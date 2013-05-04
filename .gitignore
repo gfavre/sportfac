@@ -17,6 +17,9 @@ build
 # Logs:
 *.log
 
+#No postactivate tmpl:
+config/postactivate
+
 # OS generated files #
 ######################
 .DS_Store
