@@ -1,0 +1,103 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-05-05 18:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: activities/admin.py:11
+msgid "Dates"
+msgstr "Dates"
+
+#: activities/admin.py:12
+msgid "Limitations"
+msgstr "Limitations"
+
+#: activities/admin.py:15
+msgid "course"
+msgstr "cours"
+
+#: activities/admin.py:16
+msgid "courses"
+msgstr "cours"
+
+#: activities/admin.py:21 activities/models.py:33 activities/models.py:74
+msgid "activity"
+msgstr "activité"
+
+#: activities/admin.py:22 activities/models.py:34 activities/models.py:35
+#: activities/models.py:75 activities/models.py:76 activities/models.py:92
+msgid "activities"
+msgstr "activités"
+
+#: activities/admin.py:30 activities/models.py:90
+msgid "responsible"
+msgstr "responsable"
+
+#: activities/admin.py:31 activities/models.py:91
+msgid "responsibles"
+msgstr "responsables"
+
+#: activities/models.py:5
+msgid "Monday"
+msgstr "Lundi"
+
+#: activities/models.py:6
+msgid "Tuesday"
+msgstr "Mardi"
+
+#: activities/models.py:7
+msgid "Wednesday"
+msgstr "Mercredi"
+
+#: activities/models.py:8
+msgid "Thursday"
+msgstr "Jeudi"
+
+#: activities/models.py:9
+msgid "Friday"
+msgstr "Vendredi"
+
+#: activities/models.py:10
+msgid "Saturday"
+msgstr "Samedi"
+
+#: activities/models.py:11
+msgid "Sunday"
+msgstr "Dimanche"
+
+#: activities/models.py:15
+msgid "1st HARMOS"
+msgstr "1re HARMOS"
+
+#: activities/models.py:16
+msgid "2nd HARMOS"
+msgstr "2e HARMOS"
+
+#: activities/models.py:17
+msgid "3rd HARMOS"
+msgstr "3e HARMOS"
+
+#: activities/models.py:18
+msgid "4th HARMOS"
+msgstr "4e HARMOS"
+
+#: activities/models.py:19
+msgid "5th HARMOS"
+msgstr "5e HARMOS"
+
+#: activities/models.py:20
+msgid "6th HARMOS"
+msgstr "6e HARMOS"
