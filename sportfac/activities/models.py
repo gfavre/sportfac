@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 
 DAYS_OF_WEEK = (
     (1, _('Monday')),
@@ -19,15 +19,6 @@ SCHOOL_YEARS = (
     (5, _("5th HARMOS")),
     (6, _("6th HARMOS")),
 )
-SCHOOL_YEARS = (
-    (1, _("1")),
-    (2, _("2")),
-    (3, _("3")),
-    (4, _("4")),
-    (5, _("5")),
-    (6, _("6")),
-)
-
 
 class Activity(models.Model):
     """
@@ -38,9 +29,11 @@ class Activity(models.Model):
     image = models.ImageField(upload_to='/activities', null=True, blank=True)
     
     class Meta:
+        app_label = _("activities")
         ordering = ['name']
         verbose_name = _("activity")
         verbose_name_plural = _("activities")
+
     
     def __unicode__(self):
         return self.name
@@ -78,6 +71,7 @@ class Course(models.Model):
                                             self.schoolyear_min, self.schoolyear_max)
     
     class Meta:
+        app_label = _("activities")
         ordering = ['start_date', 'activity', 'day']
         verbose_name = _("activity")
         verbose_name_plural = _("activities")
@@ -92,15 +86,8 @@ class Responsible(models.Model):
     def __unicode__(self):
         return self.name
 
-
-class TimeStampedModel(models.Model):
-      """
-      An abstract base class model that provides self-
-.
-updating ``created`` and ``modified`` fields.
-      """
-      created = models.DateTimeField(auto_now_add=True)
-      modified = models.DateTimeField(auto_now=True)
-      class Meta:
-          abstract = True
-          
+    class Meta:
+        app_label = _("activities")
+        ordering = ['name']
+        verbose_name = _("responsible")
+        verbose_name_plural = _("responsibles")          

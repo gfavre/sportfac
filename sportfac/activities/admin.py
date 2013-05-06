@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 
 from .models import Activity, Responsible, Course
 
@@ -18,12 +18,18 @@ class CourseInline(admin.TabularInline):
 class ActivityAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
     inlines = [CourseInline,]
+    verbose_name = _("activity")
+    verbose_name_plural = _("activities")
+    
 
 admin.site.register(Activity, ActivityAdmin)
 
 
 class ResponsibleAdmin(admin.ModelAdmin):
     list_display = ('name', 'phone', 'email')
+    verbose_name = _("responsible")
+    verbose_name_plural = _("responsibles")
+
 
 admin.site.register(Responsible, ResponsibleAdmin)
 
