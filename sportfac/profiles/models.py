@@ -8,8 +8,7 @@ from sportfac.activities.models import SCHOOL_YEARS
 class TimeStampedModel(models.Model):
       """
       An abstract base class model that provides self-
-.
-updating ``created`` and ``modified`` fields.
+      updating ``created`` and ``modified`` fields.
       """
       created = models.DateTimeField(auto_now_add=True)
       modified = models.DateTimeField(auto_now=True)
@@ -22,6 +21,7 @@ class FamilyUser(AbstractUser):
     zipcode = models.PositiveIntegerField(_("NPA"))
     city = models.CharField(_('City'), max_length=100)
     country = models.CharField(_('Country'), max_length = 100, default=_("Switzerland"))
+    private_phone
 
 
 # Create your models here.

@@ -12,19 +12,11 @@ $contrast_brown: rgb(138, 92, 42);
 
 
 body {
-	font-family: Helvetica, Arial, sans-serif;
+/*	font-family: Helvetica, Arial, sans-serif;
     background-repeat: no-repeat;
 	@include linear-gradient($brown, #fff, 1);
-	color: $darkest_brown;
+	color: $darkest_brown;*/
 	
-}
-.container {
-	background-color: white;
-	padding: 1em;
-	margin-top: 2em;
-	
-	@include border-radius(2px);
-	@include box-shadow(3px, 3px, 9px, $dark_brown);
 }
 a {color: $contrast_brown;}
 a:hover{color: $darkest_brown;}
