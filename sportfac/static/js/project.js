@@ -17,6 +17,10 @@ function RegistrationCtrl($scope) {
     {'id': 301, 'price': 20, 'day': 2, 'time_start': '1330', 'time_end': '1430'},
     {'id': 302, 'price': 20, 'day': 4, 'time_start': '1430', 'time_end': '1500'},   
 ]},
-]
-
+];
+/*
+    $scope.$watch('activities.selectedIdx', function(newVal) {
+    if (newVal !== null) scroll.toCurrent();
+  });
+*/
 }

@@ -54,9 +54,12 @@
         <div class="span3">
           <h3>Activities</h3>
           <ul class="unstyled">
-            <li ng-repeat="activity in activities">{{ activity.title }}<a class="btn btn-small"><i class="icon-eye-open"></i></a></li>
+            <li ng-repeat="activity in activities" ng-click="activities.selectActivity($index)" ng-class="{active: activity.selected}" >{{ activity.title }}<a class="btn btn-small"><i class="icon-eye-open"></i></a></li>
           </ul>
         </div>
+        <article class="span9" ng-show="activities.selected">
+          <h1>{{activity.title}}
+        </article>
       </div>
     
     </div> <!-- /container -->
