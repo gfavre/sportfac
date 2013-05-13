@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block page_title %}{% trans "Activities" %}{% endblock %}
+{% block extra_html %}ng-app="sportfac"{% endblock extra_html %}
+{% block page_title %}{% trans "Activities" %}{% endblock page_title%}
 
 {% block content %}
 <ul>
@@ -10,4 +11,36 @@
 {% endfor %}
 </ul>
 
+
+  <div class="container" ng-app="sportfac">
+    <div class="row" ng-controller="ActivityListCtrl">
+      <div class="span3" >
+        <h3>Activities</h3>
+        <ul class="nav nav-list">
+          <li ng-repeat="activity in activities" ng-class="{active: activity.selected}">
+            <div class="btn-group">
+              <a class="btn" href="#/activity/{[{ activity.id }]}" ng-class="{'btn-info': activity.registered, 'btn-primary': activity.selected, 'active': activity.selected}" ng-click="selectActivity(activity);">{[{ activity.name }]}</a>
+              <button class="btn" ng-click="showDetails(activity);"><i class="icon-eye-open"></i></button>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <article class="span9" id="rightViewContainer">
+         <div ng-view></div>
+      </article>
+    </div>
+
+
+
 {% endblock content %}
+
+{% block extra_js %}
+  <script src="{{ STATIC_URL }}/js/angular.min.js"></script>
+  <script src="{{ STATIC_URL }}js/app.js"></script>
+  <script src="{{ STATIC_URL }}js/services.js"></script>
+  <script src="{{ STATIC_URL }}js/controllers.js"></script>
+  <script src="{{ STATIC_URL }}js/filters.js"></script>
+  <script src="{{ STATIC_URL }}js/directives.js"></script>
+</body>
+
+{% endblock %}
