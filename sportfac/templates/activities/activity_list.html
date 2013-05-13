@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block page_title %}{% trans "Activities" %}{% endblock %}
+
+{% block content %}
+<ul>
+{% for activity in object_list %}
+  <li><a href="{{ activity.get_absolute_url }}">{{ activity.name }}</a></li>
+{% endfor %}
+</ul>
+
+{% endblock content %}

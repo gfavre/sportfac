@@ -1,0 +1,1 @@
+[{"pk": 2, "model": "activities.activity", "fields": {"image": "", "name": "basket", "slug": "basket"}}, {"pk": 3, "model": "activities.activity", "fields": {"image": "", "name": "escrime", "slug": "escrime"}}]

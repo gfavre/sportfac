@@ -1,8 +1,8 @@
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 from django.contrib.auth.models import AbstractUser
 
-from sportfac.activities.models import SCHOOL_YEARS
+from activities.models import SCHOOL_YEARS
 
 
 class TimeStampedModel(models.Model):
@@ -21,7 +21,7 @@ class FamilyUser(AbstractUser):
     zipcode = models.PositiveIntegerField(_("NPA"))
     city = models.CharField(_('City'), max_length=100)
     country = models.CharField(_('Country'), max_length = 100, default=_("Switzerland"))
-    private_phone
+    private_phone = models.CharField(max_length=12)
 
 
 # Create your models here.
@@ -34,11 +34,11 @@ class Child(TimeStampedModel):
     teacher = models.ForeignKey('Teacher')
     
 
-class SchoolYear(models.model):
+class SchoolYear(models.Model):
     year = models.PositiveIntegerField(choices=SCHOOL_YEARS, unique=True)
 
 
-class Teacher(models.model):
+class Teacher(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     years = models.ManyToManyField('SchoolYear')

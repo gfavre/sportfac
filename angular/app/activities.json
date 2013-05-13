@@ -1,0 +1,13 @@
+[
+              {"title": "basket", "id": 1, "courses": [
+                  {"id": 101, "price": 10, "day": 1, "time_start": "1615", "time_end": "1730"}
+               ]},
+              {"title": "escrime", "id": 2, "courses": [
+                  {"id": 201, "price": 20, "day": 3, "time_start": "1330", "time_end": "1430"},
+                  {"id": 202, "price": 10, "day": 3, "time_start": "1430", "time_end": "1500"}
+              ]},
+              {"title": "voile", "id": 3, "courses": [
+                  {"id": 301, "price": 20, "day": 2, "time_start": "1330", "time_end": "1430"},
+                  {"id": 302, "price": 20, "day": 4, "time_start": "1430", "time_end": "1500"}  
+              ]}
+]
