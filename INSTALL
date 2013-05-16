@@ -46,3 +46,8 @@ We use env vars to store critical informations. A good way of dealing with these
     cat postactivate >> ~/.virtualenvs/sportfac/bin/postactivate
     source ~/.virtualenvs/sportfac/bin/postactivate
 
+(sportfac)GFiMac27:sportfac_project grfavre$ ls ~/.virtualenvs/sportfac/
+.Python   .project  bin/      include/  lib/      share/    
+(sportfac)GFiMac27:sportfac_project grfavre$ more ~/.virtualenvs/sportfac/.project 
+/Users/grfavre/Documents/Projets/sportfac_project
+(sportfac)GFiMac27:sportfac_project grfavre$ 
