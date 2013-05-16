@@ -12,15 +12,15 @@
 </ul>
 
 
-  <div class="container" ng-app="sportfac">
-    <div class="row" ng-controller="ActivityListCtrl">
-      <div class="span3" >
+  <div class="container" ng-app="sportfac" >
+    <div class="row" ng-controller="ActivityCtrl">
+      <div class="span3" ng-controller="ActivityListCtrl">
         <h3>Activities</h3>
         <ul class="nav nav-list">
           <li ng-repeat="activity in activities" ng-class="{active: activity.selected}">
             <div class="btn-group">
-              <a class="btn" href="#/activity/{[{ activity.id }]}" ng-class="{'btn-info': activity.registered, 'btn-primary': activity.selected, 'active': activity.selected}" ng-click="selectActivity(activity);">{[{ activity.name }]}</a>
-              <button class="btn" ng-click="showDetails(activity);"><i class="icon-eye-open"></i></button>
+              <a class="btn" href="#/timeline/{[{ activity.id }]}" ng-class="{'btn-info': activity.registered, 'btn-primary': activity.selected, 'active': activity.selected}" ng-click="selectActivity(activity);">{[{ activity.name }]}</a>
+              <a class="btn" href="#/activity/{[{ activity.id }]}"><i class="icon-eye-open"></i></a>
             </div>
           </li>
         </ul>
@@ -29,13 +29,16 @@
          <div ng-view></div>
       </article>
     </div>
-
+  </div>
 
 
 {% endblock content %}
 
 {% block extra_js %}
+  <script src="{{ STATIC_URL }}/js/jquery-ui.custom.min.js"></script>
+  <script src="{{ STATIC_URL }}/js/fullcalendar.min.js"></script>
   <script src="{{ STATIC_URL }}/js/angular.min.js"></script>
+  <script src="{{ STATIC_URL }}/js/angular-ui-calendar.js"></script>
   <script src="{{ STATIC_URL }}js/app.js"></script>
   <script src="{{ STATIC_URL }}js/services.js"></script>
   <script src="{{ STATIC_URL }}js/controllers.js"></script>

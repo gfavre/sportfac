@@ -87,15 +87,23 @@ class Course(models.Model):
 
 class Responsible(models.Model):
     "person repsosible of a course"
-    name = models.CharField(max_length=100)
+    first = models.CharField(max_length=100, blank=True)
+    last = models.CharField(max_length=100)
     phone = models.CharField(max_length=14, blank=True)
     email = models.EmailField(blank=True)
     
     def __unicode__(self):
-        return self.name
-
+        if self.first:
+            return u'%s %s' % (self.first, self.last)
+        else:
+            return self.last
+    
+    @property
+    def fullname(self):
+        return self.__unicode__
+    
     class Meta:
         app_label = _("activities")
-        ordering = ['name']
+        ordering = ['last', 'first']
         verbose_name = _("responsible")
         verbose_name_plural = _("responsibles")          
