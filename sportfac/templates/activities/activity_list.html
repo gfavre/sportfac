@@ -5,13 +5,6 @@
 {% block page_title %}{% trans "Activities" %}{% endblock page_title%}
 
 {% block content %}
-<ul>
-{% for activity in object_list %}
-  <li><a href="{{ activity.get_absolute_url }}">{{ activity.name }}</a></li>
-{% endfor %}
-</ul>
-
-
   <div class="container" ng-app="sportfac" >
     <div class="row" ng-controller="ActivityCtrl">
       <div class="span3" ng-controller="ActivityListCtrl">
@@ -19,7 +12,7 @@
         <ul class="nav nav-list">
           <li ng-repeat="activity in activities" ng-class="{active: activity.selected}">
             <div class="btn-group">
-              <a class="btn" href="#/timeline/{[{ activity.id }]}" ng-class="{'btn-info': activity.registered, 'btn-primary': activity.selected, 'active': activity.selected}" ng-click="selectActivity(activity);">{[{ activity.name }]}</a>
+              <a class="btn" ng-class="{'btn-info': activity.registered, 'btn-primary': activity.selected, 'active': activity.selected}" ng-click="selectActivity(activity);">{[{ activity.name }]}</a>
               <a class="btn" href="#/activity/{[{ activity.id }]}"><i class="icon-eye-open"></i></a>
             </div>
           </li>
