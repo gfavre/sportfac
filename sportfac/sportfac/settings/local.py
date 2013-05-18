@@ -31,6 +31,7 @@ DATABASES = {
         'PASSWORD': os.environ['DB_PASSWORD'],
         'HOST': '',
         'PORT': '',
+        'OPTIONS': {'autocommit': True,}
     }
 }
 ########## END DATABASE CONFIGURATION

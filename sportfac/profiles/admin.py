@@ -1,0 +1,112 @@
+from django import forms
+from django.contrib import admin
+#from django.contrib.auth.models import Group
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.forms import ReadOnlyPasswordHashField
+from django.utils.translation import gettext_lazy as _
+
+
+from .models import FamilyUser, Child, Teacher
+
+
+
+#    address = models.TextField(_("Street"), blank = True)
+#    zipcode = models.PositiveIntegerField(_("NPA"))
+#    city = models.CharField(_('City'), max_length=100)
+#    country = models.CharField(_('Country'), max_length = 100, default=_("Switzerland"))
+#    private_phone = models.CharField(max_length=12)
+#
+#
+
+class FamilyCreationForm(forms.ModelForm):
+    """A form for creating new users. Includes all the required
+    fields, plus a repeated password."""
+    password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
+
+    class Meta:
+        model = FamilyUser
+        fields = ('email', 'first_name', 'last_name', 
+                  'address', 'zipcode', 'city', 'country', 
+                  'private_phone', 'private_phone2')
+
+    def clean_password2(self):
+        # Check that the two password entries match
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError("Passwords don't match")
+        return password2
+
+    def save(self, commit=True):
+        # Save the provided password in hashed format
+        user = super(FamilyCreationForm, self).save(commit=False)
+        user.set_password(self.cleaned_data["password1"])
+        if commit:
+            user.save()
+        return user
+
+
+class FamilyChangeForm(forms.ModelForm):
+    """A form for updating users. Includes all the fields on
+    the user, but replaces the password field with admin's
+    password hash display field.
+    """
+    password = ReadOnlyPasswordHashField()
+
+    class Meta:
+        model = FamilyUser
+        fields = ('email', 'first_name', 'last_name', 
+                  'address', 'zipcode', 'city', 'country', 
+                  'private_phone', 'private_phone2')
+
+
+    def clean_password(self):
+        # Regardless of what the user provides, return the initial value.
+        # This is done here, rather than on the field, because the
+        # field does not have access to the initial value
+        return self.initial["password"]
+
+class ChildInline(admin.StackedInline):
+    model = Child
+    extra = 1
+    verbose_name = _("child")
+    verbose_name_plural = _("children")
+
+class FamilyAdmin(UserAdmin):
+    # The forms to add and change user instances
+    form = FamilyChangeForm
+    add_form = FamilyCreationForm
+
+    # The fields to be used in displaying the User model.
+    # These override the definitions on the base UserAdmin
+    # that reference specific fields on auth.User.
+    list_display = ('email', 'first_name', 'last_name', 'children_names')
+    #list_filter = ('is_admin',)
+    fieldsets = (
+        (None, {'fields': ('email', 'password')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 
+                                      'address', 'zipcode', 'city', 'country', 
+                                      'private_phone', 'private_phone2')}),
+    )
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'password1', 'password2')}
+        ),
+        ('Personal info', {'fields': ('first_name', 'last_name', 
+                                      'address', 'zipcode', 'city', 'country', 
+                                      'private_phone', 'private_phone2')}),
+    )
+    search_fields = ('email', 'last_name', 'first_name')
+    ordering = ('last_name', 'first_name')
+    #filter_horizontal = ()
+    inlines = [ChildInline]
+
+# Now register the new UserAdmin...
+admin.site.register(FamilyUser, FamilyAdmin)
+# ... and, since we're not using Django's builtin permissions,
+# unregister the Group model from admin.
+#admin.site.unregister(Group)
+
+admin.site.register(Teacher)

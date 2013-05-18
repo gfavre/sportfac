@@ -260,4 +260,5 @@ REST_FRAMEWORK = {
 
 ########## END REST FRAMEWORK CONFIGURATION
 
+AUTH_USER_MODEL = 'profiles.FamilyUser'
 

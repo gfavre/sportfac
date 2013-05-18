@@ -9,5 +9,6 @@ urlpatterns = patterns('',
     url(r'^api/', include('api.urls')),
     url(r'^activities/', include('activities.urls')),
 
+    url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
     url(r'^admin/', include(admin.site.urls)),
 )
