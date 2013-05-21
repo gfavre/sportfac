@@ -5,33 +5,62 @@
 {% block page_title %}{% trans "Activities" %}{% endblock page_title%}
 
 {% block content %}
-  <div class="container" ng-app="sportfac" >
-    <div class="row" ng-controller="ActivityCtrl">
-      <ul class="nav nav-tabs">
-        <li ng-repeat="child in userChildren" ng-class="{active: child.selected}"><a href="#child-{[{ child.id }]}" data-toggle="tab" ng-click="selectChild($index)">{[{ child.first_name }]}</a></li>
-      </ul>
-      
-      <div class="tab-content">
-        <div class="tab-pane" ng-class="{active: child.selected}" ng-repeat="child in userChildren" id="child-{[{ child.id }]}">
-          <div class="span3" ng-controller="ActivityListCtrl">
-            <h3>Activities</h3>
-            <ul class="nav nav-list">
-              <li ng-repeat="activity in activities" ng-class="{active: activity.selected}">
-                <div class="btn-group">
-                  <a class="btn" ng-class="{'btn-info': activity.registered, 'btn-primary': activity.selected, 'active': activity.selected}" ng-click="selectActivity(activity);">{[{ activity.name }]}</a>
-                  <a class="btn" href="#/activity/{[{ activity.id }]}"><i class="icon-eye-open"></i></a>
-                </div>
-              </li>
-            </ul>
-          </div>
-          <article class="span9" id="rightViewContainer">
-             <div ng-view></div>
-          </article>
+<div class="container" ng-app="sportfac" ng-controller="ActivityCtrl">
+  
+  <div class="tabbable" style="margin-left:-30px">
+    <ul class="nav nav-tabs" >
+      <li ng-repeat="child in userChildren" ng-class="{active: child.selected}"><a href="#child-{[{ child.id }]}" data-toggle="tab" ng-click="selectChild($index)">{[{ child.first_name }]}</a></li>
+    </ul>
+  
+    <div class="tab-content" style="margin-left:-30px">
+      <div class="tab-pane" ng-class="{active: child.selected}" ng-repeat="child in userChildren" id="child-{[{ child.id }]}">
+        
+        <div class="span3 bs-docs-sidebar" ng-controller="ActivityListCtrl">
+          <ul class="nav nav-list bs-docs-sidenav">
+            <li ng-repeat="activity in activities" ng-class="{active: activity.selected}">
+              <a ng-class="{'active': activity.selected}" ng-click="selectActivity(activity);">{[{ activity.name }]} <!--<a class="btn" href="#/activity/{[{ activity.id }]}"><i class="icon-eye-open"></i></a>--> <i class="icon-chevron-right"></i></a>
+            </li>
+          </ul>
         </div>
-      </div> 
-         
-    </div>
+          
+        <article class="span8">
+           <div ng-view></div>
+        </article>
+      </div><!-- end pane -->
+    </div><!-- end tab-content -->
+  </div><!-- end tabbable -->
+</div> <!-- end container -->
+
+
+<!--
+
+<div class="container" ng-app="sportfac" ng-controller="ActivityCtrl">
+  
+  <div class="row">
+    <ul class="nav nav-tabs span12">
+      <li ng-repeat="child in userChildren" ng-class="{active: child.selected}"><a href="#child-{[{ child.id }]}" data-toggle="tab" ng-click="selectChild($index)">{[{ child.first_name }]}</a></li>
+    </ul>
   </div>
+  
+    <div class="tab-content row">
+      <div class="tab-pane" ng-class="{active: child.selected}" ng-repeat="child in userChildren" id="child-{[{ child.id }]}">
+        
+        <div class="span3 bs-docs-sidebar" ng-controller="ActivityListCtrl">
+          <ul class="nav nav-list bs-docs-sidenav">
+            <li ng-repeat="activity in activities" ng-class="{active: activity.selected}">
+              <a ng-class="{'active': activity.selected}" ng-click="selectActivity(activity);">{[{ activity.name }]}  <i class="icon-chevron-right"></i></a>
+            </li>
+          </ul>
+        </div>
+          
+        <article class="span8">
+           <div ng-view></div>
+        </article>
+      </div>
+    </div>
+</div> -->
+
+
 
 
 {% endblock content %}
@@ -41,11 +70,11 @@
   <script src="{{ STATIC_URL }}/js/fullcalendar.min.js"></script>
   <script src="{{ STATIC_URL }}/js/angular.min.js"></script>
   <script src="{{ STATIC_URL }}/js/angular-ui-calendar.js"></script>
-  <script src="{{ STATIC_URL }}js/app.js"></script>
-  <script src="{{ STATIC_URL }}js/services.js"></script>
-  <script src="{{ STATIC_URL }}js/controllers.js"></script>
-  <script src="{{ STATIC_URL }}js/filters.js"></script>
-  <script src="{{ STATIC_URL }}js/directives.js"></script>
+  <script src="{{ STATIC_URL }}/js/app.js"></script>
+  <script src="{{ STATIC_URL }}/js/services.js"></script>
+  <script src="{{ STATIC_URL }}/js/controllers.js"></script>
+  <script src="{{ STATIC_URL }}/js/filters.js"></script>
+  <script src="{{ STATIC_URL }}/js/directives.js"></script>
 </body>
 
 {% endblock %}
