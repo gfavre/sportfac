@@ -7,20 +7,29 @@
 {% block content %}
   <div class="container" ng-app="sportfac" >
     <div class="row" ng-controller="ActivityCtrl">
-      <div class="span3" ng-controller="ActivityListCtrl">
-        <h3>Activities</h3>
-        <ul class="nav nav-list">
-          <li ng-repeat="activity in activities" ng-class="{active: activity.selected}">
-            <div class="btn-group">
-              <a class="btn" ng-class="{'btn-info': activity.registered, 'btn-primary': activity.selected, 'active': activity.selected}" ng-click="selectActivity(activity);">{[{ activity.name }]}</a>
-              <a class="btn" href="#/activity/{[{ activity.id }]}"><i class="icon-eye-open"></i></a>
-            </div>
-          </li>
-        </ul>
-      </div>
-      <article class="span9" id="rightViewContainer">
-         <div ng-view></div>
-      </article>
+      <ul class="nav nav-tabs">
+        <li ng-repeat="child in userChildren" ng-class="{active: child.selected}"><a href="#child-{[{ child.id }]}" data-toggle="tab" ng-click="selectChild($index)">{[{ child.first_name }]}</a></li>
+      </ul>
+      
+      <div class="tab-content">
+        <div class="tab-pane" ng-class="{active: child.selected}" ng-repeat="child in userChildren" id="child-{[{ child.id }]}">
+          <div class="span3" ng-controller="ActivityListCtrl">
+            <h3>Activities</h3>
+            <ul class="nav nav-list">
+              <li ng-repeat="activity in activities" ng-class="{active: activity.selected}">
+                <div class="btn-group">
+                  <a class="btn" ng-class="{'btn-info': activity.registered, 'btn-primary': activity.selected, 'active': activity.selected}" ng-click="selectActivity(activity);">{[{ activity.name }]}</a>
+                  <a class="btn" href="#/activity/{[{ activity.id }]}"><i class="icon-eye-open"></i></a>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <article class="span9" id="rightViewContainer">
+             <div ng-view></div>
+          </article>
+        </div>
+      </div> 
+         
     </div>
   </div>
 

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from activities.models import Activity, Course
+from profiles.models import Child
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -25,3 +26,11 @@ class ActivityDetailedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Activity
         fields = ('id', 'name', 'image', 'courses')
+
+
+
+class ChildrenSerializer(serializers.ModelSerializer):
+    teacher = serializers.RelatedField(many=False)
+    class Meta:
+        model = Child
+        fields = ('id', 'first_name', 'last_name', 'school_year', 'teacher')

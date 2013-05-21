@@ -16,10 +16,21 @@ sportfacModule.config(function($interpolateProvider) {
 });
 
 var ActivityCtrl = function($scope, $http) {
+  $scope.getUserChildren = function(){
+    $http.get('/api/family/').success(function(data){ 
+      $scope.userChildren = data; 
+      $scope.selectChild(0);
+    });
+  };
   $scope.getDetailedActivity = function(activity){
-      $scope.detailedActivity = $http.get('/api/activities/' + activity.id).then(function(response){
-         return response.data 
-      });
+    $http.get('/api/activities/' + activity.id).success(function(data){$scope.detailedActivity = data; });
+  };
+  $scope.selectChild = function(childIdx){
+    if ($scope.selectedChild){
+        $scope.selectedChild.selected = false;
+    }
+    $scope.selectedChild = $scope.userChildren[childIdx];
+    $scope.selectedChild.selected = true;
   };
   
   $scope.selectActivity = function(activity){
@@ -28,59 +39,52 @@ var ActivityCtrl = function($scope, $http) {
       }
       activity.selected = true;
       $scope.selected = activity;
-      //$scope.getDetailedActivity($scope.selected);
-      //var name = $scope.detailedActivity.name;
+      $scope.getDetailedActivity($scope.selected);
   };
-  $scope.$watch('selected', function(){
-    if ($scope.selected.id) {
-        $http.get('/api/activities/' + $scope.selected.id).success(function(data){ $scope.detailedActivity = data; });
-    }
-  });
+  
+  $scope.getUserChildren();
   $scope.detailedActivity = {}
   $scope.selected = {}
-}
-
-var ActivityListCtrl = function($scope, $http) {  
-  $scope.loadActivities = function(){
-      $scope.activities = $http.get('/api/activities/').then(function(response){
-          return response.data;
-      });
-  };
-  $scope.orderProp = 'name';
-  $scope.loadActivities();
+    
+  //$scope.selectChild(0);
   
 }
 
-var ActivityTimelineCtrl = function($scope){
-    var trimesters = [{'start': ''}];
-    
+var ActivityListCtrl = function($scope, $http) {
+  $scope.loadActivities = function(){
+      var url = '/api/activities/?year=' + $scope.selectedChild.school_year;
+      $scope.activities = $http.get(url).then(function(response){
+          return response.data;
+      });
+  };
+  
+  
+  $scope.$watch('selectedChild', function(){ $scope.loadActivities()});
+};
+
+var ActivityTimelineCtrl = function($scope){    
     var date = new Date();
     var d = date.getDate();
     var m = date.getMonth();
     var y = date.getFullYear();
     
-    
-    $scope.events = []
     $scope.changeActivity = function(){
-        $scope.events.length = 0;
-    
-        var activity = $scope.detailedActivity;
-        if (activity.id) {
-          for (var i=0; i<activity.courses.length; i++){
-            var course = activity.courses[i];
-            var start = new Date(y, m, d + (course.day - date.getDay()), course.start_time.split(':')[0], course.start_time.split(':')[1]);
-            var end = new Date(y, m, d + (course.day - date.getDay()), course.end_time.split(':')[0], course.end_time.split(':')[1]);
-            $scope.events.push(
-              {title: activity.name, 
-               start: start,
-               end: end,
-               allDay: false}
-            );
-          }
+      $scope.events.length = 0;
+      var activity = $scope.detailedActivity;
+      if (activity.id) {
+        for (var i=0; i<activity.courses.length; i++){
+          var course = activity.courses[i];
+          var start = new Date(y, m, d + (course.day - date.getDay()), course.start_time.split(':')[0], course.start_time.split(':')[1]);
+          var end = new Date(y, m, d + (course.day - date.getDay()), course.end_time.split(':')[0], course.end_time.split(':')[1]);
+          $scope.events.push(
+            {title: activity.name, 
+             start: start,
+             end: end,
+             allDay: false}
+          );
         }
+      }
     };
-    $scope.$watch('detailedActivity', $scope.changeActivity);
-
         
     $scope.alertEventOnClick = function( date, allDay, jsEvent, view ){
         $scope.events.push({title: 'test',
@@ -100,11 +104,7 @@ var ActivityTimelineCtrl = function($scope){
         axisFormat: 'H:mm', columnFormat: 'dddd d MMM yyyy',
         dayNames: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
         dayNamesShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
-        header:{
-          left: '',
-          center: '',
-          right: ''
-        },
+        header:{left: '', center: '', right: ''},
         eventClick: $scope.alertEventOnClick,
       }
     };
@@ -112,7 +112,9 @@ var ActivityTimelineCtrl = function($scope){
     // 1 event source par enfant en grisé
     // 1 event source: sélection actuelle
     // 1 event source sélection déjà faite.
+    $scope.events = []
     $scope.eventSources = [$scope.events];
+    $scope.$watch('detailedActivity', $scope.changeActivity);
 }
 
 var ActivityDetailCtrl = function($scope, $routeParams){
