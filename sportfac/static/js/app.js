@@ -45,11 +45,6 @@ var ActivityCtrl = function($scope, $http) {
   $scope.getUserChildren();
   $scope.detailedActivity = {};
   $scope.selected = {};
-  $scope.events = [];
-  $scope.eventSources = [];
-    
-  //$scope.selectChild(0);
-  
 }
 
 var ActivityListCtrl = function($scope, $http) {
@@ -112,10 +107,8 @@ var ActivityTimelineCtrl = function($scope, $routeParams){
     // 1 event source par enfant en grisé
     // 1 event source: sélection actuelle
     // 1 event source sélection déjà faite.
-    $scope.events = [{title: 'test',
-                      start: new Date(y+1, m, d, 0, 0), 
-                      end: new Date(y+1, m, d, 1, 0),
-                      allDay: false }]
+
+    $scope.events = [];
     $scope.eventSources = [$scope.events];
     $scope.$watch('detailedActivity', $scope.changeActivity);
 }
