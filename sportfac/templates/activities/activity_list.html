@@ -18,7 +18,7 @@
         <div class="span3 bs-docs-sidebar" ng-controller="ActivityListCtrl">
           <ul class="nav nav-list bs-docs-sidenav">
             <li ng-repeat="activity in activities" ng-class="{active: activity.selected}">
-              <a ng-class="{'active': activity.selected}" ng-click="selectActivity(activity);">{[{ activity.name }]} <!--<a class="btn" href="#/activity/{[{ activity.id }]}"><i class="icon-eye-open"></i></a>--> <i class="icon-chevron-right"></i></a>
+              <a ng-class="{'active': activity.selected}" href="#/activity/{[{ activity.id }]}/timeline" ng-click="selectActivity(activity);">{[{ activity.name }]} <!--<a class="btn" href="#/activity/{[{ activity.id }]}"><i class="icon-eye-open"></i></a>--> <i class="icon-chevron-right"></i></a>
             </li>
           </ul>
         </div>
@@ -66,15 +66,15 @@
 {% endblock content %}
 
 {% block extra_js %}
-  <script src="{{ STATIC_URL }}/js/jquery-ui.custom.min.js"></script>
-  <script src="{{ STATIC_URL }}/js/fullcalendar.min.js"></script>
-  <script src="{{ STATIC_URL }}/js/angular.min.js"></script>
-  <script src="{{ STATIC_URL }}/js/angular-ui-calendar.js"></script>
-  <script src="{{ STATIC_URL }}/js/app.js"></script>
-  <script src="{{ STATIC_URL }}/js/services.js"></script>
-  <script src="{{ STATIC_URL }}/js/controllers.js"></script>
-  <script src="{{ STATIC_URL }}/js/filters.js"></script>
-  <script src="{{ STATIC_URL }}/js/directives.js"></script>
+  <script src="{{ STATIC_URL }}js/jquery-ui.custom.min.js"></script>
+  <script src="{{ STATIC_URL }}js/fullcalendar.min.js"></script>
+  <script src="{{ STATIC_URL }}js/angular.min.js"></script>
+  <script src="{{ STATIC_URL }}js/angular-ui-calendar.js"></script>
+  <script src="{{ STATIC_URL }}js/app.js"></script>
+  <script src="{{ STATIC_URL }}js/services.js"></script>
+  <script src="{{ STATIC_URL }}js/controllers.js"></script>
+  <script src="{{ STATIC_URL }}js/filters.js"></script>
+  <script src="{{ STATIC_URL }}js/directives.js"></script>
 </body>
 
 {% endblock %}

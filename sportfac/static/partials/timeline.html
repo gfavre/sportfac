@@ -1,8 +1,11 @@
 
 <h2>{[{ detailedActivity.name }]}</h2>
 
-<div class="calendar" ng-model="eventSources" calendar="myCalendar" config="uiConfig.calendar" ui-calendar="uiConfig.calendar"></div>
+<div class="calendar" ng-model="eventSources" calendar="calendar-{[{ detailedActivity.id }]}" config="uiConfig.calendar" ui-calendar="uiConfig.calendar"></div>
                         
+
+
+
                         <h3>Courses</h3>
 <ul class="unstyled">
     <li ng-repeat="course in detailedActivity.courses">{[{ course.start_date }]}</li>

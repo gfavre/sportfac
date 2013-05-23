@@ -5,8 +5,8 @@
 var sportfacModule = angular.module('sportfac', ['sportfac.filters', 'sportfac.services', 'sportfac.directives', 'ui.calendar']);
 
 sportfacModule.config(['$routeProvider', function($routeProvider) {
-    $routeProvider.when('/', {templateUrl: '/static/partials/timeline.html', controller: 'ActivityTimelineCtrl'});
-    $routeProvider.when('/activity/:activityId', {templateUrl: '/static/partials/activity-detail.html', controller: 'ActivityDetailCtrl'});
+    $routeProvider.when('/activity/:activityId/timeline', {templateUrl: '/static/partials/timeline.html', controller: 'ActivityTimelineCtrl'});
+    $routeProvider.when('/activity/:activityId/detail', {templateUrl: '/static/partials/activity-detail.html', controller: 'ActivityDetailCtrl'});
     $routeProvider.otherwise({redirectTo: '/activities'});
 }]);
 
@@ -43,8 +43,10 @@ var ActivityCtrl = function($scope, $http) {
   };
   
   $scope.getUserChildren();
-  $scope.detailedActivity = {}
-  $scope.selected = {}
+  $scope.detailedActivity = {};
+  $scope.selected = {};
+  $scope.events = [];
+  $scope.eventSources = [];
     
   //$scope.selectChild(0);
   
@@ -62,13 +64,14 @@ var ActivityListCtrl = function($scope, $http) {
   $scope.$watch('selectedChild', function(){ $scope.loadActivities()});
 };
 
-var ActivityTimelineCtrl = function($scope){    
+var ActivityTimelineCtrl = function($scope, $routeParams){    
     var date = new Date();
     var d = date.getDate();
     var m = date.getMonth();
     var y = date.getFullYear();
     
     $scope.changeActivity = function(){
+      debugger;
       $scope.events.length = 0;
       var activity = $scope.detailedActivity;
       if (activity.id) {
@@ -87,10 +90,7 @@ var ActivityTimelineCtrl = function($scope){
     };
         
     $scope.alertEventOnClick = function( date, allDay, jsEvent, view ){
-        $scope.events.push({title: 'test',
-                            start: new Date(y, m, d, 15, 0), 
-                            end: new Date(y, m, d, 16, 0),
-                            allDay: false });
+        alert('clicked');
     };
     
     $scope.uiConfig = {
@@ -112,7 +112,10 @@ var ActivityTimelineCtrl = function($scope){
     // 1 event source par enfant en grisé
     // 1 event source: sélection actuelle
     // 1 event source sélection déjà faite.
-    $scope.events = []
+    $scope.events = [{title: 'test',
+                      start: new Date(y+1, m, d, 0, 0), 
+                      end: new Date(y+1, m, d, 1, 0),
+                      allDay: false }]
     $scope.eventSources = [$scope.events];
     $scope.$watch('detailedActivity', $scope.changeActivity);
 }
