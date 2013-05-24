@@ -59,7 +59,7 @@ var ActivityListCtrl = function($scope, $http) {
   $scope.$watch('selectedChild', function(){ $scope.loadActivities()});
 };
 
-var ActivityTimelineCtrl = function($scope, $routeParams, $filter){    
+var ActivityTimelineCtrl = function($scope, $routeParams, $filter, calendars){    
     var date = new Date();
     var d = date.getDate();
     var m = date.getMonth();
@@ -78,14 +78,15 @@ var ActivityTimelineCtrl = function($scope, $routeParams, $filter){
             {title: activity.name + ' \n ' + $filter('date')(course.start_date, 'mediumDate') +' - ' + $filter('date')(course.end_date, 'mediumDate'), 
              start: start,
              end: end,
-             allDay: false}
+             allDay: false,
+             course: course}
           );
         }
       }
     };
         
-    $scope.alertEventOnClick = function( date, allDay, jsEvent, view ){
-        alert('clicked');
+    $scope.alertEventOnClick = function( calEvent, jsEvent, view ){
+      calendars.addCourse($scope.selectedChild, calEvent.course);
     };
     
     $scope.uiConfig = {
