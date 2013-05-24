@@ -59,23 +59,23 @@ var ActivityListCtrl = function($scope, $http) {
   $scope.$watch('selectedChild', function(){ $scope.loadActivities()});
 };
 
-var ActivityTimelineCtrl = function($scope, $routeParams){    
+var ActivityTimelineCtrl = function($scope, $routeParams, $filter){    
     var date = new Date();
     var d = date.getDate();
     var m = date.getMonth();
     var y = date.getFullYear();
     
     $scope.changeActivity = function(){
-      debugger;
       $scope.events.length = 0;
       var activity = $scope.detailedActivity;
       if (activity.id) {
         for (var i=0; i<activity.courses.length; i++){
           var course = activity.courses[i];
+          if (course.schoolyear_min > $scope.selectedChild.school_year || course.schoolyear_max < $scope.selectedChild.school_year) continue;
           var start = new Date(y, m, d + (course.day - date.getDay()), course.start_time.split(':')[0], course.start_time.split(':')[1]);
           var end = new Date(y, m, d + (course.day - date.getDay()), course.end_time.split(':')[0], course.end_time.split(':')[1]);
           $scope.events.push(
-            {title: activity.name, 
+            {title: activity.name + ' \n ' + $filter('date')(course.start_date, 'mediumDate') +' - ' + $filter('date')(course.end_date, 'mediumDate'), 
              start: start,
              end: end,
              allDay: false}
@@ -96,11 +96,12 @@ var ActivityTimelineCtrl = function($scope, $routeParams){
         defaultView: 'agendaWeek',
         weekends: false, allDaySlot: false,
         slotMinutes: 15, firstHour: 12, maxTime: 20, minTime: 12,
-        axisFormat: 'H:mm', columnFormat: 'dddd d MMM yyyy',
+        axisFormat: 'H:mm', columnFormat: 'dddd',
         dayNames: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
         dayNamesShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
         header:{left: '', center: '', right: ''},
         eventClick: $scope.alertEventOnClick,
+        timeFormat: {agenda: ''}
       }
     };
     
