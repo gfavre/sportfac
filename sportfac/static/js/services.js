@@ -11,18 +11,26 @@ angular.module('sportfac.services', []).
 
     var self = this;
   
-    self.getCourses = function(child){
+    self.getCalendar = function(child){
       if (!(self.calendars.hasOwnProperty(child.id))){
         self.calendars[child.id] = Array();
       }
       return self.calendars[child.id];
     }
-  
-    self.addCourse = function(child, course) {
+    
+    self.getOthersCalendar = function(child) {
+      var calendar = Array();
+      for (var property in self.calendars) {
+        if (property != child.id) calendar.push.apply(self.calendars[property]);
+      }
+      return calendar;
+    }
+    
+    self.addCourse = function(child, calEvent) {
       if (!(self.calendars.hasOwnProperty(child.id))){
         self.calendars[child.id] = Array();
       }
-      self.calendars[child.id].push(course);
+      self.calendars[child.id].push(calEvent);
     };
     
     

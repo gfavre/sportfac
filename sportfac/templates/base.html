@@ -1,6 +1,6 @@
 {% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE }}" {% block extra_html %}{% endblock extra_html %}>
   <head>
     <meta charset="utf-8">
     <title>{% block title %}Inscription au sport facultatif{% endblock title %}</title>
