@@ -5950,6 +5950,10 @@ h3 code {
 .fc-event {
   cursor: pointer; }
 
+.fc-event-vert .fc-event-time {
+  white-space: normal;
+  line-height: 12px; }
+
 /* Tweak navbar brand link to be super sleek
 -------------------------------------------------- */
 body > .navbar {
