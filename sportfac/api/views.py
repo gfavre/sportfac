@@ -7,9 +7,10 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import mixins, generics
 
-from activities.models import Activity
+from activities.models import Activity, Course
 from profiles.models import Child
-from .serializers import ActivitySerializer, ActivityDetailedSerializer, ChildrenSerializer
+from .serializers import (ActivitySerializer, ActivityDetailedSerializer, 
+                          ChildrenSerializer, CourseSerializer)
 
 
 class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
@@ -28,6 +29,11 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
         activities = self.get_queryset()
         serializer = ActivitySerializer(activities)
         return Response(serializer.data)
+
+
+class CourseViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CourseSerializer
+    model = Course
 
 
 class FamilyView(mixins.ListModelMixin, generics.GenericAPIView):

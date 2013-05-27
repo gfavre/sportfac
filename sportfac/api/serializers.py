@@ -4,7 +4,12 @@ from activities.models import Activity, Course
 from profiles.models import Child
 
 
-class CourseSerializer(serializers.ModelSerializer):
+class ActivitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Activity
+        fields = ('id', 'name', 'image')
+
+class CourseInlineSerializer(serializers.ModelSerializer):
     responsible = serializers.RelatedField(many=False)
 
     class Meta:
@@ -15,17 +20,25 @@ class CourseSerializer(serializers.ModelSerializer):
                   'schoolyear_min', 'schoolyear_max')
 
 
-class ActivitySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Activity
-        fields = ('id', 'name', 'image')
 
 class ActivityDetailedSerializer(serializers.ModelSerializer):
-    courses = CourseSerializer(many=False)
+    courses = CourseInlineSerializer(many=False)
     
     class Meta:
         model = Activity
         fields = ('id', 'name', 'image', 'courses')
+
+
+
+class CourseSerializer(serializers.ModelSerializer):
+    activity = ActivitySerializer(many=False)
+    responsible = serializers.RelatedField(many=False)
+    class Meta:
+        model = Course
+        fields = ('id', 'responsible', 'activity', 'price', 'number_of_sessions', 'day', 
+                  'start_date', 'end_date', 'start_time', 'end_time', 'place',
+                  'min_participants', 'max_participants', 
+                  'schoolyear_min', 'schoolyear_max')
 
 
 
