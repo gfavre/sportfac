@@ -1,38 +1,36 @@
 'use strict';
-
+if (!Array.prototype.indexOf) {
+  Array.prototype.indexOf = function (obj, fromIndex) {
+    if (fromIndex == null) {
+        fromIndex = 0;
+    } else if (fromIndex < 0) {
+        fromIndex = Math.max(0, this.length + fromIndex);
+    }
+    for (var i = fromIndex, j = this.length; i < j; i++) {
+        if (this[i] === obj)
+            return i;
+    }
+    return -1;
+  };
+}
 
 // Declare app level module which depends on filters, and services
 var sportfacModule = angular.module('sportfac', ['sportfac.services', 'ui.calendar']);//['sportfac.filters', 'sportfac.services', 'sportfac.directives', 'ui.calendar']);
 
 sportfacModule.factory("$store",function($parse){
-  /**
-   * Global Vars
-   */
+ 
   var storage = (typeof window.localStorage === 'undefined') ? undefined : window.localStorage,
       supported = !(typeof storage == 'undefined' || typeof window.JSON == 'undefined');
   
   var privateMethods = {
-      /**
-       * Pass any type of a string from the localStorage to be parsed so it returns a usable version (like an Object)
-       * @param res - a string that will be parsed for type
-       * @returns {*} - whatever the real type of stored value was
-       */
       parseValue: function(res) {
       	var val;
       	try {
       		val = JSON.parse(res);
-      		if (typeof val == 'undefined'){
-      			val = res;
-      		}
-      		if (val == 'true'){
-      			val = true;
-      		}
-      		if (val == 'false'){
-      			val = false;
-      		}
-      		if (parseFloat(val) == val && !angular.isObject(val) ){
-      			val = parseFloat(val);
-      		}
+      		if (typeof val == 'undefined') val = res;
+      		if (val == 'true') val = true;
+      		if (val == 'false') val = false;
+      		if (parseFloat(val) == val && !angular.isObject(val)) val = parseFloat(val);
       	} catch(e){
       		val = res;
       	}
@@ -99,24 +97,21 @@ sportfacModule.factory("$store",function($parse){
            * @param def - the default value (OPTIONAL)
            * @returns {*} - returns whatever the stored value is
            */
-          bind: function ($scope, key, def) {
-              def = def || [];
+          bind: function ($scope, key) {
               if (!publicMethods.get(key)) {
-                  publicMethods.set(key, def);
+                  publicMethods.set(key, Array());
               }
-              
-              $parse(key).assign($scope, publicMethods.get(key));
+              $scope[key] = publicMethods.get(key);
               
               /*$scope.$watch(key, function (val) {
                   publicMethods.set(key, val);
               }, true);*/
-              
               $scope.$watchCollection(key, function(newElems, oldElems){
                  alert('save!');
                  publicMethods.set(key, newElems); 
               });
               
-              return publicMethods.get(key);
+              return $scope[key];
           }
   };
   return publicMethods;
@@ -171,8 +166,8 @@ var ActivityCtrl = function($scope, $http, $store) {
   };
   
   $scope.getUserChildren();
-  $scope.registeredEvents = [];
-  //$store.bind($scope, 'registeredEvents', []);
+  $store.bind($scope, 'registeredEvents');
+  
 }
 
 var ActivityListCtrl = function($scope, $http) {
@@ -187,14 +182,16 @@ var ActivityListCtrl = function($scope, $http) {
 
 var ActivityTimelineCtrl = function($scope, $routeParams, $filter, $store){    
     // this controler is reloaded each time an activity is changed
-    $scope.eventSources=[];
+    $scope.events = [];
+    $scope.eventSources = [$scope.events, $scope.registeredEvents];
+    
     var date = new Date();
     var d = date.getDate();
     var m = date.getMonth();
     var y = date.getFullYear();
     
+    
     $scope.changeActivity = function(activity){
-      console.log(activity);
       $scope.events.length = 0;
       
       for (var i=0; i<activity.courses.length; i++){
@@ -202,6 +199,7 @@ var ActivityTimelineCtrl = function($scope, $routeParams, $filter, $store){
         if (course.schoolyear_min > $scope.selectedChild.school_year || course.schoolyear_max < $scope.selectedChild.school_year) continue;
         var start = new Date(y, m, d + (course.day - date.getDay()), course.start_time.split(':')[0], course.start_time.split(':')[1]);
         var end = new Date(y, m, d + (course.day - date.getDay()), course.end_time.split(':')[0], course.end_time.split(':')[1]);
+        
         $scope.events.push(
           {title: activity.name + ' \n ' + $filter('date')(course.start_date, 'mediumDate') +' - ' + $filter('date')(course.end_date, 'mediumDate'), 
            start: start,
@@ -216,54 +214,11 @@ var ActivityTimelineCtrl = function($scope, $routeParams, $filter, $store){
     };
     
     $scope.eventClick = function( calEvent, jsEvent, view ){
-      
       calEvent.color = 'green';    
-      $scope.registeredEvents.push(calEvent);
-      //console.log($scope.registeredEvents);
-      
-      //calendars.addCourse($scope.selectedChild, calEvent);
+      $scope.registeredEvents.push(calEvent);      
       $scope.weekagenda.fullCalendar('updateEvent', calEvent);
-      
-      
     };
     
-    $scope.$watchCollection('registeredEvents', function(newItems, oldItems){
-        console.log(newItems);
-        var newval = Math.random();
-        console.log(newval);
-        alert(newval);
-        //$window.localStorage.setItem('tuut', newval);
-        //window.localStorage.setItem('toot', JSON.stringify(angular.toJson(newItems)));
-        /*$store.set('registeredEvents', newItems);*/
-        
-    });
-    // 1 event source par enfant en grisé
-    // 1 event source: sélection actuelle
-    // 1 event source sélection déjà faite.
-
-    $scope.events = [];
-    
-    $scope.othersEvents = [];
-    
-    
-    $scope.eventSources = [$scope.events, $scope.registeredEvents];/*,
-                           calendars.getCalendar($scope.selectedChild),
-                           calendars.getOthersCalendar($scope.selectedChild)];*/
-    
-    
-    
-    $scope.getDetailedActivity($routeParams.activityId, 
-                               function(detailedActivity){
-                                 $scope.detailedActivity = detailedActivity;
-                                 $scope.changeActivity(detailedActivity);
-                                 // rechargmenent F5
-                                 $scope.weekagenda.fullCalendar('render');
-                                 // reclic sur la barre
-                                 $scope.weekagenda.fullCalendar('refetchEvents');
-                                 
-                                 
-
-                               });
     $scope.uiConfig = {
       calendar:{
         height: 500, aspectRatio: 4,
@@ -281,7 +236,17 @@ var ActivityTimelineCtrl = function($scope, $routeParams, $filter, $store){
         lazyFetching: true
       }
     };
-
+ 
+    $scope.getDetailedActivity($routeParams.activityId, 
+                               function(detailedActivity){
+                                 $scope.detailedActivity = detailedActivity;
+                                 $scope.changeActivity(detailedActivity);
+                                 // rechargmenent F5
+                                 $scope.weekagenda.fullCalendar('render');
+                                 // reclic sur la barre
+                                 $scope.weekagenda.fullCalendar('refetchEvents');
+                               });
+    
 
 
 }
