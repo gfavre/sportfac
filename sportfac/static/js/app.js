@@ -1,4 +1,6 @@
 'use strict';
+
+
 if (!Array.prototype.indexOf) {
   Array.prototype.indexOf = function (obj, fromIndex) {
     if (fromIndex == null) {
@@ -141,9 +143,6 @@ sportfacModule.config(function($interpolateProvider) {
 
 var ActivityCtrl = function($scope, $http, $store) {
 
-  var storage = (typeof window.localStorage === 'undefined') ? undefined : window.localStorage,
-		supported = !(typeof storage == 'undefined' || typeof window.JSON == 'undefined');
-
   $scope.getUserChildren = function(){
     $http.get('/api/family/').success(function(data){ 
       $scope.userChildren = data;
@@ -153,6 +152,7 @@ var ActivityCtrl = function($scope, $http, $store) {
       $scope.selectChild(0);
     });
   };
+  
   $scope.selectChild = function(childIdx){
     if ($scope.selectedChild){
         $scope.selectedChild.selected = false;
@@ -181,21 +181,11 @@ var ActivityCtrl = function($scope, $http, $store) {
     return $scope.selectedChild.registered.indexOf(course.id) != -1;
   }
   
-  $scope.getUserChildren();
-  
-  
-  
-  /*$scope.$watch(function() { return angular.toJson($scope.registeredEvents); },
-  function(newVal) {
-    // some value in the array has changed
-    alert('here?');
-    var saver = JSON.stringify(newVal);
-    storage.setItem($scope.registeredEvents, saver);
-  });*/
-  
-  
+  $scope.getUserChildren();  
   
 }
+
+
 
 var ActivityListCtrl = function($scope, $http) {
   $scope.loadActivities = function(){
@@ -207,13 +197,14 @@ var ActivityListCtrl = function($scope, $http) {
   $scope.$watch('selectedChild', function(){ $scope.loadActivities()});
 };
 
+
+
 var ActivityTimelineCtrl = function($scope, $routeParams, $filter, $http){    
     // this controler is reloaded each time an activity is changed
+        
     $scope.activityId = $routeParams.activityId;
     $scope.events = [];
     $scope.registeredEvents = [];
-    
-
     
     var date = new Date();
     var d = date.getDate();
@@ -317,19 +308,16 @@ var ActivityTimelineCtrl = function($scope, $routeParams, $filter, $http){
     
     $scope.uiConfig = {
       calendar:{
-        height: 600, aspectRatio: 2,
+        height: 500, aspectRatio: 2,
         year: y, month: m, date: d,
         editable: false,
-        defaultView: 'agendaWeek',
-        weekends: false, allDaySlot: false,
+        defaultView: 'agendaWeek', weekends: false, allDaySlot: false,
         slotMinutes: 15, firstHour: 12, maxTime: 20, minTime: 12,
-        axisFormat: 'H:mm', columnFormat: 'dddd',
-        dayNames: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+        axisFormat: 'H:mm', columnFormat: 'dddd', header:{left: '', center: '', right: ''},
+        dayNames: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'], 
         dayNamesShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
-        header:{left: '', center: '', right: ''},
+        timeFormat: {agenda: 'd'}, lazyFetching: true,
         eventClick: $scope.eventClick,
-        timeFormat: {agenda: 'd'},
-        lazyFetching: true,
         eventAfterRender: function(event, element, view){
           var text = $filter('date')(event.course.start_date, 'shortDate') +' - ' + $filter('date')(event.course.end_date, 'shortDate')
           $('.fc-event-time', element).text(text);
@@ -341,22 +329,19 @@ var ActivityTimelineCtrl = function($scope, $routeParams, $filter, $http){
                                function(detailedActivity){
                                  $scope.detailedActivity = detailedActivity;
                                  $scope.changeActivity(detailedActivity);
-                                 // rechargmenent F5
                                  $scope.weekagenda.fullCalendar('render');
-                                 // reclic sur la barre
                                  $scope.weekagenda.fullCalendar('refetchEvents');
                                });
     $scope.reloadRegisteredEvents();
     $scope.eventSources = [$scope.registeredEvents, $scope.events];
-
 }
+
+
 
 var ActivityDetailCtrl = function($scope, $routeParams){
   $scope.activityId = $routeParams.activityId;
-  //$scope.activityId = 3;
   if ($scope.activityId != undefined) {
     $scope.getDetailedActivity({'id': $scope.activityId});
   }
 }
-//ActivityDetailCtrl.$inject = ['$scope', '$routeParams'];
   
