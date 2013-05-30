@@ -1,16 +1,15 @@
-'use strict';
+//'use strict';
 
 
 if (!Array.prototype.indexOf) {
   Array.prototype.indexOf = function (obj, fromIndex) {
-    if (fromIndex == null) {
+    if (fromIndex === null) {
         fromIndex = 0;
     } else if (fromIndex < 0) {
         fromIndex = Math.max(0, this.length + fromIndex);
     }
     for (var i = fromIndex, j = this.length; i < j; i++) {
-        if (this[i] === obj)
-            return i;
+        if (this[i] === obj) { return i; }
     }
     return -1;
   };
@@ -142,7 +141,7 @@ sportfacModule.config(function($interpolateProvider) {
 });
 
 var ActivityCtrl = function($scope, $http, $store) {
-
+  
   $scope.getUserChildren = function(){
     $http.get('/api/family/').success(function(data){ 
       $scope.userChildren = data;
@@ -180,7 +179,20 @@ var ActivityCtrl = function($scope, $http, $store) {
   $scope.isRegistered = function(course){
     return $scope.selectedChild.registered.indexOf(course.id) != -1;
   }
+  $scope.isAvailable = function(course){
+    return !($scope.selectedChild.school_year < course.schoolyear_min || $scope.selectedChild.school_year > course.schoolyear_max);
+  }
   
+  $scope.$watch('selectedChild', function(){
+    $scope.othersRegisteredEvents.length = 0;
+    angular.forEach($scope.userChildren, function(child){
+      if (child != $scope.selectedChild) {
+        $scope.othersRegisteredEvents.push.apply($scope.othersRegisteredEvents, $scope['registeredCourses_' + child.id]);
+      }
+    });
+  });
+  
+  $scope.othersRegisteredEvents = [];
   $scope.getUserChildren();  
   
 }
@@ -201,16 +213,15 @@ var ActivityListCtrl = function($scope, $http) {
 
 var ActivityTimelineCtrl = function($scope, $routeParams, $filter, $http){    
     // this controler is reloaded each time an activity is changed
-        
     $scope.activityId = $routeParams.activityId;
     $scope.events = [];
     $scope.registeredEvents = [];
+    $scope.othersEvents = [];
     
     var date = new Date();
     var d = date.getDate();
     var m = date.getMonth();
     var y = date.getFullYear();
-    
     
     $scope.getCourse = function(courseId, callback){
       var url = '/api/courses/' + courseId;
@@ -230,30 +241,30 @@ var ActivityTimelineCtrl = function($scope, $routeParams, $filter, $http){
                         course.end_time.split(':')[1]);
     };
     
-    
-    $scope.reloadRegisteredEvents = function(){
-      for (var i=0; i<$scope.selectedChild.registered.length; i++) {
-        $scope.getCourse($scope.selectedChild.registered[i], function(course){
-          $scope.registeredEvents.push(
-            {title: course.activity.name, 
-             start: $scope.getStartDate(course),
-             end: $scope.getEndDate(course),
-             start_text: d + (course.day - date.getDay()),
-             end_text: d+  course.day - date.getDay(),
-             allDay: false,
-             color: "green",
-             course: course,
-             activityId: course.activity.id
-             }
-          );
-          $scope.weekagenda.fullCalendar('render');
-          $scope.weekagenda.fullCalendar('refetchEvents');                   
-        });
-      };
-      
+    $scope.convertCourse = function(course, css){
+        return {title: course.activity.name, 
+                start: $scope.getStartDate(course), end: $scope.getEndDate(course),
+                start_text: d, end_text: d, allDay: false,
+                className: css, course: course, activityId: course.activity.id};
     };
     
+    $scope.reloadRegisteredEvents = function(){
+      $scope.registeredEvents.length = 0;
+      for (var i=0; i<$scope.selectedChild.registered.length; i++) {
+        $scope.getCourse($scope.selectedChild.registered[i], function(course){
+          $scope.registeredEvents.push($scope.convertCourse(course, "registered"));
+        });
+      }
+    };
     
+    $scope.reloadOthersEvents = function(){
+      $scope.othersEvents.length = 0;
+      for (var i=0; i<$scope.othersRegisteredEvents.length; i++) {
+        $scope.getCourse($scope.othersRegisteredEvents[i], function(course){
+          $scope.registeredEvents.push($scope.convertCourse(course, "unavailable"));
+        });
+      }
+    };
     
     $scope.changeActivity = function(activity){
       $scope.events.length = 0;
@@ -261,7 +272,7 @@ var ActivityTimelineCtrl = function($scope, $routeParams, $filter, $http){
       for (var i=0; i<activity.courses.length; i++){
         var course = activity.courses[i];
         if ($scope.isRegistered(course)) continue;
-        if (course.schoolyear_min > $scope.selectedChild.school_year || course.schoolyear_max < $scope.selectedChild.school_year) continue;
+        if (course.schoolyear_min > $scope.selectedChild.school_year || course.schoolyear_max < $scope.selectedChild.school_year) { continue };
         var start = new Date(y, m, d + (course.day - date.getDay()), course.start_time.split(':')[0], course.start_time.split(':')[1]);
         var end = new Date(y, m, d + (course.day - date.getDay()), course.end_time.split(':')[0], course.end_time.split(':')[1]);
         
@@ -272,7 +283,7 @@ var ActivityTimelineCtrl = function($scope, $routeParams, $filter, $http){
            start_text: d + (course.day - date.getDay()),
            end_text: d+  course.day - date.getDay(),
            allDay: false,
-           color: $scope.isRegistered(course) ? "green": "#0088cc" ,
+           className: $scope.isRegistered(course) ? "registered": "available" ,
            course: course,
            activityId: activity.id
           }
@@ -282,17 +293,21 @@ var ActivityTimelineCtrl = function($scope, $routeParams, $filter, $http){
     
     $scope.eventClick = function( calEvent, jsEvent, view ){
       $scope.$apply(function(){
+        if (!$scope.isAvailable(calEvent.course)){
+          return;
+        }
+      
         var courseId = calEvent.course.id;
         var index = $scope.selectedChild.registered.indexOf(courseId);
-        if (index == -1){
+        if (index === -1){
           // unregistered event, register it
-          calEvent.color = 'green';
+          calEvent.className = 'registered';
           $scope.selectedChild.registered.push(courseId);
         } else {
           // registered event, unregister it
-          calEvent.color = "#0088cc";
+          calEvent.className = 'available';
           $scope.selectedChild.registered.splice(index, 1);
-          if (calEvent.activityId != $scope.activityId){
+          if (calEvent.activityId !== $scope.activityId){
               $scope.weekagenda.fullCalendar('removeEvents', calEvent._id);
           } else{
               $scope.weekagenda.fullCalendar('updateEvent', calEvent);
@@ -300,12 +315,12 @@ var ActivityTimelineCtrl = function($scope, $routeParams, $filter, $http){
         }
         
         $scope.weekagenda.fullCalendar('rerenderEvents');
-      })
+      });
       
       
     };
-    
-    
+
+
     $scope.uiConfig = {
       calendar:{
         height: 500, aspectRatio: 2,
@@ -324,24 +339,24 @@ var ActivityTimelineCtrl = function($scope, $routeParams, $filter, $http){
         }
       }
     };
-    
-    $scope.getDetailedActivity($scope.activityId, 
-                               function(detailedActivity){
-                                 $scope.detailedActivity = detailedActivity;
-                                 $scope.changeActivity(detailedActivity);
-                                 $scope.weekagenda.fullCalendar('render');
-                                 $scope.weekagenda.fullCalendar('refetchEvents');
-                               });
-    $scope.reloadRegisteredEvents();
+
+    $scope.getDetailedActivity($scope.activityId, function(detailedActivity){
+      $scope.detailedActivity = detailedActivity;
+      $scope.changeActivity(detailedActivity);
+      $scope.reloadRegisteredEvents();
+      $scope.reloadOthersEvents();
+      $scope.weekagenda.fullCalendar('render');
+      $scope.weekagenda.fullCalendar('refetchEvents');
+    });
+
     $scope.eventSources = [$scope.registeredEvents, $scope.events];
-}
+};
 
 
 
 var ActivityDetailCtrl = function($scope, $routeParams){
   $scope.activityId = $routeParams.activityId;
-  if ($scope.activityId != undefined) {
+  if ($scope.activityId !== undefined) {
     $scope.getDetailedActivity({'id': $scope.activityId});
   }
-}
-  
+};
