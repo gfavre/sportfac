@@ -1,6 +1,3 @@
-//'use strict';
-
-
 if (!Array.prototype.indexOf) {
   Array.prototype.indexOf = function (obj, fromIndex) {
     if (fromIndex === null) {
@@ -19,7 +16,8 @@ if (!Array.prototype.indexOf) {
 var sportfacModule = angular.module('sportfac', ['sportfac.services', 'ui.calendar']);//['sportfac.filters', 'sportfac.services', 'sportfac.directives', 'ui.calendar']);
 
 sportfacModule.factory("$store",function($parse){
- 
+  'use strict';
+
   var storage = (typeof window.localStorage === 'undefined') ? undefined : window.localStorage,
       supported = !(typeof storage == 'undefined' || typeof window.JSON == 'undefined');
   
@@ -30,17 +28,17 @@ sportfacModule.factory("$store",function($parse){
        * @returns {*} - whatever the real type of stored value was
        */
       parseValue: function(res) {
-      	var val;
-      	try {
-      		val = JSON.parse(res);
-      		if (typeof val == 'undefined') val = res;
-      		if (val == 'true') val = true;
-      		if (val == 'false') val = false;
-      		if (parseFloat(val) == val && !angular.isObject(val)) val = parseFloat(val);
-      	} catch(e){
-      		val = res;
-      	}
-      	return val;
+        var val;
+        try {
+          val = JSON.parse(res);
+          if (typeof val == 'undefined') val = res;
+          if (val == 'true') val = true;
+          if (val == 'false') val = false;
+          if (parseFloat(val) == val && !angular.isObject(val)) val = parseFloat(val);
+        } catch(e){
+          val = res;
+        }
+        return val;
       }
   };
   var publicMethods = {
@@ -51,17 +49,17 @@ sportfacModule.factory("$store",function($parse){
        * @returns {*} - will return whatever it is you've stored in the local storage
        */
       set: function(key,value){
-      	if (!supported){
-      		try {
-      			$.cookie(key, value);
-      			return value;
-      		} catch(e){
-      			console.log('Local Storage not supported, make sure you have the $.cookie supported.');
-      		}
-      	}
-      	var saver = JSON.stringify(value);
-      	storage.setItem(key, saver);
-      	return privateMethods.parseValue(saver);
+        if (!supported){
+          try {
+            $.cookie(key, value);
+            return value;
+          } catch(e){
+            console.log('Local Storage not supported, make sure you have the $.cookie supported.');
+          }
+        }
+        var saver = JSON.stringify(value);
+        storage.setItem(key, saver);
+        return privateMethods.parseValue(saver);
       },
       /**
        * Get - let's you get the value of any pair you've stored
@@ -69,15 +67,15 @@ sportfacModule.factory("$store",function($parse){
        * @returns {*} - Object,String,Float,Boolean depending on what you stored
        */
       get: function(key){
-      	if (!supported){
-      		try {
-      			return privateMethods.parseValue($.cookie(key));
-      		} catch(e){
-      			return null;
-      		}
-      	}
-      	var item = storage.getItem(key);
-      	return privateMethods.parseValue(item);
+        if (!supported){
+          try {
+            return privateMethods.parseValue($.cookie(key));
+          } catch(e){
+            return null;
+          }
+        }
+        var item = storage.getItem(key);
+        return privateMethods.parseValue(item);
       },
       /**
        * Remove - let's you nuke a value from localStorage
@@ -85,16 +83,16 @@ sportfacModule.factory("$store",function($parse){
        * @returns {boolean} - if everything went as planned
        */
       remove: function(key) {
-      	if (!supported){
-      		try {
-      			$.cookie(key, null);
-      			return true;
-      		} catch(e){
-      			return false;
-      		}
-      	}
-      	storage.removeItem(key);
-      	return true;
+        if (!supported){
+            try {
+              $.cookie(key, null);
+              return true;
+          } catch(e){
+              return false;
+            }
+        }
+        storage.removeItem(key);
+        return true;
       },
       /**
            * Bind - let's you directly bind a localStorage value to a $scope variable
@@ -126,13 +124,14 @@ sportfacModule.factory("$store",function($parse){
 
 
 sportfacModule.config(['$routeProvider', function($routeProvider) {
-    $routeProvider.when('/activity/:activityId/timeline', 
-        {templateUrl: '/static/partials/timeline.html', controller: 'ActivityTimelineCtrl'});
+  'use strict';
+  $routeProvider.when('/activity/:activityId/timeline', 
+      {templateUrl: '/static/partials/timeline.html', controller: 'ActivityTimelineCtrl'});
     
-    $routeProvider.when('/activity/:activityId/detail', 
-        {templateUrl: '/static/partials/activity-detail.html', controller: 'ActivityDetailCtrl'});
+  $routeProvider.when('/activity/:activityId/detail', 
+      {templateUrl: '/static/partials/activity-detail.html', controller: 'ActivityDetailCtrl'});
     
-    $routeProvider.otherwise({redirectTo: '/activities'});
+  $routeProvider.otherwise({redirectTo: '/activities'});
 }]);
 
 sportfacModule.config(function($interpolateProvider) {
@@ -141,7 +140,7 @@ sportfacModule.config(function($interpolateProvider) {
 });
 
 var ActivityCtrl = function($scope, $http, $store) {
-  
+  'use strict';
   $scope.getUserChildren = function(){
     $http.get('/api/family/').success(function(data){ 
       $scope.userChildren = data;
@@ -162,7 +161,7 @@ var ActivityCtrl = function($scope, $http, $store) {
   };
   
   $scope.getDetailedActivity = function(activity_id, callback){
-    var url = '/api/activities/' + activity_id
+    var url = '/api/activities/' + activity_id;
     $http({url: url, method: 'GET', cache: true }).success(function(data){
       callback(data); 
     });
@@ -178,10 +177,10 @@ var ActivityCtrl = function($scope, $http, $store) {
   
   $scope.isRegistered = function(course){
     return $scope.selectedChild.registered.indexOf(course.id) != -1;
-  }
+  };
   $scope.isAvailable = function(course){
     return !($scope.selectedChild.school_year < course.schoolyear_min || $scope.selectedChild.school_year > course.schoolyear_max);
-  }
+  };
   
   $scope.$watch('selectedChild', function(){
     $scope.othersRegisteredEvents.length = 0;
@@ -194,24 +193,25 @@ var ActivityCtrl = function($scope, $http, $store) {
   
   $scope.othersRegisteredEvents = [];
   $scope.getUserChildren();  
-  
-}
+};
 
 
 
 var ActivityListCtrl = function($scope, $http) {
+  'use strict';
   $scope.loadActivities = function(){
       var url = '/api/activities/?year=' + $scope.selectedChild.school_year;
       $scope.activities = $http({method: 'GET', url: url, cache: true}).then(function(response){
           return response.data;
       });
   };
-  $scope.$watch('selectedChild', function(){ $scope.loadActivities()});
+  $scope.$watch('selectedChild', function(){ $scope.loadActivities(); });
 };
 
 
 
-var ActivityTimelineCtrl = function($scope, $routeParams, $filter, $http){    
+var ActivityTimelineCtrl = function($scope, $routeParams, $filter, $http){
+    'use strict';  
     // this controler is reloaded each time an activity is changed
     $scope.activityId = $routeParams.activityId;
     $scope.events = [];
@@ -249,20 +249,22 @@ var ActivityTimelineCtrl = function($scope, $routeParams, $filter, $http){
     };
     
     $scope.reloadRegisteredEvents = function(){
+      var addToRegistered = function(course){
+        $scope.registeredEvents.push($scope.convertCourse(course, "registered"));
+      };
       $scope.registeredEvents.length = 0;
       for (var i=0; i<$scope.selectedChild.registered.length; i++) {
-        $scope.getCourse($scope.selectedChild.registered[i], function(course){
-          $scope.registeredEvents.push($scope.convertCourse(course, "registered"));
-        });
+        $scope.getCourse($scope.selectedChild.registered[i], addToRegistered);
       }
     };
     
     $scope.reloadOthersEvents = function(){
+      var addToRegistered = function(course){
+        $scope.registeredEvents.push($scope.convertCourse(course, "unavailable"));
+      };
       $scope.othersEvents.length = 0;
       for (var i=0; i<$scope.othersRegisteredEvents.length; i++) {
-        $scope.getCourse($scope.othersRegisteredEvents[i], function(course){
-          $scope.registeredEvents.push($scope.convertCourse(course, "unavailable"));
-        });
+        $scope.getCourse($scope.othersRegisteredEvents[i], addToRegistered);
       }
     };
     
@@ -272,7 +274,7 @@ var ActivityTimelineCtrl = function($scope, $routeParams, $filter, $http){
       for (var i=0; i<activity.courses.length; i++){
         var course = activity.courses[i];
         if ($scope.isRegistered(course)) continue;
-        if (course.schoolyear_min > $scope.selectedChild.school_year || course.schoolyear_max < $scope.selectedChild.school_year) { continue };
+        if (course.schoolyear_min > $scope.selectedChild.school_year || course.schoolyear_max < $scope.selectedChild.school_year) { continue; }
         var start = new Date(y, m, d + (course.day - date.getDay()), course.start_time.split(':')[0], course.start_time.split(':')[1]);
         var end = new Date(y, m, d + (course.day - date.getDay()), course.end_time.split(':')[0], course.end_time.split(':')[1]);
         
@@ -334,7 +336,7 @@ var ActivityTimelineCtrl = function($scope, $routeParams, $filter, $http){
         timeFormat: {agenda: 'd'}, lazyFetching: true,
         eventClick: $scope.eventClick,
         eventAfterRender: function(event, element, view){
-          var text = $filter('date')(event.course.start_date, 'shortDate') +' - ' + $filter('date')(event.course.end_date, 'shortDate')
+          var text = $filter('date')(event.course.start_date, 'shortDate') +' - ' + $filter('date')(event.course.end_date, 'shortDate');
           $('.fc-event-time', element).text(text);
         }
       }
@@ -355,6 +357,7 @@ var ActivityTimelineCtrl = function($scope, $routeParams, $filter, $http){
 
 
 var ActivityDetailCtrl = function($scope, $routeParams){
+  'use strict';
   $scope.activityId = $routeParams.activityId;
   if ($scope.activityId !== undefined) {
     $scope.getDetailedActivity({'id': $scope.activityId});
