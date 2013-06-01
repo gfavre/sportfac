@@ -142,16 +142,23 @@ var ActivityTimelineCtrl = function($scope, $routeParams, $filter, $http){
     $scope.reloadRegisteredEvents = function(){
       var addToRegistered = function(course){
         $scope.registeredEvents.push($scope.convertCourse(course, "registered"));
+        $scope.weekagenda.fullCalendar('render');
+        $scope.weekagenda.fullCalendar('refetchEvents');
+
       };
       $scope.registeredEvents.length = 0;
       for (var i=0; i<$scope.selectedChild.registered.length; i++) {
         $scope.getCourse($scope.selectedChild.registered[i], addToRegistered);
       }
+      
     };
     
     $scope.reloadOthersEvents = function(){
       var addToRegistered = function(course){
         $scope.registeredEvents.push($scope.convertCourse(course, "unavailable"));
+        $scope.weekagenda.fullCalendar('render');
+        $scope.weekagenda.fullCalendar('refetchEvents');
+
       };
       $scope.othersEvents.length = 0;
       for (var i=0; i<$scope.othersRegisteredEvents.length; i++) {
@@ -243,6 +250,9 @@ var ActivityTimelineCtrl = function($scope, $routeParams, $filter, $http){
     });
 
     $scope.eventSources = [$scope.registeredEvents, $scope.events];
+    
+    
+    
 };
 
 
