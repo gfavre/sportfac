@@ -8,7 +8,7 @@ from activities.models import SCHOOL_YEARS
 
 
 class FamilyManager(BaseUserManager):
-      def create_user(self, email, first_name, last_name, zipcode, city, country, password=None, **extra_fields):
+      def create_user(self, email, first_name, last_name, zipcode, city, password=None, **extra_fields):
           """
           Creates and saves a User with the given email, favorite topping, and password.
           """
@@ -27,9 +27,6 @@ class FamilyManager(BaseUserManager):
           if not city:
               msg = "Users must have a city"
               raise ValueError(msg)
-          if not country:
-              msg = "Users must have a country"
-              raise ValueError(msg)
           
           user = self.model(
               email=FamilyManager.normalize_email(email),
@@ -37,7 +34,6 @@ class FamilyManager(BaseUserManager):
               last_name=last_name,
               zipcode=zipcode,
               city=city,
-              country=country,
               **extra_fields
           )
           user.set_password(password)

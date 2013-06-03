@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load i18n floppyforms %}
+{% block title %}{% trans "Inscription" %}{% endblock title %}
+
+{% block page_title %}{% trans "Inscription" %}{% endblock page_title %}
+
+
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    <div class="span9">
+    
+    {% form form using %}
+    {% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
+    <form action="." method="post" class="form-horizontal">{% csrf_token %}
+      
+      {% block errors %}
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-error">
+            <a class="close" href="#" data-dismiss="alert">×</a>
+            {{ error }}
+        </div><!--- .alert.alert-error -->
+    {% endfor %}
+    {% for error in form|hidden_field_errors %}
+        <div class="alert alert-error">
+            <a class="close" href="#" data-dismiss="alert">×</a>
+            {{ error }}
+        </div><!--- .alert.alert-error -->
+    {% endfor %}
+{% endblock errors %}
+
+      
+      <fieldset>
+        <legend>{% trans "Login informations" %}</legend>
+        {% formrow form.email %}
+        {% formrow form.password1 %}
+        {% formrow form.password2 %}
+      </fieldset>
+      <fieldset>
+        <legend>{% trans "Contact informations" %}</legend>
+        {% formrow form.first_name %}
+        {% formrow form.last_name %}
+        {% formrow form.address %}
+        <div class="control-group">
+          <label class="control-label">{% trans "City" %} <span class="required">*</span></label>
+          <div class="controls form-inline required ">
+            <input type="text" name="zipcode" required="" placeholder="1296" id="id_zipcode" class="input-mini" maxlength="4">
+            {% formfield form.city %}
+          </div>
+        </div>
+        {% formrow form.private_phone %}
+        {% formrow form.private_phone2 %}
+        
+      </fieldset>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">{% trans "Register" %}</button>
+      </div>
+    </form>
+    {% endform %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+

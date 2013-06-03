@@ -6,7 +6,6 @@
 
 {% block content %}
 <div class="container" ng-controller="ActivityCtrl">
-  <div 
   <div class="tabbable" style="margin-left:-30px">
     <ul class="nav nav-tabs" >
       <li ng-repeat="child in userChildren" ng-class="{active: child.selected}"><a href="#child-{[{ child.id }]}" data-toggle="tab" ng-click="selectChild($index)">{[{ child.first_name }]}</a></li>

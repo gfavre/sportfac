@@ -189,7 +189,10 @@ DJANGO_APPS = (
 THIRD_PARTY_APPS = (
     # Database migration helpers:
     'south',
-    'rest_framework', 
+    'rest_framework',
+    'registration',
+    'floppyforms',
+    'crispy_forms',
 )
 
 # Apps specific for this project go here.
@@ -260,5 +263,6 @@ REST_FRAMEWORK = {
 
 ########## END REST FRAMEWORK CONFIGURATION
 
+########## USER and REGISTRAION
 AUTH_USER_MODEL = 'profiles.FamilyUser'
-
+REGISTRATION_OPEN = True
