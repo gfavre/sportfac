@@ -1,4 +1,4 @@
-from django.views.generic import CreateView, UpdateView
+from django.views.generic import ListView, CreateView, UpdateView
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.utils.translation import gettext as _
@@ -9,29 +9,22 @@ from registration.backends.simple.views import RegistrationView as BaseRegistrat
 from registration.compat import User
 from registration import signals
 
-from .models import FamilyUser
+from .models import FamilyUser, Child
 from .forms import RegistrationForm
 
-class FamilyActionMixin(object):
-    @property
-    def action(self):
-        msg = "{0} is missing action.".format(self.__class__)
-        raise NotImplementedError(msg)
-    
-    def form_valid(self, form):
-        messages.info(self.request, self.action_msg)
-        return super(FamilyActionMixin, self).form_valid(form)
 
-
-class AccountCreateView(FamilyActionMixin, CreateView):
-    model = FamilyUser
-    action_msg = _("Account created.")
-
-class AccountUpdateView(LoginRequiredMixin, FamilyActionMixin, UpdateView):
-    model = FamilyUser
+class ChildrenUpdateView(LoginRequiredMixin, UpdateView):
+    model = Child
     action_msg = _("Account updated.")
 
-
+class ChildrenListView(LoginRequiredMixin, ListView):
+    template_name = 'profiles/children_list.html'
+    context_object_name = 'children'
+    
+    def get_queryset(self):
+        return Child.objects.filter(family = self.request.user).order_by('first_name')
+        
+    
 
 
 class MyRegistrationView(BaseRegistrationView):
@@ -64,6 +57,3 @@ class MyRegistrationView(BaseRegistrationView):
                                      user=new_user,
                                      request=request)
         return new_user
-    
-
-class

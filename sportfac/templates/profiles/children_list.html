@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block extra_html %}ng-app="children"{% endblock extra_html %}
+
+{% block page_title %}{% trans "My Family" %}{% endblock page_title %}
+
+{% block content %}
+<div class="container" ng-controller="ListCtrl">
+  <div class="row">
+    <div class="span3">
+      <ul class="nav nav-list bs-docs-sidenav">
+        <li ng-repeat="child in userChildren" ng-class="{active: child.selected}">
+          <a href="#/edit" data-toggle="tab" ng-click="selectChild(child)">{[{ child.first_name }]} {[{ child.last_name }]}</a>
+        </li>
+      </ul>
+      <br />
+      <a href="#/new" class="btn btn-primary"><i class="icon-plus icon-white"></i> {% trans "Add child" %}</a>
+    </div>
+    <div class="span8" ng-view></div>
+  </div><!-- end row -->
+</div> <!-- end container -->
+
+
+{% endblock content %}
+
+
+{% block extra_js %}
+  <script src="{{ STATIC_URL }}js/vendor/angular.min.js"></script>
+  <script src="{{ STATIC_URL }}js/vendor/angular-locale_fr-ch.js"></script>
+  <script src="{{ STATIC_URL }}js/vendor/angular-ui-calendar.js"></script>
+  <script src="{{ STATIC_URL }}js/children/app.js"></script>
+  <script src="{{ STATIC_URL }}js/children/services.js"></script>
+</body>
+
+{% endblock %}
+
+

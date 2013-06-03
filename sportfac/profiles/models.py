@@ -87,8 +87,12 @@ class FamilyUser(AbstractBaseUser, PermissionsMixin):
     def children_names(self):
         return ', '.join([unicode(child) for child in self.children.all()])
     
+    def get_absolute_url(self):
+        return 'toto'
+    
     def __unicode__(self):
         return self.email
+    
     
 
 # Create your models here.
