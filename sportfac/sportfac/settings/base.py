@@ -192,7 +192,6 @@ THIRD_PARTY_APPS = (
     'rest_framework',
     'registration',
     'floppyforms',
-    'crispy_forms',
 )
 
 # Apps specific for this project go here.

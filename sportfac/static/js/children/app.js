@@ -1,7 +1,7 @@
 
 
 // Declare app level module which depends on filters, and services
-angular.module('children', [ 'children.services']).
+angular.module('children', [ 'children.services' ]).
   config(['$routeProvider', function($routeProvider) {
     $routeProvider.when('/edit', {templateUrl: '/static/partials/child-detail.html', controller: 'childDetailCtrl'});
     $routeProvider.otherwise({redirectTo: '/view1'});
@@ -11,8 +11,6 @@ angular.module('children', [ 'children.services']).
     $interpolateProvider.endSymbol('}]}');
 });
 
-  
-  ;
 
 
 var ListCtrl = function ($scope, $http) {
@@ -35,6 +33,19 @@ var ListCtrl = function ($scope, $http) {
 };
 
 
-var childDetailCtrl = function ($scope) {
-
+var childDetailCtrl = function ($scope, Child) {
+  var Child = $resource('/api/family/:childId',{childId:'@id'});
+  var cc = Child.query(function(){
+    alert(cc[0]);
+  });
+  
+  var newChild = new Child({first_name: 'Maurice'});
+  newChild.$save();
+  
+  
+  /*$scope.otherChild = Children.get({childId: 2}, function(){
+    //otherChild.firstName='Maurice';
+    //otherChild.$save();
+    
+  });*/
 };
