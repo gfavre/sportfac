@@ -7,27 +7,58 @@
 // In this case it is a simple value service.
 angular.module('children.services', []).
   value('version', '0.1').
-  factory('Child', function($http){
-    var Child = function(data){
-      angular.extend(this, data);
+  factory('ModelUtils', function($http, $cookies, $filter){
+    $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+    
+    var clean = function(elem){
+       var copied = angular.copy(elem);
+       copied.birth_date = $filter('date')(elem.birth_date, 'dd/MM/yyyy');
+       return copied
     }
     
-    Child.get = function(id) {
-      return $http.get('/api/family/' + id).then(function(response) {
-        return new Child(response.data);
-      });
+    var ModelUtils = {
+        /*get: function(url, id) {
+          $http.get(url + id + '/').
+            success(
+            function(data, status, headers, config) { return data });
+        },*/
+        get: function(url, id){
+          return $http.get(url + id + '/').then(function(response){ 
+            return response.data;
+          });
+          
+        },
+        create: function(url, obj, errors){
+          return $http.post(url, obj).
+            success(function(response, status, headers, config){
+                angular.extend(obj, response);
+            }).
+            error(function(response, status, headers, config){
+                console.log(response);
+            });
+        },
+        save: function(url, obj, errors){
+          var cleaned = clean(obj);
+          if (angular.isDefined(cleaned.id)){
+            return $http.put(url + cleaned.id + '/', cleaned).
+                     success(function(response, status, headers, config){
+                        angular.extend(cleaned, response);
+                     }).
+                     error(function(response, status, headers, config){
+                       console.log('error:');
+                       console.log(cleaned);
+                       console.log(response);
+                       console.log('--');
+                     });
+          } else {
+            return this.create(url, cleaned, errors);
+          }
+        },
+        del: function(url, obj){
+          return $http.delete(url + obj.id + '/');  
+        }
     };
+    return ModelUtils;
 
-  // an instance method to create a new Book
-  Child.prototype.create = function() {
-    var child = this;
-    return $http.post('/api/family/', child).then(function(response) {
-      child.id = response.data.id;
-      return child;
-    });
-  }
-    
-    
-    return Child;
   });
 

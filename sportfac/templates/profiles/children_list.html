@@ -11,7 +11,7 @@
     <div class="span3">
       <ul class="nav nav-list bs-docs-sidenav">
         <li ng-repeat="child in userChildren" ng-class="{active: child.selected}">
-          <a href="#/edit" data-toggle="tab" ng-click="selectChild(child)">{[{ child.first_name }]} {[{ child.last_name }]}</a>
+          <a href="#/edit/{[{ child.id }]}" data-toggle="tab" ng-click="selectChild(child)">{[{ child.first_name }]} {[{ child.last_name }]}</a>
         </li>
       </ul>
       <br />
@@ -21,14 +21,16 @@
   </div><!-- end row -->
 </div> <!-- end container -->
 
-
+{[{ detailedChild.first_name }]}
 {% endblock content %}
 
 
 {% block extra_js %}
   <script src="{{ STATIC_URL }}js/vendor/angular.min.js"></script>
+  <script src="{{ STATIC_URL }}js/vendor/angular-cookies.min.js"></script>
   <script src="{{ STATIC_URL }}js/vendor/angular-locale_fr-ch.js"></script>
-  <script src="{{ STATIC_URL }}js/vendor/angular-ui-calendar.js"></script>
+  <script src="{{ STATIC_URL }}js/vendor/angular-strap.js"></script>
+  <script src="{{ STATIC_URL }}js/vendor/bootstrap-datepicker.js"></script>
   <script src="{{ STATIC_URL }}js/children/app.js"></script>
   <script src="{{ STATIC_URL }}js/children/services.js"></script>
 </body>

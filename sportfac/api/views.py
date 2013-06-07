@@ -1,10 +1,11 @@
 # Create your views here.
 from django.http import Http404
 
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
+from rest_framework.decorators import api_view
+
 from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.permissions import IsAuthenticated
 from rest_framework import mixins, generics
 
 from activities.models import Activity, Course
@@ -38,7 +39,7 @@ class CourseViewSet(viewsets.ReadOnlyModelViewSet):
 
 class FamilyView(mixins.ListModelMixin, generics.GenericAPIView):
     authentication_classes = (SessionAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
     serializer_class = ChildrenSerializer
     model = Child
     
@@ -48,4 +49,25 @@ class FamilyView(mixins.ListModelMixin, generics.GenericAPIView):
     
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
+
+
+class FamilyOrAdminPermission(permissions.IsAuthenticated):
+    def has_object_permission(self, request, view, obj):
+        """
+        Return `True` if permission is granted, `False` otherwise.
+        """
+        if request.user.is_staff or request.user == obj.family:
+            return True
+        return False
         
+
+
+class ChildrenViewSet(viewsets.ModelViewSet):
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (FamilyOrAdminPermission, )
+    serializer_class = ChildrenSerializer
+    model = Child        
+    
+    def get_queryset(self):
+        user = self.request.user
+        return Child.objects.filter(family=user)

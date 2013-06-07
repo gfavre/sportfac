@@ -1,24 +1,31 @@
 
-
 // Declare app level module which depends on filters, and services
-angular.module('children', [ 'children.services' ]).
+angular.module('children', [ 'children.services', 'ngCookies', '$strap.directives']).
   config(['$routeProvider', function($routeProvider) {
-    $routeProvider.when('/edit', {templateUrl: '/static/partials/child-detail.html', controller: 'childDetailCtrl'});
-    $routeProvider.otherwise({redirectTo: '/view1'});
+    $routeProvider.when('/edit/:childId', {templateUrl: '/static/partials/child-detail.html', controller: 'childDetailCtrl'});
+    $routeProvider.otherwise({templateUrl: '/static/partials/add-child.html', controller: 'childAddCtrl'});
   }]).
   config(function($interpolateProvider) {
     $interpolateProvider.startSymbol('{[{');
     $interpolateProvider.endSymbol('}]}');
+  }).value('$strapConfig', {
+    datepicker: {
+      language: 'fr',
+      format: 'dd/MM/yyyy'
+    }
 });
 
-
-
 var ListCtrl = function ($scope, $http) {
-  $scope.getUserChildren = function(){
-    $http.get('/api/family/').success(function(data){ 
-      $scope.userChildren = data;
+  $scope.loadChildren = function(){
+    $http.get('/api/family/').
+      success(function(data, status, headers, config ){ 
+        $scope.userChildren = data;
     });
   };
+  
+  $scope.selectedChild = {};
+  $scope.loadChildren();
+  
   $scope.selectChild = function(child){
     if ($scope.selectedChild){
         $scope.selectedChild.selected = false;
@@ -27,25 +34,43 @@ var ListCtrl = function ($scope, $http) {
     $scope.selectedChild.selected = true;
   };
 
-  $scope.userChildren = [];
-  $scope.selectedChild = {};
-  $scope.getUserChildren();
+  
 };
 
 
-var childDetailCtrl = function ($scope, Child) {
-  var Child = $resource('/api/family/:childId',{childId:'@id'});
-  var cc = Child.query(function(){
-    alert(cc[0]);
+var childDetailCtrl = function ($scope, ModelUtils,  $routeParams, $location) {
+  ModelUtils.get('/api/children/', $routeParams.childId).then(function(child){
+    $scope.detailedChild = child;
   });
   
-  var newChild = new Child({first_name: 'Maurice'});
-  newChild.$save();
+  $scope.errors = {}
+  $scope.saveChild = function(){ 
+    ModelUtils.save('/api/children/', $scope.detailedChild, $scope.errors).then(function(){
+      $scope.loadChildren();
+      $scope.selectedChild = {};
+      $location.url('/');
+    });
+  };
   
-  
-  /*$scope.otherChild = Children.get({childId: 2}, function(){
-    //otherChild.firstName='Maurice';
-    //otherChild.$save();
-    
-  });*/
+  $scope.delChild = function(){
+     ModelUtils.del('/api/children', $scope.detailedChild, $scope.errors).then(function(){
+      $scope.loadChildren();
+      $scope.selectedChild = {};
+      
+    });
+  };  
 };
+
+var childAddCtrl = function($scope, ModelUtils){
+    $scope.detailedChild = {};
+    $scope.errors = {}
+    $scope.saveChild = function(){ 
+      ModelUtils.save('/api/children/', $scope.detailedChild, $scope.errors).then(function(){
+      $scope.loadChildren();
+      $scope.selectedChild = {};
+      $location.url('/');
+    });
+  };
+
+
+}

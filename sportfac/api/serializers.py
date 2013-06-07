@@ -43,7 +43,9 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class ChildrenSerializer(serializers.ModelSerializer):
+    birth_date = serializers.DateField(format='%d/%m/%Y', input_formats=('%d/%m/%Y',))
     teacher = serializers.RelatedField(many=False)
     class Meta:
         model = Child
-        fields = ('id', 'first_name', 'last_name', 'school_year', 'teacher')
+        fields = ('id', 'first_name', 'last_name', 'sex', 
+                  'birth_date', 'school_year', 'teacher',)

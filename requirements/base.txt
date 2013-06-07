@@ -6,6 +6,6 @@ logutils==0.3.3
 South==0.7.6
 psycopg2==2.5
 PIL==1.1.7
-djangorestframework==2.3.2
+djangorestframework==2.3.5
 django-floppyforms==1.1
 git+https://github.com/mattdeboard/django-registration.git
