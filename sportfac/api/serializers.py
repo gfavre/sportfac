@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from activities.models import Activity, Course
-from profiles.models import Child
+from profiles.models import Child, Teacher, SchoolYear
 
 
 class ActivitySerializer(serializers.ModelSerializer):
@@ -30,6 +30,7 @@ class ActivityDetailedSerializer(serializers.ModelSerializer):
 
 
 
+
 class CourseSerializer(serializers.ModelSerializer):
     activity = ActivitySerializer(many=False)
     responsible = serializers.RelatedField(many=False)
@@ -42,9 +43,26 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 
+class SchoolYearField(serializers.RelatedField):
+    def to_native(self, value):
+        return value.year
+
+
+class TeacherInlineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Teacher
+        fields = ('id', 'first_name', 'last_name',)
+
+class TeacherSerializer(serializers.ModelSerializer):
+    years = SchoolYearField(many=True)
+    class Meta:
+        model = Teacher
+        fields = ('id', 'first_name', 'last_name', 'years' )
+
 class ChildrenSerializer(serializers.ModelSerializer):
     birth_date = serializers.DateField(format='%d/%m/%Y', input_formats=('%d/%m/%Y',))
-    teacher = serializers.RelatedField(many=False)
+    teacher = TeacherInlineSerializer(many=False)
+    
     class Meta:
         model = Child
         fields = ('id', 'first_name', 'last_name', 'sex', 
