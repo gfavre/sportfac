@@ -23,6 +23,17 @@ var ListCtrl = function ($scope, $http) {
     });
   };
   
+  $scope.loadTeachers = function(){
+    $http.get('/api/teachers/').
+      success(function(data, status, headers, config ){ 
+        $scope.teachers = data;        
+    });
+  };
+  
+  $scope.teachers = [];
+  $scope.loadTeachers();
+  
+  
   $scope.selectedChild = {};
   $scope.loadChildren();
   
@@ -40,7 +51,15 @@ var ListCtrl = function ($scope, $http) {
 
 var childDetailCtrl = function ($scope, ModelUtils,  $routeParams, $location) {
   ModelUtils.get('/api/children/', $routeParams.childId).then(function(child){
+    for (var i=0; i< $scope.teachers.length; i++){
+      var teacher = $scope.teachers[i];
+      if (teacher.id === child.teacher.id){
+        child.teacher = teacher;
+        break;
+      }
+    }
     $scope.detailedChild = child;
+
   });
   
   $scope.errors = {}

@@ -61,7 +61,7 @@ class TeacherSerializer(serializers.ModelSerializer):
 
 class ChildrenSerializer(serializers.ModelSerializer):
     birth_date = serializers.DateField(format='%d/%m/%Y', input_formats=('%d/%m/%Y',))
-    teacher = TeacherInlineSerializer(many=False)
+    teacher = TeacherSerializer(many=False)
     
     class Meta:
         model = Child
