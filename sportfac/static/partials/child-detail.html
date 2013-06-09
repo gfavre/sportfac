@@ -36,15 +36,33 @@
   <div class="control-group">
     <label class="control-label" for="inputLastName">Enseignant principal</label>
     <div class="controls">
-      <select id="inputTeacher" ng-model="detailedChild.teacher"  ng-options="teacher.first_name + ' ' + teacher.last_name for teacher in teachers" required></select>
-      <span ng-show="child-form.name.$error.required">Ce champ est obligatoire</span>
+      <select id="inputTeacher" ng-model="detailedChild.teacher"  ng-options="teacher.first_name + ' ' + teacher.last_name for teacher in teachers" ng-change="updateSchoolYear()" required></select>
+    </div>
+  </div>
+  
+  <div class="control-group" ng-switch on="detailedChild.teacher.years.length">
+    <label class="control-label" for="inputYear" ng-show="detailedChild.teacher.years.length > 1">Année</label>
+    <div class="controls" ng-switch-when="1">
+      <input type="hidden" ng-model="detailedChild.school_year" />
+    </div>
+    <div class="controls" ng-switch-default>
+      <select id="inputYear" ng-model="detailedChild.school_year" ng-disabled="detailedChild.teacher.years.length == 1" ng-options="toHarmos(year) + '' for year in detailedChild.teacher.years" required></select>
+      <span ng-show="child-form.name.$error.required">Ce champs est obligatoire</span>
     </div>
   </div>
 
 
 
   <div class="form-actions">
-    <button ng-click="saveChild()" ng-disabled="isClean() || child-form.$invalid" class="btn btn-left">Done</button>
-    <button ng-click="delete(child.id)" class="btn btn-danger">Delete</button>
+    <button ng-click="saveChild()" ng-disabled="isClean() || child-form.$invalid" class="btn btn-right btn-primary"><i class="icon-ok-sign icon-white"></i> Enregistrer</button>
+    <div class="pull-right">
+      <button ng-click="reloadChild()" class="btn btn-small"><i class="icon-remove-sign"></i> Annuler</button>
+      <button ng-click="delete(child.id)" class="btn btn-danger btn-small"><i class="icon-trash icon-white"></i> Supprimer</button>
+    </div>
+
   </div>
 </form>
+<h2>Debug</h2>
+<pre>
+  {[{ detailedChild }]}
+</pre>

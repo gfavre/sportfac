@@ -3,6 +3,8 @@
 angular.module('children', [ 'children.services', 'ngCookies', '$strap.directives']).
   config(['$routeProvider', function($routeProvider) {
     $routeProvider.when('/edit/:childId', {templateUrl: '/static/partials/child-detail.html', controller: 'childDetailCtrl'});
+    $routeProvider.when('/new', {templateUrl: '/static/partials/add-child.html', controller: 'childAddCtrl'});
+
     $routeProvider.otherwise({templateUrl: '/static/partials/add-child.html', controller: 'childAddCtrl'});
   }]).
   config(function($interpolateProvider) {
@@ -16,6 +18,10 @@ angular.module('children', [ 'children.services', 'ngCookies', '$strap.directive
 });
 
 var ListCtrl = function ($scope, $http) {
+   /*$scope.resetForm = function(){
+      alert('reset upper');
+    };*/
+
   $scope.loadChildren = function(){
     $http.get('/api/family/').
       success(function(data, status, headers, config ){ 
@@ -44,25 +50,42 @@ var ListCtrl = function ($scope, $http) {
     $scope.selectedChild = child;
     $scope.selectedChild.selected = true;
   };
-
+  
+  $scope.toHarmos = function(year) {
+    return {1: "1re HARMOS",
+            2: "2e HARMOS",
+            3: "3e HARMOS",
+            4: "4e HARMOS",
+            5: "5e HARMOS",
+            6: "6e HARMOS",}[year];
+    
+  };
   
 };
 
 
 var childDetailCtrl = function ($scope, ModelUtils,  $routeParams, $location) {
-  ModelUtils.get('/api/children/', $routeParams.childId).then(function(child){
-    for (var i=0; i< $scope.teachers.length; i++){
-      var teacher = $scope.teachers[i];
-      if (teacher.id === child.teacher.id){
-        child.teacher = teacher;
-        break;
-      }
-    }
-    $scope.detailedChild = child;
-
-  });
-  
+  $scope.detailedChild = {};
   $scope.errors = {}
+  $scope.reloadChild = function(){    
+    ModelUtils.get('/api/children/', $routeParams.childId).then(function(child){
+      for (var i=0; i< $scope.teachers.length; i++){
+        var teacher = $scope.teachers[i];
+        if (teacher.id === child.teacher.id){
+          child.teacher = teacher;
+          break;
+        }
+      }
+      $scope.detailedChild = child;
+    });
+  };
+  $scope.reloadChild();
+
+  $scope.updateSchoolYear = function(){
+    $scope.detailedChild.school_year = $scope.detailedChild.teacher.years[0];
+  };
+  
+  
   $scope.saveChild = function(){ 
     ModelUtils.save('/api/children/', $scope.detailedChild, $scope.errors).then(function(){
       $scope.loadChildren();
@@ -77,19 +100,47 @@ var childDetailCtrl = function ($scope, ModelUtils,  $routeParams, $location) {
       $scope.selectedChild = {};
       
     });
-  };  
+  };
+  
+  $scope.resetForm = function(){
+      alert('reset detail');
+      $scope.detailedChild = {};
+    };
+
+  
+  
 };
 
-var childAddCtrl = function($scope, ModelUtils){
+var childAddCtrl = function($scope, $location, ModelUtils){
+  $scope.detailedChild = {};
+  $scope.toto = [];
+  $scope.errors = {};
+  $scope.resetForm = function(){
     $scope.detailedChild = {};
-    $scope.errors = {}
-    $scope.saveChild = function(){ 
-      ModelUtils.save('/api/children/', $scope.detailedChild, $scope.errors).then(function(){
+  };
+  $scope.updateSchoolYear = function(){
+    $scope.detailedChild.school_year = $scope.detailedChild.teacher.years[0];
+  };
+  
+  $scope.saveChild = function(){ 
+    ModelUtils.save('/api/children/', $scope.detailedChild, $scope.errors).then(function(){
       $scope.loadChildren();
       $scope.selectedChild = {};
       $location.url('/');
     });
   };
+  /*
+  
+{
+"first_name":"Jezabel",
+ "last_name":"Favre",
+"sex":"F",
+"birth_date":"08/06/2013",
+"teacher":
+                {"id":1,"first_name":"Noemie","last_name":"Feniello","years":[1,2]},
+"school_year":1
+}
 
+*/
 
 }

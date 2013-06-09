@@ -1,21 +1,29 @@
-<form name="child-form" class="form-horizontal">
+<form name="addChildForm" class="form-horizontal">
   <div class="control-group">
     <label class="control-label" for="inputFirstName">Prénom</label>
     <div class="controls">
-      <input id="inputFirstName" ng-model="detailedChild.first_name" type="text" required/>
+      <input id="inputFirstName" ng-model="detailedChild.first_name" type="text" required />
       <span ng-show="child-form.name.$error.required">Ce champ est obligatoire</span>
     </div>
   </div>
   <div class="control-group">
     <label class="control-label" for="inputLastName">Nom</label>
     <div class="controls">
-      <input id="inputLastName" ng-model="detailedChild.last_name" type="text" required/>
+      <input id="inputLastName" ng-model="detailedChild.last_name" type="text" required />
       <span ng-show="child-form.name.$error.required">Ce champ est obligatoire</span>
     </div>
   </div>
-  
-  
-  
+  <div class="control-group">
+    <label class="control-label" for="inputBirthDate">Sexe</label>
+    <div class="controls">
+      <label class="radio">
+        <input type="radio" name="sex" ng-model="detailedChild.sex"  value="F">Fille
+      </label>
+      <label class="radio">
+        <input type="radio" name="sex" ng-model="detailedChild.sex"  value="M">Garçon
+      </label>
+    </div>
+  </div>
   <div class="control-group input-append">
     <label class="control-label" for="inputBirthDate">Date de naissance</label>
     <div class="controls">
@@ -23,10 +31,41 @@
       <button type="button" class="btn" data-toggle="datepicker"><i class="icon-calendar"></i></button>
       <span ng-show="child-form.name.$error.required">Ce champ est obligatoire</span>
     </div>
-  </div>     
+  </div>
+  
+  <div class="control-group">
+    <label class="control-label" for="inputLastName">Enseignant principal</label>
+    <div class="controls">
+      <select id="inputTeacher" ng-model="detailedChild.teacher"  ng-options="teacher.first_name + ' ' + teacher.last_name for teacher in teachers" ng-change="updateSchoolYear()" required></select>
+    </div>
+  </div>
+  
+  <div class="control-group" ng-switch on="detailedChild.teacher.years.length">
+    <label class="control-label" for="inputYear" ng-show="detailedChild.teacher.years.length > 1">Année</label>
+     <div class="controls" ng-switch-when="undefined">
+      <input type="hidden" ng-model="detailedChild.school_year" />
+    </div>
+    <div class="controls" ng-switch-when="1">
+      <input type="hidden" ng-model="detailedChild.school_year" />
+    </div>
+    <div class="controls" ng-switch-default>
+      <select id="inputYear" ng-model="detailedChild.school_year" ng-disabled="detailedChild.teacher.years.length == 1" ng-options="toHarmos(year) + '' for year in detailedChild.teacher.years" required></select>
+      <span ng-show="child-form.name.$error.required">Ce champ est obligatoire</span>
+    </div>
+  </div>
+
 
 
   <div class="form-actions">
-    <button ng-click="saveChild()" ng-disabled="isClean() || child-form.$invalid" class="btn btn-left btn-primary">Ajouter</button>
+    <button type="submit" ng-click="saveChild()" ng-disabled="isClean() || child-form.$invalid" class="btn btn-right btn-primary"><i class="icon-ok-sign icon-white"></i> Enregistrer</button>
+    <div class="pull-right">
+      <button type="button" ng-click="this.resetForm()"  class="btn btn-small"><i class="icon-remove-sign"></i> Annuler</button>
+    </div>
+
   </div>
 </form>
+<h2>Debug</h2>
+<pre>
+  {[{ detailedChild }]}
+  {[{ id }]}
+</pre>
