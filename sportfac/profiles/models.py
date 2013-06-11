@@ -102,7 +102,7 @@ class Child(models.Model):
     sex = models.CharField(max_length=1, choices=(('M', _('Male')), ('F', _('Female'))))
     birth_date = models.DateField()
     school_year = models.ForeignKey('SchoolYear')
-    teacher = models.ForeignKey('Teacher')
+    teacher = models.ForeignKey('Teacher', related_name="students")
     
     family = models.ForeignKey('FamilyUser', related_name='children')
     
