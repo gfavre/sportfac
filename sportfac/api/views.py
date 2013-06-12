@@ -3,10 +3,11 @@ from django.http import Http404
 
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import api_view
-
 from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication
-from rest_framework import mixins, generics
+from rest_framework import mixins, generics, status
+
+
 
 from activities.models import Activity, Course
 from profiles.models import Child, Teacher
@@ -35,10 +36,19 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
 class CourseViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CourseSerializer
     model = Course
+    
+    def get_queryset(self):
+        return Course.objects.select_related('activity', 'responsible')
+
+    
 
 class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = TeacherSerializer
-    model = Teacher        
+    model = Teacher
+    
+    def get_queryset(self):
+        return Teacher.objects.prefetch_related('years')
+    
 
 
 class FamilyView(mixins.ListModelMixin, generics.GenericAPIView):
@@ -74,5 +84,21 @@ class ChildrenViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         user = self.request.user
-        return Child.objects.filter(family=user)
+        return Child.objects.filter(family=user).prefetch_related('school_year').select_related('teacher')
+        
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if serializer.is_valid():
+            serializer.object.family = request.user
+            self.object = serializer.save(force_insert=True)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED,
+                            headers=headers)
 
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    
+    
+    
+        

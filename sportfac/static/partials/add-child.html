@@ -1,4 +1,4 @@
-<form name="addChildForm" class="form-horizontal">
+<form name="child-form" class="form-horizontal">
   <div class="control-group">
     <label class="control-label" for="inputFirstName">Prénom</label>
     <div class="controls">
@@ -27,7 +27,7 @@
   <div class="control-group input-append">
     <label class="control-label" for="inputBirthDate">Date de naissance</label>
     <div class="controls">
-      <input type="text" placeholder="31/12/2008" ng-model="detailedChild.birth_date" data-date-format="dd/mm/yyyy" data-language="fr" mo-date-input="{{dateFormat}}" bs-datepicker>
+      <input type="text" placeholder="31/12/2008" ng-model="detailedChild.birth_date" data-date-format="dd/mm/yyyy" data-language="fr" mo-date-input="{{dateFormat}}" bs-datepicker required>
       <button type="button" class="btn" data-toggle="datepicker"><i class="icon-calendar"></i></button>
       <span ng-show="child-form.name.$error.required">Ce champ est obligatoire</span>
     </div>
@@ -57,7 +57,7 @@
 
 
   <div class="form-actions">
-    <button type="submit" ng-click="saveChild()" ng-disabled="isClean() || child-form.$invalid" class="btn btn-right btn-primary"><i class="icon-ok-sign icon-white"></i> Enregistrer</button>
+    <button type="submit" ng-click="saveChild()" ng-disabled="child-form.$invalid" class="btn btn-right btn-primary"><i class="icon-ok-sign icon-white"></i> Enregistrer</button>
     <div class="pull-right">
       <button type="button" ng-click="this.resetForm()"  class="btn btn-small"><i class="icon-remove-sign"></i> Annuler</button>
     </div>

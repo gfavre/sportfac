@@ -61,33 +61,10 @@ class TeacherSerializer(serializers.ModelSerializer):
         fields = ('id', 'first_name', 'last_name', 'years' )
 
 
-class TeacherField(serializers.RelatedField):
-    default_error_messages = {
-        'does_not_exist': _("Object with %s does not exist."),
-        'no_id': _('Teacher has no id.'),
-    }
-    
-    def from_native(self, value):
-        try:
-            return self.queryset.get(id=value.get('id', -1))
-        except ObjectDoesNotExist:
-            msg = self.error_messages['does_not_exist'] % smart_text(value)
-            raise ValidationError(msg)
-        except IndexError:
-            msg = self.error_messages['no_id']
-            raise ValidationError(msg)
-    
-    def to_native(self, value):
-        # retorun un dict
-        return (value.id, value.first_name, value.last_name, [sy.year for sy in value.years.all()])
-
-###
-# voir sui je peux pas m'en sortir avec un double héritage de primarykeyrelatedfield et
-  
 
 class ChildrenSerializer(serializers.ModelSerializer):
     birth_date = serializers.DateField(format='%d/%m/%Y', input_formats=('%d/%m/%Y',))
-    teacher = TeacherField(many=False, read_only=False)
+    teacher = serializers.PrimaryKeyRelatedField(many=False, read_only=False)
     school_year = SchoolYearField(many=False, read_only=False)
     
     class Meta:

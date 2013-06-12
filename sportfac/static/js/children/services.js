@@ -8,11 +8,13 @@
 angular.module('children.services', []).
   value('version', '0.1').
   factory('ModelUtils', function($http, $cookies, $filter){
-    $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+    $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
     
     var clean = function(elem){
        var copied = angular.copy(elem);
        copied.birth_date = $filter('date')(elem.birth_date, 'dd/MM/yyyy');
+       copied.teacher = elem.teacher.id;
+       
        return copied
     }
     

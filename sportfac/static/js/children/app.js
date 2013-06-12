@@ -66,17 +66,19 @@ var ListCtrl = function ($scope, $http) {
 
 var childDetailCtrl = function ($scope, ModelUtils,  $routeParams, $location) {
   $scope.detailedChild = {};
+  this.initialValue = {};
   $scope.errors = {}
   $scope.reloadChild = function(){    
     ModelUtils.get('/api/children/', $routeParams.childId).then(function(child){
       for (var i=0; i< $scope.teachers.length; i++){
         var teacher = $scope.teachers[i];
-        if (teacher.id === child.teacher.id){
+        if (teacher.id === child.teacher){
           child.teacher = teacher;
           break;
         }
       }
       $scope.detailedChild = child;
+      $scope.initialValue = angular.copy(child);
     });
   };
   $scope.reloadChild();
@@ -95,18 +97,22 @@ var childDetailCtrl = function ($scope, ModelUtils,  $routeParams, $location) {
   };
   
   $scope.delChild = function(){
-     ModelUtils.del('/api/children', $scope.detailedChild, $scope.errors).then(function(){
+     ModelUtils.del('/api/children/', $scope.detailedChild, $scope.errors).then(function(){
       $scope.loadChildren();
       $scope.selectedChild = {};
-      
+      $location.url('/');
     });
   };
   
   $scope.resetForm = function(){
       alert('reset detail');
       $scope.detailedChild = {};
-    };
+  };
 
+  $scope.hasNotChanged = function() {
+    return angular.equals(this.initialValue, $scope.detailedChild);
+  }
+  
   
   
 };
@@ -122,25 +128,11 @@ var childAddCtrl = function($scope, $location, ModelUtils){
     $scope.detailedChild.school_year = $scope.detailedChild.teacher.years[0];
   };
   
-  $scope.saveChild = function(){ 
+  $scope.saveChild = function(){
     ModelUtils.save('/api/children/', $scope.detailedChild, $scope.errors).then(function(){
       $scope.loadChildren();
       $scope.selectedChild = {};
       $location.url('/');
     });
   };
-  /*
-  
-{
-"first_name":"Jezabel",
- "last_name":"Favre",
-"sex":"F",
-"birth_date":"08/06/2013",
-"teacher":
-                {"id":1,"first_name":"Noemie","last_name":"Feniello","years":[1,2]},
-"school_year":1
-}
-
-*/
-
 }
