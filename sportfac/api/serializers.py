@@ -78,8 +78,12 @@ class TeacherField(serializers.RelatedField):
             raise ValidationError(msg)
     
     def to_native(self, value):
+        # retorun un dict
         return (value.id, value.first_name, value.last_name, [sy.year for sy in value.years.all()])
-    
+
+###
+# voir sui je peux pas m'en sortir avec un double héritage de primarykeyrelatedfield et
+  
 
 class ChildrenSerializer(serializers.ModelSerializer):
     birth_date = serializers.DateField(format='%d/%m/%Y', input_formats=('%d/%m/%Y',))
