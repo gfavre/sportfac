@@ -6099,6 +6099,16 @@ table.fc-border-separate {
   width: 16px;
   height: 16px; }
 
+/* forms */
+input.ng-invalid:focus,
+textarea.ng-invalid:focus,
+select.ng-invalid:focus {
+  color: #b94a48;
+  border-color: #ee5f5b;
+  -moz-box-shadow: 0 0 6px #f8b9b7;
+  -webkit-box-shadow: 0 0 6px #f8b9b7;
+  box-shadow: 0 0 6px #f8b9b7; }
+
 /*
 $brown: rgb(206, 187, 166);
 $light_brown: lighten($brown, 10%);

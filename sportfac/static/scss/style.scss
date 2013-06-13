@@ -1,9 +1,22 @@
 /*@import "bootstrap.min";
 @import "bootstrap-responsive.min";*/
+@import 'css3-sass-mixins/all';
+
 @import "bootstrap-customized.min";
 @import "fullcalendar";
 @import "datepicker";
-//@import 'css3-sass-mixins/all';
+
+
+/* forms */
+
+input.ng-invalid:focus,
+textarea.ng-invalid:focus,
+select.ng-invalid:focus{
+    color:#b94a48;
+    border-color:#ee5f5b;
+    @include box-shadow(0, 0, 6px, #f8b9b7);
+
+}
 
 /*
 $brown: rgb(206, 187, 166);
