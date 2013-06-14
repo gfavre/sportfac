@@ -5,6 +5,7 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, Permis
 from django.utils import timezone
 
 from activities.models import SCHOOL_YEARS
+from sportfac.models import TimeStampedModel
 
 
 class FamilyManager(BaseUserManager):
@@ -96,7 +97,7 @@ class FamilyUser(AbstractBaseUser, PermissionsMixin):
     
 
 # Create your models here.
-class Child(models.Model):
+class Child(TimeStampedModel):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     sex = models.CharField(max_length=1, choices=(('M', _('Male')), ('F', _('Female'))))
@@ -105,10 +106,8 @@ class Child(models.Model):
     teacher = models.ForeignKey('Teacher', related_name="students")
     
     family = models.ForeignKey('FamilyUser', related_name='children')
-    
-    created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
-    
+    courses = models.ManyToManyField('activities.Course', through="Registration")
+        
     
     class Meta:
         ordering = ('first_name',)
@@ -117,7 +116,13 @@ class Child(models.Model):
     
     def __unicode__(self):
         return '%s %s' % (self.first_name, self.last_name)
-    
+
+
+class Registration(TimeStampedModel):
+    course = models.ForeignKey('activities.Course', related_name="participants")
+    child = models.ForeignKey('Child')
+        
+
 
 class SchoolYear(models.Model):
     year = models.PositiveIntegerField(_("School year"), choices=SCHOOL_YEARS, unique=True)

@@ -9,6 +9,14 @@ angular.module('children.services', []).
   value('version', '0.1').
   factory('ModelUtils', function($http, $cookies, $filter){
     $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
+
+    var handleErrors = function(serverResponse, status, errorDestination){
+      if (angular.isDefined(errorDestination)){
+        angular.forEach(serverResponse, function(value, key){
+          errorDestination[key] = value;
+        });
+      }
+    };
     
     var clean = function(elem){
        var copied = angular.copy(elem);
@@ -36,7 +44,7 @@ angular.module('children.services', []).
                 angular.extend(obj, response);
             }).
             error(function(response, status, headers, config){
-                console.log(response);
+                handleErrors(response, status, errors);
             });
         },
         save: function(url, obj, errors){
@@ -47,10 +55,7 @@ angular.module('children.services', []).
                         angular.extend(cleaned, response);
                      }).
                      error(function(response, status, headers, config){
-                       console.log('error:');
-                       console.log(cleaned);
-                       console.log(response);
-                       console.log('--');
+                       handleErrors(response, status, errors);
                      });
           } else {
             return this.create(url, cleaned, errors);

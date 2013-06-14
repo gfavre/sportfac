@@ -1,7 +1,8 @@
 from django.db import models
 from django.core.urlresolvers import reverse
-
 from django.utils.translation import ugettext as _
+
+from sportfac.models import TimeStampedModel
 
 DAYS_OF_WEEK = (
     (1, _('Monday')),
@@ -40,9 +41,6 @@ class Activity(models.Model):
         ordering = ['name']
         verbose_name = _("activity")
         verbose_name_plural = _("activities")
-
-    
-    
            
       
 class Course(models.Model):
@@ -68,9 +66,8 @@ class Course(models.Model):
         return self.end_time - self.start_time
     
     @property
-    def trimester(self):
-        delta = end_date - start_date
-        return delta.months % 3
+    def available_places(self):
+        return self.max_participants - self.participants.count()
         
     def __unicode__(self):
         return '%s: %s-%s on %s (%s-%s)' % (self.activity.name, 

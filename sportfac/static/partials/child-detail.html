@@ -1,35 +1,39 @@
-<form name="child-form" class="form-horizontal">
+<form name="childform" class="form-horizontal">
   <div class="control-group">
-    <label class="control-label" for="inputFirstName">Prénom</label>
+    <label class="control-label" for="first_name">Prénom</label>
     <div class="controls">
-      <input id="inputFirstName" ng-model="detailedChild.first_name" type="text" required />
-      <span ng-show="child-form.name.$error.required">Ce champ est obligatoire</span>
+      <input id="first_name" ng-model="detailedChild.first_name" type="text" required />
+      <span ng-show="childform.first_name.$error.required">Ce champ est obligatoire</span>
     </div>
   </div>
   <div class="control-group">
-    <label class="control-label" for="inputLastName">Nom</label>
+    <label class="control-label" for="last_name">Nom</label>
     <div class="controls">
-      <input id="inputLastName" ng-model="detailedChild.last_name" type="text" required />
-      <span ng-show="child-form.name.$error.required">Ce champ est obligatoire</span>
+      <input id="last_name" ng-model="detailedChild.last_name" type="text" required />
+      <span ng-show="childform.last_name.$error.required">Ce champ est obligatoire</span>
     </div>
   </div>
   <div class="control-group">
     <label class="control-label" for="inputBirthDate">Sexe</label>
     <div class="controls">
       <label class="radio">
-        <input type="radio" name="sex" ng-model="detailedChild.sex"  value="F">Fille
+        <input type="radio" name="sex" ng-model="detailedChild.sex"  value="F" required>Fille
       </label>
       <label class="radio">
         <input type="radio" name="sex" ng-model="detailedChild.sex"  value="M">Garçon
       </label>
+      <!--<span ng-show="childform.sex.$error.required">Ce champ est obligatoire</span>-->
     </div>
   </div>
   <div class="control-group input-append">
     <label class="control-label" for="inputBirthDate">Date de naissance</label>
     <div class="controls">
-      <input type="text" placeholder="31/12/2008" ng-model="detailedChild.birth_date" data-date-format="dd/mm/yyyy" data-language="fr" mo-date-input="{{dateFormat}}" bs-datepicker>
+      <input type="text" placeholder="31/12/2008"
+             data-date-format="dd/mm/yyyy" data-language="fr"
+             ng-model="detailedChild.birth_date"
+             bs-datepicker required >
       <button type="button" class="btn" data-toggle="datepicker"><i class="icon-calendar"></i></button>
-      <span ng-show="child-form.name.$error.required">Ce champ est obligatoire</span>
+      <span ng-show="childform.name.$error.required">Ce champ est obligatoire</span>
     </div>
   </div>
   
@@ -42,15 +46,17 @@
   
   <div class="control-group" ng-switch on="detailedChild.teacher.years.length">
     <label class="control-label" for="inputYear" ng-show="detailedChild.teacher.years.length > 1">Année</label>
+     <div class="controls" ng-switch-when="undefined">
+      <input type="hidden" ng-model="detailedChild.school_year" />
+    </div>
     <div class="controls" ng-switch-when="1">
       <input type="hidden" ng-model="detailedChild.school_year" />
     </div>
     <div class="controls" ng-switch-default>
       <select id="inputYear" ng-model="detailedChild.school_year" ng-disabled="detailedChild.teacher.years.length == 1" ng-options="toHarmos(year) + '' for year in detailedChild.teacher.years" required></select>
-      <span ng-show="child-form.name.$error.required">Ce champs est obligatoire</span>
+      <span ng-show="childform.name.$error.required">Ce champ est obligatoire</span>
     </div>
   </div>
-
 
 
   <div class="form-actions">
@@ -62,7 +68,3 @@
 
   </div>
 </form>
-<h2>Debug</h2>
-<pre>
-  {[{ detailedChild }]}
-</pre>

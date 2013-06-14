@@ -3,8 +3,9 @@
 import os
 from os.path import abspath, basename, dirname, join, normpath
 from sys import path
+from datetime import datetime
 
-
+ugettext = lambda s: s
 
 ########## PATH CONFIGURATION
 # Absolute filesystem path to the Django project directory:
@@ -198,6 +199,8 @@ THIRD_PARTY_APPS = (
     'rest_framework',
     'registration',
     'floppyforms',
+    'constance',
+     'constance.backends.database',
 )
 
 # Apps specific for this project go here.
@@ -267,6 +270,18 @@ REST_FRAMEWORK = {
 }
 
 ########## END REST FRAMEWORK CONFIGURATION
+
+########## CONSTANCE CONFIGURATION (settings in admin)
+# see https://github.com/comoga/django-constance
+CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
+CONSTANCE_SUPERUSER_ONLY = False
+CONSTANCE_CONFIG = {
+    'START_REGISTRATION': (datetime(2013,9,1), ugettext("Registration opening date")),
+    'END_REGISTRATION': (datetime(2013,10,1), ugettext("Registration ending date")),
+}
+
+########## END CONSTANCE CONFIGURATION
+
 
 ########## USER and REGISTRAION
 AUTH_USER_MODEL = 'profiles.FamilyUser'
