@@ -1,22 +1,14 @@
 from django import forms
 from django.contrib import admin
-#from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
 
 
 from .models import FamilyUser, Child, Teacher
 
 
-
-#    address = models.TextField(_("Street"), blank = True)
-#    zipcode = models.PositiveIntegerField(_("NPA"))
-#    city = models.CharField(_('City'), max_length=100)
-#    country = models.CharField(_('Country'), max_length = 100, default=_("Switzerland"))
-#    private_phone = models.CharField(max_length=12)
-#
-#
 
 class FamilyCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
@@ -107,6 +99,10 @@ class FamilyAdmin(UserAdmin):
 admin.site.register(FamilyUser, FamilyAdmin)
 # ... and, since we're not using Django's builtin permissions,
 # unregister the Group model from admin.
-#admin.site.unregister(Group)
+admin.site.unregister(Group)
 
-admin.site.register(Teacher)
+class TeacherAdmin(admin.ModelAdmin):
+    list_display = ('last_name', 'first_name', )
+    list_filter = ('years',) 
+
+admin.site.register(Teacher, TeacherAdmin)

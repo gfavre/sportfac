@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils.translation import gettext as _
+from django.utils.translation import ugettext as _
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.utils import timezone
@@ -120,7 +120,7 @@ class Child(models.Model):
     
 
 class SchoolYear(models.Model):
-    year = models.PositiveIntegerField(choices=SCHOOL_YEARS, unique=True)
+    year = models.PositiveIntegerField(_("School year"), choices=SCHOOL_YEARS, unique=True)
     
     def __unicode__(self):
         try:
@@ -128,11 +128,15 @@ class SchoolYear(models.Model):
         except KeyError:
             return unicode(year)
     
+    class Meta:
+        verbose_name = _("School year")
+        verbose_name_plural = _("School years")
+    
 
 class Teacher(models.Model):
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50, db_index=True)
-    years = models.ManyToManyField('SchoolYear')
+    first_name = models.CharField(_("First name"), max_length=50)
+    last_name = models.CharField(_("Last name"), max_length=50, db_index=True)
+    years = models.ManyToManyField('SchoolYear', verbose_name=_("School years"))
     
     def __unicode__(self):
         years = ' - '.join([unicode(year) for year in self.years.all()])
@@ -140,3 +144,9 @@ class Teacher(models.Model):
     
     class Meta:
         ordering = ('last_name', 'first_name')
+        verbose_name = _("teacher")
+        verbose_name_plural = _("teachers")
+
+        
+        
+        

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-05 18:58+0200\n"
+"POT-Creation-Date: 2013-06-14 06:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,71 +33,253 @@ msgstr "cours"
 msgid "courses"
 msgstr "cours"
 
-#: activities/admin.py:21 activities/models.py:33 activities/models.py:74
+#: activities/admin.py:21 activities/models.py:41 activities/models.py:82
 msgid "activity"
 msgstr "activité"
 
-#: activities/admin.py:22 activities/models.py:34 activities/models.py:35
-#: activities/models.py:75 activities/models.py:76 activities/models.py:92
+#: activities/admin.py:22 activities/models.py:42 activities/models.py:83
 msgid "activities"
 msgstr "activités"
 
-#: activities/admin.py:30 activities/models.py:90
+#: activities/admin.py:31 activities/models.py:105
 msgid "responsible"
 msgstr "responsable"
 
-#: activities/admin.py:31 activities/models.py:91
+#: activities/admin.py:32 activities/models.py:106
 msgid "responsibles"
 msgstr "responsables"
 
-#: activities/models.py:5
+#: activities/models.py:7
 msgid "Monday"
 msgstr "Lundi"
 
-#: activities/models.py:6
+#: activities/models.py:8
 msgid "Tuesday"
 msgstr "Mardi"
 
-#: activities/models.py:7
+#: activities/models.py:9
 msgid "Wednesday"
 msgstr "Mercredi"
 
-#: activities/models.py:8
+#: activities/models.py:10
 msgid "Thursday"
 msgstr "Jeudi"
 
-#: activities/models.py:9
+#: activities/models.py:11
 msgid "Friday"
 msgstr "Vendredi"
 
-#: activities/models.py:10
+#: activities/models.py:12
 msgid "Saturday"
 msgstr "Samedi"
 
-#: activities/models.py:11
+#: activities/models.py:13
 msgid "Sunday"
 msgstr "Dimanche"
 
-#: activities/models.py:15
+#: activities/models.py:17
 msgid "1st HARMOS"
 msgstr "1re HARMOS"
 
-#: activities/models.py:16
+#: activities/models.py:18
 msgid "2nd HARMOS"
 msgstr "2e HARMOS"
 
-#: activities/models.py:17
+#: activities/models.py:19
 msgid "3rd HARMOS"
 msgstr "3e HARMOS"
 
-#: activities/models.py:18
+#: activities/models.py:20
 msgid "4th HARMOS"
 msgstr "4e HARMOS"
 
-#: activities/models.py:19
+#: activities/models.py:21
 msgid "5th HARMOS"
 msgstr "5e HARMOS"
 
-#: activities/models.py:20
+#: activities/models.py:22
 msgid "6th HARMOS"
 msgstr "6e HARMOS"
+
+#: profiles/admin.py:73
+msgid "child"
+msgstr "enfant"
+
+#: profiles/admin.py:74
+msgid "children"
+msgstr "enfants"
+
+#: profiles/forms.py:23
+msgid "E-mail"
+msgstr "E-mail"
+
+#: profiles/forms.py:26
+msgid "Password"
+msgstr "Mot de passe"
+
+#: profiles/forms.py:28
+msgid "Password (again)"
+msgstr "Mot de passe (encore)"
+
+#: profiles/forms.py:30 profiles/models.py:137
+msgid "First name"
+msgstr "Prénom"
+
+#: profiles/forms.py:31 profiles/models.py:138
+msgid "Last name"
+msgstr "Nom"
+
+#: profiles/forms.py:32
+msgid "Address"
+msgstr "Adresse"
+
+#: profiles/forms.py:35 profiles/models.py:61
+msgid "NPA"
+msgstr ""
+
+#: profiles/forms.py:36 profiles/models.py:62
+#: templates/registration/registration_form.html:47
+msgid "City"
+msgstr "Commune"
+
+#: profiles/forms.py:37
+msgid "Private phone"
+msgstr "Téléphone"
+
+#: profiles/forms.py:38
+msgid "Other private phone"
+msgstr "Autre n° de téléphone"
+
+#: profiles/forms.py:49
+msgid "A user with that username already exists."
+msgstr "Cette adresse email est déjà utilisée."
+
+#: profiles/forms.py:63
+msgid "The two password fields didn't match."
+msgstr "Les deux mots de passe ne sont pas identiques."
+
+#: profiles/models.py:57
+msgid "first name"
+msgstr "prénom"
+
+#: profiles/models.py:58
+msgid "last name"
+msgstr "nom"
+
+#: profiles/models.py:60
+msgid "Street"
+msgstr "Rue"
+
+#: profiles/models.py:63
+msgid "Country"
+msgstr "Pays"
+
+#: profiles/models.py:63
+msgid "Switzerland"
+msgstr "Suisse"
+
+#: profiles/models.py:71
+msgid "date joined"
+msgstr "Date d'inscription"
+
+#: profiles/models.py:102
+msgid "Male"
+msgstr "Garçon"
+
+#: profiles/models.py:102
+msgid "Female"
+msgstr "Fille"
+
+#: profiles/models.py:123 profiles/models.py:132
+msgid "School year"
+msgstr "Année scolaire"
+
+#: profiles/models.py:133
+msgid "School years"
+msgstr "Années scolaires"
+
+#: profiles/models.py:147
+msgid "teacher"
+msgstr "enseignant"
+
+#: profiles/models.py:148
+msgid "teachers"
+msgstr "enseignants"
+
+#: profiles/views.py:18
+msgid "Account updated."
+msgstr "Compte mis à jour"
+
+#: templates/base.html:40 templates/registration/registration_form.html:58
+msgid "Register"
+msgstr "Inscription"
+
+#: templates/base.html:47
+msgid "My agenda"
+msgstr "Mon agenda"
+
+#: templates/base.html:48
+msgid "My family"
+msgstr "Ma famille"
+
+#: templates/base.html:49
+msgid "logout"
+msgstr "Déconnexion"
+
+#: templates/base.html:54
+msgid "login"
+msgstr "Connexion"
+
+#: templates/home.html:5
+msgid "Sport scolaire facultatif"
+msgstr "Sport scolaire facultatif"
+
+#: templates/activities/activity_detail.html:4
+msgid "Activity: "
+msgstr "Activité: "
+
+#: templates/activities/activity_list.html:5
+msgid "Activities"
+msgstr "Activités"
+
+#: templates/profiles/children_list.html:6
+msgid "My Family"
+msgstr "Ma famille"
+
+#: templates/profiles/children_list.html:18
+msgid "Add child"
+msgstr "Ajouter un enfant"
+
+#: templates/registration/login.html:3 templates/registration/login.html:5
+msgid "Login"
+msgstr "Connexion"
+
+#: templates/registration/login.html:15
+msgid "Please correct the error below."
+msgstr "Veuillez corriger l'erreur ci-dessous."
+
+#: templates/registration/login.html:37
+msgid "Password:"
+msgstr "Mot de passe:"
+
+#: templates/registration/login.html:47
+msgid "Forgotten your password or username?"
+msgstr "Mot de passe oublié?"
+
+#: templates/registration/login.html:52
+msgid "Log in"
+msgstr "Connexion"
+
+#: templates/registration/registration_form.html:4
+#: templates/registration/registration_form.html:6
+msgid "Inscription"
+msgstr "Inscription"
+
+#: templates/registration/registration_form.html:36
+msgid "Login informations"
+msgstr "Informations de connexion"
+
+#: templates/registration/registration_form.html:42
+msgid "Contact informations"
+msgstr "Informations de contact"
+

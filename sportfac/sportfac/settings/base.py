@@ -63,6 +63,12 @@ TIME_ZONE = 'Europe/Zurich'
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#language-code
 LANGUAGE_CODE = 'fr-CH'
+LANGUAGES = (('fr', 'French'),)
+
+# see https://docs.djangoproject.com/en/dev/ref/settings/#locale-paths
+LOCALE_PATHS = (
+    normpath(join(SITE_ROOT, 'locale')),
+)
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#site-id
 SITE_ID = 1

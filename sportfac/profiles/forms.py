@@ -33,9 +33,9 @@ class RegistrationForm(Form):
                               widget=forms.Textarea(attrs={'rows': 3}),
                               required = False)
     zipcode = forms.IntegerField(label=_("NPA"), min_value=1000, max_value=9999)
-    city = forms.CharField(label=_("City"))
-    private_phone = forms.CharField(widget=forms.PhoneNumberInput(), required=True)
-    private_phone2 = forms.CharField(widget=forms.PhoneNumberInput(), required=False)
+    city = forms.CharField(label=_("City"), widget=forms.TextInput(attrs={'placeholder': 'Coppet'}))
+    private_phone = forms.CharField(label=_("Private phone"), widget=forms.PhoneNumberInput(), required=True)
+    private_phone2 = forms.CharField(label=_("Other private phone"), widget=forms.PhoneNumberInput(), required=False)
     
         
     def clean_email(self):

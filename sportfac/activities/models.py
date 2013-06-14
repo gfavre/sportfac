@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 
-from django.utils.translation import gettext as _
+from django.utils.translation import ugettext as _
 
 DAYS_OF_WEEK = (
     (1, _('Monday')),
@@ -37,7 +37,6 @@ class Activity(models.Model):
         return self.name
     
     class Meta:
-        app_label = _("activities")
         ordering = ['name']
         verbose_name = _("activity")
         verbose_name_plural = _("activities")
@@ -79,7 +78,6 @@ class Course(models.Model):
                                             self.schoolyear_min, self.schoolyear_max)
     
     class Meta:
-        app_label = _("activities")
         ordering = ['start_date', 'activity', 'day']
         verbose_name = _("activity")
         verbose_name_plural = _("activities")
@@ -103,7 +101,6 @@ class Responsible(models.Model):
         return self.__unicode__
     
     class Meta:
-        app_label = _("activities")
         ordering = ['last', 'first']
         verbose_name = _("responsible")
         verbose_name_plural = _("responsibles")          
