@@ -11,7 +11,7 @@
     <div class="span3">
       <ul class="nav nav-list bs-docs-sidenav">
         <li ng-repeat="child in userChildren" ng-class="{active: child.selected}">
-          <a href="#/edit/{[{ child.id }]}" data-toggle="tab" ng-click="selectChild(child)">{[{ child.first_name }]} {[{ child.last_name }]}</a>
+          <a href="#/edit/{[{ child.id }]}" data-toggle="tab" ng-click="selectChild(child)">{[{ child.first_name }]} {[{ child.last_name }]}<i class="icon-chevron-right"></i></a>
         </li>
       </ul>
       <br />

@@ -1,8 +1,31 @@
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
-from django.forms import Form
+from django.forms import ModelForm, Form
 
 import floppyforms as forms
+
+
+
+
+class ContactInformationForm(ModelForm):
+    required_css_class = 'required'
+    email = forms.EmailField(label=_("E-mail"), 
+                             widget=forms.EmailInput(attrs={'placeholder': 'john@example.com'}))
+    
+    first_name = forms.CharField(label=_("First name"))
+    last_name = forms.CharField(label=_("Last name"))
+    address = forms.CharField(label=_("Address"),
+                              widget=forms.Textarea(attrs={'rows': 3}),
+                              required = False)
+    zipcode = forms.IntegerField(label=_("NPA"), min_value=1000, max_value=9999)
+    city = forms.CharField(label=_("City"), widget=forms.TextInput(attrs={'placeholder': 'Coppet'}))
+    private_phone = forms.CharField(label=_("Private phone"), widget=forms.PhoneNumberInput(attrs={"maxlength": 20}), required=True)
+    private_phone2 = forms.CharField(label=_("Other private phone"), widget=forms.PhoneNumberInput(attrs={"maxlength": 20}), required=False)
+    
+    class Meta:
+        model = get_user_model()
+        fields = ('email', 'first_name', 'last_name', 'zipcode', 'city', 'private_phone', 'private_phone2',)
+
 
 
 class RegistrationForm(Form):
@@ -19,14 +42,9 @@ class RegistrationForm(Form):
 
     """
     required_css_class = 'required'
-    
     email = forms.EmailField(label=_("E-mail"), 
                              widget=forms.EmailInput(attrs={'placeholder': 'john@example.com'}))
-    password1 = forms.CharField(widget=forms.PasswordInput,
-                                label=_("Password"))
-    password2 = forms.CharField(widget=forms.PasswordInput,
-                                label=_("Password (again)"))
-                                
+    
     first_name = forms.CharField(label=_("First name"))
     last_name = forms.CharField(label=_("Last name"))
     address = forms.CharField(label=_("Address"),
@@ -36,8 +54,12 @@ class RegistrationForm(Form):
     city = forms.CharField(label=_("City"), widget=forms.TextInput(attrs={'placeholder': 'Coppet'}))
     private_phone = forms.CharField(label=_("Private phone"), widget=forms.PhoneNumberInput(), required=True)
     private_phone2 = forms.CharField(label=_("Other private phone"), widget=forms.PhoneNumberInput(), required=False)
-    
-        
+
+    password1 = forms.CharField(widget=forms.PasswordInput,
+                                label=_("Password"))
+    password2 = forms.CharField(widget=forms.PasswordInput,
+                                label=_("Password (again)"))
+                                
     def clean_email(self):
         """
         Validate that the email is alphanumeric and is not already
@@ -49,7 +71,7 @@ class RegistrationForm(Form):
             raise forms.ValidationError(_("A user with that username already exists."))
         else:
             return self.cleaned_data['email']
-
+    
     def clean(self):
         """
         Verifiy that the values entered into the two password fields

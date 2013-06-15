@@ -1,8 +1,10 @@
 from django.db import models
-from django.utils.translation import ugettext as _
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
+from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
 from django.utils import timezone
+
 
 from activities.models import SCHOOL_YEARS
 from sportfac.models import TimeStampedModel
@@ -54,16 +56,16 @@ class FamilyManager(BaseUserManager):
 
 
 class FamilyUser(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(verbose_name = 'email address', max_length=255, unique=True, db_index=True)
-    first_name = models.CharField(_('first name'), max_length=30, blank=True)
-    last_name = models.CharField(_('last name'), max_length=30, blank=True)
+    email = models.EmailField(verbose_name = 'Email address', max_length=255, unique=True, db_index=True)
+    first_name = models.CharField(_('First name'), max_length=30, blank=True)
+    last_name = models.CharField(_('Last name'), max_length=30, blank=True)
     
     address = models.TextField(_("Street"), blank = True)
     zipcode = models.PositiveIntegerField(_("NPA"))
     city = models.CharField(_('City'), max_length=100)
     country = models.CharField(_('Country'), max_length = 100, default=_("Switzerland"))
-    private_phone = models.CharField(max_length=12, blank=True)
-    private_phone2 = models.CharField(max_length=12, blank=True)
+    private_phone = models.CharField(max_length=30, blank=True)
+    private_phone2 = models.CharField(max_length=30, blank=True)
     
     is_active = models.BooleanField(default=True, help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.')
     is_admin = models.BooleanField(default=False)
@@ -89,7 +91,7 @@ class FamilyUser(AbstractBaseUser, PermissionsMixin):
         return ', '.join([unicode(child) for child in self.children.all()])
     
     def get_absolute_url(self):
-        return 'toto'
+        return reverse('profiles_account')
     
     def __unicode__(self):
         return self.email

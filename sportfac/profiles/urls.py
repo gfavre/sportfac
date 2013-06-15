@@ -2,10 +2,11 @@ from django.conf.urls import patterns, url, include
 
 
 from .forms import RegistrationForm
-from .views import MyRegistrationView, ChildrenListView
+from .views import MyRegistrationView, ChildrenListView, AccountView
 
 
 urlpatterns = patterns('',
+    url(r'^$', AccountView.as_view(), name="profiles_account"),
     url(r'^children/$', ChildrenListView.as_view(), name="profiles_children"),
     url(r'^register/$', MyRegistrationView.as_view(), name='registration_register'),
     (r'', include('registration.backends.simple.urls')),

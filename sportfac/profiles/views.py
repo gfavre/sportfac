@@ -2,7 +2,7 @@ from django.views.generic import ListView, CreateView, UpdateView
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.utils.translation import ugettext as _
-
+from django.http import HttpResponseRedirect
 
 from braces.views import LoginRequiredMixin
 from registration.backends.simple.views import RegistrationView as BaseRegistrationView
@@ -10,12 +10,8 @@ from registration.compat import User
 from registration import signals
 
 from .models import FamilyUser, Child
-from .forms import RegistrationForm
+from .forms import RegistrationForm, ContactInformationForm
 
-
-class ChildrenUpdateView(LoginRequiredMixin, UpdateView):
-    model = Child
-    action_msg = _("Account updated.")
 
 class ChildrenListView(LoginRequiredMixin, ListView):
     template_name = 'profiles/children_list.html'
@@ -24,9 +20,14 @@ class ChildrenListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return Child.objects.filter(family = self.request.user).order_by('first_name')
         
+
+class AccountView(LoginRequiredMixin, UpdateView):
+    model = FamilyUser
+    form_class = ContactInformationForm
     
-
-
+    def get_object(self, queryset=None):
+        return self.request.user    
+    
 class MyRegistrationView(BaseRegistrationView):
     """
     A registration backend which implements the simplest possible

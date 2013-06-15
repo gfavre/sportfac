@@ -1,17 +1,14 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load floppyforms %}
-{% block title %}{% trans "Inscription" %}{% endblock title %}
-
-{% block page_title %}{% trans "Inscription" %}{% endblock page_title %}
+{% block title %}{% trans "My account" %}{% endblock title %}
+{% block page_title %}{% trans "My account" %}{% endblock page_title %}
 
 
 {% block content %}
-
-<div class="container">
+<div class="container" ng-controller="ListCtrl">
   <div class="row">
     <div class="span12">
-    
     {% form form using %}
     {% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
     <form action="." method="post" class="form-horizontal">{% csrf_token %}
@@ -35,8 +32,7 @@
       <fieldset>
         <legend>{% trans "Login informations" %}</legend>
         {% formrow form.email %}
-        {% formrow form.password1 %}
-        {% formrow form.password2 %}
+        <div class="control-group"><a href="{% url 'auth_password_change' %}">{% trans "Change password" %}</a></div>
       </fieldset>
       <fieldset>
         <legend>{% trans "Contact informations" %}</legend>
@@ -46,7 +42,7 @@
         <div class="control-group">
           <label class="control-label">{% trans "City" %} <span class="required">*</span></label>
           <div class="controls form-inline required ">
-            <input type="text" name="zipcode" required="" placeholder="1296" id="id_zipcode" class="input-mini" maxlength="4">
+            <input type="text" name="zipcode" value="{{ form.zipcode.value }}" required="" placeholder="1296" id="id_zipcode" class="input-mini" maxlength="4">
             {% formfield form.city %}
           </div>
         </div>
@@ -55,12 +51,32 @@
         
       </fieldset>
       <div class="form-actions">
-        <button type="submit" class="btn btn-primary">{% trans "Register" %}</button>
+        <button type="submit" class="btn btn-primary">{% trans "Save" %}</button>
       </div>
     </form>
     {% endform %}
+
+        
+      </form>
     </div>
-  </div>
-</div>
+  </div><!-- end row -->
+</div> <!-- end container -->
+
+
+
+{% endblock content %}
+
+
+{% block extra_js %}
+  <script src="{{ STATIC_URL }}js/vendor/angular.min.js"></script>
+  <script src="{{ STATIC_URL }}js/vendor/angular-cookies.min.js"></script>
+  <script src="{{ STATIC_URL }}js/vendor/angular-locale_fr-ch.js"></script>
+  <script src="{{ STATIC_URL }}js/vendor/angular-strap.min.js"></script>
+  <script src="{{ STATIC_URL }}js/vendor/bootstrap-datepicker.js"></script>
+  <script src="{{ STATIC_URL }}js/children/app.js"></script>
+  <script src="{{ STATIC_URL }}js/children/services.js"></script>
+</body>
+
 {% endblock %}
+
 
