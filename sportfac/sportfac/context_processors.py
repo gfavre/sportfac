@@ -27,6 +27,6 @@ def wizard_context(request):
         if step.current:
             current = idx
     return {'show_wizard': len(filter(lambda x: x.current, steps)),
-            'previous': current != 0 and steps[current - 1] or None,
-            'next': current != len(steps) -1 and steps[current + 1] or None,
+            'previous_step': current != 0 and steps[current - 1] or None,
+            'next_step': current != len(steps) -1 and steps[current + 1] or None,
             'steps': steps}

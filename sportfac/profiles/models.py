@@ -11,7 +11,7 @@ from sportfac.models import TimeStampedModel
 
 
 class FamilyManager(BaseUserManager):
-      def create_user(self, email, first_name, last_name, zipcode, city, country, password=None, **extra_fields):
+      def create_user(self, email, first_name, last_name, zipcode, city, password=None, **extra_fields):
           """
           Creates and saves a User with the given email, favorite topping, and password.
           """
@@ -43,11 +43,12 @@ class FamilyManager(BaseUserManager):
           user.save(using=self._db)
           return user
       
-      def create_superuser(self, email, first_name, last_name, zipcode, city, country, password, **extra_fields):
+      def create_superuser(self, email, first_name, last_name, zipcode, city, password, **extra_fields):
           """
           Creates and saves a superuser with the given email, favorite topping and password.
           """
-          user = self.create_user(email, first_name, last_name, zipcode, city, country, password, **extra_fields)
+          user = self.create_user(email=email, first_name=first_name, last_name=last_name,
+                                  zipcode=zipcode, city=city, password=password, **extra_fields)
           user.is_admin = True
           user.is_staff = True
           user.is_superuser = True

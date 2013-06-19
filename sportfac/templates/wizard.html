@@ -20,8 +20,8 @@
     </ul>
     
     <div class="actions">
-      <button type="button" class="btn btn-mini btn-prev" {% if not previous %}disabled{% endif %}> <i class="icon-arrow-left"></i>{% trans "Previous"%}</button>
-      <button type="button" class="btn btn-mini btn-next" data-last="Finish" {% if not next %}disabled{% endif %}>{% trans "Next"%}<i class="icon-arrow-right"></i></button>
+      <button type="button" class="btn btn-mini btn-prev" {% if not previous_step %}disabled{% endif %}> <i class="icon-arrow-left"></i>{% trans "Previous"%}</button>
+      <button type="button" class="btn btn-mini btn-next" data-last="Finish" {% if not next_step %}disabled{% endif %}>{% trans "Next"%}<i class="icon-arrow-right"></i></button>
     </div>
   </div>
 </div>

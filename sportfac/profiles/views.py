@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
 
 from braces.views import LoginRequiredMixin
 from registration.backends.simple.views import RegistrationView as BaseRegistrationView
@@ -40,7 +41,7 @@ class MyRegistrationView(BaseRegistrationView):
     def get_success_url(self, request=None, user=None):
         # We need to be able to use the request and the new user when
         # constructing success_url.
-        return '/'
+        return reverse('profiles_children')
 
     def register(self, request, **cleaned_data):
         email, password = cleaned_data['email'], cleaned_data['password1']
@@ -49,9 +50,10 @@ class MyRegistrationView(BaseRegistrationView):
         private_phone, private_phone2 = cleaned_data['private_phone'], cleaned_data['private_phone2']
         
         FamilyUser.objects.create_user(email=email, password=password, 
-                                         first_name=first_name, last_name=last_name,
-                                         address=address, zipcode=zipcode, city=city,
-                                         private_phone=private_phone, private_phone2=private_phone2)
+                                       first_name=first_name, last_name=last_name,
+                                       address=address, zipcode=zipcode, city=city,
+                                       private_phone=private_phone,
+                                       private_phone2=private_phone2)
         new_user = authenticate(email=email, password=password)
         login(request, new_user)
         signals.user_registered.send(sender=self.__class__,
