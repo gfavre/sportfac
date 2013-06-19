@@ -22,7 +22,7 @@ def wizard_context(request):
     
     
     steps = [about, children, activities, confirmation, billing]
-    current = None
+    current = 0
     for idx, step in enumerate(steps):
         if step.current:
             current = idx
