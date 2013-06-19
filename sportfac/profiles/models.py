@@ -11,7 +11,7 @@ from sportfac.models import TimeStampedModel
 
 
 class FamilyManager(BaseUserManager):
-      def create_user(self, email, first_name, last_name, zipcode, city, password=None, **extra_fields):
+      def create_user(self, email, first_name, last_name, zipcode, city, country, password=None, **extra_fields):
           """
           Creates and saves a User with the given email, favorite topping, and password.
           """

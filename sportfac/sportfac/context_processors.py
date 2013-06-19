@@ -16,7 +16,7 @@ def wizard_context(request):
     about = Step(request, _("About you"), 'profiles_account', True)
     children = Step(request, _("Your children"), 'profiles_children', request.user.is_authenticated)
     activities = Step(request, _("Register activities"), 'activities-list', 
-                      request.user.is_authenticated and request.user.children.count())
+                      request.user.is_authenticated() and request.user.children.count())
     confirmation = Step(request, _("Confirmation"), 'home', False)
     billing = Step(request, _("Billing"), 'home', False)
     
