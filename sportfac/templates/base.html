@@ -62,11 +62,11 @@
     </div>
     
     <div class="container">      
+      {% block page_header %} 
       <div class="row page-header">
-        {% block page_header %}
         <h1 class="span12">{% block page_title %}Example Base Template{% endblock page_title %}</h1>
-        {% endblock page_header %}
       </div>
+      {% endblock page_header %}
     </div>
     {% block content %}
     <div class="container">

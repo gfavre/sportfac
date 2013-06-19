@@ -2,58 +2,30 @@
 {% load i18n %}
 
 {% block page_header %}
-  <div id="MyWizard" class="wizard">
+<div class="row simple-page-header">
+  <div class="wizard">
     <ul class="steps">
-    <li class="complete"><span class="badge badge-success">1</span><a href="{% url '' %}">{% trans "About you"%}<span class="chevron"></span></li>
-      <li class="active"><span class="badge badge-info">2</span>{% trans "Your children"%}<span class="chevron"></span></li>
-      <li class=""><span class="badge">3</span>{% trans "Register activities"%}<span class="chevron"></span></li>
-      <li class=""><span class="badge">4</span>{% trans "Confirmation"%}<span class="chevron"></span></li>
-      <li><span class="badge">5</span>{% trans "Billing"%}<span class="chevron"></span></li>
+      {% for step in steps %}
+        <li class="{% if step.current %}active{% else %}{% if step.activable %}complete{% endif %}{% endif %}">
+          <span class="badge {% if step.activable %}badge-success{% endif %} {% if step.current %}badge-info{% endif %}">{{ forloop.counter }}</span>
+          {% if step.current or not step.activable %}
+            {{ step.title }}
+          {% else %}
+            <a href="{{ step.url }}">{{ step.title }}</a>
+          {% endif %}
+          
+          <span class="chevron"></span>
+        </li>
+      {% endfor %}
     </ul>
+    
     <div class="actions">
-      <button type="button" class="btn btn-mini btn-prev"> <i class="icon-arrow-left"></i>{% trans "Previous"%}</button>
-      <button type="button" class="btn btn-mini btn-next" data-last="Finish">{% trans "Next"%}<i class="icon-arrow-right"></i></button>
+      <button type="button" class="btn btn-mini btn-prev" {% if not previous %}disabled{% endif %}> <i class="icon-arrow-left"></i>{% trans "Previous"%}</button>
+      <button type="button" class="btn btn-mini btn-next" data-last="Finish" {% if not next %}disabled{% endif %}>{% trans "Next"%}<i class="icon-arrow-right"></i></button>
     </div>
-    </div>
-    <div class="step-content">
-      {% block page_title %}{% trans "Sport scolaire facultatif" %}{% endblock page_title %}
-      <div class="step-pane" id="step1">This is step 1</div>
-      <div class="step-pane active" id="step2">This is step 2</div>
-      <div class="step-pane" id="step3">This is step 3</div>
-      <div class="step-pane" id="step4">This is step 4</div>
-      <div class="step-pane" id="step5">This is step 5</div>
-    </div>
-
-    <input type="button" class="btn btn-mini" id="btnWizardPrev" value="prev">
-    <input type="button" class="btn btn-mini" id="btnWizardNext" value="next">
-    <input type="button" class="btn btn-mini" id="btnWizardStep" value="current step">
   </div>
+</div>
+<div class="row page-header">
+  <h1 class="span12">{% block page_title %}{% endblock page_title %}</h1>
+</div>
 {% endblock page_header %}
-
-{% block content %}
-<div class="container">
-
-  <div class="row">
-    <div class="span12">
-      <p>Le programme du sport scolaire facultatif s’adresse aux élèves de l’Etablissement primaire de Coppet.</p>
-      <p>Il propose une série d’activités en rapport avec le sport et se fixe pour objectifs :</p>
-      <ul>
-        <li>de faire découvrir de nouvelles disciplines sportives</li>
-        <li>d’encourager une pratique physique régulière</li>
-        <li>de développer des valeurs éducatives fondamentales</li>
-      </ul>
-      <p>En règle générale, les élèves choisissent des activités nouvelles qu’ils/qu’elles ne pratiquent pas habituellement, dans le but, en cas d’intérêt marqué, de rejoindre les rangs d’un club local.</p>
-      <p><strong>En participant, chaque enfant s’engage à respecter les conditions de participation et, par son attitude, à faire en sorte que l’activité soit bénéfique tant pour lui-même que pour l’ensemble de ses camarades.</strong></p>
-     <p><em>Nous souhaitons à toutes et tous beaucoup de plaisir dans la pratique des activités de ce programme que nous espérons varié et attrayant.</em></p>
-     
-    </div><!-- end span -->
-  </div><!-- end row -->
-  <div class="row">
-    <p class="span12" style="text-align: center">
-      <a href="{% url 'registration_register' %}" class="btn btn-large btn-primary">Inscription</a>
-    </p>
-  </div>  
-</div> <!-- end container -->
-
-
-{% endblock content %}

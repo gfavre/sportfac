@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "wizard.html" %}
 {% load i18n %}
 
 {% block extra_html %}ng-app="sportfac"{% endblock extra_html %}
@@ -29,8 +29,6 @@
     </div><!-- end tab-content -->
   </div><!-- end tabbable -->
 </div> <!-- end container -->
-
-
 {% endblock content %}
 
 {% block extra_js %}
@@ -43,5 +41,4 @@
   <script src="{{ STATIC_URL }}js/activities/services.js"></script>
   <script src="{{ STATIC_URL }}js/activities/controllers.js"></script>
 </body>
-
 {% endblock %}
