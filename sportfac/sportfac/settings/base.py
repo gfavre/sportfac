@@ -287,3 +287,5 @@ CONSTANCE_CONFIG = {
 ########## USER and REGISTRAION
 AUTH_USER_MODEL = 'profiles.FamilyUser'
 REGISTRATION_OPEN = True
+LOGIN_URL = '/account/login'
+LOGOUT_URL = '/account/logout'

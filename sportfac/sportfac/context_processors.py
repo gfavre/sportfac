@@ -3,7 +3,8 @@ from django.core.urlresolvers import reverse
  
 
 class Step:
-    def __init__(self, request, title, urlname, activable):
+    def __init__(self, request, id, title, urlname, activable):
+        self.id = id
         self.title = title
         self.url = reverse(urlname)
         self.activable = activable
@@ -13,12 +14,12 @@ class Step:
     
 
 def wizard_context(request):
-    about = Step(request, _("About you"), 'profiles_account', True)
-    children = Step(request, _("Your children"), 'profiles_children', request.user.is_authenticated)
-    activities = Step(request, _("Register activities"), 'activities-list', 
+    about = Step(request, 'about-step', _("About you"), 'profiles_account', True)
+    children = Step(request, 'children-step', _("Your children"), 'profiles_children', request.user.is_authenticated)
+    activities = Step(request, 'activities-step', _("Register activities"), 'activities-list', 
                       request.user.is_authenticated() and request.user.children.count())
-    confirmation = Step(request, _("Confirmation"), 'home', False)
-    billing = Step(request, _("Billing"), 'home', False)
+    confirmation = Step(request, 'confirm-step',_("Confirmation"), 'home', False)
+    billing = Step(request, 'billing-step', _("Billing"), 'home', False)
     
     
     steps = [about, children, activities, confirmation, billing]

@@ -6,7 +6,7 @@
   <div class="wizard">
     <ul class="steps">
       {% for step in steps %}
-        <li class="{% if step.current %}active{% else %}{% if step.activable %}complete{% endif %}{% endif %}">
+        <li class="{% if step.current %}active{% else %}{% if step.activable %}complete{% endif %}{% endif %}" id="{{ step.id }}">
           <span class="badge {% if step.activable %}badge-success{% endif %} {% if step.current %}badge-info{% endif %}">{{ forloop.counter }}</span>
           {% if step.current or not step.activable %}
             {{ step.title }}
