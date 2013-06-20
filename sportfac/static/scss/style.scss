@@ -1,6 +1,6 @@
 /*@import "bootstrap.min";
 @import "bootstrap-responsive.min";*/
-@import 'css3-sass-mixins/all';
+@import 'mixins';
 
 @import "bootstrap-customized.min";
 @import "fullcalendar";
@@ -86,12 +86,12 @@ select.ng-invalid:focus{
   content: "";
 }
 
-.wizard ul li.complete {
+.wizard ul li.complete, .wizard ul li.complete a {
   color: #468847;
   background: #f3f4f5;
 }
 
-.wizard ul li.complete:hover {
+.wizard ul li.complete:hover, .wizard ul li.complete:hover a, .wizard ul li.complete a:hover {
   cursor: pointer;
   background: #e7eff8;
 }
@@ -104,7 +104,7 @@ select.ng-invalid:focus{
   border-left: 14px solid #f3f4f5;
 }
 
-.wizard ul li.active {
+.wizard ul li.active, {
   color: #3a87ad;
   background: #f1f6fc;
 }

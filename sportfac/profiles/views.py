@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse_lazy
 
 from braces.views import LoginRequiredMixin
 from registration.backends.simple.views import RegistrationView as BaseRegistrationView
@@ -25,9 +25,10 @@ class ChildrenListView(LoginRequiredMixin, ListView):
 class AccountView(LoginRequiredMixin, UpdateView):
     model = FamilyUser
     form_class = ContactInformationForm
-    #success_url = ...
+    success_url = reverse_lazy('profiles_children')
+    
     def get_object(self, queryset=None):
-        return self.request.user    
+        return self.request.user
 
 class MyRegistrationView(BaseRegistrationView):
     """
@@ -37,12 +38,8 @@ class MyRegistrationView(BaseRegistrationView):
     up and logged in).
     """
     form_class = RegistrationForm
+    success_url = reverse_lazy('profiles_children')
     
-    def get_success_url(self, request=None, user=None):
-        # We need to be able to use the request and the new user when
-        # constructing success_url.
-        return reverse('profiles_children')
-
     def register(self, request, **cleaned_data):
         email, password = cleaned_data['email'], cleaned_data['password1']
         first_name, last_name = cleaned_data['first_name'], cleaned_data['last_name']
