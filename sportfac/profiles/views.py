@@ -25,10 +25,10 @@ class ChildrenListView(LoginRequiredMixin, ListView):
 class AccountView(LoginRequiredMixin, UpdateView):
     model = FamilyUser
     form_class = ContactInformationForm
-    
+    #success_url = ...
     def get_object(self, queryset=None):
         return self.request.user    
-    
+
 class MyRegistrationView(BaseRegistrationView):
     """
     A registration backend which implements the simplest possible

@@ -29,3 +29,15 @@
   <h1 class="span12">{% block page_title %}{% endblock page_title %}</h1>
 </div>
 {% endblock page_header %}
+
+{% block page_footer %}
+  <div class="form-actions">
+    {% if previous_step %}
+      <a class="btn"><i class="icon-chevron-left" href="{{ previous_step.url }}"></i> {% trans "Previous"%}</a>
+    {% endif %}
+    <div class="pull-right">
+      {% if next_step %}
+      <a class="btn btn-primary btn-large" href="{{ next_step.url }}">{% trans "Next"%} <i class="icon-chevron-right icon-white"></i> </a>      
+      {% endif %}
+  </div>
+{% endblock page_footer %}

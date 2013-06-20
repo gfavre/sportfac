@@ -60,13 +60,14 @@
     </div>
   </div>
 
-
-  <div class="form-actions">
-    <button ng-click="saveChild()" ng-disabled="child-form.$invalid" class="btn btn-right btn-primary"><i class="icon-ok-sign icon-white"></i> Enregistrer</button>
-    <div class="pull-right">
+  <div>
+    <span class="span2">
+      <button ng-click="saveChild()" ng-disabled="child-form.$invalid" class="btn btn-right btn-success"><i class="icon-ok-sign icon-white"></i> Enregistrer</button>
+    </span>
+    <span class="offset2">
       <button ng-click="reloadChild()" ng-disabled="hasNotChanged()" class="btn btn-small"><i class="icon-remove-sign"></i> Annuler</button>
       <button ng-click="delChild(child.id)" class="btn btn-danger btn-small"><i class="icon-trash icon-white"></i> Supprimer</button>
-    </div>
-
+    </span>
   </div>
+  
 </form>
