@@ -1,3 +1,14 @@
-<h2>{[{ detailedActivity.name }]}</h2>
+<!--<h2>{[{ detailedActivity.name }]}</h2>-->
 
 <div ng-model="eventSources" calendar="weekagenda" ui-calendar="uiConfig.calendar"></div>
+
+<h3>Activités sélectionnées</h3>
+
+<ul>
+  <li ng-repeat="event in registeredEvents">{[{ event.title }]}</li>
+</ul>
+
+<h3>Others</h3>
+<ul>
+  <li ng-repeat="event in othersEvents">{[{ event.title }]}</li>
+</ul>

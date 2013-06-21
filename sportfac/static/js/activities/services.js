@@ -105,5 +105,8 @@ angular.module('sportfac.services', []).
             }
     };
     return publicMethods;
+  }).factory("$registeredEvents",function($parse){
+    'use strict';
   });
+
 
