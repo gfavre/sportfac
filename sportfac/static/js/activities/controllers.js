@@ -3,6 +3,13 @@ angular.module('sportfacCalendar.controllers', []).controller('ActivityCtrl', fu
   $scope.getUserChildren = function(){
     $http.get('/api/family/').success(function(data){
       $scope.userChildren = data;
+      angular.forEach(data, function(child){
+        $store.bind($scope, 'registeredCourses_' + child.id);
+        if (child.id === childId){
+          child.selected = true;
+          $scope.selectedChild = child;
+        }
+      }):
       for (var i=0; i<data.length; i++){
         $store.bind($scope, 'registeredCourses_' + data[i].id);
       }
@@ -260,8 +267,7 @@ angular.module('sportfacCalendar.controllers', []).controller('ActivityCtrl', fu
   
   
   $scope.eventSources = [$scope.registeredEvents, $scope.othersRegisteredEvents, []];
-  
-})
+  })
   .controller('ActivityDetailCtrl', function($scope, $routeParams){
   /*****************************************************************************
                     Detailed activity

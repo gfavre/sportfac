@@ -9,6 +9,7 @@ router.register(r'activities', views.ActivityViewSet)
 router.register(r'courses', views.CourseViewSet)
 router.register(r'children', views.ChildrenViewSet)
 router.register(r'teachers', views.TeacherViewSet)
+router.register(r'registrations', views.RegistrationViewSet)
 
 #router.register(r'family', views.FamilyView)
 

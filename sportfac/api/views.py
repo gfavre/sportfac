@@ -10,9 +10,10 @@ from rest_framework import mixins, generics, status
 
 
 from activities.models import Activity, Course
-from profiles.models import Child, Teacher
+from profiles.models import Child, Teacher, Registration
 from .serializers import (ActivitySerializer, ActivityDetailedSerializer, 
-                          ChildrenSerializer, CourseSerializer, TeacherSerializer)
+                          ChildrenSerializer, CourseSerializer, TeacherSerializer,
+                          RegistrationSerializer)
 
 
 class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
@@ -98,7 +99,25 @@ class ChildrenViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
+
+class ChildOrAdminPermission(permissions.IsAuthenticated):
+    def has_object_permission(self, request, view, obj):
+        """
+        Return `True` if permission is granted, `False` otherwise.
+        """
+        if request.user.is_staff or request.user == obj.child.family:
+            return True
+        return False
+
+class RegistrationViewSet(viewsets.ModelViewSet):
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (ChildOrAdminPermission, )
+    serializer_class = RegistrationSerializer
+    model = Registration
     
+    def get_queryset(self):
+        user = self.request.user
+        return Registration.objects.filter(child__in=user.children.all())
     
     
         
