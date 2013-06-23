@@ -8,7 +8,7 @@
 <div class="container" ng-controller="ActivityCtrl">
   <div class="tabbable" style="margin-left:-30px">
     <ul class="nav nav-tabs" >
-      <li ng-repeat="child in userChildren" ng-class="{active: child.selected}"><a href="#child-{[{ child.id }]}" data-toggle="tab" ng-click="selectChild($index)">{[{ child.first_name }]}</a></li>
+      <li ng-repeat="child in userChildren" ng-class="{active: child.selected}"><a data-toggle="tab" ng-click="selectChild($index)">{[{ child.first_name }]}</a></li>
     </ul>
   
     <div class="tab-content" style="margin-left:-30px">
@@ -32,8 +32,7 @@
 {% endblock content %}
 
 {% block extra_js %}
- <script src="{{ STATIC_URL }}js/activities/app.min.js"></script>
-<!--
+{% if debug %}
   <script src="{{ STATIC_URL }}js/vendor/jquery-ui.custom.min.js"></script>
   <script src="{{ STATIC_URL }}js/vendor/fullcalendar.min.js"></script>
   <script src="{{ STATIC_URL }}js/vendor/angular.min.js"></script>
@@ -42,7 +41,8 @@
   <script src="{{ STATIC_URL }}js/vendor/angular-ui-calendar.js"></script>
   <script src="{{ STATIC_URL }}js/activities/services.js"></script>
   <script src="{{ STATIC_URL }}js/activities/controllers.js"></script>
-  <script src="{{ STATIC_URL }}js/activities/app.js"></script>-->
-
-</body>
-{% endblock %}
+  <script src="{{ STATIC_URL }}js/activities/app.js"></script>
+{% else %}
+  <script src="{{ STATIC_URL }}js/activities/app.min.js"></script>
+{% endif %}
+{% endblock extra_js %}
