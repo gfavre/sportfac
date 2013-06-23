@@ -1,18 +1,14 @@
-angular.module('sportfacCalendar.controllers', []).controller('ActivityCtrl', function($scope, $http, $store, Courses) {
+angular.module('sportfacCalendar.controllers', []).controller('ActivityCtrl', function($scope, $http, $store, Courses, ModelUtils, $window) {
   'use strict';
+  $scope.toSave = undefined;
+  $scope.saved = false;
   $scope.getUserChildren = function(){
     $http.get('/api/family/').success(function(data){
       $scope.userChildren = data;
-      angular.forEach(data, function(child){
+      angular.forEach($scope.userChildren, function(child){
         $store.bind($scope, 'registeredCourses_' + child.id);
-        if (child.id === childId){
-          child.selected = true;
-          $scope.selectedChild = child;
-        }
-      }):
-      for (var i=0; i<data.length; i++){
-        $store.bind($scope, 'registeredCourses_' + data[i].id);
-      }
+        child.registered = $scope['registeredCourses_' + child.id];
+      });
       $scope.selectChild(0);
     });
   };
@@ -72,7 +68,26 @@ angular.module('sportfacCalendar.controllers', []).controller('ActivityCtrl', fu
       }
     });
   });
-
+  
+  $scope.registerCourses = function(){
+    $scope.toSave = $scope.othersRegisteredEvents.length + $scope.registeredEvents.length;
+    angular.forEach($scope.userChildren, function(child){
+      angular.forEach(child.registered, function(courseId){
+        var registration = {child: child.id, course: courseId};
+        ModelUtils.save('/api/registrations/', registration, $scope.errors).then(function(){
+          $scope.toSave -= 1;
+          // change status          
+        });
+      });
+    });
+  };
+  
+  $scope.$watch('toSave', function(newValue, oldValue){
+    if (newValue === 0){
+      console.log('evt triggered');
+      $window.location.href = '/activities/confirm'; 
+    }});
+  
   $scope.othersRegisteredEvents = [];
   $scope.registeredEvents = [];
 
@@ -206,12 +221,10 @@ angular.module('sportfacCalendar.controllers', []).controller('ActivityCtrl', fu
   'use strict';
   
   $scope.$watch('othersRegisteredEvents', function(){
-    console.log('others');
     $scope.weekagenda.fullCalendar('render');
     $scope.weekagenda.fullCalendar('refetchEvents');
   });
   $scope.$watch('registeredEvents', function(){
-    console.log('self');
     $scope.weekagenda.fullCalendar('render');
     $scope.weekagenda.fullCalendar('refetchEvents');
   });

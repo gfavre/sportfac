@@ -124,6 +124,11 @@ class Child(TimeStampedModel):
 class Registration(TimeStampedModel):
     course = models.ForeignKey('activities.Course', related_name="participants")
     child = models.ForeignKey('Child')
+    
+    class Meta:
+        unique_together = ('course', 'child')
+        verbose_name = _("Registration")
+        verbose_name_plural = _("Registrations")
         
 
 

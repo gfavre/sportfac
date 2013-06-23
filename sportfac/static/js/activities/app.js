@@ -12,6 +12,20 @@ if (!Array.prototype.indexOf) {
   };
 }
 
+Array.prototype.remove = function() {
+    var what, a = arguments, L = a.length, ax;
+    while (L && this.length) {
+        what = a[--L];
+        while ((ax = this.indexOf(what)) !== -1) {
+            this.splice(ax, 1);
+        }
+    }
+    return this;
+};
+
+
+
+
 // Declare app level module which depends on filters, and services
 angular.module('sportfacCalendar', ['sportfacCalendar.services', 'sportfacCalendar.controllers', 'ngCookies', 'ui.calendar']).
   config(['$routeProvider', function($routeProvider) {

@@ -1,0 +1,37 @@
+{% extends "wizard.html" %}
+{% load i18n %}
+
+{% block page_title %}{% trans "Confirmation" %}{% endblock page_title%}
+
+{% block content %}
+<div class="container" >
+  <div class="row" >
+    <table class="span12">
+      {% for registered in registered_list %}
+      <tr>
+        <td>{{ registered.course.activity.name }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div><!-- end row -->
+</div> <!-- end container -->
+{% endblock content %}
+
+
+
+
+{% block extra_js %}
+{% if debug %}
+  <script src="{{ STATIC_URL }}js/vendor/jquery-ui.custom.min.js"></script>
+  <script src="{{ STATIC_URL }}js/vendor/fullcalendar.min.js"></script>
+  <script src="{{ STATIC_URL }}js/vendor/angular.min.js"></script>
+  <script src="{{ STATIC_URL }}js/vendor/angular-locale_fr-ch.js"></script>
+  <script src="{{ STATIC_URL }}js/vendor/angular-cookies.min.js"></script>
+  <script src="{{ STATIC_URL }}js/vendor/angular-ui-calendar.js"></script>
+  <script src="{{ STATIC_URL }}js/activities/services.js"></script>
+  <script src="{{ STATIC_URL }}js/activities/controllers.js"></script>
+  <script src="{{ STATIC_URL }}js/activities/app.js"></script>
+{% else %}
+  <script src="{{ STATIC_URL }}js/activities/app.min.js"></script>
+{% endif %}
+{% endblock extra_js %}

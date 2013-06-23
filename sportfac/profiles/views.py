@@ -10,7 +10,7 @@ from registration.backends.simple.views import RegistrationView as BaseRegistrat
 from registration.compat import User
 from registration import signals
 
-from .models import FamilyUser, Child
+from .models import FamilyUser, Child, Registration
 from .forms import RegistrationForm, ContactInformationForm
 
 
@@ -57,3 +57,13 @@ class MyRegistrationView(BaseRegistrationView):
                                      user=new_user,
                                      request=request)
         return new_user
+        
+
+class RegisteredActivitiesListView(LoginRequiredMixin, ListView):
+    model = Registration
+    context_object_name = 'registered_list'
+    
+    def get_queryset(self):
+        return Registration.objects.filter(child__in=self.request.user.children.all())
+    
+

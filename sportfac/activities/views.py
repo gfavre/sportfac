@@ -5,7 +5,6 @@ from django.utils.decorators import method_decorator
 
 from .models import Activity
 
-
 class LoginRequiredMixin(object):
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):

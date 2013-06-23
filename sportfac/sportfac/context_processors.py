@@ -1,6 +1,7 @@
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
- 
+
+from profiles.models import Registration
 
 class Step:
     def __init__(self, request, id, title, urlname, activable):
@@ -18,8 +19,8 @@ def wizard_context(request):
     children = Step(request, 'children-step', _("Your children"), 'profiles_children', request.user.is_authenticated)
     activities = Step(request, 'activities-step', _("Register activities"), 'activities-list', 
                       request.user.is_authenticated() and request.user.children.count())
-    confirmation = Step(request, 'confirm-step',_("Confirmation"), 'home', False)
-    billing = Step(request, 'billing-step', _("Billing"), 'home', False)
+    confirmation = Step(request, 'confirm-step',_("Confirmation"), 'activities-confirm', Registration.objects.filter(child__in=request.user.children.all()).count() > 0)
+    billing = Step(request, 'billing-step', _("Billing"), 'home', Registration.objects.filter(child__in=request.user.children.all()).count() > 0)
     
     
     steps = [about, children, activities, confirmation, billing]

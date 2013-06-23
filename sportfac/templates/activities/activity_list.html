@@ -1,11 +1,11 @@
 {% extends "wizard.html" %}
 {% load i18n %}
 
-{% block extra_html %}ng-app="sportfacCalendar"{% endblock extra_html %}
+{% block extra_html %}ng-app="sportfacCalendar" ng-controller="ActivityCtrl"{% endblock extra_html %}
 {% block page_title %}{% trans "Activities" %}{% endblock page_title%}
 
 {% block content %}
-<div class="container" ng-controller="ActivityCtrl">
+<div class="container" >
   <div class="tabbable" style="margin-left:-30px">
     <ul class="nav nav-tabs" >
       <li ng-repeat="child in userChildren" ng-class="{active: child.selected}"><a data-toggle="tab" ng-click="selectChild($index)">{[{ child.first_name }]}</a></li>
@@ -30,6 +30,20 @@
   </div><!-- end tabbable -->
 </div> <!-- end container -->
 {% endblock content %}
+
+{% block page_footer %}
+  <div class="form-actions">
+      <a class="btn"><i class="icon-chevron-left" href="{{ previous_step.url }}"></i> {% trans "Previous"%}</a>
+    <div class="pull-right">
+      <span ng-hide="userChildren.length > 0" class="btn btn-primary btn-large disabled" >{% trans "Next"%} <i class="icon-chevron-right icon-white"></i> </span>
+
+      <button ng-show="userChildren.length > 0" class="btn btn-primary btn-large" ng-click="registerCourses()" style="display:none">{% trans "Next"%} <i class="icon-chevron-right icon-white"></i> </button>
+          
+  </div>
+{% endblock page_footer %}
+
+
+
 
 {% block extra_js %}
 {% if debug %}
