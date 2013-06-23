@@ -155,6 +155,10 @@ class Teacher(models.Model):
         years = ' - '.join([unicode(year) for year in self.years.all()])
         return '%s %s (%s)' % (self.first_name, self.last_name, years)
     
+    @property
+    def years_label(self):
+        return ', '.join([str(year) for year in self.years.all()])
+    
     class Meta:
         ordering = ('last_name', 'first_name')
         verbose_name = _("teacher")

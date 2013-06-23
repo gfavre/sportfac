@@ -102,7 +102,7 @@ admin.site.register(FamilyUser, FamilyAdmin)
 admin.site.unregister(Group)
 
 class TeacherAdmin(admin.ModelAdmin):
-    list_display = ('last_name', 'first_name', )
+    list_display = ('last_name', 'first_name', 'years_label')
     list_filter = ('years',) 
 
 admin.site.register(Teacher, TeacherAdmin)
