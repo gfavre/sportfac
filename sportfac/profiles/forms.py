@@ -19,7 +19,10 @@ class ContactInformationForm(ModelForm):
                               required = False)
     zipcode = forms.IntegerField(label=_("NPA"), min_value=1000, max_value=9999)
     city = forms.CharField(label=_("City"), widget=forms.TextInput(attrs={'placeholder': 'Coppet'}))
-    private_phone = forms.CharField(label=_("Private phone"), widget=forms.PhoneNumberInput(attrs={"maxlength": 20}), required=True)
+    private_phone = forms.CharField(label=_("Private phone"), 
+                                    widget=forms.PhoneNumberInput(attrs={"maxlength": 20,
+                                                                         "autocomplete": "tel" }), 
+                                    required=True)
     private_phone2 = forms.CharField(label=_("Other private phone"), widget=forms.PhoneNumberInput(attrs={"maxlength": 20}), required=False)
     
     class Meta:
@@ -48,7 +51,7 @@ class RegistrationForm(Form):
     first_name = forms.CharField(label=_("First name"))
     last_name = forms.CharField(label=_("Last name"))
     address = forms.CharField(label=_("Address"),
-                              widget=forms.Textarea(attrs={'rows': 3}),
+                              #widget=forms.Textarea(attrs={'rows': 3}),
                               required = False)
     zipcode = forms.IntegerField(label=_("NPA"), min_value=1000, max_value=9999)
     city = forms.CharField(label=_("City"), widget=forms.TextInput(attrs={'placeholder': 'Coppet'}))
