@@ -9,6 +9,7 @@ urlpatterns = patterns('',
     url(r'^$', AccountView.as_view(), name="profiles_account"),
     url(r'^children/$', ChildrenListView.as_view(), name="profiles_children"),
     url(r'^register/$', MyRegistrationView.as_view(), name='registration_register'),
+    
     (r'', include('registration.backends.simple.urls')),
     
     

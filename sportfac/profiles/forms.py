@@ -17,7 +17,10 @@ class ContactInformationForm(ModelForm):
     address = forms.CharField(label=_("Address"),
                               widget=forms.Textarea(attrs={'rows': 3}),
                               required = False)
-    zipcode = forms.IntegerField(label=_("NPA"), min_value=1000, max_value=9999)
+    zipcode = forms.IntegerField(label=_("NPA"), min_value=1000, max_value=9999, 
+                                 widget=forms.NumberInput(attrs={'placeholder': 1296, 
+                                                                 'class': "input-mini"})
+                                 )
     city = forms.CharField(label=_("City"), widget=forms.TextInput(attrs={'placeholder': 'Coppet'}))
     private_phone = forms.CharField(label=_("Private phone"), 
                                     widget=forms.PhoneNumberInput(attrs={"maxlength": 20,

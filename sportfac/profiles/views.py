@@ -38,7 +38,9 @@ class MyRegistrationView(BaseRegistrationView):
     up and logged in).
     """
     form_class = RegistrationForm
-    success_url = reverse_lazy('profiles_children')
+    #success_url = reverse_lazy('profiles_children')
+    success_url = 'profiles_children'
+
     
     def register(self, request, **cleaned_data):
         email, password = cleaned_data['email'], cleaned_data['password1']
