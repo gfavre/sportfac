@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-15 12:13+0200\n"
+"POT-Creation-Date: 2013-06-29 09:29+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -109,107 +109,136 @@ msgstr "enfant"
 msgid "children"
 msgstr "enfants"
 
-#: profiles/forms.py:12 profiles/forms.py:45
+#: profiles/forms.py:12 profiles/forms.py:51
 msgid "E-mail"
 msgstr "E-mail"
 
-#: profiles/forms.py:15 profiles/forms.py:48 profiles/models.py:60
-#: profiles/models.py:144
+#: profiles/forms.py:15 profiles/forms.py:54 profiles/models.py:61
+#: profiles/models.py:150
 msgid "First name"
 msgstr "Prénom"
 
-#: profiles/forms.py:16 profiles/forms.py:49 profiles/models.py:61
-#: profiles/models.py:145
+#: profiles/forms.py:16 profiles/forms.py:55 profiles/models.py:62
+#: profiles/models.py:151
 msgid "Last name"
 msgstr "Nom"
 
-#: profiles/forms.py:17 profiles/forms.py:50
+#: profiles/forms.py:17 profiles/forms.py:56
 msgid "Address"
 msgstr "Adresse"
 
-#: profiles/forms.py:20 profiles/forms.py:53 profiles/models.py:64
+#: profiles/forms.py:20 profiles/forms.py:59 profiles/models.py:65
 msgid "NPA"
 msgstr "NPA"
 
-#: profiles/forms.py:21 profiles/forms.py:54 profiles/models.py:65
+#: profiles/forms.py:24 profiles/forms.py:60 profiles/models.py:66
 #: templates/profiles/familyuser_form.html:43
 #: templates/registration/registration_form.html:47
 msgid "City"
 msgstr "Commune"
 
-#: profiles/forms.py:22 profiles/forms.py:55
+#: profiles/forms.py:25 profiles/forms.py:61
 msgid "Private phone"
 msgstr "Téléphone"
 
-#: profiles/forms.py:23 profiles/forms.py:56
+#: profiles/forms.py:29 profiles/forms.py:62
 msgid "Other private phone"
 msgstr "Autre n° de téléphone"
 
-#: profiles/forms.py:59
+#: profiles/forms.py:65
 msgid "Password"
 msgstr "Mot de passe"
 
-#: profiles/forms.py:61
+#: profiles/forms.py:67
 msgid "Password (again)"
 msgstr "Mot de passe (encore)"
 
-#: profiles/forms.py:71
+#: profiles/forms.py:77
 msgid "A user with that username already exists."
 msgstr "Cette adresse email est déjà utilisée."
 
-#: profiles/forms.py:85
+#: profiles/forms.py:91
 msgid "The two password fields didn't match."
 msgstr "Les deux mots de passe ne sont pas identiques."
 
-#: profiles/models.py:63
+#: profiles/models.py:64
 msgid "Street"
 msgstr "Rue"
 
-#: profiles/models.py:66
+#: profiles/models.py:67
 msgid "Country"
 msgstr "Pays"
 
-#: profiles/models.py:66
+#: profiles/models.py:67
 msgid "Switzerland"
 msgstr "Suisse"
 
-#: profiles/models.py:74
+#: profiles/models.py:75
 msgid "date joined"
 msgstr "Date d'inscription"
 
-#: profiles/models.py:105
+#: profiles/models.py:106
 msgid "Male"
 msgstr "Garçon"
 
-#: profiles/models.py:105
+#: profiles/models.py:106
 msgid "Female"
 msgstr "Fille"
 
-#: profiles/models.py:130 profiles/models.py:139
+#: profiles/models.py:130
+msgid "Registration"
+msgstr "Inscription"
+
+#: profiles/models.py:131
+msgid "Registrations"
+msgstr "Inscriptions"
+
+#: profiles/models.py:136 profiles/models.py:145
 msgid "School year"
 msgstr "Année scolaire"
 
-#: profiles/models.py:140 profiles/models.py:146
+#: profiles/models.py:146 profiles/models.py:152
 msgid "School years"
 msgstr "Années scolaires"
 
-#: profiles/models.py:154
+#: profiles/models.py:164
 msgid "teacher"
 msgstr "enseignant"
 
-#: profiles/models.py:155
+#: profiles/models.py:165
 msgid "teachers"
 msgstr "enseignants"
 
-#: sportfac/settings/base.py:279
+#: sportfac/context_processors.py:18
+msgid "About you"
+msgstr "À propos de vous"
+
+#: sportfac/context_processors.py:19
+msgid "Your children"
+msgstr "Vos enfants"
+
+#: sportfac/context_processors.py:20
+msgid "Register activities"
+msgstr "Inscription aux activités"
+
+#: sportfac/context_processors.py:22
+#: templates/profiles/registration_list.html:4
+msgid "Confirmation"
+msgstr "Confirmation"
+
+#: sportfac/context_processors.py:23
+msgid "Billing"
+msgstr "Paiement"
+
+#: sportfac/settings/base.py:280
 msgid "Registration opening date"
 msgstr "Début de la période d'enregistrement"
 
-#: sportfac/settings/base.py:280
+#: sportfac/settings/base.py:281
 msgid "Registration ending date"
 msgstr "Fin de la période d'enregistrement"
 
-#: templates/base.html:40 templates/registration/registration_form.html:58
+#: templates/base.html:40
 msgid "Register"
 msgstr "Inscription"
 
@@ -235,35 +264,23 @@ msgstr "Déconnexion"
 msgid "login"
 msgstr "Connexion"
 
-#: templates/home.html:5 templates/wizard.html:19
+#: templates/home.html:5
 msgid "Sport scolaire facultatif"
 msgstr "Sport scolaire facultatif"
 
-#: templates/wizard.html:7
-msgid "About you"
-msgstr "À propos de vous"
-
-#: templates/wizard.html:8
-msgid "Your children"
-msgstr "Vos enfants"
-
-#: templates/wizard.html:9
-msgid "Register activities"
-msgstr "Inscription aux activités"
-
-#: templates/wizard.html:10
-msgid "Confirmation"
-msgstr "Confirmation"
-
-#: templates/wizard.html:11
-msgid "Billing"
-msgstr "Paiement"
-
-#: templates/wizard.html:14
+#: templates/wizard.html:23 templates/wizard.html.py:36
+#: templates/activities/activity_list.html:36
+#: templates/profiles/children_list.html:35
+#: templates/profiles/children_list.html:65
 msgid "Previous"
 msgstr "Précédent"
 
-#: templates/wizard.html:15
+#: templates/wizard.html:24 templates/wizard.html.py:40
+#: templates/activities/activity_list.html:38
+#: templates/activities/activity_list.html:40
+#: templates/profiles/children_list.html:36
+#: templates/profiles/children_list.html:67
+#: templates/profiles/children_list.html:69
 msgid "Next"
 msgstr "Suivant"
 
@@ -275,11 +292,11 @@ msgstr "Activité: "
 msgid "Activities"
 msgstr "Activités"
 
-#: templates/profiles/children_list.html:6
+#: templates/profiles/children_list.html:41
 msgid "My Family"
 msgstr "Ma famille"
 
-#: templates/profiles/children_list.html:18
+#: templates/profiles/children_list.html:55
 msgid "Add child"
 msgstr "Ajouter un enfant"
 
@@ -302,9 +319,10 @@ msgstr "Changement de mot de passe"
 msgid "Contact informations"
 msgstr "Informations de contact"
 
-#: templates/profiles/familyuser_form.html:54
-msgid "Save"
-msgstr "Enregistrer"
+#: templates/profiles/familyuser_form.html:55
+#: templates/registration/registration_form.html:60
+msgid "Save and continue"
+msgstr "Enregistrer et continuer"
 
 #: templates/registration/login.html:3 templates/registration/login.html:5
 msgid "Login"
@@ -334,12 +352,3 @@ msgstr "Votre mot de passe a été changé."
 #: templates/registration/registration_form.html:6
 msgid "Inscription"
 msgstr "Inscription"
-
-#~ msgid "first name"
-#~ msgstr "Prénom"
-
-#~ msgid "last name"
-#~ msgstr "Nom"
-
-#~ msgid "Account updated."
-#~ msgstr "Compte mis à jour"
