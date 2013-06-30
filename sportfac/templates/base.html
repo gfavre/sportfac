@@ -36,17 +36,18 @@
               <li class="">
                 <a href="./index.html">Home</a>
               </li>
-              <li class="">
-                <a href="/activities/">{%trans "Register"%}</a>
-              </li>
+              
 
               {% if user.is_authenticated %}
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user icon-white"></i> {{ user.first_name }} {{ user.last_name }} <b class="caret icon-white"></b></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  <i class="icon-user"></i> {{ user.first_name }} {{ user.last_name }} <span class="icon-caret-down"></span>
+                </a>
                 <ul class="dropdown-menu">
-                  <li><a href="#">{% trans "My agenda" %}</a></li>
-                  <li><a href="{% url 'profiles_account' %}">{% trans "My account" %}</a></li>
-                  <li><a href="{% url 'profiles_children' %}">{% trans "My family" %}</a></li>
+                  <li><a href="{% url 'profiles_account' %}"><i class="icon-fixed-width icon-pencil"></i> {% trans "My account" %}</a></li>
+                  <li><a href="{% url 'profiles_children' %}"><i class="icon-fixed-width icon-sitemap"></i>{% trans "My family" %}</a></li>
+                  <li><a href="{% url 'activities-list' %}"><i class="icon-fixed-width icon-calendar"></i> {% trans "My agenda" %}</a></li>
+                  <li class="divider"></li>
                   <li><a href="{% url 'auth_logout' %}?next=/">{% trans "logout" %}</a></li>
                 </ul>
               </li>
