@@ -131,11 +131,15 @@ angular.module('sportfacCalendar.controllers', [])
 *******************************************************************************/
 .controller('ActivityTimelineCtrl', function($scope, $routeParams, $filter){
   'use strict';
+  var today = new Date();
+  var year = today.getFullYear();
+  var month = today.getMonth();
+  var day = today.getDate();
   // this controler is reloaded each time an activity is changed
   $scope.events = [];
     
   $scope.$watch('selectedActivity', function(){
-    if (!$scope.selectedActivity){
+    if (!angular.isDefined($scope.selectedActivity)){
         return;
     }
     $scope.changeActivity($scope.selectedActivity);
@@ -145,11 +149,7 @@ angular.module('sportfacCalendar.controllers', [])
 
   
 
-  var date = new Date();
-  var d = date.getDate();
-  var m = date.getMonth();
-  var y = date.getFullYear();
-  
+    
   $scope.$watch('othersRegisteredEvents', function(){
     $scope.weekagenda.fullCalendar('render');
     $scope.weekagenda.fullCalendar('refetchEvents');
@@ -160,8 +160,10 @@ angular.module('sportfacCalendar.controllers', [])
   });
 
   $scope.changeActivity = function(activity){
+    if (!angular.isDefined(activity.courses)){
+        return;
+    }
     $scope.events.length = 0;
-    console.log(activity);
     for (var i=0; i<activity.courses.length; i++){
       var course = activity.courses[i];
       if ($scope.isRegistered(course)) {
@@ -171,21 +173,21 @@ angular.module('sportfacCalendar.controllers', [])
           course.schoolyear_max < $scope.selectedChild.school_year) {
         continue;
       }
-      var start = new Date(y, m, d + (course.day - date.getDay()), course.start_time.split(':')[0], course.start_time.split(':')[1]);
-      var end = new Date(y, m, d + (course.day - date.getDay()), course.end_time.split(':')[0], course.end_time.split(':')[1]);
+      var start = new Date(year, month, day + (course.day - today.getDay()), course.start_time.split(':')[0], course.start_time.split(':')[1]);
+      var end = new Date(year, month, day + (course.day - today.getDay()), course.end_time.split(':')[0], course.end_time.split(':')[1]);
 
       $scope.events.push({
          title: activity.name,
          start: start,
          end: end,
-         start_text: d + (course.day - date.getDay()),
-         end_text: d+  course.day - date.getDay(),
+         //start_text: 'adadsas' + day + (course.day - day),
+         //end_text: day +  course.day - day,
          allDay: false,
          className: $scope.isRegistered(course) ? "registered": "available" ,
          course: course,
          activityId: activity.id
       });
-    }
+    };
   };
 
   $scope.eventClick = function( calEvent, jsEvent, view ){
@@ -213,10 +215,11 @@ angular.module('sportfacCalendar.controllers', [])
     });
   };
 
+  
   $scope.uiConfig = {
     calendar:{
       height: 450, aspectRatio: 2,
-      year: y, month: m, date: d,
+      year: year, month: month, date: day,
       editable: false,
       defaultView: 'agendaWeek', weekends: false, allDaySlot: false,
       slotMinutes: 15, firstHour: 12, maxTime: 20, minTime: 13,
