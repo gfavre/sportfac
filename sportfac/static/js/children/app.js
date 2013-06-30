@@ -17,14 +17,20 @@ angular.module('children', [ 'children.services', 'ngCookies', '$strap.directive
     }
 });
 
-var ListCtrl = function ($scope, $http) {
-   /*$scope.resetForm = function(){
-      alert('reset upper');
-    };*/
+var ListCtrl = function ($scope, $routeParams, $http) {
+  $scope.routeParams = $routeParams;
 
   $scope.loadChildren = function(){
     $http.get('/api/family/').
       success(function(data, status, headers, config ){ 
+        angular.forEach(data, function(child){
+          if (child.id === parseInt($scope.routeParams.childId)) {
+            child.selected = true;
+            $scope.selectedChild = child;
+          } else {
+              child.selected = false;
+          }
+        });
         $scope.userChildren = data;
     });
   };
@@ -40,7 +46,6 @@ var ListCtrl = function ($scope, $http) {
   $scope.loadTeachers();
   
   
-  $scope.selectedChild = {};
   $scope.loadChildren();
   
   $scope.selectChild = function(child){
@@ -50,6 +55,12 @@ var ListCtrl = function ($scope, $http) {
     $scope.selectedChild = child;
     $scope.selectedChild.selected = true;
   };
+  $scope.unselectChild = function(){
+     if ($scope.selectedChild){
+        $scope.selectedChild.selected = false;
+    }
+    $scope.selectedChild = undefined;
+  }
   
   $scope.toHarmos = function(year) {
     return {1: "1re HARMOS",
@@ -118,8 +129,8 @@ var childDetailCtrl = function ($scope, ModelUtils,  $routeParams, $location) {
 };
 
 var childAddCtrl = function($scope, $location, ModelUtils){
+  $scope.unselectChild();
   $scope.detailedChild = {};
-  $scope.toto = [];
   $scope.errors = {};
   $scope.resetForm = function(){
     $scope.detailedChild = {};
@@ -132,7 +143,8 @@ var childAddCtrl = function($scope, $location, ModelUtils){
     ModelUtils.save('/api/children/', $scope.detailedChild, $scope.errors).then(function(){
       $scope.loadChildren();
       $scope.selectedChild = {};
-      $location.url('/');
+      $scope.detailedChild = {}
+      $location.url('/new');
     });
   };
 }

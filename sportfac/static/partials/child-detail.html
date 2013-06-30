@@ -1,4 +1,4 @@
-<h2>Modifier les données</h2>
+<h3>{[{ detailedChild.first_name }]} {[{ detailedChild.last_name }]} - données personnelles</h3>
 <br />
 <form name="childform" class="form-horizontal">
   <div class="control-group">
@@ -62,7 +62,7 @@
 
   <div>
     <span class="span2">
-      <button ng-click="saveChild()" ng-disabled="child-form.$invalid" class="btn btn-right btn-success"><i class="icon-ok-sign icon-white"></i> Enregistrer</button>
+      <button ng-click="saveChild()" ng-disabled="child-form.$invalid" class="btn btn-right btn-success"><i class="icon-ok-sign icon-white"></i> Modifier</button>
     </span>
     <span class="offset2">
       <button ng-click="reloadChild()" ng-disabled="hasNotChanged()" class="btn btn-small"><i class="icon-remove-sign"></i> Annuler</button>

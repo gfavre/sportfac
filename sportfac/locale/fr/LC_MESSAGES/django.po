@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-29 09:29+0200\n"
+"POT-Creation-Date: 2013-06-29 09:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -213,7 +213,7 @@ msgstr "enseignants"
 msgid "About you"
 msgstr "À propos de vous"
 
-#: sportfac/context_processors.py:19
+#: sportfac/context_processors.py:19 templates/profiles/children_list.html:5
 msgid "Your children"
 msgstr "Vos enfants"
 
@@ -270,17 +270,17 @@ msgstr "Sport scolaire facultatif"
 
 #: templates/wizard.html:23 templates/wizard.html.py:36
 #: templates/activities/activity_list.html:36
-#: templates/profiles/children_list.html:35
-#: templates/profiles/children_list.html:65
+#: templates/profiles/children_list.html:37
+#: templates/profiles/children_list.html:67
 msgid "Previous"
 msgstr "Précédent"
 
 #: templates/wizard.html:24 templates/wizard.html.py:40
 #: templates/activities/activity_list.html:38
 #: templates/activities/activity_list.html:40
-#: templates/profiles/children_list.html:36
-#: templates/profiles/children_list.html:67
+#: templates/profiles/children_list.html:38
 #: templates/profiles/children_list.html:69
+#: templates/profiles/children_list.html:71
 msgid "Next"
 msgstr "Suivant"
 
@@ -292,11 +292,11 @@ msgstr "Activité: "
 msgid "Activities"
 msgstr "Activités"
 
-#: templates/profiles/children_list.html:41
-msgid "My Family"
-msgstr "Ma famille"
+#: templates/profiles/children_list.html:43
+msgid "About your children"
+msgstr "À propos de vos enfants"
 
-#: templates/profiles/children_list.html:55
+#: templates/profiles/children_list.html:57
 msgid "Add child"
 msgstr "Ajouter un enfant"
 
@@ -352,3 +352,6 @@ msgstr "Votre mot de passe a été changé."
 #: templates/registration/registration_form.html:6
 msgid "Inscription"
 msgstr "Inscription"
+
+#~ msgid "My Family"
+#~ msgstr "Ma famille"

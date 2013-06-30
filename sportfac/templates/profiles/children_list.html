@@ -1,6 +1,8 @@
 {% extends "wizard.html" %}
 {% load i18n %}
 
+
+{% block title %}{% trans "Your children" %}{% endblock title %}
 {% block extra_html %}ng-app="children" ng-controller="ListCtrl"{% endblock extra_html %}
 {% block page_header %}
 <div class="row simple-page-header">
@@ -38,21 +40,21 @@
   </div>
 </div>
 <div class="row page-header">
-  <h1 class="span12">{% block page_title %}{% trans "My Family" %}{% endblock page_title %}</h1>
+  <h1 class="span12">{% block page_title %}{% trans "About your children" %}{% endblock page_title %}</h1>
 </div>
 {% endblock page_header %}
 
 {% block content %}
 <div class="container">
   <div class="row">
-    <div class="span3">
+    <div class="span3" ng-show="userChildren.length !== 0" data-ng-animate="'fade'">
       <ul class="nav nav-list bs-docs-sidenav">
         <li ng-repeat="child in userChildren" ng-class="{active: child.selected}">
           <a href="#/edit/{[{ child.id }]}" data-toggle="tab" ng-click="selectChild(child)">{[{ child.first_name }]} {[{ child.last_name }]}<i class="icon-chevron-right"></i></a>
         </li>
       </ul>
       <br />
-      <a href="#/new" class="btn"><i class="icon-plus"></i> {% trans "Add child" %}</a>
+      <a href="#/new" class="btn" ng-show="selectedChild"><i class="icon-plus"></i> {% trans "Add child" %}</a>
     </div>
     <div class="span8" ng-view></div>
   </div><!-- end row -->

@@ -5,7 +5,7 @@
 @import "bootstrap-customized.min";
 @import "fullcalendar";
 @import "datepicker";
-
+@import "wizard";
 
 /* general */
 .simple-page-header{margin-top:20px;}
@@ -21,174 +21,32 @@ select.ng-invalid:focus{
 
 }
 
-/* wizard */
 
-.wizard {
-  background-color: #f9f9f9;
-  border: 1px solid #d4d4d4;
-  -webkit-border-radius: 4px;
-     -moz-border-radius: 4px;
-          border-radius: 4px;
-  *zoom: 1;
-  -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
-     -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
-          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+
+/* 
+    Animations
+    
+*/
+.fade-hide, .fade-show {
+  -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  -o-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+  transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
 }
 
-.wizard:before,
-.wizard:after {
-  display: table;
-  line-height: 0;
-  content: "";
+.fade-hide {
+  opacity:1;
+}
+.fade-hide.fade-hide-active {
+  opacity:0;
 }
 
-.wizard:after {
-  clear: both;
+.fade-show {
+  opacity:0;
 }
-
-.wizard ul {
-  padding: 0;
-  margin: 0;
-  list-style: none outside none;
+.fade-show.fade-show-active {
+  opacity:1;
 }
-
-.wizard ul li {
-  position: relative;
-  float: left;
-  height: 46px;
-  padding: 0 20px 0 30px;
-  margin: 0;
-  font-size: 16px;
-  line-height: 46px;
-  color: #999999;
-  cursor: default;
-  background: #ededed;
-}
-
-.wizard ul li .chevron {
-  position: absolute;
-  top: 0;
-  right: -14px;
-  display: block;
-  border: 24px solid transparent;
-  border-right: 0;
-  border-left: 14px solid #d4d4d4;
-}
-
-.wizard ul li .chevron:before {
-  position: absolute;
-  top: -24px;
-  right: 1px;
-  display: block;
-  border: 24px solid transparent;
-  border-right: 0;
-  border-left: 14px solid #ededed;
-  content: "";
-}
-
-.wizard ul li.complete, .wizard ul li.complete a {
-  color: #468847;
-  background: #f3f4f5;
-}
-
-.wizard ul li.complete:hover, .wizard ul li.complete:hover a, .wizard ul li.complete a:hover {
-  cursor: pointer;
-  background: #e7eff8;
-}
-
-.wizard ul li.complete:hover .chevron:before {
-  border-left: 14px solid #e7eff8;
-}
-
-.wizard ul li.complete .chevron:before {
-  border-left: 14px solid #f3f4f5;
-}
-
-.wizard ul li.active, {
-  color: #3a87ad;
-  background: #f1f6fc;
-}
-
-.wizard ul li.active .chevron:before {
-  border-left: 14px solid #f1f6fc;
-}
-
-.wizard ul li .badge {
-  margin-right: 8px;
-}
-
-.wizard ul li:nth-child(1) {
-  z-index: 10;
-  padding-left: 20px;
-  border-radius: 4px 0 0 4px;
-}
-
-.wizard ul li:nth-child(2) {
-  z-index: 9;
-}
-
-.wizard ul li:nth-child(3) {
-  z-index: 8;
-}
-
-.wizard ul li:nth-child(4) {
-  z-index: 7;
-}
-
-.wizard ul li:nth-child(5) {
-  z-index: 6;
-}
-
-.wizard ul li:nth-child(6) {
-  z-index: 5;
-}
-
-.wizard ul li:nth-child(7) {
-  z-index: 4;
-}
-
-.wizard ul li:nth-child(8) {
-  z-index: 3;
-}
-
-.wizard ul li:nth-child(9) {
-  z-index: 2;
-}
-
-.wizard ul li:nth-child(10) {
-  z-index: 1;
-}
-
-.wizard .actions {
-  float: right;
-  padding-right: 15px;
-  line-height: 44px;
-  vertical-align: middle;
-}
-
-.wizard .actions a {
-  margin-right: 8px;
-  font-size: 12px;
-  line-height: 45px;
-}
-
-.wizard .actions .btn-prev i {
-  margin-right: 5px;
-}
-
-.wizard .actions .btn-next i {
-  margin-left: 5px;
-}
-
-.step-content .step-pane {
-  display: none;
-}
-
-.step-content .active {
-  display: block;
-}
-
-
 
 
 
@@ -833,7 +691,7 @@ form.bs-docs-example {
 
 .bs-docs-sidenav {
   width: 228px;
-  margin: 30px 0 0;
+  margin: 20px 0 0;
   padding: 0;
   background-color: #fff;
   -webkit-border-radius: 6px;
