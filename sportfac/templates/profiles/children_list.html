@@ -64,7 +64,7 @@
 
 {% block page_footer %}
   <div class="form-actions">
-      <a class="btn"><i class="icon-chevron-left" href="{{ previous_step.url }}"></i> {% trans "Previous"%}</a>
+      <a class="btn" href="{{ previous_step.url }}"><i class="icon-chevron-left"></i> {% trans "Previous"%}</a>
     <div class="pull-right">
       <span ng-hide="userChildren.length > 0" class="btn btn-primary btn-large disabled" >{% trans "Next"%} <i class="icon-chevron-right icon-white"></i> </span>
 
@@ -82,6 +82,7 @@
   <script src="{{ STATIC_URL }}js/vendor/bootstrap-datepicker.js"></script>
   <script src="{{ STATIC_URL }}js/children/app.js"></script>
   <script src="{{ STATIC_URL }}js/children/services.js"></script>
+
 </body>
 
 {% endblock %}
