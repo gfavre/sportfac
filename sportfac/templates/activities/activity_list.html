@@ -7,14 +7,20 @@
 {% block content %}
 <div class="container" >
   <div class="tabbable" style="margin-left:-30px">
-    <ul class="nav nav-tabs" >
-      <li ng-repeat="child in userChildren" ng-class="{active: child.selected}"><a data-toggle="tab" ng-click="selectChild($index)">{[{ child.first_name }]}</a></li>
+    <ul class="nav nav-tabs children" >
+      <li ng-repeat="child in userChildren" ng-class="{active: child.selected}">
+        <a data-toggle="tab" href="#/child/{[{ child.first_name }]}">
+          <i class="icon-user" ng-class="{unavailable: !child.selected, available: child.selected}"></i> {[{ child.first_name }]}
+        </a>
+      </li>
     </ul>
   
     <div class="tab-content" style="margin-left:-30px">
+      
       <div class="tab-pane" ng-class="{active: child.selected}" ng-repeat="child in userChildren" id="child-{[{ child.id }]}">
         
         <div class="span3 bs-docs-sidebar" ng-controller="ActivityListCtrl">
+          <h4>{% trans "Available activities" %}</h4>
           <ul class="nav nav-list bs-docs-sidenav">
             <li ng-repeat="activity in activities" ng-class="{active: activity.selected}">
               <a ng-class="{'active': activity.selected}" href="#/activity/{[{ activity.id }]}/timeline/" ng-click="selectActivity(activity);">{[{ activity.name }]} <!--<a class="btn" href="#/activity/{[{ activity.id }]}/detail"><i class="icon-eye-open"></i></a>--> <i class="icon-chevron-right"></i></a>
@@ -33,7 +39,7 @@
 
 {% block page_footer %}
   <div class="form-actions">
-      <a class="btn"><i class="icon-chevron-left" href="{{ previous_step.url }}"></i> {% trans "Previous"%}</a>
+      <a class="btn" href="{{ previous_step.url }}"><i class="icon-chevron-left"></i> {% trans "Previous"%}</a>
     <div class="pull-right">
       <span ng-hide="userChildren.length > 0" class="btn btn-primary btn-large disabled" >{% trans "Next"%} <i class="icon-chevron-right icon-white"></i> </span>
 

@@ -1,4 +1,6 @@
-<h3>Ajout d'un enfant</h3>
+<h3 ng-hide="userChildren.length > 0">Ajout d'un enfant</h3>
+<h3 ng-show="userChildren.length > 0">Ajout d'un autre enfant</h3>
+
 <br />
 <form name="childform" class="form-horizontal">
   <div class="control-group">
@@ -61,10 +63,10 @@
   </div>
 
   <div>
-    <span class="span2">
-      <button type="submit" ng-click="saveChild()" ng-disabled="childform.$invalid" class="btn btn-right btn-success"><i class="icon-ok-sign icon-white"></i> Ajouter</button>
+    <span class="span3">
+      <button type="submit" ng-click="saveChild()" ng-disabled="childform.$invalid" class="btn btn-right btn-success"><i class="icon-ok-sign icon-white"></i> Enregistrer mon enfant</button>
     </span>
-    <span class="offset2">
+    <span class="offset1">
       <button type="button" ng-click="this.resetForm()" ng-disabled="childform.$pristine"  class="btn btn-small"><i class="icon-remove-sign"></i> Annuler</button>
     </span>
   </div>
