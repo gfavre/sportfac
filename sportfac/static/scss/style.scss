@@ -7,6 +7,9 @@
 @import "datepicker";
 @import "wizard";
 
+@import "font-awesome/font-awesome";
+
+
 /* general */
 .simple-page-header{margin-top:20px;}
 
@@ -48,7 +51,20 @@ select.ng-invalid:focus{
   opacity:1;
 }
 
+/* Calendar */
+$available: blue;
+$registered: green;
+$unavailable: #888;
 
+.nav-tabs.children li i.icon-user {
+    color: $unavailable;
+}
+.nav-tabs.children li.active i.icon-user {
+    color: $registered;
+}
+.nav-tabs.children {
+    text-transform: capitalize;
+}
 
 body {
   position: relative;

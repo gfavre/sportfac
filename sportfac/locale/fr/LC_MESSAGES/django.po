@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-29 09:37+0200\n"
+"POT-Creation-Date: 2013-06-30 13:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -217,7 +217,8 @@ msgstr "À propos de vous"
 msgid "Your children"
 msgstr "Vos enfants"
 
-#: sportfac/context_processors.py:20
+#: sportfac/context_processors.py:20 templates/profiles/children_list.html:69
+#: templates/profiles/children_list.html:71
 msgid "Register activities"
 msgstr "Inscription aux activités"
 
@@ -269,18 +270,16 @@ msgid "Sport scolaire facultatif"
 msgstr "Sport scolaire facultatif"
 
 #: templates/wizard.html:23 templates/wizard.html.py:36
-#: templates/activities/activity_list.html:36
+#: templates/activities/activity_list.html:37
 #: templates/profiles/children_list.html:37
 #: templates/profiles/children_list.html:67
 msgid "Previous"
 msgstr "Précédent"
 
 #: templates/wizard.html:24 templates/wizard.html.py:40
-#: templates/activities/activity_list.html:38
-#: templates/activities/activity_list.html:40
+#: templates/activities/activity_list.html:39
+#: templates/activities/activity_list.html:41
 #: templates/profiles/children_list.html:38
-#: templates/profiles/children_list.html:69
-#: templates/profiles/children_list.html:71
 msgid "Next"
 msgstr "Suivant"
 
@@ -291,6 +290,11 @@ msgstr "Activité: "
 #: templates/activities/activity_list.html:5
 msgid "Activities"
 msgstr "Activités"
+
+#: templates/activities/activity_list.html:18
+#, fuzzy
+msgid "Available activities"
+msgstr "activités"
 
 #: templates/profiles/children_list.html:43
 msgid "About your children"
