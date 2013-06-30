@@ -30,11 +30,17 @@ Array.prototype.remove = function() {
 angular.module('sportfacCalendar', ['sportfacCalendar.services', 'sportfacCalendar.controllers', 'ngCookies', 'ui.calendar']).
   config(['$routeProvider', function($routeProvider) {
     'use strict';
+    $routeProvider.when('/child/:childId/',
+      { templateUrl: '/static/partials/activity-list.html', controller: 'ActivityCtrl' });
+    $routeProvider.otherwise(
+      {templateUrl: '/static/partials/activity-list.html', controller: 'ActivityCtrl'});
+    /*
+    
     $routeProvider.when('/activity/:activityId/timeline',
       {templateUrl: '/static/partials/timeline.html', controller: 'ActivityTimelineCtrl'});
     $routeProvider.when('/activity/:activityId/detail',
       {templateUrl: '/static/partials/activity-detail.html', controller: 'ActivityDetailCtrl'});
-    $routeProvider.otherwise({templateUrl: '/static/partials/timeline.html', controller: 'ChildTimelineCtrl'});
+    $routeProvider.otherwise({templateUrl: '/static/partials/timeline.html', controller: 'ChildTimelineCtrl'});*/
 }]).
   config(function($interpolateProvider) {
     $interpolateProvider.startSymbol('{[{');

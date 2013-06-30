@@ -1,1 +1,22 @@
-<p>This is the partial for view 1.</p>
+<nav class="span3 bs-docs-sidebar" ng-controller="ActivityListCtrl">
+  <h4>Activités disponibles</h4>
+  <ul class="nav nav-list bs-docs-sidenav">
+    <li ng-repeat="activity in activities" ng-class="{active: activity.selected}">
+      <a ng-class="{'active': activity.selected}" ng-click="selectActivity(activity);">{[{ activity.name }]} <i class="icon-chevron-right"></i></a>
+    </li>
+  </ul>
+</nav> 
+
+<article class="span9" ng-controller="ActivityTimelineCtrl">
+  <div ng-model="eventSources" calendar="weekagenda" ui-calendar="uiConfig.calendar"></div>
+
+  <h3>Activités sélectionnées</h3>
+  <ul>
+    <li ng-repeat="event in registeredEvents">{[{ event.title }]}</li>
+  </ul>
+          
+  <h3>Others</h3>
+  <ul>
+    <li ng-repeat="event in othersRegisteredEvents">{[{ event.title }]}</li>
+  </ul>        
+</article>

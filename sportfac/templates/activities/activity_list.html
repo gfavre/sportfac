@@ -1,7 +1,7 @@
 {% extends "wizard.html" %}
 {% load i18n %}
 
-{% block extra_html %}ng-app="sportfacCalendar" ng-controller="ActivityCtrl"{% endblock extra_html %}
+{% block extra_html %}ng-app="sportfacCalendar" ng-controller="ChildrenCtrl"{% endblock extra_html %}
 {% block page_title %}{% trans "Activities" %}{% endblock page_title%}
 
 {% block content %}
@@ -9,30 +9,17 @@
   <div class="tabbable" style="margin-left:-30px">
     <ul class="nav nav-tabs children" >
       <li ng-repeat="child in userChildren" ng-class="{active: child.selected}">
-        <a data-toggle="tab" href="#/child/{[{ child.first_name }]}">
+        <a data-toggle="tab" href="#/child/{[{ child.id }]}">
           <i class="icon-user" ng-class="{unavailable: !child.selected, available: child.selected}"></i> {[{ child.first_name }]}
         </a>
       </li>
     </ul>
-  
-    <div class="tab-content" style="margin-left:-30px">
-      
-      <div class="tab-pane" ng-class="{active: child.selected}" ng-repeat="child in userChildren" id="child-{[{ child.id }]}">
-        
-        <div class="span3 bs-docs-sidebar" ng-controller="ActivityListCtrl">
-          <h4>{% trans "Available activities" %}</h4>
-          <ul class="nav nav-list bs-docs-sidenav">
-            <li ng-repeat="activity in activities" ng-class="{active: activity.selected}">
-              <a ng-class="{'active': activity.selected}" href="#/activity/{[{ activity.id }]}/timeline/" ng-click="selectActivity(activity);">{[{ activity.name }]} <!--<a class="btn" href="#/activity/{[{ activity.id }]}/detail"><i class="icon-eye-open"></i></a>--> <i class="icon-chevron-right"></i></a>
-            </li>
-          </ul>
-        </div>
-          
-        <article class="span9">
-           <div ng-view></div>
-        </article>
-      </div><!-- end pane -->
-    </div><!-- end tab-content -->
+    
+    <div class="tab-content">
+      <div class="tab-pane active" style="margin-left:-30px" ng-view>
+      </div>
+    </div>
+    
   </div><!-- end tabbable -->
 </div> <!-- end container -->
 {% endblock content %}

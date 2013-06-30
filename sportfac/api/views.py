@@ -21,17 +21,17 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
     model = Activity
     
     def get_queryset(self):
-        queryset = Activity.objects.all()
+        queryset = Activity.objects.select_related('courses').prefetch_related('courses__responsible')
         school_year = self.request.QUERY_PARAMS.get('year', None)
         if school_year is not None:
             queryset = queryset.filter(courses__schoolyear_min__lte=school_year,
                                        courses__schoolyear_max__gte=school_year).distinct()
         return queryset
     
-    def list(self, request):
-        activities = self.get_queryset()
-        serializer = ActivitySerializer(activities)
-        return Response(serializer.data)
+    #def list(self, request):
+    #    activities = self.get_queryset()
+    #    serializer = ActivitySerializer(activities)
+    #    return Response(serializer.data)
 
 
 class CourseViewSet(viewsets.ReadOnlyModelViewSet):

@@ -1,7 +1,9 @@
-angular.module('sportfacCalendar.controllers', []).controller('ActivityCtrl', function($scope, $http, $store, Courses, ModelUtils, $window) {
+angular.module('sportfacCalendar.controllers', [])
+  
+.controller('ChildrenCtrl', function($scope, $http, $store, Courses, ModelUtils, $window) {
   'use strict';
   $scope.toSave = undefined;
-  $scope.saved = false;
+  
   $scope.getUserChildren = function(){
     $http.get('/api/family/').success(function(data){
       $scope.userChildren = data;
@@ -9,55 +11,68 @@ angular.module('sportfacCalendar.controllers', []).controller('ActivityCtrl', fu
         $store.bind($scope, 'registeredCourses_' + child.id);
         child.registered = $scope['registeredCourses_' + child.id];
       });
-      $scope.selectChild(0);
+    });   
+  };
+  
+  $scope.selectChild = function(childId){
+    angular.forEach($scope.userChildren, function(child){
+      if (child.id === childId){ 
+        child.selected = true;
+        $scope.selectedChild = child; 
+      } else {
+        child.selected = false;
+      }
     });
+    $scope.loadActivities();
+    $scope.selectedActivity = {};
   };
-
-  $scope.selectChild = function(childIdx){
-    if ($scope.selectedChild){
-      $scope.selectedChild.selected = false;
-    }
-    $scope.selectedChild = $scope.userChildren[childIdx];
-    $scope.selectedChild.selected = true;
-    $scope.selectedChild.registered = $scope['registeredCourses_' + $scope.selectedChild.id];
-  };
-
-  $scope.getDetailedActivity = function(activity_id, callback){
-    var url = '/api/activities/' + activity_id;
-    $http({url: url, method: 'GET', cache: true }).success(function(data){
-      callback(data);
-    });
-  };
-
+  
   $scope.selectActivity = function(activity){
     if ($scope.selectedActivity) {
         $scope.selectedActivity.selected = false;
-      }
-      activity.selected = true;
-      $scope.selectedActivity = activity;
+    }
+    activity.selected = true;
+    $scope.selectedActivity = activity;
   };
 
-  $scope.isRegistered = function(course){
-    return $scope.selectedChild.registered.indexOf(course.id) !== -1;
+  
+  $scope.loadActivities = function(){
+    var url = '/api/activities/?year=' + $scope.selectedChild.school_year;
+    $scope.activities = $http({method: 'GET', url: url, cache: true}).then(function(response){
+        return response.data;
+    });
   };
-  $scope.isAvailable = function(course){
-    return !($scope.selectedChild.school_year < course.schoolyear_min || $scope.selectedChild.school_year > course.schoolyear_max);
-  };
+  
+})
 
-    
-  $scope.$watch('selectedChild', function(){
-    var addToOthers = function(course){
+
+/*******************************************************************************
+        Activities management, i.e. a child tab in activities application
+*******************************************************************************/
+.controller('ActivityCtrl', function($scope, $http, $store, $routeParams, Courses, ModelUtils, $window) {
+ var childId = parseInt($routeParams.childId);
+ 
+ $scope.$watch('userChildren', function(){
+   if (!angular.isDefined($scope.userChildren)) return;
+
+   if (angular.isDefined(childId)){
+       $scope.selectChild(childId);
+   } else{
+       $scope.selectChild($scope.userChildren[0].id);
+   }
+   
+   var addToOthers = function(course){
       $scope.othersRegisteredEvents.push(course.toEvent("unavailable"));
-    };
-    var addToRegistered = function(course){
-      $scope.registeredEvents.push(course.toEvent("registered"));
-    };
+   };
+   var addToRegistered = function(course){
+     $scope.registeredEvents.push(course.toEvent("registered"));
+   };
     
-    $scope.othersRegisteredEvents.length = 0;
-    $scope.registeredEvents.length = 0;
+   $scope.othersRegisteredEvents.length = 0;
+   $scope.registeredEvents.length = 0;
 
-    angular.forEach($scope.userChildren, function(child){
-      if (child !== $scope.selectedChild) {
+   angular.forEach($scope.userChildren, function(child){
+    if (child !== $scope.selectedChild) {
         angular.forEach($scope['registeredCourses_' + child.id], function(courseId){
           Courses.get(courseId).then(addToOthers);
         });
@@ -67,8 +82,18 @@ angular.module('sportfacCalendar.controllers', []).controller('ActivityCtrl', fu
         });
       }
     });
+
   });
   
+  $scope.isRegistered = function(course){
+    return $scope.selectedChild.registered.indexOf(course.id) !== -1;
+  };
+  $scope.isAvailable = function(course){
+    return !($scope.selectedChild.school_year < course.schoolyear_min || $scope.selectedChild.school_year > course.schoolyear_max);
+  };
+
+    
+    
   $scope.registerCourses = function(){
     $scope.toSave = $scope.othersRegisteredEvents.length + $scope.registeredEvents.length;
     angular.forEach($scope.userChildren, function(child){
@@ -90,32 +115,35 @@ angular.module('sportfacCalendar.controllers', []).controller('ActivityCtrl', fu
   
   $scope.othersRegisteredEvents = [];
   $scope.registeredEvents = [];
-
   $scope.getUserChildren();
 })
-  .controller('ActivityListCtrl', function($scope, $http) {
-  /*****************************************************************************
-                    List of activities, on the left.
 
-  *****************************************************************************/
+/*******************************************************************************
+                    List of activities, on the left.
+*******************************************************************************/
+.controller('ActivityListCtrl', function($scope, $http) {
   'use strict';
-  $scope.loadActivities = function(){
-      var url = '/api/activities/?year=' + $scope.selectedChild.school_year;
-      $scope.activities = $http({method: 'GET', url: url, cache: true}).then(function(response){
-          return response.data;
-      });
-  };
-  $scope.$watch('selectedChild', function(){ $scope.loadActivities(); });
 })
-  .controller('ActivityTimelineCtrl', function($scope, $routeParams, $filter){
-  /*****************************************************************************
+
+/*******************************************************************************
                     Timeline
 
-  *****************************************************************************/
+*******************************************************************************/
+.controller('ActivityTimelineCtrl', function($scope, $routeParams, $filter){
   'use strict';
   // this controler is reloaded each time an activity is changed
-  $scope.activityId = $routeParams.activityId;
   $scope.events = [];
+    
+  $scope.$watch('selectedActivity', function(){
+    if (!$scope.selectedActivity){
+        return;
+    }
+    $scope.changeActivity($scope.selectedActivity);
+    $scope.weekagenda.fullCalendar('render');
+    $scope.weekagenda.fullCalendar('refetchEvents');
+  });
+
+  
 
   var date = new Date();
   var d = date.getDate();
@@ -133,7 +161,7 @@ angular.module('sportfacCalendar.controllers', []).controller('ActivityCtrl', fu
 
   $scope.changeActivity = function(activity){
     $scope.events.length = 0;
-
+    console.log(activity);
     for (var i=0; i<activity.courses.length; i++){
       var course = activity.courses[i];
       if ($scope.isRegistered(course)) {
@@ -203,13 +231,9 @@ angular.module('sportfacCalendar.controllers', []).controller('ActivityCtrl', fu
       }
     }
   };
-
-  $scope.getDetailedActivity($scope.activityId, function(detailedActivity){
-    $scope.detailedActivity = detailedActivity;
-    $scope.changeActivity(detailedActivity);
-    $scope.weekagenda.fullCalendar('render');
-    $scope.weekagenda.fullCalendar('refetchEvents');
-  });
+  
+  
+  
 
   $scope.eventSources = [$scope.registeredEvents, $scope.othersRegisteredEvents, $scope.events];
 })
