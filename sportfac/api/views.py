@@ -21,7 +21,7 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
     model = Activity
     
     def get_queryset(self):
-        queryset = Activity.objects.select_related('courses').prefetch_related('courses__responsible')
+        queryset = Activity.objects.select_related('courses')
         school_year = self.request.QUERY_PARAMS.get('year', None)
         if school_year is not None:
             queryset = queryset.filter(courses__schoolyear_min__lte=school_year,

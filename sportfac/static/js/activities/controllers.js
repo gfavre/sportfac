@@ -180,12 +180,14 @@ angular.module('sportfacCalendar.controllers', [])
   };
   $scope.eventClick = function(calEvent, jsEvent, view){
       $scope.$apply(function(){
+        $scope.selectedEvent = calEvent;
         $scope.selectedCourse = calEvent.course;
+        
         var modal = $modal(
             {template: '/static/partials/activity-detail.html',
              show: true,
              backdrop: 'static',
-             scope: $scope
+             scope: $scope,
         });
       });
   }
@@ -200,20 +202,7 @@ angular.module('sportfacCalendar.controllers', [])
       dayNames: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
       dayNamesShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
       timeFormat: {agenda: 'd'}, lazyFetching: true,
-      eventClick: $scope.eventClick/*function(calEvent, jsEvent, view){
-          alert()
-          $scope.selectedCourse = calEvent.course;
-          $scope.$apply(function(){
-           alert(calEvent.course.activity.name);
-           return;
-           var modal = $modal(
-            {template: '/static/partials/activity-detail.html',
-             show: true,
-             backdrop: 'static',
-             scope: $scope
-            });
-        });
-      }*/,
+      eventClick: $scope.eventClick,
       eventAfterRender: function(event, element, view){
         var text = $filter('date')(event.course.start_date, 'shortDate') +' - ' + $filter('date')(event.course.end_date, 'shortDate');
         $('.fc-event-time', element).text(text);
@@ -222,7 +211,41 @@ angular.module('sportfacCalendar.controllers', [])
   };
   
   
+  $scope.register = function(calEvent){
+    var courseId = calEvent.course.id;
+    if (!$scope.isAvailable(calEvent.course)){
+      return;
+    }
+    var index = $scope.selectedChild.registered.indexOf(courseId);
+    if (index === -1){
+        // unregistered event, register it
+        calEvent.className = 'registered';
+        $scope.selectedChild.registered.push(courseId);
+    }
+  };
   
+  $scope.unregister = function(calEvent){
+    var courseId = calEvent.course.id;
+    var index = $scope.selectedChild.registered.indexOf(courseId);
+    console.log (calEvent.className);
+    if (calEvent.className === 'registered') {
+        // registered to this child
+        alert("this child");
+        calEvent.className = 'available';
+        $scope.selectedChild.registered.splice(index, 1);
+        if (calEvent.activityId !== $scope.activityId){
+            $scope.weekagenda.fullCalendar('removeEvents', calEvent._id);
+        } else{
+            $scope.weekagenda.fullCalendar('updateEvent', calEvent);
+        }
+
+    } else {
+        alert('other child');
+        // registered to another child
+    }
+    
+  }
+
 
   $scope.eventSources = [$scope.registeredEvents, $scope.othersRegisteredEvents, $scope.events];
 })
@@ -232,8 +255,31 @@ angular.module('sportfacCalendar.controllers', [])
 
   *****************************************************************************/
   'use strict';
-  alert('opened');
   
+  $scope.register = function(calEvent){
+    var courseId = calEvent.course.id;
+    alert('register');
+    if (!$scope.isAvailable(calEvent.courseId)){
+      return;
+    }
+    var index = $scope.selectedChild.registered.indexOf(courseId);
+    alert(index)
+    if (index === -1){
+        // unregistered event, register it
+        calEvent.className = 'registered';
+        $scope.selectedChild.registered.push(courseId);
+    } else {
+        // registered event, unregister it
+        calEvent.className = 'available';
+        $scope.selectedChild.registered.splice(index, 1);
+        if (calEvent.activityId !== $scope.activityId){
+            $scope.weekagenda.fullCalendar('removeEvents', calEvent._id);
+        } else{
+            $scope.weekagenda.fullCalendar('updateEvent', calEvent);
+        }
+     }
+    
+  };
   /*
     $scope.$apply(function(){
       if (!$scope.isAvailable(calEvent.course)){

@@ -15,12 +15,13 @@ class ActivitySerializer(serializers.ModelSerializer):
 
 class CourseInlineSerializer(serializers.ModelSerializer):
     responsible = serializers.RelatedField(many=False)
+    start_time = serializers.TimeField(format='%H:%M')
+    end_time = serializers.TimeField(format='%H:%M')
+
 
     class Meta:
         model = Course
-        fields = ('id', 'responsible', 'price', 'number_of_sessions', 'day', 
-                  'start_date', 'end_date', 'start_time', 'end_time', 'place',
-                  'min_participants', 'max_participants', 
+        fields = ('id', 'day', 'start_date', 'end_date', 'start_time', 'end_time', 
                   'schoolyear_min', 'schoolyear_max')
 
 
@@ -39,6 +40,8 @@ class CourseSerializer(serializers.ModelSerializer):
     activity = ActivitySerializer(many=False)
     responsible = serializers.RelatedField(many=False)
     count_participants = serializers.Field(source='count_participants')
+    start_time = serializers.TimeField(format='%H:%M')
+    end_time = serializers.TimeField(format='%H:%M')
     
     class Meta:
         model = Course

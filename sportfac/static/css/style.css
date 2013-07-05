@@ -7718,14 +7718,15 @@ select.ng-invalid:focus {
   opacity: 1; }
 
 /* Calendar */
-.nav-tabs.children li i.icon-user {
-  color: #888888; }
-
-.nav-tabs.children li.active i.icon-user {
-  color: green; }
-
 .nav-tabs.children {
   text-transform: capitalize; }
+  .nav-tabs.children li i.icon-user {
+    color: #888888; }
+  .nav-tabs.children li.active i.icon-user {
+    color: green; }
+
+.nav-list li a {
+  cursor: pointer; }
 
 body {
   position: relative;

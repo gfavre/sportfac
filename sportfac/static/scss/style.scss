@@ -56,15 +56,21 @@ $available: blue;
 $registered: green;
 $unavailable: #888;
 
-.nav-tabs.children li i.icon-user {
-    color: $unavailable;
-}
-.nav-tabs.children li.active i.icon-user {
-    color: $registered;
-}
 .nav-tabs.children {
-    text-transform: capitalize;
+  li i.icon-user {
+    color: $unavailable;
+  }
+  li.active i.icon-user {
+    color: $registered;
+  }
+  text-transform: capitalize;
 }
+
+.nav-list li a{
+    cursor: pointer;
+}
+
+
 
 body {
   position: relative;
