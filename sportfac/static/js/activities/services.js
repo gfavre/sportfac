@@ -103,36 +103,37 @@ angular.module('sportfacCalendar.services', []).
     };
     return publicMethods;
   })
-  .factory('Courses', function($http, $cookies){
-    $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
- 
+  .factory('Course', function(){
     var date = new Date();
     var d = date.getDate();
     var m = date.getMonth();
     var y = date.getFullYear();
-    
-    var Course = {
-      getStartDate: function(){
-        return new Date(y, m, d + (this.day - date.getDay()),
-                        this.start_time.split(':')[0],
-                        this.start_time.split(':')[1]);
-      },
-      
-      getEndDate: function(){
-        return new Date(y, m, d + (this.day - date.getDay()),
-                        this.end_time.split(':')[0],
-                        this.end_time.split(':')[1]);
-      },
 
-      toEvent: function(css){
-        return {title: this.activity.name,
-                start: this.getStartDate(), end: this.getEndDate(),
-                start_text: d, end_text: d, allDay: false,
-                className: css, course: this, activityId: this.activity.id};
-      },
-    
-    };
+    var Course = function(data){
+      angular.extend(this,{
+        getStartDate: function(){
+          return new Date(y, m, d + (this.day - date.getDay()),
+                          this.start_time.split(':')[0],
+                          this.start_time.split(':')[1]);},
+      
+        getEndDate: function(){
+          return new Date(y, m, d + (this.day - date.getDay()),
+                          this.end_time.split(':')[0],
+                          this.end_time.split(':')[1]);},
         
+        toEvent: function(css){
+          return {title: this.activity.name,
+                  start: this.getStartDate(), end: this.getEndDate(),
+                  allDay: false,
+                  className: css, course: this, activityId: this.activity.id};},
+      });
+      angular.extend(this, data);
+    }
+    return Course;
+  })
+  .factory('CoursesService', function($http, $cookies, Course){
+    $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
+ 
     var ModelUtils = {
         /*get: function(url, id) {
           $http.get(url + id + '/').
@@ -141,10 +142,11 @@ angular.module('sportfacCalendar.services', []).
         },*/
         get: function(courseId){
           return $http.get('/api/courses/' + courseId + '/').then(function(response){
-            return angular.extend(Course, response.data);
+            return new Course(response.data);
           });
         }
     };
+    
     return ModelUtils;
   })
   .factory('ModelUtils', function($http, $cookies){

@@ -1,6 +1,6 @@
 angular.module('sportfacCalendar.controllers', [])
   
-.controller('ChildrenCtrl', function($scope, $http, $store, Courses, ModelUtils, $window) {
+.controller('ChildrenCtrl', function($scope, $http, $store, $window) {
   'use strict';
   $scope.toSave = undefined;
   
@@ -50,7 +50,7 @@ angular.module('sportfacCalendar.controllers', [])
 /*******************************************************************************
         Activities management, i.e. a child tab in activities application
 *******************************************************************************/
-.controller('ActivityCtrl', function($scope, $http, $store, $routeParams, Courses, ModelUtils, $window) {
+.controller('ActivityCtrl', function($scope, $http, $store, $routeParams, CoursesService, ModelUtils, $window) {
  var childId = parseInt($routeParams.childId, 10);
  
  $scope.createEvents = function(){
@@ -72,11 +72,11 @@ angular.module('sportfacCalendar.controllers', [])
    angular.forEach($scope.userChildren, function(child){
      if (child !== $scope.selectedChild) {
        angular.forEach($scope['registeredCourses_' + child.id], function(courseId){
-         Courses.get(courseId).then(addToOthers);
+         CoursesService.get(courseId).then(addToOthers);
        });
      } else {
        angular.forEach($scope['registeredCourses_' + child.id], function(courseId){
-         Courses.get(courseId).then(addToRegistered);
+         CoursesService.get(courseId).then(addToRegistered);
        });
      }
    });
@@ -127,7 +127,7 @@ angular.module('sportfacCalendar.controllers', [])
                     Timeline
 
 *******************************************************************************/
-.controller('ActivityTimelineCtrl', function($scope, $routeParams, $filter, $modal, Courses){
+.controller('ActivityTimelineCtrl', function($scope, $routeParams, $filter, $modal, CoursesService){
   'use strict';
   var today = new Date();
   var year = today.getFullYear();
@@ -135,7 +135,7 @@ angular.module('sportfacCalendar.controllers', [])
   var day = today.getDate();
   // this controler is reloaded each time an activity is changed
   $scope.events = [];
-    
+
   $scope.$watch('selectedActivity', function(){
     if (!angular.isDefined($scope.selectedActivity)){
         return;
@@ -174,11 +174,21 @@ angular.module('sportfacCalendar.controllers', [])
       var available = course.schoolyear_min <= $scope.selectedChild.school_year &&
                       course.schoolyear_max >= $scope.selectedChild.school_year;
       if (!registered && available){
-        Courses.get(course.id).then(addCourse);
+        CoursesService.get(course.id).then(addCourse);
       }
     });
   };
-  
+  $scope.eventClick = function(calEvent, jsEvent, view){
+      $scope.$apply(function(){
+        $scope.selectedCourse = calEvent.course;
+        var modal = $modal(
+            {template: '/static/partials/activity-detail.html',
+             show: true,
+             backdrop: 'static',
+             scope: $scope
+        });
+      });
+  }
   $scope.uiConfig = {
     calendar:{
       height: 450, aspectRatio: 2,
@@ -190,17 +200,20 @@ angular.module('sportfacCalendar.controllers', [])
       dayNames: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
       dayNamesShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
       timeFormat: {agenda: 'd'}, lazyFetching: true,
-      eventClick: function(calEvent, jsEvent, view){
-        $scope.$apply(function(){
-           $scope.selectedCourse = calEvent.course;
+      eventClick: $scope.eventClick/*function(calEvent, jsEvent, view){
+          alert()
+          $scope.selectedCourse = calEvent.course;
+          $scope.$apply(function(){
+           alert(calEvent.course.activity.name);
+           return;
            var modal = $modal(
             {template: '/static/partials/activity-detail.html',
              show: true,
              backdrop: 'static',
              scope: $scope
-            }); 
+            });
         });
-      },
+      }*/,
       eventAfterRender: function(event, element, view){
         var text = $filter('date')(event.course.start_date, 'shortDate') +' - ' + $filter('date')(event.course.end_date, 'shortDate');
         $('.fc-event-time', element).text(text);
