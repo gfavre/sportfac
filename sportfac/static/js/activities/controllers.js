@@ -135,7 +135,14 @@ angular.module('sportfacCalendar.controllers', [])
   var day = today.getDate();
   // this controler is reloaded each time an activity is changed
   $scope.events = [];
-
+  
+  $scope.notifyChange = function(){
+      $scope.createEvents();
+      $scope.selectedActivity = undefined;
+      $scope.weekagenda.fullCalendar('refetchEvents');
+      $scope.weekagenda.fullCalendar('render');
+  };
+  
   $scope.$watch('selectedActivity', function(){
     if (!angular.isDefined($scope.selectedActivity)){
         return;
@@ -221,16 +228,20 @@ angular.module('sportfacCalendar.controllers', [])
         // unregistered event, register it
         calEvent.className = 'registered';
         $scope.selectedChild.registered.push(courseId);
+        $scope.notifyChange();
+
+        
     }
+    
   };
   
   $scope.unregister = function(calEvent){
     var courseId = calEvent.course.id;
     var index = $scope.selectedChild.registered.indexOf(courseId);
-    console.log (calEvent.className);
-    if (calEvent.className === 'registered') {
+
+    // dont change this == to a === it won't work. Dunno why.
+    if (calEvent.className == 'registered') {
         // registered to this child
-        alert("this child");
         calEvent.className = 'available';
         $scope.selectedChild.registered.splice(index, 1);
         if (calEvent.activityId !== $scope.activityId){
@@ -240,7 +251,7 @@ angular.module('sportfacCalendar.controllers', [])
         }
 
     } else {
-        alert('other child');
+        alert('other child, no implemented yet');
         // registered to another child
     }
     

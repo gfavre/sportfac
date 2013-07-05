@@ -121,11 +121,11 @@ angular.module('sportfacCalendar.services', []).
                           this.end_time.split(':')[0],
                           this.end_time.split(':')[1]);},
         
-        toEvent: function(css){
+        toEvent: function(className){
           return {title: this.activity.name,
                   start: this.getStartDate(), end: this.getEndDate(),
                   allDay: false,
-                  className: css, course: this, activityId: this.activity.id};},
+                  className: className, course: this, activityId: this.activity.id};},
       });
       angular.extend(this, data);
     }
