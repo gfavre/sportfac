@@ -68,6 +68,10 @@ class Course(models.Model):
     @property
     def available_places(self):
         return self.max_participants - self.participants.count()
+    
+    @property
+    def count_participants(self):
+        return self.participants.count()
         
     def __unicode__(self):
         return '%s: %s-%s on %s (%s-%s)' % (self.activity.name, 

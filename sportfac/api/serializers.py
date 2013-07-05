@@ -38,11 +38,13 @@ class ActivityDetailedSerializer(serializers.ModelSerializer):
 class CourseSerializer(serializers.ModelSerializer):
     activity = ActivitySerializer(many=False)
     responsible = serializers.RelatedField(many=False)
+    count_participants = serializers.Field(source='count_participants')
+    
     class Meta:
         model = Course
         fields = ('id', 'responsible', 'activity', 'price', 'number_of_sessions', 'day', 
                   'start_date', 'end_date', 'start_time', 'end_time', 'place',
-                  'min_participants', 'max_participants', 
+                  'min_participants', 'max_participants', 'count_participants',
                   'schoolyear_min', 'schoolyear_max')
 
 

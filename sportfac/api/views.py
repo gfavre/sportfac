@@ -39,7 +39,7 @@ class CourseViewSet(viewsets.ReadOnlyModelViewSet):
     model = Course
     
     def get_queryset(self):
-        return Course.objects.select_related('activity', 'responsible')
+        return Course.objects.select_related('activity', 'responsible').prefetch_related('participants')
 
     
 

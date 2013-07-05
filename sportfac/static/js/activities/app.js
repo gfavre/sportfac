@@ -27,7 +27,7 @@ Array.prototype.remove = function() {
 
 
 // Declare app level module which depends on filters, and services
-angular.module('sportfacCalendar', ['sportfacCalendar.services', 'sportfacCalendar.controllers', 'ngCookies', 'ui.calendar']).
+angular.module('sportfacCalendar', ['sportfacCalendar.services', 'sportfacCalendar.controllers', 'ngCookies', 'ui.calendar', '$strap.directives']).
   config(['$routeProvider', function($routeProvider) {
     'use strict';
     $routeProvider.when('/child/:childId/',

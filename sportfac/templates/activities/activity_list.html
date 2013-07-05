@@ -9,7 +9,7 @@
   <div class="tabbable" style="margin-left:-30px">
     <ul class="nav nav-tabs children" >
       <li ng-repeat="child in userChildren" ng-class="{active: child.selected}">
-        <a data-toggle="tab" href="#/child/{[{ child.id }]}">
+        <a href="./#/child/{[{ child.id }]}/">
           <i class="icon-user" ng-class="{unavailable: !child.selected, available: child.selected}"></i> {[{ child.first_name }]}
         </a>
       </li>
@@ -40,12 +40,13 @@
 
 {% block extra_js %}
 {% if debug %}
-  <script src="{{ STATIC_URL }}js/vendor/jquery-ui.custom.min.js"></script>
+  <!--<script src="{{ STATIC_URL }}js/vendor/jquery-ui.custom.min.js"></script>-->
   <script src="{{ STATIC_URL }}js/vendor/fullcalendar.min.js"></script>
   <script src="{{ STATIC_URL }}js/vendor/angular.min.js"></script>
   <script src="{{ STATIC_URL }}js/vendor/angular-locale_fr-ch.js"></script>
   <script src="{{ STATIC_URL }}js/vendor/angular-cookies.min.js"></script>
   <script src="{{ STATIC_URL }}js/vendor/angular-ui-calendar.js"></script>
+  <script src="{{ STATIC_URL }}js/vendor/angular-strap.min.js"></script>
   <script src="{{ STATIC_URL }}js/activities/services.js"></script>
   <script src="{{ STATIC_URL }}js/activities/controllers.js"></script>
   <script src="{{ STATIC_URL }}js/activities/app.js"></script>
