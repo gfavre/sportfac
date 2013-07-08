@@ -1,15 +1,20 @@
 angular.module('sportfacCalendar.controllers', [])
   
-.controller('ChildrenCtrl', function($scope, $store, ChildrenService) {
+.controller('ChildrenCtrl', function($scope, $store, $routeParams, ChildrenService, $window) {
   'use strict';
   $scope.toSave = undefined;
   
   ChildrenService.all().then(function(children){
+    console.log('childrenctrl init');
     $scope.userChildren = children;
     angular.forEach($scope.userChildren, function(child){
       $store.bind($scope, 'registeredCourses_' + child.id);
       child.registered = $scope['registeredCourses_' + child.id];
     });
+    
+    var childId = parseInt($routeParams.childId, 10);
+    if (isNaN(childId)) $window.location.href = './#/child/' + $scope.userChildren[0].id + '/';
+    $scope.selectChild(childId);
   });
   
   $scope.selectChild = function(childId){
@@ -30,26 +35,15 @@ angular.module('sportfacCalendar.controllers', [])
         Activities management, i.e. a child tab in activities application
 *******************************************************************************/
 .controller('ActivityCtrl', function($scope, $http, $store, $routeParams, CoursesService, ModelUtils, $window) { 
-  $scope.$watch('selectedChild', function(){
-    if (angular.isDefined($scope.selectedChild)){
+  console.log('init activity');
+  $scope.$watch('selectedChild', function(newval, oldval){
+    if (angular.isDefined(newval) ){
       $scope.loadActivities();
       $scope.selectedActivity = {};
-      $scope.updateRegisteredEvents();
       $scope.updateOthersEvents();
     }
   });
   
-  $scope.$watch('userChildren', function(){
-    if (angular.isDefined($scope.userChildren)){
-      var childId = parseInt($routeParams.childId, 10);
-      if (isNaN(childId)){
-        $window.location.href = './#/child/' + $scope.userChildren[0].id + '/';
-      } else {
-        $scope.selectChild(childId);
-      }
-    }
-  });
-
   $scope.selectActivity = function(activity){
     if ($scope.selectedActivity) $scope.selectedActivity.selected = false;
     activity.selected = true;
@@ -62,7 +56,14 @@ angular.module('sportfacCalendar.controllers', [])
         return response.data;
     });
   };
-
+  
+  $scope.$watch('selectedChild.registered.length', function(newvalue, oldvalue){
+    if (angular.isDefined(newvalue)){
+      console.log('updated length');
+      console.log(newvalue);
+      $scope.updateRegisteredEvents();
+    }
+  });
 
   $scope.othersRegisteredEvents = [];
   $scope.registeredEvents = [];
@@ -91,7 +92,7 @@ angular.module('sportfacCalendar.controllers', [])
      }); 
   };
    
-  $scope.registerCourses = function(){
+  $scope.sendRegisteredCourses = function(){
     $scope.toSave = $scope.othersRegisteredEvents.length + $scope.registeredEvents.length;
     angular.forEach($scope.userChildren, function(child){
       angular.forEach(child.registered, function(courseId){
