@@ -103,6 +103,43 @@ angular.module('sportfacCalendar.services', []).
     };
     return publicMethods;
   })
+  .factory('Child', function(){
+    var Child = function(data){
+      angular.extend(this, {
+        hasRegistered: function(course){
+          return this.registered.indexOf(course.id) !== -1;
+        },
+        canRegister: function(course){
+          return !(this.school_year < course.schoolyear_min || this.school_year > course.schoolyear_max);
+        }
+      });
+      angular.extend(this, data);
+      this.registered = [];
+    };
+    return Child;
+  })
+  .factory('ChildrenService', function($http, $cookies, Child){
+    $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
+    var ModelUtils = {
+        all: function(){
+          return $http.get('/api/family/').then(function(response){
+            var children = [];
+            angular.forEach(response.data, function(childData){
+              children.push(new Child(childData));
+            });
+            return children;
+          });
+        },
+        get: function(childId){
+          return $http.get('/api/child/' + childId + '/').then(function(response){
+            return new Child(response.data);            
+          });
+        }
+    };
+    
+    return ModelUtils;
+  })
+  
   .factory('Course', function(){
     var date = new Date();
     var d = date.getDate();
@@ -126,6 +163,7 @@ angular.module('sportfacCalendar.services', []).
                   start: this.getStartDate(), end: this.getEndDate(),
                   allDay: false,
                   className: className, course: this, activityId: this.activity.id};},
+        
       });
       angular.extend(this, data);
     }
