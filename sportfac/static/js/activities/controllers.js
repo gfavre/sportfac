@@ -2,10 +2,8 @@ angular.module('sportfacCalendar.controllers', [])
   
 .controller('ChildrenCtrl', function($scope, $store, $routeParams, ChildrenService, $window) {
   'use strict';
-  $scope.toSave = undefined;
   
   ChildrenService.all().then(function(children){
-    console.log('childrenctrl init');
     $scope.userChildren = children;
     angular.forEach($scope.userChildren, function(child){
       $store.bind($scope, 'registeredCourses_' + child.id);
@@ -35,12 +33,10 @@ angular.module('sportfacCalendar.controllers', [])
         Activities management, i.e. a child tab in activities application
 *******************************************************************************/
 .controller('ActivityCtrl', function($scope, $http, $store, $routeParams, CoursesService, ModelUtils, $window) { 
-  console.log('init activity');
   $scope.$watch('selectedChild', function(newval, oldval){
     if (angular.isDefined(newval) ){
       $scope.loadActivities();
       $scope.selectedActivity = {};
-      $scope.updateOthersEvents();
     }
   });
   
@@ -57,16 +53,66 @@ angular.module('sportfacCalendar.controllers', [])
     });
   };
   
+  
+  /*$scope.sendRegisteredCourses = function(){
+    $scope.toSave = $scope.othersRegisteredEvents.length + $scope.registeredEvents.length;
+    angular.forEach($scope.userChildren, function(child){
+      angular.forEach(child.registered, function(courseId){
+        var registration = {child: child.id, course: courseId};
+        ModelUtils.save('/api/registrations/', registration, $scope.errors).then(function(){
+          $scope.toSave -= 1;
+          // change status          
+        });
+      });
+    });
+  };
+  
+  $scope.$watch('toSave', function(newValue, oldValue){
+    if (newValue === 0){
+      console.log('evt triggered');
+      $window.location.href = '/activities/confirm'; 
+    }});*/
+    
+})
+
+/*******************************************************************************
+                    List of activities, on the left.
+*******************************************************************************/
+.controller('ActivityListCtrl', function($scope) {
+  'use strict';
+})
+
+/*******************************************************************************
+                    Timeline
+
+*******************************************************************************/
+.controller('ActivityTimelineCtrl', function($scope, $filter, $modal, CoursesService){
+  'use strict';
+  var today = new Date();
+  var year = today.getFullYear();
+  var month = today.getMonth();
+  var day = today.getDate();
+  // this controler is reloaded each time an activity is changed
+
+
+  $scope.$watch('selectedChild', function(newval, oldval){
+    if (angular.isDefined(newval) ){
+      $scope.loadActivities();
+      $scope.selectedActivity = {};
+      $scope.updateOthersEvents();
+    }
+  });
+  
   $scope.$watch('selectedChild.registered.length', function(newvalue, oldvalue){
     if (angular.isDefined(newvalue)){
-      console.log('updated length');
-      console.log(newvalue);
       $scope.updateRegisteredEvents();
+      $scope.updateAvailableEvents();
     }
   });
 
   $scope.othersRegisteredEvents = [];
   $scope.registeredEvents = [];
+  $scope.availableEvents = []
  
   $scope.updateRegisteredEvents = function() {
     $scope.registeredEvents.length = 0;
@@ -91,58 +137,8 @@ angular.module('sportfacCalendar.controllers', [])
       }
      }); 
   };
-   
-  $scope.sendRegisteredCourses = function(){
-    $scope.toSave = $scope.othersRegisteredEvents.length + $scope.registeredEvents.length;
-    angular.forEach($scope.userChildren, function(child){
-      angular.forEach(child.registered, function(courseId){
-        var registration = {child: child.id, course: courseId};
-        ModelUtils.save('/api/registrations/', registration, $scope.errors).then(function(){
-          $scope.toSave -= 1;
-          // change status          
-        });
-      });
-    });
-  };
   
-  $scope.$watch('toSave', function(newValue, oldValue){
-    if (newValue === 0){
-      console.log('evt triggered');
-      $window.location.href = '/activities/confirm'; 
-    }});
-    
-})
-
-/*******************************************************************************
-                    List of activities, on the left.
-*******************************************************************************/
-.controller('ActivityListCtrl', function($scope) {
-  'use strict';
-})
-
-/*******************************************************************************
-                    Timeline
-
-*******************************************************************************/
-.controller('ActivityTimelineCtrl', function($scope, $filter, $modal, CoursesService){
-  'use strict';
-  var today = new Date();
-  var year = today.getFullYear();
-  var month = today.getMonth();
-  var day = today.getDate();
-  // this controler is reloaded each time an activity is changed
-  $scope.availableEvents = [];
-  
-  $scope.updateCalUI = function(){
-    $scope.weekagenda.fullCalendar('refetchEvents');
-  }
-  
-  
-  $scope.$watch('selectedActivity', function(){
-    if (!angular.isDefined($scope.selectedActivity)){
-      return;
-    }
-
+  $scope.updateAvailableEvents = function(){    
     var addCourse = function(course){
       var start = new Date(year, month, day + (course.day - today.getDay()), 
                            course.start_time.split(':')[0], course.start_time.split(':')[1]);
@@ -155,16 +151,33 @@ angular.module('sportfacCalendar.controllers', [])
          activityId: course.activity.id
       });
     };
+    /*var addCourse = function(course){
+      $scope.availableEvents.push(course.toEvent("available"));
+    };*/
     
     $scope.availableEvents.length = 0;
+    
     angular.forEach($scope.selectedActivity.courses, function(course){
       var registered = $scope.selectedChild.hasRegistered(course);
       var available = course.schoolyear_min <= $scope.selectedChild.school_year &&
                       course.schoolyear_max >= $scope.selectedChild.school_year;
       if (!registered && available){
+        console.log('add evt');
+        console.log(course);
         CoursesService.get(course.id).then(addCourse);
       }
     });
+  }
+
+  
+  
+  $scope.$watch('selectedActivity', function(){
+    if (!angular.isDefined($scope.selectedActivity)){
+      return;
+    }
+    console.log('here');
+    $scope.updateAvailableEvents();
+    
   });
     
   $scope.eventClick = function(calEvent, jsEvent, view){
@@ -207,12 +220,8 @@ angular.module('sportfacCalendar.controllers', [])
     }
     var index = $scope.selectedChild.registered.indexOf(courseId);
     if (index === -1){
-        // unregistered event, register it
-        calEvent.className = 'registered';
         $scope.selectedChild.registered.push(courseId);
-        console.log($scope.selectedChild.registered);
     }
-    
   };
   
   $scope.unregister = function(calEvent){
