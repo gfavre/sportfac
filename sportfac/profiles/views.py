@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login
 from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy
+from django.db.models import Sum
 
 from braces.views import LoginRequiredMixin
 from registration.backends.simple.views import RegistrationView as BaseRegistrationView
@@ -67,5 +68,11 @@ class RegisteredActivitiesListView(LoginRequiredMixin, ListView):
     
     def get_queryset(self):
         return Registration.objects.filter(child__in=self.request.user.children.all())
-    
+        
 
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(RegisteredActivitiesListView, self).get_context_data(**kwargs)
+        # Add in the sum
+        context['total_price'] = Registration.objects.filter(child__in=self.request.user.children.all()).aggregate(Sum('course__price'))['course__price__sum']
+        return context

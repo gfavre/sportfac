@@ -119,5 +119,25 @@ class RegistrationViewSet(viewsets.ModelViewSet):
         user = self.request.user
         return Registration.objects.filter(child__in=user.children.all())
     
+    def create(self, request, format=None):
+        if type(request.DATA) is list:
+            data = []
+            for registration in request.DATA:
+                serializer = RegistrationSerializer(data=registration)
+                if serializer.is_valid():
+                    serializer.save()
+                    data.append(serializer.data)
+            if data:
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                
+        else:
+            serializer = RegistrationSerializer(data=request.DATA)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
     
         

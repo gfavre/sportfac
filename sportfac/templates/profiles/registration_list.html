@@ -7,11 +7,37 @@
 <div class="container" >
   <div class="row" >
     <table class="span12">
-      {% for registered in registered_list %}
+      <thead>
+        <tr>
+          <th>{% trans "Name" %}</th>
+          <th>{% trans "Activity" %}</th>
+          <th>{% trans "Period" %}</th>
+          <th>{% trans "Time" %}</th>
+          <th>{% trans "Price" %}</th>
+        </tr>
+      </thead>
+      <tfoot>
       <tr>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th>{{ total_price }}</th>
+        </tr>
+      </tfoot>
+      
+      {% for registered in registered_list %}
+      <tbody>
+      <tr>
+        <td>{{ registered.child.first_name }} {{ registered.child.last_name }}</td>
         <td>{{ registered.course.activity.name }}</td>
+        <td>{{ registered.course.start_date }} – {{ registered.course.end_date }}</td>
+        <td>{{ registered.course.day }}: {{ registered.course.start_time }} - {{ registered.course.end_time }}</td>
+        <td>CHF {{ registered.course.price }}</td>
       </tr>
+      </tbody>
       {% endfor %}
+      
     </table>
   </div><!-- end row -->
 </div> <!-- end container -->
