@@ -53,7 +53,7 @@ angular.module('sportfacCalendar.controllers', [])
     });
   };
   
-  
+
   /*$scope.sendRegisteredCourses = function(){
     $scope.toSave = $scope.othersRegisteredEvents.length + $scope.registeredEvents.length;
     angular.forEach($scope.userChildren, function(child){
@@ -98,7 +98,6 @@ angular.module('sportfacCalendar.controllers', [])
   $scope.$watch('selectedChild', function(newval, oldval){
     if (angular.isDefined(newval) ){
       $scope.loadActivities();
-      $scope.selectedActivity = {};
       $scope.updateOthersEvents();
     }
   });
@@ -109,7 +108,14 @@ angular.module('sportfacCalendar.controllers', [])
       $scope.updateAvailableEvents();
     }
   });
-
+  
+  
+ $scope.$watch('selectedActivity', function(newvalue, oldvalue){
+    if (angular.isDefined(newvalue)){
+      $scope.updateAvailableEvents();  
+    }
+  });
+  
   $scope.othersRegisteredEvents = [];
   $scope.registeredEvents = [];
   $scope.availableEvents = []
@@ -140,45 +146,20 @@ angular.module('sportfacCalendar.controllers', [])
   
   $scope.updateAvailableEvents = function(){    
     var addCourse = function(course){
-      var start = new Date(year, month, day + (course.day - today.getDay()), 
-                           course.start_time.split(':')[0], course.start_time.split(':')[1]);
-      var end = new Date(year, month, day + (course.day - today.getDay()), 
-                           course.end_time.split(':')[0], course.end_time.split(':')[1]);
-      $scope.availableEvents.push({
-         title: course.activity.name,
-         start: start, end: end, allDay: false,
-         className: "available", course: course,
-         activityId: course.activity.id
-      });
-    };
-    /*var addCourse = function(course){
       $scope.availableEvents.push(course.toEvent("available"));
-    };*/
+    };
     
     $scope.availableEvents.length = 0;
-    
     angular.forEach($scope.selectedActivity.courses, function(course){
       var registered = $scope.selectedChild.hasRegistered(course);
       var available = course.schoolyear_min <= $scope.selectedChild.school_year &&
                       course.schoolyear_max >= $scope.selectedChild.school_year;
       if (!registered && available){
-        console.log('add evt');
-        console.log(course);
         CoursesService.get(course.id).then(addCourse);
       }
     });
   }
 
-  
-  
-  $scope.$watch('selectedActivity', function(){
-    if (!angular.isDefined($scope.selectedActivity)){
-      return;
-    }
-    console.log('here');
-    $scope.updateAvailableEvents();
-    
-  });
     
   $scope.eventClick = function(calEvent, jsEvent, view){
       $scope.$apply(function(){
