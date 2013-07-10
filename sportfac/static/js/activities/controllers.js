@@ -39,7 +39,7 @@ angular.module('sportfacCalendar.controllers', [])
     });
     
     ModelUtils.save('/api/registrations/', toSave, $scope.errors).then(function(){
-        $window.location.href = '/activities/confirm'; 
+        $window.location.href = '/activities/confirm';
     });
     
   };  

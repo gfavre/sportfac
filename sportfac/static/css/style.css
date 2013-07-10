@@ -7728,6 +7728,15 @@ select.ng-invalid:focus {
 .nav-list li a {
   cursor: pointer; }
 
+.available {
+  color: blue; }
+
+.unavailable {
+  color: #888888; }
+
+.registered {
+  color: green; }
+
 body {
   position: relative;
   padding-top: 40px; }
@@ -7745,9 +7754,9 @@ h3 code {
   line-height: 12px; }
 
 .fc-event.unavailable {
-  background-color: grey;
+  background-color: #888888;
   color: white;
-  border-color: grey;
+  border-color: #888888;
   cursor: not-allowed; }
 
 .fc-event.registered {

@@ -69,7 +69,9 @@ $unavailable: #888;
     cursor: pointer;
 }
 
-
+.available {color: $available;}
+.unavailable {color: $unavailable;}
+.registered {color: $registered;}
 
 body {
   position: relative;
@@ -89,22 +91,22 @@ h3 code {
 .fc-event-vert .fc-event-time { white-space: normal; line-height: 12px;}
 
 .fc-event.unavailable {
-  background-color: grey;
+  background-color: $unavailable;
   color: white;
-  border-color: grey;
+  border-color: $unavailable;
   cursor: not-allowed;
   
 }
 .fc-event.registered {
-  background-color: green;
+  background-color: $registered;
   color: white;
-  border-color: green;
+  border-color: $registered;
   
 }
 .fc-event.available {
-  background-color: blue;
+  background-color: $available;
   color: white;
-  border-color: blue;
+  border-color: $available;
   
 }
 

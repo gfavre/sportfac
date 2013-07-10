@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-30 13:30+0200\n"
+"POT-Creation-Date: 2013-07-10 20:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,19 +33,19 @@ msgstr "cours"
 msgid "courses"
 msgstr "cours"
 
-#: activities/admin.py:21 activities/models.py:42 activities/models.py:79
+#: activities/admin.py:21 activities/models.py:42 activities/models.py:83
 msgid "activity"
 msgstr "activité"
 
-#: activities/admin.py:22 activities/models.py:43 activities/models.py:80
+#: activities/admin.py:22 activities/models.py:43 activities/models.py:84
 msgid "activities"
 msgstr "activités"
 
-#: activities/admin.py:31 activities/models.py:102
+#: activities/admin.py:31 activities/models.py:106
 msgid "responsible"
 msgstr "responsable"
 
-#: activities/admin.py:32 activities/models.py:103
+#: activities/admin.py:32 activities/models.py:107
 msgid "responsibles"
 msgstr "responsables"
 
@@ -239,29 +239,31 @@ msgstr "Début de la période d'enregistrement"
 msgid "Registration ending date"
 msgstr "Fin de la période d'enregistrement"
 
-#: templates/base.html:40
-msgid "Register"
-msgstr "Inscription"
+#: static/partials/activity-detail.html:44
+#: static/partials/activity-detail.html:52
+#: static/partials/activity-detail.html:60
+msgid "Plus de place"
+msgstr ""
 
-#: templates/base.html:47
-msgid "My agenda"
-msgstr "Mon agenda"
-
-#: templates/base.html:48 templates/profiles/familyuser_form.html:4
+#: templates/base.html:47 templates/profiles/familyuser_form.html:4
 #: templates/profiles/familyuser_form.html:5
 #: templates/registration/password_change_done.html:13
 msgid "My account"
 msgstr "Mon compte"
 
-#: templates/base.html:49
+#: templates/base.html:48
 msgid "My family"
 msgstr "Ma famille"
 
-#: templates/base.html:50
+#: templates/base.html:49
+msgid "My agenda"
+msgstr "Mon agenda"
+
+#: templates/base.html:51
 msgid "logout"
 msgstr "Déconnexion"
 
-#: templates/base.html:55
+#: templates/base.html:56
 msgid "login"
 msgstr "Connexion"
 
@@ -270,15 +272,14 @@ msgid "Sport scolaire facultatif"
 msgstr "Sport scolaire facultatif"
 
 #: templates/wizard.html:23 templates/wizard.html.py:36
-#: templates/activities/activity_list.html:37
+#: templates/activities/activity_list.html:29
 #: templates/profiles/children_list.html:37
 #: templates/profiles/children_list.html:67
 msgid "Previous"
 msgstr "Précédent"
 
 #: templates/wizard.html:24 templates/wizard.html.py:40
-#: templates/activities/activity_list.html:39
-#: templates/activities/activity_list.html:41
+#: templates/activities/activity_list.html:33
 #: templates/profiles/children_list.html:38
 msgid "Next"
 msgstr "Suivant"
@@ -291,10 +292,9 @@ msgstr "Activité: "
 msgid "Activities"
 msgstr "Activités"
 
-#: templates/activities/activity_list.html:18
-#, fuzzy
-msgid "Available activities"
-msgstr "activités"
+#: templates/activities/activity_list.html:31
+msgid "End registration"
+msgstr "Terminer l'inscription"
 
 #: templates/profiles/children_list.html:43
 msgid "About your children"
@@ -323,10 +323,30 @@ msgstr "Changement de mot de passe"
 msgid "Contact informations"
 msgstr "Informations de contact"
 
-#: templates/profiles/familyuser_form.html:55
+#: templates/profiles/familyuser_form.html:56
 #: templates/registration/registration_form.html:60
 msgid "Save and continue"
 msgstr "Enregistrer et continuer"
+
+#: templates/profiles/registration_list.html:12
+msgid "Name"
+msgstr "Nom"
+
+#: templates/profiles/registration_list.html:13
+msgid "Activity"
+msgstr "Activité"
+
+#: templates/profiles/registration_list.html:14
+msgid "Period"
+msgstr "Période"
+
+#: templates/profiles/registration_list.html:15
+msgid "Time"
+msgstr "Jour / Heure"
+
+#: templates/profiles/registration_list.html:16
+msgid "Price"
+msgstr "Prix"
 
 #: templates/registration/login.html:3 templates/registration/login.html:5
 msgid "Login"
@@ -356,6 +376,3 @@ msgstr "Votre mot de passe a été changé."
 #: templates/registration/registration_form.html:6
 msgid "Inscription"
 msgstr "Inscription"
-
-#~ msgid "My Family"
-#~ msgstr "Ma famille"
