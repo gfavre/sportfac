@@ -13,20 +13,20 @@
     {% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
     <form action="." method="post" class="form-horizontal">{% csrf_token %}
       
-      {% block errors %}
-    {% for error in form.non_field_errors %}
-        <div class="alert alert-error">
-            <a class="close" href="#" data-dismiss="alert">×</a>
-            {{ error }}
-        </div><!--- .alert.alert-error -->
-    {% endfor %}
-    {% for error in form|hidden_field_errors %}
-        <div class="alert alert-error">
-            <a class="close" href="#" data-dismiss="alert">×</a>
-            {{ error }}
-        </div><!--- .alert.alert-error -->
-    {% endfor %}
-{% endblock errors %}
+    {% block errors %}
+      {% for error in form.non_field_errors %}
+      <div class="alert alert-error">
+        <a class="close" href="#" data-dismiss="alert">×</a>
+        {{ error }}
+      </div><!--- .alert.alert-error -->
+      {% endfor %}
+      {% for error in form|hidden_field_errors %}
+      <div class="alert alert-error">
+        <a class="close" href="#" data-dismiss="alert">×</a>
+        {{ error }}
+      </div><!--- .alert.alert-error -->
+      {% endfor %}
+    {% endblock errors %}
 
       
       <fieldset>
@@ -50,16 +50,16 @@
         {% formrow form.private_phone2 %}
         
       </fieldset>
+      
       <div class="form-actions">
         <div class="pull-right">
-          <button type="submit" class="btn btn-primary btn-large">{% trans "Save and continue" %} <i class="icon-chevron-right icon-white"></i</button>
+          <button type="submit" class="btn btn-primary btn-large">{% trans "Save and continue" %} <i class="icon-chevron-right icon-white"></i></button>
         </div>
       </div>
     </form>
     {% endform %}
 
         
-      </form>
     </div>
   </div><!-- end row -->
 </div> <!-- end container -->
@@ -67,16 +67,6 @@
 {% block page_footer %}{% endblock page_footer %}
 
 
-{% block extra_js %}
-  <script src="{{ STATIC_URL }}js/vendor/angular.min.js"></script>
-  <script src="{{ STATIC_URL }}js/vendor/angular-cookies.min.js"></script>
-  <script src="{{ STATIC_URL }}js/vendor/angular-locale_fr-ch.js"></script>
-  <script src="{{ STATIC_URL }}js/vendor/angular-strap.min.js"></script>
-  <script src="{{ STATIC_URL }}js/vendor/bootstrap-datepicker.js"></script>
-  <script src="{{ STATIC_URL }}js/children/app.js"></script>
-  <script src="{{ STATIC_URL }}js/children/services.js"></script>
-</body>
 
-{% endblock %}
 
 
