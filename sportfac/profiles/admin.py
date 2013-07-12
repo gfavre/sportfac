@@ -44,7 +44,9 @@ class FamilyChangeForm(forms.ModelForm):
     the user, but replaces the password field with admin's
     password hash display field.
     """
-    password = ReadOnlyPasswordHashField()
+    password = ReadOnlyPasswordHashField(help_text= _("Raw passwords are not stored, so there is no way to see "
+                    "this user's password, but you can change the password "
+                    "using <a href=\"password/\">this form</a>."))
 
     class Meta:
         model = FamilyUser
@@ -104,5 +106,5 @@ admin.site.unregister(Group)
 class TeacherAdmin(admin.ModelAdmin):
     list_display = ('last_name', 'first_name', 'years_label')
     list_filter = ('years',) 
-
+    filter_horizontal=('years',)
 admin.site.register(Teacher, TeacherAdmin)
