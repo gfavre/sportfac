@@ -5,7 +5,9 @@
     <li ng-repeat="activity in activities" ng-class="{active: activity.selected}">
       <a ng-class="{'active': activity.selected}" ng-click="selectActivity(activity);">{[{ activity.name }]} <i class="icon-chevron-right"></i></a>
     </li>
+    <li ng-show="!activities.length" class="label label-warning">Aucune activité n'est disponible pour votre enfant</li>
   </ul>
+  
 </nav> 
 
 <article class="span9" ng-controller="ActivityTimelineCtrl">
