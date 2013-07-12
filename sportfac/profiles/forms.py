@@ -22,11 +22,11 @@ class ContactInformationForm(ModelForm):
                                                                  'class': "input-mini"})
                                  )
     city = forms.CharField(label=_("City"), widget=forms.TextInput(attrs={'placeholder': 'Coppet'}))
-    private_phone = forms.CharField(label=_("Private phone"), 
+    private_phone = forms.CharField(label=_("Home phone"), 
                                     widget=forms.PhoneNumberInput(attrs={"maxlength": 20,
-                                                                         "autocomplete": "tel" }), 
-                                    required=True)
-    private_phone2 = forms.CharField(label=_("Other private phone"), widget=forms.PhoneNumberInput(attrs={"maxlength": 20}), required=False)
+                                                                         "autocomplete": "tel" }))
+    private_phone2 = forms.CharField(label=_("Mobile phone #1"), widget=forms.PhoneNumberInput(attrs={"maxlength": 20}), required=False)
+    private_phone3 = forms.CharField(label=_("Mobile phone #2"), widget=forms.PhoneNumberInput(attrs={"maxlength": 20}), required=False)
     
     class Meta:
         model = get_user_model()
@@ -58,8 +58,9 @@ class RegistrationForm(Form):
                               required = False)
     zipcode = forms.IntegerField(label=_("NPA"), min_value=1000, max_value=9999)
     city = forms.CharField(label=_("City"), widget=forms.TextInput(attrs={'placeholder': 'Coppet'}))
-    private_phone = forms.CharField(label=_("Private phone"), widget=forms.PhoneNumberInput(), required=True)
-    private_phone2 = forms.CharField(label=_("Other private phone"), widget=forms.PhoneNumberInput(), required=False)
+    private_phone = forms.CharField(label=_("Home phone"), widget=forms.PhoneNumberInput(), required=False)
+    private_phone2 = forms.CharField(label=_("Mobile phone #1"), widget=forms.PhoneNumberInput(), required=False)
+    private_phone3 = forms.CharField(label=_("Mobile phone #2"), widget=forms.PhoneNumberInput(), required=False)
 
     password1 = forms.CharField(widget=forms.PasswordInput,
                                 label=_("Password"))

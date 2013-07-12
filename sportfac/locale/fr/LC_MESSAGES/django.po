@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Gregory Favre <info@gregoryfavre.ch>, 2013.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-10 20:07+0200\n"
+"POT-Creation-Date: 2013-07-12 10:49+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,19 +33,19 @@ msgstr "cours"
 msgid "courses"
 msgstr "cours"
 
-#: activities/admin.py:21 activities/models.py:42 activities/models.py:83
+#: activities/admin.py:21 activities/models.py:44 activities/models.py:85
 msgid "activity"
 msgstr "activité"
 
-#: activities/admin.py:22 activities/models.py:43 activities/models.py:84
+#: activities/admin.py:22 activities/models.py:45 activities/models.py:86
 msgid "activities"
 msgstr "activités"
 
-#: activities/admin.py:31 activities/models.py:106
+#: activities/admin.py:31 activities/models.py:108
 msgid "responsible"
 msgstr "responsable"
 
-#: activities/admin.py:32 activities/models.py:107
+#: activities/admin.py:32 activities/models.py:109
 msgid "responsibles"
 msgstr "responsables"
 
@@ -79,27 +79,35 @@ msgstr "Dimanche"
 
 #: activities/models.py:18
 msgid "1st HARMOS"
-msgstr "1re HARMOS"
+msgstr "1p HARMOS"
 
 #: activities/models.py:19
 msgid "2nd HARMOS"
-msgstr "2e HARMOS"
+msgstr "2p HARMOS"
 
 #: activities/models.py:20
 msgid "3rd HARMOS"
-msgstr "3e HARMOS"
+msgstr "3p HARMOS"
 
 #: activities/models.py:21
 msgid "4th HARMOS"
-msgstr "4e HARMOS"
+msgstr "4p HARMOS"
 
 #: activities/models.py:22
 msgid "5th HARMOS"
-msgstr "5e HARMOS"
+msgstr "5p HARMOS"
 
 #: activities/models.py:23
 msgid "6th HARMOS"
-msgstr "6e HARMOS"
+msgstr "6p HARMOS"
+
+#: activities/models.py:24
+msgid "7th HARMOS"
+msgstr "7p HARMOS"
+
+#: activities/models.py:25
+msgid "8th HARMOS"
+msgstr "8p HARMOS"
 
 #: profiles/admin.py:65
 msgid "child"
@@ -114,12 +122,12 @@ msgid "E-mail"
 msgstr "E-mail"
 
 #: profiles/forms.py:15 profiles/forms.py:54 profiles/models.py:61
-#: profiles/models.py:150
+#: profiles/models.py:152
 msgid "First name"
 msgstr "Prénom"
 
 #: profiles/forms.py:16 profiles/forms.py:55 profiles/models.py:62
-#: profiles/models.py:151
+#: profiles/models.py:153
 msgid "Last name"
 msgstr "Nom"
 
@@ -138,26 +146,30 @@ msgid "City"
 msgstr "Commune"
 
 #: profiles/forms.py:25 profiles/forms.py:61
-msgid "Private phone"
-msgstr "Téléphone"
+msgid "Home phone"
+msgstr "Téléphone (domicile)"
 
-#: profiles/forms.py:29 profiles/forms.py:62
-msgid "Other private phone"
-msgstr "Autre n° de téléphone"
+#: profiles/forms.py:28 profiles/forms.py:62
+msgid "Mobile phone #1"
+msgstr "Téléphone portable"
 
-#: profiles/forms.py:65
+#: profiles/forms.py:29 profiles/forms.py:63
+msgid "Mobile phone #2"
+msgstr "Autre téléphone"
+
+#: profiles/forms.py:66
 msgid "Password"
 msgstr "Mot de passe"
 
-#: profiles/forms.py:67
+#: profiles/forms.py:68
 msgid "Password (again)"
 msgstr "Mot de passe (encore)"
 
-#: profiles/forms.py:77
+#: profiles/forms.py:78
 msgid "A user with that username already exists."
 msgstr "Cette adresse email est déjà utilisée."
 
-#: profiles/forms.py:91
+#: profiles/forms.py:92
 msgid "The two password fields didn't match."
 msgstr "Les deux mots de passe ne sont pas identiques."
 
@@ -173,39 +185,39 @@ msgstr "Pays"
 msgid "Switzerland"
 msgstr "Suisse"
 
-#: profiles/models.py:75
+#: profiles/models.py:77
 msgid "date joined"
 msgstr "Date d'inscription"
 
-#: profiles/models.py:106
+#: profiles/models.py:108
 msgid "Male"
 msgstr "Garçon"
 
-#: profiles/models.py:106
+#: profiles/models.py:108
 msgid "Female"
 msgstr "Fille"
 
-#: profiles/models.py:130
+#: profiles/models.py:132
 msgid "Registration"
 msgstr "Inscription"
 
-#: profiles/models.py:131
+#: profiles/models.py:133
 msgid "Registrations"
 msgstr "Inscriptions"
 
-#: profiles/models.py:136 profiles/models.py:145
+#: profiles/models.py:138 profiles/models.py:147
 msgid "School year"
 msgstr "Année scolaire"
 
-#: profiles/models.py:146 profiles/models.py:152
+#: profiles/models.py:148 profiles/models.py:154
 msgid "School years"
 msgstr "Années scolaires"
 
-#: profiles/models.py:164
+#: profiles/models.py:166
 msgid "teacher"
 msgstr "enseignant"
 
-#: profiles/models.py:165
+#: profiles/models.py:167
 msgid "teachers"
 msgstr "enseignants"
 
@@ -243,7 +255,7 @@ msgstr "Fin de la période d'enregistrement"
 #: static/partials/activity-detail.html:52
 #: static/partials/activity-detail.html:60
 msgid "Plus de place"
-msgstr ""
+msgstr "Plus de place"
 
 #: templates/base.html:47 templates/profiles/familyuser_form.html:4
 #: templates/profiles/familyuser_form.html:5
@@ -279,7 +291,6 @@ msgid "Previous"
 msgstr "Précédent"
 
 #: templates/wizard.html:24 templates/wizard.html.py:40
-#: templates/activities/activity_list.html:33
 #: templates/profiles/children_list.html:38
 msgid "Next"
 msgstr "Suivant"
@@ -293,6 +304,7 @@ msgid "Activities"
 msgstr "Activités"
 
 #: templates/activities/activity_list.html:31
+#: templates/activities/activity_list.html:33
 msgid "End registration"
 msgstr "Terminer l'inscription"
 
@@ -323,8 +335,8 @@ msgstr "Changement de mot de passe"
 msgid "Contact informations"
 msgstr "Informations de contact"
 
-#: templates/profiles/familyuser_form.html:56
-#: templates/registration/registration_form.html:60
+#: templates/profiles/familyuser_form.html:57
+#: templates/registration/registration_form.html:61
 msgid "Save and continue"
 msgstr "Enregistrer et continuer"
 

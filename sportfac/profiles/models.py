@@ -67,6 +67,8 @@ class FamilyUser(AbstractBaseUser, PermissionsMixin):
     country = models.CharField(_('Country'), max_length = 100, default=_("Switzerland"))
     private_phone = models.CharField(max_length=30, blank=True)
     private_phone2 = models.CharField(max_length=30, blank=True)
+    private_phone3 = models.CharField(max_length=30, blank=True)
+    
     
     is_active = models.BooleanField(default=True, help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.')
     is_admin = models.BooleanField(default=False)
