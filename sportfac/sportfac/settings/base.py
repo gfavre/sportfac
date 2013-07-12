@@ -108,8 +108,8 @@ STATICFILES_DIRS = (
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
 STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'django.contrib.staticfiles.finders.FileSystemFinder',
 )
 ########## END STATIC FILE CONFIGURATION
 
@@ -189,8 +189,6 @@ DJANGO_APPS = (
     # Useful template tags:
     # 'django.contrib.humanize',
 
-    # Admin panel and documentation:
-    'django.contrib.admin',
     # 'django.contrib.admindocs',
 )
 
@@ -201,7 +199,8 @@ THIRD_PARTY_APPS = (
     'registration',
     'floppyforms',
     'constance',
-     'constance.backends.database',
+    'constance.backends.database',
+    'grappelli',
 )
 
 # Apps specific for this project go here.
@@ -211,8 +210,14 @@ LOCAL_APPS = (
     'profiles',
 )
 
+LAST_APPS = (
+    # Admin panel and documentation:
+    'django.contrib.admin',
+
+)
+
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
-INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS + LAST_APPS
 ########## END APP CONFIGURATION
 
 
