@@ -289,8 +289,15 @@ CONSTANCE_CONFIG = {
 ########## END CONSTANCE CONFIGURATION
 
 
-########## USER and REGISTRAION
+########## USER and REGISTRATION
 AUTH_USER_MODEL = 'profiles.FamilyUser'
 REGISTRATION_OPEN = True
 LOGIN_URL = '/account/login'
 LOGOUT_URL = '/account/logout'
+
+########## END USER and REGISTRAION
+
+
+########### GRAPPELLI CONFIG
+GRAPPELLI_ADMIN_TITLE = "Administration du sport scolaire facultatif"
+########## END GRAPPELLI CONFIG
