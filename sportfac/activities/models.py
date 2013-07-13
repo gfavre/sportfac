@@ -29,9 +29,10 @@ class Activity(models.Model):
     """
     An activity
     """
-    name = models.CharField(max_length=50, db_index=True, unique=True)
-    slug = models.SlugField(max_length=50, db_index=True, unique=True)
-    image = models.ImageField(upload_to='/activities', null=True, blank=True)
+    name = models.CharField(max_length=50, db_index=True, unique=True, verbose_name=_("Name"))
+    number = models.IntegerField(verbose_name=_("Number"), db_index=True, unique=True, null=True, blank=True)
+
+    slug = models.SlugField(max_length=50, db_index=True, unique=True, help_text=_("Part of the url. Cannot contain punctuation, spaces or accentuated letters"))
     
     def get_absolute_url(self):
         return reverse('activity-detail', kwargs={"slug": self.slug})
@@ -48,19 +49,20 @@ class Activity(models.Model):
 class Course(models.Model):
     "A course, i.e. an instance of an activity"
     activity = models.ForeignKey('Activity', related_name='courses')
-    responsible = models.ForeignKey('Responsible')
-    price = models.DecimalField(max_digits=5, decimal_places=2)
-    number_of_sessions = models.PositiveSmallIntegerField()
-    day = models.PositiveSmallIntegerField(choices=DAYS_OF_WEEK, )
-    start_date = models.DateField()
-    end_date = models.DateField()
-    start_time = models.TimeField()
-    end_time = models.TimeField()
-    place = models.TextField()
-    min_participants = models.PositiveSmallIntegerField()
-    max_participants = models.PositiveSmallIntegerField()
-    schoolyear_min = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="1")
-    schoolyear_max = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="6")
+    number = models.IntegerField(db_index=True, unique=True, null=True, blank=True, verbose_name=_("Number"))
+    responsible = models.ForeignKey('Responsible', verbose_name=_("Responsible"))
+    price = models.DecimalField(max_digits=5, decimal_places=2, verbose_name=_("Price"))
+    number_of_sessions = models.PositiveSmallIntegerField(verbose_name=_("Number of sessions"))
+    day = models.PositiveSmallIntegerField(choices=DAYS_OF_WEEK, verbose_name=_("Day"))
+    start_date = models.DateField(verbose_name=_("Start date"))
+    end_date = models.DateField(verbose_name=_("End date"))
+    start_time = models.TimeField(verbose_name=_("Start time"))
+    end_time = models.TimeField(verbose_name=_("End time"))
+    place = models.TextField(verbose_name=_("Place"))
+    min_participants = models.PositiveSmallIntegerField(verbose_name=_("Minimal number of participants"))
+    max_participants = models.PositiveSmallIntegerField(verbose_name=_("Maximal number of participants"))
+    schoolyear_min = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="1", verbose_name=_("Minimal school year"))
+    schoolyear_max = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="8", verbose_name=_("Maximal school year"))
     
     
     @property
@@ -88,10 +90,10 @@ class Course(models.Model):
 
 class Responsible(models.Model):
     "person repsosible of a course"
-    first = models.CharField(max_length=100, blank=True)
-    last = models.CharField(max_length=100)
-    phone = models.CharField(max_length=14, blank=True)
-    email = models.EmailField(blank=True)
+    first = models.CharField(max_length=100, blank=True, verbose_name=_("First name"), help_text=_("Leave it empty in case of collaboration name"))
+    last = models.CharField(max_length=100, verbose_name=_("Last name"))
+    phone = models.CharField(max_length=14, blank=True, verbose_name=_("Phone number"))
+    email = models.EmailField(blank=True, verbose_name=_("Email"))
     
     def __unicode__(self):
         if self.first:

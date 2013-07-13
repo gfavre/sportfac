@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-12 10:49+0200\n"
+"POT-Creation-Date: 2013-07-13 09:02+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,19 +33,19 @@ msgstr "cours"
 msgid "courses"
 msgstr "cours"
 
-#: activities/admin.py:21 activities/models.py:44 activities/models.py:85
+#: activities/admin.py:21 activities/models.py:45 activities/models.py:87
 msgid "activity"
 msgstr "activité"
 
-#: activities/admin.py:22 activities/models.py:45 activities/models.py:86
+#: activities/admin.py:22 activities/models.py:46 activities/models.py:88
 msgid "activities"
 msgstr "activités"
 
-#: activities/admin.py:31 activities/models.py:108
+#: activities/admin.py:31 activities/models.py:110
 msgid "responsible"
 msgstr "responsable"
 
-#: activities/admin.py:32 activities/models.py:109
+#: activities/admin.py:32 activities/models.py:111
 msgid "responsibles"
 msgstr "responsables"
 
@@ -109,27 +109,121 @@ msgstr "7p HARMOS"
 msgid "8th HARMOS"
 msgstr "8p HARMOS"
 
-#: profiles/admin.py:65
+#: activities/models.py:32 templates/profiles/registration_list.html:12
+msgid "Name"
+msgstr "Nom"
+
+#: activities/models.py:33 activities/models.py:52
+msgid "Number"
+msgstr "Numéro"
+
+#: activities/models.py:35
+msgid ""
+"Part of the url. Cannot contain punctuation, spaces or accentuated letters"
+msgstr "Partie de l'URL. Ne peut contenit de ponctuation, d'espaces ou de caractères accentués"
+
+#: activities/models.py:53
+msgid "Responsible"
+msgstr "Responsable"
+
+#: activities/models.py:54 templates/profiles/registration_list.html:16
+msgid "Price"
+msgstr "Prix"
+
+#: activities/models.py:55
+msgid "Number of sessions"
+msgstr "Nombre de sessions"
+
+#: activities/models.py:56
+msgid "Day"
+msgstr "Jour"
+
+#: activities/models.py:57
+msgid "Start date"
+msgstr "Date de début"
+
+#: activities/models.py:58
+msgid "End date"
+msgstr "Date de fin"
+
+#: activities/models.py:59
+msgid "Start time"
+msgstr "Heure de début"
+
+#: activities/models.py:60
+msgid "End time"
+msgstr "Heure de fin"
+
+#: activities/models.py:61
+msgid "Place"
+msgstr "Lieu"
+
+#: activities/models.py:62
+msgid "Minimal number of participants"
+msgstr "Nombre minimum de participants"
+
+#: activities/models.py:63
+msgid "Maximal number of participants"
+msgstr "Nombre maximum de participants"
+
+#: activities/models.py:64
+msgid "Minimal school year"
+msgstr "Année scolaire minimale"
+
+#: activities/models.py:65
+msgid "Maximal school year"
+msgstr "Année scolaire maximale"
+
+#: activities/models.py:93 profiles/forms.py:15 profiles/forms.py:54
+#: profiles/models.py:61 profiles/models.py:152
+msgid "First name"
+msgstr "Prénom"
+
+#: activities/models.py:93
+msgid "Leave it empty in case of collaboration name"
+msgstr "Laissez ce champ vide dans le cas d'un nom d'entreprise"
+
+#: activities/models.py:94 profiles/forms.py:16 profiles/forms.py:55
+#: profiles/models.py:62 profiles/models.py:153
+msgid "Last name"
+msgstr "Nom"
+
+#: activities/models.py:95
+msgid "Phone number"
+msgstr "Numéro de téléphone"
+
+#: activities/models.py:96
+msgid "Email"
+msgstr "E-mail"
+
+#: assets/partials/activity-detail.html:44
+#: assets/partials/activity-detail.html:52
+#: assets/partials/activity-detail.html:60
+#: static/partials/activity-detail.html:44
+#: static/partials/activity-detail.html:52
+#: static/partials/activity-detail.html:60
+msgid "Plus de place"
+msgstr "Plus de place"
+
+#: profiles/admin.py:47
+msgid ""
+"Raw passwords are not stored, so there is no way to see this user's "
+"password, but you can change the password using <a href=\"password/\">this "
+"form</a>."
+msgstr ""
+"Le mots de passe ne sont pas enregistrés dans leur état brut. Il est impossible d'afficher le mot de passe de cet utilisateur, mais vous pouvez le <a href=\"password/\">changer avec ce formulaire</a>"
+
+#: profiles/admin.py:67
 msgid "child"
 msgstr "enfant"
 
-#: profiles/admin.py:66
+#: profiles/admin.py:68
 msgid "children"
 msgstr "enfants"
 
 #: profiles/forms.py:12 profiles/forms.py:51
 msgid "E-mail"
 msgstr "E-mail"
-
-#: profiles/forms.py:15 profiles/forms.py:54 profiles/models.py:61
-#: profiles/models.py:152
-msgid "First name"
-msgstr "Prénom"
-
-#: profiles/forms.py:16 profiles/forms.py:55 profiles/models.py:62
-#: profiles/models.py:153
-msgid "Last name"
-msgstr "Nom"
 
 #: profiles/forms.py:17 profiles/forms.py:56
 msgid "Address"
@@ -243,19 +337,13 @@ msgstr "Confirmation"
 msgid "Billing"
 msgstr "Paiement"
 
-#: sportfac/settings/base.py:280
+#: sportfac/settings/base.py:285
 msgid "Registration opening date"
 msgstr "Début de la période d'enregistrement"
 
-#: sportfac/settings/base.py:281
+#: sportfac/settings/base.py:286
 msgid "Registration ending date"
 msgstr "Fin de la période d'enregistrement"
-
-#: static/partials/activity-detail.html:44
-#: static/partials/activity-detail.html:52
-#: static/partials/activity-detail.html:60
-msgid "Plus de place"
-msgstr "Plus de place"
 
 #: templates/base.html:47 templates/profiles/familyuser_form.html:4
 #: templates/profiles/familyuser_form.html:5
@@ -340,10 +428,6 @@ msgstr "Informations de contact"
 msgid "Save and continue"
 msgstr "Enregistrer et continuer"
 
-#: templates/profiles/registration_list.html:12
-msgid "Name"
-msgstr "Nom"
-
 #: templates/profiles/registration_list.html:13
 msgid "Activity"
 msgstr "Activité"
@@ -355,10 +439,6 @@ msgstr "Période"
 #: templates/profiles/registration_list.html:15
 msgid "Time"
 msgstr "Jour / Heure"
-
-#: templates/profiles/registration_list.html:16
-msgid "Price"
-msgstr "Prix"
 
 #: templates/registration/login.html:3 templates/registration/login.html:5
 msgid "Login"
