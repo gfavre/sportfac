@@ -47,16 +47,18 @@
 {% block content %}
 <div class="container">
   <div class="row">
-    <div class="span3" ng-show="userChildren.length !== 0" data-ng-animate="'fade'">
+    <div class="span8" ng-view></div>
+    <div class="span4" ng-show="userChildren.length !== 0" data-ng-animate="'fade'">
+      <h4>{% trans "Edit your children data" %}</h4>
       <ul class="nav nav-list bs-docs-sidenav">
         <li ng-repeat="child in userChildren" ng-class="{active: child.selected}">
-          <a href="#/edit/{[{ child.id }]}" data-toggle="tab" ng-click="selectChild(child)">{[{ child.first_name }]} {[{ child.last_name }]}<i class="icon-chevron-right"></i></a>
+          <a href="#/edit/{[{ child.id }]}" data-toggle="tab" ng-click="selectChild(child)"><i class="icon-chevron-left"></i> {[{ child.first_name }]} {[{ child.last_name }]}</a>
         </li>
       </ul>
       <br />
       <a href="#/new" class="btn" ng-show="selectedChild"><i class="icon-plus"></i> {% trans "Add child" %}</a>
     </div>
-    <div class="span8" ng-view></div>
+
   </div><!-- end row -->
 </div> <!-- end container -->
 

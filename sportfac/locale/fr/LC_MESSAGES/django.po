@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-15 11:18+0200\n"
+"POT-Creation-Date: 2013-07-15 19:02+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -335,8 +335,8 @@ msgstr "À propos de vous"
 msgid "Your children"
 msgstr "Vos enfants"
 
-#: sportfac/context_processors.py:20 templates/profiles/children_list.html:69
-#: templates/profiles/children_list.html:71
+#: sportfac/context_processors.py:20 templates/profiles/children_list.html:71
+#: templates/profiles/children_list.html:73
 msgid "Register activities"
 msgstr "Inscription aux activités"
 
@@ -392,7 +392,7 @@ msgstr "Sport scolaire facultatif"
 #: templates/wizard.html:23 templates/wizard.html.py:36
 #: templates/activities/activity_list.html:29
 #: templates/profiles/children_list.html:37
-#: templates/profiles/children_list.html:67
+#: templates/profiles/children_list.html:69
 msgid "Previous"
 msgstr "Précédent"
 
@@ -418,7 +418,11 @@ msgstr "Terminer l'inscription"
 msgid "About your children"
 msgstr "À propos de vos enfants"
 
-#: templates/profiles/children_list.html:57
+#: templates/profiles/children_list.html:52
+msgid "Edit your children data"
+msgstr "Éditer les données de mes enfants"
+
+#: templates/profiles/children_list.html:59
 msgid "Add child"
 msgstr "Ajouter un enfant"
 
