@@ -77,6 +77,8 @@ class CoursesAdmin(admin.ModelAdmin):
     ordering = ('activity__name', 'start_date', 'start_time')
     list_filter=(ParticipantsListFilter,)
     change_list_filter_template = "admin/filter_listing.html"
+    change_list_template = "admin/change_list_filter_sidebar.html"
+    
     
     def queryset(self, request):
         qs = super(CoursesAdmin, self).queryset(request)
