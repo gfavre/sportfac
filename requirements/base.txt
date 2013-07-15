@@ -10,4 +10,4 @@ djangorestframework==2.3.5
 django-floppyforms==1.1
 django-constance[database]==0.6
 git+https://github.com/mattdeboard/django-registration.git
-django-admin-tools==0.5.1
+django-grappelli==2.4.5
