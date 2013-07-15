@@ -70,7 +70,7 @@ class ParticipantsListFilter(admin.SimpleListFilter):
 
 
 class CoursesAdmin(admin.ModelAdmin):
-    list_display =('activity', 'day', 'start_date', 'start_time', 'duration', 'number_of_participants',)
+    list_display =('activity', 'number', 'day', 'start_date', 'start_time', 'duration', 'number_of_participants',)
     verbose_name = _("course")
     verbose_name_plural = _("courses")
     
