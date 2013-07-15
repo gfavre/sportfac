@@ -13,6 +13,7 @@ urlpatterns = patterns('',
     url(r'^api/', include('api.urls')),
     url(r'^activities/', include('activities.urls')),
     url(r'^account/', include('profiles.urls')),
-    url(r'^grappelli/', include('grappelli.urls')),
+    url(r'^admin_tools/', include('admin_tools.urls')),
+    #url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', include(admin.site.urls)),
 )

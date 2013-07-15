@@ -1,3 +1,5 @@
+from datetime import datetime, date
+
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
@@ -67,7 +69,7 @@ class Course(models.Model):
     
     @property
     def duration(self):
-        return self.end_time - self.start_time
+        return datetime.combine(date.today(), self.end_time) - datetime.combine(date.today(), self.start_time)
     
     @property
     def available_places(self):
@@ -84,8 +86,8 @@ class Course(models.Model):
     
     class Meta:
         ordering = ['start_date', 'activity', 'day']
-        verbose_name = _("activity")
-        verbose_name_plural = _("activities")
+        verbose_name = _("course")
+        verbose_name_plural = _("courses")
     
 
 class Responsible(models.Model):

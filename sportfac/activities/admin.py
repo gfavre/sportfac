@@ -1,7 +1,10 @@
+from django.db import models
+
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
 from .models import Activity, Responsible, Course
+from profiles.models import Registration
 
 class CourseInline(admin.StackedInline):
     model = Course
@@ -17,6 +20,7 @@ class CourseInline(admin.StackedInline):
 
 class ActivityAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
+    list_display = ('number', 'name')
     inlines = [CourseInline,]
     verbose_name = _("activity")
     verbose_name_plural = _("activities")
@@ -24,6 +28,67 @@ class ActivityAdmin(admin.ModelAdmin):
     
 
 admin.site.register(Activity, ActivityAdmin)
+
+
+class ParticipantsListFilter(admin.SimpleListFilter):
+    # Human-readable title which will be displayed in the
+    # right admin sidebar just above the filter options.
+    title = _('number of participants')
+
+    # Parameter for the filter that will be used in the URL query.
+    parameter_name = 'participants'
+
+    def lookups(self, request, model_admin):
+        """
+        Returns a list of tuples. The first element in each
+        tuple is the coded value for the option that will
+        appear in the URL query. The second element is the
+        human-readable name for the option that will appear
+        in the right sidebar.
+        """
+        return (
+            ('min', _('Not reached minimum participants')),
+            ('ok', _('Min participants reached')),
+            ('max', _('Full')),
+        )
+
+    def queryset(self, request, queryset):
+        """
+        Returns the filtered queryset based on the value
+        provided in the query string and retrievable via
+        `self.value()`.
+        """
+        # Compare the requested value (either '80s' or '90s')
+        # to decide how to filter the queryset.
+        if self.value() == 'min':
+            return queryset.filter(participants__count__lt=models.F('min_participants'))
+        if self.value() == 'max':
+            return queryset.filter(participants__count__gte=models.F('max_participants'))
+        elif self.value() == 'ok':
+            return queryset.filter(participants__count__lt=models.F('max_participants'),
+                                   participants__count__gte=models.F('min_participants'))
+
+
+class CoursesAdmin(admin.ModelAdmin):
+    list_display =('activity', 'day', 'start_date', 'start_time', 'duration', 'number_of_participants',)
+    verbose_name = _("course")
+    verbose_name_plural = _("courses")
+    
+    ordering = ('activity__name', 'start_date', 'start_time')
+    list_filter=(ParticipantsListFilter,)
+    change_list_filter_template = "admin/filter_listing.html"
+    
+    def queryset(self, request):
+        qs = super(CoursesAdmin, self).queryset(request)
+        qs = qs.annotate(models.Count('participants'))
+        return qs    
+    
+    def number_of_participants(self, obj):
+        return Registration.objects.filter(course=obj).count()
+    number_of_participants.admin_order_field = 'participants__count'
+
+
+admin.site.register(Course, CoursesAdmin)
 
 
 class ResponsibleAdmin(admin.ModelAdmin):

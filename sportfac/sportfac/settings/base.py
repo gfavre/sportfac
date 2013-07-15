@@ -200,7 +200,11 @@ THIRD_PARTY_APPS = (
     'floppyforms',
     'constance',
     'constance.backends.database',
-    'grappelli',
+    'admin_tools',
+    'admin_tools.theming',
+    'admin_tools.menu',
+    'admin_tools.dashboard',
+    #'grappelli',
 )
 
 # Apps specific for this project go here.

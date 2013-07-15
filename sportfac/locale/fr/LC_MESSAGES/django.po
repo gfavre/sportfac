@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-13 09:02+0200\n"
+"POT-Creation-Date: 2013-07-13 09:16+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,11 +25,11 @@ msgstr "Dates"
 msgid "Limitations"
 msgstr "Limitations"
 
-#: activities/admin.py:15
+#: activities/admin.py:15 activities/admin.py:31
 msgid "course"
 msgstr "cours"
 
-#: activities/admin.py:16
+#: activities/admin.py:16 activities/admin.py:32
 msgid "courses"
 msgstr "cours"
 
@@ -41,11 +41,11 @@ msgstr "activité"
 msgid "activities"
 msgstr "activités"
 
-#: activities/admin.py:31 activities/models.py:110
+#: activities/admin.py:40 activities/models.py:110
 msgid "responsible"
 msgstr "responsable"
 
-#: activities/admin.py:32 activities/models.py:111
+#: activities/admin.py:41 activities/models.py:111
 msgid "responsibles"
 msgstr "responsables"
 
@@ -120,7 +120,9 @@ msgstr "Numéro"
 #: activities/models.py:35
 msgid ""
 "Part of the url. Cannot contain punctuation, spaces or accentuated letters"
-msgstr "Partie de l'URL. Ne peut contenit de ponctuation, d'espaces ou de caractères accentués"
+msgstr ""
+"Partie de l'URL. Ne peut contenit de ponctuation, d'espaces ou de caractères "
+"accentués"
 
 #: activities/models.py:53
 msgid "Responsible"
@@ -211,7 +213,9 @@ msgid ""
 "password, but you can change the password using <a href=\"password/\">this "
 "form</a>."
 msgstr ""
-"Le mots de passe ne sont pas enregistrés dans leur état brut. Il est impossible d'afficher le mot de passe de cet utilisateur, mais vous pouvez le <a href=\"password/\">changer avec ce formulaire</a>"
+"Le mots de passe ne sont pas enregistrés dans leur état brut. Il est "
+"impossible d'afficher le mot de passe de cet utilisateur, mais vous pouvez "
+"le <a href=\"password/\">changer avec ce formulaire</a>"
 
 #: profiles/admin.py:67
 msgid "child"
