@@ -88,6 +88,11 @@ class CoursesAdmin(admin.ModelAdmin):
     def number_of_participants(self, obj):
         return Registration.objects.filter(course=obj).count()
     number_of_participants.admin_order_field = 'participants__count'
+    number_of_participants.short_description = _('number of participants')
+    
+    def duration(self, obj):
+        return obj.duration
+    duration.short_description = _("Duration")
 
 
 admin.site.register(Course, CoursesAdmin)

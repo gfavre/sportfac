@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from datetime import datetime, date
 
 from django.db import models
@@ -80,9 +81,12 @@ class Course(models.Model):
         return self.participants.count()
         
     def __unicode__(self):
-        return '%s: %s-%s on %s (%s-%s)' % (self.activity.name, 
-                                            self.start_date, self.end_date, self.day, 
-                                            self.schoolyear_min, self.schoolyear_max)
+        return u'%s (%s): du %s au %s les %s à %s (%sp-%sp)' % (self.activity.name, self.number,
+                                                          self.start_date.strftime("%d/%m/%Y"), 
+                                                          self.end_date.strftime("%d/%m/%Y"),
+                                                          dict(DAYS_OF_WEEK).get(self.day, str(self.day)).lower(),
+                                                          self.start_time.strftime("%H:%M"),
+                                                          self.schoolyear_min, self.schoolyear_max)
     
     class Meta:
         ordering = ['start_date', 'activity', 'day']
