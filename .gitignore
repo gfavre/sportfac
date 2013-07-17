@@ -20,6 +20,9 @@ build
 #No postactivate tmpl:
 config/postactivate
 
+# no config info
+fabsettings.py
+
 # OS generated files #
 ######################
 .DS_Store

@@ -1,7 +1,7 @@
-export PYTHONPATH=/path/to/your/sources
-export DJANGO_SETTINGS_MODULE="sportfac.settings.yoursettings"
-export DB_USER="database user"
-export DB_PASSWORD="database password"
-export DB_NAME="database name"
-export SECRET_KEY="django secret key"
+export PYTHONPATH=%(project_dir)s
+export DJANGO_SETTINGS_MODULE="%(project)s.settings.%(settings)s"
+export DB_USER="%(dbuser)s"
+export DB_PASSWORD="%(dbpassword)s"
+export DB_NAME="%(dbname)s"
+export SECRET_KEY="%(secretkey)s"
 
