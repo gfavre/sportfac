@@ -1,8 +1,4 @@
 #!/bin/bash
-NAME = $1
-PORT = $2
-NUM_WORKERS = $3
-
 echo "Starting $NAME"
 workon $1
 exec gunicorn --workers=$3 --bind 0.0.0.0:$2 $1.wsgi

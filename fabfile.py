@@ -207,10 +207,9 @@ def _create_ve(name):
     
     
 
-def _ve_run(ve,cmd):
-    """virtualenv wrapper for fabric commands
-    """
-    run("""source %s/%s/bin/activate && %s""" % (env.virtualenv_dir, ve, cmd))
+def _ve_run(ve, cmd):
+    """virtualenv wrapper for fabric commands"""
+    run("""/bin/bash -l -c 'source %s/bin/virtualenvwrapper.sh && workon %s && %s'""" % (env.home, ve, cmd))
 
 def djangoadmin(cmd):
     _ve_run(env.project, "django-admin.py %s" % cmd)
