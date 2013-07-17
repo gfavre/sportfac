@@ -1,4 +1,4 @@
-export PYTHONPATH=%(project_dir)s
+export PYTHONPATH=%(project_dir)s/%(project)s
 export DJANGO_SETTINGS_MODULE="%(project)s.settings.%(settings)s"
 export DB_USER="%(dbuser)s"
 export DB_PASSWORD="%(dbpassword)s"
