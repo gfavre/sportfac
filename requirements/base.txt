@@ -1,4 +1,3 @@
-Django==1.5.1
 bpython==0.12
 django-braces==1.0.0
 django-model-utils==1.1.0
@@ -11,3 +10,4 @@ django-floppyforms==1.1
 django-constance[database]==0.6
 git+https://github.com/mattdeboard/django-registration.git
 django-admin-tools==0.5.1
+Django==1.5.1
