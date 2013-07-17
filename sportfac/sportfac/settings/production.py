@@ -25,16 +25,13 @@ INSTALLED_APPS += ('gunicorn',)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-host
-EMAIL_HOST = environ.get('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_HOST = environ.get('EMAIL_HOST', '')
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-host-password
 EMAIL_HOST_PASSWORD = environ.get('EMAIL_HOST_PASSWORD', '')
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-host-user
-EMAIL_HOST_USER = environ.get('EMAIL_HOST_USER', 'your_email@example.com')
-
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#email-port
-EMAIL_PORT = environ.get('EMAIL_PORT', 587)
+EMAIL_HOST_USER = environ.get('EMAIL_HOST_USER', '')
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-subject-prefix
 EMAIL_SUBJECT_PREFIX = '[%s] ' % SITE_NAME
@@ -43,13 +40,29 @@ EMAIL_SUBJECT_PREFIX = '[%s] ' % SITE_NAME
 EMAIL_USE_TLS = True
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#server-email
-SERVER_EMAIL = EMAIL_HOST_USER
+SERVER_EMAIL = environ.get('SERVER_EMAIL', '')
+DEFAULT_FROM_EMAIL = environ.get('DEFAULT_FROM_EMAIL', '')
+
+
+
 ########## END EMAIL CONFIGURATION
 
 
 ########## DATABASE CONFIGURATION
-DATABASES = {}
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': environ.get('DB_NAME'),
+        'USER': environ.get('DB_USER'),
+        'PASSWORD': environ.get('DB_PASSWORD'),
+        'HOST': '',
+        'PORT': '',
+        'OPTIONS': {'autocommit': True,}
+    }
+}
 ########## END DATABASE CONFIGURATION
+
 
 
 ########## CACHE CONFIGURATION

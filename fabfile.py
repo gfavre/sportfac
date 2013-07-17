@@ -7,7 +7,7 @@ import os, re, xmlrpclib, sys, xmlrpclib, os.path, httplib, random
 
 from fabric.api import *
 from fabric.contrib.console import confirm
-from fabric.contrib.files import sed, exists, upload_template
+from fabric.contrib.files import sed, exists, upload_template, append
 from fabric.utils import abort
 from fabric.context_managers import prefix, path
 from fabric.operations import put
@@ -15,7 +15,8 @@ from fabric.operations import put
 try:
     from fabsettings import WF_HOST, PROJECT_NAME, REPOSITORY, USER, PASSWORD, \
                             VIRTUALENVS, SETTINGS_SUBDIR, \
-                            DBNAME, DBUSER, DBPASSWORD
+                            DBNAME, DBUSER, DBPASSWORD, \
+                            MAILHOST, MAILUSER, MAILPASSWORD, MAILADDRESS
 except ImportError:
     print("""
 ImportError: Couldn't find fabsettings.py, it either does not exist or is
@@ -32,10 +33,15 @@ DBUSER          = "sportfac"
 DBPASSWORD      = "************"
 SETTINGS_SUBDIR = "sportfac"
 VIRTUALENVS     = "/home/grfavre/.virtualenvs"
+MAILHOST        = "smtp.webfaction.com"
+MAILUSER        = "grfavre"
+MAILPASSWORD    = PASSWORD
+MAILADDRESS     = "gregory@dealguru.ch"
+
 """)
     sys.exit(1)
 
-class WebFactionXmlRPC():
+class _WebFactionXmlRPC():
     def __init__(self, user, password):
         API_URL = 'https://api.webfaction.com/'
         try:
@@ -71,8 +77,12 @@ env.supervisor_dir    = os.path.join(env.home, 'webapps', 'supervisor')
 env.virtualenv_dir    = VIRTUALENVS
 env.virtualenv        = VIRTUALENVS + '/' + env.project
 env.supervisor_ve_dir = os.path.join(env.virtualenv_dir, '/supervisor')
-env.webfaction        = WebFactionXmlRPC(USER, PASSWORD)
+env.webfaction        = _WebFactionXmlRPC(USER, PASSWORD)
 env.supervisor_cfg    = '%s/conf.d/%s.conf' % (env.supervisor_dir, env.project)
+env.mailhost          = MAILHOST
+env.mailuser          = MAILUSER
+env.mailpassword      = MAILPASSWORD
+env.mailaddress       = MAILADDRESS
 
 
 def bootstrap():
@@ -192,6 +202,7 @@ def _create_ve(name):
     upload_template(os.path.join(env.local_config_dir, 'postactivate.tpl'),
                     os.path.join(env.virtualenv, 'bin', 'postactivate'), 
                     env)
+    append(os.path.join(env.virtualenv, '.project'), env.project_dir)
 
     
     
