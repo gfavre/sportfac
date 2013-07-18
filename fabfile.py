@@ -98,6 +98,9 @@ env.https             = False
 env.website_name      = env.project
 env.django_app_name   = env.project
 env.static_app_name   = env.project + '_static'
+env.media_app_name    = env.project + '_media'
+
+env.static_root       = os.path.join(env.home, 'webapps', env.static_app_name)
 env.allowed_hosts     = [__concat_domain(subdomain, env.domain) for subdomain in env.subdomains]
 env.allowed_hosts_str = ';'.join(env.allowed_hosts)
 
@@ -129,6 +132,14 @@ def _create_static_app():
     
     env.webfaction.create_app(env.project + '_static', 'static_only', False, '')    
 
+def _create_media_app():
+    print("Creating static app...")
+    for app_info in env.webfaction.list_apps():
+        if app_info['name'] == env.media_app_name:
+            return
+    
+    env.webfaction.create_app(env.project + '_media', 'static_only', False, '')    
+
 
 def _create_main_app():
     print("Creating main app...")
@@ -140,7 +151,7 @@ def _create_main_app():
         
     port = env.webfaction.create_app(env.project, 'custom_app_with_port', False, '')
 
-def create_domain():
+def _create_domain():
     print("Creating domain %s..." % env.domain)
     for (domain_id, domain, subdomains) in env.webfaction.list_domains():
         if domain == env.domain and set(subdomains) == set(env.subdomains):
@@ -149,7 +160,7 @@ def create_domain():
     env.webfaction.create_domain(env.domain, *env.subdomains)
     print("...done")
     
-def create_website():
+def _create_website():
     print("Creating website")    
     website_fct = env.webfaction.create_website
     for name_info in env.webfaction.list_websites():
@@ -168,7 +179,8 @@ def create_website():
     website_fct(env.website_name, ip, env.https,
                 env.allowed_hosts,
                 (env.django_app_name, '/'), 
-                (env.static_app_name, '/static'))
+                (env.static_app_name, '/static'),
+                (env.media_app_name, '/media'))
     print("...done")
 
 
@@ -189,7 +201,10 @@ def configure_supervisor():
 def configure_webfaction():
     _create_db()
     _create_static_app()
+    _create_media_app()
     _create_main_app()
+    _create_domain()
+    _create_website()
 
 def install_app():
     "Installs the django project in its own wf app and virtualenv"

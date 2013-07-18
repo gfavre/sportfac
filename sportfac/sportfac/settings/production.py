@@ -43,9 +43,19 @@ EMAIL_USE_TLS = True
 SERVER_EMAIL = environ.get('SERVER_EMAIL', '')
 DEFAULT_FROM_EMAIL = environ.get('DEFAULT_FROM_EMAIL', '')
 
-
-
 ########## END EMAIL CONFIGURATION
+
+
+########## MEDIA CONFIGURATION
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#media-root
+MEDIA_ROOT = get_env_setting('MEDIA_ROOT')
+
+########## STATIC FILE CONFIGURATION
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
+STATIC_ROOT = get_env_setting('STATIC_ROOT')
+
+########## END STATIC FILE CONFIGURATION
+
 
 
 ########## DATABASE CONFIGURATION
