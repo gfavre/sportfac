@@ -11,3 +11,4 @@ django-constance[database]==0.6
 git+https://github.com/georgedorn/django-registration.git@49eba8542eca34ee3d4dd07cdd49912a8cfc3726
 Django==1.5.1
 django-grappelli==2.4.5
+django-pipeline==1.3.12
