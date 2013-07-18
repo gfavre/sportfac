@@ -23,7 +23,7 @@ ImportError: Couldn't find fabsettings.py, it either does not exist or is
 missing specific settings.
 It should be of this form:
 
-WF_HOST         = "web392.webfaction.com"
+WF_HOST         = "web392"
 PROJECT_NAME    = "sportfac"
 REPOSITORY      = "https://grfavre@kis-git.epfl.ch/repo/sportfac.git"
 USER            = "grfavre"
@@ -59,8 +59,16 @@ class _WebFactionXmlRPC():
             return getattr(self.server, name)(self.session_id, *args, **kwargs)
         return _missing
 
+def __concat_domain(subdomain, domain):
+    if subdomain:
+        return subdomain + '.' + domain
+    return domain
+
+
+
 env.local_config_dir  = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config')
-env.hosts             = [WF_HOST]
+env.machine           = WF_HOST
+env.hosts             = [WF_HOST.lower() + '.webfaction.com']
 env.user              = USER
 env.password          = PASSWORD
 env.project           = PROJECT_NAME
@@ -84,6 +92,14 @@ env.mailuser          = MAILUSER
 env.mailpassword      = MAILPASSWORD
 env.mailaddress       = MAILADDRESS
 
+env.domain            = "gregoryfavre.ch"
+env.subdomains        = ['', 'sportfac']
+env.https             = False
+env.website_name      = env.project
+env.django_app_name   = env.project
+env.static_app_name   = env.project + '_static'
+env.allowed_hosts     = [__concat_domain(subdomain, env.domain) for subdomain in env.subdomains]
+env.allowed_hosts_str = ';'.join(env.allowed_hosts)
 
 def bootstrap():
     "Initializes python libraries"
@@ -123,7 +139,40 @@ def _create_main_app():
             return
         
     port = env.webfaction.create_app(env.project, 'custom_app_with_port', False, '')
+
+def create_domain():
+    print("Creating domain %s..." % env.domain)
+    for (domain_id, domain, subdomains) in env.webfaction.list_domains():
+        if domain == env.domain and set(subdomains) == set(env.subdomains):
+            print("Domain already exists")
+            return
+    env.webfaction.create_domain(env.domain, *env.subdomains)
+    print("...done")
     
+def create_website():
+    print("Creating website")    
+    website_fct = env.webfaction.create_website
+    for name_info in env.webfaction.list_websites():
+        if name_info.get('name') == env.website_name:
+            print("Website already exists")
+            website_fct = env.webfaction.update_website
+
+
+    machines = env.webfaction.list_ips()
+    env.ip = None
+    for machine in machines:
+        if machine.get('machine') == env.machine:
+            ip = machine.get('ip')
+
+
+    website_fct(env.website_name, ip, env.https,
+                env.allowed_hosts,
+                (env.django_app_name, '/'), 
+                (env.static_app_name, '/static'))
+    print("...done")
+
+
+  
 def configure_supervisor():
     print("Configuring supervisor...")
     if not 'app_port' in env:
@@ -145,9 +194,9 @@ def configure_webfaction():
 def install_app():
     "Installs the django project in its own wf app and virtualenv"
     configure_webfaction()
-    print("Grabbing sources...")
-    with cd(env.home + '/webapps'):
-        if not exists(env.project_dir + '/setup.py'):
+    with cd(env.project_dir):
+        if not exists(env.project):
+            print("Grabbing sources...")
             run('git clone %s %s' % (env.repo, env.project_dir))
     
     print("Creating virtualenv...")
@@ -194,16 +243,19 @@ def _create_ve(name):
     """
     env.secretkey = ''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)])
     
-    if not exists(env.virtualenv_dir + '/name'):
+    if not exists(env.virtualenv):
         with cd(env.virtualenv_dir):
             run('mkvirtualenv -p /usr/local/bin/python2.7 --no-site-packages %s' % name)
     else:
         print("Virtualenv with name %s already exists. Skipping.") % name
+    
+    env.allowed_hosts = ''
     upload_template(os.path.join(env.local_config_dir, 'postactivate.tpl'),
                     os.path.join(env.virtualenv, 'bin', 'postactivate'), 
                     env)
-    append(os.path.join(env.virtualenv, '.project'), env.project_dir)
-
+    upload_template(os.path.join(env.local_config_dir, 'virtualenv_project'),
+                    os.path.join(env.virtualenv, '.project'), 
+                    env)
     
     
 
