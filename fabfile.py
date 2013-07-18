@@ -98,7 +98,9 @@ env.https             = False
 env.website_name      = env.project
 env.django_app_name   = env.project
 env.static_app_name   = env.project + '_static'
+env.static_root       = os.path.join(env.home, 'webapps', env.static_app_name)
 env.media_app_name    = env.project + '_media'
+env.media_root        = os.path.join(env.home, 'webapps', env.media_app_name)
 
 env.static_root       = os.path.join(env.home, 'webapps', env.static_app_name)
 env.allowed_hosts     = [__concat_domain(subdomain, env.domain) for subdomain in env.subdomains]
