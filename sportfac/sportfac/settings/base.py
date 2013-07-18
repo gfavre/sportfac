@@ -204,7 +204,7 @@ THIRD_PARTY_APPS = (
     'constance', # settings in admin
     'constance.backends.database', #settings in admin
     'grappelli', # admin interface
-    'pipeline', # minifier
+    #'pipeline', # minifier
 )
 
 # Apps specific for this project go here.
