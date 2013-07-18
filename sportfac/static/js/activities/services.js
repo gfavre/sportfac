@@ -15,10 +15,10 @@ angular.module('sportfacCalendar.services', []).
           var val;
           try {
             val = JSON.parse(res);
-            if (typeof val === 'undefined') val = res ;
-            if (val === 'true') val = true;
-            if (val === 'false') val = false;
-            if (parseFloat(val) === val && !angular.isObject(val)) val = parseFloat(val);
+            if (typeof val === 'undefined') { val = res; }
+            if (val === 'true') { val = true;}
+            if (val === 'false') { val = false;}
+            if (parseFloat(val) === val && !angular.isObject(val)) { val = parseFloat(val);}
           } catch(e){
             val = res;
           }
@@ -132,7 +132,7 @@ angular.module('sportfacCalendar.services', []).
         },
         get: function(childId){
           return $http.get('/api/child/' + childId + '/').then(function(response){
-            return new Child(response.data);            
+            return new Child(response.data);
           });
         }
     };
@@ -166,7 +166,7 @@ angular.module('sportfacCalendar.services', []).
         
       });
       angular.extend(this, data);
-    }
+    };
     return Course;
   })
   .factory('CoursesService', function($http, $cookies, Course){
@@ -204,7 +204,7 @@ angular.module('sportfacCalendar.services', []).
             function(data, status, headers, config) { return data });
         },*/
         get: function(url, id){
-          return $http.get(url + id + '/').then(function(response){ 
+          return $http.get(url + id + '/').then(function(response){
             return response.data;
           });
           
@@ -232,7 +232,7 @@ angular.module('sportfacCalendar.services', []).
           }
         },
         del: function(url, obj){
-          return $http.delete(url + obj.id + '/');  
+          return $http.delete(url + obj.id + '/');
         }
     };
     return ModelUtils;

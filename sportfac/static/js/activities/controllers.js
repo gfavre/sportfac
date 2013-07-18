@@ -20,7 +20,7 @@ angular.module('sportfacCalendar.controllers', [])
   
   $scope.selectChild = function(childId){
     angular.forEach($scope.userChildren, function(child){
-      if (child.id === childId){ 
+      if (child.id === childId){
         child.selected = true;
         $scope.selectedChild = child;
       } else {
@@ -42,15 +42,14 @@ angular.module('sportfacCalendar.controllers', [])
         $window.location.href = '/activities/confirm';
     });
     
-  };  
-    
+  };
 })
 
 
 /*******************************************************************************
         Activities management, i.e. a child tab in activities application
 *******************************************************************************/
-.controller('ActivityCtrl', function($scope, $http, $store, $routeParams, CoursesService, ModelUtils, $window) { 
+.controller('ActivityCtrl', function($scope, $http) {
   $scope.$watch('selectedChild', function(newval, oldval){
     if (angular.isDefined(newval) ){
       $scope.loadActivities();
@@ -59,7 +58,7 @@ angular.module('sportfacCalendar.controllers', [])
   });
   
   $scope.selectActivity = function(activity){
-    if ($scope.selectedActivity) $scope.selectedActivity.selected = false;
+    if ($scope.selectedActivity) { $scope.selectedActivity.selected = false;}
     activity.selected = true;
     $scope.selectedActivity = activity;
   };
@@ -110,7 +109,7 @@ angular.module('sportfacCalendar.controllers', [])
   
  $scope.$watch('selectedActivity', function(newvalue, oldvalue){
     if (angular.isDefined(newvalue)){
-      $scope.updateAvailableEvents();  
+      $scope.updateAvailableEvents();
     }
   });
   
@@ -139,10 +138,10 @@ angular.module('sportfacCalendar.controllers', [])
           CoursesService.get(courseId).then(addToOthers);
         });
       }
-     }); 
+     });
   };
   
-  $scope.updateAvailableEvents = function(){    
+  $scope.updateAvailableEvents = function(){
     var addCourse = function(course){
       $scope.availableEvents.push(course.toEvent("available"));
     };
@@ -156,7 +155,7 @@ angular.module('sportfacCalendar.controllers', [])
         CoursesService.get(course.id).then(addCourse);
       }
     });
-  }
+  };
 
     
   $scope.eventClick = function(calEvent, jsEvent, view){
@@ -164,14 +163,14 @@ angular.module('sportfacCalendar.controllers', [])
         $scope.selectedEvent = calEvent;
         $scope.selectedCourse = calEvent.course;
         
-        var modal = $modal(
+        $modal(
             {template: '/static/partials/activity-detail.html',
              show: true,
              backdrop: 'static',
              scope: $scope,
         });
       });
-  }
+  };
   
   $scope.uiConfig = {
     calendar:{
@@ -218,10 +217,10 @@ angular.module('sportfacCalendar.controllers', [])
             $scope.weekagenda.fullCalendar('updateEvent', calEvent);
         }
     } else {
-        alert('other child, no implemented yet');
+        console.log('other child, no implemented yet');
         // registered to another child
     }
-  }
+  };
   
   $scope.hasRegistered = function(){
     return $scope.registeredEvents.length > 0 || $scope.othersRegisteredEvents.length > 0;

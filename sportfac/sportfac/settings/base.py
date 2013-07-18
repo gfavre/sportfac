@@ -111,6 +111,9 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'django.contrib.staticfiles.finders.FileSystemFinder',
 )
+
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+
 ########## END STATIC FILE CONFIGURATION
 
 
@@ -194,13 +197,14 @@ DJANGO_APPS = (
 
 THIRD_PARTY_APPS = (
     # Database migration helpers:
-    'south',
-    'rest_framework',
-    'registration',
-    'floppyforms',
-    'constance',
-    'constance.backends.database',
-    'grappelli',
+    'south', # db migration
+    'rest_framework', # REST API
+    'registration', #user registration
+    'floppyforms', # better forms
+    'constance', # settings in admin
+    'constance.backends.database', #settings in admin
+    'grappelli', # admin interface
+    'pipeline', # minifier
 )
 
 # Apps specific for this project go here.
@@ -301,3 +305,9 @@ LOGOUT_URL = '/account/logout'
 ########### GRAPPELLI CONFIG
 GRAPPELLI_ADMIN_TITLE = "Administration du sport scolaire facultatif"
 ########## END GRAPPELLI CONFIG
+
+
+########### PIPELINE CONFIG
+########## END PIPELINE CONFIG
+
+
