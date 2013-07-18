@@ -1,7 +1,8 @@
 /* Services */
     
 angular.module('sportfacCalendar.services', []).
-  factory("$store",function($parse){
+
+factory("$store", ["$parse", function($parse){
     'use strict';
     var storage = (typeof window.localStorage === 'undefined') ? undefined : window.localStorage,
         supported = !(typeof storage === 'undefined' || typeof window.JSON === 'undefined');
@@ -102,8 +103,9 @@ angular.module('sportfacCalendar.services', []).
             }
     };
     return publicMethods;
-  })
-  .factory('Child', function(){
+  }])
+
+.factory('Child', function(){
     var Child = function(data){
       angular.extend(this, {
         hasRegistered: function(course){
@@ -118,7 +120,8 @@ angular.module('sportfacCalendar.services', []).
     };
     return Child;
   })
-  .factory('ChildrenService', function($http, $cookies, Child){
+
+.factory('ChildrenService', ["$http", "$cookies", "Child", function($http, $cookies, Child){
     $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
     var ModelUtils = {
         all: function(){
@@ -138,9 +141,9 @@ angular.module('sportfacCalendar.services', []).
     };
     
     return ModelUtils;
-  })
+  }])
   
-  .factory('Course', function(){
+.factory('Course', function(){
     var date = new Date();
     var d = date.getDate();
     var m = date.getMonth();
@@ -169,25 +172,20 @@ angular.module('sportfacCalendar.services', []).
     };
     return Course;
   })
-  .factory('CoursesService', function($http, $cookies, Course){
-    $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
- 
-    var ModelUtils = {
-        /*get: function(url, id) {
-          $http.get(url + id + '/').
-            success(
-            function(data, status, headers, config) { return data });
-        },*/
-        get: function(courseId){
-          return $http.get('/api/courses/' + courseId + '/').then(function(response){
-            return new Course(response.data);
-          });
-        }
-    };
-    
-    return ModelUtils;
-  })
-  .factory('ModelUtils', function($http, $cookies){
+
+.factory('CoursesService', ["$http", "$cookies", "Course", function($http, $cookies, Course){
+  $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
+  var ModelUtils = {
+    get: function(courseId){
+      return $http.get('/api/courses/' + courseId + '/').then(function(response){
+        return new Course(response.data);
+      });
+    }
+  };  
+  return ModelUtils;
+}])
+
+.factory('ModelUtils', ["$http", "$cookies", function($http, $cookies){
     $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
     var handleErrors = function(serverResponse, status, errorDestination){
       if (angular.isDefined(errorDestination)){
@@ -235,8 +233,5 @@ angular.module('sportfacCalendar.services', []).
           return $http.delete(url + obj.id + '/');
         }
     };
-    return ModelUtils;
-
-    
-    
-  });
+    return ModelUtils;  
+}]);

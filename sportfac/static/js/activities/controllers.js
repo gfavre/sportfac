@@ -1,6 +1,7 @@
 angular.module('sportfacCalendar.controllers', [])
   
-.controller('ChildrenCtrl', function($scope, $store, $routeParams, ChildrenService, ModelUtils, $window) {
+.controller('ChildrenCtrl', ["$scope", "$store", "$routeParams", "ChildrenService", "ModelUtils", "$window",
+function($scope, $store, $routeParams, ChildrenService, ModelUtils, $window) {
   'use strict';
   
   ChildrenService.all().then(function(children){
@@ -43,13 +44,15 @@ angular.module('sportfacCalendar.controllers', [])
     });
     
   };
-})
+}])
 
 
 /*******************************************************************************
         Activities management, i.e. a child tab in activities application
 *******************************************************************************/
-.controller('ActivityCtrl', function($scope, $http) {
+.controller('ActivityCtrl', ["$scope", "$http",
+function($scope, $http) {
+  'use strict';
   $scope.$watch('selectedChild', function(newval, oldval){
     if (angular.isDefined(newval) ){
       $scope.loadActivities();
@@ -69,21 +72,22 @@ angular.module('sportfacCalendar.controllers', [])
         return response.data;
     });
   };
+}])
 
-})
 
 /*******************************************************************************
                     List of activities, on the left.
 *******************************************************************************/
-.controller('ActivityListCtrl', function($scope) {
+.controller('ActivityListCtrl', ["$scope", function($scope) {
   'use strict';
-})
+}])
+
 
 /*******************************************************************************
                     Timeline
-
 *******************************************************************************/
-.controller('ActivityTimelineCtrl', function($scope, $filter, $modal, CoursesService){
+.controller('ActivityTimelineCtrl', ["$scope", "$filter", "$modal", "CoursesService",
+function($scope, $filter, $modal, CoursesService){
   'use strict';
   var today = new Date();
   var year = today.getFullYear();
@@ -232,12 +236,12 @@ angular.module('sportfacCalendar.controllers', [])
 
 
   $scope.eventSources = [$scope.registeredEvents, $scope.othersRegisteredEvents, $scope.availableEvents];
-})
-  .controller('ActivityDetailCtrl', function($scope){
-  /*****************************************************************************
+}])
+
+
+/*****************************************************************************
                     Detailed activity
-
-  *****************************************************************************/
+*****************************************************************************/
+.controller('ActivityDetailCtrl', ["$scope", function($scope){
   'use strict';
-
-  });
+}]);
