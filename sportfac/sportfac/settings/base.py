@@ -112,7 +112,6 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
 )
 
-STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 
 ########## END STATIC FILE CONFIGURATION
 
@@ -308,6 +307,8 @@ GRAPPELLI_ADMIN_TITLE = "Administration du sport scolaire facultatif"
 
 
 ########### PIPELINE CONFIG
+#STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+
 ########## END PIPELINE CONFIG
 
 
