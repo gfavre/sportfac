@@ -11,6 +11,11 @@
 </nav> 
 
 <article class="span9" ng-controller="ActivityTimelineCtrl">
+  <div class="alert alert-block" ng-show="selectedChild.registered.length >= 4">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <h4>Le nombre maximal d'activités (4) est atteint pour {[{ selectedChild.first_name }]}. </h4>
+    <p>Vous devez d'abord désinscrire votre enfant de l'une des activités sélectionnées (en vert) si vous souhaitez l'inscrire à d'autres activités disponibles.</p>
+  </div>
   <ul class="inline">
     <li><i class="icon-circle available"></i> événements disponibles</li>
     <li><i class="icon-circle registered"></i> événements choisis pour cet enfant</li>

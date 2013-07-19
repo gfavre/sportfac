@@ -38,10 +38,14 @@
 <div ng-switch on="selectedEvent.className">
   <div class="modal-footer" ng-switch-when="available">
     <button type="button" class="btn" ng-click="hide()">Fermer</button>
-    <button ng-show="{[{ selectedCourse.count_participants < selectedCourse.max_participants }]}" 
+    <button ng-show="{[{ selectedCourse.count_participants < selectedCourse.max_participants && selectedChild.registered.length < 4}]}" 
             class="btn btn-success" ng-click="register(selectedEvent);hide()">Inscrire {[{ selectedChild.first_name }]}</button>
     <span ng-hide="{[{ selectedCourse.count_participants < selectedCourse.max_participants }]}" 
         class="btn btn-primary disabled" >{% trans "Plus de place"%}</span>
+    <span ng-show="{[{ selectedCourse.count_participants < selectedCourse.max_participants && selectedChild.registered.length >= 4}]}" 
+        class="btn btn-primary disabled" >Inscrire {[{ selectedChild.first_name }]}</span>
+    
+
   </div>
   
   <div class="modal-footer" ng-switch-when="registered">
