@@ -50,7 +50,7 @@ class FamilyChangeForm(forms.ModelForm):
 
     class Meta:
         model = FamilyUser
-        fields = ('email', 'first_name', 'last_name', 
+        fields = ('email', 'is_staff', 'first_name', 'last_name', 
                   'address', 'zipcode', 'city', 'country', 
                   'private_phone', 'private_phone2')
 
@@ -75,10 +75,10 @@ class FamilyAdmin(UserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('email', 'first_name', 'last_name', 'children_names')
+    list_display = ('email', 'first_name', 'last_name', 'children_names', 'is_staff')
     #list_filter = ('is_admin',)
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
+        (None, {'fields': ('email', 'password', 'is_staff')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 
                                       'address', 'zipcode', 'city', 'country', 
                                       'private_phone', 'private_phone2')}),
@@ -101,7 +101,7 @@ class FamilyAdmin(UserAdmin):
 admin.site.register(FamilyUser, FamilyAdmin)
 # ... and, since we're not using Django's builtin permissions,
 # unregister the Group model from admin.
-admin.site.unregister(Group)
+#admin.site.unregister(Group)
 
 class TeacherAdmin(admin.ModelAdmin):
     list_display = ('last_name', 'first_name', 'years_label')
