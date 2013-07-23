@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load floppyforms %}
+{% block title %}Règlement de participation{% endblock title %}
+
+{% block page_title %}Règlement de participation{% endblock page_title %}
+
+
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    <div class="span12">
+    
+<h2>1. Principe</h2>
+<p>L’objectif du SSF est de proposer la découverte d’activités sportives nouvelles et par là, de donner aux enfants le goût du loisir sportif. Il n’est donc, en principe, pas souhaitable que l’élève s’inscrive à une activité déjà pratiquée sur une base régulière.</p>
+
+<h2>2. Inscription</h2>
+<ul>
+ <li>Procéder à l’inscription en ligne.</li>
+ <li>Transmettre le montant correspondant aux cours souhaités, d’ici au 6 septembre 2012 à l’enseignant-e de votre enfant.</li>
+<li>Trois inscriptions, au maximum, sont acceptées par enfant et par année scolaire.</li>
+</ul>
+
+<h2>3. Confirmation | Convocation</h2>
+<p>Tous les cours ne débutant pas simultanément, chaque enfant est convoqué par écrit avant le début de chaque cours.
+Une confirmation écrite est adressée pour tous les cours retenus qui ne commencent pas au début de l’année scolaire.<br />
+<strong>Les documents sont envoyés à l’adresse de courriel communiquée lors de l’inscription.</strong></p>
+
+<h2>4. Finance d'inscription</h2>
+<p>La finance d’inscription est versée directement au maître/à la maîtresse de classe de votre enfant à la suite de l’inscription en ligne. C’est la remise de cette finance qui valide l’inscription.<br />
+<strong>Aucun remboursement ne pourra être demandé en cas de désistement.</strong>
+</p>
+
+<h2>5. Conditions de participation</h2>
+<p>En s’inscrivant à un cours, l’enfant s’engage à le suivre régulièrement et, par son comportement, à en assurer le bon déroulement. L’organisateur se réserve le droit, en cas d’indiscipline grave ou répétée, d’exclure un enfant d’un ou plusieurs cours.<br />
+En cas d’absence, une justification écrite sera adressée au moniteur ou à la monitrice du cours concerné.</p>
+
+<h2>6. Transport</h2>
+<p>Le transport des élèves sur le lieu de l’activité est à la charge et sous la responsabilité des parents/du répondant légal.<br />
+Pour les activités de ski de fond, le transport est organisé et pris en charge par l’organisateur.</p>
+
+<h2>7. Assurance</h2>
+<p>Les élèves sont assurés contre les accidents à titre privé. Tout accident est annoncé à la <a href="{% url 'contact' %}">Direction des écoles</a> dans les meilleurs délais.</p>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+

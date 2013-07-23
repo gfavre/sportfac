@@ -34,8 +34,9 @@
           <div class="nav-collapse collapse">
             <ul class="nav">
               <li class="">
-                <a href="/">Home</a>
+                <a href="/">{% trans "Home" %}</a>
               </li>
+              <li><a href="{% url 'terms' %}">{% trans "Terms and conditions" %}</a></li>
               
 
               {% if user.is_authenticated %}
@@ -83,10 +84,19 @@
     {% endblock content %}
     
     
-    <div class="container">
-    {% block page_footer %}{% endblock page_footer %}
-    </div>
+    <div class="container">{% block page_footer %}{% endblock page_footer %}</div>
     
+    <footer class="footer">
+      <div class="container">
+          <p>© Établissement primaire de Coppet et environs, 2013 <img src="{{ STATIC_URL }}img/logo-mini.png"/></p>
+          <ul class="footer-links">
+            <li><a href="{% url 'contact' %}">{% trans "Contact" %}</a></li>
+            <li class="muted">·</li>
+            <li><a href="{% url 'terms' %}">{% trans "Terms and conditions" %}</a></li>
+          </ul>
+      </div>
+    </footer>
+
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->

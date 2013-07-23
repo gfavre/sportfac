@@ -40,8 +40,9 @@ EMAIL_SUBJECT_PREFIX = '[%s] ' % SITE_NAME
 EMAIL_USE_TLS = True
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#server-email
-SERVER_EMAIL = environ.get('SERVER_EMAIL', '')
-DEFAULT_FROM_EMAIL = environ.get('DEFAULT_FROM_EMAIL', '')
+SERVER_EMAIL = get_env_setting('SERVER_EMAIL')
+
+DEFAULT_FROM_EMAIL = get_env_setting('DEFAULT_FROM_EMAIL')
 
 ########## END EMAIL CONFIGURATION
 

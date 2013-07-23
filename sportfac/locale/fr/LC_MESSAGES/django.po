@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-16 07:15+0200\n"
+"POT-Creation-Date: 2013-07-23 23:42+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -130,7 +130,8 @@ msgstr "7p HARMOS"
 msgid "8th HARMOS"
 msgstr "8p HARMOS"
 
-#: activities/models.py:35 templates/profiles/registration_list.html:12
+#: activities/models.py:35 contact/forms.py:9
+#: templates/profiles/registration_list.html:12
 msgid "Name"
 msgstr "Nom"
 
@@ -198,7 +199,7 @@ msgid "Maximal school year"
 msgstr "Année scolaire maximale"
 
 #: activities/models.py:99 profiles/forms.py:15 profiles/forms.py:54
-#: profiles/models.py:61 profiles/models.py:152
+#: profiles/models.py:61 profiles/models.py:166
 msgid "First name"
 msgstr "Prénom"
 
@@ -207,7 +208,7 @@ msgid "Leave it empty in case of collaboration name"
 msgstr "Laissez ce champ vide dans le cas d'un nom d'entreprise"
 
 #: activities/models.py:100 profiles/forms.py:16 profiles/forms.py:55
-#: profiles/models.py:62 profiles/models.py:153
+#: profiles/models.py:62 profiles/models.py:167
 msgid "Last name"
 msgstr "Nom"
 
@@ -223,10 +224,22 @@ msgstr "E-mail"
 #: assets/partials/activity-detail.html:52
 #: assets/partials/activity-detail.html:60
 #: static/partials/activity-detail.html:44
-#: static/partials/activity-detail.html:52
-#: static/partials/activity-detail.html:60
+#: static/partials/activity-detail.html:56
+#: static/partials/activity-detail.html:64
 msgid "Plus de place"
 msgstr "Plus de place"
+
+#: contact/forms.py:11 profiles/forms.py:12 profiles/forms.py:51
+msgid "E-mail"
+msgstr "E-mail"
+
+#: contact/forms.py:14
+msgid "Subject"
+msgstr "Sujet"
+
+#: contact/forms.py:17
+msgid "Message"
+msgstr "Message"
 
 #: profiles/admin.py:47
 msgid ""
@@ -245,10 +258,6 @@ msgstr "enfant"
 #: profiles/admin.py:68
 msgid "children"
 msgstr "enfants"
-
-#: profiles/forms.py:12 profiles/forms.py:51
-msgid "E-mail"
-msgstr "E-mail"
 
 #: profiles/forms.py:17 profiles/forms.py:56
 msgid "Address"
@@ -308,35 +317,35 @@ msgstr "Suisse"
 msgid "date joined"
 msgstr "Date d'inscription"
 
-#: profiles/models.py:108
+#: profiles/models.py:122
 msgid "Male"
 msgstr "Garçon"
 
-#: profiles/models.py:108
+#: profiles/models.py:122
 msgid "Female"
 msgstr "Fille"
 
-#: profiles/models.py:132
+#: profiles/models.py:146
 msgid "Registration"
 msgstr "Inscription"
 
-#: profiles/models.py:133
+#: profiles/models.py:147
 msgid "Registrations"
 msgstr "Inscriptions"
 
-#: profiles/models.py:138 profiles/models.py:147
+#: profiles/models.py:152 profiles/models.py:161
 msgid "School year"
 msgstr "Année scolaire"
 
-#: profiles/models.py:148 profiles/models.py:154
+#: profiles/models.py:162 profiles/models.py:168
 msgid "School years"
 msgstr "Années scolaires"
 
-#: profiles/models.py:166
+#: profiles/models.py:180
 msgid "teacher"
 msgstr "enseignant"
 
-#: profiles/models.py:167
+#: profiles/models.py:181
 msgid "teachers"
 msgstr "enseignants"
 
@@ -362,11 +371,11 @@ msgstr "Confirmation"
 msgid "Billing"
 msgstr "Paiement"
 
-#: sportfac/settings/base.py:285
+#: sportfac/settings/base.py:292
 msgid "Registration opening date"
 msgstr "Début de la période d'enregistrement"
 
-#: sportfac/settings/base.py:286
+#: sportfac/settings/base.py:293
 msgid "Registration ending date"
 msgstr "Fin de la période d'enregistrement"
 
@@ -384,13 +393,26 @@ msgstr "Ma famille"
 msgid "My agenda"
 msgstr "Mon agenda"
 
-#: templates/base.html:51
+#: templates/base.html:52
+msgid "Administration"
+msgstr "Administration"
+
+#: templates/base.html:56
 msgid "logout"
 msgstr "Déconnexion"
 
-#: templates/base.html:56
+#: templates/base.html:61
 msgid "login"
 msgstr "Connexion"
+
+#: templates/base.html:92 templates/contact/contact.html:4
+#: templates/contact/contact.html.py:6
+msgid "Contact"
+msgstr "Contact"
+
+#: templates/base.html:94
+msgid "Terms and conditions"
+msgstr "Règlement de participation"
 
 #: templates/home.html:5
 msgid "Sport scolaire facultatif"
@@ -420,6 +442,22 @@ msgstr "Activités"
 #: templates/activities/activity_list.html:33
 msgid "End registration"
 msgstr "Terminer l'inscription"
+
+#: templates/contact/contact.html:23
+msgid "Send message"
+msgstr "Envoyer ce message"
+
+#: templates/contact/thanks.html:4
+msgid "Merci"
+msgstr "Merci"
+
+#: templates/contact/thanks.html:6
+msgid "Thanks for your message"
+msgstr "Merci pour votre message"
+
+#: templates/contact/thanks.html:14
+msgid "Your message has been sent. We'll get in touch soon."
+msgstr "Votre message a bien été envoyé. Nous vous recontacterons rapidement."
 
 #: templates/profiles/children_list.html:43
 msgid "About your children"
@@ -497,7 +535,3 @@ msgstr "Votre mot de passe a été changé."
 #: templates/registration/registration_form.html:6
 msgid "Inscription"
 msgstr "Inscription"
-
-#, fuzzy
-#~ msgid "Number of participants"
-#~ msgstr "nombre de participants"
