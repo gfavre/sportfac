@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib import admin
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.utils.translation import ugettext_lazy as _
@@ -96,12 +96,11 @@ class FamilyAdmin(UserAdmin):
     ordering = ('last_name', 'first_name')
     #filter_horizontal = ()
     inlines = [ChildInline]
+    
 
-# Now register the new UserAdmin...
 admin.site.register(FamilyUser, FamilyAdmin)
-# ... and, since we're not using Django's builtin permissions,
-# unregister the Group model from admin.
-#admin.site.unregister(Group)
+admin.site.unregister(Group)
+
 
 class TeacherAdmin(admin.ModelAdmin):
     list_display = ('last_name', 'first_name', 'years_label')

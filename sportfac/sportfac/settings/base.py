@@ -203,6 +203,7 @@ THIRD_PARTY_APPS = (
     'constance', # settings in admin
     'constance.backends.database', #settings in admin
     'grappelli', # admin interface
+    'django.contrib.admin',
     #'pipeline', # minifier
 )
 

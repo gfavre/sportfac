@@ -56,7 +56,7 @@ class FamilyManager(BaseUserManager):
           return user
 
 
-class FamilyUser(AbstractBaseUser, PermissionsMixin):
+class FamilyUser(PermissionsMixin, AbstractBaseUser):
     email = models.EmailField(verbose_name = 'Email address', max_length=255, unique=True, db_index=True)
     first_name = models.CharField(_('First name'), max_length=30, blank=True)
     last_name = models.CharField(_('Last name'), max_length=30, blank=True)
@@ -95,6 +95,20 @@ class FamilyUser(AbstractBaseUser, PermissionsMixin):
     
     def get_absolute_url(self):
         return reverse('profiles_account')
+    
+    
+    def has_perm(self, perm, obj=None):
+        return True
+    
+    def has_module_perms(self, app_label):
+        staff_apps = ['activities', 'profiles', 'constance']
+        # no registration nore auth
+        if self.is_superuser:
+            return True
+        if self.is_staff and app_label in staff_apps:
+            return True
+        return False
+            
     
     def __unicode__(self):
         return self.email
