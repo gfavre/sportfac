@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
-from .models import Activity, Responsible, Course
+from .models import Activity, Responsible, Course, ExtraNeed
 from profiles.models import Registration
 
 class CourseInline(admin.StackedInline):
@@ -18,10 +18,20 @@ class CourseInline(admin.StackedInline):
     verbose_name = _("course")
     verbose_name_plural = _("courses")
 
+class ExtraInline(admin.StackedInline):
+    model = ExtraNeed
+    extra = 0
+    
+    verbose_name = _("Extra need")
+    verbose_name_plural = _("Extra needs")
+
+
+
 class ActivityAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
     list_display = ('number', 'name')
-    inlines = [CourseInline,]
+    inlines = [CourseInline, ExtraInline]
+    
     verbose_name = _("activity")
     verbose_name_plural = _("activities")
     ordering = ('name',)

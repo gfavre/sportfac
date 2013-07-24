@@ -5,7 +5,7 @@ from rest_framework import serializers
 from rest_framework.compat import smart_text
 
 from activities.models import Activity, Course
-from profiles.models import Child, Teacher, SchoolYear, Registration
+from profiles.models import Child, Teacher, SchoolYear, Registration, ExtraInfo
 
 
 class ActivitySerializer(serializers.ModelSerializer):
@@ -84,3 +84,10 @@ class RegistrationSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Registration
+
+class ExtraSerializer(serializers.ModelSerializer):
+    registration = serializers.PrimaryKeyRelatedField(many=False, read_only=False)
+    key = serializers.PrimaryKeyRelatedField(many=False, read_only=False)
+    
+    class Meta:
+        model = ExtraInfo

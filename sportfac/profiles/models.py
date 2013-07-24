@@ -140,12 +140,27 @@ class Child(TimeStampedModel):
 class Registration(TimeStampedModel):
     course = models.ForeignKey('activities.Course', related_name="participants")
     child = models.ForeignKey('Child')
+    validated = models.BooleanField(default=False)
+    
+    @property
+    def extra_needs(self):
+        return self.course.activity.extra.all().exclude(id__in=self.extra_infos.values_list('key'))  
+    
+    def is_valid(self):
+        return self.extra_needs.count() == 0
+            
+    def __unicode__(self):
+        return '%s -> course %s' % (unicode(self.child), self.course.number)
     
     class Meta:
         unique_together = ('course', 'child')
         verbose_name = _("Registration")
         verbose_name_plural = _("Registrations")
-        
+
+class ExtraInfo(models.Model):
+    registration = models.ForeignKey('Registration', related_name='extra_infos')
+    key =  models.ForeignKey('activities.ExtraNeed')
+    value = models.CharField(max_length=255)
 
 
 class SchoolYear(models.Model):

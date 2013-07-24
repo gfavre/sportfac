@@ -10,6 +10,9 @@ router.register(r'courses', views.CourseViewSet)
 router.register(r'children', views.ChildrenViewSet)
 router.register(r'teachers', views.TeacherViewSet)
 router.register(r'registrations', views.RegistrationViewSet)
+router.register(r'extra', views.ExtraInfoViewSet, base_name="api-extra")
+
+
 
 #router.register(r'family', views.FamilyView)
 

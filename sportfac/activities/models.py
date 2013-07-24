@@ -48,7 +48,14 @@ class Activity(models.Model):
         verbose_name = _("activity")
         verbose_name_plural = _("activities")
            
-      
+
+class ExtraNeed(models.Model):
+    activity = models.ForeignKey('Activity', related_name='extra')
+    question_label = models.CharField(max_length=255, verbose_name=_("Question"), help_text=_("e.g. Shoes size?"))
+    
+    def __unicode__(self):
+        return self.question_label
+
 class Course(models.Model):
     "A course, i.e. an instance of an activity"
     activity = models.ForeignKey('Activity', related_name='courses')
@@ -67,6 +74,9 @@ class Course(models.Model):
     schoolyear_min = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="1", verbose_name=_("Minimal school year"))
     schoolyear_max = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="8", verbose_name=_("Maximal school year"))
     
+    @property
+    def day_name(self):
+        return dict(DAYS_OF_WEEK).get(self.day, str(self.day))
     
     @property
     def duration(self):
@@ -84,7 +94,7 @@ class Course(models.Model):
         return u'%s (%s): du %s au %s les %s à %s (%sp-%sp)' % (self.activity.name, self.number,
                                                           self.start_date.strftime("%d/%m/%Y"), 
                                                           self.end_date.strftime("%d/%m/%Y"),
-                                                          dict(DAYS_OF_WEEK).get(self.day, str(self.day)).lower(),
+                                                          self.day_name.lower(),
                                                           self.start_time.strftime("%H:%M"),
                                                           self.schoolyear_min, self.schoolyear_max)
     

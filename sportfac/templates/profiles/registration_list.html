@@ -1,12 +1,14 @@
 {% extends "wizard.html" %}
 {% load i18n %}
+{% load l10n %}
+{% load humanize %}
 
 {% block page_title %}{% trans "Confirmation" %}{% endblock page_title%}
 
 {% block content %}
 <div class="container" >
   <div class="row" >
-    <table class="span12">
+    <table class="span12 table">
       <thead>
         <tr>
           <th>{% trans "Name" %}</th>
@@ -21,43 +23,95 @@
           <th></th>
           <th></th>
           <th></th>
-          <th></th>
-          <th>{{ total_price }}</th>
+          <th>{% trans "Total" %}</th>
+          <th>CHF {{ total_price }}</th>
         </tr>
       </tfoot>
-      
-      {% for registered in registered_list %}
       <tbody>
+      {% for registered in registered_list %}
       <tr>
         <td>{{ registered.child.first_name }} {{ registered.child.last_name }}</td>
-        <td>{{ registered.course.activity.name }}</td>
+        <td>{{ registered.course.activity.name }}
+            {% for extra in registered.extra_needs %}
+              <p class="alert alert-error form-error" style="display: none">
+                <i class="icon-warning-sign icon-large"></i> {% trans "Please submit this form." %}</span>
+              </p>
+
+              <form class="form-inline extra-info" method="post">
+                {% csrf_token %}
+                <div class="form-content">
+                  <input type="hidden" name="registration" value="{{ registered.id }}" />
+                  <input type="hidden" name="key" value="{{ extra.id }}" />
+                  <label>{{ extra.question_label }} <input type="text" name="value" class="input-small" value=""/></label>
+                  <button type="submit" class="btn btn-success" >{% trans "Save" %}</button>
+                </div>
+                <p class="alert alert-info" style="display: none">
+                  <i class="icon-refresh icon-spin"></i> {% trans "Sending info..." %}
+                </p>
+                <p class="alert alert-success" style="display: none">
+                  <i class="icon-ok"></i> {{ extra.question_label }}: <span class="value"></span>
+                </p>
+                <p class="alert alert-error" style="display: none">
+                  <i class="icon-cross"></i> {% trans "An error has occurred. Please contact us." %}</span>
+                </p>
+              </form></p>
+            {% empty %}
+               {% for extra in registered.extra_infos.all %}
+                 <p class="text-info">{{ extra.key.question_label }}: {{ extra.value }}</p>
+               {% endfor %}
+            {% endfor %}
+        </td>
         <td>{{ registered.course.start_date }} – {{ registered.course.end_date }}</td>
-        <td>{{ registered.course.day }}: {{ registered.course.start_time }} - {{ registered.course.end_time }}</td>
-        <td>CHF {{ registered.course.price }}</td>
+        <td>{{ registered.course.day_name }} / {{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</td>
+        <td>CHF {{ registered.course.price|floatformat:2|intcomma }}</td>
       </tr>
-      </tbody>
       {% endfor %}
+      </tbody>
       
     </table>
   </div><!-- end row -->
 </div> <!-- end container -->
 {% endblock content %}
 
+{% block page_footer %}
+  <div class="form-actions">
+    {% if previous_step %}
+      <a class="btn"><i class="icon-chevron-left" href="{{ previous_step.url }}"></i> {% trans "Previous"%}</a>
+    {% endif %}
+    <div class="pull-right">
+      <a class="btn btn-primary btn-large btn-next" href="{{ next_step.url }}">{% trans "Confirm and proceed to checkout"%} <i class="icon-chevron-right icon-white"></i> </a>      
+  </div>
+{% endblock page_footer %}
 
 
 
 {% block extra_js %}
-{% if debug %}
-  <script src="{{ STATIC_URL }}js/vendor/jquery-ui.custom.min.js"></script>
-  <script src="{{ STATIC_URL }}js/vendor/fullcalendar.min.js"></script>
-  <script src="{{ STATIC_URL }}js/vendor/angular.min.js"></script>
-  <script src="{{ STATIC_URL }}js/vendor/angular-locale_fr-ch.js"></script>
-  <script src="{{ STATIC_URL }}js/vendor/angular-cookies.min.js"></script>
-  <script src="{{ STATIC_URL }}js/vendor/angular-ui-calendar.js"></script>
-  <script src="{{ STATIC_URL }}js/activities/services.js"></script>
-  <script src="{{ STATIC_URL }}js/activities/controllers.js"></script>
-  <script src="{{ STATIC_URL }}js/activities/app.js"></script>
-{% else %}
-  <script src="{{ STATIC_URL }}js/activities/app.min.js"></script>
-{% endif %}
+  <script src="{{ STATIC_URL }}js/vendor/jquery.form.min.js"></script>
+  <script>
+    $(document).ready(function(){
+        $('.btn-next').click(function(event){
+           if ($('.form-content').is(':visible')){
+              $('.form-error').show();
+              event.preventDefault();
+           } 
+        });
+        
+        $('.extra-info').ajaxForm({
+            url: '{% url "api-extra-list" %}',
+            success: function(res, status, xhr, form){
+              $('.alert-info', form).hide();
+              $('.alert-success .value', form).html(res.value);
+              $('.alert-success', form).show();
+            },
+            error: function(){
+              $('.alert-info', form).hide();
+              $('.alert-error', form).show();
+            },
+            beforeSubmit: function(formData, form, options){
+              $('.form-content', form).hide();
+              $('.alert-info', form).show();
+            }
+        });
+    });
+  </script>
 {% endblock extra_js %}

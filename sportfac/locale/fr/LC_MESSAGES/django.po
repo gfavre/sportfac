@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-23 23:42+0200\n"
+"POT-Creation-Date: 2013-07-24 15:52+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,47 +26,55 @@ msgstr "Dates"
 msgid "Limitations"
 msgstr "Limitations"
 
-#: activities/admin.py:18 activities/admin.py:74 activities/models.py:93
+#: activities/admin.py:18 activities/admin.py:84 activities/models.py:103
 msgid "course"
 msgstr "cours"
 
-#: activities/admin.py:19 activities/admin.py:75 activities/models.py:94
+#: activities/admin.py:19 activities/admin.py:85 activities/models.py:104
 msgid "courses"
 msgstr "cours"
 
-#: activities/admin.py:25 activities/models.py:48
+#: activities/admin.py:25
+msgid "Extra need"
+msgstr "Question complémentaire"
+
+#: activities/admin.py:26
+msgid "Extra needs"
+msgstr "Questions complémentaires"
+
+#: activities/admin.py:35 activities/models.py:48
 msgid "activity"
 msgstr "activité"
 
-#: activities/admin.py:26 activities/models.py:49
+#: activities/admin.py:36 activities/models.py:49
 msgid "activities"
 msgstr "activités"
 
-#: activities/admin.py:36 activities/admin.py:91
+#: activities/admin.py:46 activities/admin.py:101
 msgid "number of participants"
 msgstr "nombre de participants"
 
-#: activities/admin.py:50
+#: activities/admin.py:60
 msgid "Not reached minimum participants"
 msgstr "Pas encore atteint le minimum"
 
-#: activities/admin.py:51
+#: activities/admin.py:61
 msgid "Min participants reached"
 msgstr "Nombre minimal atteint"
 
-#: activities/admin.py:52
+#: activities/admin.py:62
 msgid "Full"
 msgstr "Complet"
 
-#: activities/admin.py:95
+#: activities/admin.py:105
 msgid "Duration"
 msgstr "Durée"
 
-#: activities/admin.py:103 activities/models.py:116
+#: activities/admin.py:113 activities/models.py:126
 msgid "responsible"
 msgstr "responsable"
 
-#: activities/admin.py:104 activities/models.py:117
+#: activities/admin.py:114 activities/models.py:127
 msgid "responsibles"
 msgstr "responsables"
 
@@ -131,11 +139,11 @@ msgid "8th HARMOS"
 msgstr "8p HARMOS"
 
 #: activities/models.py:35 contact/forms.py:9
-#: templates/profiles/registration_list.html:12
+#: templates/profiles/registration_list.html:14
 msgid "Name"
 msgstr "Nom"
 
-#: activities/models.py:36 activities/models.py:55
+#: activities/models.py:36 activities/models.py:62
 msgid "Number"
 msgstr "Numéro"
 
@@ -146,88 +154,87 @@ msgstr ""
 "Partie de l'URL. Ne peut contenit de ponctuation, d'espaces ou de caractères "
 "accentués"
 
-#: activities/models.py:56
+#: activities/models.py:54
+msgid "Question"
+msgstr "Question"
+
+#: activities/models.py:54
+msgid "e.g. Shoes size?"
+msgstr "p. ex. Taille des chaussures?"
+
+#: activities/models.py:63
 msgid "Responsible"
 msgstr "Responsable"
 
-#: activities/models.py:57 templates/profiles/registration_list.html:16
+#: activities/models.py:64 templates/profiles/registration_list.html:18
 msgid "Price"
 msgstr "Prix"
 
-#: activities/models.py:58
+#: activities/models.py:65
 msgid "Number of sessions"
 msgstr "Nombre de sessions"
 
-#: activities/models.py:59
+#: activities/models.py:66
 msgid "Day"
 msgstr "Jour"
 
-#: activities/models.py:60
+#: activities/models.py:67
 msgid "Start date"
 msgstr "Date de début"
 
-#: activities/models.py:61
+#: activities/models.py:68
 msgid "End date"
 msgstr "Date de fin"
 
-#: activities/models.py:62
+#: activities/models.py:69
 msgid "Start time"
 msgstr "Heure de début"
 
-#: activities/models.py:63
+#: activities/models.py:70
 msgid "End time"
 msgstr "Heure de fin"
 
-#: activities/models.py:64
+#: activities/models.py:71
 msgid "Place"
 msgstr "Lieu"
 
-#: activities/models.py:65
+#: activities/models.py:72
 msgid "Minimal number of participants"
 msgstr "Nombre minimum de participants"
 
-#: activities/models.py:66
+#: activities/models.py:73
 msgid "Maximal number of participants"
 msgstr "Nombre maximum de participants"
 
-#: activities/models.py:67
+#: activities/models.py:74
 msgid "Minimal school year"
 msgstr "Année scolaire minimale"
 
-#: activities/models.py:68
+#: activities/models.py:75
 msgid "Maximal school year"
 msgstr "Année scolaire maximale"
 
-#: activities/models.py:99 profiles/forms.py:15 profiles/forms.py:54
-#: profiles/models.py:61 profiles/models.py:166
+#: activities/models.py:109 profiles/forms.py:15 profiles/forms.py:54
+#: profiles/models.py:61 profiles/models.py:181
 msgid "First name"
 msgstr "Prénom"
 
-#: activities/models.py:99
+#: activities/models.py:109
 msgid "Leave it empty in case of collaboration name"
 msgstr "Laissez ce champ vide dans le cas d'un nom d'entreprise"
 
-#: activities/models.py:100 profiles/forms.py:16 profiles/forms.py:55
-#: profiles/models.py:62 profiles/models.py:167
+#: activities/models.py:110 profiles/forms.py:16 profiles/forms.py:55
+#: profiles/models.py:62 profiles/models.py:182
 msgid "Last name"
 msgstr "Nom"
 
-#: activities/models.py:101
+#: activities/models.py:111
 msgid "Phone number"
 msgstr "Numéro de téléphone"
 
-#: activities/models.py:102
+#: activities/models.py:112
 msgid "Email"
 msgstr "E-mail"
-
-#: assets/partials/activity-detail.html:44
-#: assets/partials/activity-detail.html:52
-#: assets/partials/activity-detail.html:60
-#: static/partials/activity-detail.html:44
-#: static/partials/activity-detail.html:56
-#: static/partials/activity-detail.html:64
-msgid "Plus de place"
-msgstr "Plus de place"
 
 #: contact/forms.py:11 profiles/forms.py:12 profiles/forms.py:51
 msgid "E-mail"
@@ -325,27 +332,27 @@ msgstr "Garçon"
 msgid "Female"
 msgstr "Fille"
 
-#: profiles/models.py:146
+#: profiles/models.py:157
 msgid "Registration"
 msgstr "Inscription"
 
-#: profiles/models.py:147
+#: profiles/models.py:158
 msgid "Registrations"
 msgstr "Inscriptions"
 
-#: profiles/models.py:152 profiles/models.py:161
+#: profiles/models.py:167 profiles/models.py:176
 msgid "School year"
 msgstr "Année scolaire"
 
-#: profiles/models.py:162 profiles/models.py:168
+#: profiles/models.py:177 profiles/models.py:183
 msgid "School years"
 msgstr "Années scolaires"
 
-#: profiles/models.py:180
+#: profiles/models.py:195
 msgid "teacher"
 msgstr "enseignant"
 
-#: profiles/models.py:181
+#: profiles/models.py:196
 msgid "teachers"
 msgstr "enseignants"
 
@@ -363,7 +370,7 @@ msgid "Register activities"
 msgstr "Inscription aux activités"
 
 #: sportfac/context_processors.py:22
-#: templates/profiles/registration_list.html:4
+#: templates/profiles/registration_list.html:6
 msgid "Confirmation"
 msgstr "Confirmation"
 
@@ -371,48 +378,58 @@ msgstr "Confirmation"
 msgid "Billing"
 msgstr "Paiement"
 
-#: sportfac/settings/base.py:292
+#: sportfac/settings/base.py:293
 msgid "Registration opening date"
 msgstr "Début de la période d'enregistrement"
 
-#: sportfac/settings/base.py:293
+#: sportfac/settings/base.py:294
 msgid "Registration ending date"
 msgstr "Fin de la période d'enregistrement"
 
-#: templates/base.html:47 templates/profiles/familyuser_form.html:4
+#: static/partials/activity-detail.html:44
+#: static/partials/activity-detail.html:56
+#: static/partials/activity-detail.html:64
+msgid "Plus de place"
+msgstr "Plus de place"
+
+#: templates/base.html:37
+msgid "Home"
+msgstr "Accueil"
+
+#: templates/base.html:39 templates/base.html.py:95
+msgid "Terms and conditions"
+msgstr "Règlement de participation"
+
+#: templates/base.html:48 templates/profiles/familyuser_form.html:4
 #: templates/profiles/familyuser_form.html:5
 #: templates/registration/password_change_done.html:13
 msgid "My account"
 msgstr "Mon compte"
 
-#: templates/base.html:48
+#: templates/base.html:49
 msgid "My family"
 msgstr "Ma famille"
 
-#: templates/base.html:49
+#: templates/base.html:50
 msgid "My agenda"
 msgstr "Mon agenda"
 
-#: templates/base.html:52
+#: templates/base.html:53
 msgid "Administration"
 msgstr "Administration"
 
-#: templates/base.html:56
+#: templates/base.html:57
 msgid "logout"
 msgstr "Déconnexion"
 
-#: templates/base.html:61
+#: templates/base.html:62
 msgid "login"
 msgstr "Connexion"
 
-#: templates/base.html:92 templates/contact/contact.html:4
+#: templates/base.html:93 templates/contact/contact.html:4
 #: templates/contact/contact.html.py:6
 msgid "Contact"
 msgstr "Contact"
-
-#: templates/base.html:94
-msgid "Terms and conditions"
-msgstr "Règlement de participation"
 
 #: templates/home.html:5
 msgid "Sport scolaire facultatif"
@@ -422,6 +439,7 @@ msgstr "Sport scolaire facultatif"
 #: templates/activities/activity_list.html:29
 #: templates/profiles/children_list.html:37
 #: templates/profiles/children_list.html:69
+#: templates/profiles/registration_list.html:79
 msgid "Previous"
 msgstr "Précédent"
 
@@ -495,17 +513,41 @@ msgstr "Informations de contact"
 msgid "Save and continue"
 msgstr "Enregistrer et continuer"
 
-#: templates/profiles/registration_list.html:13
+#: templates/profiles/registration_list.html:15
 msgid "Activity"
 msgstr "Activité"
 
-#: templates/profiles/registration_list.html:14
+#: templates/profiles/registration_list.html:16
 msgid "Period"
 msgstr "Période"
 
-#: templates/profiles/registration_list.html:15
+#: templates/profiles/registration_list.html:17
 msgid "Time"
 msgstr "Jour / Heure"
+
+#: templates/profiles/registration_list.html:26
+msgid "Total"
+msgstr "Total"
+
+#: templates/profiles/registration_list.html:37
+msgid "Please submit this form."
+msgstr "Merci de remplir ce formulaire"
+
+#: templates/profiles/registration_list.html:46
+msgid "Save"
+msgstr "Enregistrer"
+
+#: templates/profiles/registration_list.html:49
+msgid "Sending info..."
+msgstr "Envoi des informations..."
+
+#: templates/profiles/registration_list.html:55
+msgid "An error has occurred. Please contact us."
+msgstr "Une erreur s'est produite, veuillez nous contacter"
+
+#: templates/profiles/registration_list.html:82
+msgid "Confirm and proceed to checkout"
+msgstr "Confirmer et passer au paiement"
 
 #: templates/registration/login.html:3 templates/registration/login.html:5
 msgid "Login"
@@ -535,3 +577,4 @@ msgstr "Votre mot de passe a été changé."
 #: templates/registration/registration_form.html:6
 msgid "Inscription"
 msgstr "Inscription"
+

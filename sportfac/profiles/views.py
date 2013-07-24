@@ -67,7 +67,7 @@ class RegisteredActivitiesListView(LoginRequiredMixin, ListView):
     context_object_name = 'registered_list'
     
     def get_queryset(self):
-        return Registration.objects.filter(child__in=self.request.user.children.all())
+        return Registration.objects.select_related('course__activity__extra', 'extra_infos').prefetch_related('extra_infos').filter(child__in=self.request.user.children.all())
         
 
     def get_context_data(self, **kwargs):
