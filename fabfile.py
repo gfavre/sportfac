@@ -65,7 +65,6 @@ def __concat_domain(subdomain, domain):
     return domain
 
 
-
 env.local_config_dir  = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config')
 env.machine           = WF_HOST
 env.hosts             = [WF_HOST.lower() + '.webfaction.com']
@@ -258,7 +257,8 @@ def restart_app():
 def _create_ve(name):
     """creates virtualenv using virtualenvwrapper
     """
-    env.secretkey = ''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)])
+    secret_chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$^&*(-_=+)'
+    env.secretkey = ''.join([random.SystemRandom().choice(secret_chars) for i in range(50)])
     
     if not exists(env.virtualenv):
         with cd(env.virtualenv_dir):
