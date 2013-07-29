@@ -181,7 +181,7 @@ factory("$store", ["$parse", function($parse){
         return new Course(response.data);
       });
     }
-  };  
+  };
   return ModelUtils;
 }])
 
@@ -233,5 +233,5 @@ factory("$store", ["$parse", function($parse){
           return $http.delete(url + obj.id + '/');
         }
     };
-    return ModelUtils;  
+    return ModelUtils;
 }]);

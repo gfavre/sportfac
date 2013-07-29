@@ -133,13 +133,15 @@ function($scope, $filter, $modal, CoursesService){
   
   $scope.updateOthersEvents = function(){
     $scope.othersRegisteredEvents.length = 0;
-    var addToOthers = function(course){
-      $scope.othersRegisteredEvents.push(course.toEvent("unavailable"));
-    };
+    
     angular.forEach($scope.userChildren, function(child){
       if (child !== $scope.selectedChild) {
         angular.forEach($scope['registeredCourses_' + child.id], function(courseId){
-          CoursesService.get(courseId).then(addToOthers);
+          CoursesService.get(courseId).then(function(course){
+            var event = course.toEvent("unavailable");
+            event.title = event.title + ' (' + child.first_name + ')';
+            $scope.othersRegisteredEvents.push(event);
+          });
         });
       }
      });
