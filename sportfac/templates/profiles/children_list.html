@@ -3,46 +3,17 @@
 
 
 {% block title %}{% trans "Your children" %}{% endblock title %}
-{% block extra_html %}ng-app="children" ng-controller="ListCtrl"{% endblock extra_html %}
-{% block page_header %}
-<div class="row simple-page-header">
-  <div class="wizard">
-    <ul class="steps" >
-      {% for step in steps %}
-        {% if step.id == 'activities-step' %}
-          <li ng-class="{complete: userChildren.length > 0}">
-          <span ng-class="{'badge': true, 'badge-success': userChildren.length > 0}">{{ forloop.counter }}</span>
-          <a href="{{ step.url }}" ng-show="userChildren.length > 0" style="display: none">{{ step.title }}</a>
-          <span ng-hide="userChildren.length > 0">{{ step.title }}</span>          
-          <span class="chevron"></span>
-        </li>
+{% block page_title %}{% trans "About your children" %}{% endblock page_title %}
 
-        {% else %}
-      
-        <li class="{% if step.current %}active{% else %}{% if step.activable %}complete{% endif %}{% endif %}">
-          <span class="badge {% if step.activable %}badge-success{% endif %} {% if step.current %}badge-info{% endif %}">{{ forloop.counter }}</span>
-          {% if step.current or not step.activable %}
-            {{ step.title }}
-          {% else %}
-            <a href="{{ step.url }}">{{ step.title }}</a>
-          {% endif %}
-          
-          <span class="chevron"></span>
-        </li>
-        {% endif %}        
-      {% endfor %}
-    </ul>
-    
+{% block extra_html %}ng-app="children" ng-controller="ListCtrl"{% endblock extra_html %}
+
+{% block wizard_actions %}
     <div class="actions">
-      <button type="button" class="btn btn-mini btn-prev" {% if not previous_step %}disabled{% endif %}> <i class="icon-arrow-left"></i>{% trans "Previous"%}</button>
-      <button type="button" class="btn btn-mini btn-next" data-last="Finish" ng-disabled="userChildren.length == 0">{% trans "Next"%}<i class="icon-arrow-right"></i></button>
+      <a href="{{ previous_step.url }}" class="btn btn-mini btn-prev{% if not previous_step %} disabled{% endif %}"><i class="icon-arrow-left"></i> {% trans "Previous"%}</a>
+      <a href="{{ next_step.url }}" class="btn btn-mini btn-next" ng-class="{'disabled': userChildren.length == 0}">{% trans "Next"%} <i class="icon-arrow-right"></i></a>
     </div>
-  </div>
-</div>
-<div class="row page-header">
-  <h1 class="span12">{% block page_title %}{% trans "About your children" %}{% endblock page_title %}</h1>
-</div>
-{% endblock page_header %}
+{% endblock wizard_actions %}
+
 
 {% block content %}
 <div class="container">

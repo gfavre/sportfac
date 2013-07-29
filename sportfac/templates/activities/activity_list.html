@@ -4,6 +4,15 @@
 {% block extra_html %}ng-app="sportfacCalendar" ng-controller="ChildrenCtrl"{% endblock extra_html %}
 {% block page_title %}{% trans "Activities" %}{% endblock page_title%}
 
+
+{% block wizard_actions %}
+    <div class="actions">
+      <a href="{{ previous_step.url }}" class="btn btn-mini btn-prev{% if not previous_step %} disabled{% endif %}"><i class="icon-arrow-left"></i> {% trans "Previous"%}</a>
+      <a href="{{ next_step.url }}" class="btn btn-mini btn-next" ng-class="{'disabled': selectedChild.registered.length === 0}">{% trans "Next"%}<i class="icon-arrow-right"></i></a>
+    </div>
+  </div>
+{% endblock wizard_actions %}
+
 {% block content %}
 <div class="container" >
   <div class="tabbable" style="margin-left:-30px">

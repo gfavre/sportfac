@@ -13,23 +13,29 @@ class Step:
     
         
 def can_pay(user):
-    if not user.is_authenticated:
+    if not user.is_authenticated():
         return False
     return Registration.objects.filter(child__in=user.children.all(), validated=True, paid=False).count() > 0
 
 def can_confirm(user):
-    if not user.is_authenticated:
+    if not user.is_authenticated():
         return False
-    return Registration.objects.filter(child__in=request.user.children.all()).count() > 0
+    return Registration.objects.filter(child__in=user.children.all()).count() > 0
+
+def can_register(user):
+    if not user.is_authenticated():
+        return False
+    return user.children.count() > 0
+
 
 
 def wizard_context(request):
     about = Step(request, 'about-step', _("About you"), 'profiles_account', True)
     children = Step(request, 'children-step', _("Your children"), 'profiles_children', request.user.is_authenticated)
     activities = Step(request, 'activities-step', _("Register activities"), 'activities-list', 
-                      request.user.is_authenticated() and request.user.children.count())
+                      can_register(request.user))
     confirmation = Step(request, 'confirm-step',_("Confirmation"), 'activities-confirm', 
-                       request.user.is_authenticated and Registration.objects.filter(child__in=request.user.children.all()).count() > 0)
+                        can_confirm(request.user))
     billing = Step(request, 'billing-step', _("Billing"), 'home', can_pay(request.user))
     
     

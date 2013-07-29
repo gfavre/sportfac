@@ -18,12 +18,13 @@
         </li>
       {% endfor %}
     </ul>
-    
+    {% block wizard_actions %}
     <div class="actions">
-      <button type="button" class="btn btn-mini btn-prev" {% if not previous_step %}disabled{% endif %}> <i class="icon-arrow-left"></i>{% trans "Previous"%}</button>
-      <button type="button" class="btn btn-mini btn-next" data-last="Finish" {% if not next_step %}disabled{% endif %}>{% trans "Next"%}<i class="icon-arrow-right"></i></button>
+      <a href="{{ previous_step.url }}" class="btn btn-mini btn-prev{% if not previous_step %} disabled{% endif %}"><i class="icon-arrow-left"></i> {% trans "Previous"%}</a>
+      <a href="{{ next_step.url }}" class="btn btn-mini btn-next{% if not next_step %} disabled{% endif %}">{% trans "Next"%}<i class="icon-arrow-right"></i></a>
     </div>
   </div>
+  {% endblock wizard_actions %}
 </div>
 <div class="row page-header">
   <h1 class="span12">{% block page_title %}{% endblock page_title %}</h1>
@@ -33,11 +34,11 @@
 {% block page_footer %}
   <div class="form-actions">
     {% if previous_step %}
-      <a class="btn"><i class="icon-chevron-left" href="{{ previous_step.url }}"></i> {% trans "Previous"%}</a>
+      <a class="btn"><i class="icon-chevron-left" href="{{ previous_step.url }}"></i> {% block previous_label %}{% trans "Previous"%}{% endblock previous_label %}</a>
     {% endif %}
     <div class="pull-right">
       {% if next_step %}
-      <a class="btn btn-primary btn-large" href="{{ next_step.url }}">{% trans "Next"%} <i class="icon-chevron-right icon-white"></i> </a>      
+      <a class="btn btn-primary btn-large" href="{{ next_step.url }}">{% block next_label %}{% trans "Next"%}{% endblock %} <i class="icon-chevron-right icon-white"></i> </a>      
       {% endif %}
   </div>
 {% endblock page_footer %}

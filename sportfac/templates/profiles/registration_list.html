@@ -73,16 +73,7 @@
 </div> <!-- end container -->
 {% endblock content %}
 
-{% block page_footer %}
-  <div class="form-actions">
-    {% if previous_step %}
-      <a class="btn"><i class="icon-chevron-left" href="{{ previous_step.url }}"></i> {% trans "Previous"%}</a>
-    {% endif %}
-    <div class="pull-right">
-      <a class="btn btn-primary btn-large btn-next" href="{{ next_step.url }}">{% trans "Confirm and proceed to checkout"%} <i class="icon-chevron-right icon-white"></i> </a>      
-  </div>
-{% endblock page_footer %}
-
+{% block next_label %}{% trans "Confirm and proceed to checkout"%}{% endblock next_label %}
 
 
 {% block extra_js %}
