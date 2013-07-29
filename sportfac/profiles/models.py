@@ -141,7 +141,7 @@ class Registration(TimeStampedModel):
     course = models.ForeignKey('activities.Course', related_name="participants")
     child = models.ForeignKey('Child')
     validated = models.BooleanField(default=False)
-    payed = models.BooleanField(default=False)
+    paid = models.BooleanField(default=False)
     
     @property
     def extra_needs(self):
