@@ -165,7 +165,9 @@ factory("$store", ["$parse", function($parse){
           return {title: this.activity.name,
                   start: this.getStartDate(), end: this.getEndDate(),
                   allDay: false,
-                  className: className, course: this, activityId: this.activity.id};},
+                  className: className,
+                  clickable: className !== 'unavailable',
+                  course: this, activityId: this.activity.id};},
         
       });
       angular.extend(this, data);

@@ -166,9 +166,11 @@ function($scope, $filter, $modal, CoursesService){
     
   $scope.eventClick = function(calEvent, jsEvent, view){
       $scope.$apply(function(){
+        if (!calEvent.clickable){
+            return;
+        }
         $scope.selectedEvent = calEvent;
         $scope.selectedCourse = calEvent.course;
-        
         $modal(
             {template: '/static/partials/activity-detail.html',
              show: true,
@@ -211,9 +213,9 @@ function($scope, $filter, $modal, CoursesService){
   $scope.unregister = function(calEvent){
     var courseId = calEvent.course.id;
     var index = $scope.selectedChild.registered.indexOf(courseId);
-
+    
     // dont change this == to a === it won't work. Dunno why.
-    if (calEvent.className == 'registered') {
+    if (calEvent.clickable) {
         // registered to this child
         calEvent.className = 'available';
         $scope.selectedChild.registered.splice(index, 1);
@@ -222,9 +224,6 @@ function($scope, $filter, $modal, CoursesService){
         } else{
             $scope.weekagenda.fullCalendar('updateEvent', calEvent);
         }
-    } else {
-        console.log('other child, no implemented yet');
-        // registered to another child
     }
   };
   
