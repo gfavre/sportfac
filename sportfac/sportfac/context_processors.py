@@ -12,6 +12,15 @@ class Step:
         self.current = request.path == self.url
     
         
+def can_pay(user):
+    if not user.is_authenticated:
+        return False
+    return Registration.objects.filter(child__in=user.children.all(), validated=True, paid=False).count() > 0
+
+def can_confirm(user):
+    if not user.is_authenticated:
+        return False
+    return Registration.objects.filter(child__in=request.user.children.all()).count() > 0
 
 
 def wizard_context(request):
@@ -19,8 +28,9 @@ def wizard_context(request):
     children = Step(request, 'children-step', _("Your children"), 'profiles_children', request.user.is_authenticated)
     activities = Step(request, 'activities-step', _("Register activities"), 'activities-list', 
                       request.user.is_authenticated() and request.user.children.count())
-    confirmation = Step(request, 'confirm-step',_("Confirmation"), 'activities-confirm', True)#request.user.is_authenticated and Registration.objects.filter(child__in=request.user.children.all()).count() > 0)
-    billing = Step(request, 'billing-step', _("Billing"), 'home', True)#request.user.is_authenticated and Registration.objects.filter(child__in=request.user.children.all()).count() > 0)
+    confirmation = Step(request, 'confirm-step',_("Confirmation"), 'activities-confirm', 
+                       request.user.is_authenticated and Registration.objects.filter(child__in=request.user.children.all()).count() > 0)
+    billing = Step(request, 'billing-step', _("Billing"), 'home', can_pay(request.user))
     
     
     steps = [about, children, activities, confirmation, billing]
