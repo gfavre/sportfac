@@ -1,5 +1,9 @@
+from datetime import datetime
+
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
+
+from constance import config
 
 from profiles.models import Registration
 
@@ -49,3 +53,10 @@ def wizard_context(request):
             'next_step': current != len(steps) -1 and steps[current + 1] or None,
             'steps': steps,
             'max_step': [step.url for step in steps if step.activable][-1]}
+
+def registration_opened_context(request):
+    start = config.START_REGISTRATION
+    end = config.END_REGISTRATION
+    return {'registration_opened': start <= datetime.today() <= end,
+            'registration_start': start,
+            'registration_end': end}

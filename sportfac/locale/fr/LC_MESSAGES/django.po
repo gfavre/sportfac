@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-31 10:53+0200\n"
+"POT-Creation-Date: 2013-07-31 11:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -332,7 +332,7 @@ msgstr "Garçon"
 msgid "Female"
 msgstr "Fille"
 
-#: profiles/models.py:158 templates/home.html:28 templates/home.html.py:30
+#: profiles/models.py:158 templates/home.html:32 templates/home.html.py:34
 msgid "Registration"
 msgstr "Inscription"
 
@@ -356,33 +356,33 @@ msgstr "enseignant"
 msgid "teachers"
 msgstr "enseignants"
 
-#: sportfac/context_processors.py:33
+#: sportfac/context_processors.py:37
 msgid "About you"
 msgstr "À propos de vous"
 
-#: sportfac/context_processors.py:34 templates/profiles/children_list.html:5
+#: sportfac/context_processors.py:38 templates/profiles/children_list.html:5
 msgid "Your children"
 msgstr "Vos enfants"
 
-#: sportfac/context_processors.py:35 templates/profiles/children_list.html:42
+#: sportfac/context_processors.py:39 templates/profiles/children_list.html:42
 #: templates/profiles/children_list.html:44
 msgid "Register activities"
 msgstr "Inscription aux activités"
 
-#: sportfac/context_processors.py:37
+#: sportfac/context_processors.py:41
 #: templates/profiles/registration_list.html:6
 msgid "Confirmation"
 msgstr "Confirmation"
 
-#: sportfac/context_processors.py:39
+#: sportfac/context_processors.py:43
 msgid "Billing"
 msgstr "Paiement"
 
-#: sportfac/settings/base.py:293
+#: sportfac/settings/base.py:294
 msgid "Registration opening date"
 msgstr "Début de la période d'enregistrement"
 
-#: sportfac/settings/base.py:294
+#: sportfac/settings/base.py:295
 msgid "Registration ending date"
 msgstr "Fin de la période d'enregistrement"
 
@@ -431,13 +431,24 @@ msgstr "Connexion"
 msgid "Contact"
 msgstr "Contact"
 
-#: templates/home.html:5
+#: templates/home.html:7
 msgid "Sport scolaire facultatif"
 msgstr "Sport scolaire facultatif"
 
-#: templates/home.html:31
+#: templates/home.html:35
 msgid "... or login"
 msgstr "... ou connexion"
+
+#: templates/home.html:40
+msgid "Registrations are currently closed"
+msgstr "Les inscriptions sont fermées pour le moment."
+
+#: templates/home.html:41
+#, python-format
+msgid "They will open from %(registration_start)s until %(registration_end)s."
+msgstr ""
+"La période d'inscription "
+"commence le %(registration_start)s et se termine le %(registration_end)s."
 
 #: templates/wizard.html:23 templates/wizard.html.py:37
 #: templates/activities/activity_list.html:10

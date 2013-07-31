@@ -46,9 +46,11 @@
                   <i class="icon-user"></i> {{ user.first_name }} {{ user.last_name }} <span class="icon-caret-down"></span>
                 </a>
                 <ul class="dropdown-menu">
+                  {% if registration_opened or user.is_staff %}
                   <li><a href="{% url 'profiles_account' %}"><i class="icon-fixed-width icon-pencil"></i> {% trans "My account" %}</a></li>
                   <li><a href="{% url 'profiles_children' %}"><i class="icon-fixed-width icon-group"></i>{% trans "My family" %}</a></li>
                   <li><a href="{% url 'activities-list' %}"><i class="icon-fixed-width icon-calendar"></i> {% trans "My agenda" %}</a></li>
+                  {% endif %}
                   {% if user.is_staff %}
                     <li class="divider"></li>
                     <li><a href="{% url 'admin:index' %}"><i class="icon-fixed-width icon-cogs"></i> {% trans "Administration" %}</a></li>
