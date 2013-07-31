@@ -72,10 +72,11 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     
     is_active = models.BooleanField(default=True, help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.')
     is_admin = models.BooleanField(default=False)
-    is_staff = models.BooleanField('staff status', default=False, help_text='Designates whether the user can log into this admin site.')
+    is_staff = models.BooleanField('staff status', default=False, help_text=_('Designates whether the user can log into this admin site.'))
     
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
     
+    finished_registration = models.BooleanField(default=False, verbose_name=_("Finished registration"), help_text=_("For current year"))
     
     objects = FamilyManager()
     
