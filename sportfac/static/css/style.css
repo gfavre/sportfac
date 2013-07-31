@@ -7693,6 +7693,9 @@ a .icon-rotate-90:before, a .icon-rotate-180:before, a .icon-rotate-270:before, 
 .warning-light {
   border-left: 5px solid #f1e7bc; }
 
+body > .navbar .brand.white {
+  color: white; }
+
 /* forms */
 input.ng-invalid:focus,
 textarea.ng-invalid:focus,
