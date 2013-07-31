@@ -1,4 +1,4 @@
-from datetime import datetime
+from django.utils import timezone
 
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
@@ -57,6 +57,6 @@ def wizard_context(request):
 def registration_opened_context(request):
     start = config.START_REGISTRATION
     end = config.END_REGISTRATION
-    return {'registration_opened': start <= datetime.today() <= end,
+    return {'registration_opened': start <= timezone.now() <= end,
             'registration_start': start,
             'registration_end': end}

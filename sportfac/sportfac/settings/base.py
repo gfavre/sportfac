@@ -4,6 +4,7 @@ import os
 from os.path import abspath, basename, dirname, join, normpath
 from sys import path
 from datetime import datetime
+from pytz import timezone
 
 ugettext = lambda s: s
 
@@ -291,8 +292,8 @@ REST_FRAMEWORK = {
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 CONSTANCE_SUPERUSER_ONLY = False
 CONSTANCE_CONFIG = {
-    'START_REGISTRATION': (datetime(2013,9,1), ugettext("Registration opening date")),
-    'END_REGISTRATION': (datetime(2013,10,1), ugettext("Registration ending date")),
+    'START_REGISTRATION': (datetime(2013,9,1, tzinfo=timezone('Europe/Zurich')), ugettext("Registration opening date")),
+    'END_REGISTRATION': (datetime(2013,10,1, tzinfo=timezone('Europe/Zurich')), ugettext("Registration ending date")),
 }
 
 ########## END CONSTANCE CONFIGURATION
