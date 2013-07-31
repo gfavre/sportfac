@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-31 09:33+0200\n"
+"POT-Creation-Date: 2013-07-31 10:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -139,7 +139,7 @@ msgid "8th HARMOS"
 msgstr "8p HARMOS"
 
 #: activities/models.py:35 contact/forms.py:9
-#: templates/profiles/registration_list.html:33
+#: templates/profiles/registration_list.html:35
 msgid "Name"
 msgstr "Nom"
 
@@ -166,7 +166,7 @@ msgstr "p. ex. Taille des chaussures?"
 msgid "Responsible"
 msgstr "Responsable"
 
-#: activities/models.py:64 templates/profiles/registration_list.html:38
+#: activities/models.py:64 templates/profiles/registration_list.html:40
 msgid "Price"
 msgstr "Prix"
 
@@ -194,7 +194,7 @@ msgstr "Heure de début"
 msgid "End time"
 msgstr "Heure de fin"
 
-#: activities/models.py:71 templates/profiles/registration_list.html:37
+#: activities/models.py:71 templates/profiles/registration_list.html:39
 msgid "Place"
 msgstr "Lieu"
 
@@ -332,7 +332,7 @@ msgstr "Garçon"
 msgid "Female"
 msgstr "Fille"
 
-#: profiles/models.py:158
+#: profiles/models.py:158 templates/home.html:28 templates/home.html.py:30
 msgid "Registration"
 msgstr "Inscription"
 
@@ -435,6 +435,10 @@ msgstr "Contact"
 msgid "Sport scolaire facultatif"
 msgstr "Sport scolaire facultatif"
 
+#: templates/home.html:31
+msgid "... or login"
+msgstr "... ou connexion"
+
 #: templates/wizard.html:23 templates/wizard.html.py:37
 #: templates/activities/activity_list.html:10
 #: templates/activities/activity_list.html:38
@@ -534,39 +538,39 @@ msgstr ""
 "Les cours suivants se déroulent en même temps ou à moins de trente minutes "
 "l'un de l'autre. Il pourrait être difficile d'y amener votre enfant."
 
-#: templates/profiles/registration_list.html:34
+#: templates/profiles/registration_list.html:36
 msgid "Activity"
 msgstr "Activité"
 
-#: templates/profiles/registration_list.html:35
+#: templates/profiles/registration_list.html:37
 msgid "Period"
 msgstr "Période"
 
-#: templates/profiles/registration_list.html:36
+#: templates/profiles/registration_list.html:38
 msgid "Time"
 msgstr "Jour / Heure"
 
-#: templates/profiles/registration_list.html:43
+#: templates/profiles/registration_list.html:45
 msgid "Total"
 msgstr "Total"
 
-#: templates/profiles/registration_list.html:54
+#: templates/profiles/registration_list.html:56
 msgid "Please submit this form."
 msgstr "Merci de remplir ce formulaire"
 
-#: templates/profiles/registration_list.html:63
+#: templates/profiles/registration_list.html:65
 msgid "Save"
 msgstr "Enregistrer"
 
-#: templates/profiles/registration_list.html:66
+#: templates/profiles/registration_list.html:68
 msgid "Sending info..."
 msgstr "Envoi des informations..."
 
-#: templates/profiles/registration_list.html:72
+#: templates/profiles/registration_list.html:74
 msgid "An error has occurred. Please contact us."
 msgstr "Une erreur s'est produite, veuillez nous contacter"
 
-#: templates/profiles/registration_list.html:94
+#: templates/profiles/registration_list.html:96
 msgid "Confirm and proceed to checkout"
 msgstr "Confirmer et passer au paiement"
 

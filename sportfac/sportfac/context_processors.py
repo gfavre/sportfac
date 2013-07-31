@@ -47,4 +47,5 @@ def wizard_context(request):
     return {'show_wizard': len(filter(lambda x: x.current, steps)),
             'previous_step': current != 0 and steps[current - 1] or None,
             'next_step': current != len(steps) -1 and steps[current + 1] or None,
-            'steps': steps}
+            'steps': steps,
+            'max_step': [step.url for step in steps if step.activable][-1]}

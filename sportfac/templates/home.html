@@ -24,7 +24,12 @@
   </div><!-- end row -->
   <div class="row">
     <p class="span12" style="text-align: center">
-      <a href="{% url 'registration_register' %}" class="btn btn-large btn-primary">Inscription</a>
+      {% if user.is_authenticated %}
+      <a href="{{ max_step }}" class="btn btn-large btn-primary">{% trans "Registration" %}</a>
+      {% else %}
+      <a href="{% url 'registration_register' %}" class="btn btn-large btn-primary">{% trans "Registration" %}</a>
+      <a href="{% url 'auth_login' %}?next={{ request.path }}">{% trans "... or login" %}</a>
+      {% endif %}
     </p>
   </div>  
 </div> <!-- end container -->
