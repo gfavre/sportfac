@@ -122,6 +122,7 @@ class RegistrationViewSet(viewsets.ModelViewSet):
     def create(self, request, format=None):
         if type(request.DATA) is list:
             data = []
+            self.get_queryset().exclude(validated=True).exclude(paid=True).delete()
             for registration in request.DATA:
                 serializer = RegistrationSerializer(data=registration)
                 if serializer.is_valid():

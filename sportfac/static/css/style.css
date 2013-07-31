@@ -7684,6 +7684,15 @@ a .icon-rotate-90:before, a .icon-rotate-180:before, a .icon-rotate-270:before, 
 .simple-page-header {
   margin-top: 20px; }
 
+.nowrap {
+  white-space: nowrap; }
+
+.highlight {
+  cursor: help; }
+
+.warning-light {
+  border-left: 5px solid #f1e7bc; }
+
 /* forms */
 input.ng-invalid:focus,
 textarea.ng-invalid:focus,

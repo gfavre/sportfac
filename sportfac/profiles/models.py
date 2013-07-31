@@ -157,6 +157,7 @@ class Registration(TimeStampedModel):
         unique_together = ('course', 'child')
         verbose_name = _("Registration")
         verbose_name_plural = _("Registrations")
+        ordering = ('child__first_name', 'course__start_date')
 
 class ExtraInfo(models.Model):
     registration = models.ForeignKey('Registration', related_name='extra_infos')

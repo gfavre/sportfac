@@ -34,7 +34,7 @@
 {% block page_footer %}
   <div class="form-actions">
     {% if previous_step %}
-      <a class="btn"><i class="icon-chevron-left" href="{{ previous_step.url }}"></i> {% block previous_label %}{% trans "Previous"%}{% endblock previous_label %}</a>
+      <a class="btn" href="{{ previous_step.url }}"><i class="icon-chevron-left"></i> {% block previous_label %}{% trans "Previous"%}{% endblock previous_label %}</a>
     {% endif %}
     <div class="pull-right">
       {% if next_step %}

@@ -8,29 +8,48 @@
 {% block content %}
 <div class="container" >
   <div class="row" >
-    <table class="span12 table">
+    {% if overlaps %}
+    <div class="alert alert-block">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      <h4>{% trans "Warning!" %}</h4>
+      <p>{% if user.children.count > 1 %}
+         {% trans "The following courses occur at the same or close times. It may be difficult to bring your children." %}
+         {% else %}
+         {% trans "The following courses occur at the same or close times. It may be difficult to bring your child." %}
+         {% endif %}
+      <ul>
+      {% for overlap in overlaps %}
+        <li>
+          <span class="highlight" rel="{{ overlap.0.id}}">{{ overlap.0.child.first_name }} - {{ overlap.0.course.activity.name }}</span> / 
+          <span class="highlight" rel="{{ overlap.1.id}}">{{ overlap.1.child.first_name }} - {{ overlap.1.course.activity.name }}</span></li>
+      {% endfor %}
+      </ul>
+      </p>
+    </div>
+    {% endif %}
+  
+  
+    <table class=" table table-hover">
       <thead>
         <tr>
           <th>{% trans "Name" %}</th>
           <th>{% trans "Activity" %}</th>
           <th>{% trans "Period" %}</th>
           <th>{% trans "Time" %}</th>
+          <th>{% trans "Place" %}</th>
           <th>{% trans "Price" %}</th>
         </tr>
       </thead>
       <tfoot>
       <tr>
-          <th></th>
-          <th></th>
-          <th></th>
-          <th>{% trans "Total" %}</th>
+          <th colspan="5" style="text-align: right">{% trans "Total" %}</th>
           <th>CHF {{ total_price }}</th>
         </tr>
       </tfoot>
       <tbody>
       {% for registered in registered_list %}
-      <tr>
-        <td>{{ registered.child.first_name }} {{ registered.child.last_name }}</td>
+      <tr id="{{ registered.id }}" {% if registered.id in overlapped %}class="warning-light"{% endif %}>
+        <td><span class="nowrap">{{ registered.child.first_name }} {{ registered.child.last_name }}</span></td>
         <td>{{ registered.course.activity.name }}
             {% for extra in registered.extra_needs %}
               <p class="alert alert-error form-error" style="display: none">
@@ -61,9 +80,10 @@
                {% endfor %}
             {% endfor %}
         </td>
-        <td>{{ registered.course.start_date }} – {{ registered.course.end_date }}</td>
-        <td>{{ registered.course.day_name }} / {{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</td>
-        <td>CHF {{ registered.course.price|floatformat:2|intcomma }}</td>
+        <td><span class="nowrap">{{ registered.course.start_date }}</span> – <span class="nowrap">{{ registered.course.end_date }}</span></td>
+        <td>{{ registered.course.day_name }} / <span class="nowrap">{{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</span></td>
+        <td>{{ registered.course.place }}</td>
+        <td class="nowrap">CHF {{ registered.course.price|floatformat:2|intcomma }}</td>
       </tr>
       {% endfor %}
       </tbody>
@@ -86,6 +106,12 @@
               event.preventDefault();
            } 
         });
+        
+        $('.highlight').hover(function(){
+           
+           $('#' + $(this).attr('rel')).toggleClass('warning');
+        });
+
         
         $('.extra-info').ajaxForm({
             url: '{% url "api-extra-list" %}',
