@@ -1,24 +1,32 @@
+
+
 angular.module('sportfacCalendar.controllers', [])
   
-.controller('ChildrenCtrl', ["$scope", "$store", "$routeParams", "ChildrenService", "ModelUtils", "$window",
-function($scope, $store, $routeParams, ChildrenService, ModelUtils, $window) {
+.controller('ChildrenCtrl', ["$scope", "$store", "$routeParams", "$filter", "ChildrenService", "RegistrationsService", "ModelUtils", "$window",
+function($scope, $store, $routeParams, $filter, ChildrenService, RegistrationsService, ModelUtils, $window) {
   'use strict';
   
-  ChildrenService.all().then(function(children){
-    $scope.userChildren = children;
-    angular.forEach($scope.userChildren, function(child){
-      $store.bind($scope, 'registeredCourses_' + child.id);
-      child.registered = $scope['registeredCourses_' + child.id];
+  $scope.loadRegistrations = function(){
+    RegistrationsService.all().then(function(registrations){
+      $scope.registrations = registrations;
     });
-    
-    var childId = parseInt($routeParams.childId, 10);
-    if (isNaN(childId)) {
-      childId = $scope.userChildren[0].id;
-      $window.location.href = './#/child/' + $scope.userChildren[0].id + '/';
-    }
-    $scope.selectChild(childId);
-  });
+  }
   
+  $scope.getRegisteredCourses = function(child){
+    return $filter('filter')($scope.registrations, {child: child.id}).map(function(registration){ return registration.course });
+  }
+  $scope.unregisterCourse = function(child, course){
+    var registration = $filter('filter')($scope.registrations, {child: child.id, course: course.id})[0];
+    RegistrationsService.del(registration);
+    $scope.registrations.remove(registration);
+  }
+  $scope.registerCourse = function(child, course){
+    var registration = {child: child.id, course: course.id};
+    RegistrationsService.save(registration).then(function(){
+      $scope.registrations.push(registration);
+    });
+  }
+
   $scope.selectChild = function(childId){
     angular.forEach($scope.userChildren, function(child){
       if (child.id === childId){
@@ -40,10 +48,29 @@ function($scope, $store, $routeParams, ChildrenService, ModelUtils, $window) {
     });
     
     ModelUtils.save('/api/registrations/', toSave, $scope.errors).then(function(){
-        $window.location.href = '/activities/confirm';
-    });
-    
+      $window.location.href = '/activities/confirm';
+    }); 
   };
+  
+  ChildrenService.all().then(function(children){
+    $scope.userChildren = children;
+    /*angular.forEach($scope.userChildren, function(child){
+      $store.bind($scope, 'registeredCourses_' + child.id);
+      child.registered = $scope['registeredCourses_' + child.id];
+    });*/
+    
+    var childId = parseInt($routeParams.childId, 10);
+    if (isNaN(childId)) {
+      childId = $scope.userChildren[0].id;
+      $window.location.href = './#/child/' + $scope.userChildren[0].id + '/';
+    }
+    $scope.selectChild(childId);
+    $scope.loadRegistrations();
+  });
+  
+  
+  
+
 }])
 
 
@@ -86,8 +113,8 @@ function($scope, $http) {
 /*******************************************************************************
                     Timeline
 *******************************************************************************/
-.controller('ActivityTimelineCtrl', ["$scope", "$filter", "$modal", "CoursesService",
-function($scope, $filter, $modal, CoursesService){
+.controller('ActivityTimelineCtrl', ["$scope", "$filter", "$modal", "CoursesService", "RegistrationsService",
+function($scope, $filter, $modal, CoursesService, RegistrationsService){
   'use strict';
   var today = new Date();
   var year = today.getFullYear();
@@ -103,7 +130,8 @@ function($scope, $filter, $modal, CoursesService){
     }
   });
   
-  $scope.$watch('selectedChild.registered.length', function(newvalue, oldvalue){
+  /*$scope.$watch('selectedChild.registered.length', function(newvalue, oldvalue){*/
+  $scope.$watch('registrations.length', function(newvalue, oldvalue){
     if (angular.isDefined(newvalue)){
       $scope.updateRegisteredEvents();
       $scope.updateAvailableEvents();
@@ -122,21 +150,28 @@ function($scope, $filter, $modal, CoursesService){
   $scope.availableEvents = [];
  
   $scope.updateRegisteredEvents = function() {
+    if (!$scope.registrations){
+      return;
+    }
     $scope.registeredEvents.length = 0;
     var addToRegistered = function(course){
       $scope.registeredEvents.push(course.toEvent("registered"));
     };
-    angular.forEach($scope.selectedChild.registered, function(courseId){
+    //angular.forEach($scope.selectedChild.registered, function(courseId){
+    angular.forEach($scope.getRegisteredCourses($scope.selectedChild), function(courseId){
       CoursesService.get(courseId).then(addToRegistered);
     });
   };
   
   $scope.updateOthersEvents = function(){
+    if (!$scope.registrations){
+      return;
+    }
     $scope.othersRegisteredEvents.length = 0;
-    
     angular.forEach($scope.userChildren, function(child){
       if (child !== $scope.selectedChild) {
-        angular.forEach($scope['registeredCourses_' + child.id], function(courseId){
+        //angular.forEach($scope['registeredCourses_' + child.id], function(courseId){
+        angular.forEach($scope.getRegisteredCourses(child), function(courseId){
           CoursesService.get(courseId).then(function(course){
             var event = course.toEvent("unavailable");
             event.title = event.title + ' (' + child.first_name + ')';
@@ -154,7 +189,7 @@ function($scope, $filter, $modal, CoursesService){
     
     $scope.availableEvents.length = 0;
     angular.forEach($scope.selectedActivity.courses, function(course){
-      var registered = $scope.selectedChild.hasRegistered(course);
+      var registered = $scope.getRegisteredCourses($scope.selectedChild).indexOf(course.id) !== -1;
       var available = course.schoolyear_min <= $scope.selectedChild.school_year &&
                       course.schoolyear_max >= $scope.selectedChild.school_year;
       if (!registered && available){
@@ -204,6 +239,9 @@ function($scope, $filter, $modal, CoursesService){
     if (!$scope.selectedChild.canRegister(calEvent.course)){
       return;
     }
+    
+    $scope.registerCourse($scope.selectedChild, calEvent.course);
+    
     var index = $scope.selectedChild.registered.indexOf(courseId);
     if (index === -1){
         $scope.selectedChild.registered.push(courseId);
@@ -211,6 +249,8 @@ function($scope, $filter, $modal, CoursesService){
   };
   
   $scope.unregister = function(calEvent){
+    $scope.unregisterCourse($scope.selectedChild, calEvent.course);
+    
     var courseId = calEvent.course.id;
     var index = $scope.selectedChild.registered.indexOf(courseId);
     
