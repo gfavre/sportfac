@@ -105,6 +105,70 @@ factory("$store", ["$parse", function($parse){
     return publicMethods;
   }])
 
+.factory('Registration', function(){
+    var Registration = function(data){
+      /*angular.extend(this, {
+        delete: function(course){
+          return this.registered.indexOf(course.id) !== -1;
+        },
+        canRegister: function(course){
+          return !(this.school_year < course.schoolyear_min || this.school_year > course.schoolyear_max);
+        }
+      });*/
+      
+      angular.extend(this, data);
+    };
+    return Registration;
+  })
+
+.factory('RegistrationsService', ["$http", "$cookies", "Registration", function($http, $cookies, Registration){
+    $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
+    var base = '/api/registrations/'
+    var ModelUtils = {
+        all: function(){
+          return $http.get(base).then(function(response){
+            var registrations = [];
+            angular.forEach(response.data, function(registrationData){
+              registrations.push(new Registration(registrationData));
+            });
+            return registrations;
+          });
+        },
+        get: function(registrationId){
+          return $http.get(base + registrationId + '/').then(function(response){
+            return new Registration(response.data);
+          });
+        },
+        del: function(obj){
+          return $http.delete(base + obj.id + '/');
+        },
+        create: function(obj, errors){
+          return $http.post(base, obj).
+            success(function(response, status, headers, config){
+                angular.extend(obj, response);
+            }).
+            error(function(response, status, headers, config){
+                handleErrors(response, status, errors);
+            });
+        },
+        save: function(obj, errors){
+          if (angular.isDefined(obj.id)){
+            return $http.put(base + obj.id + '/', obj).
+                     success(function(response, status, headers, config){
+                        angular.extend(obj, response);
+                     }).
+                     error(function(response, status, headers, config){
+                       handleErrors(response, status, errors);
+                     });
+          } else {
+            return this.create(obj, errors);
+          }
+        },
+    };
+    
+    return ModelUtils;
+  }])
+
 .factory('Child', function(){
     var Child = function(data){
       angular.extend(this, {
