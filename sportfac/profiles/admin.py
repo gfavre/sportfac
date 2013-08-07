@@ -52,7 +52,7 @@ class FamilyChangeForm(forms.ModelForm):
         model = FamilyUser
         fields = ('email', 'is_staff', 'finished_registration', 'first_name', 'last_name', 
                   'address', 'zipcode', 'city', 'country', 
-                  'private_phone', 'private_phone2')
+                  'private_phone', 'private_phone2', 'private_phone3')
 
 
     def clean_password(self):
@@ -81,7 +81,7 @@ class FamilyAdmin(UserAdmin):
         (None, {'fields': ('email', 'password', 'is_staff', 'finished_registration')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 
                                       'address', 'zipcode', 'city', 'country', 
-                                      'private_phone', 'private_phone2')}),
+                                      'private_phone', 'private_phone2', 'private_phone3')}),
     )
     add_fieldsets = (
         (None, {

@@ -1,3 +1,5 @@
+from datetime import datetime, date
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
@@ -153,6 +155,36 @@ class Registration(TimeStampedModel):
             
     def __unicode__(self):
         return '%s -> course %s' % (unicode(self.child), self.course.number)
+    
+    def overlap(self, r2):
+        "Test if another registration object overlaps with this one."  
+        # no overlap if course are not the same day
+        if self.course.day != r2.course.day:
+            return False
+            
+        same_days = min(self.course.end_date - r2.course.start_date, 
+                        r2.course.end_date - self.course.start_date).days + 1
+        
+        # no overlap if periods do not superpose
+        if not same_days > 0:
+            return False
+        
+        # two children can attend same course
+        if self.course == r2.course and self.child != r2.child:
+            return False
+        
+        interval = min(datetime.combine(date.today(), self.course.start_time) - 
+                       datetime.combine(date.today(), r2.course.end_time), 
+                       datetime.combine(date.today(), r2.course.start_time) - 
+                       datetime.combine(date.today(), self.course.end_time))
+        
+        if interval.days < 0:
+            # overlap
+            return True
+        elif interval.seconds < (60*30):
+            # less than half an hour between courses
+            return True
+        return False   
     
     class Meta:
         unique_together = ('course', 'child')

@@ -1,5 +1,3 @@
-from datetime import datetime, date
-
 from django.views.generic import ListView, CreateView, UpdateView
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
@@ -65,35 +63,6 @@ class MyRegistrationView(BaseRegistrationView):
 
 
 
-def overlap(r1, r2):    
-    # no overlap if course are not the same day
-    if r1.course.day != r2.course.day:
-        return False
-        
-    same_days = min(r1.course.end_date - r2.course.start_date, 
-                    r2.course.end_date - r1.course.start_date).days + 1
-    
-    # no overlap if periods do not superpose
-    if not same_days > 0:
-        return False
-    
-    # two children can attend same course
-    if r1.course == r2.course and r1.child != r2.child:
-        return False
-
-    interval = min(datetime.combine(date.today(), r1.course.start_time) - 
-                   datetime.combine(date.today(), r2.course.end_time), 
-                   datetime.combine(date.today(), r2.course.start_time) - 
-                   datetime.combine(date.today(), r1.course.end_time))
-    
-    if interval.days < 0:
-        # overlap
-        return True
-    elif interval.seconds < (60*30):
-        # less than half an hour between courses
-        return True
-    
-    return False   
 
       
 
@@ -119,7 +88,7 @@ class RegisteredActivitiesListView(LoginRequiredMixin, ListView):
         context['overlapped'] = set()
         for (idx, registration) in list(enumerate(registrations))[:-1]:
             for registration2 in registrations[idx+1:]:
-                if overlap(registration, registration2):
+                if registration.overlap(registration2):
                     context['overlaps'].append((registration, registration2))
                     context['overlapped'].add(registration.id)
                     context['overlapped'].add(registration2.id)

@@ -24,13 +24,19 @@ class ContactInformationForm(ModelForm):
     city = forms.CharField(label=_("City"), widget=forms.TextInput(attrs={'placeholder': 'Coppet'}))
     private_phone = forms.CharField(label=_("Home phone"), 
                                     widget=forms.PhoneNumberInput(attrs={"maxlength": 20,
-                                                                         "autocomplete": "tel" }))
-    private_phone2 = forms.CharField(label=_("Mobile phone #1"), widget=forms.PhoneNumberInput(attrs={"maxlength": 20}), required=False)
-    private_phone3 = forms.CharField(label=_("Mobile phone #2"), widget=forms.PhoneNumberInput(attrs={"maxlength": 20}), required=False)
+                                                                         "autocomplete": "tel" }),
+                                    required=False)
+    private_phone2 = forms.CharField(label=_("Mobile phone #1"), 
+                                     widget=forms.PhoneNumberInput(attrs={"maxlength": 20}), 
+                                     required=False)
+    private_phone3 = forms.CharField(label=_("Mobile phone #2"), 
+                                     widget=forms.PhoneNumberInput(attrs={"maxlength": 20}), 
+                                     required=False)
     
     class Meta:
         model = get_user_model()
-        fields = ('email', 'first_name', 'last_name', 'zipcode', 'city', 'private_phone', 'private_phone2',)
+        fields = ('email', 'first_name', 'last_name', 'zipcode', 'city', 
+                  'private_phone', 'private_phone2', 'private_phone3')
 
 
 
