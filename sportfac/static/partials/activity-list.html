@@ -11,19 +11,18 @@
 </nav> 
 
 <article class="span9" ng-controller="ActivityTimelineCtrl">
-  <div class="alert alert-block" ng-show="selectedChild.registered.length >= 4">
+  <div class="alert alert-block" ng-show="getRegisteredCourses(selectedChild).length >= 4">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
     <h4>Le nombre maximal d'activités (4) est atteint pour {[{ selectedChild.first_name }]}. </h4>
     <p>Vous devez d'abord désinscrire votre enfant de l'une des activités sélectionnées (en vert) si vous souhaitez l'inscrire à d'autres activités disponibles.</p>
   </div>
   <ul class="inline">
-    <li><i class="icon-circle available"></i> événements disponibles</li>
-    <li><i class="icon-circle registered"></i> événements choisis pour cet enfant</li>
-    <li><i class="icon-circle unavailable"></i> événements choisis pour un autre de vos enfants</li>
+    <li><i class="icon-circle available"></i> cours disponibles</li>
+    <li><i class="icon-circle registered"></i> sours choisis pour cet enfant</li>
+    <li><i class="icon-circle unavailable"></i> cours choisis pour un autre de vos enfants</li>
   </ul>
     
   <div ng-model="eventSources" calendar="weekagenda" ui-calendar="uiConfig.calendar"></div>
-  
   <h4>Fonctionnement</h4>
   <p>Les activités disponibles pour chaque enfant se trouvent à gauche. Une fois l'activité sélectionnée, cliquez sur l'événement dans le calendrier pour inscrire votre enfant. Faites ainsi pour chaque enfant à inscrire. <br/>
       Lorsque vous avez terminé, appuyez sur le bouton &quot;Terminer l'inscription&quot; au bas de cette page.

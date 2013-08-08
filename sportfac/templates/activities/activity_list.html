@@ -8,7 +8,7 @@
 {% block wizard_actions %}
     <div class="actions">
       <a href="{{ previous_step.url }}" class="btn btn-mini btn-prev{% if not previous_step %} disabled{% endif %}"><i class="icon-arrow-left"></i> {% trans "Previous"%}</a>
-      <a href="{{ next_step.url }}" class="btn btn-mini btn-next" ng-class="{'disabled': selectedChild.registered.length === 0}">{% trans "Next"%}<i class="icon-arrow-right"></i></a>
+      <a href="{{ next_step.url }}" class="btn btn-mini btn-next" ng-class="{'disabled': registrations.length === 0}">{% trans "Next"%}<i class="icon-arrow-right"></i></a>
     </div>
   </div>
 {% endblock wizard_actions %}
@@ -37,10 +37,8 @@
   <div class="form-actions">
       <a class="btn" href="{{ previous_step.url }}"><i class="icon-chevron-left"></i> {% trans "Previous"%}</a>
     <div class="pull-right">
-      <span ng-hide="selectedChild.registered.length > 0" class="btn btn-primary btn-large disabled" >{% trans "End registration"%} <i class="icon-chevron-right icon-white"></i> </span>
-
-      <button ng-show="selectedChild.registered.length > 0" class="btn btn-primary btn-large" ng-click="sendRegisteredCourses()">{% trans "End registration"%} <i class="icon-chevron-right icon-white"></i> </button>
-          
+      <a href="{{ next_step.url }}" class="btn btn-primary btn-large btn-next" ng-class="{'disabled': registrations.length === 0}">{% trans "End registration"%} <i class="icon-chevron-right"></i></a>
+    </div>          
   </div>
 {% endblock page_footer %}
 
