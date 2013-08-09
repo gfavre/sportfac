@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.utils.translation import ugettext_lazy as _
 from django.core.mail import send_mail
 from django.conf import settings
@@ -19,8 +20,11 @@ class ContactForm(forms.Form):
     
     def send_mail(self, fail_silently=False):
         message_dict = {'from_email': settings.DEFAULT_FROM_EMAIL,
-                        'message': self.cleaned_data['message'],
+                        'message': u'%s <%s> a utilisé le formulaire de contact.\n\n %s' % (
+                            self.cleaned_data['name'],
+                            self.cleaned_data['email'],
+                            self.cleaned_data['message']),
                         'recipient_list': [mail_tuple[1] for mail_tuple in settings.MANAGERS],
-                        'subject': self.cleaned_data['subject']}
+                        'subject': self.cleaned_data['subject'] + ' [sportfac - formulaire de contact]'}
         send_mail(fail_silently=fail_silently, **message_dict)
     
