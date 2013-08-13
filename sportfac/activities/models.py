@@ -5,6 +5,8 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 
+from ckeditor.fields import RichTextField
+
 from sportfac.models import TimeStampedModel
 
 DAYS_OF_WEEK = (
@@ -37,11 +39,18 @@ class Activity(models.Model):
 
     slug = models.SlugField(max_length=50, db_index=True, unique=True, help_text=_("Part of the url. Cannot contain punctuation, spaces or accentuated letters"))
     
+    description = RichTextField(blank=True)
+    
+    
     def get_absolute_url(self):
         return reverse('activity-detail', kwargs={"slug": self.slug})
 
     def __unicode__(self):
         return self.name
+    
+    def available_to_school_years(self):
+        return self.courses
+    
     
     class Meta:
         ordering = ['name']

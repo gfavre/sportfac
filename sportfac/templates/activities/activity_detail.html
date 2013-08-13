@@ -1,8 +1,15 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block page_title %}{% trans "Activity: " %}{{ object.name }}{% endblock %}
+{% block page_title %}{{ object.name }}{% endblock %}
 
 {% block content %}
+<dl class="dl-horizontal">
+  <dt>{% trans "Activity number" %}</dt>
+  <dd>{{ object.number }}</dd>
+  
+  <dt>{% trans "School years concerned" %}</dt>
+  <dd>{{ object.number }}</dd>
 
+</dl>
 {% endblock content %}

@@ -173,6 +173,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 )
 ########## END MIDDLEWARE CONFIGURATION
 
@@ -192,7 +194,9 @@ DJANGO_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-
+    
+    'django.contrib.sites',
+    'django.contrib.flatpages',
     # Useful template tags:
     # 'django.contrib.humanize',
 
@@ -208,7 +212,7 @@ THIRD_PARTY_APPS = (
     'constance', # settings in admin
     'constance.backends.database', #settings in admin
     'grappelli', # admin interface
-    'django.contrib.admin',
+    'ckeditor', # wysiwyg editor
     #'pipeline', # minifier
 )
 
@@ -319,3 +323,10 @@ GRAPPELLI_ADMIN_TITLE = "Administration du sport scolaire facultatif"
 ########## END PIPELINE CONFIG
 
 
+########### CKEDITOR
+CKEDITOR_UPLOAD_PATH = MEDIA_ROOT
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'Full',
+    },
+}

@@ -1,4 +1,7 @@
+from django.conf import settings
 from django.conf.urls import patterns, include, url
+from django.conf.urls.static import static
+
 from django.views.generic import TemplateView
 from django.core.urlresolvers import reverse
 from django.contrib import admin
@@ -14,7 +17,14 @@ urlpatterns = patterns('',
     url(r'^activities/', include('activities.urls')),
     url(r'^account/', include('profiles.urls')),
     url(r'^contact/', include('contact.urls')),
+    url(r'^ckeditor/', include('ckeditor.urls')),
+
 
     url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', include(admin.site.urls)),
 )
+
+
+if settings.DEBUG:
+    # static files (images, css, javascript, etc.)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

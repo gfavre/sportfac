@@ -73,3 +73,11 @@ DEBUG_TOOLBAR_CONFIG ={'INTERCEPT_REDIRECTS': False}
 ########### EMAIL:
 DEFAULT_FROM_EMAIL = 'sportfac@localhost'
 EMAIL_SUBJECT_PREFIX = '[%s] ' % SITE_NAME
+
+########### MEDIA:
+MEDIA_ROOT = normpath(join(dirname(SITE_ROOT), 'media'))
+
+########### CKEDITOR
+CKEDITOR_UPLOAD_PATH = MEDIA_ROOT
+
+
