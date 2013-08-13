@@ -7,9 +7,44 @@
 <dl class="dl-horizontal">
   <dt>{% trans "Activity number" %}</dt>
   <dd>{{ object.number }}</dd>
-  
-  <dt>{% trans "School years concerned" %}</dt>
-  <dd>{{ object.number }}</dd>
-
 </dl>
+
+{% for course in object.courses.all %}
+<section class="span3">
+<dl class="dl-horizontal">
+    <dt>{% trans "Responsible" %}</dt><dd>{{ course.responsible  }}</dd>
+    <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
+    <dt>{% trans "Dates" %}</dt>
+    <dd>{{ course.number_of_sessions }} cours, tous les 
+      {{ course.day_name }} de {[{ selectedCourse.start_time }]} à {[{ selectedCourse.end_time }]}<br /> entre le {[{ selectedCourse.start_date | date:'longDate' }]} et le {[{ selectedCourse.end_date | date:'longDate'  }]}
+    </dd>
+    <dt>Prix</dt><dd>CHF {[{ selectedCourse.price }]}</dd>
+  </dl>
+  <dl class="dl-horizontal">
+    <dt>Places disponibles</dt>
+    <dd>
+      <div>
+        {[{ selectedCourse.count_participants  }]} participants
+        <span class="pull-right strong"> {[{ selectedCourse.max_participants }]} places</span>
+      </div>
+      <div class="progress" style="margin-bottom: 0"
+           ng-class="{'progress-success': selectedCourse.count_participants >= selectedCourse.min_participants,
+                      'progress-warning': selectedCourse.count_participants < selectedCourse.min_participants}">
+        <div class="bar" 
+             style="width: {[{ 100 * selectedCourse.count_participants /  selectedCourse.max_participants }]}%"></div>
+      </div>
+      <small>{[{ selectedCourse.min_participants }]} participants requis pour que l'activité ait lieu</small>
+    </dd>
+  </dl>
+
+
+
+
+<dl class="dl-horizontal">
+  <dt>{% trans "Day" %}</dt>
+  <dd>{{ course.day_name }}</dd>
+</dl>
+</section>
+{% endfor %}
+
 {% endblock content %}
