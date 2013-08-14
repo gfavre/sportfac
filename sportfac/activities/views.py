@@ -21,14 +21,21 @@ class ActivityDetailView(DetailView):
     
     def get_context_data(self, **kwargs):
         context = super(ActivityDetailView, self).get_context_data(**kwargs)
-        context['registrations'] = []
-
-        if self.request.user.is_authenticated():
-            reg = Registration.objects.filter(course__activity=kwargs['object'],
-                                              child__in=self.request.user.children.all())
-            registrations = Registration.objects.filter(course__activity=kwargs['object'],
-                                                        child__in=self.request.user.children.all()).order_by('course')
-            context['registrations'] = registrations
+        activity = kwargs['object']
+        if not self.request.user.is_authenticated():
+            context['registrations'] = {}
+            return context
+        
+        registrations = {}
+        children = self.request.user.children.all()
+        for course in activity.courses.all():
+            participants = [reg.child for reg in course.participants.all()]
+            for child in children:
+                if child in participants:
+                    registrations[course] = participants
+                    break
+            
+        context['registrations'] = registrations
         return context
 
 

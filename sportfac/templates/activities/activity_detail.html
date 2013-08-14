@@ -14,15 +14,22 @@
   {{ activity.informations | safe }}
   {% endif %}
   
-  {% comment %}{% if registrations %}
+  {% if registrations %}
   <h4>Participants</h4>
-  <ul>
-  {% for registration in registrations %}
-   <li>{{ registration.child.first_name }} {{ registration.child.last_name }} (cours n° {{ registration.course.number }}) </li>
+  <dl class="dl-horizontal">
+  {% for course, participants in registrations.items %}
+   <dt>Cours n°{{ course.number }}</dt>
+   <dd>
+     <ul class="unstyled">
+     {% for child in participants %}
+       <li>{{ child.first_name }} {{ registration.child.last_name }}</li>
+     {% endfor %}
+     </ul>
+   </dd>
+  </dl>
   {% endfor %}
-  </ul>
+
   {% endif %}
-  {% endcomment %}
     
   <h2>Cours</h2>
   <ul class=" thumbnails">
