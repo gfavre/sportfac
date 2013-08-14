@@ -47,7 +47,7 @@ DEFAULT_FROM_EMAIL = get_env_setting('DEFAULT_FROM_EMAIL')
 
 MANAGERS = (
     ('Gregory Favre', 'gregory.favre@gmail.com'),
-    ('Remo Aeschbach', 'remo@netplus.ch'),
+    ('Remo Aeschbach', 'remo.aeschbach@vd.educanet2.ch'),
 )
 ########## END EMAIL CONFIGURATION
 
