@@ -63,12 +63,14 @@ var ListCtrl = function ($scope, $routeParams, $http) {
   }
   
   $scope.toHarmos = function(year) {
-    return {1: "1re HARMOS",
-            2: "2e HARMOS",
-            3: "3e HARMOS",
-            4: "4e HARMOS",
-            5: "5e HARMOS",
-            6: "6e HARMOS",}[year];
+    return {1: "1P HARMOS",
+            2: "2P HARMOS",
+            3: "3P HARMOS",
+            4: "4P HARMOS",
+            5: "5P HARMOS",
+            6: "6P HARMOS",
+            7: "7P HARMOS",
+            8: "8P HARMOS",}[year];
     
   };
   
