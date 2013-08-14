@@ -39,6 +39,14 @@
               </li>
               <li><a href="{% url 'terms' %}">{% trans "Terms and conditions" %}</a></li>
               
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Activities" %} <span class="icon-caret-down"></span></a>
+                <ul class="dropdown-menu">
+                  {% for activity in activities %}
+                  <li><a href="{{ activity.get_absolute_url }}">{{ activity.name }}</a></li>
+                  {% endfor %}
+                </ul>
+              </li>
 
               {% if user.is_authenticated %}
               <li class="dropdown">

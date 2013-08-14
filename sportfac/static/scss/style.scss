@@ -17,6 +17,31 @@
 .highlight { cursor:help;}
 .warning-light {border-left: 5px solid #f1e7bc;}
 body > .navbar .brand.white { color: #fff }
+body {
+  position: relative;
+  padding-top: 40px;
+}
+
+/* Code in headings */
+h3 code {
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.course h3 {
+  font-size: 1.3em;
+  line-height: 1.4em;
+}
+.course .lead{
+  font-size: 1.2em;
+  line-height: 1.3em;
+}
+.course h4 {
+  font-size:1.2em;
+}
+
+
+
 /* forms */
 
 input.ng-invalid:focus,
@@ -81,7 +106,6 @@ letter-spacing: 0.15em;
 transform: rotate(90deg); 
 transform-origin: right top;
 
-
 /* IE */
 filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 }
@@ -104,16 +128,6 @@ filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 .unavailable {color: $unavailable;}
 .registered {color: $registered;}
 
-body {
-  position: relative;
-  padding-top: 40px;
-}
-
-/* Code in headings */
-h3 code {
-  font-size: 14px;
-  font-weight: normal;
-}
 
 .fc-event{
     cursor: pointer;

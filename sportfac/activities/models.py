@@ -37,8 +37,10 @@ class Activity(models.Model):
     name = models.CharField(max_length=50, db_index=True, unique=True, verbose_name=_("Name"))
     number = models.IntegerField(verbose_name=_("Number"), db_index=True, unique=True, null=True, blank=True)
 
-    slug = models.SlugField(max_length=50, db_index=True, unique=True, help_text=_("Part of the url. Cannot contain punctuation, spaces or accentuated letters"))
+    slug = models.SlugField(max_length=50, db_index=True, unique=True, 
+                            help_text=_("Part of the url. Cannot contain punctuation, spaces or accentuated letters"))
     
+    informations = RichTextField(blank=True, help_text=_("Specific informations like outfit."))
     description = RichTextField(blank=True)
     
     
@@ -47,9 +49,6 @@ class Activity(models.Model):
 
     def __unicode__(self):
         return self.name
-    
-    def available_to_school_years(self):
-        return self.courses
     
     
     class Meta:
@@ -98,7 +97,25 @@ class Course(models.Model):
     @property
     def count_participants(self):
         return self.participants.count()
+    
+    @property
+    def percentage_full(self):
+        return int(100 * float(self.count_participants) / float(self.max_participants))
+    
+    @property
+    def minimal_participants_reached(self):
+        return self.count_participants >= self.min_participants
         
+    @property
+    def full(self):
+        return self.count_participants >= self.max_participants
+        
+    @property
+    def school_years(self):
+        return range(self.schoolyear_min, self.schoolyear_max + 1)
+    
+
+
     def __unicode__(self):
         return u'%s (%s): du %s au %s les %s à %s (%sp-%sp)' % (self.activity.name, self.number,
                                                           self.start_date.strftime("%d/%m/%Y"), 
@@ -115,8 +132,8 @@ class Course(models.Model):
 
 class Responsible(models.Model):
     "person repsosible of a course"
-    first = models.CharField(max_length=100, blank=True, verbose_name=_("First name"), help_text=_("Leave it empty in case of collaboration name"))
-    last = models.CharField(max_length=100, verbose_name=_("Last name"))
+    first = models.CharField(max_length=100, blank=True, verbose_name=_("First name"), help_text=_("Leave it empty in case of collaboration name"), db_index=True)
+    last = models.CharField(max_length=100, verbose_name=_("Last name"), db_index=True)
     phone = models.CharField(max_length=14, blank=True, verbose_name=_("Phone number"))
     email = models.EmailField(blank=True, verbose_name=_("Email"))
     

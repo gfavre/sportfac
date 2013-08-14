@@ -147,6 +147,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     
     'sportfac.context_processors.wizard_context',
     'sportfac.context_processors.registration_opened_context',
+    'sportfac.context_processors.activities_context',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-loaders

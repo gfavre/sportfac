@@ -1,50 +1,63 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block page_title %}{{ object.name }}{% endblock %}
+{% block page_title %}{{ activity.name }} {% endblock %}
 
 {% block content %}
-<dl class="dl-horizontal">
-  <dt>{% trans "Activity number" %}</dt>
-  <dd>{{ object.number }}</dd>
-</dl>
+<div class="container">
+  <p><strong>{% trans "Activity number" %}:</strong> {{ activity.number }}<br /></p>
+  
+  {{ activity.description|safe }}
+  
+  {% if activity.informations %}
+  <h4>Informations spécifiques</h4>
+  {{ activity.informations | safe }}
+  {% endif %}
+  
+  {% comment %}{% if registrations %}
+  <h4>Participants</h4>
+  <ul>
+  {% for registration in registrations %}
+   <li>{{ registration.child.first_name }} {{ registration.child.last_name }} (cours n° {{ registration.course.number }}) </li>
+  {% endfor %}
+  </ul>
+  {% endif %}
+  {% endcomment %}
+    
+  <h2>Cours</h2>
+  <ul class=" thumbnails">
+    {% for course in activity.courses.all %}
+    <li class="span4">
+      <section class="thumbnail course">
+        <h3>{{ course.start_date | date:"j F Y" }} -  {{ course.end_date | date:'j F Y'  }}</h3>
+        <p class="lead">Les {{ course.day_name|lower }} de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }}</p>
+        <dl class="dl-horizontal">
+          <dt>Cours n°</dt><dd>{{ course.number }}</dd>
+          <dt>{% trans "Responsible" %}</dt><dd>{{ course.responsible  }}{% if course.responsible.phone %}<br /> {{ course.responsible.phone }}{% endif %}</dd>
+          <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
+          <dt>{% trans "Number of sessions" %}</dt>
+          <dd>{{ course.number_of_sessions }} cours
+          </dd>
+          <dt>{% trans "Price" %}</dt><dd>CHF {{ course.price }}</dd>
+          <dt>{% trans "School years" %}</dt><dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
+        </dl>
 
-{% for course in object.courses.all %}
-<section class="span3">
-<dl class="dl-horizontal">
-    <dt>{% trans "Responsible" %}</dt><dd>{{ course.responsible  }}</dd>
-    <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
-    <dt>{% trans "Dates" %}</dt>
-    <dd>{{ course.number_of_sessions }} cours, tous les 
-      {{ course.day_name }} de {[{ selectedCourse.start_time }]} à {[{ selectedCourse.end_time }]}<br /> entre le {[{ selectedCourse.start_date | date:'longDate' }]} et le {[{ selectedCourse.end_date | date:'longDate'  }]}
-    </dd>
-    <dt>Prix</dt><dd>CHF {[{ selectedCourse.price }]}</dd>
-  </dl>
-  <dl class="dl-horizontal">
-    <dt>Places disponibles</dt>
-    <dd>
-      <div>
-        {[{ selectedCourse.count_participants  }]} participants
-        <span class="pull-right strong"> {[{ selectedCourse.max_participants }]} places</span>
-      </div>
-      <div class="progress" style="margin-bottom: 0"
-           ng-class="{'progress-success': selectedCourse.count_participants >= selectedCourse.min_participants,
-                      'progress-warning': selectedCourse.count_participants < selectedCourse.min_participants}">
-        <div class="bar" 
-             style="width: {[{ 100 * selectedCourse.count_participants /  selectedCourse.max_participants }]}%"></div>
-      </div>
-      <small>{[{ selectedCourse.min_participants }]} participants requis pour que l'activité ait lieu</small>
-    </dd>
-  </dl>
+        <h4>{% trans "Availability"%}</h4>      
+        <div class="well">
+        <p>{{ course.count_participants  }} participants <span class="pull-right strong"> {{ course.max_participants }} places</span></p>
+        <div class="progress  {% if course.full %}progress-danger{% elif course.minimal_participants_reached %}progress-success{% else %}progress-warning{% endif %}" style="margin-bottom: 0;">
+          <div class="bar" style="width: {{ course.percentage_full }}%"></div>
+        </div>
+        <p class="text-right"><small>{{ course.min_participants }} participants requis pour que l'activité ait lieu</small></p>
+        </div>        
+        
+        
+      </section>
+    </li>
+  {% endfor %}
+  </ul>
 
+  </div>
 
-
-
-<dl class="dl-horizontal">
-  <dt>{% trans "Day" %}</dt>
-  <dd>{{ course.day_name }}</dd>
-</dl>
-</section>
-{% endfor %}
-
+</div>
 {% endblock content %}

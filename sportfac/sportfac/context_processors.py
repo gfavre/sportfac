@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 from constance import config
 
 from profiles.models import Registration
+from activities.models import Activity
 
 class Step:
     def __init__(self, request, id, title, urlname, activable):
@@ -60,3 +61,7 @@ def registration_opened_context(request):
     return {'registration_opened': start <= timezone.now() <= end,
             'registration_start': start,
             'registration_end': end}
+
+
+def activities_context(request):
+    return {'activities': Activity.objects.all()}
