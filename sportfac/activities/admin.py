@@ -34,7 +34,7 @@ class ActivityAdmin(admin.ModelAdmin):
     
     verbose_name = _("activity")
     verbose_name_plural = _("activities")
-    ordering = ('name',)
+    ordering = ('number', 'name',)
     
 
 admin.site.register(Activity, ActivityAdmin)
@@ -84,7 +84,7 @@ class CoursesAdmin(admin.ModelAdmin):
     verbose_name = _("course")
     verbose_name_plural = _("courses")
     
-    ordering = ('activity__name', 'start_date', 'start_time')
+    ordering = ('number', 'activity__number', 'activity__name', 'start_date', 'start_time')
     list_filter=(ParticipantsListFilter,)
     change_list_filter_template = "admin/filter_listing.html"
     change_list_template = "admin/change_list_filter_sidebar.html"
