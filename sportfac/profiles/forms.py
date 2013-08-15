@@ -35,7 +35,7 @@ class ContactInformationForm(ModelForm):
     
     class Meta:
         model = get_user_model()
-        fields = ('email', 'first_name', 'last_name', 'zipcode', 'city', 
+        fields = ('email', 'first_name', 'last_name', 'address', 'zipcode', 'city', 
                   'private_phone', 'private_phone2', 'private_phone3')
 
 
