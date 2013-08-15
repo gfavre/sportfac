@@ -37,12 +37,10 @@
           <label class="control-label" for="id_password">{% trans 'Password:' %}</label>
           <div class="controls">
             {{ form.password }}
-            <span class="help-inline">{{ form.password.errors }}</span>
+            <span class="help-inline">{{ form.password.errors }}</span><br />
+            <a href="{% url 'registration_reset' %}">{% trans 'Forgotten your password or username?' %}</a>
           </div>
           
-        </div>
-        <div class="password-reset-link">
-          <a href="{% url 'registration_reset' %}">{% trans 'Forgotten your password or username?' %}</a>
         </div>
         <div class="control-group">
           <div class="controls">
