@@ -1,14 +1,12 @@
-from django.views.generic import ListView, CreateView, UpdateView
-from django.contrib import messages
+from django.views.generic import ListView, UpdateView
 from django.contrib.auth import authenticate, login
 from django.utils.translation import ugettext as _
-from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy
 from django.db.models import Sum
 
 from braces.views import LoginRequiredMixin
 from registration.backends.simple.views import RegistrationView as BaseRegistrationView
-from registration.compat import User
+#from registration.compat import User
 from registration import signals
 
 from .models import FamilyUser, Child, Registration

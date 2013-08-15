@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, url, include
+from django.contrib.auth.views import password_reset
 
 
 from .forms import RegistrationForm
@@ -9,7 +10,8 @@ urlpatterns = patterns('',
     url(r'^$', AccountView.as_view(), name="profiles_account"),
     url(r'^children/$', ChildrenListView.as_view(), name="profiles_children"),
     url(r'^register/$', MyRegistrationView.as_view(), name='registration_register'),
-    
+    url(r'^reset/$', password_reset, name="registration_reset"),
+
     (r'', include('registration.backends.simple.urls')),
     
     
