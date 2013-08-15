@@ -5,7 +5,13 @@
 </div>
 <div class="modal-body">
   <dl class="dl-horizontal">
-    <dt>Responsable</dt><dd>{[{ selectedCourse.responsible  }]}</dd>
+    <dt>Responsable</dt>
+    <dd>{[{ selectedCourse.responsible.first  }]} {[{ selectedCourse.responsible.last  }]}
+    <div ng-show="{[{ selectedCourse.responsible.phone  }]}">{[{ selectedCourse.responsible.phone  }]}</div>
+    <div ng-show="{[{ selectedCourse.responsible.email  }]}"><a href="mailto:{[{ selectedCourse.responsible.email  }]}">email</a></div>
+    
+    
+    </dd>
     <dt>Lieu</dt><dd>{[{ selectedCourse.place  }]}</dd>
     <dt>Dates</dt>
     <dd ng-switch on="selectedCourse.day">{[{ selectedCourse.number_of_sessions }]} cours, tous les 

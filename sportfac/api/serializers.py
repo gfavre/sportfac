@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from rest_framework.compat import smart_text
 
-from activities.models import Activity, Course
+from activities.models import Activity, Course, Responsible
 from profiles.models import Child, Teacher, SchoolYear, Registration, ExtraInfo
 
 
@@ -12,6 +12,13 @@ class ActivitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Activity
         fields = ('id', 'name', 'number')
+
+class ResponsibleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Responsible
+        fields = ('last', 'first', 'phone', 'email')
+
+
 
 class CourseInlineSerializer(serializers.ModelSerializer):
     responsible = serializers.RelatedField(many=False)
@@ -38,7 +45,7 @@ class ActivityDetailedSerializer(serializers.ModelSerializer):
 
 class CourseSerializer(serializers.ModelSerializer):
     activity = ActivitySerializer(many=False)
-    responsible = serializers.RelatedField(many=False)
+    responsible = ResponsibleSerializer(many=False)
     count_participants = serializers.Field(source='count_participants')
     start_time = serializers.TimeField(format='%H:%M')
     end_time = serializers.TimeField(format='%H:%M')
