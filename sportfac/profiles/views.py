@@ -46,12 +46,15 @@ class MyRegistrationView(BaseRegistrationView):
         first_name, last_name = cleaned_data['first_name'], cleaned_data['last_name']
         address, zipcode, city = cleaned_data['address'], cleaned_data['zipcode'], cleaned_data['city']
         private_phone, private_phone2 = cleaned_data['private_phone'], cleaned_data['private_phone2']
+        private_phone3 = cleaned_data['private_phone3']
+        
         
         FamilyUser.objects.create_user(email=email, password=password, 
                                        first_name=first_name, last_name=last_name,
                                        address=address, zipcode=zipcode, city=city,
                                        private_phone=private_phone,
-                                       private_phone2=private_phone2)
+                                       private_phone2=private_phone2
+                                       private_phone3=private_phone3)
         new_user = authenticate(email=email, password=password)
         login(request, new_user)
         signals.user_registered.send(sender=self.__class__,
