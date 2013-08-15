@@ -213,6 +213,8 @@ class SchoolYear(models.Model):
     
 
 class Teacher(models.Model):
+    number = models.IntegerField(db_index=True, unique=True, null=True, blank=True, verbose_name=_("Number"))
+
     first_name = models.CharField(_("First name"), max_length=50)
     last_name = models.CharField(_("Last name"), max_length=50, db_index=True)
     years = models.ManyToManyField('SchoolYear', verbose_name=_("School years"))
