@@ -40,7 +40,10 @@
         <p class="lead">Chaque {{ course.day_name|lower }} de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }}</p>
         <dl class="dl-horizontal">
           <dt>Cours n°</dt><dd>{{ course.number }}</dd>
-          <dt>{% trans "Responsible" %}</dt><dd>{{ course.responsible  }}{% if course.responsible.phone %}<br /> {{ course.responsible.phone }}{% endif %}</dd>
+          <dt>{% trans "Responsible" %}</dt>
+          <dd>{{ course.responsible  }}
+              {% if course.responsible.phone %}<br />{{ course.responsible.phone }}{% endif %}
+              {% if course.responsible.email %}<br /><a href="mailto:{{course.responsible.email}}">{% trans "email" %}</a>{% endif %}</dd>
           <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
           <dt>{% trans "Number of sessions" %}</dt>
           <dd>{{ course.number_of_sessions }} cours

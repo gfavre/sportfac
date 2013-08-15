@@ -53,7 +53,7 @@ class MyRegistrationView(BaseRegistrationView):
                                        first_name=first_name, last_name=last_name,
                                        address=address, zipcode=zipcode, city=city,
                                        private_phone=private_phone,
-                                       private_phone2=private_phone2
+                                       private_phone2=private_phone2,
                                        private_phone3=private_phone3)
         new_user = authenticate(email=email, password=password)
         login(request, new_user)
