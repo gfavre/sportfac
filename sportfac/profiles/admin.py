@@ -50,7 +50,7 @@ class FamilyChangeForm(forms.ModelForm):
 
     class Meta:
         model = FamilyUser
-        fields = ('email', 'is_staff', 'groups', 'finished_registration', 
+        fields = ('email', 'is_staff', 'finished_registration', 
                   'first_name', 'last_name', 
                   'address', 'zipcode', 'city', 'country', 
                   'private_phone', 'private_phone2', 'private_phone3')
@@ -79,7 +79,7 @@ class FamilyAdmin(UserAdmin):
     list_display = ('email', 'first_name', 'last_name', 'children_names', 'is_staff',)
     #list_filter = ('is_admin',)
     fieldsets = (
-        (None, {'fields': ('email', 'password', 'is_staff', 'groups', 'finished_registration')}),
+        (None, {'fields': ('email', 'password', 'is_staff', 'finished_registration')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 
                                       'address', 'zipcode', 'city', 'country', 
                                       'private_phone', 'private_phone2', 'private_phone3')}),
@@ -100,7 +100,7 @@ class FamilyAdmin(UserAdmin):
     
 
 admin.site.register(FamilyUser, FamilyAdmin)
-admin.site.register(User, UserAdmin)
+admin.site.unregister(Group)
 
 class TeacherAdmin(admin.ModelAdmin):
     list_display = ('last_name', 'first_name', 'years_label')

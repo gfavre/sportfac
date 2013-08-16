@@ -104,7 +104,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         return True
     
     def has_module_perms(self, app_label):
-        staff_apps = ['activities', 'profiles', 'constance']
+        staff_apps = ['activities', 'profiles', 'constance', 'extended_flatpages']
         # no registration nore auth
         if self.is_superuser:
             return True
