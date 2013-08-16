@@ -99,7 +99,6 @@ class FamilyAdmin(UserAdmin):
     
 
 admin.site.register(FamilyUser, FamilyAdmin)
-admin.site.unregister(Group)
 
 
 class TeacherAdmin(admin.ModelAdmin):
