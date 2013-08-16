@@ -10,7 +10,7 @@ class CourseInline(admin.StackedInline):
     model = Course
     extra = 1
     fieldsets = (
-       (None, {'fields': ('number', 'responsible', 'price', 'number_of_sessions', 'place')}),
+       (None, {'fields': ('number', 'responsible', 'price', 'number_of_sessions', 'place', 'uptodate')}),
        (_("Dates"), {'fields': ('start_date', 'end_date', 'day', 'start_time', 'end_time')}),
        (_("Limitations"), {'fields': ('min_participants', 'max_participants', 'schoolyear_min', 'schoolyear_max')}),
     )
@@ -80,12 +80,12 @@ class ParticipantsListFilter(admin.SimpleListFilter):
 
 
 class CoursesAdmin(admin.ModelAdmin):
-    list_display =('activity', 'number', 'day', 'start_date', 'start_time', 'duration', 'number_of_participants',)
+    list_display =('activity', 'number', 'day', 'start_date', 'start_time', 'duration', 'number_of_participants', 'uptodate',)
     verbose_name = _("course")
     verbose_name_plural = _("courses")
     
     ordering = ('number', 'activity__number', 'activity__name', 'start_date', 'start_time')
-    list_filter=(ParticipantsListFilter,)
+    list_filter=(ParticipantsListFilter, 'uptodate',)
     change_list_filter_template = "admin/filter_listing.html"
     change_list_template = "admin/change_list_filter_sidebar.html"
     

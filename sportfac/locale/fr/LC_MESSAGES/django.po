@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-15 11:29+0200\n"
+"POT-Creation-Date: 2013-08-16 10:24+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: activities/admin.py:14
@@ -26,11 +26,11 @@ msgstr "Dates"
 msgid "Limitations"
 msgstr "Limitations"
 
-#: activities/admin.py:18 activities/admin.py:84 activities/models.py:129
+#: activities/admin.py:18 activities/admin.py:84 activities/models.py:131
 msgid "course"
 msgstr "cours"
 
-#: activities/admin.py:19 activities/admin.py:85 activities/models.py:130
+#: activities/admin.py:19 activities/admin.py:85 activities/models.py:132
 msgid "courses"
 msgstr "cours"
 
@@ -70,11 +70,11 @@ msgstr "Complet"
 msgid "Duration"
 msgstr "Durée"
 
-#: activities/admin.py:113 activities/models.py:152
+#: activities/admin.py:113 activities/models.py:154
 msgid "responsible"
 msgstr "responsable"
 
-#: activities/admin.py:114 activities/models.py:153
+#: activities/admin.py:114 activities/models.py:155
 msgid "responsibles"
 msgstr "responsables"
 
@@ -143,7 +143,7 @@ msgstr "8p HARMOS"
 msgid "Name"
 msgstr "Nom"
 
-#: activities/models.py:38 activities/models.py:70
+#: activities/models.py:38 activities/models.py:70 profiles/models.py:216
 msgid "Number"
 msgstr "Numéro"
 
@@ -166,88 +166,92 @@ msgstr "Question"
 msgid "e.g. Shoes size?"
 msgstr "p. ex. Taille des chaussures?"
 
-#: activities/models.py:71 templates/activities/activity_detail.html:43
+#: activities/models.py:71
+msgid "Course up to date"
+msgstr "cours à jour"
+
+#: activities/models.py:72 templates/activities/activity_detail.html:43
 msgid "Responsible"
 msgstr "Responsable"
 
-#: activities/models.py:72 templates/activities/activity_detail.html:48
+#: activities/models.py:73 templates/activities/activity_detail.html:51
 #: templates/profiles/registration_list.html:40
 msgid "Price"
 msgstr "Prix"
 
-#: activities/models.py:73 templates/activities/activity_detail.html:45
+#: activities/models.py:74 templates/activities/activity_detail.html:48
 msgid "Number of sessions"
 msgstr "Nombre de sessions"
 
-#: activities/models.py:74
+#: activities/models.py:75
 msgid "Day"
 msgstr "Jour"
 
-#: activities/models.py:75
+#: activities/models.py:76
 msgid "Start date"
 msgstr "Date de début"
 
-#: activities/models.py:76
+#: activities/models.py:77
 msgid "End date"
 msgstr "Date de fin"
 
-#: activities/models.py:77
+#: activities/models.py:78
 msgid "Start time"
 msgstr "Heure de début"
 
-#: activities/models.py:78
+#: activities/models.py:79
 msgid "End time"
 msgstr "Heure de fin"
 
-#: activities/models.py:79 templates/activities/activity_detail.html:44
+#: activities/models.py:80 templates/activities/activity_detail.html:47
 #: templates/profiles/registration_list.html:39
 msgid "Place"
 msgstr "Lieu"
 
-#: activities/models.py:80
+#: activities/models.py:81
 msgid "Minimal number of participants"
 msgstr "Nombre minimum de participants"
 
-#: activities/models.py:81
+#: activities/models.py:82
 msgid "Maximal number of participants"
 msgstr "Nombre maximum de participants"
 
-#: activities/models.py:82
+#: activities/models.py:83
 msgid "Minimal school year"
 msgstr "Année scolaire minimale"
 
-#: activities/models.py:83
+#: activities/models.py:84
 msgid "Maximal school year"
 msgstr "Année scolaire maximale"
 
-#: activities/models.py:135 profiles/forms.py:15 profiles/forms.py:60
-#: profiles/models.py:63 profiles/models.py:216
+#: activities/models.py:137 profiles/forms.py:15 profiles/forms.py:60
+#: profiles/models.py:63 profiles/models.py:218
 msgid "First name"
 msgstr "Prénom"
 
-#: activities/models.py:135
+#: activities/models.py:137
 msgid "Leave it empty in case of collaboration name"
 msgstr "Laissez ce champ vide dans le cas d'un nom d'entreprise"
 
-#: activities/models.py:136 profiles/forms.py:16 profiles/forms.py:61
-#: profiles/models.py:64 profiles/models.py:217
+#: activities/models.py:138 profiles/forms.py:16 profiles/forms.py:61
+#: profiles/models.py:64 profiles/models.py:219
 msgid "Last name"
 msgstr "Nom"
 
-#: activities/models.py:137
+#: activities/models.py:139
 msgid "Phone number"
 msgstr "Numéro de téléphone"
 
-#: activities/models.py:138
+#: activities/models.py:140
 msgid "Email"
 msgstr "E-mail"
 
 #: assets/partials/activity-detail.html:44
-#: assets/partials/activity-detail.html:56
-#: assets/partials/activity-detail.html:64
-#: static/partials/activity-detail.html:44
-#: static/partials/activity-detail.html:57
-#: static/partials/activity-detail.html:65
+#: assets/partials/activity-detail.html:57
+#: assets/partials/activity-detail.html:65
+#: static/partials/activity-detail.html:50
+#: static/partials/activity-detail.html:63
+#: static/partials/activity-detail.html:71
 msgid "Plus de place"
 msgstr "Plus de place"
 
@@ -376,16 +380,16 @@ msgstr "Inscriptions"
 msgid "School year"
 msgstr "Année scolaire"
 
-#: profiles/models.py:212 profiles/models.py:218
-#: templates/activities/activity_detail.html:49
+#: profiles/models.py:212 profiles/models.py:220
+#: templates/activities/activity_detail.html:52
 msgid "School years"
 msgstr "Années scolaires"
 
-#: profiles/models.py:230
+#: profiles/models.py:232
 msgid "teacher"
 msgstr "enseignant"
 
-#: profiles/models.py:231
+#: profiles/models.py:233
 msgid "teachers"
 msgstr "enseignants"
 
@@ -499,7 +503,12 @@ msgstr "Suivant"
 msgid "Activity number"
 msgstr "Activité n°"
 
-#: templates/activities/activity_detail.html:52
+#: templates/activities/activity_detail.html:46
+#, fuzzy
+msgid "email"
+msgstr "E-mail"
+
+#: templates/activities/activity_detail.html:55
 msgid "Availability"
 msgstr "Places disponibles"
 
@@ -652,7 +661,9 @@ msgstr "Réinitialisation du mot de passe"
 
 #: templates/registration/password_reset_complete.html:12
 msgid "Your password has been set.  You may go ahead and log in now."
-msgstr "Votre mot de passe a été enregistré. Vous pouvez vous connecter avec celui-ci."
+msgstr ""
+"Votre mot de passe a été enregistré. Vous pouvez vous connecter avec celui-"
+"ci."
 
 #: templates/registration/password_reset_confirm.html:3
 #: templates/registration/password_reset_confirm.html:6

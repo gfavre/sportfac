@@ -68,6 +68,7 @@ class Course(models.Model):
     "A course, i.e. an instance of an activity"
     activity = models.ForeignKey('Activity', related_name='courses')
     number = models.IntegerField(db_index=True, unique=True, null=True, blank=True, verbose_name=_("Number"))
+    uptodate = models.BooleanField(verbose_name=_("Course up to date"), default=False)
     responsible = models.ForeignKey('Responsible', verbose_name=_("Responsible"))
     price = models.DecimalField(max_digits=5, decimal_places=2, verbose_name=_("Price"))
     number_of_sessions = models.PositiveSmallIntegerField(verbose_name=_("Number of sessions"))
@@ -81,6 +82,7 @@ class Course(models.Model):
     max_participants = models.PositiveSmallIntegerField(verbose_name=_("Maximal number of participants"))
     schoolyear_min = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="1", verbose_name=_("Minimal school year"))
     schoolyear_max = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="8", verbose_name=_("Maximal school year"))
+    
     
     @property
     def day_name(self):
