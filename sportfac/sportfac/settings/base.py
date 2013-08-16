@@ -214,6 +214,7 @@ THIRD_PARTY_APPS = (
     'constance.backends.database', #settings in admin
     'grappelli', # admin interface
     'ckeditor', # wysiwyg editor
+    'extended_flatpages',
     #'pipeline', # minifier
 )
 
@@ -328,6 +329,15 @@ GRAPPELLI_ADMIN_TITLE = "Administration du sport scolaire facultatif"
 CKEDITOR_UPLOAD_PATH = MEDIA_ROOT
 CKEDITOR_CONFIGS = {
     'default': {
-        'toolbar': 'Full',
+        'toolbar': [
+                    [ 'Source','-','Save','-', 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo', '-', 'Find','Replace','-','SelectAll'],
+                    [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] ,'/',
+                    [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock','-','BidiLtr','BidiRtl' ],
+                    [ 'Link','Unlink' ],
+                    [ 'Image','Table','HorizontalRule','SpecialChar' ],
+                    [ 'TextColor', '-','Format'],
+                    [ 'Maximize', 'ShowBlocks','-'],
+                ],
+        'format_tags': 'p;h1;h2;h3;h4;h5;h6;pre;address',
     },
 }

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load l10n %}
+{% load humanize %}
+
+
+{% block page_title %}{{ flatpage.title }}{% endblock page_title%}
+
+{% block content %}
+<div class="container">
+
+  <div class="row">
+    <div class="span12">
+      {{ flatpage.content }}     
+    </div><!-- end span -->
+  </div><!-- end row -->
+  <div class="row">
+    <p class="span12" style="text-align: center">
+    {% if registration_opened %}
+    
+      {% if user.is_authenticated %}
+      <a href="{{ max_step }}" class="btn btn-large btn-primary">{% trans "Registration" %}</a>
+      {% else %}
+      <a href="{% url 'registration_register' %}" class="btn btn-large btn-primary">{% trans "Registration" %}</a>
+      <a href="{% url 'auth_login' %}?next={{ request.path }}">{% trans "... or login" %}</a>
+      {% endif %}
+      
+    {% else %}
+      <div class="alert alert-info alert-block">
+        <h4>{% trans "Registrations are currently closed" %}</h4>
+        <p>{% blocktrans with registration_start=registration_start|date:"j F Y" registration_end=registration_end|date:"j F Y"%}They will open from {{ registration_start }} until {{ registration_end }}.{% endblocktrans %}</p>
+      </div>
+    {% endif %}
+    </p>
+  </div>  
+</div> <!-- end container -->
+
+
+{% endblock content %}

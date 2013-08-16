@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load l10n %}
+{% load humanize %}
+
+
+{% block page_title %}{{ flatpage.title }}{% endblock page_title%}
+
+{% block content %}
+<div class="container">
+
+  <div class="row">
+    <div class="span12">
+      {{ flatpage.content }}
+    </div><!-- end span -->
+  </div><!-- end row -->
+</div> <!-- end container -->
+
+
+{% endblock content %}
