@@ -50,7 +50,8 @@ class FamilyChangeForm(forms.ModelForm):
 
     class Meta:
         model = FamilyUser
-        fields = ('email', 'is_staff', 'finished_registration', 'first_name', 'last_name', 
+        fields = ('email', 'is_staff', 'groups', 'finished_registration', 
+                  'first_name', 'last_name', 
                   'address', 'zipcode', 'city', 'country', 
                   'private_phone', 'private_phone2', 'private_phone3')
 
@@ -75,10 +76,10 @@ class FamilyAdmin(UserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('email', 'first_name', 'last_name', 'children_names', 'is_staff')
+    list_display = ('email', 'first_name', 'last_name', 'children_names', 'is_staff',)
     #list_filter = ('is_admin',)
     fieldsets = (
-        (None, {'fields': ('email', 'password', 'is_staff', 'finished_registration')}),
+        (None, {'fields': ('email', 'password', 'is_staff', 'groups', 'finished_registration')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 
                                       'address', 'zipcode', 'city', 'country', 
                                       'private_phone', 'private_phone2', 'private_phone3')}),
@@ -99,7 +100,7 @@ class FamilyAdmin(UserAdmin):
     
 
 admin.site.register(FamilyUser, FamilyAdmin)
-
+admin.site.register(User, UserAdmin)
 
 class TeacherAdmin(admin.ModelAdmin):
     list_display = ('last_name', 'first_name', 'years_label')
