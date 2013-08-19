@@ -1,4 +1,4 @@
-from django.views.generic import ListView, UpdateView
+from django.views.generic import ListView, UpdateView, TemplateView
 from django.contrib.auth import authenticate, login
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse_lazy
@@ -94,5 +94,16 @@ class RegisteredActivitiesListView(LoginRequiredMixin, ListView):
                     context['overlapped'].add(registration.id)
                     context['overlapped'].add(registration2.id)
         
+        
+        return context
+
+class BillingView(LoginRequiredMixin, TemplateView):
+    template_name = "profiles/billing.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super(BillingView, self).get_context_data(**kwargs)
+        registrations = Registration.objects.filter(child__in=self.request.user.children.all(), validated=True, paid=False)
+        total = registrations.aggregate(Sum('course__price')).get('course__price__sum')
+        context['total'] = total or 0
         
         return context

@@ -1,6 +1,7 @@
 from datetime import datetime, date
 
 from django.db import models
+from django.template.defaultfilters import slugify
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.core.urlresolvers import reverse
@@ -85,6 +86,10 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ('first_name', 'last_name', 'zipcode', 'city', 'country')
     
+    @property
+    def billing_identifier(self):
+        return slugify('%s-%i' % (self.last_name, self.id))
+    
     def get_full_name(self):
         full_name = '%s %s' % (self.first_name, self.last_name)
         return full_name.strip()
@@ -102,6 +107,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     
     def has_perm(self, perm, obj=None):
         return True
+    
     
     def has_module_perms(self, app_label):
         staff_apps = ['activities', 'profiles', 'constance', 'extended_flatpages']

@@ -41,4 +41,3 @@ class ActivityDetailView(DetailView):
 
 class ActivityListView(LoginRequiredMixin, ListView):
     model = Activity
-
