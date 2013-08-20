@@ -17,21 +17,21 @@ class Step:
         self.current = request.path == self.url
     
         
-def can_pay(user):
-    if not user.is_authenticated():
+
+def can_register(user):
+    if not user.is_authenticated() or user.finished_registration:
         return False
-    return Registration.objects.filter(child__in=user.children.all(), validated=True, paid=False).count() > 0
+    return user.children.count() > 0
 
 def can_confirm(user):
     if not user.is_authenticated():
         return False
-    return Registration.objects.filter(child__in=user.children.all()).count() > 0
+    return Registration.objects.filter(child__in=user.children.all(), validated=False).count() > 0
 
-def can_register(user):
-    if not user.is_authenticated():
+def can_pay(user):
+    if not user.is_authenticated() or user.finished_registration:
         return False
-    return user.children.count() > 0
-
+    return Registration.objects.filter(child__in=user.children.all(), validated=True).count() > 0
 
 
 def wizard_context(request):

@@ -62,9 +62,6 @@ class MyRegistrationView(BaseRegistrationView):
                                      request=request)
         return new_user
 
-
-
-
       
 
 class RegisteredActivitiesListView(LoginRequiredMixin, FormView):
@@ -77,7 +74,7 @@ class RegisteredActivitiesListView(LoginRequiredMixin, FormView):
         return Registration.objects.select_related('extra_infos',
                                                    'child', 
                                                    'course', 'course__activity').prefetch_related('extra_infos').filter(child__in=self.request.user.children.all())
-        
+    
     
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context        
@@ -102,6 +99,14 @@ class RegisteredActivitiesListView(LoginRequiredMixin, FormView):
         
         return context
 
+    def form_valid(self, form):
+        for registration in self.get_queryset().all():
+            registration.validated = True
+            registration.save()
+        self.request.user.finished_registration = True
+        self.request.user.save()
+        return super(RegisteredActivitiesListView, self).form_valid(form)
+    
 
 class BillingView(LoginRequiredMixin, TemplateView):
     template_name = "profiles/billing.html"

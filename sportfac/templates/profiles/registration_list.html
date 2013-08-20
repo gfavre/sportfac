@@ -132,14 +132,7 @@
         
         $('.highlight').hover(function(){
            $('#' + $(this).attr('rel')).toggleClass('warning');
-        });
-        
-        $('#accept button').click(function(){
-          alert('click');
-          if (!$('#accept input:checkbox').is(':checked')){
-          
-          }
-        });
+        });        
         $('#accept button').prop('disabled', true); 
         $('#accept input:checkbox').click(function(){
           $('#accept button').prop('disabled', !$('#accept button').prop('disabled'));
