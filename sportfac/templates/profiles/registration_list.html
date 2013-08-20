@@ -89,11 +89,29 @@
       </tbody>
       
     </table>
+        
   </div><!-- end row -->
 </div> <!-- end container -->
 {% endblock content %}
 
-{% block next_label %}{% trans "Confirm and proceed to checkout"%}{% endblock next_label %}
+
+
+{% block page_footer %}
+<form id="accept" method="post">{% csrf_token %}
+  {{ form.non_field_errors }}
+  {{ form.accept.errors }}
+  <label class="checkbox">{{ form.accept }}{{ form.accept.label }}</label>
+  <div class="form-actions">
+    {% if previous_step %}
+      <a class="btn btn-prev" href="{{ previous_step.url }}"><i class="icon-chevron-left"></i> {% block previous_label %}{% trans "Previous"%}{% endblock previous_label %}</a>
+    {% endif %}
+    <div class="pull-right">
+      <button type="submit" class="btn btn-primary btn-large btn-next">{% trans "Confirm and proceed to checkout"%} <i class="icon-chevron-right icon-white"></i> </a>      
+    </div>
+  </div>
+</form>
+{% endblock page_footer %}
+
 
 
 {% block extra_js %}
@@ -108,11 +126,11 @@
         });
         
         $('.highlight').hover(function(){
-           
            $('#' + $(this).attr('rel')).toggleClass('warning');
         });
 
-        
+        $('#accept button').prop('disabled', true); 
+          
         $('.extra-info').ajaxForm({
             url: '{% url "api-extra-list" %}',
             success: function(res, status, xhr, form){

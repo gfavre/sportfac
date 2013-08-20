@@ -1,6 +1,8 @@
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
 from django.forms import ModelForm, Form
+from django.core.urlresolvers import reverse
+from django.template.defaultfilters import mark_safe
 
 import floppyforms as forms
 
@@ -97,3 +99,11 @@ class RegistrationForm(Form):
             if self.cleaned_data['password1'] != self.cleaned_data['password2']:
                 raise forms.ValidationError(_("The two password fields didn't match."))
         return self.cleaned_data
+
+
+class AcceptTermsForm(Form):
+    accept = forms.BooleanField(required=True)
+    
+    def __init__(self, *args, **kwargs):
+        super(AcceptTermsForm, self).__init__(*args, **kwargs)
+        self.fields['accept'].label= mark_safe(_("""I've read and agree to <a href="%s"> terms and conditions</a>""") % reverse('terms'))

@@ -1,4 +1,4 @@
-from django.views.generic import ListView, UpdateView, TemplateView
+from django.views.generic import ListView, UpdateView, TemplateView, FormView
 from django.contrib.auth import authenticate, login
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse_lazy
@@ -10,7 +10,7 @@ from registration.backends.simple.views import RegistrationView as BaseRegistrat
 from registration import signals
 
 from .models import FamilyUser, Child, Registration
-from .forms import RegistrationForm, ContactInformationForm
+from .forms import RegistrationForm, ContactInformationForm, AcceptTermsForm
 
 
 class ChildrenListView(LoginRequiredMixin, ListView):
@@ -67,20 +67,25 @@ class MyRegistrationView(BaseRegistrationView):
 
       
 
-class RegisteredActivitiesListView(LoginRequiredMixin, ListView):
+class RegisteredActivitiesListView(LoginRequiredMixin, FormView):
     model = Registration
-    context_object_name = 'registered_list'
+    form_class = AcceptTermsForm
+    success_url = reverse_lazy('profiles_billing')
+    template_name = 'profiles/registration_list.html'
     
     def get_queryset(self):
         return Registration.objects.select_related('extra_infos',
                                                    'child', 
                                                    'course', 'course__activity').prefetch_related('extra_infos').filter(child__in=self.request.user.children.all())
         
-
+    
     def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
+        # Call the base implementation first to get a context        
         context = super(RegisteredActivitiesListView, self).get_context_data(**kwargs)
-        registrations = context[self.context_object_name].order_by('course__start_date', 
+        context['registered_list'] = self.get_queryset()
+        
+        
+        registrations = context['registered_list'].order_by('course__start_date', 
                                                                    'course__end_date')
         context['total_price'] = registrations.aggregate(Sum('course__price'))['course__price__sum']
         
@@ -96,6 +101,7 @@ class RegisteredActivitiesListView(LoginRequiredMixin, ListView):
         
         
         return context
+
 
 class BillingView(LoginRequiredMixin, TemplateView):
     template_name = "profiles/billing.html"

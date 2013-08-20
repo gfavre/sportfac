@@ -3,7 +3,7 @@ from django.contrib.auth.views import password_reset
 
 
 from .forms import RegistrationForm
-from .views import MyRegistrationView, ChildrenListView, AccountView, BillingView
+from .views import MyRegistrationView, ChildrenListView, AccountView, BillingView, RegisteredActivitiesListView
 
 
 urlpatterns = patterns('',
@@ -12,6 +12,8 @@ urlpatterns = patterns('',
     url(r'^register/$', MyRegistrationView.as_view(), name='registration_register'),
     url(r'^reset/$', password_reset, name="registration_reset"),
     url(r'^billing/$', BillingView.as_view(), name="profiles_billing"),
+    url(r'^confirm/$', view=RegisteredActivitiesListView.as_view(), name="activities-confirm"),
+
     (r'', include('registration.backends.simple.urls')),
     
     
