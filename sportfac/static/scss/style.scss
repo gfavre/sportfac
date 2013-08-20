@@ -11,6 +11,17 @@
 @import "font-awesome/font-awesome";
 
 
+/* Large desktop */
+@media (max-width: 1199px) {  
+    .wizard ul li {
+        list-style-type: none; 
+    }
+    .wizard li.active {
+      font-weight: bold;
+    }
+}
+ 
+
 /* general */
 .simple-page-header{margin-top:20px;}
 .nowrap {white-space:nowrap;}

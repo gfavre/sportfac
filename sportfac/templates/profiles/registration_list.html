@@ -7,8 +7,8 @@
 
 {% block content %}
 <div class="container" >
+  {% if overlaps %}
   <div class="row" >
-    {% if overlaps %}
     <div class="alert alert-block">
       <button type="button" class="close" data-dismiss="alert">&times;</button>
       <h4>{% trans "Warning!" %}</h4>
@@ -26,10 +26,9 @@
       </ul>
       </p>
     </div>
-    {% endif %}
-  
-  
-    <table class=" table table-hover">
+  </div>
+  {% endif %}
+     <table class=" table table-hover">
       <thead>
         <tr>
           <th>{% trans "Name" %}</th>
@@ -97,9 +96,15 @@
 
 
 {% block page_footer %}
+<hr />
 <form id="accept" method="post">{% csrf_token %}
   {{ form.non_field_errors }}
   {{ form.accept.errors }}
+  <div class="alert hidden">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <strong>Warning!</strong> Best check yo self, you're not looking too good.
+  </div>
+
   <label class="checkbox">{{ form.accept }}{{ form.accept.label }}</label>
   <div class="form-actions">
     {% if previous_step %}
@@ -128,8 +133,17 @@
         $('.highlight').hover(function(){
            $('#' + $(this).attr('rel')).toggleClass('warning');
         });
-
+        
+        $('#accept button').click(function(){
+          alert('click');
+          if (!$('#accept input:checkbox').is(':checked')){
+          
+          }
+        });
         $('#accept button').prop('disabled', true); 
+        $('#accept input:checkbox').click(function(){
+          $('#accept button').prop('disabled', !$('#accept button').prop('disabled'));
+        });
           
         $('.extra-info').ajaxForm({
             url: '{% url "api-extra-list" %}',
