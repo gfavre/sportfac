@@ -12,21 +12,22 @@
   <div class="row">
     <div class="span12">
       <p>Les inscriptions seront définitivement validées à la suite du règlement de la finance de participation pour les cours choisis.</p>
-      <p>Le montant total pour vos inscriptions s'élève à: <strong> CHF {{ total }}</strong></p>
-      <p>L'identifiant pour votre transaction est le suivant: <strong>{{ user.billing_identifier }}</strong></p>
+      <p>Le montant total pour vos inscriptions s'élève à : <strong> CHF {{ total }}</strong></p>
+      <p>L'identifiant pour votre transaction est le suivant : <strong>{{ user.billing_identifier }}</strong></p>
       </dl>
       <hr>
-      <p>Nous vous remercions de verser cette somme d’ici au  {{ registration_end|date:"j F Y" }} en privilégiant le virement bancaire sur le compte : 
-      </p>
-      <p class="well">
-        CH77 0076 7000 C507 0682 4 <br />
-        AIIP - 1201 Genève
-      </p>
+      <p>Nous vous remercions de verser cette somme d’ici au  {{ registration_end|date:"j F Y" }} en privilégiant le virement bancaire sur le compte : </p>
+      <div class="well">
+        <dl class="dl-horizontal">
+          <dt>IBAN</dt><dd>CH77 0076 7000 C507 0682 4</dd>
+          <dt>Adresse</dt><dd>AIIP<br/>1201 Genève</dd>
+        </dl>
+      </div>
       <p>en indiquant, sous communications ou motif, votre identifiant de transaction.</p>
       <hr>
-<p>Si vous le souhaitez vous pouvez obtenir un bulletin de versement auprès du maître/de la maîtresse de classe de votre enfant sur lequel vous ferez figurer votre identifiant de transaction.</p>
+<p>Si vous le souhaitez, vous pouvez obtenir un bulletin de versement auprès du maître/de la maîtresse de classe de votre enfant sur lequel vous ferez figurer votre identifiant de transaction.</p>
 <p>Si nécessaire, il est également possible de déposer cette somme au secrétariat des écoles, Chemin du Chaucey 7, 1296 Coppet, en se munissant du récapitulatif des inscriptions imprimable à la page de CONFIRMATION et de votre identifiant de transaction.</p>
-<p><strong>Aucun remboursement ne pourra être demandé en cas de désistement</strong></p>
+<p><strong>Aucun remboursement ne pourra être demandé en cas de désistement.</strong></p>
     </div><!-- end span -->
   </div><!-- end row -->
 </div> <!-- end container -->
