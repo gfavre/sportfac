@@ -1,4 +1,4 @@
-{% extends "wizard.html" %}
+{% extends base_template %}
 {% load i18n %}
 {% load floppyforms %}
 {% block title %}{% trans "My account" %}{% endblock title %}
@@ -48,9 +48,13 @@
   </fieldset>
   
   <div class="form-actions">
+    {% if wizard_mode %}
     <div class="pull-right">
       <button type="submit" class="btn btn-primary btn-large">{% trans "Save and continue" %} <i class="icon-chevron-right icon-white"></i></button>
     </div>
+    {% else %}
+    <button type="submit" class="btn btn-success btn-large">{% trans "Save" %}</button>
+    {% endif %}
   </div>
 </form>
 {% endform %}

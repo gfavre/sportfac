@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-21 09:29+0200\n"
+"POT-Creation-Date: 2013-08-21 17:59+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -139,7 +139,9 @@ msgid "8th HARMOS"
 msgstr "8p HARMOS"
 
 #: activities/models.py:37 contact/forms.py:10
-#: templates/profiles/registration_list.html:34
+#: templates/profiles/billing.html:33
+#: templates/profiles/registration_list.html:35
+#: templates/profiles/summary.html:13
 msgid "Name"
 msgstr "Nom"
 
@@ -170,16 +172,18 @@ msgstr "p. ex. Taille des chaussures?"
 msgid "Course up to date"
 msgstr "cours à jour"
 
-#: activities/models.py:72 templates/activities/activity_detail.html:43
+#: activities/models.py:72 templates/activities/activity_detail.html:40
+#: templates/profiles/summary.html:18
 msgid "Responsible"
 msgstr "Responsable"
 
-#: activities/models.py:73 templates/activities/activity_detail.html:51
-#: templates/profiles/registration_list.html:39
+#: activities/models.py:73 templates/activities/activity_detail.html:48
+#: templates/profiles/billing.html:38
+#: templates/profiles/registration_list.html:40
 msgid "Price"
 msgstr "Prix"
 
-#: activities/models.py:74 templates/activities/activity_detail.html:48
+#: activities/models.py:74 templates/activities/activity_detail.html:45
 msgid "Number of sessions"
 msgstr "Nombre de sessions"
 
@@ -203,8 +207,10 @@ msgstr "Heure de début"
 msgid "End time"
 msgstr "Heure de fin"
 
-#: activities/models.py:80 templates/activities/activity_detail.html:47
-#: templates/profiles/registration_list.html:38
+#: activities/models.py:80 templates/activities/activity_detail.html:44
+#: templates/profiles/billing.html:37
+#: templates/profiles/registration_list.html:39
+#: templates/profiles/summary.html:17
 msgid "Place"
 msgstr "Lieu"
 
@@ -294,8 +300,8 @@ msgid "NPA"
 msgstr "NPA"
 
 #: profiles/forms.py:26 profiles/forms.py:68 profiles/models.py:69
-#: templates/profiles/familyuser_form.html:41
-#: templates/registration/registration_form.html:47
+#: templates/profiles/familyuser_form.html:38
+#: templates/registration/registration_form.html:40
 msgid "City"
 msgstr "Commune"
 
@@ -373,8 +379,7 @@ msgstr "Garçon"
 msgid "Female"
 msgstr "Fille"
 
-#: profiles/models.py:197 templates/flatpages/home.html:22
-#: templates/flatpages/home.html.py:24
+#: profiles/models.py:197 templates/flatpages/home.html:21
 msgid "Registration"
 msgstr "Inscription"
 
@@ -387,7 +392,7 @@ msgid "School year"
 msgstr "Année scolaire"
 
 #: profiles/models.py:218 profiles/models.py:226
-#: templates/activities/activity_detail.html:52
+#: templates/activities/activity_detail.html:49
 msgid "School years"
 msgstr "Années scolaires"
 
@@ -403,12 +408,14 @@ msgstr "enseignants"
 msgid "About you"
 msgstr "À propos de vous"
 
-#: sportfac/context_processors.py:39 templates/profiles/children_list.html:5
+#: sportfac/context_processors.py:39 templates/profiles/children_list.html:4
 msgid "Your children"
 msgstr "Vos enfants"
 
-#: sportfac/context_processors.py:40 templates/profiles/children_list.html:42
-#: templates/profiles/children_list.html:44
+#: sportfac/context_processors.py:40 templates/base.html:64
+#: templates/flatpages/home.html:18 templates/profiles/children_list.html:25
+#: templates/profiles/children_list.html:32
+#: templates/profiles/children_list.html:34
 msgid "Register activities"
 msgstr "Inscription aux activités"
 
@@ -433,7 +440,7 @@ msgstr "Fin de la période d'enregistrement"
 msgid "Page not found"
 msgstr "Page non trouvée"
 
-#: templates/404.html:10
+#: templates/404.html:9
 msgid "Sorry, this is probably not the page you were looking for."
 msgstr "Désolé, cette page n'est probablement pas celle que vous cherchiez."
 
@@ -441,11 +448,13 @@ msgstr "Désolé, cette page n'est probablement pas celle que vous cherchiez."
 msgid "Internal Error"
 msgstr "Erreur interne"
 
-#: templates/500.html:10
+#: templates/500.html:9
 msgid "Sorry, an error has happened. This is not your fault. Really."
-msgstr "Désolé, une erreur inattendue s'est produite. Ceci n'est pas de votre faute. Vraiment."
+msgstr ""
+"Désolé, une erreur inattendue s'est produite. Ceci n'est pas de votre faute. "
+"Vraiment."
 
-#: templates/500.html:11
+#: templates/500.html:10
 msgid "Administrators have been warned."
 msgstr "Les administrateurs ont été prévenus du problème."
 
@@ -453,7 +462,7 @@ msgstr "Les administrateurs ont été prévenus du problème."
 msgid "Home"
 msgstr "Accueil"
 
-#: templates/base.html:40 templates/base.html.py:106
+#: templates/base.html:40 templates/base.html.py:109
 msgid "Terms and conditions"
 msgstr "Règlement de participation"
 
@@ -461,139 +470,168 @@ msgstr "Règlement de participation"
 msgid "Activities"
 msgstr "Activités"
 
-#: templates/base.html:58 templates/profiles/familyuser_form.html:4
+#: templates/base.html:57 templates/profiles/familyuser_form.html:4
 #: templates/profiles/familyuser_form.html:5
-#: templates/registration/password_change_done.html:13
+#: templates/registration/password_change_done.html:9
 msgid "My account"
 msgstr "Mon compte"
 
-#: templates/base.html:59
+#: templates/base.html:58
 msgid "My family"
 msgstr "Ma famille"
 
-#: templates/base.html:60
-msgid "My agenda"
-msgstr "Mon agenda"
+#: templates/base.html:62 templates/flatpages/home.html:16
+msgid "My registered activities"
+msgstr "Mes inscriptions pour cette année"
 
-#: templates/base.html:64
+#: templates/base.html:69
 msgid "Administration"
 msgstr "Administration"
 
-#: templates/base.html:68
+#: templates/base.html:73
 msgid "logout"
 msgstr "Déconnexion"
 
-#: templates/base.html:73
+#: templates/base.html:78
 msgid "login"
 msgstr "Connexion"
 
-#: templates/base.html:104 templates/contact/contact.html:4
+#: templates/base.html:107 templates/contact/contact.html:4
 #: templates/contact/contact.html.py:6
 msgid "Contact"
 msgstr "Contact"
 
-#: templates/wizard.html:30 templates/activities/activity_list.html:10
-#: templates/activities/activity_list.html:38
-#: templates/profiles/children_list.html:12
-#: templates/profiles/children_list.html:40
-#: templates/profiles/registration_list.html:111
+#: templates/wizard.html:31 templates/activities/activity_list.html:29
+#: templates/profiles/children_list.html:30
+#: templates/profiles/registration_list.html:112
 msgid "Previous"
 msgstr "Précédent"
 
-#: templates/wizard.html:34 templates/activities/activity_list.html:11
-#: templates/profiles/children_list.html:13
+#: templates/wizard.html:35
 msgid "Next"
 msgstr "Suivant"
 
-#: templates/activities/activity_detail.html:8
+#: templates/activities/activity_detail.html:7
 msgid "Activity number"
 msgstr "Activité n°"
 
-#: templates/activities/activity_detail.html:46
+#: templates/activities/activity_detail.html:43
 msgid "email"
 msgstr "email"
 
-#: templates/activities/activity_detail.html:55
+#: templates/activities/activity_detail.html:52
 msgid "Availability"
 msgstr "Places disponibles"
 
-#: templates/activities/activity_list.html:40
+#: templates/activities/activity_list.html:31
 msgid "End registration"
 msgstr "Terminer l'inscription"
 
-#: templates/contact/contact.html:23
+#: templates/contact/contact.html:21
 msgid "Send message"
 msgstr "Envoyer ce message"
 
 #: templates/contact/thanks.html:4
-msgid "Merci"
-msgstr "Merci"
+msgid "Thank you!"
+msgstr "Merci!"
 
 #: templates/contact/thanks.html:6
 msgid "Thanks for your message"
 msgstr "Merci pour votre message"
 
-#: templates/contact/thanks.html:14
+#: templates/contact/thanks.html:9
 msgid "Your message has been sent. We'll get in touch soon."
 msgstr "Votre message a bien été envoyé. Nous vous recontacterons rapidement."
 
-#: templates/flatpages/home.html:25
+#: templates/flatpages/home.html:22
 msgid "... or login"
 msgstr "... ou connexion"
 
-#: templates/flatpages/home.html:30
+#: templates/flatpages/home.html:27
 msgid "Registrations are currently closed"
 msgstr "Les inscriptions sont fermées pour le moment."
 
-#: templates/flatpages/home.html:31
+#: templates/flatpages/home.html:28
 #, python-format
 msgid "They will open from %(registration_start)s until %(registration_end)s."
 msgstr ""
 "La période d'inscription commence le %(registration_start)s et se termine le "
 "%(registration_end)s."
 
-#: templates/profiles/children_list.html:6
+#: templates/flatpages/home.html:29
+msgid "Review my registered activities"
+msgstr "Revoir mes inscriptions pour cette année"
+
+#: templates/profiles/billing.html:34
+#: templates/profiles/registration_list.html:36
+#: templates/profiles/summary.html:14
+msgid "Activity"
+msgstr "Activité"
+
+#: templates/profiles/billing.html:35
+#: templates/profiles/registration_list.html:37
+#: templates/profiles/summary.html:15
+msgid "Period"
+msgstr "Période"
+
+#: templates/profiles/billing.html:36
+#: templates/profiles/registration_list.html:38
+#: templates/profiles/summary.html:16
+msgid "Time"
+msgstr "Jour / Heure"
+
+#: templates/profiles/billing.html:44
+#: templates/profiles/registration_list.html:46
+msgid "Total"
+msgstr "Total"
+
+#: templates/profiles/children_list.html:5
 msgid "About your children"
 msgstr "À propos de vos enfants"
 
-#: templates/profiles/children_list.html:23
+#: templates/profiles/children_list.html:13
 msgid "Edit my children data"
 msgstr "Éditer les données de mes enfants"
 
-#: templates/profiles/children_list.html:30
+#: templates/profiles/children_list.html:20
 msgid "Add child"
 msgstr "Ajouter un enfant"
 
-#: templates/profiles/familyuser_form.html:31
-#: templates/registration/registration_form.html:36
+#: templates/profiles/familyuser_form.html:28
+#: templates/registration/registration_form.html:29
 msgid "Login informations"
 msgstr "Informations de connexion"
 
-#: templates/profiles/familyuser_form.html:33
+#: templates/profiles/familyuser_form.html:30
 #: templates/registration/password_change_done.html:3
 #: templates/registration/password_change_done.html:5
 #: templates/registration/password_change_form.html:3
 #: templates/registration/password_change_form.html:5
-#: templates/registration/password_change_form.html:36
-#: templates/registration/password_reset_confirm.html:35
+#: templates/registration/password_change_form.html:35
+#: templates/registration/password_reset_confirm.html:33
 msgid "Change password"
 msgstr "Changement de mot de passe"
 
-#: templates/profiles/familyuser_form.html:36
-#: templates/registration/registration_form.html:42
+#: templates/profiles/familyuser_form.html:33
+#: templates/registration/registration_form.html:35
 msgid "Contact informations"
 msgstr "Informations de contact"
 
-#: templates/profiles/familyuser_form.html:55
-#: templates/registration/registration_form.html:61
+#: templates/profiles/familyuser_form.html:53
+#: templates/registration/registration_form.html:55
 msgid "Save and continue"
 msgstr "Enregistrer et continuer"
 
-#: templates/profiles/registration_list.html:14
+#: templates/profiles/familyuser_form.html:56
+#: templates/profiles/registration_list.html:68
+msgid "Save"
+msgstr "Enregistrer"
+
+#: templates/profiles/registration_list.html:12
 msgid "Warning!"
 msgstr "Attention!"
 
-#: templates/profiles/registration_list.html:16
+#: templates/profiles/registration_list.html:15
 msgid ""
 "The following courses occur at the same or close times. It may be difficult "
 "to bring your children."
@@ -601,7 +639,7 @@ msgstr ""
 "Les cours suivants se déroulent en même temps ou à moins de trente minutes "
 "l'un de l'autre. Il pourrait être difficile d'y amener vos enfants."
 
-#: templates/profiles/registration_list.html:18
+#: templates/profiles/registration_list.html:17
 msgid ""
 "The following courses occur at the same or close times. It may be difficult "
 "to bring your child."
@@ -609,64 +647,48 @@ msgstr ""
 "Les cours suivants se déroulent en même temps ou à moins de trente minutes "
 "l'un de l'autre. Il pourrait être difficile d'y amener votre enfant."
 
-#: templates/profiles/registration_list.html:35
-msgid "Activity"
-msgstr "Activité"
-
-#: templates/profiles/registration_list.html:36
-msgid "Period"
-msgstr "Période"
-
-#: templates/profiles/registration_list.html:37
-msgid "Time"
-msgstr "Jour / Heure"
-
-#: templates/profiles/registration_list.html:44
-msgid "Total"
-msgstr "Total"
-
-#: templates/profiles/registration_list.html:55
+#: templates/profiles/registration_list.html:60
 msgid "Please submit this form."
 msgstr "Merci de remplir ce formulaire"
 
-#: templates/profiles/registration_list.html:64
-msgid "Save"
-msgstr "Enregistrer"
-
-#: templates/profiles/registration_list.html:67
+#: templates/profiles/registration_list.html:71
 msgid "Sending info..."
 msgstr "Envoi des informations..."
 
-#: templates/profiles/registration_list.html:73
+#: templates/profiles/registration_list.html:77
 msgid "An error has occurred. Please contact us."
 msgstr "Une erreur s'est produite, veuillez nous contacter"
 
-#: templates/profiles/registration_list.html:114
+#: templates/profiles/registration_list.html:115
 msgid "Confirm and proceed to checkout"
 msgstr "Confirmer et passer au paiement"
+
+#: templates/profiles/summary.html:7
+msgid "Registered activities"
+msgstr "Inscriptions pour cette année"
 
 #: templates/registration/login.html:3 templates/registration/login.html:5
 msgid "Login"
 msgstr "Connexion"
 
-#: templates/registration/login.html:15
+#: templates/registration/login.html:10
 msgid "Please correct the error below."
 msgstr "Veuillez corriger l'erreur ci-dessous."
 
-#: templates/registration/login.html:37
+#: templates/registration/login.html:31
 msgid "Password:"
 msgstr "Mot de passe:"
 
-#: templates/registration/login.html:41
+#: templates/registration/login.html:35
 msgid "Forgotten your password or username?"
 msgstr "Mot de passe oublié?"
 
-#: templates/registration/login.html:47
-#: templates/registration/password_reset_complete.html:13
+#: templates/registration/login.html:41
+#: templates/registration/password_reset_complete.html:9
 msgid "Log in"
 msgstr "Connexion"
 
-#: templates/registration/password_change_done.html:12
+#: templates/registration/password_change_done.html:8
 msgid "Password successfully changed!"
 msgstr "Votre mot de passe a été changé."
 
@@ -679,7 +701,7 @@ msgstr "Votre mot de passe a été changé."
 msgid "Password reset"
 msgstr "Réinitialisation du mot de passe"
 
-#: templates/registration/password_reset_complete.html:12
+#: templates/registration/password_reset_complete.html:8
 msgid "Your password has been set.  You may go ahead and log in now."
 msgstr ""
 "Votre mot de passe a été enregistré. Vous pouvez vous connecter avec celui-"
@@ -694,7 +716,7 @@ msgstr "Confirmation de réinitialisation"
 msgid "Password reset unsuccessful"
 msgstr "Le mot de passe n'a pas pu être changé"
 
-#: templates/registration/password_reset_confirm.html:16
+#: templates/registration/password_reset_confirm.html:13
 msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
@@ -702,7 +724,7 @@ msgstr ""
 "Veuillez entrer votre nouveau mot de passe deux fois afin d'être sûr qu'il a "
 "été tapé correctement."
 
-#: templates/registration/password_reset_confirm.html:40
+#: templates/registration/password_reset_confirm.html:38
 msgid ""
 "The password reset link was invalid, possibly because it has already been "
 "used.  Please request a new password reset."
@@ -710,7 +732,7 @@ msgstr ""
 "Le lien de réinitialisation du mot de passe est invalide. Probablement qu'il "
 "a déjà été utilisé. Veuillez réitérer votre demande de réinitialisation"
 
-#: templates/registration/password_reset_done.html:12
+#: templates/registration/password_reset_done.html:8
 msgid ""
 "We've emailed you instructions for setting your password. You should be "
 "receiving them shortly."
@@ -718,7 +740,7 @@ msgstr ""
 "Nous vous avons envoyé des instructions pour réinitialiser votre mot de "
 "passe. Vous devriez les recevoir rapidement."
 
-#: templates/registration/password_reset_done.html:13
+#: templates/registration/password_reset_done.html:9
 msgid ""
 "If you don't receive an email, please make sure you've entered the address "
 "you registered with, and check your spam folder."
@@ -754,7 +776,7 @@ msgstr "Merci d'utiliser notre site!"
 msgid "The %(site_name)s team"
 msgstr "L'équipe %(site_name)s"
 
-#: templates/registration/password_reset_form.html:12
+#: templates/registration/password_reset_form.html:8
 msgid ""
 "Forgotten your password? Enter your email address below, and we'll email "
 "instructions for setting a new one."
@@ -762,7 +784,7 @@ msgstr ""
 "Vous avez oublié votre mot de passe? Entrez votre adresse email ci-dessous "
 "et nous vous enverrons des instructions pour en créer un nouveau."
 
-#: templates/registration/password_reset_form.html:17
+#: templates/registration/password_reset_form.html:12
 msgid "Reset my password"
 msgstr "Réinitialiser mon mot de passe"
 
@@ -770,6 +792,16 @@ msgstr "Réinitialiser mon mot de passe"
 #: templates/registration/registration_form.html:6
 msgid "Inscription"
 msgstr "Inscription"
+
+#, fuzzy
+#~ msgid "My activities"
+#~ msgstr "activités"
+
+#~ msgid "My agenda"
+#~ msgstr "Mon agenda"
+
+#~ msgid "Merci"
+#~ msgstr "Merci"
 
 #~ msgid "Sport scolaire facultatif"
 #~ msgstr "Sport scolaire facultatif"

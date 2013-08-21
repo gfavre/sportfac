@@ -4,7 +4,9 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from .models import Activity
-from profiles.models import Registration
+from sportfac.utils import WizardMixin
+
+
 
 class LoginRequiredMixin(object):
     @method_decorator(login_required)
@@ -39,5 +41,5 @@ class ActivityDetailView(DetailView):
         return context
 
 
-class ActivityListView(LoginRequiredMixin, ListView):
+class ActivityListView(LoginRequiredMixin, WizardMixin, ListView):
     model = Activity

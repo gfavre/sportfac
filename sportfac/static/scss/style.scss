@@ -20,7 +20,11 @@
       font-weight: bold;
     }
 }
- 
+@media print {
+    .wizard { display: none;}
+    .form-actions { display: none;}
+    .footer-links { display: none;}
+}
 
 /* general */
 .simple-page-header{margin-top:20px;}

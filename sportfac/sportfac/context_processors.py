@@ -29,19 +29,19 @@ def can_confirm(user):
     return Registration.objects.filter(child__in=user.children.all(), validated=False).count() > 0
 
 def can_pay(user):
-    if not user.is_authenticated() or user.finished_registration:
+    if not user.is_authenticated():
         return False
     return Registration.objects.filter(child__in=user.children.all(), validated=True).count() > 0
 
 
 def wizard_context(request):
-    about = Step(request, 'about-step', _("About you"), 'profiles_account', True)
-    children = Step(request, 'children-step', _("Your children"), 'profiles_children', request.user.is_authenticated)
-    activities = Step(request, 'activities-step', _("Register activities"), 'activities-list', 
+    about = Step(request, 'about-step', _("About you"), 'wizard_account', True)
+    children = Step(request, 'children-step', _("Your children"), 'wizard_children', request.user.is_authenticated)
+    activities = Step(request, 'activities-step', _("Register activities"), 'wizard_activities', 
                       can_register(request.user))
-    confirmation = Step(request, 'confirm-step',_("Confirmation"), 'activities-confirm', 
+    confirmation = Step(request, 'confirm-step',_("Confirmation"), 'wizard_confirm', 
                         can_confirm(request.user))
-    billing = Step(request, 'billing-step', _("Billing"), 'home', can_pay(request.user))
+    billing = Step(request, 'billing-step', _("Billing"), 'wizard_billing', can_pay(request.user))
     
     
     steps = [about, children, activities, confirmation, billing]
@@ -49,9 +49,18 @@ def wizard_context(request):
     for idx, step in enumerate(steps):
         if step.current:
             current = idx
-    return {'show_wizard': len(filter(lambda x: x.current, steps)),
-            'previous_step': current != 0 and steps[current - 1] or None,
-            'next_step': current != len(steps) -1 and steps[current + 1] or None,
+    
+    previous_step = next_step = None
+    previous_steps = filter(lambda x: x.activable, steps[:current])
+    if len(previous_steps):
+        previous_step = previous_steps[-1]
+
+    next_steps = filter(lambda x: x.activable, steps[current + 1:])
+    if len(next_steps):
+        next_step = next_steps[0]
+    
+    return {'previous_step': previous_step,
+            'next_step': next_step,
             'steps': steps,
             'max_step': [step.url for step in steps if step.activable][-1]}
 

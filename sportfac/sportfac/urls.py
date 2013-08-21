@@ -17,6 +17,8 @@ urlpatterns = patterns('',
     url(r'^contact/', include('contact.urls')),
     url(r'^ckeditor/', include('ckeditor.urls')),
     
+    url(r'^wizard/', include('sportfac.wizardurls')),
+    
     url(r'404$', TemplateView.as_view(template_name='404.html')),
     url(r'500$', TemplateView.as_view(template_name='500.html')),
 

@@ -76,7 +76,7 @@ class FamilyAdmin(UserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('email', 'first_name', 'last_name', 'children_names', 'is_staff', 'billing_identifier')
+    list_display = ('email', 'first_name', 'last_name', 'children_names', 'billing_identifier', 'finished_registration')
     #list_filter = ('is_admin',)
     fieldsets = (
         (None, {'fields': ('email', 'password', 'is_staff', 'finished_registration')}),

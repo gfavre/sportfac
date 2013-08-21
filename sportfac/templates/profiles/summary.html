@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load l10n %}
+{% load humanize %}
+
+
+{% block page_title %}{% trans "Registered activities" %}{% endblock page_title%}
+
+{% block content %}
+<table class=" table  table-striped">
+  <thead>
+    <tr>
+      <th>{% trans "Name" %}</th>
+      <th>{% trans "Activity" %}</th>
+      <th>{% trans "Period" %}</th>
+      <th>{% trans "Time" %}</th>
+      <th>{% trans "Place" %}</th>
+      <th>{% trans "Responsible" %}</th>
+    </tr>
+  </thead>
+  
+
+  <tbody>
+  {% for registered in registered_list %}
+    <tr>
+      <td>
+        <span class="nowrap">{{ registered.child.first_name }} {{ registered.child.last_name }}</span>
+      </td>
+      <td>{{ registered.course.activity.name }}
+    </td>
+      <td>
+        <span class="nowrap">{{ registered.course.start_date }}</span> – <span class="nowrap">{{ registered.course.end_date }}</span>
+      </td>
+      <td>
+        {{ registered.course.day_name }} / <span class="nowrap">{{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</span>
+      </td>
+      <td>{{ registered.course.place }} <hr>{{ registered.course.activity.informations|safe}}</td>
+      <td>{{ registered.course.responsible}} <br />
+      {{registered.course.responsible.phone }}<br />
+      <a href="mailto:{{registered.course.responsible.email }}">{{registered.course.responsible.email }}</a>
+    </tr>
+  {% endfor %}
+  </tbody>
+  
+</table>
+
+
+{% endblock content %}

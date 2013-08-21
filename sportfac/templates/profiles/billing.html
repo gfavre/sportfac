@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends base_template %}
 {% load i18n %}
 {% load l10n %}
 {% load humanize %}
@@ -7,10 +7,10 @@
 {% block page_title %}Paiement{% endblock page_title%}
 
 {% block content %}
+{% if wizard_mode %}
 <p>Les inscriptions seront définitivement validées à la suite du règlement de la finance de participation pour les cours choisis.</p>
-<p>Le montant total pour vos inscriptions s'élève à : <strong> CHF {{ total }}</strong></p>
+<p>Le montant total pour vos inscriptions s'élève à : <strong> CHF {{ total_price }}</strong></p>
 <p>L'identifiant pour votre transaction est le suivant : <strong>{{ user.billing_identifier }}</strong></p>
-<hr>
 <p>Nous vous remercions de verser cette somme d’ici au  {{ registration_end|date:"j F Y" }} en privilégiant le virement bancaire sur le compte : </p>
 <div class="well">
   <dl class="dl-horizontal">
@@ -20,11 +20,53 @@
 </div>
 <p>en indiquant, sous communications ou motif, votre identifiant de transaction.</p>
 
-<hr />
-
 <p>Si vous le souhaitez, vous pouvez obtenir un bulletin de versement auprès du maître/de la maîtresse de classe de votre enfant sur lequel vous ferez figurer votre identifiant de transaction.</p>
 <p>Si nécessaire, il est également possible de déposer cette somme au secrétariat des écoles, Chemin du Chaucey 7, 1296 Coppet, en se munissant du récapitulatif des inscriptions imprimable à la page de CONFIRMATION et de votre identifiant de transaction.</p>
 <p><strong>Aucun remboursement ne pourra être demandé en cas de désistement.</strong></p>
+
+<hr />
+{% endif %}
+<h2>Inscriptions</h2>
+<table class=" table table-striped">
+  <thead>
+    <tr>
+      <th>{% trans "Name" %}</th>
+      <th>{% trans "Activity" %}</th>
+      <th>{% trans "Period" %}</th>
+      <th>{% trans "Time" %}</th>
+      <th>{% trans "Place" %}</th>
+      <th>{% trans "Price" %}</th>
+    </tr>
+  </thead>
+  
+ <tfoot>
+    <tr>
+      <th colspan="5" style="text-align: right">{% trans "Total" %}</th>
+      <th class="nowrap">CHF {{ total_price }}</th>
+    </tr>
+  </tfoot>
+
+  <tbody>
+  {% for registered in registered_list %}
+    <tr>
+      <td>
+        <span class="nowrap">{{ registered.child.first_name }} {{ registered.child.last_name }}</span>
+      </td>
+      <td>{{ registered.course.activity.name }}
+    </td>
+      <td>
+        <span class="nowrap">{{ registered.course.start_date }}</span> – <span class="nowrap">{{ registered.course.end_date }}</span>
+      </td>
+      <td>
+        {{ registered.course.day_name }} / <span class="nowrap">{{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</span>
+      </td>
+      <td>{{ registered.course.place }}</td>
+      <td class="nowrap">CHF {{ registered.course.price|floatformat:2|intcomma }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+  
+</table>
 
 
 {% endblock content %}

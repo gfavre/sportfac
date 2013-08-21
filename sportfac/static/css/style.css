@@ -7687,6 +7687,15 @@ a .icon-rotate-90:before, a .icon-rotate-180:before, a .icon-rotate-270:before, 
 
   .wizard li.active {
     font-weight: bold; } }
+@media print {
+  .wizard {
+    display: none; }
+
+  .form-actions {
+    display: none; }
+
+  .footer-links {
+    display: none; } }
 /* general */
 .simple-page-header {
   margin-top: 20px; }

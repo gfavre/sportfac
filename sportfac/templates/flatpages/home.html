@@ -12,7 +12,11 @@
 {% if registration_opened %}
 <p style="text-align: center">
   {% if user.is_authenticated %}
-  <a href="{{ max_step }}" class="btn btn-large btn-primary">{% trans "Registration" %}</a>
+    {% if user.finished_registration %}
+    <a href="{% url 'profiles_registered_activities' %}" class="btn btn-large btn-primary"><i class="icon-fixed-width icon-calendar"></i> {% trans "My registered activities" %}</a>
+    {% else  %}
+    <a href="{{ max_step }}" class="btn btn-large btn-primary"><i class="icon-fixed-width icon-calendar"></i>{% trans "Register activities" %}</a>
+    {% endif %}
   {% else %}
   <a href="{% url 'registration_register' %}" class="btn btn-large btn-primary">{% trans "Registration" %}</a>
   <a href="{% url 'auth_login' %}?next={{ request.path }}">{% trans "... or login" %}</a>
@@ -22,6 +26,7 @@
 <div class="alert alert-info alert-block">
   <h4>{% trans "Registrations are currently closed" %}</h4>
   <p>{% blocktrans with registration_start=registration_start|date:"j F Y" registration_end=registration_end|date:"j F Y"%}They will open from {{ registration_start }} until {{ registration_end }}.{% endblocktrans %}</p>
+  <p class="text-center"><a href="{% url 'profiles_registered_activities' %}" class="btn  btn-info"><i class="icon-fixed-width icon-calendar"></i> {% trans "Review my registered activities" %}</a></p>
 </div>
 {% endif %}
 {% endblock content %}

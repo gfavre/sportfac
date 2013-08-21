@@ -1,19 +1,22 @@
 from django.views.generic import ListView, UpdateView, TemplateView, FormView
 from django.contrib.auth import authenticate, login
 from django.utils.translation import ugettext as _
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy, reverse
 from django.db.models import Sum
 
 from braces.views import LoginRequiredMixin
 from registration.backends.simple.views import RegistrationView as BaseRegistrationView
-#from registration.compat import User
 from registration import signals
 
 from .models import FamilyUser, Child, Registration
 from .forms import RegistrationForm, ContactInformationForm, AcceptTermsForm
 
+from sportfac.utils import WizardMixin
 
-class ChildrenListView(LoginRequiredMixin, ListView):
+
+
+
+class ChildrenListView(LoginRequiredMixin, WizardMixin, ListView):
     template_name = 'profiles/children_list.html'
     context_object_name = 'children'
     
@@ -21,15 +24,21 @@ class ChildrenListView(LoginRequiredMixin, ListView):
         return Child.objects.filter(family = self.request.user).order_by('first_name')
         
 
-class AccountView(LoginRequiredMixin, UpdateView):
+class AccountView(LoginRequiredMixin, WizardMixin, UpdateView):
     model = FamilyUser
     form_class = ContactInformationForm
-    success_url = reverse_lazy('profiles_children')
+    
+    def get_success_url(self, request=None, user=None):
+        if self.wizard:
+            return reverse('wizard_children')
+        else:
+            return reverse('profiles_children')
+ 
     
     def get_object(self, queryset=None):
         return self.request.user
 
-class MyRegistrationView(BaseRegistrationView):
+class MyRegistrationView(WizardMixin, BaseRegistrationView):
     """
     A registration backend which implements the simplest possible
     workflow: a user supplies a username, email address and password
@@ -39,7 +48,10 @@ class MyRegistrationView(BaseRegistrationView):
     form_class = RegistrationForm
     
     def get_success_url(self, request=None, user=None):
-        return 'profiles_children'
+        if self.wizard:
+            return reverse('wizard_children')
+        else:
+            return reverse('profiles_children')
     
     def register(self, request, **cleaned_data):
         email, password = cleaned_data['email'], cleaned_data['password1']
@@ -64,10 +76,10 @@ class MyRegistrationView(BaseRegistrationView):
 
       
 
-class RegisteredActivitiesListView(LoginRequiredMixin, FormView):
+class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
     model = Registration
     form_class = AcceptTermsForm
-    success_url = reverse_lazy('profiles_billing')
+    success_url = reverse_lazy('wizard_billing')
     template_name = 'profiles/registration_list.html'
     
     def get_queryset(self):
@@ -108,13 +120,15 @@ class RegisteredActivitiesListView(LoginRequiredMixin, FormView):
         return super(RegisteredActivitiesListView, self).form_valid(form)
     
 
-class BillingView(LoginRequiredMixin, TemplateView):
+class BillingView(LoginRequiredMixin, WizardMixin, TemplateView):
     template_name = "profiles/billing.html"
     
     def get_context_data(self, **kwargs):
         context = super(BillingView, self).get_context_data(**kwargs)
         registrations = Registration.objects.filter(child__in=self.request.user.children.all(), validated=True, paid=False)
+        context['registered_list'] = registrations.all()
+        
         total = registrations.aggregate(Sum('course__price')).get('course__price__sum')
-        context['total'] = total or 0
+        context['total_price'] = total or 0
         
         return context
