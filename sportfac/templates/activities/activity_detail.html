@@ -4,70 +4,61 @@
 {% block page_title %}{{ activity.name }} {% endblock %}
 
 {% block content %}
-<div class="container">
-  <p><strong>{% trans "Activity number" %}:</strong> {{ activity.number }}<br /></p>
+<p><strong>{% trans "Activity number" %}:</strong> {{ activity.number }}<br /></p>  
+{{ activity.description|safe }}
   
-  {{ activity.description|safe }}
+{% if activity.informations %}
+<h4>Informations spécifiques</h4>
+{{ activity.informations | safe }}
+{% endif %}
   
-  {% if activity.informations %}
-  <h4>Informations spécifiques</h4>
-  {{ activity.informations | safe }}
-  {% endif %}
-  
-  {% if registrations %}
-  <h4>Participants</h4>
-  <dl class="dl-horizontal">
-  {% for course, participants in registrations.items %}
-   <dt>Cours n°{{ course.number }}</dt>
-   <dd>
-     <ul class="unstyled">
-     {% for child in participants %}
-       <li>{{ child.first_name }} {{ child.last_name }}</li>
-     {% endfor %}
-     </ul>
-   </dd>
-  </dl>
+{% if registrations %}
+<h4>Participants</h4>
+<dl class="dl-horizontal">
+{% for course, participants in registrations.items %}
+  <dt>Cours n°{{ course.number }}</dt>
+  <dd>
+    <ul class="unstyled">
+    {% for child in participants %}
+      <li>{{ child.first_name }} {{ child.last_name }}</li>
+    {% endfor %}
+    </ul>
+  </dd>
   {% endfor %}
-
-  {% endif %}
+</dl>
+{% endif %}
     
-  <h2>Cours</h2>
-  <ul class=" thumbnails">
-    {% for course in activity.courses.all %}
-    <li class="span4">
-      <section class="thumbnail course">
-        <h3>{{ course.start_date | date:"j F Y" }} -  {{ course.end_date | date:'j F Y'  }}</h3>
-        <p class="lead">Chaque {{ course.day_name|lower }} de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }}</p>
-        <dl class="dl-horizontal">
-          <dt>Cours n°</dt><dd>{{ course.number }}</dd>
-          <dt>{% trans "Responsible" %}</dt>
-          <dd>{{ course.responsible  }}
-              {% if course.responsible.phone %}<br />{{ course.responsible.phone }}{% endif %}
-              {% if course.responsible.email %}<br /><a href="mailto:{{course.responsible.email}}">{% trans "email" %}</a>{% endif %}</dd>
-          <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
-          <dt>{% trans "Number of sessions" %}</dt>
-          <dd>{{ course.number_of_sessions }} cours
-          </dd>
-          <dt>{% trans "Price" %}</dt><dd>CHF {{ course.price }}</dd>
-          <dt>{% trans "School years" %}</dt><dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
-        </dl>
+<h2>Cours</h2>
+<ul class=" thumbnails">
+  {% for course in activity.courses.all %}
+  <li class="span4">
+    <section class="thumbnail course">
+      <h3>{{ course.start_date | date:"j F Y" }} -  {{ course.end_date | date:'j F Y'  }}</h3>
+      <p class="lead">Chaque {{ course.day_name|lower }} de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }}</p>
+      <dl class="dl-horizontal">
+        <dt>Cours n°</dt><dd>{{ course.number }}</dd>
+        <dt>{% trans "Responsible" %}</dt>
+        <dd>{{ course.responsible  }}
+            {% if course.responsible.phone %}<br />{{ course.responsible.phone }}{% endif %}
+            {% if course.responsible.email %}<br /><a href="mailto:{{course.responsible.email}}">{% trans "email" %}</a>{% endif %}</dd>
+        <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
+        <dt>{% trans "Number of sessions" %}</dt>
+        <dd>{{ course.number_of_sessions }} cours
+        </dd>
+        <dt>{% trans "Price" %}</dt><dd>CHF {{ course.price }}</dd>
+        <dt>{% trans "School years" %}</dt><dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
+      </dl>
 
-        <h4>{% trans "Availability"%}</h4>      
-        <div class="well">
+      <h4>{% trans "Availability"%}</h4>      
+      <div class="well">
         <p>{{ course.count_participants  }} participants <span class="pull-right strong"> {{ course.max_participants }} places</span></p>
         <div class="progress  {% if course.full %}progress-danger{% elif course.minimal_participants_reached %}progress-success{% else %}progress-warning{% endif %}" style="margin-bottom: 0;">
           <div class="bar" style="width: {{ course.percentage_full }}%"></div>
         </div>
         <p class="text-right"><small>{{ course.min_participants }} participants requis pour que l'activité ait lieu</small></p>
-        </div>        
-        
-        
-      </section>
-    </li>
+      </div>          
+    </section>
+  </li>
   {% endfor %}
-  </ul>
-
-  </div>
-
-</div>
+</ul>
 {% endblock content %}

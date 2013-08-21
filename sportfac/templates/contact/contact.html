@@ -7,53 +7,50 @@
 
 
 {% block content %}
+<div class="row">
+  <div class="span6">
+    <form action="." method="post" class="form-horizontal">{% csrf_token %}  
+      {% form form using %}
+        {% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
+        {% formrow form.name %}
+        {% formrow form.email %}
+        {% formrow form.subject %}
+        {% formrow form.message %}
+      {% endform %}
+      <div class="pull-right">
+          <button type="submit" class="btn btn-primary btn-large">{% trans "Send message" %}</button>
+      </div>
+    </form>
+  </div>
+  
+  <div class="span6" itemscope itemtype="http://schema.org/Organization">
 
-<div class="container">
-  <div class="row">
-    <div class="span6">
-      <form action="." method="post" class="form-horizontal">{% csrf_token %}  
-        {% form form using %}
-          {% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
-          {% formrow form.name %}
-          {% formrow form.email %}
-          {% formrow form.subject %}
-          {% formrow form.message %}
-        {% endform %}
-        <div class="pull-right">
-            <button type="submit" class="btn btn-primary btn-large">{% trans "Send message" %}</button>
-        </div>
-      </form>
-    </div>
-    <div class="span6" itemscope itemtype="http://schema.org/Organization">
-      <section style="padding-top: 0">          
-        <h4 itemprop="name">Établissement Primaire de Coppet et Environs</h4>
-        <address itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
-          <span itemprop="streetAddress">Chemin du Chaucey 7</span><br />
-          <abbr itemprop="addressCountry" title="Switzerland">CH</abbr>-<span itemprop="postalCode">1296</span> <span itemprop="addressLocality">Coppet</span>
-        </address>
-        <dl class="dl-horizontal">
-          <dt>Téléphone</dt><dd itemprop="telephone">+41 22 557 58 58</dd>
-          <dt>Fax</dt><dd itemprop="faxNumber">+41 22 557 58 59</dd>
-          <dt>Email</dt><dd><a itemprop="email" href="mailto:ep.coppet@vd.ch">ep.coppet@vd.ch</a></dd>
-        </dl>
-      </section>
+    <section style="padding-top: 0">          
+      <h4 itemprop="name">Établissement Primaire de Coppet et Environs</h4>
+      <address itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+        <span itemprop="streetAddress">Chemin du Chaucey 7</span><br />
+        <abbr itemprop="addressCountry" title="Switzerland">CH</abbr>-<span itemprop="postalCode">1296</span> <span itemprop="addressLocality">Coppet</span>
+      </address>
+      <dl class="dl-horizontal">
+        <dt>Téléphone</dt><dd itemprop="telephone">+41 22 557 58 58</dd>
+        <dt>Fax</dt><dd itemprop="faxNumber">+41 22 557 58 59</dd>
+        <dt>Email</dt><dd><a itemprop="email" href="mailto:ep.coppet@vd.ch">ep.coppet@vd.ch</a></dd>
+      </dl>
+    </section>
 
-      <section itemprop="member" itemscope itemtype="http://www.schema.org/Person">          
-        <h4 itemprop="jobTitle">Responsable Sport Scolaire Facultatif</h4>
-        <p itemprop="name">Remo Aeschbach</p>
-        <address itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
-          <span itemprop="streetAddress">Chemin du Chaucey 7</span><br />
-          <abbr itemprop="addressCountry" title="Switzerland">CH</abbr>-<span itemprop="postalCode">1296</span> <span itemprop="addressLocality">Coppet</span>
-        </address>
-        <dl class="dl-horizontal">
-          <dt>Téléphone</dt><dd itemprop="telephone">+41 22 557 58 58</dd>
-          <dt>Portable</dt><dd itemprop="telephone">+41 79 417 69 93</dd>
-          <dt>Email</dt><dd><a itemprop="email" href="mailto:remo.aeschbach@vd.educanet2.ch">remo.aeschbach@vd.educanet2.ch</a></dd>
-        </dl>
-      </section>
-
-
-    </div>
+    <section itemprop="member" itemscope itemtype="http://www.schema.org/Person">          
+      <h4 itemprop="jobTitle">Responsable Sport Scolaire Facultatif</h4>
+      <p itemprop="name">Remo Aeschbach</p>
+      <address itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+        <span itemprop="streetAddress">Chemin du Chaucey 7</span><br />
+        <abbr itemprop="addressCountry" title="Switzerland">CH</abbr>-<span itemprop="postalCode">1296</span> <span itemprop="addressLocality">Coppet</span>
+      </address>
+      <dl class="dl-horizontal">
+        <dt>Téléphone</dt><dd itemprop="telephone">+41 22 557 58 58</dd>
+        <dt>Portable</dt><dd itemprop="telephone">+41 79 417 69 93</dd>
+        <dt>Email</dt><dd><a itemprop="email" href="mailto:remo.aeschbach@vd.educanet2.ch">remo.aeschbach@vd.educanet2.ch</a></dd>
+      </dl>
+    </section>
   </div>
 </div>
 {% endblock %}

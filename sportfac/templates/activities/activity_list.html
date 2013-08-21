@@ -5,32 +5,23 @@
 {% block page_title %}{% trans "Activities" %}{% endblock page_title%}
 
 
-{% block wizard_actions %}
-    <div class="actions">
-      <a href="{{ previous_step.url }}" class="btn btn-mini btn-prev{% if not previous_step %} disabled{% endif %}"><i class="icon-arrow-left"></i> {% trans "Previous"%}</a>
-      <a href="{{ next_step.url }}" class="btn btn-mini btn-next" ng-class="{'disabled': registrations.length === 0}">{% trans "Next"%}<i class="icon-arrow-right"></i></a>
-    </div>
-  </div>
-{% endblock wizard_actions %}
-
 {% block content %}
-<div class="container" >
-  <div class="tabbable" style="margin-left:-30px">
-    <ul class="nav nav-tabs children" >
-      <li ng-repeat="child in userChildren" ng-class="{active: child.selected}">
-        <a href="./#/child/{[{ child.id }]}/" ng-click="selectChild(child.id)">
-          <i class="icon-user" ng-class="{unavailable: !child.selected, available: child.selected}"></i> {[{ child.first_name }]}
-        </a>
-      </li>
-    </ul>
-    
-    <div class="tab-content">
-      <div class="tab-pane active" style="margin-left:-30px" ng-view>
-      </div>
-    </div>
-    
-  </div><!-- end tabbable -->
-</div> <!-- end container -->
+<div class="row">
+<div class="tabbable">
+  <ul class="nav nav-tabs children" style="margin-left: 30px">
+    <li ng-repeat="child in userChildren" ng-class="{active: child.selected}">
+      <a href="./#/child/{[{ child.id }]}/" ng-click="selectChild(child.id)">
+        <i class="icon-user" ng-class="{unavailable: !child.selected, available: child.selected}"></i> {[{ child.first_name }]}
+      </a>
+    </li>
+  </ul>
+  
+  <div class="tab-content">
+    <div class="tab-pane active" ng-view></div>
+  </div>
+  
+</div><!-- end tabbable -->
+</div>
 {% endblock content %}
 
 {% block page_footer %}
@@ -47,16 +38,16 @@
 
 {% block extra_js %}
 {% if debug %}
-  <script src="{{ STATIC_URL }}js/vendor/fullcalendar.min.js"></script>
-  <script src="{{ STATIC_URL }}js/vendor/angular.min.js"></script>
-  <script src="{{ STATIC_URL }}js/vendor/angular-locale_fr-ch.js"></script>
-  <script src="{{ STATIC_URL }}js/vendor/angular-cookies.min.js"></script>
-  <script src="{{ STATIC_URL }}js/vendor/angular-ui-calendar.js"></script>
-  <script src="{{ STATIC_URL }}js/vendor/angular-strap.min.js"></script>
-  <script src="{{ STATIC_URL }}js/activities/services.js"></script>
-  <script src="{{ STATIC_URL }}js/activities/controllers.js"></script>
-  <script src="{{ STATIC_URL }}js/activities/app.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/fullcalendar.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/angular.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/angular-locale_fr-ch.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/angular-cookies.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/angular-ui-calendar.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/angular-strap.min.js"></script>
+<script src="{{ STATIC_URL }}js/activities/services.js"></script>
+<script src="{{ STATIC_URL }}js/activities/controllers.js"></script>
+<script src="{{ STATIC_URL }}js/activities/app.js"></script>
 {% else %}
-  <script src="{{ STATIC_URL }}js/activities/app.min.js"></script>
+<script src="{{ STATIC_URL }}js/activities/app.min.js"></script>
 {% endif %}
 {% endblock extra_js %}

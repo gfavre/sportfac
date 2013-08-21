@@ -6,91 +6,96 @@
 {% block page_title %}{% trans "Confirmation" %}{% endblock page_title%}
 
 {% block content %}
-<div class="container" >
-  {% if overlaps %}
-  <div class="row" >
-    <div class="alert alert-block">
-      <button type="button" class="close" data-dismiss="alert">&times;</button>
-      <h4>{% trans "Warning!" %}</h4>
-      <p>{% if user.children.count > 1 %}
-         {% trans "The following courses occur at the same or close times. It may be difficult to bring your children." %}
-         {% else %}
-         {% trans "The following courses occur at the same or close times. It may be difficult to bring your child." %}
-         {% endif %}
-      <ul>
-      {% for overlap in overlaps %}
-        <li>
-          <span class="highlight" rel="{{ overlap.0.id}}">{{ overlap.0.child.first_name }} - {{ overlap.0.course.activity.name }}</span> / 
-          <span class="highlight" rel="{{ overlap.1.id}}">{{ overlap.1.child.first_name }} - {{ overlap.1.course.activity.name }}</span></li>
-      {% endfor %}
-      </ul>
-      </p>
-    </div>
-  </div>
-  {% endif %}
-     <table class=" table table-hover">
-      <thead>
-        <tr>
-          <th>{% trans "Name" %}</th>
-          <th>{% trans "Activity" %}</th>
-          <th>{% trans "Period" %}</th>
-          <th>{% trans "Time" %}</th>
-          <th>{% trans "Place" %}</th>
-          <th>{% trans "Price" %}</th>
-        </tr>
-      </thead>
-      <tfoot>
-      <tr>
-          <th colspan="5" style="text-align: right">{% trans "Total" %}</th>
-          <th class="nowrap">CHF {{ total_price }}</th>
-        </tr>
-      </tfoot>
-      <tbody>
-      {% for registered in registered_list %}
-      <tr id="{{ registered.id }}" {% if registered.id in overlapped %}class="warning-light"{% endif %}>
-        <td><span class="nowrap">{{ registered.child.first_name }} {{ registered.child.last_name }}</span></td>
-        <td>{{ registered.course.activity.name }}
-            {% for extra in registered.extra_needs %}
-              <p class="alert alert-error form-error" style="display: none">
-                <i class="icon-warning-sign icon-large"></i> {% trans "Please submit this form." %}</span>
-              </p>
+{% if overlaps %}
+<div class="alert alert-block">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <h4>{% trans "Warning!" %}</h4>
+  <p>
+    {% if user.children.count > 1 %}
+    {% trans "The following courses occur at the same or close times. It may be difficult to bring your children." %}
+    {% else %}
+    {% trans "The following courses occur at the same or close times. It may be difficult to bring your child." %}
+    {% endif %}
+    <ul>
+    {% for overlap in overlaps %}
+      <li>
+        <span class="highlight" rel="{{ overlap.0.id}}">{{ overlap.0.child.first_name }} - {{ overlap.0.course.activity.name }}</span> / 
+        <span class="highlight" rel="{{ overlap.1.id}}">{{ overlap.1.child.first_name }} - {{ overlap.1.course.activity.name }}</span>
+      </li>
+    {% endfor %}
+    </ul>
+  </p>
+</div>
+{% endif %}
 
-              <form class="form-inline extra-info" method="post">
-                {% csrf_token %}
-                <div class="form-content">
-                  <input type="hidden" name="registration" value="{{ registered.id }}" />
-                  <input type="hidden" name="key" value="{{ extra.id }}" />
-                  <label>{{ extra.question_label }} <input type="text" name="value" class="input-small" value=""/></label>
-                  <button type="submit" class="btn btn-success" >{% trans "Save" %}</button>
-                </div>
-                <p class="alert alert-info" style="display: none">
-                  <i class="icon-refresh icon-spin"></i> {% trans "Sending info..." %}
-                </p>
-                <p class="alert alert-success" style="display: none">
-                  <i class="icon-ok"></i> {{ extra.question_label }}: <span class="value"></span>
-                </p>
-                <p class="alert alert-error" style="display: none">
-                  <i class="icon-cross"></i> {% trans "An error has occurred. Please contact us." %}</span>
-                </p>
-              </form></p>
-            {% empty %}
-               {% for extra in registered.extra_infos.all %}
-                 <p class="text-info">{{ extra.key.question_label }}: {{ extra.value }}</p>
-               {% endfor %}
-            {% endfor %}
-        </td>
-        <td><span class="nowrap">{{ registered.course.start_date }}</span> – <span class="nowrap">{{ registered.course.end_date }}</span></td>
-        <td>{{ registered.course.day_name }} / <span class="nowrap">{{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</span></td>
-        <td>{{ registered.course.place }}</td>
-        <td class="nowrap">CHF {{ registered.course.price|floatformat:2|intcomma }}</td>
-      </tr>
-      {% endfor %}
-      </tbody>
+
+<table class=" table table-hover">
+  <thead>
+    <tr>
+      <th>{% trans "Name" %}</th>
+      <th>{% trans "Activity" %}</th>
+      <th>{% trans "Period" %}</th>
+      <th>{% trans "Time" %}</th>
+      <th>{% trans "Place" %}</th>
+      <th>{% trans "Price" %}</th>
+    </tr>
+  </thead>
+  
+  <tfoot>
+  <tr>
+      <th colspan="5" style="text-align: right">{% trans "Total" %}</th>
+      <th class="nowrap">CHF {{ total_price }}</th>
+    </tr>
+  </tfoot>
+  
+  <tbody>
+  {% for registered in registered_list %}
+    <tr id="{{ registered.id }}" {% if registered.id in overlapped %}class="warning-light"{% endif %}>
+      <td>
+        <span class="nowrap">{{ registered.child.first_name }} {{ registered.child.last_name }}</span>
+      </td>
+      <td>{{ registered.course.activity.name }}
+      {% for extra in registered.extra_needs %}
+        <p class="alert alert-error form-error" style="display: none">
+          <i class="icon-warning-sign icon-large"></i> {% trans "Please submit this form." %}</span>
+        </p>
       
-    </table>
-        
-  </div><!-- end row -->
-</div> <!-- end container -->
+        <form class="form-inline extra-info" method="post">{% csrf_token %}
+          <div class="form-content">
+            <input type="hidden" name="registration" value="{{ registered.id }}" />
+            <input type="hidden" name="key" value="{{ extra.id }}" />
+            <label>{{ extra.question_label }} <input type="text" name="value" class="input-small" value=""/></label>
+            <button type="submit" class="btn btn-success" >{% trans "Save" %}</button>
+          </div>
+          <p class="alert alert-info" style="display: none">
+            <i class="icon-refresh icon-spin"></i> {% trans "Sending info..." %}
+          </p>
+          <p class="alert alert-success" style="display: none">
+            <i class="icon-ok"></i> {{ extra.question_label }}: <span class="value"></span>
+          </p>
+          <p class="alert alert-error" style="display: none">
+            <i class="icon-cross"></i> {% trans "An error has occurred. Please contact us." %}</span>
+          </p>
+        </form>
+      {% empty %}
+        {% for extra in registered.extra_infos.all %}
+        <p class="text-info">{{ extra.key.question_label }}: {{ extra.value }}</p>
+        {% endfor %}
+      {% endfor %}
+      </td>
+      <td>
+        <span class="nowrap">{{ registered.course.start_date }}</span> – <span class="nowrap">{{ registered.course.end_date }}</span>
+      </td>
+      <td>
+        {{ registered.course.day_name }} / <span class="nowrap">{{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</span>
+      </td>
+      <td>{{ registered.course.place }}</td>
+      <td class="nowrap">CHF {{ registered.course.price|floatformat:2|intcomma }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+  
+</table>
 {% endblock content %}
 
 
@@ -117,44 +122,42 @@
 </form>
 {% endblock page_footer %}
 
-
-
 {% block extra_js %}
-  <script src="{{ STATIC_URL }}js/vendor/jquery.form.min.js"></script>
-  <script>
-    $(document).ready(function(){
-        $('.btn-next').click(function(event){
-           if ($('.form-content').is(':visible')){
-              $('.form-error').show();
-              event.preventDefault();
-           } 
-        });
+<script src="{{ STATIC_URL }}js/vendor/jquery.form.min.js"></script>
+<script>
+  $(document).ready(function(){
+      $('.btn-next').click(function(event){
+         if ($('.form-content').is(':visible')){
+            $('.form-error').show();
+            event.preventDefault();
+         } 
+      });
+      
+      $('.highlight').hover(function(){
+         $('#' + $(this).attr('rel')).toggleClass('warning');
+      });        
+      $('#accept button').prop('disabled', true); 
+      $('#accept input:checkbox').click(function(){
+        $('#accept button').prop('disabled', !$('#accept button').prop('disabled'));
+      });
         
-        $('.highlight').hover(function(){
-           $('#' + $(this).attr('rel')).toggleClass('warning');
-        });        
-        $('#accept button').prop('disabled', true); 
-        $('#accept input:checkbox').click(function(){
-          $('#accept button').prop('disabled', !$('#accept button').prop('disabled'));
-        });
-          
-        $('.extra-info').ajaxForm({
-            url: '{% url "api-extra-list" %}',
-            success: function(res, status, xhr, form){
-              $('.alert-info', form).hide();
-              $('.alert-success .value', form).html(res.value);
-              $('.alert-success', form).show();
-              $('.alert-error', form).hide();
-            },
-            error: function(){
-              $('.alert-info', form).hide();
-              $('.alert-error', form).show();
-            },
-            beforeSubmit: function(formData, form, options){
-              $('.form-content', form).hide();
-              $('.alert-info', form).show();
-            }
-        });
-    });
-  </script>
+      $('.extra-info').ajaxForm({
+          url: '{% url "api-extra-list" %}',
+          success: function(res, status, xhr, form){
+            $('.alert-info', form).hide();
+            $('.alert-success .value', form).html(res.value);
+            $('.alert-success', form).show();
+            $('.alert-error', form).hide();
+          },
+          error: function(){
+            $('.alert-info', form).hide();
+            $('.alert-error', form).show();
+          },
+          beforeSubmit: function(formData, form, options){
+            $('.form-content', form).hide();
+            $('.alert-info', form).show();
+          }
+      });
+  });
+</script>
 {% endblock extra_js %}
