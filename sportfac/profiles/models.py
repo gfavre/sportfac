@@ -80,6 +80,8 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
     
     finished_registration = models.BooleanField(default=False, verbose_name=_("Finished registration"), help_text=_("For current year"))
+    paid = models.BooleanField(default=False, verbose_name=_("Has paid"), help_text=_("For current year"))
+    
     
     objects = FamilyManager()
     

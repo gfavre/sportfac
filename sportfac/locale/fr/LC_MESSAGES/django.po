@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-21 17:59+0200\n"
+"POT-Creation-Date: 2013-08-22 17:04+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -145,7 +145,7 @@ msgstr "8p HARMOS"
 msgid "Name"
 msgstr "Nom"
 
-#: activities/models.py:38 activities/models.py:70 profiles/models.py:222
+#: activities/models.py:38 activities/models.py:70 profiles/models.py:224
 msgid "Number"
 msgstr "Numéro"
 
@@ -231,7 +231,7 @@ msgid "Maximal school year"
 msgstr "Année scolaire maximale"
 
 #: activities/models.py:137 profiles/forms.py:17 profiles/forms.py:62
-#: profiles/models.py:64 profiles/models.py:224
+#: profiles/models.py:64 profiles/models.py:226
 msgid "First name"
 msgstr "Prénom"
 
@@ -240,7 +240,7 @@ msgid "Leave it empty in case of collaboration name"
 msgstr "Laissez ce champ vide dans le cas d'un nom d'entreprise"
 
 #: activities/models.py:138 profiles/forms.py:18 profiles/forms.py:63
-#: profiles/models.py:65 profiles/models.py:225
+#: profiles/models.py:65 profiles/models.py:227
 msgid "Last name"
 msgstr "Nom"
 
@@ -367,40 +367,44 @@ msgstr "Date d'inscription"
 msgid "Finished registration"
 msgstr "Inscription terminée"
 
-#: profiles/models.py:82
+#: profiles/models.py:82 profiles/models.py:83
 msgid "For current year"
 msgstr "Pour l'année courante"
 
-#: profiles/models.py:131
+#: profiles/models.py:83
+msgid "Has paid"
+msgstr "A payé"
+
+#: profiles/models.py:133
 msgid "Male"
 msgstr "Garçon"
 
-#: profiles/models.py:131
+#: profiles/models.py:133
 msgid "Female"
 msgstr "Fille"
 
-#: profiles/models.py:197 templates/flatpages/home.html:21
+#: profiles/models.py:199 templates/flatpages/home.html:21
 msgid "Registration"
 msgstr "Inscription"
 
-#: profiles/models.py:198
+#: profiles/models.py:200
 msgid "Registrations"
 msgstr "Inscriptions"
 
-#: profiles/models.py:208 profiles/models.py:217
+#: profiles/models.py:210 profiles/models.py:219
 msgid "School year"
 msgstr "Année scolaire"
 
-#: profiles/models.py:218 profiles/models.py:226
+#: profiles/models.py:220 profiles/models.py:228
 #: templates/activities/activity_detail.html:49
 msgid "School years"
 msgstr "Années scolaires"
 
-#: profiles/models.py:238
+#: profiles/models.py:240
 msgid "teacher"
 msgstr "enseignant"
 
-#: profiles/models.py:239
+#: profiles/models.py:241
 msgid "teachers"
 msgstr "enseignants"
 
@@ -412,7 +416,7 @@ msgstr "À propos de vous"
 msgid "Your children"
 msgstr "Vos enfants"
 
-#: sportfac/context_processors.py:40 templates/base.html:64
+#: sportfac/context_processors.py:40 templates/base.html:65
 #: templates/flatpages/home.html:18 templates/profiles/children_list.html:25
 #: templates/profiles/children_list.html:32
 #: templates/profiles/children_list.html:34
@@ -458,45 +462,45 @@ msgstr ""
 msgid "Administrators have been warned."
 msgstr "Les administrateurs ont été prévenus du problème."
 
-#: templates/base.html:38
+#: templates/base.html:39
 msgid "Home"
 msgstr "Accueil"
 
-#: templates/base.html:40 templates/base.html.py:109
+#: templates/base.html:41 templates/base.html.py:113
 msgid "Terms and conditions"
 msgstr "Règlement de participation"
 
-#: templates/base.html:43 templates/activities/activity_list.html:5
+#: templates/base.html:44 templates/activities/activity_list.html:5
 msgid "Activities"
 msgstr "Activités"
 
-#: templates/base.html:57 templates/profiles/familyuser_form.html:4
+#: templates/base.html:58 templates/profiles/familyuser_form.html:4
 #: templates/profiles/familyuser_form.html:5
 #: templates/registration/password_change_done.html:9
 msgid "My account"
 msgstr "Mon compte"
 
-#: templates/base.html:58
+#: templates/base.html:59
 msgid "My family"
 msgstr "Ma famille"
 
-#: templates/base.html:62 templates/flatpages/home.html:16
+#: templates/base.html:63 templates/flatpages/home.html:16
 msgid "My registered activities"
 msgstr "Mes inscriptions pour cette année"
 
-#: templates/base.html:69
+#: templates/base.html:70
 msgid "Administration"
 msgstr "Administration"
 
-#: templates/base.html:73
+#: templates/base.html:74
 msgid "logout"
 msgstr "Déconnexion"
 
-#: templates/base.html:78
+#: templates/base.html:79
 msgid "login"
 msgstr "Connexion"
 
-#: templates/base.html:107 templates/contact/contact.html:4
+#: templates/base.html:111 templates/contact/contact.html:4
 #: templates/contact/contact.html.py:6
 msgid "Contact"
 msgstr "Contact"
@@ -792,16 +796,3 @@ msgstr "Réinitialiser mon mot de passe"
 #: templates/registration/registration_form.html:6
 msgid "Inscription"
 msgstr "Inscription"
-
-#, fuzzy
-#~ msgid "My activities"
-#~ msgstr "activités"
-
-#~ msgid "My agenda"
-#~ msgstr "Mon agenda"
-
-#~ msgid "Merci"
-#~ msgstr "Merci"
-
-#~ msgid "Sport scolaire facultatif"
-#~ msgstr "Sport scolaire facultatif"
