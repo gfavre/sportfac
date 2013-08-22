@@ -28,7 +28,7 @@
   <div class="form-actions">
       <a class="btn" href="{{ previous_step.url }}"><i class="icon-chevron-left"></i> {% trans "Previous"%}</a>
     <div class="pull-right">
-      <a href="{{ next_step.url }}" class="btn btn-primary btn-large btn-next" ng-class="{'disabled': registrations.length === 0}">{% trans "End registration"%} <i class="icon-chevron-right"></i></a>
+      <a href="{% url 'wizard_confirm' %}" class="btn btn-primary btn-large btn-next" ng-class="{'disabled': registrations.length === 0}">{% trans "End registration"%} <i class="icon-chevron-right"></i></a>
     </div>          
   </div>
 {% endblock page_footer %}
