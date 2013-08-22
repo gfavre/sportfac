@@ -7777,13 +7777,13 @@ select.ng-invalid:focus {
   /* FF Chrome Opera etc */
   -webkit-transform: rotate(-90deg);
   -webkit-transform-origin: right top;
-  -moz-transform: rotate(90deg);
+  -moz-transform: rotate(-90deg);
   -moz-transform-origin: right top;
-  -o-transform: rotate(90deg);
+  -o-transform: rotate(-90deg);
   -o-transform-origin: right top;
-  -ms-transform: rotate(90deg);
+  -ms-transform: rotate(-90deg);
   -ms-transform-origin: right top;
-  transform: rotate(90deg);
+  transform: rotate(-90deg);
   transform-origin: right top;
   /* IE */
   filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3); }

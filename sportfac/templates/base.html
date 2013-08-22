@@ -102,12 +102,17 @@
     
     <footer class="footer">
       <div class="container">
-          <p>© Établissement primaire de Coppet et environs, 2013 <img src="{{ STATIC_URL }}img/logo-mini.png"/></p>
+        <div class="media">
+          
+          <div class="media-body">
+          <p>© Établissement primaire de Coppet et environs, 2013 </p><img src="{{ STATIC_URL }}img/logo-terre-sainte.png" />
           <ul class="footer-links">
             <li><a href="{% url 'contact' %}">{% trans "Contact" %}</a></li>
             <li class="muted">·</li>
             <li><a href="{% url 'terms' %}">{% trans "Terms and conditions" %}</a></li>
           </ul>
+          </div>
+        </div>
       </div>
     </footer>
 
