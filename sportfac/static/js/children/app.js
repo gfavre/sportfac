@@ -1,6 +1,6 @@
 
 // Declare app level module which depends on filters, and services
-angular.module('children', [ 'children.services', 'ngCookies', '$strap.directives']).
+angular.module('children', [ 'ngRoute', 'children.services', 'ngCookies', '$strap.directives']).
   config(['$routeProvider', function($routeProvider) {
     $routeProvider.when('/edit/:childId', {templateUrl: '/static/partials/child-detail.html', controller: 'childDetailCtrl'});
     $routeProvider.when('/new', {templateUrl: '/static/partials/add-child.html', controller: 'childAddCtrl'});
