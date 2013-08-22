@@ -7830,6 +7830,9 @@ select.ng-invalid:focus {
   color: white;
   border-color: blue; }
 
+.fc-state-highlight {
+  background: none; }
+
 /* Tweak navbar brand link to be super sleek
 -------------------------------------------------- */
 body > .navbar {
