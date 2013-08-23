@@ -25,7 +25,7 @@
 {% block next_label %}{% trans "Register activities"%}{% endblock %}
 
 {% block page_footer %}
-{% if wizard_mode %}
+{% if wizard_mode and not user.finished_registration %}
 <div class="form-actions">
   <a class="btn" href="{{ previous_step.url }}"><i class="icon-chevron-left"></i> {% trans "Previous"%}</a>
   <div class="pull-right">
