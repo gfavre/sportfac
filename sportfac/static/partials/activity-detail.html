@@ -7,8 +7,9 @@
   <dl class="dl-horizontal">
     <dt>Responsable</dt>
     <dd>{[{ selectedCourse.responsible.first  }]} {[{ selectedCourse.responsible.last  }]}
-        
-    
+    <div>{[{ selectedCourse.responsible.phone  }]}</div>
+    <div><a href="mailto:{[{ selectedCourse.responsible.email  }]}">email</a></div>
+
     </dd>
     <dt>Lieu</dt><dd>{[{ selectedCourse.place  }]}</dd>
     <dt>Dates</dt>
