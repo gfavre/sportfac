@@ -176,6 +176,7 @@ function($scope, $filter, $modal, CoursesService){
             {template: '/static/partials/activity-detail.html',
              show: true,
              backdrop: 'static',
+             persist: true,
              scope: $scope,
         });
       });
