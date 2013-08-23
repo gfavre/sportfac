@@ -2,8 +2,8 @@
 
 angular.module('sportfacCalendar.controllers', [])
   
-.controller('ChildrenCtrl', ["$scope", "$routeParams", "$filter", "ChildrenService", "RegistrationsService", "ModelUtils", "$window",
-function($scope, $routeParams, $filter, ChildrenService, RegistrationsService, ModelUtils, $window) {
+.controller('ChildrenCtrl', ["$scope", "$routeParams", "$location", "$filter", "ChildrenService", "RegistrationsService",
+function($scope, $routeParams, $location, $filter, ChildrenService, RegistrationsService) {
   'use strict';
   
   $scope.loadRegistrations = function(){
@@ -51,7 +51,7 @@ function($scope, $routeParams, $filter, ChildrenService, RegistrationsService, M
     var childId = parseInt($routeParams.childId, 10);
     if (isNaN(childId)) {
       childId = $scope.userChildren[0].id;
-      $window.location.href = './#/child/' + $scope.userChildren[0].id + '/';
+      $location.path('/child/' + $scope.userChildren[0].id + '/');
     }
     $scope.selectChild(childId);
     $scope.loadRegistrations();
