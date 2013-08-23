@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-22 17:04+0200\n"
+"POT-Creation-Date: 2013-08-23 18:03+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -255,9 +255,9 @@ msgstr "E-mail"
 #: assets/partials/activity-detail.html:44
 #: assets/partials/activity-detail.html:56
 #: assets/partials/activity-detail.html:64
-#: static/partials/activity-detail.html:50
-#: static/partials/activity-detail.html:63
-#: static/partials/activity-detail.html:71
+#: static/partials/activity-detail.html:49
+#: static/partials/activity-detail.html:62
+#: static/partials/activity-detail.html:70
 msgid "Plus de place"
 msgstr "Plus de place"
 
@@ -666,6 +666,12 @@ msgstr "Une erreur s'est produite, veuillez nous contacter"
 #: templates/profiles/registration_list.html:115
 msgid "Confirm and proceed to checkout"
 msgstr "Confirmer et passer au paiement"
+
+#: templates/profiles/registration_list.html:116
+msgid ""
+"Confirmation is definitive. You will not be able to change your "
+"registrations again."
+msgstr "La confirmation est définitive. Il ne vous sera plus possible de changer vos inscriptions."
 
 #: templates/profiles/summary.html:7
 msgid "Registered activities"
