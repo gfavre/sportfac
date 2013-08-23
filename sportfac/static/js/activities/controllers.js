@@ -14,14 +14,21 @@ function($scope, $routeParams, $location, $filter, ChildrenService, Registration
     if (!angular.isDefined($scope.registrations)){
       return;
     }
-    return $filter('filter')($scope.registrations, {child: child.id}).map(
+    var compare = function(registration){
+      return registration.child === child.id;
+    };
+    return $filter('filter')($scope.registrations, compare).map(
                 function(registration){
                     return registration.course;
                 });
   };
    
   $scope.unregisterCourse = function(child, course){
-    var registration = $filter('filter')($scope.registrations, {child: child.id, course: course.id})[0];
+    var compare = function(registration){
+       return registration.child === child.id && registration.course === course.id;
+    };
+    
+    var registration = $filter('filter')($scope.registrations, compare)[0];
     RegistrationsService.del(registration);
     $scope.registrations.remove(registration);
   };
@@ -150,6 +157,7 @@ function($scope, $filter, $modal, CoursesService){
         });
       }
      });
+     
   };
   
   $scope.updateAvailableEvents = function(){
