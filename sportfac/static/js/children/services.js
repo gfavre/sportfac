@@ -1,6 +1,6 @@
-angular.module('sportfacChildren.services', []).
+angular.module('sportfacChildren.services', [])
 
-factory('ModelUtils', ["$http", "$cookies", function($http, $cookies){
+.factory('ModelUtils', ["$http", "$cookies", function($http, $cookies){
     $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
     var handleErrors = function(serverResponse, status, errorDestination){
       if (angular.isDefined(errorDestination)){
@@ -49,4 +49,81 @@ factory('ModelUtils', ["$http", "$cookies", function($http, $cookies){
         }
     };
     return ModelUtils;
-}]);
+}])
+
+.factory('Child', ['$filter', function($filter){
+    var Child = function(data){
+      angular.extend(this, {
+        toModel: function(){
+          var converted = angular.copy(this);
+          if (typeof converted.teacher === 'object'){
+            converted.teacher = converted.teacher.id;
+          }
+          if (typeof converted.birth_date === 'object'){
+            converted.birth_date = $filter('date')(converted.birth_date, 'dd/MM/yyyy');
+          }
+          return converted;
+        }
+      });
+      angular.extend(this, data);
+      
+    };
+    return Child;
+  }])
+
+.factory('ChildrenService', ["$http", "$cookies", "Child", function($http, $cookies, Child){
+    $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
+    var base = '/api/children/';
+    var handleErrors = function(serverResponse, status, errorDestination){
+      if (angular.isDefined(errorDestination)){
+        angular.forEach(serverResponse, function(value, key){
+          errorDestination[key] = value;
+        });
+      }
+    };
+
+    var ModelUtils = {
+        all: function(){
+          return $http.get('/api/family/').then(function(response){
+            var children = [];
+            angular.forEach(response.data, function(childData){
+              children.push(new Child(childData));
+            });
+            return children;
+          });
+        },
+        get: function(registrationId){
+          return $http.get(base + registrationId + '/').then(function(response){
+            return new Child(response.data);
+          });
+        },
+        del: function(obj){
+          return $http.delete(base + obj.id + '/');
+        },
+        create: function(obj, errors){
+          var child = new Child(obj);
+          return $http.post(base, child.toModel()).
+            success(function(response){
+                angular.extend(child, response);
+            }).
+            error(function(response, status){
+                handleErrors(response, status, errors);
+            });
+        },
+        save: function(obj, errors){
+          if (angular.isDefined(obj.id)){
+            return $http.put(base + obj.id + '/', obj.toModel()).
+                     success(function(response){
+                        angular.extend(obj, response);
+                     }).
+                     error(function(response, status){
+                       handleErrors(response, status, errors);
+                     });
+          } else {
+            return this.create(obj, errors);
+          }
+        },
+    };
+    
+    return ModelUtils;
+  }]);

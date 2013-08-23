@@ -1,22 +1,21 @@
 angular.module('sportfacChildren.controllers', [])
 
-.controller('ListCtrl', ["$scope", "$routeParams", "$http",
-function($scope, $routeParams, $http) {
+.controller('ListCtrl', ["$scope", "$routeParams", "$http", "ChildrenService",
+function($scope, $routeParams, $http, ChildrenService) {
   'use strict';
   $scope.routeParams = $routeParams;
 
   $scope.loadChildren = function(){
-    $http.get('/api/family/').
-      success(function(data, status, headers, config ){
-        angular.forEach(data, function(child){
-          if (child.id === parseInt($scope.routeParams.childId, 10)) {
+    ChildrenService.all().then(function(children){
+      $scope.userChildren = children;
+      angular.forEach(children, function(child){
+        if (child.id === parseInt($scope.routeParams.childId, 10)) {
             child.selected = true;
             $scope.selectedChild = child;
-          } else {
-              child.selected = false;
-          }
-        });
-        $scope.userChildren = data;
+        } else {
+            child.selected = false;
+        }
+      });
     });
   };
   
@@ -60,14 +59,15 @@ function($scope, $routeParams, $http) {
   };
 }])
 
-.controller('childDetailCtrl', ["$scope", "$routeParams", "$location", "ModelUtils",
-function($scope, $routeParams, $location, ModelUtils) {
+.controller('childDetailCtrl', ["$scope", "$routeParams", "$location", "ChildrenService",
+function($scope, $routeParams, $location, ChildrenService) {
   'use strict';
   $scope.detailedChild = {};
   this.initialValue = {};
   $scope.errors = {};
+  
   $scope.reloadChild = function(){
-    ModelUtils.get('/api/children/', $routeParams.childId).then(function(child){
+    ChildrenService.get($routeParams.childId).then(function(child){
       for (var i=0; i< $scope.teachers.length; i++){
         var teacher = $scope.teachers[i];
         if (teacher.id === child.teacher){
@@ -87,7 +87,7 @@ function($scope, $routeParams, $location, ModelUtils) {
   
   
   $scope.saveChild = function(){
-    ModelUtils.save('/api/children/', $scope.detailedChild, $scope.errors).then(function(){
+    ChildrenService.save($scope.detailedChild).then(function(){
       $scope.loadChildren();
       $scope.selectedChild = {};
       $location.url('/');
@@ -95,7 +95,7 @@ function($scope, $routeParams, $location, ModelUtils) {
   };
   
   $scope.delChild = function(){
-     ModelUtils.del('/api/children/', $scope.detailedChild, $scope.errors).then(function(){
+     ChildrenService.del($scope.detailedChild, $scope.errors).then(function(){
       $scope.loadChildren();
       $scope.selectedChild = {};
       $location.url('/');
@@ -108,10 +108,10 @@ function($scope, $routeParams, $location, ModelUtils) {
 
   $scope.hasNotChanged = function() {
     return angular.equals(this.initialValue, $scope.detailedChild);
-  }
+  };
 }])
-.controller('childAddCtrl', ["$scope", "$location", "ModelUtils",
-function($scope, $location, ModelUtils) {
+.controller('childAddCtrl', ["$scope", "$location", "ChildrenService",
+function($scope, $location, ChildrenService) {
   $scope.unselectChild();
   $scope.detailedChild = {};
   $scope.errors = {};
@@ -123,7 +123,7 @@ function($scope, $location, ModelUtils) {
   };
   
   $scope.saveChild = function(){
-    ModelUtils.save('/api/children/', $scope.detailedChild, $scope.errors).then(function(){
+    ChildrenService.save($scope.detailedChild, $scope.errors).then(function(){
       $scope.loadChildren();
       $scope.selectedChild = {};
       $scope.detailedChild = {};
