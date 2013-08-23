@@ -1,5 +1,3 @@
-
-
 angular.module('sportfacCalendar.controllers', [])
   
 .controller('ChildrenCtrl', ["$scope", "$routeParams", "$location", "$filter", "ChildrenService", "RegistrationsService",

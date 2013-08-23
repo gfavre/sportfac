@@ -1,4 +1,4 @@
-if (!Array.prototype.indexOf) {
+if (!Array.prototype.indexOf){
   Array.prototype.indexOf = function (obj, fromIndex) {
     if (fromIndex === null) {
         fromIndex = 0;
@@ -11,8 +11,8 @@ if (!Array.prototype.indexOf) {
     return -1;
   };
 }
-
-Array.prototype.remove = function() {
+if (!Array.prototype.remove){
+  Array.prototype.remove = function(){
     var what, a = arguments, L = a.length, ax;
     while (L && this.length) {
         what = a[--L];
@@ -21,10 +21,9 @@ Array.prototype.remove = function() {
         }
     }
     return this;
-};
-
-if (!Array.prototype.map)
-{
+  };
+}
+if (!Array.prototype.map){
   Array.prototype.map = function(fun /*, thisp*/)
   {
     var len = this.length;
@@ -42,9 +41,7 @@ if (!Array.prototype.map)
     return res;
   };
 }
-
-if (!Array.prototype.filter)
-{
+if (!Array.prototype.filter){
   Array.prototype.filter = function(fun /*, thisp*/)
   {
     var len = this.length;
@@ -65,9 +62,6 @@ if (!Array.prototype.filter)
   };
 }
 
-
-
-
 // Declare app level module which depends on filters, and services
 angular.module('sportfacCalendar', ['sportfacCalendar.services', 'sportfacCalendar.controllers', 'ngRoute', 'ngCookies', 'ui.calendar', '$strap.directives']).
 
@@ -77,13 +71,6 @@ config(['$routeProvider', function($routeProvider) {
       { templateUrl: '/static/partials/activity-list.html', controller: 'ActivityCtrl' });
     $routeProvider.otherwise(
       {templateUrl: '/static/partials/activity-list.html', controller: 'ActivityCtrl'});
-    /*
-    
-    $routeProvider.when('/activity/:activityId/timeline',
-      {templateUrl: '/static/partials/timeline.html', controller: 'ActivityTimelineCtrl'});
-    $routeProvider.when('/activity/:activityId/detail',
-      {templateUrl: '/static/partials/activity-detail.html', controller: 'ActivityDetailCtrl'});
-    $routeProvider.otherwise({templateUrl: '/static/partials/timeline.html', controller: 'ChildTimelineCtrl'});*/
 }]).
 
 config(["$interpolateProvider", function($interpolateProvider) {

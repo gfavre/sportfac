@@ -24,12 +24,12 @@ def can_register(user):
     return user.children.count() > 0
 
 def can_confirm(user):
-    if not user.is_authenticated():
+    if not user.is_authenticated() or user.finished_registration:
         return False
     return Registration.objects.filter(child__in=user.children.all(), validated=False).count() > 0
 
 def can_pay(user):
-    if not user.is_authenticated():
+    if not user.is_authenticated() or user.finished_registration:
         return False
     return Registration.objects.filter(child__in=user.children.all(), validated=True).count() > 0
 
