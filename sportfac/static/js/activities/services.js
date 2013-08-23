@@ -45,9 +45,11 @@ factory('Registration', function(){
           });
         },
         del: function(obj){
+          console.log(obj);
           return $http.delete(base + obj.id + '/');
         },
         create: function(obj, errors){
+          console.log(obj);
           return $http.post(base, obj).
             success(function(response){
                 angular.extend(obj, response);
