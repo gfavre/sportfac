@@ -161,16 +161,33 @@ function($scope, $filter, $modal, CoursesService){
   };
   
   $scope.updateAvailableEvents = function(){
-    var addCourse = function(course){
+    var addAvailableCourse = function(course){
       $scope.availableEvents.push(course.toEvent("available"));
     };
+    var addUnavailableCourse = function(course){
+      $scope.availableEvents.push(course.toEvent("unavailable"));
+    };
+ 
     $scope.availableEvents.length = 0;
+    
+    var oneCourseRegistered = false;
+    angular.forEach($scope.selectedActivity.courses, function(course){
+      if ($scope.getRegisteredCourses($scope.selectedChild).indexOf(course.id) !== -1){
+        oneCourseRegistered = true;
+      }
+    });
+    
     angular.forEach($scope.selectedActivity.courses, function(course){
       var registered = $scope.getRegisteredCourses($scope.selectedChild).indexOf(course.id) !== -1;
       var available = course.schoolyear_min <= $scope.selectedChild.school_year &&
                       course.schoolyear_max >= $scope.selectedChild.school_year;
+      
       if (!registered && available){
-        CoursesService.get(course.id).then(addCourse);
+        if (oneCourseRegistered){
+          CoursesService.get(course.id).then(addUnavailableCourse);
+        } else {
+          CoursesService.get(course.id).then(addAvailableCourse);
+        }
       }
     });
   };
