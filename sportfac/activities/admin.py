@@ -88,7 +88,7 @@ class CoursesAdmin(admin.ModelAdmin):
     list_filter=(ParticipantsListFilter, 'uptodate',)
     change_list_filter_template = "admin/filter_listing.html"
     change_list_template = "admin/change_list_filter_sidebar.html"
-    
+    save_as = True
     
     def queryset(self, request):
         qs = super(CoursesAdmin, self).queryset(request)
