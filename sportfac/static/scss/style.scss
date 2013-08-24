@@ -21,9 +21,12 @@
     }
 }
 @media print {
+    @page {size: landscape;}
     .wizard { display: none;}
+    .navbar { display: none;}
     .form-actions { display: none;}
     .footer-links { display: none;}
+    a[href]:after {content: none;}
 }
 
 /* general */
@@ -55,7 +58,10 @@ h3 code {
   font-size:1.2em;
 }
 
-
+footer address {
+    font-size: 0.9em;
+    color: #777;
+}
 
 /* forms */
 

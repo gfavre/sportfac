@@ -21,7 +21,8 @@
 <p>en indiquant, sous communications ou motif, votre identifiant de transaction.</p>
 
 <p>Si vous le souhaitez, vous pouvez obtenir un bulletin de versement auprès du maître/de la maîtresse de classe de votre enfant sur lequel vous ferez figurer votre identifiant de transaction.</p>
-<p>Si nécessaire, il est également possible de déposer cette somme au secrétariat des écoles, Chemin du Chaucey 7, 1296 Coppet, en se munissant du récapitulatif des inscriptions imprimable à la page de CONFIRMATION et de votre identifiant de transaction.</p>
+<p>Si nécessaire, il est également possible de déposer cette somme au secrétariat des écoles, Chemin du Chaucey 7, 1296 Coppet, en se munissant du présent récapitulatif.</p>
+<p class="hidden-print"><button class="btn btn-success btn-large print-button"><i class="icon icon-print"> Imprimer</i></button></p>
 <p><strong>Aucun remboursement ne pourra être demandé en cas de désistement.</strong></p>
 
 <hr />
@@ -70,3 +71,10 @@
 
 
 {% endblock content %}
+
+{% block extra_js %}
+  <script>
+    $('.print-button').click(function(){window.print()});
+  </script>
+
+{% endblock extra_js %}

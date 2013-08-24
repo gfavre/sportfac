@@ -11,7 +11,7 @@
     <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon.ico" />
 
     <!-- Le styles -->
-    <link href="{{ STATIC_URL }}css/style.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}css/style.css" rel="stylesheet" media="all"v>
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -106,7 +106,13 @@
         <div class="media">
           
           <div class="media-body">
-          <p>© Établissement primaire de Coppet et environs, 2013 </p><img src="{{ STATIC_URL }}img/logo-terre-sainte.png" />
+          <address itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">© 
+            <span itemprop="name">Établissement primaire de Coppet et environs</span><br />
+            <span itemprop="streetAddress">Chemin du Chaucey 7</span>, 
+            <span itemprop="postalCode">1296</span> <span itemprop="addressLocality">Coppet</span> - 
+            Tél: <span itemprop="telephone">+41 22 557 58 58</span>
+          </address>
+          <img src="{{ STATIC_URL }}img/logo-terre-sainte.png" />
           <ul class="footer-links">
             <li><a href="{% url 'contact' %}">{% trans "Contact" %}</a></li>
             <li class="muted">·</li>

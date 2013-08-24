@@ -7688,14 +7688,23 @@ a .icon-rotate-90:before, a .icon-rotate-180:before, a .icon-rotate-270:before, 
   .wizard li.active {
     font-weight: bold; } }
 @media print {
+  @page {
+    size: landscape; }
+
   .wizard {
+    display: none; }
+
+  .navbar {
     display: none; }
 
   .form-actions {
     display: none; }
 
   .footer-links {
-    display: none; } }
+    display: none; }
+
+  a[href]:after {
+    content: none; } }
 /* general */
 .simple-page-header {
   margin-top: 20px; }
@@ -7731,6 +7740,10 @@ h3 code {
 
 .course h4 {
   font-size: 1.2em; }
+
+footer address {
+  font-size: 0.9em;
+  color: #777; }
 
 /* forms */
 input.ng-invalid:focus,
