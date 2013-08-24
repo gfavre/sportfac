@@ -73,11 +73,13 @@ class FamilyAdmin(UserAdmin):
     form = FamilyChangeForm
     add_form = FamilyCreationForm
 
-    # The fields to be used in displaying the User model.
-    # These override the definitions on the base UserAdmin
-    # that reference specific fields on auth.User.
     list_display = ('email', 'first_name', 'last_name', 'children_names', 'billing_identifier', 'finished_registration','paid')
-    #list_filter = ('is_admin',)
+    
+    list_filter = ('paid', 'finished_registration')
+    change_list_template = "admin/change_list_filter_sidebar.html"
+    change_list_filter_template = "admin/filter_listing.html"
+
+    
     fieldsets = (
         (None, {'fields': ('email', 'password', 'is_staff', 'finished_registration', 'paid')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 
@@ -113,6 +115,8 @@ class TeacherAdmin(admin.ModelAdmin):
 admin.site.register(Teacher, TeacherAdmin)
 
 class RegistrationAdmin(admin.ModelAdmin):
+    list_display = ('__unicode__', 'validated')
+
     list_filter = ('validated',)
     change_list_template = "admin/change_list_filter_sidebar.html"
     change_list_filter_template = "admin/filter_listing.html"
