@@ -7,6 +7,9 @@
 {% block page_title %}{% trans "Registered activities" %}{% endblock page_title%}
 
 {% block content %}
+
+
+
 <table class=" table  table-striped">
   <thead>
     <tr>
@@ -44,5 +47,12 @@
   
 </table>
 
+<p class="hidden-print text-center"><button class="btn btn-success btn-large print-button"><i class="icon icon-print"> {% trans "Print" %}</i></button></p>
 
 {% endblock content %}
+
+{% block extra_js %}
+  <script>
+    $('.print-button').click(function(){window.print()});
+  </script>
+{% endblock extra_js %}
