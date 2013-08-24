@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-23 18:03+0200\n"
+"POT-Creation-Date: 2013-08-24 10:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: activities/admin.py:14
@@ -145,7 +145,7 @@ msgstr "8p HARMOS"
 msgid "Name"
 msgstr "Nom"
 
-#: activities/models.py:38 activities/models.py:70 profiles/models.py:224
+#: activities/models.py:38 activities/models.py:70 profiles/models.py:227
 msgid "Number"
 msgstr "Numéro"
 
@@ -231,7 +231,7 @@ msgid "Maximal school year"
 msgstr "Année scolaire maximale"
 
 #: activities/models.py:137 profiles/forms.py:17 profiles/forms.py:62
-#: profiles/models.py:64 profiles/models.py:226
+#: profiles/models.py:64 profiles/models.py:229
 msgid "First name"
 msgstr "Prénom"
 
@@ -240,7 +240,7 @@ msgid "Leave it empty in case of collaboration name"
 msgstr "Laissez ce champ vide dans le cas d'un nom d'entreprise"
 
 #: activities/models.py:138 profiles/forms.py:18 profiles/forms.py:63
-#: profiles/models.py:65 profiles/models.py:227
+#: profiles/models.py:65 profiles/models.py:230
 msgid "Last name"
 msgstr "Nom"
 
@@ -253,8 +253,8 @@ msgid "Email"
 msgstr "E-mail"
 
 #: assets/partials/activity-detail.html:44
-#: assets/partials/activity-detail.html:56
-#: assets/partials/activity-detail.html:64
+#: assets/partials/activity-detail.html:57
+#: assets/partials/activity-detail.html:65
 #: static/partials/activity-detail.html:49
 #: static/partials/activity-detail.html:62
 #: static/partials/activity-detail.html:70
@@ -383,28 +383,37 @@ msgstr "Garçon"
 msgid "Female"
 msgstr "Fille"
 
-#: profiles/models.py:199 templates/flatpages/home.html:21
+#: profiles/models.py:154
+msgid "Confirmed registration"
+msgstr "Inscription confirmée"
+
+#: profiles/models.py:165
+#, python-format
+msgid "%(child)s ⇒ course %(number)s (%(activity)s)"
+msgstr "%(child)s ⇒ cours %(number)s (%(activity)s)"
+
+#: profiles/models.py:201 templates/flatpages/home.html:21
 msgid "Registration"
 msgstr "Inscription"
 
-#: profiles/models.py:200
+#: profiles/models.py:202
 msgid "Registrations"
 msgstr "Inscriptions"
 
-#: profiles/models.py:210 profiles/models.py:219
+#: profiles/models.py:212 profiles/models.py:221
 msgid "School year"
 msgstr "Année scolaire"
 
-#: profiles/models.py:220 profiles/models.py:228
+#: profiles/models.py:222 profiles/models.py:231
 #: templates/activities/activity_detail.html:49
 msgid "School years"
 msgstr "Années scolaires"
 
-#: profiles/models.py:240
+#: profiles/models.py:243
 msgid "teacher"
 msgstr "enseignant"
 
-#: profiles/models.py:241
+#: profiles/models.py:244
 msgid "teachers"
 msgstr "enseignants"
 
@@ -671,7 +680,9 @@ msgstr "Confirmer et passer au paiement"
 msgid ""
 "Confirmation is definitive. You will not be able to change your "
 "registrations again."
-msgstr "La confirmation est définitive. Il ne vous sera plus possible de changer vos inscriptions."
+msgstr ""
+"La confirmation est définitive. Il ne vous sera plus possible de changer vos "
+"inscriptions."
 
 #: templates/profiles/summary.html:7
 msgid "Registered activities"

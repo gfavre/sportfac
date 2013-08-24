@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from datetime import datetime, date
 
 from django.db import models
@@ -151,8 +153,7 @@ class Child(TimeStampedModel):
 class Registration(TimeStampedModel):
     course = models.ForeignKey('activities.Course', related_name="participants")
     child = models.ForeignKey('Child')
-    validated = models.BooleanField(default=False, db_index=True)
-    paid = models.BooleanField(default=False, db_index=True)
+    validated = models.BooleanField(default=False, db_index=True,verbose_name=_("Confirmed registration"))
     
     @property
     def extra_needs(self):
@@ -162,7 +163,9 @@ class Registration(TimeStampedModel):
         return self.extra_needs.count() == 0
             
     def __unicode__(self):
-        return '%s -> course %s' % (unicode(self.child), self.course.number)
+        return _(u'%(child)s ⇒ course %(number)s (%(activity)s)') % {'child': unicode(self.child), 
+                                                                      'number': self.course.number,
+                                                                      'activity': self.course.activity.name}
     
     def overlap(self, r2):
         "Test if another registration object overlaps with this one."  
@@ -218,6 +221,7 @@ class SchoolYear(models.Model):
     class Meta:
         verbose_name = _("School year")
         verbose_name_plural = _("School years")
+        ordering = ('year',)
     
 
 class Teacher(models.Model):

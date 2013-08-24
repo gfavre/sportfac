@@ -125,7 +125,7 @@ class BillingView(LoginRequiredMixin, WizardMixin, TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super(BillingView, self).get_context_data(**kwargs)
-        registrations = Registration.objects.filter(child__in=self.request.user.children.all(), validated=True, paid=False)
+        registrations = Registration.objects.filter(child__in=self.request.user.children.all(), validated=True)
         context['registered_list'] = registrations.all()
         
         total = registrations.aggregate(Sum('course__price')).get('course__price__sum')

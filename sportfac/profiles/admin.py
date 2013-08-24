@@ -6,7 +6,7 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.utils.translation import ugettext_lazy as _
 
 
-from .models import FamilyUser, Child, Teacher
+from .models import FamilyUser, Child, Teacher, Registration
 
 
 
@@ -111,3 +111,10 @@ class TeacherAdmin(admin.ModelAdmin):
     change_list_filter_template = "admin/filter_listing.html"
 
 admin.site.register(Teacher, TeacherAdmin)
+
+class RegistrationAdmin(admin.ModelAdmin):
+    list_filter = ('validated',)
+    change_list_template = "admin/change_list_filter_sidebar.html"
+    change_list_filter_template = "admin/filter_listing.html"
+
+admin.site.register(Registration, RegistrationAdmin)
