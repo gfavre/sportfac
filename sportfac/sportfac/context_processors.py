@@ -26,12 +26,12 @@ def can_register(user):
 def can_confirm(user):
     if not user.is_authenticated() or user.finished_registration:
         return False
-    return Registration.objects.filter(child__in=user.children.all(), validated=False).count() > 0
+    return Registration.objects.filter(child__in=user.children.all()).count() > 0
 
 def can_pay(user):
-    if not user.is_authenticated() or user.finished_registration:
+    if not user.is_authenticated():
         return False
-    return Registration.objects.filter(child__in=user.children.all(), validated=True).count() > 0
+    return user.finished_registration
 
 
 def wizard_context(request):
