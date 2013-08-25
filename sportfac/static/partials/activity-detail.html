@@ -47,7 +47,7 @@
     <button ng-show="{[{ selectedCourse.count_participants < selectedCourse.max_participants && getRegisteredCourses(selectedChild).length < 4}]}" 
             class="btn btn-success" ng-click="register(selectedEvent);hide()">Inscrire {[{ selectedChild.first_name }]}</button>
     <span ng-hide="{[{ selectedCourse.count_participants < selectedCourse.max_participants }]}" 
-        class="btn btn-primary disabled" >Plus de place</span>
+        class="btn btn-info disabled" >Plus de place</span>
     <span ng-show="{[{ selectedCourse.count_participants < selectedCourse.max_participants && getRegisteredCourses(selectedChild).length >= 4}]}" 
         class="btn btn-primary disabled" >Inscrire {[{ selectedChild.first_name }]}</span>
     <p ng-show="getRegisteredCourses(selectedChild).length >= 4" class="text-info" style="margin-top: .4em">Le nombre maximal d'inscriptions par enfant (4) est atteint.</p>
@@ -60,7 +60,7 @@
     <button ng-show="{[{ selectedCourse.count_participants < selectedCourse.max_participants }]}" 
             class="btn btn-danger" ng-click="unregister(selectedEvent);hide()">Désinscrire {[{ selectedChild.first_name }]}</button>
     <span ng-hide="{[{ selectedCourse.count_participants < selectedCourse.max_participants }]}" 
-        class="btn btn-primary disabled" >Plus de place</span>
+        class="btn btn-info disabled" >Plus de place</span>
   </div>
 
   <div class="modal-footer" ng-switch-when="unavailable">
@@ -68,7 +68,7 @@
     <button ng-show="{[{ selectedCourse.count_participants < selectedCourse.max_participants }]}" 
             class="btn btn-danger" ng-click="unregister(selectedEvent);hide()">Désinscrire mon enfant</button>
     <span ng-hide="{[{ selectedCourse.count_participants < selectedCourse.max_participants }]}" 
-        class="btn btn-primary disabled" >Plus de place</span>
+        class="btn btn-info disabled" >Plus de place</span>
   </div>
 
   <div class="modal-footer" ng-switch-default>
