@@ -2,11 +2,24 @@ from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.conf.urls.static import static
 
+
+
+from django.contrib import admin
+from django.contrib.sitemaps import FlatPageSitemap, GenericSitemap
 from django.views.generic import TemplateView
 from django.core.urlresolvers import reverse
-from django.contrib import admin
+
+from activities.urls import sitemap as activity_sitemap
+from contact.urls import Sitemap as ContactSitemap
 
 admin.autodiscover()
+
+
+sitemaps = {
+    'flatpages': FlatPageSitemap,
+    'activities': activity_sitemap,
+    'contact': ContactSitemap,
+}
 
 urlpatterns = patterns('',
     #url(r'^$', TemplateView.as_view(template_name='home.html'), name="home"),
@@ -16,6 +29,9 @@ urlpatterns = patterns('',
     url(r'^account/', include('profiles.urls')),
     url(r'^contact/', include('contact.urls')),
     url(r'^ckeditor/', include('ckeditor.urls')),
+    
+    url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
+
     
     url(r'^wizard/', include('sportfac.wizardurls')),
     

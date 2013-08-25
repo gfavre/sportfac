@@ -1,7 +1,18 @@
 from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
+from django.contrib import sitemaps
+from django.core.urlresolvers import reverse
 
 from .views import ContactView
+
+class Sitemap(sitemaps.Sitemap):
+    def items(self):
+        return ['contact']
+    
+    def location(self, item):
+        return reverse(item)
+
+
 
 urlpatterns = patterns('',
     url(r'^$', ContactView.as_view(), name='contact'),

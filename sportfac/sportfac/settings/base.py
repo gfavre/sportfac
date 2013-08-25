@@ -198,6 +198,7 @@ DJANGO_APPS = (
     
     'django.contrib.sites',
     'django.contrib.flatpages',
+    'django.contrib.sitemaps',
     # Useful template tags:
     # 'django.contrib.humanize',
 
