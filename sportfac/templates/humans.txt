@@ -1,0 +1,25 @@
+Sport Scolaire Facultatif
+                            
+/* TEAM */
+
+Development: Gregory Favre <info@gregoryfavre.ch>                            
+Site: gttp://www.gregoryfavre.ch
+Twitter: @favregregory      
+Location: Gland, Switzerland
+							
+/* THANKS */
+
+Remo Aeschbach, the perfect client, lot of expectations and patience!
+
+                            
+/* SITE */
+
+Last update: 2013/08/25 
+                            
+Standards: HTML5, CSS3
+
+                            
+Components: AngularJS, jQuery, Twitter Bootstrap, FullCalendar
+
+Backend: Nginx (static files)
+         Gunicorn (dynamic), serving Django 1.5 project.
