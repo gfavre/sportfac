@@ -30,7 +30,7 @@
         <span class="pull-right strong"> {[{ selectedCourse.max_participants }]} places</span>
       </div>
       <div class="progress" style="margin-bottom: 0"
-           ng-class="{'progress-success': selectedCourse.count_participants >= selectedCourse.min_participants,
+           ng-class="{'progress-success': selectedCourse.count_participants >= selectedCourse.min_participants && selectedCourse.count_participants < selectedCourse.max_participants,
                       'progress-warning': selectedCourse.count_participants < selectedCourse.min_participants,
                       'progress-danger': selectedCourse.count_participants >= selectedCourse.max_participants}">
         <div class="bar" 
