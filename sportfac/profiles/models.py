@@ -9,6 +9,7 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, Permis
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from django.utils import timezone
+from django.db.models import Sum
 
 
 from activities.models import SCHOOL_YEARS
@@ -84,11 +85,20 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     finished_registration = models.BooleanField(default=False, verbose_name=_("Finished registration"), help_text=_("For current year"))
     paid = models.BooleanField(default=False, verbose_name=_("Has paid"), help_text=_("For current year"))
     
+    total = models.PositiveIntegerField(default=0, verbose_name=_("Total to be paid"))
+    
+    __original_status = None
+    
     
     objects = FamilyManager()
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ('first_name', 'last_name', 'zipcode', 'city', 'country')
+    
+    
+    def __init__(self, *args, **kwargs):
+        super(FamilyUser, self).__init__(*args, **kwargs)
+        self.__original_status = self.finished_registration
     
     @property
     def billing_identifier(self):
@@ -104,6 +114,14 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     @property
     def children_names(self):
         return ', '.join([unicode(child) for child in self.children.all()])
+    
+    def get_registrations(self, validated=True):
+        return Registration.objects.filter(child__in=self.children.all(), validated=validated)
+    
+    def update_total(self):
+        registrations = self.get_registrations(True)
+        total = registrations.aggregate(Sum('course__price')).get('course__price__sum')
+        self.total = total or 0
     
     def get_absolute_url(self):
         return reverse('profiles_account')
@@ -125,6 +143,16 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     
     def __unicode__(self):
         return self.email
+    
+    
+    def save(self, *args, **kwargs):
+        if self.finished_registration != self.__original_status:
+            for registration in self.get_registrations(self.__original_status):
+                registration.validated=self.finished_registration
+                registration.save()
+            self.update_total()
+                
+        super(FamilyUser, self).save(*args, **kwargs)
     
     
 

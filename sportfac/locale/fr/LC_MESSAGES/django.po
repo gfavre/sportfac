@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-24 18:11+0200\n"
+"POT-Creation-Date: 2013-08-27 14:54+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: activities/admin.py:14
@@ -145,7 +145,7 @@ msgstr "8p HARMOS"
 msgid "Name"
 msgstr "Nom"
 
-#: activities/models.py:38 activities/models.py:70 profiles/models.py:228
+#: activities/models.py:38 activities/models.py:70 profiles/models.py:242
 msgid "Number"
 msgstr "Numéro"
 
@@ -172,18 +172,18 @@ msgstr "p. ex. Taille des chaussures?"
 msgid "Course up to date"
 msgstr "cours à jour"
 
-#: activities/models.py:72 templates/activities/activity_detail.html:40
+#: activities/models.py:72 templates/activities/activity_detail.html:41
 #: templates/profiles/summary.html:21
 msgid "Responsible"
 msgstr "Responsable"
 
-#: activities/models.py:73 templates/activities/activity_detail.html:48
+#: activities/models.py:73 templates/activities/activity_detail.html:49
 #: templates/profiles/billing.html:38
 #: templates/profiles/registration_list.html:40
 msgid "Price"
 msgstr "Prix"
 
-#: activities/models.py:74 templates/activities/activity_detail.html:45
+#: activities/models.py:74 templates/activities/activity_detail.html:46
 msgid "Number of sessions"
 msgstr "Nombre de sessions"
 
@@ -207,7 +207,7 @@ msgstr "Heure de début"
 msgid "End time"
 msgstr "Heure de fin"
 
-#: activities/models.py:80 templates/activities/activity_detail.html:44
+#: activities/models.py:80 templates/activities/activity_detail.html:45
 #: templates/profiles/billing.html:37
 #: templates/profiles/registration_list.html:39
 #: templates/profiles/summary.html:20
@@ -231,7 +231,7 @@ msgid "Maximal school year"
 msgstr "Année scolaire maximale"
 
 #: activities/models.py:137 profiles/forms.py:17 profiles/forms.py:62
-#: profiles/models.py:66 profiles/models.py:230
+#: profiles/models.py:67 profiles/models.py:244
 msgid "First name"
 msgstr "Prénom"
 
@@ -240,7 +240,7 @@ msgid "Leave it empty in case of collaboration name"
 msgstr "Laissez ce champ vide dans le cas d'un nom d'entreprise"
 
 #: activities/models.py:138 profiles/forms.py:18 profiles/forms.py:63
-#: profiles/models.py:67 profiles/models.py:231
+#: profiles/models.py:68 profiles/models.py:245
 msgid "Last name"
 msgstr "Nom"
 
@@ -253,11 +253,8 @@ msgid "Email"
 msgstr "E-mail"
 
 #: assets/partials/activity-detail.html:44
-#: assets/partials/activity-detail.html:57
-#: assets/partials/activity-detail.html:65
-#: static/partials/activity-detail.html:49
-#: static/partials/activity-detail.html:62
-#: static/partials/activity-detail.html:70
+#: assets/partials/activity-detail.html:56
+#: assets/partials/activity-detail.html:64
 msgid "Plus de place"
 msgstr "Plus de place"
 
@@ -295,11 +292,11 @@ msgstr "enfants"
 msgid "Address"
 msgstr "Adresse"
 
-#: profiles/forms.py:22 profiles/forms.py:67 profiles/models.py:70
+#: profiles/forms.py:22 profiles/forms.py:67 profiles/models.py:71
 msgid "NPA"
 msgstr "NPA"
 
-#: profiles/forms.py:26 profiles/forms.py:68 profiles/models.py:71
+#: profiles/forms.py:26 profiles/forms.py:68 profiles/models.py:72
 #: templates/profiles/familyuser_form.html:38
 #: templates/registration/registration_form.html:40
 msgid "City"
@@ -338,82 +335,86 @@ msgstr "Les deux mots de passe ne sont pas identiques."
 msgid "I've read and agree to <a href=\"%s\"> terms and conditions</a>"
 msgstr "J'ai lu et j'accepte le  <a href=\"%s\">règlement de participation</a>"
 
-#: profiles/models.py:65
+#: profiles/models.py:66
 msgid "Email address"
 msgstr "Email"
 
-#: profiles/models.py:69
+#: profiles/models.py:70
 msgid "Street"
 msgstr "Rue"
 
-#: profiles/models.py:72
+#: profiles/models.py:73
 msgid "Country"
 msgstr "Pays"
 
-#: profiles/models.py:72
+#: profiles/models.py:73
 msgid "Switzerland"
 msgstr "Suisse"
 
-#: profiles/models.py:80
+#: profiles/models.py:81
 msgid "Designates whether the user can log into this admin site."
 msgstr ""
 "Indique si cet utilisateur peut se logguer dans la partie d'administration"
 
-#: profiles/models.py:82
+#: profiles/models.py:83
 msgid "date joined"
 msgstr "Date d'inscription"
 
-#: profiles/models.py:84
+#: profiles/models.py:85
 msgid "Finished registration"
 msgstr "Inscription terminée"
 
-#: profiles/models.py:84 profiles/models.py:85
+#: profiles/models.py:85 profiles/models.py:86
 msgid "For current year"
 msgstr "Pour l'année courante"
 
-#: profiles/models.py:85
+#: profiles/models.py:86
 msgid "Has paid"
 msgstr "A payé"
 
-#: profiles/models.py:135
+#: profiles/models.py:88
+msgid "Total to be paid"
+msgstr "Total à payer"
+
+#: profiles/models.py:149
 msgid "Male"
 msgstr "Garçon"
 
-#: profiles/models.py:135
+#: profiles/models.py:149
 msgid "Female"
 msgstr "Fille"
 
-#: profiles/models.py:156
+#: profiles/models.py:170
 msgid "Confirmed registration"
 msgstr "Inscription confirmée"
 
-#: profiles/models.py:166
+#: profiles/models.py:180
 #, python-format
 msgid "%(child)s ⇒ course %(number)s (%(activity)s)"
 msgstr "%(child)s ⇒ cours %(number)s (%(activity)s)"
 
-#: profiles/models.py:202 templates/flatpages/home.html:21
+#: profiles/models.py:216 templates/flatpages/home.html:21
 msgid "Registration"
 msgstr "Inscription"
 
-#: profiles/models.py:203
+#: profiles/models.py:217
 msgid "Registrations"
 msgstr "Inscriptions"
 
-#: profiles/models.py:213 profiles/models.py:222
+#: profiles/models.py:227 profiles/models.py:236
 msgid "School year"
 msgstr "Année scolaire"
 
-#: profiles/models.py:223 profiles/models.py:232
-#: templates/activities/activity_detail.html:49
+#: profiles/models.py:237 profiles/models.py:246
+#: templates/activities/activity_detail.html:50
 msgid "School years"
 msgstr "Années scolaires"
 
-#: profiles/models.py:244
+#: profiles/models.py:258
 msgid "teacher"
 msgstr "enseignant"
 
-#: profiles/models.py:245
+#: profiles/models.py:259
 msgid "teachers"
 msgstr "enseignants"
 
@@ -441,11 +442,11 @@ msgstr "Confirmation"
 msgid "Billing"
 msgstr "Paiement"
 
-#: sportfac/settings/base.py:301
+#: sportfac/settings/base.py:302
 msgid "Registration opening date"
 msgstr "Début de la période d'enregistrement"
 
-#: sportfac/settings/base.py:302
+#: sportfac/settings/base.py:303
 msgid "Registration ending date"
 msgstr "Fin de la période d'enregistrement"
 
@@ -524,19 +525,20 @@ msgstr "Précédent"
 msgid "Next"
 msgstr "Suivant"
 
-#: templates/activities/activity_detail.html:7
+#: templates/activities/activity_detail.html:8
 msgid "Activity number"
 msgstr "Activité n°"
 
-#: templates/activities/activity_detail.html:43
+#: templates/activities/activity_detail.html:44
 msgid "email"
 msgstr "email"
 
-#: templates/activities/activity_detail.html:52
+#: templates/activities/activity_detail.html:53
 msgid "Availability"
 msgstr "Places disponibles"
 
 #: templates/activities/activity_list.html:31
+#: templates/activities/activity_list.html:32
 msgid "End registration"
 msgstr "Terminer l'inscription"
 

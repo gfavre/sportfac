@@ -67,13 +67,14 @@ class ChildInline(admin.StackedInline):
     extra = 1
     verbose_name = _("child")
     verbose_name_plural = _("children")
-
+    
 class FamilyAdmin(UserAdmin):
     # The forms to add and change user instances
     form = FamilyChangeForm
     add_form = FamilyCreationForm
+    readonly_fields = ('total',)
 
-    list_display = ('email', 'first_name', 'last_name', 'children_names', 'billing_identifier', 'finished_registration','paid')
+    list_display = ('email', 'first_name', 'last_name', 'children_names', 'billing_identifier', 'finished_registration', 'total', 'paid')
     
     list_filter = ('paid', 'finished_registration')
     change_list_template = "admin/change_list_filter_sidebar.html"
@@ -81,7 +82,7 @@ class FamilyAdmin(UserAdmin):
 
     
     fieldsets = (
-        (None, {'fields': ('email', 'password', 'is_staff', 'finished_registration', 'paid')}),
+        (None, {'fields': ('email', 'password', 'is_staff', 'finished_registration', 'total', 'paid')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 
                                       'address', 'zipcode', 'city', 'country', 
                                       'private_phone', 'private_phone2', 'private_phone3')}),
@@ -99,6 +100,12 @@ class FamilyAdmin(UserAdmin):
     ordering = ('last_name', 'first_name')
     #filter_horizontal = ()
     inlines = [ChildInline]
+    
+    def queryset(self, request):
+        qs = super(FamilyAdmin, self).queryset(request)
+        #return qs 19
+        return qs.prefetch_related('children')
+    
     
 
 admin.site.register(FamilyUser, FamilyAdmin)
@@ -120,5 +127,11 @@ class RegistrationAdmin(admin.ModelAdmin):
     list_filter = ('validated',)
     change_list_template = "admin/change_list_filter_sidebar.html"
     change_list_filter_template = "admin/filter_listing.html"
+    
+    def queryset(self, request):
+        qs = super(RegistrationAdmin, self).queryset(request)
+        #return qs 19
+        return qs.select_related('course', 'course__activity', 'child')
+    
 
 admin.site.register(Registration, RegistrationAdmin)
