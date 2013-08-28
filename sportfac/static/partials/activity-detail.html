@@ -57,10 +57,7 @@
   
   <div class="modal-footer" ng-switch-when="registered">
     <button type="button" class="btn" ng-click="hide()">Fermer</button>
-    <button ng-show="{[{ selectedCourse.count_participants < selectedCourse.max_participants }]}" 
-            class="btn btn-danger" ng-click="unregister(selectedEvent);hide()">Désinscrire {[{ selectedChild.first_name }]}</button>
-    <span ng-hide="{[{ selectedCourse.count_participants < selectedCourse.max_participants }]}" 
-        class="btn btn-info disabled" >Plus de place</span>
+    <button class="btn btn-danger" ng-click="unregister(selectedEvent);hide()">Désinscrire {[{ selectedChild.first_name }]}</button>
   </div>
 
   <div class="modal-footer" ng-switch-when="unavailable">
