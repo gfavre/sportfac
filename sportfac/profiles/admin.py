@@ -96,7 +96,7 @@ class FamilyAdmin(UserAdmin):
                                       'address', 'zipcode', 'city', 'country', 
                                       'private_phone', 'private_phone2')}),
     )
-    search_fields = ('email', 'last_name', 'first_name')
+    search_fields = ('email', 'last_name', 'first_name', 'billing_identifier')
     ordering = ('last_name', 'first_name')
     #filter_horizontal = ()
     inlines = [ChildInline]
