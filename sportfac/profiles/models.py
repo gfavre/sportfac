@@ -85,7 +85,10 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     finished_registration = models.BooleanField(default=False, verbose_name=_("Finished registration"), help_text=_("For current year"))
     paid = models.BooleanField(default=False, verbose_name=_("Has paid"), help_text=_("For current year"))
     
+    billing_identifier = models.CharField(_('Billing identifier'), max_length=45, blank=True)
     total = models.PositiveIntegerField(default=0, verbose_name=_("Total to be paid"))
+    
+    
     
     __original_status = None
     
@@ -99,10 +102,6 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     def __init__(self, *args, **kwargs):
         super(FamilyUser, self).__init__(*args, **kwargs)
         self.__original_status = self.finished_registration
-    
-    @property
-    def billing_identifier(self):
-        return slugify('%s-%i' % (self.last_name, self.id))
     
     def get_full_name(self):
         full_name = '%s %s' % (self.first_name, self.last_name)
@@ -122,6 +121,10 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         registrations = self.get_registrations(True)
         total = registrations.aggregate(Sum('course__price')).get('course__price__sum')
         self.total = total or 0
+    
+    def update_billing_identifier(self):
+        if self.pk:
+            self.billing_identifier = slugify('%s-%i' % (self.last_name, self.id))
     
     def get_absolute_url(self):
         return reverse('profiles_account')
@@ -151,7 +154,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
                 registration.validated=self.finished_registration
                 registration.save()
             self.update_total()
-                
+        self.update_billing_identifier()
         super(FamilyUser, self).save(*args, **kwargs)
     
     
