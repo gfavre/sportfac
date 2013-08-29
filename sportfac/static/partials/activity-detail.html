@@ -1,6 +1,6 @@
 <div class="modal-header" ng-controller="ActivityDetailCtrl">
   <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-  <h3>{[{ selectedCourse.activity.name }]}</h5>
+  <h3>{[{ selectedCourse.activity.name }]} (n°{[{ selectedCourse.number }]})</h5>
   <h5>{[{ selectedCourse.start_date | date:'longDate' }]} - {[{ selectedCourse.end_date | date:'longDate' }]}</h4>
 </div>
 <div class="modal-body">
