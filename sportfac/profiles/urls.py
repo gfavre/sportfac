@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     url(r'^reset/$', password_reset, name="registration_reset"),
     url(r'^summary/$', BillingView.as_view(template_name="profiles/summary.html"), name="profiles_registered_activities"),
     url(r'^register/$',  MyRegistrationView.as_view(wizard=False), name="registeraccount"),
+    url(r'^payement/$', BillingView.as_view(wizard=False), name="profiles_billing"),
     
     (r'', include('registration.backends.simple.urls')),
     

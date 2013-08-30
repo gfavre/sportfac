@@ -7,7 +7,6 @@
 {% block page_title %}Paiement{% endblock page_title%}
 
 {% block content %}
-{% if wizard_mode %}
 <p>Les inscriptions seront définitivement validées à la suite du règlement de la finance de participation pour les cours choisis.</p>
 <p>Le montant total pour vos inscriptions s'élève à : <strong> CHF {{ total_price }}</strong></p>
 <p>L'identifiant pour votre transaction est le suivant : <strong>{{ user.billing_identifier }}</strong></p>
@@ -25,7 +24,6 @@
 <p><strong>Aucun remboursement ne pourra être demandé en cas de désistement.</strong></p>
 
 <hr />
-{% endif %}
 <h2>Inscriptions</h2>
 <table class=" table table-striped">
   <thead>
