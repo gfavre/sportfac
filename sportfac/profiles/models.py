@@ -178,7 +178,7 @@ class Child(TimeStampedModel):
     
     
     def __unicode__(self):
-        return '%s %s' % (self.last_name, self.first_name)
+        return '%s %s' % (self.first_name, self.last_name)
 
 
 class Registration(TimeStampedModel):
@@ -232,7 +232,7 @@ class Registration(TimeStampedModel):
         unique_together = ('course', 'child')
         verbose_name = _("Registration")
         verbose_name_plural = _("Registrations")
-        ordering = ('child__first_name', 'course__start_date')
+        ordering = ('child__last_name', 'child__first_name', 'course__start_date')
 
 class ExtraInfo(models.Model):
     registration = models.ForeignKey('Registration', related_name='extra_infos')
