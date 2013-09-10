@@ -216,6 +216,7 @@ THIRD_PARTY_APPS = (
     'grappelli', # admin interface
     'ckeditor', # wysiwyg editor
     'extended_flatpages',
+    'autocomplete_light', # autocomplete for django admin
     #'pipeline', # minifier
 )
 

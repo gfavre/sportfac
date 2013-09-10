@@ -4,12 +4,14 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.sitemaps import FlatPageSitemap, GenericSitemap
 from django.views.generic import TemplateView, RedirectView
-
 from django.core.urlresolvers import reverse
+
+import autocomplete_light
 
 from activities.urls import sitemap as activity_sitemap
 from contact.urls import Sitemap as ContactSitemap
 
+autocomplete_light.autodiscover()
 admin.autodiscover()
 
 
@@ -44,6 +46,7 @@ urlpatterns = patterns('',
     url(r'500$', TemplateView.as_view(template_name='500.html')),
 
     url(r'^grappelli/', include('grappelli.urls')),
+    url(r'^admin/autocomplete/', include('autocomplete_light.urls')),
     url(r'^admin/', include(admin.site.urls)),
 )
 

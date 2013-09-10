@@ -5,6 +5,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.utils.translation import ugettext_lazy as _
 
+import autocomplete_light
 
 from .models import FamilyUser, Child, Teacher, Registration
 
@@ -132,6 +133,9 @@ class RegistrationAdmin(admin.ModelAdmin):
                      )
     change_list_template = "admin/change_list_filter_sidebar.html"
     change_list_filter_template = "admin/filter_listing.html"
+    
+    form = autocomplete_light.modelform_factory(Registration)
+    
     
     def queryset(self, request):
         qs = super(RegistrationAdmin, self).queryset(request)
