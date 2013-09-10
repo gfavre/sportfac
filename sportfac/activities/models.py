@@ -127,7 +127,7 @@ class Course(models.Model):
                                                           self.schoolyear_min, self.schoolyear_max)
     
     class Meta:
-        ordering = ['start_date', 'activity', 'day']
+        ordering = ('activity__name', 'number', )
         verbose_name = _("course")
         verbose_name_plural = _("courses")
     

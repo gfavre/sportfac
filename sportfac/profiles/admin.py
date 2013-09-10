@@ -123,8 +123,13 @@ admin.site.register(Teacher, TeacherAdmin)
 
 class RegistrationAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'validated')
-
-    list_filter = ('validated',)
+    
+    list_filter = ('validated', 'course__activity__name')
+    
+    search_fields = ('child__first_name', 'child__last_name', 
+                     'course__activity__number', 'course__activity__name',
+                     'course__number',
+                     )
     change_list_template = "admin/change_list_filter_sidebar.html"
     change_list_filter_template = "admin/filter_listing.html"
     
@@ -132,6 +137,10 @@ class RegistrationAdmin(admin.ModelAdmin):
         qs = super(RegistrationAdmin, self).queryset(request)
         #return qs 19
         return qs.select_related('course', 'course__activity', 'child')
+    
+    def save_model(self, request, obj, form, change):
+        obj.child.family.update_total()
+        obj.child.family.save()
     
 
 admin.site.register(Registration, RegistrationAdmin)

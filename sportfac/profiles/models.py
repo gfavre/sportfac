@@ -173,12 +173,12 @@ class Child(TimeStampedModel):
         
     
     class Meta:
-        ordering = ('first_name',)
+        ordering = ('last_name', 'first_name',)
         abstract = False
     
     
     def __unicode__(self):
-        return '%s %s' % (self.first_name, self.last_name)
+        return '%s %s' % (self.last_name, self.first_name)
 
 
 class Registration(TimeStampedModel):
