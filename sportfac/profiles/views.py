@@ -132,6 +132,6 @@ class BillingView(LoginRequiredMixin, WizardMixin, TemplateView):
         total = registrations.aggregate(Sum('course__price')).get('course__price__sum')
         context['total_price'] = total or 0
         self.request.user.update_total()
-        self.user.save()
+        self.request.user.save()
         
         return context
