@@ -116,6 +116,7 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
             registration.validated = True
             registration.save()
         self.request.user.finished_registration = True
+        self.request.user.update_total()
         self.request.user.save()
         return super(RegisteredActivitiesListView, self).form_valid(form)
     
@@ -125,10 +126,8 @@ class BillingView(LoginRequiredMixin, WizardMixin, TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super(BillingView, self).get_context_data(**kwargs)
-        registrations = Registration.objects.filter(child__in=self.request.user.children.all(), validated=True)
-        context['registered_list'] = registrations.all()
-        
-        total = registrations.aggregate(Sum('course__price')).get('course__price__sum')
-        context['total_price'] = total or 0
-        
+        self.request.user.update_total()
+        self.request.user.save()
+        context['total_price'] = self.request.user.total
+                
         return context

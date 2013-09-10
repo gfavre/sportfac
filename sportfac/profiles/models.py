@@ -153,7 +153,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
             for registration in self.get_registrations(self.__original_status):
                 registration.validated=self.finished_registration
                 registration.save()
-            self.update_total()
+        self.update_total()
         self.update_billing_identifier()
         super(FamilyUser, self).save(*args, **kwargs)
     
