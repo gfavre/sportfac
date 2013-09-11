@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-10 09:00+0200\n"
+"POT-Creation-Date: 2013-09-11 09:33+0200\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "Language: \n"
@@ -280,6 +280,10 @@ msgstr "enfant"
 #: profiles/admin.py:70
 msgid "children"
 msgstr "enfants"
+
+#: profiles/admin.py:162
+msgid "Delete selected registration"
+msgstr "Supprimer les inscriptions sélectionnées"
 
 #: profiles/autocomplete_light_registry.py:11
 msgid "Child name"

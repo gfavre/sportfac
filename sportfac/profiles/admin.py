@@ -135,6 +135,7 @@ class RegistrationAdmin(admin.ModelAdmin):
     change_list_filter_template = "admin/filter_listing.html"
     
     form = autocomplete_light.modelform_factory(Registration)
+    actions = ['delete_model',]
     
     
     def queryset(self, request):
@@ -143,8 +144,23 @@ class RegistrationAdmin(admin.ModelAdmin):
         return qs.select_related('course', 'course__activity', 'child')
     
     def save_model(self, request, obj, form, change):
+        obj.save()
         obj.child.family.update_total()
         obj.child.family.save()
+    
+    def get_actions(self, request):
+        actions = super(RegistrationAdmin, self).get_actions(request)
+        del actions['delete_selected']
+        return actions
+    
+    def delete_model(self, request, obj):
+        for o in obj.all():
+            family = o.child.family
+            o.delete()
+            family.update_total()
+            family.save()
+    delete_model.short_description = _('Delete selected registration')
+        
     
 
 admin.site.register(Registration, RegistrationAdmin)
