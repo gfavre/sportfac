@@ -133,7 +133,7 @@ class Course(models.Model):
     
 
 class Responsible(models.Model):
-    "person repsosible of a course"
+    "person responsible of a course"
     first = models.CharField(max_length=100, blank=True, verbose_name=_("First name"), help_text=_("Leave it empty in case of collaboration name"), db_index=True)
     last = models.CharField(max_length=100, verbose_name=_("Last name"), db_index=True)
     phone = models.CharField(max_length=14, blank=True, verbose_name=_("Phone number"))

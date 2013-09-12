@@ -265,6 +265,10 @@ class Teacher(models.Model):
     def __unicode__(self):
         years = ' - '.join([unicode(year) for year in self.years.all()])
         return '%s %s (%s)' % (self.first_name, self.last_name, years)
+
+    def get_full_name(self):
+        return '%s %s ' % (self.first_name, self.last_name)
+            
     
     @property
     def years_label(self):

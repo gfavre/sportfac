@@ -1,12 +1,17 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from django import forms
 from django.contrib import admin
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.utils.translation import ugettext_lazy as _
+from django.http import HttpResponse
 
 import autocomplete_light
 
+from sportfac.utils import UnicodeWriter
 from .models import FamilyUser, Child, Teacher, Registration
 
 
@@ -135,7 +140,7 @@ class RegistrationAdmin(admin.ModelAdmin):
     change_list_filter_template = "admin/filter_listing.html"
     
     form = autocomplete_light.modelform_factory(Registration)
-    actions = ['delete_model',]
+    actions = ['delete_model', 'export']
     
     
     def queryset(self, request):
@@ -153,13 +158,57 @@ class RegistrationAdmin(admin.ModelAdmin):
         del actions['delete_selected']
         return actions
     
-    def delete_model(self, request, obj):
-        for o in obj.all():
-            family = o.child.family
-            o.delete()
+    def delete_model(self, request, queryset):
+        for registration in queryset.all():
+            family = registration.child.family
+            registration.delete()
             family.update_total()
             family.save()
     delete_model.short_description = _('Delete selected registration')
+    
+    def export(self, request, queryset):
+        response = HttpResponse(mimetype='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=inscriptions.csv'
+        writer = UnicodeWriter(response)
+        
+        field_names = (u'Inscription #', 
+                       u'Cours n°',
+                       u'Activité',
+                       u'Activité n°',
+                       u'Responsable',
+                       u'Enfant',
+                       u'Parent',
+                       u'email',
+                       u'Tél maison',
+                       u'Tél mobile #1',
+                       u'Tél mobile #2',
+                       u'Payé',
+                       u'Enseignant',
+                       u'Enseignant n°',
+
+                       )
+        writer.writerow(field_names)
+        for registration in queryset.select_related('course__responsible', 'course__activity', 
+                                                    'child__family', 'child__teacher').all():
+            writer.writerow((str(registration.id), 
+                             str(registration.course.number),
+                             registration.course.activity.name,
+                             str(registration.course.activity.number),
+                             unicode(registration.course.responsible),
+                             unicode(registration.child),
+                             registration.child.family.get_full_name(),
+                             registration.child.family.email,
+                             registration.child.family.private_phone,
+                             registration.child.family.private_phone2,
+                             registration.child.family.private_phone3,
+                             str(int(registration.child.family.paid)),
+                             registration.child.teacher.get_full_name(),
+                             str(registration.child.teacher.number),
+                             ))
+        #wrapped = ("<html><body>", response.content, "</body></html>")
+        #return HttpResponse(wrapped)
+        return response
+    export.short_description = _('Export selected registrations')
         
     
 
