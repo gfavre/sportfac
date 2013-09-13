@@ -1,10 +1,16 @@
-from django.db import models
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
+from django.db import models
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
+from django.http import HttpResponse
 
-from .models import Activity, Responsible, Course, ExtraNeed
+
 from profiles.models import Registration
+from sportfac.utils import UnicodeWriter
+from .models import Activity, Responsible, Course, ExtraNeed
+
 
 class CourseInline(admin.StackedInline):
     model = Course
@@ -90,10 +96,13 @@ class CoursesAdmin(admin.ModelAdmin):
     change_list_template = "admin/change_list_filter_sidebar.html"
     save_as = True
     
+    actions = ('export',)
+    
+    
     def queryset(self, request):
         qs = super(CoursesAdmin, self).queryset(request)
         qs = qs.annotate(models.Count('participants'))
-        return qs    
+        return qs
     
     def number_of_participants(self, obj):
         return Registration.objects.filter(course=obj).count()
@@ -103,6 +112,50 @@ class CoursesAdmin(admin.ModelAdmin):
     def duration(self, obj):
         return obj.duration
     duration.short_description = _("Duration")
+    
+    
+    def export(self, request, queryset):
+        response = HttpResponse(mimetype='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=cours.csv'
+        writer = UnicodeWriter(response)
+        
+        field_names = (u'Cours n°',
+                       u'Activité',
+                       u'Activité n°',
+                       u'Responsable',
+                       u'Nombre de sessions',
+                       u'Jour',
+                       u'Durée (minutes)',
+                       u'Date de début',
+                       u'Heure de début',
+                       u'Date de fin',
+                       u'Heure de fin',
+                       u'Prix',
+                       u'Lieu',
+                       )
+        writer.writerow(field_names)
+        for course in queryset.select_related('responsible', 'activity').all():
+            writer.writerow((str(course.number),
+                             course.activity.name,
+                             str(course.activity.number),
+                             unicode(course.responsible),
+                             str(course.number_of_sessions),
+                             course.day_name,
+                             str(int(course.duration.total_seconds() / 60)),
+                             course.start_date.strftime('%Y-%m-%d'),
+                             course.start_time.strftime('%H:%M'),
+                             course.end_date.strftime('%Y-%m-%d'),
+                             course.end_time.strftime('%H:%M'),
+                             str(course.price),
+                             course.place,
+                             ))
+        #wrapped = ("<html><body>", response.content, "</body></html>")
+        #return HttpResponse(wrapped)
+        return response
+    export.short_description = _('Export selected courses')
+
+    
+    
 
 
 admin.site.register(Course, CoursesAdmin)

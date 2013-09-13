@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-12 06:48+0200\n"
+"POT-Creation-Date: 2013-09-13 11:49+0200\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -17,63 +17,67 @@ msgstr ""
 "Language: \n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: activities/admin.py:14
+#: activities/admin.py:20
 msgid "Dates"
 msgstr "Dates"
 
-#: activities/admin.py:15
+#: activities/admin.py:21
 msgid "Limitations"
 msgstr "Limitations"
 
-#: activities/admin.py:18 activities/admin.py:84 activities/models.py:131
+#: activities/admin.py:24 activities/admin.py:90 activities/models.py:131
 msgid "course"
 msgstr "cours"
 
-#: activities/admin.py:19 activities/admin.py:85 activities/models.py:132
+#: activities/admin.py:25 activities/admin.py:91 activities/models.py:132
 msgid "courses"
 msgstr "cours"
 
-#: activities/admin.py:25
+#: activities/admin.py:31
 msgid "Extra need"
 msgstr "Question complémentaire"
 
-#: activities/admin.py:26
+#: activities/admin.py:32
 msgid "Extra needs"
 msgstr "Questions complémentaires"
 
-#: activities/admin.py:35 activities/models.py:56
+#: activities/admin.py:41 activities/models.py:56
 msgid "activity"
 msgstr "activité"
 
-#: activities/admin.py:36 activities/models.py:57
+#: activities/admin.py:42 activities/models.py:57
 msgid "activities"
 msgstr "activités"
 
-#: activities/admin.py:46 activities/admin.py:101
+#: activities/admin.py:52 activities/admin.py:110
 msgid "number of participants"
 msgstr "nombre de participants"
 
-#: activities/admin.py:60
+#: activities/admin.py:66
 msgid "Not reached minimum participants"
 msgstr "Pas encore atteint le minimum"
 
-#: activities/admin.py:61
+#: activities/admin.py:67
 msgid "Min participants reached"
 msgstr "Nombre minimal atteint"
 
-#: activities/admin.py:62
+#: activities/admin.py:68
 msgid "Full"
 msgstr "Complet"
 
-#: activities/admin.py:105
+#: activities/admin.py:114
 msgid "Duration"
 msgstr "Durée"
 
-#: activities/admin.py:113 activities/models.py:154
+#: activities/admin.py:155
+msgid "Export selected courses"
+msgstr "Exporter les cours sélectionnés"
+
+#: activities/admin.py:166 activities/models.py:154
 msgid "responsible"
 msgstr "responsable"
 
-#: activities/admin.py:114 activities/models.py:155
+#: activities/admin.py:167 activities/models.py:155
 msgid "responsibles"
 msgstr "responsables"
 
@@ -291,7 +295,7 @@ msgstr "enfants"
 msgid "Delete selected registration"
 msgstr "Supprimer les inscriptions sélectionnées"
 
-#: profiles/admin.py:211
+#: profiles/admin.py:231
 msgid "Export selected registrations"
 msgstr "Exporter les inscriptions sélectionnées"
 
