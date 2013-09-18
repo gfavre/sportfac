@@ -210,7 +210,7 @@ class RegistrationAdmin(admin.ModelAdmin):
                              registration.child.first_name,
                              registration.child.last_name,
                              registration.child.sex,  
-                             registration.child.birth_date.strftime('%Y-%m-%d'),
+                             registration.child.birth_date.strftime('%d.%m.%Y'),
                              str(registration.child.school_year.year),
                              size,
                              registration.child.family.get_full_name(),
