@@ -171,7 +171,7 @@ class RegistrationAdmin(admin.ModelAdmin):
         response['Content-Disposition'] = 'attachment; filename=inscriptions.csv'
         writer = UnicodeWriter(response)
         
-        field_names = (u'Inscription #', 
+        field_names = (u'Inscription n°', 
                        u'Cours n°',
                        u'Activité',
                        u'Activité n°',
