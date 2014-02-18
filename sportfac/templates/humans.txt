@@ -2,9 +2,9 @@ Sport Scolaire Facultatif
                             
 /* TEAM */
 
-Development: Gregory Favre <info@gregoryfavre.ch>                            
-Site: gttp://www.gregoryfavre.ch
-Twitter: @favregregory      
+Development: Gregory Favre <info@beyondthewall.ch>                            
+Site: http://www.beyondthewall.ch
+Twitter: @favreGregory      
 Location: Gland, Switzerland
 							
 /* THANKS */
@@ -14,7 +14,7 @@ Remo Aeschbach, the perfect client, lot of expectations and patience!
                             
 /* SITE */
 
-Last update: 2013/08/25 
+Last update: 2014/02/10 
                             
 Standards: HTML5, CSS3
 
