@@ -1,5 +1,5 @@
 ========================
-django-twoscoops-project
+Sportfac - an app to handle 
 ========================
 
 A project template for Django 1.5.
