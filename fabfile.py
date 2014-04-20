@@ -92,8 +92,8 @@ env.mailuser          = MAILUSER
 env.mailpassword      = MAILPASSWORD
 env.mailaddress       = MAILADDRESS
 
-env.domain            = "kepchup.ch"
-env.subdomains        = ['', 'www']
+env.domain            = "beyondthewall.ch"
+env.subdomains        = ['sportfac',]
 env.https             = False
 env.website_name      = env.project
 env.django_app_name   = env.project
