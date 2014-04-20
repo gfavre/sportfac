@@ -78,6 +78,7 @@ env.dbpassword        = DBPASSWORD
 env.dbtype            = 'postgresql'
 env.home              = os.path.join("/home/", USER)
 env.repo              = REPOSITORY
+env.branch            = 'demo'
 env.project_dir       = os.path.join(env.home, 'webapps', PROJECT_NAME)
 env.settings_dir      = os.path.join(env.project_dir, SETTINGS_SUBDIR)
 env.supervisor_dir    = os.path.join(env.home, 'webapps', 'supervisor')
@@ -213,7 +214,7 @@ def install_app():
     with cd(env.project_dir):
         if not exists(env.project):
             print("Grabbing sources...")
-            run('git clone %s %s' % (env.repo, env.project_dir))
+            run('git clone -b %s %s %s' % (env.branch, env.repo, env.project_dir))
     
     print("Creating virtualenv...")
     _create_ve(env.project)
