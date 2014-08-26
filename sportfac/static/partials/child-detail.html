@@ -27,16 +27,18 @@
       <!--<span ng-show="childform.sex.$error.required">Ce champ est obligatoire</span>-->
     </div>
   </div>
-  <div class="control-group input-append">
+  <div class="control-group ">
     <label class="control-label" for="inputBirthDate">Date de naissance</label>
-    <div class="controls">
+    <div class="controls input-append">
       <input type="text" placeholder="31/12/2008"
              data-date-format="dd/mm/yyyy" data-language="fr"
              ng-model="detailedChild.birth_date"
              bs-datepicker required >
       <button type="button" class="btn" data-toggle="datepicker"><i class="icon-calendar"></i></button>
-      <span ng-show="childform.name.$error.required">Ce champ est obligatoire</span>
     </div>
+    <span class="help-block">Format: 31/07/2003</span>
+    <span ng-show="childform.name.$error.required">Ce champ est obligatoire</span>
+
   </div>
   
   <div class="control-group">
