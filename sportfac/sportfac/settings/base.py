@@ -210,8 +210,8 @@ THIRD_PARTY_APPS = (
     'rest_framework', # REST API
     #'registration', #user registration
     'floppyforms', # better forms
-    #'constance', # settings in admin
-    #'constance.backends.database', #settings in admin
+    'constance', # settings in admin
+    'constance.backends.database', # settings in admin
     'grappelli', # admin interface
     'ckeditor', # wysiwyg editor
     #'extended_flatpages',

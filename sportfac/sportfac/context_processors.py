@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
 
-from constance import config
+from constance.admin import config
 
 from profiles.models import Registration
 from activities.models import Activity

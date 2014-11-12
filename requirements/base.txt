@@ -6,7 +6,7 @@ psycopg2==2.5.4
 Pillow==2.6.1
 djangorestframework==2.4.4
 django-floppyforms==1.2.0
-django-constance[database]==0.6
+git+https://github.com/comoga/django-constance@b3f849e0fbec9a1c9e52d43cee480570f11f8fd3
 git+https://github.com/georgedorn/django-registration.git@49eba8542eca34ee3d4dd07cdd49912a8cfc3726
 Django==1.7.1
 django-grappelli==2.6.2
