@@ -207,15 +207,14 @@ DJANGO_APPS = (
 
 THIRD_PARTY_APPS = (
     # Database migration helpers:
-    'south', # db migration
     'rest_framework', # REST API
-    'registration', #user registration
+    #'registration', #user registration
     'floppyforms', # better forms
-    'constance', # settings in admin
-    'constance.backends.database', #settings in admin
+    #'constance', # settings in admin
+    #'constance.backends.database', #settings in admin
     'grappelli', # admin interface
     'ckeditor', # wysiwyg editor
-    'extended_flatpages',
+    #'extended_flatpages',
     'autocomplete_light', # autocomplete for django admin
     #'pipeline', # minifier
 )

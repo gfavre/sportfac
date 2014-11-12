@@ -1,242 +1,159 @@
 # -*- coding: utf-8 -*-
-import datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+from __future__ import unicode_literals
+
+from django.db import models, migrations
+import django.utils.timezone
+from django.conf import settings
+import django.db.models.deletion
 
 
-class Migration(SchemaMigration):
+class Migration(migrations.Migration):
 
-    def forwards(self, orm):
-        # Adding model 'FamilyUser'
-        db.create_table(u'profiles_familyuser', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('password', self.gf('django.db.models.fields.CharField')(max_length=128)),
-            ('last_login', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
-            ('is_superuser', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('email', self.gf('django.db.models.fields.EmailField')(unique=True, max_length=255, db_index=True)),
-            ('first_name', self.gf('django.db.models.fields.CharField')(max_length=30, blank=True)),
-            ('last_name', self.gf('django.db.models.fields.CharField')(max_length=30, blank=True)),
-            ('address', self.gf('django.db.models.fields.TextField')(blank=True)),
-            ('zipcode', self.gf('django.db.models.fields.PositiveIntegerField')()),
-            ('city', self.gf('django.db.models.fields.CharField')(max_length=100)),
-            ('country', self.gf('django.db.models.fields.CharField')(default=u'Switzerland', max_length=100)),
-            ('private_phone', self.gf('django.db.models.fields.CharField')(max_length=30, blank=True)),
-            ('private_phone2', self.gf('django.db.models.fields.CharField')(max_length=30, blank=True)),
-            ('is_active', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('is_admin', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('is_staff', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('date_joined', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
-        ))
-        db.send_create_signal(u'profiles', ['FamilyUser'])
+    dependencies = [
+        ('auth', '0001_initial'),
+        ('activities', '0001_initial'),
+    ]
 
-        # Adding M2M table for field groups on 'FamilyUser'
-        db.create_table(u'profiles_familyuser_groups', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('familyuser', models.ForeignKey(orm[u'profiles.familyuser'], null=False)),
-            ('group', models.ForeignKey(orm[u'auth.group'], null=False))
-        ))
-        db.create_unique(u'profiles_familyuser_groups', ['familyuser_id', 'group_id'])
-
-        # Adding M2M table for field user_permissions on 'FamilyUser'
-        db.create_table(u'profiles_familyuser_user_permissions', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('familyuser', models.ForeignKey(orm[u'profiles.familyuser'], null=False)),
-            ('permission', models.ForeignKey(orm[u'auth.permission'], null=False))
-        ))
-        db.create_unique(u'profiles_familyuser_user_permissions', ['familyuser_id', 'permission_id'])
-
-        # Adding model 'Child'
-        db.create_table(u'profiles_child', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, db_index=True, blank=True)),
-            ('modified', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, db_index=True, blank=True)),
-            ('first_name', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('last_name', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('sex', self.gf('django.db.models.fields.CharField')(max_length=1)),
-            ('birth_date', self.gf('django.db.models.fields.DateField')()),
-            ('school_year', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['profiles.SchoolYear'])),
-            ('teacher', self.gf('django.db.models.fields.related.ForeignKey')(related_name='students', to=orm['profiles.Teacher'])),
-            ('family', self.gf('django.db.models.fields.related.ForeignKey')(related_name='children', to=orm['profiles.FamilyUser'])),
-        ))
-        db.send_create_signal(u'profiles', ['Child'])
-
-        # Adding model 'Registration'
-        db.create_table(u'profiles_registration', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, db_index=True, blank=True)),
-            ('modified', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, db_index=True, blank=True)),
-            ('course', self.gf('django.db.models.fields.related.ForeignKey')(related_name='participants', to=orm['activities.Course'])),
-            ('child', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['profiles.Child'])),
-        ))
-        db.send_create_signal(u'profiles', ['Registration'])
-
-        # Adding unique constraint on 'Registration', fields ['course', 'child']
-        db.create_unique(u'profiles_registration', ['course_id', 'child_id'])
-
-        # Adding model 'SchoolYear'
-        db.create_table(u'profiles_schoolyear', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('year', self.gf('django.db.models.fields.PositiveIntegerField')(unique=True)),
-        ))
-        db.send_create_signal(u'profiles', ['SchoolYear'])
-
-        # Adding model 'Teacher'
-        db.create_table(u'profiles_teacher', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('first_name', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('last_name', self.gf('django.db.models.fields.CharField')(max_length=50, db_index=True)),
-        ))
-        db.send_create_signal(u'profiles', ['Teacher'])
-
-        # Adding M2M table for field years on 'Teacher'
-        db.create_table(u'profiles_teacher_years', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('teacher', models.ForeignKey(orm[u'profiles.teacher'], null=False)),
-            ('schoolyear', models.ForeignKey(orm[u'profiles.schoolyear'], null=False))
-        ))
-        db.create_unique(u'profiles_teacher_years', ['teacher_id', 'schoolyear_id'])
-
-
-    def backwards(self, orm):
-        # Removing unique constraint on 'Registration', fields ['course', 'child']
-        db.delete_unique(u'profiles_registration', ['course_id', 'child_id'])
-
-        # Deleting model 'FamilyUser'
-        db.delete_table(u'profiles_familyuser')
-
-        # Removing M2M table for field groups on 'FamilyUser'
-        db.delete_table('profiles_familyuser_groups')
-
-        # Removing M2M table for field user_permissions on 'FamilyUser'
-        db.delete_table('profiles_familyuser_user_permissions')
-
-        # Deleting model 'Child'
-        db.delete_table(u'profiles_child')
-
-        # Deleting model 'Registration'
-        db.delete_table(u'profiles_registration')
-
-        # Deleting model 'SchoolYear'
-        db.delete_table(u'profiles_schoolyear')
-
-        # Deleting model 'Teacher'
-        db.delete_table(u'profiles_teacher')
-
-        # Removing M2M table for field years on 'Teacher'
-        db.delete_table('profiles_teacher_years')
-
-
-    models = {
-        u'activities.activity': {
-            'Meta': {'ordering': "['name']", 'object_name': 'Activity'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'image': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '50', 'db_index': 'True'}),
-            'slug': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '50'})
-        },
-        u'activities.course': {
-            'Meta': {'ordering': "['start_date', 'activity', 'day']", 'object_name': 'Course'},
-            'activity': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'courses'", 'to': u"orm['activities.Activity']"}),
-            'day': ('django.db.models.fields.PositiveSmallIntegerField', [], {}),
-            'end_date': ('django.db.models.fields.DateField', [], {}),
-            'end_time': ('django.db.models.fields.TimeField', [], {}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'max_participants': ('django.db.models.fields.PositiveSmallIntegerField', [], {}),
-            'min_participants': ('django.db.models.fields.PositiveSmallIntegerField', [], {}),
-            'number_of_sessions': ('django.db.models.fields.PositiveSmallIntegerField', [], {}),
-            'place': ('django.db.models.fields.TextField', [], {}),
-            'price': ('django.db.models.fields.DecimalField', [], {'max_digits': '5', 'decimal_places': '2'}),
-            'responsible': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['activities.Responsible']"}),
-            'schoolyear_max': ('django.db.models.fields.PositiveIntegerField', [], {'default': "'6'"}),
-            'schoolyear_min': ('django.db.models.fields.PositiveIntegerField', [], {'default': "'1'"}),
-            'start_date': ('django.db.models.fields.DateField', [], {}),
-            'start_time': ('django.db.models.fields.TimeField', [], {})
-        },
-        u'activities.responsible': {
-            'Meta': {'ordering': "['last', 'first']", 'object_name': 'Responsible'},
-            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
-            'first': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'last': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'phone': ('django.db.models.fields.CharField', [], {'max_length': '14', 'blank': 'True'})
-        },
-        u'auth.group': {
-            'Meta': {'object_name': 'Group'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
-            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
-        },
-        u'auth.permission': {
-            'Meta': {'ordering': "(u'content_type__app_label', u'content_type__model', u'codename')", 'unique_together': "((u'content_type', u'codename'),)", 'object_name': 'Permission'},
-            'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-        },
-        u'contenttypes.contenttype': {
-            'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
-            'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
-        },
-        u'profiles.child': {
-            'Meta': {'ordering': "('first_name',)", 'object_name': 'Child'},
-            'birth_date': ('django.db.models.fields.DateField', [], {}),
-            'courses': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['activities.Course']", 'through': u"orm['profiles.Registration']", 'symmetrical': 'False'}),
-            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'db_index': 'True', 'blank': 'True'}),
-            'family': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'children'", 'to': u"orm['profiles.FamilyUser']"}),
-            'first_name': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'last_name': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'modified': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'db_index': 'True', 'blank': 'True'}),
-            'school_year': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['profiles.SchoolYear']"}),
-            'sex': ('django.db.models.fields.CharField', [], {'max_length': '1'}),
-            'teacher': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'students'", 'to': u"orm['profiles.Teacher']"})
-        },
-        u'profiles.familyuser': {
-            'Meta': {'object_name': 'FamilyUser'},
-            'address': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'city': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'country': ('django.db.models.fields.CharField', [], {'default': "u'Switzerland'", 'max_length': '100'}),
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'email': ('django.db.models.fields.EmailField', [], {'unique': 'True', 'max_length': '255', 'db_index': 'True'}),
-            'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'is_admin': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'private_phone': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'private_phone2': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
-            'zipcode': ('django.db.models.fields.PositiveIntegerField', [], {})
-        },
-        u'profiles.registration': {
-            'Meta': {'unique_together': "(('course', 'child'),)", 'object_name': 'Registration'},
-            'child': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['profiles.Child']"}),
-            'course': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'participants'", 'to': u"orm['activities.Course']"}),
-            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'db_index': 'True', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'modified': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'db_index': 'True', 'blank': 'True'})
-        },
-        u'profiles.schoolyear': {
-            'Meta': {'object_name': 'SchoolYear'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'year': ('django.db.models.fields.PositiveIntegerField', [], {'unique': 'True'})
-        },
-        u'profiles.teacher': {
-            'Meta': {'ordering': "('last_name', 'first_name')", 'object_name': 'Teacher'},
-            'first_name': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'last_name': ('django.db.models.fields.CharField', [], {'max_length': '50', 'db_index': 'True'}),
-            'years': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['profiles.SchoolYear']", 'symmetrical': 'False'})
-        }
-    }
-
-    complete_apps = ['profiles']
+    operations = [
+        migrations.CreateModel(
+            name='FamilyUser',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('password', models.CharField(max_length=128, verbose_name='password')),
+                ('last_login', models.DateTimeField(default=django.utils.timezone.now, verbose_name='last login')),
+                ('is_superuser', models.BooleanField(default=False, help_text='Designates that this user has all permissions without explicitly assigning them.', verbose_name='superuser status')),
+                ('email', models.EmailField(unique=True, max_length=255, verbose_name='Email', db_index=True)),
+                ('first_name', models.CharField(max_length=30, verbose_name='Pr\xe9nom', blank=True)),
+                ('last_name', models.CharField(max_length=30, verbose_name='Nom', blank=True)),
+                ('address', models.TextField(verbose_name='Rue', blank=True)),
+                ('zipcode', models.PositiveIntegerField(verbose_name='NPA')),
+                ('city', models.CharField(max_length=100, verbose_name='Commune')),
+                ('country', models.CharField(default='Suisse', max_length=100, verbose_name='Pays')),
+                ('private_phone', models.CharField(max_length=30, blank=True)),
+                ('private_phone2', models.CharField(max_length=30, blank=True)),
+                ('private_phone3', models.CharField(max_length=30, blank=True)),
+                ('is_active', models.BooleanField(default=True, help_text=b'Designates whether this user should be treated as active. Unselect this instead of deleting accounts.')),
+                ('is_admin', models.BooleanField(default=False)),
+                ('is_staff', models.BooleanField(default=False, help_text="Indique si cet utilisateur peut se logguer dans la partie d'administration", verbose_name=b'staff status')),
+                ('date_joined', models.DateTimeField(default=django.utils.timezone.now, verbose_name="Date d'inscription")),
+                ('finished_registration', models.BooleanField(default=False, help_text="Pour l'ann\xe9e courante", verbose_name='Inscription termin\xe9e')),
+                ('paid', models.BooleanField(default=False, help_text="Pour l'ann\xe9e courante", verbose_name='A pay\xe9')),
+                ('billing_identifier', models.CharField(max_length=45, verbose_name='Identifiant de paiement', blank=True)),
+                ('total', models.PositiveIntegerField(default=0, verbose_name='Total \xe0 payer')),
+                ('groups', models.ManyToManyField(related_query_name='user', related_name='user_set', to='auth.Group', blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of his/her group.', verbose_name='groups')),
+                ('user_permissions', models.ManyToManyField(related_query_name='user', related_name='user_set', to='auth.Permission', blank=True, help_text='Specific permissions for this user.', verbose_name='user permissions')),
+            ],
+            options={
+                'abstract': False,
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Child',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created', models.DateTimeField(auto_now_add=True, db_index=True)),
+                ('modified', models.DateTimeField(auto_now=True, db_index=True)),
+                ('first_name', models.CharField(max_length=50)),
+                ('last_name', models.CharField(max_length=50)),
+                ('sex', models.CharField(max_length=1, choices=[(b'M', 'Gar\xe7on'), (b'F', 'Fille')])),
+                ('birth_date', models.DateField()),
+            ],
+            options={
+                'ordering': ('last_name', 'first_name'),
+                'abstract': False,
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='ExtraInfo',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('value', models.CharField(max_length=255)),
+                ('key', models.ForeignKey(to='activities.ExtraNeed')),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Registration',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created', models.DateTimeField(auto_now_add=True, db_index=True)),
+                ('modified', models.DateTimeField(auto_now=True, db_index=True)),
+                ('validated', models.BooleanField(default=False, db_index=True, verbose_name='Inscription confirm\xe9e')),
+                ('child', models.ForeignKey(to='profiles.Child')),
+                ('course', models.ForeignKey(related_name='participants', to='activities.Course')),
+            ],
+            options={
+                'ordering': ('child__last_name', 'child__first_name', 'course__start_date'),
+                'verbose_name': 'Inscription',
+                'verbose_name_plural': 'Inscriptions',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='SchoolYear',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('year', models.PositiveIntegerField(unique=True, verbose_name='Ann\xe9e scolaire', choices=[(1, '1p HARMOS'), (2, '2p HARMOS'), (3, '3p HARMOS'), (4, '4p HARMOS'), (5, '5p HARMOS'), (6, '6p HARMOS'), (7, '7p HARMOS'), (8, '8p HARMOS')])),
+            ],
+            options={
+                'ordering': ('year',),
+                'verbose_name': 'Ann\xe9e scolaire',
+                'verbose_name_plural': 'Ann\xe9es scolaires',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Teacher',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('number', models.IntegerField(db_index=True, unique=True, null=True, verbose_name='Num\xe9ro', blank=True)),
+                ('first_name', models.CharField(max_length=50, verbose_name='Pr\xe9nom')),
+                ('last_name', models.CharField(max_length=50, verbose_name='Nom', db_index=True)),
+                ('years', models.ManyToManyField(to='profiles.SchoolYear', verbose_name='Ann\xe9es scolaires')),
+            ],
+            options={
+                'ordering': ('last_name', 'first_name'),
+                'verbose_name': 'enseignant',
+                'verbose_name_plural': 'enseignants',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.AlterUniqueTogether(
+            name='registration',
+            unique_together=set([('course', 'child')]),
+        ),
+        migrations.AddField(
+            model_name='extrainfo',
+            name='registration',
+            field=models.ForeignKey(related_name='extra_infos', to='profiles.Registration'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='child',
+            name='courses',
+            field=models.ManyToManyField(to='activities.Course', through='profiles.Registration'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='child',
+            name='family',
+            field=models.ForeignKey(related_name='children', to=settings.AUTH_USER_MODEL),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='child',
+            name='school_year',
+            field=models.ForeignKey(to='profiles.SchoolYear'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='child',
+            name='teacher',
+            field=models.ForeignKey(related_name='students', on_delete=django.db.models.deletion.SET_NULL, to='profiles.Teacher', null=True),
+            preserve_default=True,
+        ),
+    ]
