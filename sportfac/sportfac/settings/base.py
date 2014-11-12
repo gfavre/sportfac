@@ -208,7 +208,7 @@ DJANGO_APPS = (
 THIRD_PARTY_APPS = (
     # Database migration helpers:
     'rest_framework', # REST API
-    #'registration', #user registration
+    'registration', #user registration
     'floppyforms', # better forms
     'constance', # settings in admin
     'constance.backends.database', # settings in admin

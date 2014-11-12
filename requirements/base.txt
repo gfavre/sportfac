@@ -1,14 +1,14 @@
+Django==1.7.1
+psycopg2==2.5.4
 bpython==0.13.1
 django-braces==1.4.0
 django-model-utils==2.2
 logutils==0.3.3
-psycopg2==2.5.4
 Pillow==2.6.1
 djangorestframework==2.4.4
 django-floppyforms==1.2.0
 git+https://github.com/comoga/django-constance@b3f849e0fbec9a1c9e52d43cee480570f11f8fd3
-git+https://github.com/georgedorn/django-registration.git@49eba8542eca34ee3d4dd07cdd49912a8cfc3726
-Django==1.7.1
+django-registration-redux==1.1
 django-grappelli==2.6.2
 django-pipeline==1.3.26
 pytz==2014.9
