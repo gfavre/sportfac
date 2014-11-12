@@ -107,8 +107,8 @@ class FamilyAdmin(UserAdmin):
     #filter_horizontal = ()
     inlines = [ChildInline]
     
-    def queryset(self, request):
-        qs = super(FamilyAdmin, self).queryset(request)
+    def get_queryset(self, request):
+        qs = super(FamilyAdmin, self).get_queryset(request)
         #return qs 19
         return qs.prefetch_related('children')
     
@@ -139,12 +139,12 @@ class RegistrationAdmin(admin.ModelAdmin):
     change_list_template = "admin/change_list_filter_sidebar.html"
     change_list_filter_template = "admin/filter_listing.html"
     
-    form = autocomplete_light.modelform_factory(Registration)
+    #form = autocomplete_light.modelform_factory(Registration)
     actions = ['delete_model', 'export']
     
     
-    def queryset(self, request):
-        qs = super(RegistrationAdmin, self).queryset(request)
+    def get_queryset(self, request):
+        qs = super(RegistrationAdmin, self).get_queryset(request)
         #return qs 19
         return qs.select_related('course', 'course__activity', 'child')
     

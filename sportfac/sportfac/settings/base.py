@@ -270,6 +270,9 @@ LOGGING = {
 }
 ########## END LOGGING CONFIGURATION
 
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
+
 
 ########## WSGI CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#wsgi-application
