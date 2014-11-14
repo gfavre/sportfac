@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ course.activity.name }} - {{ block.super }}{% endblock %}
+{% block page_title %}{{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }}{% endblocktrans %}{% endblock %}
+
+{% block content %}
+<p><strong>{% trans "Activity number" %}:</strong> {{ course.activity.number }}<br /></p>  
+  
+<section class="thumbnail course">
+      <h3>{{ course.start_date | date:"j F Y" }} -  {{ course.end_date | date:'j F Y'  }}</h3>
+      <p class="lead">Chaque {{ course.day_name|lower }} de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }}</p>
+      <dl class="dl-horizontal">
+        <dt>{% trans "Responsible" %}</dt>
+        <dd><a href="{{ course.responsible.get_backend_url }}">{{ course.responsible  }}</a></dd>
+        <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
+        <dt>{% trans "Number of sessions" %}</dt>
+        <dd>{{ course.number_of_sessions }} cours
+        </dd>
+        <dt>{% trans "Price" %}</dt><dd>CHF {{ course.price }}</dd>
+        <dt>{% trans "School years" %}</dt><dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
+      </dl>
+
+      <h4>{% trans "Availability"%}</h4>      
+      <div class="well">
+        <p>{{ course.count_participants  }} participants <span class="pull-right strong"> {{ course.max_participants }} places</span></p>
+        <div class="progress  {% if course.full %}progress-danger{% elif course.minimal_participants_reached %}progress-success{% else %}progress-warning{% endif %}" style="margin-bottom: 0;">
+          <div class="bar" style="width: {{ course.percentage_full }}%"></div>
+        </div>
+        <p class="text-right"><small>{{ course.min_participants }} participants requis pour que l'activité ait lieu</small></p>
+      </div>          
+    </section> 
+
+<section>
+  <h2>{% trans "Registrations" %}</h2>
+  
+  <table class="table">
+    <thead>
+      <tr>
+        <th>{% trans "First name" %}</th>
+        <th>{% trans "Last name" %}</th>
+        <th>{% trans "Birth date" %}</th>
+        <th>{% trans "School year" %}</th>
+        <th>{% trans "Parents phone" %}</th>
+        <th>{% trans "Parents email" %}</th>
+
+      </tr>
+    {% for participant in course.participants.all %}
+      <tr>
+        <td>{{ participant.child.first_name|title }}</td>
+        <td>{{ participant.child.last_name|title }}</td>
+        <td>{{ participant.child.birth_date }}</td>
+        <td>{{ participant.child.school_year }}</td>
+        <td>
+          <ul>
+            {% if participant.child.family.private_phone %}
+            <li>{{ participant.child.family.private_phone }}</li>
+            {% endif %}
+            {% if participant.child.family.private_phone2 %}
+            <li>{{ participant.child.family.private_phone2 }}</li>
+            {% endif %}
+            {% if participant.child.family.private_phone3 %}
+            <li>{{ participant.child.family.private_phone3 }}</li>
+            {% endif %}
+        </td>
+        <td>{{ participant.child.family.email  }}</td>
+        
+
+      </tr>
+    {% empty %}
+    
+    {% endfor %}
+  </table>
+</section>   
+{% endblock content %}

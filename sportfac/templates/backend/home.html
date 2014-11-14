@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Administration" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "Administration" %}{% endblock %}
+
+{% block content %}
+<section>
+  <ul>
+    <li><a href="{% url 'backend:activity-list' %}">{% trans "Manage activities" %}</a></li>
+    <li><a href="{% url 'backend:course-list' %}">{% trans "Manage courses" %}</a></li>
+    <li><a href="{% url 'backend:responsible-list' %}">{% trans "Manage responsibles" %}</a></li>
+
+  </ul>
+</section>
+{% endblock content %}

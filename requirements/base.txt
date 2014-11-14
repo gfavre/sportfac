@@ -1,12 +1,16 @@
 Django==1.7.1
 psycopg2==2.5.4
 bpython==0.13.1
+
+# Forms
 django-braces==1.4.0
+django-floppyforms==1.2.0
+
+
 django-model-utils==2.2
 logutils==0.3.3
 Pillow==2.6.1
 djangorestframework==2.4.4
-django-floppyforms==1.2.0
 git+https://github.com/comoga/django-constance@b3f849e0fbec9a1c9e52d43cee480570f11f8fd3
 django-registration-redux==1.1
 django-grappelli==2.6.2

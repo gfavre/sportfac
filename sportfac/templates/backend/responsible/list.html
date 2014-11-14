@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "List responsibles" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "List responsibles" %}{% endblock %}
+
+{% block content %}
+<a href="{% url 'backend:responsible-create' %}">{% trans "New responsible" %}</a>
+<table class="table">
+  <thead>
+    <tr>
+      <th>{% trans "First name" %}</th>
+      <th>{% trans "Last name" %}</th>
+      <th>{% trans "Phone" %}</th>
+      <th>{% trans "email" %}</th>
+      <th>{% trans "Actions" %}</th>
+    </tr>
+  </thead>
+  {% for responsible in object_list %}
+    <tr>
+      <td>{{ responsible.first }}</td>
+      <td>{{ responsible.last }}</td>
+      <td><a href="tel:{{ responsible.phone }}">{{ responsible.phone }}</a></td>
+      <td><a href="mailto:{{ responsible.email }}">{{ responsible.email }}</a></td>
+
+      <td>
+        <ul>
+          <li><a href="{% url 'backend:responsible-detail' pk=responsible.pk %}">{% trans "Check courses" %}</a></li>
+          <li><a href="{% url 'backend:responsible-update' pk=responsible.pk %}">{% trans "Update info" %}</a></li>
+          <li><a href="{% url 'backend:responsible-delete' pk=responsible.pk %}">{% trans "Delete person" %}</a></li>
+        </ul>
+      </td>
+    </tr>
+  {% empty %}
+    <tr>
+      <td colspan="5">{% trans "No responsible yet" %}</td>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock content %}

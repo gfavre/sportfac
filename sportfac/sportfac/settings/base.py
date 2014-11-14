@@ -223,8 +223,9 @@ THIRD_PARTY_APPS = (
 LOCAL_APPS = (
     'activities',
     'api',
-    'profiles',
+    'backend',
     'contact',
+    'profiles',
 )
 
 LAST_APPS = (
