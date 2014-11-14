@@ -4,6 +4,8 @@
 """
 from __future__ import unicode_literals
 
+from backend import GROUP_NAME
+
 from django.db import models, migrations
 
 
@@ -20,7 +22,7 @@ def create_managers_group(apps, schema_editor):
                        ('FamilyUser', 'Child', 'Registration', 'ExtraInfo', 'Teacher')]
     all_models = activities_models + profiles_models
     
-    grp, created = Group.objects.get_or_create(name='Sports managers')
+    grp, created = Group.objects.get_or_create(name=GROUP_NAME)
     for model in all_models:
         content_type = ContentType.objects.get(
                         app_label=model._meta.concrete_model._meta.app_label,
