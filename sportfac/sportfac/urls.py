@@ -32,6 +32,7 @@ urlpatterns = patterns('',
     url(r'^api/', include('api.urls')),
     url(r'^activities/', include('activities.urls')),
     url(r'^account/', include('profiles.urls')),
+    url(r'^backend/', include('backend.urls')),
     url(r'^contact/', include('contact.urls')),
     url(r'^ckeditor/', include('ckeditor.urls')),
     
