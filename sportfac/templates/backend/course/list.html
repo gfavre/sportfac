@@ -5,6 +5,7 @@
 {% block page_title %}{% trans "List courses" %}{% endblock %}
 
 {% block content %}
+<a href="{% url 'backend:course-create' %}">{% trans "New course" %}</a>
 <table class="table">
   <thead>
     <tr>
@@ -14,6 +15,7 @@
       <th>{% trans "Start date" %}</th>
       <th>{% trans "Start hour" %}</th>
       <th>{% trans "Duration" %}</th>
+      <th>{% trans "Responsible" %}</th>
       <th>{% trans "Actions" %}</th>
     </tr>
   </thead>
@@ -25,6 +27,7 @@
       <td>{{ course.start_date }}</td>
       <td>{{ course.start_time }}</td>
       <td>{{ course.duration }}</td>
+      <td><a href="{{ course.responsible.get_backend_url }}">{{ course.responsible }}</td>
       <td>
         <ul>
           <li><a href="{% url 'backend:course-detail' pk=course.pk %}">{% trans "Check registrations" %}</a></li>
@@ -35,7 +38,7 @@
     </tr>
   {% empty %}
     <tr>
-      <td colspan="7">{% trans "No course yet" %}</td>
+      <td colspan="8">{% trans "No course yet" %}</td>
     </tr>
   {% endfor %}
 </table>

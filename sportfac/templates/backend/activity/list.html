@@ -5,6 +5,7 @@
 {% block page_title %}{% trans "List activities" %}{% endblock %}
 
 {% block content %}
+<a href="{% url 'backend:activity-create' %}">{% trans "New activity" %}</a>
 <table class="table">
   <thead>
     <tr>

@@ -1,9 +1,12 @@
 from django.conf.urls import patterns, include, url
+from django.views.generic import TemplateView
 
 from .views import CourseCreateView, CourseDeleteView, CourseDetailView, \
                    CourseListView, CourseUpdateView,\
                    ActivityCreateView, ActivityDeleteView, ActivityDetailView, \
-                   ActivityListView, ActivityUpdateView
+                   ActivityListView, ActivityUpdateView,\
+                   ResponsibleCreateView, ResponsibleDeleteView, ResponsibleDetailView, \
+                   ResponsibleListView, ResponsibleUpdateView
 
 courses_patterns = patterns('', 
     url(r'^$', view=CourseListView.as_view(), 
@@ -17,6 +20,20 @@ courses_patterns = patterns('',
     url(r'^(?P<pk>\d+)/delete$', view=CourseDeleteView.as_view(),
         name='course-delete'),
 )
+
+responsibles_patterns = patterns('', 
+    url(r'^$', view=ResponsibleListView.as_view(), 
+        name='responsible-list'),
+    url(r'^new$', view=ResponsibleCreateView.as_view(), 
+        name='responsible-create'),
+    url(r'^(?P<pk>\d+)/$', view=ResponsibleDetailView.as_view(), 
+        name='responsible-detail'),
+    url(r'^(?P<pk>\d+)/update$', view=ResponsibleUpdateView.as_view(), 
+        name='responsible-update'),
+    url(r'^(?P<pk>\d+)/delete$', view=ResponsibleDeleteView.as_view(),
+        name='responsible-delete'),
+)
+
 
 activities_patterns = patterns('', 
     url(r'^$', view=ActivityListView.as_view(), 
@@ -34,7 +51,8 @@ activities_patterns = patterns('',
 
 
 urlpatterns = patterns('',
-    url(r'^course/', include(courses_patterns)),
+    url(r'^$', TemplateView.as_view(template_name="backend/home.html")),
     url(r'^activity/', include(activities_patterns)),
-
+    url(r'^course/', include(courses_patterns)),
+    url(r'^responsible/', include(responsibles_patterns)),
 )

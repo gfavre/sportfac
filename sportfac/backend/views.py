@@ -4,7 +4,7 @@ from django.views.generic import CreateView, DeleteView, DetailView, \
                                  ListView, UpdateView
 
 from . import GROUP_NAME
-from activities.models import Course, Activity
+from activities.models import Course, Activity, Responsible
 
 from braces.views import GroupRequiredMixin, LoginRequiredMixin
 
@@ -31,7 +31,7 @@ class CourseCreateView(BackendMixin, CreateView):
               'number_of_sessions', 'day', 'start_date', 'end_date',
               'start_time', 'end_time', 'place', 'min_participants',
               'max_participants', 'schoolyear_min', 'schoolyear_max')
-    template_name = 'backend/course/form.html'
+    template_name = 'backend/course/create.html'
 
 class CourseUpdateView(BackendMixin, UpdateView):
     model = Course
@@ -39,13 +39,40 @@ class CourseUpdateView(BackendMixin, UpdateView):
               'number_of_sessions', 'day', 'start_date', 'end_date',
               'start_time', 'end_time', 'place', 'min_participants',
               'max_participants', 'schoolyear_min', 'schoolyear_max')
-    template_name = 'backend/course_form.html'
+    template_name = 'backend/course/update.html'
     
 class CourseDeleteView(BackendMixin, DeleteView):
     model = Course
     template_name = 'backend/course/confirm_delete.html'
     success_url = reverse_lazy('backend:course-list')
 
+
+
+################################################################################
+# Responsibles
+class ResponsibleDetailView(BackendMixin, DetailView):
+    model = Responsible
+    template_name = 'backend/responsible/detail.html'
+
+class ResponsibleListView(BackendMixin, ListView):
+    model = Responsible
+    template_name = 'backend/responsible/list.html'
+   
+
+class ResponsibleCreateView(BackendMixin, CreateView):
+    model = Responsible
+    fields = ('first', 'last', 'phone', 'email')
+    template_name = 'backend/responsible/create.html'
+
+class ResponsibleUpdateView(BackendMixin, UpdateView):
+    model = Responsible
+    fields = ('first', 'last', 'phone', 'email')
+    template_name = 'backend/responsible/update.html'
+    
+class ResponsibleDeleteView(BackendMixin, DeleteView):
+    model = Responsible
+    template_name = 'backend/responsible/confirm_delete.html'
+    success_url = reverse_lazy('backend:responsible-list')
 
 
 ################################################################################
@@ -62,12 +89,12 @@ class ActivityListView(BackendMixin, ListView):
 class ActivityCreateView(BackendMixin, CreateView):
     model = Activity
     fields = ('name', 'number', 'informations', 'description')
-    template_name = 'backend/activity/form.html'
+    template_name = 'backend/activity/create.html'
 
 class ActivityUpdateView(BackendMixin, UpdateView):
     model = Activity
     fields = ('name', 'number', 'informations', 'description')
-    template_name = 'backend/activity/form.html'
+    template_name = 'backend/activity/update.html'
     
 class ActivityDeleteView(BackendMixin, DeleteView):
     model = Activity
