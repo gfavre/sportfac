@@ -7484,6 +7484,25 @@ a .icon-rotate-90:before, a .icon-rotate-180:before, a .icon-rotate-270:before, 
 .icon-renren:before {
   content: "\f18b"; }
 
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%; }
+
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+  padding-top: 50px; }
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 260px;
+  background-color: #f5f5f5; }
+
 /* Large desktop */
 @media (max-width: 1199px) {
   .wizard ul li {
@@ -7524,10 +7543,6 @@ a .icon-rotate-90:before, a .icon-rotate-180:before, a .icon-rotate-270:before, 
 
 body > .navbar .brand.white {
   color: white; }
-
-body {
-  position: relative;
-  padding-top: 40px; }
 
 /* Code in headings */
 h3 code {
@@ -7653,9 +7668,10 @@ select.ng-invalid:focus {
 /* Tweak navbar brand link to be super sleek
 -------------------------------------------------- */
 body > .navbar {
-  font-size: 13px; }
+  /*font-size: 13px;*/ }
 
 /* Change the docs' brand */
+/*
 body > .navbar .brand {
   padding-right: 0;
   padding-left: 0;
@@ -7663,15 +7679,16 @@ body > .navbar .brand {
   float: right;
   font-weight: bold;
   color: #000;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 30px rgba(255, 255, 255, 0.125);
+  text-shadow: 0 1px 0 rgba(255,255,255,.1), 0 0 30px rgba(255,255,255,.125);
   -webkit-transition: all .2s linear;
-  -moz-transition: all .2s linear;
-  transition: all .2s linear; }
-
+     -moz-transition: all .2s linear;
+          transition: all .2s linear;
+}
 body > .navbar .brand:hover {
   text-decoration: none;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 30px rgba(255, 255, 255, 0.4); }
-
+  text-shadow: 0 1px 0 rgba(255,255,255,.1), 0 0 30px rgba(255,255,255,.4);
+}
+*/
 /* Sections
 -------------------------------------------------- */
 /* padding for in-page bookmarks and fixed navbar */
@@ -7704,7 +7721,7 @@ hr.soften {
 .footer {
   text-align: center;
   padding: 30px 0;
-  margin-top: 70px;
+  /*margin-top: 70px;*/
   border-top: 1px solid #e5e5e5;
   background-color: #f5f5f5; }
 
