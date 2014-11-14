@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import DetailView
+from django.views.generic import CreateView, DetailView
 
 from . import GROUP_NAME
 from activities.models import Course
@@ -15,3 +15,12 @@ class BackendMixin(GroupRequiredMixin, LoginRequiredMixin):
 class CourseDetailView(BackendMixin, DetailView):
     model = Course
     template_name = 'backend/course_detail.html'
+    
+
+class CourseCreateView(BackendMixin, CreateView):
+    model = Course
+    fields = ('activity', 'number', 'responsible', 'price', 
+              'number_of_sessions', 'day', 'start_date', 'end_date',
+              'start_time', 'end_time', 'place', 'min_participants',
+              'max_participants', 'schoolyear_min', 'schoolyear_max')
+    template_name = 'backend/course_form.html'
