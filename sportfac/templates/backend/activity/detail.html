@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ activity.name }} - {{ block.super }}{% endblock %}
+{% block page_title %}{{ activity.name }}{% endblock %}
+
+{% block content %}
+<p><strong>{% trans "Activity number" %}:</strong> {{ activity.number }}<br /></p>  
+  
+<h2>Cours</h2>
+{% for course in activity.courses.all %}
+<section class="thumbnail course">
+      <h3>{{ course.start_date | date:"j F Y" }} -  {{ course.end_date | date:'j F Y'  }}</h3>
+      <p class="lead">Chaque {{ course.day_name|lower }} de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }}</p>
+      <dl class="dl-horizontal">
+        <dt>{% trans "Responsible" %}</dt>
+        <dd>{{ course.responsible  }}
+            {% if course.responsible.phone %}<br />{{ course.responsible.phone }}{% endif %}
+            {% if course.responsible.email %}<br /><a href="mailto:{{course.responsible.email}}">{% trans "email" %}</a>{% endif %}</dd>
+        <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
+        <dt>{% trans "Number of sessions" %}</dt>
+        <dd>{{ course.number_of_sessions }} cours
+        </dd>
+        <dt>{% trans "Price" %}</dt><dd>CHF {{ course.price }}</dd>
+        <dt>{% trans "School years" %}</dt><dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
+      </dl>
+
+      <h4>{% trans "Availability"%}</h4>      
+      <div class="well">
+        <p>{{ course.count_participants  }} participants <span class="pull-right strong"> {{ course.max_participants }} places</span></p>
+        <div class="progress  {% if course.full %}progress-danger{% elif course.minimal_participants_reached %}progress-success{% else %}progress-warning{% endif %}" style="margin-bottom: 0;">
+          <div class="bar" style="width: {{ course.percentage_full }}%"></div>
+        </div>
+        <p class="text-right"><small>{{ course.min_participants }} participants requis pour que l'activité ait lieu</small></p>
+      </div>          
+    </section> 
+{% endfor %}   
+{% endblock content %}

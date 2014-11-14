@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "List activities" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "List activities" %}{% endblock %}
+
+{% block content %}
+<table class="table">
+  <thead>
+    <tr>
+      <th>{% trans "Identifier" %}</th>
+      <th>{% trans "Name" %}</th>
+      <th>{% trans "Actions" %}</th>
+    </tr>
+  </thead>
+  {% for activity in object_list %}
+    <tr>
+      <td><a href="{% url 'backend:activity-detail' pk=activity.pk %}">{{ activity.number }}</a></td>
+      <td><a href="{% url 'backend:activity-detail' pk=activity.pk %}">{{ activity.name }}</a></td>
+      <td>
+        <ul>
+          <li><a href="{% url 'backend:activity-detail' pk=activity.pk %}">{% trans "Check courses" %}</a></li>
+          <li><a href="{% url 'backend:activity-update' pk=activity.pk %}">{% trans "Update activity" %}</a></li>
+          <li><a href="{% url 'backend:activity-delete' pk=activity.pk %}">{% trans "Delete activity" %}</a></li>
+        </ul>
+      </td>
+    </tr>
+  {% empty %}
+    <tr>
+      <td colspan="3">{% trans "No activity yet" %}</td>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock content %}
