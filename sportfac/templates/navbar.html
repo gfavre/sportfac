@@ -1,0 +1,75 @@
+{% load i18n %}
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">{% trans "Toggle navigation" %}</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a href="/" class="navbar-brand white">Sport scolaire facultatif</a>
+    </div>
+    
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">          
+        <li><a href="/">{% trans "Home" %}</a></li>
+        <li><a href="{% url 'terms' %}">{% trans "Terms and conditions" %}</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% trans "Activities" %} <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            {% for activity in activities %}
+            <li><a href="{{ activity.get_absolute_url }}">{{ activity.name }}</a></li>
+            {% endfor %}
+          </ul>
+        </li>
+
+        {% if user.is_authenticated %}
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+            <i class="icon-user"></i> {{ user.first_name }} {{ user.last_name }} <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu" role="menu">
+            <li>
+              <a href="{% url 'profiles_account' %}"><i class="icon-fixed-width icon-pencil"></i> {% trans "My account" %}</a>
+            </li>
+            <li>
+              <a href="{% url 'profiles_children' %}"><i class="icon-fixed-width icon-group"></i> {% trans "My family" %}</a>
+            </li>
+            
+            
+            {% if user.finished_registration %}
+            <li>
+              <a href="{% url 'profiles_registered_activities' %}"> <i class="icon-fixed-width icon-calendar"></i> {% trans "My registered activities" %}</a>
+            </li>
+            
+            <li>
+              <a href="{% url 'profiles_billing' %}"> <i class="icon-fixed-width icon-credit-card"></i> {% trans "Terms of payement" %}</a>
+            </li>
+            
+            {% elif registration_opened %}
+            <li>
+              <a href="{{ max_step }}"><i class="icon-fixed-width icon-calendar"></i> {% trans "Register activities" %}</a>
+            </li>
+            {% endif %}
+            
+            {% if user.is_staff %}
+              <li class="divider"></li>
+              <li>
+                <a href="{% url 'admin:index' %}"><i class="icon-fixed-width icon-cogs"></i> {% trans "Administration" %}</a>
+              </li>
+            {% endif %}
+            <li class="divider"></li>
+            <li><a href="{% url 'auth_logout' %}?next=/">{% trans "logout" %}</a></li>
+          </ul>
+        </li>
+        {% else %}
+        <li>
+          <a href="{% url 'auth_login' %}?next={{ request.path }}"><i class="icon-user icon-white"></i> {% trans "login" %}</a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
