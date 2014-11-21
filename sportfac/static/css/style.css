@@ -7484,41 +7484,133 @@ a .icon-rotate-90:before, a .icon-rotate-180:before, a .icon-rotate-270:before, 
 .icon-renren:before {
   content: "\f18b"; }
 
-/* Sticky footer styles
--------------------------------------------------- */
-html {
-  position: relative;
-  min-height: 100%; }
+html, body {
+  height: 100%; }
 
 body {
-  /* Margin bottom by footer height */
-  margin-bottom: 60px;
   padding-top: 50px; }
 
-.footer {
-  position: absolute;
-  bottom: 0;
+#wrap {
+  min-height: 100%;
+  height: auto; }
+
+#footer {
   width: 100%;
-  /* Set the fixed height of the footer here */
-  height: 220px;
   text-align: center;
   padding: 1em 0;
   border-top: 1px solid #e5e5e5;
   background-color: #f5f5f5; }
-  .footer address {
+  #footer address {
     font-size: 0.9em;
     color: #777; }
-  .footer p {
+  #footer p {
     margin-bottom: 0;
     color: #777; }
-  .footer .footer-links {
+  #footer .footer-links {
     margin: 10px 0; }
-    .footer .footer-links li {
+    #footer .footer-links li {
       display: inline;
       padding: 0 2px; }
-    .footer .footer-links li:first-child {
+    #footer .footer-links li:first-child {
       padding-left: 0; }
 
+/* Responsive
+-------------------------------------------------- */
+/* Desktop large
+------------------------- */
+@media (min-width: 1200px) {
+  .bs-docs-container {
+    max-width: 970px; }
+
+  .bs-docs-sidenav {
+    width: 258px; }
+
+  .bs-docs-sidenav > li > a {
+    width: 230px \9;
+    /* Override the previous IE8-9 hack */ } }
+/* Desktop
+------------------------- */
+@media (max-width: 980px) {
+  /* When affixed, space properly */
+  .bs-docs-sidenav {
+    top: 0;
+    width: 218px;
+    margin-top: 30px;
+    margin-right: 0; } }
+/* Tablet to desktop
+------------------------- */
+@media (min-width: 768px) and (max-width: 979px) {
+  /* Remove any padding from the body */
+  /* Widen masthead and social buttons to fill body padding */
+  #wrap {
+    /* Negative indent footer by its height */
+    margin: 0 auto -100px;
+    /* Pad bottom by footer height */
+    padding-bottom: 100px; }
+
+  #footer {
+    height: 100px; }
+
+  .jumbotron {
+    margin-top: -20px;
+    /* Offset bottom margin on .navbar */ }
+
+  /* Adjust sidenav width */
+  .bs-docs-sidenav {
+    width: 166px;
+    margin-top: 20px; }
+
+  .bs-docs-sidenav.affix {
+    top: 0; } }
+/* Desktop to large */
+@media (min-width: 980px) {
+  #wrap {
+    /* Negative indent footer by its height */
+    margin: 0 auto -220px;
+    /* Pad bottom by footer height */
+    padding-bottom: 220px; }
+
+  #footer {
+    height: 220px; } }
+/* Phone to Desktop */
+@media (max-width: 979px) {
+  #wrap {
+    /* Negative indent footer by its height */
+    margin: 0 auto -100px;
+    /* Pad bottom by footer height */
+    padding-bottom: 100px; }
+
+  #footer {
+    height: 100px; }
+
+  #footer {
+    padding: 10px 0; }
+    #footer address {
+      margin-bottom: 0; }
+    #footer .footer-links {
+      margin: 0.3em; } }
+/* Tablet
+------------------------- */
+@media (max-width: 767px) {
+  /* Widen masthead and social buttons to fill body padding */
+  .jumbotron {
+    padding: 40px 20px;
+    margin-top: -20px;
+    /* Offset bottom margin on .navbar */
+    margin-right: -20px;
+    margin-left: -20px; }
+
+  /* Sidenav */
+  .bs-docs-sidenav {
+    width: auto;
+    margin-bottom: 20px; }
+
+  .bs-docs-sidenav.affix {
+    position: static;
+    width: auto;
+    top: 0; } }
+/* Landscape phones
+------------------------- */
 /* Large desktop */
 @media (max-width: 1199px) {
   .wizard ul li {
@@ -7677,30 +7769,6 @@ select.ng-invalid:focus {
 .fc-state-highlight {
   background: none; }
 
-/* Tweak navbar brand link to be super sleek
--------------------------------------------------- */
-body > .navbar {
-  /*font-size: 13px;*/ }
-
-/* Change the docs' brand */
-/*
-body > .navbar .brand {
-  padding-right: 0;
-  padding-left: 0;
-  margin-left: 20px;
-  float: right;
-  font-weight: bold;
-  color: #000;
-  text-shadow: 0 1px 0 rgba(255,255,255,.1), 0 0 30px rgba(255,255,255,.125);
-  -webkit-transition: all .2s linear;
-     -moz-transition: all .2s linear;
-          transition: all .2s linear;
-}
-body > .navbar .brand:hover {
-  text-decoration: none;
-  text-shadow: 0 1px 0 rgba(255,255,255,.1), 0 0 30px rgba(255,255,255,.4);
-}
-*/
 /* Sections
 -------------------------------------------------- */
 /* padding for in-page bookmarks and fixed navbar */
@@ -7819,73 +7887,3 @@ h2 + .row {
   position: absolute;
   top: auto;
   bottom: 270px; }
-
-/* Responsive
--------------------------------------------------- */
-/* Desktop large
-------------------------- */
-@media (min-width: 1200px) {
-  .bs-docs-container {
-    max-width: 970px; }
-
-  .bs-docs-sidenav {
-    width: 258px; }
-
-  .bs-docs-sidenav > li > a {
-    width: 230px \9;
-    /* Override the previous IE8-9 hack */ } }
-/* Desktop
-------------------------- */
-@media (max-width: 980px) {
-  /* When affixed, space properly */
-  .bs-docs-sidenav {
-    top: 0;
-    width: 218px;
-    margin-top: 30px;
-    margin-right: 0; } }
-/* Tablet to desktop
-------------------------- */
-@media (min-width: 768px) and (max-width: 979px) {
-  /* Remove any padding from the body */
-  /* Widen masthead and social buttons to fill body padding */
-  .jumbotron {
-    margin-top: -20px;
-    /* Offset bottom margin on .navbar */ }
-
-  /* Adjust sidenav width */
-  .bs-docs-sidenav {
-    width: 166px;
-    margin-top: 20px; }
-
-  .bs-docs-sidenav.affix {
-    top: 0; }
-
-  .footer {
-    height: 100px;
-    padding: 10px 0; }
-    .footer address {
-      margin-bottom: 0; }
-    .footer .footer-links {
-      margin: 0.3em; } }
-/* Tablet
-------------------------- */
-@media (max-width: 767px) {
-  /* Widen masthead and social buttons to fill body padding */
-  .jumbotron {
-    padding: 40px 20px;
-    margin-top: -20px;
-    /* Offset bottom margin on .navbar */
-    margin-right: -20px;
-    margin-left: -20px; }
-
-  /* Sidenav */
-  .bs-docs-sidenav {
-    width: auto;
-    margin-bottom: 20px; }
-
-  .bs-docs-sidenav.affix {
-    position: static;
-    width: auto;
-    top: 0; } }
-/* Landscape phones
-------------------------- */
