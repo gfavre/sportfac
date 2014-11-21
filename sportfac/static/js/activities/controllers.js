@@ -68,7 +68,7 @@ function($scope, $routeParams, $location, $filter, ChildrenService, Registration
 /*******************************************************************************
         Activities management, i.e. a child tab in activities application
 *******************************************************************************/
-.controller('ActivityCtrl', ["$scope", "$http",
+.controller('ActivityCtrl', ["$scope", "$http", 
 function($scope, $http) {
   'use strict';
   $scope.$watch('selectedChild', function(){
@@ -79,6 +79,7 @@ function($scope, $http) {
   });
   
   $scope.selectActivity = function(activity){
+    console.log(activity);
     if ($scope.selectedActivity) { $scope.selectedActivity.selected = false;}
     activity.selected = true;
     $scope.selectedActivity = activity;
@@ -86,9 +87,10 @@ function($scope, $http) {
   
   $scope.loadActivities = function(){
     var url = '/api/activities/?year=' + $scope.selectedChild.school_year;
-    $scope.activities = $http({method: 'GET', url: url, cache: true}).then(function(response){
-        return response.data;
-    });
+    $http({method: 'GET', url: url, cache: true})
+       .success(function(response){
+           $scope.activities = response;
+       });
   };
 }])
 
