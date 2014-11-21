@@ -8,17 +8,19 @@
 
 {% block content %}
 <div class="row">
-  <div class="span8" ng-view></div>
-  <div class="span4" ng-show="userChildren.length !== 0" data-ng-animate="'fade'">
+  <div class="col-sm-4  col-sm-push-8" ng-show="userChildren.length !== 0" data-ng-animate="'fade'">
     <h4>{% trans "Edit my children data" %}</h4>
-    <ul class="nav nav-list bs-docs-sidenav">
+    <ul class="nav nav-pills nav-stacked">
       <li ng-repeat="child in userChildren" ng-class="{active: child.selected}">
-        <a href="#/edit/{[{ child.id }]}" data-toggle="tab" ng-click="selectChild(child)"><i class="icon-chevron-left"></i> {[{ child.first_name }]} {[{ child.last_name }]}</a>
+        <a href="#/edit/{[{ child.id }]}" data-toggle="tab" ng-click="selectChild(child)">{[{ child.first_name }]} {[{ child.last_name }]}</a>
       </li>
     </ul>
     <br />
     <a href="#/new" class="btn" ng-show="selectedChild"><i class="icon-plus"></i> {% trans "Add child" %}</a>
   </div><!-- end span -->
+  <div class="col-sm-8 col-sm-pull-4" ng-view></div>
+
+
 </div><!-- end row -->
 {% endblock content %}
 
@@ -44,17 +46,33 @@
 <script src="{{ STATIC_URL }}js/vendor/angular-locale_fr-ch.js"></script>
 <script src="{{ STATIC_URL }}js/vendor/angular-route.min.js"></script>
 <script src="{{ STATIC_URL }}js/vendor/angular-cookies.min.js"></script>
-
 <script src="{{ STATIC_URL }}js/vendor/angular-strap.min.js"></script>
-
 <script src="{{ STATIC_URL }}js/vendor/bootstrap-datepicker.js"></script>
-
 <script src="{{ STATIC_URL }}js/children/services.js"></script>
 <script src="{{ STATIC_URL }}js/children/controllers.js"></script>
 <script src="{{ STATIC_URL }}js/children/app.js"></script>
 {% else %}
 <script src="{{ STATIC_URL }}js/children/app.min.js"></script>
 {% endif %}
+
+<script>
+$('#sandbox-container div').datepicker({
+    format: "dd/mm/yyyy",
+    weekStart: 1,
+    startDate: "01/01/2001",
+    endDate: "31/12/2012",
+    startView: 1
+});
+
+
+$('#sandbox-container div').datepicker({
+    format: "dd/mm/yyyy",
+    weekStart: 1,
+    startDate: "01/01/2001",
+    endDate: "31/12/2012",
+    startView: 1
+});
+
 {% endblock %}
 
 
