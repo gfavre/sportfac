@@ -6,10 +6,10 @@
 
 
 {% block content %}
-<div class="row">
-<div class="tabbable">
+<nav>
   <ul class="nav nav-tabs children" style="margin-left: 30px">
-    <li ng-repeat="child in userChildren" ng-class="{active: child.selected}">
+    <li role="presentation" ng-repeat="child in userChildren" 
+                            ng-class="{active: child.selected}">
       <a href="./#/child/{[{ child.id }]}/" ng-click="selectChild(child.id)">
         <i class="icon-user" ng-class="{unavailable: !child.selected, available: child.selected}"></i> {[{ child.first_name }]}
       </a>
@@ -20,8 +20,7 @@
     <div class="tab-pane active" ng-view></div>
   </div>
   
-</div><!-- end tabbable -->
-</div>
+</nav><!-- end tabbable -->
 {% endblock content %}
 
 {% block page_footer %}
@@ -40,7 +39,7 @@
 
 
 {% block extra_js %}
-{% if debug %}
+{% if not debug %}
 <script src="{{ STATIC_URL }}js/vendor/fullcalendar.min.js"></script>
 
 <script src="{{ STATIC_URL }}js/vendor/angular.min.js"></script>

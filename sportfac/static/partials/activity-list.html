@@ -1,15 +1,15 @@
 <div ng-controller="ActivityCtrl">
-  <nav class="span3 bs-docs-sidebar" ng-controller="ActivityListCtrl" style="padding-bottom: 2em;">
+  <nav class="col-sm-3 bs-docs-sidebar" ng-controller="ActivityListCtrl" style="padding-bottom: 2em;">
     <h4>Activités disponibles</h4>
-    <ul class="nav nav-list bs-docs-sidenav">
+    <ul class="nav nav-list nav-stacked">
       <li ng-repeat="activity in activities" ng-class="{active: activity.selected}">
-        <a ng-class="{'active': activity.selected}" ng-click="selectActivity(activity);">{[{ activity.name }]} <i class="icon-chevron-right"></i></a>
+        <a ng-class="{'active': activity.selected}" ng-click="selectActivity(activity);">{[{ activity.name }]} <!--<i class="icon-chevron-right"></i>--></a>
       </li>
       <li ng-show="!activities.length" class="label label-warning">Aucune activité n'est disponible pour votre enfant</li>
     </ul>
   </nav> 
 
-  <div class="span9" ng-controller="ActivityTimelineCtrl">
+  <div class="col-sm-9" ng-controller="ActivityTimelineCtrl">
     <div class="alert alert-block" ng-show="getRegisteredCourses(selectedChild).length >= 4">
       <button type="button" class="close" data-dismiss="alert">&times;</button>
       <h4>Le nombre maximal d'activités (4) est atteint pour {[{ selectedChild.first_name }]}. </h4>
