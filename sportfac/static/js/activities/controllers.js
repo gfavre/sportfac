@@ -79,7 +79,6 @@ function($scope, $http) {
   });
   
   $scope.selectActivity = function(activity){
-    console.log(activity);
     if ($scope.selectedActivity) { $scope.selectedActivity.selected = false;}
     activity.selected = true;
     $scope.selectedActivity = activity;
@@ -113,7 +112,17 @@ function($scope, $filter, $modal, CoursesService){
   var year = today.getFullYear();
   var month = today.getMonth();
   var day = today.getDate();
-    
+  
+  var modalwindow = $modal(
+            {template: '/static/partials/activity-detail.html',
+             show: false,
+             backdrop: 'static',
+             persist: true,
+             keyboard: true,
+             scope: $scope,
+  });
+  
+  
   $scope.$watch('registrations.length', function(){
     if (!angular.isDefined($scope.registrations)){ return; }
     
@@ -199,13 +208,7 @@ function($scope, $filter, $modal, CoursesService){
         if (!event.clickable){ return; }
         $scope.selectedEvent = event;
         $scope.selectedCourse = event.course;
-        $modal(
-            {template: '/static/partials/activity-detail.html',
-             show: true,
-             backdrop: 'static',
-             persist: true,
-             scope: $scope,
-        });
+        modalwindow.show();
       });
   };
   
