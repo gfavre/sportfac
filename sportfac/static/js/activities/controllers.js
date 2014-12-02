@@ -119,6 +119,8 @@ function($scope, $filter, $modal, CoursesService){
              backdrop: 'static',
              persist: true,
              keyboard: true,
+             container: 'body',
+             animation: "am-flip-x",
              scope: $scope,
   });
   
