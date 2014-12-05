@@ -1,4 +1,6 @@
-# -*- coding: utf8 -*-
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from profiles.models import FamilyUser
 from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives

@@ -7,6 +7,9 @@
 @import "datepicker3";
 @import "wizard";
 
+@import "mvpready/mvpready-admin-slate";
+@import "mvpready/mvpready-flat";
+
 @import "font-awesome/font-awesome";
 
 
@@ -47,6 +50,20 @@ body {
     }
     li:first-child { padding-left: 0; }
   }
+}
+
+/* MVP Ready 
+-------------------------------------------------- */
+.pricing-plan{
+    max-width: none;
+    text-align: left;
+}
+.pricing-plan .pricing-header {
+    text-align: center;
+}
+.topped {
+    padding-top:0;
+    margin-top: 0;
 }
 
 
