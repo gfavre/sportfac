@@ -16,16 +16,6 @@
 
 $headerheight: 50px;
 
-html, body {
-  height: 100%;
-}
-body {
-  padding-top: $headerheight;
-}
-#wrap {
-  min-height: 100%;
-  height: auto;
-}  
 #footer {
   width: 100%;
   text-align: center;
@@ -66,6 +56,9 @@ body {
     margin-top: 0;
 }
 
+dt {
+    font-weight: 600;
+}
 
 /* Responsive
 -------------------------------------------------- */
