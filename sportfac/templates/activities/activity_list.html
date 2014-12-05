@@ -7,11 +7,11 @@
 
 {% block content %}
 <nav>
-  <ul class="nav nav-tabs children" style="margin-left: 30px">
+  <ul class="nav nav-tabs children">
     <li role="presentation" ng-repeat="child in userChildren" 
                             ng-class="{active: child.selected}">
       <a href="./#/child/{[{ child.id }]}/" ng-click="selectChild(child.id)">
-        <i class="icon-user" ng-class="{unavailable: !child.selected, available: child.selected}"></i> {[{ child.first_name }]}
+        {[{ child.first_name }]}
       </a>
     </li>
   </ul>
