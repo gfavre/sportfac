@@ -19,8 +19,6 @@
     <a href="#/new" class="btn" ng-show="selectedChild"><i class="icon-plus"></i> {% trans "Add child" %}</a>
   </div><!-- end span -->
   <div class="col-sm-8 col-sm-pull-4" ng-view></div>
-
-
 </div><!-- end row -->
 {% endblock content %}
 
@@ -28,14 +26,16 @@
 
 {% block page_footer %}
 {% if wizard_mode and not user.finished_registration %}
-<div class="form-actions">
-  <a class="btn" href="{{ previous_step.url }}"><i class="icon-chevron-left"></i> {% trans "Previous"%}</a>
-  <div class="pull-right">
-    <span ng-hide="userChildren.length > 0" class="btn btn-primary btn-large disabled" >{% trans "Register activities"%} <i class="icon-chevron-right icon-white"></i> </span>
-
-    <a ng-show="userChildren.length > 0" class="btn btn-primary btn-large" href="{% url 'wizard_activities' %}">{% trans "Register activities"%} <i class="icon-chevron-right icon-white"></i> </a>
-  </div>  
-</div>
+<nav>
+  <ul class="pager">
+    <li class="previous">
+      <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span> {% block previous_label %}{% trans "Previous"%}{% endblock %}</a>
+    </li>
+    <li class="next" ng-class="{disabled: userChildren.length === 0}">
+      <a href="{{ next_step.url }}">{% trans "Register activities"%} <span aria-hidden="true">&rarr;</span></a>
+    </li>
+  </ul>
+</nav>
 {% endif %}
 {% endblock page_footer %}
 
@@ -46,7 +46,9 @@
 <script src="{{ STATIC_URL }}js/vendor/angular-locale_fr-ch.js"></script>
 <script src="{{ STATIC_URL }}js/vendor/angular-route.min.js"></script>
 <script src="{{ STATIC_URL }}js/vendor/angular-cookies.min.js"></script>
-<script src="{{ STATIC_URL }}js/vendor/angular-strap.min.js"></script>
+
+<script src="{{ STATIC_URL }}js/vendor/angularstrap/angular-strap.min.js"></script>
+
 <script src="{{ STATIC_URL }}js/vendor/bootstrap-datepicker.js"></script>
 <script src="{{ STATIC_URL }}js/children/services.js"></script>
 <script src="{{ STATIC_URL }}js/children/controllers.js"></script>

@@ -102,7 +102,7 @@ class RegistrationForm(Form):
 
 
 class AcceptTermsForm(Form):
-    accept = forms.BooleanField(required=True)
+    accept = forms.BooleanField(required=True, widget=forms.CheckboxInput(attrs={'style': 'margin-top:0;'}))
     
     def __init__(self, *args, **kwargs):
         super(AcceptTermsForm, self).__init__(*args, **kwargs)

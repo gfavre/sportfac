@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% load i18n %}
 
+{% block extra_css %} <link rel="stylesheet" href="{{ STATIC_URL }}css/mvpready-admin-slate.css">{% endblock extra_css %}
+
+
 {% block title %}{% trans "Administration" %} - {{ block.super }}{% endblock %}
 {% block page_title %}{% trans "Administration" %}{% endblock %}
 

@@ -53,8 +53,8 @@
       <h4>{% trans "Availability"%}</h4>      
       <div class="well">
         <p>{{ course.count_participants  }} participants <span class="pull-right strong"> {{ course.max_participants }} places</span></p>
-        <div class="progress  {% if course.full %}progress-danger{% elif course.minimal_participants_reached %}progress-success{% else %}progress-warning{% endif %}" style="margin-bottom: 0;">
-          <div class="bar" style="width: {{ course.percentage_full }}%"></div>
+        <div class="progress" style="margin-bottom: 0;">
+          <div class="progress-bar {% if course.full %}progress-bar-danger{% elif course.minimal_participants_reached %}progress-bar-success{% else %}progress-bar-warning{% endif %}" style="width: {{ course.percentage_full }}%"></div>
         </div>
         <p class="text-right"><small>{{ course.min_participants }} participants requis pour que l'activité ait lieu</small></p>
       </div>          
