@@ -4,3 +4,4 @@
 
 gunicorn==0.17.0
 redis==2.10.3
+django-constance[redis]==1.0

@@ -11,7 +11,7 @@ django-model-utils==2.2
 logutils==0.3.3
 Pillow==2.6.1
 djangorestframework==2.4.4
-git+https://github.com/comoga/django-constance@b3f849e0fbec9a1c9e52d43cee480570f11f8fd3
+django-constance==1.0
 django-registration-redux==1.1
 django-grappelli==2.6.2
 django-pipeline==1.3.26

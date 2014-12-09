@@ -299,12 +299,13 @@ REST_FRAMEWORK = {
 ########## END REST FRAMEWORK CONFIGURATION
 
 ########## CONSTANCE CONFIGURATION (settings in admin)
-# see https://github.com/comoga/django-constance
+# see http://django-constance.readthedocs.org
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 CONSTANCE_SUPERUSER_ONLY = False
 CONSTANCE_CONFIG = {
     'START_REGISTRATION': (datetime(2013,9,1, tzinfo=timezone('Europe/Zurich')), ugettext("Registration opening date")),
     'END_REGISTRATION': (datetime(2013,10,1, tzinfo=timezone('Europe/Zurich')), ugettext("Registration ending date")),
+    'CURRENT_PHASE': (1, 'PREPARATION'),
 }
 
 ########## END CONSTANCE CONFIGURATION
