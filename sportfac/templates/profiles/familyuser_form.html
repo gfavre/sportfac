@@ -6,6 +6,10 @@
 
 
 {% block content %}
+<h3 class="content-title">
+  <u>{% trans "Edit profile" %}</u>
+</h3>
+
 {% form form using %}
 {% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
 <form action="." method="post" class="form-horizontal" role="form">{% csrf_token %}
@@ -25,18 +29,9 @@
 {% endblock errors %}
 
   <fieldset>
-    <legend>{% trans "Login informations" %}</legend>
-    {% formrow form.email %}
-    <div class="row">
-      <div class="col-sm-12">
-        <a href="{% url 'auth_password_change' %}">{% trans "Change password" %}</a>
-      </div>
-    </div>
-  </fieldset>
-  <fieldset>
-    <legend>{% trans "Contact informations" %}</legend>
     {% formrow form.first_name %}
     {% formrow form.last_name %}
+    {% formrow form.email %}
     {% formrow form.address %}
     <div class="form-group">
       <label class="control-label col-sm-2">{% trans "City" %} <span class="required">*</span></label>

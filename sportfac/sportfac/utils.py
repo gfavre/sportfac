@@ -9,7 +9,7 @@ class WizardMixin(object):
             context["base_template"] = 'wizard.html'
             context["wizard_mode"] = True
         else:
-            context["base_template"] = 'base.html'
+            context["base_template"] = 'profiles/baseprofile.html'
             context["wizard_mode"] = False
         return context
 

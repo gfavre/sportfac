@@ -31,32 +31,32 @@
           </a>
           <ul class="dropdown-menu" role="menu">
             <li>
-              <a href="{% url 'profiles_account' %}"><i class="icon-fixed-width icon-pencil"></i> {% trans "My account" %}</a>
+              <a href="{% url 'profiles_account' %}"><i class="icon-pencil"></i> {% trans "My account" %}</a>
             </li>
             <li>
-              <a href="{% url 'profiles_children' %}"><i class="icon-fixed-width icon-group"></i> {% trans "My family" %}</a>
+              <a href="{% url 'profiles_children' %}"><i class="icon-group"></i> {% trans "My family" %}</a>
             </li>
             
             
             {% if user.finished_registration %}
             <li>
-              <a href="{% url 'profiles_registered_activities' %}"> <i class="icon-fixed-width icon-calendar"></i> {% trans "My registered activities" %}</a>
+              <a href="{% url 'profiles_registered_activities' %}"> <i class="icon-calendar"></i> {% trans "My registered activities" %}</a>
             </li>
             
             <li>
-              <a href="{% url 'profiles_billing' %}"> <i class="icon-fixed-width icon-credit-card"></i> {% trans "Terms of payement" %}</a>
+              <a href="{% url 'profiles_billing' %}"> <i class="icon-credit-card-1"></i> {% trans "Terms of payement" %}</a>
             </li>
             
             {% elif registration_opened %}
             <li>
-              <a href="{{ max_step }}"><i class="icon-fixed-width icon-calendar"></i> {% trans "Register activities" %}</a>
+              <a href="{{ max_step }}"><i class="icon-calendar"></i> {% trans "Register activities" %}</a>
             </li>
             {% endif %}
             
             {% if user.is_staff %}
               <li class="divider"></li>
               <li>
-                <a href="{% url 'admin:index' %}"><i class="icon-fixed-width icon-cogs"></i> {% trans "Administration" %}</a>
+                <a href="{% url 'admin:index' %}"><i class="icon-cogs"></i> {% trans "Administration" %}</a>
               </li>
             {% endif %}
             <li class="divider"></li>

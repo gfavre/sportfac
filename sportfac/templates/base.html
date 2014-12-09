@@ -38,9 +38,9 @@
         </div>
         {% endblock page_header %}
         
-        {% block content %}
-        <p>Use this document as a way to quick start any new project.</p>
-        {% endblock content %}
+        {% block main-content %}
+        {% block content %}<p>Use this document as a way to quick start any new project.</p>{% endblock content %}
+        {% endblock main-content %}
         
         <footer>{% block page_footer %}{% endblock page_footer %}</footer>
       </div>

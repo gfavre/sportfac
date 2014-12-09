@@ -10,7 +10,8 @@
 @import "mvpready/mvpready-admin-slate";
 @import "mvpready/mvpready-flat";
 
-@import "font-awesome/font-awesome";
+@import "fontello/animation";
+@import "fontello/icons-sportfac";
 
 
 
@@ -58,6 +59,13 @@ $headerheight: 50px;
 
 dt {
     font-weight: 600;
+}
+.page-header {
+    border: none;
+}
+
+legend{
+    font-family: Oswald;
 }
 
 /* Responsive
