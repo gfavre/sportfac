@@ -3,17 +3,18 @@
 @import "angular-motion";
 
 @import "bootstrap331.min";
-@import "fullcalendar";
-@import "datepicker3";
-@import "bootstrap-datetimepicker";
-@import "wizard";
 
-@import "mvpready/mvpready-admin-slate";
+/*@import "mvpready/mvpready-admin-slate";*/
+@import "mvpready/mvpready-admin";
 @import "mvpready/mvpready-flat";
 
 @import "fontello/animation";
 @import "fontello/icons-sportfac";
 
+@import "wizard";
+@import "fullcalendar";
+@import "datepicker3";
+@import "bootstrap-datetimepicker";
 
 
 $headerheight: 50px;

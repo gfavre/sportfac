@@ -3,14 +3,14 @@
 <header class="navbar navbar-inverse" role="banner">
   <div class="container">
     <div class="navbar-header">
-      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse">
+      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topnav">
         <span class="sr-only">{% trans "Toggle navigation" %}</span>
-        <i class="fa fa-cog"></i>
+        <span class="icon-menu" style="color:#fff;"></span>
       </button>
       <a href="/" class="navbar-brand navbar-brand-white">Sport scolaire facultatif</a>
     </div> <!-- /.navbar-header -->
 
-    <nav class="collapse navbar-collapse" role="navigation">
+    <nav class="collapse navbar-collapse" role="navigation" id="topnav">
       <ul class="nav navbar-nav  navbar-left">          
         <li><a href="{% url 'terms' %}">{% trans "Terms and conditions" %}</a></li>
         <li class="dropdown">

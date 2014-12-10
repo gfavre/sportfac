@@ -30,16 +30,22 @@
 
   <body>
     <div id="wrapper">
-      {% include "navbar.html" %}    
-      <div class="container">      
+      {% include "navbar.html" %} 
+      {% block localnav %}{% endblock %}   
         {% block page_header %} 
+      <div class="container">      
         <div class="page-header">
+
           <h1>{% block page_title %}Example Base Template{% endblock page_title %}</h1>
+      </div>
         </div>
         {% endblock page_header %}
         
         {% block main-content %}
+              <div class="container">      
+
         {% block content %}<p>Use this document as a way to quick start any new project.</p>{% endblock content %}
+              </div>
         {% endblock main-content %}
         
         <footer>{% block page_footer %}{% endblock page_footer %}</footer>
@@ -71,6 +77,10 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="{{ STATIC_URL }}js/vendor/jquery-2.1.1.min.js"></script>
     <script src="{{ STATIC_URL }}js/vendor/bootstrap.min.js"></script>
+    <!--<script src="{{ STATIC_URL }}js/vendor/mvpready-app.js"></script>
+    <script src="{{ STATIC_URL }}js/vendor/mvpready-core.js"></script>
+    <script src="{{ STATIC_URL }}js/vendor/mvpready-admin.js"></script>-->
+        
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

@@ -4,16 +4,15 @@
 
 {% block extra_css %}{% endblock extra_css %}
 
-{% block extra_js %}
-{{ block.super }}
-<script src="{{ STATIC_URL }}js/vendor/bootstrap-datetimepicker.min.js"></script>
-{% endblock extra_js %}
 
-
-
+{% block localnav %}
+{% include "backend/navbar.html" %}
+{% endblock %}
 
 {% block main-content %}
-<!-- navbar -->
+
+<div class="content">
+<div class="container">
 {% if messages %}
 {% for message in messages %}
 <div class="alert {% if message.tags %}{{ message.tags }}{% endif %}">
@@ -24,4 +23,7 @@
 {% endif %}
 
 {% block content %}{% endblock content %}
+</div>
+</div>
 {% endblock main-content %}
+

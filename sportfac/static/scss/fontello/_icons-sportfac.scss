@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icons-sportfac';
-  src: url('../font/icons-sportfac.eot?27511928');
-  src: url('../font/icons-sportfac.eot?27511928#iefix') format('embedded-opentype'),
-       url('../font/icons-sportfac.woff?27511928') format('woff'),
-       url('../font/icons-sportfac.ttf?27511928') format('truetype'),
-       url('../font/icons-sportfac.svg?27511928#icons-sportfac') format('svg');
+  src: url('../font/icons-sportfac.eot?47360215');
+  src: url('../font/icons-sportfac.eot?47360215#iefix') format('embedded-opentype'),
+       url('../font/icons-sportfac.woff?47360215') format('woff'),
+       url('../font/icons-sportfac.ttf?47360215') format('truetype'),
+       url('../font/icons-sportfac.svg?47360215#icons-sportfac') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -14,7 +14,7 @@
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   @font-face {
     font-family: 'icons-sportfac';
-    src: url('../font/icons-sportfac.svg?27511928#icons-sportfac') format('svg');
+    src: url('../font/icons-sportfac.svg?47360215#icons-sportfac') format('svg');
   }
 }
 */
@@ -184,3 +184,4 @@
 .icon-cc-discover:before { content: '\e883'; } /* '' */
 .icon-cc-amex:before { content: '\e884'; } /* '' */
 .icon-cc-paypal:before { content: '\e885'; } /* '' */
+.icon-menu:before { content: '\e886'; } /* '' */

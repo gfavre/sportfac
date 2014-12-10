@@ -1,0 +1,156 @@
+{% load i18n %}
+
+{% url 'backend:home' as home_url %}
+{% url 'backend:activity-list' as activities_url %}
+{% url 'profiles_children' as children_url %}
+
+
+<div class="mainnav">
+    <div class="container">
+
+      <a class="mainnav-toggle" data-toggle="collapse" data-target="#mainnav-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <i class="icon-menu"></i>
+      </a>
+
+      <nav class=" mainnav-collapse" id="mainnav-collapse" role="navigation">
+        <ul class="mainnav-menu">
+          <li {% if request.get_full_path == home_url %}class="active"{% endif %}>
+            <a href="{{ home_url }}">{% trans "Dashboard" %}</a>
+          </li>
+          <li class="dropdown{% if request.get_full_path == activities_url %} active{% endif %}">
+          	<a href="{{ activities_url }}" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
+          	{% trans "Activities" %}
+          	<i class="icon-down-open"></i>
+          	</a>
+
+          	<ul class="dropdown-menu" role="menu">
+              <li>
+                <a href="{% url 'backend:activity-list' %}">
+                  {% trans "List activities" %}
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'backend:activity-create' %}">
+                  <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New activity" %}
+                </a>
+              </li>
+              <li class="divider"></li>
+              <li>
+                <a href="{% url 'backend:course-list' %}">
+                  {% trans "List courses" %}
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'backend:course-create' %}">
+                  <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New activity" %}
+                </a>
+              </li>
+              <li class="divider"></li>
+              <li>
+                <a href="{% url 'backend:responsible-list' %}">
+                  {% trans "List responsibles" %}
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'backend:responsible-create' %}">
+                  <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New responsible" %}
+                </a>
+              </li>
+
+          	</ul>
+          </li>
+
+          <li class="dropdown">
+            <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
+              {% trans "Registrations" %}
+              <i class="icon-down-open"></i>					
+            </a>
+
+            <ul class="dropdown-menu" role="menu">
+              <li>
+                <a href="./components-tabs.html">
+                <i class="fa fa-bars"></i> 
+                &nbsp;&nbsp;Tabs &amp; Accordions
+                </a>
+              </li>
+              <li>
+                <a href="./components-popups.html">
+                <i class="fa fa-calendar-o"></i> 
+                &nbsp;&nbsp;Popups &amp; Alerts
+                </a>
+              </li>
+
+              <li>
+                <a href="./components-validation.html">
+                <i class="fa fa-check"></i> 
+                &nbsp;&nbsp;Validation
+                </a>
+              </li>
+
+              <li>
+                <a href="./components-datatables.html">
+                <i class="fa fa-table"></i> 
+                &nbsp;&nbsp;Data Tables
+                </a>
+              </li>
+
+              <li>
+                <a href="./components-gallery.html">
+                <i class="fa fa-picture-o"></i> 
+                &nbsp;&nbsp;Gallery
+                </a>
+              </li>
+
+              <li>
+                <a href="./components-charts.html">
+                <i class="fa fa-bar-chart-o"></i> 
+                &nbsp;&nbsp;Charts
+                </a>
+              </li>		  
+            </ul>
+          </li>
+
+
+          <li class="dropdown">
+
+            <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
+                {% trans "Users" %}
+
+            <i class="icon-down-open"></i>
+            </a>
+
+            <ul class="dropdown-menu" role="menu">
+              <li>
+                <a href="./page-pricing.html">
+                <i class="fa fa-money"></i> 
+                &nbsp;&nbsp;Plans &amp; Billing
+                </a>
+              </li>
+
+              <li>
+                <a href="./page-profile.html">
+                <i class="fa fa-user"></i> 
+                &nbsp;&nbsp;Profile
+                </a>
+              </li>
+
+              <li>
+                <a href="./page-settings.html">
+                <i class="fa fa-cogs"></i> 
+                &nbsp;&nbsp;Settings
+                </a>
+              </li>
+
+              <li>
+                <a href="./page-faq.html">
+                <i class="fa fa-question"></i> 
+                &nbsp;&nbsp;FAQ
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </div> <!-- /.container -->
+  </div>
