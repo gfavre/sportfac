@@ -1,9 +1,13 @@
 from django.shortcuts import render
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, \
-                                 ListView, UpdateView
+                                 FormView, ListView, UpdateView
+from django.contrib import messages
+from django.utils.translation import ugettext as _
+from django.utils.safestring import mark_safe
 
 from . import GROUP_NAME
+from .forms import RegistrationDatesForm
 from activities.models import Course, Activity, Responsible
 
 from braces.views import GroupRequiredMixin, LoginRequiredMixin
@@ -100,3 +104,22 @@ class ActivityDeleteView(BackendMixin, DeleteView):
     model = Activity
     template_name = 'backend/activity/confirm_delete.html'
     success_url = reverse_lazy('backend:activity-list')
+
+################################################################################
+# Dates
+class RegistrationDatesView(BackendMixin, FormView):
+    template_name = 'backend/registration_dates.html'
+    form_class = RegistrationDatesForm
+    success_url = reverse_lazy('backend:home')
+    
+    def form_valid(self, form):
+        form.save_to_constance()
+        messages.add_message(self.request, messages.SUCCESS, _("Opening and closing dates have been changed"))
+        return super(RegistrationDatesView, self).form_valid(form)
+
+    def form_invalid(self, form):
+        messages.add_message(self.request, messages.ERROR, 
+                             mark_safe(_("An error was found in form %s") % form.non_field_errors()))
+        return super(RegistrationDatesView, self).form_invalid(form)
+
+

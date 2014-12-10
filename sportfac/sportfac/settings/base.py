@@ -145,6 +145,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.request',
     
+    'constance.context_processors.config',
+    
     'sportfac.context_processors.wizard_context',
     'sportfac.context_processors.registration_opened_context',
     'sportfac.context_processors.activities_context',
@@ -279,6 +281,23 @@ TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#wsgi-application
 WSGI_APPLICATION = 'wsgi.application'
 ########## END WSGI CONFIGURATION
+
+
+##########  MESSAGE CONFIGURATION
+# See: https://docs.djangoproject.com/en/dev/ref/contrib/messages/
+
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.DEBUG: 'alert-info',
+    messages.INFO: 'alert-info',
+    messages.SUCCESS: 'alert-success',
+    messages.WARNING: 'alert-warning',
+    messages.ERROR: 'alert-danger'
+}
+
+
+########## END WSGI CONFIGURATION
+
 
 
 ########## REST FRAMEWORK CONFIGURATION
