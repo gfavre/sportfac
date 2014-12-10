@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-05 22:59+0100\n"
+"POT-Creation-Date: 2014-12-10 18:30+0100\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -284,6 +284,27 @@ msgstr "Numéro de téléphone"
 msgid "Email"
 msgstr "E-mail"
 
+#: sportfac/backend/forms.py:12 sportfac/templates/backend/home.html:50
+msgid "Opening date"
+msgstr "Date d'ouverture"
+
+#: sportfac/backend/forms.py:15 sportfac/templates/backend/home.html:51
+msgid "Closing date"
+msgstr "Date de fermeture"
+
+#: sportfac/backend/forms.py:24
+msgid "Closing date should come after opening date"
+msgstr "La date de fermeture doit être postérieuse à la date d'ouverture"
+
+#: sportfac/backend/views.py:117
+msgid "Opening and closing dates have been changed"
+msgstr "Les dates d'ouverture et de fermeture ont été mises à jour"
+
+#: sportfac/backend/views.py:122
+#, python-format
+msgid "An error was found in form %s"
+msgstr "Une erreur a été trouvée dans le formulaire %s"
+
 #: sportfac/contact/forms.py:12 sportfac/profiles/forms.py:14
 #: sportfac/profiles/forms.py:59
 msgid "E-mail"
@@ -338,7 +359,7 @@ msgstr "NPA"
 
 #: sportfac/profiles/forms.py:26 sportfac/profiles/forms.py:68
 #: sportfac/profiles/models.py:72
-#: sportfac/templates/profiles/familyuser_form.html:42
+#: sportfac/templates/profiles/familyuser_form.html:37
 #: sportfac/templates/registration/registration_form.html:40
 msgid "City"
 msgstr "Commune"
@@ -444,6 +465,7 @@ msgstr "Inscription"
 
 #: sportfac/profiles/models.py:234
 #: sportfac/templates/backend/course/detail.html:35
+#: sportfac/templates/backend/navbar.html:66
 msgid "Registrations"
 msgstr "Inscriptions"
 
@@ -493,11 +515,11 @@ msgstr "Confirmation"
 msgid "Billing"
 msgstr "Paiement"
 
-#: sportfac/sportfac/settings/base.py:306
+#: sportfac/sportfac/settings/base.py:325
 msgid "Registration opening date"
 msgstr "Début de la période d'enregistrement"
 
-#: sportfac/sportfac/settings/base.py:307
+#: sportfac/sportfac/settings/base.py:326
 msgid "Registration ending date"
 msgstr "Fin de la période d'enregistrement"
 
@@ -541,7 +563,7 @@ msgid "Availability"
 msgstr "Places disponibles"
 
 #: sportfac/templates/activities/activity_list.html:5
-#: sportfac/templates/navbar.html:17
+#: sportfac/templates/backend/navbar.html:23 sportfac/templates/navbar.html:17
 msgid "Activities"
 msgstr "Activités"
 
@@ -600,10 +622,13 @@ msgstr "Activité n°"
 
 #: sportfac/templates/backend/activity/list.html:6
 #: sportfac/templates/backend/activity/list.html:7
+#: sportfac/templates/backend/navbar.html:30
 msgid "List activities"
 msgstr "Liste des activités"
 
 #: sportfac/templates/backend/activity/list.html:10
+#: sportfac/templates/backend/navbar.html:35
+#: sportfac/templates/backend/navbar.html:46
 msgid "New activity"
 msgstr "Nouvelle activité"
 
@@ -670,6 +695,7 @@ msgid "View courses"
 msgstr "Afficher les cours"
 
 #: sportfac/templates/backend/course/list.html:5
+#: sportfac/templates/backend/navbar.html:41
 msgid "List courses"
 msgstr "Afficher les cours"
 
@@ -702,40 +728,83 @@ msgstr "Mettre à jour le cours"
 msgid "No course yet"
 msgstr "Pas encore de cours"
 
-#: sportfac/templates/backend/home.html:7
-#: sportfac/templates/backend/home.html:8 sportfac/templates/navbar.html:59
+#: sportfac/templates/backend/home.html:6
+#: sportfac/templates/backend/home.html:9 sportfac/templates/navbar.html:59
 msgid "Administration"
 msgstr "Administration"
 
-#: sportfac/templates/backend/home.html:13
+#: sportfac/templates/backend/home.html:17
+msgid "Opening & closing"
+msgstr "Ouverture & fermeture"
+
+#: sportfac/templates/backend/home.html:28
+msgid "Registrations open"
+msgstr "Inscriptions ouvertes"
+
+#: sportfac/templates/backend/home.html:29
+#, python-format
+msgid "%(time)s remaining"
+msgstr "encore %(time)s"
+
+#: sportfac/templates/backend/home.html:36
+#, python-format
+msgid "%(time)s since opening of registrations"
+msgstr "%(time)s écoulés depuis l'ouverture des inscriptions"
+
+#: sportfac/templates/backend/home.html:53
+msgid "Change dates"
+msgstr "Mettre à jour les dates"
+
+#: sportfac/templates/backend/home.html:61
 msgid "Manage activities"
 msgstr "Gestion des activités"
 
-#: sportfac/templates/backend/home.html:14
+#: sportfac/templates/backend/home.html:62
 msgid "Manage courses"
 msgstr "Gestion des cours"
 
-#: sportfac/templates/backend/home.html:15
+#: sportfac/templates/backend/home.html:63
 msgid "Manage responsibles"
 msgstr "Gestion des responsables"
 
-#: sportfac/templates/backend/responsible/create.html:4
-msgid "Informations about a new responsible"
-msgstr "Informations sur le nouveau responsable"
+#: sportfac/templates/backend/navbar.html:19
+msgid "Dashboard"
+msgstr "Tableau de bord"
 
+#: sportfac/templates/backend/navbar.html:52
+#: sportfac/templates/backend/responsible/list.html:4
+#: sportfac/templates/backend/responsible/list.html:5
+msgid "List responsibles"
+msgstr "Afficher les responsables"
+
+#: sportfac/templates/backend/navbar.html:57
 #: sportfac/templates/backend/responsible/create.html:5
 #: sportfac/templates/backend/responsible/list.html:8
 msgid "New responsible"
 msgstr "Nouveau responsable"
 
+#: sportfac/templates/backend/navbar.html:118
+msgid "Users"
+msgstr "Utilisateurs"
+
+#: sportfac/templates/backend/registration_dates.html:5
+#: sportfac/templates/backend/registration_dates.html:6
+msgid "Change opening and closing dates"
+msgstr "Mettre à jour les dates d'ouverture et de fermeture"
+
+#: sportfac/templates/backend/registration_dates.html:19
+#: sportfac/templates/profiles/familyuser_form.html:63
+#: sportfac/templates/profiles/registration_list.html:73
+msgid "Save"
+msgstr "Enregistrer"
+
+#: sportfac/templates/backend/responsible/create.html:4
+msgid "Informations about a new responsible"
+msgstr "Informations sur le nouveau responsable"
+
 #: sportfac/templates/backend/responsible/detail.html:9
 msgid "Courses"
 msgstr "Cours"
-
-#: sportfac/templates/backend/responsible/list.html:4
-#: sportfac/templates/backend/responsible/list.html:5
-msgid "List responsibles"
-msgstr "Afficher les responsables"
 
 #: sportfac/templates/backend/responsible/list.html:14
 msgid "Phone"
@@ -761,12 +830,12 @@ msgstr "Mettre à jour les informations sur le nouveau responsable"
 msgid "Update inforrmation"
 msgstr "Mettre à jour les informations"
 
-#: sportfac/templates/base.html:60 sportfac/templates/contact/contact.html:4
+#: sportfac/templates/base.html:66 sportfac/templates/contact/contact.html:4
 #: sportfac/templates/contact/contact.html:6
 msgid "Contact"
 msgstr "Contact"
 
-#: sportfac/templates/base.html:62 sportfac/templates/navbar.html:15
+#: sportfac/templates/base.html:68 sportfac/templates/navbar.html:15
 msgid "Terms and conditions"
 msgstr "Règlement de participation"
 
@@ -814,9 +883,10 @@ msgid "Toggle navigation"
 msgstr "Afficher la navigation"
 
 #: sportfac/templates/navbar.html:34
+#: sportfac/templates/profiles/baseprofile.html:3
+#: sportfac/templates/profiles/baseprofile.html:4
 #: sportfac/templates/profiles/familyuser_form.html:4
 #: sportfac/templates/profiles/familyuser_form.html:5
-#: sportfac/templates/registration/password_change_done.html:9
 msgid "My account"
 msgstr "Mon compte"
 
@@ -835,6 +905,24 @@ msgstr "Déconnexion"
 #: sportfac/templates/navbar.html:68
 msgid "login"
 msgstr "Connexion"
+
+#: sportfac/templates/profiles/baseprofile.html:22
+msgid "Profile Settings"
+msgstr "Mon compte"
+
+#: sportfac/templates/profiles/baseprofile.html:29
+#: sportfac/templates/registration/password_change_done.html:3
+#: sportfac/templates/registration/password_change_done.html:5
+#: sportfac/templates/registration/password_change_form.html:5
+#: sportfac/templates/registration/password_change_form.html:7
+#: sportfac/templates/registration/password_change_form.html:21
+#: sportfac/templates/registration/password_reset_confirm.html:33
+msgid "Change password"
+msgstr "Changement de mot de passe"
+
+#: sportfac/templates/profiles/baseprofile.html:36
+msgid "Family settings"
+msgstr "Ma famille"
 
 #: sportfac/templates/profiles/billing.html:33
 #: sportfac/templates/profiles/registration_list.html:39
@@ -870,35 +958,14 @@ msgstr "Éditer les données de mes enfants"
 msgid "Add child"
 msgstr "Ajouter un enfant"
 
-#: sportfac/templates/profiles/familyuser_form.html:28
-#: sportfac/templates/registration/registration_form.html:29
-msgid "Login informations"
-msgstr "Informations de connexion"
+#: sportfac/templates/profiles/familyuser_form.html:10
+msgid "Edit profile"
+msgstr "Editer le compte"
 
-#: sportfac/templates/profiles/familyuser_form.html:32
-#: sportfac/templates/registration/password_change_done.html:3
-#: sportfac/templates/registration/password_change_done.html:5
-#: sportfac/templates/registration/password_change_form.html:3
-#: sportfac/templates/registration/password_change_form.html:5
-#: sportfac/templates/registration/password_change_form.html:35
-#: sportfac/templates/registration/password_reset_confirm.html:33
-msgid "Change password"
-msgstr "Changement de mot de passe"
-
-#: sportfac/templates/profiles/familyuser_form.html:37
-#: sportfac/templates/registration/registration_form.html:35
-msgid "Contact informations"
-msgstr "Informations de contact"
-
-#: sportfac/templates/profiles/familyuser_form.html:63
+#: sportfac/templates/profiles/familyuser_form.html:58
 #: sportfac/templates/registration/registration_form.html:55
 msgid "Save and continue"
 msgstr "Enregistrer et continuer"
-
-#: sportfac/templates/profiles/familyuser_form.html:68
-#: sportfac/templates/profiles/registration_list.html:73
-msgid "Save"
-msgstr "Enregistrer"
 
 #: sportfac/templates/profiles/registration_list.html:12
 msgid "Close"
@@ -1078,6 +1145,14 @@ msgstr "Réinitialiser mon mot de passe"
 #: sportfac/templates/registration/registration_form.html:6
 msgid "Inscription"
 msgstr "Inscription"
+
+#: sportfac/templates/registration/registration_form.html:29
+msgid "Login informations"
+msgstr "Informations de connexion"
+
+#: sportfac/templates/registration/registration_form.html:35
+msgid "Contact informations"
+msgstr "Informations de contact"
 
 #: sportfac/templates/wizard.html:38
 msgid "Next"
