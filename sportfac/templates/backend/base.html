@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load humanize %} 
+{% load sekizai_tags %}
 
 {% block extra_css %}{% endblock extra_css %}
 
@@ -9,7 +10,18 @@
 {% include "backend/navbar.html" %}
 {% endblock %}
 
+
 {% block main-content %}
+{% addtoblock "js" %}
+<script src="{{ STATIC_URL }}js/vendor/mvpready-core.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/mvpready-admin.js"></script>
+
+<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="{{ STATIC_URL }}js/vendor/excanvas.compiled.js"></script><![endif]-->
+<script src="{{ STATIC_URL }}js/vendor/flot/jquery.flot.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/flot/jquery.flot.time.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/flot/jquery.flot.tooltip.min.js"></script>
+
+{% endaddtoblock %}
 
 <div class="content">
 <div class="container">
@@ -25,5 +37,8 @@
 {% block content %}{% endblock content %}
 </div>
 </div>
+
+
 {% endblock main-content %}
+
 

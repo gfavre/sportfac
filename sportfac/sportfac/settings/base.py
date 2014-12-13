@@ -150,6 +150,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'sportfac.context_processors.wizard_context',
     'sportfac.context_processors.registration_opened_context',
     'sportfac.context_processors.activities_context',
+    'sekizai.context_processors.sekizai',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-loaders
@@ -219,6 +220,7 @@ THIRD_PARTY_APPS = (
     #'extended_flatpages',
     'autocomplete_light', # autocomplete for django admin
     #'pipeline', # minifier
+    'sekizai',
 )
 
 # Apps specific for this project go here.

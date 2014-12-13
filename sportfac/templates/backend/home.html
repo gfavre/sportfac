@@ -56,6 +56,15 @@
 </section>
 </div>
 
+<div class="row">
+  <div class="col-sm-6 col-md-4">
+    {% include 'backend/portlets/paid.html'%}
+  </div>
+  <div class="col-sm-6 col-md-8">
+    {% include 'backend/portlets/registrations.html'%}
+  </div>
+</div>
+
 <section>
   <ul>
     <li><a href="{% url 'backend:activity-list' %}">{% trans "Manage activities" %}</a></li>

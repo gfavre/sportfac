@@ -7,7 +7,7 @@ from .views import CourseCreateView, CourseDeleteView, CourseDetailView, \
                    ActivityListView, ActivityUpdateView,\
                    ResponsibleCreateView, ResponsibleDeleteView, ResponsibleDetailView, \
                    ResponsibleListView, ResponsibleUpdateView, \
-                   RegistrationDatesView
+                   RegistrationDatesView, HomePageView
 
 courses_patterns = patterns('', 
     url(r'^$', view=CourseListView.as_view(), 
@@ -52,7 +52,7 @@ activities_patterns = patterns('',
 
 
 urlpatterns = patterns('',
-    url(r'^$', TemplateView.as_view(template_name="backend/home.html"), name="home"),
+    url(r'^$', HomePageView.as_view(), name="home"),
     url(r'^dates$', RegistrationDatesView.as_view(), name='dates'),
     url(r'^activity/', include(activities_patterns)),
     url(r'^course/', include(courses_patterns)),
