@@ -11,6 +11,8 @@ from django.utils.translation import ugettext as _
 from django.utils import timezone
 from django.db.models import Sum
 
+from model_utils import Choices
+from model_utils.models import StatusModel
 
 from activities.models import SCHOOL_YEARS
 from sportfac.models import TimeStampedModel
@@ -180,11 +182,23 @@ class Child(TimeStampedModel):
     def __unicode__(self):
         return '%s %s' % (self.first_name, self.last_name)
 
+class RegistrationManager(models.Manager):
+    def get_queryset(self):
+        return super(RegistrationManager, self).get_queryset().exclude(status=Registration.STATUS.canceled)
+    
+    def all_with_deleted(self):
+        return super(RegistrationManager, self).get_queryset().all()
 
-class Registration(TimeStampedModel):
+class Registration(TimeStampedModel, StatusModel):
+    STATUS = Choices(('waiting', _("Waiting parent's confirmation")),
+                     ('valid', _("Validated by parent")),
+                     ('canceled', _("Canceled by administrator")),
+                     ('confirmed', _("Confirmed by administrator")),
+                     )
     course = models.ForeignKey('activities.Course', related_name="participants")
     child = models.ForeignKey('Child')
-    validated = models.BooleanField(default=False, db_index=True,verbose_name=_("Confirmed registration"))
+    
+    objects = RegistrationManager()
     
     @property
     def extra_needs(self):
@@ -197,6 +211,9 @@ class Registration(TimeStampedModel):
         return _(u'%(child)s ⇒ course %(number)s (%(activity)s)') % {'child': unicode(self.child), 
                                                                       'number': self.course.number,
                                                                       'activity': self.course.activity.name}
+    
+    def cancel(self):
+        self.status = self.STATUS.canceled 
     
     def overlap(self, r2):
         "Test if another registration object overlaps with this one."  

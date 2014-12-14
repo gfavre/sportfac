@@ -127,9 +127,9 @@ class TeacherAdmin(admin.ModelAdmin):
 admin.site.register(Teacher, TeacherAdmin)
 
 class RegistrationAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'validated')
+    list_display = ('__unicode__', 'status')
     
-    list_filter = ('validated', 'course__activity__name')
+    list_filter = ('status', 'course__activity__name')
     
     search_fields = ('child__first_name', 'child__last_name', 
                      'course__activity__number', 'course__activity__name',
@@ -143,8 +143,11 @@ class RegistrationAdmin(admin.ModelAdmin):
     
     
     def get_queryset(self, request):
-        qs = super(RegistrationAdmin, self).get_queryset(request)
+        #qs = super(RegistrationAdmin, self).get_queryset(request)
         #return qs 19
+        qs = self.model._default_manager.all_with_deleted()
+        
+        
         return qs.select_related('course', 'course__activity', 'child')
     
     def save_model(self, request, obj, form, change):

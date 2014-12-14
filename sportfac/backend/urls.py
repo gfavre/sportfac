@@ -7,6 +7,8 @@ from .views import CourseCreateView, CourseDeleteView, CourseDetailView, \
                    ActivityListView, ActivityUpdateView,\
                    ResponsibleCreateView, ResponsibleDeleteView, ResponsibleDetailView, \
                    ResponsibleListView, ResponsibleUpdateView, \
+                   RegistrationCreateView, RegistrationDeleteView, RegistrationDetailView, \
+                   RegistrationListView, RegistrationUpdateView, \
                    RegistrationDatesView, HomePageView
 
 courses_patterns = patterns('', 
@@ -49,6 +51,20 @@ activities_patterns = patterns('',
         name='activity-delete'),
 )
 
+registrations_patterns = patterns('', 
+    url(r'^$', view=RegistrationListView.as_view(), 
+        name='registration-list'),
+    url(r'^new$', view=RegistrationCreateView.as_view(), 
+        name='registration-create'),
+    url(r'^(?P<pk>\d+)/$', view=RegistrationDetailView.as_view(), 
+        name='registration-detail'),
+    url(r'^(?P<pk>\d+)/update$', view=RegistrationUpdateView.as_view(), 
+        name='registration-update'),
+    url(r'^(?P<pk>\d+)/cancel$', view=RegistrationDeleteView.as_view(),
+        name='registration-delete'),
+)
+
+
 
 
 urlpatterns = patterns('',
@@ -56,5 +72,6 @@ urlpatterns = patterns('',
     url(r'^dates$', RegistrationDatesView.as_view(), name='dates'),
     url(r'^activity/', include(activities_patterns)),
     url(r'^course/', include(courses_patterns)),
+    url(r'^registrations/', include(registrations_patterns)),
     url(r'^responsible/', include(responsibles_patterns)),
 )

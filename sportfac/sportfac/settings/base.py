@@ -220,7 +220,7 @@ THIRD_PARTY_APPS = (
     #'extended_flatpages',
     'autocomplete_light', # autocomplete for django admin
     #'pipeline', # minifier
-    'sekizai',
+    'sekizai', #add_to_block template tag
 )
 
 # Apps specific for this project go here.

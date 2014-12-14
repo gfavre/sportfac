@@ -13,6 +13,7 @@ class CourseDetailView(BackendMixin, DetailView):
 
 class CourseListView(BackendMixin, ListView):
     model = Course
+    queryset = Course.objects.select_related('activity', 'responsible')
     template_name = 'backend/course/list.html'
    
 

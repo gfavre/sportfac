@@ -1,0 +1,45 @@
+{% extends "backend/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "View courses" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "List courses" %}{% endblock %}
+
+{% block content %}
+<a href="{% url 'backend:course-create' %}">{% trans "New course" %}</a>
+<table class="table">
+  <thead>
+    <tr>
+      <th>{% trans "Identifier" %}</th>
+      <th>{% trans "Activity" %}</th>
+      <th>{% trans "Day" %}</th>
+      <th>{% trans "Start date" %}</th>
+      <th>{% trans "Start hour" %}</th>
+      <th>{% trans "Duration" %}</th>
+      <th>{% trans "Responsible" %}</th>
+      <th>{% trans "Actions" %}</th>
+    </tr>
+  </thead>
+  {% for course in object_list %}
+    <tr>
+      <td><a href="{% url 'backend:course-detail' pk=course.pk %}">{{ course.number }}</a></td>
+      <td><a href="{% url 'backend:activity-detail' pk=course.activity.pk %}">{{ course.activity.name }}</a></td>
+      <td>{{ course.day_name }}</td>
+      <td>{{ course.start_date }}</td>
+      <td>{{ course.start_time }}</td>
+      <td>{{ course.duration }}</td>
+      <td><a href="{{ course.responsible.get_backend_url }}">{{ course.responsible }}</td>
+      <td>
+        <ul>
+          <li><a href="{% url 'backend:course-detail' pk=course.pk %}">{% trans "Check registrations" %}</a></li>
+          <li><a href="{% url 'backend:course-update' pk=course.pk %}">{% trans "Update course" %}</a></li>
+          <li><a href="{% url 'backend:course-delete' pk=course.pk %}">{% trans "Delete course" %}</a></li>
+        </ul>
+      </td>
+    </tr>
+  {% empty %}
+    <tr>
+      <td colspan="8">{% trans "No course yet" %}</td>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock content %}
