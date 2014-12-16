@@ -24,7 +24,7 @@ def create_managers_group(apps, schema_editor):
     
     grp, created = Group.objects.get_or_create(name=GROUP_NAME)
     for model in all_models:
-        content_type = ContentType.objects.get(
+        content_type, created = ContentType.objects.get_or_create(
                         app_label=model._meta.concrete_model._meta.app_label,
                         model=model._meta.concrete_model._meta.model_name
                        )

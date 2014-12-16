@@ -131,11 +131,13 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     def get_absolute_url(self):
         return reverse('profiles_account')
     
-    
-    def has_perm(self, perm, obj=None):
-        return True
-    
-    
+    @property 
+    def is_manager(self):
+        from backend import GROUP_NAME
+        if self.is_superuser or self.is_admin:
+            return True
+        return GROUP_NAME in self.groups.values_list("name", flat=True)
+        
     def has_module_perms(self, app_label):
         staff_apps = ['activities', 'profiles', 'constance', 'extended_flatpages']
         # no registration nore auth

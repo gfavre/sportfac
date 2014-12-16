@@ -3,10 +3,12 @@ Tests for profiles app.
 """
 from datetime import time
 from django.test import TestCase
+from django.contrib.auth.models import Group
 
-from django_dynamic_fixture import G
+#from django_dynamic_fixture import G
 
-from .models import Registration, Child, SchoolYear
+from .models import Registration, Child, SchoolYear, FamilyUser
+from backend import GROUP_NAME
 from activities.models import Course
 
 class RegistrationTestCase(TestCase):
@@ -46,4 +48,50 @@ class RegistrationTestCase(TestCase):
 
         
         
+class FamilyUserTestCase(TestCase):
+
+    def setUp(self):
+        self.superuser = FamilyUser.objects.create(
+                            email='superadmin@site.com',
+                            first_name='superadmin',
+                            last_name='superadmin',
+                            zipcode=1000,
+                            city='Lausanne',
+                            is_superuser=True,
+                            is_admin=True)
+        self.admin = FamilyUser.objects.create(
+                            email='admin@site.com',
+                            first_name='admin',
+                            last_name='admin',
+                            zipcode=1000,
+                            city='Lausanne',
+                            is_superuser=False,
+                            is_admin=True)
+        self.manager = FamilyUser.objects.create(
+                            email='manager@site.com',
+                            first_name='manager',
+                            last_name='manager',
+                            zipcode=1000,
+                            city='Lausanne',
+                            is_superuser=False,
+                            is_admin=False)
+        managers, created = Group.objects.get_or_create(name=GROUP_NAME)
+        self.manager.groups.add(managers)
         
+        self.user = FamilyUser.objects.create(
+                            email='user@site.com',
+                            first_name='user',
+                            last_name='user',
+                            zipcode=1000,
+                            city='Lausanne',
+                            is_superuser=False,
+                            is_admin=False)
+        
+        
+    
+    def test_manager_rights(self):
+        self.assertTrue(self.superuser.is_manager)
+        self.assertTrue(self.admin.is_manager)
+        self.assertTrue(self.manager.is_manager)
+        self.assertFalse(self.user.is_manager)
+           
