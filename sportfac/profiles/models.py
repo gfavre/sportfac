@@ -117,7 +117,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         return ', '.join([unicode(child) for child in self.children.all()])
     
     def get_registrations(self, validated=True):
-        return Registration.objects.filter(child__in=self.children.all(), validated=validated)
+        return Registration.valid.filter(child__in=self.children.all())
     
     def update_total(self):
         registrations = self.get_registrations(True)
