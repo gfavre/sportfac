@@ -52,11 +52,16 @@
               <a href="{{ max_step }}"><i class="icon-calendar"></i> {% trans "Register activities" %}</a>
             </li>
             {% endif %}
-            
             {% if user.is_staff %}
               <li class="divider"></li>
               <li>
-                <a href="{% url 'admin:index' %}"><i class="icon-cogs"></i> {% trans "Administration" %}</a>
+                <a href="{% url 'backend:home' %}"><i class="icon-cogs"></i> {% trans "Administration" %}</a>
+              </li>
+            {% endif %}
+            {% if user.is_staff %}
+              <li class="divider"></li>
+              <li>
+                <a href="{% url 'admin:index' %}"><i class="icon-lock"></i> Django admin</a>
               </li>
             {% endif %}
             <li class="divider"></li>
