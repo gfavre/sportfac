@@ -11,7 +11,6 @@ django-model-utils==2.2
 logutils==0.3.3
 Pillow==2.6.1
 djangorestframework==2.4.4
-django-constance==1.0
 django-registration-redux==1.1
 django-grappelli==2.6.2
 django-pipeline==1.3.26
