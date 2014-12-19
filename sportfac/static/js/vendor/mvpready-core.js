@@ -78,7 +78,7 @@ var mvpready_core = function () {
 
   var initBackToTop = function () {
     var backToTop = $('<a>', { id: 'back-to-top', href: '#top' }),
-        icon = $('<i>', { 'class': 'fa fa-chevron-up' })
+        icon = $('<i>', { 'class': 'icon-up-open' })
 
     backToTop.appendTo ('body')
     icon.appendTo (backToTop)
