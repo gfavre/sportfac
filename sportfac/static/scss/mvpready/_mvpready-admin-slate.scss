@@ -1162,10 +1162,10 @@ fieldset[disabled] .btn-twitter.active {
   margin-right: .35em;
   color: #d74b4b;
   font-size: 1.25em;
-  content: "\f0d7";
+  content: "\e891";
 }
 .is-open .accordion-caret:before {
-  content: "\f0da";
+  content: "\e893";
 }
 /* !Portlets */
 /* ----------------------------------------------- */
@@ -1869,20 +1869,20 @@ table.table thead .sorting_desc_disabled,
 .paginate_disabled_next:before {
   margin-right: 10px;
   color: #d74b4b;
-  font-family: FontAwesome;
+  font-family: 'icons-sportfac';
   font-size: 16px;
 }
 .sorting:before {
-  content: "\f0dc";
+  content: "\e871";
   color: #bbb;
 }
 .sorting_asc:before,
 .sorting_asc_disabled:before {
-  content: "\f0de";
+  content: "\e873";
 }
 .sorting_desc:before,
 .sorting_desc_disabled:before {
-  content: "\f0dd";
+  content: "\e872";
 }
 .sorting_asc_disabled:before,
 .sorting_desc_disabled:before {
@@ -1890,14 +1890,14 @@ table.table thead .sorting_desc_disabled,
 }
 .paginate_enabled_previous:after,
 .paginate_disabled_previous:after {
-  content: "\f0d9";
+  content: "\e887";
   right: auto;
   left: 2px;
   top: 0;
 }
 .paginate_enabled_next:after,
 .paginate_disabled_next:after {
-  content: "\f0da";
+  content: "\e888";
   top: 0;
 }
 .paginate_disabled_previous:after,
@@ -2128,11 +2128,11 @@ table.table thead .sorting_desc_disabled,
   position: relative;
   top: -1px;
   margin-left: .25em;
-  font-family: FontAwesome;
+  font-family: 'icons-sportfac';
   font-style: normal;
   font-weight: normal;
   line-height: 1;
-  content: "\f0d7";
+  content: "\e892";
   -webkit-font-smoothing: antialiased;
 }
 .mainnav-menu > li.active > a,

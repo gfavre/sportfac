@@ -1,11 +1,11 @@
 {% extends "backend/base.html" %}
 {% load i18n %}
 {% load sekizai_tags %}
-
+{% load duration %}
 {% block title %}{% trans "View courses" %} - {{ block.super }}{% endblock %}
 {% block page_title %}{% trans "List courses" %}{% endblock %}
 
-
+{% get_current_language as LANGUAGE_CODE %}
 
 
 
@@ -16,25 +16,34 @@
 <script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
 <script>
 $(function () {
-  //$("#courses-table").dataTable({});
-
+  $(".table").dataTable({
+{% if LANGUAGE_CODE == 'fr' %}
+      "language": {
+            "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+      },
+{% endif %}
+      "aoColumnDefs": [
+          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ 8 ] }
+      ]
+  });
 });
 </script>
 {% endaddtoblock %}
 
-
-<a href="{% url 'backend:course-create' %}">{% trans "New course" %}</a>
-<table class="table" id="courses-table">
+<a href="{% url 'backend:course-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New course" %}</a>
+<hr>
+<table class="table">
   <thead>
     <tr>
-      <th>{% trans "Identifier" %}</th>
-      <th>{% trans "Activity" %}</th>
-      <th>{% trans "Day" %}</th>
-      <th>{% trans "Start date" %}</th>
-      <th>{% trans "Start hour" %}</th>
-      <th>{% trans "Duration" %}</th>
-      <th>{% trans "Responsible" %}</th>
-      <th>{% trans "Actions" %}</th>
+      <th class="text-nowrap">{% trans "Identifier" %}</th>
+      <th class="text-nowrap">{% trans "Activity" %}</th>
+      <th class="text-nowrap">{% trans "Day" %}</th>
+      <th class="text-nowrap">{% trans "Start date" %}</th>
+      <th class="text-nowrap">{% trans "Time" %}</th>
+      <th class="text-nowrap">{% trans "Duration" %}</th>
+      <th class="text-nowrap">{% trans "Responsible" %}</th>
+      <th class="text-nowrap">{% trans "Registrations" %}</th>
+      <th class="text-nowrap">{% trans "Actions" %}</th>
     </tr>
   </thead>
   {% for course in object_list %}
@@ -42,15 +51,19 @@ $(function () {
       <td><a href="{% url 'backend:course-detail' pk=course.pk %}">{{ course.number }}</a></td>
       <td><a href="{% url 'backend:activity-detail' pk=course.activity.pk %}">{{ course.activity.name }}</a></td>
       <td>{{ course.day_name }}</td>
-      <td>{{ course.start_date }}</td>
-      <td>{{ course.start_time }}</td>
-      <td>{{ course.duration }}</td>
+      <td data-order="{{ course.start_date|date:'c'}}">{{ course.start_date|date:"SHORT_DATE_FORMAT" }}</td>
+      <td>{{ course.start_time|time:"H:i" }}</td>
+      <td data-order="{{ course.duration|seconds }}">{{ course.duration|duration }}</td>
       <td><a href="{{ course.responsible.get_backend_url }}">{{ course.responsible }}</td>
+      <td data-order="{{ course.available_places }}" 
+          class="{% if course.full %}bg-danger{% elif course.minimal_participants_reached %}bg-success{% else %}bg-warning{% endif %}">
+        {{ course.count_participants  }}&nbsp;/&nbsp;{{ course.max_participants }}
+      </td>
       <td>
-        <ul>
-          <li><a href="{% url 'backend:course-detail' pk=course.pk %}">{% trans "Check registrations" %}</a></li>
-          <li><a href="{% url 'backend:course-update' pk=course.pk %}">{% trans "Update course" %}</a></li>
-          <li><a href="{% url 'backend:course-delete' pk=course.pk %}">{% trans "Delete course" %}</a></li>
+        <ul class="list-unstyled">
+          <li class="text-nowrap"><a href="{% url 'backend:course-detail' pk=course.pk %}" class="btn btn-sm"><i class="icon-check"></i>&nbsp;{% trans "Check registrations" %}</a></li>
+          <li class="text-nowrap"><a href="{% url 'backend:course-update' pk=course.pk %}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update course" %}</a></li>
+          <li class="text-nowrap"><a href="{% url 'backend:course-delete' pk=course.pk %}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete course" %}</a></li>
         </ul>
       </td>
     </tr>

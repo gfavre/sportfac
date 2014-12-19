@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load duration %}
 
 {% block title %}{{ activity.name }} - Sport scolaire facultatif - EP Coppet{% endblock %}
 {% block page_title %}{{ activity.name }} {% endblock %}
@@ -43,7 +44,7 @@
         <h4 class="pricing-plan-title">
           {{ course.start_date | date:"j F Y" }} – {{ course.end_date | date:'j F Y'  }}
         </h4>
-        <p class="pricing-plan-label">Chaque {{ course.day_name|lower }} de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }}</p>
+        <p class="pricing-plan-label">Chaque {{ course.day_name|lower }} de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }} ({{ course.duration|duration }})</p>
       </header>
       
       <dl class="dl-horizontal">

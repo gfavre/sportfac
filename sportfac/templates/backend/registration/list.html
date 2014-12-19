@@ -1,6 +1,7 @@
 {% extends "backend/base.html" %}
 {% load i18n %}
 {% load sekizai_tags %}
+{% load duration %}
 
 {% block title %}{% trans "List registrations" %} - {{ block.super }}{% endblock %}
 {% block page_title %}{% trans "List registrations" %}{% endblock %}
@@ -12,25 +13,33 @@
 <script>
 $(function () {
   $(".table").dataTable({
+{% if LANGUAGE_CODE == 'fr' %}
+      "language": {
+            "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+      },
+{% endif %}
+      "aoColumnDefs": [
+          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ 6 ] }
+      ],
       "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "{% trans 'All registrations' %}"] ]
-      
   });
-
 });
 </script>
 {% endaddtoblock %}
 
 
-<a href="{% url 'backend:course-create' %}">{% trans "New registration" %}</a>
+<a href="{% url 'backend:registration-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New registration" %}</a>
+<hr />
 <table class="table">
   <thead>
     <tr>
-      <th>{% trans "Course Identifier" %}</th>
-      <th>{% trans "Activity" %}</th>
-      <th>{% trans "Day" %}</th>
-      <th>{% trans "Start date" %}</th>
-      <th>{% trans "Start hour" %}</th>
-      <th>{% trans "Child" %}</th>
+      <th class="text-nowrap">{% trans "Course Identifier" %}</th>
+      <th class="text-nowrap">{% trans "Activity" %}</th>
+      <th class="text-nowrap">{% trans "Day" %}</th>
+      <th class="text-nowrap">{% trans "Start date" %}</th>
+      <th class="text-nowrap">{% trans "Time" %}</th>
+      <th class="text-nowrap">{% trans "Child" %}</th>
+      <th class="text-nowrap">{% trans "Action" %}</th>
     </tr>
   </thead>
   {% for registration in registration_list %}
@@ -38,10 +47,16 @@ $(function () {
    <tr>
       <td><a href="{% url 'backend:course-detail' pk=course.pk %}">{{ course.number }}</a></td>
       <td><a href="{% url 'backend:activity-detail' pk=course.activity.pk %}">{{ course.activity.name }}</a></td>
-      <td>{{ course.day_name }}, {{ course.start_date }}</td>
-      <td>{{ course.start_date }}</td>
-      <td>{{ course.start_time }}</td>
+      <td>{{ course.day_name }}</td>
+      <td data-order="{{ course.start_date|date:'c'}}">{{ course.start_date|date:"SHORT_DATE_FORMAT" }}</td>
+      <td>{{ course.start_time|time:"H:i" }}</td>
       <td>{{ child }}</td>
+      <td>
+        <ul class="list-unstyled">
+          <li class="text-nowrap"><a href="{% url 'backend:registration-update' pk=registration.pk %}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update registration" %}</a></li>
+          <li class="text-nowrap"><a href="{% url 'backend:registration-delete' pk=registration.pk %}" class="btn btn-sm"><i class="icon-cancel"></i>&nbsp;{% trans "Cancel registration" %}</a></li>
+        </ul>
+      </td>
     </tr>
   {% endwith %}  
   {% empty %}

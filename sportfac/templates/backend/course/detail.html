@@ -1,6 +1,6 @@
 {% extends "backend/base.html" %}
 {% load i18n %}
-
+{% load duration %}
 {% block title %}{{ course.activity.name }} - {{ block.super }}{% endblock %}
 {% block page_title %}{{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }}{% endblocktrans %}{% endblock %}
 
@@ -9,7 +9,7 @@
   <div class="pricing-plan">
     <header class="pricing-header">
       <p class="pricing-plan-label">{{ course.start_date | date:"j F Y" }} – {{ course.end_date | date:'j F Y'  }}</p>
-      <p class="lead">Chaque {{ course.day_name|lower }} de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }}</p>
+      <p class="lead">Chaque {{ course.day_name|lower }} de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }} ({{ course.duration|duration }})</p>
     </header>
     <dl class="dl-horizontal">
       <dt>{% trans "Activity number" %}</dt><dd><a href="{% url 'backend:activity-detail' pk=course.activity.pk %}">{{ course.activity.number }}</a></dd>  
