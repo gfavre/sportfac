@@ -1,12 +1,30 @@
 {% extends "backend/base.html" %}
 {% load i18n %}
+{% load sekizai_tags %}
 
 {% block title %}{% trans "View courses" %} - {{ block.super }}{% endblock %}
 {% block page_title %}{% trans "List courses" %}{% endblock %}
 
+
+
+
+
 {% block content %}
+
+{% addtoblock  "js" %}    
+<script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
+<script>
+$(function () {
+  //$("#courses-table").dataTable({});
+
+});
+</script>
+{% endaddtoblock %}
+
+
 <a href="{% url 'backend:course-create' %}">{% trans "New course" %}</a>
-<table class="table">
+<table class="table" id="courses-table">
   <thead>
     <tr>
       <th>{% trans "Identifier" %}</th>

@@ -17,6 +17,9 @@ class RegistrationDetailView(BackendMixin, DetailView):
 class RegistrationListView(BackendMixin, ListView):
     model = Registration
     template_name = 'backend/registration/list.html'
+    
+    def get_queryset(self):
+        return Registration.objects.select_related('course', 'child').prefetch_related('course__activity').all()
    
 
 class RegistrationCreateView(BackendMixin, CreateView):

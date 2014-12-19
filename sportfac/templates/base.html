@@ -22,6 +22,7 @@
     <link href="{{ STATIC_URL }}css/style.css" rel="stylesheet" media="all" />
 
     {% block extra_css %}{% endblock extra_css %}
+    {% render_block "css" %}
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
