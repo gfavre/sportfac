@@ -7,7 +7,7 @@ from django.template.defaultfilters import slugify
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from django.db.models import Sum
 
@@ -197,7 +197,7 @@ class Registration(TimeStampedModel, StatusModel):
                      ('canceled', _("Canceled by administrator")),
                      ('confirmed', _("Confirmed by administrator")),
                      )
-    course = models.ForeignKey('activities.Course', related_name="participants")
+    course = models.ForeignKey('activities.Course', related_name="participants", verbose_name=_("Course"))
     child = models.ForeignKey('Child')
     
     objects = RegistrationManager()

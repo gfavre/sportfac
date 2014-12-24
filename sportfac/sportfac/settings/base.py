@@ -218,7 +218,7 @@ THIRD_PARTY_APPS = (
     'grappelli', # admin interface
     'ckeditor', # wysiwyg editor
     #'extended_flatpages',
-    'autocomplete_light', # autocomplete for django admin
+    'autocomplete_light', # autocomplete 
     #'pipeline', # minifier
     'sekizai', #add_to_block template tag
 )

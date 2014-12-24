@@ -19,3 +19,5 @@ django-ckeditor==4.4.6
 django_extended_flatpages==0.1
 django-autocomplete-light==2.0.1
 django-sekizai==0.7
+
+phonenumbers==7.0.1

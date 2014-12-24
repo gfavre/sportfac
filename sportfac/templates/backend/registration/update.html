@@ -1,13 +1,28 @@
 {% extends "backend/base.html" %}
 {% load i18n %}
-
-{% block title %}{% trans "Update course" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "Update course" %}{% endblock %}
+{% load floppyforms %}
+{% block title %}{% trans "Update registration" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "Update registration" %}{% endblock %}
 
 {% block content %}
-<form action="" method="post">{% csrf_token %}
-  {{ form.as_p }}
-  <input type="submit" value="{% trans 'Update' %}">
+
+{% form form using %}
+{% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
+
+<form action="" method="post" class="form-horizontal">{% csrf_token %}
+  {% block errors %}{% endblock %}
+  {% formrow form.child %}
+  {% formrow form.course %}
+  {% formrow form.status %}
+
+
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-success btn-large">{% trans "Update" %}</button>
+    </div>
+  </div>
 </form>
+
+{% endform %}
 
 {% endblock content %}

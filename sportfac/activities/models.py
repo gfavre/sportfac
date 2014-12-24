@@ -119,13 +119,23 @@ class Course(models.Model):
 
 
     def __unicode__(self):
-        return u'%s (%s): du %s au %s les %s à %s (%sp-%sp)' % (self.activity.name, self.number,
-                                                          self.start_date.strftime("%d/%m/%Y"), 
-                                                          self.end_date.strftime("%d/%m/%Y"),
-                                                          self.day_name.lower(),
-                                                          self.start_time.strftime("%H:%M"),
-                                                          self.schoolyear_min, self.schoolyear_max)
-    
+        base = _(u'%(activity)s (%(number)s): from %(start)s to %(end)s, every %(day)s at %(hour)s.')
+        base %= {'activity': self.activity.name,
+                 'number': self.number,
+                 'start': self.start_date.strftime("%d/%m/%Y"), 
+                 'end': self.end_date.strftime("%d/%m/%Y"),
+                 'day': self.day_name.lower(),
+                 'hour': self.start_time.strftime("%H:%M"),
+                 }
+        if self.full:
+            fullness = _('Course full')
+        else:
+            fullness = _('%(available)s out of %(total)s places remaining') 
+            fullness %= {'available': self.available_places, 'total': self.max_participants}
+        return base + ' ' + fullness
+        
+        
+            
     class Meta:
         ordering = ('activity__name', 'number', )
         verbose_name = _("course")

@@ -8,11 +8,16 @@ from django.utils.translation import ugettext as _
 from profiles.models import Registration
 
 from .mixins import BackendMixin
+from backend.forms import RegistrationForm, RegistrationUpdateForm
 
+   
 
 class RegistrationDetailView(BackendMixin, DetailView):
     model = Registration
     template_name = 'backend/registration/detail.html'
+
+
+
 
 class RegistrationListView(BackendMixin, ListView):
     model = Registration
@@ -20,18 +25,23 @@ class RegistrationListView(BackendMixin, ListView):
     
     def get_queryset(self):
         return Registration.objects.select_related('course', 'child').prefetch_related('course__activity').all()
+
    
 
 class RegistrationCreateView(BackendMixin, CreateView):
     model = Registration
-    fields = ('first', 'last', 'phone', 'email')
+    form_class = RegistrationForm
     template_name = 'backend/registration/create.html'
+
 
 class RegistrationUpdateView(BackendMixin, UpdateView):
     model = Registration
-    fields = ('first', 'last', 'phone', 'email')
+    form_class = RegistrationUpdateForm
     template_name = 'backend/registration/update.html'
+
     
+
+
 class RegistrationDeleteView(BackendMixin, DeleteView):
     model = Registration
     template_name = 'backend/registration/confirm_delete.html'

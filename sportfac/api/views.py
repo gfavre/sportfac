@@ -71,7 +71,7 @@ class FamilyOrAdminPermission(permissions.IsAuthenticated):
         """
         Return `True` if permission is granted, `False` otherwise.
         """
-        if request.user.is_staff or request.user == obj.family:
+        if request.user.is_manager or request.user == obj.family:
             return True
         return False
         
@@ -105,7 +105,7 @@ class ChildOrAdminPermission(permissions.IsAuthenticated):
         """
         Return `True` if permission is granted, `False` otherwise.
         """
-        if request.user.is_staff or request.user == obj.child.family:
+        if request.user.is_manager or request.user == obj.child.family:
             return True
         return False
 
@@ -146,7 +146,7 @@ class RegistrationOwnerAdminPermission(permissions.IsAuthenticated):
         """
         Return `True` if permission is granted, `False` otherwise.
         """
-        if request.user.is_staff or request.user == obj.registration.child.family:
+        if request.user.is_manager or request.user == obj.registration.child.family:
             return True
         return False
 

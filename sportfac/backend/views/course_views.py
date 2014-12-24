@@ -10,10 +10,16 @@ from .mixins import BackendMixin
 class CourseDetailView(BackendMixin, DetailView):
     model = Course
     template_name = 'backend/course/detail.html'
+    queryset = Course.objects.select_related('activity', 
+                                             'responsible', 
+                                             #'participants__child',
+                                             #'participants__child__family'
+                            ).prefetch_related( 'participants__child__school_year', 'participants__child__family')
+
 
 class CourseListView(BackendMixin, ListView):
     model = Course
-    queryset = Course.objects.select_related('activity', 'responsible')
+    queryset = Course.objects.select_related('activity', 'responsible').prefetch_related('participants')
     template_name = 'backend/course/list.html'
    
 
@@ -31,6 +37,7 @@ class CourseUpdateView(BackendMixin, UpdateView):
               'number_of_sessions', 'day', 'start_date', 'end_date',
               'start_time', 'end_time', 'place', 'min_participants',
               'max_participants', 'schoolyear_min', 'schoolyear_max')
+
     template_name = 'backend/course/update.html'
     
 class CourseDeleteView(BackendMixin, DeleteView):

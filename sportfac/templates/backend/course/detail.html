@@ -1,6 +1,7 @@
 {% extends "backend/base.html" %}
 {% load i18n %}
 {% load duration %}
+{% load phone %}
 {% block title %}{{ course.activity.name }} - {{ block.super }}{% endblock %}
 {% block page_title %}{{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }}{% endblocktrans %}{% endblock %}
 
@@ -56,18 +57,33 @@
         <td>
           <ul>
             {% if registration.child.family.private_phone %}
-            <li>{{ registration.child.family.private_phone }}</li>
+            <li>
+              <a href="{{ registration.child.family.private_phone|swissphone:'RFC3966' }}">
+                {{ registration.child.family.private_phone|swissphone }}
+              </a>
+            </li>
             {% endif %}
             {% if registration.child.family.private_phone2 %}
-            <li>{{ registration.child.family.private_phone2 }}</li>
+            <li>
+              <a href="{{ registration.child.family.private_phone2|swissphone:'RFC3966' }}">
+                {{ registration.child.family.private_phone2|swissphone }}
+              </a>
+            </li>
             {% endif %}
             {% if registration.child.family.private_phone3 %}
-            <li>{{ registration.child.family.private_phone3 }}</li>
+            <li>
+              <a href="{{ registration.child.family.private_phone3|swissphone:'RFC3966' }}">
+                {{ registration.child.family.private_phone3|swissphone }}
+              </a>
+            </li>
             {% endif %}
         </td>
         <td>{{ registration.child.family.email  }}</td>
         <td>
-            <a href="{% url 'backend:registration-delete' pk=registration.id %}"><i class="icon-cancel"></i> {% trans "Cancel registration" %}</a>
+          <ul class="list-unstyled">
+            <li class="text-nowrap"><a href="{% url 'backend:registration-update' pk=registration.pk %}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update registration" %}</a></li>
+            <li class="text-nowrap"><a href="{% url 'backend:registration-delete' pk=registration.pk %}" class="btn btn-sm"><i class="icon-cancel"></i>&nbsp;{% trans "Cancel registration" %}</a></li>
+          </ul>
         </td>
 
       </tr>
