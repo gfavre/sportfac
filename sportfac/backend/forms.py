@@ -3,9 +3,10 @@ from django.db.models import Count, F, Q
 
 import floppyforms.__future__ as forms
 from constance.admin import config
+import autocomplete_light
 
 from activities.models import Course
-from profiles.models import Registration
+from profiles.models import Registration, Child
 
 class DateTimePickerInput(forms.DateTimeInput):
     template_name = 'floppyforms/datetime.html'
@@ -45,13 +46,17 @@ class RegistrationForm(forms.ModelForm):
                         nb_participants=Count('participants'))
         if self.instance.pk:
             course_qs = course_qs.filter(
-                 Q(pk=self.instance.course.pk) | Q(nb_participants__lt=F('max_participants')),
-                 schoolyear_min__lte=self.instance.child.school_year.year,
-                 schoolyear_max__gte=self.instance.child.school_year.year)
-                 
+                 Q(pk=self.instance.course.pk) | Q(nb_participants__lt=F('max_participants'))
+            )
         else:
             course_qs = course_qs.filter(nb_participants__lt=F('max_participants')) 
-            
+        try:
+            course_qs = course_qs.filter(
+                schoolyear_min__lte=self.instance.child.school_year.year,
+                schoolyear_max__gte=self.instance.child.school_year.year,
+            )
+        except Child.DoesNotExist:
+            pass
         self.fields['course'].queryset = course_qs
 
 
@@ -59,6 +64,26 @@ class RegistrationUpdateForm(RegistrationForm):
     class Meta:
         model = Registration
         fields = ( 'course',)
+        widgets = {
+            'status': forms.RadioSelect,
+        }
+
+class ChildSelectForm(forms.ModelForm):
+    class Meta:
+        model = Registration
+        fields = ('child',)
+    
+class CourseSelectForm(RegistrationForm):
+    class Meta:
+        model = Registration
+        fields = ('course',)
+    
+    
+
+class RegistrationCreateForm(autocomplete_light.ModelForm):
+    class Meta:
+        model = Registration
+        fields = ('child', 'course', 'status',)
         widgets = {
             'status': forms.RadioSelect,
         }

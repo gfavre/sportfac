@@ -116,6 +116,10 @@ class Course(models.Model):
     def school_years(self):
         return range(self.schoolyear_min, self.schoolyear_max + 1)
     
+    @property
+    def short_name(self):
+        return '%s (%s)' % (self.activity.name, self.number)
+    
 
 
     def __unicode__(self):
