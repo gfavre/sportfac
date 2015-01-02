@@ -5,7 +5,7 @@ bpython==0.13.1
 # Forms
 django-braces==1.4.0
 django-floppyforms==1.2.0
-
+django-autocomplete-light==2.0.5
 
 django-model-utils==2.2
 logutils==0.3.3
@@ -17,7 +17,6 @@ django-pipeline==1.3.26
 pytz==2014.9
 django-ckeditor==4.4.6
 django_extended_flatpages==0.1
-django-autocomplete-light==2.0.1
 django-sekizai==0.7
 
 phonenumbers==7.0.1
