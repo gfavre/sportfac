@@ -37,7 +37,7 @@ class RegistrationListView(BackendMixin, ListView):
 class RegistrationCreateView(BackendMixin, SessionWizardView):
     form_list = ((_('Child'), ChildSelectForm),
                  (_('Course'), CourseSelectForm),)
-    template_name = 'backend/registration/create/wizard.html'
+    template_name = 'backend/registration/wizard.html'
     instance = None
     
     def done(self, form_list, form_dict, **kwargs):
@@ -63,7 +63,7 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
 
 class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
     model = Registration
-    form_class = RegistrationUpdateForm
+    form_class = CourseSelectForm#RegistrationUpdateForm
     template_name = 'backend/registration/update.html'
     success_message = _("Registration has been updated.")
 

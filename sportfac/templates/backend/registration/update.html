@@ -6,14 +6,12 @@
 
 {% block content %}
 
-{% form form using %}
-{% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
 
 <form action="" method="post" class="form-horizontal">{% csrf_token %}
   {% block errors %}{% endblock %}
-  {% formrow form.child %}
-  {% formrow form.course %}
-  {% formrow form.status %}
+  {% form form using "floppyforms/layouts/bootstrap.html" %}
+
+
 
 
   <div class="form-group">
@@ -23,6 +21,5 @@
   </div>
 </form>
 
-{% endform %}
 
 {% endblock content %}
