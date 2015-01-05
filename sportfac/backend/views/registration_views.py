@@ -12,8 +12,7 @@ from profiles.models import Registration
 
 from .mixins import BackendMixin
 
-from backend.forms import (RegistrationForm, RegistrationUpdateForm,
-                           ChildSelectForm, CourseSelectForm)
+from backend.forms import RegistrationForm, ChildSelectForm, CourseSelectForm
 
    
 
@@ -63,7 +62,7 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
 
 class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
     model = Registration
-    form_class = CourseSelectForm#RegistrationUpdateForm
+    form_class = CourseSelectForm
     template_name = 'backend/registration/update.html'
     success_message = _("Registration has been updated.")
 

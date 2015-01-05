@@ -38,6 +38,7 @@ class RegistrationDatesForm(forms.Form):
             config.END_REGISTRATION = self.cleaned_data['closing_date']
             
 
+
 class RegistrationForm(forms.ModelForm):
     class Meta:
         model = Registration
@@ -61,15 +62,7 @@ class RegistrationForm(forms.ModelForm):
         except Child.DoesNotExist:
             pass
         self.fields['course'].queryset = course_qs.prefetch_related('participants')
-
-
-class RegistrationUpdateForm(RegistrationForm):
-    class Meta:
-        model = Registration
-        fields = ( 'course',)
-        widgets = {
-            'status': forms.RadioSelect,
-        }
+        
 
 
 class ChildSelectForm(forms.ModelForm):

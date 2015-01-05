@@ -1,13 +1,16 @@
 {% extends "backend/base.html" %}
-{% load i18n %}
+{% load i18n floppyforms %}
 
 {% block title %}{% trans "Create a new course" %} - {{ block.super }}{% endblock %}
 {% block page_title %}{% trans "Create a new course" %}{% endblock %}
 
 {% block content %}
-<form action="" method="post">{% csrf_token %}
-  {{ form.as_p }}
-  <input type="submit" value="{% trans 'Create' %}">
+<form action="" method="post" class="form-horizontal">{% csrf_token %}
+  {% form form using "floppyforms/layouts/bootstrap.html" %}
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-success btn-large">{% trans 'Create course' %}</button>
+    </div>
+  </div>
 </form>
-
 {% endblock content %}

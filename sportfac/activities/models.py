@@ -72,7 +72,7 @@ class Course(models.Model):
     responsible = models.ForeignKey('Responsible', verbose_name=_("Responsible"), related_name='courses')
     price = models.DecimalField(max_digits=5, decimal_places=2, verbose_name=_("Price"))
     number_of_sessions = models.PositiveSmallIntegerField(verbose_name=_("Number of sessions"))
-    day = models.PositiveSmallIntegerField(choices=DAYS_OF_WEEK, verbose_name=_("Day"))
+    day = models.PositiveSmallIntegerField(choices=DAYS_OF_WEEK, verbose_name=_("Day"), default=1)
     start_date = models.DateField(verbose_name=_("Start date"))
     end_date = models.DateField(verbose_name=_("End date"))
     start_time = models.TimeField(verbose_name=_("Start time"))
