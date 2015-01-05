@@ -45,7 +45,7 @@ class RegistrationForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
-        course_qs = Course.objects.select_related('activity').annotate(
+        course_qs = Course.objects.select_related('activity', 'participants').annotate(
                         nb_participants=Count('participants'))
         if self.instance.pk:
             course_qs = course_qs.filter(
@@ -60,7 +60,7 @@ class RegistrationForm(forms.ModelForm):
             )
         except Child.DoesNotExist:
             pass
-        self.fields['course'].queryset = course_qs
+        self.fields['course'].queryset = course_qs.prefetch_related('participants')
 
 
 class RegistrationUpdateForm(RegistrationForm):
