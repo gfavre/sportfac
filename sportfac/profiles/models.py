@@ -182,7 +182,7 @@ class Child(TimeStampedModel):
     
     
     def __unicode__(self):
-        return '%s %s' % (self.first_name, self.last_name)
+        return '%s %s' % (self.first_name.title(), self.last_name.title())
 
 class RegistrationManager(models.Manager):
     def get_queryset(self):

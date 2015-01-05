@@ -28,10 +28,10 @@
   {% if wizard.form.forms %}
       {{ wizard.form.management_form }}
       {% for form in wizard.form.forms %}
-          {% form form using "floppyforms/layouts/bootstrap-basic.html" %}
+          {% form form using "floppyforms/layouts/bootstrap.html" %}
       {% endfor %}
   {% else %}
-      {% form wizard.form using "floppyforms/layouts/bootstrap-basic.html" %}
+      {% form wizard.form using "floppyforms/layouts/bootstrap.html" %}
   {% endif %}
   
   <div class="form-group">

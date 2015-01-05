@@ -11,6 +11,7 @@ router.register(r'children', views.ChildrenViewSet)
 router.register(r'teachers', views.TeacherViewSet)
 router.register(r'registrations', views.RegistrationViewSet)
 router.register(r'extra', views.ExtraInfoViewSet, base_name="api-extra")
+router.register(r'all-children', views.SimpleChildrenViewSet, base_name='allchildren')
 
 
 
@@ -19,5 +20,6 @@ router.register(r'extra', views.ExtraInfoViewSet, base_name="api-extra")
 urlpatterns = patterns('',
     url(r'^', include(router.urls)),
     url(r'^family/', views.FamilyView.as_view()),
+
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 )

@@ -221,6 +221,7 @@ THIRD_PARTY_APPS = (
     'autocomplete_light', # autocomplete 
     #'pipeline', # minifier
     'sekizai', #add_to_block template tag
+    'django_select2', # select2 widget (enhanced select box)
 )
 
 # Apps specific for this project go here.
@@ -368,3 +369,6 @@ CKEDITOR_CONFIGS = {
         'format_tags': 'p;h1;h2;h3;h4;h5;h6;pre;address',
     },
 }
+
+############# Select2
+AUTO_RENDER_SELECT2_STATICS = False

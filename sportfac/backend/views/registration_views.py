@@ -11,13 +11,8 @@ from profiles.models import Registration
 
 from .mixins import BackendMixin
 
-#import autocomplete_light
-#autocomplete_light.autodiscover()
-# Has to be imported before any import of a form with autocomplete 
-# http://django-autocomplete-light.readthedocs.org/en/stable-2.x.x/install.html
-
-from backend.forms import RegistrationForm, RegistrationCreateForm, RegistrationUpdateForm,\
-                          ChildSelectForm, CourseSelectForm
+from backend.forms import (RegistrationForm, RegistrationUpdateForm,
+                           ChildSelectForm, CourseSelectForm)
 
    
 
@@ -37,10 +32,6 @@ class RegistrationListView(BackendMixin, ListView):
 
    
 
-#class RegistrationCreateView(BackendMixin, CreateView):
-#    model = Registration
-#    form_class = RegistrationCreateForm
-#    template_name = 'backend/registration/create.html'
 
 class RegistrationCreateView(BackendMixin, SessionWizardView):
     form_list = ((_('Child'), ChildSelectForm),

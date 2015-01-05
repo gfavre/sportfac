@@ -27,7 +27,7 @@
           	<ul class="dropdown-menu" role="menu">
               <li>
                 <a href="{% url 'backend:activity-list' %}">
-                  {% trans "List activities" %}
+                  {% trans "All activities" %}
                 </a>
               </li>
               <li>
@@ -38,18 +38,18 @@
               <li class="divider"></li>
               <li>
                 <a href="{% url 'backend:course-list' %}">
-                  {% trans "List courses" %}
+                  {% trans "All courses" %}
                 </a>
               </li>
               <li>
                 <a href="{% url 'backend:course-create' %}">
-                  <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New activity" %}
+                  <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New course" %}
                 </a>
               </li>
               <li class="divider"></li>
               <li>
                 <a href="{% url 'backend:responsible-list' %}">
-                  {% trans "List responsibles" %}
+                  {% trans "All responsibles" %}
                 </a>
               </li>
               <li>
@@ -71,43 +71,14 @@
               <li>
                 <a href="{% url 'backend:registration-list' %}">
                 <i class="fa fa-bars"></i> 
-                &nbsp;&nbsp;{% trans "List registrations" %}
+                &nbsp;&nbsp;{% trans "All registrations" %}
                 </a>
               </li>
               <li>
-                <a href="./components-popups.html">
-                <i class="fa fa-calendar-o"></i> 
-                &nbsp;&nbsp;Popups &amp; Alerts
+                <a href="{% url 'backend:registration-create' %}">
+                <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New registration" %}
                 </a>
               </li>
-
-              <li>
-                <a href="./components-validation.html">
-                <i class="fa fa-check"></i> 
-                &nbsp;&nbsp;Validation
-                </a>
-              </li>
-
-              <li>
-                <a href="./components-datatables.html">
-                <i class="fa fa-table"></i> 
-                &nbsp;&nbsp;Data Tables
-                </a>
-              </li>
-
-              <li>
-                <a href="./components-gallery.html">
-                <i class="fa fa-picture-o"></i> 
-                &nbsp;&nbsp;Gallery
-                </a>
-              </li>
-
-              <li>
-                <a href="./components-charts.html">
-                <i class="fa fa-bar-chart-o"></i> 
-                &nbsp;&nbsp;Charts
-                </a>
-              </li>		  
             </ul>
           </li>
 

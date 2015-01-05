@@ -4,21 +4,23 @@
 
 @import "bootstrap331.min";
 
-@import "mvpready/mvpready-admin";
-@import "mvpready/mvpready-flat";
-@import "mvpready/mvpready-admin-slate";
+@import "vendor/mvpready/mvpready-admin";
+@import "vendor/mvpready/mvpready-flat";
+@import "vendor/mvpready/mvpready-admin-slate";
 
 
 @import "fontello/animation";
 @import "fontello/icons-sportfac";
 
-@import "datatables/dataTables.bootstrap";
+@import "vendor/datatables/dataTables.bootstrap";
 
 
 @import "wizard";
-@import "fullcalendar";
+@import "vendor/fullcalendar";
 @import "datepicker3";
-@import "bootstrap-datetimepicker";
+@import "vendor/select2";
+@import "vendor/select2-bootstrap";
+@import "vendor/bootstrap-datetimepicker";
 
 
 $headerheight: 50px;

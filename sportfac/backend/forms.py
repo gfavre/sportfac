@@ -3,13 +3,16 @@ from django.db.models import Count, F, Q
 
 import floppyforms.__future__ as forms
 from constance.admin import config
-import autocomplete_light
 
 from activities.models import Course
 from profiles.models import Registration, Child
 
+
 class DateTimePickerInput(forms.DateTimeInput):
     template_name = 'floppyforms/datetime.html'
+
+class Select2Widget(forms.Select):
+    template_name = 'floppyforms/select2.html'
 
 
 class RegistrationDatesForm(forms.Form):
@@ -68,22 +71,24 @@ class RegistrationUpdateForm(RegistrationForm):
             'status': forms.RadioSelect,
         }
 
+
 class ChildSelectForm(forms.ModelForm):
+    """Child selection, with select2 widget.
+       Used in registration creation wizard"""
+    child = forms.ModelChoiceField(queryset=Child.objects, 
+                                   empty_label=None,
+                                   widget=Select2Widget())    
     class Meta:
         model = Registration
         fields = ('child',)
-    
+
+
 class CourseSelectForm(RegistrationForm):
+    "Course selection, used in registration creation wizard"
+    course = forms.ModelChoiceField(queryset=Course.objects, 
+                                    empty_label=None,
+                                    widget=Select2Widget())    
+    
     class Meta:
         model = Registration
         fields = ('course',)
-    
-    
-
-class RegistrationCreateForm(autocomplete_light.ModelForm):
-    class Meta:
-        model = Registration
-        fields = ('child', 'course', 'status',)
-        widgets = {
-            'status': forms.RadioSelect,
-        }

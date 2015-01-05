@@ -18,5 +18,5 @@ pytz==2014.9
 django-ckeditor==4.4.6
 django_extended_flatpages==0.1
 django-sekizai==0.7
-
+django-filter==0.9.1
 phonenumbers==7.0.1
