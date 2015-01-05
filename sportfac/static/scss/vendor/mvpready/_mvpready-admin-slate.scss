@@ -29,7 +29,7 @@ body {
   color: #777;
 }
 .fontawesome-icon-list > div a:hover {
-  color: #d74b4b;
+  color: $contrast;
   text-decoration: none;
 }
 .fontawesome-icon-list > div i {
@@ -51,7 +51,7 @@ body {
 }
 .chart-bg {
   padding: 30px 30px 20px;
-  background: #d74b4b;
+  background: $contrast;
   border-top-right-radius: 4px;
   border-top-left-radius: 4px;
   border-bottom-right-radius: 4px;
@@ -61,7 +61,7 @@ body {
   color: #fff;
 }
 .chart-bg-primary {
-  background: #d74b4b;
+  background: $contrast;
 }
 .chart-bg-secondary {
   background: #6685a4;
@@ -190,7 +190,7 @@ h6,
 /* ----------------------------------------------- */
 .text-primary,
 .text-primary:hover {
-  color: #d74b4b;
+  color: $contrast;
 }
 .text-secondary,
 .text-secondary:hover {
@@ -273,7 +273,7 @@ h6,
 }
 .btn-primary {
   color: #ffffff;
-  background-color: #d74b4b;
+  background-color: $contrast;
   border-color: #cc2d2d;
 }
 .btn-primary:hover,
@@ -305,11 +305,11 @@ fieldset[disabled] .btn-primary:active,
 .btn-primary.disabled.active,
 .btn-primary[disabled].active,
 fieldset[disabled] .btn-primary.active {
-  background-color: #d74b4b;
+  background-color: $contrast;
   border-color: #cc2d2d;
 }
 .btn-primary .badge {
-  color: #d74b4b;
+  color: $contrast;
   background-color: #fff;
 }
 .btn-secondary {
@@ -574,8 +574,8 @@ fieldset[disabled] .btn-twitter.active {
   border-color: #28a4c9;
 }
 .btn-primary {
-  background-image: -webkit-linear-gradient(top, #d74b4b 0%, #bb2a2a 100%);
-  background-image: linear-gradient(to bottom, #d74b4b 0%, #bb2a2a 100%);
+  background-image: -webkit-linear-gradient(top, $contrast 0%, #bb2a2a 100%);
+  background-image: linear-gradient(to bottom, $contrast 0%, #bb2a2a 100%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffd74b4b', endColorstr='#ffbb2a2a', GradientType=0);
   filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
   background-repeat: repeat-x;
@@ -680,7 +680,7 @@ fieldset[disabled] .btn-twitter.active {
   font-weight: 600;
 }
 .badge-primary {
-  background-color: #d74b4b;
+  background-color: $contrast;
 }
 .badge-secondary {
   background-color: #6685a4;
@@ -706,7 +706,7 @@ fieldset[disabled] .btn-twitter.active {
   font-weight: 600;
 }
 .label-primary {
-  background-color: #d74b4b;
+  background-color: $contrast;
 }
 .label-secondary {
   background-color: #6685a4;
@@ -724,9 +724,9 @@ fieldset[disabled] .btn-twitter.active {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffebebeb', endColorstr='#fff5f5f5', GradientType=0);
 }
 .progress-bar {
-  background-color: #d74b4b;
-  background-image: -webkit-linear-gradient(top, #d74b4b 0%, #c42b2b 100%);
-  background-image: linear-gradient(to bottom, #d74b4b 0%, #c42b2b 100%);
+  background-color: $contrast;
+  background-image: -webkit-linear-gradient(top, $contrast 0%, #c42b2b 100%);
+  background-image: linear-gradient(to bottom, $contrast 0%, #c42b2b 100%);
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffd74b4b', endColorstr='#ffc42b2b', GradientType=0);
 }
@@ -759,9 +759,9 @@ fieldset[disabled] .btn-twitter.active {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffd9534f', endColorstr='#ffc9302c', GradientType=0);
 }
 .progress-bar-primary {
-  background-color: #d74b4b;
-  background-image: -webkit-linear-gradient(top, #d74b4b 0%, #c42b2b 100%);
-  background-image: linear-gradient(to bottom, #d74b4b 0%, #c42b2b 100%);
+  background-color: $contrast;
+  background-image: -webkit-linear-gradient(top, $contrast 0%, #c42b2b 100%);
+  background-image: linear-gradient(to bottom, $contrast 0%, #c42b2b 100%);
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffd74b4b', endColorstr='#ffc42b2b', GradientType=0);
 }
@@ -886,7 +886,7 @@ fieldset[disabled] .btn-twitter.active {
 .dropdown-menu > li > a:hover,
 .dropdown-menu > li > a:focus {
   color: #fff;
-  background-color: #d74b4b;
+  background-color: $contrast;
 }
 .dropdown-menu > .active > a,
 .dropdown-menu > .active > a:hover,
@@ -945,7 +945,7 @@ fieldset[disabled] .btn-twitter.active {
     border-left-color: #cccccc;
   }
   .dropdown-submenu:hover > a:after {
-    border-left-color: #d74b4b;
+    border-left-color: $contrast;
   }
 }
 .dropdown-submenu.pull-left {
@@ -1002,9 +1002,9 @@ fieldset[disabled] .btn-twitter.active {
 .pagination > .active > span:focus {
   z-index: 2;
   color: #fff;
-  background-color: #d74b4b;
-  background-image: -webkit-linear-gradient(top, #d74b4b 0%, #c82c2c 100%);
-  background-image: linear-gradient(to bottom, #d74b4b 0%, #c82c2c 100%);
+  background-color: $contrast;
+  background-image: -webkit-linear-gradient(top, $contrast 0%, #c82c2c 100%);
+  background-image: linear-gradient(to bottom, $contrast 0%, #c82c2c 100%);
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffd74b4b', endColorstr='#ffc82c2c', GradientType=0);
   border-color: #af2727;
@@ -1051,7 +1051,7 @@ fieldset[disabled] .btn-twitter.active {
 .nav-pills > li.active > a:hover,
 .nav-pills > li.active > a:focus {
   color: #fff;
-  background-color: #d74b4b;
+  background-color: $contrast;
 }
 .nav-pills > li.active .caret,
 .nav-pills > li.active a:hover .caret {
@@ -1061,7 +1061,7 @@ fieldset[disabled] .btn-twitter.active {
 .nav-tabs > li.active > a,
 .nav-tabs > li.active > a:hover,
 .nav-tabs > li.active > a:focus {
-  color: #d74b4b;
+  color: $contrast;
   font-weight: 600;
 }
 .nav-tabs > li > a {
@@ -1071,7 +1071,7 @@ fieldset[disabled] .btn-twitter.active {
 .nav-tabs .open > a:hover,
 .nav-tabs .open > a:focus {
   background-color: #eeeeee;
-  border-color: #d74b4b;
+  border-color: $contrast;
 }
 /* !Modal */
 /* ----------------------------------------------- */
@@ -1134,7 +1134,7 @@ fieldset[disabled] .btn-twitter.active {
 }
 .accordion-panel .panel.is-open .accordion-toggle {
   color: #fff;
-  background-color: #d74b4b;
+  background-color: $contrast;
 }
 .accordion-simple .panel .panel-heading {
   padding-right: 0;
@@ -1160,7 +1160,7 @@ fieldset[disabled] .btn-twitter.active {
   width: 16px;
   height: 16px;
   margin-right: .35em;
-  color: #d74b4b;
+  color: $contrast;
   font-size: 1.25em;
   content: "\e891";
 }
@@ -1328,7 +1328,7 @@ fieldset[disabled] .btn-twitter.active {
 }
 #back-to-top:hover {
   text-decoration: none;
-  background-color: #d74b4b;
+  background-color: $contrast;
   background-color: rgba(215, 75, 75, 0.85);
 }
 #back-to-top i {
@@ -1464,7 +1464,7 @@ fieldset[disabled] .btn-twitter.active {
   border-left: 14px solid transparent;
 }
 .pricing-plan-ribbon-primary {
-  background-color: #d74b4b;
+  background-color: $contrast;
 }
 .pricing-plan-ribbon-secondary {
   background-color: #6685a4;
@@ -1474,7 +1474,7 @@ fieldset[disabled] .btn-twitter.active {
 }
 .pricing-plan-ribbon-current {
   background-color: #425d75;
-  color: #d74b4b;
+  color: $contrast;
 }
 @media (min-width: 768px) {
   .pricing-plan {
@@ -1528,7 +1528,7 @@ fieldset[disabled] .btn-twitter.active {
 }
 .share-widget-types a:hover {
   text-decoration: none;
-  color: #d74b4b;
+  color: $contrast;
   background-color: #fff;
   border-color: #ccc;
   border-top-right-radius: 4px;
@@ -1588,7 +1588,7 @@ fieldset[disabled] .btn-twitter.active {
 }
 .feed-item .feed-actions a:hover {
   text-decoration: none;
-  color: #d74b4b;
+  color: $contrast;
 }
 .feed-item .feed-actions .pull-left {
   margin: 0 15px 0 0;
@@ -1622,7 +1622,7 @@ fieldset[disabled] .btn-twitter.active {
   background-color: #bcbcbc;
 }
 .feed-item-file .feed-icon {
-  background-color: #d74b4b;
+  background-color: $contrast;
 }
 .feed-item-bookmark .feed-icon {
   background-color: #555;
@@ -1700,7 +1700,7 @@ fieldset[disabled] .btn-twitter.active {
   border: 1px solid #ccc;
 }
 .kv-icon-primary {
-  background-color: #d74b4b;
+  background-color: $contrast;
   color: #fff;
 }
 .kv-icon-secondary {
@@ -1793,7 +1793,7 @@ fieldset[disabled] .btn-twitter.active {
 }
 .thumbnail-footer a:hover {
   text-decoration: none;
-  color: #d74b4b;
+  color: $contrast;
 }
 .thumbnail-footer .pull-left a {
   padding: 0 12px 0 0;
@@ -1868,7 +1868,7 @@ table.table thead .sorting_desc_disabled,
 .paginate_enabled_next:before,
 .paginate_disabled_next:before {
   margin-right: 10px;
-  color: #d74b4b;
+  color: $contrast;
   font-family: 'icons-sportfac';
   font-size: 16px;
 }
@@ -1906,7 +1906,7 @@ table.table thead .sorting_desc_disabled,
 }
 .paginate_enabled_previous:hover:after,
 .paginate_enabled_next:hover:after {
-  color: #d74b4b;
+  color: $contrast;
 }
 /* !Navbar */
 /* ----------------------------------------------- */
@@ -2069,7 +2069,7 @@ table.table thead .sorting_desc_disabled,
 .mainnav-toggle {
   display: block;
   padding: 12px 0;
-  color: #d74b4b;
+  color: $contrast;
   font-size: 18px;
   text-align: center;
   cursor: pointer;
@@ -2084,7 +2084,7 @@ table.table thead .sorting_desc_disabled,
   position: absolute;
   top: 17px;
   right: 2px;
-  color: #d74b4b;
+  color: $contrast;
   background-color: transparent;
   border-bottom-left-radius: 0;
   border-top-left-radius: 0;
@@ -2138,8 +2138,8 @@ table.table thead .sorting_desc_disabled,
 .mainnav-menu > li.active > a,
 .mainnav-menu > li.active > a:hover,
 .mainnav-menu > li.active > a:focus {
-  color: #d74b4b;
-  border-bottom-color: #d74b4b;
+  color: $contrast;
+  border-bottom-color: $contrast;
 }
 .mainnav:after {
   content: '';
@@ -2366,7 +2366,7 @@ table.table thead .sorting_desc_disabled,
 .nav-layout-sidebar > .active > a,
 .nav-layout-sidebar > .active > a:focus,
 .nav-layout-sidebar > .active > a:hover {
-  color: #d74b4b;
+  color: $contrast;
   font-weight: 600;
   background-color: #fff;
 }
@@ -2576,7 +2576,7 @@ body {
   text-align: center;
 }
 .noticebar-empty-title {
-  color: #d74b4b;
+  color: $contrast;
 }
 .noticebar-empty-text {
   color: #777;
