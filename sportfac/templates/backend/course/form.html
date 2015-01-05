@@ -1,0 +1,20 @@
+{% load i18n floppyforms %}
+
+{% form form using %}
+{% formconfig row using "floppyforms/rows/bootstrap-basic-row.html" %}
+
+{% formconfig row using "floppyforms/rows/bootstrap-basic-sm-6.html" %}
+
+{%  formrow form.activity form.responsible form.number  %}
+
+
+
+{% formrow form.price form.number_of_sessions form.day  %}
+{% formrow form.start_date form.end_date form.start_time form.end_time %}
+
+
+{%  formrow form.place using "floppyforms/rows/bootstrap-basic-row.html" %}
+
+{% formrow form.min_participants form.max_participants form.schoolyear_min form.schoolyear_max  %}
+
+{% endform %}   

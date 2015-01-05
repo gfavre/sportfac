@@ -11,6 +11,13 @@ from profiles.models import Registration, Child
 class DateTimePickerInput(forms.DateTimeInput):
     template_name = 'floppyforms/datetime.html'
 
+class DatePickerInput(forms.DateInput):
+    template_name = 'floppyforms/date.html'
+
+class TimePickerInput(forms.TimeInput):
+    template_name = 'floppyforms/time.html'
+
+
 class Select2Widget(forms.Select):
     template_name = 'floppyforms/select2.html'
 

@@ -5,13 +5,30 @@
 {% block page_title %}{% trans "Update course" %}{% endblock %}
 
 {% block content %}
-<form action="" method="post" class="form-horizontal">{% csrf_token %}
-  {% form form using "floppyforms/layouts/bootstrap.html" %}
-    <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-success btn-large">{% trans 'Update' %}</button>
-    </div>
+<form action="" method="post">{% csrf_token %}
+  {% include "backend/course/form.html" %}
+  <div class=" form-group">
+    <button type="submit" class="btn btn-success ">{% trans 'Update course' %}</button>
+    &nbsp;
+    <a href="{% url 'backend:course-list' %}" class="btn  btn-default">{% trans 'Cancel' %}</a>
   </div>
 </form>
 
 {% endblock content %}
+
+{% block extra_js %}
+{{ block.super }}
+<script src="{{ STATIC_URL }}js/vendor/moment-with-locales.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript">
+  $(function () {
+    $('.datetimepicker').datetimepicker({
+        language: '{{ LANGUAGE_CODE }}',
+        icons: {time: 'icon-clock', 
+                date: 'icon-calendar', 
+                up:   'icon-up-open', 
+                down: 'icon-down-open'}
+        });
+  });
+</script>
+{% endblock extra_js %}

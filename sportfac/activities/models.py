@@ -67,7 +67,7 @@ class ExtraNeed(models.Model):
 class Course(models.Model):
     "A course, i.e. an instance of an activity"
     activity = models.ForeignKey('Activity', related_name='courses')
-    number = models.IntegerField(db_index=True, unique=True, null=True, blank=True, verbose_name=_("Number"))
+    number = models.IntegerField(db_index=True, unique=True, null=True, blank=True, verbose_name=_("Identifier"))
     uptodate = models.BooleanField(verbose_name=_("Course up to date"), default=False)
     responsible = models.ForeignKey('Responsible', verbose_name=_("Responsible"), related_name='courses')
     price = models.DecimalField(max_digits=5, decimal_places=2, verbose_name=_("Price"))
@@ -119,8 +119,7 @@ class Course(models.Model):
     @property
     def short_name(self):
         return '%s (%s)' % (self.activity.name, self.number)
-    
-
+        
 
     def __unicode__(self):
         base = _(u'%(activity)s (%(number)s): from %(start)s to %(end)s, every %(day)s at %(hour)s.')

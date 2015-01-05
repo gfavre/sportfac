@@ -1,22 +1,28 @@
+from django.utils.translation import ugettext as _
+
 import floppyforms.__future__ as forms
 
-from .models import Activity, Course
+from backend.forms import Select2Widget, DatePickerInput, TimePickerInput
+from .models import Activity, Course, Responsible
 
-
-class DateTimePickerInput(forms.DateTimeInput):
-    template_name = 'floppyforms/datetime.html'
-
-class Select2Widget(forms.Select):
-    template_name = 'floppyforms/select2.html'
 
             
 
 class CourseForm(forms.ModelForm):
-    #activity = forms.ModelChoiceField(queryset=Activity.objects, 
-    #                                  empty_label=None,
-    #                                  widget=Select2Widget())    
-
-    
+    activity = forms.ModelChoiceField(queryset=Activity.objects, 
+                                      empty_label=None,
+                                      widget=Select2Widget())    
+    responsible = forms.ModelChoiceField(queryset=Responsible.objects, 
+                                         empty_label=None,
+                                          widget=Select2Widget()) 
+    start_date = forms.DateTimeField(label=_("Start date"), required=True, 
+                                     widget=DatePickerInput(format='%d.%m.%Y'))
+    end_date = forms.DateTimeField(label=_("End date"), required=True, 
+                                   widget=DatePickerInput(format='%d.%m.%Y'))
+    start_time = forms.TimeField(label=_("Start time"), required=True, 
+                                 widget=TimePickerInput(format='%H:%M'))
+    end_time = forms.TimeField(label=_("End time"), required=True, 
+                               widget=TimePickerInput(format='%H:%M'))
     class Meta:
         model = Course
         fields = ('activity', 'number', 'responsible', 'price', 
