@@ -6,6 +6,7 @@ from django.views.generic import CreateView, DeleteView, DetailView, \
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.formtools.wizard.views import SessionWizardView
+from django.db import IntegrityError
 
 from profiles.models import Registration
 
@@ -41,12 +42,17 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
     
     def done(self, form_list, form_dict, **kwargs):
         self.instance.status = Registration.STATUS.confirmed
-        self.instance.save()
-        
-        message = _("Registration for %(child)s to %(course)s has been validated.")
-        message %= {'child': self.instance.child,
-                    'course': self.instance.course.short_name}
-        messages.add_message(self.request, messages.SUCCESS, message)
+        try:
+            self.instance.save()
+            message = _("Registration for %(child)s to %(course)s has been validated.")
+            message %= {'child': self.instance.child,
+                        'course': self.instance.course.short_name}
+            messages.add_message(self.request, messages.SUCCESS, message)
+        except IntegrityError:
+            message = _("A registration for %(child)s to %(course)s already exists.")
+            message %= {'child': self.instance.child,
+                        'course': self.instance.course.short_name}
+            messages.add_message(self.request, messages.WARNING, message)
         return HttpResponseRedirect(reverse_lazy('backend:registration-list'))
     
     def get_form_instance(self, step):

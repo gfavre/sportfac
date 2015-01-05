@@ -85,7 +85,7 @@ class ChildSelectForm(forms.ModelForm):
 
 class CourseSelectForm(RegistrationForm):
     "Course selection, used in registration creation wizard"
-    course = forms.ModelChoiceField(queryset=Course.objects, 
+    course = forms.ModelChoiceField(queryset=Course.objects, #overriden in __init__!
                                     empty_label=None,
                                     widget=Select2Widget())    
     
