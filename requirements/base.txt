@@ -6,6 +6,7 @@ bpython==0.13.1
 django-braces==1.4.0
 django-floppyforms==1.2.0
 django-autocomplete-light==2.0.5
+Django-Select2==4.2.2
 
 django-model-utils==2.2
 logutils==0.3.3
