@@ -1,5 +1,8 @@
 from django.views.generic import ListView, UpdateView, TemplateView, FormView
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.views import password_change as auth_password_change
+import django.contrib.auth.views as auth_views
+
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.db.models import Sum
@@ -9,11 +12,19 @@ from registration.backends.simple.views import RegistrationView as BaseRegistrat
 from registration import signals
 
 from .models import FamilyUser, Child, Registration
-from .forms import RegistrationForm, ContactInformationForm, AcceptTermsForm
+from .forms import (RegistrationForm, ContactInformationForm, AcceptTermsForm, 
+                    PasswordChangeForm, PasswordResetForm)
 
 from sportfac.utils import WizardMixin
 
 
+def password_change(request):
+    "Wrap the built-in password reset view and pass it the arguments"
+    return auth_views.password_change(request, password_change_form=PasswordChangeForm)
+
+def password_reset(request):
+    "Wrap the built-in password reset view and pass it the arguments"
+    return auth_views.password_reset(request, password_reset_form=PasswordResetForm)
 
 
 class ChildrenListView(LoginRequiredMixin, WizardMixin, ListView):
