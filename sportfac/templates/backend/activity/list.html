@@ -1,13 +1,35 @@
 {% extends "backend/base.html" %}
-{% block extra_css %} 
-{% endblock extra_css %}
-{% load i18n %}
+{% load i18n sekizai_tags duration %}
+{% get_current_language as LANGUAGE_CODE %}
 
 {% block title %}{% trans "List activities" %} - {{ block.super }}{% endblock %}
 {% block page_title %}{% trans "List activities" %}{% endblock %}
 
 {% block content %}
-<a href="{% url 'backend:activity-create' %}">{% trans "New activity" %}</a>
+
+{% addtoblock  "js" %}    
+<script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
+<script>
+$(function () {
+  $(".table").dataTable({
+{% if LANGUAGE_CODE == 'fr' %}
+      "language": {
+            "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+      },
+{% endif %}
+      "aoColumnDefs": [
+          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ 2 ] }
+      ]
+  });
+});
+</script>
+{% endaddtoblock %}
+
+
+
+<a href="{% url 'backend:activity-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New activity" %}</a>
+<hr />
 <table class="table">
   <thead>
     <tr>
@@ -21,10 +43,10 @@
       <td><a href="{% url 'backend:activity-detail' pk=activity.pk %}">{{ activity.number }}</a></td>
       <td><a href="{% url 'backend:activity-detail' pk=activity.pk %}">{{ activity.name }}</a></td>
       <td>
-        <ul>
-          <li><a href="{% url 'backend:activity-detail' pk=activity.pk %}">{% trans "Check courses" %}</a></li>
-          <li><a href="{% url 'backend:activity-update' pk=activity.pk %}">{% trans "Update activity" %}</a></li>
-          <li><a href="{% url 'backend:activity-delete' pk=activity.pk %}">{% trans "Delete activity" %}</a></li>
+        <ul class="list-unstyled">
+          <li class="text-nowrap"><a href="{% url 'backend:activity-detail' pk=activity.pk %}" class="btn btn-sm"><i class="icon-graduation-cap"></i>&nbsp;{% trans "Check courses" %}</a></li>
+          <li class="text-nowrap"><a href="{% url 'backend:activity-update' pk=activity.pk %}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update activity" %}</a></li>
+          <li class="text-nowrap"><a href="{% url 'backend:activity-delete' pk=activity.pk %}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete activity" %}</a></li>
         </ul>
       </td>
     </tr>

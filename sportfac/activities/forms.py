@@ -29,4 +29,9 @@ class CourseForm(forms.ModelForm):
                   'number_of_sessions', 'day', 'start_date', 'end_date',
                   'start_time', 'end_time', 'place', 'min_participants',
                   'max_participants', 'schoolyear_min', 'schoolyear_max')
-        
+
+
+class ActivityForm(forms.ModelForm):
+    class Meta:
+        model = Activity
+        fields = ('name', 'number', 'description', 'informations')

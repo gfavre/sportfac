@@ -3,6 +3,7 @@ from django.views.generic import CreateView, DeleteView, DetailView, \
                                 ListView, UpdateView
 
 from activities.models import Activity
+from activities.forms import ActivityForm
 
 from .mixins import BackendMixin
 
@@ -18,12 +19,12 @@ class ActivityListView(BackendMixin, ListView):
 
 class ActivityCreateView(BackendMixin, CreateView):
     model = Activity
-    fields = ('name', 'number', 'informations', 'description')
+    form_class = ActivityForm
     template_name = 'backend/activity/create.html'
 
 class ActivityUpdateView(BackendMixin, UpdateView):
     model = Activity
-    fields = ('name', 'number', 'informations', 'description')
+    form_class = ActivityForm
     template_name = 'backend/activity/update.html'
     
 class ActivityDeleteView(BackendMixin, DeleteView):

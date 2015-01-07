@@ -1,13 +1,18 @@
 {% extends "backend/base.html" %}
-{% load i18n %}
+{% load i18n floppyforms %}
 
 {% block title %}{% trans "Update activity" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "Update activity" %}{% endblock %}
+{% block page_title %}<i class="icon-soccer-ball"></i>&nbsp;&nbsp;{% trans "Update activity" %}{% endblock %}
 
 {% block content %}
-<form action="" method="post">{% csrf_token %}
-  {{ form.as_p }}
-  <input type="submit" value="{% trans 'Update' %}">
+<form action="" method="post" class="form-horizontal">{% csrf_token %}
+  {% include "backend/activity/form.html" %}
+  <div class=" form-group">
+    <button type="submit" class="btn btn-success ">{% trans 'Update activity' %}</button>
+    &nbsp;
+    <a href="{% url 'backend:activity-list' %}" class="btn  btn-default">{% trans 'Cancel' %}</a>
+  </div>
+
 </form>
 
 {% endblock content %}
