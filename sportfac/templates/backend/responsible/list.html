@@ -1,11 +1,33 @@
 {% extends "backend/base.html" %}
-{% load i18n %}
+{% load i18n sekizai_tags %}
 
 {% block title %}{% trans "List responsibles" %} - {{ block.super }}{% endblock %}
 {% block page_title %}{% trans "List responsibles" %}{% endblock %}
 
 {% block content %}
-<a href="{% url 'backend:responsible-create' %}">{% trans "New responsible" %}</a>
+
+{% addtoblock  "js" %}    
+<script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
+<script>
+$(function () {
+  $(".table").dataTable({
+{% if LANGUAGE_CODE == 'fr' %}
+      "language": {
+            "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+      },
+{% endif %}
+      "aoColumnDefs": [
+          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ 4 ] }
+      ]
+  });
+});
+</script>
+{% endaddtoblock %}
+
+
+<a href="{% url 'backend:responsible-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New responsible" %}</a>
+<hr />
 <table class="table">
   <thead>
     <tr>
@@ -24,10 +46,10 @@
       <td><a href="mailto:{{ responsible.email }}">{{ responsible.email }}</a></td>
 
       <td>
-        <ul>
-          <li><a href="{% url 'backend:responsible-detail' pk=responsible.pk %}">{% trans "Check courses" %}</a></li>
-          <li><a href="{% url 'backend:responsible-update' pk=responsible.pk %}">{% trans "Update info" %}</a></li>
-          <li><a href="{% url 'backend:responsible-delete' pk=responsible.pk %}">{% trans "Delete person" %}</a></li>
+        <ul class="list-unstyled">
+          <li class="text-nowrap"><a href="{% url 'backend:responsible-detail' pk=responsible.pk %}" class="btn btn-sm"><i class="icon-graduation-cap"></i>&nbsp;{% trans "Check courses" %}</a></li>
+          <li class="text-nowrap"><a href="{% url 'backend:responsible-update' pk=responsible.pk %}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update info" %}</a></li>
+          <li class="text-nowrap"><a href="{% url 'backend:responsible-delete' pk=responsible.pk %}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete person" %}</a></li>
         </ul>
       </td>
     </tr>
