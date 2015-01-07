@@ -145,9 +145,12 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.request',
     
+    'constance.context_processors.config',
+    
     'sportfac.context_processors.wizard_context',
     'sportfac.context_processors.registration_opened_context',
     'sportfac.context_processors.activities_context',
+    'sekizai.context_processors.sekizai',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-loaders
@@ -207,25 +210,27 @@ DJANGO_APPS = (
 
 THIRD_PARTY_APPS = (
     # Database migration helpers:
-    'south', # db migration
     'rest_framework', # REST API
     'registration', #user registration
     'floppyforms', # better forms
     'constance', # settings in admin
-    'constance.backends.database', #settings in admin
+    'constance.backends.database', # settings in admin
     'grappelli', # admin interface
     'ckeditor', # wysiwyg editor
-    'extended_flatpages',
-    'autocomplete_light', # autocomplete for django admin
+    #'extended_flatpages',
+    'autocomplete_light', # autocomplete 
     #'pipeline', # minifier
+    'sekizai', #add_to_block template tag
+    'django_select2', # select2 widget (enhanced select box)
 )
 
 # Apps specific for this project go here.
 LOCAL_APPS = (
     'activities',
     'api',
-    'profiles',
+    'backend',
     'contact',
+    'profiles',
 )
 
 LAST_APPS = (
@@ -271,11 +276,31 @@ LOGGING = {
 }
 ########## END LOGGING CONFIGURATION
 
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
+
 
 ########## WSGI CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#wsgi-application
 WSGI_APPLICATION = 'wsgi.application'
 ########## END WSGI CONFIGURATION
+
+
+##########  MESSAGE CONFIGURATION
+# See: https://docs.djangoproject.com/en/dev/ref/contrib/messages/
+
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.DEBUG: 'alert-info',
+    messages.INFO: 'alert-info',
+    messages.SUCCESS: 'alert-success',
+    messages.WARNING: 'alert-warning',
+    messages.ERROR: 'alert-danger'
+}
+
+
+########## END WSGI CONFIGURATION
+
 
 
 ########## REST FRAMEWORK CONFIGURATION
@@ -296,12 +321,13 @@ REST_FRAMEWORK = {
 ########## END REST FRAMEWORK CONFIGURATION
 
 ########## CONSTANCE CONFIGURATION (settings in admin)
-# see https://github.com/comoga/django-constance
+# see http://django-constance.readthedocs.org
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 CONSTANCE_SUPERUSER_ONLY = False
 CONSTANCE_CONFIG = {
     'START_REGISTRATION': (datetime(2013,9,1, tzinfo=timezone('Europe/Zurich')), ugettext("Registration opening date")),
     'END_REGISTRATION': (datetime(2013,10,1, tzinfo=timezone('Europe/Zurich')), ugettext("Registration ending date")),
+    'CURRENT_PHASE': (1, 'PREPARATION'),
 }
 
 ########## END CONSTANCE CONFIGURATION
@@ -343,3 +369,6 @@ CKEDITOR_CONFIGS = {
         'format_tags': 'p;h1;h2;h3;h4;h5;h6;pre;address',
     },
 }
+
+############# Select2
+AUTO_RENDER_SELECT2_STATICS = False

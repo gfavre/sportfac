@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
 
-from constance import config
+from constance.admin import config
 
 from profiles.models import Registration
 from activities.models import Activity
@@ -67,9 +67,19 @@ def wizard_context(request):
 def registration_opened_context(request):
     start = config.START_REGISTRATION
     end = config.END_REGISTRATION
-    return {'registration_opened': start <= timezone.now() <= end,
+    now = timezone.now()
+    minutes_spent = int((now - start).total_seconds() / 60)
+    minutes_total = int((end - start).total_seconds() / 60)
+    return {'registration_opened': start <= now <= end,
             'registration_start': start,
-            'registration_end': end}
+            'registration_end': end,
+            'registration_past': start <= end <= now,
+            'registration_due': now <= start <= end,
+            'minutes_spent': minutes_spent,
+            'minutes_total': minutes_total,
+            
+            }
+
 
 
 def activities_context(request):

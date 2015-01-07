@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "My account" %}{% endblock title %}
+{% block page_title %}{% trans "My account" %} <small>- responsable légal</small>{% endblock page_title %}
+
+
+{% block main-content %}
+
+{% url 'profiles_account' as profiles_url %}
+{% url 'auth_password_change' as password_change_url %}
+{% url 'profiles_children' as children_url %}
+<div class="container">
+  <div class="layout layout-main-right layout-stack-sm">
+    <div class="col-md-3 col-sm-4 layout-sidebar">
+      <div class="nav-layout-sidebar-skip">
+        <strong>Tab Navigation</strong> / <a href="#settings-content">Skip to Content</a>	
+      </div>
+  
+      <ul id="myTab" class="nav nav-layout-sidebar nav-stacked">
+        <li {% if request.get_full_path == profiles_url %}class="active"{% endif %}>
+          <a href="{{ profiles_url }}">
+          <i class="icon-user"></i> 
+          &nbsp;&nbsp;{% trans "Profile Settings" %}
+          </a>
+        </li>
+  
+        <li {% if request.get_full_path == password_change_url %}class="active"{% endif %}>
+          <a href="{{ password_change_url }}" >
+          <i class="{% if request.get_full_path != password_change_url %}icon-lock{% else %}icon-lock-open{% endif %}"></i> 
+          &nbsp;&nbsp;{% trans "Change password" %}
+          </a>
+        </li>
+  
+        <li {% if request.get_full_path == profiles_children %}class="active"{% endif %}>
+          <a href="{{ children_url }}">
+            <i class="icon-group"></i>
+            &nbsp;&nbsp;{% trans "Family settings" %}
+          </a>
+        </li>
+  
+      </ul>
+    </div>
+    <div class="col-md-9 col-sm-8 layout-main">
+      <div class="tab-content stacked-content">
+          {% block content %}
+          
+          {% endblock content %}
+      </div><!-- end tab-content -->
+    </div><!-- end layout-main -->
+  </div><!-- end layout -->
+</div>
+{% endblock main-content %}
+
+
+
+
+

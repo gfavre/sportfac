@@ -107,15 +107,14 @@ class FamilyAdmin(UserAdmin):
     #filter_horizontal = ()
     inlines = [ChildInline]
     
-    def queryset(self, request):
-        qs = super(FamilyAdmin, self).queryset(request)
+    def get_queryset(self, request):
+        qs = super(FamilyAdmin, self).get_queryset(request)
         #return qs 19
         return qs.prefetch_related('children')
     
     
 
 admin.site.register(FamilyUser, FamilyAdmin)
-admin.site.unregister(Group)
 
 class TeacherAdmin(admin.ModelAdmin):
     list_display = ('last_name', 'first_name', 'years_label')
@@ -128,9 +127,9 @@ class TeacherAdmin(admin.ModelAdmin):
 admin.site.register(Teacher, TeacherAdmin)
 
 class RegistrationAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'validated')
+    list_display = ('__unicode__', 'status')
     
-    list_filter = ('validated', 'course__activity__name')
+    list_filter = ('status', 'course__activity__name')
     
     search_fields = ('child__first_name', 'child__last_name', 
                      'course__activity__number', 'course__activity__name',
@@ -139,13 +138,16 @@ class RegistrationAdmin(admin.ModelAdmin):
     change_list_template = "admin/change_list_filter_sidebar.html"
     change_list_filter_template = "admin/filter_listing.html"
     
-    form = autocomplete_light.modelform_factory(Registration)
+    #form = autocomplete_light.modelform_factory(Registration)
     actions = ['delete_model', 'export']
     
     
-    def queryset(self, request):
-        qs = super(RegistrationAdmin, self).queryset(request)
+    def get_queryset(self, request):
+        #qs = super(RegistrationAdmin, self).get_queryset(request)
         #return qs 19
+        qs = self.model._default_manager.all_with_deleted()
+        
+        
         return qs.select_related('course', 'course__activity', 'child')
     
     def save_model(self, request, obj, form, change):

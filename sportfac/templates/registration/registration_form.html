@@ -9,7 +9,7 @@
 {% block content %}
 {% form form using %}
 {% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
-<form action="." method="post" class="form-horizontal">{% csrf_token %}
+<form action="." method="post" class="form-horizontal" ole="form">{% csrf_token %}
   {% block errors %}
   {% for error in form.non_field_errors %}
   <div class="alert alert-error">
@@ -36,8 +36,8 @@
     {% formrow form.first_name %}
     {% formrow form.last_name %}
     {% formrow form.address %}
-    <div class="control-group {% if form.city.errors or form.zipcode.errors %}error{% endif %}">
-      <label class="control-label">{% trans "City" %} <span class="required">*</span></label>
+    <div class="form-group {% if form.city.errors or form.zipcode.errors %}error{% endif %}">
+      <label>{% trans "City" %} <span class="required">*</span></label>
       <div class="controls form-inline required ">
         <input type="number" min="1000" max="9999" name="zipcode" value="{% if form.zipcode.value %}{{ form.zipcode.value }}{% endif %}" required="" placeholder="1296" id="id_zipcode" class="input-mini" maxlength="4">
         {% formfield form.city %}

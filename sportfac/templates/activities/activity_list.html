@@ -6,12 +6,12 @@
 
 
 {% block content %}
-<div class="row">
-<div class="tabbable">
-  <ul class="nav nav-tabs children" style="margin-left: 30px">
-    <li ng-repeat="child in userChildren" ng-class="{active: child.selected}">
+<nav>
+  <ul class="nav nav-tabs children">
+    <li role="presentation" ng-repeat="child in userChildren" 
+                            ng-class="{active: child.selected}">
       <a href="./#/child/{[{ child.id }]}/" ng-click="selectChild(child.id)">
-        <i class="icon-user" ng-class="{unavailable: !child.selected, available: child.selected}"></i> {[{ child.first_name }]}
+        {[{ child.first_name }]}
       </a>
     </li>
   </ul>
@@ -20,20 +20,21 @@
     <div class="tab-pane active" ng-view></div>
   </div>
   
-</div><!-- end tabbable -->
-</div>
+</nav><!-- end tabbable -->
 {% endblock content %}
 
 {% block page_footer %}
-  <div class="form-actions">
-      <a class="btn" href="{{ previous_step.url }}"><i class="icon-chevron-left"></i> {% trans "Previous"%}</a>
-    <div class="pull-right">
-      <a href="{% url 'wizard_confirm' %}" class="btn btn-primary btn-large btn-next" ng-show="registrations.length > 0" >{% trans "End registration"%} <i class="icon-chevron-right"></i></a>
-      <button class="btn btn-primary btn-large btn-next disabled" ng-show="registrations.length === 0" >{% trans "End registration"%} <i class="icon-chevron-right"></i></button>
-      
-      
-    </div>          
-  </div>
+<nav>
+  <ul class="pager">
+    <li class="previous">
+      <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span> {% block previous_label %}{% trans "Previous"%}{% endblock %}</a>
+    </li>
+    <li class="next" ng-class="{disabled: registrations.length === 0}">
+      <a href="{{ next_step.url }}">{% trans "End registration" %} <span aria-hidden="true">&rarr;</span></a>
+    </li>
+  </ul>
+</nav>
+
 {% endblock page_footer %}
 
 
@@ -49,7 +50,8 @@
 <script src="{{ STATIC_URL }}js/vendor/angular-cookies.min.js"></script>
 
 <script src="{{ STATIC_URL }}js/vendor/angular-ui-calendar.js"></script>
-<script src="{{ STATIC_URL }}js/vendor/angular-strap.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/angularstrap/angular-strap.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/angularstrap/angular-strap.tpl.min.js"></script>
 
 <script src="{{ STATIC_URL }}js/activities/services.js"></script>
 <script src="{{ STATIC_URL }}js/activities/controllers.js"></script>

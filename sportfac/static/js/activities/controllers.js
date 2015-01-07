@@ -68,7 +68,7 @@ function($scope, $routeParams, $location, $filter, ChildrenService, Registration
 /*******************************************************************************
         Activities management, i.e. a child tab in activities application
 *******************************************************************************/
-.controller('ActivityCtrl', ["$scope", "$http",
+.controller('ActivityCtrl', ["$scope", "$http", 
 function($scope, $http) {
   'use strict';
   $scope.$watch('selectedChild', function(){
@@ -86,9 +86,10 @@ function($scope, $http) {
   
   $scope.loadActivities = function(){
     var url = '/api/activities/?year=' + $scope.selectedChild.school_year;
-    $scope.activities = $http({method: 'GET', url: url, cache: true}).then(function(response){
-        return response.data;
-    });
+    $http({method: 'GET', url: url, cache: true})
+       .success(function(response){
+           $scope.activities = response;
+       });
   };
 }])
 
@@ -111,7 +112,19 @@ function($scope, $filter, $modal, CoursesService){
   var year = today.getFullYear();
   var month = today.getMonth();
   var day = today.getDate();
-    
+  
+  var modalwindow = $modal(
+            {template: '/static/partials/activity-detail.html',
+             show: false,
+             backdrop: 'static',
+             persist: true,
+             keyboard: true,
+             container: 'body',
+             animation: "am-flip-x",
+             scope: $scope,
+  });
+  
+  
   $scope.$watch('registrations.length', function(){
     if (!angular.isDefined($scope.registrations)){ return; }
     
@@ -197,13 +210,7 @@ function($scope, $filter, $modal, CoursesService){
         if (!event.clickable){ return; }
         $scope.selectedEvent = event;
         $scope.selectedCourse = event.course;
-        $modal(
-            {template: '/static/partials/activity-detail.html',
-             show: true,
-             backdrop: 'static',
-             persist: true,
-             scope: $scope,
-        });
+        modalwindow.show();
       });
   };
   

@@ -1,0 +1,13 @@
+{% extends "backend/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Informations about a new responsible" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "New responsible" %}{% endblock %}
+
+{% block content %}
+<form action="" method="post">{% csrf_token %}
+  {{ form.as_p }}
+  <input type="submit" value="{% trans 'Create' %}">
+</form>
+
+{% endblock content %}

@@ -1,0 +1,49 @@
+{% extends "backend/base.html" %}
+{% load i18n duration %}
+
+{% block title %}{{ responsible.first }} {{ responsible.last }} - {{ block.super }}{% endblock %}
+{% block page_title %}{{ responsible.first }} {{ responsible.last }}{% endblock %}
+
+{% block content %}
+  
+<h2>{% trans "Courses" %}</h2>
+<div class="row">
+  {% for course in responsible.courses.all %}
+  <section class="col-sm-6 topped">
+    <div class="pricing-plan">
+      <header class="pricing-header">
+        <p class="pricing-plan-label">{% blocktrans with number=course.number %}Course #{{ number }}{% endblocktrans %}</p>
+        <h4 class="pricing-plan-title">
+          {{ course.start_date | date:"j F Y" }} – {{ course.end_date | date:'j F Y'  }}
+        </h4>
+        <p class="pricing-plan-label">Chaque {{ course.day_name|lower }} de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }} ({{ course.duration|duration }})</p>
+      </header>
+      
+      <dl class="dl-horizontal">
+        <dt>{% trans "Responsible" %}</dt>
+        <dd><a href="{{ course.responsible.get_backend_url }}">{{ course.responsible  }}</a></dd>
+        <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
+        <dt>{% trans "Number of sessions" %}</dt>
+        <dd>{{ course.number_of_sessions }} cours
+        </dd>
+        <dt>{% trans "Price" %}</dt><dd>CHF {{ course.price }}</dd>
+        <dt>{% trans "School years" %}</dt><dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
+      </dl>
+      <p class="text-center"><a href="{% url 'backend:course-update' pk=course.pk %}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a> </p>
+      <h4 class="content-title">
+        <u>{% trans "Availability"%}</u>
+      </h4>      
+      <p>{{ course.count_participants  }} participants <span class="pull-right strong"> {{ course.max_participants }} places</span></p>
+      <div class="progress" style="margin-bottom: 0;">
+        <div class="progress-bar {% if course.full %}progress-bar-danger{% elif course.minimal_participants_reached %}progress-bar-success{% else %}progress-bar-warning{% endif %}" style="width: {{ course.percentage_full }}%">{% if course.full %}{% trans "Course full" %}{% elif course.minimal_participants_reached %}{% trans "Minimal number of participants reached" %}{% else %}{% trans "Not enough participants" %}{% endif %}</div>
+      </div>  
+      <p class="text-right"><small>{{ course.min_participants }} participants requis pour que l'activité ait lieu</small></p>
+      
+      <p class="text-center"><a href="{% url 'backend:course-detail' pk=course.pk %}" class="btn btn-default"><i class="icon-check"></i>&nbsp;{% trans "Check registrations" %}</a> </p>
+
+      
+    </div>          
+  </section> 
+  {% endfor %}
+</div>
+{% endblock content %}

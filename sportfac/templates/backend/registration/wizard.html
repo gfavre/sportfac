@@ -1,0 +1,67 @@
+{% extends "backend/base.html" %}
+{% load i18n sekizai_tags floppyforms %}
+
+{% block title %}{% trans "Create a new registration" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "Create a new registration" %}{% endblock %}
+
+{% addtoblock  "css" %}
+{{ wizard.form.media }}
+{% endaddtoblock %} 
+
+
+{% block content %}
+<div class="row">
+<div class="col-md-3 col-sm-5">
+  <ul class="nav nav-pills nav-stacked">
+    {% for step in wizard.steps.all %}
+    <li {% if wizard.steps.current == step %}class="active"{% endif %} >
+      <a>{{ step }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<form action="" method="post">{% csrf_token %}
+
+<div class="col-md-9 col-sm-7">
+  {{ wizard.management_form }}
+  {% if wizard.form.forms %}
+      {{ wizard.form.management_form }}
+      {% for form in wizard.form.forms %}
+          {% form form using "floppyforms/layouts/bootstrap.html" %}
+      {% endfor %}
+  {% else %}
+      {% form wizard.form using "floppyforms/layouts/bootstrap.html" %}
+  {% endif %}
+  
+  <div class="form-group">
+    <button type="submit" class="btn btn-success btn-large">{% trans "Save" %}</button>
+  </div>
+  
+</div>
+
+</div>
+<footer>
+    <nav>
+      <ul class="pager">
+      {% if wizard.steps.prev %}
+        <li class="previous">
+          <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">
+            <span aria-hidden="true">&larr;</span> {% trans "Previous"%}
+          </button>
+        </li>
+      {% endif %}
+      {% if wizard.steps.next %}
+        <li class="next">
+          <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.next }}">
+            {% trans "Next"%} <span aria-hidden="true">&rarr;</span>
+          </button>
+        </li>
+      {% endif %}
+      </ul>
+    </nav>
+</footer>
+
+</form>
+
+{% endblock %}

@@ -7,9 +7,11 @@
 
 {% block content %}
 {% if overlaps %}
-<div class="alert alert-block">
-  <button type="button" class="close" data-dismiss="alert">&times;</button>
-  <h4>{% trans "Warning!" %}</h4>
+<div class="alert alert-warning alert-dismissible" role="alert">
+  <button type="button" class="close" data-dismiss="alert">
+    <span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span>
+  </button>
+  <strong>{% trans "Warning!" %}</strong>
   <p>
     {% if user.children.count > 1 %}
     {% trans "The following courses occur at the same or close times. It may be difficult to bring your children." %}
@@ -29,51 +31,54 @@
 {% endif %}
 
 
-<table class=" table table-hover">
+<table class=" table table-hover table-striped">
   <thead>
     <tr>
-      <th>{% trans "Name" %}</th>
-      <th>{% trans "Activity" %}</th>
-      <th>{% trans "Period" %}</th>
-      <th>{% trans "Time" %}</th>
-      <th>{% trans "Place" %}</th>
-      <th>{% trans "Price" %}</th>
+      <th class="text-center">{% trans "Name" %}</th>
+      <th class="text-center">{% trans "Activity" %}</th>
+      <th class="text-center">{% trans "Period" %}</th>
+      <th class="text-center">{% trans "Time" %}</th>
+      <th class="text-center">{% trans "Place" %}</th>
+      <th class="text-center">{% trans "Price" %}</th>
     </tr>
   </thead>
   
   <tfoot>
   <tr>
-      <th colspan="5" style="text-align: right">{% trans "Total" %}</th>
+      <th colspan="5" class="text-right">{% trans "Total" %}</th>
       <th class="nowrap">CHF {{ total_price }}</th>
     </tr>
   </tfoot>
   
   <tbody>
   {% for registered in registered_list %}
-    <tr id="{{ registered.id }}" {% if registered.id in overlapped %}class="warning-light"{% endif %}>
+    <tr id="{{ registered.id }}" {% if registered.id in overlapped %}class="warning"{% endif %}>
       <td>
         <span class="nowrap">{{ registered.child.first_name }} {{ registered.child.last_name }}</span>
       </td>
-      <td>{{ registered.course.activity.name }}
+      <td><p>{{ registered.course.activity.name }}</p>
       {% for extra in registered.extra_needs %}
         <p class="alert alert-error form-error" style="display: none">
           <i class="icon-warning-sign icon-large"></i> {% trans "Please submit this form." %}</span>
         </p>
       
-        <form class="form-inline extra-info" method="post">{% csrf_token %}
+        <form class=" extra-info" method="post" role="form">{% csrf_token %}
+          <input type="hidden" name="registration" value="{{ registered.id }}" />
+          <input type="hidden" name="key" value="{{ extra.id }}" />
           <div class="form-content">
-            <input type="hidden" name="registration" value="{{ registered.id }}" />
-            <input type="hidden" name="key" value="{{ extra.id }}" />
-            <label>{{ extra.question_label }} <input type="text" name="value" class="input-small" value=""/></label>
-            <button type="submit" class="btn btn-success" >{% trans "Save" %}</button>
+            <div class="form-group">
+              <label for="question-{{ extra.id }}">{{ extra.question_label }}</label>
+              <input type="text" name="value" class="input-small" value="" id="question-{{ extra.id }}" required />
+            </div>
+            <button type="submit" class="btn btn-success disabled" >{% trans "Save" %}</button>
           </div>
-          <p class="alert alert-info" style="display: none">
+          <p class="alert alert-info hide" role="alert">
             <i class="icon-refresh icon-spin"></i> {% trans "Sending info..." %}
           </p>
-          <p class="alert alert-success" style="display: none">
+          <p class="alert alert-success hide" role="alert">
             <i class="icon-ok"></i> {{ extra.question_label }}: <span class="value"></span>
           </p>
-          <p class="alert alert-error" style="display: none">
+          <p class="alert alert-danger hide" role="alert">
             <i class="icon-cross"></i> {% trans "An error has occurred. Please contact us." %}</span>
           </p>
         </form>
@@ -83,11 +88,11 @@
         {% endfor %}
       {% endfor %}
       </td>
-      <td>
-        <span class="nowrap">{{ registered.course.start_date }}</span> – <span class="nowrap">{{ registered.course.end_date }}</span>
+      <td class="text-center">
+        <span class="nowrap">{{ registered.course.start_date }}</span><br><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span><br><span class="nowrap">{{ registered.course.end_date }}</span>
       </td>
-      <td>
-        {{ registered.course.day_name }} / <span class="nowrap">{{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</span>
+      <td class="text-center">
+        {{ registered.course.day_name }} <br /> <span class="nowrap">{{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</span>
       </td>
       <td>{{ registered.course.place }}</td>
       <td class="nowrap">CHF {{ registered.course.price|floatformat:2|intcomma }}</td>
@@ -102,20 +107,26 @@
 
 {% block page_footer %}
 <hr />
-<form id="accept" method="post">{% csrf_token %}
+<form class="form form-inline" id="accept" method="post">{% csrf_token %}
   {{ form.non_field_errors }}
   {{ form.accept.errors }}
-
-  <label class="checkbox">{{ form.accept }}{{ form.accept.label }}</label>
-  <div class="form-actions">
-    {% if previous_step %}
-      <a class="btn btn-prev" href="{{ previous_step.url }}"><i class="icon-chevron-left"></i> {% block previous_label %}{% trans "Previous"%}{% endblock previous_label %}</a>
-    {% endif %}
-    <div class="pull-right">
-      <button type="submit" class="btn btn-primary btn-large btn-next pull-right">{% trans "Confirm and proceed to checkout"%} <i class="icon-chevron-right icon-white"></i> </button>  <br>
-      <p class="pull-right"><small >{% trans "Confirmation is definitive. You will not be able to change your registrations again." %}</small> </p>   
-    </div>
+  
+  <div class="checkbox">
+    <label>{{ form.accept }} {{ form.accept.label }}</label>
   </div>
+  
+<nav>
+  <ul class="pager">
+    <li class="previous">
+      <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span> {% trans "Previous"%}</a>
+    </li>
+    <li class="next">
+      <button type="submit" class="btn btn-primary btn-large btn-next pull-right">{% trans "Confirm and proceed to checkout"%} <i class="icon-chevron-right icon-white"></i> </button>  <br />
+    </li>
+  </ul>
+  <span class="pull-right"><small >{% trans "Confirmation is definitive. You will not be able to change your registrations again." %}</small> </span>   
+</nav>
+
 </form>
 {% endblock page_footer %}
 
@@ -137,22 +148,30 @@
       $('#accept input:checkbox').click(function(){
         $('#accept button').prop('disabled', !$('#accept button').prop('disabled'));
       });
-        
+      $('.extra-info input').keyup(function(){
+          var button = $(this).closest('form').find('button[type=submit]');
+          if ($(this).val().length > 0) {
+             button.removeClass('disabled');
+          } else {
+             button.addClass('disabled');
+          }
+      })
+      
       $('.extra-info').ajaxForm({
           url: '{% url "api-extra-list" %}',
           success: function(res, status, xhr, form){
-            $('.alert-info', form).hide();
+            $('.alert-info', form).addClass('hide');
             $('.alert-success .value', form).html(res.value);
-            $('.alert-success', form).show();
-            $('.alert-error', form).hide();
+            $('.alert-success', form).removeClass('hide');
+            $('.alert-danger', form).addClass('hide');
           },
-          error: function(){
-            $('.alert-info', form).hide();
-            $('.alert-error', form).show();
+          error: function(xhr, status, error, form){
+            $('.alert-info', form).addClass('hide');
+            $('.alert-danger', form).removeClass('hide');
           },
           beforeSubmit: function(formData, form, options){
-            $('.form-content', form).hide();
-            $('.alert-info', form).show();
+            $('.form-content', form).addClass('hide');
+            $('.alert-info', form).removeClass('hide');
           }
       });
   });

@@ -99,8 +99,8 @@ class CoursesAdmin(admin.ModelAdmin):
     actions = ('export',)
     
     
-    def queryset(self, request):
-        qs = super(CoursesAdmin, self).queryset(request)
+    def get_queryset(self, request):
+        qs = super(CoursesAdmin, self).get_queryset(request)
         qs = qs.annotate(models.Count('participants'))
         return qs
     

@@ -1,0 +1,26 @@
+{% extends "backend/base.html" %}
+{% load i18n floppyforms sekizai_tags %}
+
+{% block title %}{% trans "Update activity" %} - {{ block.super }}{% endblock %}
+{% block page_title %}<i class="icon-soccer-ball"></i>&nbsp;&nbsp;{% trans "Update activity" %}{% endblock %}
+
+{% block content %}
+
+{% addtoblock "js" %}
+{{ form.media }}
+{% endaddtoblock %}
+
+<form action="" method="post" class="form-horizontal">{% csrf_token %}
+
+  {% include "backend/activity/form.html" %}
+  <div class=" form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+
+      <button type="submit" class="btn btn-success ">{% trans 'Update activity' %}</button>
+      &nbsp;
+      <a href="{% url 'backend:activity-list' %}" class="btn  btn-default">{% trans 'Cancel' %}</a>
+    </div>
+  </div>
+
+</form>
+{% endblock content %}

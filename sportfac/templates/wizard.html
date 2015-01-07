@@ -26,14 +26,19 @@
 {% endblock page_header %}
 
 {% block page_footer %}
-<div class="form-actions">
+<nav>
+  <ul class="pager">
   {% if previous_step %}
-  <a class="btn btn-prev" href="{{ previous_step.url }}"><i class="icon-chevron-left"></i> {% block previous_label %}{% trans "Previous"%}{% endblock previous_label %}</a>
+    <li class="previous">
+      <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span> {% block previous_label %}{% trans "Previous"%}{% endblock %}</a>
+    </li>
   {% endif %}
   {% if next_step %}
-  <div class="pull-right">
-    <a class="btn btn-primary btn-large btn-next" href="{{ next_step.url }}">{% block next_label %}{% trans "Next"%}{% endblock %} <i class="icon-chevron-right icon-white"></i> </a>      
-  </div>
+    <li class="next">
+      <a href="{{ next_step.url }}">{% block next_label %}{% trans "Next"%}{% endblock %}<span aria-hidden="true">&rarr;</span></a>
+    </li>
+
   {% endif %}
-</div>
+  </ul>
+</nav>
 {% endblock page_footer %}

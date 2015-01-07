@@ -7,10 +7,12 @@ from django.template.defaultfilters import slugify
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from django.db.models import Sum
 
+from model_utils import Choices
+from model_utils.models import StatusModel
 
 from activities.models import SCHOOL_YEARS
 from sportfac.models import TimeStampedModel
@@ -115,7 +117,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         return ', '.join([unicode(child) for child in self.children.all()])
     
     def get_registrations(self, validated=True):
-        return Registration.objects.filter(child__in=self.children.all(), validated=validated)
+        return Registration.valid.filter(child__in=self.children.all())
     
     def update_total(self):
         registrations = self.get_registrations(True)
@@ -129,11 +131,13 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     def get_absolute_url(self):
         return reverse('profiles_account')
     
-    
-    def has_perm(self, perm, obj=None):
-        return True
-    
-    
+    @property 
+    def is_manager(self):
+        from backend import GROUP_NAME
+        if self.is_superuser or self.is_admin:
+            return True
+        return GROUP_NAME in self.groups.values_list("name", flat=True)
+        
     def has_module_perms(self, app_label):
         staff_apps = ['activities', 'profiles', 'constance', 'extended_flatpages']
         # no registration nore auth
@@ -178,13 +182,25 @@ class Child(TimeStampedModel):
     
     
     def __unicode__(self):
-        return '%s %s' % (self.first_name, self.last_name)
+        return '%s %s' % (self.first_name.title(), self.last_name.title())
 
+class RegistrationManager(models.Manager):
+    def get_queryset(self):
+        return super(RegistrationManager, self).get_queryset().exclude(status=Registration.STATUS.canceled)
+    
+    def all_with_deleted(self):
+        return super(RegistrationManager, self).get_queryset().all()
 
-class Registration(TimeStampedModel):
-    course = models.ForeignKey('activities.Course', related_name="participants")
+class Registration(TimeStampedModel, StatusModel):
+    STATUS = Choices(('waiting', _("Waiting parent's confirmation")),
+                     ('valid', _("Validated by parent")),
+                     ('canceled', _("Canceled by administrator")),
+                     ('confirmed', _("Confirmed by administrator")),
+                     )
+    course = models.ForeignKey('activities.Course', related_name="participants", verbose_name=_("Course"))
     child = models.ForeignKey('Child')
-    validated = models.BooleanField(default=False, db_index=True,verbose_name=_("Confirmed registration"))
+    
+    objects = RegistrationManager()
     
     @property
     def extra_needs(self):
@@ -197,6 +213,9 @@ class Registration(TimeStampedModel):
         return _(u'%(child)s ⇒ course %(number)s (%(activity)s)') % {'child': unicode(self.child), 
                                                                       'number': self.course.number,
                                                                       'activity': self.course.activity.name}
+    
+    def cancel(self):
+        self.status = self.STATUS.canceled 
     
     def overlap(self, r2):
         "Test if another registration object overlaps with this one."  

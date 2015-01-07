@@ -67,12 +67,12 @@ class ExtraNeed(models.Model):
 class Course(models.Model):
     "A course, i.e. an instance of an activity"
     activity = models.ForeignKey('Activity', related_name='courses')
-    number = models.IntegerField(db_index=True, unique=True, null=True, blank=True, verbose_name=_("Number"))
+    number = models.IntegerField(db_index=True, unique=True, null=True, blank=True, verbose_name=_("Identifier"))
     uptodate = models.BooleanField(verbose_name=_("Course up to date"), default=False)
-    responsible = models.ForeignKey('Responsible', verbose_name=_("Responsible"))
+    responsible = models.ForeignKey('Responsible', verbose_name=_("Responsible"), related_name='courses')
     price = models.DecimalField(max_digits=5, decimal_places=2, verbose_name=_("Price"))
     number_of_sessions = models.PositiveSmallIntegerField(verbose_name=_("Number of sessions"))
-    day = models.PositiveSmallIntegerField(choices=DAYS_OF_WEEK, verbose_name=_("Day"))
+    day = models.PositiveSmallIntegerField(choices=DAYS_OF_WEEK, verbose_name=_("Day"), default=1)
     start_date = models.DateField(verbose_name=_("Start date"))
     end_date = models.DateField(verbose_name=_("End date"))
     start_time = models.TimeField(verbose_name=_("Start time"))
@@ -116,16 +116,29 @@ class Course(models.Model):
     def school_years(self):
         return range(self.schoolyear_min, self.schoolyear_max + 1)
     
-
+    @property
+    def short_name(self):
+        return '%s (%s)' % (self.activity.name, self.number)
+        
 
     def __unicode__(self):
-        return u'%s (%s): du %s au %s les %s à %s (%sp-%sp)' % (self.activity.name, self.number,
-                                                          self.start_date.strftime("%d/%m/%Y"), 
-                                                          self.end_date.strftime("%d/%m/%Y"),
-                                                          self.day_name.lower(),
-                                                          self.start_time.strftime("%H:%M"),
-                                                          self.schoolyear_min, self.schoolyear_max)
-    
+        base = _(u'%(activity)s (%(number)s): from %(start)s to %(end)s, every %(day)s at %(hour)s.')
+        base %= {'activity': self.activity.name,
+                 'number': self.number,
+                 'start': self.start_date.strftime("%d/%m/%Y"), 
+                 'end': self.end_date.strftime("%d/%m/%Y"),
+                 'day': self.day_name.lower(),
+                 'hour': self.start_time.strftime("%H:%M"),
+                 }
+        if self.full:
+            fullness = _('Course full')
+        else:
+            fullness = _('%(available)s out of %(total)s places remaining') 
+            fullness %= {'available': self.available_places, 'total': self.max_participants}
+        return base + ' ' + fullness
+        
+        
+            
     class Meta:
         ordering = ('activity__name', 'number', )
         verbose_name = _("course")
@@ -148,6 +161,10 @@ class Responsible(models.Model):
     @property
     def fullname(self):
         return self.__unicode__
+    
+    def get_backend_url(self):
+        return reverse('backend:responsible-detail', kwargs={"pk": self.pk})
+
     
     class Meta:
         ordering = ['last', 'first']

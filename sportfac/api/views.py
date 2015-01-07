@@ -5,15 +5,14 @@ from rest_framework import viewsets, permissions
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication
-from rest_framework import mixins, generics, status
-
+from rest_framework import mixins, generics, status, filters
 
 
 from activities.models import Activity, Course
 from profiles.models import Child, Teacher, Registration, ExtraInfo
 from .serializers import (ActivitySerializer, ActivityDetailedSerializer, 
                           ChildrenSerializer, CourseSerializer, TeacherSerializer,
-                          RegistrationSerializer, ExtraSerializer)
+                          RegistrationSerializer, ExtraSerializer, SimpleChildrenSerializer)
 
 
 class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
@@ -66,12 +65,21 @@ class FamilyView(mixins.ListModelMixin, generics.GenericAPIView):
         return self.list(request, *args, **kwargs)
 
 
+class ManagerPermission(permissions.IsAuthenticated):
+    def has_object_permission(self, request, view, obj):
+        """
+        Return `True` if permission is granted, `False` otherwise.
+        """
+        if request.user.is_manager:
+            return True
+        return False
+
 class FamilyOrAdminPermission(permissions.IsAuthenticated):
     def has_object_permission(self, request, view, obj):
         """
         Return `True` if permission is granted, `False` otherwise.
         """
-        if request.user.is_staff or request.user == obj.family:
+        if request.user.is_manager or request.user == obj.family:
             return True
         return False
         
@@ -98,14 +106,23 @@ class ChildrenViewSet(viewsets.ModelViewSet):
                             headers=headers)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+
+
+class SimpleChildrenViewSet(viewsets.ReadOnlyModelViewSet):
+    model = Child
+    permission_classes = (ManagerPermission, )
+    serializer_class = SimpleChildrenSerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('first_name', 'last_name')
+    
+
 
 class ChildOrAdminPermission(permissions.IsAuthenticated):
     def has_object_permission(self, request, view, obj):
         """
         Return `True` if permission is granted, `False` otherwise.
         """
-        if request.user.is_staff or request.user == obj.child.family:
+        if request.user.is_manager or request.user == obj.child.family:
             return True
         return False
 
@@ -146,7 +163,7 @@ class RegistrationOwnerAdminPermission(permissions.IsAuthenticated):
         """
         Return `True` if permission is granted, `False` otherwise.
         """
-        if request.user.is_staff or request.user == obj.registration.child.family:
+        if request.user.is_manager or request.user == obj.registration.child.family:
             return True
         return False
 

@@ -1,0 +1,31 @@
+{% extends "backend/base.html" %}
+{% load i18n floppyforms %}
+
+{% block title %}{% trans "Create a new course" %} - {{ block.super }}{% endblock %}
+{% block page_title %}<i class="icon-graduation-cap"></i>&nbsp;&nbsp;{% trans "Create a new course" %}{% endblock %}
+
+{% block content %}
+<form action="" method="post">{% csrf_token %}
+  {% include "backend/course/form.html" %}
+  <div class="form-group">
+      <button type="submit" class="btn btn-success btn-large"><i class="icon-plus"></i>&nbsp;{% trans 'Create course' %}</button>
+  </div>
+</form>
+{% endblock content %}
+
+{% block extra_js %}
+{{ block.super }}
+<script src="{{ STATIC_URL }}js/vendor/moment-with-locales.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript">
+  $(function () {
+    $('.datetimepicker').datetimepicker({
+        language: '{{ LANGUAGE_CODE }}',
+        icons: {time: 'icon-clock', 
+                date: 'icon-calendar', 
+                up:   'icon-up-open', 
+                down: 'icon-down-open'}
+        });
+  });
+</script>
+{% endblock extra_js %}

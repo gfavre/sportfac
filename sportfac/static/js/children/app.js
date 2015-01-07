@@ -1,6 +1,6 @@
 // Declare app level module which depends on filters, and services
 
-angular.module('sportfacChildren', ['sportfacChildren.services', 'sportfacChildren.controllers', 'ngRoute', 'ngCookies', '$strap.directives' ]).
+angular.module('sportfacChildren', ['sportfacChildren.services', 'sportfacChildren.controllers', 'ngRoute', 'ngCookies', 'mgcrea.ngStrap' ]).
 
 config(['$routeProvider', function($routeProvider) {
   'use strict';

@@ -1,15 +1,26 @@
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
+import django.contrib.auth.forms as auth_forms
 from django.forms import ModelForm, Form
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import mark_safe
 
 import floppyforms as forms
 
+class PasswordChangeForm(auth_forms.PasswordChangeForm):
+    old_password = forms.CharField(label=_("Old password"),
+                                   widget=forms.PasswordInput)
+    new_password1 = forms.CharField(label=_("New password"),
+                                    widget=forms.PasswordInput)
+    new_password2 = forms.CharField(label=_("New password confirmation"),
+                                    widget=forms.PasswordInput)
+
+class PasswordResetForm(auth_forms.PasswordResetForm):
+    email = forms.EmailField(label=_("Email"), max_length=254, 
+                             widget=forms.EmailInput(attrs={'placeholder': 'john@example.com'}))
 
 
-
-class ContactInformationForm(ModelForm):
+class ContactInformationForm(forms.ModelForm):
     required_css_class = 'required'
     email = forms.EmailField(label=_("E-mail"), 
                              widget=forms.EmailInput(attrs={'placeholder': 'john@example.com'}))
@@ -42,7 +53,7 @@ class ContactInformationForm(ModelForm):
 
 
 
-class RegistrationForm(Form):
+class RegistrationForm(forms.Form):
     """
     Form for registering a new user account.
     
@@ -101,8 +112,8 @@ class RegistrationForm(Form):
         return self.cleaned_data
 
 
-class AcceptTermsForm(Form):
-    accept = forms.BooleanField(required=True)
+class AcceptTermsForm(forms.Form):
+    accept = forms.BooleanField(required=True, widget=forms.CheckboxInput(attrs={'style': 'margin-top:0;'}))
     
     def __init__(self, *args, **kwargs):
         super(AcceptTermsForm, self).__init__(*args, **kwargs)

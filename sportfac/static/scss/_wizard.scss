@@ -1,3 +1,19 @@
+.pager li>button{
+    display:inline-block;
+    padding:5px 14px;
+    background-color:#fff;
+    border:1px solid #ddd;
+    -webkit-border-radius:15px;
+    -moz-border-radius:15px;
+    border-radius:15px;}
+.pager li>button:hover,.pager li>button:focus{text-decoration:none;background-color:#f5f5f5;}
+.pager .next>button {float:right;}
+.pager .previous>button {float:left;}
+.pager .disabled>button,.pager .disabled>button:hover,.pager .disabled>button:focus{
+    color:#999999;background-color:#fff;cursor:default;}
+
+
+
 @media (min-width: 1200px) { 
 .wizard {
   background-color: #f9f9f9;

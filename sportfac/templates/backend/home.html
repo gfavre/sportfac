@@ -1,0 +1,76 @@
+{% extends "backend/base.html" %}
+{% load i18n %}
+{% load humanize %} 
+
+
+{% block title %}{% trans "Administration" %} - {{ block.super }}{% endblock %}
+
+{% block page_header %}{% endblock %}
+{% block page_title %}{% trans "Administration" %}{% endblock %}
+
+{% block content %}
+
+<div class="row">
+<section class="col-md-12">
+  <div class="portlet">
+    <h4 class="portlet-title">
+      <u><i class="icon-hourglass"></i>{% trans "Opening & closing" %}</u>
+    </h4>
+    {% if config.CURRENT_PHASE == 1 %}
+    
+    {% if registration_past %}
+    Registrations are past
+    
+    {% elif registration_opened %}
+    {% widthratio minutes_spent minutes_total 100|add:"0" as percentage %}
+  
+    <div class="progress-stat">
+      <div class="progress-stat-label">{% trans "Registrations open"%}</div>
+      <div class="progress-stat-value">{% blocktrans with time=registration_end|timeuntil %}{{ time }} remaining{% endblocktrans %}</div>
+      <div class="progress progress-sm">
+        {% with pp=percentage|add:"0" %}
+        <div class="progress-bar {% if pp < 50 %}progress-bar-success{% elif pp < 80 %}progress-bar-warning{% else %}progress-bar-danger{% endif %}" role="progressbar" 
+             aria-valuenow="{{ minutes_spent }}" aria-valuemin="0" 
+             aria-valuemax="{{ minutes_total }}" 
+             style="width: {{ percentage }}%">
+          <span class="sr-only">{% blocktrans with time=registration_start|timesince %}{{ time }} since opening of registrations{% endblocktrans %}</span>
+        </div>
+        {% endwith %}
+      </div>
+    </div>
+    <form>
+         </form>
+    {% elif registration_due %}
+    Registrations set in the future
+    {% else %}
+    Registrations are illogical
+    {% endif %}
+    {% endif %}
+    <dl class="dl-horizontal">
+      <dt>{% trans "Opening date"%}</dt><dd>{{ registration_start|date:"l j E Y, H:i" }}</dd>
+      <dt>{% trans "Closing date"%}</dt><dd>{{ registration_end|date:"l j E Y, H:i" }}</dd>
+    </dl>
+    [ <a href="{% url 'backend:dates' %}">{% trans "Change dates"%}</a> ]
+
+  </div>
+</section>
+</div>
+
+<div class="row">
+  <div class="col-sm-6 col-md-4">
+    {% include 'backend/portlets/paid.html'%}
+  </div>
+  <div class="col-sm-6 col-md-8">
+    {% include 'backend/portlets/registrations.html'%}
+  </div>
+</div>
+
+<section>
+  <ul>
+    <li><a href="{% url 'backend:activity-list' %}">{% trans "Manage activities" %}</a></li>
+    <li><a href="{% url 'backend:course-list' %}">{% trans "Manage courses" %}</a></li>
+    <li><a href="{% url 'backend:responsible-list' %}">{% trans "Manage responsibles" %}</a></li>
+
+  </ul>
+</section>
+{% endblock content %}

@@ -6,9 +6,13 @@
 
 
 {% block content %}
+<h3 class="content-title">
+  <u>{% trans "Edit profile" %}</u>
+</h3>
+
 {% form form using %}
 {% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
-<form action="." method="post" class="form-horizontal">{% csrf_token %}
+<form action="." method="post" class="form-horizontal" role="form">{% csrf_token %}
 {% block errors %}
   {% for error in form.non_field_errors %}
   <div class="alert alert-error">
@@ -25,35 +29,39 @@
 {% endblock errors %}
 
   <fieldset>
-    <legend>{% trans "Login informations" %}</legend>
-    {% formrow form.email %}
-    <div class="control-group"><a href="{% url 'auth_password_change' %}">{% trans "Change password" %}</a></div>
-  </fieldset>
-  <fieldset>
-    <legend>{% trans "Contact informations" %}</legend>
     {% formrow form.first_name %}
     {% formrow form.last_name %}
+    {% formrow form.email %}
     {% formrow form.address %}
-    <div class="control-group">
-      <label class="control-label">{% trans "City" %} <span class="required">*</span></label>
-      <div class="controls form-inline required ">
-        <input type="text" name="zipcode" value="{{ form.zipcode.value }}" required="" placeholder="1296" id="id_zipcode" class="input-mini" maxlength="4">
-        {% formfield form.city %}
+    <div class="form-group">
+      <label class="control-label col-sm-2">{% trans "City" %} <span class="required">*</span></label>
+      <div class="col-sm-10">
+        <div class="row">
+          <div class="col-sm-2">
+            {% formfield form.zipcode using "floppyforms/100percentinput.html" %}
+          </div>
+          <div class="col-sm-10">
+            {% formfield form.city using "floppyforms/100percentinput.html" %}
+          </div>
+        </div>
       </div>
     </div>
     {% formrow form.private_phone %}
     {% formrow form.private_phone2 %}
     {% formrow form.private_phone3 %}
-    
   </fieldset>
   
-  <div class="form-actions">
+  <div class="form-group">
     {% if wizard_mode %}
-    <div class="pull-right">
-      <button type="submit" class="btn btn-primary btn-large">{% trans "Save and continue" %} <i class="icon-chevron-right icon-white"></i></button>
+    <div class="col-sm-12">
+      <div class="pull-right">
+        <button type="submit" class="btn btn-primary btn-large">{% trans "Save and continue" %} <span class="icon-chevron-right icon-white"></span></button>
+      </div>
     </div>
     {% else %}
-    <button type="submit" class="btn btn-success btn-large">{% trans "Save" %}</button>
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-success btn-large">{% trans "Save" %}</button>
+    </div>
     {% endif %}
   </div>
 </form>
