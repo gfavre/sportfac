@@ -1,0 +1,15 @@
+{% extends "backend/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Delete course" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "Please confirm deletion" %}{% endblock %}
+
+{% block content %}
+le mail
+
+<form action="" method="post">{% csrf_token %}
+  <p>{% blocktrans %}Are you sure you want to send this mail ?{% endblocktrans %}</p>
+  <button type="submit" class="btn btn-danger"><i class="icon icon-email"></i>&nbsp;{% trans 'Send email' %}</button>
+</form>
+
+{% endblock content %}

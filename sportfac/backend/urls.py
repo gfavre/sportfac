@@ -9,7 +9,7 @@ from .views import CourseCreateView, CourseDeleteView, CourseDetailView, \
                    ResponsibleListView, ResponsibleUpdateView, \
                    RegistrationCreateView, RegistrationDeleteView, RegistrationDetailView, \
                    RegistrationListView, RegistrationUpdateView, \
-                   RegistrationDatesView, HomePageView
+                   RegistrationDatesView, HomePageView, SimpleMailView
 
 courses_patterns = patterns('', 
     url(r'^$', view=CourseListView.as_view(), 
@@ -64,6 +64,10 @@ registrations_patterns = patterns('',
         name='registration-delete'),
 )
 
+mail_patterns = patterns('', 
+    url(r'^$', view=SimpleMailView.as_view(), 
+        name='simple-mail'),
+)
 
 
 
@@ -72,6 +76,9 @@ urlpatterns = patterns('',
     url(r'^dates$', RegistrationDatesView.as_view(), name='dates'),
     url(r'^activity/', include(activities_patterns)),
     url(r'^course/', include(courses_patterns)),
+    url(r'^mail/', include(mail_patterns)),
+
     url(r'^registrations/', include(registrations_patterns)),
     url(r'^responsible/', include(responsibles_patterns)),
+    
 )
