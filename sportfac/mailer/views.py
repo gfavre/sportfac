@@ -56,13 +56,7 @@ class MailMixin(ContextMixin):
         else:
             return template
     
-    #def get_context_data(self, **kwargs):
-    #    context = super(MailMixin, self).get_context_data(**kwargs)
-    #    recipients = self.get_recipients_list()
-    #    context['recipients'] = recipients
-    #    context['recipients_emails'] = [self.get_recipient_address(rcp) for rcp in recipients]
-    
-        
+       
     def get_subject(self):
         if self.subject is None:
             raise ImproperlyConfigured(
@@ -88,21 +82,20 @@ class MailMixin(ContextMixin):
             return self.success_message
         return _("Message has been scheduled to be sent.")
     
+    def get_mail_body(self, context):
+        return self.get_message_template().render(Context(context))    
+    
     def mail(self, request, *args, **kwargs):
         success_url = self.get_success_url()
         recipients = self.get_recipients_list()
         
         for recipient in recipients:
             context = self.get_context_data(**kwargs)
-            context['mailer_recipient'] = recipient
-            context = Context(context)
-            to_email = self.get_recipient_address(recipient)
-            subject = self.get_subject()
-            message = self.get_message_template().render(context)
-            from_email = self.get_from_address()
-            send_mail(subject=subject, message=message, 
-                      from_email=from_email, 
-                      recipient_list=[to_email,])
+            context.update(get_mail_context(recipient))
+            send_mail(subject=self.get_subject(), 
+                      message=self.get_mail_body(context), 
+                      from_email=self.get_from_address(), 
+                      recipient_list=[self.get_recipient_address(recipient),])
         messages.add_message(self.request, messages.SUCCESS, 
                              self.get_success_message())
         return HttpResponseRedirect(success_url)
@@ -110,13 +103,39 @@ class MailMixin(ContextMixin):
     def post(self, request, *args, **kwargs):
         return self.mail(request, *args, **kwargs)
           
-   
+    
 
 
 class MailView(MailMixin, TemplateView):
+    template_name = 'backend/mail/preview.html'
     
+    def add_mail_context(self, mailnumber, context):
+        "Get context, add navigation"
+        
+        recipients = self.get_recipients_list()
+        context['total'] = recipients.count()
+        context['recipient'] = recipients[mailnumber]
+
+        context['to_email'] = self.get_recipient_address(context['recipient'] )
+        context['from_email'] = self.get_from_address()
+        context['subject'] = self.get_subject()
+        context['message'] = self.get_mail_body(context)
+        
+        context['mailidentifier'] = mailnumber + 1
+        context['has_prev'] = mailnumber != 0
+        context['prev'] = mailnumber
+        context['has_next'] = mailnumber +1 != context['total']
+        context['next'] = mailnumber + 2
+        
+        return context
+ 
     def get(self, request, *args, **kwargs):
+        "Preview emails."
+        mailnumber = int(self.request.GET.get('number', 1)) - 1
+
         context = self.get_context_data(**kwargs)
+        context = self.add_mail_context(mailnumber, context)
+        
         return self.render_to_response(context)
 
     

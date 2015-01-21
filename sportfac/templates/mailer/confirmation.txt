@@ -1,11 +1,15 @@
 Madame, Monsieur,
+
 En passant en revue les inscriptions aux sports scolaires facultatifs, nous constatons que les inscriptions pour votre/vos enfant/s ne sont à ce jour pas encore confirmées (passage à l'étape du paiement).
 
 Nous vous serions reconnaissants de bien vouloir contrôler les inscriptions que vous avez saisies, de les modifier si nécessaire et de confirmer d'ici à demain soir (11.9.13) afin que nous puissions terminer le processus d'inscription.
 
-Le site des inscriptions: {{ SITE_URL }}
+Le site des inscriptions: {{ url }}
+
 Enfin, nous vous saurions gré de verser le montant relatif à ces inscriptions sur le compte indiqué.
 En vous remerciant de votre collaboration, nous vous adressons nos cordiaux messages.
+
+
 Remo Aeschbach
 Doyen
 responsable du sport scolaire facultatif
