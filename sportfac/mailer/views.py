@@ -91,7 +91,7 @@ class MailMixin(ContextMixin):
         
         for recipient in recipients:
             context = self.get_context_data(**kwargs)
-            context.update(get_mail_context(recipient))
+            context['recipient'] = recipient
             send_mail(subject=self.get_subject(), 
                       message=self.get_mail_body(context), 
                       from_email=self.get_from_address(), 
@@ -113,7 +113,7 @@ class MailView(MailMixin, TemplateView):
         "Get context, add navigation"
         
         recipients = self.get_recipients_list()
-        context['total'] = recipients.count()
+        context['total'] = len(recipients)
         context['recipient'] = recipients[mailnumber]
 
         context['to_email'] = self.get_recipient_address(context['recipient'] )

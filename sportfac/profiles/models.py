@@ -190,6 +190,10 @@ class RegistrationManager(models.Manager):
     
     def all_with_deleted(self):
         return super(RegistrationManager, self).get_queryset().all()
+    
+    def waiting(self):
+        return self.get_queryset().filter(status=Registration.STATUS.waiting)
+    
 
 class Registration(TimeStampedModel, StatusModel):
     STATUS = Choices(('waiting', _("Waiting parent's confirmation")),

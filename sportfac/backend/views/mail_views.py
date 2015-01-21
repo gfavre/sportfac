@@ -12,16 +12,19 @@ from django.views.generic import CreateView, DeleteView, DetailView, \
 from profiles.models import FamilyUser
 
 from mailer.views import MailView
-
+from profiles.models import Registration
 from .mixins import BackendMixin
 
 
 class NeedConfirmationView(BackendMixin, MailView):
     "Mail to people having not confirmed activities yet."
-    recipients_queryset = FamilyUser.objects.filter(is_superuser=False)
     success_url = reverse_lazy('backend:home')
     subject = 'Inscription au sport scolaire facultatif - EP Coppet'
     message_template = 'mailer/confirmation.txt'
+    
+    def get_recipients_list(self):
+        parents = list(set([reg.child.family for reg in  Registration.objects.waiting()]))
+        return parents
     
     def get_context_data(self, **kwargs):
         context = super(NeedConfirmationView, self).get_context_data(**kwargs)
@@ -46,7 +49,7 @@ class ParticipantsView(BackendMixin, MailView):
     subject = 'Inscription au sport scolaire facultatif - EP Coppet'
     message_template = 'mailer/confirmation.txt'
     
-    def get_recipient_list(self):
+    def get_recipients_list(self):
         pass
     
     def get_context_data(self, **kwargs):
