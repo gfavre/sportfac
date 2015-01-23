@@ -2,6 +2,6 @@
 #	production that isn't in development.
 -r base.txt
 
-gunicorn==0.17.0
+gunicorn==19.1.1
 redis==2.10.3
-django-constance[redis]==1.0
+django-constance[redis]==1.0.1

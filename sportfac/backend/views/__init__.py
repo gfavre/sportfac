@@ -4,7 +4,8 @@ from .activity_views import ActivityCreateView, ActivityDeleteView, ActivityDeta
 from .course_views import CourseCreateView, CourseDeleteView, CourseDetailView, \
                           CourseListView, CourseUpdateView
 
-from .mail_views import NeedConfirmationView, NotPaidYetView
+from .mail_views import NeedConfirmationView, NotPaidYetView, ParticipantsView,\
+                        MailArchiveListView
 
 from .registration_views import RegistrationCreateView, RegistrationDeleteView, RegistrationDetailView, \
                                 RegistrationListView, RegistrationUpdateView

@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.sites.models import get_current_site
+from django.http import Http404
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse, reverse_lazy
@@ -9,11 +10,18 @@ from django.views.generic import CreateView, DeleteView, DetailView, \
                                 ListView, UpdateView
 
 
-from profiles.models import FamilyUser
-
+from profiles.models import FamilyUser, Registration
 from mailer.views import MailView
-from profiles.models import Registration
+from mailer.models import MailArchive
+from activities.models import Course
+
+
 from .mixins import BackendMixin
+
+class MailArchiveListView(BackendMixin, ListView):
+    model = MailArchive
+    template_name = 'backend/mail/list.html'
+
 
 
 class NeedConfirmationView(BackendMixin, MailView):
@@ -47,18 +55,35 @@ class ParticipantsView(BackendMixin, MailView):
     recipients_queryset = FamilyUser.objects.filter(is_superuser=False)
     success_url = reverse_lazy('backend:home')
     subject = 'Inscription au sport scolaire facultatif - EP Coppet'
-    message_template = 'mailer/confirmation.txt'
+    message_template = 'mailer/course-begin.txt'
+
+    def get_recipient_address(self, recipient):
+       return super(ParticipantsView, self).get_recipient_address(recipient.child.family)
+    
+    def add_recipient_context(self, recipient, context):
+        context['recipient'] = recipient.child.family
+        context['child'] = recipient.child
+        context['registration'] = recipient
+   
+    def add_mail_context(self, mailnumber, context):
+        "Get context, add navigation"
+        context['to_email'] = self.get_recipient_address(context['registration'] )
+        context['from_email'] = self.get_from_address()
+        context['subject'] = self.get_subject()
+        context['message'] = self.get_mail_body(context)        
+
     
     def get_recipients_list(self):
-        pass
+        return self.course.participants.all()
     
     def get_context_data(self, **kwargs):
         context = super(ParticipantsView, self).get_context_data(**kwargs)
         try:
-            course = Course.objects.get(id=self.kwargs.get('course'))
+            course = Course.objects.get(number=self.kwargs.get('course'))
+            self.course = course
             context['course'] = course
         except Course.DoesNotExist:
-            pass
+            raise Http404(_("No course found"))
 
         context['url'] = ''.join(('http://', 
                                   get_current_site(self.request).domain,

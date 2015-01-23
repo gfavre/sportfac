@@ -10,12 +10,4 @@ Enfin, nous vous saurions gré de verser le montant relatif à ces inscriptions 
 En vous remerciant de votre collaboration, nous vous adressons nos cordiaux messages.
 
 
-Remo Aeschbach
-Doyen
-responsable du sport scolaire facultatif
-EPCoppet
-Chemin du Chaucey 7
-1296 Coppet
-remo.aeschbach@vd.educanet2.ch
-+4122 | 557 58 58
-+4179 | 417 69 93
+{{ signature }}

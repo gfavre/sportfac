@@ -1,23 +1,24 @@
-Django==1.7.1
+Django>=1.7.0,<1.8
 psycopg2==2.5.4
-bpython==0.13.1
+bpython==0.13.2
 
 # Forms
 django-braces==1.4.0
-django-floppyforms==1.2.0
-django-autocomplete-light==2.0.5
+django-floppyforms==1.3.0
+django-autocomplete-light==2.0.7
 Django-Select2==4.2.2
 
 django-model-utils==2.2
 logutils==0.3.3
-Pillow==2.6.1
+Pillow==2.7.0
 djangorestframework==2.4.4
 django-registration-redux==1.1
-django-grappelli==2.6.2
-django-pipeline==1.3.26
-pytz==2014.9
-django-ckeditor==4.4.6
+django-grappelli==2.6.3
+django-pipeline==1.4.3
+pytz==2014.10
+django-ckeditor==4.4.7
 django_extended_flatpages==0.1
-django-sekizai==0.7
+django-sekizai==0.8.1
 django-filter==0.9.1
-phonenumbers==7.0.1
+phonenumbers==7.0.2
+django-dbtemplates==1.3

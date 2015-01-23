@@ -72,6 +72,11 @@ mail_patterns = patterns('',
         name='mail-needconfirmation'),
     url(r'^not-paid-yet', view=views.NotPaidYetView.as_view(), 
         name='mail-notpaidyet'),
+    url(r'^participants/(?P<course>[\w-]+)$', view=views.ParticipantsView.as_view(), 
+        name='mail-notpaidyet'),
+    url(r'^archive', view=views.MailArchiveListView.as_view(), 
+        name='archive')
+
 
 )
 
