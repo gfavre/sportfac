@@ -384,3 +384,11 @@ CKEDITOR_CONFIGS = {
 
 ############# Select2
 AUTO_RENDER_SELECT2_STATICS = False
+
+
+############ Celery
+# Asynchrnous tasks. 
+# See http://celery.readthedocs.org/en/latest/configuration.html
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'

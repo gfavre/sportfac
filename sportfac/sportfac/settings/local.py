@@ -55,8 +55,9 @@ CACHES = {
 ########## TOOLBAR CONFIGURATION
 # See: https://github.com/django-debug-toolbar/django-debug-toolbar#installation
 INSTALLED_APPS += (
-    'django_extensions',
-    'debug_toolbar',
+    'django_extensions', # more commands
+    'debug_toolbar', # debugging
+    'kombu.transport.django', # celery broker using django db
 )
 
 # See: https://github.com/django-debug-toolbar/django-debug-toolbar#installation
@@ -81,4 +82,7 @@ MEDIA_ROOT = normpath(join(dirname(SITE_ROOT), 'media'))
 ########### CKEDITOR
 CKEDITOR_UPLOAD_PATH = MEDIA_ROOT
 
-
+############ Celery
+# Asynchrnous tasks. 
+# See http://celery.readthedocs.org/en/latest/configuration.html
+BROKER_URL = 'django://'
