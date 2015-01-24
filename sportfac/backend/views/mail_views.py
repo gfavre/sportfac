@@ -90,3 +90,10 @@ class ParticipantsView(BackendMixin, MailView):
                                   reverse('wizard_confirm')))
         return context
 
+class TestSuperadmin(BackendMixin, MailView):
+    "Mail to people having registered to courses but not paid yet"
+    recipients_queryset = FamilyUser.objects.filter(is_superuser=True)
+    success_url = reverse_lazy('backend:home')
+    subject = 'Test superadmin'
+    message_template = 'mailer/notpaid.txt'
+ 
