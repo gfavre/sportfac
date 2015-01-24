@@ -92,6 +92,7 @@ env.mailhost          = MAILHOST
 env.mailuser          = MAILUSER
 env.mailpassword      = MAILPASSWORD
 env.mailaddress       = MAILADDRESS
+env.broker            = BROKER_URL
 
 env.domain            = "beyondthewall.ch"
 env.subdomains        = ['sportfac',]
@@ -233,7 +234,7 @@ def reload_app(arg=None):
     
     if arg <> "quick":
         with cd(env.project_dir):
-            _ve_run(env.project, "pip install -r requirements.txt")
+            _ve_run(env.project, "pip install -r requirements.txt --upgrade")
             djangoadmin('syncdb')
             djangoadmin('migrate')
             djangoadmin('collectstatic --noinput')

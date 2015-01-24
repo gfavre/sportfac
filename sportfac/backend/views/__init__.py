@@ -5,7 +5,7 @@ from .course_views import CourseCreateView, CourseDeleteView, CourseDetailView, 
                           CourseListView, CourseUpdateView
 
 from .mail_views import NeedConfirmationView, NotPaidYetView, ParticipantsView,\
-                        MailArchiveListView
+                        MailArchiveListView, TestSuperadmin
 
 from .registration_views import RegistrationCreateView, RegistrationDeleteView, RegistrationDetailView, \
                                 RegistrationListView, RegistrationUpdateView

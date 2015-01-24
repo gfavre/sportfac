@@ -75,9 +75,9 @@ mail_patterns = patterns('',
     url(r'^participants/(?P<course>[\w-]+)$', view=views.ParticipantsView.as_view(), 
         name='mail-notpaidyet'),
     url(r'^archive', view=views.MailArchiveListView.as_view(), 
+        name='archive'),
+    url(r'^test', view=views.TestSuperadmin.as_view(), 
         name='archive')
-
-
 )
 
 
