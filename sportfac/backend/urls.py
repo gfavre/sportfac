@@ -74,10 +74,15 @@ mail_patterns = patterns('',
         name='mail-notpaidyet'),
     url(r'^participants/(?P<course>[\w-]+)$', view=views.ParticipantsView.as_view(), 
         name='mail-notpaidyet'),
+    url(r'^participants/(?P<course>[\w-]+)/custom$', 
+        view=views.CustomMailParticipantsView.as_view(),
+        name="mail-participants-custom"),
+    url(r'^participants/(?P<course>[\w-]+)/custom/preview$', 
+        view=views.CustomMailParticipantsPreview.as_view(),
+        name="mail-participants-custom-preview"),
+    
     url(r'^archive', view=views.MailArchiveListView.as_view(), 
         name='archive'),
-    url(r'^test', view=views.TestSuperadmin.as_view(), 
-        name='archive')
 )
 
 

@@ -1,0 +1,15 @@
+{% extends "backend/base.html" %}
+{% load i18n floppyforms %}
+
+{% block title %}{% trans "Mail to participants" %} - {{ block.super }}{% endblock %}
+{% block page_title %}<i class="icon icon-mail"></i>&nbsp;&nbsp;{% trans "Mail to participants" %}{% endblock %}
+
+{% block content %}
+<form action="" method="post" class="form-horizontal">{% csrf_token %}
+  {{ form }}
+    <div class="col-sm-offset-2"> 
+      <button type="submit" class="btn btn-success btn-large"><i class="icon-check"></i>&nbsp;{% trans 'Save and preview' %}</button>
+    </div>
+</form>
+{% endblock content %}
+

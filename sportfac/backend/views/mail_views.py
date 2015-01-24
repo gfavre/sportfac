@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.formtools.wizard.views import SessionWizardView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.sites.models import get_current_site
 from django.http import Http404
@@ -9,17 +10,20 @@ from django.template import loader, Context, RequestContext
 from django.views.generic import CreateView, DeleteView, DetailView, \
                                 ListView, UpdateView
 
-
 from profiles.models import FamilyUser, Registration
-from mailer.views import MailView
+from mailer.views import MailView, MailCreateView
 from mailer.models import MailArchive
 from activities.models import Course
 
-
 from .mixins import BackendMixin
 
+__all__ = ['MailArchiveListView', 'NeedConfirmationView',
+           'NotPaidYetView', 'ParticipantsView',
+           'CustomMailParticipantsView', 'CustomMailParticipantsPreview']
+
+
 class MailArchiveListView(BackendMixin, ListView):
-    model = MailArchive
+    queryset = MailArchive.sent.all()
     template_name = 'backend/mail/list.html'
 
 
@@ -89,6 +93,35 @@ class ParticipantsView(BackendMixin, MailView):
                                   get_current_site(self.request).domain,
                                   reverse('wizard_confirm')))
         return context
+
+
+class CustomMailParticipantsView(BackendMixin, MailCreateView):
+    template_name = 'backend/mail/create.html'
+    
+    def get_success_url(self):
+        course = self.kwargs['course']                
+        return reverse('backend:mail-participants-custom-preview', 
+                       kwargs={'course': course })
+    
+     
+
+class CustomMailParticipantsPreview(ParticipantsView):
+    template_name = 'backend/mail/preview-editlink.html'
+    
+    def get_message_template(self):
+        mail_id = self.request.session.get('mail', None)
+        try:
+            mail = MailArchive.objects.get(id=mail_id)
+        except MailArchive.DoesNotExist:
+            raise Http404()
+        return self.resolve_template(mail.template)
+    
+
+
+#class ParticipantsView(ParticipantsBeginView):
+    
+
+
 
 class TestSuperadmin(BackendMixin, MailView):
     "Mail to people having registered to courses but not paid yet"

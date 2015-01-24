@@ -1,4 +1,4 @@
-import six
+import six, time, itertools
 
 from django.conf import settings
 from django.contrib import messages
@@ -10,12 +10,16 @@ from django.template import loader, Context, RequestContext
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext as _
 from django.views.generic.base import TemplateView, ContextMixin
+from django.views.generic.edit import FormView
+from django.http import Http404
+
 
 from constance import config
+from dbtemplates.models import Template
 
 from .models import MailArchive
 from .tasks import send_mail
-
+from .forms import MailForm
 
 # Create your views here.
 class MailMixin(ContextMixin):
@@ -164,4 +168,51 @@ class MailView(MailMixin, TemplateView):
         
         return self.render_to_response(context)
 
+
+class MailCreateView(FormView):
+    form_class = MailForm            
     
+    def get_archive_from_session(self):
+        if not 'mail' in self.request.session:
+            return None
+        try:
+            return MailArchive.objects.get(id=self.request.session['mail'])
+        except MailArchive.DoesNotExist:
+            del self.request.session['mail']
+            return None
+    
+    def get_template_from_archive(self, archive):
+        template, created = Template.objects.get_or_create(name=archive.template)
+        return template
+    
+    def get_initial(self):
+        if 'mail' in self.request.session:
+            archive = MailArchive.objects.get(id=self.request.session['mail'])
+            template = Template.objects.get(name=archive.template)
+            return {'message': template.content,
+                    'subject': archive.subject}
+        return {}
+    
+    def form_valid(self, form):
+        archive = self.get_archive_from_session()
+        if archive:
+            template = self.get_template_from_archive(archive)
+        else:
+            template = Template()
+            orig = time.strftime('%Y-%m-%d-%H-%M-custom')
+            template.name = orig + '.txt'
+            for x in itertools.count(1):
+                if not Template.objects.filter(name=template.name).exists():
+                    break
+                template.name = '%s-%d.txt' % (orig, x)
+            archive = MailArchive.objects.create(status=MailArchive.STATUS.draft,
+                                                 subject=form.cleaned_data['subject'],
+                                                 recipients=[],
+                                                 messages=[],
+                                                 template=template.name)
+            self.request.session['mail'] = archive.id
+            
+        template.content = form.cleaned_data['message']
+        template.save()
+               
+        return super(MailCreateView, self).form_valid(form)
