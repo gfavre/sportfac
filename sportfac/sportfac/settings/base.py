@@ -28,7 +28,7 @@ path.append(DJANGO_ROOT)
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = False
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#template-debug
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#-debug
 TEMPLATE_DEBUG = DEBUG
 ########## END DEBUG CONFIGURATION
 
@@ -157,7 +157,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-
+    'dbtemplates.loader.Loader',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-dirs
@@ -222,6 +222,7 @@ THIRD_PARTY_APPS = (
     #'pipeline', # minifier
     'sekizai', #add_to_block template tag
     'django_select2', # select2 widget (enhanced select box)
+    'dbtemplates', # store templates in db (used by mailer module)
 )
 
 # Apps specific for this project go here.
@@ -230,6 +231,7 @@ LOCAL_APPS = (
     'api',
     'backend',
     'contact',
+    'mailer',
     'profiles',
 )
 
@@ -328,6 +330,16 @@ CONSTANCE_CONFIG = {
     'START_REGISTRATION': (datetime(2013,9,1, tzinfo=timezone('Europe/Zurich')), ugettext("Registration opening date")),
     'END_REGISTRATION': (datetime(2013,10,1, tzinfo=timezone('Europe/Zurich')), ugettext("Registration ending date")),
     'CURRENT_PHASE': (1, 'PREPARATION'),
+    'SIGNATURE': ("""
+Remo Aeschbach
+Doyen - responsable du sport scolaire facultatif
+EPCoppet
+Chemin du Chaucey 7
+1296 Coppet
+remo.aeschbach@vd.educanet2.ch
++4122 | 557 58 58
++4179 | 417 69 93""", ugettext("Email Signature")),
+    'FROM_MAIL': ('Remo Aeschbach <remo.aeschbach@vd.educanet2.ch>', ugettext("Email used to send"))
 }
 
 ########## END CONSTANCE CONFIGURATION
@@ -372,3 +384,11 @@ CKEDITOR_CONFIGS = {
 
 ############# Select2
 AUTO_RENDER_SELECT2_STATICS = False
+
+
+############ Celery
+# Asynchrnous tasks. 
+# See http://celery.readthedocs.org/en/latest/configuration.html
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'

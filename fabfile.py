@@ -37,6 +37,7 @@ MAILHOST        = "smtp.webfaction.com"
 MAILUSER        = "grfavre"
 MAILPASSWORD    = PASSWORD
 MAILADDRESS     = "gregory@dealguru.ch"
+BROKER_URL      = redis://localhost:14387/0
 
 """)
     sys.exit(1)

@@ -1,0 +1,53 @@
+{% extends "backend/base.html" %}
+{% load i18n sekizai_tags duration %}
+{% get_current_language as LANGUAGE_CODE %}
+
+{% block title %}{% trans "Mail archive" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "Mail archive" %}{% endblock %}
+
+{% block content %}
+
+{% addtoblock  "js" %}    
+<script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
+<script>
+$(function () {
+  $(".table").dataTable({
+{% if LANGUAGE_CODE == 'fr' %}
+      "language": {
+            "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+      }
+{% endif %}
+      
+  });
+});
+</script>
+{% endaddtoblock %}
+
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>{% trans "Date" %}</th>
+
+      <th>{% trans "Subject" %}</th>
+      <th>{% trans "Recipient" %}</th>
+      <th>{% trans "Message" %}</th>
+    </tr>
+  </thead>
+  {% for mailarchive in object_list %}
+    <tr>
+      <td>{{ mailarchive.created }}</td>
+
+      <td>{{ mailarchive.subject }}</td>
+      <td>{{ mailarchive.admin_recipients|safe }}</td>
+      <td>{{ mailarchive.admin_message|safe }}</td>
+
+    </tr>
+  {% empty %}
+    <tr>
+      <td colspan="3">{% trans "No activity yet" %}</td>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock content %}
