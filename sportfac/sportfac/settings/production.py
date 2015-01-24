@@ -99,3 +99,8 @@ SECRET_KEY = get_env_setting('SECRET_KEY')
 ########## END SECRET CONFIGURATION
 
 ALLOWED_HOSTS = get_env_setting('ALLOWED_HOSTS').split(';')
+
+############ Celery
+# Asynchrnous tasks. 
+# See http://celery.readthedocs.org/en/latest/configuration.html
+BROKER_URL = get_env_setting('BROKER_URL')
