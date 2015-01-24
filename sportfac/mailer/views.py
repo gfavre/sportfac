@@ -4,7 +4,6 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ImproperlyConfigured
-from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.template import loader, Context, RequestContext
@@ -15,6 +14,7 @@ from django.views.generic.base import TemplateView, ContextMixin
 from constance import config
 
 from .models import MailArchive
+from .tasks import send_mail
 
 
 # Create your views here.
@@ -106,10 +106,10 @@ class MailMixin(ContextMixin):
             self.add_recipient_context(recipient, context)
             message = self.get_mail_body(context)
             recipient_address = self.get_recipient_address(recipient)
-            send_mail(subject=subject, 
-                      message=message, 
-                      from_email=from_email, 
-                      recipient_list=[recipient_address,])
+            send_mail.delay(subject=subject, 
+                            message=message, 
+                            from_email=from_email, 
+                            recipient_list=[recipient_address,])
             emails.append(message)
             recipients_addresses.append(recipient_address)
         MailArchive.objects.create(subject=subject, messages=emails, 
