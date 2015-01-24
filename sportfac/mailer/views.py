@@ -109,7 +109,7 @@ class MailMixin(ContextMixin):
             send_mail.delay(subject=subject, 
                             message=message, 
                             from_email=from_email, 
-                            recipient_list=[recipient_address,])
+                            recipients=[recipient_address,])
             emails.append(message)
             recipients_addresses.append(recipient_address)
         MailArchive.objects.create(subject=subject, messages=emails, 

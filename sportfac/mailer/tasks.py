@@ -6,9 +6,9 @@ from celery import shared_task
 
 
 @shared_task
-def send_mail(xsubject, message, from_email, recipients):    
+def send_mail(subject, message, from_email, recipients):    
     
     return django_send_mail(subject=subject, 
                             message=message, 
                             from_email=from_email, 
-                            recipient_list=[recipient_address,])
+                            recipient_list=recipients)
