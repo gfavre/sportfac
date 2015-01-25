@@ -117,7 +117,7 @@ class MailMixin(ContextMixin):
             recipients_addresses.append(recipient_address)
         MailArchive.objects.create(subject=subject, messages=emails, 
                                    recipients=recipients_addresses,
-                                   template=self.message_template)
+                                   template=self.get_message_template())
         messages.add_message(self.request, messages.SUCCESS, 
                              self.get_success_message())
         
@@ -188,10 +188,16 @@ class MailCreateView(FormView):
     def get_initial(self):
         if not 'mail' in self.request.session:
             return {}
-        archive = MailArchive.objects.get(id=self.request.session['mail'])
-        template = Template.objects.get(name=archive.template)
-        return {'message': template.content,
-                'subject': archive.subject}
+        try:
+            archive = MailArchive.objects.get(id=self.request.session['mail'])
+            template = Template.objects.get(name=archive.template)
+            return {'message': template.content,
+                    'subject': archive.subject}
+        except Template.DoesNotExist:
+            return {'subject': archive.subject}
+        except MailArchive.DoesNotExist:
+            return {}
+
     
     def form_valid(self, form):
         archive = self.get_archive_from_session()

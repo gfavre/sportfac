@@ -44,6 +44,33 @@ activities_patterns = patterns('',
         name='activity-delete'),
 )
 
+mail_patterns = patterns('', 
+    url(r'^archive', view=views.MailArchiveListView.as_view(), 
+        name='archive'),
+
+    url(r'^need-confirmation', view=views.NeedConfirmationView.as_view(), 
+        name='mail-needconfirmation'),
+    url(r'^not-paid-yet', view=views.NotPaidYetView.as_view(), 
+        name='mail-notpaidyet'),
+    #url(r'^participants/(?P<course>[\w-]+)/notpaid$', view=views.ParticipantsView.as_view(), 
+    #    name='mail-participants-notpaidyet'),
+    
+    url(r'^participants/(?P<course>[\w-]+)/custom$', 
+        view=views.CustomMailParticipantsCreateView.as_view(),
+        name="mail-participants-custom"),
+    url(r'^participants/(?P<course>[\w-]+)/custom/preview$', 
+        view=views.CustomMailParticipantsPreview.as_view(),
+        name="mail-participants-custom-preview"),
+            
+    url(r'^custom$', view=views.CustomUserCustomMailCreateView.as_view(),
+        name='custom-mail-custom-users'),
+    url(r'^custom/preview$', view=views.CustomUserCustomMailPreview.as_view(),
+        name='custom-mail-custom-users-preview')
+
+
+)
+
+
 registrations_patterns = patterns('', 
     url(r'^$', view=views.RegistrationListView.as_view(), 
         name='registration-list'),
@@ -56,25 +83,9 @@ registrations_patterns = patterns('',
     url(r'^(?P<pk>\d+)/cancel$', view=views.RegistrationDeleteView.as_view(),
         name='registration-delete'),
 )
-
-mail_patterns = patterns('', 
-    #url(r'^$', view=SimpleMailView.as_view(), 
-    #    name='simple-mail'),
-    url(r'^need-confirmation', view=views.NeedConfirmationView.as_view(), 
-        name='mail-needconfirmation'),
-    url(r'^not-paid-yet', view=views.NotPaidYetView.as_view(), 
-        name='mail-notpaidyet'),
-    url(r'^participants/(?P<course>[\w-]+)$', view=views.ParticipantsView.as_view(), 
-        name='mail-notpaidyet'),
-    url(r'^participants/(?P<course>[\w-]+)/custom$', 
-        view=views.CustomMailParticipantsView.as_view(),
-        name="mail-participants-custom"),
-    url(r'^participants/(?P<course>[\w-]+)/custom/preview$', 
-        view=views.CustomMailParticipantsPreview.as_view(),
-        name="mail-participants-custom-preview"),
-    
-    url(r'^archive', view=views.MailArchiveListView.as_view(), 
-        name='archive'),
+users_patterns = patterns('', 
+    url(r'^$', view=views.UserListView.as_view(), 
+        name='user-list'),
 )
 
 
@@ -88,5 +99,5 @@ urlpatterns = patterns('',
     url(r'^mail/', include(mail_patterns)),
     url(r'^registrations/', include(registrations_patterns)),
     url(r'^responsible/', include(responsibles_patterns)),
-    
+    url(r'^user/', include(users_patterns)),   
 )

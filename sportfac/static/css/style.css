@@ -12820,6 +12820,21 @@ div.DTFC_LeftFootWrapper table {
 div.FixedHeader_Cloned table {
   margin: 0 !important; }
 
+/* Icons */
+table.dataTable i.success {
+  color: #5cb85c; }
+table.dataTable i.danger {
+  color: #d9534f; }
+
+table.dataTable .active i.success {
+  color: #fff; }
+table.dataTable .active i.danger {
+  color: #fff; }
+table.dataTable .active a {
+  color: #ddf; }
+table.dataTable .active a:hover {
+  color: #fff; }
+
 .pager li > button {
   display: inline-block;
   padding: 5px 14px;

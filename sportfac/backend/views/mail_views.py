@@ -1,5 +1,4 @@
 from django.contrib import messages
-from django.contrib.formtools.wizard.views import SessionWizardView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.sites.models import get_current_site
 from django.http import Http404
@@ -8,7 +7,7 @@ from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.template import loader, Context, RequestContext
 from django.views.generic import CreateView, DeleteView, DetailView, \
-                                ListView, UpdateView
+                                ListView, UpdateView, View
 
 from profiles.models import FamilyUser, Registration
 from mailer.views import MailView, MailCreateView
@@ -19,7 +18,8 @@ from .mixins import BackendMixin
 
 __all__ = ['MailArchiveListView', 'NeedConfirmationView',
            'NotPaidYetView', 'ParticipantsView',
-           'CustomMailParticipantsView', 'CustomMailParticipantsPreview']
+           'CustomMailParticipantsCreateView', 'CustomMailParticipantsPreview',
+           'CustomUserCustomMailCreateView', 'CustomUserCustomMailPreview',]
 
 
 class MailArchiveListView(BackendMixin, ListView):
@@ -53,22 +53,20 @@ class NotPaidYetView(BackendMixin, MailView):
     success_url = reverse_lazy('backend:home')
     subject = 'Inscription au sport scolaire facultatif - EP Coppet - rappel'
     message_template = 'mailer/notpaid.txt'
-
+    
+    
+    
 
 class ParticipantsView(BackendMixin, MailView):
-    recipients_queryset = FamilyUser.objects.filter(is_superuser=False)
     success_url = reverse_lazy('backend:home')
     subject = 'Inscription au sport scolaire facultatif - EP Coppet'
     message_template = 'mailer/course-begin.txt'
 
-    def get_recipient_address(self, recipient):
-       return super(ParticipantsView, self).get_recipient_address(recipient.child.family)
-    
     def add_recipient_context(self, recipient, context):
         context['recipient'] = recipient.child.family
         context['child'] = recipient.child
         context['registration'] = recipient
-   
+
     def add_mail_context(self, mailnumber, context):
         "Get context, add navigation"
         context['to_email'] = self.get_recipient_address(context['registration'] )
@@ -76,6 +74,9 @@ class ParticipantsView(BackendMixin, MailView):
         context['subject'] = self.get_subject()
         context['message'] = self.get_mail_body(context)        
 
+
+    def get_recipient_address(self, recipient):
+       return super(ParticipantsView, self).get_recipient_address(recipient.child.family)
     
     def get_recipients_list(self):
         return self.course.participants.all()
@@ -95,19 +96,8 @@ class ParticipantsView(BackendMixin, MailView):
         return context
 
 
-class CustomMailParticipantsView(BackendMixin, MailCreateView):
-    template_name = 'backend/mail/create.html'
     
-    def get_success_url(self):
-        course = self.kwargs['course']                
-        return reverse('backend:mail-participants-custom-preview', 
-                       kwargs={'course': course })
-    
-     
-
-class CustomMailParticipantsPreview(ParticipantsView):
-    template_name = 'backend/mail/preview-editlink.html'
-    
+class CustomMailMixin(object):
     def get_subject(self):
         mail_id = self.request.session.get('mail', None)
         try:
@@ -115,11 +105,7 @@ class CustomMailParticipantsPreview(ParticipantsView):
         except MailArchive.DoesNotExist:
             raise Http404()
         return mail.subject
-    
-    def get_success_url(self):
-        return reverse('backend:course-detail', kwargs=self.kwargs)
-        
-        
+
     def get_message_template(self):
         mail_id = self.request.session.get('mail', None)
         try:
@@ -127,15 +113,56 @@ class CustomMailParticipantsPreview(ParticipantsView):
         except MailArchive.DoesNotExist:
             raise Http404()
         return self.resolve_template(mail.template)
+
+
+class CustomMailParticipantsCreateView(BackendMixin, MailCreateView):
+    template_name = 'backend/mail/create.html'
     
+    def get_success_url(self):
+        course = self.kwargs['course']                
+        return reverse('backend:mail-participants-custom-preview', 
+                       kwargs={'course': course })
+          
+class CustomMailParticipantsPreview(CustomMailMixin, ParticipantsView):
+    template_name = 'backend/mail/preview-editlink.html'
+        
+    def get_success_url(self):
+        return reverse('backend:course-detail', kwargs=self.kwargs)
+        
     def post(self, request, *args, **kwargs):
         redirect = super(CustomMailParticipantsPreview, self).post(request, *args, **kwargs)
         del self.request.session['mail']
         return redirect 
 
-
-#class ParticipantsView(ParticipantsBeginView):
     
+
+
+class CustomUserCustomMailCreateView(BackendMixin, MailCreateView):
+    template_name = 'backend/mail/create.html'
+    success_url = reverse_lazy('backend:custom-mail-custom-users-preview')
+        
+    
+class CustomUserCustomMailPreview(BackendMixin, CustomMailMixin, MailView):
+    success_url = reverse_lazy('backend:user-list')
+    
+    def get_recipients_list(self):
+        return FamilyUser.objects.filter(id__in=self.request.session['mail-userids'])
+    
+    def get_context_data(self, **kwargs):
+        context = super(CustomUserCustomMailPreview, self).get_context_data(**kwargs)
+        context['url'] = ''.join(('http://', 
+                                  get_current_site(self.request).domain,
+                                  reverse('wizard_confirm')))
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        redirect = super(CustomUserCustomMailPreview, self).post(request, *args, **kwargs)
+        del self.request.session['mail']
+        del self.request.session['mail-userids']
+        return redirect
+
+
+
 
 
 

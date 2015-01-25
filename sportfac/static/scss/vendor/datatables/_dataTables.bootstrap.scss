@@ -311,3 +311,14 @@ div.FixedHeader_Cloned table {
 	margin: 0 !important
 }
 
+/* Icons */
+table.dataTable {
+    i.success {color: #5cb85c; }
+    i.danger {color: #d9534f; }
+}
+table.dataTable .active {
+    i.success {color: #fff; }
+    i.danger {color: #fff; }
+    a { color: #ddf;}
+    a:hover {color: #fff;}
+}

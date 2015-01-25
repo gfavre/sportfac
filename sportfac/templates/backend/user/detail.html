@@ -1,14 +1,17 @@
 {% extends "backend/base.html" %}
-{% load i18n duration %}
+{% load i18n %}
+{% load duration %}
 
-{% block title %}{{ responsible.first }} {{ responsible.last }} - {{ block.super }}{% endblock %}
-{% block page_title %}{{ responsible.first }} {{ responsible.last }}{% endblock %}
+{% block title %}{{ activity.name }} - {{ block.super }}{% endblock %}
+{% block page_title %}{{ activity.name }}{% endblock %}
 
 {% block content %}
+<p><strong>{% trans "Activity number" %}:</strong> {{ activity.number }}<br /></p>  
   
 <h2>{% trans "Courses" %}</h2>
+
 <div class="row">
-  {% for course in responsible.courses.all %}
+  {% for course in activity.courses.all %}
   <section class="col-sm-6 topped">
     <div class="pricing-plan">
       <header class="pricing-header">
@@ -29,7 +32,7 @@
         <dt>{% trans "Price" %}</dt><dd>CHF {{ course.price }}</dd>
         <dt>{% trans "School years" %}</dt><dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
       </dl>
-      <p class="text-center"><a href="{{ course.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a> </p>
+      <p class="text-center"><a href="{% url 'backend:course-update' pk=course.pk %}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a> </p>
       <h4 class="content-title">
         <u>{% trans "Availability"%}</u>
       </h4>      
@@ -39,11 +42,11 @@
       </div>  
       <p class="text-right"><small>{{ course.min_participants }} participants requis pour que l'activité ait lieu</small></p>
       
-      <p class="text-center"><a href="{{ course.get_backend_url }}" class="btn btn-default"><i class="icon-check"></i>&nbsp;&nbsp;{% trans "Check registrations" %}</a> </p>
+      <p class="text-center"><a href="{% url 'backend:course-detail' pk=course.pk %}" class="btn btn-default"><i class="icon-check"></i>&nbsp;{% trans "Check registrations" %}</a> </p>
 
       
     </div>          
   </section> 
   {% endfor %}
-</div>
+</div>  
 {% endblock content %}

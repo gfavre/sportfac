@@ -1,0 +1,122 @@
+{% extends "backend/base.html" %}
+{% load i18n sekizai_tags duration %}
+{% get_current_language as LANGUAGE_CODE %}
+
+{% block title %}{% trans "List users" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "List users" %}{% endblock %}
+
+{% block content %}
+
+{% addtoblock  "js" %}    
+<script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.tableTools.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
+<script>
+$(function () {
+  var t = $(".table").dataTable({
+{% if LANGUAGE_CODE == 'fr' %}
+      "language": {
+            "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+      },
+{% endif %}
+      aoColumnDefs: [
+          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ 4] }
+      ],
+      'lengthMenu': [[10, 25, 50, -1], [10, 25, 50, "{% trans 'All users' %}"] ],
+      dom: 'T<"clear">lfrtip',
+      tableTools: {
+            "sRowSelect": "multi",
+            "aButtons": [ ],
+            'fnRowSelected': function(){ 
+                $('.needs-select').removeClass('disabled'); 
+            },
+            'fnRowDeselected': function(){ 
+                if ($('tr.active').length == 0){ 
+                    $('.needs-select').addClass('disabled');
+                } 
+            }
+      }
+
+  });
+  
+  
+  $('.selectall').click(function(){
+      var tabletools = TableTools.fnGetInstance(t[0]);
+      tabletools.fnSelectAll(true);
+  });
+  $('.deselectall').click(function(){
+      var tabletools = TableTools.fnGetInstance(t[0]);
+      tabletools.fnSelectNone();
+  });
+  
+  $('form.mail').submit(function(){
+    var tabletools = TableTools.fnGetInstance(t[0]);
+    var ids = tabletools.fnGetSelected().map(function(elem){  
+        return elem.getAttribute('data-userid'); 
+    });
+    $('input[name="data"]').val(JSON.stringify(ids));
+  });
+  
+});
+</script>
+{% endaddtoblock %}
+
+<a href="" class="btn btn-success"><i class="icon-plus"></i> {% trans "New user" %}</a>
+<hr />
+<div class="btn-group">
+  <a class="btn btn-default selectall"><span>Select all</span></a>
+  <a class="btn btn-default deselectall needs-select disabled"><span>Deselect all</span></a>
+</div>
+<div class="btn-group">
+  <form class="mail" method="post">{% csrf_token %}
+    <input type="hidden" name="data" value='' />
+    <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-mail"></i>&nbsp;&nbsp;{% trans "Send email to selected users" %}</button>
+  </form>
+</div>
+<table class="table" id="users">
+  <thead>
+    <tr>
+      <th>{% trans "Name" %}</th>
+      <th>{% trans "Children" %}</th>
+      <th>{% trans "Finished registration" %}</th>
+      <th>{% trans "Paid" %}</th>
+    </tr>
+  </thead>
+  {% for user in object_list %}
+    <tr data-userid="{{ user.id }}">
+      <td><a href="{% url 'backend:activity-detail' pk=user.pk %}">{{ user.full_name }}</a></td>
+      <td>
+        <ul>
+        {% for child in user.children.all %}
+          <li>{{ child }}</li>
+        {% endfor %}
+        </ul>
+      </td>
+      <td>{% if user.finished_registration %}<i class="icon-ok-circled success"></i>{% else %}<i class="icon-cancel-circled  danger"></i>{% endif %}</td>
+      <td>{% if user.paid %}<i class="icon-ok-circled success"></i>{% else %}<i class="icon-cancel-circled  danger"></i>{% endif %}</td>
+      <td>
+        <ul class="list-unstyled">
+          <li class="text-nowrap"><a href="{% url 'backend:activity-detail' pk=user.pk %}" class="btn btn-sm"><i class="icon-graduation-cap"></i>&nbsp;&nbsp;{% trans "Check courses" %}</a></li>
+          <li class="text-nowrap"><a href="{% url 'backend:activity-update' pk=user.pk %}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Update activity" %}</a></li>
+          <li class="text-nowrap"><a href="{% url 'backend:activity-delete' pk=user.pk %}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;&nbsp;{% trans "Delete activity" %}</a></li>
+        </ul>
+      </td>
+    </tr>
+  {% empty %}
+    <tr>
+      <td colspan="3">{% trans "No user yet" %}</td>
+    </tr>
+  {% endfor %}
+</table>
+
+<div class="btn-group">
+  <a class="btn btn-default selectall"><span>Select all</span></a>
+  <a class="btn btn-default deselectall needs-select disabled"><span>Deselect all</span></a>
+</div>
+<div class="btn-group">
+  <form class="mail" method="post">{% csrf_token %}
+    <input type="hidden" name="data" value='' />
+    <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-mail"></i>&nbsp;&nbsp;{% trans "Send email to selected users" %}</button>
+  </form>
+</div>
+{% endblock content %}
