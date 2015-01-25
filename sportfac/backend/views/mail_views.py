@@ -108,6 +108,18 @@ class CustomMailParticipantsView(BackendMixin, MailCreateView):
 class CustomMailParticipantsPreview(ParticipantsView):
     template_name = 'backend/mail/preview-editlink.html'
     
+    def get_subject(self):
+        mail_id = self.request.session.get('mail', None)
+        try:
+            mail = MailArchive.objects.get(id=mail_id)
+        except MailArchive.DoesNotExist:
+            raise Http404()
+        return mail.subject
+    
+    def get_success_url(self):
+        return reverse('backend:course-detail', kwargs=self.kwargs)
+        
+        
     def get_message_template(self):
         mail_id = self.request.session.get('mail', None)
         try:
@@ -116,6 +128,10 @@ class CustomMailParticipantsPreview(ParticipantsView):
             raise Http404()
         return self.resolve_template(mail.template)
     
+    def post(self, request, *args, **kwargs):
+        redirect = super(CustomMailParticipantsPreview, self).post(request, *args, **kwargs)
+        del self.request.session['mail']
+        return redirect 
 
 
 #class ParticipantsView(ParticipantsBeginView):

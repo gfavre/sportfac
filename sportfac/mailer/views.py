@@ -99,7 +99,6 @@ class MailMixin(ContextMixin):
     
     def mail(self, request, *args, **kwargs):
         base_context = self.get_context_data(**kwargs)
-        success_url = self.get_success_url()
         recipients = self.get_recipients_list()
         emails = []
         recipients_addresses = []
@@ -121,12 +120,13 @@ class MailMixin(ContextMixin):
                                    template=self.message_template)
         messages.add_message(self.request, messages.SUCCESS, 
                              self.get_success_message())
-        return HttpResponseRedirect(success_url)
+        
+        
    
     def post(self, request, *args, **kwargs):
-        return self.mail(request, *args, **kwargs)
-          
-    
+        self.mail(request, *args, **kwargs)
+        success_url = self.get_success_url()
+        return HttpResponseRedirect(success_url) 
 
 
 class MailView(MailMixin, TemplateView):
@@ -186,17 +186,19 @@ class MailCreateView(FormView):
         return template
     
     def get_initial(self):
-        if 'mail' in self.request.session:
-            archive = MailArchive.objects.get(id=self.request.session['mail'])
-            template = Template.objects.get(name=archive.template)
-            return {'message': template.content,
-                    'subject': archive.subject}
-        return {}
+        if not 'mail' in self.request.session:
+            return {}
+        archive = MailArchive.objects.get(id=self.request.session['mail'])
+        template = Template.objects.get(name=archive.template)
+        return {'message': template.content,
+                'subject': archive.subject}
     
     def form_valid(self, form):
         archive = self.get_archive_from_session()
         if archive:
             template = self.get_template_from_archive(archive)
+            archive.subject = form.cleaned_data['subject']
+            archive.save()
         else:
             template = Template()
             orig = time.strftime('%Y-%m-%d-%H-%M-custom')

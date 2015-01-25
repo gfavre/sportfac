@@ -26,7 +26,7 @@
 </section>
 <section>
 <form action="" method="post">{% csrf_token %}
-  <p>{% blocktrans %}Are you sure you want to send this mail ?{% endblocktrans %}</p>
+  <p>{% blocktrans %}Are you sure you want to send this mail to {{ total }} recipients ?{% endblocktrans %}</p>
   <a href="{% url 'backend:mail-participants-custom' course=course.number %}" class="btn btn-default"><i class="icon icon-edit"></i> {% trans "Modify mail" %}</a> &nbsp;
 
   <button type="submit" class="btn btn-danger"><i class="icon icon-mail"></i>&nbsp;{% trans 'Send all emails' %}</button>

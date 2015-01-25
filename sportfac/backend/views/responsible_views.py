@@ -6,6 +6,9 @@ from activities.models import Responsible
 
 from .mixins import BackendMixin
 
+__all__ = ('ResponsibleCreateView', 'ResponsibleDeleteView', 
+           'ResponsibleDetailView', 'ResponsibleListView', 
+           'ResponsibleUpdateView',)
 
 class ResponsibleDetailView(BackendMixin, DetailView):
     model = Responsible

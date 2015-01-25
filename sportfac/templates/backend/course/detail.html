@@ -22,7 +22,7 @@
       <dt>{% trans "School years" %}</dt>
       <dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
     </dl>
-    <p class="text-center"><a href="{% url 'backend:course-update' pk=course.pk %}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a> </p>
+    <p class="text-center"><a href="{{ course.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a> </p>
       
     <h4 class="content-title"><u>{% trans "Availability"%}</u></h4>      
     <p>{{ course.count_participants  }} participants <span class="pull-right strong"> {{ course.max_participants }} places</span></p>
@@ -92,5 +92,6 @@
     
     {% endfor %}
   </table>
+  <a href="{{ course.get_custom_mail_url }}" class="btn btn-default"><i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}</a>
 </section>   
 {% endblock content %}

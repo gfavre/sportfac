@@ -12,6 +12,7 @@ from profiles.models import FamilyUser, Registration
 from backend.forms import RegistrationDatesForm
 from .mixins import BackendMixin
 
+__all__ = ('HomePageView', 'RegistrationDatesView',)
 
 ################################################################################
 # Homepage

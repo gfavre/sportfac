@@ -136,8 +136,18 @@ class Course(models.Model):
             fullness %= {'available': self.available_places, 'total': self.max_participants}
         return base + ' ' + fullness
         
-        
-            
+    def get_update_url(self):
+        return reverse('backend:course-update', kwargs={'course': self.number})
+    
+    def get_delete_url(self):
+        return reverse('backend:course-delete', kwargs={'course': self.number})
+    
+    def get_backend_url(self):
+        return reverse('backend:course-detail', kwargs={'course': self.number})
+    
+    def get_custom_mail_url(self):
+        return reverse('backend:mail-participants-custom', kwargs={'course': self.number})
+         
     class Meta:
         ordering = ('activity__name', 'number', )
         verbose_name = _("course")

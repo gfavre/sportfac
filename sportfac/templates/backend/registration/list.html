@@ -45,7 +45,7 @@ $(function () {
   {% for registration in registration_list %}
   {% with course=registration.course child=registration.child%}
    <tr>
-      <td><a href="{% url 'backend:course-detail' pk=course.pk %}">{{ course.number }}</a></td>
+      <td><a href="{{ course.get_backend_url }}">{{ course.number }}</a></td>
       <td><a href="{% url 'backend:activity-detail' pk=course.activity.pk %}">{{ course.activity.name }}</a></td>
       <td>{{ course.day_name }}</td>
       <td data-order="{{ course.start_date|date:'c'}}">{{ course.start_date|date:"SHORT_DATE_FORMAT" }}</td>

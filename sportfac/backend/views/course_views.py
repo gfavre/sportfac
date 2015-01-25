@@ -11,14 +11,16 @@ from activities.forms import CourseForm
 
 from .mixins import BackendMixin
 
+__all__ = ('CourseCreateView', 'CourseDeleteView', 'CourseDetailView',
+           'CourseListView', 'CourseUpdateView',)
 
 class CourseDetailView(BackendMixin, DetailView):
     model = Course
     template_name = 'backend/course/detail.html'
+    slug_field = 'number'
+    slug_url_kwarg = 'course'
     queryset = Course.objects.select_related('activity', 
-                                             'responsible', 
-                                             #'participants__child',
-                                             #'participants__child__family'
+                                             'responsible' 
                             ).prefetch_related( 'participants__child__school_year', 'participants__child__family')
 
 
@@ -36,7 +38,7 @@ class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
     success_message = _('<a href="%(url)s" class="alert-link">Course (%(number)s)</a> has been created.')
     
     def get_success_message(self, cleaned_data):    
-        url = reverse('backend:course-detail', kwargs={'pk': self.object.pk})
+        url = self.object.get_backend_url()
         return mark_safe(self.success_message % {'url': url, 'number': self.object.number})
 
 
@@ -44,17 +46,21 @@ class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
     model = Course
     form_class = CourseForm
     template_name = 'backend/course/update.html'
+    slug_field = 'number'
+    slug_url_kwarg = 'course'
     success_url = reverse_lazy('backend:course-list')
     success_message = _('<a href="%(url)s" class="alert-link">Course (%(number)s)</a> has been updated.')
     
-    def get_success_message(self, cleaned_data):    
-        url = reverse('backend:course-detail', kwargs={'pk': self.object.pk})
+    def get_success_message(self, cleaned_data):
+        url = self.object.get_backend_url()
         return mark_safe(self.success_message % {'url': url, 'number': self.object.number})
 
     
 class CourseDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
     model = Course
     template_name = 'backend/course/confirm_delete.html'
+    slug_field = 'number'
+    slug_url_kwarg = 'course'
     success_url = reverse_lazy('backend:course-list')
     success_message = _("Course has been deleted.")
 

@@ -7,6 +7,9 @@ from activities.forms import ActivityForm
 
 from .mixins import BackendMixin
 
+__all__ = ['ActivityDetailView', 'ActivityListView',
+           'ActivityCreateView',  'ActivityUpdateView',
+           'ActivityDeleteView']
 
 class ActivityDetailView(BackendMixin, DetailView):
     model = Activity

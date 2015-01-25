@@ -14,13 +14,14 @@ from .mixins import BackendMixin
 
 from backend.forms import RegistrationForm, ChildSelectForm, CourseSelectForm
 
-   
+
+__all__ = ('RegistrationCreateView', 'RegistrationDeleteView', 'RegistrationDetailView', 
+           'RegistrationListView', 'RegistrationUpdateView',)
+
 
 class RegistrationDetailView(BackendMixin, DetailView):
     model = Registration
     template_name = 'backend/registration/detail.html'
-
-
 
 
 class RegistrationListView(BackendMixin, ListView):
@@ -29,8 +30,6 @@ class RegistrationListView(BackendMixin, ListView):
     
     def get_queryset(self):
         return Registration.objects.select_related('course', 'child').prefetch_related('course__activity').all()
-
-   
 
 
 class RegistrationCreateView(BackendMixin, SessionWizardView):
@@ -74,8 +73,7 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
         self.initial_object = Registration.objects.get(pk=self.object.pk)
         form.instance.status = Registration.STATUS.confirmed
         return super(RegistrationUpdateView, self).form_valid(form)
-    
- 
+
 
 class RegistrationDeleteView(BackendMixin, DeleteView):
     model = Registration

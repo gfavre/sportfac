@@ -47,7 +47,7 @@ $(function () {
   </thead>
   {% for course in object_list %}
     <tr>
-      <td><a href="{% url 'backend:course-detail' pk=course.pk %}">{{ course.number }}</a></td>
+      <td><a href="{{ course.get_backend_url }}">{{ course.number }}</a></td>
       <td><a href="{% url 'backend:activity-detail' pk=course.activity.pk %}">{{ course.activity.name }}</a></td>
       <td>{{ course.day_name }}</td>
       <td data-order="{{ course.start_date|date:'c'}}">{{ course.start_date|date:"SHORT_DATE_FORMAT" }}</td>
@@ -60,9 +60,13 @@ $(function () {
       </td>
       <td>
         <ul class="list-unstyled">
-          <li class="text-nowrap"><a href="{% url 'backend:course-detail' pk=course.pk %}" class="btn btn-sm"><i class="icon-check"></i>&nbsp;{% trans "Check registrations" %}</a></li>
-          <li class="text-nowrap"><a href="{% url 'backend:course-update' pk=course.pk %}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update course" %}</a></li>
-          <li class="text-nowrap"><a href="{% url 'backend:course-delete' pk=course.pk %}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete course" %}</a></li>
+          <li class="text-nowrap"><a href="{{ course.get_backend_url }}" class="btn btn-sm"><i class="icon-check"></i>&nbsp;{% trans "Check registrations" %}</a></li>
+          <li class="text-nowrap"><a href="{{ course.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update course" %}</a></li>
+          <li class="text-nowrap"><a href="{{ course.get_custom_mail_url }}" class="btn btn-sm"><i class="icon-mail"></i>&nbsp;{% trans "Mail participants" %}</a></li>
+          <li class="text-nowrap"><a href="{{ course.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete course" %}</a></li>
+          
+
+
         </ul>
       </td>
     </tr>
