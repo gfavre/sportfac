@@ -1,13 +1,16 @@
 import re
 from django.db import models
 from django.utils.html import linebreaks
+from django.utils.translation import ugettext as _
 
 from model_utils.models import TimeStampedModel, StatusModel
 from model_utils import Choices
 
 from sportfac.models import ListField
 
+
 __all__ = ('MailArchive', )
+
 
 class SentMailManager(models.Manager):
     def get_queryset(self):
@@ -16,16 +19,15 @@ class SentMailManager(models.Manager):
 class DraftMailManager(models.Manager):
     def get_queryset(self):
         return super(SentMailManager, self).get_queryset().filter(status=MailArchive.STATUS.draft)
-    
-
 
 class MailArchive(TimeStampedModel, StatusModel):
-    STATUS = Choices('sent', 'draft')
+    STATUS = Choices(('sent', _("sent")), 
+                     ('draft', _("draft")),)
 
-    subject = models.CharField(max_length=255)
-    recipients = ListField()
-    messages = ListField()
-    template = models.CharField(max_length=255)
+    subject = models.CharField(max_length=255, verbose_name=_("Subject"))
+    recipients = ListField(verbose_name=_("Recipients"))
+    messages = ListField(verbose_name=_("Message"))
+    template = models.CharField(max_length=255, verbose_name=_("Template"))
     
     objects = models.Manager()
     draft = DraftMailManager()
