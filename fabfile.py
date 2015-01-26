@@ -16,7 +16,8 @@ try:
     from fabsettings import WF_HOST, PROJECT_NAME, REPOSITORY, USER, PASSWORD, \
                             VIRTUALENVS, SETTINGS_SUBDIR, \
                             DBNAME, DBUSER, DBPASSWORD, \
-                            MAILHOST, MAILUSER, MAILPASSWORD, MAILADDRESS
+                            MAILHOST, MAILUSER, MAILPASSWORD, MAILADDRESS,\
+                            BROKER_URL
 except ImportError:
     print("""
 ImportError: Couldn't find fabsettings.py, it either does not exist or is
