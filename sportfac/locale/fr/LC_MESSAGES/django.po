@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-25 20:19+0100\n"
+"POT-Creation-Date: 2015-01-26 11:54+0100\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -504,11 +504,11 @@ msgstr "enfant"
 msgid "children"
 msgstr "enfants"
 
-#: sportfac/profiles/admin.py:169
+#: sportfac/profiles/admin.py:170
 msgid "Delete selected registration"
 msgstr "Supprimer les inscriptions sélectionnées"
 
-#: sportfac/profiles/admin.py:233
+#: sportfac/profiles/admin.py:234
 msgid "Export selected registrations"
 msgstr "Exporter les inscriptions sélectionnées"
 
@@ -1302,6 +1302,14 @@ msgstr "Mettre à jour les informations"
 #: sportfac/templates/backend/user/list.html:6
 msgid "List users"
 msgstr "Liste des utilisateurs"
+
+#: sportfac/templates/backend/user/list.html:67
+msgid "Select all"
+msgstr "Tout sélectionner"
+
+#: sportfac/templates/backend/user/list.html:68
+msgid "Deselect all"
+msgstr "Tout désélectionner"
 
 #: sportfac/templates/backend/user/list.html:73
 #: sportfac/templates/backend/user/list.html:119

@@ -64,8 +64,8 @@ $(function () {
 <a href="" class="btn btn-success"><i class="icon-plus"></i> {% trans "New user" %}</a>
 <hr />
 <div class="btn-group">
-  <a class="btn btn-default selectall"><span>Select all</span></a>
-  <a class="btn btn-default deselectall needs-select disabled"><span>Deselect all</span></a>
+  <a class="btn btn-default selectall">{% trans "Select all" %}</span></a>
+  <a class="btn btn-default deselectall needs-select disabled">{% trans "Deselect all" %}</a>
 </div>
 <div class="btn-group">
   <form class="mail" method="post">{% csrf_token %}
