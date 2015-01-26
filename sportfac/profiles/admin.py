@@ -56,7 +56,7 @@ class FamilyChangeForm(forms.ModelForm):
 
     class Meta:
         model = FamilyUser
-        fields = ('email', 'is_staff', 'finished_registration', 'paid',
+        fields = ('email', 'is_staff', 'is_superuser', 'finished_registration', 'paid', 'groups',
                   'first_name', 'last_name', 
                   'address', 'zipcode', 'city', 'country', 
                   'private_phone', 'private_phone2', 'private_phone3')
@@ -88,8 +88,8 @@ class FamilyAdmin(UserAdmin):
 
     
     fieldsets = (
-        (None, {'fields': ('email', 'password', 'is_staff', 'is_superuser',
-                           'finished_registration', 'total', 'paid')}),
+        (None, {'fields': ('email', 'password', 'is_staff', 'is_superuser', 'groups',
+                           'finished_registration', 'total', 'paid', )}),
         ('Personal info', {'fields': ('first_name', 'last_name', 
                                       'address', 'zipcode', 'city', 'country', 
                                       'private_phone', 'private_phone2', 'private_phone3')}),
