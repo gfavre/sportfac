@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-26 11:54+0100\n"
+"POT-Creation-Date: 2015-01-27 09:49+0100\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -206,7 +206,7 @@ msgstr "cours à jour"
 
 #: sportfac/activities/models.py:72
 #: sportfac/templates/activities/activity_detail.html:51
-#: sportfac/templates/backend/activity/detail.html:26
+#: sportfac/templates/backend/activity/detail.html:27
 #: sportfac/templates/backend/course/detail.html:17
 #: sportfac/templates/backend/course/list.html:43
 #: sportfac/templates/backend/registration/detail.html:16
@@ -218,7 +218,7 @@ msgstr "Responsable"
 
 #: sportfac/activities/models.py:73
 #: sportfac/templates/activities/activity_detail.html:59
-#: sportfac/templates/backend/activity/detail.html:32
+#: sportfac/templates/backend/activity/detail.html:33
 #: sportfac/templates/backend/course/detail.html:21
 #: sportfac/templates/backend/registration/detail.html:20
 #: sportfac/templates/backend/responsible/detail.html:29
@@ -230,7 +230,7 @@ msgstr "Prix"
 
 #: sportfac/activities/models.py:74
 #: sportfac/templates/activities/activity_detail.html:56
-#: sportfac/templates/backend/activity/detail.html:29
+#: sportfac/templates/backend/activity/detail.html:30
 #: sportfac/templates/backend/course/detail.html:20
 #: sportfac/templates/backend/registration/detail.html:19
 #: sportfac/templates/backend/responsible/detail.html:26
@@ -246,7 +246,7 @@ msgstr "Jour"
 
 #: sportfac/activities/models.py:80
 #: sportfac/templates/activities/activity_detail.html:55
-#: sportfac/templates/backend/activity/detail.html:28
+#: sportfac/templates/backend/activity/detail.html:29
 #: sportfac/templates/backend/course/detail.html:19
 #: sportfac/templates/backend/registration/detail.html:18
 #: sportfac/templates/backend/responsible/detail.html:25
@@ -282,7 +282,7 @@ msgstr ""
 "%(activity)s (%(number)s): du %(start)s au %(end)s, les %(day)s à %(hour)s."
 
 #: sportfac/activities/models.py:133
-#: sportfac/templates/backend/activity/detail.html:41
+#: sportfac/templates/backend/activity/detail.html:42
 #: sportfac/templates/backend/course/detail.html:30
 #: sportfac/templates/backend/registration/detail.html:28
 #: sportfac/templates/backend/responsible/detail.html:38
@@ -667,7 +667,7 @@ msgstr "Année scolaire"
 
 #: sportfac/profiles/models.py:281 sportfac/profiles/models.py:290
 #: sportfac/templates/activities/activity_detail.html:60
-#: sportfac/templates/backend/activity/detail.html:33
+#: sportfac/templates/backend/activity/detail.html:34
 #: sportfac/templates/backend/course/detail.html:22
 #: sportfac/templates/backend/registration/detail.html:21
 #: sportfac/templates/backend/responsible/detail.html:30
@@ -760,7 +760,7 @@ msgid "email"
 msgstr "email"
 
 #: sportfac/templates/activities/activity_detail.html:64
-#: sportfac/templates/backend/activity/detail.html:37
+#: sportfac/templates/backend/activity/detail.html:38
 #: sportfac/templates/backend/course/detail.html:27
 #: sportfac/templates/backend/registration/detail.html:25
 #: sportfac/templates/backend/responsible/detail.html:34
@@ -841,14 +841,29 @@ msgstr "Activité n°"
 msgid "Courses"
 msgstr "Cours"
 
-#: sportfac/templates/backend/activity/detail.html:35
+#: sportfac/templates/backend/activity/detail.html:23
+#, python-format
+msgid "Every %(day)s from %(start_time)s to %(end_time)s (%(duration)s)"
+msgstr "Chaque %(day)s de %(start_time)s à %(end_time)s (%(duration)s)"
+
+#: sportfac/templates/backend/activity/detail.html:36
 #: sportfac/templates/backend/course/detail.html:25
 #: sportfac/templates/backend/responsible/detail.html:32
 #: sportfac/templates/backend/user/detail.html:35
 msgid "Edit"
 msgstr "Éditer"
 
-#: sportfac/templates/backend/activity/detail.html:41
+#: sportfac/templates/backend/activity/detail.html:40
+#, python-format
+msgid "%(count)s participants"
+msgstr "%(count)s participants"
+
+#: sportfac/templates/backend/activity/detail.html:40
+#, python-format
+msgid "%(max_number)s places"
+msgstr "%(max_number)s places"
+
+#: sportfac/templates/backend/activity/detail.html:42
 #: sportfac/templates/backend/course/detail.html:30
 #: sportfac/templates/backend/registration/detail.html:28
 #: sportfac/templates/backend/responsible/detail.html:38
@@ -856,7 +871,7 @@ msgstr "Éditer"
 msgid "Minimal number of participants reached"
 msgstr "Nombre minimum de participants atteint"
 
-#: sportfac/templates/backend/activity/detail.html:41
+#: sportfac/templates/backend/activity/detail.html:42
 #: sportfac/templates/backend/course/detail.html:30
 #: sportfac/templates/backend/registration/detail.html:28
 #: sportfac/templates/backend/responsible/detail.html:38
@@ -864,7 +879,12 @@ msgstr "Nombre minimum de participants atteint"
 msgid "Not enough participants"
 msgstr "Pas assez de participants"
 
-#: sportfac/templates/backend/activity/detail.html:45
+#: sportfac/templates/backend/activity/detail.html:44
+#, python-format
+msgid "%(min_number)s participants required for activity to take place"
+msgstr "%(min_number)s participants requis pour que le cours ait lieu"
+
+#: sportfac/templates/backend/activity/detail.html:46
 #: sportfac/templates/backend/course/list.html:63
 #: sportfac/templates/backend/responsible/detail.html:42
 #: sportfac/templates/backend/user/detail.html:45
