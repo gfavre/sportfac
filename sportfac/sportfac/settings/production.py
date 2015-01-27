@@ -109,13 +109,6 @@ BROKER_URL = get_env_setting('BROKER_URL')
 
 
 ########### Sentry
-# Définissez la valeur du DSN : 
 RAVEN_CONFIG = {
     'dsn': 'https://7490d3622e2140c6beb983ede7fd6c88:ebffe9eb0ff249da95e412296e1dad4d@beyond-sentry.herokuapp.com/2',
 }
-
-# Ajoutez raven à la liste des applications installées
-INSTALLED_APPS = INSTALLED_APPS + (
-    # ...
-    'raven.contrib.django.raven_compat',
-)
