@@ -18,7 +18,9 @@ def get_env_setting(setting):
         error_msg = "Set the %s env variable" % setting
         raise ImproperlyConfigured(error_msg)
 
-INSTALLED_APPS += ('gunicorn',)
+INSTALLED_APPS += ('gunicorn', # web server
+                   'raven.contrib.django.raven_compat', # sentry
+                   )
 
 ########## EMAIL CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
@@ -104,3 +106,16 @@ ALLOWED_HOSTS = get_env_setting('ALLOWED_HOSTS').split(';')
 # Asynchrnous tasks. 
 # See http://celery.readthedocs.org/en/latest/configuration.html
 BROKER_URL = get_env_setting('BROKER_URL')
+
+
+########### Sentry
+# Définissez la valeur du DSN : 
+RAVEN_CONFIG = {
+    'dsn': 'https://7490d3622e2140c6beb983ede7fd6c88:ebffe9eb0ff249da95e412296e1dad4d@beyond-sentry.herokuapp.com/2',
+}
+
+# Ajoutez raven à la liste des applications installées
+INSTALLED_APPS = INSTALLED_APPS + (
+    # ...
+    'raven.contrib.django.raven_compat',
+)
