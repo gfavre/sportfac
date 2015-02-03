@@ -83,7 +83,8 @@ class UserForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(UserForm, self).__init__(*args, **kwargs)
         instance = kwargs['instance']
-        self.fields['is_manager'].initial = instance.is_manager
+        if instance:
+            self.fields['is_manager'].initial = instance.is_manager
     
     
 class UserUpdateForm(UserForm):
