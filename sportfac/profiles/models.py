@@ -4,7 +4,7 @@ from datetime import datetime, date
 
 from django.db import models
 from django.template.defaultfilters import slugify
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
@@ -73,9 +73,9 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     zipcode = models.PositiveIntegerField(_("NPA"))
     city = models.CharField(_('City'), max_length=100)
     country = models.CharField(_('Country'), max_length = 100, default=_("Switzerland"))
-    private_phone = models.CharField(max_length=30, blank=True)
-    private_phone2 = models.CharField(max_length=30, blank=True)
-    private_phone3 = models.CharField(max_length=30, blank=True)
+    private_phone = models.CharField(_("Home phone"), max_length=30, blank=True)
+    private_phone2 = models.CharField(_("Mobile phone"), max_length=30, blank=True)
+    private_phone3 = models.CharField(_("Other phone"), max_length=30, blank=True)
     
     
     is_active = models.BooleanField(default=True, help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.')
@@ -135,12 +135,22 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     def get_absolute_url(self):
         return reverse('profiles_account')
     
-    @property 
-    def is_manager(self):
+    def get_manager(self):
         from backend import GROUP_NAME
         if self.is_superuser or self.is_admin:
             return True
         return GROUP_NAME in self.groups.values_list("name", flat=True)
+    
+    def set_manager(self, value):
+        from backend import GROUP_NAME
+        managers = Group.objects.get(name=GROUP_NAME)
+        if value:
+            managers.user_set.add(self)
+        else:
+            managers.user_set.remove(self)
+    
+    is_manager = property(get_manager, set_manager)
+
         
     def has_module_perms(self, app_label):
         staff_apps = ['activities', 'profiles', 'constance', 'extended_flatpages']

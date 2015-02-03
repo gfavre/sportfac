@@ -4,10 +4,11 @@ import django.contrib.auth.forms as auth_forms
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import mark_safe
 
-import floppyforms as forms
+import floppyforms.__future__ as forms
 
 __all__ = ('AuthenticationForm', 'PasswordChangeForm', 'PasswordResetForm',
-           'AcceptTermsForm', 'ContactInformationForm', 'RegistrationForm')
+           'AcceptTermsForm', 'ContactInformationForm', 'RegistrationForm',
+           'UserForm')
 
 
 class AuthenticationForm(auth_forms.AuthenticationForm):
@@ -70,7 +71,27 @@ class ContactInformationForm(forms.ModelForm):
         fields = ('email', 'first_name', 'last_name', 'address', 'zipcode', 'city', 
                   'private_phone', 'private_phone2', 'private_phone3')
 
-
+class UserForm(forms.ModelForm):
+    is_manager = forms.BooleanField(required=False, label=_("Is a manager"), 
+                                    help_text=_("Grant access for this user to this backend interface"))
+    
+    class Meta:
+        model = get_user_model()
+        fields = ('email', 'password', 'first_name', 'last_name', 'address', 'zipcode', 'city', 
+                  'private_phone', 'private_phone2', 'private_phone3')
+    
+    def __init__(self, *args, **kwargs):
+        super(UserForm, self).__init__(*args, **kwargs)
+        instance = kwargs['instance']
+        self.fields['is_manager'].initial = instance.is_manager
+    
+    
+class UserUpdateForm(UserForm):
+    class Meta:
+        model = get_user_model()
+        fields = ('email', 'first_name', 'last_name', 'address', 'zipcode', 'city', 
+                  'private_phone', 'private_phone2', 'private_phone3')
+           
 
 class RegistrationForm(forms.Form):
     """

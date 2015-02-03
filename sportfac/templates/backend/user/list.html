@@ -61,7 +61,7 @@ $(function () {
 </script>
 {% endaddtoblock %}
 
-<a href="" class="btn btn-success"><i class="icon-plus"></i> {% trans "New user" %}</a>
+<a href="{% url 'backend:user-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New user" %}</a>
 <hr />
 <div class="btn-group">
   <a class="btn btn-default selectall">{% trans "Select all" %}</span></a>
@@ -97,7 +97,7 @@ $(function () {
       <td>
         <ul class="list-unstyled">
           <li class="text-nowrap"><a href="{% url 'backend:activity-detail' pk=user.pk %}" class="btn btn-sm"><i class="icon-graduation-cap"></i>&nbsp;&nbsp;{% trans "Check courses" %}</a></li>
-          <li class="text-nowrap"><a href="{% url 'backend:activity-update' pk=user.pk %}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Update activity" %}</a></li>
+          <li class="text-nowrap"><a href="{% url 'backend:user-update' pk=user.pk %}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Update user" %}</a></li>
           <li class="text-nowrap"><a href="{% url 'backend:activity-delete' pk=user.pk %}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;&nbsp;{% trans "Delete activity" %}</a></li>
         </ul>
       </td>

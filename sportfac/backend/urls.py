@@ -86,6 +86,11 @@ registrations_patterns = patterns('',
 users_patterns = patterns('', 
     url(r'^$', view=views.UserListView.as_view(), 
         name='user-list'),
+    url(r'^new$', view=views.UserCreateView.as_view(), 
+        name='user-create'),
+    url(r'^(?P<pk>\d+)/update$', view=views.UserUpdateView.as_view(), 
+        name='user-update'),
+
 )
 
 

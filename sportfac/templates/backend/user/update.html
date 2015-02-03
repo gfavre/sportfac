@@ -1,8 +1,8 @@
 {% extends "backend/base.html" %}
 {% load i18n floppyforms sekizai_tags %}
 
-{% block title %}{% trans "Update activity" %} - {{ block.super }}{% endblock %}
-{% block page_title %}<i class="icon-soccer-ball"></i>&nbsp;&nbsp;{% trans "Update activity" %}{% endblock %}
+{% block title %}{% trans "Update user" %} - {{ block.super }}{% endblock %}
+{% block page_title %}<i class="icon-user"></i>&nbsp;&nbsp;{% trans "Update user" %}{% endblock %}
 
 {% block content %}
 
@@ -11,14 +11,63 @@
 {% endaddtoblock %}
 
 <form action="" method="post" class="form-horizontal">{% csrf_token %}
+  {% form form using %}
 
-  {% include "backend/activity/form.html" %}
+  {% formconfig row using "floppyforms/rows/bootstrap.html" %}
+
+  <fieldset>
+    <legend>{% trans "Login informations" %}</legend>
+    {% formrow form.email %}
+    <a href="">Change password</a>
+  </fieldset>
+  <fieldset>
+    <legend>{% trans "Contact informations" %}</legend>
+    {% formrow form.first_name %}
+    {% formrow form.last_name %}
+    {% formrow form.address %}
+    <div class="form-group">
+      <label class="control-label col-sm-2">{% trans "City" %} <span class="required">*</span></label>
+      <div class="col-sm-10">
+        <div class="row">
+          <div class="col-sm-2 col-xs-4">
+            {% formfield form.zipcode using "floppyforms/100percentinput.html" %}
+          </div>
+          <div class="col-sm-10 col-xs-8">
+            {% formfield form.city using "floppyforms/100percentinput.html" %}
+          </div>
+          <span class="help-block">{{ form.zipcode.errors }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2">{% trans "Phone" %}</label>
+      <div class="col-sm-10">
+        <div class="row">
+          <div class="col-sm-4">
+            {% formfield form.private_phone using "floppyforms/100percentinput.html" %}
+            <p class="help-block">{% trans "Home phone" %}</p>
+          </div>
+          <div class="col-sm-4">
+            {% formfield form.private_phone2 using "floppyforms/100percentinput.html" %}
+            <p class="help-block">{% trans "Mobile" %}</p>
+          </div>
+          <div class="col-sm-4">
+            {% formfield form.private_phone3 using "floppyforms/100percentinput.html" %}
+            <p class="help-block">{% trans "Other phone" %}</p>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  {%  formrow form.is_manager  %}
+  {% endform %}
   <div class=" form-group">
     <div class="col-sm-offset-2 col-sm-10">
 
-      <button type="submit" class="btn btn-success ">{% trans 'Update activity' %}</button>
+      <button type="submit" class="btn btn-success ">{% trans 'Update user' %}</button>
       &nbsp;
-      <a href="{% url 'backend:activity-list' %}" class="btn  btn-default">{% trans 'Cancel' %}</a>
+      <a href="{% url 'backend:user-list' %}" class="btn  btn-default">{% trans 'Cancel' %}</a>
     </div>
   </div>
 
