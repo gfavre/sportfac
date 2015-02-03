@@ -37,5 +37,5 @@ urlpatterns = patterns('',
      
     
     #and now add the registration urls
-    #url(r'', include('registration.backends.default.urls')),
+    url(r'', include('registration.backends.default.urls')),
 )

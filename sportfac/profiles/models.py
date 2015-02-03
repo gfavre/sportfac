@@ -161,9 +161,17 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
             return True
         return False
             
+    def get_update_url(self):
+        return reverse('backend:user-update', kwargs={'pk': self.pk})
     
+    def get_delete_url(self):
+        return reverse('backend:user-delete', kwargs={'pk': self.pk})
+    
+    def get_backend_url(self):
+        return reverse('backend:user-detail', kwargs={'pk': self.pk})
+
     def __unicode__(self):
-        return self.email
+        return "%s %s <%s>" % (self.first_name, self.last_name, self.email)
     
     
     def save(self, *args, **kwargs):
@@ -264,6 +272,13 @@ class Registration(TimeStampedModel, StatusModel):
             # less than half an hour between courses
             return True
         return False   
+    
+    def get_delete_url(self):
+        return reverse('backend:registration-delete', kwargs={'pk': self.pk})
+
+    def get_update_url(self):
+        return reverse('backend:registration-update', kwargs={'pk': self.pk})
+
     
     class Meta:
         unique_together = ('course', 'child')

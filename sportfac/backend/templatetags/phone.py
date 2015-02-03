@@ -1,13 +1,3 @@
-"""Template tag to display duration: 
-{{ timedelta|duration }}
-
-rendered as:
-45mn
-
-{{timedelta|seconds }}
-rendered as: 2700
-
-"""
 from django import template
 from django.utils.translation import ugettext as _
 

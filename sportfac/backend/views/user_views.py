@@ -10,7 +10,7 @@ from profiles.forms import UserForm, UserUpdateForm
 
 from .mixins import BackendMixin
 
-__all__ = ('UserListView', 'UserCreateView', 'UserUpdateView')
+__all__ = ('UserListView', 'UserCreateView', 'UserUpdateView', 'UserDeleteView', 'UserDetailView')
 
 class UserListView(BackendMixin, ListView):
     model = FamilyUser
@@ -45,27 +45,13 @@ class UserUpdateView(BackendMixin, UpdateView):
         self.object = form.save()
         self.object.is_manager = form.cleaned_data['is_manager']
         return super(UserUpdateView, self).form_valid(form)
-    
+
+class UserDeleteView(BackendMixin, DeleteView):
+    model = FamilyUser
+    template_name = 'backend/user/confirm_delete.html'
+    success_url = reverse_lazy('backend:user-list')    
     
 
-#class ActivityDetailView(BackendMixin, DetailView):
-#    model = Activity
-#    template_name = 'backend/activity/detail.html'
-#
-
-#   
-#
-#class ActivityCreateView(BackendMixin, CreateView):
-#    model = Activity
-#    form_class = ActivityForm
-#    template_name = 'backend/activity/create.html'
-#
-#class ActivityUpdateView(BackendMixin, UpdateView):
-#    model = Activity
-#    form_class = ActivityForm
-#    template_name = 'backend/activity/update.html'
-#    
-#class ActivityDeleteView(BackendMixin, DeleteView):
-#    model = Activity
-#    template_name = 'backend/activity/confirm_delete.html'
-#    success_url = reverse_lazy('backend:activity-list')
+class UserDetailView(BackendMixin, DetailView):
+    model = FamilyUser
+    template_name = 'backend/user/detail.html'

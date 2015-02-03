@@ -96,9 +96,9 @@ $(function () {
       <td>{% if user.paid %}<i class="icon-ok-circled success"></i>{% else %}<i class="icon-cancel-circled  danger"></i>{% endif %}</td>
       <td>
         <ul class="list-unstyled">
-          <li class="text-nowrap"><a href="{% url 'backend:activity-detail' pk=user.pk %}" class="btn btn-sm"><i class="icon-graduation-cap"></i>&nbsp;&nbsp;{% trans "Check courses" %}</a></li>
-          <li class="text-nowrap"><a href="{% url 'backend:user-update' pk=user.pk %}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Update user" %}</a></li>
-          <li class="text-nowrap"><a href="{% url 'backend:activity-delete' pk=user.pk %}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;&nbsp;{% trans "Delete activity" %}</a></li>
+          <li class="text-nowrap"><a href="{{ user.get_backend_url }}" class="btn btn-sm"><i class="icon-user"></i>&nbsp;&nbsp;{% trans "User details" %}</a></li>
+          <li class="text-nowrap"><a href="{{ user.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Update user" %}</a></li>
+          <li class="text-nowrap"><a href="{{ user.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;&nbsp;{% trans "Delete user" %}</a></li>
         </ul>
       </td>
     </tr>
@@ -110,8 +110,8 @@ $(function () {
 </table>
 
 <div class="btn-group">
-  <a class="btn btn-default selectall"><span>Select all</span></a>
-  <a class="btn btn-default deselectall needs-select disabled"><span>Deselect all</span></a>
+  <a class="btn btn-default selectall"><span>{% trans "Select all" %}</span></a>
+  <a class="btn btn-default deselectall needs-select disabled"><span>{% trans "Deselect all" %}</span></a>
 </div>
 <div class="btn-group">
   <form class="mail" method="post">{% csrf_token %}

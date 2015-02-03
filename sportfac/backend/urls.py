@@ -88,8 +88,12 @@ users_patterns = patterns('',
         name='user-list'),
     url(r'^new$', view=views.UserCreateView.as_view(), 
         name='user-create'),
+    url(r'^(?P<pk>\d+)/$', view=views.UserDetailView.as_view(), 
+        name='user-detail'),
     url(r'^(?P<pk>\d+)/update$', view=views.UserUpdateView.as_view(), 
         name='user-update'),
+    url(r'^(?P<pk>\d+)/delete$', view=views.UserDeleteView.as_view(), 
+        name='user-delete'),
 
 )
 
