@@ -1,11 +1,23 @@
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
 import django.contrib.auth.forms as auth_forms
-from django.forms import ModelForm, Form
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import mark_safe
 
 import floppyforms as forms
+
+__all__ = ('AuthenticationForm', 'PasswordChangeForm', 'PasswordResetForm',
+           'AcceptTermsForm', 'ContactInformationForm', 'RegistrationForm')
+
+
+class AuthenticationForm(auth_forms.AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        "Convert to floppyform"
+        super(AuthenticationForm, self).__init__(*args, **kwargs)
+        self.fields['username'].widget = forms.TextInput()
+        self.fields['password'].widget = forms.PasswordInput()
+
+
 
 class PasswordChangeForm(auth_forms.PasswordChangeForm):
     old_password = forms.CharField(label=_("Old password"),
@@ -18,6 +30,13 @@ class PasswordChangeForm(auth_forms.PasswordChangeForm):
 class PasswordResetForm(auth_forms.PasswordResetForm):
     email = forms.EmailField(label=_("Email"), max_length=254, 
                              widget=forms.EmailInput(attrs={'placeholder': 'john@example.com'}))
+
+class AcceptTermsForm(forms.Form):
+    accept = forms.BooleanField(required=True, widget=forms.CheckboxInput(attrs={'style': 'margin-top:0;'}))
+    
+    def __init__(self, *args, **kwargs):
+        super(AcceptTermsForm, self).__init__(*args, **kwargs)
+        self.fields['accept'].label= mark_safe(_("""I've read and agree to <a href="%s"> terms and conditions</a>""") % reverse('terms'))
 
 
 class ContactInformationForm(forms.ModelForm):
@@ -112,9 +131,3 @@ class RegistrationForm(forms.Form):
         return self.cleaned_data
 
 
-class AcceptTermsForm(forms.Form):
-    accept = forms.BooleanField(required=True, widget=forms.CheckboxInput(attrs={'style': 'margin-top:0;'}))
-    
-    def __init__(self, *args, **kwargs):
-        super(AcceptTermsForm, self).__init__(*args, **kwargs)
-        self.fields['accept'].label= mark_safe(_("""I've read and agree to <a href="%s"> terms and conditions</a>""") % reverse('terms'))

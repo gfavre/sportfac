@@ -12,8 +12,7 @@ from registration.backends.simple.views import RegistrationView as BaseRegistrat
 from registration import signals
 
 from .models import FamilyUser, Child, Registration
-from .forms import (RegistrationForm, ContactInformationForm, AcceptTermsForm, 
-                    PasswordChangeForm, PasswordResetForm)
+from .forms import *
 
 from sportfac.utils import WizardMixin
 
@@ -49,7 +48,9 @@ class AccountView(LoginRequiredMixin, WizardMixin, UpdateView):
     def get_object(self, queryset=None):
         return self.request.user
 
-class MyRegistrationView(WizardMixin, BaseRegistrationView):
+
+
+class RegistrationView(BaseRegistrationView):
     """
     A registration backend which implements the simplest possible
     workflow: a user supplies a username, email address and password
@@ -57,20 +58,14 @@ class MyRegistrationView(WizardMixin, BaseRegistrationView):
     up and logged in).
     """
     form_class = RegistrationForm
-    
-    def get_success_url(self, request=None, user=None):
-        if self.wizard:
-            return reverse('wizard_children')
-        else:
-            return reverse('profiles_children')
-    
+    success_url = reverse_lazy('profiles_children')
+        
     def register(self, request, **cleaned_data):
         email, password = cleaned_data['email'], cleaned_data['password1']
         first_name, last_name = cleaned_data['first_name'], cleaned_data['last_name']
         address, zipcode, city = cleaned_data['address'], cleaned_data['zipcode'], cleaned_data['city']
         private_phone, private_phone2 = cleaned_data['private_phone'], cleaned_data['private_phone2']
         private_phone3 = cleaned_data['private_phone3']
-        
         
         FamilyUser.objects.create_user(email=email, password=password, 
                                        first_name=first_name, last_name=last_name,
@@ -85,7 +80,10 @@ class MyRegistrationView(WizardMixin, BaseRegistrationView):
                                      request=request)
         return new_user
 
-      
+
+class WizardRegistrationView(WizardMixin, RegistrationView):
+    success_url = reverse_lazy('wizard_children')
+
 
 class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
     model = Registration
