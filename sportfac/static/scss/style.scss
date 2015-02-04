@@ -1,26 +1,25 @@
 @import 'base';
 @import 'mixins';
-@import "angular-motion";
 
 @import "bootstrap331.min";
+@import "fontello/animation";
+@import "fontello/icons-sportfac";
 
 @import "vendor/mvpready/mvpready-admin";
 @import "vendor/mvpready/mvpready-flat";
 @import "vendor/mvpready/mvpready-admin-slate";
 
 
-@import "fontello/animation";
-@import "fontello/icons-sportfac";
-
 @import "vendor/datatables/dataTables.bootstrap";
-
-
-@import "wizard";
 @import "vendor/fullcalendar";
-@import "datepicker3";
 @import "vendor/select2";
 @import "vendor/select2-bootstrap";
 @import "vendor/bootstrap-datetimepicker";
+
+
+@import "angular-motion";
+@import "wizard";
+@import "datepicker-angularstrap";
 
 
 $headerheight: 50px;

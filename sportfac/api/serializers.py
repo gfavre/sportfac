@@ -79,7 +79,7 @@ class SimpleChildrenSerializer(serializers.ModelSerializer):
 
 
 class ChildrenSerializer(serializers.ModelSerializer):
-    birth_date = serializers.DateField(format='%d/%m/%Y', input_formats=('%d/%m/%Y', ))
+    birth_date = serializers.DateField(format='iso-8601', input_formats=('iso-8601', '%d/%m/%Y', '%d.%m.%Y'))
     teacher = serializers.PrimaryKeyRelatedField(many=False, read_only=False)
     school_year = SchoolYearField(many=False, read_only=False)
     

@@ -60,13 +60,13 @@ angular.module('sportfacChildren.services', [])
             converted.teacher = converted.teacher.id;
           }
           if (typeof converted.birth_date === 'object'){
-            converted.birth_date = $filter('date')(converted.birth_date, 'dd/MM/yyyy');
+            converted.birth_date = $filter('date')(converted.birth_date, 'yyyy-MM-dd');
           }
           return converted;
         }
       });
-      angular.extend(this, data);
       
+      angular.extend(this, data);
     };
     return Child;
   }])

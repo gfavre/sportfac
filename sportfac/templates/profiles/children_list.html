@@ -47,9 +47,10 @@
 <script src="{{ STATIC_URL }}js/vendor/angular-route.min.js"></script>
 <script src="{{ STATIC_URL }}js/vendor/angular-cookies.min.js"></script>
 
-<script src="{{ STATIC_URL }}js/vendor/angularstrap/angular-strap.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/angularstrap/angular-strap.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/angularstrap/angular-strap.tpl.js"></script>
 
-<script src="{{ STATIC_URL }}js/vendor/bootstrap-datepicker.js"></script>
+<!--<script src="{{ STATIC_URL }}js/vendor/bootstrap-datepicker.js"></script>-->
 <script src="{{ STATIC_URL }}js/children/services.js"></script>
 <script src="{{ STATIC_URL }}js/children/controllers.js"></script>
 <script src="{{ STATIC_URL }}js/children/app.js"></script>
@@ -57,24 +58,7 @@
 <script src="{{ STATIC_URL }}js/children/app.min.js"></script>
 {% endif %}
 
-<script>
-$('#sandbox-container div').datepicker({
-    format: "dd/mm/yyyy",
-    weekStart: 1,
-    startDate: "01/01/2001",
-    endDate: "31/12/2012",
-    startView: 1
-});
 
-
-$('#sandbox-container div').datepicker({
-    format: "dd/mm/yyyy",
-    weekStart: 1,
-    startDate: "01/01/2001",
-    endDate: "31/12/2012",
-    startView: 1
-});
-</script>
 {% endblock %}
 
 

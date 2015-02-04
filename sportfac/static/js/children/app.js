@@ -1,6 +1,6 @@
 // Declare app level module which depends on filters, and services
 
-angular.module('sportfacChildren', ['sportfacChildren.services', 'sportfacChildren.controllers', 'ngRoute', 'ngCookies', 'mgcrea.ngStrap' ]).
+angular.module('sportfacChildren', ['sportfacChildren.services', 'sportfacChildren.controllers', 'ngRoute', 'ngCookies', 'mgcrea.ngStrap.datepicker']).
 
 config(['$routeProvider', function($routeProvider) {
   'use strict';
@@ -9,14 +9,15 @@ config(['$routeProvider', function($routeProvider) {
 
   $routeProvider.otherwise({templateUrl: '/static/partials/add-child.html', controller: 'childAddCtrl'});
 }]).
-
+config(["$datepickerProvider", function($datepickerProvider) {
+  angular.extend($datepickerProvider.defaults, {
+    dateFormat: "dd.MM.yyyy",
+    modelDateFormat: "yyyy-MM-dd",
+    iconLeft: "icon-left-open",
+    iconRight: "icon-right-open"
+  });
+}]).
 config(["$interpolateProvider", function($interpolateProvider) {
     $interpolateProvider.startSymbol('{[{');
     $interpolateProvider.endSymbol('}]}');
-}]).
-
-value('$strapConfig', {
-  datepicker: {
-  language: 'fr',
-  format: 'dd/MM/yyyy'}
-});
+}]);
