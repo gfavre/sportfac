@@ -1,0 +1,35 @@
+{% load i18n floppyforms sekizai_tags %}
+
+{% addtoblock "js" %}
+{{ form.media }}
+<script src="{{ STATIC_URL }}js/vendor/moment-with-locales.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript">
+  $(function () {
+    $('.datetimepicker').datetimepicker({
+        language: '{{ LANGUAGE_CODE }}',
+        icons: {time: 'icon-clock', 
+                date: 'icon-calendar', 
+                up:   'icon-up-open', 
+                down: 'icon-down-open'}
+        });
+  });
+</script>
+
+{% endaddtoblock %}
+
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="parent_name">{% trans "Parent" %}</label>
+    <p class="col-sm-10 form-control-static" id="parent_name">{{ family.full_name }}</p>
+  </div>
+  {% form form using %}
+  {% formconfig row using "floppyforms/rows/bootstrap.html" %}
+  {% formrow form.first_name form.last_name %}
+
+  {% formconfig row using "floppyforms/rows/bootstrap-sm-3.html" %}
+  {% formrow form.sex form.birth_date form.school_year %}
+  {% formconfig row using "floppyforms/rows/bootstrap.html" %}
+  {% formrow form.teacher %}
+
+  {% endform %}
+  

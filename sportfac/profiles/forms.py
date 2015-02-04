@@ -6,9 +6,12 @@ from django.template.defaultfilters import mark_safe
 
 import floppyforms.__future__ as forms
 
+from backend.forms import Select2Widget, DatePickerInput
+from .models import Child, Teacher
+
 __all__ = ('AuthenticationForm', 'PasswordChangeForm', 'PasswordResetForm',
            'AcceptTermsForm', 'ContactInformationForm', 'RegistrationForm',
-           'UserForm')
+           'UserForm', 'UserUpdateForm', 'ChildForm')
 
 
 class AuthenticationForm(auth_forms.AuthenticationForm):
@@ -93,6 +96,21 @@ class UserUpdateForm(UserForm):
         fields = ('email', 'first_name', 'last_name', 'address', 'zipcode', 'city', 
                   'private_phone', 'private_phone2', 'private_phone3')
            
+
+class ChildForm(forms.ModelForm):
+    birth_date = forms.DateTimeField(widget=DatePickerInput(format='%d.%m.%Y'),
+                                     help_text=_("Format: 31.12.2012"))
+    sex = forms.ChoiceField(widget=forms.widgets.RadioSelect, choices=Child.SEX)
+    teacher = forms.ModelChoiceField(queryset=Teacher.objects, 
+                                         empty_label=None,
+                                          widget=Select2Widget()) 
+    class Meta:
+        model = Child
+        fields = ('first_name', 'last_name', 'sex', 'birth_date', 
+                  'school_year', 'teacher')
+    
+
+
 
 class RegistrationForm(forms.Form):
     """

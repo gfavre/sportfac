@@ -3,14 +3,16 @@ import json
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
 from django.views.generic import CreateView, DeleteView, DetailView, \
-                                ListView, UpdateView
+                                ListView, UpdateView, View
+from django.shortcuts import get_object_or_404
 
-from profiles.models import FamilyUser
-from profiles.forms import UserForm, UserUpdateForm
+from profiles.models import FamilyUser, Child
+from profiles.forms import UserForm, UserUpdateForm, ChildForm
 
 from .mixins import BackendMixin
 
-__all__ = ('UserListView', 'UserCreateView', 'UserUpdateView', 'UserDeleteView', 'UserDetailView')
+__all__ = ('UserListView', 'UserCreateView', 'UserUpdateView', 'UserDeleteView', 'UserDetailView',
+           'ChildCreateView', 'ChildUpdateView', 'ChildDeleteView')
 
 class UserListView(BackendMixin, ListView):
     model = FamilyUser
@@ -55,3 +57,41 @@ class UserDeleteView(BackendMixin, DeleteView):
 class UserDetailView(BackendMixin, DetailView):
     model = FamilyUser
     template_name = 'backend/user/detail.html'
+
+
+class ChildView(BackendMixin, View):
+    def get_context_data(self, **kwargs):
+        context = super(ChildView, self).get_context_data(**kwargs)
+        context['family'] = get_object_or_404(FamilyUser, pk=self.kwargs['user'])
+        return context
+       
+    def get_success_url(self):
+        user = get_object_or_404(FamilyUser, pk=self.kwargs['user'])
+        return user.get_backend_url()
+    
+
+
+class ChildCreateView(ChildView, CreateView):
+    model = Child
+    form_class = ChildForm
+    template_name = 'backend/user/child-create.html'
+    
+    
+    def form_valid(self, form):
+        user = get_object_or_404(FamilyUser, pk=self.kwargs['user'])
+        child = form.save(commit=False)
+        child.family = user
+        child.save()
+        return HttpResponseRedirect(self.get_success_url())
+        
+
+class ChildUpdateView(ChildView, UpdateView):
+    model = Child
+    form_class = ChildForm
+    template_name = 'backend/user/child-update.html'
+        
+
+class ChildDeleteView(ChildView, DeleteView):
+    model = Child
+    template_name = 'backend/user/child-confirm_delete.html'
+    

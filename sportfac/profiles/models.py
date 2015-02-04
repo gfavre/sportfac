@@ -187,10 +187,13 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
 
 # Create your models here.
 class Child(TimeStampedModel):
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    sex = models.CharField(max_length=1, choices=(('M', _('Male')), ('F', _('Female'))))
-    birth_date = models.DateField()
+    SEX = Choices(('M', _('Male'))  , 
+                  ('F', _('Female')) )
+
+    first_name = models.CharField(_("First name"), max_length=50)
+    last_name = models.CharField(_("Last name"), max_length=50)
+    sex = models.CharField(_("Sex"), max_length=1, choices=SEX)
+    birth_date = models.DateField(_("Birth date"))
     school_year = models.ForeignKey('SchoolYear')
     teacher = models.ForeignKey('Teacher', related_name="students", null=True, on_delete=models.SET_NULL)
     
@@ -202,6 +205,15 @@ class Child(TimeStampedModel):
         ordering = ('last_name', 'first_name',)
         abstract = False
     
+    def get_update_url(self):
+        return reverse('backend:child-update', kwargs={'pk': self.pk, 'user': self.family.pk})
+    
+    def get_delete_url(self):
+        return reverse('backend:child-delete', kwargs={'pk': self.pk, 'user': self.family.pk})
+    
+    def get_backend_url(self):
+        return reverse('backend:user-detail', kwargs={'pk': self.family.pk})
+
     
     def __unicode__(self):
         return '%s %s' % (self.first_name.title(), self.last_name.title())

@@ -68,7 +68,9 @@ MIDDLEWARE_CLASSES += (
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
-DEBUG_TOOLBAR_CONFIG ={'INTERCEPT_REDIRECTS': False}
+DEBUG_TOOLBAR_CONFIG ={'INTERCEPT_REDIRECTS': False,
+                       'SHOW_TEMPLATE_CONTEXT': True,
+}
 
 ALLOWED_HOSTS = ('127.0.0.1', 'localhost',)
 
