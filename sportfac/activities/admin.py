@@ -9,7 +9,7 @@ from django.http import HttpResponse
 
 from profiles.models import Registration
 from sportfac.utils import UnicodeWriter
-from .models import Activity, Responsible, Course, ExtraNeed
+from .models import Activity, Course, ExtraNeed
 
 
 class CourseInline(admin.StackedInline):
@@ -159,14 +159,3 @@ class CoursesAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Course, CoursesAdmin)
-
-
-class ResponsibleAdmin(admin.ModelAdmin):
-    list_display = ('fullname', 'phone', 'email')
-    verbose_name = _("responsible")
-    verbose_name_plural = _("responsibles")
-    ordering = ('last', 'first')
-
-admin.site.register(Responsible, ResponsibleAdmin)
-
- 
