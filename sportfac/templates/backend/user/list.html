@@ -20,7 +20,7 @@ $(function () {
       },
 {% endif %}
       aoColumnDefs: [
-          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ 4] }
+          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ 5] }
       ],
       'lengthMenu': [[10, 25, 50, -1], [10, 25, 50, "{% trans 'All users' %}"] ],
       dom: 'T<"clear">lfrtip',
@@ -80,6 +80,8 @@ $(function () {
       <th>{% trans "Children" %}</th>
       <th>{% trans "Finished registration" %}</th>
       <th>{% trans "Paid" %}</th>
+      <th>{% trans "Billing identifier" %}</th>
+      <th>{% trans "Actions" %}</th>
     </tr>
   </thead>
   {% for user in object_list %}
@@ -94,6 +96,7 @@ $(function () {
       </td>
       <td>{% if user.finished_registration %}<i class="icon-ok-circled success"></i>{% else %}<i class="icon-cancel-circled  danger"></i>{% endif %}</td>
       <td>{% if user.paid %}<i class="icon-ok-circled success"></i>{% else %}<i class="icon-cancel-circled  danger"></i>{% endif %}</td>
+      <td>{{ user.billing_identifier }} </td>
       <td>
         <ul class="list-unstyled">
           <li class="text-nowrap"><a href="{{ user.get_backend_url }}" class="btn btn-sm"><i class="icon-user"></i>&nbsp;&nbsp;{% trans "User details" %}</a></li>
