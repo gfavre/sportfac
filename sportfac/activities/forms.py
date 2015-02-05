@@ -3,7 +3,9 @@ from django.utils.translation import ugettext as _
 import floppyforms.__future__ as forms
 
 from backend.forms import Select2Widget, DatePickerInput, TimePickerInput
-from .models import Activity, Course, Responsible
+from .models import Activity, Course
+
+from profiles.models import FamilyUser
 
 
             
@@ -12,9 +14,9 @@ class CourseForm(forms.ModelForm):
     activity = forms.ModelChoiceField(queryset=Activity.objects, 
                                       empty_label=None,
                                       widget=Select2Widget())    
-    responsible = forms.ModelChoiceField(queryset=Responsible.objects, 
+    responsible = forms.ModelChoiceField(queryset=FamilyUser.responsible_objects, 
                                          empty_label=None,
-                                          widget=Select2Widget()) 
+                                         widget=Select2Widget()) 
     start_date = forms.DateTimeField(label=_("Start date"), required=True, 
                                      widget=DatePickerInput(format='%d.%m.%Y'))
     end_date = forms.DateTimeField(label=_("End date"), required=True, 

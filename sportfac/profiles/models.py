@@ -15,6 +15,7 @@ from model_utils import Choices
 from model_utils.models import StatusModel
 
 from activities.models import SCHOOL_YEARS
+from backend import MANAGERS_GROUP, RESPONSIBLE_GROUP
 from sportfac.models import TimeStampedModel
 
 
@@ -63,6 +64,14 @@ class FamilyManager(BaseUserManager):
           user.save(using=self._db)
           return user
 
+class ResponsibleFamilyUserManager(BaseUserManager):
+    def get_queryset(self):
+        return super(ResponsibleFamilyUserManager, self).get_queryset().filter(groups__name=RESPONSIBLE_GROUP)
+
+class ManagerFamilyUserManager(BaseUserManager):
+    def get_queryset(self):
+        return super(ManagerFamilyUserManager, self).get_queryset().filter(groups__name=MANAGERS_GROUP)
+    
 
 class FamilyUser(PermissionsMixin, AbstractBaseUser):
     email = models.EmailField(verbose_name = _('Email address'), max_length=255, unique=True, db_index=True)
@@ -96,6 +105,9 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     
     
     objects = FamilyManager()
+    responsible_objects = ResponsibleFamilyUserManager()
+    managers_objects = ManagerFamilyUserManager()
+
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ('first_name', 'last_name', 'zipcode', 'city', 'country')
@@ -108,6 +120,10 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     def get_full_name(self):
         full_name = '%s %s' % (self.first_name, self.last_name)
         return full_name.strip()
+    
+    @property
+    def best_phone(self):
+        return self.private_phone2 or self.private_phone1 or self.private_phone3
     
     @property
     def full_name(self):
