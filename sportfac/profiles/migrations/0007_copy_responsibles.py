@@ -17,7 +17,7 @@ def copy_responsibles(apps, schema_editor):
                         first_name = resp.first,
                         last_name = resp.last,
                         private_phone2 = resp.phone)
-        grp.user_set.add(course.responsible)
+        grp.user_set.add(f)
 
 
 
