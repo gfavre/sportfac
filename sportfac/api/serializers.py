@@ -4,8 +4,8 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from rest_framework.compat import smart_text
 
-from activities.models import Activity, Course, Responsible
-from profiles.models import Child, Teacher, SchoolYear, Registration, ExtraInfo
+from activities.models import Activity, Course
+from profiles.models import UserFamily, Child, Teacher, SchoolYear, Registration, ExtraInfo
 
 
 class ActivitySerializer(serializers.ModelSerializer):
@@ -14,9 +14,15 @@ class ActivitySerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'number')
 
 class ResponsibleSerializer(serializers.ModelSerializer):
+    first = serializers.CharField(source='first_name')
+    last  = serializers.CharField(source='last_name')
+    phone = serializers.CharField(source='best_phone')
+    email = serializers.CharField(source='email')
+
+    
     class Meta:
-        model = Responsible
-        fields = ('last', 'first', 'phone', 'email')
+        model = UserFamily
+        read_only_fields = ('email',)
 
 
 
