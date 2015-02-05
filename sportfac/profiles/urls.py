@@ -4,16 +4,16 @@ from django.contrib.auth import views as auth_views
 
 from .forms import RegistrationForm, AuthenticationForm
 from .views import (password_change, password_reset, RegistrationView, 
-                    ChildrenListView, AccountView, BillingView, 
+                    ChildrenListView, AccountView, BillingView, SummaryView,
                     RegisteredActivitiesListView)
 
 
 urlpatterns = patterns('',
     url(r'^$', AccountView.as_view(), name="profiles_account"),
     url(r'^children/$', ChildrenListView.as_view(), name="profiles_children"),
-    url(r'^summary/$', BillingView.as_view(template_name="profiles/summary.html"), name="profiles_registered_activities"),
+    url(r'^summary/$', SummaryView.as_view(), name="profiles_registered_activities"),
     url(r'^register/$',  RegistrationView.as_view(), name="registeraccount"),
-    url(r'^payement/$', BillingView.as_view(wizard=False), name="profiles_billing"),
+    url(r'^payement/$', BillingView.as_view(), name="profiles_billing"),
     
     url(r'^reset/$', password_reset, name="registration_reset"),
     url(r'^password/change/$', password_change, name='password_change'),

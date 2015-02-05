@@ -31,7 +31,7 @@
           </a>
         </li>
   
-        <li {% if request.get_full_path == profiles_children %}class="active"{% endif %}>
+        <li {% if request.get_full_path == children_url %}class="active"{% endif %}>
           <a href="{{ children_url }}">
             <i class="icon-group"></i>
             &nbsp;&nbsp;{% trans "Family settings" %}
@@ -42,9 +42,23 @@
     </div>
     <div class="col-md-9 col-sm-8 layout-main">
       <div class="tab-content stacked-content">
-          {% block content %}
-          
-          {% endblock content %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert {% if message.tags %}{{ message.tags }}{% endif %}">  
+          <a class="close" href="#" data-dismiss="alert">×</a>
+          {% if message.tags = "alert-success" %}
+          <i class="icon-ok"></i>&nbsp;&nbsp;
+          {% elif  message.tags = "alert-warning" %}
+          <i class="icon-ok"></i>&nbsp;&nbsp;
+          {% elif  message.tags = "alert-error" %}
+          <i class="icon-cancel"></i>&nbsp;&nbsp;
+          {% else %}
+          <i class="icon-exclamation"></i>&nbsp;&nbsp;
+          {% endif %}{{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% block content %}{% endblock content %}
       </div><!-- end tab-content -->
     </div><!-- end layout-main -->
   </div><!-- end layout -->

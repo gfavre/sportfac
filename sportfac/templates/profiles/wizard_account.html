@@ -1,0 +1,27 @@
+{% extends "wizard.html" %}
+
+{% load i18n floppyforms %}
+
+{% block title %}{% trans "My account" %}{% endblock title %}
+{% block page_title %}{% trans "My account" %} <small>- responsable légal</small>{% endblock page_title %}
+
+{% block content %}
+<form action="." method="post" class="form-horizontal" role="form">{% csrf_token %}
+
+{% include "profiles/account_form.html" %}
+
+  <div class="form-group">
+    <div class="col-sm-12">
+      <div class="pull-right">
+        <button type="submit" class="btn btn-primary btn-large">{% trans "Save and continue" %} <span class="icon-chevron-right icon-white"></span></button>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock content %}
+{% block page_footer %}{% endblock page_footer %}
+
+
+
+
+

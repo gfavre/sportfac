@@ -1,0 +1,10 @@
+{% extends "profiles/baseprofile.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Your children" %}{% endblock title %}
+{% block page_title %}{% trans "About your children" %}{% endblock page_title %}
+
+{% block content %}
+  {% include "profiles/children_list_partial.html" %}
+{% endblock content %}
+

@@ -1,0 +1,27 @@
+{% extends "profiles/baseprofile.html" %}
+{% load i18n floppyforms %}
+
+{% block title %}{% trans "My account" %}{% endblock title %}
+{% block page_title %}{% trans "My account" %} <small>- responsable légal</small>{% endblock page_title %}
+
+{% block content %}
+<h3 class="content-title">
+  <u>{% trans "Edit profile" %}</u>
+</h3>
+<form action="." method="post" class="form-horizontal" role="form">{% csrf_token %}
+
+{% include "profiles/account_form.html" %}
+
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-success btn-large">{% trans "Save" %}</button>
+    </div>
+  </div>
+</form>
+
+{% endblock content %}
+
+
+
+
+

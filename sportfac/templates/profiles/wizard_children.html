@@ -1,0 +1,25 @@
+{% extends "wizard.html" %}
+
+{% load i18n %}
+{% block title %}{% trans "Your children" %}{% endblock title %}
+{% block page_title %}{% trans "About your children" %}{% endblock page_title %}
+
+{% block content %}
+{% include "profiles/children_list_partial.html" %}
+{% endblock content %}
+
+{% block next_label %}{% trans "Register activities"%}{% endblock %}
+{% block page_footer %}
+{% if not user.finished_registration %}
+<nav>
+  <ul class="pager">
+    <li class="previous">
+      <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span> {% block previous_label %}{% trans "Previous"%}{% endblock %}</a>
+    </li>
+    <li class="next" ng-class="{disabled: userChildren.length === 0}">
+      <a href="{{ next_step.url }}">{% trans "Register activities" %} <span aria-hidden="true">&rarr;</span></a>
+    </li>
+  </ul>
+</nav>
+{% endif %}
+{% endblock page_footer %}

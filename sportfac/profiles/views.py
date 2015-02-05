@@ -2,7 +2,7 @@ from django.views.generic import ListView, UpdateView, TemplateView, FormView
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.views import password_change as auth_password_change
 import django.contrib.auth.views as auth_views
-
+from django.contrib.messages.views import SuccessMessageMixin
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.db.models import Sum
@@ -14,8 +14,13 @@ from registration import signals
 from .models import FamilyUser, Child, Registration
 from .forms import *
 
-from sportfac.utils import WizardMixin
+from sportfac.views import WizardMixin
 
+__all__ = ('password_change', 'password_reset', 
+           'AccountView', 'BillingView', 'ChildrenListView', 
+           'RegisteredActivitiesListView', 'RegistrationView', 'SummaryView',
+           'WizardAccountView', 'WizardBillingView', 'WizardChildrenListView', 
+           'WizardRegistrationView')
 
 def password_change(request):
     "Wrap the built-in password reset view and pass it the arguments"
@@ -26,29 +31,33 @@ def password_reset(request):
     return auth_views.password_reset(request, password_reset_form=PasswordResetForm)
 
 
-class ChildrenListView(LoginRequiredMixin, WizardMixin, ListView):
-    template_name = 'profiles/children_list.html'
+class ChildrenListView(LoginRequiredMixin, ListView):
+    template_name = 'profiles/children.html'
     context_object_name = 'children'
     
     def get_queryset(self):
         return Child.objects.filter(family = self.request.user).order_by('first_name')
         
+class WizardChildrenListView(WizardMixin, ChildrenListView):
+    template_name = 'profiles/wizard_children.html'
 
-class AccountView(LoginRequiredMixin, WizardMixin, UpdateView):
+
+
+class _BaseAccount(LoginRequiredMixin, UpdateView):
     model = FamilyUser
     form_class = ContactInformationForm
-    
-    def get_success_url(self, request=None, user=None):
-        if self.wizard:
-            return reverse('wizard_children')
-        else:
-            return reverse('profiles_children')
- 
-    
     def get_object(self, queryset=None):
         return self.request.user
+    
 
+class AccountView(SuccessMessageMixin, _BaseAccount):
+    template_name = 'profiles/account.html'
+    success_message = _('Contact informations have been saved.')
 
+class WizardAccountView(WizardMixin, _BaseAccount):
+    template_name = 'profiles/wizard_account.html'
+    success_url = reverse_lazy('wizard_children')
+    
 
 class RegistrationView(BaseRegistrationView):
     """
@@ -82,6 +91,8 @@ class RegistrationView(BaseRegistrationView):
 
 
 class WizardRegistrationView(WizardMixin, RegistrationView):
+    template_name = 'registration/wizard_registration.html'
+
     success_url = reverse_lazy('wizard_children')
 
 
@@ -122,7 +133,7 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
 
     def form_valid(self, form):
         for registration in self.get_queryset().all():
-            registration.validated = True
+            registration.set_valid()
             registration.save()
         self.request.user.finished_registration = True
         self.request.user.update_total()
@@ -130,17 +141,24 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
         return super(RegisteredActivitiesListView, self).form_valid(form)
     
 
-class BillingView(LoginRequiredMixin, WizardMixin, TemplateView):
+class BillingView(LoginRequiredMixin, TemplateView):
     template_name = "profiles/billing.html"
     
     def get_context_data(self, **kwargs):
         context = super(BillingView, self).get_context_data(**kwargs)
-        registrations = Registration.objects.filter(child__in=self.request.user.children.all(), validated=True)
+        registrations = Registration.objects.validated().filter(
+                            child__in=self.request.user.children.all())
         context['registered_list'] = registrations.all()
-        
         total = registrations.aggregate(Sum('course__price')).get('course__price__sum')
         context['total_price'] = total or 0
         self.request.user.update_total()
         self.request.user.save()
         
         return context
+
+class SummaryView(BillingView):
+    template_name = "profiles/summary.html"
+
+class WizardBillingView(WizardMixin, BillingView):
+    template_name = "profiles/wizard_billing.html"
+

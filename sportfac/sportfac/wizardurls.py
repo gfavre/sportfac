@@ -7,14 +7,17 @@ from django.core.urlresolvers import reverse
 from django.contrib import admin
 
 from activities.views import ActivityListView
-from profiles.views import AccountView, WizardRegistrationView, ChildrenListView, BillingView, RegisteredActivitiesListView
-
+from profiles.views import (WizardAccountView, WizardRegistrationView,
+                            WizardChildrenListView, 
+                            RegisteredActivitiesListView, WizardBillingView,)
+from .views import WizardView
 
 urlpatterns = patterns('',
-    url(r'^register/$', WizardRegistrationView.as_view(), name='wizard_register'),
-    url(r'^account/$', AccountView.as_view(wizard=True), name='wizard_account'),
-    url(r'^children/$', ChildrenListView.as_view(wizard=True), name="wizard_children"),
-    url(r'^activities/$', ActivityListView.as_view(wizard=True), name='wizard_activities'),
-    url(r'^confirm/$', RegisteredActivitiesListView.as_view(wizard=True), name="wizard_confirm"),
-    url(r'^billing/$', BillingView.as_view(wizard=True), name="wizard_billing"),
+    url(r'^$', WizardView.as_view(), name='wizard' ),
+    url(r'^register/$', WizardRegistrationView.as_view(), name='wizard_register'), # no account yet
+    url(r'^account/$', WizardAccountView.as_view(), name='wizard_account'), # account created
+    url(r'^children/$', WizardChildrenListView.as_view(), name="wizard_children"),
+    url(r'^activities/$', ActivityListView.as_view(), name='wizard_activities'),
+    url(r'^confirm/$', RegisteredActivitiesListView.as_view(), name="wizard_confirm"),
+    url(r'^billing/$', WizardBillingView.as_view(), name="wizard_billing"),
 )

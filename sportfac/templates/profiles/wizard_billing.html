@@ -1,6 +1,9 @@
-{% extends profiles/baseprofile.html %}
+{% extends "wizard.html" %}
+{% load i18n l10n humanize sekizai_tags %}
+
 
 {% block page_title %}Paiement{% endblock page_title%}
+
 {% block content %}
   {% include "profiles/billing_partial.html" %}
 {% endblock %}

@@ -1,18 +1,7 @@
-{% extends base_template %}
-{% load i18n %}
-{% load floppyforms %}
-{% block title %}{% trans "My account" %}{% endblock title %}
-{% block page_title %}{% trans "My account" %} <small>- responsable légal</small>{% endblock page_title %}
-
-
-{% block content %}
-<h3 class="content-title">
-  <u>{% trans "Edit profile" %}</u>
-</h3>
+{% load i18n floppyforms %}
 
 {% form form using %}
 {% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
-<form action="." method="post" class="form-horizontal" role="form">{% csrf_token %}
 {% block errors %}
   {% for error in form.non_field_errors %}
   <div class="alert alert-error">
@@ -50,28 +39,7 @@
     {% formrow form.private_phone2 %}
     {% formrow form.private_phone3 %}
   </fieldset>
-  
-  <div class="form-group">
-    {% if wizard_mode %}
-    <div class="col-sm-12">
-      <div class="pull-right">
-        <button type="submit" class="btn btn-primary btn-large">{% trans "Save and continue" %} <span class="icon-chevron-right icon-white"></span></button>
-      </div>
-    </div>
-    {% else %}
-    <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-success btn-large">{% trans "Save" %}</button>
-    </div>
-    {% endif %}
-  </div>
-</form>
 {% endform %}
-{% endblock content %}
-
-
-
-{% block page_footer %}{% endblock page_footer %}
-
 
 
 

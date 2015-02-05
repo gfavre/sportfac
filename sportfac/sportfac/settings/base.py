@@ -177,6 +177,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'sportfac.middleware.RegistrationOpenedMiddleware',
     
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 )

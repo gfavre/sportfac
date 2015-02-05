@@ -228,6 +228,10 @@ class RegistrationManager(models.Manager):
     def waiting(self):
         return self.get_queryset().filter(status=Registration.STATUS.waiting)
     
+    def validated(self):
+        return self.get_queryset().filter(status=Registration.STATUS.valid)
+
+    
 
 class Registration(TimeStampedModel, StatusModel):
     STATUS = Choices(('waiting', _("Waiting parent's confirmation")),
@@ -251,6 +255,15 @@ class Registration(TimeStampedModel, StatusModel):
         return _(u'%(child)s ⇒ course %(number)s (%(activity)s)') % {'child': unicode(self.child), 
                                                                       'number': self.course.number,
                                                                       'activity': self.course.activity.name}
+ 
+    def set_waiting(self):
+        self.status = self.STATUS.waiting
+  
+    def set_valid(self):
+        self.status = self.STATUS.valid
+    
+    def set_confirmed(self):
+        self.status = self.STATUS.confirmed
     
     def cancel(self):
         self.status = self.STATUS.canceled 
