@@ -1,1 +1,2 @@
-GROUP_NAME = 'Sports managers'
+MANAGERS_GROUP = 'Sports managers'
+RESPONSIBLE_GROUP = 'Courses responsibles'

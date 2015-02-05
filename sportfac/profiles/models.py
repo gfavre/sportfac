@@ -70,8 +70,8 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     last_name = models.CharField(_('Last name'), max_length=30, blank=True)
     
     address = models.TextField(_("Street"), blank = True)
-    zipcode = models.PositiveIntegerField(_("NPA"))
-    city = models.CharField(_('City'), max_length=100)
+    zipcode = models.PositiveIntegerField(_("NPA"), blank=True)
+    city = models.CharField(_('City'), max_length=100, blank=True)
     country = models.CharField(_('Country'), max_length = 100, default=_("Switzerland"))
     private_phone = models.CharField(_("Home phone"), max_length=30, blank=True)
     private_phone2 = models.CharField(_("Mobile phone"), max_length=30, blank=True)
@@ -136,20 +136,38 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         return reverse('profiles_account')
     
     def get_manager(self):
-        from backend import GROUP_NAME
+        from backend import MANAGERS_GROUP
         if self.is_superuser or self.is_admin:
             return True
-        return GROUP_NAME in self.groups.values_list("name", flat=True)
+        return MANAGERS_GROUP in self.groups.values_list("name", flat=True)
     
     def set_manager(self, value):
-        from backend import GROUP_NAME
-        managers = Group.objects.get(name=GROUP_NAME)
+        from backend import MANAGERS_GROUP
+        managers = Group.objects.get(name=MANAGERS_GROUP)
         if value:
             managers.user_set.add(self)
         else:
             managers.user_set.remove(self)
     
     is_manager = property(get_manager, set_manager)
+    
+    def get_responsible_status(self):
+        from backend import RESPONSIBLE_GROUP
+        if self.is_superuser or self.is_admin:
+            return True
+        return RESPONSIBLE_GROUP in self.groups.values_list("name", flat=True)
+    
+    def set_responsible_status(self, value):
+        from backend import RESPONSIBLE_GROUP
+        managers = Group.objects.get(name=RESPONSIBLE_GROUP)
+        if value:
+            managers.user_set.add(self)
+        else:
+            managers.user_set.remove(self)
+
+    is_responsible = property(get_responsible_status, set_responsible_status)
+
+    
 
         
     def has_module_perms(self, app_label):

@@ -8,7 +8,7 @@ from django.contrib.auth.models import Group
 #from django_dynamic_fixture import G
 
 from .models import Registration, Child, SchoolYear, FamilyUser
-from backend import GROUP_NAME
+from backend import MANAGERS_GROUP
 from activities.models import Course
 
 class RegistrationTestCase(TestCase):
@@ -75,7 +75,7 @@ class FamilyUserTestCase(TestCase):
                             city='Lausanne',
                             is_superuser=False,
                             is_admin=False)
-        managers, created = Group.objects.get_or_create(name=GROUP_NAME)
+        managers, created = Group.objects.get_or_create(name=MANAGERS_GROUP)
         self.manager.groups.add(managers)
         
         self.user = FamilyUser.objects.create(

@@ -16,7 +16,7 @@ from profiles.forms import UserForm, UserUpdateForm, UserPayForm, ChildForm
 
 
 from .mixins import BackendMixin
-from backend import GROUP_NAME
+from backend import MANAGERS_GROUP
 
 
 
@@ -36,7 +36,7 @@ class UserListView(BackendMixin, ListView):
         return HttpResponseRedirect(reverse('backend:custom-mail-custom-users')) 
         
 class ManagerListView(UserListView):
-    queryset =  Group.objects.get(name=GROUP_NAME).user_set.all()
+    queryset =  Group.objects.get(name=MANAGERS_GROUP).user_set.all()
     template_name = 'backend/user/manager-list.html'
 
 

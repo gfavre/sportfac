@@ -139,13 +139,13 @@ class RegistrationForm(forms.Form):
     email = forms.EmailField(label=_("E-mail"), 
                              widget=forms.EmailInput(attrs={'placeholder': 'john@example.com'}))
     
-    first_name = forms.CharField(label=_("First name"))
-    last_name = forms.CharField(label=_("Last name"))
+    first_name = forms.CharField(label=_("First name"), required=True)
+    last_name = forms.CharField(label=_("Last name"), required=True)
     address = forms.CharField(label=_("Address"),
                               #widget=forms.Textarea(attrs={'rows': 3}),
                               required = False)
-    zipcode = forms.IntegerField(label=_("NPA"), min_value=1000, max_value=9999)
-    city = forms.CharField(label=_("City"), widget=forms.TextInput(attrs={'placeholder': 'Coppet'}))
+    zipcode = forms.IntegerField(label=_("NPA"), min_value=1000, max_value=9999, required=True)
+    city = forms.CharField(label=_("City"), widget=forms.TextInput(attrs={'placeholder': 'Coppet'}), required=True)
     private_phone = forms.CharField(label=_("Home phone"), widget=forms.PhoneNumberInput(), required=False)
     private_phone2 = forms.CharField(label=_("Mobile phone #1"), widget=forms.PhoneNumberInput(), required=False)
     private_phone3 = forms.CharField(label=_("Mobile phone #2"), widget=forms.PhoneNumberInput(), required=False)
