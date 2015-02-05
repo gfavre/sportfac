@@ -5,7 +5,7 @@ from rest_framework import serializers
 from rest_framework.compat import smart_text
 
 from activities.models import Activity, Course
-from profiles.models import UserFamily, Child, Teacher, SchoolYear, Registration, ExtraInfo
+from profiles.models import FamilyUser, Child, Teacher, SchoolYear, Registration, ExtraInfo
 
 
 class ActivitySerializer(serializers.ModelSerializer):
@@ -21,7 +21,7 @@ class ResponsibleSerializer(serializers.ModelSerializer):
 
     
     class Meta:
-        model = UserFamily
+        model = FamilyUser
         read_only_fields = ('email',)
 
 
