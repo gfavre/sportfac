@@ -63,7 +63,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='familyuser',
             name='zipcode',
-            field=models.PositiveIntegerField(verbose_name='NPA', blank=True),
+            field=models.PositiveIntegerField(null=True, verbose_name='NPA', blank=True),
             preserve_default=True,
         ),
+
     ]

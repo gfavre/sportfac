@@ -70,7 +70,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     last_name = models.CharField(_('Last name'), max_length=30, blank=True)
     
     address = models.TextField(_("Street"), blank = True)
-    zipcode = models.PositiveIntegerField(_("NPA"), blank=True)
+    zipcode = models.PositiveIntegerField(_("NPA"), blank=True, null=True)
     city = models.CharField(_('City'), max_length=100, blank=True)
     country = models.CharField(_('Country'), max_length = 100, default=_("Switzerland"))
     private_phone = models.CharField(_("Home phone"), max_length=30, blank=True)

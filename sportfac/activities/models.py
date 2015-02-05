@@ -69,7 +69,8 @@ class Course(models.Model):
     activity = models.ForeignKey('Activity', related_name='courses')
     number = models.IntegerField(db_index=True, unique=True, null=True, blank=True, verbose_name=_("Identifier"))
     uptodate = models.BooleanField(verbose_name=_("Course up to date"), default=False)
-    responsible = models.ForeignKey('Responsible', verbose_name=_("Responsible"), related_name='courses')
+    responsible = models.ForeignKey('profiles.FamilyUser', verbose_name=_("Responsible"), related_name='courses')
+
     price = models.DecimalField(max_digits=5, decimal_places=2, verbose_name=_("Price"))
     number_of_sessions = models.PositiveSmallIntegerField(verbose_name=_("Number of sessions"))
     day = models.PositiveSmallIntegerField(choices=DAYS_OF_WEEK, verbose_name=_("Day"), default=1)

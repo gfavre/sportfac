@@ -17,7 +17,10 @@ class Step:
         self.current = request.path == self.url
     
 def has_finished(request):
-    return request.user.finished_registration      
+    if not request.user.is_authenticated():
+        return False
+    return request.user.finished_registration
+    
 
 def can_register_activities(request):
     if not request.user.is_authenticated() or has_finished(request):
@@ -35,7 +38,7 @@ def can_pay(request):
     return has_finished(request)
 
 def can_register(request):
-    if not request.user:
+    if not request.user.is_authenticated():
         return True
     return not has_finished(request)
 
