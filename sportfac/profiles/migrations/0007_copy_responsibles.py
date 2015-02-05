@@ -24,6 +24,8 @@ def set_responsibles(apps, schema_editor):
     """
     from django.contrib.auth.models import Group
     from activities.models import Course
+    Group = apps.get_app_config('auth').get_model('Group')
+    Course = apps.get_app_config('activities').get_model('Course')    
 
     grp = Group.objects.get(name=RESPONSIBLE_GROUP)
     for course in Course.objects.all():    
