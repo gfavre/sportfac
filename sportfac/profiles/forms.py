@@ -11,7 +11,7 @@ from .models import Child, Teacher
 
 __all__ = ('AuthenticationForm', 'PasswordChangeForm', 'PasswordResetForm',
            'AcceptTermsForm', 'ContactInformationForm', 'RegistrationForm',
-           'UserForm', 'UserUpdateForm', 'ChildForm')
+           'UserForm', 'UserUpdateForm', 'UserPayForm', 'ChildForm')
 
 
 class AuthenticationForm(auth_forms.AuthenticationForm):
@@ -91,11 +91,20 @@ class UserForm(forms.ModelForm):
             self.fields['is_manager'].initial = instance.is_manager
     
     
-class UserUpdateForm(UserForm):
+class UserUpdateForm(forms.ModelForm):
+    is_manager = forms.BooleanField(required=False, label=_("Is a manager"), 
+                                    help_text=_("Grant access for this user to this backend interface"))
+
     class Meta:
         model = get_user_model()
         fields = ('email', 'first_name', 'last_name', 'address', 'zipcode', 'city', 
                   'private_phone', 'private_phone2', 'private_phone3')
+
+class UserPayForm(forms.ModelForm):
+    class Meta:
+        model = get_user_model()
+        fields = ('finished_registration', 'paid', )
+
            
 
 class ChildForm(forms.ModelForm):

@@ -166,6 +166,10 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     
     def get_delete_url(self):
         return reverse('backend:user-delete', kwargs={'pk': self.pk})
+
+    def get_payment_url(self):
+        return reverse('backend:user-pay', kwargs={'pk': self.pk})
+
     
     def get_backend_url(self):
         return reverse('backend:user-detail', kwargs={'pk': self.pk})
@@ -213,10 +217,18 @@ class Child(TimeStampedModel):
     
     def get_backend_url(self):
         return reverse('backend:user-detail', kwargs={'pk': self.family.pk})
+    
+    def get_full_name(self):
+        full_name = '%s %s' % (self.first_name.title(), self.last_name.title())
+        return full_name.strip()
+    
+    @property
+    def full_name(self):
+        return self.get_full_name()
 
     
     def __unicode__(self):
-        return '%s %s' % (self.first_name.title(), self.last_name.title())
+        return self.get_full_name()
 
 class RegistrationManager(models.Manager):
     def get_queryset(self):

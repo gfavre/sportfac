@@ -1,20 +1,27 @@
 import json
 
+from django.contrib.auth.models import Group
+from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy, reverse
+
 from django.http import HttpResponseRedirect
 from django.views.generic import CreateView, DeleteView, DetailView, \
                                 ListView, UpdateView, View
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import Group
+from django.utils.translation import ugettext as _
+
 
 from profiles.models import FamilyUser, Child
-from profiles.forms import UserForm, UserUpdateForm, ChildForm
+from profiles.forms import UserForm, UserUpdateForm, UserPayForm, ChildForm
+
 
 from .mixins import BackendMixin
 from backend import GROUP_NAME
 
+
+
 __all__ = ('UserListView', 'ManagerListView', 'UserCreateView', 'ManagerCreateView',
-           'UserUpdateView', 'UserDeleteView', 'UserDetailView',
+           'UserUpdateView', 'UserPayUpdateView', 'UserDeleteView', 'UserDetailView',
            'ChildCreateView', 'ChildUpdateView', 'ChildDeleteView')
 
 class UserListView(BackendMixin, ListView):
@@ -33,7 +40,7 @@ class ManagerListView(UserListView):
     template_name = 'backend/user/manager-list.html'
 
 
-class UserCreateView(BackendMixin, CreateView):
+class UserCreateView(BackendMixin, SuccessMessageMixin, CreateView):
     model = FamilyUser
     form_class = UserForm
     template_name = 'backend/user/create.html'
@@ -45,6 +52,10 @@ class UserCreateView(BackendMixin, CreateView):
         self.object.is_manager = form.cleaned_data['is_manager']
         return super(UserCreateView, self).form_valid(form)
 
+    def get_success_message(self, cleaned_data):
+        return _("User %s has been added.") % self.object.full_name
+
+
 class ManagerCreateView(UserCreateView):
     success_url = reverse_lazy('backend:manager-list')    
     
@@ -53,8 +64,11 @@ class ManagerCreateView(UserCreateView):
         initial['is_manager'] = True
         return initial
 
+    def get_success_message(self, cleaned_data):
+        return _("Manager %s has been added.") % self.object.full_name
 
-class UserUpdateView(BackendMixin, UpdateView):
+
+class UserUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
     model = FamilyUser
     form_class = UserUpdateForm
     template_name = 'backend/user/update.html'
@@ -65,11 +79,26 @@ class UserUpdateView(BackendMixin, UpdateView):
         self.object.is_manager = form.cleaned_data['is_manager']
         return super(UserUpdateView, self).form_valid(form)
 
-class UserDeleteView(BackendMixin, DeleteView):
+    def get_success_message(self, cleaned_data):
+        return _("Contact informations of %s have been updated.") % self.object.full_name
+
+
+class UserPayUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
+    model = FamilyUser
+    form_class = UserPayForm
+    template_name = 'backend/user/pay.html'
+    success_url = reverse_lazy('backend:user-list')    
+    
+    def get_success_message(self, cleaned_data):
+        return _("Status of %s has been changed.") % self.object.full_name
+
+
+class UserDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
     model = FamilyUser
     template_name = 'backend/user/confirm_delete.html'
     success_url = reverse_lazy('backend:user-list')    
-    
+    success_message = _("User has been deleted.")
+
 
 class UserDetailView(BackendMixin, DetailView):
     model = FamilyUser
@@ -88,11 +117,14 @@ class ChildView(BackendMixin, View):
     
 
 
-class ChildCreateView(ChildView, CreateView):
+class ChildCreateView(ChildView, SuccessMessageMixin, CreateView):
     model = Child
     form_class = ChildForm
     template_name = 'backend/user/child-create.html'
-    
+    success_message = _("User has been deleted.")
+
+    def get_success_message(self, cleaned_data):
+        return _("Child %s has been added.") % self.object.full_name
     
     def form_valid(self, form):
         user = get_object_or_404(FamilyUser, pk=self.kwargs['user'])
@@ -102,13 +134,16 @@ class ChildCreateView(ChildView, CreateView):
         return HttpResponseRedirect(self.get_success_url())
         
 
-class ChildUpdateView(ChildView, UpdateView):
+class ChildUpdateView(ChildView, SuccessMessageMixin, UpdateView):
     model = Child
     form_class = ChildForm
     template_name = 'backend/user/child-update.html'
+    
+    def get_success_message(self, cleaned_data):
+        return _("Child %s has been updated.") % self.object.full_name
         
 
-class ChildDeleteView(ChildView, DeleteView):
+class ChildDeleteView(ChildView, SuccessMessageMixin, DeleteView):
     model = Child
     template_name = 'backend/user/child-confirm_delete.html'
-    
+    success_message = _("Child has been removed.")

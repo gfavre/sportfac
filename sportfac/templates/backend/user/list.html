@@ -86,7 +86,7 @@ $(function () {
   </thead>
   {% for user in object_list %}
     <tr data-userid="{{ user.id }}">
-      <td><a href="{% url 'backend:activity-detail' pk=user.pk %}">{{ user.full_name }}</a></td>
+      <td data-order="{{ user.last_name}} {{ user.first_name}}"><a href="{% url 'backend:activity-detail' pk=user.pk %}">{{ user.full_name }}</a></td>
       <td>
         <ul>
         {% for child in user.children.all %}
@@ -94,14 +94,15 @@ $(function () {
         {% endfor %}
         </ul>
       </td>
-      <td>{% if user.finished_registration %}<i class="icon-ok-circled success"></i>{% else %}<i class="icon-cancel-circled  danger"></i>{% endif %}</td>
-      <td>{% if user.paid %}<i class="icon-ok-circled success"></i>{% else %}<i class="icon-cancel-circled  danger"></i>{% endif %}</td>
+      <td data-order="{{ user.finished_registration }}" data-search="{% if user.finished_registration %}{% trans 'finished' %}{% endif %}">{% if user.finished_registration %}<i class="icon-ok-circled success"></i>{% else %}<i class="icon-cancel-circled  danger"></i>{% endif %}</td>
+      <td data-order="{{ user.paid }}" data-search="{% if user.paid %}{% trans 'paid' %}{% endif %}">{% if user.paid %}<i class="icon-ok-circled success"></i>{% else %}<i class="icon-cancel-circled  danger"></i>{% endif %}</td>
       <td>{{ user.billing_identifier }} </td>
       <td>
         <ul class="list-unstyled">
           <li class="text-nowrap"><a href="{{ user.get_backend_url }}" class="btn btn-sm"><i class="icon-user"></i>&nbsp;&nbsp;{% trans "User details" %}</a></li>
           <li class="text-nowrap"><a href="{{ user.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Update user" %}</a></li>
           <li class="text-nowrap"><a href="{{ user.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;&nbsp;{% trans "Delete user" %}</a></li>
+          <li class="text-nowrap"><a href="{{ user.get_payment_url }}" class="btn btn-sm"><i class="icon-credit-card-1"></i>&nbsp;&nbsp;{% trans "Change payment status" %}</a></li>
         </ul>
       </td>
     </tr>
