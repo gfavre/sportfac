@@ -77,7 +77,8 @@ class ContactInformationForm(forms.ModelForm):
 class UserForm(forms.ModelForm):
     is_manager = forms.BooleanField(required=False, label=_("Is a manager"), 
                                     help_text=_("Grant access for this user to this backend interface"))
-    
+    password = forms.CharField(label=_("Password"),
+                               widget=forms.PasswordInput)
     class Meta:
         model = get_user_model()
         fields = ('email', 'password', 'first_name', 'last_name', 'address', 'zipcode', 'city', 

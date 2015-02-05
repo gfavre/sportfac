@@ -5,13 +5,16 @@ from django.http import HttpResponseRedirect
 from django.views.generic import CreateView, DeleteView, DetailView, \
                                 ListView, UpdateView, View
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import Group
 
 from profiles.models import FamilyUser, Child
 from profiles.forms import UserForm, UserUpdateForm, ChildForm
 
 from .mixins import BackendMixin
+from backend import GROUP_NAME
 
-__all__ = ('UserListView', 'UserCreateView', 'UserUpdateView', 'UserDeleteView', 'UserDetailView',
+__all__ = ('UserListView', 'ManagerListView', 'UserCreateView', 'ManagerCreateView',
+           'UserUpdateView', 'UserDeleteView', 'UserDetailView',
            'ChildCreateView', 'ChildUpdateView', 'ChildDeleteView')
 
 class UserListView(BackendMixin, ListView):
@@ -24,6 +27,11 @@ class UserListView(BackendMixin, ListView):
         userids = list(set(json.loads(request.POST.get('data', '[]'))))
         self.request.session['mail-userids'] = userids
         return HttpResponseRedirect(reverse('backend:custom-mail-custom-users')) 
+        
+class ManagerListView(UserListView):
+    queryset =  Group.objects.get(name=GROUP_NAME).user_set.all()
+    template_name = 'backend/user/manager-list.html'
+
 
 class UserCreateView(BackendMixin, CreateView):
     model = FamilyUser
@@ -36,6 +44,15 @@ class UserCreateView(BackendMixin, CreateView):
         self.object.set_password(form.cleaned_data['password'])
         self.object.is_manager = form.cleaned_data['is_manager']
         return super(UserCreateView, self).form_valid(form)
+
+class ManagerCreateView(UserCreateView):
+    success_url = reverse_lazy('backend:manager-list')    
+    
+    def get_initial(self):
+        initial = super(ManagerCreateView, self).get_initial()
+        initial['is_manager'] = True
+        return initial
+
 
 class UserUpdateView(BackendMixin, UpdateView):
     model = FamilyUser
