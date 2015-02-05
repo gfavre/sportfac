@@ -34,14 +34,5 @@ class Migration(migrations.Migration):
             preserve_default=True,
         ),
         migrations.RunPython(update_userresponsible),
-        migrations.DeleteModel(
-            name='Responsible',
-        ),
-        migrations.AlterField(
-            model_name='course',
-            name='responsible',
-            field=models.ForeignKey(related_name='courses', verbose_name='Responsable', to=settings.AUTH_USER_MODEL),
-            preserve_default=True,
-        ),
       
     ]
