@@ -46,18 +46,6 @@
                   <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New course" %}
                 </a>
               </li>
-              <li class="divider"></li>
-              <li>
-                <a href="{% url 'backend:responsible-list' %}">
-                  <i class="icon-adult"></i>&nbsp;&nbsp;{% trans "All responsibles" %}
-                </a>
-              </li>
-              <li>
-                <a href="{% url 'backend:responsible-create' %}">
-                  <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New responsible" %}
-                </a>
-              </li>
-
           	</ul>
           </li>
 
@@ -98,14 +86,13 @@
                 &nbsp;&nbsp;{% trans "All users" %}
                 </a>
               </li>
-<!--
+
               <li>
-                <a href="l">
+                <a href="{% url 'backend:responsible-list' %}">
                 <i class="icon-star"></i> 
                 &nbsp;&nbsp;{% trans "All responsibles" %}
                 </a>
-              </li>-->
-
+              </li>
               <li>
                 <a href="{% url 'backend:manager-list' %}">
                 <i class="icon-hammer"></i> 

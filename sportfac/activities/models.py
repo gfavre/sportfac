@@ -154,29 +154,3 @@ class Course(models.Model):
         verbose_name = _("course")
         verbose_name_plural = _("courses")
     
-
-class Responsible(models.Model):
-    "person responsible of a course"
-    first = models.CharField(max_length=100, blank=True, verbose_name=_("First name"), help_text=_("Leave it empty in case of collaboration name"), db_index=True)
-    last = models.CharField(max_length=100, verbose_name=_("Last name"), db_index=True)
-    phone = models.CharField(max_length=14, blank=True, verbose_name=_("Phone number"))
-    email = models.EmailField(blank=True, verbose_name=_("Email"))
-    
-    def __unicode__(self):
-        if self.first:
-            return u'%s %s' % (self.first, self.last)
-        else:
-            return self.last
-    
-    @property
-    def fullname(self):
-        return self.__unicode__
-    
-    def get_backend_url(self):
-        return reverse('backend:responsible-detail', kwargs={"pk": self.pk})
-
-    
-    class Meta:
-        ordering = ['last', 'first']
-        verbose_name = _("responsible")
-        verbose_name_plural = _("responsibles")          

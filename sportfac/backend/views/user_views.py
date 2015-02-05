@@ -16,13 +16,15 @@ from profiles.forms import UserForm, UserUpdateForm, UserPayForm, ChildForm
 
 
 from .mixins import BackendMixin
-from backend import MANAGERS_GROUP
+from backend import MANAGERS_GROUP, RESPONSIBLE_GROUP
 
 
 
-__all__ = ('UserListView', 'ManagerListView', 'UserCreateView', 'ManagerCreateView',
+__all__ = ('UserListView', 'UserCreateView', 
            'UserUpdateView', 'UserPayUpdateView', 'UserDeleteView', 'UserDetailView',
-           'ChildCreateView', 'ChildUpdateView', 'ChildDeleteView')
+           'ChildCreateView', 'ChildUpdateView', 'ChildDeleteView',
+            'ManagerListView', 'ManagerCreateView', 'ResponsibleListView'
+           )
 
 class UserListView(BackendMixin, ListView):
     model = FamilyUser
@@ -38,6 +40,11 @@ class UserListView(BackendMixin, ListView):
 class ManagerListView(UserListView):
     queryset =  Group.objects.get(name=MANAGERS_GROUP).user_set.all()
     template_name = 'backend/user/manager-list.html'
+
+class ResponsibleListView(UserListView):
+    queryset =  Group.objects.get(name=RESPONSIBLE_GROUP).user_set.all()
+    template_name = 'backend/user/manager-list.html'
+
 
 
 class UserCreateView(BackendMixin, SuccessMessageMixin, CreateView):
