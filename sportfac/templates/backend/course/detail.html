@@ -1,7 +1,7 @@
 {% extends "backend/base.html" %}
 {% load i18n %}
-{% load duration %}
-{% load phone %}
+{% load duration phone money%}
+
 {% block title %}{{ course.activity.name }} - {{ block.super }}{% endblock %}
 {% block page_title %}{{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }}{% endblocktrans %}{% endblock %}
 
@@ -15,10 +15,10 @@
     <dl class="dl-horizontal">
       <dt>{% trans "Activity number" %}</dt><dd><a href="{% url 'backend:activity-detail' pk=course.activity.pk %}">{{ course.activity.number }}</a></dd>  
       <dt>{% trans "Responsible" %}</dt>
-      <dd><a href="{{ course.responsible.get_backend_url }}">{{ course.responsible  }}</a></dd>
+      <dd><a href="{{ course.responsible.get_backend_url }}">{{ course.responsible.full_name  }}</a></dd>
       <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
       <dt>{% trans "Number of sessions" %}</dt><dd>{{ course.number_of_sessions }} cours</dd>
-      <dt>{% trans "Price" %}</dt><dd>CHF {{ course.price }}</dd>
+      <dt>{% trans "Price" %}</dt><dd>{{ course.price|swissfranc }}</dd>
       <dt>{% trans "School years" %}</dt>
       <dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
     </dl>

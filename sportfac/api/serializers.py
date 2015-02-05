@@ -17,7 +17,6 @@ class ResponsibleSerializer(serializers.ModelSerializer):
     first = serializers.CharField(source='first_name')
     last  = serializers.CharField(source='last_name')
     phone = serializers.CharField(source='best_phone')
-    email = serializers.CharField(source='email')
 
     
     class Meta:
