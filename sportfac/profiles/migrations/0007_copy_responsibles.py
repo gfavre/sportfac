@@ -4,15 +4,29 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 
 from backend import RESPONSIBLE_GROUP
-from django.contrib.auth.models import Group
-from activities.models import Course
 
 def copy_responsibles(apps, schema_editor):
+    Responsible = apps.get_app_config('activities').get_model('Responsible')
+    FamilyUser = apps.get_app_config('profiles').get_model('FamilyUser')
+
+    for resp in Responsible.objects.all():
+        f, created = FamilyUser.objects.get_or_create(
+                        email=resp.email,
+                        first_name = resp.first,
+                        last_name = resp.last,
+                        private_phone2 = resp.phone)
+
+
+
+def set_responsibles(apps, schema_editor):
     """Data migration: Create the "sports managers" group, 
        and give this group proper permissions.
     """
+    from django.contrib.auth.models import Group
+    from activities.models import Course
+
     grp = Group.objects.get(name=RESPONSIBLE_GROUP)
-    for course in Course.objects.all():
+    for course in Course.objects.all():    
         grp.user_set.add(course.responsible)
 
 
@@ -28,4 +42,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(copy_responsibles),
+        migrations.RunPython(set_responsibles),
+
     ]
