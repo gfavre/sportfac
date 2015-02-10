@@ -103,7 +103,7 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
     template_name = 'profiles/registration_list.html'
     
     def get_queryset(self):
-        return Registration.objects.select_related('extra_infos',
+        Registration.objects.select_related('extra_infos',
                                                    'child', 
                                                    'course', 'course__activity').prefetch_related('extra_infos').filter(child__in=self.request.user.children.all())
     

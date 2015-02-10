@@ -1,7 +1,7 @@
-{% load i18n l10n humanize sekizai_tags %}
+{% load i18n l10n humanize sekizai_tags money %}
 
 <p>Les inscriptions seront définitivement validées à la suite du règlement de la finance de participation pour les cours choisis.</p>
-<p>Le montant total pour vos inscriptions s'élève à : <strong> CHF {{ total_price }}</strong></p>
+<p>Le montant total pour vos inscriptions s'élève à : <strong>{{ total_price|swissfranc }}</strong></p>
 <p>L'identifiant pour votre transaction est le suivant : <strong>{{ user.billing_identifier }}</strong></p>
 <p>Nous vous remercions de verser cette somme d’ici au  {{ registration_end|date:"j F Y" }} en privilégiant le virement bancaire sur le compte : </p>
 <div class="well">
@@ -33,7 +33,7 @@
  <tfoot>
     <tr>
       <th colspan="5" style="text-align: right">{% trans "Total" %}</th>
-      <th class="nowrap">CHF {{ total_price }}</th>
+      <th class="nowrap">{{ total_price|swissfranc }}</th>
     </tr>
   </tfoot>
 
@@ -52,7 +52,7 @@
         {{ registered.course.day_name }} / <span class="nowrap">{{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</span>
       </td>
       <td>{{ registered.course.place }}</td>
-      <td class="nowrap">CHF {{ registered.course.price|floatformat:2|intcomma }}</td>
+      <td class="nowrap">{{ registered.course.price|swissfranc }}</td>
     </tr>
   {% endfor %}
   </tbody>

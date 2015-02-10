@@ -10,7 +10,7 @@
       <a href="/" class="navbar-brand navbar-brand-white">Sport scolaire facultatif</a>
     </div> <!-- /.navbar-header -->
 
-    <nav class="collapse navbar-collapse" role="navigation" id="topnav">
+    <nav class="collapse navbar-collapse hidden-print" role="navigation" id="topnav">
       <ul class="nav navbar-nav  navbar-left">          
         <li><a href="{% url 'terms' %}">{% trans "Terms and conditions" %}</a></li>
         <li class="dropdown">
@@ -52,7 +52,13 @@
               <a href="{{ max_step }}"><i class="icon-calendar"></i> {% trans "Register activities" %}</a>
             </li>
             {% endif %}
-            {% if user.is_staff %}
+            {% if user.is_responsible %}
+              <li class="divider"></li>
+              <li>
+                <a href="{% url 'activities:my-courses' %}"><i class="icon-graduation-cap"></i> {% trans "My courses" %}</a>
+              </li>
+            {% endif %}
+            {% if user.is_manager %}
               <li class="divider"></li>
               <li>
                 <a href="{% url 'backend:home' %}"><i class="icon-cogs"></i> {% trans "Administration" %}</a>

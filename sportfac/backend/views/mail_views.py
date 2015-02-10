@@ -10,7 +10,7 @@ from django.views.generic import CreateView, DeleteView, DetailView, \
                                 ListView, UpdateView, View
 
 from profiles.models import FamilyUser, Registration
-from mailer.views import MailView, MailCreateView
+from mailer.views import MailView, MailCreateView, CustomMailMixin, MailParticipantsView
 from mailer.models import MailArchive
 from activities.models import Course
 
@@ -55,64 +55,12 @@ class NotPaidYetView(BackendMixin, MailView):
     message_template = 'mailer/notpaid.txt'
     
     
-    
+class ParticipantsView(BackendMixin, MailParticipantsView):
+    pass 
 
-class ParticipantsView(BackendMixin, MailView):
-    success_url = reverse_lazy('backend:home')
-    subject = 'Inscription au sport scolaire facultatif - EP Coppet'
-    message_template = 'mailer/course-begin.txt'
-
-    def add_recipient_context(self, recipient, context):
-        context['recipient'] = recipient.child.family
-        context['child'] = recipient.child
-        context['registration'] = recipient
-
-    def add_mail_context(self, mailnumber, context):
-        "Get context, add navigation"
-        context['to_email'] = self.get_recipient_address(context['registration'] )
-        context['from_email'] = self.get_from_address()
-        context['subject'] = self.get_subject()
-        context['message'] = self.get_mail_body(context)        
-
-
-    def get_recipient_address(self, recipient):
-       return super(ParticipantsView, self).get_recipient_address(recipient.child.family)
-    
-    def get_recipients_list(self):
-        return self.course.participants.all()
-    
-    def get_context_data(self, **kwargs):
-        context = super(ParticipantsView, self).get_context_data(**kwargs)
-        try:
-            course = Course.objects.get(number=self.kwargs.get('course'))
-            self.course = course
-            context['course'] = course
-        except Course.DoesNotExist:
-            raise Http404(_("No course found"))
-
-        context['url'] = ''.join(('http://', 
-                                  get_current_site(self.request).domain,
-                                  reverse('wizard_confirm')))
-        return context
 
 
     
-class CustomMailMixin(object):
-    def get_subject(self):
-        mail_id = self.request.session.get('mail', None)
-        try:
-            mail = MailArchive.objects.get(id=mail_id)
-        except MailArchive.DoesNotExist:
-            raise Http404()
-        return mail.subject
-
-    def get_message_template(self):
-        mail_id = self.request.session.get('mail', None)
-        try:
-            mail = MailArchive.objects.get(id=mail_id)
-        except MailArchive.DoesNotExist:
-            raise Http404()
-        return self.resolve_template(mail.template)
 
 
 class CustomMailParticipantsCreateView(BackendMixin, MailCreateView):

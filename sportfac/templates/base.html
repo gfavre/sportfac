@@ -13,13 +13,10 @@
     <meta name="author" content="Établissement primaire de Coppet et environs">
     <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon.ico" />
     <link type="text/plain" rel="author" href="/humans.txt" >
-
-    <!-- Le styles -->
-    
+        
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Oswald:400,300,700">
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,600,700,800&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
     <link href="{{ STATIC_URL }}css/style.css" rel="stylesheet" media="all" />
-
     {% block extra_css %}{% endblock extra_css %}
     {% render_block "css" %}
 
@@ -34,24 +31,23 @@
     <div id="wrapper">
       {% include "navbar.html" %} 
       {% block localnav %}{% endblock %}   
-        {% block page_header %} 
+      
+      {% block page_header %} 
       <div class="container">      
         <div class="page-header">
-
           <h1>{% block page_title %}Example Base Template{% endblock page_title %}</h1>
-      </div>
         </div>
-        {% endblock page_header %}
-        
-        {% block main-content %}
-              <div class="container">      
-
-        {% block content %}<p>Use this document as a way to quick start any new project.</p>{% endblock content %}
-              </div>
-        {% endblock main-content %}
-        
-        <footer class="container">{% block page_footer %}{% endblock page_footer %}</footer>
       </div>
+      {% endblock page_header %}
+        
+      {% block main-content %}
+      <div class="container"> 
+        {% include "messages.html" %} 
+        {% block content %}Use this document as a way to quick start any new project.{% endblock content %}
+      </div>
+      {% endblock main-content %}
+        
+      <footer class="container">{% block page_footer %}{% endblock page_footer %}</footer>
     </div>
     
     <footer id="footer">
@@ -63,8 +59,8 @@
             <span itemprop="postalCode">1296</span> <span itemprop="addressLocality">Coppet</span> - 
             Tél: <span itemprop="telephone">+41 22 557 58 58</span>
           </address>
-          <img src="{{ STATIC_URL }}img/logo-terre-sainte.png" class="hidden-xs hidden-sm"/>
-          <ul class="footer-links">
+          <img src="{{ STATIC_URL }}img/logo-terre-sainte.png" class="hidden-xs hidden-sm hidden-print"/>
+          <ul class="footer-links hidden-print">
             <li><a href="{% url 'contact' %}">{% trans "Contact" %}</a></li>
             <li class="muted">·</li>
             <li><a href="{% url 'terms' %}">{% trans "Terms and conditions" %}</a></li>
@@ -74,9 +70,6 @@
       </div>
     </footer>
 
-    <!-- Le javascript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
     <script src="{{ STATIC_URL }}js/vendor/jquery-2.1.1.min.js"></script>
     <script src="{{ STATIC_URL }}js/vendor/bootstrap.min.js"></script>
     {% include 'autocomplete_light/static.html' %}

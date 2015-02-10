@@ -1,7 +1,6 @@
-{% extends "base.html" %}
-{% load i18n %}
-{% load l10n %}
-{% load humanize %}
+{% extends "profiles/baseprofile.html" %}
+{% load i18n l10n humanize phone %}
+
 
 
 {% block page_title %}{% trans "Registered activities" %}{% endblock page_title%}
@@ -9,43 +8,34 @@
 {% block content %}
 
 
+{% for registered in registered_list %}
+<h4 class="content-title"><u>{{ registered.child.full_name }} - {{ registered.course.activity.name }} </u><small><a href="{{ registered.course.get_absolute_url }}" class="" style="float: right"><i class="icon-check"></i>&nbsp;&nbsp;{% trans "Details" %}</a></small></h4>
 
-<table class=" table  table-striped">
-  <thead>
-    <tr>
-      <th>{% trans "Name" %}</th>
-      <th>{% trans "Activity" %}</th>
-      <th>{% trans "Period" %}</th>
-      <th>{% trans "Time" %}</th>
-      <th>{% trans "Place" %}</th>
-      <th>{% trans "Responsible" %}</th>
-    </tr>
-  </thead>
+<dl class="dl-horizontal">
+  <dt>{% trans "Period" %}</dt>
+  <dd>{{ registered.course.start_date }}&nbsp;&nbsp;<i class="icon-right" aria-hidden="true"></i>&nbsp;&nbsp;{{ registered.course.end_date }}</dd>
+  <dt>{% trans "Time" %}</dt>
+  <dd>{{ registered.course.day_name }}, {{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</dd>  
+  <dt>{% trans "Place" %}</dt>
+  <dd>{{ registered.course.place }}</dd>
+  <dt>{% trans "Responsible" %}</dt>
+  <dd>
+    {{ registered.course.responsible.full_name }} <br />
+    <a href="{{ registered.course.responsible.best_phone|swissphone:'RFC3966' }}">
+      {{ registered.course.responsible.best_phone|swissphone }}
+    </a><br />
+    <a href="mailto:{{ registered.course.responsible.email }}">{{ registered.course.responsible.email }}</a>
+  </dd>    
+  {% if registered.course.activity.informations%}
+  <dt>{% trans "Informations" %}</dt>
+  <dd>{{ registered.course.activity.informations|safe}}</dd>
+  {% endif %}
+</dl>
+<p class="hidden-print text-center">
   
+</p>
+{% endfor %}
 
-  <tbody>
-  {% for registered in registered_list %}
-    <tr>
-      <td>
-        <span class="nowrap">{{ registered.child.first_name }} {{ registered.child.last_name }}</span>
-      </td>
-      <td>{{ registered.course.activity.name }}
-    </td>
-      <td>
-        <span class="nowrap">{{ registered.course.start_date }}</span> – <span class="nowrap">{{ registered.course.end_date }}</span>
-      </td>
-      <td>
-        {{ registered.course.day_name }} / <span class="nowrap">{{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</span>
-      </td>
-      <td>{{ registered.course.place }} <hr>{{ registered.course.activity.informations|safe}}</td>
-      <td>{{ registered.course.responsible}} <br />
-      {{registered.course.responsible.phone }}<br />
-      <a href="mailto:{{registered.course.responsible.email }}">{{registered.course.responsible.email }}</a>
-    </tr>
-  {% endfor %}
-  </tbody>
-  
-</table>
 
 <p class="hidden-print text-center"><button class="btn btn-success btn-large print-button"><i class="icon icon-print"></i> {% trans "Print" %}</button></p>
 

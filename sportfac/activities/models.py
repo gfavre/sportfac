@@ -45,7 +45,7 @@ class Activity(models.Model):
     
     
     def get_absolute_url(self):
-        return reverse('activity-detail', kwargs={"slug": self.slug})
+        return reverse('activities:activity-detail', kwargs={"slug": self.slug})
 
     def __unicode__(self):
         return self.name
@@ -148,7 +148,20 @@ class Course(models.Model):
     
     def get_custom_mail_url(self):
         return reverse('backend:mail-participants-custom', kwargs={'course': self.number})
-         
+
+    def get_custom_mail_responsible_url(self):
+        return reverse('activities:mail-participants-custom', kwargs={'course': self.number})
+
+        
+    def get_absolute_url(self):
+        return reverse('activities:course-detail', kwargs={"course": self.number})
+
+
+    def save(self, *args, **kwargs):
+        super(Course, self).save(*args, **kwargs)
+        self.responsible.is_responsible = True
+
+        
     class Meta:
         ordering = ('activity__name', 'number', )
         verbose_name = _("course")

@@ -1,0 +1,25 @@
+@media only print {
+    /*@page {size: landscape;}*/
+    .wizard { display: none;}
+    .navbar { display: none;}
+    .form-actions { display: none;}
+    a[href]:after {content: none;}
+    
+    .col-print-12 {
+        width: 100%;
+        
+    }
+    .layout-main-right .layout-main.col-print-12{
+        padding-left: 15px;
+    }
+    
+    @include footer_height(100px);
+    
+    #footer {
+        padding: 10px 0;
+        page-break-inside: avoid;
+        address {
+            margin-bottom: 0;
+        }
+    }
+}

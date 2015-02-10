@@ -9,9 +9,11 @@
 {% url 'profiles_account' as profiles_url %}
 {% url 'auth_password_change' as password_change_url %}
 {% url 'profiles_children' as children_url %}
+{% url 'profiles_registered_activities' as activities_url %}
+{% url 'profiles_billing' as billing_url %}
 <div class="container">
   <div class="layout layout-main-right layout-stack-sm">
-    <div class="col-md-3 col-sm-4 layout-sidebar">
+    <div class="col-md-3 col-sm-4 layout-sidebar hidden-print">
       <div class="nav-layout-sidebar-skip">
         <strong>Tab Navigation</strong> / <a href="#settings-content">Skip to Content</a>	
       </div>
@@ -37,27 +39,29 @@
             &nbsp;&nbsp;{% trans "Family settings" %}
           </a>
         </li>
-  
+
+        {% if user.finished_registration %}
+        <li {% if request.get_full_path == activities_url %}class="active"{% endif %}>
+          <a href="{{ activities_url }}">
+            <i class="icon-calendar"></i>
+            &nbsp;&nbsp;{% trans "My registered activities" %}
+          </a>
+        </li>
+        {% if not user.paid %}
+        <li {% if request.get_full_path == billing_url %}class="active"{% endif %}>
+          <a href="{{ billing_url }}">
+            <i class="icon-credit-card-1"></i>
+            &nbsp;&nbsp;{% trans "Terms of payement" %}
+          </a>
+        </li>
+        {% endif %}
+        {% endif %}        
+        
       </ul>
     </div>
-    <div class="col-md-9 col-sm-8 layout-main">
+    <div class="col-md-9 col-sm-8 col-print-12 layout-main">
       <div class="tab-content stacked-content">
-        {% if messages %}
-        {% for message in messages %}
-        <div class="alert {% if message.tags %}{{ message.tags }}{% endif %}">  
-          <a class="close" href="#" data-dismiss="alert">×</a>
-          {% if message.tags = "alert-success" %}
-          <i class="icon-ok"></i>&nbsp;&nbsp;
-          {% elif  message.tags = "alert-warning" %}
-          <i class="icon-ok"></i>&nbsp;&nbsp;
-          {% elif  message.tags = "alert-error" %}
-          <i class="icon-cancel"></i>&nbsp;&nbsp;
-          {% else %}
-          <i class="icon-exclamation"></i>&nbsp;&nbsp;
-          {% endif %}{{ message }}
-        </div>
-        {% endfor %}
-        {% endif %}
+        {% include "messages.html" %}
         {% block content %}{% endblock content %}
       </div><!-- end tab-content -->
     </div><!-- end layout-main -->

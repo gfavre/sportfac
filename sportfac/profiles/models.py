@@ -100,18 +100,18 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     total = models.PositiveIntegerField(default=0, verbose_name=_("Total to be paid"))
     
     
-    
     __original_status = None
-    
     
     objects = FamilyManager()
     responsible_objects = ResponsibleFamilyUserManager()
     managers_objects = ManagerFamilyUserManager()
-
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ('first_name', 'last_name', 'zipcode', 'city', 'country')
     
+    class Meta:
+        get_latest_by = "date_joined"
+        ordering =('last_name', 'first_name')
     
     def __init__(self, *args, **kwargs):
         super(FamilyUser, self).__init__(*args, **kwargs)
@@ -182,10 +182,11 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
             managers.user_set.remove(self)
 
     is_responsible = property(get_responsible_status, set_responsible_status)
-
     
-
-        
+    def is_responsible_of(self, course):
+        return course in self.courses.all()
+            
+      
     def has_module_perms(self, app_label):
         staff_apps = ['activities', 'profiles', 'constance', 'extended_flatpages']
         # no registration nore auth
@@ -207,9 +208,13 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     
     def get_backend_url(self):
         return reverse('backend:user-detail', kwargs={'pk': self.pk})
-
-    def __unicode__(self):
+    
+    def get_from_address(self):
         return "%s %s <%s>" % (self.first_name, self.last_name, self.email)
+        
+    
+    def __unicode__(self):
+        return self.get_from_address()
     
     
     def save(self, *args, **kwargs):

@@ -159,7 +159,7 @@ $useIEFilters: 0;
 // ==== /CSS3 SASS MIXINS ====
 
 @mixin footer_height($height){
-    #wrap{
+    #wrapper{
         /* Negative indent footer by its height */
         margin: 0 auto (-$height);
         /* Pad bottom by footer height */

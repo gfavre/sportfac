@@ -14,21 +14,6 @@
 {{ activity.informations | safe }}
 {% endif %}
   
-{% if registrations %}
-<h4>Participants</h4>
-<dl class="dl-horizontal">
-{% for course, participants in registrations.items %}
-  <dt>Cours n°{{ course.number }}</dt>
-  <dd>
-    <ul class="unstyled">
-    {% for child in participants %}
-      <li>{{ child.first_name }} {{ child.last_name }}</li>
-    {% endfor %}
-    </ul>
-  </dd>
-  {% endfor %}
-</dl>
-{% endif %}
 </div>
 
 <h3 class="content-title">

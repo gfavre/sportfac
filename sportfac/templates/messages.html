@@ -1,0 +1,17 @@
+{% if messages %}
+  {% for message in messages %}
+  <div class="alert hidden-print {% if message.tags %}{{ message.tags }}{% endif %}">  
+    <a class="close" href="#" data-dismiss="alert">×</a>
+    {% if message.tags = "alert-success" %}
+    <i class="icon-ok"></i>&nbsp;&nbsp;
+    {% elif  message.tags = "alert-warning" %}
+    <i class="icon-ok"></i>&nbsp;&nbsp;
+    {% elif  message.tags = "alert-error" %}
+    <i class="icon-cancel"></i>&nbsp;&nbsp;
+    {% else %}
+    <i class="icon-exclamation"></i>&nbsp;&nbsp;
+    {% endif %}
+    {{ message }}
+  </div>
+  {% endfor %}
+{% endif %}

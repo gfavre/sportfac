@@ -43,7 +43,7 @@
       </div>  
       <p class="text-right"><small>{% blocktrans with min_number=course.min_participants %}{{ min_number }} participants required for activity to take place{% endblocktrans %}</small></p>
       
-      <p class="text-center"><a href="{{ course.backend_url }}" class="btn btn-default"><i class="icon-check"></i>&nbsp;{% trans "Check registrations" %}</a> </p>
+      <p class="text-center"><a href="{{ course.get_backend_url }}" class="btn btn-default"><i class="icon-check"></i>&nbsp;{% trans "Check registrations" %}</a> </p>
 
       
     </div>          

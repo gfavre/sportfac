@@ -54,7 +54,7 @@
   {% for registered in registered_list %}
     <tr id="{{ registered.id }}" {% if registered.id in overlapped %}class="warning"{% endif %}>
       <td>
-        <span class="nowrap">{{ registered.child.first_name }} {{ registered.child.last_name }}</span>
+        <span class="nowrap">{{ registered.child.full_name }}</span>
       </td>
       <td><p>{{ registered.course.activity.name }}</p>
       {% for extra in registered.extra_needs %}

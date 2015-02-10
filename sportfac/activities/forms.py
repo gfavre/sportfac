@@ -14,7 +14,7 @@ class CourseForm(forms.ModelForm):
     activity = forms.ModelChoiceField(queryset=Activity.objects, 
                                       empty_label=None,
                                       widget=Select2Widget())    
-    responsible = forms.ModelChoiceField(queryset=FamilyUser.responsible_objects, 
+    responsible = forms.ModelChoiceField(queryset=FamilyUser.objects, 
                                          empty_label=None,
                                          widget=Select2Widget()) 
     start_date = forms.DateTimeField(label=_("Start date"), required=True, 
