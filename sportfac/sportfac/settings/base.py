@@ -340,7 +340,8 @@ Chemin du Chaucey 7
 remo.aeschbach@vd.educanet2.ch
 +4122 | 557 58 58
 +4179 | 417 69 93""", ugettext("Email Signature")),
-    'FROM_MAIL': ('Remo Aeschbach <remo.aeschbach@vd.educanet2.ch>', ugettext("Email used to send"))
+    'FROM_MAIL': ('Remo Aeschbach <remo.aeschbach@vd.educanet2.ch>', ugettext("Email used to send")),
+    'SCHOOL_NAME': ('EP Coppet', ugettext("Name of school"))
 }
 
 ########## END CONSTANCE CONFIGURATION
@@ -393,3 +394,6 @@ AUTO_RENDER_SELECT2_STATICS = False
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+
+
+PHANTOMJS = os.environ['PHANTOMJS']

@@ -45,3 +45,9 @@ We use env vars to store critical informations. A good way of dealing with these
     vi postactivate
     cat postactivate >> ~/.virtualenvs/sportfac/bin/postactivate
     source ~/.virtualenvs/sportfac/bin/postactivate
+    
+    
+PDFtk
+=====
+
+brew install https://raw.github.com/quantiverge/homebrew-binary/pdftk/pdftk.rb

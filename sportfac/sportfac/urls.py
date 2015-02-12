@@ -34,6 +34,7 @@ urlpatterns = patterns('',
     url(r'^contact/', include('contact.urls')),
     url(r'^ckeditor/', include('ckeditor.urls')),
     
+    
     url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
     url(r'^robots\.txt$', TextPlainView.as_view(template_name='robots.txt')),
     url(r'^humans\.txt$', TextPlainView.as_view(template_name='humans.txt')),

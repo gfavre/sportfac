@@ -152,6 +152,9 @@ class Course(models.Model):
     def get_custom_mail_responsible_url(self):
         return reverse('activities:mail-participants-custom', kwargs={'course': self.number})
 
+    def get_mail_responsible_url(self):
+        return reverse('backend:course-mail-responsible', kwargs={'course': self.number})
+
         
     def get_absolute_url(self):
         return reverse('activities:course-detail', kwargs={"course": self.number})

@@ -10,16 +10,17 @@ from django.views.generic import CreateView, DeleteView, DetailView, \
                                 ListView, UpdateView, View
 
 from profiles.models import FamilyUser, Registration
-from mailer.views import MailView, MailCreateView, CustomMailMixin, MailParticipantsView
+from mailer.views import MailView, MailCreateView, CustomMailMixin, MailParticipantsView, MailCourseResponsibleView
 from mailer.models import MailArchive
 from activities.models import Course
 
 from .mixins import BackendMixin
 
 __all__ = ['MailArchiveListView', 'NeedConfirmationView',
-           'NotPaidYetView', 'ParticipantsView',
+           'NotPaidYetView', 'BackendMailParticipantsView',
            'CustomMailParticipantsCreateView', 'CustomMailParticipantsPreview',
-           'CustomUserCustomMailCreateView', 'CustomUserCustomMailPreview',]
+           'CustomUserCustomMailCreateView', 'CustomUserCustomMailPreview',
+           'BackendMailCourseResponsibleView', ]
 
 
 class MailArchiveListView(BackendMixin, ListView):
@@ -55,12 +56,16 @@ class NotPaidYetView(BackendMixin, MailView):
     message_template = 'mailer/notpaid.txt'
     
     
-class ParticipantsView(BackendMixin, MailParticipantsView):
+class BackendMailParticipantsView(BackendMixin, MailParticipantsView):
     pass 
 
 
-
+class BackendMailCourseResponsibleView(BackendMixin, MailCourseResponsibleView):
+    template_name = 'backend/course/confirm_send.html'
     
+    def get_success_url(self):
+        return reverse('backend:course-detail', kwargs=self.kwargs)
+
 
 
 class CustomMailParticipantsCreateView(BackendMixin, MailCreateView):
@@ -71,7 +76,7 @@ class CustomMailParticipantsCreateView(BackendMixin, MailCreateView):
         return reverse('backend:mail-participants-custom-preview', 
                        kwargs={'course': course })
           
-class CustomMailParticipantsPreview(CustomMailMixin, ParticipantsView):
+class CustomMailParticipantsPreview(CustomMailMixin, BackendMailParticipantsView):
     template_name = 'backend/mail/preview-editlink.html'
         
     def get_success_url(self):
@@ -108,8 +113,6 @@ class CustomUserCustomMailPreview(BackendMixin, CustomMailMixin, MailView):
         del self.request.session['mail']
         del self.request.session['mail-userids']
         return redirect
-
-
 
 
 

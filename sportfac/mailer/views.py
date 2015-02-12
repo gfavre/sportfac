@@ -19,7 +19,7 @@ from constance import config
 from dbtemplates.models import Template
 
 from .models import MailArchive
-from .tasks import send_mail
+from .tasks import send_mail, send_responsible_email
 from .forms import MailForm
 
 from activities.models import Course
@@ -33,6 +33,15 @@ class MailMixin(ContextMixin):
     message_template = None
     from_address = None
     success_message = ''
+
+    def get_context_data(self, **kwargs):
+        context = super(MailMixin, self).get_context_data(**kwargs)
+        context['signature'] = config.SIGNATURE
+        current_site = get_current_site(self.request)
+        context['site_name'] = current_site.name
+        context['site_url'] = 'http://%s' % current_site.domain
+        return context
+
     
     def get_recipients_list(self):
         if self.recipients_queryset is None:
@@ -100,17 +109,16 @@ class MailMixin(ContextMixin):
     def add_recipient_context(self, recipient, context):
         context['recipient'] = recipient
     
-    def mail(self, request, *args, **kwargs):
-        base_context = self.get_context_data(**kwargs)
+    def mail(self, context):
         recipients = self.get_recipients_list()
         emails = []
         recipients_addresses = []
         subject = self.get_subject()
         from_email = self.get_from_address()
         for recipient in recipients:
-            context = base_context.copy()
-            self.add_recipient_context(recipient, context)
-            message = self.get_mail_body(context)
+            mail_context = context.copy()
+            self.add_recipient_context(recipient, mail_context)
+            message = self.get_mail_body(mail_context)
             recipient_address = self.get_recipient_address(recipient)
             send_mail.delay(subject=subject, 
                             message=message, 
@@ -121,27 +129,64 @@ class MailMixin(ContextMixin):
         MailArchive.objects.create(subject=subject, messages=emails, 
                                    recipients=recipients_addresses,
                                    template=self.get_message_template())
-        messages.add_message(self.request, messages.SUCCESS, 
-                             self.get_success_message())
+        
         
         
    
     def post(self, request, *args, **kwargs):
-        self.mail(request, *args, **kwargs)
+        context = self.get_context_data(**kwargs)
+        self.mail(context)
+        messages.add_message(self.request, messages.SUCCESS, 
+                             self.get_success_message())
         success_url = self.get_success_url()
         return HttpResponseRedirect(success_url) 
 
 
+class CourseMixin(object):
+    def get_context_data(self, **kwargs):
+        context = super(CourseMixin, self).get_context_data(**kwargs)
+        try:
+            course = Course.objects.get(number=self.kwargs.get('course'))
+            self.course = course
+            context['course'] = course
+        except Course.DoesNotExist:
+            raise Http404(_("No course found"))
+
+        context['url'] = ''.join(('http://', 
+                                  get_current_site(self.request).domain,
+                                  reverse('wizard_confirm')))
+        return context
+
+
+
+class MailCourseResponsibleView(MailMixin, CourseMixin, TemplateView):
+    message_template = 'mailer/responsible.txt'
+    subject_template = 'mailer/responsible_subject.txt'
+    
+    def get_recipients_list(self):
+        return (self.course.responsible, )
+
+    def get_subject(self):
+        context = self.get_context_data()
+        return self.resolve_template(self.subject_template).render(Context(context))  
+    
+
+    def mail(self, context):
+        recipients = self.get_recipients_list()
+        subject = self.get_subject()
+        from_email = self.get_from_address()
+        for recipient in recipients:
+            message = self.get_mail_body(context)
+            send_responsible_email.delay(subject=subject, 
+                                         message=message, 
+                                         from_email=from_email, 
+                                         course_pk=self.course.pk)      
+        
+    
+
 class MailView(MailMixin, TemplateView):
     template_name = 'backend/mail/preview.html'
     
-    def get_context_data(self, **kwargs):
-        context = super(MailView, self).get_context_data(**kwargs)
-        context['signature'] = config.SIGNATURE
-        current_site = get_current_site(self.request)
-        context['site_name'] = current_site.name
-        context['site_url'] = 'http://%s' % current_site.domain
-        return context
         
     def add_navigation_context(self, mailnumber, mails, context):
         context['total'] = len(mails)
@@ -247,7 +292,10 @@ class CustomMailMixin(object):
         return self.resolve_template(mail.template)
 
 
-class MailParticipantsView(MailView):
+    
+
+
+class MailParticipantsView(CourseMixin, MailView):
     subject = 'Inscription au sport scolaire facultatif - EP Coppet'
 
     def add_recipient_context(self, recipient, context):
@@ -269,16 +317,3 @@ class MailParticipantsView(MailView):
     def get_recipients_list(self):
         return self.course.participants.all()
     
-    def get_context_data(self, **kwargs):
-        context = super(MailParticipantsView, self).get_context_data(**kwargs)
-        try:
-            course = Course.objects.get(number=self.kwargs.get('course'))
-            self.course = course
-            context['course'] = course
-        except Course.DoesNotExist:
-            raise Http404(_("No course found"))
-
-        context['url'] = ''.join(('http://', 
-                                  get_current_site(self.request).domain,
-                                  reverse('wizard_confirm')))
-        return context

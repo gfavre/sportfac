@@ -1,0 +1,1 @@
+{{ site_name }} - documents monitrice/moniteur cours: {{ course.number }} - {{ course.activity.name }}

@@ -1,0 +1,100 @@
+{% load static from staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <title>{{ title|default:"" }}</title>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">    
+    <style>
+h1 {
+    font-size: 0.6cm;
+    font-weight: 700;
+    line-height: 1.5;
+}
+header {
+    margin-bottom: 0.4cm;
+}
+.logo {
+    height: 3.5cm; 
+    float: left;
+    margin-right: 0.4cm;
+}
+.header {
+    float: left;
+    width: 7.5cm;
+    border-right: 1px solid #000;
+}
+.name {
+    font-weight: bold; 
+    margin-bottom: 1cm;
+}
+.title {
+    float: left;
+    width: auto;
+    padding:  0cm 0 0 0.75cm;
+    
+}
+.table td {
+    border-top: 1px solid #ccc !important;
+}
+.table-header-rotated {
+  border-collapse: collapse;
+}
+/*.table-header-rotated td {
+  width: 30px;
+}*/
+.table-header-rotated th {
+border-right: 1px solid #ccc;
+}
+.table-header-rotated td {
+}
+.table-header-rotated th.rotate {
+  height: 100px;
+  white-space: nowrap;
+}
+.table-header-rotated th.rotate > div {
+  -webkit-transform: translate(4px, 15px) rotate(-90deg);
+      -ms-transform: translate(4px, 0px) rotate(-90deg);
+          transform: translate(4px, 0px) rotate(-90deg);
+  width: 1em;
+}
+.table-header-rotated th.rotate > div > span {
+  padding: 5px 10px;
+}
+.table-header-rotated th.fixed, .table-header-rotated td.fixed {
+    width:40px;
+    border-left: 1px solid #ccc;
+    border-right:   border: 1px solid #ccc;
+
+}
+
+</style>
+</head>
+<body>
+  <header>
+    <div class="header">
+        <!--<img src="http://sportfac.beyondthewall.ch/static/img/logo-etat-vd.svg" class="logo" />-->
+        <img src="{% static 'img/logo-etat-vd.svg' %}" class="logo" />
+        <p class="name"><strong>Etablissement primaire<br />
+        de Coppet</strong></p>
+        <p>Chemin du Chaucey<br />
+        Bâtiment de la Doye<br />
+        1296 Coppet</p>
+    </div>
+    <div class="title">
+        {% block page_header%}
+        {% endblock%}
+    </div>
+    <div style="clear:both;"></div>
+  </header>
+  <div>
+  {%block content%}
+  {%endblock%}
+  </div>
+  <footer id="page-footer">
+    {%block page_foot%}
+    {%endblock%}
+  </footer>
+</body>
+</html>
