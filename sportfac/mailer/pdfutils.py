@@ -12,7 +12,6 @@ from django.utils.encoding import smart_text
 
 import pypdftk
 from constance.admin import config
-from easy_pdf.rendering import render_to_pdf
 
 
 

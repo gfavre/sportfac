@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from tempfile import NamedTemporaryFile, mkdtemp
+from tempfile import  mkdtemp
 import os, shutil
 
 from django.core.mail import send_mail as django_send_mail
