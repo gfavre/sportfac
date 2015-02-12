@@ -1,0 +1,43 @@
+{% extends "mailer/base_pdf.html" %}
+{% load i18n phone %}
+
+
+{% block page_header %}
+<h1>SPORT SCOLAIRE FACULTATIF<br /> Liste des participants | cours n°{{ course.number }} | {{ course.activity.name }}</h1>
+{% endblock page_header %}
+
+{% block content %}
+
+  
+   
+  <table class="table table-striped">
+    {% for registration in course.participants.all %}
+      <tr>
+        <td>{{ registration.child.last_name|title }}</td>
+        <td>{{ registration.child.first_name|title }}</td>
+        <td>{{ registration.child.school_year.year }}P</td>
+        <td>{{ registration.child.birth_date|date:"j.n.Y"}}</td>
+        <td>{{ registration.child.family.address }}</td>
+        <td>{{ registration.child.family.zipcode }} {{ registration.child.family.city|title }}</td>
+        
+        <td>
+          {% if registration.child.family.private_phone %}
+          {{ registration.child.family.private_phone|swissphone }}
+          {% endif %}
+          {% if registration.child.family.private_phone2 %}
+          <br />
+          {{ registration.child.family.private_phone2|swissphone }}</li>
+          {% endif %}
+          {% if registration.child.family.private_phone3 %}
+          <br />
+          {{ registration.child.family.private_phone3|swissphone }}</li>
+          {% endif %}
+        </td>
+        <td>{{ registration.child.family.email  }}</td>
+      </tr>
+    {% empty %}
+    
+    {% endfor %}
+  </table>
+
+{% endblock %}

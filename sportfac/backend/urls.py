@@ -15,6 +15,14 @@ courses_patterns = patterns('',
         name='course-update'),
     url(r'^(?P<course>[\w-]+)/delete$', view=views.CourseDeleteView.as_view(),
         name='course-delete'),
+    url(r'(?P<course>[\w-]+)/mail-responsible$', view=views.BackendMailCourseResponsibleView.as_view(),
+        name='course-mail-responsible'),
+    
+    url(r'^(?P<course>[\w-]+)/participants$', view=views.CourseParticipantsView.as_view(), 
+        name='course-participants'),     
+        
+        
+        
 )
 
 #responsibles_patterns = patterns('', 
@@ -52,7 +60,7 @@ mail_patterns = patterns('',
         name='mail-needconfirmation'),
     url(r'^not-paid-yet', view=views.NotPaidYetView.as_view(), 
         name='mail-notpaidyet'),
-    #url(r'^participants/(?P<course>[\w-]+)/notpaid$', view=views.ParticipantsView.as_view(), 
+    #url(r'^participants/(?P<course>[\w-]+)/notpaid$', view=views.BackendMailParticipantsView.as_view(), 
     #    name='mail-participants-notpaidyet'),
     
     url(r'^participants/(?P<course>[\w-]+)/custom$', 

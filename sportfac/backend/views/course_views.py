@@ -6,13 +6,15 @@ from django.views.generic import CreateView, DeleteView, DetailView, \
                                 ListView, UpdateView
 from django.contrib.messages.views import SuccessMessageMixin
 
+
+
 from activities.models import Course
 from activities.forms import CourseForm
 
 from .mixins import BackendMixin
 
 __all__ = ('CourseCreateView', 'CourseDeleteView', 'CourseDetailView',
-           'CourseListView', 'CourseUpdateView',)
+           'CourseListView', 'CourseUpdateView', 'CourseParticipantsView')
 
 class CourseDetailView(BackendMixin, DetailView):
     model = Course
@@ -22,6 +24,17 @@ class CourseDetailView(BackendMixin, DetailView):
     queryset = Course.objects.select_related('activity', 
                                              'responsible' 
                             ).prefetch_related( 'participants__child__school_year', 'participants__child__family')
+
+class CourseParticipantsView(CourseDetailView):
+    template_name = 'mailer/pdf_participants_presence.html'
+    
+    def get_context_data(self, **kwargs):
+        
+        context = super(CourseParticipantsView, self).get_context_data(**kwargs)
+        context['sessions'] = range(0, self.object.number_of_sessions)
+        return context
+
+    
 
 
 class CourseListView(BackendMixin, ListView):
