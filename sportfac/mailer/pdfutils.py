@@ -86,11 +86,12 @@ class PDFRenderer(object):
     def render_to_pdf(self, output):
         "output: filelike object"
         filelike = self.render_to_temporary_file(self.get_message_template())
+        
         try:
             phandle = subprocess.Popen([
                 settings.PHANTOMJS,
                 os.path.join(os.path.dirname(settings.SITE_ROOT), 'bin', 'rasterize.js'),
-                filelike.name, output, 
+                filelike.name.encode(), output, 
                 'A4'
             ], close_fds=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             phandle.communicate()
@@ -118,11 +119,12 @@ class MyCourses(PDFRenderer):
 from mailer.pdfutils import MyCourses
 from activities.models import Course
 
-course = Course.objects.get(number=111)
+course = Course.objects.get(number=121)
 c=MyCourses({'responsible': course.responsible, 
              'courses':Course.objects.filter(responsible=course.responsible)})
-f=open('/Users/grfavre/Desktop/test.pdf', 'w')
-c.render_to_pdf(f)
+#filename='/Users/grfavre/Desktop/test.pdf'
+filename='/home/grfavre/test.pdf'
+c.render_to_pdf(filename)
 
     
 """
