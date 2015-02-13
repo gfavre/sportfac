@@ -9,6 +9,7 @@ from django.conf import settings
 from django.template import loader, Context, RequestContext
 from django.utils.translation import activate
 from django.utils.encoding import smart_text
+from django.contrib.sites.models import Site
 
 import pypdftk
 from constance.admin import config
@@ -40,6 +41,9 @@ class PDFRenderer(object):
     message_template = None
 
     def __init__(self, context_data):
+        site = Site.objects.all()[0]
+        query = {'site': site}
+        context_data['query'] = query
         self.context = Context(context_data)
 
     def resolve_template(self, template):
@@ -95,6 +99,7 @@ class PDFRenderer(object):
                 'A4'
             ], close_fds=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             phandle.communicate()
+            
         finally:
             filelike.close()
 

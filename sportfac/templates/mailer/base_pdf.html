@@ -73,9 +73,8 @@ border-right: 1px solid #ccc;
 </head>
 <body>
   <header>
-    <div class="header">
-        <!--<img src="http://sportfac.beyondthewall.ch/static/img/logo-etat-vd.svg" class="logo" />-->
-        <img src="{% static 'img/logo-etat-vd.svg' %}" class="logo" />
+    <div class="header">        
+        <img src="//{{ request.site.domain }}{% static 'img/logo-etat-vd.svg' %}" class="logo" />
         <p class="name"><strong>Etablissement primaire<br />
         de Coppet</strong></p>
         <p>Chemin du Chaucey<br />
