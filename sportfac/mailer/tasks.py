@@ -35,7 +35,7 @@ def send_responsible_email(subject, message, from_email, course_pk):
                          body=message,
                          from_email=from_email,
                          to=recipients)
-    logger.debug("Message created" % course_pk)
+    logger.debug("Message created")
 
     filepath = get_ssf_decompte_heures(course)
     filename = 'E_SSF_decompte_heures_%s_%s.pdf' % (course.responsible.first_name, 
