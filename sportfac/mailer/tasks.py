@@ -44,7 +44,7 @@ def send_responsible_email(subject, message, from_email, course_pk):
     logger.debug("Decompte.pdf attached")
     tempdir = mkdtemp()
     
-    filename = '%s - participants.pdf' % course.number
+    filename = '%s-participants.pdf' % course.number
     filepath = os.path.join(tempdir, filename)
     cp_generator = CourseParticipants({'course': course})
     cp_generator.render_to_pdf(filepath)
@@ -52,7 +52,7 @@ def send_responsible_email(subject, message, from_email, course_pk):
     logger.debug("Participants.pdf attached")
 
     
-    filename = '%s - presences.pdf' % course.number
+    filename = '%s-presences.pdf' % course.number
     filepath = os.path.join(tempdir, filename)
     cp_generator = CourseParticipantsPresence({'course': course})
     cp_generator.render_to_pdf(filepath)
@@ -60,7 +60,7 @@ def send_responsible_email(subject, message, from_email, course_pk):
     logger.debug("Presences.pdf attached")
 
 
-    filename = '%s - tous les cours.pdf' % course.responsible.full_name
+    filename = 'mes_cours.pdf'
     filepath = os.path.join(tempdir, filename)
     cp_generator = MyCourses({'responsible': course.responsible, 
                               'courses':Course.objects.filter(responsible=course.responsible)})
