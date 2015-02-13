@@ -42,8 +42,8 @@ class PDFRenderer(object):
 
     def __init__(self, context_data):
         site = Site.objects.all()[0]
-        query = {'site': site}
-        context_data['query'] = query
+        request = {'site': site}
+        context_data['request'] = request
         self.context = Context(context_data)
 
     def resolve_template(self, template):
