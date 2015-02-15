@@ -66,7 +66,7 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
     success_message = _("Registration has been updated.")
 
     def get_success_url(self):
-        return reverse_lazy('backend:course-detail', kwargs={'pk': self.initial_object.course.pk})
+        return self.initial_object.course.get_backend_url()
     
             
     def form_valid(self, form):
@@ -80,7 +80,7 @@ class RegistrationDeleteView(BackendMixin, DeleteView):
     template_name = 'backend/registration/confirm_delete.html'
     
     def get_success_url(self):
-        return reverse_lazy('backend:course-detail', kwargs={'pk': self.object.course.pk})
+        return self.object.course.get_backend_url()
     
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
