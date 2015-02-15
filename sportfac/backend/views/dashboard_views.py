@@ -14,23 +14,18 @@ from .mixins import BackendMixin
 
 __all__ = ('HomePageView', 'RegistrationDatesView',)
 
-################################################################################
+
+###############################################################################
 # Homepage
 
 class HomePageView(BackendMixin, TemplateView):
     template_name = 'backend/home.html'
-    
-    
+
     def get_context_data(self, **kwargs):
         def time_str_to_milliseconds(time_str):
-            return int(datetime.strptime(time_str, 
-                                         '%Y-%m-%d'
-                                         ).strftime('%s')) * 1000
+            return 1000 * int(datetime.strptime(time_str, '%Y-%m-%d').strftime('%s'))
         
         context = super(HomePageView, self).get_context_data(**kwargs)
-        parents = FamilyUser.objects.filter(finished_registration=True, 
-                                            total__gt=0)
-        users = FamilyUser.objects.all()
         finished = FamilyUser.objects.filter(finished_registration=True)
         
         context['payement_due'] = finished.filter(total__gt=0).count()
@@ -43,13 +38,12 @@ class HomePageView(BackendMixin, TemplateView):
             ).order_by('creation'
             ).annotate(num=Count('id'))
 
-        context['registrations_per_day'] = [[time_str_to_milliseconds(reg.get('creation')), 
+        context['registrations_per_day'] = [[time_str_to_milliseconds(reg.get('creation')),
                                              reg.get('num')] for reg in registrations]
-
         return context
 
 
-################################################################################
+###############################################################################
 # Dates
 class RegistrationDatesView(BackendMixin, FormView):
     template_name = 'backend/registration_dates.html'
@@ -62,8 +56,6 @@ class RegistrationDatesView(BackendMixin, FormView):
         return super(RegistrationDatesView, self).form_valid(form)
 
     def form_invalid(self, form):
-        messages.add_message(self.request, messages.ERROR, 
+        messages.add_message(self.request, messages.ERROR,
                              mark_safe(_("An error was found in form %s") % form.non_field_errors()))
         return super(RegistrationDatesView, self).form_invalid(form)
-
-

@@ -1,12 +1,10 @@
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.core.urlresolvers import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, \
                                 ListView, UpdateView
 from django.contrib.messages.views import SuccessMessageMixin
-
-
 
 from activities.models import Course
 from activities.forms import CourseForm
@@ -16,32 +14,30 @@ from .mixins import BackendMixin
 __all__ = ('CourseCreateView', 'CourseDeleteView', 'CourseDetailView',
            'CourseListView', 'CourseUpdateView', 'CourseParticipantsView')
 
+
 class CourseDetailView(BackendMixin, DetailView):
     model = Course
     template_name = 'backend/course/detail.html'
     slug_field = 'number'
     slug_url_kwarg = 'course'
-    queryset = Course.objects.select_related('activity', 
-                                             'responsible' 
-                            ).prefetch_related( 'participants__child__school_year', 'participants__child__family')
+    queryset = Course.objects.select_related('activity', 'responsible')\
+                             .prefetch_related('participants__child__school_year',
+                                               'participants__child__family')
+
 
 class CourseParticipantsView(CourseDetailView):
     template_name = 'mailer/pdf_participants_presence.html'
-    
+
     def get_context_data(self, **kwargs):
-        
         context = super(CourseParticipantsView, self).get_context_data(**kwargs)
         context['sessions'] = range(0, self.object.number_of_sessions)
         return context
-
-    
 
 
 class CourseListView(BackendMixin, ListView):
     model = Course
     queryset = Course.objects.select_related('activity', 'responsible').prefetch_related('participants')
     template_name = 'backend/course/list.html'
-   
 
 
 class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
@@ -50,9 +46,10 @@ class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
     success_url = reverse_lazy('backend:course-list')
     success_message = _('<a href="%(url)s" class="alert-link">Course (%(number)s)</a> has been created.')
     
-    def get_success_message(self, cleaned_data):    
+    def get_success_message(self, cleaned_data):
         url = self.object.get_backend_url()
-        return mark_safe(self.success_message % {'url': url, 'number': self.object.number})
+        return mark_safe(self.success_message % {'url': url,
+                                                 'number': self.object.number})
 
 
 class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
@@ -66,9 +63,10 @@ class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
     
     def get_success_message(self, cleaned_data):
         url = self.object.get_backend_url()
-        return mark_safe(self.success_message % {'url': url, 'number': self.object.number})
+        return mark_safe(self.success_message % {'url': url,
+                                                 'number': self.object.number})
 
-    
+
 class CourseDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
     model = Course
     template_name = 'backend/course/confirm_delete.html'
@@ -80,7 +78,7 @@ class CourseDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
         identifier = self.get_object().number
-        messages.add_message(self.request, messages.SUCCESS, 
+        messages.add_message(self.request, messages.SUCCESS,
                              _("Course %(identifier)s has been deleted.") % {
                                 'identifier': identifier
                              })
