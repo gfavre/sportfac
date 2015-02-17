@@ -12,7 +12,7 @@ from django.http import HttpResponse
 import autocomplete_light
 
 from sportfac.utils import UnicodeWriter
-from .models import FamilyUser, Child, Teacher, Registration
+from .models import FamilyUser, Child, Teacher, Registration, SchoolYear
 
 
 
@@ -233,6 +233,6 @@ class RegistrationAdmin(admin.ModelAdmin):
         return response
     export.short_description = _('Export selected registrations')
         
-    
 
 admin.site.register(Registration, RegistrationAdmin)
+admin.site.register(SchoolYear)

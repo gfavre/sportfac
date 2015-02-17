@@ -28,6 +28,9 @@ SCHOOL_YEARS = (
     (6, _("6th HARMOS")),
     (7, _("7th HARMOS")),
     (8, _("8th HARMOS")),
+    (9, _("9th HARMOS")),
+    (10, _("10th HARMOS")),
+    (11, _("11th HARMOS")),    
 )
 
 class Activity(models.Model):
