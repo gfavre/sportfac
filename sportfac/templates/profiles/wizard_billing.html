@@ -1,9 +1,18 @@
 {% extends "wizard.html" %}
-{% load i18n l10n humanize sekizai_tags %}
+{% load i18n  sekizai_tags %}
 
 
 {% block page_title %}Paiement{% endblock page_title%}
 
 {% block content %}
   {% include "profiles/billing_partial.html" %}
+  
+  <p class="hidden-print text-center"><button class="btn btn-success btn-large print-button"><i class="icon icon-print"></i> {% trans "Print" %}</button></p>
+
+
+{% addtoblock "js" %}
+<script>
+  $('.print-button').click(function(){window.print()});
+</script>
+{% endaddtoblock %}
 {% endblock %}
