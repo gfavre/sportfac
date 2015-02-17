@@ -54,7 +54,10 @@ function($scope, $routeParams, $http, ChildrenService) {
             5: "5P HARMOS",
             6: "6P HARMOS",
             7: "7P HARMOS",
-            8: "8P HARMOS",}[year];
+            8: "8P HARMOS",
+            9: "9S HARMOS",
+            10: "10S HARMOS",
+            11: "11S HARMOS",}[year];
     
   };
 }])
