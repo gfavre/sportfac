@@ -116,8 +116,8 @@ class ChildForm(forms.ModelForm):
                                           widget=Select2Widget()) 
     class Meta:
         model = Child
-        fields = ('first_name', 'last_name', 'sex', 'birth_date', 
-                  'school_year', 'teacher')
+        fields = ('first_name', 'last_name', 'sex', 'birth_date', 'nationality', 
+                  'language', 'school_year', 'teacher')
     
 
 

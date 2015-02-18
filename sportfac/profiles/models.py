@@ -232,13 +232,24 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
 class Child(TimeStampedModel):
     SEX = Choices(('M', _('Male'))  , 
                   ('F', _('Female')) )
+    NATIONALITY = Choices(('CH', _('Swiss'))  , 
+                          ('FL', _('Liechtenstein')),
+                          ('DIV', _('Other')) )
+    LANGUAGE = Choices(('D', 'Deutsch')  , 
+                       ('E', 'English'),
+                       ('F', u'Français'),
+                       ('I', 'Italiano') )
 
     first_name = models.CharField(_("First name"), max_length=50)
     last_name = models.CharField(_("Last name"), max_length=50)
     sex = models.CharField(_("Sex"), max_length=1, choices=SEX)
     birth_date = models.DateField(_("Birth date"))
+    nationality = models.CharField(choices=NATIONALITY, max_length=3, default=NATIONALITY.CH)
+    language = models.CharField(choices=LANGUAGE, max_length=2, default=LANGUAGE.F)
+    
     school_year = models.ForeignKey('SchoolYear')
     teacher = models.ForeignKey('Teacher', related_name="students", null=True, on_delete=models.SET_NULL)
+    
     
     family = models.ForeignKey('FamilyUser', related_name='children')
     courses = models.ManyToManyField('activities.Course', through="Registration")
