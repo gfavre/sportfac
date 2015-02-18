@@ -12,6 +12,7 @@ TEMPLATES = ('profiles/billing_partial.html', )
 
 def load_templates(apps, schema_editor):
     current_site = Site.objects.get(pk=settings.SITE_ID)
+    settings.TEMPLATE_DEBUG = True
     for template_name in TEMPLATES:
         template = loader.get_template(template_name)
         template_file = template.origin.name
