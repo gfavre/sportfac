@@ -156,8 +156,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-loaders
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
     'dbtemplates.loader.Loader',
+    'django.template.loaders.app_directories.Loader',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-dirs
@@ -398,3 +398,4 @@ CELERY_RESULT_SERIALIZER = 'json'
 
 
 PHANTOMJS = os.environ['PHANTOMJS']
+DBTEMPLATES_USE_CODEMIRROR = True

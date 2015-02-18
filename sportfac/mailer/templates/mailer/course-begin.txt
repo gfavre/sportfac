@@ -1,0 +1,12 @@
+{% load duration %}
+
+Bonjour,
+Votre enfant {{ child }} s'apprête à commencer le cours: 
+{{ course.short_name }}.
+Celui-ci aura lieu du {{ course.start_date | date:"j F Y" }} au {{ course.end_date | date:"j F Y" }}, chaque {{ course.day_name|lower }}, de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }} 
+Lieu: {{ course.place  }}.
+Vous pouvez retrouver ces infos en tous temps sur {{ site_url }}{{ course.activity.get_absolute_url }}
+
+Meilleures salutations,
+
+{{ signature }}
