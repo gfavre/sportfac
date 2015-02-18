@@ -42,7 +42,23 @@
     <p class="col-sm-10 col-sm-offset-2" ng-show="childform.inputBirthDate.$error.required">Ce champ est obligatoire</p>
   </div>
 
+ <div class="form-group">
+    <label class="col-sm-2 control-label" for="nationality">Nationalité</label>
+    <div class="col-sm-10">
+      <input id="nationality" ng-model="detailedChild.nationality" 
+             type="text" class="form-control" required />
+      <span ng-show="childform.nationality.$error.required">Ce champ est obligatoire</span>
+    </div>
+  </div>
 
+ <div class="form-group">
+    <label class="col-sm-2 control-label" for="language">Langue</label>
+    <div class="col-sm-10">
+      <input id="language" ng-model="detailedChild.language" 
+             type="text" class="form-control" required />
+      <span ng-show="childform.language.$error.required">Ce champ est obligatoire</span>
+    </div>
+  </div>
 
   <div class="form-group">
     <label class="col-sm-2 control-label" for="inputLastName">Enseignant principal</label>
