@@ -33,14 +33,17 @@ class UserListView(BackendMixin, ListView):
 
 
 class ManagerListView(UserListView):
-    queryset =  Group.objects.get(name=MANAGERS_GROUP).user_set.all()
     template_name = 'backend/user/manager-list.html'
-
+    
+    def get_queryset(self):
+        Group.objects.get(name=MANAGERS_GROUP).user_set.all()
 
 class ResponsibleListView(UserListView):
-    queryset =  Group.objects.get(name=RESPONSIBLE_GROUP).user_set.all()
     template_name = 'backend/user/manager-list.html'
-
+    
+    def get_queryset(self):
+        return Group.objects.get(name=RESPONSIBLE_GROUP).user_set.all()
+    
 
 class UserCreateView(BackendMixin, SuccessMessageMixin, CreateView):
     model = FamilyUser
