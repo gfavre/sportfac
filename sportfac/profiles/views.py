@@ -103,16 +103,19 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
     template_name = 'profiles/registration_list.html'
     
     def get_queryset(self):
-        Registration.objects.select_related('extra_infos',
-                                                   'child', 
-                                                   'course', 'course__activity').prefetch_related('extra_infos').filter(child__in=self.request.user.children.all())
+        return Registration.objects\
+                           .select_related('extra_infos',
+                                           'child', 
+                                           'course',
+                                           'course__activity')\
+                           .prefetch_related('extra_infos')\
+                           .filter(child__in=self.request.user.children.all())
     
     
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context        
         context = super(RegisteredActivitiesListView, self).get_context_data(**kwargs)
         context['registered_list'] = self.get_queryset()
-        
         
         registrations = context['registered_list'].order_by('course__start_date', 
                                                                    'course__end_date')
