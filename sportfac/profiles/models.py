@@ -74,6 +74,12 @@ class ManagerFamilyUserManager(BaseUserManager):
     
 
 class FamilyUser(PermissionsMixin, AbstractBaseUser):
+    COUNTRY = Choices(('CH', _("Switzerland")),
+                       ('FL', _("Liechtenstein")),
+                       ('D', _("Germany")),
+                       ('F', _("France")),
+                       ('I', _("Italy")),
+                       ('A', _("Austria")))
     email = models.EmailField(verbose_name = _('Email address'), max_length=255, unique=True, db_index=True)
     first_name = models.CharField(_('First name'), max_length=30, blank=True)
     last_name = models.CharField(_('Last name'), max_length=30, blank=True)
@@ -81,7 +87,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     address = models.TextField(_("Street"), blank = True)
     zipcode = models.PositiveIntegerField(_("NPA"), blank=True, null=True)
     city = models.CharField(_('City'), max_length=100, blank=True)
-    country = models.CharField(_('Country'), max_length = 100, default=_("Switzerland"))
+    country = models.CharField(_('Country'), max_length = 2, choices=COUNTRY, default=COUNTRY.CH)
     private_phone = models.CharField(_("Home phone"), max_length=30, blank=True)
     private_phone2 = models.CharField(_("Mobile phone"), max_length=30, blank=True)
     private_phone3 = models.CharField(_("Other phone"), max_length=30, blank=True)
@@ -276,6 +282,15 @@ class Child(TimeStampedModel):
     def full_name(self):
         return self.get_full_name()
 
+    @property
+    def js_sex(self):
+        if self.sex == SEX.M:
+            return '1'
+        return '2'
+    
+    @property
+    def js_birth_date(self):
+        return self.birth_date.strftime('%d.%m.%Y')
     
     def __unicode__(self):
         return self.get_full_name()
