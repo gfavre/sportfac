@@ -22,9 +22,11 @@ __all__ = ('password_change', 'password_reset',
            'WizardAccountView', 'WizardBillingView', 'WizardChildrenListView', 
            'WizardRegistrationView')
 
+
 def password_change(request):
     "Wrap the built-in password reset view and pass it the arguments"
     return auth_views.password_change(request, password_change_form=PasswordChangeForm)
+
 
 def password_reset(request):
     "Wrap the built-in password reset view and pass it the arguments"
@@ -37,10 +39,10 @@ class ChildrenListView(LoginRequiredMixin, ListView):
     
     def get_queryset(self):
         return Child.objects.filter(family = self.request.user).order_by('first_name')
-        
+
+
 class WizardChildrenListView(WizardMixin, ChildrenListView):
     template_name = 'profiles/wizard_children.html'
-
 
 
 class _BaseAccount(LoginRequiredMixin, UpdateView):
@@ -48,16 +50,17 @@ class _BaseAccount(LoginRequiredMixin, UpdateView):
     form_class = ContactInformationForm
     def get_object(self, queryset=None):
         return self.request.user
-    
+
 
 class AccountView(SuccessMessageMixin, _BaseAccount):
     template_name = 'profiles/account.html'
     success_message = _('Contact informations have been saved.')
 
+
 class WizardAccountView(WizardMixin, _BaseAccount):
     template_name = 'profiles/wizard_account.html'
     success_url = reverse_lazy('wizard_children')
-    
+
 
 class RegistrationView(BaseRegistrationView):
     """
@@ -92,7 +95,6 @@ class RegistrationView(BaseRegistrationView):
 
 class WizardRegistrationView(WizardMixin, RegistrationView):
     template_name = 'registration/wizard_registration.html'
-
     success_url = reverse_lazy('wizard_children')
 
 
@@ -111,17 +113,14 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
                            .prefetch_related('extra_infos')\
                            .filter(child__in=self.request.user.children.all())
     
-    
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context        
         context = super(RegisteredActivitiesListView, self).get_context_data(**kwargs)
         context['registered_list'] = self.get_queryset()
-        
         registrations = context['registered_list'].order_by('course__start_date', 
-                                                                   'course__end_date')
+                                                            'course__end_date')
         context['total_price'] = registrations.aggregate(Sum('course__price'))['course__price__sum']
         
-                    
         context['overlaps'] = []
         context['overlapped'] = set()
         for (idx, registration) in list(enumerate(registrations))[:-1]:
@@ -155,12 +154,13 @@ class BillingView(LoginRequiredMixin, TemplateView):
         total = registrations.aggregate(Sum('course__price')).get('course__price__sum')
         context['total_price'] = total or 0
         self.request.user.update_total()
-        self.request.user.save()
-        
+        self.request.user.save()        
         return context
+
 
 class SummaryView(BillingView):
     template_name = "profiles/summary.html"
+
 
 class WizardBillingView(WizardMixin, BillingView):
     template_name = "profiles/wizard_billing.html"

@@ -144,7 +144,7 @@ class RegistrationForm(forms.Form):
     address = forms.CharField(label=_("Address"),
                               #widget=forms.Textarea(attrs={'rows': 3}),
                               required = False)
-    zipcode = forms.IntegerField(label=_("NPA"), min_value=1000, max_value=9999, required=True)
+    zipcode = forms.CharField(label=_("NPA"), required=True)
     city = forms.CharField(label=_("City"), widget=forms.TextInput(attrs={'placeholder': 'Coppet'}), required=True)
     private_phone = forms.CharField(label=_("Home phone"), widget=forms.PhoneNumberInput(), required=False)
     private_phone2 = forms.CharField(label=_("Mobile phone #1"), widget=forms.PhoneNumberInput(), required=False)

@@ -85,7 +85,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     last_name = models.CharField(_('Last name'), max_length=30, blank=True)
     
     address = models.TextField(_("Street"), blank = True)
-    zipcode = models.PositiveIntegerField(_("NPA"), blank=True, null=True)
+    zipcode = models.CharField(_("NPA"), blank=True, max_length=5)
     city = models.CharField(_('City'), max_length=100, blank=True)
     country = models.CharField(_('Country'), max_length = 2, choices=COUNTRY, default=COUNTRY.CH)
     private_phone = models.CharField(_("Home phone"), max_length=30, blank=True)
