@@ -1,0 +1,65 @@
+{% extends "backend/base.html" %}
+{% load i18n sekizai_tags duration money %}
+
+{% block title %}{% trans "View teachers" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "List teachers" %}{% endblock %}
+
+{% get_current_language as LANGUAGE_CODE %}
+
+
+
+{% block content %}
+
+{% addtoblock  "js" %}    
+<script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
+<script>
+$(function () {
+  $(".table").dataTable({
+{% if LANGUAGE_CODE == 'fr' %}
+      "language": {
+            "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+      },
+{% endif %}
+      "aoColumnDefs": [
+          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ 2 ] }
+      ]
+  });
+});
+</script>
+{% endaddtoblock %}
+
+<a href="{% url 'backend:teacher-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New teacher" %}</a>
+<hr>
+<table class="table">
+  <thead>
+    <tr>
+      <th class="text-nowrap">{% trans "Name" %}</th>
+      <th class="text-nowrap">{% trans "Years" %}</th>
+      <th class="text-nowrap">{% trans "Actions" %}</th>
+    </tr>
+  </thead>
+  {% for teacher in object_list %}
+    <tr>
+      <td data-order="{{ teacher.last_name }} {{ teacher.first_name }}">{{ teacher.get_full_name }}</td>
+      <td >
+        <ul>
+        {% for year in teacher.years.all %}
+          <li>{{ year }}</li>
+        {% endfor %}
+        </ul>
+      </td>
+      <td>
+        <ul class="list-unstyled">
+          <li class="text-nowrap"><a href="{{ teacher.get_backend_url }}" class="btn btn-sm"><i class="icon-check"></i>&nbsp;{% trans "Check students" %}</a></li>
+          <li class="text-nowrap"><a href="{{ teacher.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update teacher" %}</a></li>
+          <li class="text-nowrap"><a href="{{ teacher.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete teacher" %}</a></li>          
+          
+
+
+        </ul>
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock content %}

@@ -317,7 +317,7 @@ class Registration(TimeStampedModel, StatusModel):
                      ('confirmed', _("Confirmed by administrator")),
                      )
     course = models.ForeignKey('activities.Course', related_name="participants", verbose_name=_("Course"))
-    child = models.ForeignKey('Child')
+    child = models.ForeignKey('Child', related_name="registrations")
     
     objects = RegistrationManager()
     
@@ -423,7 +423,15 @@ class Teacher(models.Model):
     def get_full_name(self):
         return '%s %s ' % (self.first_name, self.last_name)
             
+    def get_update_url(self):
+        return reverse('backend:teacher-update', kwargs={'pk': self.pk})
     
+    def get_delete_url(self):
+        return reverse('backend:teacher-delete', kwargs={'pk': self.pk})
+    
+    def get_backend_url(self):
+        return reverse('backend:teacher-detail', kwargs={'pk': self.pk})
+
     @property
     def years_label(self):
         return ', '.join([str(year) for year in self.years.all()])

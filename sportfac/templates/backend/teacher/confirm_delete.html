@@ -1,0 +1,13 @@
+{% extends "backend/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Delete teacher" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "Please confirm deletion" %}{% endblock %}
+
+{% block content %}
+<form action="" method="post">{% csrf_token %}
+  <p>{% blocktrans %}Are you sure you want to delete "{{ object }}"?{% endblocktrans %}</p>
+  <button type="submit" class="btn btn-danger"><i class="icon icon-trash"></i>&nbsp;{% trans 'Delete teacher' %}</button>
+</form>
+
+{% endblock content %}

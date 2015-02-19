@@ -1,0 +1,40 @@
+{% extends "backend/base.html" %}
+{% load i18n %}
+{% load duration phone money %}
+
+{% block title %}{{ teacher.get_full_name }} - {{ block.super }}{% endblock %}
+{% block page_title %}{{ teacher.get_full_name }}{% endblock %}
+
+{% block content %}  
+<section class="portlet">
+  <h4 class="portlet-title"><u>{% trans "Classes" %}</u></h4>
+  <ul>
+  {% for year in teacher.years.all %}
+          <li>{{ year }}</li>
+        {% endfor %}
+  </ul>
+</section>
+<section class="portlet">
+  <h4 class="portlet-title"><u>{% trans "Students registered to courses" %}</u></h4>
+  
+  <table class="table table-condensed"> 
+  {% for child in students.all.distinct %}
+  {% if child.registrations.count  %}
+  <tr>
+    <td><a href="{{ child.family.get_backend_url }}">{{ child.full_name }}</a></td>
+    <td>
+      <ul>
+      {% for registration in child.registrations.all %}
+        <li>
+          <a href="{{ registration.course.get_backend_url }}">{{ registration.course.short_name }}</a>
+        </li>
+    {% endfor %}
+      </ul>
+    </td>
+  </tr>
+  {% endif %}
+  {% endfor %}
+  </table>
+</section> 
+
+{% endblock content %}

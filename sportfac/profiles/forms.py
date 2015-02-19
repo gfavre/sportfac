@@ -198,3 +198,7 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
                 raise forms.ValidationError(_("The two password fields didn't match."))
         
 
+class TeacherForm(forms.ModelForm):
+    class Meta:
+        model = Teacher
+        fields = ('first_name', 'last_name', 'years')

@@ -107,6 +107,32 @@
               </li>
             </ul>
           </li>
+          <li class="dropdown">
+
+            <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
+                {% trans "School" %}
+
+            <i class="icon-down-open"></i>
+            </a>
+
+            <ul class="dropdown-menu" role="menu">
+              <li>
+                <a href="{% url 'backend:teacher-list' %}">
+                <i class="icon-adult"></i> 
+                &nbsp;&nbsp;{% trans "All teachers" %}
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'backend:teacher-create' %}">
+                  <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New teacher" %}
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          
+          
+          
         </ul>
       </nav>
     </div> <!-- /.container -->

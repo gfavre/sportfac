@@ -93,6 +93,22 @@ registrations_patterns = patterns('',
     url(r'^(?P<pk>\d+)/cancel$', view=views.RegistrationDeleteView.as_view(),
         name='registration-delete'),
 )
+
+teachers_patterns = patterns('', 
+    url(r'^$', view=views.TeacherListView.as_view(), 
+        name='teacher-list'),
+    url(r'^new$', view=views.TeacherCreateView.as_view(), 
+        name='teacher-create'),
+    url(r'^(?P<pk>\d+)/$', view=views.TeacherDetailView.as_view(), 
+        name='teacher-detail'),
+    url(r'^(?P<pk>\d+)/update$', view=views.TeacherUpdateView.as_view(), 
+        name='teacher-update'),
+    url(r'^(?P<pk>\d+)/delete$', view=views.TeacherDeleteView.as_view(),
+        name='teacher-delete'),
+)
+
+
+
 users_patterns = patterns('', 
     url(r'^$', view=views.UserListView.as_view(), 
         name='user-list'),
@@ -133,6 +149,6 @@ urlpatterns = patterns('',
     url(r'^course/', include(courses_patterns)),
     url(r'^mail/', include(mail_patterns)),
     url(r'^registrations/', include(registrations_patterns)),
-    #url(r'^responsible/', include(responsibles_patterns)),
+    url(r'^teacher/', include(teachers_patterns)),
     url(r'^user/', include(users_patterns)),   
 )
