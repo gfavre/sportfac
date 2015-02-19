@@ -1,5 +1,6 @@
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse_lazy, reverse
+from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.views.generic.base import RedirectView
 from django.template import RequestContext
@@ -30,3 +31,19 @@ class WizardView(WizardMixin, RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         context = RequestContext(self.request)
         return context.get('max_step')
+
+
+class CSVMixin(object):
+    def get_csv_filename(self):
+        return NotImplementedError
+    
+    def write_csv(self, filelike):
+        return NotImplementedError
+    
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        response = HttpResponse(content_type='text/csv')
+        cd = 'attachment; filename="{0}"'.format(self.get_csv_filename())
+        response['Content-Disposition'] = cd
+        self.write_csv(response)
+        return response

@@ -8,10 +8,11 @@ from django.contrib.messages.views import SuccessMessageMixin
 
 from activities.models import Course
 from activities.forms import CourseForm
-
+from sportfac.views import CSVMixin
 from .mixins import BackendMixin
 
 __all__ = ('CourseCreateView', 'CourseDeleteView', 'CourseDetailView',
+           'CourseJSCSVView',
            'CourseListView', 'CourseUpdateView', 'CourseParticipantsView')
 
 
@@ -24,6 +25,14 @@ class CourseDetailView(BackendMixin, DetailView):
                              .prefetch_related('participants__child__school_year',
                                                'participants__child__family')
 
+class CourseJSCSVView(CSVMixin, CourseDetailView):
+    def get_csv_filename(self):
+        return '%s - J+S.csv' % self.object.number
+    
+    def write_csv(self, filelike):
+        return self.object.get_js_csv(filelike)
+        
+    
 
 class CourseParticipantsView(CourseDetailView):
     template_name = 'mailer/pdf_participants_presence.html'

@@ -92,7 +92,8 @@
     
     {% endfor %}
   </table>
-  <a href="{{ course.get_custom_mail_url }}" class="btn btn-default"><i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}</a> &nbsp;   <a href="{{ course.get_mail_responsible_url }}" class="btn btn-default"><i class="icon-tasks"></i>&nbsp;{% trans "Send infos to responsible" %}</a>
+  <a href="{{ course.get_custom_mail_url }}" class="btn btn-default"><i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}</a> &nbsp;   <a href="{{ course.get_mail_responsible_url }}" class="btn btn-default"><i class="icon-tasks"></i>&nbsp;{% trans "Send infos to responsible" %}</a> &nbsp;   <a href="{{ course.get_js_export_url }}" class="btn btn-default"><i class="icon-doc"></i>&nbsp;{% trans "Get BDNS: J+S export file" %}</a>
+  
 
 </section>   
 {% endblock content %}

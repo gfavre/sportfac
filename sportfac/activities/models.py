@@ -159,7 +159,10 @@ class Course(models.Model):
 
     def get_mail_responsible_url(self):
         return reverse('backend:course-mail-responsible', kwargs={'course': self.number})
-
+    
+    def get_js_export_url(self):
+        return reverse('backend:course-js-export', kwargs={'course': self.number})
+    
     def get_js_csv(self, filelike):
         course_to_js_csv(self, filelike)
     
