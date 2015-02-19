@@ -284,7 +284,7 @@ class Child(TimeStampedModel):
 
     @property
     def js_sex(self):
-        if self.sex == SEX.M:
+        if self.sex == self.SEX.M:
             return '1'
         return '2'
     

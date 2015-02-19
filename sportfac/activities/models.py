@@ -8,6 +8,8 @@ from django.utils.translation import ugettext as _
 from ckeditor.fields import RichTextField
 
 from sportfac.models import TimeStampedModel
+from .utils import course_to_js_csv
+
 
 DAYS_OF_WEEK = (
     (1, _('Monday')),
@@ -158,7 +160,13 @@ class Course(models.Model):
     def get_mail_responsible_url(self):
         return reverse('backend:course-mail-responsible', kwargs={'course': self.number})
 
-        
+    def get_js_csv(self, filelike):
+        course_to_js_csv(self, filelike)
+    
+    @property
+    def get_js_name(self):
+        return '%s - %s' % (self.number, self.responsible.full_name)
+    
     def get_absolute_url(self):
         return reverse('activities:course-detail', kwargs={"course": self.number})
 
@@ -173,3 +181,18 @@ class Course(models.Model):
         verbose_name = _("course")
         verbose_name_plural = _("courses")
     
+"""
+from StringIO import StringIO
+from activities.models import Course
+
+c=Course.objects.all()[0]
+s=StringIO()
+
+c.get_js_csv(s)
+s.getvalue()
+
+f = open('/Users/grfavre/Desktop/excel-sucks.csv', 'w')
+c.get_js_csv(f)
+f.close()
+
+"""
