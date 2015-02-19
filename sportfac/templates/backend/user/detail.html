@@ -13,7 +13,7 @@
     <dd>
       {{ object.address }}<br />
       {{ object.zipcode }} {{ object.city }}<br />
-      {{ object.country }}
+      {{ object.get_country_display }}
     </dd>
     <dt>Email</dt><dd><a href="mailto:{{ object.email }}">{{ object.email }} </a></dd>
     {% if object.private_phone %}
@@ -80,11 +80,10 @@
           <h4 class="pricing-plan-title">{{  child }}</h4>
         </header>
         <dl class="dl-horizontal">
-          <dt>{% trans "Sex" %}</dt><dd> {{ child.sex }}</dd>
           <dt>{% trans "Birth date" %}</dt><dd> {{ child.birth_date | date:"j F Y" }}</dd>
-          <dt>{% trans "Nationality" %}</dt><dd> {{ child.nationality }}</dd>
-          <dt>{% trans "Language" %}</dt><dd> {{ child.language }}</dd>
-
+          <dt>{% trans "Sex" %}</dt><dd> {{ child.get_sex_display }}</dd>
+          <dt>{% trans "Nationality" %}</dt><dd> {{ child.get_nationality_display }}</dd>
+          <dt>{% trans "Language" %}</dt><dd> {{ child.get_language_display }}</dd>
           <dt>{% trans "School year" %}</dt><dd> {{ child.school_year }}</dd>
           <dt>{% trans "Teacher" %}</dt><dd> {{ child.teacher.get_full_name }}</dd>
         </dl>

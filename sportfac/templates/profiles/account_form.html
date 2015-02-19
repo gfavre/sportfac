@@ -2,20 +2,22 @@
 
 {% form form using %}
 {% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
+
 {% block errors %}
-  {% for error in form.non_field_errors %}
-  <div class="alert alert-error">
-    <a class="close" href="#" data-dismiss="alert">×</a>
-    {{ error }}
-  </div><!--- .alert.alert-error -->
-  {% endfor %}
-  {% for error in form|hidden_field_errors %}
-  <div class="alert alert-error">
-    <a class="close" href="#" data-dismiss="alert">×</a>
-    {{ error }}
-  </div><!--- .alert.alert-error -->
-  {% endfor %}
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">
+            <a class="close" href="#" data-dismiss="alert">×</a>
+             <i class="icon-exclamation" aria-hidden="true"></i>&nbsp;&nbsp;{{ error }}
+        </div><!--- .alert.alert-error -->
+    {% endfor %}
+    {% for error in form|hidden_field_errors %}
+        <div class="alert alert-danger">
+            <a class="close" href="#" data-dismiss="alert">×</a>
+            <i class="icon-exclamation" aria-hidden="true"></i>{{ error }}
+        </div><!--- .alert.alert-error -->
+    {% endfor %}
 {% endblock errors %}
+  {% formconfig row using "floppyforms/rows/bootstrap.html" %}
 
   <fieldset>
     {% formrow form.first_name %}
@@ -35,6 +37,8 @@
         </div>
       </div>
     </div>
+    {% formrow form.country %}
+
     {% formrow form.private_phone %}
     {% formrow form.private_phone2 %}
     {% formrow form.private_phone3 %}

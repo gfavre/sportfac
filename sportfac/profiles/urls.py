@@ -3,7 +3,7 @@ from django.contrib.auth import views as auth_views
 
 
 from .forms import RegistrationForm, AuthenticationForm
-from .views import (password_change, password_reset, RegistrationView, 
+from .views import (password_change, password_reset, WizardRegistrationView, 
                     ChildrenListView, AccountView, BillingView, SummaryView,
                     RegisteredActivitiesListView)
 
@@ -12,7 +12,7 @@ urlpatterns = patterns('',
     url(r'^$', AccountView.as_view(), name="profiles_account"),
     url(r'^children/$', ChildrenListView.as_view(), name="profiles_children"),
     url(r'^summary/$', SummaryView.as_view(), name="profiles_registered_activities"),
-    url(r'^register/$',  RegistrationView.as_view(), name="registeraccount"),
+    url(r'^register/$',  WizardRegistrationView.as_view(), name="registeraccount"),
     url(r'^payement/$', BillingView.as_view(), name="profiles_billing"),
     
     url(r'^reset/$', password_reset, name="registration_reset"),

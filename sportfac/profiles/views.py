@@ -54,15 +54,17 @@ class _BaseAccount(LoginRequiredMixin, UpdateView):
 
 class AccountView(SuccessMessageMixin, _BaseAccount):
     template_name = 'profiles/account.html'
-    success_message = _('Contact informations have been saved.')
-
+    
+    def get_success_message(self, form):
+        return _('Your contact informations have been saved.')
+    
 
 class WizardAccountView(WizardMixin, _BaseAccount):
     template_name = 'profiles/wizard_account.html'
     success_url = reverse_lazy('wizard_children')
 
 
-class RegistrationView(BaseRegistrationView):
+class WizardRegistrationView(WizardMixin, BaseRegistrationView):
     """
     A registration backend which implements the simplest possible
     workflow: a user supplies a username, email address and password
@@ -70,18 +72,24 @@ class RegistrationView(BaseRegistrationView):
     up and logged in).
     """
     form_class = RegistrationForm
-    success_url = reverse_lazy('profiles_children')
-        
+    template_name = 'profiles/registration_form.html'
+
+    def get_success_url(self, request, user):
+        return reverse('wizard_children')    
+       
     def register(self, request, **cleaned_data):
         email, password = cleaned_data['email'], cleaned_data['password1']
         first_name, last_name = cleaned_data['first_name'], cleaned_data['last_name']
         address, zipcode, city = cleaned_data['address'], cleaned_data['zipcode'], cleaned_data['city']
-        private_phone, private_phone2 = cleaned_data['private_phone'], cleaned_data['private_phone2']
+        country = cleaned_data['country']
+        private_phone = cleaned_data['private_phone']
+        private_phone2 = cleaned_data['private_phone2']
         private_phone3 = cleaned_data['private_phone3']
         
         FamilyUser.objects.create_user(email=email, password=password, 
                                        first_name=first_name, last_name=last_name,
                                        address=address, zipcode=zipcode, city=city,
+                                       country=country,
                                        private_phone=private_phone,
                                        private_phone2=private_phone2,
                                        private_phone3=private_phone3)
@@ -91,11 +99,6 @@ class RegistrationView(BaseRegistrationView):
                                      user=new_user,
                                      request=request)
         return new_user
-
-
-class WizardRegistrationView(WizardMixin, RegistrationView):
-    template_name = 'registration/wizard_registration.html'
-    success_url = reverse_lazy('wizard_children')
 
 
 class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
