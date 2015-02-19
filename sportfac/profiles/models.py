@@ -409,7 +409,7 @@ class SchoolYear(models.Model):
         ordering = ('year',)
     
 
-class Teacher(models.Model):
+class Teacher(TimeStampedModel):
     number = models.IntegerField(db_index=True, unique=True, null=True, blank=True, verbose_name=_("Number"))
 
     first_name = models.CharField(_("First name"), max_length=50)

@@ -5,10 +5,10 @@ from django.views.generic import FormView, TemplateView
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
-from django.db.models import Count
+from django.db.models import Count, Max
 
 from constance import config
-from profiles.models import FamilyUser, Registration
+from profiles.models import FamilyUser, Registration, Teacher, SchoolYear
 from backend.forms import RegistrationDatesForm
 from .mixins import BackendMixin
 
@@ -40,6 +40,14 @@ class HomePageView(BackendMixin, TemplateView):
 
         context['registrations_per_day'] = [[time_str_to_milliseconds(reg.get('creation')),
                                              reg.get('num')] for reg in registrations]
+                                             
+        context['nb_teachers'] = Teacher.objects.count()
+        context['last_teacher_update'] = Teacher.objects.aggregate(
+                                            latest=Max('modified'))['latest']
+        years = SchoolYear.objects\
+                          .annotate(num_teachers=(Count('teacher')))\
+                          .filter(num_teachers__gt=0)
+        context['teachers_per_year'] = [(year.get_year_display(), year.num_teachers) for year in years]
         return context
 
 

@@ -1,0 +1,56 @@
+{% load i18n %}
+{% load humanize %} 
+{% load sekizai_tags %}
+
+<section class="portlet">
+  <h4 class="portlet-title">
+    <u>{% trans "Teachers" %}</u>
+  </h4>
+  <div class="portlet-body">
+    <dl class="dl-horizontal">
+      <dt>{% trans "Number of teachers" %}</dt>
+      <dd>{{ nb_teachers }}</dd>
+      <dt>{% trans "Last update" %}</dt>
+      <dd>{{ last_teacher_update }}</dd>
+    </dl>
+    <div id="pie-chart-teachers" class="chart-holder-250"></div>
+    [ <a href="{% url 'backend:teacher-list' %}">{% trans "All teachers" %}</a> ]
+    {% addtoblock  "js" %}    
+    <script src="{{ STATIC_URL }}js/vendor/flot/jquery.flot.pie.min.js"></script>
+    <script>
+$(function () {
+  var data, placeholder;
+  placeholder = $("#pie-chart-teachers");
+  data = [
+  {% for name, value in teachers_per_year %}
+      { label: "{{ name }}", data: {{ value }} }{% if not forloop.last %},{% endif %}
+  {% endfor %}
+  ];
+  placeholder = $("#pie-chart-teachers");
+  $.plot(placeholder, data, {
+				series: {
+					pie: { 
+						show: true,
+						innerRadius: 0, 
+                        stroke: { width: 2 }
+					}
+				},
+				legend: {
+					show: false
+				},
+				tooltip: true,
+				tooltipOpts: {
+                    content: function(label, xval, yval, flotItem){ return label + ': ' + yval.toString(); }
+                },
+                grid: {
+                    hoverable: true
+                },
+
+				colors: mvpready_core.layoutColors
+  });
+ 
+});
+    </script>
+    {% endaddtoblock %}
+  </div> <!-- /.portlet-body -->
+</section>
