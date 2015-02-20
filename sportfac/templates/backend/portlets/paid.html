@@ -8,10 +8,17 @@
   </h4>
   <div class="portlet-body">
     <div id="pie-chart-paid" class="chart-holder-250"></div>
-    [ <a href="{% url 'backend:mail-notpaidyet' %}">{% trans "Send reminder email" %}</a> ]
-    {% addtoblock  "js" %}    
-    <script src="{{ STATIC_URL }}js/vendor/flot/jquery.flot.pie.min.js"></script>
-    <script>
+    <p class="text-center">
+    [&nbsp;<a href="{% url 'backend:user-list' %}"><i class="icon-group"></i>&nbsp;{% trans "List users" %}</a>&nbsp;]
+    [&nbsp;<a href="{% url 'backend:mail-notpaidyet' %}"><i class="icon-mail"></i>&nbsp;{% trans "Send reminder email" %}</a>&nbsp;]
+    
+    </p>
+ </div> <!-- /.portlet-body -->
+</section>
+   
+{% addtoblock  "js" %}    
+<script src="{{ STATIC_URL }}js/vendor/flot/jquery.flot.pie.min.js"></script>
+<script>
 $(function () {
   var data, placeholder;
   data = [
@@ -41,7 +48,6 @@ $(function () {
 				colors: mvpready_core.layoutColors
   });
 });
-    </script>
-    {% endaddtoblock %}
-  </div> <!-- /.portlet-body -->
-</section>
+</script>
+{% endaddtoblock %}
+  

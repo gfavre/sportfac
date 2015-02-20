@@ -36,17 +36,14 @@ class RegistrationDatesForm(forms.Form):
     def clean(self):
         opening_date = self.cleaned_data.get('opening_date')
         closing_date = self.cleaned_data.get('closing_date')
-        
         if opening_date and closing_date and not opening_date < closing_date:
             raise forms.ValidationError(_("Closing date should come after opening date"))
-        
         super(RegistrationDatesForm, self).clean()
     
     def save_to_constance(self):
         if self.is_valid():
             config.START_REGISTRATION = self.cleaned_data['opening_date']
             config.END_REGISTRATION = self.cleaned_data['closing_date']
-            
 
 
 class RegistrationForm(forms.ModelForm):

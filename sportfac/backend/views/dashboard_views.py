@@ -17,17 +17,27 @@ __all__ = ('HomePageView', 'RegistrationDatesView',)
 
 ###############################################################################
 # Homepage
+       
 
 class HomePageView(BackendMixin, TemplateView):
-    template_name = 'backend/home.html'
-
-    def get_context_data(self, **kwargs):
+    
+    def get_template_names(self):
+        return 'backend/dashboard-phase%i.html' % self.request.PHASE
+    
+    def get_additional_context_phase1(self, context):
+        context['nb_teachers'] = Teacher.objects.count()
+        context['last_teacher_update'] = Teacher.objects.aggregate(
+                                            latest=Max('modified'))['latest']
+        years = SchoolYear.objects\
+                          .annotate(num_teachers=(Count('teacher')))\
+                          .filter(num_teachers__gt=0)
+        context['teachers_per_year'] = [(year.get_year_display(), year.num_teachers) for year in years]
+        return context
+    
+    def get_additional_context_phase2(self, context):
         def time_str_to_milliseconds(time_str):
             return 1000 * int(datetime.strptime(time_str, '%Y-%m-%d').strftime('%s'))
-        
-        context = super(HomePageView, self).get_context_data(**kwargs)
         finished = FamilyUser.objects.filter(finished_registration=True)
-        
         context['payement_due'] = finished.filter(total__gt=0).count()
         context['paid'] = finished.filter(total__gt=0, paid=True).count()
         registrations = Registration.objects.filter(
@@ -37,17 +47,33 @@ class HomePageView(BackendMixin, TemplateView):
             ).values('creation'
             ).order_by('creation'
             ).annotate(num=Count('id'))
-
         context['registrations_per_day'] = [[time_str_to_milliseconds(reg.get('creation')),
                                              reg.get('num')] for reg in registrations]
-                                             
-        context['nb_teachers'] = Teacher.objects.count()
-        context['last_teacher_update'] = Teacher.objects.aggregate(
-                                            latest=Max('modified'))['latest']
-        years = SchoolYear.objects\
-                          .annotate(num_teachers=(Count('teacher')))\
-                          .filter(num_teachers__gt=0)
-        context['teachers_per_year'] = [(year.get_year_display(), year.num_teachers) for year in years]
+        return context
+    
+    def get_additional_context_phase3(self, context):
+        def time_str_to_milliseconds(time_str):
+            return 1000 * int(datetime.strptime(time_str, '%Y-%m-%d').strftime('%s'))
+
+        finished = FamilyUser.objects.filter(finished_registration=True)
+        context['payement_due'] = finished.filter(total__gt=0).count()
+        context['paid'] = finished.filter(total__gt=0, paid=True).count()
+        registrations = Registration.objects.filter(
+            created__range=(config.START_REGISTRATION,
+                            config.END_REGISTRATION)
+            ).extra({'creation': "to_char(profiles_registration.created, 'YYYY-MM-DD')"}
+            ).values('creation'
+            ).order_by('creation'
+            ).annotate(num=Count('id'))
+        context['registrations_per_day'] = [[time_str_to_milliseconds(reg.get('creation')),
+                                             reg.get('num')] for reg in registrations]
+
+        return context
+    
+    def get_context_data(self, **kwargs):
+        context = super(HomePageView, self).get_context_data(**kwargs)
+        method_name = 'get_additional_context_phase%i' % self.request.PHASE
+        context = getattr(self, method_name)(context)                              
         return context
 
 

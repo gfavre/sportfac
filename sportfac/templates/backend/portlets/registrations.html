@@ -7,8 +7,12 @@
     <u>{% trans "Registrations per day" %}</u>
   </h4>
   <div class="portlet-body">
-    
     <div id="line-chart-registrations" class="chart-holder-300"></div>
+    <p class="text-center">
+        [&nbsp;<a href="{% url 'backend:registration-list' %}"><i class="icon-check"></i>&nbsp;{% trans "List registrations" %}</a>&nbsp;]
+    </p>
+  </div> <!-- /.portlet-body -->
+</section>
 
     {% addtoblock  "js" %}    
     <script>
@@ -66,5 +70,3 @@ $(function () {
 });
     </script>
     {% endaddtoblock %}
-  </div> <!-- /.portlet-body -->
-</section>

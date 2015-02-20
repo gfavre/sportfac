@@ -8,7 +8,14 @@ class RegistrationOpenedMiddleware(object):
         start = config.START_REGISTRATION
         end = config.END_REGISTRATION
         now = timezone.now()
-        request.REGISTRATION_OPENED = start <= now <= end
+
+        request.PHASE = 1
+        request.REGISTRATION_OPENED = False
+        if start <= now <= end:
+            request.PHASE = 2
+            request.REGISTRATION_OPENED = True
+        elif now > end:
+            request.PHASE = 3    
         request.REGISTRATION_START = start
         request.REGISTRATION_END = end
 

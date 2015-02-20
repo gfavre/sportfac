@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-19 17:37+0100\n"
+"POT-Creation-Date: 2015-02-20 09:50+0100\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -355,15 +355,23 @@ msgstr "0 seconde"
 msgid "0 minute"
 msgstr "0 minute"
 
-#: sportfac/backend/forms.py:26 sportfac/templates/backend/home.html:50
+#: sportfac/backend/forms.py:26
+#: sportfac/templates/backend/dashboard-phase1.html:21
+#: sportfac/templates/backend/dashboard-phase2.html:36
+#: sportfac/templates/backend/dashboard-phase3.html:21
+#: sportfac/templates/backend/home.html:50
 msgid "Opening date"
 msgstr "Date d'ouverture"
 
-#: sportfac/backend/forms.py:29 sportfac/templates/backend/home.html:51
+#: sportfac/backend/forms.py:28
+#: sportfac/templates/backend/dashboard-phase1.html:22
+#: sportfac/templates/backend/dashboard-phase2.html:37
+#: sportfac/templates/backend/dashboard-phase3.html:22
+#: sportfac/templates/backend/home.html:51
 msgid "Closing date"
 msgstr "Date de fermeture"
 
-#: sportfac/backend/forms.py:38
+#: sportfac/backend/forms.py:40
 msgid "Closing date should come after opening date"
 msgstr "La date de fermeture doit être postérieuse à la date d'ouverture"
 
@@ -394,11 +402,11 @@ msgstr "Le cours a été supprimé"
 msgid "Course %(identifier)s has been deleted."
 msgstr "Le cours #%(identifier)s a bien été supprimé"
 
-#: sportfac/backend/views/dashboard_views.py:55
+#: sportfac/backend/views/dashboard_views.py:89
 msgid "Opening and closing dates have been changed"
 msgstr "Les dates d'ouverture et de fermeture ont été mises à jour"
 
-#: sportfac/backend/views/dashboard_views.py:60
+#: sportfac/backend/views/dashboard_views.py:94
 #, python-format
 msgid "An error was found in form %s"
 msgstr "Une erreur a été trouvée dans le formulaire %s"
@@ -1315,42 +1323,66 @@ msgstr "Nouveau cours"
 msgid "Update course"
 msgstr "Mettre à jour le cours"
 
+#: sportfac/templates/backend/dashboard-phase1.html:6
+#: sportfac/templates/backend/dashboard-phase1.html:9
+#: sportfac/templates/backend/dashboard-phase2.html:6
+#: sportfac/templates/backend/dashboard-phase2.html:9
+#: sportfac/templates/backend/dashboard-phase3.html:6
+#: sportfac/templates/backend/dashboard-phase3.html:9
 #: sportfac/templates/backend/home.html:6
 #: sportfac/templates/backend/home.html:9 sportfac/templates/navbar.html:64
 msgid "Administration"
 msgstr "Administration"
 
+#: sportfac/templates/backend/dashboard-phase1.html:17
+#: sportfac/templates/backend/dashboard-phase2.html:17
+#: sportfac/templates/backend/dashboard-phase3.html:17
 #: sportfac/templates/backend/home.html:17
 msgid "Opening & closing"
 msgstr "Ouverture & fermeture"
 
+#: sportfac/templates/backend/dashboard-phase1.html:19
+#, python-format
+msgid "Opening in %(natural_time)s"
+msgstr "Ouverture %(natural_time)s"
+
+#: sportfac/templates/backend/dashboard-phase1.html:24
+#: sportfac/templates/backend/dashboard-phase2.html:39
+#: sportfac/templates/backend/dashboard-phase3.html:24
+#: sportfac/templates/backend/home.html:53
+msgid "Change dates"
+msgstr "Mettre à jour les dates"
+
+#: sportfac/templates/backend/dashboard-phase2.html:21
 #: sportfac/templates/backend/home.html:28
 msgid "Registrations open"
 msgstr "Inscriptions ouvertes"
 
+#: sportfac/templates/backend/dashboard-phase2.html:22
 #: sportfac/templates/backend/home.html:29
 #, python-format
 msgid "%(time)s remaining"
 msgstr "encore %(time)s"
 
+#: sportfac/templates/backend/dashboard-phase2.html:29
 #: sportfac/templates/backend/home.html:36
 #, python-format
 msgid "%(time)s since opening of registrations"
 msgstr "%(time)s écoulés depuis l'ouverture des inscriptions"
 
-#: sportfac/templates/backend/home.html:53
-msgid "Change dates"
-msgstr "Mettre à jour les dates"
+#: sportfac/templates/backend/dashboard-phase3.html:19
+msgid "Closed since %(natural_time)s"
+msgstr "Fermé %(natural_time)s"
 
-#: sportfac/templates/backend/home.html:70
+#: sportfac/templates/backend/home.html:73
 msgid "Manage activities"
 msgstr "Gestion des activités"
 
-#: sportfac/templates/backend/home.html:71
+#: sportfac/templates/backend/home.html:74
 msgid "Manage courses"
 msgstr "Gestion des cours"
 
-#: sportfac/templates/backend/home.html:72
+#: sportfac/templates/backend/home.html:75
 msgid "Manage responsibles"
 msgstr "Gestion des responsables"
 
@@ -1421,6 +1453,7 @@ msgid "School"
 msgstr "École"
 
 #: sportfac/templates/backend/navbar.html:122
+#: sportfac/templates/backend/portlets/teachers.html:17
 msgid "All teachers"
 msgstr "Tous les enseignants"
 
@@ -1433,15 +1466,21 @@ msgstr "Nouvel enseignant"
 msgid "Validated payments"
 msgstr "Paiements validés"
 
-#: sportfac/templates/backend/portlets/paid.html:11
+#: sportfac/templates/backend/portlets/paid.html:12
+#: sportfac/templates/backend/user/list.html:5
+#: sportfac/templates/backend/user/list.html:6
+msgid "List users"
+msgstr "Liste des utilisateurs"
+
+#: sportfac/templates/backend/portlets/paid.html:13
 msgid "Send reminder email"
 msgstr "Email de rappel"
 
-#: sportfac/templates/backend/portlets/paid.html:18
+#: sportfac/templates/backend/portlets/paid.html:25
 msgid "Not yet"
 msgstr "Pas encore payé"
 
-#: sportfac/templates/backend/portlets/paid.html:19
+#: sportfac/templates/backend/portlets/paid.html:26
 msgid "Validated"
 msgstr "Validé"
 
@@ -1464,6 +1503,24 @@ msgstr "Enregistrer"
 msgid "Registrations per day"
 msgstr "Inscriptions par jour"
 
+#: sportfac/templates/backend/portlets/registrations.html:12
+#: sportfac/templates/backend/registration/list.html:6
+#: sportfac/templates/backend/registration/list.html:7
+msgid "List registrations"
+msgstr "Liste des inscriptions"
+
+#: sportfac/templates/backend/portlets/teachers.html:7
+msgid "Teachers"
+msgstr "Enseignants"
+
+#: sportfac/templates/backend/portlets/teachers.html:11
+msgid "Number of teachers"
+msgstr "Nombre d'enseignants"
+
+#: sportfac/templates/backend/portlets/teachers.html:13
+msgid "Last update"
+msgstr "Dernière mise à jour"
+
 #: sportfac/templates/backend/registration/confirm_delete.html:9
 #, python-format
 msgid ""
@@ -1474,11 +1531,6 @@ msgstr ""
 #: sportfac/templates/backend/registration/confirm_delete.html:10
 msgid "confirm"
 msgstr "confirmer"
-
-#: sportfac/templates/backend/registration/list.html:6
-#: sportfac/templates/backend/registration/list.html:7
-msgid "List registrations"
-msgstr "Liste des inscriptions"
 
 #: sportfac/templates/backend/registration/list.html:36
 msgid "Course Identifier"
@@ -1693,11 +1745,6 @@ msgstr "Aucune inscription pour cet enfant"
 #: sportfac/templates/profiles/children_list_partial.html:13
 msgid "Add child"
 msgstr "Ajouter un enfant"
-
-#: sportfac/templates/backend/user/list.html:5
-#: sportfac/templates/backend/user/list.html:6
-msgid "List users"
-msgstr "Liste des utilisateurs"
 
 #: sportfac/templates/backend/user/list.html:67
 #: sportfac/templates/backend/user/list.html:113
