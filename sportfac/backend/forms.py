@@ -24,11 +24,14 @@ class Select2Widget(forms.Select):
 
 class RegistrationDatesForm(forms.Form):
     opening_date = forms.DateTimeField(label=_("Opening date"), required=True, 
-                                       initial=config.START_REGISTRATION,
                                        widget=DateTimePickerInput(format='%d.%m.%Y %H:%M'))
     closing_date = forms.DateTimeField(label=_("Closing date"), required=True,
-                                       initial=config.END_REGISTRATION, 
                                        widget=DateTimePickerInput(format='%d.%m.%Y %H:%M'))
+    
+    def __init__(self, *args, **kwargs):
+        super(RegistrationDatesForm, self).__init__(*args, **kwargs)
+        self.initial.setdefault('opening_date', config.START_REGISTRATION)
+        self.initial.setdefault('closing_date', config.END_REGISTRATION)        
     
     def clean(self):
         opening_date = self.cleaned_data.get('opening_date')
