@@ -95,7 +95,30 @@ class HomePageView(BackendMixin, TemplateView):
     def get_additional_context_phase3(self, context):
         def time_str_to_milliseconds(time_str):
             return 1000 * int(datetime.strptime(time_str, '%Y-%m-%d').strftime('%s'))
-
+        
+        courses = Course.objects.all()
+        context['nb_courses'] = courses.count()
+        activities = Activity.objects.all()
+        context['nb_activities'] = activities.count()
+        context['total_sessions'] = courses.aggregate(Sum('number_of_sessions')).values()[0]
+        context['total_responsibles'] =  courses.values('responsible').distinct().count()
+        
+        
+        participants = Course.objects.annotate(count_participants=Count('participants'))\
+                                     .values_list('min_participants', 
+                                                  'max_participants', 
+                                                  'count_participants')
+        context['nb_courses'] = len(participants)
+        context['nb_full_courses'] = 0
+        context['nb_minimal_courses'] = 0
+        
+        for (min_participants, max_participants, count_participants) in participants:
+            if min_participants <= count_participants:
+                context['nb_minimal_courses'] += 1
+                if max_participants == count_participants:
+                    context['nb_full_courses'] += 1
+        
+        
         finished = FamilyUser.objects.filter(finished_registration=True)
         context['payement_due'] = finished.filter(total__gt=0).count()
         context['paid'] = finished.filter(total__gt=0, paid=True).count()

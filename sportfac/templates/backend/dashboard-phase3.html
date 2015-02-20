@@ -11,8 +11,8 @@
 {% block content %}
 
 <div class="row">
-<section class="col-md-12">
-  <div class="portlet">
+<div class="col-md-4 ">
+  <section class="portlet">
     <h4 class="portlet-title">
       <u><i class="icon-hourglass"></i>{% trans "Opening & closing" %}</u>
     </h4>
@@ -21,17 +21,24 @@
       <dt>{% trans "Opening date"%}</dt><dd>{{ registration_start|date:"l j E Y, H:i" }}</dd>
       <dt>{% trans "Closing date"%}</dt><dd>{{ registration_end|date:"l j E Y, H:i" }}</dd>
     </dl>
-    [ <a href="{% url 'backend:dates' %}">{% trans "Change dates"%}</a> ]
+    <p class="text-center">[ <a href="{% url 'backend:dates' %}">{% trans "Change dates"%}</a> ]</p>
 
-  </div>
-</section>
+  </section>
+</div>
+
+<div class="col-sm-12 col-md-8">
+    {% include 'backend/portlets/registration_courses_phase3.html'%}
+</divn>
+
 </div>
 
 <div class="row">
-  <div class="col-sm-6 col-md-6">
+ 
+
+  <div class="col-sm-6 col-md-4">
     {% include 'backend/portlets/paid.html'%}
   </div>
-  <div class="col-sm-6 col-md-6">
+  <div class="col-sm-6 col-md-8">
     {% include 'backend/portlets/registrations.html'%}
   </div>
 </div>

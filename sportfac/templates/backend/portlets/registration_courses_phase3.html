@@ -1,0 +1,66 @@
+{% load i18n %}
+{% load humanize %} 
+{% load sekizai_tags %}
+<section class="portlet">
+  <h4 class="portlet-title">
+    <u><i class="icon-graduation-cap"></i>&nbsp;&nbsp;{% trans "Activities &amp; courses" %}</u>
+  </h4>
+  <div class="portlet-body row">
+    <div class="col-md-8">
+      <p><strong>{{ nb_courses }}</strong> <a href="{% url 'backend:course-list' %}">{% trans "courses" %}</a> {% trans "in" %} <strong>{{ nb_activities }}</strong> <a href="{% url 'backend:activity-list' %}">{% trans "activities" %}</a>.</p>
+      
+      {% widthratio nb_full_courses nb_courses 100|add:"0" as percentage %}
+      <div class="progress-stat">
+        <div class="progress-stat-label">{% trans "Full courses"%}</div>
+        <div class="progress-stat-value">{{ nb_full_courses }} / {{ nb_courses }}</div>
+        <div class="progress progress-sm">
+          {% with pp=percentage|add:"0" %}
+          <div class="progress-bar progress-bar-danger" role="progressbar" 
+               aria-valuenow="{{ nb_full_courses }}" aria-valuemin="0" 
+               aria-valuemax="{{ nb_courses }}" 
+               style="width: {{ percentage }}%">
+          </div>
+          {% endwith %}
+        </div>
+      </div>
+
+      {% widthratio nb_minimal_courses nb_courses 100|add:"0" as percentage %}
+      <div class="progress-stat">
+        <div class="progress-stat-label">{% trans "Minimal participants reached courses"%}</div>
+        <div class="progress-stat-value">{{ nb_minimal_courses }} / {{ nb_courses }}</div>
+        <div class="progress progress-sm">
+          {% with pp=percentage|add:"0" %}
+          <div class="progress-bar progress-bar-warning" role="progressbar" 
+               aria-valuenow="{{ nb_minimal_courses }}" aria-valuemin="0" 
+               aria-valuemax="{{ nb_courses }}" 
+               style="width: {{ percentage }}%">
+          </div>
+          {% endwith %}
+        </div>
+      </div>
+
+      <p>
+        <ul class="list-unstyled">
+        <li><a href="{% url 'backend:activity-list' %}"><i class="icon-soccer-ball"></i>&nbsp;{% trans "Manage activities" %}</a></li>
+        <li><a href="{% url 'backend:course-list' %}"><i class="icon-graduation-cap"></i>&nbsp;{% trans "Manage courses" %}</a></li>
+        <li><a href="{% url 'backend:responsible-list' %}"><i class="icon-user"></i>&nbsp;{% trans "Manage responsibles" %}</a></li>
+        </ul>
+      </p>
+    </div>
+    <div class="col-md-4">
+      <div class="row-stat">
+        <p class="row-stat-label">{% trans "Total sessions" %}</p>
+        <h3 class="row-stat-value">{{ total_sessions }}</h3>
+      </div>    
+    </div>
+     <div class="col-md-4">
+      <div class="row-stat">
+        <p class="row-stat-label">{% trans "Total responsibles" %}</p>
+        <h3 class="row-stat-value">{{ total_responsibles }}</h3>
+      </div>    
+    </div>
+    
+    <div class="col-md-12">
+        </div>
+  </div> <!-- /.portlet-body -->
+</section>
