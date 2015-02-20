@@ -11,7 +11,7 @@
       <dt>{% trans "Number of teachers" %}</dt>
       <dd>{{ nb_teachers }}</dd>
       <dt>{% trans "Last update" %}</dt>
-      <dd>{{ last_teacher_update }}</dd>
+      <dd>{{ last_teacher_update|naturaltime }}</dd>
     </dl>
     <div id="pie-chart-teachers" class="chart-holder-250"></div>
     [ <a href="{% url 'backend:teacher-list' %}">{% trans "All teachers" %}</a> ]

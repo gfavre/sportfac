@@ -5,9 +5,10 @@ from django.views.generic import FormView, TemplateView
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
-from django.db.models import Count, Max
+from django.db.models import Count, Max, Sum, Avg
 
 from constance import config
+from activities.models import Activity, Course
 from profiles.models import FamilyUser, Registration, Teacher, SchoolYear
 from backend.forms import RegistrationDatesForm
 from .mixins import BackendMixin
@@ -32,6 +33,16 @@ class HomePageView(BackendMixin, TemplateView):
                           .annotate(num_teachers=(Count('teacher')))\
                           .filter(num_teachers__gt=0)
         context['teachers_per_year'] = [(year.get_year_display(), year.num_teachers) for year in years]
+        
+        courses = Course.objects.all()
+        context['nb_courses'] = courses.count()
+        context['ready_courses'] = courses.filter(uptodate=True).count()
+        context['notready_courses'] = context['nb_courses'] - context['ready_courses']
+        context['total_sessions'] = courses.aggregate(Sum('number_of_sessions')).values()[0]
+        context['total_responsibles'] =  courses.values('responsible').distinct().count()
+        context['last_course_update'] = courses.aggregate(
+                                            latest=Max('modified'))['latest']
+        
         return context
     
     def get_additional_context_phase2(self, context):

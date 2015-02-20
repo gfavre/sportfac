@@ -35,16 +35,14 @@ SCHOOL_YEARS = (
     (11, _("11th HARMOS")),    
 )
 
-class Activity(models.Model):
+class Activity(TimeStampedModel):
     """
     An activity
     """
     name = models.CharField(max_length=50, db_index=True, unique=True, verbose_name=_("Name"))
     number = models.IntegerField(verbose_name=_("Number"), db_index=True, unique=True, null=True, blank=True)
-
     slug = models.SlugField(max_length=50, db_index=True, unique=True, 
                             help_text=_("Part of the url. Cannot contain punctuation, spaces or accentuated letters"))
-    
     informations = RichTextField(blank=True, help_text=_("Specific informations like outfit."))
     description = RichTextField(blank=True)
     
@@ -55,21 +53,21 @@ class Activity(models.Model):
     def __unicode__(self):
         return self.name
     
-    
     class Meta:
         ordering = ['name']
         verbose_name = _("activity")
         verbose_name_plural = _("activities")
            
 
-class ExtraNeed(models.Model):
+class ExtraNeed(TimeStampedModel):
     activity = models.ForeignKey('Activity', related_name='extra')
     question_label = models.CharField(max_length=255, verbose_name=_("Question"), help_text=_("e.g. Shoes size?"))
     
     def __unicode__(self):
         return self.question_label
 
-class Course(models.Model):
+
+class Course(TimeStampedModel):
     "A course, i.e. an instance of an activity"
     activity = models.ForeignKey('Activity', related_name='courses')
     number = models.IntegerField(db_index=True, unique=True, null=True, blank=True, verbose_name=_("Identifier"))
