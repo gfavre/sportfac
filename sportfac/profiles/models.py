@@ -399,7 +399,7 @@ class SchoolYear(models.Model):
     
     def __unicode__(self):
         try:
-            return dict(SCHOOL_YEARS)[self.year]
+            return unicode(dict(SCHOOL_YEARS)[self.year])
         except KeyError:
             return unicode(year)
     

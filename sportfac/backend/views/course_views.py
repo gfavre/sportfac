@@ -24,6 +24,11 @@ class CourseDetailView(BackendMixin, DetailView):
     queryset = Course.objects.select_related('activity', 'responsible')\
                              .prefetch_related('participants__child__school_year',
                                                'participants__child__family')
+    def get_template_names(self):
+        if self.request.PHASE == 2:
+            return 'backend/course/detail-phase2.html'
+        return 'backend/course/detail.html'
+    
 
 class CourseJSCSVView(CSVMixin, CourseDetailView):
     def get_csv_filename(self):

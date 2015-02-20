@@ -36,6 +36,9 @@ class HomePageView(BackendMixin, TemplateView):
         
         courses = Course.objects.all()
         context['nb_courses'] = courses.count()
+        activities = Activity.objects.all()
+        context['nb_activities'] = activities.count()
+
         context['ready_courses'] = courses.filter(uptodate=True).count()
         context['notready_courses'] = context['nb_courses'] - context['ready_courses']
         context['total_sessions'] = courses.aggregate(Sum('number_of_sessions')).values()[0]
@@ -48,7 +51,19 @@ class HomePageView(BackendMixin, TemplateView):
     def get_additional_context_phase2(self, context):
         def time_str_to_milliseconds(time_str):
             return 1000 * int(datetime.strptime(time_str, '%Y-%m-%d').strftime('%s'))
+        
         finished = FamilyUser.objects.filter(finished_registration=True)
+        waiting = set(Registration.objects\
+                                      .filter(status=Registration.STATUS.waiting)\
+                                      .select_related('child__family')\
+                                      .values_list('child__family'))
+        valid = set(Registration.objects\
+                                      .filter(status=Registration.STATUS.valid)\
+                                      .select_related('child__family')\
+                                      .values_list('child__family'))
+        context['waiting'] = len(waiting)
+        context['valid'] = len(valid)
+        
         context['payement_due'] = finished.filter(total__gt=0).count()
         context['paid'] = finished.filter(total__gt=0, paid=True).count()
         registrations = Registration.objects.filter(
@@ -60,6 +75,21 @@ class HomePageView(BackendMixin, TemplateView):
             ).annotate(num=Count('id'))
         context['registrations_per_day'] = [[time_str_to_milliseconds(reg.get('creation')),
                                              reg.get('num')] for reg in registrations]
+        
+        participants = Course.objects.annotate(count_participants=Count('participants'))\
+                                     .values_list('min_participants', 
+                                                  'max_participants', 
+                                                  'count_participants')
+        context['nb_courses'] = len(participants)
+        context['nb_full_courses'] = 0
+        context['nb_minimal_courses'] = 0
+        
+        for (min_participants, max_participants, count_participants) in participants:
+            if min_participants <= count_participants:
+                context['nb_minimal_courses'] += 1
+                if max_participants == count_participants:
+                    context['nb_full_courses'] += 1
+
         return context
     
     def get_additional_context_phase3(self, context):

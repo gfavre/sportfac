@@ -19,7 +19,7 @@ $(function () {
       },
 {% endif %}
       "aoColumnDefs": [
-          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ 6 ] }
+          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ 7 ] }
       ],
       "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "{% trans 'All registrations' %}"] ]
   });
@@ -39,6 +39,7 @@ $(function () {
       <th class="text-nowrap">{% trans "Start date" %}</th>
       <th class="text-nowrap">{% trans "Time" %}</th>
       <th class="text-nowrap">{% trans "Child" %}</th>
+      <th class="text-nowrap">{% trans "Status" %}</th>
       <th class="text-nowrap">{% trans "Action" %}</th>
     </tr>
   </thead>
@@ -51,6 +52,7 @@ $(function () {
       <td data-order="{{ course.start_date|date:'c'}}">{{ course.start_date|date:"SHORT_DATE_FORMAT" }}</td>
       <td>{{ course.start_time|time:"H:i" }}</td>
       <td>{{ child }}</td>
+      <td>{{ registration.get_status_display }}</td>
       <td>
         <ul class="list-unstyled">
           <li class="text-nowrap"><a href="{{ registration.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update registration" %}</a></li>

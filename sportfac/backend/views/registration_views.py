@@ -4,11 +4,13 @@ from django.http import HttpResponseRedirect
 from django.views.generic import DeleteView, DetailView, \
                                 ListView, UpdateView
 from django.utils.translation import ugettext_lazy as _
+from django.shortcuts import get_object_or_404
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.db import IntegrityError
 
-from backend.forms import ChildSelectForm, CourseSelectForm
+from backend.forms import ChildSelectForm, CourseSelectForm, RegistrationForm
+from activities.models import Course
 from profiles.models import Registration
 from .mixins import BackendMixin
 
@@ -58,18 +60,18 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
 
 class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
     model = Registration
-    form_class = CourseSelectForm
+    form_class = RegistrationForm
     template_name = 'backend/registration/update.html'
     success_message = _("Registration has been updated.")
-
+    success_url = reverse_lazy('backend:registration-list')
+    
     def get_success_url(self):
-        return self.initial_object.course.get_backend_url()
-  
-    def form_valid(self, form):
-        self.initial_object = Registration.objects.get(pk=self.object.pk)
-        form.instance.status = Registration.STATUS.confirmed
-        return super(RegistrationUpdateView, self).form_valid(form)
-
+        course = self.request.GET.get('course', None)
+        if not course:
+            return self.success_url
+        else:
+            course_obj = get_object_or_404(Course, number=course)
+            return course_obj.get_backend_url()
 
 class RegistrationDeleteView(BackendMixin, DeleteView):
     model = Registration

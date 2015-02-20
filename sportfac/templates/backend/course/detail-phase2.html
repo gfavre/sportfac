@@ -46,6 +46,7 @@
         <th>{% trans "School year" %}</th>
         <th>{% trans "Parents phone" %}</th>
         <th>{% trans "Parents email" %}</th>
+        <th>{% trans "Status" %}</th>
         <th>{% trans "Actions" %}</th>
 
       </tr>
@@ -80,6 +81,8 @@
             {% endif %}
         </td>
         <td>{{ registration.child.family.email  }}</td>
+        <td>{{ registration.get_status_display }}</td>
+
         <td>
           <ul class="list-unstyled">
             <li class="text-nowrap"><a href="{% url 'backend:registration-update' pk=registration.pk %}?course={{ course.number }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update registration" %}</a></li>
@@ -92,8 +95,7 @@
     
     {% endfor %}
   </table>
-  <a href="{{ course.get_custom_mail_url }}" class="btn btn-default"><i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}</a> &nbsp;   <a href="{{ course.get_mail_responsible_url }}" class="btn btn-default"><i class="icon-tasks"></i>&nbsp;{% trans "Send infos to responsible" %}</a> &nbsp;   <a href="{{ course.get_js_export_url }}" class="btn btn-default"><i class="icon-doc"></i>&nbsp;{% trans "Get BDNS: J+S export file" %}</a>
-  
+  <a href="{{ course.get_custom_mail_url }}" class="btn btn-default"><i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}</a>  
 
 </section>   
 {% endblock content %}

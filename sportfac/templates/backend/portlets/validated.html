@@ -1,0 +1,53 @@
+{% load i18n %}
+{% load humanize %} 
+{% load sekizai_tags %}
+
+<section class="portlet">
+  <h4 class="portlet-title">
+    <u>{% trans "Validated registrations" %}</u>
+  </h4>
+  <div class="portlet-body">
+    <div id="pie-chart-paid" class="chart-holder-250"></div>
+    <p class="text-center">
+    [&nbsp;<a href="{% url 'backend:user-list' %}"><i class="icon-group"></i>&nbsp;{% trans "List users" %}</a>&nbsp;]
+    [&nbsp;<a href="{% url 'backend:mail-needconfirmation' %}"><i class="icon-mail"></i>&nbsp;{% trans "Send reminder email" %}</a>&nbsp;]
+    
+    </p>
+ </div> <!-- /.portlet-body -->
+</section>
+   
+{% addtoblock  "js" %}    
+<script src="{{ STATIC_URL }}js/vendor/flot/jquery.flot.pie.min.js"></script>
+<script>
+$(function () {
+  var data, placeholder;
+  data = [
+      { label: "{% trans 'Not validated yet' %}", data: {{ waiting }}  },
+      { label: "{% trans 'Validated' %}", data:  {{ valid }} }
+  ];
+  placeholder = $("#pie-chart-paid");
+  $.plot(placeholder, data, {
+				series: {
+					pie: { 
+						show: true,
+						innerRadius: 0, 
+                        stroke: { width: 4 }
+					}
+				},
+				legend: {
+					show: false
+				},
+				tooltip: true,
+				tooltipOpts: {
+                    content: function(label, xval, yval, flotItem){ return label + ': ' + yval.toString(); }
+                },
+                grid: {
+                    hoverable: true
+                },
+
+				colors: mvpready_core.layoutColors
+  });
+});
+</script>
+{% endaddtoblock %}
+  
