@@ -25,12 +25,13 @@ class CourseForm(forms.ModelForm):
                                  widget=TimePickerInput(format='%H:%M'))
     end_time = forms.TimeField(label=_("End time"), required=True, 
                                widget=TimePickerInput(format='%H:%M'))
+    
     class Meta:
         model = Course
         fields = ('activity', 'number', 'responsible', 'price', 
                   'number_of_sessions', 'day', 'start_date', 'end_date',
                   'start_time', 'end_time', 'place', 'min_participants',
-                  'max_participants', 'schoolyear_min', 'schoolyear_max')
+                  'max_participants', 'schoolyear_min', 'schoolyear_max', 'uptodate')
 
 
 class ActivityForm(forms.ModelForm):

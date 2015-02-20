@@ -1,0 +1,69 @@
+{% extends "backend/base.html" %}
+{% load i18n sekizai_tags duration money %}
+
+{% block title %}{% trans "View courses" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "List courses" %}{% endblock %}
+
+{% get_current_language as LANGUAGE_CODE %}
+
+
+
+{% block content %}
+
+{% addtoblock  "js" %}    
+<script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
+<script>
+$(function () {
+  $(".table").dataTable({
+{% if LANGUAGE_CODE == 'fr' %}
+      "language": {
+            "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+      },
+{% endif %}
+      "aoColumnDefs": [
+          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ 8 ] }
+      ]
+  });
+});
+</script>
+{% endaddtoblock %}
+
+<a href="{% url 'backend:course-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New course" %}</a>
+<hr>
+<table class="table">
+  <thead>
+    <tr>
+      <th class="text-nowrap">{% trans "Identifier" %}</th>
+      <th class="text-nowrap">{% trans "Activity" %}</th>
+      <th class="text-nowrap">{% trans "Day" %}</th>
+      <th class="text-nowrap">{% trans "Start date" %}</th>
+      <th class="text-nowrap">{% trans "Time" %}</th>
+      <th class="text-nowrap">{% trans "Duration" %}</th>
+      <th class="text-nowrap">{% trans "Responsible" %}</th>
+      <th class="text-nowrap">{% trans "Up to date?" %}</th>
+      <th class="text-nowrap">{% trans "Actions" %}</th>
+    </tr>
+  </thead>
+  {% for course in object_list %}
+    <tr>
+      <td><a href="{{ course.get_backend_url }}">{{ course.number }}</a></td>
+      <td><a href="{% url 'backend:activity-detail' pk=course.activity.pk %}">{{ course.activity.name }}</a></td>
+      <td>{{ course.day_name }}</td>
+      <td data-order="{{ course.start_date|date:'c'}}">{{ course.start_date|date:"SHORT_DATE_FORMAT" }}</td>
+      <td>{{ course.start_time|time:"H:i" }}</td>
+      <td data-order="{{ course.duration|seconds }}">{{ course.duration|duration }}</td>
+      <td><a href="{{ course.responsible.get_backend_url }}">{{ course.responsible.full_name }}</td>
+      <td data-order="{{ course.uptodate }}" data-search="{% if user.finished_registration %}{% trans 'up to date' %}{% endif %}">{% if course.uptodate %}<i class="icon-ok-circled success"></i>{% else %}<i class="icon-cancel-circled  danger"></i>{% endif %}</td>      <td>
+        <ul class="list-unstyled">
+          <li class="text-nowrap"><a href="{{ course.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update course" %}</a></li>
+          <li class="text-nowrap"><a href="{{ course.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete course" %}</a></li>          
+          
+
+
+        </ul>
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock content %}

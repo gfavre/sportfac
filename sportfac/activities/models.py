@@ -3,7 +3,8 @@ from datetime import datetime, date
 
 from django.db import models
 from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext
 
 from ckeditor.fields import RichTextField
 
@@ -12,27 +13,27 @@ from .utils import course_to_js_csv
 
 
 DAYS_OF_WEEK = (
-    (1, _('Monday')),
-    (2, _('Tuesday')),
-    (3, _('Wednesday')),
-    (4, _('Thursday')),
-    (5, _('Friday')),
-    (6, _('Saturday')),
-    (7, _('Sunday')),
+    (1, ugettext('Monday')),
+    (2, ugettext('Tuesday')),
+    (3, ugettext('Wednesday')),
+    (4, ugettext('Thursday')),
+    (5, ugettext('Friday')),
+    (6, ugettext('Saturday')),
+    (7, ugettext('Sunday')),
 )
 
 SCHOOL_YEARS = (
-    (1, _("1st HARMOS")),
-    (2, _("2nd HARMOS")),
-    (3, _("3rd HARMOS")),
-    (4, _("4th HARMOS")),
-    (5, _("5th HARMOS")),
-    (6, _("6th HARMOS")),
-    (7, _("7th HARMOS")),
-    (8, _("8th HARMOS")),
-    (9, _("9th HARMOS")),
-    (10, _("10th HARMOS")),
-    (11, _("11th HARMOS")),    
+    (1, ugettext("1st HARMOS")),
+    (2, ugettext("2nd HARMOS")),
+    (3, ugettext("3rd HARMOS")),
+    (4, ugettext("4th HARMOS")),
+    (5, ugettext("5th HARMOS")),
+    (6, ugettext("6th HARMOS")),
+    (7, ugettext("7th HARMOS")),
+    (8, ugettext("8th HARMOS")),
+    (9, ugettext("9th HARMOS")),
+    (10, ugettext("10th HARMOS")),
+    (11, ugettext("11th HARMOS")),    
 )
 
 class Activity(TimeStampedModel):
@@ -69,9 +70,9 @@ class ExtraNeed(TimeStampedModel):
 
 class Course(TimeStampedModel):
     "A course, i.e. an instance of an activity"
-    activity = models.ForeignKey('Activity', related_name='courses')
+    activity = models.ForeignKey('Activity', related_name='courses', verbose_name=_("Activity"))
     number = models.IntegerField(db_index=True, unique=True, null=True, blank=True, verbose_name=_("Identifier"))
-    uptodate = models.BooleanField(verbose_name=_("Course up to date"), default=False)
+    uptodate = models.BooleanField(verbose_name=_("Course up to date"), default=True)
     responsible = models.ForeignKey('profiles.FamilyUser', verbose_name=_("Responsible"), related_name='courses')
 
     price = models.DecimalField(max_digits=5, decimal_places=2, verbose_name=_("Price"))
