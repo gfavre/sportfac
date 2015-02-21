@@ -1,4 +1,4 @@
-{% load duration %}
+{% load duration mail_tags %}
 Madame, Monsieur,
 
 Nous avons le plaisir d'inviter votre enfant {{ child }} à la première séance du cours suivant : 
@@ -9,8 +9,10 @@ Jour : {{ course.day_name }} de {{ course.start_time|time:"H:i" }} à à {{ cour
 Date 1ère séance : {{ course.start_date | date:"j F Y" }}
 Nombre de séances : {{ course.number_of_sessions }}
 Rendez-vous/lieu du cours : {{ course.place }}
+{% if course.activity.informations %}
+Informations: {{ course.activity.informations|striptags|unescape }}
 Vous pouvez retrouver ces informations sur: {{ site_url }}{% url "profiles_registered_activities" %}
-
+{% endif %}
 
 L'animatrice/l'animateur vous donnera toutes les informations en lien avec son cours lors de la 1ère séance.
 
