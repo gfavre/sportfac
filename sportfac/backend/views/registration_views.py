@@ -39,6 +39,9 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
 
     def done(self, form_list, form_dict, **kwargs):
         self.instance.status = Registration.STATUS.confirmed
+        user = self.instance.child.family
+        user.finished_registration = True
+        user.save()
         try:
             self.instance.save()
             message = _("Registration for %(child)s to %(course)s has been validated.")
