@@ -5,8 +5,12 @@
 
 {% block title %}{% trans "Administration" %} - {{ block.super }}{% endblock %}
 
-{% block page_header %}{% endblock %}
-{% block page_title %}{% trans "Administration" %}{% endblock %}
+{% block page_header %}
+<div class="container">
+  <h3 class="content-title"><u>{% trans "Administration" %} <small>- {% trans "consolidation phase" %}</small></u></h3>
+</div>
+{% endblock %}
+
 
 {% block content %}
 
@@ -16,13 +20,14 @@
     <h4 class="portlet-title">
       <u><i class="icon-hourglass"></i>{% trans "Opening & closing" %}</u>
     </h4>
-    {% blocktrans with natural_time=registration_end|naturaltime %}Closed since {{ natural_time }}{% endblocktrans %}
-    <dl class="dl-horizontal">
-      <dt>{% trans "Opening date"%}</dt><dd>{{ registration_start|date:"l j E Y, H:i" }}</dd>
-      <dt>{% trans "Closing date"%}</dt><dd>{{ registration_end|date:"l j E Y, H:i" }}</dd>
-    </dl>
-    <p class="text-center">[ <a href="{% url 'backend:dates' %}">{% trans "Change dates"%}</a> ]</p>
-
+    <div class="portlet-body">
+      <p>{% blocktrans with natural_time=registration_end|naturaltime %}Closed since {{ natural_time }}{% endblocktrans %}</p>
+      <dl class="dl-horizontal">
+        <dt>{% trans "Opening date"%}</dt><dd>{{ registration_start|date:"l j E Y, H:i" }}</dd>
+        <dt>{% trans "Closing date"%}</dt><dd>{{ registration_end|date:"l j E Y, H:i" }}</dd>
+      </dl>
+      <p class="text-center">[ <a href="{% url 'backend:dates' %}">{% trans "Change dates"%}</a> ]</p>
+    </div>
   </section>
 </div>
 
@@ -39,7 +44,7 @@
     {% include 'backend/portlets/paid.html'%}
   </div>
   <div class="col-sm-6 col-md-8">
-    {% include 'backend/portlets/registrations.html'%}
+    {% include 'backend/portlets/registrations_phase3.html' %}
   </div>
 </div>
 

@@ -5,9 +5,11 @@
 
 {% block title %}{% trans "Administration" %} - {{ block.super }}{% endblock %}
 
-{% block page_header %}{% endblock %}
-{% block page_title %}{% trans "Administration" %}{% endblock %}
-
+{% block page_header %}
+<div class="container">
+  <h3 class="content-title"><u>{% trans "Administration" %} <small>- {% trans "registrations phase" %}</small></u></h3>
+</div>
+{% endblock %}
 {% block content %}
 
 <div class="row">

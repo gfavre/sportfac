@@ -9,7 +9,7 @@ from django.db.models import Count, Max, Sum, Avg
 
 from constance import config
 from activities.models import Activity, Course
-from profiles.models import FamilyUser, Registration, Teacher, SchoolYear
+from profiles.models import FamilyUser, Registration, Child, Teacher, SchoolYear
 from backend.forms import RegistrationDatesForm
 from .mixins import BackendMixin
 
@@ -131,7 +131,9 @@ class HomePageView(BackendMixin, TemplateView):
             ).annotate(num=Count('id'))
         context['registrations_per_day'] = [[time_str_to_milliseconds(reg.get('creation')),
                                              reg.get('num')] for reg in registrations]
-
+        context['nb_registrations'] = Registration.objects.count()
+        context['nb_families'] = finished.count()
+        context['nb_children'] = Child.objects.filter(family__finished_registration=True).count()
         return context
     
     def get_context_data(self, **kwargs):

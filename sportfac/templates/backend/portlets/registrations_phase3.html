@@ -1,0 +1,93 @@
+{% load i18n %}
+{% load humanize %} 
+{% load sekizai_tags %}
+
+<section class="portlet">
+  <h4 class="portlet-title">
+    <u><i class="icon-check"></i>&nbsp;&nbsp;{% trans "Registrations" %}</u>
+  </h4>
+  <div class="portlet-body row">
+    <div class="col-md-8">
+      <div id="line-chart-registrations" class="chart-holder-300"></div>
+      <p class="text-center">
+        [&nbsp;<a href="{% url 'backend:registration-list' %}"><i class="icon-check"></i>&nbsp;{% trans "List registrations" %}</a>&nbsp;]
+      </p>
+    </div>
+    <div class="col-md-4">
+      <div class="row-stat">
+        <p class="row-stat-label">{% trans "Total registrations" %}</p>
+        <h3 class="row-stat-value">{{ nb_registrations }}</h3>
+      </div>    
+    </div>
+     <div class="col-md-4">
+      <div class="row-stat">
+        <p class="row-stat-label">{% trans "Total children" %}</p>
+        <h3 class="row-stat-value">{{ nb_children }}</h3>
+      </div>    
+    </div>
+     <div class="col-md-4">
+      <div class="row-stat">
+        <p class="row-stat-label">{% trans "Total families" %}</p>
+        <h3 class="row-stat-value">{{ nb_families }}</h3>
+      </div>    
+    </div>
+
+  </div> <!-- /.portlet-body -->
+</section>
+
+    {% addtoblock  "js" %}    
+    <script>
+$(function () {
+  var data, placeholder;
+  data = {{ registrations_per_day }};
+  
+  placeholder = $("#line-chart-registrations");
+  $.plot(placeholder, [data], {
+			xaxis: { mode: "time" },
+			minTickSize: [1, "day"],
+			series: {
+                lines: {
+                    show: true, 
+                    fill: false,
+                    lineWidth: 3
+                },
+                points: {
+                    show: true,
+                    radius: 3,
+                    fill: true,
+                    fillColor: "#ffffff",
+                    lineWidth: 2
+                }
+            },
+			tooltip: true,
+            tooltipOpts: {
+                content: function(label, xval, yval, flotItem){ 
+                    var d = new Date(xval);
+                    var s = d.getDate() + '.' + d.getMonth() + '.' + d.getFullYear();
+                    return s + ': ' + yval.toString(); }
+            },
+            grid: { hoverable: true },
+            colors: mvpready_core.layoutColors
+		});
+
+  
+  
+  /*$.plot(placeholder, data, {
+  			    xaxis: { mode: "time" },
+			
+				legend: {
+					show: false
+				},
+				tooltip: true,
+				tooltipOpts: {
+                    content: function(label, xval, yval, flotItem){ return label + ': ' + yval.toString(); }
+                },
+                grid: {
+                    hoverable: true
+                },
+
+				colors: mvpready_core.layoutColors
+  });*/
+});
+    </script>
+    {% endaddtoblock %}
