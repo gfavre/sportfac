@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-21 09:06+0100\n"
+"POT-Creation-Date: 2015-02-21 09:45+0100\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -436,10 +436,6 @@ msgstr "Les dates d'ouverture et de fermeture ont été mises à jour"
 msgid "An error was found in form %s"
 msgstr "Une erreur a été trouvée dans le formulaire %s"
 
-#: sportfac/backend/views/mail_views.py:47
-msgid "Inscription au sport scolaire facultatif - EP Coppet - rappel"
-msgstr "Inscription au sport scolaire facultatif - EP Coppet - rappel"
-
 #: sportfac/backend/views/registration_views.py:35
 #: sportfac/templates/backend/registration/list.html:41
 msgid "Child"
@@ -542,11 +538,11 @@ msgstr "Destinataires"
 msgid "Template"
 msgstr "Modèle"
 
-#: sportfac/mailer/views.py:104
+#: sportfac/mailer/views.py:108
 msgid "Message has been scheduled to be sent."
 msgstr "Le message est en cours d'envoi."
 
-#: sportfac/mailer/views.py:153
+#: sportfac/mailer/views.py:157
 msgid "No course found"
 msgstr "Aucun cours n'a été trouvé"
 
@@ -919,25 +915,25 @@ msgstr "Confirmation"
 msgid "Billing"
 msgstr "Paiement"
 
-#: sportfac/sportfac/settings/base.py:332
+#: sportfac/sportfac/settings/base.py:333
 msgid "Registration opening date"
 msgstr "Début de la période d'enregistrement"
 
-#: sportfac/sportfac/settings/base.py:333
+#: sportfac/sportfac/settings/base.py:335
 msgid "Registration ending date"
 msgstr "Fin de la période d'enregistrement"
 
-#: sportfac/sportfac/settings/base.py:343
-msgid "Email Signature"
-msgstr "Signature de l'email"
-
-#: sportfac/sportfac/settings/base.py:344
+#: sportfac/sportfac/settings/base.py:338
 msgid "Email used to send"
 msgstr "Adresse email utilisée pour l'envoi"
 
-#: sportfac/sportfac/settings/base.py:345
+#: sportfac/sportfac/settings/base.py:339
 msgid "Name of school"
 msgstr "Nom de l'école"
+
+#: sportfac/sportfac/settings/base.py:348
+msgid "Email Signature"
+msgstr "Signature de l'email"
 
 #: sportfac/templates/403.html:4
 msgid "403 Forbidden"
@@ -1958,12 +1954,12 @@ msgstr "Utilisateur"
 msgid "Update status"
 msgstr "Mettre à jour le statut"
 
-#: sportfac/templates/base.html:64 sportfac/templates/contact/contact.html:4
+#: sportfac/templates/base.html:63 sportfac/templates/contact/contact.html:4
 #: sportfac/templates/contact/contact.html:6
 msgid "Contact"
 msgstr "Contact"
 
-#: sportfac/templates/base.html:66 sportfac/templates/navbar.html:15
+#: sportfac/templates/base.html:65 sportfac/templates/navbar.html:15
 msgid "Terms and conditions"
 msgstr "Règlement de participation"
 
@@ -2259,59 +2255,3 @@ msgstr ""
 #: sportfac/templates/registration/password_reset_form.html:13
 msgid "Reset my password"
 msgstr "Réinitialiser mon mot de passe"
-
-#~ msgid "responsible"
-#~ msgstr "responsable"
-
-#~ msgid "responsibles"
-#~ msgstr "responsables"
-
-#~ msgid "Leave it empty in case of collaboration name"
-#~ msgstr "Laissez ce champ vide dans le cas d'un nom d'entreprise"
-
-#~ msgid "Phone number"
-#~ msgstr "Numéro de téléphone"
-
-#~ msgid "No activity yet"
-#~ msgstr "Pas encore d'activité"
-
-#~ msgid "No course yet"
-#~ msgstr "Pas encore de cours"
-
-#~ msgid "No registration yet"
-#~ msgstr "Aucune inscription"
-
-#~ msgid "No responsible yet"
-#~ msgstr "Pas encore de responsable"
-
-#~ msgid "No user yet"
-#~ msgstr "Pas encore d'utilisateur"
-
-#~ msgid "Password:"
-#~ msgstr "Mot de passe:"
-
-#~ msgid "Mail to participants"
-#~ msgstr "Email aux participants"
-
-#~ msgid ""
-#~ "You're receiving this email because you requested a password reset for "
-#~ "your user account at %(site_name)s."
-#~ msgstr ""
-#~ "Vous recevez ce message en réponse à votre demande de réinitialisation du "
-#~ "mot de passe de votre compte sur %(site_name)s."
-
-#~ msgid "Please go to the following page and choose a new password:"
-#~ msgstr ""
-#~ "Veuillez vous rendre sur cette page et choisir un nouveau mot de passe:"
-
-#~ msgid "Your username, in case you've forgotten:"
-#~ msgstr "Votre nom d'utilisateur, en cas d'oubli:"
-
-#~ msgid "Thanks for using our site!"
-#~ msgstr "Merci d'utiliser notre site!"
-
-#~ msgid "The %(site_name)s team"
-#~ msgstr "L'équipe %(site_name)s"
-
-#~ msgid "Child name"
-#~ msgstr "Nom de l'enfant"

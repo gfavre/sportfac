@@ -24,8 +24,8 @@ class MailArchiveListView(BackendMixin, ListView):
 class NeedConfirmationView(BackendMixin, MailView):
     "Mail to people having not confirmed activities yet."
     success_url = reverse_lazy('backend:home')
-    subject = 'Inscription au sport scolaire facultatif - EP Coppet'
-    message_template = 'mailer/confirmation.txt'
+    subject_template = 'mailer/need_confirmation_subject.txt'
+    message_template = 'mailer/need_confirmation.txt'
     
     def get_recipients_list(self):
         parents = list(set([reg.child.family for reg in  Registration.objects.waiting()]))
@@ -44,7 +44,7 @@ class NotPaidYetView(BackendMixin, MailView):
     recipients_queryset = FamilyUser.objects.filter(finished_registration=True, 
                                                     paid=False, total__gt=0)
     success_url = reverse_lazy('backend:home')
-    subject = _('Inscription au sport scolaire facultatif - EP Coppet - rappel')
+    subject_template = 'mailer/notpaid_subject.txt'
     message_template = 'mailer/notpaid.txt'
 
 
@@ -103,11 +103,3 @@ class CustomUserCustomMailPreview(BackendMixin, CustomMailMixin, MailView):
         del self.request.session['mail']
         del self.request.session['mail-userids']
         return redirect
-
-
-class TestSuperadmin(BackendMixin, MailView):
-    "Mail to people having registered to courses but not paid yet"
-    recipients_queryset = FamilyUser.objects.filter(is_superuser=True)
-    success_url = reverse_lazy('backend:home')
-    subject = 'Test superadmin'
-    message_template = 'mailer/notpaid.txt'

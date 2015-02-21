@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load duration phone money %}
 
-{% block title %}{{ activity.name }} - Sport scolaire facultatif - EP Coppet{% endblock %}
+{% block title %}{{ activity.name }} - {{ block.super }}{% endblock %}
 {% block page_title %}{{ activity.name }} {% endblock %}
 
 {% block content %}

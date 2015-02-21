@@ -27,20 +27,6 @@ courses_patterns = patterns('',
         
 )
 
-#responsibles_patterns = patterns('', 
-#    url(r'^$', view=views.ResponsibleListView.as_view(), 
-#        name='responsible-list'),
-#    url(r'^new$', view=views.ResponsibleCreateView.as_view(), 
-#        name='responsible-create'),
-#    url(r'^(?P<pk>\d+)/$', view=views.ResponsibleDetailView.as_view(), 
-#        name='responsible-detail'),
-#    url(r'^(?P<pk>\d+)/update$', view=views.ResponsibleUpdateView.as_view(), 
-#        name='responsible-update'),
-#    url(r'^(?P<pk>\d+)/delete$', view=views.ResponsibleDeleteView.as_view(),
-#        name='responsible-delete'),
-#)
-
-
 activities_patterns = patterns('', 
     url(r'^$', view=views.ActivityListView.as_view(), 
         name='activity-list'),
@@ -61,25 +47,18 @@ mail_patterns = patterns('',
     url(r'^need-confirmation', view=views.NeedConfirmationView.as_view(), 
         name='mail-needconfirmation'),
     url(r'^not-paid-yet', view=views.NotPaidYetView.as_view(), 
-        name='mail-notpaidyet'),
-    #url(r'^participants/(?P<course>[\w-]+)/notpaid$', view=views.BackendMailParticipantsView.as_view(), 
-    #    name='mail-participants-notpaidyet'),
-    
+        name='mail-notpaidyet'),    
     url(r'^participants/(?P<course>[\w-]+)/custom$', 
         view=views.CustomMailParticipantsCreateView.as_view(),
         name="mail-participants-custom"),
     url(r'^participants/(?P<course>[\w-]+)/custom/preview$', 
         view=views.CustomMailParticipantsPreview.as_view(),
-        name="mail-participants-custom-preview"),
-            
+        name="mail-participants-custom-preview"),     
     url(r'^custom$', view=views.CustomUserCustomMailCreateView.as_view(),
         name='custom-mail-custom-users'),
     url(r'^custom/preview$', view=views.CustomUserCustomMailPreview.as_view(),
         name='custom-mail-custom-users-preview')
-
-
 )
-
 
 registrations_patterns = patterns('', 
     url(r'^$', view=views.RegistrationListView.as_view(), 
@@ -108,7 +87,6 @@ teachers_patterns = patterns('',
 )
 
 
-
 users_patterns = patterns('', 
     url(r'^$', view=views.UserListView.as_view(), 
         name='user-list'),
@@ -116,12 +94,10 @@ users_patterns = patterns('',
         name='manager-list'),
     url(r'^responsible$', view=views.ResponsibleListView.as_view(), 
         name='responsible-list'),
-
     url(r'^new$', view=views.UserCreateView.as_view(), 
         name='user-create'),
     url(r'^manager/new$', view=views.ManagerCreateView.as_view(), 
         name='manager-create'),
-
     url(r'^(?P<pk>\d+)/$', view=views.UserDetailView.as_view(), 
         name='user-detail'),
     url(r'^(?P<pk>\d+)/update$', view=views.UserUpdateView.as_view(), 
@@ -136,15 +112,11 @@ users_patterns = patterns('',
         name='child-update'),
     url(r'^(?P<user>\d+)/child/(?P<pk>\d+)/delete$', view=views.ChildDeleteView.as_view(), 
         name='child-delete'),
-
 )
-
-
 
 urlpatterns = patterns('',
     url(r'^$', views.HomePageView.as_view(), name="home"),
     url(r'^dates$', views.RegistrationDatesView.as_view(), name='dates'),
-
     url(r'^activity/', include(activities_patterns)),
     url(r'^course/', include(courses_patterns)),
     url(r'^mail/', include(mail_patterns)),

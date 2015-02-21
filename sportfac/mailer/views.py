@@ -30,6 +30,7 @@ class MailMixin(ContextMixin):
     success_url = None
     from_email = None
     subject = None
+    subject_template = None
     message_template = None
     from_address = None
     success_message = ''
@@ -77,13 +78,16 @@ class MailMixin(ContextMixin):
         else:
             return template
     
-       
     def get_subject(self):
-        if self.subject is None:
+        context = self.get_context_data()
+        return self.get_subject_template().render(Context(context))  
+       
+    def get_subject_template(self):
+        if self.subject_template is None:
             raise ImproperlyConfigured(
                 "MailMixin requires either a definition of "
                 "'subject' or an implementation of 'get_subject'")
-        return self.subject 
+        return self.resolve_template(self.subject_template)
 
     def get_message_template(self):
         if self.message_template is None:
@@ -165,12 +169,7 @@ class MailCourseResponsibleView(MailMixin, CourseMixin, TemplateView):
     
     def get_recipients_list(self):
         return (self.course.responsible, )
-
-    def get_subject(self):
-        context = self.get_context_data()
-        return self.resolve_template(self.subject_template).render(Context(context))  
     
-
     def mail(self, context):
         recipients = self.get_recipients_list()
         subject = self.get_subject()
@@ -181,12 +180,10 @@ class MailCourseResponsibleView(MailMixin, CourseMixin, TemplateView):
                                          message=message, 
                                          from_email=from_email, 
                                          course_pk=self.course.pk)      
-        
-    
+
 
 class MailView(MailMixin, TemplateView):
     template_name = 'backend/mail/preview.html'
-    
         
     def add_navigation_context(self, mailnumber, mails, context):
         context['total'] = len(mails)
@@ -206,20 +203,17 @@ class MailView(MailMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         "Preview emails."
         mailnumber = int(self.request.GET.get('number', 1)) - 1
-        
         context = self.get_context_data(**kwargs)
-        
         recipients = self.get_recipients_list()
         self.add_navigation_context(mailnumber, recipients, context)
         self.add_recipient_context(recipients[mailnumber], context)
         self.add_mail_context(mailnumber, context)
-        
         return self.render_to_response(context)
 
 
 class MailCreateView(FormView):
     form_class = MailForm            
-    
+
     def get_archive_from_session(self):
         if not 'mail' in self.request.session:
             return None
@@ -228,11 +222,11 @@ class MailCreateView(FormView):
         except MailArchive.DoesNotExist:
             del self.request.session['mail']
             return None
-    
+
     def get_template_from_archive(self, archive):
         template, created = Template.objects.get_or_create(name=archive.template)
         return template
-    
+
     def get_initial(self):
         if not 'mail' in self.request.session:
             return {}
@@ -246,7 +240,6 @@ class MailCreateView(FormView):
         except MailArchive.DoesNotExist:
             return {}
 
-    
     def form_valid(self, form):
         archive = self.get_archive_from_session()
         if archive:
@@ -270,7 +263,6 @@ class MailCreateView(FormView):
             
         template.content = form.cleaned_data['message']
         template.save()
-               
         return super(MailCreateView, self).form_valid(form)
 
 
@@ -292,11 +284,7 @@ class CustomMailMixin(object):
         return self.resolve_template(mail.template)
 
 
-    
-
-
 class MailParticipantsView(CourseMixin, MailView):
-    subject = 'Inscription au sport scolaire facultatif - EP Coppet'
 
     def add_recipient_context(self, recipient, context):
         context['recipient'] = recipient.child.family
@@ -308,12 +296,10 @@ class MailParticipantsView(CourseMixin, MailView):
         context['to_email'] = self.get_recipient_address(context['registration'] )
         context['from_email'] = self.get_from_address()
         context['subject'] = self.get_subject()
-        context['message'] = self.get_mail_body(context)        
-
+        context['message'] = self.get_mail_body(context)
 
     def get_recipient_address(self, recipient):
        return super(MailParticipantsView, self).get_recipient_address(recipient.child.family)
     
     def get_recipients_list(self):
         return self.course.participants.all()
-    

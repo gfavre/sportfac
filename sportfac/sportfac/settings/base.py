@@ -329,9 +329,14 @@ REST_FRAMEWORK = {
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 CONSTANCE_SUPERUSER_ONLY = False
 CONSTANCE_CONFIG = {
-    'START_REGISTRATION': (datetime(2013,9,1, tzinfo=timezone('Europe/Zurich')), ugettext("Registration opening date")),
-    'END_REGISTRATION': (datetime(2013,10,1, tzinfo=timezone('Europe/Zurich')), ugettext("Registration ending date")),
+    'START_REGISTRATION': (datetime(2013,9,1, tzinfo=timezone('Europe/Zurich')), 
+                           ugettext("Registration opening date")),
+    'END_REGISTRATION': (datetime(2013,10,1, tzinfo=timezone('Europe/Zurich')), 
+                         ugettext("Registration ending date")),
     'CURRENT_PHASE': (1, 'PREPARATION'),
+    'FROM_MAIL': ('Remo Aeschbach <remo.aeschbach@vd.educanet2.ch>', 
+                  ugettext("Email used to send")),
+    'SCHOOL_NAME': ('EP Coppet', ugettext("Name of school")),
     'SIGNATURE': ("""
 Remo Aeschbach
 Doyen - responsable du sport scolaire facultatif
@@ -341,8 +346,7 @@ Chemin du Chaucey 7
 remo.aeschbach@vd.educanet2.ch
 +4122 | 557 58 58
 +4179 | 417 69 93""", ugettext("Email Signature")),
-    'FROM_MAIL': ('Remo Aeschbach <remo.aeschbach@vd.educanet2.ch>', ugettext("Email used to send")),
-    'SCHOOL_NAME': ('EP Coppet', ugettext("Name of school"))
+   
 }
 
 ########## END CONSTANCE CONFIGURATION
