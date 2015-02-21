@@ -160,7 +160,10 @@ class CourseMixin(object):
                                   get_current_site(self.request).domain,
                                   reverse('wizard_confirm')))
         return context
-
+    
+    def get_success_url(self):
+        return self.course.get_backend_url()
+    
 
 
 class MailCourseResponsibleView(MailMixin, CourseMixin, TemplateView):

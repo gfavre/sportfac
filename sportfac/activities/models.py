@@ -94,7 +94,7 @@ class Course(TimeStampedModel):
     
     @property
     def day_name(self):
-        return dict(DAYS_OF_WEEK).get(self.day, str(self.day))
+        return unicode(dict(DAYS_OF_WEEK).get(self.day, str(self.day)))
     
     @property
     def duration(self):
@@ -161,6 +161,9 @@ class Course(TimeStampedModel):
 
     def get_mail_responsible_url(self):
         return reverse('backend:course-mail-responsible', kwargs={'course': self.number})
+    
+    def get_mail_confirmation_url(self):
+        return reverse('backend:course-mail-confirmation', kwargs={'course': self.number})
     
     def get_js_export_url(self):
         return reverse('backend:course-js-export', kwargs={'course': self.number})

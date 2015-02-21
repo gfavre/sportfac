@@ -1,12 +1,19 @@
 {% load duration %}
+Madame, Monsieur,
 
-Bonjour,
-Votre enfant {{ child }} s'apprête à commencer le cours: 
-{{ course.short_name }}.
-Celui-ci aura lieu du {{ course.start_date | date:"j F Y" }} au {{ course.end_date | date:"j F Y" }}, chaque {{ course.day_name|lower }}, de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }} 
-Lieu: {{ course.place  }}.
-Vous pouvez retrouver ces infos en tous temps sur {{ site_url }}{{ course.activity.get_absolute_url }}
+Nous avons le plaisir d'inviter votre enfant {{ child }} à la première séance du cours suivant : 
 
-Meilleures salutations,
+{{ course.short_name }}
+Responsable : {{ course.responsible.full_name }} 
+Jour : {{ course.day_name }} de {{ course.start_time|time:"H:i" }} à à {{ course.end_time|time:"H:i" }}
+Date 1ère séance : {{ course.start_date | date:"j F Y" }}
+Nombre de séances : {{ course.number_of_sessions }}
+Rendez-vous/lieu du cours : {{ course.place }}
+Vous pouvez retrouver ces informations sur: {{ site_url }}{% url "profiles_registered_activities" %}
+
+
+L'animatrice/l'animateur vous donnera toutes les informations en lien avec son cours lors de la 1ère séance.
+
+En restant à votre disposition pour tout complément d'information, nous vous adressons, Madame, Monsieur, nos cordiaux messages.
 
 {{ signature }}

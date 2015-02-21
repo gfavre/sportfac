@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-21 09:45+0100\n"
+"POT-Creation-Date: 2015-02-21 10:56+0100\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -26,12 +26,12 @@ msgid "Limitations"
 msgstr "Limitations"
 
 #: sportfac/activities/admin.py:24 sportfac/activities/admin.py:90
-#: sportfac/activities/models.py:186
+#: sportfac/activities/models.py:189
 msgid "course"
 msgstr "cours"
 
 #: sportfac/activities/admin.py:25 sportfac/activities/admin.py:91
-#: sportfac/activities/models.py:187
+#: sportfac/activities/models.py:190
 #: sportfac/templates/backend/portlets/courses.html:11
 #: sportfac/templates/backend/portlets/registration_courses_phase3.html:10
 msgid "courses"
@@ -1342,6 +1342,10 @@ msgstr "Envoyer les infos du cours au responsable"
 #: sportfac/templates/backend/course/list.html:65
 msgid "Get BDNS: J+S export file"
 msgstr "Récupérer fichier d'export J+S"
+
+#: sportfac/templates/backend/course/detail.html:96
+msgid "Send confirmation email"
+msgstr "Envoyer l'email de confirmation"
 
 #: sportfac/templates/backend/course/list-phase1.html:4
 #: sportfac/templates/backend/course/list.html:4

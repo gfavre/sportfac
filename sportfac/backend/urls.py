@@ -19,7 +19,8 @@ courses_patterns = patterns('',
         name='course-delete'),
     url(r'(?P<course>[\w-]+)/mail-responsible$', view=views.BackendMailCourseResponsibleView.as_view(),
         name='course-mail-responsible'),
-    
+    url(r'(?P<course>[\w-]+)/mail-confirmation$', view=views.MailConfirmationParticipantsView.as_view(),
+        name='course-mail-confirmation'),
     url(r'^(?P<course>[\w-]+)/participants$', view=views.CourseParticipantsView.as_view(), 
         name='course-participants'),     
         

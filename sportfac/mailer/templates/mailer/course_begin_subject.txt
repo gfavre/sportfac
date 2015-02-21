@@ -1,1 +1,1 @@
-Inscription au sport scolaire facultatif: {{ course.shortname }}
+{{ site_name }} - convocation pour le cours {{ course.short_name }}

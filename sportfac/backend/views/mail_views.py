@@ -10,7 +10,8 @@ from profiles.models import FamilyUser, Registration
 from .mixins import BackendMixin
 
 __all__ = ['MailArchiveListView', 'NeedConfirmationView',
-           'NotPaidYetView', 'BackendMailParticipantsView',
+           'NotPaidYetView', 'BackendMailParticipantsView', 
+           'MailConfirmationParticipantsView',
            'CustomMailParticipantsCreateView', 'CustomMailParticipantsPreview',
            'CustomUserCustomMailCreateView', 'CustomUserCustomMailPreview',
            'BackendMailCourseResponsibleView', ]
@@ -50,6 +51,12 @@ class NotPaidYetView(BackendMixin, MailView):
 
 class BackendMailParticipantsView(BackendMixin, MailParticipantsView):
     pass 
+
+
+class MailConfirmationParticipantsView(BackendMixin, MailParticipantsView):
+    subject_template = 'mailer/course_begin_subject.txt'
+    message_template = 'mailer/course_begin.txt'
+    
 
 
 class BackendMailCourseResponsibleView(BackendMixin, MailCourseResponsibleView):
