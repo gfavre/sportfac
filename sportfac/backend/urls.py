@@ -4,6 +4,19 @@ from django.views.generic import TemplateView
 
 import views
 
+activities_patterns = patterns('', 
+    url(r'^$', view=views.ActivityListView.as_view(), 
+        name='activity-list'),
+    url(r'^new$', view=views.ActivityCreateView.as_view(), 
+        name='activity-create'),
+    url(r'^(?P<pk>\d+)/$', view=views.ActivityDetailView.as_view(), 
+        name='activity-detail'),
+    url(r'^(?P<pk>\d+)/update$', view=views.ActivityUpdateView.as_view(), 
+        name='activity-update'),
+    url(r'^(?P<pk>\d+)/delete$', view=views.ActivityDeleteView.as_view(),
+        name='activity-delete'),
+)
+
 courses_patterns = patterns('', 
     url(r'^$', view=views.CourseListView.as_view(), 
         name='course-list'),
@@ -23,28 +36,11 @@ courses_patterns = patterns('',
         name='course-mail-confirmation'),
     url(r'^(?P<course>[\w-]+)/participants$', view=views.CourseParticipantsView.as_view(), 
         name='course-participants'),     
-        
-        
-        
-)
-
-activities_patterns = patterns('', 
-    url(r'^$', view=views.ActivityListView.as_view(), 
-        name='activity-list'),
-    url(r'^new$', view=views.ActivityCreateView.as_view(), 
-        name='activity-create'),
-    url(r'^(?P<pk>\d+)/$', view=views.ActivityDetailView.as_view(), 
-        name='activity-detail'),
-    url(r'^(?P<pk>\d+)/update$', view=views.ActivityUpdateView.as_view(), 
-        name='activity-update'),
-    url(r'^(?P<pk>\d+)/delete$', view=views.ActivityDeleteView.as_view(),
-        name='activity-delete'),
 )
 
 mail_patterns = patterns('', 
     url(r'^archive', view=views.MailArchiveListView.as_view(), 
         name='archive'),
-
     url(r'^need-confirmation', view=views.NeedConfirmationView.as_view(), 
         name='mail-needconfirmation'),
     url(r'^not-paid-yet', view=views.NotPaidYetView.as_view(), 
@@ -86,7 +82,6 @@ teachers_patterns = patterns('',
     url(r'^(?P<pk>\d+)/delete$', view=views.TeacherDeleteView.as_view(),
         name='teacher-delete'),
 )
-
 
 users_patterns = patterns('', 
     url(r'^$', view=views.UserListView.as_view(), 
