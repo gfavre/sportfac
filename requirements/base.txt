@@ -21,6 +21,7 @@ django_extended_flatpages==0.1
 django-sekizai==0.8.1
 django-filter==0.9.1
 phonenumbers==7.0.2
+xlrd==0.9.3
 -e git+git://github.com/gfavre/django-dbtemplates@b371cc6518fbc0389898271e77f1b9962ea38391#egg=dbtemplates
 celery==3.1.17
 -e git+git://github.com/gfavre/pypdftk@84215dedae1fc5b8629e13043a1b5183e7960a37#egg=pypdftk
