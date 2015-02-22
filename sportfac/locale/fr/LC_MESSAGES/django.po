@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-21 10:56+0100\n"
+"POT-Creation-Date: 2015-02-22 19:09+0100\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -447,23 +447,35 @@ msgstr "Enfant"
 msgid "Course"
 msgstr "Cours"
 
-#: sportfac/backend/views/registration_views.py:44
+#: sportfac/backend/views/registration_views.py:47
 #, python-format
 msgid "Registration for %(child)s to %(course)s has been validated."
 msgstr "L'inscription pour %(child)s au cours %(course)s a été validée"
 
-#: sportfac/backend/views/registration_views.py:49
+#: sportfac/backend/views/registration_views.py:52
 #, python-format
 msgid "A registration for %(child)s to %(course)s already exists."
 msgstr "Une inscriptionpour %(child)s au cours %(course)s existe déjà."
 
-#: sportfac/backend/views/registration_views.py:65
+#: sportfac/backend/views/registration_views.py:68
 msgid "Registration has been updated."
 msgstr "L'inscription a été mise à jour."
 
-#: sportfac/backend/views/registration_views.py:89
+#: sportfac/backend/views/registration_views.py:92
 msgid "Registration has been canceled."
 msgstr "L'inscription a été annulée."
+
+#: sportfac/backend/views/teacher_views.py:58
+msgid "Teachers have been imported"
+msgstr "Les enseignants ont été importés"
+
+#: sportfac/backend/views/teacher_views.py:70
+#, python-format
+msgid ""
+"%i teachers have been created, %i have been updated. %i were skipped because "
+"they are not responsible of a class."
+msgstr "%i enseignants ont été créés, %i ont été mis à jour. %i n'ont pas été importés "
+"car ils n'ont pas de maîtrise de classe."
 
 #: sportfac/backend/views/user_views.py:61
 #, python-format
@@ -688,6 +700,14 @@ msgstr "Cette adresse email est déjà utilisée."
 msgid "The two password fields didn't match."
 msgstr "Les deux mots de passe ne sont pas identiques."
 
+#: sportfac/profiles/forms.py:208
+msgid "File"
+msgstr "Fichier"
+
+#: sportfac/profiles/forms.py:208
+msgid "Extraction from LAGAPEO, excel format"
+msgstr "Extraction de LAGAPEO, format excel"
+
 #: sportfac/profiles/models.py:77
 msgid "Switzerland"
 msgstr "Suisse"
@@ -712,7 +732,7 @@ msgstr "Total"
 msgid "Austria"
 msgstr "Autriche"
 
-#: sportfac/profiles/models.py:83
+#: sportfac/profiles/models.py:83 sportfac/profiles/models.py:418
 msgid "Email address"
 msgstr "Email"
 
@@ -855,11 +875,11 @@ msgstr "Année scolaire"
 msgid "School years"
 msgstr "Années scolaires"
 
-#: sportfac/profiles/models.py:441
+#: sportfac/profiles/models.py:444
 msgid "teacher"
 msgstr "enseignant"
 
-#: sportfac/profiles/models.py:442
+#: sportfac/profiles/models.py:445
 msgid "teachers"
 msgstr "enseignants"
 
@@ -884,6 +904,15 @@ msgstr "Heure"
 #: sportfac/templates/profiles/registration_list.html:48
 msgid "Total"
 msgstr "Total"
+
+#: sportfac/profiles/utils.py:24
+#, python-format
+msgid "All these fields are mandatory: %s"
+msgstr "Tous ces champs sont obligatoires: %s"
+
+#: sportfac/profiles/utils.py:26
+msgid "File format is unreadable"
+msgstr "Le fichier n'a pas pu être lu: mauvais format"
 
 #: sportfac/profiles/views.py:59
 msgid "Your contact informations have been saved."
@@ -1276,6 +1305,8 @@ msgstr "Mettre à jour l'activité"
 #: sportfac/templates/backend/activity/update.html:21
 #: sportfac/templates/backend/course/confirm_send.html:12
 #: sportfac/templates/backend/course/update.html:14
+#: sportfac/templates/backend/registration/update.html:21
+#: sportfac/templates/backend/teacher/import.html:19
 #: sportfac/templates/backend/teacher/update.html:21
 #: sportfac/templates/backend/user/child-update.html:17
 #: sportfac/templates/backend/user/pay.html:42
@@ -1537,6 +1568,14 @@ msgstr "Tous les enseignants"
 #: sportfac/templates/backend/teacher/list.html:32
 msgid "New teacher"
 msgstr "Nouvel enseignant"
+
+#: sportfac/templates/backend/navbar.html:133
+#: sportfac/templates/backend/teacher/import.html:4
+#: sportfac/templates/backend/teacher/import.html:5
+#: sportfac/templates/backend/teacher/import.html:17
+#: sportfac/templates/backend/teacher/list.html:32
+msgid "Import teachers"
+msgstr "Importer des enseignants"
 
 #: sportfac/templates/backend/portlets/courses.html:7
 #: sportfac/templates/backend/portlets/registration_courses_phase3.html:6
