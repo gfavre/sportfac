@@ -118,7 +118,7 @@ class FamilyAdmin(UserAdmin):
 admin.site.register(FamilyUser, FamilyAdmin)
 
 class TeacherAdmin(admin.ModelAdmin):
-    list_display = ('last_name', 'first_name', 'years_label')
+    list_display = ('last_name', 'first_name', 'years_label', 'number')
     list_filter = ('years',) 
     filter_horizontal=('years',)
     
