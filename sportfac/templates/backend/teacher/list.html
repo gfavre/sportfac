@@ -29,7 +29,7 @@ $(function () {
 </script>
 {% endaddtoblock %}
 
-<a href="{% url 'backend:teacher-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New teacher" %}</a>
+<a href="{% url 'backend:teacher-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New teacher" %}</a> &nbsp; <a href="{% url 'backend:teacher-import' %}" class="btn btn-default"><i class="icon-doc-new"></i> {% trans "Import teachers" %}</a>
 <hr>
 <table class="table">
   <thead>

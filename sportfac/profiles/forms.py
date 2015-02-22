@@ -201,4 +201,8 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
 class TeacherForm(forms.ModelForm):
     class Meta:
         model = Teacher
-        fields = ('first_name', 'last_name', 'years')
+        fields = ('first_name', 'last_name', 'email', 'years')
+
+
+class TeacherImportForm(forms.Form):
+    thefile = forms.FileField(label=_("File"), help_text=_("Extraction from LAGAPEO, excel format"))
