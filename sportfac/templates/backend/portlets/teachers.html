@@ -14,7 +14,8 @@
       <dd>{{ last_teacher_update|naturaltime }}</dd>
     </dl>
     <div id="pie-chart-teachers" class="chart-holder-250"></div>
-    [ <a href="{% url 'backend:teacher-list' %}">{% trans "All teachers" %}</a> ]
+    <p class="text-center">[&nbsp;<a href="{% url 'backend:teacher-list' %}"><i class="icon-adult"></i>&nbsp;{% trans "All teachers" %}</a>&nbsp;]
+    [&nbsp;<a href="{% url 'backend:teacher-import' %}"><i class="icon-doc-new"></i>&nbsp;{% trans "Import teachers" %}</a>&nbsp;]</p>
     {% addtoblock  "js" %}    
     <script src="{{ STATIC_URL }}js/vendor/flot/jquery.flot.pie.min.js"></script>
     <script>

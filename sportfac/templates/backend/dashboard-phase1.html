@@ -25,7 +25,7 @@
           <dt>{% trans "Opening date"%}</dt><dd>{{ registration_start|date:"l j E Y, H:i" }}</dd>
           <dt>{% trans "Closing date"%}</dt><dd>{{ registration_end|date:"l j E Y, H:i" }}</dd>
         </dl>
-        <p class="text-center">[ <a href="{% url 'backend:dates' %}">{% trans "Change dates"%}</a> ]</p>
+        <p class="text-center">[ <a href="{% url 'backend:dates' %}"><i class="icon-calendar"></i>&nbsp;{% trans "Change dates"%}</a> ]</p>
       </div>
     </div>
   </section>
@@ -35,7 +35,7 @@
   </section>
 
 
-  <section class="col-sm-6 col-md-4">
+  <section class="col-md-4">
     {% include 'backend/portlets/teachers.html'%}
   </section>
 </div>
