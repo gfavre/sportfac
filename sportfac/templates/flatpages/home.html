@@ -26,8 +26,12 @@
 {% else %}
 <div class="alert alert-info alert-block">
   <h4>{% trans "Registrations are currently closed" %}</h4>
+  {%  if request.PHASE == 1 %}
   <p>{% blocktrans with registration_start=registration_start|date:"j F Y" registration_end=registration_end|date:"j F Y"%}They will open from {{ registration_start }} until {{ registration_end }}.{% endblocktrans %}</p>
+  {% endif %}
+  {%  if request.PHASE == 3 %}
   <p class="text-center"><a href="{% url 'profiles_registered_activities' %}" class="btn  btn-info"><i class="icon-fixed-width icon-calendar"></i> {% trans "Review my registered activities" %}</a></p>
+  {% endif %}
 </div>
 {% endif %}
 {% endblock content %}
