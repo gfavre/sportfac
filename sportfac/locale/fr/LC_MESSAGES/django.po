@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-22 19:09+0100\n"
+"POT-Creation-Date: 2015-02-24 10:53+0100\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -443,6 +443,7 @@ msgstr "Enfant"
 
 #: sportfac/backend/views/registration_views.py:36
 #: sportfac/profiles/models.py:319
+#: sportfac/templates/backend/teacher/detail.html:26
 #: sportfac/templates/backend/user/detail.html:97
 msgid "Course"
 msgstr "Cours"
@@ -465,17 +466,36 @@ msgstr "L'inscription a été mise à jour."
 msgid "Registration has been canceled."
 msgstr "L'inscription a été annulée."
 
-#: sportfac/backend/views/teacher_views.py:58
+#: sportfac/backend/views/teacher_views.py:43
+#, python-format
+msgid ""
+"<a href=\"%(url)s\" class=\"alert-link\">Teacher %(name)s)</a> has been "
+"created."
+msgstr ""
+"<a href=\"%(url)s\" class=\"alert-link\">L'enseignant (%(name)s)</a> a été "
+"créé."
+
+#: sportfac/backend/views/teacher_views.py:56
+msgid "Teacher has been updated."
+msgstr "L'enseignant a été mis à jour."
+
+#: sportfac/backend/views/teacher_views.py:67
+#, python-format
+msgid "Teacher %(name)s has been deleted."
+msgstr "L'enseignant %(name)s a été supprimé."
+
+#: sportfac/backend/views/teacher_views.py:76
 msgid "Teachers have been imported"
 msgstr "Les enseignants ont été importés"
 
-#: sportfac/backend/views/teacher_views.py:70
+#: sportfac/backend/views/teacher_views.py:87
 #, python-format
 msgid ""
 "%i teachers have been created, %i have been updated. %i were skipped because "
 "they are not responsible of a class."
-msgstr "%i enseignants ont été créés, %i ont été mis à jour. %i n'ont pas été importés "
-"car ils n'ont pas de maîtrise de classe."
+msgstr ""
+"%i enseignants ont été créés, %i ont été mis à jour. %i n'ont pas été "
+"importés car ils n'ont pas de maîtrise de classe."
 
 #: sportfac/backend/views/user_views.py:61
 #, python-format
@@ -1262,6 +1282,7 @@ msgstr "Chaque %(day)s de %(start_time)s à %(end_time)s (%(duration)s)"
 #: sportfac/templates/backend/course/detail-phase2.html:25
 #: sportfac/templates/backend/course/detail.html:25
 #: sportfac/templates/backend/responsible/detail.html:32
+#: sportfac/templates/backend/teacher/detail.html:16
 msgid "Edit"
 msgstr "Éditer"
 
@@ -1570,6 +1591,7 @@ msgid "New teacher"
 msgstr "Nouvel enseignant"
 
 #: sportfac/templates/backend/navbar.html:133
+#: sportfac/templates/backend/portlets/teachers.html:18
 #: sportfac/templates/backend/teacher/import.html:4
 #: sportfac/templates/backend/teacher/import.html:5
 #: sportfac/templates/backend/teacher/import.html:17
@@ -1797,9 +1819,17 @@ msgstr "Créer un enseignant"
 msgid "Classes"
 msgstr "Classes"
 
-#: sportfac/templates/backend/teacher/detail.html:18
+#: sportfac/templates/backend/teacher/detail.html:20
 msgid "Students registered to courses"
 msgstr "Élèves enregistrés aux cours"
+
+#: sportfac/templates/backend/teacher/detail.html:25
+msgid "Student"
+msgstr "Élève"
+
+#: sportfac/templates/backend/teacher/detail.html:46
+msgid "No student has registered a course yet."
+msgstr "Aucun élève de cette classe ne s'est encore inscrit à un cours."
 
 #: sportfac/templates/backend/teacher/list.html:4
 msgid "View teachers"
