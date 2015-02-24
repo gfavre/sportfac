@@ -1,7 +1,6 @@
 {% extends "wizard.html" %}
-{% load i18n %}
-{% load l10n %}
-{% load humanize %}
+{% load i18n l10n humanize money %}
+
 
 {% block page_title %}{% trans "Confirmation" %}{% endblock page_title%}
 
@@ -11,7 +10,7 @@
   <button type="button" class="close" data-dismiss="alert">
     <span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span>
   </button>
-  <strong>{% trans "Warning!" %}</strong>
+  <strong><i class="icon-warning"></i>&nbsp;{% trans "Warning!" %}</strong>
   <p>
     {% if user.children.count > 1 %}
     {% trans "The following courses occur at the same or close times. It may be difficult to bring your children." %}
@@ -46,7 +45,7 @@
   <tfoot>
   <tr>
       <th colspan="5" class="text-right">{% trans "Total" %}</th>
-      <th class="nowrap">CHF {{ total_price }}</th>
+      <th class="nowrap">{{ total_price|swissfranc }}</th>
     </tr>
   </tfoot>
   
@@ -89,13 +88,13 @@
       {% endfor %}
       </td>
       <td class="text-center">
-        <span class="nowrap">{{ registered.course.start_date }}</span><br><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span><br><span class="nowrap">{{ registered.course.end_date }}</span>
+        <span class="nowrap">{{ registered.course.start_date }}</span><br><span class="icon-down-1" aria-hidden="true"></span><br><span class="nowrap">{{ registered.course.end_date }}</span>
       </td>
       <td class="text-center">
         {{ registered.course.day_name }} <br /> <span class="nowrap">{{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</span>
       </td>
       <td>{{ registered.course.place }}</td>
-      <td class="nowrap">CHF {{ registered.course.price|floatformat:2|intcomma }}</td>
+      <td class="nowrap">{{ registered.course.price|swissfranc }}</td>
     </tr>
   {% endfor %}
   </tbody>
@@ -111,20 +110,21 @@
   {{ form.non_field_errors }}
   {{ form.accept.errors }}
   
-  <div class="checkbox">
+  <div class="checkbox pull-right">
     <label>{{ form.accept }} {{ form.accept.label }}</label>
   </div>
-  
-<nav>
+  <div class="clearfix"></div>
+  <span class="pull-right"><small ><i class="icon-warning"></i>{% trans "Confirmation is definitive. You will not be able to change your registrations again." %}</small> </span>   
+<nav >
   <ul class="pager">
     <li class="previous">
       <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span> {% trans "Previous"%}</a>
     </li>
     <li class="next">
-      <button type="submit" class="btn btn-primary btn-large btn-next pull-right">{% trans "Confirm and proceed to checkout"%} <i class="icon-chevron-right icon-white"></i> </button>  <br />
+      <button type="submit" class="btn btn-primary btn-large btn-next pull-right">{% trans "Confirm and proceed to checkout"%}</button>
     </li>
   </ul>
-  <span class="pull-right"><small >{% trans "Confirmation is definitive. You will not be able to change your registrations again." %}</small> </span>   
+  
 </nav>
 
 </form>
@@ -148,6 +148,7 @@
       $('#accept input:checkbox').click(function(){
         $('#accept button').prop('disabled', !$('#accept button').prop('disabled'));
       });
+            
       $('.extra-info input').keyup(function(){
           var button = $(this).closest('form').find('button[type=submit]');
           if ($(this).val().length > 0) {

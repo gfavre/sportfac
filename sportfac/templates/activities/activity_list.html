@@ -57,7 +57,7 @@ ng-controller="ChildrenCtrl" id="ng-app"{% endaddtoblock %}
       <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span> {% block previous_label %}{% trans "Previous"%}{% endblock %}</a>
     </li>
     <li class="next" ng-class="{disabled: registrations.length === 0}">
-      <a href="{{ next_step.url }}">{% trans "End registration" %} <span aria-hidden="true">&rarr;</span></a>
+      <a href="{{ next_step.url }}" ><b>{% trans "End registration" %} <span aria-hidden="true">&rarr;</span></b></a>
     </li>
   </ul>
 </nav>

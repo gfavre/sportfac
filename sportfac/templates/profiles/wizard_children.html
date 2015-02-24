@@ -17,7 +17,7 @@
       <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span> {% block previous_label %}{% trans "Previous"%}{% endblock %}</a>
     </li>
     <li class="next" ng-class="{disabled: userChildren.length === 0}">
-      <a href="{{ next_step.url }}">{% trans "Register activities" %} <span aria-hidden="true">&rarr;</span></a>
+      <a href="{{ next_step.url }}"><strong>{% trans "Register activities" %} <span aria-hidden="true">&rarr;</span></strong></a>
     </li>
   </ul>
 </nav>
