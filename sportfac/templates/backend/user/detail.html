@@ -89,7 +89,7 @@
         </dl>
         <p class="text-center">
            <a href="{{ child.get_update_url }}" class="btn btn-default btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Update child" %}</a>&nbsp; <a href="{{ child.get_delete_url }}" class="btn btn-danger btn-sm"><i class="icon-trash"></i>&nbsp;&nbsp;{% trans "Delete child" %}</a>
-        </p>
+        </p><hr />
         <h5 >{% trans "Registrations" %}</h5>
         <table class="table">
           <thead class="sr-only">
@@ -98,7 +98,7 @@
               <th>{% trans "Actions" %}</th>
             </tr>
           </thead>
-          {% for registration in child.registration_set.all %}
+          {% for registration in child.registrations.all %}
           <tr>
             <td>
              <a href="{{ registration.course.get_backend_url }}">{{ registration.course.short_name }}</a>
