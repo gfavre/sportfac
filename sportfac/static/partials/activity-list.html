@@ -16,10 +16,10 @@
       <p>Vous devez d'abord désinscrire votre enfant de l'une des activités sélectionnées (en vert) si vous souhaitez l'inscrire à d'autres activités disponibles.</p>
     </div>
     <div class="portlet">
-    <ul class="list-inline">
-      <li><i class="icon-circle available"></i> cours disponibles</li>
-      <li><i class="icon-circle registered"></i> cours choisis pour cet enfant</li>
-      <li><i class="icon-circle unavailable"></i> cours choisis pour un autre de vos enfants</li>
+    <ul class="list-inline" aria-hidden="true">
+      <li><span class="available">&#9632;</span> cours disponibles</li>
+      <li><span class="registered">&#9632;</span> cours choisis pour cet enfant</li>
+      <li><span class="unavailable">&#9632;</span> cours choisis pour un autre de vos enfants</li>
     </ul>
       
     <div ng-model="eventSources" calendar="weekagenda" ui-calendar="uiConfig.calendar"></div>
