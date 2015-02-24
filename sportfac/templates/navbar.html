@@ -37,7 +37,7 @@
               <a href="{% url 'profiles_children' %}"><i class="icon-group"></i> {% trans "My family" %}</a>
             </li>
             
-            
+{% if not request.PHASE == 1 %}            
             {% if user.finished_registration %}
             <li>
               <a href="{% url 'profiles_registered_activities' %}"> <i class="icon-calendar"></i> {% trans "My registered activities" %}</a>
@@ -52,6 +52,7 @@
               <a href="{{ max_step }}"><i class="icon-calendar"></i> {% trans "Register activities" %}</a>
             </li>
             {% endif %}
+{% endif %}
             {% if user.is_responsible %}
               <li class="divider"></li>
               <li>

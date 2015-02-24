@@ -1,11 +1,12 @@
-from django.views.generic import ListView, UpdateView, TemplateView, FormView
+from django.core.exceptions import ImproperlyConfigured, PermissionDenied
+from django.core.urlresolvers import reverse_lazy, reverse
+from django.db.models import Sum
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.views import password_change as auth_password_change
+from django.contrib.auth.views import password_change as auth_password_change, redirect_to_login
 import django.contrib.auth.views as auth_views
 from django.contrib.messages.views import SuccessMessageMixin
 from django.utils.translation import ugettext as _
-from django.core.urlresolvers import reverse_lazy, reverse
-from django.db.models import Sum
+from django.views.generic import ListView, UpdateView, TemplateView, FormView
 
 from braces.views import LoginRequiredMixin
 from registration.backends.simple.views import RegistrationView as BaseRegistrationView
@@ -21,6 +22,33 @@ __all__ = ('password_change', 'password_reset',
            'RegisteredActivitiesListView', 'RegistrationView', 'SummaryView',
            'WizardAccountView', 'WizardBillingView', 'WizardChildrenListView', 
            'WizardRegistrationView')
+
+class PhaseForbiddenMixin(LoginRequiredMixin):
+    forbidden_phases = None
+    
+    def get_forbidden_phases(self):
+        if self.forbidden_phases is None:
+            raise ImproperlyConfigured(
+                '{0} requires the "forbidden_phases" attribute to be '
+                'set.'.format(self.__class__.__name__))
+        return self.forbidden_phases
+    
+    def check_phase(self, request):
+        current_phase = request.PHASE
+        return current_phase not in self.get_forbidden_phases()
+    
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Check to see if the request.PHASE is compatible
+        """
+        correct_phase = self.check_phase(request)
+        if not correct_phase:  
+            if self.raise_exception:
+                raise PermissionDenied  # Return a 403
+            return redirect_to_login(request.get_full_path(),
+                                 self.get_login_url(),
+                                 self.get_redirect_field_name())
+        return super(PhaseForbiddenMixin, self).dispatch(request, *args, **kwargs)
 
 
 def password_change(request):
@@ -101,7 +129,7 @@ class WizardRegistrationView(WizardMixin, BaseRegistrationView):
         return new_user
 
 
-class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
+class RegisteredActivitiesListView(WizardMixin, FormView):
     model = Registration
     form_class = AcceptTermsForm
     success_url = reverse_lazy('wizard_billing')
@@ -146,8 +174,9 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
         return super(RegisteredActivitiesListView, self).form_valid(form)
     
 
-class BillingView(LoginRequiredMixin, TemplateView):
+class BillingView(PhaseForbiddenMixin, TemplateView):
     template_name = "profiles/billing.html"
+    forbidden_phases = (1,)
     
     def get_context_data(self, **kwargs):
         context = super(BillingView, self).get_context_data(**kwargs)
