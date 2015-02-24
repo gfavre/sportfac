@@ -34,9 +34,7 @@
       
       <dl class="dl-horizontal">
         <dt>{% trans "Responsible" %}</dt>
-        <dd>{{ course.responsible.full_name  }}
-            {% if course.responsible.best_phone %}<br /><a href="{{ course.responsible.best_phone|swissphone:'RFC3966' }}">{{ course.responsible.best_phone|swissphone }}</a>{% endif %}
-            {% if course.responsible.email %}<br /><a href="mailto:{{course.responsible.email}}">{% trans "email" %}</a>{% endif %}</dd>
+        <dd>{{ course.responsible.full_name  }}</dd>
         <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
         <dt>{% trans "Number of sessions" %}</dt>
         <dd>{{ course.number_of_sessions }} cours
@@ -44,7 +42,6 @@
         <dt>{% trans "Price" %}</dt><dd>{{ course.price|swissfranc }}</dd>
         <dt>{% trans "School years" %}</dt><dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
       </dl>
-
       <h4 class="content-title">
         <u>{% trans "Availability"%}</u>
       </h4>      
