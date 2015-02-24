@@ -416,7 +416,7 @@ class Teacher(TimeStampedModel):
     last_name = models.CharField(_("Last name"), max_length=50, db_index=True)
     years = models.ManyToManyField('SchoolYear', verbose_name=_("School years"))
     email = models.EmailField(verbose_name=_('Email address'), max_length=255, 
-                              unique=True, blank=True, null=True)
+                              blank=True, null=True)
     
     
     def __unicode__(self):

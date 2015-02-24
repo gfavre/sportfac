@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, \
                                 ListView, UpdateView, FormView
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 
 from profiles.models import Teacher, Child
 from profiles.forms import TeacherForm, TeacherImportForm
@@ -34,22 +35,39 @@ class TeacherListView(BackendMixin, ListView):
     
 
 
-class TeacherCreateView(BackendMixin, CreateView):
+class TeacherCreateView(BackendMixin, SuccessMessageMixin, CreateView):
     model = Teacher
     form_class = TeacherForm
     template_name = 'backend/teacher/create.html'
+    success_url = reverse_lazy('backend:teacher-list')
+    success_message = _('<a href="%(url)s" class="alert-link">Teacher %(name)s)</a> has been created.')
+    
+    def get_success_message(self, cleaned_data):
+        url = self.object.get_backend_url()
+        return mark_safe(self.success_message % {'url': url,
+                                                 'name': self.object.get_full_name()})
 
 
-class TeacherUpdateView(BackendMixin, UpdateView):
+class TeacherUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
     model = Teacher
     form_class = TeacherForm
     template_name = 'backend/teacher/update.html'
+    success_url = reverse_lazy('backend:teacher-list')
+    success_message = _("Teacher has been updated.")
 
 
-class TeacherDeleteView(BackendMixin, DeleteView):
+class TeacherDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
     model = Teacher
     template_name = 'backend/teacher/confirm_delete.html'
     success_url = reverse_lazy('backend:teacher-list')
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        messages.add_message(self.request, messages.SUCCESS,
+                             _("Teacher %(name)s has been deleted.") % {
+                                'name': self.object.get_full_name()
+                             })
+        return super(TeacherDeleteView, self).delete(request, *args, **kwargs)
 
 
 class TeacherImportView(BackendMixin, SuccessMessageMixin, FormView):
@@ -58,7 +76,6 @@ class TeacherImportView(BackendMixin, SuccessMessageMixin, FormView):
     success_message = _("Teachers have been imported")
     template_name = 'backend/teacher/import.html'
 
-    
     def form_valid(self, form):
         try:
             (created, updated, skipped) = load_teachers(self.request.FILES['thefile'])

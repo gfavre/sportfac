@@ -13,11 +13,19 @@
           <li>{{ year }}</li>
         {% endfor %}
   </ul>
+  <p class="text-center"><a href="{{ teacher.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a> </p>
+
 </section>
 <section class="portlet">
   <h4 class="portlet-title"><u>{% trans "Students registered to courses" %}</u></h4>
   
   <table class="table table-condensed"> 
+    <thead>
+      <tr>
+        <th>{% trans "Student" %}</th>
+        <th>{% trans "Course" %}</th>
+      </tr>
+    </thead>
   {% for child in students.all.distinct %}
   {% if child.registrations.count  %}
   <tr>
@@ -33,6 +41,10 @@
     </td>
   </tr>
   {% endif %}
+  {% empty %}
+  <tr>
+    <td class="text-center" colspan="2">{% trans "No student has registered a course yet." %}
+  </tr>
   {% endfor %}
   </table>
 </section> 
