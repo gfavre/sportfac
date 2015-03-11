@@ -44,6 +44,7 @@
         <th>{% trans "Birth date" %}</th>
         <th>{% trans "School year" %}</th>
         {% endifequal %}
+        <th>{% trans "City" %}</th>
         <th>{% trans "Parents phone" %}</th>
         <th>{% trans "Parents email" %}</th>
       </tr>
@@ -55,6 +56,8 @@
         <td>{{ registration.child.birth_date }}</td>
         <td>{{ registration.child.school_year }}</td>
         {% endifequal %}
+        <td>{{ registration.child.family.city|title }}</td>
+
         <td>
           <ul>
             {% if registration.child.family.private_phone %}
@@ -79,7 +82,7 @@
             </li>
             {% endif %}
         </td>
-        <td><a href="{{ registration.child.family.email }}">{{ registration.child.family.email }}</a></td>
+        <td><a href="mailto:{{ registration.child.family.email }}">{{ registration.child.family.email }}</a></td>
       </tr>
     {% empty %}
     

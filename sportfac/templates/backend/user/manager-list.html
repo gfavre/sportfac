@@ -82,7 +82,7 @@ $(function () {
   </thead>
   {% for user in object_list %}
     <tr data-userid="{{ user.id }}">
-      <td data-order="{{ user.last_name}} {{ user.first_name}}"><a href="{% url 'backend:activity-detail' pk=user.pk %}">{{ user.full_name }}</a></td>
+      <td data-order="{{ user.last_name}} {{ user.first_name}}"><a href="{{ user.get_backend_url }}">{{ user.full_name }}</a></td>
       <td>
         <ul class="list-unstyled">
           <li class="text-nowrap"><a href="{{ user.get_backend_url }}" class="btn btn-sm"><i class="icon-user"></i>&nbsp;&nbsp;{% trans "User details" %}</a></li>

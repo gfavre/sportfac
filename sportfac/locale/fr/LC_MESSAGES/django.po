@@ -706,7 +706,7 @@ msgstr "Format: 31.12.2012"
 
 #: sportfac/profiles/forms.py:164 sportfac/profiles/models.py:90
 msgid "Country"
-msgstr "Pays"
+msgstr "Pays de résidence"
 
 #: sportfac/profiles/forms.py:173
 msgid "Password (again)"
@@ -746,7 +746,7 @@ msgstr "France"
 
 #: sportfac/profiles/models.py:81
 msgid "Italy"
-msgstr "Total"
+msgstr "Italie"
 
 #: sportfac/profiles/models.py:82
 msgid "Austria"
