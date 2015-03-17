@@ -20,7 +20,7 @@ __all__ = ('UserListView', 'UserCreateView',
            'UserUpdateView', 'UserPayUpdateView', 'UserDeleteView', 'UserDetailView',
            'ChildCreateView', 'ChildUpdateView', 'ChildDeleteView',
             'ManagerListView', 'ManagerCreateView', 
-            'ResponsibleListView', 'ResponsibleCreateView'
+            'ResponsibleListView', 'ResponsibleCreateView', 'ResponsibleDetailView'
            )
 
 
@@ -145,6 +145,10 @@ class UserDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
 class UserDetailView(BackendMixin, DetailView):
     model = FamilyUser
     template_name = 'backend/user/detail.html'
+
+class ResponsibleDetailView(BackendMixin, DetailView):
+    model = FamilyUser
+    template_name = 'backend/user/detail-responsible.html'
 
 
 class ChildView(BackendMixin, View):

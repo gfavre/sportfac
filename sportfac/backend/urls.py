@@ -102,6 +102,9 @@ users_patterns = patterns('',
     
     url(r'^(?P<pk>\d+)/$', view=views.UserDetailView.as_view(), 
         name='user-detail'),
+    url(r'^(?P<pk>\d+)/responsible$', view=views.ResponsibleDetailView.as_view(), 
+        name='responsible-detail'),
+
     url(r'^(?P<pk>\d+)/update$', view=views.UserUpdateView.as_view(), 
         name='user-update'),
     url(r'^(?P<pk>\d+)/delete$', view=views.UserDeleteView.as_view(), 
