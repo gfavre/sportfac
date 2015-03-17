@@ -34,7 +34,6 @@ class ExtraInline(admin.StackedInline):
 
 
 class ActivityAdmin(admin.ModelAdmin):
-    prepopulated_fields = {"slug": ("name",)}
     list_display = ('number', 'name')
     inlines = [CourseInline, ExtraInline]
     
