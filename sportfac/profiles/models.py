@@ -13,11 +13,13 @@ from django.db.models import Sum
 
 from model_utils import Choices
 from model_utils.models import StatusModel
+from localflavor.generic.models import IBANField
+from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 
 from activities.models import SCHOOL_YEARS
 from backend import MANAGERS_GROUP, RESPONSIBLE_GROUP
 from sportfac.models import TimeStampedModel
-
+from .ahv import AHVField
 
 class FamilyManager(BaseUserManager):
       def create_user(self, email, first_name, last_name, zipcode, city, password=None, **extra_fields):
@@ -64,6 +66,10 @@ class FamilyManager(BaseUserManager):
           user.save(using=self._db)
           return user
 
+
+    
+
+
 class ResponsibleFamilyUserManager(BaseUserManager):
     def get_queryset(self):
         return super(ResponsibleFamilyUserManager, self).get_queryset().filter(groups__name=RESPONSIBLE_GROUP)
@@ -91,6 +97,12 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     private_phone = models.CharField(_("Home phone"), max_length=30, blank=True)
     private_phone2 = models.CharField(_("Mobile phone"), max_length=30, blank=True)
     private_phone3 = models.CharField(_("Other phone"), max_length=30, blank=True)
+    
+    iban = IBANField(include_countries=IBAN_SEPA_COUNTRIES, blank=True)
+    birth_date = models.DateField(_("Birth date"), null=True, blank=True)
+    ahv = AHVField(_('AHV number'), 
+                   help_text=_("New AHV number, e.g. 756.1234.5678.90"), 
+                   blank=True)
     
     
     is_active = models.BooleanField(default=True, help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.')

@@ -11,13 +11,16 @@ from django.views.generic import CreateView, DeleteView, DetailView, \
 
 from backend import MANAGERS_GROUP, RESPONSIBLE_GROUP
 from profiles.models import FamilyUser, Child
-from profiles.forms import UserForm, UserUpdateForm, UserPayForm, ChildForm
+from profiles.forms import (UserForm, ResponsibleForm,
+                            UserUpdateForm, ResponsibleUpdateForm, 
+                            UserPayForm, ChildForm)
 from .mixins import BackendMixin
 
 __all__ = ('UserListView', 'UserCreateView', 
            'UserUpdateView', 'UserPayUpdateView', 'UserDeleteView', 'UserDetailView',
            'ChildCreateView', 'ChildUpdateView', 'ChildDeleteView',
-            'ManagerListView', 'ManagerCreateView', 'ResponsibleListView'
+            'ManagerListView', 'ManagerCreateView', 
+            'ResponsibleListView', 'ResponsibleCreateView'
            )
 
 
@@ -36,10 +39,10 @@ class ManagerListView(UserListView):
     template_name = 'backend/user/manager-list.html'
     
     def get_queryset(self):
-        Group.objects.get(name=MANAGERS_GROUP).user_set.all()
+        return Group.objects.get(name=MANAGERS_GROUP).user_set.all()
 
 class ResponsibleListView(UserListView):
-    template_name = 'backend/user/manager-list.html'
+    template_name = 'backend/user/responsible-list.html'
     
     def get_queryset(self):
         return Group.objects.get(name=RESPONSIBLE_GROUP).user_set.all()
@@ -50,7 +53,7 @@ class UserCreateView(BackendMixin, SuccessMessageMixin, CreateView):
     form_class = UserForm
     template_name = 'backend/user/create.html'
     success_url = reverse_lazy('backend:user-list')    
-
+    
     def form_valid(self, form):
         self.object = form.save()
         self.object.set_password(form.cleaned_data['password'])
@@ -71,13 +74,41 @@ class ManagerCreateView(UserCreateView):
 
     def get_success_message(self, cleaned_data):
         return _("Manager %s has been added.") % self.object.full_name
+    
 
+class ResponsibleCreateView(UserCreateView):
+    success_url = reverse_lazy('backend:responsible-list')
+    form_class = ResponsibleForm
+    
+    def get_context_data(self, **kwargs):
+        ctx = super(ResponsibleCreateView, self).get_context_data(**kwargs)
+        ctx['is_responsible'] = True
+        return ctx
+
+    def get_initial(self):
+        initial = super(ResponsibleCreateView, self).get_initial()
+        initial['is_responsible'] = True
+        return initial
+    
+    def get_success_message(self, cleaned_data):
+        return _("Responsible %s has been added.") % self.object.full_name
+
+    
 
 class UserUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
     model = FamilyUser
-    form_class = UserUpdateForm
     template_name = 'backend/user/update.html'
     success_url = reverse_lazy('backend:user-list')    
+
+    def get_form_class(self):
+        if self.object.is_responsible:
+            return ResponsibleUpdateForm
+        return UserUpdateForm
+    
+    def get_context_data(self, **kwargs):
+        ctx = super(UserUpdateView, self).get_context_data(**kwargs)
+        ctx['is_responsible'] = self.object.is_responsible
+        return ctx
 
     def form_valid(self, form):
         self.object = form.save()

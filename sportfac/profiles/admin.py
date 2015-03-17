@@ -26,7 +26,8 @@ class FamilyCreationForm(forms.ModelForm):
         model = FamilyUser
         fields = ('email', 'first_name', 'last_name', 
                   'address', 'zipcode', 'city', 'country', 
-                  'private_phone', 'private_phone2')
+                  'private_phone', 'private_phone2', 
+                  'birth_date', 'iban', 'ahv')
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -59,7 +60,8 @@ class FamilyChangeForm(forms.ModelForm):
         fields = ('email', 'is_staff', 'is_superuser', 'finished_registration', 'paid', 'groups',
                   'first_name', 'last_name', 
                   'address', 'zipcode', 'city', 'country', 
-                  'private_phone', 'private_phone2', 'private_phone3')
+                  'private_phone', 'private_phone2', 'private_phone3',
+                  'birth_date', 'iban', 'ahv')
 
 
     def clean_password(self):
@@ -92,7 +94,9 @@ class FamilyAdmin(UserAdmin):
                            'finished_registration', 'total', 'paid', )}),
         ('Personal info', {'fields': ('first_name', 'last_name', 
                                       'address', 'zipcode', 'city', 'country', 
-                                      'private_phone', 'private_phone2', 'private_phone3')}),
+                                      'private_phone', 'private_phone2', 'private_phone3',
+                                      'birth_date', 'iban', 'ahv')}),
+        
     )
     add_fieldsets = (
         (None, {
@@ -101,7 +105,8 @@ class FamilyAdmin(UserAdmin):
         ),
         ('Personal info', {'fields': ('first_name', 'last_name', 
                                       'address', 'zipcode', 'city', 'country', 
-                                      'private_phone', 'private_phone2')}),
+                                      'private_phone', 'private_phone2',
+                                      'birth_date', 'iban', 'ahv')}),
     )
     search_fields = ('email', 'last_name', 'first_name', 'billing_identifier')
     ordering = ('last_name', 'first_name')

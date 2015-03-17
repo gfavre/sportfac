@@ -8,6 +8,22 @@
 
 {% addtoblock "js" %}
 {{ form.media }}
+{% if is_responsible %}
+<script src="{{ STATIC_URL }}js/vendor/moment-with-locales.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript">
+  $(function () {
+    $('.datetimepicker').datetimepicker({
+        language: '{{ LANGUAGE_CODE }}',
+        icons: {time: 'icon-clock', 
+                date: 'icon-calendar', 
+                up:   'icon-up-open', 
+                down: 'icon-down-open'}
+        });
+  });
+</script>
+
+{% endif %}
 {% endaddtoblock %}
 
 <form action="" method="post" class="form-horizontal">{% csrf_token %}
@@ -74,7 +90,15 @@
         </div>
       </div>
     </div>
-  
+    {% if is_responsible %}
+    <fieldset>
+    <legend>{% trans "Responsible informations" %}</legend>
+    {% formconfig row using "floppyforms/rows/bootstrap-sm-3.html" %}
+    {% formrow form.birth_date %}
+    {% formconfig row using "floppyforms/rows/bootstrap.html" %}
+    {% formrow form.ahv form.iban %}
+    </fieldset>
+    {% endif %}
   {%  formrow form.is_manager  %}
   {% endform %}
   <div class=" form-group">

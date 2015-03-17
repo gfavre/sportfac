@@ -5,14 +5,15 @@ from django.core.urlresolvers import reverse
 from django.template.defaultfilters import mark_safe
 
 import floppyforms.__future__ as forms
+from localflavor.generic.forms import IBANFormField
 
 from backend.forms import Select2Widget, DatePickerInput
 from .models import Child, Teacher, FamilyUser
 
 __all__ = ('AuthenticationForm', 'PasswordChangeForm', 'PasswordResetForm',
            'AcceptTermsForm', 'ContactInformationForm', 'RegistrationForm',
-           'UserForm', 'UserUpdateForm', 'UserPayForm', 'ChildForm')
-
+           'UserForm', 'ResponsibleForm', 'UserUpdateForm', 'ResponsibleUpdateForm',
+           'UserPayForm', 'ChildForm')
 
 class AuthenticationForm(auth_forms.AuthenticationForm):
     def __init__(self, *args, **kwargs):
@@ -103,16 +104,45 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
         if instance:
             self.fields['is_manager'].initial = instance.is_manager
     
+
+class ResponsibleForm(UserForm):
+    iban = IBANFormField(label=_("IBAN"), 
+                         widget=forms.TextInput(attrs={'placeholder': 'CH37...'}), 
+                         required=False)
+    birth_date = forms.DateTimeField(label=_("Birth date"),
+                                     widget=DatePickerInput(format='%d.%m.%Y'),
+                                     help_text=_("Format: 31.12.2012"), required=False)
+    class Meta:
+        model = get_user_model()
+        fields = ('email', 'password', 'first_name', 'last_name', 'address', 
+                  'zipcode', 'city', 'country',
+                  'private_phone', 'private_phone2', 'private_phone3',
+                  'birth_date', 'iban', 'ahv')
+
     
 class UserUpdateForm(PhoneRequiredMixin, forms.ModelForm):
     is_manager = forms.BooleanField(required=False, label=_("Is a manager"), 
                                     help_text=_("Grant access for this user to this backend interface"))
-
+    
     class Meta:
         model = get_user_model()
         fields = ('email', 'first_name', 'last_name', 'address', 
                   'zipcode', 'city', 'country', 
                   'private_phone', 'private_phone2', 'private_phone3')
+
+class ResponsibleUpdateForm(PhoneRequiredMixin, forms.ModelForm):
+    is_manager = forms.BooleanField(required=False, label=_("Is a manager"), 
+                                    help_text=_("Grant access for this user to this backend interface"))
+    iban = IBANFormField(widget=forms.TextInput(attrs={'placeholder': 'CH37...'}))
+    
+    birth_date = forms.DateTimeField(widget=DatePickerInput(format='%d.%m.%Y'),
+                                     help_text=_("Format: 31.12.2012"))
+    class Meta:
+        model = get_user_model()
+        fields = ('email', 'first_name', 'last_name', 'address', 
+                  'zipcode', 'city', 'country', 
+                  'private_phone', 'private_phone2', 'private_phone3',
+                  'birth_date', 'iban', 'ahv')
 
 class UserPayForm(forms.ModelForm):
     class Meta:
@@ -206,3 +236,5 @@ class TeacherForm(forms.ModelForm):
 
 class TeacherImportForm(forms.Form):
     thefile = forms.FileField(label=_("File"), help_text=_("Extraction from LAGAPEO, excel format"))
+
+
