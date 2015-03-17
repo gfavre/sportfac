@@ -47,7 +47,7 @@ $(function () {
   {% for course in object_list %}
     <tr>
       <td>{{ course.number }}</td>
-      <td><a href="{{ activity.get_absolute_url }}">{{ course.activity.name }}</a></td>
+      <td><a href="{{ course.activity.get_absolute_url }}">{{ course.activity.name }}</a></td>
       <td>{{ course.day_name }}</td>
       <td data-order="{{ course.start_date|date:'c'}}">{{ course.start_date|date:"SHORT_DATE_FORMAT" }}</td>
       <td data-order="{{ course.end_date|date:'c'}}">{{ course.end_date|date:"SHORT_DATE_FORMAT" }}</td>
