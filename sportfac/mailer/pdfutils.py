@@ -28,9 +28,9 @@ def get_ssf_decompte_heures(course):
               u'Prénom': course.responsible.first_name,
               u'Adresse': course.responsible.address,
               u'localité': '%s %s' % (course.responsible.zipcode, course.responsible.city),
-              u'datedenaissance': course.responsible.birth_date and course.responsible.birth_date.strftime('%d/%m/%Y') or '',
+              u'date de naissance': course.responsible.birth_date and course.responsible.birth_date.strftime('%d/%m/%Y') or '',
               u'iban': course.responsible.iban,
-              u'Noavs': course.responsible.ahv,
+              u'No avs': course.responsible.ahv,
              }
     try:
         return pypdftk.fill_form(pdf_path=pdf_file, datas=fields)
