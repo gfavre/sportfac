@@ -12,7 +12,7 @@
       <p class="lead">Chaque {{ course.day_name|lower }} de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }}</p>
     </header>
     <dl class="dl-horizontal">
-      <dt>{% trans "Activity number" %}</dt><dd><a href="{% url 'backend:activity-detail' pk=course.activity.pk %}">{{ course.activity.number }}</a></dd>  
+      <dt>{% trans "Activity number" %}</dt><dd><a href="{{ course.activity.get_backend_url }}">{{ course.activity.number }}</a></dd>  
       <dt>{% trans "Responsible" %}</dt>
       <dd><a href="{{ course.responsible.get_backend_url }}">{{ course.responsible  }}</a></dd>
       <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
@@ -23,7 +23,7 @@
     </dl>
       
     <h4 class="content-title"><u>{% trans "Availability"%}</u></h4>      
-    <p>{{ course.count_participants  }} participants <span class="pull-right strong"> {{ course.max_participants }} places</span></p>
+    <p>{{ course.count_participants }} participants <span class="pull-right strong"> {{ course.max_participants }} places</span></p>
     <div class="progress" style="margin-bottom: 0;">
       <div class="progress-bar {% if course.full %}progress-bar-danger{% elif course.minimal_participants_reached %}progress-bar-success{% else %}progress-bar-warning{% endif %}" style="width: {{ course.percentage_full }}%">{% if course.full %}{% trans "Course full" %}{% elif course.minimal_participants_reached %}{% trans "Minimal number of participants reached" %}{% else %}{% trans "Not enough participants" %}{% endif %}</div>
     </div>
@@ -67,7 +67,7 @@
         </td>
         <td>{{ registration.child.family.email  }}</td>
         <td>
-            <a href="{% url 'backend:registration-delete' pk=registration.id %}"><i class="icon-cancel"></i> {% trans "Cancel registration" %}</a>
+            <a href="{{ registration.get_delete_url }}"><i class="icon-cancel"></i> {% trans "Cancel registration" %}</a>
         </td>
 
       </tr>

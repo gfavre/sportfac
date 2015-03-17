@@ -7,10 +7,10 @@ register = template.Library()
 def swissfranc(value):
     try:
         number = float(value)
-        frac, integer = math.modf(value)
+        frac, integer = math.modf(number)
         if frac:
-            return "CHF {:1.2f}".format(value)
+            return "CHF {:1.2f}".format(number)
         else:
-            return "CHF {:1.0f}.-".format(value)
+            return "CHF {:1.0f}.-".format(number)
     except ValueError:
         return value        

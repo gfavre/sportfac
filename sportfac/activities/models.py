@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy
 from django.utils.translation import ugettext as _
 
 from ckeditor.fields import RichTextField
+from autoslug import AutoSlugField
 
 from sportfac.models import TimeStampedModel
 from .utils import course_to_js_csv
@@ -42,14 +43,23 @@ class Activity(TimeStampedModel):
     """
     name = models.CharField(max_length=50, db_index=True, unique=True, verbose_name=ugettext_lazy("Name"))
     number = models.IntegerField(verbose_name=ugettext_lazy("Number"), db_index=True, unique=True, null=True, blank=True)
-    slug = models.SlugField(max_length=50, db_index=True, unique=True, 
-                            help_text=ugettext_lazy("Part of the url. Cannot contain punctuation, spaces or accentuated letters"))
-    informations = RichTextField(blank=True, help_text=ugettext_lazy("Specific informations like outfit."))
-    description = RichTextField(blank=True)
-    
+    slug = AutoSlugField(populate_from='name', max_length=50, db_index=True, unique=True, 
+                         help_text=ugettext_lazy("Part of the url. Cannot contain punctuation, spaces or accentuated letters"))
+    informations = RichTextField(verbose_name=_("Informations"), blank=True, 
+                                 help_text=ugettext_lazy("Specific informations like outfit."))
+    description = RichTextField(verbose_name=_("Description"), blank=True)
     
     def get_absolute_url(self):
         return reverse('activities:activity-detail', kwargs={"slug": self.slug})
+
+    def get_update_url(self):
+        return reverse('backend:activity-update', kwargs={'activity': self.number})
+    
+    def get_delete_url(self):
+        return reverse('backend:activity-delete', kwargs={'activity': self.number})
+    
+    def get_backend_url(self):
+        return reverse('backend:activity-detail', kwargs={'activity': self.number})
 
     def __unicode__(self):
         return self.name
@@ -58,6 +68,8 @@ class Activity(TimeStampedModel):
         ordering = ['name']
         verbose_name = _("activity")
         verbose_name_plural = _("activities")
+
+
            
 
 class ExtraNeed(TimeStampedModel):

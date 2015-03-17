@@ -1,12 +1,13 @@
 from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
+from django.core.urlresolvers import reverse_lazy
+from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
-from django.core.urlresolvers import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, \
                                 ListView, UpdateView
-from django.contrib.messages.views import SuccessMessageMixin
 
-from activities.models import Course
+from activities.models import Course, Activity
 from activities.forms import CourseForm
 from sportfac.views import CSVMixin
 from .mixins import BackendMixin
@@ -69,7 +70,16 @@ class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
         url = self.object.get_backend_url()
         return mark_safe(self.success_message % {'url': url,
                                                  'number': self.object.number})
+    
+    def get_initial(self):
+        initial = super(CourseCreateView, self).get_initial()
+        activity = self.request.GET.get('activity', None)
+        if activity:
+            activity_obj = get_object_or_404(Activity, number=activity)
+            initial['activity'] = activity_obj
+        return initial
 
+    
 
 class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
     model = Course

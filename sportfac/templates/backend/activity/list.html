@@ -40,13 +40,13 @@ $(function () {
   </thead>
   {% for activity in object_list %}
     <tr>
-      <td><a href="{% url 'backend:activity-detail' pk=activity.pk %}">{{ activity.number }}</a></td>
-      <td><a href="{% url 'backend:activity-detail' pk=activity.pk %}">{{ activity.name }}</a></td>
+      <td><a href="{{ activity.get_backend_url }}">{{ activity.number }}</a></td>
+      <td><a href="{{ activity.get_backend_url }}">{{ activity.name }}</a></td>
       <td>
         <ul class="list-unstyled">
-          <li class="text-nowrap"><a href="{% url 'backend:activity-detail' pk=activity.pk %}" class="btn btn-sm"><i class="icon-graduation-cap"></i>&nbsp;{% trans "Check courses" %}</a></li>
-          <li class="text-nowrap"><a href="{% url 'backend:activity-update' pk=activity.pk %}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update activity" %}</a></li>
-          <li class="text-nowrap"><a href="{% url 'backend:activity-delete' pk=activity.pk %}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete activity" %}</a></li>
+          <li class="text-nowrap"><a href="{{ activity.get_backend_url }}" class="btn btn-sm"><i class="icon-graduation-cap"></i>&nbsp;{% trans "Check courses" %}</a></li>
+          <li class="text-nowrap"><a href="{{ activity.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update activity" %}</a></li>
+          <li class="text-nowrap"><a href="{{ activity.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete activity" %}</a></li>
         </ul>
       </td>
     </tr>

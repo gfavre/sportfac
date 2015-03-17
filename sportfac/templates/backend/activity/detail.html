@@ -6,9 +6,26 @@
 {% block page_title %}{{ activity.name }}{% endblock %}
 
 {% block content %}
-<p><strong>{% trans "Activity number" %}:</strong> {{ activity.number }}<br /></p>  
-  
-<h2>{% trans "Courses" %}</h2>
+<section class="portlet">
+  <h4 class="portlet-title"><u>{% trans "Description" %}</u></h4>
+
+<dl class="dl-horizontal">
+  <dt>{% trans "Activity number" %}</dt><dd>{{ activity.number }}</dd>
+  {% if activity.description %}
+  <dt>{% trans "Description" %}</dt><dd>{{ activity.description|safe }}</dd>
+  {% endif %}
+  {% if activity.informations %}
+  <dt>{% trans "Informations" %}</dt><dd>{{ activity.informations|safe }}</dd>
+  {% endif %}
+</dl>
+   <p class="text-center"><a href="{{ activity.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a> </p>
+</section>
+
+<section class="portlet">
+  <h4 class="portlet-title"><u>{% trans "Courses" %} <small>({% blocktrans with number=activity.courses.count %}{{ number }} courses foretold so far{% endblocktrans %})</small></u></h4>
+<p><a href="{% url 'backend:course-create' %}?activity={{ activity.number }}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New course" %}</a></p>
+
+
 
 <div class="row">
   {% for course in activity.courses.all %}
@@ -50,4 +67,5 @@
   </section> 
   {% endfor %}
 </div>  
+</section>
 {% endblock content %}
