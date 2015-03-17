@@ -13,7 +13,11 @@ class DateTimePickerInput(forms.DateTimeInput):
 
 class DatePickerInput(forms.DateInput):
     template_name = 'floppyforms/date.html'
-
+    
+    def __init__(self, attrs=None, format=None):
+        super(DatePickerInput, self).__init__(attrs)
+        self.format = '%d.%m.%Y'
+        
 class TimePickerInput(forms.TimeInput):
     template_name = 'floppyforms/time.html'
 

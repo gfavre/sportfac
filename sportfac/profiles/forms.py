@@ -130,13 +130,13 @@ class UserUpdateForm(PhoneRequiredMixin, forms.ModelForm):
                   'zipcode', 'city', 'country', 
                   'private_phone', 'private_phone2', 'private_phone3')
 
-class ResponsibleUpdateForm(PhoneRequiredMixin, forms.ModelForm):
-    is_manager = forms.BooleanField(required=False, label=_("Is a manager"), 
-                                    help_text=_("Grant access for this user to this backend interface"))
-    iban = IBANFormField(widget=forms.TextInput(attrs={'placeholder': 'CH37...'}))
-    
-    birth_date = forms.DateTimeField(widget=DatePickerInput(format='%d.%m.%Y'),
-                                     help_text=_("Format: 31.12.2012"))
+class ResponsibleUpdateForm(UserUpdateForm):
+    iban = IBANFormField(label=_("IBAN"), 
+                         widget=forms.TextInput(attrs={'placeholder': 'CH37...'}), 
+                         required=False)
+    birth_date = forms.DateTimeField(label=_("Birth date"),
+                                     widget=DatePickerInput(format='%d.%m.%Y'),
+                                     help_text=_("Format: 31.12.2012"), required=False)
     class Meta:
         model = get_user_model()
         fields = ('email', 'first_name', 'last_name', 'address', 

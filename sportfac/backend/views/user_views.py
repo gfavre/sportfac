@@ -100,6 +100,12 @@ class UserUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
     template_name = 'backend/user/update.html'
     success_url = reverse_lazy('backend:user-list')    
 
+    def get_initial(self):
+        initial = super(UserUpdateView, self).get_initial()
+        initial['is_manager'] = self.object.is_manager
+        return initial
+    
+
     def get_form_class(self):
         if self.object.is_responsible:
             return ResponsibleUpdateForm
