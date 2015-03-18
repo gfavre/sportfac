@@ -1,5 +1,5 @@
 {% load i18n sekizai_tags%}<!DOCTYPE html>
-<html lang="{{ LANGUAGE_CODE }}" {% render_block "extra_html" %}>
+<html lang="{{ LANGUAGE_CODE }}" >
   <head>
     <meta charset="utf-8">
     <title>{% block title %}Inscription au sport facultatif - EP Coppet{% endblock title %}</title>
@@ -27,23 +27,24 @@
     <div id="wrapper">
       {% include "navbar.html" %} 
       {% block localnav %}{% endblock %}   
-      
-      {% block page_header %} 
-      <div class="container">      
-        <div class="page-header">
-          <h1>{% block page_title %}Example Base Template{% endblock page_title %}</h1>
+      <div id="pagecontent" {% render_block "extra_html" %}>
+        {% block page_header %} 
+        <div class="container">      
+          <div class="page-header">
+            <h1>{% block page_title %}Example Base Template{% endblock page_title %}</h1>
+          </div>
         </div>
+        {% endblock page_header %}
+          
+        {% block main-content %}
+        <div class="container"> 
+          {% include "messages.html" %} 
+          {% block content %}Use this document as a way to quick start any new project.{% endblock content %}
+        </div>
+        {% endblock main-content %}
+          
+        <footer class="container">{% block page_footer %}{% endblock page_footer %}</footer>
       </div>
-      {% endblock page_header %}
-        
-      {% block main-content %}
-      <div class="container"> 
-        {% include "messages.html" %} 
-        {% block content %}Use this document as a way to quick start any new project.{% endblock content %}
-      </div>
-      {% endblock main-content %}
-        
-      <footer class="container">{% block page_footer %}{% endblock page_footer %}</footer>
     </div>
     
     <footer id="footer">
