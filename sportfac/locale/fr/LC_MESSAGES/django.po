@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-18 09:05+0100\n"
+"POT-Creation-Date: 2015-03-18 10:10+0100\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -472,11 +472,11 @@ msgstr "Le cours a été supprimé"
 msgid "Course %(identifier)s has been deleted."
 msgstr "Le cours #%(identifier)s a bien été supprimé"
 
-#: sportfac/backend/views/dashboard_views.py:162
+#: sportfac/backend/views/dashboard_views.py:165
 msgid "Opening and closing dates have been changed"
 msgstr "Les dates d'ouverture et de fermeture ont été mises à jour"
 
-#: sportfac/backend/views/dashboard_views.py:167
+#: sportfac/backend/views/dashboard_views.py:170
 #, python-format
 msgid "An error was found in form %s"
 msgstr "Une erreur a été trouvée dans le formulaire %s"
@@ -1732,27 +1732,35 @@ msgstr "Pas à jour"
 msgid "Ready"
 msgstr "À jour"
 
-#: sportfac/templates/backend/portlets/paid.html:7
+#: sportfac/templates/backend/portlets/paid.html:6
 msgid "Validated payments"
 msgstr "Paiements validés"
 
-#: sportfac/templates/backend/portlets/paid.html:12
+#: sportfac/templates/backend/portlets/paid.html:11
+msgid "Total due"
+msgstr "Total dû"
+
+#: sportfac/templates/backend/portlets/paid.html:15
+msgid "Total paid"
+msgstr "Total payé"
+
+#: sportfac/templates/backend/portlets/paid.html:24
 #: sportfac/templates/backend/portlets/validated.html:12
 #: sportfac/templates/backend/user/list.html:5
 #: sportfac/templates/backend/user/list.html:6
 msgid "List users"
 msgstr "Liste des utilisateurs"
 
-#: sportfac/templates/backend/portlets/paid.html:13
+#: sportfac/templates/backend/portlets/paid.html:25
 #: sportfac/templates/backend/portlets/validated.html:13
 msgid "Send reminder email"
 msgstr "Email de rappel"
 
-#: sportfac/templates/backend/portlets/paid.html:25
+#: sportfac/templates/backend/portlets/paid.html:39
 msgid "Not yet"
 msgstr "Pas encore payé"
 
-#: sportfac/templates/backend/portlets/paid.html:26
+#: sportfac/templates/backend/portlets/paid.html:40
 #: sportfac/templates/backend/portlets/validated.html:26
 msgid "Validated"
 msgstr "Validé"
@@ -1796,21 +1804,21 @@ msgid "Registrations per day"
 msgstr "Inscriptions par jour"
 
 #: sportfac/templates/backend/portlets/registrations.html:12
-#: sportfac/templates/backend/portlets/registrations_phase3.html:13
+#: sportfac/templates/backend/portlets/registrations_phase3.html:27
 #: sportfac/templates/backend/registration/list.html:6
 #: sportfac/templates/backend/registration/list.html:7
 msgid "List registrations"
 msgstr "Liste des inscriptions"
 
-#: sportfac/templates/backend/portlets/registrations_phase3.html:18
+#: sportfac/templates/backend/portlets/registrations_phase3.html:12
 msgid "Total registrations"
 msgstr "Nombre total d'inscriptions"
 
-#: sportfac/templates/backend/portlets/registrations_phase3.html:24
+#: sportfac/templates/backend/portlets/registrations_phase3.html:16
 msgid "Total children"
 msgstr "Nombre total d'enfants"
 
-#: sportfac/templates/backend/portlets/registrations_phase3.html:30
+#: sportfac/templates/backend/portlets/registrations_phase3.html:20
 msgid "Total families"
 msgstr "Nombre total de familles"
 
