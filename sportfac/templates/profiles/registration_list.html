@@ -1,5 +1,5 @@
 {% extends "wizard.html" %}
-{% load i18n l10n humanize money %}
+{% load i18n l10n humanize switzerland %}
 
 
 {% block page_title %}{% trans "Confirmation" %}{% endblock page_title%}
@@ -45,7 +45,7 @@
   <tfoot>
   <tr>
       <th colspan="5" class="text-right">{% trans "Total" %}</th>
-      <th class="nowrap">{{ total_price|swissfranc }}</th>
+      <th class="nowrap">{{ total_price|money }}</th>
     </tr>
   </tfoot>
   
@@ -94,7 +94,7 @@
         {{ registered.course.day_name }} <br /> <span class="nowrap">{{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</span>
       </td>
       <td>{{ registered.course.place }}</td>
-      <td class="nowrap">{{ registered.course.price|swissfranc }}</td>
+      <td class="nowrap">{{ registered.course.price|money }}</td>
     </tr>
   {% endfor %}
   </tbody>

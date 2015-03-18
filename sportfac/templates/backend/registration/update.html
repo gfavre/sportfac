@@ -10,10 +10,6 @@
 <form action="" method="post" class="form-horizontal">{% csrf_token %}
   {% block errors %}{% endblock %}
   {% form form using "floppyforms/layouts/bootstrap.html" %}
-
-
-
-
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
       <button type="submit" class="btn btn-success btn-large">{% trans "Update" %}</button>
@@ -23,6 +19,4 @@
     </div>
   </div>
 </form>
-
-
 {% endblock content %}

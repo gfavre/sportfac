@@ -1,4 +1,4 @@
-{% load i18n sekizai_tags money %}
+{% load i18n sekizai_tags switzerland %}
 
 
 <section class="portlet">
@@ -9,11 +9,11 @@
     <div class="col-sm-push-6 col-sm-6 ">
       <div class="row-stat">
         <p class="row-stat-label">{% trans "Total due" %}</p>
-        <h3 class="row-stat-value">{{ total_due|swissfranc }}</h3>
+        <h3 class="row-stat-value">{{ total_due|money }}</h3>
       </div>    
       <div class="row-stat">
         <p class="row-stat-label">{% trans "Total paid" %}</p>
-        <h3 class="row-stat-value">{{ total_paid|swissfranc }}</h3>
+        <h3 class="row-stat-value">{{ total_paid|money }}</h3>
       </div>    
     </div>
     <div class="col-sm-pull-6 col-sm-6">

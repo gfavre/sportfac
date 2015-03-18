@@ -1,6 +1,6 @@
 {% extends "backend/base.html" %}
 {% load i18n %}
-{% load money phone duration %}
+{% load duration switzerland %}
 
 {% block title %}{{ object.full_name }} - {{ block.super }}{% endblock %}
 {% block page_title %}{{ object.full_name }}{% endblock %}
@@ -11,7 +11,7 @@
   <dl class="dl-horizontal">
     <dt>{% trans "Address" %}</dt>
     <dd>
-      {{ object.address }}<br />
+      {% if object.address %}{{ object.address }}<br />{% endif %}
       {{ object.zipcode }} {{ object.city }}<br />
       {{ object.get_country_display }}
     </dd>
@@ -19,27 +19,27 @@
     {% if object.private_phone %}
     <dt>{% trans "Home phone" %}</dt>
     <dd>
-      <a href="{{ object.private_phone|swissphone:'RFC3966' }}">{{ object.private_phone|swissphone }}</a>
+      <a href="{{ object.private_phone|phone:'RFC3966' }}">{{ object.private_phone|phone }}</a>
     </dd>
     {% endif %}
     {% if object.private_phone2 %}
     <dt>{% trans "Mobile phone" %}</dt>
     <dd>
-      <a href="{{ object.private_phone2|swissphone:'RFC3966' }}">{{ object.private_phone2|swissphone }}</a>
+      <a href="{{ object.private_phone2|phone:'RFC3966' }}">{{ object.private_phone2|phone }}</a>
     </dd>
     {% endif %}
     {% if object.private_phone3 %}
     <dt>{% trans "Other phone" %}</dt>
     <dd>
-      <a href="{{ object.private_phone3|swissphone:'RFC3966' }}">{{ object.private_phone3|swissphone }}</a>
+      <a href="{{ object.private_phone3|phone:'RFC3966' }}">{{ object.private_phone3|phone }}</a>
     </dd>
     {% endif %}
     <dt>{% trans "Birth date" %}</dt>
     <dd>{{ object.birth_date | date:"j F Y"}}</dd>
     <dt>{% trans "IBAN" %}</dt>
-    <dd>{{ object.iban }}</dd>
+    <dd>{{ object.iban|iban }}</dd>
     <dt>{% trans "AHV number" %}</dt>
-    <dd>{{ object.ahv }}</dd>
+    <dd>{{ object.ahv|ahv }}</dd>
 
   </dl>
   <p class="text-center">
@@ -68,7 +68,7 @@
         <dt>{% trans "Number of sessions" %}</dt>
         <dd>{{ course.number_of_sessions }} cours
         </dd>
-        <dt>{% trans "Price" %}</dt><dd>{{ course.price|swissfranc }}</dd>
+        <dt>{% trans "Price" %}</dt><dd>{{ course.price|money }}</dd>
         <dt>{% trans "School years" %}</dt><dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
       </dl>
       <p class="text-center"><a href="{{ course.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a> </p>

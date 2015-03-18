@@ -20,6 +20,7 @@
   {% formconfig row using "floppyforms/rows/bootstrap.html" %}
 
   <fieldset>
+    {% if object.is_responsible %}<legend>{% trans "Contact informations" %}</legend>{% endif %}
     {% formrow form.first_name %}
     {% formrow form.last_name %}
     {% formrow form.email %}
@@ -43,6 +44,16 @@
     {% formrow form.private_phone2 %}
     {% formrow form.private_phone3 %}
   </fieldset>
+  {% if object.is_responsible %}
+  <fieldset>
+    <legend>{% trans "Responsible informations" %}</legend>
+    {% formconfig row using "floppyforms/rows/bootstrap-sm-3.html" %}
+    {% formrow form.birth_date %}
+    {% formconfig row using "floppyforms/rows/bootstrap.html" %}
+    {% formrow form.ahv form.iban %}
+  </fieldset>
+  {% endif %}
+  
 {% endform %}
 
 

@@ -1,4 +1,4 @@
-{% load i18n l10n humanize sekizai_tags money %}
+{% load i18n l10n humanize sekizai_tags switzerland %}
 
 <p>Les inscriptions seront définitivement validées à la suite du règlement de la finance de participation pour les cours choisis.</p>
 <p>Le montant total pour vos inscriptions s'élève à : <strong>{{ total_price|swissfranc }}</strong></p>
@@ -32,7 +32,7 @@
  <tfoot>
     <tr>
       <th colspan="5" style="text-align: right">{% trans "Total" %}</th>
-      <th class="nowrap">{{ total_price|swissfranc }}</th>
+      <th class="nowrap">{{ total_price|money }}</th>
     </tr>
   </tfoot>
 
@@ -51,7 +51,7 @@
         {{ registered.course.day_name }} / <span class="nowrap">{{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</span>
       </td>
       <td>{{ registered.course.place }}</td>
-      <td class="nowrap">{{ registered.course.price|swissfranc }}</td>
+      <td class="nowrap">{{ registered.course.price|money }}</td>
     </tr>
   {% endfor %}
   </tbody>

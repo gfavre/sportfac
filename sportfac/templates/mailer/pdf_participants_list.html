@@ -1,5 +1,5 @@
 {% extends "mailer/base_pdf.html" %}
-{% load i18n phone %}
+{% load i18n switzerland %}
 
 
 {% block page_header %}
@@ -22,15 +22,15 @@
         
         <td>
           {% if registration.child.family.private_phone %}
-          {{ registration.child.family.private_phone|swissphone }}
+          {{ registration.child.family.private_phone|phone }}
           {% endif %}
           {% if registration.child.family.private_phone2 %}
           <br />
-          {{ registration.child.family.private_phone2|swissphone }}</li>
+          {{ registration.child.family.private_phone2|phone }}</li>
           {% endif %}
           {% if registration.child.family.private_phone3 %}
           <br />
-          {{ registration.child.family.private_phone3|swissphone }}</li>
+          {{ registration.child.family.private_phone3|phone }}</li>
           {% endif %}
         </td>
         <td>{{ registration.child.family.email  }}</td>

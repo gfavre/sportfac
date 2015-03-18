@@ -1,22 +1,16 @@
 {% extends "backend/base.html" %}
-{% load i18n floppyforms sekizai_tags %}
+{% load i18n floppyforms %}
 
 {% block title %}{% trans "Create child" %} - {{ block.super }}{% endblock %}
 {% block page_title %}<i class="icon-user"></i>&nbsp;&nbsp;{% trans "Create child" %}{% endblock %}
 
 {% block content %}
-
 <form action="" method="post" class="form-horizontal">{% csrf_token %}
-
   {% include "backend/user/child-form.html" %}
-
-  
-
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
       <button type="submit" class="btn btn-success btn-large"><i class="icon-plus"></i>&nbsp;{% trans 'Create child' %}</button>
     </div>
   </div>
 </form>
-
 {% endblock content %}

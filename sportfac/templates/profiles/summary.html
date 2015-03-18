@@ -1,5 +1,5 @@
 {% extends "profiles/baseprofile.html" %}
-{% load i18n l10n humanize phone %}
+{% load i18n l10n humanize switzerland %}
 
 
 
@@ -21,8 +21,8 @@
   <dt>{% trans "Responsible" %}</dt>
   <dd>
     {{ registered.course.responsible.full_name }} <br />
-    <a href="{{ registered.course.responsible.best_phone|swissphone:'RFC3966' }}">
-      {{ registered.course.responsible.best_phone|swissphone }}
+    <a href="{{ registered.course.responsible.best_phone|phone:'RFC3966' }}">
+      {{ registered.course.responsible.best_phone|phone }}
     </a><br />
     <a href="mailto:{{ registered.course.responsible.email }}">{{ registered.course.responsible.email }}</a>
   </dd>    

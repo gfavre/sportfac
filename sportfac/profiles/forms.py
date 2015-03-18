@@ -80,10 +80,15 @@ class ContactInformationForm(PhoneRequiredMixin, forms.ModelForm):
     class Meta:
         model = get_user_model()
         fields = ('email', 'first_name', 'last_name', 'address', 'zipcode', 'city', 
-                  'country', 'private_phone', 'private_phone2', 'private_phone3')
+                  'country', 'private_phone', 'private_phone2', 'private_phone3',
+                  )
 
 
 class UserForm(PhoneRequiredMixin, forms.ModelForm):
+    address = forms.CharField(label=_("Address"),
+                              widget=forms.Textarea(attrs={'rows': 3}),
+                              required = False)
+
     email = forms.EmailField(label=_("E-mail"), 
                              widget=forms.EmailInput(attrs={'placeholder': 'john@example.com'}))
     zipcode = forms.CharField(label=_("NPA"), widget=forms.TextInput(attrs={'placeholder': '1296'}))

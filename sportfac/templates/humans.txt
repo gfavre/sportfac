@@ -3,15 +3,14 @@ Sport Scolaire Facultatif
 /* TEAM */
 
 Development: Gregory Favre <info@beyondthewall.ch>                            
+
 Site: http://www.beyondthewall.ch
 Twitter: @favreGregory      
 Location: Gland, Switzerland
-							
-/* THANKS */
 
-Remo Aeschbach, the perfect client, lot of expectations and patience!
+Project: Remo Aeschbach <remo@kepchup.ch>
 
-                            
+
 /* SITE */
 
 Last update: 2014/02/10 
@@ -22,4 +21,4 @@ Standards: HTML5, CSS3
 Components: AngularJS, jQuery, Twitter Bootstrap, FullCalendar
 
 Backend: Nginx (static files)
-         Gunicorn (dynamic), serving Django 1.5 project.
+         Gunicorn (dynamic), serving Django 1.7 project.

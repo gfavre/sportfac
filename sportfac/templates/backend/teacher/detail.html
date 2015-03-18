@@ -1,6 +1,5 @@
 {% extends "backend/base.html" %}
 {% load i18n %}
-{% load duration phone money %}
 
 {% block title %}{{ teacher.get_full_name }} - {{ block.super }}{% endblock %}
 {% block page_title %}{{ teacher.get_full_name }}{% endblock %}
@@ -9,9 +8,9 @@
 <section class="portlet">
   <h4 class="portlet-title"><u>{% trans "Classes" %}</u></h4>
   <ul>
-  {% for year in teacher.years.all %}
-          <li>{{ year }}</li>
-        {% endfor %}
+    {% for year in teacher.years.all %}
+    <li>{{ year }}</li>
+    {% endfor %}
   </ul>
   <p class="text-center"><a href="{{ teacher.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a> </p>
 

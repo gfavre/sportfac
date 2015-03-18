@@ -75,7 +75,7 @@ class WizardChildrenListView(WizardMixin, ChildrenListView):
 
 class _BaseAccount(LoginRequiredMixin, UpdateView):
     model = FamilyUser
-    form_class = ContactInformationForm
+    form_class = ResponsibleForm
     def get_object(self, queryset=None):
         return self.request.user
 

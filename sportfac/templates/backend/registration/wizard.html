@@ -10,38 +10,35 @@
 
 
 {% block content %}
-<div class="row">
-<div class="col-md-3 col-sm-5">
-  <ul class="nav nav-pills nav-stacked">
-    {% for step in wizard.steps.all %}
-    <li {% if wizard.steps.current == step %}class="active"{% endif %} >
-      <a>{{ step }}</a>
-    </li>
-    {% endfor %}
-  </ul>
-</div>
-
 <form action="" method="post">{% csrf_token %}
-
-<div class="col-md-9 col-sm-7">
-  {{ wizard.management_form }}
-  {% if wizard.form.forms %}
-      {{ wizard.form.management_form }}
-      {% for form in wizard.form.forms %}
-          {% form form using "floppyforms/layouts/bootstrap.html" %}
-      {% endfor %}
-  {% else %}
-      {% form wizard.form using "floppyforms/layouts/bootstrap.html" %}
-  {% endif %}
-  
-  <div class="form-group">
-    <button type="submit" class="btn btn-success btn-large">{% trans "Save" %}</button>
+  <div class="row">
+    <div class="col-md-3 col-sm-5">
+      <ul class="nav nav-pills nav-stacked">
+        {% for step in wizard.steps.all %}
+        <li {% if wizard.steps.current == step %}class="active"{% endif %} >
+          <a>{{ step }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="col-md-9 col-sm-7">
+        {{ wizard.management_form }}
+        {% if wizard.form.forms %}
+          {{ wizard.form.management_form }}
+          {% for form in wizard.form.forms %}
+            {% form form using "floppyforms/layouts/bootstrap.html" %}
+          {% endfor %}
+        {% else %}
+          {% form wizard.form using "floppyforms/layouts/bootstrap.html" %}
+        {% endif %}
+        <div class="form-group">
+          <button type="submit" class="btn btn-success btn-large">{% trans "Save" %}</button>
+        </div>
+      </form>
+    </div>
   </div>
   
-</div>
-
-</div>
-<footer>
+  <footer>
     <nav>
       <ul class="pager">
       {% if wizard.steps.prev %}
@@ -60,8 +57,7 @@
       {% endif %}
       </ul>
     </nav>
-</footer>
-
+  </footer>
 </form>
 
 {% endblock %}

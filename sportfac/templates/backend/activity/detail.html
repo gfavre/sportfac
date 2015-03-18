@@ -1,6 +1,6 @@
 {% extends "backend/base.html" %}
 {% load i18n %}
-{% load duration phone money %}
+{% load duration switzerland %}
 
 {% block title %}{{ activity.name }} - {{ block.super }}{% endblock %}
 {% block page_title %}{{ activity.name }}{% endblock %}
@@ -47,7 +47,7 @@
         <dt>{% trans "Number of sessions" %}</dt>
         <dd>{{ course.number_of_sessions }} cours
         </dd>
-        <dt>{% trans "Price" %}</dt><dd>{{ course.price|swissfranc }}</dd>
+        <dt>{% trans "Price" %}</dt><dd>{{ course.price|money }}</dd>
         <dt>{% trans "School years" %}</dt><dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
       </dl>
       <p class="text-center"><a href="{{ course.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a> </p>

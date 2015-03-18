@@ -1,6 +1,6 @@
 {% extends "backend/base.html" %}
 {% load i18n %}
-{% load duration phone money%}
+{% load duration switzerland %}
 
 {% block title %}{{ course.activity.name }} - {{ block.super }}{% endblock %}
 {% block page_title %}{{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }}{% endblocktrans %}{% endblock %}
@@ -18,7 +18,7 @@
       <dd><a href="{{ course.responsible.get_backend_url }}">{{ course.responsible.full_name  }}</a></dd>
       <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
       <dt>{% trans "Number of sessions" %}</dt><dd>{{ course.number_of_sessions }} cours</dd>
-      <dt>{% trans "Price" %}</dt><dd>{{ course.price|swissfranc }}</dd>
+      <dt>{% trans "Price" %}</dt><dd>{{ course.price|money }}</dd>
       <dt>{% trans "School years" %}</dt>
       <dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
     </dl>
@@ -60,22 +60,22 @@
           <ul>
             {% if registration.child.family.private_phone %}
             <li>
-              <a href="{{ registration.child.family.private_phone|swissphone:'RFC3966' }}">
-                {{ registration.child.family.private_phone|swissphone }}
+              <a href="{{ registration.child.family.private_phone|phone:'RFC3966' }}">
+                {{ registration.child.family.private_phone|phone }}
               </a>
             </li>
             {% endif %}
             {% if registration.child.family.private_phone2 %}
             <li>
-              <a href="{{ registration.child.family.private_phone2|swissphone:'RFC3966' }}">
-                {{ registration.child.family.private_phone2|swissphone }}
+              <a href="{{ registration.child.family.private_phone2|phone:'RFC3966' }}">
+                {{ registration.child.family.private_phone2|phone }}
               </a>
             </li>
             {% endif %}
             {% if registration.child.family.private_phone3 %}
             <li>
-              <a href="{{ registration.child.family.private_phone3|swissphone:'RFC3966' }}">
-                {{ registration.child.family.private_phone3|swissphone }}
+              <a href="{{ registration.child.family.private_phone3|phone:'RFC3966' }}">
+                {{ registration.child.family.private_phone3|phone }}
               </a>
             </li>
             {% endif %}

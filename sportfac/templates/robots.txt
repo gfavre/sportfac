@@ -1,6 +1,7 @@
 User-agent: *
 Disallow: /admin/
+Disallow: /backend/
 Disallow: /wizard/
 Disallow: /account/
 
-Sitemap: http://www.kepchup.ch/sitemap.xml
+Sitemap: /sitemap.xml

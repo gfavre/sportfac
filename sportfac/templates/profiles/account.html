@@ -1,10 +1,29 @@
 {% extends "profiles/baseprofile.html" %}
-{% load i18n floppyforms %}
+{% load i18n floppyforms sekizai_tags %}
 
 {% block title %}{% trans "My account" %}{% endblock title %}
 {% block page_title %}{% trans "My account" %} <small>- responsable légal</small>{% endblock page_title %}
 
 {% block content %}
+{% addtoblock "js" %}
+{{ form.media }}
+{% if object.is_responsible %}
+<script src="{{ STATIC_URL }}js/vendor/moment-with-locales.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript">
+  $(function () {
+    $('.datetimepicker').datetimepicker({
+        language: '{{ LANGUAGE_CODE }}',
+        icons: {time: 'icon-clock', 
+                date: 'icon-calendar', 
+                up:   'icon-up-open', 
+                down: 'icon-down-open'}
+        });
+  });
+</script>
+{% endif %}
+{% endaddtoblock %}
+
 <h3 class="content-title">
   <u>{% trans "Edit profile" %}</u>
 </h3>

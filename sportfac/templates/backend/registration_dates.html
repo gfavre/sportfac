@@ -1,6 +1,5 @@
 {% extends "backend/base.html" %}
-{% load i18n %}
-{% load floppyforms %}
+{% load i18n floppyforms %}
 
 {% block title %}{% trans "Change opening and closing dates" %} - {{ block.super }}{% endblock %}
 {% block page_title %}{% trans "Change opening and closing dates" %}{% endblock %}
@@ -23,6 +22,7 @@
 {% endform %}
 
 {% endblock content %}
+
 {% block extra_js %}
 {{ block.super }}
 <script src="{{ STATIC_URL }}js/vendor/moment-with-locales.min.js"></script>

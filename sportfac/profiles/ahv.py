@@ -66,7 +66,7 @@ class AHVField(models.CharField):
         kwargs.setdefault('max_length', 16)
         super(AHVField, self).__init__(*args, **kwargs)
         self.validators.append(AHVValidator())
-    
+        
     def to_python(self, value):
         value = super(AHVField, self).to_python(value)
         if value is not None:

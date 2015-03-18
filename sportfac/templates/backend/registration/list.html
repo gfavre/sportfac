@@ -1,7 +1,6 @@
 {% extends "backend/base.html" %}
-{% load i18n %}
-{% load sekizai_tags %}
-{% load duration %}
+{% load i18n sekizai_tags %}
+
 
 {% block title %}{% trans "List registrations" %} - {{ block.super }}{% endblock %}
 {% block page_title %}{% trans "List registrations" %}{% endblock %}
@@ -47,7 +46,7 @@ $(function () {
   {% with course=registration.course child=registration.child%}
    <tr>
       <td><a href="{{ course.get_backend_url }}">{{ course.number }}</a></td>
-      <td><a href="{{ course.activity.get_backend_url %}}">{{ course.activity.name }}</a></td>
+      <td><a href="{{ course.activity.get_backend_url }}">{{ course.activity.name }}</a></td>
       <td>{{ course.day_name }}</td>
       <td data-order="{{ course.start_date|date:'c'}}">{{ course.start_date|date:"SHORT_DATE_FORMAT" }}</td>
       <td>{{ course.start_time|time:"H:i" }}</td>

@@ -1,6 +1,4 @@
-{% load i18n %}
-{% load humanize %} 
-{% load sekizai_tags %}
+{% load i18n humanize sekizai_tags %}
 
 <section class="portlet">
   <h4 class="portlet-title">
@@ -14,11 +12,17 @@
       <dd>{{ last_teacher_update|naturaltime }}</dd>
     </dl>
     <div id="pie-chart-teachers" class="chart-holder-250"></div>
-    <p class="text-center">[&nbsp;<a href="{% url 'backend:teacher-list' %}"><i class="icon-adult"></i>&nbsp;{% trans "All teachers" %}</a>&nbsp;]
-    [&nbsp;<a href="{% url 'backend:teacher-import' %}"><i class="icon-doc-new"></i>&nbsp;{% trans "Import teachers" %}</a>&nbsp;]</p>
-    {% addtoblock  "js" %}    
-    <script src="{{ STATIC_URL }}js/vendor/flot/jquery.flot.pie.min.js"></script>
-    <script>
+    <ul class="list-unstyled">
+      <li><a href="{% url 'backend:teacher-list' %}"><i class="icon-adult"></i>&nbsp;{% trans "All teachers" %}</a></li>
+      <li><a href="{% url 'backend:teacher-import' %}"><i class="icon-doc-new"></i>&nbsp;{% trans "Import teachers" %}</a></li>
+    </ul>
+  </div> <!-- /.portlet-body -->
+</section>
+
+
+{% addtoblock  "js" %}    
+<script src="{{ STATIC_URL }}js/vendor/flot/jquery.flot.pie.min.js"></script>
+<script>
 $(function () {
   var data, placeholder;
   placeholder = $("#pie-chart-teachers");
@@ -51,7 +55,5 @@ $(function () {
   });
  
 });
-    </script>
-    {% endaddtoblock %}
-  </div> <!-- /.portlet-body -->
-</section>
+</script>
+{% endaddtoblock %}
