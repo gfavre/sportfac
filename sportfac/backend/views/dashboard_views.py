@@ -128,7 +128,10 @@ class HomePageView(BackendMixin, TemplateView):
         
         finished = FamilyUser.objects.filter(finished_registration=True)
         context['payement_due'] = finished.filter(total__gt=0).count()
-        context['paid'] = finished.filter(total__gt=0, paid=True).count()
+        context['total_due'] = FamilyUser.objects.aggregate(Sum('total')).values()[0]
+        paid = finished.filter(total__gt=0, paid=True)
+        context['paid'] = paid.count()
+        context['total_paid'] = paid.aggregate(Sum('total')).values()[0]
         registrations = Registration.objects.filter(
             created__range=(config.START_REGISTRATION,
                             config.END_REGISTRATION)

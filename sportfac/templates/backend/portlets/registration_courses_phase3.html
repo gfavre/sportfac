@@ -6,7 +6,7 @@
     <u><i class="icon-graduation-cap"></i>&nbsp;&nbsp;{% trans "Activities &amp; courses" %}</u>
   </h4>
   <div class="portlet-body row">
-    <div class="col-md-8">
+    <div class="col-md-8 col-sm-6">
       <p><strong>{{ nb_courses }}</strong> <a href="{% url 'backend:course-list' %}">{% trans "courses" %}</a> {% trans "in" %} <strong>{{ nb_activities }}</strong> <a href="{% url 'backend:activity-list' %}">{% trans "activities" %}</a>.</p>
       
       {% widthratio nb_full_courses nb_courses 100|add:"0" as percentage %}
@@ -47,19 +47,19 @@
         </ul>
       </p>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-4 col-sm-6">
       <div class="row-stat">
         <p class="row-stat-label">{% trans "Total sessions" %}</p>
         <h3 class="row-stat-value">{{ total_sessions }}</h3>
       </div>    
     </div>
-     <div class="col-md-4">
+    <div class="col-md-4 col-sm-6">
       <div class="row-stat">
         <p class="row-stat-label">{% trans "Total responsibles" %}</p>
         <h3 class="row-stat-value">{{ total_responsibles }}</h3>
       </div>    
     </div>
-    <div class="col-md-4">
+    <div class="col-md-4 col-sm-6">
       <div class="row-stat">
         <p class="row-stat-label">{% trans "Total teaching time" %}</p>
         <h3 class="row-stat-value">

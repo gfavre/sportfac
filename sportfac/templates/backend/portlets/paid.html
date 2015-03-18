@@ -1,19 +1,33 @@
-{% load i18n %}
-{% load humanize %} 
-{% load sekizai_tags %}
+{% load i18n sekizai_tags money %}
+
 
 <section class="portlet">
   <h4 class="portlet-title">
     <u><i class="icon-credit-card-1"></i>&nbsp;&nbsp;{% trans "Validated payments" %}</u>
   </h4>
-  <div class="portlet-body">
-    <div id="pie-chart-paid" class="chart-holder-250"></div>
-    <p class="text-center">
-    [&nbsp;<a href="{% url 'backend:user-list' %}"><i class="icon-group"></i>&nbsp;{% trans "List users" %}</a>&nbsp;]
-    [&nbsp;<a href="{% url 'backend:mail-notpaidyet' %}"><i class="icon-mail"></i>&nbsp;{% trans "Send reminder email" %}</a>&nbsp;]
-    
-    </p>
+  <div class="portlet-body row">
+    <div class="col-sm-push-6 col-sm-6 ">
+      <div class="row-stat">
+        <p class="row-stat-label">{% trans "Total due" %}</p>
+        <h3 class="row-stat-value">{{ total_due|swissfranc }}</h3>
+      </div>    
+      <div class="row-stat">
+        <p class="row-stat-label">{% trans "Total paid" %}</p>
+        <h3 class="row-stat-value">{{ total_paid|swissfranc }}</h3>
+      </div>    
+    </div>
+    <div class="col-sm-pull-6 col-sm-6">
+      <div id="pie-chart-paid" class="chart-holder-250"></div>
+    </div>
  </div> <!-- /.portlet-body -->
+ <ul class="list-unstyled">
+   <li><a href="{% url 'backend:user-list' %}"><i class="icon-group"></i>&nbsp;{% trans "List users" %}</a></li>
+   <li><a href="{% url 'backend:mail-notpaidyet' %}"><i class="icon-mail"></i>&nbsp;{% trans "Send reminder email" %}</a></li>
+ </ul>
+
+ 
+ 
+ 
 </section>
    
 {% addtoblock  "js" %}    
@@ -31,7 +45,7 @@ $(function () {
 					pie: { 
 						show: true,
 						innerRadius: 0, 
-                        stroke: { width: 4 }
+                        stroke: { width: 2 }
 					}
 				},
 				legend: {
