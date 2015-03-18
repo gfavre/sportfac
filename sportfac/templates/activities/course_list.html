@@ -62,6 +62,8 @@ $(function () {
         <ul class="list-unstyled">
           <li class="text-nowrap"><a href="{{ course.get_absolute_url }}" class="btn btn-sm"><i class="icon-check"></i>&nbsp;{% trans "Check registrations" %}</a></li>
           <li class="text-nowrap"><a href="{{ course.get_custom_mail_responsible_url }}" class="btn btn-sm"><i class="icon-mail"></i>&nbsp;{% trans "Mail participants" %}</a></li>
+           <li class="text-nowrap"><a href="{% url 'activities:mail-responsible' course=course.number %}" class="btn btn-sm"><i class="icon-tasks"></i>&nbsp;</i>&nbsp;{% trans "Send course informations" %}</a></li>
+          
         </ul>
       </td>
     </tr>

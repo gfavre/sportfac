@@ -13,9 +13,15 @@ urlpatterns = patterns('',
         name='my-courses'),
     url(r'^courses/(?P<course>\d+)/$', view=views.MyCourseDetailView.as_view(), 
         name='course-detail'),
+    
     url(r'^courses/(?P<course>\d+)/mail$', 
         view=views.CustomMailCreateView.as_view(),
         name="mail-participants-custom"),
+    
+    url(r'^courses/(?P<course>\d+)/send-infos$', 
+        view=views.ResponsibleMailView.as_view(),
+        name="mail-responsible"),
+    
     url(r'^courses/(?P<course>\d+)/mail/preview$', 
         view=views.CustomMailPreview.as_view(),
         name="mail-preview"),

@@ -1,13 +1,15 @@
 from django.views.generic import DetailView, ListView
 from django.contrib.auth.decorators import login_required
+from django.contrib.messages.views import SuccessMessageMixin
 from django.utils.decorators import method_decorator
+from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse, reverse_lazy
 
 from braces.views import GroupRequiredMixin, LoginRequiredMixin
 
 from backend import RESPONSIBLE_GROUP
 from sportfac.views import WizardMixin
-from mailer.views import MailView, MailCreateView, CustomMailMixin, MailParticipantsView
+from mailer.views import MailView, MailCreateView, CustomMailMixin, MailParticipantsView, MailCourseResponsibleView
 
 from .models import Activity, Course
 
@@ -95,3 +97,10 @@ class CustomMailPreview(ResponsibleMixin, CustomMailMixin, MailParticipantsView)
         redirect = super(CustomMailPreview, self).post(request, *args, **kwargs)
         del self.request.session['mail']
         return redirect 
+
+
+class ResponsibleMailView(ResponsibleMixin, MailCourseResponsibleView):
+    template_name = 'activities/confirm_send.html'
+    
+    def get_success_url(self):
+        return reverse('activities:my-courses')
