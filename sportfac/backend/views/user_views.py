@@ -11,9 +11,8 @@ from django.views.generic import CreateView, DeleteView, DetailView, \
 
 from backend import MANAGERS_GROUP, RESPONSIBLE_GROUP
 from profiles.models import FamilyUser, Child
-from profiles.forms import (UserForm, ResponsibleForm,
-                            UserUpdateForm, ResponsibleUpdateForm, 
-                            UserPayForm, ChildForm)
+from profiles.forms import (ManagerForm, ResponsibleForm, UserPayForm, ChildForm)
+
 from .mixins import BackendMixin
 
 __all__ = ('UserListView', 'UserCreateView', 'PasswordSetView',
@@ -41,6 +40,7 @@ class ManagerListView(UserListView):
     def get_queryset(self):
         return Group.objects.get(name=MANAGERS_GROUP).user_set.all()
 
+
 class ResponsibleListView(UserListView):
     template_name = 'backend/user/responsible-list.html'
     
@@ -50,13 +50,12 @@ class ResponsibleListView(UserListView):
 
 class UserCreateView(BackendMixin, SuccessMessageMixin, CreateView):
     model = FamilyUser
-    form_class = UserForm
+    form_class = ManagerForm
     template_name = 'backend/user/create.html'
     success_url = reverse_lazy('backend:user-list')    
     
     def form_valid(self, form):
         self.object = form.save()
-        self.object.set_password(form.cleaned_data['password'])
         self.object.is_manager = form.cleaned_data['is_manager']
         return super(UserCreateView, self).form_valid(form)
 
@@ -84,32 +83,30 @@ class ResponsibleCreateView(UserCreateView):
         ctx = super(ResponsibleCreateView, self).get_context_data(**kwargs)
         ctx['is_responsible'] = True
         return ctx
-
-    def get_initial(self):
-        initial = super(ResponsibleCreateView, self).get_initial()
-        initial['is_responsible'] = True
-        return initial
+    
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.is_manager = form.cleaned_data['is_manager']
+        self.object.is_responsible = True
+        return super(ResponsibleCreateView, self).form_valid(form)
     
     def get_success_message(self, cleaned_data):
         return _("Responsible %s has been added.") % self.object.full_name
-
     
 
 class UserUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
     model = FamilyUser
     template_name = 'backend/user/update.html'
-    success_url = reverse_lazy('backend:user-list')    
 
     def get_initial(self):
         initial = super(UserUpdateView, self).get_initial()
         initial['is_manager'] = self.object.is_manager
         return initial
-    
 
     def get_form_class(self):
         if self.object.is_responsible:
-            return ResponsibleUpdateForm
-        return UserUpdateForm
+            return ResponsibleForm
+        return ManagerForm
     
     def get_context_data(self, **kwargs):
         ctx = super(UserUpdateView, self).get_context_data(**kwargs)
@@ -119,8 +116,14 @@ class UserUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
     def form_valid(self, form):
         self.object = form.save()
         self.object.is_manager = form.cleaned_data['is_manager']
+        self.object.save()
         return super(UserUpdateView, self).form_valid(form)
-
+       
+    def get_success_url(self):
+        if self.object.is_responsible:
+            return reverse_lazy('backend:responsible-list')
+        return reverse_lazy('backend:user-list')
+    
     def get_success_message(self, cleaned_data):
         return _("Contact informations of %s have been updated.") % self.object.full_name
 

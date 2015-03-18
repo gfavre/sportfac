@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import FormView, TemplateView
 from django.contrib import messages
@@ -11,6 +12,7 @@ from constance import config
 from activities.models import Activity, Course
 from profiles.models import FamilyUser, Registration, Child, Teacher, SchoolYear
 from backend.forms import RegistrationDatesForm
+from backend import MANAGERS_GROUP, RESPONSIBLE_GROUP
 from .mixins import BackendMixin
 
 __all__ = ('HomePageView', 'RegistrationDatesView',)
@@ -42,7 +44,8 @@ class HomePageView(BackendMixin, TemplateView):
         context['ready_courses'] = courses.filter(uptodate=True).count()
         context['notready_courses'] = context['nb_courses'] - context['ready_courses']
         context['total_sessions'] = courses.aggregate(Sum('number_of_sessions')).values()[0]
-        context['total_responsibles'] =  courses.values('responsible').distinct().count()
+        context['total_responsibles'] = Group.objects.get(name=RESPONSIBLE_GROUP).user_set.count()
+        
         context['last_course_update'] = courses.aggregate(
                                             latest=Max('modified'))['latest']
         
@@ -101,7 +104,7 @@ class HomePageView(BackendMixin, TemplateView):
         activities = Activity.objects.all()
         context['nb_activities'] = activities.count()
         context['total_sessions'] = courses.aggregate(Sum('number_of_sessions')).values()[0]
-        context['total_responsibles'] =  courses.values('responsible').distinct().count()
+        context['total_responsibles'] = Group.objects.get(name=RESPONSIBLE_GROUP).user_set.count()
         timedeltas = []
         for course in courses:
             timedeltas.append(course.number_of_sessions * course.duration)

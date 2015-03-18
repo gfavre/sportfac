@@ -11,9 +11,10 @@ from backend.forms import Select2Widget, DatePickerInput
 from .models import Child, Teacher, FamilyUser
 
 __all__ = ('AuthenticationForm', 'PasswordChangeForm', 'PasswordResetForm',
-           'AcceptTermsForm', 'ContactInformationForm', 'RegistrationForm',
-           'UserForm', 'ResponsibleForm', 'UserUpdateForm', 'ResponsibleUpdateForm',
+           'AcceptTermsForm', 'RegistrationForm',
+           'UserForm', 'ManagerForm', 'ResponsibleForm',
            'UserPayForm', 'ChildForm')
+
 
 class AuthenticationForm(auth_forms.AuthenticationForm):
     def __init__(self, *args, **kwargs):
@@ -21,7 +22,6 @@ class AuthenticationForm(auth_forms.AuthenticationForm):
         super(AuthenticationForm, self).__init__(*args, **kwargs)
         self.fields['username'].widget = forms.TextInput()
         self.fields['password'].widget = forms.PasswordInput()
-
 
 
 class PasswordChangeForm(auth_forms.PasswordChangeForm):
@@ -32,16 +32,20 @@ class PasswordChangeForm(auth_forms.PasswordChangeForm):
     new_password2 = forms.CharField(label=_("New password confirmation"),
                                     widget=forms.PasswordInput)
 
+
 class PasswordResetForm(auth_forms.PasswordResetForm):
     email = forms.EmailField(label=_("Email"), max_length=254, 
                              widget=forms.EmailInput(attrs={'placeholder': 'john@example.com'}))
+
 
 class AcceptTermsForm(forms.Form):
     accept = forms.BooleanField(required=True, widget=forms.CheckboxInput(attrs={'style': 'margin-top:0;'}))
     
     def __init__(self, *args, **kwargs):
         super(AcceptTermsForm, self).__init__(*args, **kwargs)
-        self.fields['accept'].label= mark_safe(_("""I've read and agree to <a href="%s"> terms and conditions</a>""") % reverse('terms'))
+        self.fields['accept'].label = mark_safe(
+            _("""I've read and agree to <a href="%s"> terms and conditions</a>""") % reverse('terms')
+        )
 
 
 class PhoneRequiredMixin(object):
@@ -53,37 +57,6 @@ class PhoneRequiredMixin(object):
             raise forms.ValidationError(_("At least one phone number is mandatory"))
 
 
-class ContactInformationForm(PhoneRequiredMixin, forms.ModelForm):
-    required_css_class = 'required'
-    email = forms.EmailField(label=_("E-mail"), 
-                             widget=forms.EmailInput(attrs={'placeholder': 'john@example.com'}))
-    
-    first_name = forms.CharField(label=_("First name"))
-    last_name = forms.CharField(label=_("Last name"))
-    address = forms.CharField(label=_("Address"),
-                              widget=forms.Textarea(attrs={'rows': 3}),
-                              required = False)
-    zipcode = forms.CharField(label=_("NPA"), widget=forms.TextInput(attrs={'placeholder': '1296'}))
-    city = forms.CharField(label=_("City"), widget=forms.TextInput(attrs={'placeholder': 'Coppet'}))
-
-    private_phone = forms.CharField(label=_("Home phone"), 
-                                    widget=forms.PhoneNumberInput(attrs={"maxlength": 20,
-                                                                         "autocomplete": "tel" }),
-                                    required=False)
-    private_phone2 = forms.CharField(label=_("Mobile phone #1"), 
-                                     widget=forms.PhoneNumberInput(attrs={"maxlength": 20}), 
-                                     required=False)
-    private_phone3 = forms.CharField(label=_("Mobile phone #2"), 
-                                     widget=forms.PhoneNumberInput(attrs={"maxlength": 20}), 
-                                     required=False)
-    
-    class Meta:
-        model = get_user_model()
-        fields = ('email', 'first_name', 'last_name', 'address', 'zipcode', 'city', 
-                  'country', 'private_phone', 'private_phone2', 'private_phone3',
-                  )
-
-
 class UserForm(PhoneRequiredMixin, forms.ModelForm):
     address = forms.CharField(label=_("Address"),
                               widget=forms.Textarea(attrs={'rows': 3}),
@@ -93,24 +66,27 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
                              widget=forms.EmailInput(attrs={'placeholder': 'john@example.com'}))
     zipcode = forms.CharField(label=_("NPA"), widget=forms.TextInput(attrs={'placeholder': '1296'}))
     city = forms.CharField(label=_("City"), widget=forms.TextInput(attrs={'placeholder': 'Coppet'}))
-    is_manager = forms.BooleanField(required=False, label=_("Is a manager"), 
-                                    help_text=_("Grant access for this user to this backend interface"))
-    password = forms.CharField(label=_("Password"),
-                               widget=forms.PasswordInput)
+
     class Meta:
         model = get_user_model()
-        fields = ('email', 'password', 'first_name', 'last_name', 'address', 
+        fields = ('email', 'first_name', 'last_name', 'address', 
                   'zipcode', 'city', 'country',
                   'private_phone', 'private_phone2', 'private_phone3')
         
+    
+
+class ManagerForm(UserForm):
+    is_manager = forms.BooleanField(required=False, label=_("Is a manager"), 
+                                    help_text=_("Grant access for this user to this backend interface"))
+    
     def __init__(self, *args, **kwargs):
         super(UserForm, self).__init__(*args, **kwargs)
         instance = kwargs['instance']
         if instance:
             self.fields['is_manager'].initial = instance.is_manager
-    
 
-class ResponsibleForm(UserForm):
+
+class ResponsibleForm(ManagerForm):
     iban = IBANFormField(label=_("IBAN"), 
                          widget=forms.TextInput(attrs={'placeholder': 'CH37...'}), 
                          required=False)
@@ -119,35 +95,11 @@ class ResponsibleForm(UserForm):
                                      help_text=_("Format: 31.12.2012"), required=False)
     class Meta:
         model = get_user_model()
-        fields = ('email', 'password', 'first_name', 'last_name', 'address', 
+        fields = ('email', 'first_name', 'last_name', 'address', 
                   'zipcode', 'city', 'country',
                   'private_phone', 'private_phone2', 'private_phone3',
                   'birth_date', 'iban', 'ahv')
 
-    
-class UserUpdateForm(PhoneRequiredMixin, forms.ModelForm):
-    is_manager = forms.BooleanField(required=False, label=_("Is a manager"), 
-                                    help_text=_("Grant access for this user to this backend interface"))
-    
-    class Meta:
-        model = get_user_model()
-        fields = ('email', 'first_name', 'last_name', 'address', 
-                  'zipcode', 'city', 'country', 
-                  'private_phone', 'private_phone2', 'private_phone3')
-
-class ResponsibleUpdateForm(UserUpdateForm):
-    iban = IBANFormField(label=_("IBAN"), 
-                         widget=forms.TextInput(attrs={'placeholder': 'CH37...'}), 
-                         required=False)
-    birth_date = forms.DateTimeField(label=_("Birth date"),
-                                     widget=DatePickerInput(format='%d.%m.%Y'),
-                                     help_text=_("Format: 31.12.2012"), required=False)
-    class Meta:
-        model = get_user_model()
-        fields = ('email', 'first_name', 'last_name', 'address', 
-                  'zipcode', 'city', 'country', 
-                  'private_phone', 'private_phone2', 'private_phone3',
-                  'birth_date', 'iban', 'ahv')
 
 class UserPayForm(forms.ModelForm):
     class Meta:
