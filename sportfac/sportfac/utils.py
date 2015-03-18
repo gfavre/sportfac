@@ -39,18 +39,19 @@ class ExcelWriter:
     which is encoded in the given encoding.
     """
 
-    def __init__(self, f, dialect=excel_semicolon, encoding="cp1252", **kwds):
+    def __init__(self, f, dialect=excel_semicolon, encoding="mac_roman", **kwds):
         # Redirect output to a queue
         self.queue = cStringIO.StringIO()
         self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
         self.stream = f
         self.encoder = codecs.getincrementalencoder(encoding)()
+        self.encoding = encoding
 
     def writerow(self, row):
-        self.writer.writerow([s.encode("cp1252", 'ignore') for s in row])
+        self.writer.writerow([s.encode(self.encoding, 'ignore') for s in row])
         # Fetch UTF-8 output from the queue ...
         data = self.queue.getvalue()
-        data = data.decode("cp1252", 'ignore')
+        data = data.decode(self.encoding, 'ignore')
         # ... and reencode it into the target encoding
         data = self.encoder.encode(data)
         # write to the target stream
