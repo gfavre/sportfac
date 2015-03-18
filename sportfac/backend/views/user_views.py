@@ -1,5 +1,5 @@
 import json
-
+from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.models import Group
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy, reverse
@@ -7,7 +7,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 from django.views.generic import CreateView, DeleteView, DetailView, \
-                                ListView, UpdateView, View
+                                ListView, UpdateView, View, FormView
 
 from backend import MANAGERS_GROUP, RESPONSIBLE_GROUP
 from profiles.models import FamilyUser, Child
@@ -16,7 +16,7 @@ from profiles.forms import (UserForm, ResponsibleForm,
                             UserPayForm, ChildForm)
 from .mixins import BackendMixin
 
-__all__ = ('UserListView', 'UserCreateView', 
+__all__ = ('UserListView', 'UserCreateView', 'PasswordSetView',
            'UserUpdateView', 'UserPayUpdateView', 'UserDeleteView', 'UserDetailView',
            'ChildCreateView', 'ChildUpdateView', 'ChildDeleteView',
             'ManagerListView', 'ManagerCreateView', 
@@ -149,6 +149,27 @@ class UserDetailView(BackendMixin, DetailView):
 class ResponsibleDetailView(BackendMixin, DetailView):
     model = FamilyUser
     template_name = 'backend/user/detail-responsible.html'
+
+
+class PasswordSetView(BackendMixin, SuccessMessageMixin, FormView):
+    form_class = SetPasswordForm
+    template_name ='backend/user/password-change.html'
+    
+    def get_success_message(self, cleaned_data):
+        return _("Password changed for user %s.") % self.get_object()
+    
+    def get_success_url(self):
+        return self.get_object().get_backend_url()
+    
+    def get_object(self):
+        user_id = self.kwargs.get('user', None)
+        return get_object_or_404(FamilyUser, pk=user_id)
+    
+    def get_form_kwargs(self):
+        kwargs = super(PasswordSetView, self).get_form_kwargs()
+        user_id = self.request.GET.get('user', None)
+        kwargs['user'] = self.get_object()
+        return kwargs
 
 
 class ChildView(BackendMixin, View):

@@ -47,7 +47,7 @@
   <fieldset>
     <legend>{% trans "Login informations" %}</legend>
     {% formrow form.email %}
-    <a href="">Change password</a>
+    <p><a href="{% url 'backend:password-change' user=object.pk %}">{% trans "Change password" %}</a></p>
   </fieldset>
   <fieldset>
     <legend>{% trans "Contact informations" %}</legend>
