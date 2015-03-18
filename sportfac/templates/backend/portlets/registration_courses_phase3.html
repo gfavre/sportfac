@@ -59,6 +59,13 @@
         <h3 class="row-stat-value">{{ total_responsibles }}</h3>
       </div>    
     </div>
+    <div class="col-md-4">
+      <div class="row-stat">
+        <p class="row-stat-label">{% trans "Total teaching time" %}</p>
+        <h3 class="row-stat-value">
+          {% blocktrans with hours=total_hours minutes=total_remaining_minutes%}{{ hours }} hrs and {{ minutes }} mins{% endblocktrans %}</h3>
+      </div>    
+    </div>
     
     <div class="col-md-12">
         </div>

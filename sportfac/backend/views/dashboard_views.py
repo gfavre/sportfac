@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import FormView, TemplateView
@@ -102,6 +102,13 @@ class HomePageView(BackendMixin, TemplateView):
         context['nb_activities'] = activities.count()
         context['total_sessions'] = courses.aggregate(Sum('number_of_sessions')).values()[0]
         context['total_responsibles'] =  courses.values('responsible').distinct().count()
+        timedeltas = []
+        for course in courses:
+            timedeltas.append(course.number_of_sessions * course.duration)
+        
+        td = sum(timedeltas, timedelta())
+        context['total_hours'] =  td.days * 24 + td.seconds / 3600
+        context['total_remaining_minutes'] =  (td.seconds % 3600) / 60
         
         
         participants = Course.objects.annotate(count_participants=Count('participants'))\
