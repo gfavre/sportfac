@@ -1,8 +1,8 @@
 from sportfac.utils import ExcelWriter
 
 
-JS_CSV_COLUMNS = ('NO_PERS_BDNS','SEXE','NOM','PRENOM',
-                  'DAT_NAISSANCE','RUE','NPA','LIEU',
+JS_CSV_COLUMNS = ('NO_PERS_BDNJS','SEXE','NOM','PRENOM',
+                  'DAT_NAISSANCE','RUE','NPA','LOCALITE',
                   'PAYS','NATIONALITE','1ERE_LANGUE','CLASSE/GROUPE')
 
 def course_to_js_csv(course, filelike):
