@@ -13,7 +13,7 @@ from fabric.context_managers import prefix, path
 from fabric.operations import put
 
 try:
-    from fabsettings import (WF_HOST, PROJECT_NAME, REPOSITORY, BRANCH, 
+    from fabsettings import (WF_HOST, APP_NAME, PROJECT_NAME, REPOSITORY, BRANCH, 
                              USER, PASSWORD, 
                              VIRTUALENVS, SETTINGS_SUBDIR, 
                              DBNAME, DBUSER, DBPASSWORD, 
@@ -26,6 +26,7 @@ missing specific settings.
 It should be of this form:
 
 WF_HOST         = "web392"
+APP_NAME        = 'sportfac'
 PROJECT_NAME    = "sportfac"
 REPOSITORY      = "https://grfavre@kis-git.epfl.ch/repo/sportfac.git"
 BRANCH          = 'master'
@@ -75,6 +76,7 @@ env.hosts             = [WF_HOST.lower() + '.webfaction.com']
 env.user              = USER
 env.password          = PASSWORD
 env.project           = PROJECT_NAME
+env.app_name          = APP_NAME
 env.settings          = 'production'
 env.dbname            = DBNAME
 env.dbuser            = DBUSER
@@ -218,7 +220,7 @@ def install_app():
     "Installs the django project in its own wf app and virtualenv"
     configure_webfaction()
     with cd(env.project_dir):
-        if not exists(env.project):
+        if not exists('sportfac'):
             print("Grabbing sources...")
             run('git clone -b %s %s %s' % (env.branch, env.repo, env.project_dir))
     
