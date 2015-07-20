@@ -1,19 +1,19 @@
 {% load i18n l10n humanize sekizai_tags switzerland %}
 
 <p>Les inscriptions seront définitivement validées à la suite du règlement de la finance de participation pour les cours choisis.</p>
-<p>Le montant total pour vos inscriptions s'élève à : <strong>{{ total_price|swissfranc }}</strong></p>
+<p>Le montant total pour vos inscriptions s'élève à : <strong>{{ total_price|money }}</strong></p>
 <p>L'identifiant pour votre transaction est le suivant : <strong>{{ user.billing_identifier }}</strong></p>
-<p>Nous vous remercions de verser cette somme d’ici au  {{ registration_end|date:"j F Y" }} en privilégiant le virement bancaire sur le compte : </p>
+<p>Nous vous remercions de verser cette somme d’ici au  {{ registration_end|date:"j F Y" }} en privilégiant le virement bancaire sur le compte : </p>
 <div class="well">
   <dl class="dl-horizontal">
     <dt>IBAN</dt><dd>CH77 0076 7000 C507 0682 4</dd>
-    <dt>Adresse</dt><dd>AIC<br/>1201 Genève</dd>
+    <dt>Adresse</dt><dd>AIC<br/>1201 Genève</dd>
   </dl>
 </div>
 <p>en indiquant, sous communications ou motif, votre identifiant de transaction.</p>
 
-<p>Si nécessaire, il est également possible de déposer cette somme au secrétariat des écoles, Chemin du Chaucey 7, 1296 Coppet, en se munissant du présent récapitulatif.</p>
-<p><strong>Aucun remboursement ne pourra être demandé en cas de désistement.</strong></p>
+<p>Si nécessaire, il est également possible de déposer cette somme au secrétariat des écoles, Chemin du Chaucey 7, 1296 Coppet, en se munissant du présent récapitulatif.</p>
+<p><strong>Aucun remboursement ne pourra être demandé en cas de désistement.</strong></p>
 
 <hr />
 <h2>Inscriptions</h2>
@@ -57,3 +57,4 @@
   </tbody>
   
 </table>
+​
