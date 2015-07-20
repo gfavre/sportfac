@@ -24,8 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Kepchup 0.1 documentation" href="index.html" />
-    <link rel="next" title="Deploy" href="deploy.html" />
-    <link rel="prev" title="Welcome to sportfac_project’s documentation!" href="index.html" /> 
+    <link rel="prev" title="Configuration" href="configurer.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -35,10 +34,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="deploy.html" title="Deploy"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="index.html" title="Welcome to sportfac_project’s documentation!"
+          <a href="configurer.html" title="Configuration"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Kepchup 0.1 documentation</a> &raquo;</li> 
       </ul>
@@ -52,6 +48,44 @@
   <div class="section" id="install">
 <h1>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h1>
 <p>This is where you write how to get a new laptop to run this project.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span class="nb">export </span><span class="nv">PROJECT</span><span class="o">=</span>nyon
+
+<span class="nb">export </span><span class="nv">BASE_DIR</span><span class="o">=</span>~/Documents/Projets
+<span class="nb">export </span><span class="nv">PROJECT_NAME</span><span class="o">=</span>sportfac_<span class="nv">$PROJECT</span>
+<span class="nb">export </span><span class="nv">PROJECT_DIR</span><span class="o">=</span><span class="nv">$BASE_DIR</span>/<span class="nv">$PROJECT_NAME</span>
+<span class="nb">export </span><span class="nv">DB_NAME</span><span class="o">=</span><span class="nv">$PROJECT_NAME</span>
+<span class="nb">export </span><span class="nv">DB_USER</span><span class="o">=</span><span class="nv">$PROJECT_NAME</span>
+<span class="nb">export </span><span class="nv">DB_PASSWORD</span><span class="o">=</span><span class="nv">$PROJECT_NAME</span>
+<span class="nb">export </span><span class="nv">VENVDIR</span><span class="o">=</span>~/.virtualenvs/<span class="nv">$PROJECT_NAME</span>
+
+git clone http://git.pygreg.ch/sportfac.git <span class="nv">$PROJECT_DIR</span>
+<span class="nb">cd</span> <span class="nv">$PROJECT_DIR</span>
+git checkout -b <span class="nv">$PROJECT</span>
+git push --set-upstream origin <span class="nv">$PROJECT</span>
+mkvirtualenv <span class="nv">$PROJECT_NAME</span>
+<span class="nb">echo</span> <span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span> &gt; <span class="nv">$VENVDIR</span>/.project
+
+<span class="c"># Database</span>
+<span class="nb">echo</span> <span class="s2">&quot;CREATE ROLE </span><span class="nv">$DB_USER</span><span class="s2"> WITH LOGIN UNENCRYPTED PASSWORD &#39;</span><span class="nv">$DB_PASSWORD</span><span class="s2">&#39;&quot;</span> <span class="p">|</span> psql --user postgres
+<span class="nb">echo</span> <span class="s2">&quot;CREATE DATABASE </span><span class="nv">$DB_NAME</span><span class="s2"> WITH OWNER=</span><span class="nv">$DB_USER</span><span class="s2">&quot;</span> <span class="p">|</span> psql --user postgres
+
+<span class="c"># Env vars</span>
+<span class="nb">echo</span> <span class="s2">&quot;export PYTHONPATH=</span><span class="nv">$PROJECT_DIR</span><span class="s2">/sportfac&quot;</span> &gt;&gt; <span class="nv">$VENVDIR</span>/bin/postactivate
+<span class="nb">echo</span> <span class="s1">&#39;export DJANGO_SETTINGS_MODULE=&quot;sportfac.settings.local&quot;&#39;</span> &gt;&gt; <span class="nv">$VENVDIR</span>/bin/postactivate
+<span class="nb">echo</span> <span class="s2">&quot;export DB_USER=</span><span class="nv">$DB_USER</span><span class="s2">&quot;</span> &gt;&gt; <span class="nv">$VENVDIR</span>/bin/postactivate
+<span class="nb">echo</span> <span class="s2">&quot;export DB_PASSWORD=</span><span class="nv">$DB_PASSWORD</span><span class="s2">&quot;</span> &gt;&gt; <span class="nv">$VENVDIR</span>/bin/postactivate
+<span class="nb">echo</span> <span class="s2">&quot;export DB_NAME=</span><span class="nv">$DB_NAME</span><span class="s2">&quot;</span> &gt;&gt; <span class="nv">$VENVDIR</span>/bin/postactivate
+<span class="nb">echo</span> <span class="s2">&quot;export SECRET_KEY=gdhsagkdahjsg&quot;</span> &gt;&gt; <span class="nv">$VENVDIR</span>/bin/postactivate
+<span class="nb">echo</span> <span class="s2">&quot;export PHANTOMJS=/usr/local/bin/phantomjs&quot;</span> &gt;&gt; <span class="nv">$VENVDIR</span>/bin/postactivate
+
+
+<span class="c"># soft</span>
+pip install -r requirements/local.txt
+django-admin syncdb
+django-admin migrate
+django-admin loaddata sportfac/sportfac/fixtures/flatpages.json
+</pre></div>
+</div>
 </div>
 
 
@@ -61,11 +95,8 @@
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="index.html"
-                        title="previous chapter">Welcome to sportfac_project&#8217;s documentation!</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="deploy.html"
-                        title="next chapter">Deploy</a></p>
+  <p class="topless"><a href="configurer.html"
+                        title="previous chapter">Configuration</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -97,10 +128,7 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="deploy.html" title="Deploy"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="index.html" title="Welcome to sportfac_project’s documentation!"
+          <a href="configurer.html" title="Configuration"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Kepchup 0.1 documentation</a> &raquo;</li> 
       </ul>

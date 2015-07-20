@@ -259,7 +259,3 @@ div.code-block-caption {
     color: #efefef;
     background-color: #1c4e63;
 }
-
-h2, h3{
-    page-break-before: always;
-}

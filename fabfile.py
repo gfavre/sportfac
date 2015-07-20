@@ -13,11 +13,12 @@ from fabric.context_managers import prefix, path
 from fabric.operations import put
 
 try:
-    from fabsettings import WF_HOST, PROJECT_NAME, REPOSITORY, USER, PASSWORD, \
-                            VIRTUALENVS, SETTINGS_SUBDIR, \
-                            DBNAME, DBUSER, DBPASSWORD, \
-                            MAILHOST, MAILUSER, MAILPASSWORD, MAILADDRESS,\
-                            BROKER_URL
+    from fabsettings import (WF_HOST, PROJECT_NAME, REPOSITORY, BRANCH, 
+                             USER, PASSWORD, 
+                             VIRTUALENVS, SETTINGS_SUBDIR, 
+                             DBNAME, DBUSER, DBPASSWORD, 
+                             MAILHOST, MAILUSER, MAILPASSWORD, MAILADDRESS,
+                             BROKER_URL)
 except ImportError:
     print("""
 ImportError: Couldn't find fabsettings.py, it either does not exist or is
@@ -27,6 +28,7 @@ It should be of this form:
 WF_HOST         = "web392"
 PROJECT_NAME    = "sportfac"
 REPOSITORY      = "https://grfavre@kis-git.epfl.ch/repo/sportfac.git"
+BRANCH          = 'master'
 USER            = "grfavre"
 PASSWORD        = "************"
 DBNAME          = "sportfac"
@@ -80,7 +82,7 @@ env.dbpassword        = DBPASSWORD
 env.dbtype            = 'postgresql'
 env.home              = os.path.join("/home/", USER)
 env.repo              = REPOSITORY
-env.branch            = 'demo'
+env.branch            = BRANCH
 env.project_dir       = os.path.join(env.home, 'webapps', PROJECT_NAME)
 env.settings_dir      = os.path.join(env.project_dir, SETTINGS_SUBDIR)
 env.supervisor_dir    = os.path.join(env.home, 'webapps', 'supervisor')

@@ -13,6 +13,7 @@ Contents:
    
    
    configurer
+   install
 
 
 
