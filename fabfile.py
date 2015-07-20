@@ -251,7 +251,7 @@ def reload_app(arg=None):
 def reload_supervisor():
     "Reload supervisor config"
     with cd(env.supervisor_dir):
-        _ve_run('supervisor','supervisorctl reread && supervisorctl reload')
+        _ve_run('supervisor','supervisorctl reread && supervisorctl update')
 
 def restart_app():
     "Restarts the app using supervisorctl"
