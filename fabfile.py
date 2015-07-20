@@ -18,7 +18,7 @@ try:
                              VIRTUALENVS, SETTINGS_SUBDIR, 
                              DBNAME, DBUSER, DBPASSWORD, 
                              MAILHOST, MAILUSER, MAILPASSWORD, MAILADDRESS,
-                             BROKER_URL)
+                             BROKER_URL, PHANTOMJS)
 except ImportError:
     print("""
 ImportError: Couldn't find fabsettings.py, it either does not exist or is
@@ -41,7 +41,7 @@ MAILUSER        = "grfavre"
 MAILPASSWORD    = "************"
 MAILADDRESS     = "gregory@dealguru.ch"
 BROKER_URL      = "redis://localhost:14387/0"
-
+PHANTOMJS       = '/home/grfavre/bin/phantomjs'
 """)
     sys.exit(1)
 
@@ -96,6 +96,7 @@ env.mailuser          = MAILUSER
 env.mailpassword      = MAILPASSWORD
 env.mailaddress       = MAILADDRESS
 env.broker            = BROKER_URL
+env.phantomjs         = PHANTOMJS
 
 env.domain            = "beyondthewall.ch"
 env.subdomains        = ['sportfac',]
