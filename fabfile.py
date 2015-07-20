@@ -38,9 +38,9 @@ SETTINGS_SUBDIR = "sportfac"
 VIRTUALENVS     = "/home/grfavre/.virtualenvs"
 MAILHOST        = "smtp.webfaction.com"
 MAILUSER        = "grfavre"
-MAILPASSWORD    = PASSWORD
+MAILPASSWORD    = "************"
 MAILADDRESS     = "gregory@dealguru.ch"
-BROKER_URL      = redis://localhost:14387/0
+BROKER_URL      = "redis://localhost:14387/0"
 
 """)
     sys.exit(1)
