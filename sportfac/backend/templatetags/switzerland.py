@@ -18,7 +18,9 @@ def money(value):
         else:
             return "CHF {:1,.0f}.-".format(number).replace(',', "'")
     except ValueError:
-        return value        
+        return value
+    except TypeError:
+        return value
 
 @register.filter(is_safe=True)
 def iban(value):
