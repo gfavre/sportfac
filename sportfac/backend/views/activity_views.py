@@ -19,7 +19,7 @@ __all__ = ['ActivityDetailView', 'ActivityListView',
 
 class ActivityDetailView(BackendMixin, DetailView):
     model = Activity
-    slug_field = 'number'
+    slug_field = 'slug'
     slug_url_kwarg = 'activity'
     template_name = 'backend/activity/detail.html'
 
@@ -45,7 +45,7 @@ class ActivityCreateView(SuccessMessageMixin, BackendMixin, CreateView):
 class ActivityUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
     model = Activity
     form_class = ActivityForm
-    slug_field = 'number'
+    slug_field = 'slug'
     slug_url_kwarg = 'activity'
     success_url = reverse_lazy('backend:activity-list')
     success_message = _('<a href="%(url)s" class="alert-link">Activity (%(number)s)</a> has been updated.')
@@ -59,7 +59,7 @@ class ActivityUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
 
 class ActivityDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
     model = Activity
-    slug_field = 'number'
+    slug_field = 'slug'
     slug_url_kwarg = 'activity'
     success_message = _("Activity has been deleted.")
     success_url = reverse_lazy('backend:activity-list')

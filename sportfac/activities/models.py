@@ -42,7 +42,7 @@ class Activity(TimeStampedModel):
     An activity
     """
     name = models.CharField(max_length=50, db_index=True, unique=True, verbose_name=ugettext_lazy("Name"))
-    number = models.IntegerField(verbose_name=ugettext_lazy("Number"), db_index=True, unique=True, null=True, blank=True)
+    number = models.IntegerField(verbose_name=ugettext_lazy("Identifier"), db_index=True, unique=True, null=True, blank=True)
     slug = AutoSlugField(populate_from='name', max_length=50, db_index=True, unique=True, 
                          help_text=ugettext_lazy("Part of the url. Cannot contain punctuation, spaces or accentuated letters"))
     informations = RichTextField(verbose_name=_("Informations"), blank=True, 
@@ -53,13 +53,13 @@ class Activity(TimeStampedModel):
         return reverse('activities:activity-detail', kwargs={"slug": self.slug})
 
     def get_update_url(self):
-        return reverse('backend:activity-update', kwargs={'activity': self.number})
+        return reverse('backend:activity-update', kwargs={'activity': self.slug})
     
     def get_delete_url(self):
-        return reverse('backend:activity-delete', kwargs={'activity': self.number})
+        return reverse('backend:activity-delete', kwargs={'activity': self.slug})
     
     def get_backend_url(self):
-        return reverse('backend:activity-detail', kwargs={'activity': self.number})
+        return reverse('backend:activity-detail', kwargs={'activity': self.slug})
 
     def __unicode__(self):
         return self.name
@@ -157,28 +157,28 @@ class Course(TimeStampedModel):
         return base + ' ' + fullness
         
     def get_update_url(self):
-        return reverse('backend:course-update', kwargs={'course': self.number})
+        return reverse('backend:course-update', kwargs={'course': self.pk})
     
     def get_delete_url(self):
-        return reverse('backend:course-delete', kwargs={'course': self.number})
+        return reverse('backend:course-delete', kwargs={'course': self.pk})
     
     def get_backend_url(self):
-        return reverse('backend:course-detail', kwargs={'course': self.number})
+        return reverse('backend:course-detail', kwargs={'course': self.pk})
     
     def get_custom_mail_url(self):
-        return reverse('backend:mail-participants-custom', kwargs={'course': self.number})
+        return reverse('backend:mail-participants-custom', kwargs={'course': self.pk})
 
     def get_custom_mail_responsible_url(self):
-        return reverse('activities:mail-participants-custom', kwargs={'course': self.number})
+        return reverse('activities:mail-participants-custom', kwargs={'course': self.pk})
 
     def get_mail_responsible_url(self):
-        return reverse('backend:course-mail-responsible', kwargs={'course': self.number})
+        return reverse('backend:course-mail-responsible', kwargs={'course': self.pk})
     
     def get_mail_confirmation_url(self):
-        return reverse('backend:course-mail-confirmation', kwargs={'course': self.number})
+        return reverse('backend:course-mail-confirmation', kwargs={'course': self.pk})
     
     def get_js_export_url(self):
-        return reverse('backend:course-js-export', kwargs={'course': self.number})
+        return reverse('backend:course-js-export', kwargs={'course': self.pk})
     
     def get_js_csv(self, filelike):
         course_to_js_csv(self, filelike)

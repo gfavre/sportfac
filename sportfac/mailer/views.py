@@ -150,7 +150,7 @@ class CourseMixin(object):
     def get_context_data(self, **kwargs):
         context = super(CourseMixin, self).get_context_data(**kwargs)
         try:
-            course = Course.objects.get(number=self.kwargs.get('course'))
+            course = Course.objects.get(pk=self.kwargs.get('course'))
             self.course = course
             context['course'] = course
         except Course.DoesNotExist:
