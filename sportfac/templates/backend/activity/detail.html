@@ -23,7 +23,7 @@
 
 <section class="portlet">
   <h4 class="portlet-title"><u>{% trans "Courses" %} <small>({% blocktrans with number=activity.courses.count %}{{ number }} courses foretold so far{% endblocktrans %})</small></u></h4>
-<p><a href="{% url 'backend:course-create' %}?activity={{ activity.number }}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New course" %}</a></p>
+<p><a href="{% url 'backend:course-create' %}?activity={{ activity.pk }}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New course" %}</a></p>
 
 
 
