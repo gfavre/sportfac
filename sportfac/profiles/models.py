@@ -141,7 +141,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     
     @property
     def best_phone(self):
-        return self.private_phone2 or self.private_phone1 or self.private_phone3
+        return self.private_phone or self.private_phone2 or self.private_phone3
     
     @property
     def full_name(self):
