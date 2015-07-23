@@ -18,6 +18,8 @@ class CourseForm(forms.ModelForm):
                                          empty_label=None,
                                          widget=Select2Widget()) 
     number = forms.CharField(label=_("Identifier"), required=True)
+    price = forms.DecimalField(label=_("Price"), required=True)
+
     start_date = forms.DateTimeField(label=_("Start date"), required=True, 
                                      widget=DatePickerInput(format='%d.%m.%Y'))
     end_date = forms.DateTimeField(label=_("End date"), required=True, 
