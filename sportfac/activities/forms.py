@@ -17,6 +17,7 @@ class CourseForm(forms.ModelForm):
     responsible = forms.ModelChoiceField(queryset=FamilyUser.objects, 
                                          empty_label=None,
                                          widget=Select2Widget()) 
+    number = forms.CharField(label=_("Identifier"), required=True)
     start_date = forms.DateTimeField(label=_("Start date"), required=True, 
                                      widget=DatePickerInput(format='%d.%m.%Y'))
     end_date = forms.DateTimeField(label=_("End date"), required=True, 
@@ -35,6 +36,8 @@ class CourseForm(forms.ModelForm):
 
 
 class ActivityForm(forms.ModelForm):
+    number = forms.CharField(label=_("Identifier"), required=True)
+    
     class Meta:
         model = Activity
         fields = ('name', 'number', 'description', 'informations')

@@ -42,7 +42,10 @@ class Activity(TimeStampedModel):
     An activity
     """
     name = models.CharField(max_length=50, db_index=True, unique=True, verbose_name=ugettext_lazy("Name"))
-    number = models.IntegerField(verbose_name=ugettext_lazy("Identifier"), db_index=True, unique=True, null=True, blank=True)
+    number = models.CharField(max_length=30,
+                              db_index=True, unique=True, 
+                              null=True, blank=True, 
+                              verbose_name=ugettext_lazy("Identifier"))
     slug = AutoSlugField(populate_from='name', max_length=50, db_index=True, unique=True, 
                          help_text=ugettext_lazy("Part of the url. Cannot contain punctuation, spaces or accentuated letters"))
     informations = RichTextField(verbose_name=_("Informations"), blank=True, 
@@ -85,12 +88,17 @@ class Course(TimeStampedModel):
     "A course, i.e. an instance of an activity"
     activity = models.ForeignKey('Activity', related_name='courses', 
                                  verbose_name=ugettext_lazy("Activity"))
-    number = models.IntegerField(db_index=True, unique=True, null=True, blank=True, 
-                                 verbose_name=ugettext_lazy("Identifier"))
+    number = models.CharField(max_length=30,
+                              db_index=True, unique=True, 
+                              null=True, blank=True, 
+                              verbose_name=ugettext_lazy("Identifier"))
     uptodate = models.BooleanField(verbose_name=ugettext_lazy("Course up to date"), default=True)
     responsible = models.ForeignKey('profiles.FamilyUser', verbose_name=ugettext_lazy("Responsible"), related_name='courses')
 
-    price = models.DecimalField(max_digits=5, decimal_places=2, verbose_name=ugettext_lazy("Price"))
+    price = models.DecimalField(max_digits=5, decimal_places=2, 
+                                verbose_name=ugettext_lazy("Price"), 
+                                null=True, 
+                                blank=True)
     number_of_sessions = models.PositiveSmallIntegerField(verbose_name=ugettext_lazy("Number of sessions"))
     day = models.PositiveSmallIntegerField(choices=DAYS_OF_WEEK, verbose_name=ugettext_lazy("Day"), default=1)
     start_date = models.DateField(verbose_name=ugettext_lazy("Start date"))
