@@ -196,7 +196,7 @@ class Course(TimeStampedModel):
         return '%s - %s' % (self.number, self.responsible.full_name)
     
     def get_absolute_url(self):
-        return reverse('activities:course-detail', kwargs={"course": self.number})
+        return reverse('activities:course-detail', kwargs={"course": self.pk})
 
 
     def save(self, *args, **kwargs):
