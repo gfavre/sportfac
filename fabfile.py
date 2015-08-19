@@ -100,8 +100,8 @@ env.mailaddress       = MAILADDRESS
 env.broker            = BROKER_URL
 env.phantomjs         = PHANTOMJS
 
-env.domain            = "beyondthewall.ch"
-env.subdomains        = ['sportfac',]
+env.domain            = "kepchup.ch"
+env.subdomains        = ['coppet',]
 env.https             = False
 env.website_name      = env.project
 env.django_app_name   = env.project

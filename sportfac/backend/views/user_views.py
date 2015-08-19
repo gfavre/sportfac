@@ -11,7 +11,8 @@ from django.views.generic import CreateView, DeleteView, DetailView, \
 
 from backend import MANAGERS_GROUP, RESPONSIBLE_GROUP
 from profiles.models import FamilyUser, Child
-from profiles.forms import (ManagerForm, ResponsibleForm, UserPayForm, ChildForm)
+from profiles.forms import (ManagerForm, ManagerWithPasswordForm, 
+                            ResponsibleForm, UserPayForm, ChildForm)
 
 from .mixins import BackendMixin
 
@@ -50,12 +51,14 @@ class ResponsibleListView(UserListView):
 
 class UserCreateView(BackendMixin, SuccessMessageMixin, CreateView):
     model = FamilyUser
-    form_class = ManagerForm
+    form_class = ManagerWithPasswordForm
     template_name = 'backend/user/create.html'
     success_url = reverse_lazy('backend:user-list')    
     
     def form_valid(self, form):
         self.object = form.save()
+        self.object.set_password(form.cleaned_data['password1'])
+        self.object.save()
         self.object.is_manager = form.cleaned_data['is_manager']
         return super(UserCreateView, self).form_valid(form)
 

@@ -85,6 +85,22 @@ class ManagerForm(UserForm):
         if instance:
             self.fields['is_manager'].initial = instance.is_manager
 
+class ManagerWithPasswordForm(ManagerForm):
+    password1 = forms.CharField(widget=forms.PasswordInput,
+                                label=_("Password"),
+                                required=True)
+    password2 = forms.CharField(widget=forms.PasswordInput,
+                                label=_("Password (again)"),
+                                required=True)
+
+    def clean(self):
+        super(ManagerWithPasswordForm, self).clean()
+        c = self.cleaned_data
+        if self.cleaned_data.get("password1") != self.cleaned_data.get("password2"):
+            raise forms.ValidationError(_("You must type the same password"
+                                              " each time."))
+
+
 
 class ResponsibleForm(ManagerForm):
     iban = IBANFormField(label=_("IBAN"), 
