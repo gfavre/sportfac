@@ -5,7 +5,10 @@ from django.db import models
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 from django.http import HttpResponse
+from django.contrib.flatpages.admin import FlatPageAdmin
+from django.contrib.flatpages.models import FlatPage
 
+from ckeditor.widgets import CKEditorWidget
 
 from profiles.models import Registration
 from sportfac.utils import UnicodeWriter
@@ -158,3 +161,15 @@ class CoursesAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Course, CoursesAdmin)
+
+
+
+
+class FlatPageCustom(FlatPageAdmin):
+    formfield_overrides = {
+        models.TextField: {'widget': CKEditorWidget}
+    }
+
+
+admin.site.unregister(FlatPage)
+admin.site.register(FlatPage, FlatPageCustom)
