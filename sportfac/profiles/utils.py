@@ -21,7 +21,7 @@ def load_teachers(filelike):
         header_row = sheet.row_values(0)
                 
         if not all(key in header_row for key in MANDATORY_FIELDS):
-            raise ValueError(_("All these fields are mandatory: %s") % MANDATORY_FIELDS)
+            raise ValueError(_("All these fields are mandatory: %s") % unicode(MANDATORY_FIELDS))
     except xlrd.XLRDError:
         raise ValueError(_("File format is unreadable"))
     
