@@ -245,10 +245,10 @@ function($scope, $filter, $modal, CoursesService){
 
   $scope.uiConfig = {
     calendar:{
-      height: 450, aspectRatio: 2, editable: false,
+      height: 650, aspectRatio: 3, editable: false,
       year: year, month: month, date: day,
       defaultView: 'agendaWeek', weekends: false, allDaySlot: false,
-      slotMinutes: 15, firstHour: 12, maxTime: 20, minTime: 13,
+      slotMinutes: 15, maxTime: 19, minTime: 11,
       axisFormat: 'H:mm', columnFormat: 'dddd', header:{left: '', center: '', right: ''},
       dayNames: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
       dayNamesShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
