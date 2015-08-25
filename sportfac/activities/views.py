@@ -69,8 +69,7 @@ class MyCoursesListView(ResponsibleMixin, ListView):
 class MyCourseDetailView(CourseAccessMixin, DetailView):
     model = Course
     template_name = 'activities/course_detail.html'
-    slug_field = 'number'
-    slug_url_kwarg = 'course'
+    pk_url_kwarg = 'course'
     queryset = Course.objects.select_related('activity', 
                                              'responsible' 
                             ).prefetch_related( 'participants__child__school_year', 'participants__child__family')
