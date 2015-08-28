@@ -182,7 +182,12 @@ class PasswordSetView(BackendMixin, SuccessMessageMixin, FormView):
         user_id = self.request.GET.get('user', None)
         kwargs['user'] = self.get_object()
         return kwargs
-
+    
+    def form_valid(self, form):
+        user = self.get_object()
+        user.set_password(form.cleaned_data['password1'])
+        user.save()
+        return super(PasswordSetView, self).form_valid(form)    
 
 class ChildView(BackendMixin, View):
     def get_context_data(self, **kwargs):
