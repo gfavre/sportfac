@@ -80,6 +80,7 @@ class ManagerCreateView(UserCreateView):
 
 class ResponsibleCreateView(UserCreateView):
     success_url = reverse_lazy('backend:responsible-list')
+    form_class = ResponsibleForm
     
     def get_context_data(self, **kwargs):
         ctx = super(ResponsibleCreateView, self).get_context_data(**kwargs)

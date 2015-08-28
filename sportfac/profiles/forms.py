@@ -102,7 +102,7 @@ class ManagerWithPasswordForm(ManagerForm):
 
 
 
-class ResponsibleForm(ManagerForm):
+class ResponsibleForm(ManagerWithPasswordForm):
     iban = IBANFormField(label=_("IBAN"), 
                          widget=forms.TextInput(attrs={'placeholder': 'CH37...'}), 
                          required=False)
