@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-28 08:57+0200\n"
+"POT-Creation-Date: 2015-08-28 10:07+0200\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -539,47 +539,47 @@ msgstr ""
 msgid "User %s has been added."
 msgstr "L'utilisateur %s a été ajouté"
 
-#: sportfac/backend/views/user_views.py:78
+#: sportfac/backend/views/user_views.py:84
 #, python-format
 msgid "Manager %s has been added."
 msgstr "Le gestionnaire %s a été ajouté"
 
-#: sportfac/backend/views/user_views.py:97
+#: sportfac/backend/views/user_views.py:103
 #, python-format
 msgid "Responsible %s has been added."
 msgstr "Le responsable %s a été ajouté"
 
-#: sportfac/backend/views/user_views.py:131
+#: sportfac/backend/views/user_views.py:137
 #, python-format
 msgid "Contact informations of %s have been updated."
 msgstr "Les informations de contact de %s ont été mises à jour."
 
-#: sportfac/backend/views/user_views.py:141
+#: sportfac/backend/views/user_views.py:147
 #, python-format
 msgid "Status of %s has been changed."
 msgstr "Le status de %s a été changé."
 
-#: sportfac/backend/views/user_views.py:148
-#: sportfac/backend/views/user_views.py:196
+#: sportfac/backend/views/user_views.py:154
+#: sportfac/backend/views/user_views.py:202
 msgid "User has been deleted."
 msgstr "L'utilisateur a été supprimé"
 
-#: sportfac/backend/views/user_views.py:165
+#: sportfac/backend/views/user_views.py:171
 #, python-format
 msgid "Password changed for user %s."
 msgstr "Mot de passe changé pour l'utilisateur %s."
 
-#: sportfac/backend/views/user_views.py:199
+#: sportfac/backend/views/user_views.py:205
 #, python-format
 msgid "Child %s has been added."
 msgstr "L'e cours a été supprimé'enfant %s a été ajouté."
 
-#: sportfac/backend/views/user_views.py:215
+#: sportfac/backend/views/user_views.py:221
 #, python-format
 msgid "Child %s has been updated."
 msgstr "L'enfant %s a été mise à jour."
 
-#: sportfac/backend/views/user_views.py:221
+#: sportfac/backend/views/user_views.py:227
 msgid "Child has been removed."
 msgstr "L'enfant a été supprimé"
 
@@ -734,7 +734,7 @@ msgstr "Mot de passe (encore)"
 
 #: sportfac/profiles/forms.py:100
 msgid "You must type the same password each time."
-msgstr ""
+msgstr "Vous devez entrer le même mot de passe dans chaque champ"
 
 #: sportfac/profiles/forms.py:106
 #: sportfac/templates/backend/user/detail-responsible.html:39
