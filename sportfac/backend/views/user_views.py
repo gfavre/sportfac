@@ -185,7 +185,7 @@ class PasswordSetView(BackendMixin, SuccessMessageMixin, FormView):
     
     def form_valid(self, form):
         user = self.get_object()
-        user.set_password(form.cleaned_data['password1'])
+        user.set_password(form.cleaned_data['new_password1'])
         user.save()
         return super(PasswordSetView, self).form_valid(form)    
 
