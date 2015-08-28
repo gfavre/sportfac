@@ -117,7 +117,7 @@ class CoursesAdmin(admin.ModelAdmin):
     
     
     def export(self, request, queryset):
-        response = HttpResponse(mimetype='text/csv')
+        response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=cours.csv'
         writer = UnicodeWriter(response)
         
