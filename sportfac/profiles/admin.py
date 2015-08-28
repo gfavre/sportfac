@@ -175,7 +175,7 @@ class RegistrationAdmin(admin.ModelAdmin):
     delete_model.short_description = _('Delete selected registration')
     
     def export(self, request, queryset):
-        response = HttpResponse(mimetype='text/csv')
+        response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=inscriptions.csv'
         writer = UnicodeWriter(response)
         
