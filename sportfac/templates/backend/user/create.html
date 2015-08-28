@@ -2,7 +2,7 @@
 {% load i18n floppyforms sekizai_tags %}
 
 {% block title %}{% trans "Create user" %} - {{ block.super }}{% endblock %}
-{% block page_title %}<i class="icon-user"></i>&nbsp;&nbsp;{% trans "Create user" %}{% endblock %}
+{% block page_title %}<i class="icon-user"></i>&nbsp;&nbsp;{% if is_responsible %}{% trans "Create responsible" %}{% elif is_manager %}{% trans "Create manager" %}{% else %}{% trans "Create user" %}{% endif %}{% endblock %}
 
 {% block content %}
 
@@ -114,7 +114,7 @@
 
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-success btn-large"><i class="icon-plus"></i>&nbsp;{% trans 'Create user' %}</button>
+      <button type="submit" class="btn btn-success btn-large"><i class="icon-plus"></i>&nbsp;{% if is_responsible %}{% trans "Create responsible" %}{% elif is_manager %}{% trans "Create manager" %}{% else %}{% trans "Create user" %}{% endif %}</button>
     </div>
   </div>
 </form>
