@@ -69,6 +69,12 @@ class UserCreateView(BackendMixin, SuccessMessageMixin, CreateView):
 class ManagerCreateView(UserCreateView):
     success_url = reverse_lazy('backend:manager-list')    
 
+    def get_context_data(self, **kwargs):
+        ctx = super(ManagerCreateView, self).get_context_data(**kwargs)
+        ctx['is_manager'] = True
+        return ctx
+
+
     def get_initial(self):
         initial = super(ManagerCreateView, self).get_initial()
         initial['is_manager'] = True
