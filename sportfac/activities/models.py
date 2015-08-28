@@ -35,6 +35,7 @@ SCHOOL_YEARS = (
     (9, ugettext_lazy("9th HARMOS")),
     (10, ugettext_lazy("10th HARMOS")),
     (11, ugettext_lazy("11th HARMOS")),    
+    (12, ugettext_lazy("12th HARMOS")),   
 )
 
 class Activity(TimeStampedModel):
