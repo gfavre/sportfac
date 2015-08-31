@@ -12,7 +12,8 @@ from django.views.generic import CreateView, DeleteView, DetailView, \
 from backend import MANAGERS_GROUP, RESPONSIBLE_GROUP
 from profiles.models import FamilyUser, Child
 from profiles.forms import (ManagerForm, ManagerWithPasswordForm, 
-                            ResponsibleForm, UserPayForm, ChildForm)
+                            ResponsibleForm, ResponsibleWithPasswordForm, 
+                            UserPayForm, ChildForm)
 
 from .mixins import BackendMixin
 
@@ -86,7 +87,7 @@ class ManagerCreateView(UserCreateView):
 
 class ResponsibleCreateView(UserCreateView):
     success_url = reverse_lazy('backend:responsible-list')
-    form_class = ResponsibleForm
+    form_class = ResponsibleWithPasswordForm
     
     def get_context_data(self, **kwargs):
         ctx = super(ResponsibleCreateView, self).get_context_data(**kwargs)

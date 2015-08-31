@@ -12,7 +12,8 @@ from .models import Child, Teacher, FamilyUser
 
 __all__ = ('AuthenticationForm', 'PasswordChangeForm', 'PasswordResetForm',
            'AcceptTermsForm', 'RegistrationForm',
-           'UserForm', 'ManagerForm', 'ResponsibleForm',
+           'UserForm', 'ManagerForm', 'ManagerWithPasswordForm',
+           'ResponsibleForm', 'ResponsibleWithPasswordForm',
            'UserPayForm', 'ChildForm')
 
 
@@ -100,9 +101,7 @@ class ManagerWithPasswordForm(ManagerForm):
             raise forms.ValidationError(_("You must type the same password"
                                               " each time."))
 
-
-
-class ResponsibleForm(ManagerWithPasswordForm):
+class ResponsibleForm(ManagerForm):
     iban = IBANFormField(label=_("IBAN"), 
                          widget=forms.TextInput(attrs={'placeholder': 'CH37...'}), 
                          required=False)
@@ -115,6 +114,23 @@ class ResponsibleForm(ManagerWithPasswordForm):
                   'zipcode', 'city', 'country',
                   'private_phone', 'private_phone2', 'private_phone3',
                   'birth_date', 'iban', 'ahv')
+    
+
+
+class ResponsibleWithPasswordForm(ResponsibleForm):
+    password1 = forms.CharField(widget=forms.PasswordInput,
+                                label=_("Password"),
+                                required=True)
+    password2 = forms.CharField(widget=forms.PasswordInput,
+                                label=_("Password (again)"),
+                                required=True)
+
+    def clean(self):
+        super(ResponsibleWithPasswordForm, self).clean()
+        c = self.cleaned_data
+        if self.cleaned_data.get("password1") != self.cleaned_data.get("password2"):
+            raise forms.ValidationError(_("You must type the same password"
+                                              " each time."))
 
 
 class UserPayForm(forms.ModelForm):
