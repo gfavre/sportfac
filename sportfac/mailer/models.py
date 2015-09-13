@@ -34,14 +34,14 @@ class MailArchive(TimeStampedModel, StatusModel):
     sent = SentMailManager()
     
     def admin_recipients(self):
-        r = re.compile('(?P<name>[\w\s^\<]+) \<(?P<email>[^\>]+)\>')
+        r = re.compile('(?P<name>[\w\s^\<]+) \<(?P<email>[^\>]+)\>', re.U)
         def clean_email(name):
             m = r.search(name)
             if m:
-                return '<a href="mailto:%s">%s</a>' % (m.group('email'), m.group('name'))
+                return u'<a href="mailto:%s">%s</a>' % (m.group('email'), m.group('name'))
             return name
         
-        return '<br />'.join([clean_email(rec) for rec in self.recipients])
+        return u'<br />'.join([clean_email(rec) for rec in self.recipients])
     admin_recipients.allow_tags = True
     
     def admin_message(self):
