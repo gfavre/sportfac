@@ -37,7 +37,9 @@ class MailArchive(TimeStampedModel, StatusModel):
         r = re.compile('(?P<name>[\w\s^\<]+) \<(?P<email>[^\>]+)\>')
         def clean_email(name):
             m = r.search(name)
-            return '<a href="mailto:%s">%s</a>' % (m.group('email'), m.group('name'))
+            if m:
+                return '<a href="mailto:%s">%s</a>' % (m.group('email'), m.group('name'))
+            return name
         
         return '<br />'.join([clean_email(rec) for rec in self.recipients])
     admin_recipients.allow_tags = True
