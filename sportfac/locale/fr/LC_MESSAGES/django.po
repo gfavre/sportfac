@@ -8,13 +8,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-28 10:33+0200\n"
+"POT-Creation-Date: 2015-08-31 10:37+0200\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: sportfac/activities/admin.py:23
@@ -202,10 +202,8 @@ msgid "11th HARMOS"
 msgstr "11S HARMOS"
 
 #: sportfac/activities/models.py:38
-#, fuzzy
-#| msgid "10th HARMOS"
 msgid "12th HARMOS"
-msgstr "10S HARMOS"
+msgstr "12S HARMOS"
 
 #: sportfac/activities/models.py:45 sportfac/contact/forms.py:10
 #: sportfac/profiles/templates/profiles/billing_partial.html:23
@@ -332,8 +330,8 @@ msgstr "Année scolaire maximale"
 #: sportfac/activities/models.py:153
 #, python-format
 msgid ""
-"%(activity)s (%(number)s): from %(start)s to %(end)s, every %(day)s at %"
-"(hour)s."
+"%(activity)s (%(number)s): from %(start)s to %(end)s, every %(day)s at "
+"%(hour)s."
 msgstr ""
 "%(activity)s (%(number)s): du %(start)s au %(end)s, les %(day)s à %(hour)s."
 
@@ -714,7 +712,7 @@ msgstr "NPA"
 #: sportfac/profiles/models.py:95
 #: sportfac/templates/activities/course_detail.html:47
 #: sportfac/templates/backend/user/create.html:63
-#: sportfac/templates/backend/user/update.html:58
+#: sportfac/templates/backend/user/update.html:66
 #: sportfac/templates/profiles/account_form.html:29
 #: sportfac/templates/profiles/registration_form.html:38
 msgid "City"
@@ -788,7 +786,7 @@ msgstr "Pays de résidence"
 #: sportfac/templates/backend/user/create.html:84
 #: sportfac/templates/backend/user/detail-responsible.html:20
 #: sportfac/templates/backend/user/detail.html:19
-#: sportfac/templates/backend/user/update.html:79
+#: sportfac/templates/backend/user/update.html:87
 msgid "Home phone"
 msgstr "Téléphone (domicile)"
 
@@ -858,7 +856,7 @@ msgstr "Téléphone portable"
 #: sportfac/templates/backend/user/create.html:92
 #: sportfac/templates/backend/user/detail-responsible.html:32
 #: sportfac/templates/backend/user/detail.html:31
-#: sportfac/templates/backend/user/update.html:87
+#: sportfac/templates/backend/user/update.html:95
 msgid "Other phone"
 msgstr "Autre téléphone"
 
@@ -1184,7 +1182,7 @@ msgstr "Envoyer l'email"
 #: sportfac/templates/backend/user/child-update.html:17
 #: sportfac/templates/backend/user/password-change.html:20
 #: sportfac/templates/backend/user/pay.html:42
-#: sportfac/templates/backend/user/update.html:109
+#: sportfac/templates/backend/user/update.html:117
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -1979,7 +1977,7 @@ msgid "Create manager"
 msgstr "Créer un gestionnaire"
 
 #: sportfac/templates/backend/user/create.html:51
-#: sportfac/templates/backend/user/update.html:48
+#: sportfac/templates/backend/user/update.html:56
 #: sportfac/templates/profiles/registration_form.html:27
 msgid "Login informations"
 msgstr "Informations de connexion"
@@ -1987,24 +1985,24 @@ msgstr "Informations de connexion"
 #: sportfac/templates/backend/user/create.html:58
 #: sportfac/templates/backend/user/detail-responsible.html:10
 #: sportfac/templates/backend/user/detail.html:9
-#: sportfac/templates/backend/user/update.html:53
+#: sportfac/templates/backend/user/update.html:61
 #: sportfac/templates/profiles/account_form.html:23
 #: sportfac/templates/profiles/registration_form.html:33
 msgid "Contact informations"
 msgstr "Informations de contact"
 
 #: sportfac/templates/backend/user/create.html:79
-#: sportfac/templates/backend/user/update.html:74
+#: sportfac/templates/backend/user/update.html:82
 msgid "Phone"
 msgstr "Téléphone"
 
 #: sportfac/templates/backend/user/create.html:88
-#: sportfac/templates/backend/user/update.html:83
+#: sportfac/templates/backend/user/update.html:91
 msgid "Mobile"
 msgstr "Mobile"
 
 #: sportfac/templates/backend/user/create.html:100
-#: sportfac/templates/backend/user/update.html:95
+#: sportfac/templates/backend/user/update.html:103
 #: sportfac/templates/profiles/account_form.html:49
 msgid "Responsible informations"
 msgstr "Informations sur le responsable"
@@ -2099,7 +2097,7 @@ msgstr "Détails"
 #: sportfac/templates/backend/user/responsible-list.html:89
 #: sportfac/templates/backend/user/update.html:4
 #: sportfac/templates/backend/user/update.html:5
-#: sportfac/templates/backend/user/update.html:107
+#: sportfac/templates/backend/user/update.html:115
 msgid "Update user"
 msgstr "Mettre à jour l'utilisateur"
 
@@ -2120,7 +2118,7 @@ msgstr "Nouveau gestionnaire"
 
 #: sportfac/templates/backend/user/password-change.html:4
 #: sportfac/templates/backend/user/password-change.html:5
-#: sportfac/templates/backend/user/update.html:50
+#: sportfac/templates/backend/user/update.html:58
 #: sportfac/templates/profiles/baseprofile.html:32
 #: sportfac/templates/registration/password_change_done.html:3
 #: sportfac/templates/registration/password_change_done.html:5
@@ -2159,6 +2157,10 @@ msgstr "Liste des responsables"
 #: sportfac/templates/backend/user/responsible-list.html:64
 msgid "New responsible"
 msgstr "Nouveau responsable"
+
+#: sportfac/templates/backend/user/update.html:35
+msgid "There are errors in this form."
+msgstr "Il y a des erreurs dans ce formulaire"
 
 #: sportfac/templates/base.html:61 sportfac/templates/contact/contact.html:4
 #: sportfac/templates/contact/contact.html:5
