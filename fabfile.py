@@ -257,6 +257,7 @@ def restart_app():
     "Restarts the app using supervisorctl"
     with cd(env.supervisor_dir):            
         _ve_run('supervisor','supervisorctl restart %s' % env.project)
+        _ve_run('supervisor','supervisorctl restart %s_worker' % env.project)
 
 
 
