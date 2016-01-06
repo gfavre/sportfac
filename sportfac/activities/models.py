@@ -183,6 +183,9 @@ class Course(TimeStampedModel):
     def get_mail_responsible_url(self):
         return reverse('backend:course-mail-responsible', kwargs={'course': self.pk})
     
+    def get_mail_infos_url(self):
+        return reverse('activities:mail-responsible', kwargs={'course': self.pk})
+    
     def get_mail_confirmation_url(self):
         return reverse('backend:course-mail-confirmation', kwargs={'course': self.pk})
     
