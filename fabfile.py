@@ -236,7 +236,7 @@ def install_app():
 def reload_app(arg=None):
     "Pulls app and refreshes requirements"
     with cd(env.project_dir):
-        run('git pull origin master')
+        run('git pull origin %s' % env.branch) 
     
     if arg <> "quick":
         with cd(env.project_dir):
