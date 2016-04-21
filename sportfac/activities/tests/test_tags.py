@@ -1,11 +1,6 @@
-"""
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
-
-Replace this with more appropriate tests for your application.
-"""
 from datetime import datetime, timedelta
-from django.test import TestCase
+
+from django.test import TestCase, override_settings
 from django.template import Template, Context, TemplateSyntaxError
 
 
@@ -15,14 +10,13 @@ class TemplateTagDurationTests(TestCase):
         self.tpl = Template("{% load duration %}{{ delta | duration }}")
         self.tpl2 = Template("{% load duration %}{{ delta | duration:True }}")
 
-        
     def render(self, value, tpl=None):
         if not tpl:
             tpl = self.tpl
         return tpl.render(Context({
             'delta': value,
         })) 
-    
+
     def test_bad_value(self):
         """
         template filter expects timedelta object
@@ -33,6 +27,7 @@ class TemplateTagDurationTests(TestCase):
         self.assertEqual(self.render(datetime.now()), '')
         self.assertNotEqual(len(self.render(timedelta(0))), 0)
 
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
     def test_duration(self):
         """
         test various durations
@@ -48,6 +43,7 @@ class TemplateTagDurationTests(TestCase):
         self.assertEqual(self.render(timedelta(days=2, seconds=7320)), '2 days, 2 hours, 2 minutes')
         self.assertEqual(self.render(timedelta(days=1)), '1 day')
 
+    @override_settings(LANGUAGE_CODE='en-US', LANGUAGES=(('en', 'English'),))
     def test_argument(self):
         """
         test when display of seconds is on.

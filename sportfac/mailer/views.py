@@ -133,9 +133,6 @@ class MailMixin(ContextMixin):
         MailArchive.objects.create(subject=subject, messages=emails, 
                                    recipients=recipients_addresses,
                                    template=self.get_message_template())
-        
-        
-        
    
     def post(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)

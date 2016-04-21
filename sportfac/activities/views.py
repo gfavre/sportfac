@@ -28,6 +28,7 @@ class CourseAccessMixin(ResponsibleMixin):
             return self.request.user in [p.child.family for p in self.get_object().participants.all()]
         return True
 
+
 class ActivityDetailView(DetailView):
     model = Activity
     
@@ -72,7 +73,7 @@ class MyCourseDetailView(CourseAccessMixin, DetailView):
     pk_url_kwarg = 'course'
     queryset = Course.objects.select_related('activity', 
                                              'responsible' 
-                            ).prefetch_related( 'participants__child__school_year', 'participants__child__family')
+                            ).prefetch_related('participants__child__school_year', 'participants__child__family')
 
 
 class CustomMailCreateView(ResponsibleMixin, MailCreateView):
