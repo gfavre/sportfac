@@ -8,7 +8,7 @@ from .views import (password_change, password_reset, WizardRegistrationView,
                     RegisteredActivitiesListView)
 
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^$', AccountView.as_view(), name="profiles_account"),
     url(r'^children/$', ChildrenListView.as_view(), name="profiles_children"),
     url(r'^summary/$', SummaryView.as_view(), name="profiles_registered_activities"),
@@ -38,4 +38,4 @@ urlpatterns = patterns('',
     
     #and now add the registration urls
     url(r'', include('registration.backends.default.urls')),
-)
+]

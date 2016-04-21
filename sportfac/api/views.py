@@ -74,6 +74,7 @@ class ManagerPermission(permissions.IsAuthenticated):
             return True
         return False
 
+
 class FamilyOrAdminPermission(permissions.IsAuthenticated):
     def has_object_permission(self, request, view, obj):
         """
@@ -99,7 +100,7 @@ class ChildrenViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
         if serializer.is_valid():
-            serializer.object.family = request.user
+            serializer.validated_data['family'] = request.user
             self.object = serializer.save(force_insert=True)
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED,
@@ -114,7 +115,6 @@ class SimpleChildrenViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SimpleChildrenSerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ('first_name', 'last_name')
-    
 
 
 class ChildOrAdminPermission(permissions.IsAuthenticated):
@@ -125,6 +125,7 @@ class ChildOrAdminPermission(permissions.IsAuthenticated):
         if request.user.is_manager or request.user == obj.child.family:
             return True
         return False
+
 
 class RegistrationViewSet(viewsets.ModelViewSet):
     authentication_classes = (SessionAuthentication,)
@@ -157,7 +158,6 @@ class RegistrationViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
-
 class RegistrationOwnerAdminPermission(permissions.IsAuthenticated):
     def has_object_permission(self, request, view, obj):
         """
@@ -176,7 +176,4 @@ class ExtraInfoViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         user = self.request.user
-        return ExtraInfo.objects.filter(registration__child__in=user.children.all())    
-    
-    
-        
+        return ExtraInfo.objects.filter(registration__child__in=user.children.all())

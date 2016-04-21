@@ -1,10 +1,6 @@
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.utils.translation import ugettext_lazy as _
-
 from rest_framework import serializers
-from rest_framework.compat import smart_text
 
-from activities.models import Activity, Course
+from activities.models import Activity, Course, ExtraNeed
 from profiles.models import FamilyUser, Child, Teacher, SchoolYear, Registration, ExtraInfo
 
 
@@ -13,29 +9,27 @@ class ActivitySerializer(serializers.ModelSerializer):
         model = Activity
         fields = ('id', 'name', 'number')
 
+
 class ResponsibleSerializer(serializers.ModelSerializer):
     first = serializers.CharField(source='first_name')
     last  = serializers.CharField(source='last_name')
     phone = serializers.CharField(source='best_phone')
-
     
     class Meta:
         model = FamilyUser
+        fields = ('id', 'first', 'last', 'phone', 'email')
         read_only_fields = ('email',)
 
 
-
 class CourseInlineSerializer(serializers.ModelSerializer):
-    responsible = serializers.RelatedField(many=False)
+    responsible = ResponsibleSerializer(read_only=True)
     start_time = serializers.TimeField(format='%H:%M')
     end_time = serializers.TimeField(format='%H:%M')
-
 
     class Meta:
         model = Course
         fields = ('id', 'number', 'day', 'start_date', 'end_date', 'start_time', 'end_time', 
-                  'schoolyear_min', 'schoolyear_max')
-
+                  'schoolyear_min', 'schoolyear_max', 'responsible')
 
 
 class ActivityDetailedSerializer(serializers.ModelSerializer):
@@ -44,8 +38,6 @@ class ActivityDetailedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Activity
         fields = ('id', 'name', 'number', 'courses')
-
-
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -70,12 +62,14 @@ class SchoolYearField(serializers.RelatedField):
     def from_native(self, value):
         return SchoolYear.objects.get(year=value)
 
+
 class TeacherSerializer(serializers.ModelSerializer):
-    years = SchoolYearField(many=True, required=False)
+    years = SchoolYearField(many=True, required=False, read_only=True)
     
     class Meta:
         model = Teacher
         fields = ('id', 'first_name', 'last_name', 'years' )
+
 
 class SimpleChildrenSerializer(serializers.ModelSerializer):
     class Meta:
@@ -85,8 +79,9 @@ class SimpleChildrenSerializer(serializers.ModelSerializer):
 
 class ChildrenSerializer(serializers.ModelSerializer):
     birth_date = serializers.DateField(format='iso-8601', input_formats=('iso-8601', '%d/%m/%Y', '%d.%m.%Y'))
-    teacher = serializers.PrimaryKeyRelatedField(many=False, read_only=False)
-    school_year = SchoolYearField(many=False, read_only=False)
+    teacher = serializers.PrimaryKeyRelatedField(many=False, read_only=False,
+                                                 queryset=Teacher.objects.all())
+    school_year = SchoolYearField(many=False, read_only=False, queryset=SchoolYear.objects.all())
     
     class Meta:
         model = Child
@@ -95,16 +90,22 @@ class ChildrenSerializer(serializers.ModelSerializer):
                   'birth_date', 'school_year', 'teacher',)
         depth = 1
 
+
 class RegistrationSerializer(serializers.ModelSerializer):
-    child = serializers.PrimaryKeyRelatedField()
-    course = serializers.PrimaryKeyRelatedField()
+    child = serializers.PrimaryKeyRelatedField(read_only=True)
+    course = serializers.PrimaryKeyRelatedField(read_only=True)
     
     class Meta:
         model = Registration
+        fields = ('id', 'child', 'course',)
+
 
 class ExtraSerializer(serializers.ModelSerializer):
-    registration = serializers.PrimaryKeyRelatedField(many=False, read_only=False)
-    key = serializers.PrimaryKeyRelatedField(many=False, read_only=False)
+    registration = serializers.PrimaryKeyRelatedField(many=False, read_only=False,
+                                                      queryset=Registration.objects.all())
+    key = serializers.PrimaryKeyRelatedField(many=False, read_only=False,
+                                             queryset=ExtraNeed.objects.all())
     
     class Meta:
         model = ExtraInfo
+        fields = ('id', 'registration', 'key', 'info')

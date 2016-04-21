@@ -135,35 +135,39 @@ FIXTURE_DIRS = (
 
 ########## TEMPLATE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-context-processors
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.debug',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.media',
-    'django.core.context_processors.static',
-    'django.core.context_processors.tz',
-    'django.contrib.messages.context_processors.messages',
-    'django.core.context_processors.request',
-    
-    'constance.context_processors.config',
-    
-    'sportfac.context_processors.wizard_context',
-    'sportfac.context_processors.registration_opened_context',
-    'sportfac.context_processors.activities_context',
-    'sekizai.context_processors.sekizai',
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            normpath(join(SITE_ROOT, 'templates')),
+        ],
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.core.context_processors.debug',
+                'django.core.context_processors.i18n',
+                'django.core.context_processors.media',
+                'django.core.context_processors.static',
+                'django.core.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+                'django.core.context_processors.request',
+                
+                'constance.context_processors.config',
+                
+                'sportfac.context_processors.wizard_context',
+                'sportfac.context_processors.registration_opened_context',
+                'sportfac.context_processors.activities_context',
+                'sekizai.context_processors.sekizai',
+            ],
+            'loaders': [
+                'django.template.loaders.filesystem.Loader',
+                'dbtemplates.loader.Loader',
+                'django.template.loaders.app_directories.Loader',
+            ]
+        },
+    },
+]
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#template-loaders
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'dbtemplates.loader.Loader',
-    'django.template.loaders.app_directories.Loader',
-)
-
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#template-dirs
-TEMPLATE_DIRS = (
-    normpath(join(SITE_ROOT, 'templates')),
-)
 ########## END TEMPLATE CONFIGURATION
 
 
@@ -178,8 +182,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
-    'sportfac.middleware.RegistrationOpenedMiddleware',
     
+    'sportfac.middleware.RegistrationOpenedMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 )
 ########## END MIDDLEWARE CONFIGURATION
@@ -219,11 +223,8 @@ THIRD_PARTY_APPS = (
     'constance.backends.database', # settings in admin
     'grappelli', # admin interface
     'ckeditor', # wysiwyg editor
-    #'extended_flatpages',
-    'autocomplete_light', # autocomplete 
-    #'pipeline', # minifier
     'sekizai', #add_to_block template tag
-    'django_select2', # select2 widget (enhanced select box)
+#    'django_select2', # select2 widget (enhanced select box)
     'dbtemplates', # store templates in db (used by mailer module)
 )
 
@@ -373,7 +374,6 @@ GRAPPELLI_ADMIN_TITLE = "Administration du sport scolaire facultatif"
 
 
 ########### CKEDITOR
-CKEDITOR_UPLOAD_PATH = MEDIA_ROOT
 CKEDITOR_CONFIGS = {
     'default': {
         'toolbar': [

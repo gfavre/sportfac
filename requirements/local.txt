@@ -1,9 +1,10 @@
 # Local development dependencies go here
 -r base.txt
-coverage==3.7.1
-django-discover-runner==1.0
-django-debug-toolbar==1.2.2
-Sphinx==1.3b2
-fabric==1.10.1
-django-constance[database]==1.0.1
-django_extensions==1.5.0
+
+coverage == 4.1b2
+django-discover-runner == 1.0
+django-debug-toolbar == 1.4
+Sphinx == 1.4.1
+fabric == 1.11.1
+django-constance[database] == 1.1.2
+django_extensions == 1.6.1

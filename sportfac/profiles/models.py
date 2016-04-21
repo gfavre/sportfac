@@ -318,7 +318,7 @@ class RegistrationManager(models.Manager):
         return self.get_queryset().filter(status=Registration.STATUS.waiting)
     
     def validated(self):
-        return self.get_queryset().filter(status__in=(Registration.STATUS.valid, Registration.STATUS.confirmed)
+        return self.get_queryset().filter(status__in=(Registration.STATUS.valid, Registration.STATUS.confirmed))
 
     
 

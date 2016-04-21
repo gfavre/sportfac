@@ -9,8 +9,6 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.utils.translation import ugettext_lazy as _
 from django.http import HttpResponse
 
-import autocomplete_light
-
 from sportfac.utils import UnicodeWriter
 from .models import FamilyUser, Child, Teacher, Registration, SchoolYear
 
@@ -144,7 +142,6 @@ class RegistrationAdmin(admin.ModelAdmin):
     change_list_template = "admin/change_list_filter_sidebar.html"
     change_list_filter_template = "admin/filter_listing.html"
     
-    #form = autocomplete_light.modelform_factory(Registration)
     actions = ['delete_model', 'export']
     
     

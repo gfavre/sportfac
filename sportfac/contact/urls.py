@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.views.generic import TemplateView
 from django.contrib import sitemaps
 from django.core.urlresolvers import reverse
@@ -14,7 +14,7 @@ class Sitemap(sitemaps.Sitemap):
 
 
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^$', ContactView.as_view(), name='contact'),
     url(r'^thanks/$', view=TemplateView.as_view(template_name='contact/thanks.html'), name="contact_thanks")
-) 
+]

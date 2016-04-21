@@ -6,8 +6,9 @@ from django.views.generic import DeleteView, DetailView, \
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import get_object_or_404
 from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib.formtools.wizard.views import SessionWizardView
 from django.db import IntegrityError
+
+from formtools.wizard.views import SessionWizardView
 
 from backend.forms import ChildSelectForm, CourseSelectForm, RegistrationForm
 from activities.models import Course
@@ -67,7 +68,7 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
     template_name = 'backend/registration/update.html'
     success_message = _("Registration has been updated.")
     success_url = reverse_lazy('backend:registration-list')
-    
+            
     def get_success_url(self):
         course = self.request.GET.get('course', None)
         if not course:

@@ -1,11 +1,11 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.contrib.sitemaps import  GenericSitemap
 
 import views
 
 from .models import Activity
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^(?P<pk>\d+)/$', view=views.ActivityDetailView.as_view()),
     url(r'^(?P<slug>[-_\w]+)/$', view=views.ActivityDetailView.as_view(), 
         name='activity-detail'),
@@ -25,8 +25,6 @@ urlpatterns = patterns('',
     url(r'^courses/(?P<course>\d+)/mail/preview$', 
         view=views.CustomMailPreview.as_view(),
         name="mail-preview"),
-
-
-) 
+]
 
 sitemap = GenericSitemap({'queryset': Activity.objects.all() })

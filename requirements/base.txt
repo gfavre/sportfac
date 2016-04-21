@@ -1,30 +1,29 @@
-Django>=1.7.0,<1.8
-psycopg2==2.5.4
-bpython==0.13.2
+Django >=1.9.5, <1.10
+djangorestframework >= 3.3.3
+psycopg2 == 2.6.1
+celery == 3.1.23
+
+bpython == 0.15.0
 
 # Forms
-django-braces==1.4.0
-django-floppyforms==1.3.0
-django-autocomplete-light==2.0.7
-Django-Select2==4.2.2
-django-autoslug==1.7.2
-django-model-utils==2.2
-django-localflavor==1.1
+django-braces == 1.8.1
+django-floppyforms == 1.6.2
+Django-Select2 == 5.8.4
+django-autoslug == 1.9.3
+django-model-utils == 2.5
+django-localflavor == 1.2
+django-ckeditor == 5.0.3
+django-formtools == 1.0
+django-picklefield == 0.3.2
 
 logutils==0.3.3
-Pillow==2.7.0
-djangorestframework==2.4.4
-django-registration-redux==1.1
-django-grappelli==2.6.3
-django-pipeline==1.4.3
-pytz==2014.10
-django-ckeditor==4.4.7
-django_extended_flatpages==0.1
-django-sekizai==0.8.1
-django-filter==0.9.1
-phonenumbers==7.0.2
-xlrd==0.9.3
--e git+git://github.com/gfavre/django-dbtemplates@b371cc6518fbc0389898271e77f1b9962ea38391#egg=dbtemplates
-celery==3.1.17
+Pillow == 3.2.0
+django-registration-redux == 1.4
+django-grappelli == 2.8.1
+pytz == 2016.3
+django-sekizai == 0.9
+django-filter == 0.13.0
+phonenumbers == 7.3.0
+xlrd == 0.9.4
+-e git+git://github.com/jazzband/django-dbtemplates.git#egg=dbtemplates
 -e git+git://github.com/gfavre/pypdftk@84215dedae1fc5b8629e13043a1b5183e7960a37#egg=pypdftk
-django-picklefield==0.3.1

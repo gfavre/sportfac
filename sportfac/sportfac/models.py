@@ -2,11 +2,16 @@ from django.db import models
 import ast
 
 class ListField(models.TextField):
-    __metaclass__ = models.SubfieldBase
     description = "Stores a python list"
 
     def __init__(self, *args, **kwargs):
         super(ListField, self).__init__(*args, **kwargs)
+
+    def from_db_value(self, value, expression, connection, context):
+        if value is None:
+            return value
+        
+        return ast.literal_eval(value)
 
     def to_python(self, value):
         if not value:

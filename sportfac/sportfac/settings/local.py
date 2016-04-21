@@ -10,13 +10,6 @@ from base import *
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = True
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#template-debug
-TEMPLATE_DEBUG = DEBUG
-
-TEMPLATE_CONTEXT_PROCESSORS += (
-  'django.core.context_processors.debug',
-)
-
 ########## END DEBUG CONFIGURATION
 
 
@@ -36,7 +29,6 @@ DATABASES = {
         'PASSWORD': os.environ['DB_PASSWORD'],
         'HOST': '',
         'PORT': '',
-        'OPTIONS': {'autocommit': True,}
     }
 }
 ########## END DATABASE CONFIGURATION

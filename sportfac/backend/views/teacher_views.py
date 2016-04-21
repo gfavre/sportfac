@@ -23,7 +23,8 @@ class TeacherDetailView(BackendMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = {'students': Child.objects.filter(teacher=self.get_object())\
-                                            .select_related('family')
+                                            .select_related('family',)\
+                                            .prefetch_related('registrations', 'registrations__course__activity')
                    }
         return super(TeacherDetailView, self).get_context_data(**context)
     

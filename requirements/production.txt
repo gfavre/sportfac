@@ -5,4 +5,4 @@
 gunicorn==19.1.1
 redis==2.10.3
 raven==5.1.1
-django-constance[redis]==1.0.1
+django-constance[redis] == 1.1.2

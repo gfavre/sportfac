@@ -57,7 +57,7 @@ class RegistrationForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
-        course_qs = Course.objects.select_related('activity', 'participants').annotate(
+        course_qs = Course.objects.select_related('activity').annotate(
                         nb_participants=Count('participants'))
         if self.instance.pk:
             course_qs = course_qs.filter(

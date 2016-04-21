@@ -144,9 +144,9 @@ class ChildForm(forms.ModelForm):
     birth_date = forms.DateTimeField(widget=DatePickerInput(format='%d.%m.%Y'),
                                      help_text=_("Format: 31.12.2012"))
     sex = forms.ChoiceField(widget=forms.widgets.RadioSelect, choices=Child.SEX)
-    teacher = forms.ModelChoiceField(queryset=Teacher.objects, 
-                                         empty_label=None,
-                                          widget=Select2Widget()) 
+    teacher = forms.ModelChoiceField(queryset=Teacher.objects.prefetch_related('years'), 
+                                     empty_label=None,
+                                     widget=Select2Widget()) 
     class Meta:
         model = Child
         fields = ('first_name', 'last_name', 'sex', 'birth_date', 'nationality', 

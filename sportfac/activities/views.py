@@ -44,7 +44,7 @@ class ActivityDetailView(DetailView):
         
         registrations = {}
         children = self.request.user.children.all()
-        for course in activity.courses.all():
+        for course in activity.courses.prefetch_related('participants__child'):
             participants = [reg.child for reg in course.participants.all()]
             for child in children:
                 if child in participants:
