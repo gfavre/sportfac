@@ -1,0 +1,1 @@
+  coverage run --source 'sportfac' sportfac/manage.py test -k activities api backend contact mailer profiles sportfac
