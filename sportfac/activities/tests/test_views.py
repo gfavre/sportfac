@@ -3,22 +3,34 @@ from django.test import TestCase, override_settings
 
 import mock
 
+from mailer.views import MailMixin
 from .factories import ActivityFactory, CourseFactory
 from profiles.tests.factories.users import ChildFactory, FamilyUserFactory, DEFAULT_PASS
-from mailer.views import MailMixin
+from profiles.tests.factories.registrations import RegistrationFactory
 
 class ActivityViewsTests(TestCase):
     def setUp(self):
         self.activity = ActivityFactory()
+        self.user = FamilyUserFactory()
+        
     
     def test_detail_view(self):
         url = self.activity.get_absolute_url()
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+    
+    def test_detail_user_registered(self):
+        self.client.login(username=self.user.email, password=DEFAULT_PASS)
+        child = ChildFactory(family=self.user)
+        course = CourseFactory(activity=self.activity)
+        registration=RegistrationFactory(child=child, course=course)
+        url = self.activity.get_absolute_url()
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        
 
 class CourseViewsTests(TestCase):
     def setUp(self):
-        from profiles.tests.factories.registrations import RegistrationFactory
         self.responsible = FamilyUserFactory()
         self.course = CourseFactory(responsible=self.responsible)
         self.family = FamilyUserFactory()
