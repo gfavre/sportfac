@@ -4,7 +4,7 @@
 coverage == 4.1b2
 mock == 2.0.0
 factory_boy >= 2.7.0
-django-discover-runner == 1.0
+-e git+https://github.com/gfavre/faker.git@2e81e142499da46a3e3dc8eaaf51a92df475cdb9#egg=faker
 django-debug-toolbar == 1.4
 Sphinx == 1.4.1
 fabric == 1.11.1

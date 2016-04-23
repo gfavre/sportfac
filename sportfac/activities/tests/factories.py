@@ -2,10 +2,13 @@ import datetime
 
 import factory
 import factory.fuzzy
+import faker
 
 from activities.models import Activity, Course, ExtraNeed, SCHOOL_YEARS
 from profiles.tests.factories.users import FamilyUserFactory
 
+
+fake = faker.Factory.create()
 
 YEARS = [year for (year, name) in SCHOOL_YEARS]
 
@@ -14,7 +17,7 @@ class ActivityFactory(factory.DjangoModelFactory):
         model = Activity
 
     number = factory.Sequence(lambda x: "{0}".format(x))
-    name = factory.fuzzy.FuzzyText()
+    name = factory.lazy_attribute(lambda o: fake.words())
 
 
 class CourseFactory(factory.DjangoModelFactory):
@@ -32,7 +35,7 @@ class CourseFactory(factory.DjangoModelFactory):
     )
     start_time = datetime.time(hour=16)
     end_time = datetime.time(hour=17)
-    place = factory.fuzzy.FuzzyText()
+    place = factory.lazy_attribute(lambda o: fake.address())
     min_participants = factory.fuzzy.FuzzyInteger(1, 20)
     
     max_participants = factory.LazyAttribute(
