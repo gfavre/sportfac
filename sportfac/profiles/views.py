@@ -102,31 +102,34 @@ class WizardRegistrationView(WizardMixin, BaseRegistrationView):
     form_class = RegistrationForm
     template_name = 'profiles/registration_form.html'
 
-    def get_success_url(self, request, user):
+    def get_success_url(self, user):
         return reverse('wizard_children')    
        
-    def register(self, request, **cleaned_data):
-        email, password = cleaned_data['email'], cleaned_data['password1']
-        first_name, last_name = cleaned_data['first_name'], cleaned_data['last_name']
-        address, zipcode, city = cleaned_data['address'], cleaned_data['zipcode'], cleaned_data['city']
-        country = cleaned_data['country']
-        private_phone = cleaned_data['private_phone']
-        private_phone2 = cleaned_data['private_phone2']
-        private_phone3 = cleaned_data['private_phone3']
+    def register(self, form):
+        email, password = form.cleaned_data['email'], form.cleaned_data['password1']
+        first_name, last_name = form.cleaned_data['first_name'], form.cleaned_data['last_name']
+        address, zipcode, city = form.cleaned_data['address'], form.cleaned_data['zipcode'], form.cleaned_data['city']
+        country = form.cleaned_data['country']
+        private_phone = form.cleaned_data['private_phone']
+        private_phone2 = form.cleaned_data['private_phone2']
+        private_phone3 = form.cleaned_data['private_phone3']
         
-        FamilyUser.objects.create_user(email=email, password=password, 
-                                       first_name=first_name, last_name=last_name,
-                                       address=address, zipcode=zipcode, city=city,
-                                       country=country,
-                                       private_phone=private_phone,
-                                       private_phone2=private_phone2,
-                                       private_phone3=private_phone3)
-        new_user = authenticate(email=email, password=password)
-        login(request, new_user)
-        signals.user_registered.send(sender=self.__class__,
-                                     user=new_user,
-                                     request=request)
-        return new_user
+        user = FamilyUser.objects.create_user(
+            first_name=first_name, last_name=last_name, 
+            password=password, email=email,
+            address=address, zipcode=zipcode, city=city, country=country,
+            private_phone=private_phone,
+            private_phone2=private_phone2,
+            private_phone3=private_phone3
+        )
+        user = authenticate(email=email, password=password)
+        login(self.request, user)
+        signals.user_registered.send(
+            sender=self.__class__,
+            user=user,
+            request=self.request
+        )
+        return user
 
 
 class RegisteredActivitiesListView(WizardMixin, FormView):

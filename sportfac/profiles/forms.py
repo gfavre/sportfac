@@ -170,21 +170,26 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
     """
     required_css_class = 'required'
     email = forms.EmailField(label=_("E-mail"), 
+                             max_length=255,
                              widget=forms.EmailInput(attrs={'placeholder': 'john@example.com'}))
     
-    first_name = forms.CharField(label=_("First name"), required=True)
-    last_name = forms.CharField(label=_("Last name"), required=True)
+    first_name = forms.CharField(label=_("First name"), max_length=30, required=True)
+    last_name = forms.CharField(label=_("Last name"),  max_length=30, required=True)
     address = forms.CharField(label=_("Address"),
                               #widget=forms.Textarea(attrs={'rows': 3}),
                               required = False)
-    zipcode = forms.CharField(label=_("NPA"), required=True, 
-                              widget=forms.TextInput(attrs={'placeholder': '1296'}))
-    city = forms.CharField(label=_("City"), widget=forms.TextInput(attrs={'placeholder': 'Coppet'}), required=True)
+    zipcode = forms.CharField(label=_("NPA"), required=True,
+                              max_length=5, 
+                              widget=forms.TextInput(attrs={'placeholder': _("NPA")}))
+    city = forms.CharField(
+                label=_("City"),max_length=100,required=True,
+                widget=forms.TextInput(attrs={'placeholder': _('City')})
+            )
     country = forms.ChoiceField(label=_("Country"), choices=FamilyUser.COUNTRY)
 
-    private_phone = forms.CharField(label=_("Home phone"), widget=forms.PhoneNumberInput(), required=False)
-    private_phone2 = forms.CharField(label=_("Mobile phone #1"), widget=forms.PhoneNumberInput(), required=False)
-    private_phone3 = forms.CharField(label=_("Mobile phone #2"), widget=forms.PhoneNumberInput(), required=False)
+    private_phone = forms.CharField(label=_("Home phone"), max_length=30, widget=forms.PhoneNumberInput(), required=False)
+    private_phone2 = forms.CharField(label=_("Mobile phone #1"), max_length=30, widget=forms.PhoneNumberInput(), required=False)
+    private_phone3 = forms.CharField(label=_("Mobile phone #2"), max_length=30, widget=forms.PhoneNumberInput(), required=False)
 
     password1 = forms.CharField(widget=forms.PasswordInput,
                                 label=_("Password"))
