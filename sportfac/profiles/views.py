@@ -137,8 +137,7 @@ class RegisteredActivitiesListView(WizardMixin, FormView):
     
     def get_queryset(self):
         return Registration.objects\
-                           .select_related('extra_infos',
-                                           'child', 
+                           .select_related('child', 
                                            'course',
                                            'course__activity')\
                            .prefetch_related('extra_infos')\
