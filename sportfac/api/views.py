@@ -34,7 +34,6 @@ class CourseViewSet(viewsets.ReadOnlyModelViewSet):
     
     def get_queryset(self):
         return Course.objects.select_related('activity', 'responsible').prefetch_related('participants')
-
     
 
 class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
@@ -77,7 +76,6 @@ class FamilyOrAdminPermission(permissions.IsAuthenticated):
         if request.user.is_manager or request.user == obj.family:
             return True
         return False
-        
 
 
 class ChildrenViewSet(viewsets.ModelViewSet):

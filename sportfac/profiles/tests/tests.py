@@ -36,7 +36,6 @@ class RegistrationTestCase(TestCase):
                                       start_time=time(hour=12, minute=15), 
                                       end_time=time(hour=13, minute=0))
         
-        RegistrationFactory
         registration1 = RegistrationFactory(course=course1, child=self.child1)
         registration2 = RegistrationFactory(course=course1, child=self.child2)
         
