@@ -30,7 +30,7 @@ urlpatterns = [
     url(r'^$', flatviews.flatpage, {'url': '/'}, name='home'),
     url(r'^reglement/$', flatviews.flatpage, {'url': '/reglement/'}, name='terms'),
 
-    url(r'^api/', include('api.urls')),
+    url(r'^api/', include('api.urls', namespace="api")),
     url(r'^activities/', include('activities.urls', namespace="activities")),
     url(r'^account/', include('profiles.urls')),
     url(r'^backend/', include('backend.urls', namespace="backend", app_name="backend")),

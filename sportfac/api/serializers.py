@@ -32,18 +32,10 @@ class CourseInlineSerializer(serializers.ModelSerializer):
                   'schoolyear_min', 'schoolyear_max', 'responsible')
 
 
-class ActivityDetailedSerializer(serializers.ModelSerializer):
-    courses = CourseInlineSerializer(many=False)
-    
-    class Meta:
-        model = Activity
-        fields = ('id', 'name', 'number', 'courses')
-
-
 class CourseSerializer(serializers.ModelSerializer):
     activity = ActivitySerializer(many=False)
     responsible = ResponsibleSerializer(many=False)
-    count_participants = serializers.Field(source='count_participants')
+    count_participants = serializers.IntegerField()
     start_time = serializers.TimeField(format='%H:%M')
     end_time = serializers.TimeField(format='%H:%M')
     
@@ -55,12 +47,19 @@ class CourseSerializer(serializers.ModelSerializer):
                   'schoolyear_min', 'schoolyear_max')
 
 
-class SchoolYearField(serializers.RelatedField):
-    def to_native(self, value):
-        return value.year
+
+
+class ActivityDetailedSerializer(serializers.ModelSerializer):
+    courses = CourseInlineSerializer(many=True)
     
-    def from_native(self, value):
-        return SchoolYear.objects.get(year=value)
+    class Meta:
+        model = Activity
+        fields = ('id', 'name', 'number', 'courses')
+
+
+class SchoolYearField(serializers.RelatedField):
+    def to_representation(self, value):
+        return value.year
 
 
 class TeacherSerializer(serializers.ModelSerializer):
