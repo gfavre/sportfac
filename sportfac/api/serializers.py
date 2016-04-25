@@ -92,8 +92,8 @@ class ChildrenSerializer(serializers.ModelSerializer):
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
-    child = serializers.PrimaryKeyRelatedField(read_only=True)
-    course = serializers.PrimaryKeyRelatedField(read_only=True)
+    child = serializers.PrimaryKeyRelatedField(queryset=Child.objects.all())
+    course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all())
     
     class Meta:
         model = Registration

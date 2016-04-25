@@ -17,7 +17,7 @@ class ActivityFactory(factory.DjangoModelFactory):
         model = Activity
 
     number = factory.Sequence(lambda x: "{0}".format(x))
-    name = factory.lazy_attribute(lambda o: fake.words())
+    name = factory.lazy_attribute(lambda o: fake.word())
 
 
 class CourseFactory(factory.DjangoModelFactory):

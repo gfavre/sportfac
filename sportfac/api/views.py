@@ -86,7 +86,11 @@ class ChildrenViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         user = self.request.user
-        return Child.objects.filter(family=user).prefetch_related('school_year').select_related('teacher')
+        if user.is_manager:
+            queryset = Child.objects.all()
+        else:
+            queryset = Child.objects.filter(family=user)
+        return queryset.prefetch_related('school_year').select_related('teacher')
         
     
     def create(self, request, *args, **kwargs):
@@ -127,10 +131,13 @@ class RegistrationViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         user = self.request.user
-        return Registration.objects.filter(child__in=user.children.all())
+        if user.is_manager:
+            return Registration.objects.all()
+        else:
+            return Registration.objects.filter(child__in=user.children.all())
     
     def create(self, request, format=None):
-        if type(request.DATA) is list:
+        if type(request.data) is list:
             data = []
             self.get_queryset().exclude(validated=True).exclude(paid=True).delete()
             for registration in request.data:
