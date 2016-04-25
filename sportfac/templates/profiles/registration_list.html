@@ -159,7 +159,7 @@
       })
       
       $('.extra-info').ajaxForm({
-          url: '{% url "api-extra-list" %}',
+          url: '{% url "api:api-extra-list" %}',
           success: function(res, status, xhr, form){
             $('.alert-info', form).addClass('hide');
             $('.alert-success .value', form).html(res.value);
