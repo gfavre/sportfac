@@ -78,7 +78,6 @@ DATABASES = {
         'PASSWORD': environ.get('DB_PASSWORD'),
         'HOST': '',
         'PORT': '',
-        'OPTIONS': {'autocommit': True,}
     }
 }
 ########## END DATABASE CONFIGURATION
