@@ -47,8 +47,6 @@ class CourseSerializer(serializers.ModelSerializer):
                   'schoolyear_min', 'schoolyear_max')
 
 
-
-
 class ActivityDetailedSerializer(serializers.ModelSerializer):
     courses = CourseInlineSerializer(many=True)
     
@@ -60,6 +58,9 @@ class ActivityDetailedSerializer(serializers.ModelSerializer):
 class SchoolYearField(serializers.RelatedField):
     def to_representation(self, value):
         return value.year
+    
+    def to_internal_value(self, data):
+        return SchoolYear.objects.get(year=data)
 
 
 class TeacherSerializer(serializers.ModelSerializer):

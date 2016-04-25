@@ -90,10 +90,10 @@ class ChildrenViewSet(viewsets.ModelViewSet):
         
     
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.validated_data['family'] = request.user
-            self.object = serializer.save(force_insert=True)
+            self.object = serializer.save()
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED,
                             headers=headers)
@@ -133,7 +133,7 @@ class RegistrationViewSet(viewsets.ModelViewSet):
         if type(request.DATA) is list:
             data = []
             self.get_queryset().exclude(validated=True).exclude(paid=True).delete()
-            for registration in request.DATA:
+            for registration in request.data:
                 serializer = RegistrationSerializer(data=registration)
                 if serializer.is_valid():
                     serializer.save()
@@ -143,7 +143,7 @@ class RegistrationViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 
         else:
-            serializer = RegistrationSerializer(data=request.DATA)
+            serializer = RegistrationSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
