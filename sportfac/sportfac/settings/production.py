@@ -95,10 +95,18 @@ DATABASES = {
 ########## END CACHE CONFIGURATION
 
 
+
 ########## SECRET CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 SECRET_KEY = get_env_setting('SECRET_KEY')
 ########## END SECRET CONFIGURATION
+
+########## SECURITY
+SECURE_SSL_HOST = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_SECONDS = 3600
 
 ALLOWED_HOSTS = get_env_setting('ALLOWED_HOSTS').split(';')
 
