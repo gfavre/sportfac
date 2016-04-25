@@ -180,7 +180,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
-    'django.middleware.security.SecurityMiddleWare',
+    'django.middleware.security.SecurityMiddleware',
     
     'sportfac.middleware.RegistrationOpenedMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
