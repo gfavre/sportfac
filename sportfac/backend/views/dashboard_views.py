@@ -9,8 +9,10 @@ from django.utils.safestring import mark_safe
 from django.db.models import Count, Max, Sum, Avg
 
 from constance import config
+
 from activities.models import Activity, Course
-from profiles.models import FamilyUser, Registration, Child, Teacher, SchoolYear
+from profiles.models import Child, FamilyUser, SchoolYear, Teacher
+from registrations.models import Registration
 from backend.forms import RegistrationDatesForm
 from backend import MANAGERS_GROUP, RESPONSIBLE_GROUP
 from .mixins import BackendMixin
@@ -69,13 +71,20 @@ class HomePageView(BackendMixin, TemplateView):
         
         context['payement_due'] = finished.filter(total__gt=0).count()
         context['paid'] = finished.filter(total__gt=0, paid=True).count()
+        #registrations = Registration.objects.filter(
+        #    created__range=(config.START_REGISTRATION,
+        #                    config.END_REGISTRATION)
+        #    ).extra({'creation': "to_char(profiles_registration.created, 'YYYY-MM-DD')"}
+        #    ).values('creation'
+        #    ).order_by('creation'
+        #    ).annotate(num=Count('id'))
         registrations = Registration.objects.filter(
             created__range=(config.START_REGISTRATION,
-                            config.END_REGISTRATION)
-            ).extra({'creation': "to_char(profiles_registration.created, 'YYYY-MM-DD')"}
-            ).values('creation'
-            ).order_by('creation'
-            ).annotate(num=Count('id'))
+            config.END_REGISTRATION)
+        ).extra(
+            {'creation': "to_char(profiles_registration.created, 'YYYY-MM-DD')"}
+        ).values('creation').order_by('creation').annotate(num=Count('id'))
+
         context['registrations_per_day'] = [[time_str_to_milliseconds(reg.get('creation')),
                                              reg.get('num')] for reg in registrations]
         

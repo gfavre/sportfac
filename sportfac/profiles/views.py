@@ -12,9 +12,9 @@ from braces.views import LoginRequiredMixin
 from registration.backends.simple.views import RegistrationView as BaseRegistrationView
 from registration import signals
 
-from .models import FamilyUser, Child, Registration
+from .models import FamilyUser, Child
 from .forms import *
-
+from registrations.models import Registration
 from sportfac.views import WizardMixin
 
 __all__ = ('password_change', 'password_reset', 

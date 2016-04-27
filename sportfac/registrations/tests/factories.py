@@ -4,8 +4,8 @@ import factory
 import factory.fuzzy
 
 from activities.tests.factories import CourseFactory
-from profiles.models import Registration
-from .users import ChildFactory
+from registrations.models import Registration
+from profiles.tests.factories import ChildFactory
 
 
 

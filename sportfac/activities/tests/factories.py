@@ -5,7 +5,7 @@ import factory.fuzzy
 import faker
 
 from activities.models import Activity, Course, ExtraNeed, SCHOOL_YEARS
-from profiles.tests.factories.users import FamilyUserFactory
+from profiles.tests.factories import FamilyUserFactory
 
 
 fake = faker.Factory.create()

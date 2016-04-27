@@ -6,9 +6,10 @@ from rest_framework.test import APITestCase, APIClient
 
 from activities.tests.factories import ActivityFactory, CourseFactory
 from profiles.models import Child
-from profiles.tests.factories.users import ChildFactory, FamilyUserFactory, SchoolYearFactory, TeacherFactory, DEFAULT_PASS
-from profiles.tests.factories.registrations import RegistrationFactory
+from profiles.tests.factories import ChildFactory, FamilyUserFactory, SchoolYearFactory, TeacherFactory, DEFAULT_PASS
+from registrations.tests.factories import RegistrationFactory
 from api.serializers import ChildrenSerializer
+
 
 fake = faker.Factory.create('fr_CH')
 

@@ -6,7 +6,8 @@ from django.views.generic import ListView
 from mailer.views import (MailView, MailCreateView, CustomMailMixin,
                           MailParticipantsView, MailCourseResponsibleView)
 from mailer.models import MailArchive
-from profiles.models import FamilyUser, Registration
+from profiles.models import FamilyUser
+from registrations.models import Registration
 from .mixins import BackendMixin
 
 __all__ = ['MailArchiveListView', 'NeedConfirmationView',

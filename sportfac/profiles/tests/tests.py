@@ -2,16 +2,15 @@
 Tests for profiles app.
 """
 from datetime import time
-from django.test import TestCase
 from django.contrib.auth.models import Group
 
-from profiles.models import Registration, Child, SchoolYear, FamilyUser
 from backend import MANAGERS_GROUP
-from activities.models import Course
-
-from .factories.users import FamilyUserFactory, SchoolYearFactory, TeacherFactory, ChildFactory
-from .factories.registrations import RegistrationFactory
 from activities.tests.factories import CourseFactory
+from registrations.tests.factories import RegistrationFactory
+from .factories import ChildFactory, FamilyUserFactory, SchoolYearFactory, TeacherFactory
+from sportfac.utils import TenantTestCase as TestCase
+
+
 
 class RegistrationTestCase(TestCase):
     def setUp(self):

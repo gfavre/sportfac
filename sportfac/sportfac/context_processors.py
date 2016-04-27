@@ -5,8 +5,9 @@ from django.core.urlresolvers import reverse
 
 from constance.admin import config
 
-from profiles.models import Registration
 from activities.models import Activity
+from registrations.models import Registration
+
 
 class Step:
     def __init__(self, request, id, title, urlname, activable):

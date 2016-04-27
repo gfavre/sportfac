@@ -70,16 +70,11 @@ STATIC_ROOT = get_env_setting('STATIC_ROOT')
 
 ########## DATABASE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': environ.get('DB_NAME'),
-        'USER': environ.get('DB_USER'),
-        'PASSWORD': environ.get('DB_PASSWORD'),
-        'HOST': '',
-        'PORT': '',
-    }
-}
+
+DATABASES['default']['NAME'] = environ.get('DB_NAME')
+DATABASES['default']['USER'] = environ.get('DB_USER')
+DATABASES['default']['PASSWORD'] = environ.get('DB_PASSWORD')
+
 ########## END DATABASE CONFIGURATION
 
 

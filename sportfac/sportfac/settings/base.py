@@ -47,7 +47,7 @@ MANAGERS = ADMINS
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.',
+        'ENGINE': 'django_tenants.postgresql_backend',
         'NAME': '',
         'USER': '',
         'PASSWORD': '',
@@ -55,6 +55,16 @@ DATABASES = {
         'PORT': '',
     }
 }
+
+# Multitenancy configuration
+DATABASE_ROUTERS = (
+    'django_tenants.routers.TenantSyncRouter',
+)
+DEFAULT_TENANT_NAME = 'current'
+VERSION_COOKIE_NAME = 'KepchupYear'
+TENANT_MODEL = "backend.YearTenant" # app.Model
+TENANT_DOMAIN_MODEL = "backend.Domain" # app.Model
+
 ########## END DATABASE CONFIGURATION
 
 
@@ -172,6 +182,8 @@ TEMPLATES = [
 ########## MIDDLEWARE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#middleware-classes
 MIDDLEWARE_CLASSES = (
+    'sportfac.middleware.VersionMiddleware',
+
     # Default Django middleware.
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -195,7 +207,11 @@ ROOT_URLCONF = '%s.urls' % SITE_NAME
 
 
 ########## APP CONFIGURATION
-DJANGO_APPS = (
+
+SHARED_APPS = (
+    'django_tenants',
+    'backend', # you must list the app where your tenant model resides in
+    
     # Default Django apps:
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -207,44 +223,40 @@ DJANGO_APPS = (
     'django.contrib.sites',
     'django.contrib.flatpages',
     'django.contrib.sitemaps',
-    # Useful template tags:
-    # 'django.contrib.humanize',
+    #'django.contrib.humanize', # Useful template tags:
 
-    # 'django.contrib.admindocs',
-)
-
-THIRD_PARTY_APPS = (
-    # Database migration helpers:
+    # third party apps
     'rest_framework', # REST API
     'registration', #user registration
     'floppyforms', # better forms
-    'constance', # settings in admin
-    'constance.backends.database', # settings in admin
     'grappelli', # admin interface
     'ckeditor', # wysiwyg editor
     'sekizai', #add_to_block template tag
-#    'django_select2', # select2 widget (enhanced select box)
+    #'django_select2', # select2 widget (enhanced select box)
     'dbtemplates', # store templates in db (used by mailer module)
-)
 
-# Apps specific for this project go here.
-LOCAL_APPS = (
-    'activities',
+    # local apps
     'api',
-    'backend',
     'contact',
     'mailer',
     'profiles',
+
+    # last apps
+    'django.contrib.admin',   
 )
 
-LAST_APPS = (
-    # Admin panel and documentation:
-    'django.contrib.admin',
 
+TENANT_APPS = (
+    # third party apps
+    'constance', # settings in admin
+    'constance.backends.database', # settings in admin
+    'activities',
+    'registrations',
+    'profiles',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
-INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS + LAST_APPS
+INSTALLED_APPS = list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]
 ########## END APP CONFIGURATION
 
 

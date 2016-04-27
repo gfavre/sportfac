@@ -1,5 +1,9 @@
 import csv, codecs, cStringIO
 
+from django_tenants.test.cases import TenantTestCase as BaseTenantTestCase
+from django_tenants.test.client import TenantClient
+from django_tenants.utils import get_tenant_model, get_tenant_domain_model
+
 class excel_semicolon(csv.excel):
     delimiter = ';'
 
@@ -62,3 +66,10 @@ class ExcelWriter:
     def writerows(self, rows):
         for row in rows:
             self.writerow(row)
+
+
+class TenantTestCase(BaseTenantTestCase):
+    def setUp(self, *args, **kwargs):
+        super(TenantTestCase, self).__init__(*args, **kwargs)
+        self.tenant = get_tenant_model()(schema_name='test')
+        self.client = TenantClient(self.tenant)
