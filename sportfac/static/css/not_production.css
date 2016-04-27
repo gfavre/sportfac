@@ -1,0 +1,87 @@
+.navbar-inverse {
+  margin-bottom: 0;
+  background-color: #800911;
+  background-image: -webkit-linear-gradient(top, #c9181f 0%, #800911 100%);
+  background-image: linear-gradient(to bottom, #c9181f 0%, #800911 100%);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff9181f', endColorstr='#ff800911', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  border: none;
+  border-bottom: 1px solid #6d060c;
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.navbar-inverse .navbar-collapse,
+.navbar-inverse .navbar-form {
+  border-color: #6d060c;
+}
+.navbar-collapse.in {
+  max-height: none;
+  overflow-y: visible;
+}
+.navbar-inverse .navbar-brand {
+  color: #fff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+.navbar-inverse .navbar-brand:hover {
+  color: #fff;
+  background-color: #7b0810;
+}
+.navbar-inverse .navbar-brand-img {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.navbar-inverse .navbar-toggle {
+  padding: 0 18px;
+  margin: 0;
+  height: 60px;
+  color: #fff;
+  color: #6f91ae;
+  font-size: 17px;
+  text-align: center;
+  line-height: 60px;
+  border: none;
+  outline: none;
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.navbar-inverse .navbar-toggle:active,
+.navbar-inverse .navbar-toggle:focus {
+  background-color: transparent;
+}
+.navbar-inverse .navbar-toggle:hover {
+  color: #547795;
+  background-color: #7b0810;
+}
+.navbar-inverse .navbar-toggle.is-open {
+  color: #fff;
+  background-color: #7b0810;
+}
+.navbar-inverse .navbar-nav > li > a {
+  color: #fff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+.navbar-inverse .navbar-nav > li > a:hover {
+  background-color: #7b0810;
+}
+.navbar-inverse .navbar-nav > li.active > a,
+.navbar-inverse .navbar-nav > li.active > a:hover,
+.navbar-inverse .navbar-nav > li.active > a:active,
+.navbar-inverse .navbar-nav > li.active > a:focus {
+  background-color: #7b0810;
+}
+.navbar-inverse .navbar-nav > .open > a,
+.navbar-inverse .navbar-nav > .open > a:hover,
+.navbar-inverse .navbar-nav > .open > a:focus {
+  background-color: #7b0810;
+}
+.navbar-inverse .navbar-nav > .navbar-profile > a {
+  height: 60px;
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 60px;
+}

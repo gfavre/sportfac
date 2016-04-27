@@ -32,8 +32,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('schema_name', models.CharField(max_length=63, unique=True, validators=[django_tenants.postgresql_backend.base._check_schema_name])),
-                ('start_date', models.DateField(null=True)),
-                ('end_date', models.DateField(null=True)),
+                ('start_date', models.DateField(null=False)),
+                ('end_date', models.DateField(null=False)),
                 ('created_on', models.DateTimeField(auto_now_add=True)),
             ],
             options={
