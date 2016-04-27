@@ -39,7 +39,7 @@ class ExcelWriter:
     which is encoded in the given encoding.
     """
 
-    def __init__(self, f, dialect=excel_semicolon, encoding="mac_roman", **kwds):
+    def __init__(self, f, dialect=excel_semicolon, encoding="utf-8", **kwds):
         # Redirect output to a queue
         self.queue = cStringIO.StringIO()
         self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
