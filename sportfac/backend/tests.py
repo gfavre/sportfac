@@ -1,14 +1,12 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.core.urlresolvers import reverse
-from django.test import TestCase
 from django.test.client import RequestFactory
 
-from sportfac.middleware import RegistrationOpenedMiddleware
+from profiles.tests.factories import FamilyUserFactory, DEFAULT_PASS
+from sportfac.utils import TenantTestCase as TestCase
 
-from profiles.tests.factories.users import FamilyUserFactory, DEFAULT_PASS
 
 class BackendTestBase(TestCase):
     def setUp(self):

@@ -9,7 +9,8 @@ from rest_framework import mixins, generics, status, filters
 
 
 from activities.models import Activity, Course
-from profiles.models import Child, Teacher, Registration, ExtraInfo
+from profiles.models import Child, Teacher
+from registrations.models import Registration, ExtraInfo
 from .serializers import (ActivitySerializer, ActivityDetailedSerializer, 
                           ChildrenSerializer, CourseSerializer, TeacherSerializer,
                           RegistrationSerializer, ExtraSerializer, SimpleChildrenSerializer)

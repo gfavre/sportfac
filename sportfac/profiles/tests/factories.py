@@ -7,7 +7,7 @@ import factory.fuzzy
 import faker
 
 
-from profiles.models import FamilyUser, Child, Registration, SchoolYear, Teacher
+from profiles.models import FamilyUser, Child, SchoolYear, Teacher
 from activities.models import SCHOOL_YEARS
 
 

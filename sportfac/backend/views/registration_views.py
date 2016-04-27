@@ -10,9 +10,9 @@ from django.db import IntegrityError
 
 from formtools.wizard.views import SessionWizardView
 
-from backend.forms import ChildSelectForm, CourseSelectForm, RegistrationForm
 from activities.models import Course
-from profiles.models import Registration
+from registrations.models import Registration
+from backend.forms import ChildSelectForm, CourseSelectForm, RegistrationForm
 from .mixins import BackendMixin
 
 __all__ = ('RegistrationCreateView', 'RegistrationDeleteView', 'RegistrationDetailView', 

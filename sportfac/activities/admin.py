@@ -10,7 +10,7 @@ from django.contrib.flatpages.models import FlatPage
 
 from ckeditor.widgets import CKEditorWidget
 
-from profiles.models import Registration
+from registrations.models import Registration
 from sportfac.utils import UnicodeWriter
 from .models import Activity, Course, ExtraNeed
 

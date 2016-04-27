@@ -3,7 +3,8 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 
-from profiles.models import Registration as RegistrationModel
+from registrations.models import Registration as RegistrationModel
+
 def fix_status(apps, schema_editor):
     Registration = apps.get_model('profiles', 'Registration')
     for registration in Registration.objects.all():
