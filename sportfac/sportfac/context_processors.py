@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 from constance.admin import config
 
 from activities.models import Activity
+from backend.models import YearTenant
 from registrations.models import Registration
 
 
@@ -92,3 +93,7 @@ def registration_opened_context(request):
 
 def activities_context(request):
     return {'activities': Activity.objects.all()}
+
+def tenants_context(request):
+    if request.user.is_manager:
+        return {'tenants': YearTenant.objects.all()}

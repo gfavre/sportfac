@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import time
 
 from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse_lazy
@@ -53,10 +54,19 @@ class HomePageView(BackendMixin, TemplateView):
         
         return context
     
-    def get_additional_context_phase2(self, context):
-        def time_str_to_milliseconds(time_str):
-            return 1000 * int(datetime.strptime(time_str, '%Y-%m-%d').strftime('%s'))
+    def _get_registrations_per_day(self):
+        total_per_day = {}
+        registrations = [d.date() for d in Registration.objects.filter(
+                                            created__range=(config.START_REGISTRATION, config.END_REGISTRATION)
+                                           ).values_list('created', flat=True)]
+        for date in registrations:
+            milliseconds = int(time.mktime(date.timetuple()) * 1000)
+            total = total_per_day.setdefault(milliseconds, 0)
+            total_per_day[milliseconds] += 1
         
+        return [[k, total_per_day[k]] for k in sorted(total_per_day)]
+    
+    def get_additional_context_phase2(self, context):
         finished = FamilyUser.objects.filter(finished_registration=True)
         waiting = set(Registration.objects\
                                       .filter(status=Registration.STATUS.waiting)\
@@ -71,22 +81,8 @@ class HomePageView(BackendMixin, TemplateView):
         
         context['payement_due'] = finished.filter(total__gt=0).count()
         context['paid'] = finished.filter(total__gt=0, paid=True).count()
-        #registrations = Registration.objects.filter(
-        #    created__range=(config.START_REGISTRATION,
-        #                    config.END_REGISTRATION)
-        #    ).extra({'creation': "to_char(profiles_registration.created, 'YYYY-MM-DD')"}
-        #    ).values('creation'
-        #    ).order_by('creation'
-        #    ).annotate(num=Count('id'))
-        registrations = Registration.objects.filter(
-            created__range=(config.START_REGISTRATION,
-            config.END_REGISTRATION)
-        ).extra(
-            {'creation': "to_char(profiles_registration.created, 'YYYY-MM-DD')"}
-        ).values('creation').order_by('creation').annotate(num=Count('id'))
-
-        context['registrations_per_day'] = [[time_str_to_milliseconds(reg.get('creation')),
-                                             reg.get('num')] for reg in registrations]
+                    
+        context['registrations_per_day'] = self._get_registrations_per_day()
         
         participants = Course.objects.annotate(count_participants=Count('participants'))\
                                      .values_list('min_participants', 
@@ -104,10 +100,7 @@ class HomePageView(BackendMixin, TemplateView):
 
         return context
     
-    def get_additional_context_phase3(self, context):
-        def time_str_to_milliseconds(time_str):
-            return 1000 * int(datetime.strptime(time_str, '%Y-%m-%d').strftime('%s'))
-        
+    def get_additional_context_phase3(self, context):        
         courses = Course.objects.all()
         context['nb_courses'] = courses.count()
         activities = Activity.objects.all()
@@ -144,15 +137,9 @@ class HomePageView(BackendMixin, TemplateView):
         paid = finished.filter(total__gt=0, paid=True)
         context['paid'] = paid.count()
         context['total_paid'] = paid.aggregate(Sum('total')).values()[0]
-        registrations = Registration.objects.filter(
-            created__range=(config.START_REGISTRATION,
-                            config.END_REGISTRATION)
-            ).extra({'creation': "to_char(profiles_registration.created, 'YYYY-MM-DD')"}
-            ).values('creation'
-            ).order_by('creation'
-            ).annotate(num=Count('id'))
-        context['registrations_per_day'] = [[time_str_to_milliseconds(reg.get('creation')),
-                                             reg.get('num')] for reg in registrations]
+
+        context['registrations_per_day'] = self._get_registrations_per_day()
+        
         context['nb_registrations'] = Registration.objects.count()
         context['nb_families'] = finished.count()
         context['nb_children'] = Child.objects.filter(family__finished_registration=True).count()

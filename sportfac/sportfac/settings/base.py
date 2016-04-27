@@ -165,6 +165,7 @@ TEMPLATES = [
                 'sportfac.context_processors.wizard_context',
                 'sportfac.context_processors.registration_opened_context',
                 'sportfac.context_processors.activities_context',
+                'sportfac.context_processors.tenants_context',
                 'sekizai.context_processors.sekizai',
             ],
             'loaders': [

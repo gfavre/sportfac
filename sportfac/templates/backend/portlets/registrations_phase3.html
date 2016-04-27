@@ -33,7 +33,6 @@
 $(function () {
   var data, placeholder;
   data = {{ registrations_per_day }};
-  
   placeholder = $("#line-chart-registrations");
   $.plot(placeholder, [data], {
 			xaxis: { mode: "time" },
