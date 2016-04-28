@@ -1162,10 +1162,10 @@ fieldset[disabled] .btn-twitter.active {
   margin-right: .35em;
   color: $contrast;
   font-size: 1.25em;
-  content: "\e891";
+  content: "\e805";
 }
 .is-open .accordion-caret:before {
-  content: "\e893";
+  content: "\e802";
 }
 /* !Portlets */
 /* ----------------------------------------------- */
@@ -1873,16 +1873,16 @@ table.table thead .sorting_desc_disabled,
   font-size: 16px;
 }
 .sorting:before {
-  content: "\e871";
+  content: "\e81e";
   color: #bbb;
 }
 .sorting_asc:before,
 .sorting_asc_disabled:before {
-  content: "\e873";
+  content: "\e81f";
 }
 .sorting_desc:before,
 .sorting_desc_disabled:before {
-  content: "\e872";
+  content: "\e820";
 }
 .sorting_asc_disabled:before,
 .sorting_desc_disabled:before {
@@ -1890,14 +1890,14 @@ table.table thead .sorting_desc_disabled,
 }
 .paginate_enabled_previous:after,
 .paginate_disabled_previous:after {
-  content: "\e887";
+  content: "\e804";
   right: auto;
   left: 2px;
   top: 0;
 }
 .paginate_enabled_next:after,
 .paginate_disabled_next:after {
-  content: "\e888";
+  content: "\e805";
   top: 0;
 }
 .paginate_disabled_previous:after,
@@ -2132,7 +2132,7 @@ table.table thead .sorting_desc_disabled,
   font-style: normal;
   font-weight: normal;
   line-height: 1;
-  content: "\e892";
+  content: "\e802";
   -webkit-font-smoothing: antialiased;
 }
 .mainnav-menu > li.active > a,
