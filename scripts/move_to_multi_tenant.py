@@ -17,7 +17,6 @@ domain.domain = settings.DEFAULT_TENANT_NAME
 domain.tenant = tenant
 domain.is_primary = True
 domain.save()
-    
 
 
 from datetime import datetime, timedelta
@@ -40,8 +39,6 @@ domain.tenant = tenant
 domain.is_primary = True
 domain.save()
     
-
-
 tenant = YearTenant(
     schema_name='year_2016_2017',
     start_date=datetime(2016, 8, 1),
