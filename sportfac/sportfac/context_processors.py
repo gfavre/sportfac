@@ -95,5 +95,6 @@ def activities_context(request):
     return {'activities': Activity.objects.all()}
 
 def tenants_context(request):
-    if request.user.is_manager:
+    if request.user.is_authenticated() and request.user.is_manager:
         return {'tenants': YearTenant.objects.all()}
+    return {}

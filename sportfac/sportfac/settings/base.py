@@ -253,7 +253,6 @@ TENANT_APPS = (
     'constance.backends.database', # settings in admin
     'activities',
     'registrations',
-    'profiles',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
