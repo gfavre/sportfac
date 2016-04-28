@@ -1,5 +1,6 @@
-from django.db import models
 import ast
+
+from django.db import models
 
 class ListField(models.TextField):
     description = "Stores a python list"
@@ -29,8 +30,8 @@ class ListField(models.TextField):
         return unicode(value)
 
     def value_to_string(self, obj):
-        value = self._get_val_from_obj(obj)
-        return self.get_db_prep_value(value)
+        value = self.value_from_object(obj)
+        return self.get_prep_value(value)
 
 
 class TimeStampedModel(models.Model):
