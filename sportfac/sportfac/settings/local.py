@@ -38,7 +38,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 ########## DATABASE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES['default']['NAME'] = os.environ['DB_NAME']
+DATABASES['default']['NAME'] = 'sportfac_initial' #os.environ['DB_NAME']
 DATABASES['default']['USER'] = os.environ['DB_USER']
 DATABASES['default']['PASSWORD'] = os.environ['DB_PASSWORD']
 

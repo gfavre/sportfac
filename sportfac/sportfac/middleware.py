@@ -4,6 +4,7 @@ from django.utils import timezone
 
 from constance.admin import config
 from django_tenants.middleware import TenantMiddleware
+from backend.models import Domain
 
 class RegistrationOpenedMiddleware(object):
     def process_request(self, request):
@@ -24,4 +25,9 @@ class RegistrationOpenedMiddleware(object):
 
 class VersionMiddleware(TenantMiddleware):
     def hostname_from_request(self, request):
-        return request.COOKIES.get(settings.VERSION_COOKIE_NAME, settings.DEFAULT_TENANT_NAME)
+        if settings.VERSION_COOKIE_NAME in request.COOKIES:
+            return request.COOKIES.get(settings.VERSION_COOKIE_NAME)
+        else:
+            domain = Domain.objects.filter(is_current=True).first()
+            return domain.domain
+    

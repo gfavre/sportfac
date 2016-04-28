@@ -17,11 +17,16 @@ class YearTenant(TenantMixin):
                                    self.end_date.year)
     
     def is_production(self):
-        return self.domains.first().domain == settings.DEFAULT_TENANT_NAME
+        return self.domains.first().domain.is_current
     
     class Meta:
         ordering = ('start_date',)
     
 
 class Domain(DomainMixin):
-    pass
+    is_current = models.BooleanField(default=False)
+    
+    def __unicode__(self):
+        if self.is_current:
+            return '[default domain] ' + self.domain
+        return self.domain
