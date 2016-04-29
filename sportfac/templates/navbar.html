@@ -30,14 +30,23 @@
              <i class="icon-sitemap"></i> {{ request.tenant }} <span class="caret"></span>
            </a>
            <ul class="dropdown-menu" role="menu">
-           {% for tenant in tenants %}
+             <form id="tenant-change" action="{% url 'backend:year-change' %}" method="post">
+               {% csrf_token %}
+               <input type="hidden" name="next" value="{{ request.get_full_path }}" />
+               <input type="hidden" name="tenant" value="{{ request.tenant.pk }}" />           
+             </form>
+
+            {% for tenant in tenants %}
             {% if tenant == request.tenant %}
             <li class="disabled">
               <a><i class="icon-star"></i> {{ tenant }}</a>
             </li>
             {% else %}
             <li>
-              <a href=""><i class="icon-loop-alt"></i> {% trans "Preview" %} {{ tenant }}</a>
+              <a href="#" onclick="$('#tenant-change input[name=tenant]').val({{ tenant.pk }}); $('#tenant-change').submit();">
+                <i class="icon-loop-alt"></i> 
+                {% if tenant.is_past %}{% trans "Review" %}{% elif tenant.is_future %}{% trans "Preview" %}{% endif %} {{ tenant }}
+              </a>
               {% endif %}
             </li>
             
@@ -47,7 +56,7 @@
               <a href=""><i class="icon-split"></i> {% trans "Configure new year" %}</a>
             </li>
             <li>
-              <a href=""><i class="icon-loop-alt"></i> {% trans "Change year in production" %}</a>
+              <a href=""><i class="icon-exchange"></i> {% trans "Change year in production" %}</a>
             </li>
            </ul>
          </li>

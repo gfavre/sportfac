@@ -122,6 +122,10 @@ users_patterns = [
         name='child-delete'),
 ]
 
+years_patterns = [
+    url(r'^change', view=views.ChangeYearFormView.as_view(), name='year-change'),
+]
+
 urlpatterns = [
     url(r'^$', views.HomePageView.as_view(), name="home"),
     url(r'^dates$', views.RegistrationDatesView.as_view(), name='dates'),
@@ -130,5 +134,7 @@ urlpatterns = [
     url(r'^mail/', include(mail_patterns)),
     url(r'^registrations/', include(registrations_patterns)),
     url(r'^teacher/', include(teachers_patterns)),
-    url(r'^user/', include(users_patterns)),   
+    url(r'^user/', include(users_patterns)),
+    url(r'^year/', include(years_patterns)),
+    
 ]

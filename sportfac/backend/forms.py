@@ -1,5 +1,5 @@
-from django.utils.translation import ugettext as _
 from django.db.models import Count, F, Q
+from django.utils.translation import ugettext as _
 
 import floppyforms.__future__ as forms
 from constance.admin import config
@@ -7,7 +7,7 @@ from constance.admin import config
 from activities.models import Course
 from profiles.models import Child
 from registrations.models import Registration
-
+from .models import YearTenant
 
 class DateTimePickerInput(forms.DateTimeInput):
     template_name = 'floppyforms/datetime.html'
@@ -99,3 +99,7 @@ class CourseSelectForm(RegistrationForm):
     class Meta:
         model = Registration
         fields = ('course',)
+
+class YearSelectForm(forms.Form):
+    tenant = forms.ModelChoiceField(queryset=YearTenant.objects.all(), required=True)
+    next = forms.CharField(max_length=255, required=True)

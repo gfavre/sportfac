@@ -1,4 +1,7 @@
+from datetime import date
+
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.db import models
 
 from django_tenants.models import TenantMixin, DomainMixin
@@ -16,12 +19,20 @@ class YearTenant(TenantMixin):
                                    self.end_date.day, self.end_date.month,
                                    self.end_date.year)
     
+    @property
     def is_production(self):
-        return self.domains.first().domain.is_current
+        return self.domains.first().is_current
+    
+    @property
+    def is_past(self):
+        return self.end_date < date.today()
+    
+    @property
+    def is_future(self):
+        return self.start_date > date.today()
     
     class Meta:
         ordering = ('start_date',)
-    
 
 class Domain(DomainMixin):
     is_current = models.BooleanField(default=False)
