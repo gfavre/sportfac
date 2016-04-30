@@ -2,17 +2,20 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse, reverse_lazy
+from django.db import connection
+
 from django.utils.http import is_safe_url
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from django.views.generic import (CreateView, DeleteView, DetailView, FormView,
                                   ListView, UpdateView)
 
-from ..forms import YearSelectForm
+from ..forms import YearSelectForm, YearCreateForm
+from ..models import YearTenant, Domain
 from .mixins import BackendMixin
 
 
-__all__ = ['ChangeYearFormView', ]
+__all__ = ['ChangeYearFormView', 'YearCreateView', ]
 
 
 class ChangeYearFormView(SuccessMessageMixin, BackendMixin, FormView):
@@ -44,3 +47,33 @@ class ChangeYearFormView(SuccessMessageMixin, BackendMixin, FormView):
         return mark_safe(message)
 
 
+class YearCreateView(SuccessMessageMixin, BackendMixin, FormView):
+    form_class = YearCreateForm
+    success_url = reverse_lazy('backend:home')
+    template_name = 'backend/year/create.html'
+    success_message = _("A new period, starting on %s and ending on %s has been defined")
+    
+    def get_success_message(self, cleaned_data):
+        return self.success_message % (cleaned_data['start_date'], cleaned_data['end_date'])
+    
+    def form_valid(self, form):
+        response = super(YearCreateView, self).form_valid(form)
+        start = form.cleaned_data['start_date']
+        end = form.cleaned_data['end_date']
+        connection.set_schema_to_public()
+        tenant = YearTenant(
+            schema_name='period_%s_%s' % (start.strftime('%Y%m%d'), end.strftime('%Y%m%d')),
+            start_date=start,
+            end_date=end
+        )
+        tenant.save()
+        domain = Domain.objects.create(
+            is_primary=False,
+            domain='%s-%s' % (start, end),
+            tenant=tenant
+        )
+                
+        return response
+        # create tenant
+        # copy activities
+        # set tenant

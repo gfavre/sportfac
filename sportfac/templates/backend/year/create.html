@@ -1,0 +1,54 @@
+{% extends "backend/base.html" %}
+{% load i18n floppyforms sekizai_tags %}
+
+{% block title %}{% trans "Configure a new period of activity" %} - {{ block.super }}{% endblock %}
+{% block page_title %}<i class="icon-split"></i>&nbsp;&nbsp;{% trans "Configure a new period of activity" %}{% endblock %}
+
+{% block content %}
+
+{% addtoblock "js" %}
+{{ form.media }}
+{% endaddtoblock %}
+
+{% form form using %}
+{% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap-sm-3.html" %}{% endblock %}
+
+<form action="" method="post" class="form-horizontal">{% csrf_token %}
+  {% formrow form.start_date %}
+  {% formrow form.end_date %}
+  {% formrow form.copy_activities %}
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-success btn-large"><i class="icon-plus"></i>&nbsp;{% trans 'Create period' %}</button>
+    </div>
+  </div>
+</form>
+{% endform %}
+
+{% endblock content %}
+{% block extra_js %}
+{{ block.super }}
+<script src="{{ STATIC_URL }}js/vendor/moment-with-locales.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript">
+  $(function () {
+    var dt_settings = {
+        language: '{{ LANGUAGE_CODE }}',
+        icons: {time: 'icon-clock', 
+                date: 'icon-calendar', 
+                up: 'icon-up-open', 
+                down: 'icon-down-open'}
+    };
+    $('#dt-start_date').datetimepicker(dt_settings);
+    $('#dt-end_date').datetimepicker(dt_settings);
+    
+    $('#dt-start_date').on('dp.change', function(event){
+        if (!$('#id_end_date').val()){
+            var start_date = $('#dt-start_date').data("DateTimePicker").getDate();
+            end_date = new Date(start_date + 364*24*60*60*1000);
+            $('#dt-end_date').data("DateTimePicker").setDate(end_date);
+        }
+    });
+  });
+</script>
+{% endblock extra_js %}

@@ -124,6 +124,7 @@ users_patterns = [
 
 years_patterns = [
     url(r'^change', view=views.ChangeYearFormView.as_view(), name='year-change'),
+    url(r'^new', view=views.YearCreateView.as_view(), name='year-create'),
 ]
 
 urlpatterns = [

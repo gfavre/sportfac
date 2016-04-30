@@ -53,7 +53,7 @@
             {% endfor %}
             <li class="divider"></li>
             <li>
-              <a href=""><i class="icon-split"></i> {% trans "Configure new year" %}</a>
+              <a href="{% url 'backend:year-create' %}"><i class="icon-split"></i> {% trans "Configure new year" %}</a>
             </li>
             <li>
               <a href=""><i class="icon-exchange"></i> {% trans "Change year in production" %}</a>

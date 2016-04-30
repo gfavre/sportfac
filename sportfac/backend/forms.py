@@ -103,3 +103,17 @@ class CourseSelectForm(RegistrationForm):
 class YearSelectForm(forms.Form):
     tenant = forms.ModelChoiceField(queryset=YearTenant.objects.all(), required=True)
     next = forms.CharField(max_length=255, required=True)
+
+
+class YearCreateForm(forms.Form):
+    start_date = forms.DateField(label=_("Period start date"), required=True, 
+                                 help_text =_("Format: DD.MM.YYYY"),
+                                 widget=DatePickerInput())
+    end_date = forms.DateField(label=_("Period end date"), required=True,
+                               help_text =_("Format: DD.MM.YYYY"),
+                               widget=DatePickerInput())
+    copy_activities = forms.ModelChoiceField(
+        label=_("Copy courses"), 
+        help_text=_("Copy all activities and courses from the selected period"),
+        queryset=YearTenant.objects.all(), required=False)
+    
