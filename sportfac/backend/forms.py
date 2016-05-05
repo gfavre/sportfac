@@ -116,4 +116,16 @@ class YearCreateForm(forms.Form):
         label=_("Copy courses"), 
         help_text=_("Copy all activities and courses from the selected period"),
         queryset=YearTenant.objects.all(), required=False)
-    
+
+
+class YearForm(forms.ModelForm):
+    start_date = forms.DateField(label=_("Period start date"), required=True, 
+                                 help_text =_("Format: DD.MM.YYYY"),
+                                 widget=DatePickerInput())
+    end_date = forms.DateField(label=_("Period end date"), required=True,
+                               help_text =_("Format: DD.MM.YYYY"),
+                               widget=DatePickerInput())
+
+    class Meta:
+        model = YearTenant
+        fields = ('start_date', 'end_date')

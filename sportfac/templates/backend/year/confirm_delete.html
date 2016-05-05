@@ -1,0 +1,14 @@
+{% extends "backend/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Delete activity" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "Please confirm deletion" %}{% endblock %}
+
+{% block content %}
+<form action="" method="post">{% csrf_token %}
+  <p>{% blocktrans %}Are you sure you want to delete "{{ object }}"?{% endblocktrans %}</p>
+  <p class="text-danger lead">{% blocktrans %}All data related to this period will be lost forever.{% endblocktrans %}</p>
+  <button type="submit" class="btn btn-danger"><i class="icon icon-trash"></i>&nbsp;{% trans 'Delete period' %}</button>
+</form>
+
+{% endblock content %}

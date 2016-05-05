@@ -123,8 +123,13 @@ users_patterns = [
 ]
 
 years_patterns = [
-    url(r'^change', view=views.ChangeYearFormView.as_view(), name='year-change'),
+    url(r'^$', view=views.YearListView.as_view(), name='year-list'),
+    url(r'^(?P<pk>\d+)/update', view=views.YearUpdateView.as_view(), name='year-update'),
+    url(r'^(?P<pk>\d+)/delete', view=views.YearDeleteView.as_view(), name='year-delete'),
+
     url(r'^new', view=views.YearCreateView.as_view(), name='year-create'),
+    url(r'^change', view=views.ChangeYearFormView.as_view(), name='year-change'),
+
 ]
 
 urlpatterns = [

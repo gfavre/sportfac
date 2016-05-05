@@ -1,0 +1,74 @@
+{% extends "backend/base.html" %}
+{% load i18n sekizai_tags duration %}
+{% get_current_language as LANGUAGE_CODE %}
+
+{% block title %}{% trans "List periods" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "List periods" %}{% endblock %}
+
+{% block content %}
+
+{% addtoblock  "js" %}    
+<script>
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip();
+});
+</script>
+{% endaddtoblock %}
+
+
+
+<a href="{% url 'backend:year-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New period" %}</a>
+<hr />
+<form id="tenant-change" action="{% url 'backend:year-change' %}" method="post">
+{% csrf_token %}
+  <input type="hidden" name="next" value="{{ request.get_full_path }}" />
+  <input type="hidden" name="tenant" value="{{ request.tenant.pk }}" />           
+</form>
+<table class="table">
+  <thead>
+    <tr>
+      <th class="text-center">{% trans "In production" %} <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'The period that is currently viewed by all users' %}">[?]</th>
+      <th class="text-center">{% trans "Currently reviewing" %}</th>
+      <th>{% trans "Status" %}</th>
+      <th>{% trans "Start date" %}</th>
+      <th>{% trans "End date" %}</th>
+      <th>{% trans "Actions" %}</th>
+    </tr>
+  </thead>
+  {% for tenant in object_list %}
+    <tr>
+      <td class="text-center">{% if tenant.is_production %}<i class="icon-star"></i>{% endif %}</td>
+      <td class="text-center">{% if tenant == request.tenant %}<i class="icon-star"></i>{% endif %}
+      </td>
+      <td>{{ tenant.get_status_display }}</td>
+      <td>{{ tenant.start_date }}</td>
+      <td>{{ tenant.end_date }}</td>     
+      <td>
+        {% if tenant.is_ready %}
+        <ul class="list-unstyled">
+          <li class="text-nowrap">
+            <a href="#" class="btn btn-sm" 
+                        onclick="$('#tenant-change input[name=tenant]').val({{ tenant.pk }}); $('#tenant-change').submit();">
+              <i class="icon icon-loop-alt"></i>
+              {% if tenant.is_past %}{% trans "Review" %}{% elif tenant.is_future %}{% trans "Preview" %}{% else %}View{% endif %}
+            </a>
+          </li>
+          <li class="text-no-wrap">
+            <a href="{{ tenant.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update period" %}</a>
+          </li>
+          <li class="text-nowrap">
+            <a href="{{ tenant.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete period" %}</a>
+          </li>
+          {% comment %}<li class="text-nowrap"><a href="{{ activity.get_backend_url }}" class="btn btn-sm"><i class="icon-graduation-cap"></i>&nbsp;{% trans "Check courses" %}</a></li>
+          <li class="text-nowrap"><a href="{{ activity.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update activity" %}</a></li>
+          <li class="text-nowrap"><a href="{{ activity.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete activity" %}</a></li>
+          {% endcomment %}
+        </ul>
+        {% else %}
+        {% trans "Period is not ready to use yet" %}
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock content %}

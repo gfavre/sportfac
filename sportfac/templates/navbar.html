@@ -41,22 +41,17 @@
             <li class="disabled">
               <a><i class="icon-star"></i> {{ tenant }}</a>
             </li>
-            {% else %}
+            {% elif tenant.is_ready %}
             <li>
               <a href="#" onclick="$('#tenant-change input[name=tenant]').val({{ tenant.pk }}); $('#tenant-change').submit();">
-                <i class="icon-loop-alt"></i> 
                 {% if tenant.is_past %}{% trans "Review" %}{% elif tenant.is_future %}{% trans "Preview" %}{% endif %} {{ tenant }}
               </a>
-              {% endif %}
             </li>
-            
+            {% endif %}
             {% endfor %}
             <li class="divider"></li>
             <li>
-              <a href="{% url 'backend:year-create' %}"><i class="icon-split"></i> {% trans "Configure new year" %}</a>
-            </li>
-            <li>
-              <a href=""><i class="icon-exchange"></i> {% trans "Change year in production" %}</a>
+              <a href="{% url 'backend:year-list' %}"><i class="icon-exchange"></i> {% trans "Manage periods" %}</a>
             </li>
            </ul>
          </li>

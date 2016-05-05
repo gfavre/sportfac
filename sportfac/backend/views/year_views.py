@@ -10,12 +10,12 @@ from django.utils.translation import ugettext as _
 from django.views.generic import (CreateView, DeleteView, DetailView, FormView,
                                   ListView, UpdateView)
 
-from ..forms import YearSelectForm, YearCreateForm
+from ..forms import YearSelectForm, YearCreateForm, YearForm
 from ..models import YearTenant, Domain
 from .mixins import BackendMixin
 
 
-__all__ = ['ChangeYearFormView', 'YearCreateView', ]
+__all__ = ['ChangeYearFormView', 'YearCreateView', 'YearDeleteView', 'YearListView', 'YearUpdateView']
 
 
 class ChangeYearFormView(SuccessMessageMixin, BackendMixin, FormView):
@@ -45,6 +45,35 @@ class ChangeYearFormView(SuccessMessageMixin, BackendMixin, FormView):
         elif tenant.is_future:
             message = _("You are now previewing %s") % tenant        
         return mark_safe(message)
+
+
+class YearListView(BackendMixin, ListView):
+    model = YearTenant
+    template_name = 'backend/year/list.html'
+    
+
+class YearUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
+    model = YearTenant
+    form_class = YearForm
+    success_url = reverse_lazy('backend:year-list')
+    success_message = _('Period has been updated.')
+    template_name = 'backend/year/update.html'
+
+
+class YearDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
+    model = YearTenant
+    success_message = _("Period has been deleted.")
+    success_url = reverse_lazy('backend:year-list')
+    template_name = 'backend/year/confirm_delete.html'
+    
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        identifier = str(self.get_object())
+        messages.add_message(self.request, messages.SUCCESS,
+                             _("Period %(identifier)s has been deleted.") % {'identifier': identifier})
+        connection.set_schema_to_public()
+        response = super(YearDeleteView, self).delete(request, *args, **kwargs)
+        return response
 
 
 class YearCreateView(SuccessMessageMixin, BackendMixin, FormView):
