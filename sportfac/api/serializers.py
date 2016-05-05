@@ -1,8 +1,9 @@
 from rest_framework import serializers
 
 from activities.models import Activity, Course, ExtraNeed
-from profiles.models import Child, FamilyUser, SchoolYear, Teacher
-from registrations.models import ExtraInfo, Registration
+from profiles.models import FamilyUser, SchoolYear
+from registrations.models import Child, ExtraInfo, Registration
+from schools.models import Teacher
 
 
 class ActivitySerializer(serializers.ModelSerializer):

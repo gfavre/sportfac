@@ -6,8 +6,8 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.utils.translation import ugettext_lazy as _
 
-from .models import FamilyUser, Child, Teacher, SchoolYear
-
+from .models import FamilyUser, SchoolYear
+from registrations.models import Child
 
 
 class FamilyCreationForm(forms.ModelForm):
@@ -64,12 +64,14 @@ class FamilyChangeForm(forms.ModelForm):
         # field does not have access to the initial value
         return self.initial["password"]
 
+
 class ChildInline(admin.StackedInline):
     model = Child
     extra = 1
     verbose_name = _("child")
     verbose_name_plural = _("children")
-    
+
+ 
 class FamilyAdmin(UserAdmin):
     # The forms to add and change user instances
     form = FamilyChangeForm
@@ -115,15 +117,4 @@ class FamilyAdmin(UserAdmin):
     
 
 admin.site.register(FamilyUser, FamilyAdmin)
-
-class TeacherAdmin(admin.ModelAdmin):
-    list_display = ('last_name', 'first_name', 'years_label', 'number')
-    list_filter = ('years',) 
-    filter_horizontal=('years',)
-    
-    change_list_template = "admin/change_list_filter_sidebar.html"
-    change_list_filter_template = "admin/filter_listing.html"
-
-admin.site.register(Teacher, TeacherAdmin)
-
 admin.site.register(SchoolYear)

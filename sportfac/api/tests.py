@@ -5,9 +5,10 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.test import APITestCase, APIClient
 
 from activities.tests.factories import ActivityFactory, CourseFactory
-from profiles.models import Child
-from profiles.tests.factories import ChildFactory, FamilyUserFactory, SchoolYearFactory, TeacherFactory, DEFAULT_PASS
-from registrations.tests.factories import RegistrationFactory
+from profiles.tests.factories import FamilyUserFactory, SchoolYearFactory, DEFAULT_PASS
+from registrations.models import Child
+from registrations.tests.factories import ChildFactory, RegistrationFactory
+from schools.tests.factories import TeacherFactory
 from api.serializers import ChildrenSerializer
 
 

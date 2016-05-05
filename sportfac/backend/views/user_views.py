@@ -1,4 +1,5 @@
 import json
+
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.models import Group
 from django.contrib.messages.views import SuccessMessageMixin
@@ -10,10 +11,12 @@ from django.views.generic import CreateView, DeleteView, DetailView, \
                                 ListView, UpdateView, View, FormView
 
 from backend import MANAGERS_GROUP, RESPONSIBLE_GROUP
-from profiles.models import FamilyUser, Child
 from profiles.forms import (ManagerForm, ManagerWithPasswordForm, 
                             ResponsibleForm, ResponsibleWithPasswordForm, 
-                            UserPayForm, ChildForm)
+                            UserPayForm)
+from profiles.models import FamilyUser
+from registrations.models import Child
+from registrations.forms import ChildForm
 
 from .mixins import BackendMixin
 

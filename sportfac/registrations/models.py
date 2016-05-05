@@ -35,7 +35,7 @@ class Registration(TimeStampedModel, StatusModel):
                      )
     course = models.ForeignKey('activities.Course', related_name="participants", 
                                verbose_name=_("Course"))
-    child = models.ForeignKey('profiles.Child', related_name="registrations")
+    child = models.ForeignKey('Child', related_name="registrations")
 
     objects = RegistrationManager()
 
@@ -109,3 +109,65 @@ class ExtraInfo(models.Model):
     registration = models.ForeignKey('registrations.Registration', related_name='extra_infos')
     key =  models.ForeignKey('activities.ExtraNeed')
     value = models.CharField(max_length=255)
+
+
+class Child(TimeStampedModel):
+    SEX = Choices(('M', _('Male')),
+                  ('F', _('Female')),
+    )
+    NATIONALITY = Choices(('CH', _('Swiss')),
+                          ('FL', _('Liechtenstein')),
+                          ('DIV', _('Other')),
+    )
+    LANGUAGE = Choices(('D', 'Deutsch'),
+                       ('E', 'English'),
+                       ('F', u'Français'),
+                       ('I', 'Italiano'),
+    )
+
+    first_name = models.CharField(_("First name"), max_length=50)
+    last_name = models.CharField(_("Last name"), max_length=50)
+    sex = models.CharField(_("Sex"), max_length=1, choices=SEX)
+    birth_date = models.DateField(_("Birth date"))
+    nationality = models.CharField(choices=NATIONALITY, max_length=3, default=NATIONALITY.CH)
+    language = models.CharField(choices=LANGUAGE, max_length=2, default=LANGUAGE.F)
+
+    school_year = models.ForeignKey('profiles.SchoolYear')
+    teacher = models.ForeignKey('schools.Teacher', related_name="students", null=True, on_delete=models.SET_NULL)
+
+    family = models.ForeignKey('profiles.FamilyUser', related_name='children')
+    courses = models.ManyToManyField('activities.Course', through="registrations.Registration")
+ 
+    class Meta:
+        ordering = ('last_name', 'first_name',)
+        abstract = False
+
+    def get_update_url(self):
+        return reverse('backend:child-update', kwargs={'pk': self.pk, 'user': self.family.pk})
+
+    def get_delete_url(self):
+        return reverse('backend:child-delete', kwargs={'pk': self.pk, 'user': self.family.pk})
+
+    def get_backend_url(self):
+        return reverse('backend:user-detail', kwargs={'pk': self.family.pk})
+
+    def get_full_name(self):
+        full_name = '%s %s' % (self.first_name.title(), self.last_name.title())
+        return full_name.strip()
+
+    @property
+    def full_name(self):
+        return self.get_full_name()
+
+    @property
+    def js_sex(self):
+        if self.sex == self.SEX.M:
+            return '1'
+        return '2'
+
+    @property
+    def js_birth_date(self):
+        return self.birth_date.strftime('%d.%m.%Y')
+
+    def __unicode__(self):
+        return self.get_full_name()

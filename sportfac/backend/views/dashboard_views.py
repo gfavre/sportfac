@@ -12,8 +12,9 @@ from django.db.models import Count, Max, Sum, Avg
 from constance import config
 
 from activities.models import Activity, Course
-from profiles.models import Child, FamilyUser, SchoolYear, Teacher
-from registrations.models import Registration
+from profiles.models import FamilyUser, SchoolYear
+from registrations.models import Child, Registration
+from schools.models import Teacher
 from backend.forms import RegistrationDatesForm
 from backend import MANAGERS_GROUP, RESPONSIBLE_GROUP
 from .mixins import BackendMixin

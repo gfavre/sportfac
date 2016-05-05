@@ -5,9 +5,9 @@ import floppyforms.__future__ as forms
 from constance.admin import config
 
 from activities.models import Course
-from profiles.models import Child
-from registrations.models import Registration
+from registrations.models import Child, Registration
 from .models import YearTenant
+
 
 class DateTimePickerInput(forms.DateTimeInput):
     template_name = 'floppyforms/datetime.html'

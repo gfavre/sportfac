@@ -235,68 +235,6 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         return self.get_from_address()
 
 
-class Child(TimeStampedModel):
-    SEX = Choices(('M', _('Male')),
-                  ('F', _('Female')),
-    )
-    NATIONALITY = Choices(('CH', _('Swiss')),
-                          ('FL', _('Liechtenstein')),
-                          ('DIV', _('Other')),
-    )
-    LANGUAGE = Choices(('D', 'Deutsch'),
-                       ('E', 'English'),
-                       ('F', u'Français'),
-                       ('I', 'Italiano'),
-    )
-
-    first_name = models.CharField(_("First name"), max_length=50)
-    last_name = models.CharField(_("Last name"), max_length=50)
-    sex = models.CharField(_("Sex"), max_length=1, choices=SEX)
-    birth_date = models.DateField(_("Birth date"))
-    nationality = models.CharField(choices=NATIONALITY, max_length=3, default=NATIONALITY.CH)
-    language = models.CharField(choices=LANGUAGE, max_length=2, default=LANGUAGE.F)
-
-    school_year = models.ForeignKey('SchoolYear')
-    teacher = models.ForeignKey('Teacher', related_name="students", null=True, on_delete=models.SET_NULL)
-
-    family = models.ForeignKey('FamilyUser', related_name='children')
-    courses = models.ManyToManyField('activities.Course', through="registrations.Registration")
- 
-    class Meta:
-        ordering = ('last_name', 'first_name',)
-        abstract = False
-
-    def get_update_url(self):
-        return reverse('backend:child-update', kwargs={'pk': self.pk, 'user': self.family.pk})
-
-    def get_delete_url(self):
-        return reverse('backend:child-delete', kwargs={'pk': self.pk, 'user': self.family.pk})
-
-    def get_backend_url(self):
-        return reverse('backend:user-detail', kwargs={'pk': self.family.pk})
-
-    def get_full_name(self):
-        full_name = '%s %s' % (self.first_name.title(), self.last_name.title())
-        return full_name.strip()
-
-    @property
-    def full_name(self):
-        return self.get_full_name()
-
-    @property
-    def js_sex(self):
-        if self.sex == self.SEX.M:
-            return '1'
-        return '2'
-
-    @property
-    def js_birth_date(self):
-        return self.birth_date.strftime('%d.%m.%Y')
-
-    def __unicode__(self):
-        return self.get_full_name()
-
-
 class SchoolYear(models.Model):
     year = models.PositiveIntegerField(_("School year"), choices=SCHOOL_YEARS, unique=True)
 
@@ -310,39 +248,3 @@ class SchoolYear(models.Model):
         verbose_name = _("School year")
         verbose_name_plural = _("School years")
         ordering = ('year',)
-
-
-class Teacher(TimeStampedModel):
-    number = models.IntegerField(db_index=True, unique=True, null=True, blank=True, 
-                                 verbose_name=_("Number"))
-
-    first_name = models.CharField(_("First name"), max_length=50)
-    last_name = models.CharField(_("Last name"), max_length=50, db_index=True)
-    years = models.ManyToManyField('SchoolYear', verbose_name=_("School years"))
-    email = models.EmailField(verbose_name=_('Email address'), max_length=255, 
-                              blank=True, null=True)
-
-    def __unicode__(self):
-        years = ' - '.join([unicode(year) for year in self.years.all()])
-        return '%s %s (%s)' % (self.first_name, self.last_name, years)
-
-    def get_full_name(self):
-        return '%s %s ' % (self.first_name, self.last_name)
-
-    def get_update_url(self):
-        return reverse('backend:teacher-update', kwargs={'pk': self.pk})
-
-    def get_delete_url(self):
-        return reverse('backend:teacher-delete', kwargs={'pk': self.pk})
-
-    def get_backend_url(self):
-        return reverse('backend:teacher-detail', kwargs={'pk': self.pk})
-
-    @property
-    def years_label(self):
-        return ', '.join([str(year) for year in self.years.all()])
-
-    class Meta:
-        ordering = ('last_name', 'first_name')
-        verbose_name = _("teacher")
-        verbose_name_plural = _("teachers")

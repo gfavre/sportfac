@@ -7,14 +7,15 @@ from django.template.defaultfilters import mark_safe
 import floppyforms.__future__ as forms
 from localflavor.generic.forms import IBANFormField
 
+from .models import FamilyUser
 from backend.forms import Select2Widget, DatePickerInput
-from .models import Child, Teacher, FamilyUser
+
 
 __all__ = ('AuthenticationForm', 'PasswordChangeForm', 'PasswordResetForm',
            'AcceptTermsForm', 'RegistrationForm',
            'UserForm', 'ManagerForm', 'ManagerWithPasswordForm',
            'ResponsibleForm', 'ResponsibleWithPasswordForm',
-           'UserPayForm', 'ChildForm')
+           'UserPayForm')
 
 
 class AuthenticationForm(auth_forms.AuthenticationForm):
@@ -116,7 +117,6 @@ class ResponsibleForm(ManagerForm):
                   'birth_date', 'iban', 'ahv')
     
 
-
 class ResponsibleWithPasswordForm(ResponsibleForm):
     password1 = forms.CharField(widget=forms.PasswordInput,
                                 label=_("Password"),
@@ -139,22 +139,6 @@ class UserPayForm(forms.ModelForm):
         fields = ('finished_registration', 'paid', )
 
            
-
-class ChildForm(forms.ModelForm):
-    birth_date = forms.DateTimeField(widget=DatePickerInput(format='%d.%m.%Y'),
-                                     help_text=_("Format: 31.12.2012"))
-    sex = forms.ChoiceField(widget=forms.widgets.RadioSelect, choices=Child.SEX)
-    teacher = forms.ModelChoiceField(queryset=Teacher.objects.prefetch_related('years'), 
-                                     empty_label=None,
-                                     widget=Select2Widget()) 
-    class Meta:
-        model = Child
-        fields = ('first_name', 'last_name', 'sex', 'birth_date', 'nationality', 
-                  'language', 'school_year', 'teacher')
-    
-
-
-
 class RegistrationForm(PhoneRequiredMixin, forms.Form):
     """
     Form for registering a new user account.
@@ -220,15 +204,3 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
         if 'password1' in self.cleaned_data and 'password2' in self.cleaned_data:
             if self.cleaned_data['password1'] != self.cleaned_data['password2']:
                 raise forms.ValidationError(_("The two password fields didn't match."))
-        
-
-class TeacherForm(forms.ModelForm):
-    class Meta:
-        model = Teacher
-        fields = ('first_name', 'last_name', 'email', 'years')
-
-
-class TeacherImportForm(forms.Form):
-    thefile = forms.FileField(label=_("File"), help_text=_("Extraction from LAGAPEO, excel format"))
-
-

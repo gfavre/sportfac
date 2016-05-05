@@ -6,9 +6,11 @@ from django.views.generic import CreateView, DeleteView, DetailView, \
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 
-from profiles.models import Teacher, Child
-from profiles.forms import TeacherForm, TeacherImportForm
-from profiles.utils import load_teachers
+from registrations.models import Child
+from schools.models import Teacher
+from schools.forms import TeacherForm, TeacherImportForm
+from schools.utils import load_teachers
+
 
 from .mixins import BackendMixin
 

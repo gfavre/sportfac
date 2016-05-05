@@ -2,10 +2,10 @@ from django.core.urlresolvers import reverse
 
 import mock
 
-from mailer.views import MailMixin
 from .factories import ActivityFactory, CourseFactory
-from profiles.tests.factories import ChildFactory, FamilyUserFactory, DEFAULT_PASS
-from registrations.tests.factories import RegistrationFactory
+from mailer.views import MailMixin
+from profiles.tests.factories import FamilyUserFactory, DEFAULT_PASS
+from registrations.tests.factories import ChildFactory, RegistrationFactory
 from sportfac.utils import TenantTestCase as TestCase
 
 

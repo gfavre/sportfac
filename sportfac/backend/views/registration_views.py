@@ -15,6 +15,7 @@ from registrations.models import Registration
 from backend.forms import ChildSelectForm, CourseSelectForm, RegistrationForm
 from .mixins import BackendMixin
 
+
 __all__ = ('RegistrationCreateView', 'RegistrationDeleteView', 'RegistrationDetailView', 
            'RegistrationListView', 'RegistrationUpdateView',)
 

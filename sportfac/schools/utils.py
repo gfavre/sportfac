@@ -5,7 +5,8 @@ import re
 from django.utils.translation import ugettext as _
 from django.utils.six import moves
 
-from .models import Teacher, SchoolYear
+from .models import Teacher
+from profiles.models import SchoolYear
 
 import xlrd
 
