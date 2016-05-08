@@ -199,7 +199,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         return course in self.courses.all()
 
     def has_module_perms(self, app_label):
-        staff_apps = ['activities', 'profiles', 'constance', 'extended_flatpages']
+        staff_apps = ['activities', 'backend', 'extended_flatpages' 'profiles', 'registrations', 'schools']
         # no registration nore auth
         if self.is_superuser:
             return True

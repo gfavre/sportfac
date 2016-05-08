@@ -2,14 +2,15 @@ from django.conf import settings
 from django.db import connection
 from django.utils import timezone
 
-from constance.admin import config
 from django_tenants.middleware import TenantMiddleware
 from backend.models import Domain
+from backend.dynamic_preferences_registry import tenant_preferences_registry
+
 
 class RegistrationOpenedMiddleware(object):
     def process_request(self, request):
-        start = config.START_REGISTRATION
-        end = config.END_REGISTRATION
+        start = request.tenant.preferences['phase__START_REGISTRATION']
+        end = request.tenant.preferences['phase__END_REGISTRATION']
         now = timezone.now()
 
         request.PHASE = 1

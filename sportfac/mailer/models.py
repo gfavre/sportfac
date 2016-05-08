@@ -13,37 +13,49 @@ __all__ = ('MailArchive', )
 
 
 class SentMailManager(models.Manager):
+
     def get_queryset(self):
-        return super(SentMailManager, self).get_queryset().filter(status=MailArchive.STATUS.sent)
+        return super(
+            SentMailManager,
+            self).get_queryset().filter(
+            status=MailArchive.STATUS.sent)
+
 
 class DraftMailManager(models.Manager):
+
     def get_queryset(self):
-        return super(SentMailManager, self).get_queryset().filter(status=MailArchive.STATUS.draft)
+        return super(
+            SentMailManager,
+            self).get_queryset().filter(
+            status=MailArchive.STATUS.draft)
+
 
 class MailArchive(TimeStampedModel, StatusModel):
-    STATUS = Choices(('sent', _("sent")), 
+    STATUS = Choices(('sent', _("sent")),
                      ('draft', _("draft")),)
 
     subject = models.CharField(max_length=255, verbose_name=_("Subject"))
     recipients = ListField(verbose_name=_("Recipients"))
     messages = ListField(verbose_name=_("Message"))
     template = models.CharField(max_length=255, verbose_name=_("Template"))
-    
+
     objects = models.Manager()
     draft = DraftMailManager()
     sent = SentMailManager()
-    
+
     def admin_recipients(self):
         r = re.compile('(?P<name>[\w\s^\<]+) \<(?P<email>[^\>]+)\>', re.U)
+
         def clean_email(name):
             m = r.search(name)
             if m:
-                return u'<a href="mailto:%s">%s</a>' % (m.group('email'), m.group('name'))
+                return u'<a href="mailto:%s">%s</a>' % (
+                    m.group('email'), m.group('name'))
             return name
-        
+
         return u'<br />'.join([clean_email(rec) for rec in self.recipients])
     admin_recipients.allow_tags = True
-    
+
     def admin_message(self):
         if self.messages:
             return linebreaks(self.messages[0])

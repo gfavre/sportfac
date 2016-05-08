@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from django_tenants.models import TenantMixin, DomainMixin
 from model_utils import Choices
+from dynamic_preferences.models import PerInstancePreferenceModel
 
 
 class YearTenant(TenantMixin):
@@ -64,3 +65,13 @@ class Domain(DomainMixin):
         if self.is_current:
             return '[default domain] ' + self.domain
         return self.domain
+
+
+class TenantPreferenceModel(PerInstancePreferenceModel):
+    instance = models.ForeignKey('backend.YearTenant')
+    
+    class Meta(PerInstancePreferenceModel.Meta):
+        verbose_name = _("tenant preference")
+        verbose_name_plural = _("tenant preferences")
+        app_label = 'backend'
+        abstract = False

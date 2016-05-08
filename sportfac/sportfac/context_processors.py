@@ -3,8 +3,6 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
 
-from constance.admin import config
-
 from activities.models import Activity
 from backend.models import YearTenant
 from registrations.models import Registration

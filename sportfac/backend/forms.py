@@ -2,7 +2,6 @@ from django.db.models import Count, F, Q
 from django.utils.translation import ugettext as _
 
 import floppyforms.__future__ as forms
-from constance.admin import config
 
 from activities.models import Course
 from registrations.models import Child, Registration
@@ -34,23 +33,13 @@ class RegistrationDatesForm(forms.Form):
                                        widget=DateTimePickerInput(format='%d.%m.%Y %H:%M'))
     closing_date = forms.DateTimeField(label=_("Closing date"), required=True,
                                        widget=DateTimePickerInput(format='%d.%m.%Y %H:%M'))
-    
-    def __init__(self, *args, **kwargs):
-        super(RegistrationDatesForm, self).__init__(*args, **kwargs)
-        self.initial.setdefault('opening_date', config.START_REGISTRATION)
-        self.initial.setdefault('closing_date', config.END_REGISTRATION)        
-    
+        
     def clean(self):
         opening_date = self.cleaned_data.get('opening_date')
         closing_date = self.cleaned_data.get('closing_date')
         if opening_date and closing_date and not opening_date < closing_date:
             raise forms.ValidationError(_("Closing date should come after opening date"))
         super(RegistrationDatesForm, self).clean()
-    
-    def save_to_constance(self):
-        if self.is_valid():
-            config.START_REGISTRATION = self.cleaned_data['opening_date']
-            config.END_REGISTRATION = self.cleaned_data['closing_date']
 
 
 class RegistrationForm(forms.ModelForm):

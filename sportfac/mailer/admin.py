@@ -14,5 +14,5 @@ class MailArchiveAdmin(admin.ModelAdmin):
         'template',
     )
     list_filter = ('created', 'template', 'status')
-        
+
 admin.site.register(MailArchive, MailArchiveAdmin)

@@ -9,8 +9,6 @@ from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
 from django.db.models import Count, Max, Sum, Avg
 
-from constance import config
-
 from activities.models import Activity, Course
 from profiles.models import FamilyUser, SchoolYear
 from registrations.models import Child, Registration
@@ -57,9 +55,11 @@ class HomePageView(BackendMixin, TemplateView):
     
     def _get_registrations_per_day(self):
         total_per_day = {}
-        registrations = [d.date() for d in Registration.objects.filter(
-                                            created__range=(config.START_REGISTRATION, config.END_REGISTRATION)
-                                           ).values_list('created', flat=True)]
+        start = self.request.tenant.preferences['phase__START_REGISTRATION']
+        end = self.request.tenant.preferences['phase__END_REGISTRATION']
+        registrations = [d.date() for d in Registration.objects\
+                                                       .filter(created__range=(start, end))\
+                                                       .values_list('created', flat=True)]
         for date in registrations:
             milliseconds = int(time.mktime(date.timetuple()) * 1000)
             total = total_per_day.setdefault(milliseconds, 0)
@@ -160,8 +160,15 @@ class RegistrationDatesView(BackendMixin, FormView):
     form_class = RegistrationDatesForm
     success_url = reverse_lazy('backend:home')
     
+    def get_initial(self):
+        initial = super(RegistrationDatesView, self).get_initial()
+        initial['opening_date'] = self.request.tenant.preferences['phase__START_REGISTRATION']
+        initial['closing_date'] = self.request.tenant.preferences['phase__END_REGISTRATION']      
+        return initial
+    
     def form_valid(self, form):
-        form.save_to_constance()
+        self.request.tenant.preferences['phase__START_REGISTRATION'] = form.cleaned_data['opening_date']
+        self.request.tenant.preferences['phase__END_REGISTRATION'] = form.cleaned_data['closing_date']
         messages.add_message(self.request, messages.SUCCESS, _("Opening and closing dates have been changed"))
         return super(RegistrationDatesView, self).form_valid(form)
 

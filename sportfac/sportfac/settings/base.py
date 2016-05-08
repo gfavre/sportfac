@@ -160,7 +160,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.request',
                 
-                'constance.context_processors.config',
+                'dynamic_preferences.processors.global_preferences',
                 
                 'sportfac.context_processors.wizard_context',
                 'sportfac.context_processors.registration_opened_context',
@@ -235,7 +235,7 @@ SHARED_APPS = (
     'sekizai', #add_to_block template tag
     #'django_select2', # select2 widget (enhanced select box)
     'dbtemplates', # store templates in db (used by mailer module)
-
+    'dynamic_preferences',
     # local apps
     'api',
     'contact',
@@ -243,14 +243,12 @@ SHARED_APPS = (
     'profiles',
 
     # last apps
-    'django.contrib.admin',   
+    'django.contrib.admin',
 )
 
 
 TENANT_APPS = (
     # third party apps
-    'constance', # settings in admin
-    'constance.backends.database', # settings in admin
     'activities',
     'registrations',
     'schools',
@@ -335,32 +333,42 @@ REST_FRAMEWORK = {
 
 ########## END REST FRAMEWORK CONFIGURATION
 
-########## CONSTANCE CONFIGURATION (settings in admin)
-# see http://django-constance.readthedocs.org
-CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
-CONSTANCE_SUPERUSER_ONLY = False
-CONSTANCE_CONFIG = {
-    'START_REGISTRATION': (datetime(2013,9,1, tzinfo=timezone('Europe/Zurich')), 
-                           ugettext("Registration opening date")),
-    'END_REGISTRATION': (datetime(2013,10,1, tzinfo=timezone('Europe/Zurich')), 
-                         ugettext("Registration ending date")),
-    'CURRENT_PHASE': (1, 'PREPARATION'),
-    'FROM_MAIL': ('Remo Aeschbach <remo.aeschbach@vd.educanet2.ch>', 
-                  ugettext("Email used to send")),
-    'SCHOOL_NAME': ('EP Coppet', ugettext("Name of school")),
-    'SIGNATURE': ("""
-Remo Aeschbach
-Doyen - responsable du sport scolaire facultatif
-EPCoppet
-Chemin du Chaucey 7
-1296 Coppet
-remo.aeschbach@vd.educanet2.ch
-+4122 | 557 58 58
-+4179 | 417 69 93""", ugettext("Email Signature")),
-   
+########## DYNAMIC PREFERENCES CONFIGURATION 
+# see http://django-dynamic-preferences.readthedocs.io
+
+DYNAMIC_PREFERENCES = {
+
+    # a python attribute that will be added to model instances with preferences
+    # override this if the default collide with one of your models attributes/fields
+    'MANAGER_ATTRIBUTE': 'preferences',
+
+    # The python module in which registered preferences will be searched within each app
+    'REGISTRY_MODULE': 'dynamic_preferences_registry',
+
+    # Allow quick editing of preferences directly in admin list view
+    # WARNING: enabling this feature can cause data corruption if multiple users
+    # use the same list view at the same time, see https://code.djangoproject.com/ticket/11313
+    'ADMIN_ENABLE_CHANGELIST_FORM': False,
+
+    # Should we enable the admin module for user preferences ?
+    'ENABLE_USER_PREFERENCES': True,
+
+    # Customize how you can access preferences from managers. The default is to
+    # separate sections and keys with two underscores. This is probably not a settings you'll
+    # want to change, but it's here just in case
+    'SECTION_KEY_SEPARATOR': '__',
+
+    # Use this to disable caching of preference. This can be useful to debug things
+    'ENABLE_CACHE': True,
+
+    # Use this to disable checking preferences names. This can be useful to debug things
+    'VALIDATE_NAMES': True,
 }
 
-########## END CONSTANCE CONFIGURATION
+########## END DYNAMIC PREFERENCES CONFIGURATION 
+
+
+
 
 
 ########## USER and REGISTRATION
