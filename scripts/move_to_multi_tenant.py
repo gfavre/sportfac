@@ -6,7 +6,7 @@ from constance.admin import config
 from backend.models import YearTenant, Domain
 
 tenant = YearTenant(
-    schema_name='year_2015_2016',
+    schema_name='period_20150801_20160731',
     start_date=datetime(2015, 8, 1),
     end_date=datetime(2016, 7, 31)
 )
@@ -21,7 +21,7 @@ domain.save()
 
 
 tenant = YearTenant(
-    schema_name='year_2016_2017',
+    schema_name='period_20160801_20170731',
     start_date=datetime(2016, 8, 1),
     end_date=datetime(2017, 7, 31)
 )

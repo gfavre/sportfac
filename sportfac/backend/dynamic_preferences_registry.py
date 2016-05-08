@@ -70,14 +70,14 @@ info@kepchup.ch"""
 class StartRegistration(DateTimePreference):
     section = phase
     name = 'START_REGISTRATION'
-    default = timezone.now()
+    default = timezone.now() + timedelta(days=30)
 
 
 @tenant_preferences_registry.register
 class EndRegistration(DateTimePreference):
     section = phase
     name = 'END_REGISTRATION'
-    default = timezone.now() + timedelta(days=30)
+    default = timezone.now() + timedelta(days=60)
 
 
 @tenant_preferences_registry.register
