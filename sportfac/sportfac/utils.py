@@ -1,4 +1,7 @@
 import csv, codecs, cStringIO
+from datetime import date
+
+from django.db import connection
 
 from django_tenants.test.cases import TenantTestCase as BaseTenantTestCase
 from django_tenants.test.client import TenantClient
@@ -69,7 +72,20 @@ class ExcelWriter:
 
 
 class TenantTestCase(BaseTenantTestCase):
-    def setUp(self, *args, **kwargs):
-        super(TenantTestCase, self).__init__(*args, **kwargs)
-        self.tenant = get_tenant_model()(schema_name='test')
+    def setUp(self):
+        self.sync_shared()
+        self.tenant, created = get_tenant_model().objects.get_or_create(
+            schema_name='test',
+            start_date=date(2015, 1, 1),
+            end_date=date(2015, 12, 31),
+            status='ready')
+        self.tenant.create_schema(check_if_exists=True, verbosity=0)
+        
+        tenant_domain = 'test'
+        self.domain, created = get_tenant_domain_model().objects.get_or_create(
+            tenant=self.tenant, 
+            domain=tenant_domain, 
+            is_current=True)
+        
+        connection.set_tenant(self.tenant)
         self.client = TenantClient(self.tenant)

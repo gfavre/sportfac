@@ -2,12 +2,14 @@ import datetime
 
 import factory
 import factory.fuzzy
+import faker
 
 from activities.tests.factories import CourseFactory
 from profiles.tests.factories import FamilyUserFactory, SchoolYearFactory
 from registrations.models import Registration, Child
 from schools.tests.factories import TeacherFactory
 
+fake = faker.Factory.create('fr_CH')
 
 class ChildFactory(factory.DjangoModelFactory):
     class Meta:

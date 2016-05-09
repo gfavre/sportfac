@@ -6,7 +6,7 @@ import factory
 import factory.fuzzy
 import faker
 
-from schools.models import SchoolYear, Teacher
+from schools.models import Teacher
 from activities.models import SCHOOL_YEARS
 
 
