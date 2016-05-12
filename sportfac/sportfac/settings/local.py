@@ -103,3 +103,15 @@ CKEDITOR_UPLOAD_PATH = MEDIA_ROOT
 # See http://celery.readthedocs.org/en/latest/configuration.html
 BROKER_URL = 'django://'
 CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
+
+
+
+TEMPLATES[0]['DIRS'] = [
+    normpath(join(SITE_ROOT, 'themes', 'montreux', 'templates')),
+    normpath(join(SITE_ROOT, 'templates')),
+]
+
+STATICFILES_DIRS = (
+    normpath(join(SITE_ROOT, 'themes', 'montreux', 'static')),
+    normpath(join(SITE_ROOT, 'static')),
+)

@@ -8,15 +8,14 @@ import floppyforms as forms
 
 class ContactForm(forms.Form):
     name = forms.CharField(label=_("Name"),
-                           widget=forms.TextInput(attrs={'class': 'span4'}))
+                           widget=forms.TextInput())
     email = forms.EmailField(label=_("E-mail"), 
-                             widget=forms.EmailInput(attrs={'placeholder': 'john@example.com',
-                                                            'class': 'span4'}))
+                             widget=forms.EmailInput(attrs={'placeholder': 'john@example.com',}))
     subject = forms.CharField(label=_("Subject"),
-                           widget=forms.TextInput(attrs={'class': 'span4'}))
+                           widget=forms.TextInput())
 
     message = forms.CharField(label=_("Message"), 
-                              widget=forms.Textarea(attrs={'class': 'span4'}))
+                              widget=forms.Textarea())
     
     def send_mail(self, fail_silently=False):
         message_dict = {'from_email': settings.DEFAULT_FROM_EMAIL,
