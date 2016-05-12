@@ -10,10 +10,16 @@ from base import *
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = True
 
+SHARED_APPS += (
+    'djcelery',
+    'kombu.transport.django', 
+)
+
 INSTALLED_APPS += (
     'django_extensions', # more commands
     'debug_toolbar', # debugging
-    'kombu.transport.django', # celery broker using django db
+    'djcelery',
+    'kombu.transport.django', 
 )
 
 # See: https://github.com/django-debug-toolbar/django-debug-toolbar#installation
@@ -96,4 +102,4 @@ CKEDITOR_UPLOAD_PATH = MEDIA_ROOT
 # Asynchrnous tasks. 
 # See http://celery.readthedocs.org/en/latest/configuration.html
 BROKER_URL = 'django://'
-
+CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'

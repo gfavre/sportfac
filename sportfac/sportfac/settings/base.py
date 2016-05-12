@@ -225,7 +225,6 @@ SHARED_APPS = (
     'django.contrib.sites',
     'django.contrib.flatpages',
     'django.contrib.sitemaps',
-    #'django.contrib.humanize', # Useful template tags:
 
     # third party apps
     'rest_framework', # REST API
@@ -237,6 +236,7 @@ SHARED_APPS = (
     #'django_select2', # select2 widget (enhanced select box)
     'dbtemplates', # store templates in db (used by mailer module)
     'dynamic_preferences',
+
     # local apps
     'api',
     'contact',

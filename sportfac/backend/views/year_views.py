@@ -5,9 +5,7 @@ from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.core.management import call_command
-
-from django.db import connection
-
+from django.db import connection, transaction
 from django.utils.http import is_safe_url
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
@@ -89,13 +87,30 @@ class YearCreateView(SuccessMessageMixin, BackendMixin, FormView):
     def get_success_message(self, cleaned_data):
         return self.success_message % (cleaned_data['start_date'], cleaned_data['end_date'])
     
+    @transaction.atomic
     def form_valid(self, form):
         response = super(YearCreateView, self).form_valid(form)
         start = form.cleaned_data['start_date']
         end = form.cleaned_data['end_date']
+        connection.set_schema_to_public()
+        tenant, created = YearTenant.objects.get_or_create(
+            schema_name='period_%s_%s' % (start.strftime('%Y%m%d'), 
+                                          end.strftime('%Y%m%d')),
+            defaults = {
+                'start_date': start,
+                'end_date': end,
+                'status': YearTenant.STATUS.creating
+            }
+        )
+        domain, created = Domain.objects.get_or_create(
+            tenant=tenant,
+            domain='%s-%s' % (start.strftime('%Y%m%d'), 
+                              end.strftime('%Y%m%d')),
+        )
         copy_from_id = None
         if form.cleaned_data.get('copy_activities', None):
             copy_from_id = form.cleaned_data.get('copy_activities').pk
-        create_tenant.delay(start.strftime('%Y%m%d'), end.strftime('%Y%m%d'), copy_from_id)
+        create_tenant.delay(start.strftime('%Y%m%d'), end.strftime('%Y%m%d'), 
+                            tenant.pk, copy_from_id)
         return response
         
