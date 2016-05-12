@@ -5,12 +5,11 @@ from django.core.urlresolvers import reverse
 from django.test.client import RequestFactory
 
 from profiles.tests.factories import FamilyUserFactory, DEFAULT_PASS
-from sportfac.utils import TenantTestCase as TestCase
+from sportfac.utils import TenantTestCase
 
-
-class BackendTestBase(TestCase):
+class BackendTestBase(TenantTestCase):
     def setUp(self):
-        # Every test needs access to the request factory.
+        super(BackendTestBase, self).setUp()
         self.factory = RequestFactory()
         self.user = FamilyUserFactory()
         self.manager = FamilyUserFactory()           
@@ -18,17 +17,17 @@ class BackendTestBase(TestCase):
     
     def generic_test_rights(self, url):
         # anonymous access
-        response = self.client.get(url)
+        response = self.tenant_client.get(url)
         self.assertEqual(response.status_code, 302)
 
         # basic user access        
-        self.client.login(username=self.user.email, password=DEFAULT_PASS)
-        response = self.client.get(url)
+        self.tenant_client.login(username=self.user.email, password=DEFAULT_PASS)
+        response = self.tenant_client.get(url)
         self.assertEqual(response.status_code, 302)
         
         # manager access
-        self.client.login(username=self.manager.email, password=DEFAULT_PASS)
-        response = self.client.get(url)        
+        self.tenant_client.login(username=self.manager.email, password=DEFAULT_PASS)
+        response = self.tenant_client.get(url)        
         self.assertEqual(response.status_code, 200)
 
       

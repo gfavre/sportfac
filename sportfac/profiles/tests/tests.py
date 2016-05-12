@@ -6,13 +6,14 @@ from django.contrib.auth.models import Group
 
 from .factories import FamilyUserFactory
 from backend import MANAGERS_GROUP
-from sportfac.utils import TenantTestCase as TestCase
+from sportfac.utils import TenantTestCase
 
 
         
-class FamilyUserTestCase(TestCase):
+class FamilyUserTestCase(TenantTestCase):
 
     def setUp(self):
+        super(FamilyUserTestCase, self).setUp()
         self.superuser = FamilyUserFactory(is_superuser=True, is_admin=True)
         self.admin = FamilyUserFactory(is_admin=True)
         self.manager = FamilyUserFactory()

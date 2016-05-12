@@ -1,11 +1,16 @@
 import csv, codecs, cStringIO
 from datetime import date
 
+from django.core.management import call_command
 from django.db import connection
-
+from django.conf import settings
 from django_tenants.test.cases import TenantTestCase as BaseTenantTestCase
 from django_tenants.test.client import TenantClient
 from django_tenants.utils import get_tenant_model, get_tenant_domain_model
+from django.contrib.auth.models import Group
+
+from backend import RESPONSIBLE_GROUP, MANAGERS_GROUP
+from backend.models import TenantPreferenceModel
 
 class excel_semicolon(csv.excel):
     delimiter = ';'
@@ -72,8 +77,11 @@ class ExcelWriter:
 
 
 class TenantTestCase(BaseTenantTestCase):
+    
     def setUp(self):
         self.sync_shared()
+        grp, created = Group.objects.get_or_create(name=RESPONSIBLE_GROUP)
+        grp, created = Group.objects.get_or_create(name=MANAGERS_GROUP)
         self.tenant, created = get_tenant_model().objects.get_or_create(
             schema_name='test',
             start_date=date(2015, 1, 1),
@@ -88,4 +96,27 @@ class TenantTestCase(BaseTenantTestCase):
             is_current=True)
         
         connection.set_tenant(self.tenant)
-        self.client = TenantClient(self.tenant)
+        self.tenant_client = TenantClient(self.tenant)
+    
+    def _fixture_teardown(self):
+        # Allow TRUNCATE ... CASCADE and don't emit the post_migrate signal
+        # when flushing only a subset of the apps
+        for db_name in self._databases_names(include_mirrors=False):
+            # Flush the database
+            inhibit_post_migrate = (
+                self.available_apps is not None or
+                (   # Inhibit the post_migrate signal when using serialized
+                    # rollback to avoid trying to recreate the serialized data.
+                    self.serialized_rollback and
+                    hasattr(connections[db_name], '_test_serialized_contents')
+                )
+            )
+            call_command('flush', verbosity=0, interactive=False,
+                         database=db_name, reset_sequences=False,
+                         allow_cascade=True,
+                         inhibit_post_migrate=inhibit_post_migrate)    
+    
+    #def tearDown(self):
+    #    pass
+        #TenantPreferenceModel.objects.all().delete()
+        #super(TenantTestCase, self).tearDown()

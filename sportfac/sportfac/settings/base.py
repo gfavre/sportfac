@@ -61,7 +61,8 @@ DATABASE_ROUTERS = (
     'django_tenants.routers.TenantSyncRouter',
 )
 DEFAULT_TENANT_NAME = 'current'
-VERSION_COOKIE_NAME = 'KepchupYear'
+
+VERSION_SESSION_NAME = 'period'
 TENANT_MODEL = "backend.YearTenant" # app.Model
 TENANT_DOMAIN_MODEL = "backend.Domain" # app.Model
 
@@ -136,7 +137,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 ########## FIXTURE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FIXTURE_DIRS
 FIXTURE_DIRS = (
-    normpath(join(SITE_ROOT, 'fixtures')),
+    #normpath(join(SITE_ROOT, 'fixtures')),
 )
 ########## END FIXTURE CONFIGURATION
 
@@ -183,8 +184,6 @@ TEMPLATES = [
 ########## MIDDLEWARE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#middleware-classes
 MIDDLEWARE_CLASSES = (
-    'sportfac.middleware.VersionMiddleware',
-
     # Default Django middleware.
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -194,7 +193,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    
+
+    'sportfac.middleware.VersionMiddleware',
+
     'sportfac.middleware.RegistrationOpenedMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 )
@@ -351,7 +352,7 @@ DYNAMIC_PREFERENCES = {
     'ADMIN_ENABLE_CHANGELIST_FORM': False,
 
     # Should we enable the admin module for user preferences ?
-    'ENABLE_USER_PREFERENCES': True,
+    'ENABLE_USER_PREFERENCES': False,
 
     # Customize how you can access preferences from managers. The default is to
     # separate sections and keys with two underscores. This is probably not a settings you'll

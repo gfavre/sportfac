@@ -1,7 +1,11 @@
+import os
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse, reverse_lazy
+from django.core.management import call_command
+
 from django.db import connection
 
 from django.utils.http import is_safe_url
@@ -10,8 +14,10 @@ from django.utils.translation import ugettext as _
 from django.views.generic import (CreateView, DeleteView, DetailView, FormView,
                                   ListView, UpdateView)
 
+from activities.models import Course
 from ..forms import YearSelectForm, YearCreateForm, YearForm
 from ..models import YearTenant, Domain
+from ..tasks import create_tenant
 from .mixins import BackendMixin
 
 
@@ -30,9 +36,7 @@ class ChangeYearFormView(SuccessMessageMixin, BackendMixin, FormView):
         self.success_url = form.cleaned_data['next']
         response = super(ChangeYearFormView, self).form_valid(form)
         tenant = form.cleaned_data['tenant']
-        response.set_cookie(settings.VERSION_COOKIE_NAME, tenant.domains.first().domain,
-                            max_age=settings.SESSION_COOKIE_AGE,
-                            secure=settings.SESSION_COOKIE_SECURE or None)
+        self.request.session[settings.VERSION_SESSION_NAME] = tenant.domains.first().domain
         return response
     
     def get_success_message(self, cleaned_data):
@@ -78,7 +82,7 @@ class YearDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
 
 class YearCreateView(SuccessMessageMixin, BackendMixin, FormView):
     form_class = YearCreateForm
-    success_url = reverse_lazy('backend:home')
+    success_url = reverse_lazy('backend:year-list')
     template_name = 'backend/year/create.html'
     success_message = _("A new period, starting on %s and ending on %s has been defined")
     
@@ -89,20 +93,9 @@ class YearCreateView(SuccessMessageMixin, BackendMixin, FormView):
         response = super(YearCreateView, self).form_valid(form)
         start = form.cleaned_data['start_date']
         end = form.cleaned_data['end_date']
-        connection.set_schema_to_public()
-        tenant = YearTenant(
-            schema_name='period_%s_%s' % (start.strftime('%Y%m%d'), end.strftime('%Y%m%d')),
-            start_date=start,
-            end_date=end
-        )
-        tenant.save()
-        domain = Domain.objects.create(
-            is_primary=False,
-            domain='%s-%s' % (start, end),
-            tenant=tenant
-        )
-                
+        copy_from_id = None
+        if form.cleaned_data.get('copy_activities', None):
+            copy_from_id = form.cleaned_data.get('copy_activities').pk
+        create_tenant.delay(start.strftime('%Y%m%d'), end.strftime('%Y%m%d'), copy_from_id)
         return response
-        # create tenant
-        # copy activities
-        # set tenant
+        

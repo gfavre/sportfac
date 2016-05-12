@@ -68,7 +68,7 @@ class Domain(DomainMixin):
 
 
 class TenantPreferenceModel(PerInstancePreferenceModel):
-    instance = models.ForeignKey('backend.YearTenant')
+    instance = models.ForeignKey('backend.YearTenant', on_delete=models.deletion.CASCADE)
     
     class Meta(PerInstancePreferenceModel.Meta):
         verbose_name = _("tenant preference")

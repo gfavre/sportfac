@@ -4,16 +4,20 @@ import mock
 
 from .factories import ActivityFactory, CourseFactory
 from mailer.views import MailMixin
-from profiles.tests.factories import FamilyUserFactory, DEFAULT_PASS
+from profiles.tests.factories import FamilyUserFactory, SchoolYearFactory, DEFAULT_PASS
 from registrations.tests.factories import ChildFactory, RegistrationFactory
 from sportfac.utils import TenantTestCase as TestCase
 
+from profiles.models import SchoolYear
 
 class ActivityViewsTests(TestCase):
     def setUp(self):
         super(ActivityViewsTests, self).setUp()
         self.activity = ActivityFactory()
         self.user = FamilyUserFactory()
+
+    def tearDown(self):
+        pass
 
     def test_detail_view(self):
         url = self.activity.get_absolute_url()
@@ -32,11 +36,12 @@ class ActivityViewsTests(TestCase):
 
 class CourseViewsTests(TestCase):
     def setUp(self):
-        super(ActivityViewsTests, self).setUp()
+        super(CourseViewsTests, self).setUp()
         self.responsible = FamilyUserFactory()
         self.course = CourseFactory(responsible=self.responsible)
         self.family = FamilyUserFactory()
-        self.child = ChildFactory(family=self.family)
+        self.year = SchoolYearFactory()
+        self.child = ChildFactory(family=self.family, school_year=self.year)
         self.registration = RegistrationFactory(course=self.course, child=self.child)
         self.other_user = FamilyUserFactory()
     

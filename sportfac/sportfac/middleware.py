@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import connection
+from django.http import Http404
 from django.utils import timezone
 
 from django_tenants.middleware import TenantMiddleware
@@ -26,9 +27,16 @@ class RegistrationOpenedMiddleware(object):
 
 class VersionMiddleware(TenantMiddleware):
     def hostname_from_request(self, request):
-        if settings.VERSION_COOKIE_NAME in request.COOKIES:
-            return request.COOKIES.get(settings.VERSION_COOKIE_NAME)
+        if settings.VERSION_SESSION_NAME in request.session:
+            return request.session.get(settings.VERSION_SESSION_NAME)
         else:
             domain = Domain.objects.filter(is_current=True).first()
+            request.session[settings.VERSION_SESSION_NAME] = domain.domain
             return domain.domain
     
+    def process_request(self, request): 
+        try:
+            super(VersionMiddleware, self).process_request(request)
+        except Http404:
+            del request.session[settings.VERSION_SESSION_NAME]
+            return super(VersionMiddleware, self).process_request(request)

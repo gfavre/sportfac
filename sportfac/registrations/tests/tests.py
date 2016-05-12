@@ -1,3 +1,4 @@
+from datetime import time
 from django.test import TestCase
 from sportfac.utils import TenantTestCase as TestCase
 
@@ -5,10 +6,12 @@ from .factories import ChildFactory, RegistrationFactory
 from activities.tests.factories import CourseFactory
 from profiles.tests.factories import FamilyUserFactory, SchoolYearFactory
 from schools.tests.factories import TeacherFactory
+from sportfac.utils import TenantTestCase
 
 
-class RegistrationTestCase(TestCase):
+class RegistrationTestCase(TenantTestCase):
     def setUp(self):
+        super(RegistrationTestCase, self).setUp()
         self.user = FamilyUserFactory()
         self.year = SchoolYearFactory()
         self.teacher = TeacherFactory()

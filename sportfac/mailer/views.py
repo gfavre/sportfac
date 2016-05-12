@@ -41,7 +41,6 @@ class MailMixin(ContextMixin):
 
     def get_context_data(self, **kwargs):
         context = super(MailMixin, self).get_context_data(**kwargs)
-        global_preferences
         context['signature'] = self.global_preferences['email__SIGNATURE']
         current_site = get_current_site(self.request)
         context['site_name'] = current_site.name
