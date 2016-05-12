@@ -10,9 +10,8 @@ python manage.py dumpdata profiles.Child > ../backup/children.json
 python manage.py dumpdata activities > ../backup/activities.json
 python manage.py dumpdata profiles.Registration  > ../backup/registrations.json
 python manage.py dumpdata profiles.ExtraInfo  > ../backup/extra.json
-
 python manage.py dumpdata mailer > ../backup/mail.json
-python manage.py dumpdata database > ../backup/constance.json
+python manage.py dumpdata dbtemplates  > ../backup/dbtemplates.json
 
 
 Reload backup
@@ -76,4 +75,3 @@ sed 's/profiles\.extrainfo/registrations\.extrainfo/g' ../backup/extra.json > ..
 python manage.py tenant_command loaddata ../backup/extra-fixed.json
 
 python manage.py loaddata ../backup/mail.json
-python manage.py tenant_command loaddata ../backup/constance.json

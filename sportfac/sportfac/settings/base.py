@@ -170,8 +170,8 @@ TEMPLATES = [
                 'sekizai.context_processors.sekizai',
             ],
             'loaders': [
-                'django.template.loaders.filesystem.Loader',
                 'dbtemplates.loader.Loader',
+                'django.template.loaders.filesystem.Loader',
                 'django.template.loaders.app_directories.Loader',
             ]
         },

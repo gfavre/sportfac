@@ -50,25 +50,7 @@
       </div>
     </div>
     
-    <footer id="footer">
-      <div class="container">
-        <div>
-          <address itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">© 
-            <span itemprop="name">Établissement primaire de Coppet et environs</span><br />
-            <span itemprop="streetAddress">Chemin du Chaucey 7</span>, 
-            <span itemprop="postalCode">1296</span> <span itemprop="addressLocality">Coppet</span> - 
-            Tél: <span itemprop="telephone">+41 22 557 58 58</span>
-          </address>{{ request.tenant }}
-          <img src="{{ STATIC_URL }}img/logo-terre-sainte.png" class="hidden-xs hidden-sm hidden-print"/>
-          <ul class="footer-links hidden-print">
-            <li><a href="{% url 'contact' %}">{% trans "Contact" %}</a></li>
-            <li class="muted">·</li>
-            <li><a href="{% url 'terms' %}">{% trans "Terms and conditions" %}</a></li>
-          </ul>
-          <small><a href="http://www.beyondthewall.ch">Développé par Beyond the Wall, Gland</a></small>
-        </div>
-      </div>
-    </footer>
+    {% include "footer.html" %} 
 
     <script src="{{ STATIC_URL }}js/vendor/jquery-2.1.1.min.js"></script>
     <script src="{{ STATIC_URL }}js/vendor/bootstrap.min.js"></script>
