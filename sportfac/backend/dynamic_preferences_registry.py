@@ -6,7 +6,8 @@ from django.utils import timezone
 
 from dynamic_preferences.types import BaseSerializer
 from dynamic_preferences.types import (BasePreferenceType, BooleanPreference, 
-                                       IntegerPreference, StringPreference, Section)
+                                       IntegerPreference, LongStringPreference, 
+                                       StringPreference, Section)
 from dynamic_preferences.registries import PerInstancePreferenceRegistry, global_preferences_registry, preference_models
 
 from .models import TenantPreferenceModel
@@ -58,11 +59,10 @@ class SchoolName(StringPreference):
 
 
 @global_preferences_registry.register
-class Signature(StringPreference):
+class Signature(LongStringPreference):
     section = email
     name = 'SIGNATURE'
-    default = """
-Sport scolaire facultatif
+    default = """Sport scolaire facultatif
 info@kepchup.ch"""
 
 
