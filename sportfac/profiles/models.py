@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.db import models
+from django.db import models, ProgrammingError
 from django.contrib.auth.models import AbstractUser, Group
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.core.urlresolvers import reverse
@@ -223,12 +223,16 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         return "%s %s <%s>" % (self.first_name, self.last_name, self.email)
 
     def save(self, *args, **kwargs):
-        if self.finished_registration != self.__original_status:
-            for registration in self.get_registrations(self.__original_status):
-                registration.validated=self.finished_registration
-                registration.save()
-        self.update_total()
-        self.update_billing_identifier()
+        try:
+            if self.finished_registration != self.__original_status:
+                for registration in self.get_registrations(self.__original_status):
+                    registration.validated=self.finished_registration
+                    registration.save()
+            self.update_total()
+            self.update_billing_identifier()
+        except ProgrammingError:
+            # code run from public shema => console
+            pass
         super(FamilyUser, self).save(*args, **kwargs)
 
     def __unicode__(self):
