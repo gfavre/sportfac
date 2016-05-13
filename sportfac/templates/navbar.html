@@ -97,7 +97,7 @@
                 <a href="{% url 'backend:home' %}"><i class="icon-cogs"></i> {% trans "Administration" %}</a>
               </li>
             {% endif %}
-            {% if user.is_staff %}
+            {% if user.is_staff or user.is_superadmin %}
               <li class="divider"></li>
               <li>
                 <a href="{% url 'admin:index' %}"><i class="icon-lock"></i> Django admin</a>
