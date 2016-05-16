@@ -18,3 +18,9 @@ class ChildForm(forms.ModelForm):
         model = Child
         fields = ('first_name', 'last_name', 'sex', 'birth_date', 'nationality', 
                   'language', 'school_year', 'teacher')
+
+
+#class UserPayForm(forms.ModelForm):
+#    class Meta:
+#        model = get_user_model()
+#        fields = ('finished_registration', 'paid', )

@@ -51,7 +51,7 @@ class FamilyChangeForm(forms.ModelForm):
 
     class Meta:
         model = FamilyUser
-        fields = ('email', 'is_staff', 'is_superuser', 'finished_registration', 'paid', 'groups',
+        fields = ('email', 'is_staff', 'is_superuser', 'groups',
                   'first_name', 'last_name', 
                   'address', 'zipcode', 'city', 'country', 
                   'private_phone', 'private_phone2', 'private_phone3',
@@ -76,18 +76,15 @@ class FamilyAdmin(UserAdmin):
     # The forms to add and change user instances
     form = FamilyChangeForm
     add_form = FamilyCreationForm
-    readonly_fields = ('total',)
 
-    list_display = ('email', 'first_name', 'last_name', 'children_names', 'billing_identifier', 'finished_registration', 'total', 'paid')
+    list_display = ('email', 'first_name', 'last_name', 'children_names')
     
-    list_filter = ('paid', 'finished_registration')
     change_list_template = "admin/change_list_filter_sidebar.html"
     change_list_filter_template = "admin/filter_listing.html"
 
     
     fieldsets = (
-        (None, {'fields': ('email', 'password', 'is_staff', 'is_superuser', 'groups',
-                           'finished_registration', 'total', 'paid', )}),
+        (None, {'fields': ('email', 'password', 'is_staff', 'is_superuser', 'groups')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 
                                       'address', 'zipcode', 'city', 'country', 
                                       'private_phone', 'private_phone2', 'private_phone3',
@@ -104,7 +101,7 @@ class FamilyAdmin(UserAdmin):
                                       'private_phone', 'private_phone2',
                                       'birth_date', 'iban', 'ahv')}),
     )
-    search_fields = ('email', 'last_name', 'first_name', 'billing_identifier')
+    search_fields = ('email', 'last_name', 'first_name',)
     ordering = ('last_name', 'first_name')
     #filter_horizontal = ()
     inlines = [ChildInline]

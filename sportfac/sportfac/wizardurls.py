@@ -7,9 +7,9 @@ from django.core.urlresolvers import reverse
 from django.contrib import admin
 
 from activities.views import ActivityListView
-from profiles.views import (WizardAccountView, WizardRegistrationView,
-                            WizardChildrenListView, 
-                            RegisteredActivitiesListView, WizardBillingView,)
+from profiles.views import WizardAccountView, WizardRegistrationView
+from registrations.views import (RegisteredActivitiesListView, WizardChildrenListView, 
+                                 WizardBillingView)
 from .views import WizardView
 
 urlpatterns = [

@@ -1,0 +1,81 @@
+{% extends "backend/base.html" %}
+{% load i18n switzerland static %}
+
+{% block title %}{% trans "Bill detail" %}{% endblock %}
+{% block page_title %}{% endblock %}
+
+{% block content %}
+<section>  
+    
+  <div class="row">
+     <div class="col-sm-6 ">
+       <img src="{% static 'img/logo.png' %}"/>
+     {% include "address.html" %}
+    </div>
+
+      
+    <div class="col-sm-6 col-sm-offset-6">
+      <address>
+        {{ bill.family.full_name }}<br/>
+        {{ bill.family.address }}<br/>
+        {{ bill.family.zipcode }} {{ bill.family.city }}<br />
+        {{ bill.family.get_country_display }}
+      </address>
+    </div>
+  </div>
+  <h1>{% trans "Bill detail" %}</h1>
+  <dl class="dl-horizontal">  
+      <dt>{% trans "Billing identifier" %}</dt><dd>{{ bill.billing_identifier }}</dd>
+      <dt>{% trans "Billing date" %}</dt><dd>{{ bill.created|date:"SHORT_DATE_FORMAT" }}</dd>
+  </dl>
+</section>
+
+
+<section>
+  <h3>{% trans "Registrations" %}</h3>
+  <table class=" table table-striped">
+    <thead>
+      <tr>
+        <th>{% trans "Name" %}</th>
+        <th>{% trans "Activity" %}</th>
+        <th>{% trans "Period" %}</th>
+        <th>{% trans "Time" %}</th>
+        <th>{% trans "Price" %}</th>
+        <th class="hidden-print">{% trans "Actions" %}</th>
+      </tr>
+    </thead> 
+    <tfoot>
+      <tr>
+        <th colspan="4" class="nowrap" style="text-align: right">{% trans "Total" %}</th>
+        <th class="nowrap">{{ bill.total|money }}</th>
+        <th class="hidden-print"></th>
+      </tr>
+    </tfoot>
+    <tbody>
+    {% for registration in bill.registrations.all %}
+      <tr>
+        <td>
+          <span class="nowrap"><a href="{{ registration.child.backend_url }}">{{ registration.child.full_name }}</a></span>
+        </td>
+        <td>
+          <a href="{{ registration.course.activity.backend_url }}">{{ registration.course.activity.name }}</a>
+        </td>
+        <td>
+          <span class="nowrap"><a href="{{ registration.course.backend_url }}">{{ registration.course.start_date }}</span> – <span class="nowrap">{{ registration.course.end_date }}</span></a>
+        </td>
+        <td>
+          {{ registration.course.day_name }} / <span class="nowrap">{{ registration.course.start_time|time:"H:i"}} - {{ registration.course.end_time|time:"H:i" }}</span>
+        </td>
+        <td class="nowrap">{{ registration.course.price|money }}</td>
+        <td class="hidden-print">
+          <ul class="list-unstyled">
+            <li class="text-nowrap"><a href="{{ registration.update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update registration" %}</a></li>
+            <li class="text-nowrap"><a href="{{ registration.delete_url }}" class="btn btn-sm"><i class="icon-cancel"></i>&nbsp;{% trans "Cancel registration" %}</a></li>
+          </ul>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>  
+  </table>
+</section>   
+{% endblock content %}

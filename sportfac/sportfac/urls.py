@@ -35,6 +35,7 @@ urlpatterns = [
     url(r'^account/', include('profiles.urls')),
     url(r'^backend/', include('backend.urls', namespace="backend", app_name="backend")),
     url(r'^contact/', include('contact.urls')),
+    url(r'^registrations/', include('registrations.urls')),
         
     url(r'^sitemap\.xml$', sitemapviews.sitemap, {'sitemaps': sitemaps}),
     url(r'^robots\.txt$', TextPlainView.as_view(template_name='robots.txt')),

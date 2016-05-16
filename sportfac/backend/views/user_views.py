@@ -4,6 +4,7 @@ from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.models import Group
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy, reverse
+from django.db.models import Count, Case, When
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
@@ -12,31 +13,53 @@ from django.views.generic import CreateView, DeleteView, DetailView, \
 
 from backend import MANAGERS_GROUP, RESPONSIBLE_GROUP
 from profiles.forms import (ManagerForm, ManagerWithPasswordForm, 
-                            ResponsibleForm, ResponsibleWithPasswordForm, 
-                            UserPayForm)
+                            ResponsibleForm, ResponsibleWithPasswordForm)
 from profiles.models import FamilyUser
-from registrations.models import Child
+from registrations.models import Bill, Child, Registration
 from registrations.forms import ChildForm
 
 from .mixins import BackendMixin
 
 __all__ = ('UserListView', 'UserCreateView', 'PasswordSetView',
-           'UserUpdateView', 'UserPayUpdateView', 'UserDeleteView', 'UserDetailView',
+           'UserUpdateView', 'UserDeleteView', 'UserDetailView',
            'ChildCreateView', 'ChildUpdateView', 'ChildDeleteView',
             'ManagerListView', 'ManagerCreateView', 
             'ResponsibleListView', 'ResponsibleCreateView', 'ResponsibleDetailView'
            )
 
+valid_registrations = Registration.objects.validated()
+
+FamilyUser.objects.annotate(
+    valid_registrations=Count(Case(When(children__registrations__in= Registration.objects.validated(), then=1))),
+    waiting_registrations=Count(Case(When(children__registrations__in=Registration.objects.waiting(), then=1))),
+    opened_bills=Count(Case(When(bills__status=Bill.STATUS.waiting, then=1))),
+)
+
 
 class UserListView(BackendMixin, ListView):
     model = FamilyUser
-    queryset = FamilyUser.objects.prefetch_related('children')
     template_name = 'backend/user/list.html'
-
+    
+    def get_queryset(self):
+        return FamilyUser.objects.annotate(num_children=Count('children'))\
+                         .filter(num_children__gt=0)\
+                         .annotate(
+                            valid_registrations=Count(
+                                Case(When(children__registrations__in= Registration.objects.validated(), then=1))
+                            ),
+                            waiting_registrations=Count(
+                                Case(When(children__registrations__in=Registration.objects.waiting(), then=1))
+                            ),
+                            opened_bills=Count(
+                                Case(When(bills__status=Bill.STATUS.waiting, then=1))
+                            ),
+                         )\
+                         .prefetch_related('children')
+    
     def post(self, request, *args, **kwargs):
         userids = list(set(json.loads(request.POST.get('data', '[]'))))
         self.request.session['mail-userids'] = userids
-        return HttpResponseRedirect(reverse('backend:custom-mail-custom-users')) 
+        return HttpResponseRedirect(reverse('backend:custom-mail-custom-users'))
 
 
 class ManagerListView(UserListView):
@@ -141,15 +164,15 @@ class UserUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
         return _("Contact informations of %s have been updated.") % self.object.full_name
 
 
-class UserPayUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
-    model = FamilyUser
-    form_class = UserPayForm
-    template_name = 'backend/user/pay.html'
-    success_url = reverse_lazy('backend:user-list')    
-    
-    def get_success_message(self, cleaned_data):
-        return _("Status of %s has been changed.") % self.object.full_name
-
+#class UserPayUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
+#    model = FamilyUser
+#    form_class = UserPayForm
+#    template_name = 'backend/user/pay.html'
+#    success_url = reverse_lazy('backend:user-list')    
+#    
+#    def get_success_message(self, cleaned_data):
+#        return _("Status of %s has been changed.") % self.object.full_name
+#
 
 class UserDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
     model = FamilyUser

@@ -1,11 +1,13 @@
 {% load i18n l10n humanize sekizai_tags switzerland %}
 
 <p>Les inscriptions seront définitivement validées à la suite du règlement de la finance de participation pour les cours choisis.</p>
-<p>Le montant total pour vos inscriptions s'élève à : <strong>{{ total_price|money }}</strong></p>
-<p>L'identifiant pour votre transaction est le suivant : <strong>{{ user.billing_identifier }}</strong></p>
+<p>Le montant total pour vos inscriptions s'élève à : <strong>{{ bill.total|money }}</strong></p>
+<p>L'identifiant pour votre transaction est le suivant : <strong>{{ bill.billing_identifier }}</strong></p>
 <p>Nous vous remercions de verser cette somme d’ici au  {{ registration_end|date:"j F Y" }} en privilégiant le virement bancaire sur le compte : </p>
 <div class="well">
   <dl class="dl-horizontal">
+    <dt>Montant</dt><dd>{{ bill.total|money }}</dd>
+    <dt>Identifiant</dt><dd>{{ bill.billing_identifier }}</dd>
     <dt>IBAN</dt><dd>CH77 0076 7000 C507 0682 4</dd>
     <dt>Adresse</dt><dd>AIC<br/>1201 Genève</dd>
   </dl>
@@ -16,7 +18,7 @@
 <p><strong>Aucun remboursement ne pourra être demandé en cas de désistement.</strong></p>
 
 <hr />
-<h2>Inscriptions</h2>
+<h3>Inscriptions</h3>
 <table class=" table table-striped">
   <thead>
     <tr>
@@ -32,12 +34,12 @@
  <tfoot>
     <tr>
       <th colspan="5" style="text-align: right">{% trans "Total" %}</th>
-      <th class="nowrap">{{ total_price|money }}</th>
+      <th class="nowrap">{{ bill.total|money }}</th>
     </tr>
   </tfoot>
 
   <tbody>
-  {% for registered in registered_list %}
+  {% for registered in bill.registrations.all %}
     <tr>
       <td>
         <span class="nowrap">{{ registered.child.first_name }} {{ registered.child.last_name }}</span>

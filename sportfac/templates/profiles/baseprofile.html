@@ -8,9 +8,9 @@
 
 {% url 'profiles_account' as profiles_url %}
 {% url 'auth_password_change' as password_change_url %}
-{% url 'profiles_children' as children_url %}
-{% url 'profiles_registered_activities' as activities_url %}
-{% url 'profiles_billing' as billing_url %}
+{% url 'registrations_children' as children_url %}
+{% url 'registrations_registered_activities' as activities_url %}
+{% url 'registrations_billing' as billing_url %}
 <div class="container">
   <div class="layout layout-main-right layout-stack-sm">
     <div class="col-md-3 col-sm-4 layout-sidebar hidden-print">
@@ -39,15 +39,15 @@
             &nbsp;&nbsp;{% trans "Family settings" %}
           </a>
         </li>
-{% if not request.PHASE == 1 %}
-        {% if user.finished_registration %}
+        {% if request.PHASE != 1 %}
         <li {% if request.get_full_path == activities_url %}class="active"{% endif %}>
           <a href="{{ activities_url }}">
             <i class="icon-calendar"></i>
             &nbsp;&nbsp;{% trans "My registered activities" %}
           </a>
         </li>
-        {% if not user.paid %}
+        {% endif %}
+        {% if user.has_open_bills %}
         <li {% if request.get_full_path == billing_url %}class="active"{% endif %}>
           <a href="{{ billing_url }}">
             <i class="icon-credit-card-1"></i>
@@ -55,8 +55,6 @@
           </a>
         </li>
         {% endif %}
-        {% endif %}        
-{% endif %}    
         
       </ul>
     </div>

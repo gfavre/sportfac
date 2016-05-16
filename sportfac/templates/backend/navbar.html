@@ -2,10 +2,10 @@
 
 {% url 'backend:home' as home_url %}
 {% url 'backend:activity-list' as activities_url %}
-{% url 'profiles_children' as children_url %}
+{% url 'registrations_children' as children_url %}
 
 
-<div class="mainnav">
+<div class="mainnav hidden-print">
     <div class="container">
 
       <a class="mainnav-toggle" data-toggle="collapse" data-target="#mainnav-collapse">
@@ -65,6 +65,12 @@
               <li>
                 <a href="{% url 'backend:registration-create' %}">
                 <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New registration" %}
+                </a>
+              </li>
+              <li class="divider"></li>
+              <li>
+                <a href="{% url 'backend:bill-list' %}">
+                  <i class="icon-credit-card-1"></i>&nbsp;&nbsp;{% trans "All bills" %}
                 </a>
               </li>
             </ul>

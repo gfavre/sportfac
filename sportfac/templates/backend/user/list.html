@@ -20,7 +20,7 @@ $(function () {
       },
 {% endif %}
       aoColumnDefs: [
-          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ 5] }
+          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ 4] }
       ],
       'lengthMenu': [[10, 25, 50, -1], [10, 25, 50, "{% trans 'All users' %}"] ],
       dom: 'T<"clear">lfrtip',
@@ -80,7 +80,6 @@ $(function () {
       <th>{% trans "Children" %}</th>
       <th>{% trans "Finished registration" %}</th>
       <th>{% trans "Paid" %}</th>
-      <th>{% trans "Billing identifier" %}</th>
       <th>{% trans "Actions" %}</th>
     </tr>
   </thead>
@@ -94,18 +93,31 @@ $(function () {
         {% endfor %}
         </ul>
       </td>
-      <td data-order="{{ user.finished_registration }}" data-search="{% if user.finished_registration %}{% trans 'finished' %}{% endif %}">{% if user.finished_registration %}<i class="icon-ok-circled success"></i>{% else %}<i class="icon-cancel-circled  danger"></i>{% endif %}</td>
-      <td data-order="{{ user.paid }}" data-search="{% if user.paid %}{% trans 'paid' %}{% endif %}">{% if user.paid %}<i class="icon-ok-circled success"></i>{% else %}<i class="icon-cancel-circled  danger"></i>{% endif %}</td>
-      <td>{{ user.billing_identifier }} </td>
+
+      <td data-order="{{ user.finished_registrations }}" data-search="{% if user.finished_registrations %}{% trans 'finished' %}{% endif %}">
+        {% if user.finished_registrations %}
+        <i class="icon-ok-circled success"></i>
+        {% else %}
+        <i class="icon-cancel-circled  danger"></i>
+        {% endif %}
+      </td>
+      <td data-order="{{ user.paid }}" data-search="{% if user.paid %}{% trans 'paid' %}{% endif %}">
+        {% if user.paid %}
+        <i class="icon-ok-circled success"></i>
+        {% else %}
+        <i class="icon-cancel-circled danger"></i>
+        {% endif %}
+      </td>
       <td>
         <ul class="list-unstyled">
           <li class="text-nowrap"><a href="{{ user.get_backend_url }}" class="btn btn-sm"><i class="icon-user"></i>&nbsp;&nbsp;{% trans "User details" %}</a></li>
           <li class="text-nowrap"><a href="{{ user.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Update user" %}</a></li>
           <li class="text-nowrap"><a href="{{ user.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;&nbsp;{% trans "Delete user" %}</a></li>
-          <li class="text-nowrap"><a href="{{ user.get_payment_url }}" class="btn btn-sm"><i class="icon-credit-card-1"></i>&nbsp;&nbsp;{% trans "Change payment status" %}</a></li>
+          {% comment %}<li class="text-nowrap"><a href="{{ user.get_payment_url }}" class="btn btn-sm"><i class="icon-credit-card-1"></i>&nbsp;&nbsp;{% trans "Change payment status" %}</a></li>{% endcomment %}
         </ul>
       </td>
     </tr>
+    
   {% endfor %}
 </table>
 

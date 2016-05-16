@@ -3,7 +3,6 @@ from django.db import models, ProgrammingError
 from django.contrib.auth.models import AbstractUser, Group
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.core.urlresolvers import reverse
-from django.template.defaultfilters import slugify
 
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
@@ -16,7 +15,7 @@ from activities.models import SCHOOL_YEARS
 from backend import MANAGERS_GROUP, RESPONSIBLE_GROUP
 from sportfac.models import TimeStampedModel
 from .ahv import AHVField
-from registrations.models import Registration
+from registrations.models import Registration, Bill
 
 
 class FamilyManager(BaseUserManager):
@@ -106,13 +105,6 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
 
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
-    finished_registration = models.BooleanField(default=False, verbose_name=_("Finished registration"), help_text=_("For current year"))
-    paid = models.BooleanField(default=False, verbose_name=_("Has paid"), help_text=_("For current year"))
-
-    billing_identifier = models.CharField(_('Billing identifier'), max_length=45, blank=True)
-    total = models.PositiveIntegerField(default=0, verbose_name=_("Total to be paid"))
-
-    __original_status = None
 
     objects = FamilyManager()
     responsible_objects = ResponsibleFamilyUserManager()
@@ -124,10 +116,6 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     class Meta:
         get_latest_by = "date_joined"
         ordering =('last_name', 'first_name')
-
-    def __init__(self, *args, **kwargs):
-        super(FamilyUser, self).__init__(*args, **kwargs)
-        self.__original_status = self.finished_registration
 
     def get_full_name(self):
         full_name = '%s %s' % (self.first_name, self.last_name)
@@ -147,18 +135,37 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     @property
     def children_names(self):
         return ', '.join([unicode(child) for child in self.children.all()])
-
+    
+    @property
+    def has_open_bills(self):
+        if hasattr(self, 'opened_bills'):
+            return self.opened_bills > 0
+        return self.bills.filter(status=Bill.STATUS.waiting).count() > 0
+    
+    @property
+    def paid(self):
+        if hasattr(self, 'opened_bills'):
+            return self.opened_bills == 0
+        return not self.has_open_bills()
+    
+    @property
+    def has_open_registrations(self):
+        if hasattr(self, 'waiting_registrations'):
+            return self.waiting_registrations > 0
+        return self.get_registrations(validated=False).count() > 0
+    
+    @property
+    def finished_registrations(self):
+        if hasattr(self, 'waiting_registrations'):
+            return self.waiting_registrations == 0
+        return not self.has_open_registrations()
+    
     def get_registrations(self, validated=True):
-        return Registration.valid.filter(child__in=self.children.all())
-
-    def update_total(self):
-        registrations = self.get_registrations(True)
-        total = registrations.aggregate(models.Sum('course__price')).get('course__price__sum')
-        self.total = total or 0
-
-    def update_billing_identifier(self):
-        if self.pk:
-            self.billing_identifier = slugify('%s-%i' % (self.last_name, self.id))
+        if validated:
+            queryset = Registration.objects.validated()
+        else:
+            queryset = Registration.objects.waiting()
+        return queryset.filter(child__in=self.children.all())
 
     def get_absolute_url(self):
         return reverse('profiles_account')
@@ -221,19 +228,6 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
 
     def get_from_address(self):
         return "%s %s <%s>" % (self.first_name, self.last_name, self.email)
-
-    def save(self, *args, **kwargs):
-        try:
-            if self.finished_registration != self.__original_status:
-                for registration in self.get_registrations(self.__original_status):
-                    registration.validated=self.finished_registration
-                    registration.save()
-            self.update_total()
-            self.update_billing_identifier()
-        except ProgrammingError:
-            # code run from public shema => console
-            pass
-        super(FamilyUser, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.get_from_address()

@@ -64,7 +64,19 @@ class Activity(TimeStampedModel):
     
     def get_backend_url(self):
         return reverse('backend:activity-detail', kwargs={'activity': self.slug})
+    
+    @property
+    def backend_url(self):
+        return self.get_backend_url()
 
+    @property
+    def update_url(self):
+        return self.get_update_url()
+
+    @property
+    def delete_url(self):
+        return self.get_delete_url()
+    
     def __unicode__(self):
         return self.name
     
@@ -201,6 +213,18 @@ class Course(TimeStampedModel):
     
     def get_absolute_url(self):
         return reverse('activities:course-detail', kwargs={"course": self.pk})
+
+    @property
+    def backend_url(self):
+        return self.get_backend_url()
+
+    @property
+    def update_url(self):
+        return self.get_update_url()
+
+    @property
+    def delete_url(self):
+        return self.get_delete_url()
 
 
     def save(self, *args, **kwargs):

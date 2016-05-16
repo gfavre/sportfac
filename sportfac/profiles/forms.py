@@ -14,8 +14,7 @@ from backend.forms import Select2Widget, DatePickerInput
 __all__ = ('AuthenticationForm', 'PasswordChangeForm', 'PasswordResetForm',
            'AcceptTermsForm', 'RegistrationForm',
            'UserForm', 'ManagerForm', 'ManagerWithPasswordForm',
-           'ResponsibleForm', 'ResponsibleWithPasswordForm',
-           'UserPayForm')
+           'ResponsibleForm', 'ResponsibleWithPasswordForm')
 
 
 class AuthenticationForm(auth_forms.AuthenticationForm):
@@ -131,12 +130,6 @@ class ResponsibleWithPasswordForm(ResponsibleForm):
         if self.cleaned_data.get("password1") != self.cleaned_data.get("password2"):
             raise forms.ValidationError(_("You must type the same password"
                                               " each time."))
-
-
-class UserPayForm(forms.ModelForm):
-    class Meta:
-        model = get_user_model()
-        fields = ('finished_registration', 'paid', )
 
            
 class RegistrationForm(PhoneRequiredMixin, forms.Form):

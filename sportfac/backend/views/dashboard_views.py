@@ -11,7 +11,7 @@ from django.db.models import Count, Max, Sum, Avg
 
 from activities.models import Activity, Course
 from profiles.models import FamilyUser, SchoolYear
-from registrations.models import Child, Registration
+from registrations.models import Bill, Child, Registration
 from schools.models import Teacher
 from backend.forms import RegistrationDatesForm
 from backend import MANAGERS_GROUP, RESPONSIBLE_GROUP
@@ -68,7 +68,6 @@ class HomePageView(BackendMixin, TemplateView):
         return [[k, total_per_day[k]] for k in sorted(total_per_day)]
     
     def get_additional_context_phase2(self, context):
-        finished = FamilyUser.objects.filter(finished_registration=True)
         waiting = set(Registration.objects\
                                       .filter(status=Registration.STATUS.waiting)\
                                       .select_related('child__family')\
@@ -80,8 +79,8 @@ class HomePageView(BackendMixin, TemplateView):
         context['waiting'] = len(waiting)
         context['valid'] = len(valid)
         
-        context['payement_due'] = finished.filter(total__gt=0).count()
-        context['paid'] = finished.filter(total__gt=0, paid=True).count()
+        context['payement_due'] = Bill.waiting.filter(total__gt=0).count()
+        context['paid'] = Bill.paid.filter(total__gt=0).count()
                     
         context['registrations_per_day'] = self._get_registrations_per_day()
         
@@ -131,19 +130,18 @@ class HomePageView(BackendMixin, TemplateView):
                 if max_participants == count_participants:
                     context['nb_full_courses'] += 1
         
-        
-        finished = FamilyUser.objects.filter(finished_registration=True)
-        context['payement_due'] = finished.filter(total__gt=0).count()
-        context['total_due'] = FamilyUser.objects.aggregate(Sum('total')).values()[0]
-        paid = finished.filter(total__gt=0, paid=True)
+        context['payement_due'] = Bill.waiting.filter(total__gt=0).count()
+        paid =  Bill.paid.filter(total__gt=0)
         context['paid'] = paid.count()
-        context['total_paid'] = paid.aggregate(Sum('total')).values()[0]
+        context['total_due'] = Bill.objects.aggregate(Sum('total')).values()[0] or 0
+        context['total_paid'] = paid.aggregate(Sum('total')).values()[0] or 0
 
         context['registrations_per_day'] = self._get_registrations_per_day()
         
         context['nb_registrations'] = Registration.objects.count()
-        context['nb_families'] = finished.count()
-        context['nb_children'] = Child.objects.filter(family__finished_registration=True).count()
+        families = FamilyUser.objects.filter(bills__in=Bill.objects.all())
+        context['nb_families'] = families.count()
+        context['nb_children'] = Child.objects.filter(family__in=families).count()
         return context
     
     def get_context_data(self, **kwargs):

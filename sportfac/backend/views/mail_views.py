@@ -7,7 +7,7 @@ from mailer.views import (MailView, MailCreateView, CustomMailMixin,
                           MailParticipantsView, MailCourseResponsibleView)
 from mailer.models import MailArchive
 from profiles.models import FamilyUser
-from registrations.models import Registration
+from registrations.models import Bill, Registration
 from .mixins import BackendMixin
 
 __all__ = ['MailArchiveListView', 'NeedConfirmationView',
@@ -43,11 +43,14 @@ class NeedConfirmationView(BackendMixin, MailView):
 
 class NotPaidYetView(BackendMixin, MailView):
     "Mail to people having registered to courses but not paid yet"
-    recipients_queryset = FamilyUser.objects.filter(finished_registration=True, 
-                                                    paid=False, total__gt=0)
+    
     success_url = reverse_lazy('backend:home')
     subject_template = 'mailer/notpaid_subject.txt'
     message_template = 'mailer/notpaid.txt'
+    
+    def get_recipients_list(self):
+        bills = Bill.objects.filter(status=Bill.STATUS.waiting, total__gt=0)
+        return FamilyUser.objects.filter(pk__in=[bill.family.pk for bill in bills])
 
 
 class BackendMailParticipantsView(BackendMixin, MailParticipantsView):

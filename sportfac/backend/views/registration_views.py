@@ -11,13 +11,14 @@ from django.db import IntegrityError
 from formtools.wizard.views import SessionWizardView
 
 from activities.models import Course
-from registrations.models import Registration
+from registrations.models import Bill, Registration
 from backend.forms import ChildSelectForm, CourseSelectForm, RegistrationForm
 from .mixins import BackendMixin
 
 
 __all__ = ('RegistrationCreateView', 'RegistrationDeleteView', 'RegistrationDetailView', 
-           'RegistrationListView', 'RegistrationUpdateView',)
+           'RegistrationListView', 'RegistrationUpdateView',
+           'BillListView', 'BillDetailView')
 
 
 class RegistrationDetailView(BackendMixin, DetailView):
@@ -93,3 +94,16 @@ class RegistrationDeleteView(BackendMixin, DeleteView):
         messages.add_message(self.request, messages.SUCCESS, 
                              _("Registration has been canceled."))
         return HttpResponseRedirect(success_url)
+
+
+class BillListView(BackendMixin, ListView):
+    model = Bill
+    template_name = 'backend/registration/bill-list.html'
+    
+    def get_queryset(self):
+        return Bill.objects.all().select_related('family')
+    
+ 
+class BillDetailView(BackendMixin, DetailView):
+    model = Bill
+    template_name = 'backend/registration/bill-detail.html'

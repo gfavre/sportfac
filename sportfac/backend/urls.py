@@ -68,6 +68,11 @@ registrations_patterns = [
         name='registration-update'),
     url(r'^(?P<pk>\d+)/cancel$', view=views.RegistrationDeleteView.as_view(),
         name='registration-delete'),
+    url(r'^bills$', view=views.BillListView.as_view(), 
+        name='bill-list'),    
+    url(r'^bills/(?P<pk>\d+)/$', view=views.BillDetailView.as_view(), 
+        name='bill-detail'),    
+
 ]
 
 teachers_patterns = [
@@ -109,8 +114,8 @@ users_patterns = [
         name='user-update'),
     url(r'^(?P<pk>\d+)/delete$', view=views.UserDeleteView.as_view(), 
         name='user-delete'),
-    url(r'^(?P<pk>\d+)/pay$', view=views.UserPayUpdateView.as_view(), 
-        name='user-pay'),
+    #url(r'^(?P<pk>\d+)/pay$', view=views.UserPayUpdateView.as_view(), 
+    #    name='user-pay'),
     url(r'^(?P<user>\d+)/password$', view=views.PasswordSetView.as_view(), 
         name='password-change'),
  
