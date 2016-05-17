@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 
 from activities.models import Activity
 from backend.models import YearTenant
-from registrations.models import Registration
+from registrations.models import Bill, Registration
 
 
 class Step:
@@ -34,12 +34,8 @@ def can_confirm(request):
            ).count() > 0
 
 def can_pay(request):
-    return can_register_activities(request) and \
-           Registration.objects.validated().filter(
-                child__in=request.user.children.all(),
-                paid=False
-           ).count() > 0
-
+    return can_register_activities(request) and Bill.objects.filter(status=Bill.STATUS.just_created, family=request.user).count() > 0
+        
 
 
 def wizard_context(request):

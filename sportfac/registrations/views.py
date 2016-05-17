@@ -59,7 +59,7 @@ class RegisteredActivitiesListView(WizardMixin, FormView):
     def form_valid(self, form):
         with transaction.atomic():
             bill = Bill.objects.create(
-                status = Bill.STATUS.waiting,
+                status = Bill.STATUS.just_created,
                 family = self.request.user
             )
             for registration in self.get_queryset().all():
@@ -87,7 +87,14 @@ class WizardBillingView(WizardMixin, TemplateView):
         context = super(WizardBillingView, self).get_context_data(**kwargs)
         context['bill'] = Bill.objects.filter(family=self.request.user).order_by('created').last()
         return context
-
+    
+    def get(self, request, *args, **kwargs):
+        response = super(WizardBillingView, self).get(request, *args, **kwargs)
+        for bill in Bill.objects.filter(status=Bill.STATUS.just_created, family=self.request.user):
+            bill.status = status=Bill.STATUS.waiting
+            bill.save()
+        return response
+    
 
 class SummaryView(BillingView):
     template_name = "registrations/summary.html"

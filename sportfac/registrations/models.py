@@ -129,7 +129,8 @@ class Registration(TimeStampedModel, StatusModel):
     
 
 class Bill(TimeStampedModel, StatusModel):
-    STATUS = Choices(('waiting', _("Waiting parent's payment")),
+    STATUS = Choices(('just_created', _("Created")),
+                     ('waiting', _("Waiting parent's payment")),
                      ('paid', _("Paid by parent")),
                      ('canceled', _("Canceled by administrator")),
                      )
