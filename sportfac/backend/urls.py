@@ -72,7 +72,8 @@ registrations_patterns = [
         name='bill-list'),    
     url(r'^bills/(?P<pk>\d+)/$', view=views.BillDetailView.as_view(), 
         name='bill-detail'),    
-
+    url(r'^bills/(?P<pk>\d+)/pay$', view=views.BillUpdateView.as_view(), 
+        name='bill-update'),
 ]
 
 teachers_patterns = [

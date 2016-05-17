@@ -120,7 +120,8 @@ class Registration(TimeStampedModel, StatusModel):
 
     def save(self, *args, **kwargs):
         super(Registration, self).save(*args, **kwargs)
-        self.bill.save()
+        if self.bill:
+            self.bill.save()
 
     def delete(self, *args, **kwargs):
         super(Registration, self).delete(*args, **kwargs)
@@ -147,6 +148,9 @@ class Bill(TimeStampedModel, StatusModel):
     def get_backend_url(self):
         return reverse('backend:bill-detail', kwargs={'pk': self.pk})
     
+    def get_pay_url(self):
+        return reverse('backend:bill-update', kwargs={'pk': self.pk})
+    
     @property
     def is_ok(self):
         return self.status != self.STATUS.waiting
@@ -154,6 +158,11 @@ class Bill(TimeStampedModel, StatusModel):
     @property
     def backend_url(self):
         return self.get_backend_url()
+ 
+    @property
+    def pay_url(self):
+        return self.get_pay_url()
+
     
     @transaction.atomic
     def close(self):
@@ -161,7 +170,6 @@ class Bill(TimeStampedModel, StatusModel):
         for registration in self.registrations.filter(status=Registration.STATUS.valid):
             registration.paid = True
             registration.save()
-        self.save()
     
     @transaction.atomic
     def save(self, *args, **kwargs):

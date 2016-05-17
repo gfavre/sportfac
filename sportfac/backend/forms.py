@@ -4,7 +4,7 @@ from django.utils.translation import ugettext as _
 import floppyforms.__future__ as forms
 
 from activities.models import Course
-from registrations.models import Child, Registration
+from registrations.models import Bill, Child, Registration
 from .models import YearTenant
 
 
@@ -88,6 +88,15 @@ class CourseSelectForm(RegistrationForm):
     class Meta:
         model = Registration
         fields = ('course',)
+
+
+class BillingForm(forms.ModelForm):
+    paid = forms.BooleanField(required=False, label=_("Mark as paid?"), help_text=_("If not checked, a bill will be created"))
+
+    class Meta:
+        model = Registration
+        fields = ('paid',)
+
 
 class YearSelectForm(forms.Form):
     tenant = forms.ModelChoiceField(queryset=YearTenant.objects.all(), required=True)

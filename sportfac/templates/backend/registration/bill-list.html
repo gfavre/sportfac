@@ -44,8 +44,8 @@ $(function () {
       <td>{{ bill.created|date:"SHORT_DATE_FORMAT" }}</td>
       <td><a href="{{ family.get_backend_url }}">{{ bill.family.full_name }}</a></td>
       <td>{{ bill.total }}</td>
-      <td data-order="{{ bill.is_ok }}" data-search="{% if user.is_ok %}{% trans 'paid' %}{% endif %}">
-        {% if user.is_ok %}
+      <td data-order="{{ bill.is_ok }}" data-search="{% if bill.is_ok %}{% trans 'paid' %}{% endif %}">
+        {% if bill.is_ok %}
         <i class="icon-ok-circled success"></i>
         {% else %}
         <i class="icon-cancel-circled danger"></i>
@@ -53,10 +53,8 @@ $(function () {
       </td>
       <td>
         <ul class="list-unstyled">
-          {% comment %}
-          <li class="text-nowrap"><a href="{{ registration.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update registration" %}</a></li>
-          <li class="text-nowrap"><a href="{{ registration.get_delete_url }}" class="btn btn-sm"><i class="icon-cancel"></i>&nbsp;{% trans "Cancel registration" %}</a></li>
-          {% endcomment %}
+          <li class="text-nowrap"><a href="{{ bill.backend_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Review bill" %}</a></li>
+          <li class="text-nowrap"><a href="{{ bill.pay_url }}" class="btn btn-sm"><i class="icon-credit-card-1"></i>&nbsp;{% trans "Update payment information" %}</a></li>
         </ul>
       </td>
     </tr>

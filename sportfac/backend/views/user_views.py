@@ -164,15 +164,6 @@ class UserUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
         return _("Contact informations of %s have been updated.") % self.object.full_name
 
 
-#class UserPayUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
-#    model = FamilyUser
-#    form_class = UserPayForm
-#    template_name = 'backend/user/pay.html'
-#    success_url = reverse_lazy('backend:user-list')    
-#    
-#    def get_success_message(self, cleaned_data):
-#        return _("Status of %s has been changed.") % self.object.full_name
-#
 
 class UserDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
     model = FamilyUser

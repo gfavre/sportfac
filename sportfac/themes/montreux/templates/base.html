@@ -26,7 +26,7 @@
     <![endif]-->
   </head>
 
-  <body>
+  <body  {% block extra_body %}{% endblock %}>
     <div id="wrapper">
       {% include "navbar.html" %} 
       {% block localnav %}{% endblock %}   

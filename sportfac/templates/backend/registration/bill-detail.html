@@ -1,14 +1,16 @@
 {% extends "backend/base.html" %}
-{% load i18n switzerland static %}
+{% load i18n switzerland static sekizai_tags %}
 
 {% block title %}{% trans "Bill detail" %}{% endblock %}
 {% block page_title %}{% endblock %}
 
+{% block extra_body %}class="bill"{% endblock %}
+
 {% block content %}
+
 <section>  
-    
   <div class="row">
-     <div class="col-sm-6 ">
+     <div class="col-sm-6 visible-print-block">
        <img src="{% static 'img/logo.png' %}"/>
      {% include "address.html" %}
     </div>
@@ -75,7 +77,14 @@
         </td>
       </tr>
     {% endfor %}
-    </tbody>  
+    </tbody>
   </table>
-</section>   
+  <p class="hidden-print text-center"><button class="btn btn-success btn-large print-button"><i class="icon icon-print"></i> Imprimer</button></p>
+</section>
+
+{% addtoblock "js" %}
+<script>
+  $('.print-button').click(function(){window.print()});
+</script>
+{% endaddtoblock %}
 {% endblock content %}

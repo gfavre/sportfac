@@ -51,6 +51,7 @@ MANAGERS = (
     ('Gregory Favre', 'gregory.favre@gmail.com'),
     ('Remo Aeschbach', 'remo.aeschbach@vd.educanet2.ch'),
 )
+
 ########## END EMAIL CONFIGURATION
 
 

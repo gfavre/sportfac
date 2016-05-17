@@ -2,7 +2,7 @@ from django.utils.translation import ugettext_lazy as _
 
 import floppyforms.__future__ as forms
 
-from .models import Child
+from .models import Bill, Child
 from backend.forms import Select2Widget, DatePickerInput
 from schools.models import Teacher
 
@@ -20,7 +20,7 @@ class ChildForm(forms.ModelForm):
                   'language', 'school_year', 'teacher')
 
 
-#class UserPayForm(forms.ModelForm):
-#    class Meta:
-#        model = get_user_model()
-#        fields = ('finished_registration', 'paid', )
+class BillForm(forms.ModelForm):
+    class Meta:
+        model = Bill
+        fields = ('status',)
