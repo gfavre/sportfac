@@ -18,16 +18,18 @@ logger = get_task_logger(__name__)
 
 
 @shared_task
-def send_mail(subject, message, from_email, recipients):
+def send_mail(subject, message, from_email, recipients, reply_to):
     logger.debug("Sending email to %s" % recipients)
-    return django_send_mail(subject=subject,
-                            message=message,
-                            from_email=from_email,
-                            recipient_list=recipients)
+    email = EmailMessage(subject=subject,
+                         body=message,
+                         from_email=from_email,
+                         bcc=recipients,
+                         reply_to=reply_to)
+    return email.send()
 
 
 @shared_task
-def send_responsible_email(subject, message, from_email, course_pk):
+def send_responsible_email(subject, message, from_email, course_pk, reply_to):
     logger.debug("Forging email to responsible of course #%s" % course_pk)
 
     course = Course.objects.get(pk=course_pk)
@@ -35,7 +37,8 @@ def send_responsible_email(subject, message, from_email, course_pk):
     email = EmailMessage(subject=subject,
                          body=message,
                          from_email=from_email,
-                         to=recipients)
+                         to=recipients,
+                         reply_to=reply_to)
     logger.debug("Message created")
 
     filepath = get_ssf_decompte_heures(course)

@@ -33,6 +33,7 @@ class MailMixin(ContextMixin):
     subject_template = None
     message_template = None
     from_address = None
+    reply_to_address = None
     success_message = ''
 
     def __init__(self, *args, **kwargs):
@@ -105,6 +106,12 @@ class MailMixin(ContextMixin):
         if self.from_address:
             return self.from_address
         return self.global_preferences['email__FROM_MAIL']
+    
+    def get_reply_to_address(self):
+        if self.reply_to_address:
+            return reply_to_address
+        return self.global_preferences['email__REPLY_TO_MAIL']
+    
 
     def get_success_message(self):
         if self.success_message:
@@ -123,6 +130,9 @@ class MailMixin(ContextMixin):
         recipients_addresses = []
         subject = self.get_subject()
         from_email = self.get_from_address()
+        reply_to = [self.get_reply_to_address()]
+        if reply_to[0] != from_email:
+            reply_to = []
         for recipient in recipients:
             mail_context = context.copy()
             self.add_recipient_context(recipient, mail_context)
@@ -131,7 +141,8 @@ class MailMixin(ContextMixin):
             send_mail.delay(subject=subject,
                             message=message,
                             from_email=from_email,
-                            recipients=[recipient_address, ])
+                            recipients=[recipient_address, ],
+                            reply_to=reply_to)
             emails.append(message)
             recipients_addresses.append(recipient_address)
         MailArchive.objects.create(subject=subject, messages=emails,
@@ -178,12 +189,16 @@ class MailCourseResponsibleView(MailMixin, CourseMixin, TemplateView):
         recipients = self.get_recipients_list()
         subject = self.get_subject()
         from_email = self.get_from_address()
+        reply_to = [self.get_reply_to_address()]
+        if reply_to[0] != from_email:
+            reply_to = []
         for recipient in recipients:
             message = self.get_mail_body(context)
             send_responsible_email.delay(subject=subject,
                                          message=message,
                                          from_email=from_email,
-                                         course_pk=self.course.pk)
+                                         course_pk=self.course.pk,
+                                         reply_to=reply_to)
 
 
 class MailView(MailMixin, TemplateView):
