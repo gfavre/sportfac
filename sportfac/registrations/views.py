@@ -29,7 +29,7 @@ class RegisteredActivitiesListView(WizardMixin, FormView):
     template_name = 'registrations/registration_list.html'
 
     def get_queryset(self):
-        return Registration.objects\
+        return Registration.waiting\
                            .select_related('child', 
                                            'course',
                                            'course__activity')\

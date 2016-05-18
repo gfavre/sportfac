@@ -170,6 +170,10 @@ class Course(TimeStampedModel):
                  'day': self.day_name.lower(),
                  'hour': self.start_time.strftime("%H:%M"),
                  }
+        return base
+    
+    def detailed_label(self):
+        base = unicode(self)
         if self.full:
             fullness = _('Course full')
         else:

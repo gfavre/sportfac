@@ -209,8 +209,12 @@ filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 .fc-event.registered {
   background-color: $registered;
   color: white;
-  border-color: $registered;
-  
+  border-color: $registered; 
+}
+.fc-event.validated {
+  background-color: darken($registered, 5%);
+  color: white;
+  border-color: darken($registered, 5%) 
 }
 .fc-event.available {
   background-color: $available;

@@ -87,10 +87,7 @@ class ChildrenViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         user = self.request.user
-        if user.is_manager:
-            queryset = Child.objects.all()
-        else:
-            queryset = Child.objects.filter(family=user)
+        queryset = Child.objects.filter(family=user)
         return queryset.prefetch_related('school_year').select_related('teacher')
         
     
@@ -132,10 +129,7 @@ class RegistrationViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         user = self.request.user
-        if user.is_manager:
-            return Registration.objects.all()
-        else:
-            return Registration.objects.filter(child__in=user.children.all())
+        return Registration.objects.filter(child__in=user.children.all())
     
     def create(self, request, format=None):
         if type(request.data) is list:

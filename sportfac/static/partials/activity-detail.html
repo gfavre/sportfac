@@ -69,6 +69,11 @@
     <button type="button" class="btn" ng-click="$hide()">Fermer</button>
     <button class="btn btn-danger" ng-click="unregister(selectedEvent);$hide()">Désinscrire {[{ selectedChild.first_name }]}</button>
   </div>
+  <div class="modal-footer" ng-switch-when="validated">
+    L'inscription de votre enfant à ce cours a déjà été validée.
+
+    <button type="button" class="btn" ng-click="$hide()">Fermer</button>
+  </div>
 
   <div class="modal-footer" ng-switch-when="unavailable">
     <button type="button" class="btn" ng-click="$hide()">Fermer</button>

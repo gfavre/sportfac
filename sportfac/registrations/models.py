@@ -11,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from model_utils import Choices
 from model_utils.models import StatusModel
+from model_utils.fields import StatusField
 
 from sportfac.models import TimeStampedModel
 
@@ -41,8 +42,7 @@ class Registration(TimeStampedModel, StatusModel):
     child = models.ForeignKey('Child', related_name="registrations")
     bill = models.ForeignKey('Bill', related_name="registrations", null=True, blank=True)
     paid = models.BooleanField(default=False, verbose_name=_("Has paid"))
-
-
+    
     objects = RegistrationManager()
 
     class Meta:

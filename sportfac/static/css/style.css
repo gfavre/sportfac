@@ -14914,6 +14914,11 @@ select.ng-invalid:focus {
   color: white;
   border-color: green; }
 
+.fc-event.validated {
+  background-color: #006700;
+  color: white;
+  border-color: #006700; }
+
 .fc-event.available {
   background-color: blue;
   color: white;

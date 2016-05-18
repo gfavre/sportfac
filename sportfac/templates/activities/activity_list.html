@@ -27,7 +27,7 @@ ng-controller="ChildrenCtrl" id="ng-app"{% endaddtoblock %}
 
 
 {% addtoblock "js" %}
-{% if debug %}
+{% if not debug %}
   <script src="{{ STATIC_URL }}js/vendor/fullcalendar.min.js"></script>
   
   <script src="{{ STATIC_URL }}js/vendor/angular.min.js"></script>

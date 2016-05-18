@@ -10,17 +10,14 @@ function($scope, $routeParams, $location, $filter, ChildrenService, Registration
     });
   };
   
-  $scope.getRegisteredCourses = function(child){
+  $scope.getRegistrations = function(child){
     if (!angular.isDefined($scope.registrations)){
       return;
     }
     var compare = function(registration){
       return registration.child === child.id;
     };
-    return $filter('filter')($scope.registrations, compare).map(
-                function(registration){
-                    return registration.course;
-                });
+    return $filter('filter')($scope.registrations, compare);
   };
    
   $scope.unregisterCourse = function(child, course){
@@ -68,8 +65,7 @@ function($scope, $routeParams, $location, $filter, ChildrenService, Registration
 /*******************************************************************************
         Activities management, i.e. a child tab in activities application
 *******************************************************************************/
-.controller('ActivityCtrl', ["$scope", "$http", 
-function($scope, $http) {
+.controller('ActivityCtrl', ["$scope", "$http", function($scope, $http) {
   'use strict';
   $scope.$watch('selectedChild', function(){
     if (angular.isDefined($scope.selectedChild) ){
@@ -143,12 +139,22 @@ function($scope, $filter, $modal, CoursesService){
     if (!$scope.registrations){ return; }
     $scope.registeredEvents.length = 0;
     var addToRegistered = function(course){
-      var event = course.toEvent("registered");
+      var event = course.toEvent('registered');
       event.registeredChild = $scope.selectedChild;
       $scope.registeredEvents.push(event);
     };
-    angular.forEach($scope.getRegisteredCourses($scope.selectedChild), function(courseId){
-      CoursesService.get(courseId).then(addToRegistered);
+    var addToValidated = function(course){
+      var event = course.toEvent('validated');
+      event.registeredChild = $scope.selectedChild;
+      $scope.registeredEvents.push(event);
+    };
+    angular.forEach($scope.getRegistrations($scope.selectedChild), function(registration){
+      if (registration.status === 'valid'){
+          CoursesService.get(registration.course).then(addToValidated);
+      } else {
+          CoursesService.get(registration.course).then(addToRegistered);
+      }
+      
     });
   };
   
@@ -161,8 +167,8 @@ function($scope, $filter, $modal, CoursesService){
     $scope.othersRegisteredEvents.length = 0;
     angular.forEach($scope.userChildren, function(child){
       if (child !== $scope.selectedChild) {
-        angular.forEach($scope.getRegisteredCourses(child), function(courseId){
-          CoursesService.get(courseId).then(function(course){
+        angular.forEach($scope.getRegistrations(child), function(registration){
+          CoursesService.get(registration.course).then(function(course){
             var event = course.toEvent("unavailable");
             event.registeredChild = child;
             $scope.othersRegisteredEvents.push(event);
@@ -180,23 +186,27 @@ function($scope, $filter, $modal, CoursesService){
     var addUnavailableCourse = function(course){
       $scope.availableEvents.push(course.toEvent("unavailable"));
     };
- 
+    var registeredCourses = $scope.getRegistrations($scope.selectedChild);
+    if (registeredCourses){
+      registeredCourses = registeredCourses.map(function(registration){
+        return registration.course;
+      });
+    }
+    
     $scope.availableEvents.length = 0;
     
-    var oneCourseRegistered = false;
+    var activityRegistered = false;
     angular.forEach($scope.selectedActivity.courses, function(course){
-      if ($scope.getRegisteredCourses($scope.selectedChild).indexOf(course.id) !== -1){
-        oneCourseRegistered = true;
+      if (registeredCourses.indexOf(course.id) !== -1){
+        activityRegistered = true;
       }
     });
-    
     angular.forEach($scope.selectedActivity.courses, function(course){
-      var registered = $scope.getRegisteredCourses($scope.selectedChild).indexOf(course.id) !== -1;
       var available = course.schoolyear_min <= $scope.selectedChild.school_year &&
                       course.schoolyear_max >= $scope.selectedChild.school_year;
-      
+      var registered = registeredCourses.indexOf(course.id) !== -1;
       if (!registered && available){
-        if (oneCourseRegistered){
+        if (activityRegistered){
           CoursesService.get(course.id).then(addUnavailableCourse);
         } else {
           CoursesService.get(course.id).then(addAvailableCourse);
