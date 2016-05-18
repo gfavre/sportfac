@@ -69,22 +69,15 @@
               <a href="{% url 'registrations_children' %}"><i class="icon-group"></i> {% trans "My family" %}</a>
             </li>
             
-{% if not request.PHASE == 1 %}            
-            {% if user.finished_registration %}
+            {% if user.has_registrations %}
             <li>
-              <a href="{% url 'profiles_registered_activities' %}"> <i class="icon-calendar"></i> {% trans "My registered activities" %}</a>
+              <a href="{% url 'registrations_registered_activities' %}"> <i class="icon-calendar"></i> {% trans "My registered activities" %}</a>
             </li>
-            
             <li>
-              <a href="{% url 'profiles_billing' %}"> <i class="icon-credit-card-1"></i> {% trans "Terms of payement" %}</a>
-            </li>
-            
-            {% elif registration_opened %}
-            <li>
-              <a href="{{ max_step }}"><i class="icon-calendar"></i> {% trans "Register activities" %}</a>
+              <a href="{% url 'registrations_billing' %}"> <i class="icon-credit-card-1"></i> {% trans "My bills" %}</a>
             </li>
             {% endif %}
-{% endif %}
+
             {% if user.is_responsible %}
               <li class="divider"></li>
               <li>

@@ -109,7 +109,7 @@ class Registration(TimeStampedModel, StatusModel):
 
     def get_update_url(self):
         return reverse('backend:registration-update', kwargs={'pk': self.pk})
-
+       
     @property
     def update_url(self):
         return self.get_update_url()
@@ -129,7 +129,7 @@ class Registration(TimeStampedModel, StatusModel):
     
 
 class Bill(TimeStampedModel, StatusModel):
-    STATUS = Choices(('just_created', _("Created")),
+    STATUS = Choices(('just_created', _("Just created")),
                      ('waiting', _("Waiting parent's payment")),
                      ('paid', _("Paid by parent")),
                      ('canceled', _("Canceled by administrator")),
@@ -145,6 +145,10 @@ class Bill(TimeStampedModel, StatusModel):
     def update_billing_identifier(self):
         if self.pk:
             self.billing_identifier = slugify('%s-%i' % (self.family.last_name, self.pk))
+
+    def get_absolute_url(self):
+        return reverse('registrations_bill_detail', kwargs={'pk': self.pk})
+ 
 
     def get_backend_url(self):
         return reverse('backend:bill-detail', kwargs={'pk': self.pk})

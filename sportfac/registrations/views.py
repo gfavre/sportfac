@@ -2,7 +2,7 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.db import transaction
 from django.db.models import Sum
 from django.shortcuts import render
-from django.views.generic import FormView, ListView, TemplateView
+from django.views.generic import DetailView, FormView, ListView, TemplateView
 
 from braces.views import LoginRequiredMixin
 
@@ -70,15 +70,21 @@ class RegisteredActivitiesListView(WizardMixin, FormView):
         return super(RegisteredActivitiesListView, self).form_valid(form)
 
 
-class BillingView(PhaseForbiddenMixin, TemplateView):
+class BillingView(LoginRequiredMixin, ListView):
     template_name = "registrations/billing.html"
-    forbidden_phases = (1,)
     
-    def get_context_data(self, **kwargs):
-        context = super(BillingView, self).get_context_data(**kwargs)
-        context['bills'] = Bill.objects.filter(family=self.request.user)
-        context['registered_list'] = self.request.user.get_registrations()
-        return context
+    def get_queryset(self):
+        return Bill.objects.filter(family=self.request.user).order_by('created')
+        
+
+class BillDetailView(LoginRequiredMixin, DetailView):
+    template_name = 'registrations/bill-detail.html'
+
+    
+    def get_queryset(self):
+        return Bill.objects.filter(family=self.request.user)
+    
+
 
 class WizardBillingView(WizardMixin, TemplateView):
     template_name = "registrations/wizard_billing.html"
@@ -96,5 +102,10 @@ class WizardBillingView(WizardMixin, TemplateView):
         return response
     
 
-class SummaryView(BillingView):
+class SummaryView(LoginRequiredMixin, TemplateView):
     template_name = "registrations/summary.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(SummaryView, self).get_context_data(**kwargs)
+        context['registered_list'] = self.request.user.get_registrations()
+        return context

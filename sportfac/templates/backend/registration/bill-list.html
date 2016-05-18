@@ -53,7 +53,7 @@ $(function () {
       </td>
       <td>
         <ul class="list-unstyled">
-          <li class="text-nowrap"><a href="{{ bill.backend_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Review bill" %}</a></li>
+          <li class="text-nowrap"><a href="{{ bill.get_absolute_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Review bill" %}</a></li>
           <li class="text-nowrap"><a href="{{ bill.pay_url }}" class="btn btn-sm"><i class="icon-credit-card-1"></i>&nbsp;{% trans "Update payment information" %}</a></li>
         </ul>
       </td>

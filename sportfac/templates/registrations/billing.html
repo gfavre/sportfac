@@ -1,8 +1,41 @@
 {% extends "profiles/baseprofile.html" %}
-{% load i18n sekizai_tags %}
+{% load i18n sekizai_tags switzerland %}
 {% block page_title %}Paiement{% endblock page_title%}
 {% block content %}
-  {% include "registrations/billing_partial.html" %}
+
+ <table class="table">
+  <thead>
+    <tr>
+      <th class="text-nowrap">{% trans "Billing identifier" %}</th>
+      <th class="text-nowrap">{% trans "Billing Date" %}</th>
+      <th class="text-nowrap">{% trans "Total" %}</th>
+      <th class="text-nowrap">{% trans "Paid" %}</th>
+      <th class="text-nowrap">{% trans "Action" %}</th>
+    </tr>
+  </thead>
+  {% for bill in bill_list %}
+   <tr>
+      <td><a href="{{ bill.backend_url }}">{{ bill.billing_identifier }}</a></td>
+      <td>{{ bill.created|date:"SHORT_DATE_FORMAT" }}</td>
+      <td data-order="{{ bill.total }}">{{ bill.total|money }}</td>
+      <td data-order="{{ bill.is_ok }}" data-search="{% if bill.is_ok %}{% trans 'paid' %}{% endif %}">
+        {% if bill.is_ok %}
+        <i class="icon-ok-circled text-success"></i>
+        {% else %}
+        <i class="icon-cancel-circled text-danger"></i>
+        {% endif %}
+      </td>
+      <td>
+        <ul class="list-unstyled">
+          <li class="text-nowrap"><a href="{{ bill.get_absolute_url }}" class="btn btn-sm"><i class="icon-check"></i>&nbsp;{% trans "Review bill" %}</a></li>
+        </ul>
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+
+ 
+ 
 
   <p class="hidden-print text-center"><button class="btn btn-success btn-large print-button"><i class="icon icon-print"></i> {% trans "Print" %}</button></p>
 

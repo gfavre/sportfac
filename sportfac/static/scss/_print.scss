@@ -1,4 +1,4 @@
-@media only print {
+@media  print {
     /*@page {size: landscape;}*/
     .wizard { display: none;}
     .navbar { display: none;}
@@ -24,6 +24,31 @@
     }
     
     .bill {
-        font-size:1.1em;
+        font-size: 13px;
+        .container {
+            width: auto;
+        }
+        
+        .page-header {
+            margin: 0;
+            padding: 0;
+        }
+        section {
+            padding-top: 0;
+            padding-bottom: 1em;
+        }
+        .logo {
+            margin-bottom: 1.5em;
+        }
+        h1 {
+            margin-top: 1em;
+        }
+        h3 {
+            margin-top: 1em;
+        }
+        
     }
+    
+    
+    
 }

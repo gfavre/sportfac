@@ -160,6 +160,10 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
             return self.waiting_registrations == 0
         return not self.has_open_registrations()
     
+    @property
+    def has_registrations(self):
+        return Registration.valid.filter(child__in=self.children.all()).count() > 0
+    
     def get_registrations(self, validated=True):
         if validated:
             queryset = Registration.objects.validated()

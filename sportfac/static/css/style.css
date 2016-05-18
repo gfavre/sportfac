@@ -14710,7 +14710,7 @@ html[dir="rtl"] .select2-container-multi .select2-search-choice-close {
 
   .wizard li.active {
     font-weight: bold; } }
-@media only print {
+@media print {
   /*@page {size: landscape;}*/
   .wizard {
     display: none; }
@@ -14746,7 +14746,21 @@ html[dir="rtl"] .select2-container-multi .select2-search-choice-close {
       margin-bottom: 0; }
 
   .bill {
-    font-size: 1.1em; } }
+    font-size: 13px; }
+    .bill .container {
+      width: auto; }
+    .bill .page-header {
+      margin: 0;
+      padding: 0; }
+    .bill section {
+      padding-top: 0;
+      padding-bottom: 1em; }
+    .bill .logo {
+      margin-bottom: 1.5em; }
+    .bill h1 {
+      margin-top: 1em; }
+    .bill h3 {
+      margin-top: 1em; } }
 #footer {
   width: 100%;
   text-align: center;
