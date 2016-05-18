@@ -10,7 +10,7 @@
   </nav> 
 
   <div class="col-sm-9" ng-controller="ActivityTimelineCtrl">
-    <div class="alert alert-info" ng-show="getRegisteredCourses(selectedChild).length >= 4">
+    <div class="alert alert-info" ng-show="getRegistrations(selectedChild).length >= 4">
       <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
       <strong>Le nombre maximal d'activités (4) est atteint pour {[{ selectedChild.first_name }]}. </strong>
       <p>Vous devez d'abord désinscrire votre enfant de l'une des activités sélectionnées (en vert) si vous souhaitez l'inscrire à d'autres activités disponibles.</p>
