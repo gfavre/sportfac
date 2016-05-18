@@ -8,7 +8,7 @@
     <ul class="steps">
       {% for step in steps %}
         <li class="{% if step.current %}active{% else %}{% if step.activable %}complete{% endif %}{% endif %}" id="{{ step.id }}">
-          <span class="badge {% if step.current %}badge-inverse{% elif step.activable %}badge-success{% endif %} ">{{ forloop.counter }}</span>
+          <span class="badge {% if step.current %}badge-secondary{% elif step.activable %}badge-success{% endif %} ">{{ forloop.counter }}</span>
           {% if step.current or not step.activable %}
             {{ step.title }}
           {% else %}

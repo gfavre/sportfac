@@ -22,7 +22,7 @@ def is_authenticated(request):
     return request.user.is_authenticated()
 
 def can_register(request):
-    return not is_authenticated(request)
+    return True#not is_authenticated(request)
 
 def can_register_activities(request):
     return is_authenticated(request) and request.user.children.count() > 0
