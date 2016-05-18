@@ -82,17 +82,6 @@
       "fileType" : 4,
       "debugStyle" : 0
     },
-    "\/js\/vendor\/select2\/select2_locale_th.js" : {
-      "ignoreWasSetByUser" : 0,
-      "ignore" : 0,
-      "hidden" : 0,
-      "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/js\/vendor\/select2\/select2_locale_th.js",
-      "outputStyle" : 1,
-      "syntaxCheckerStyle" : 1,
-      "outputAbbreviatedPath" : "\/js\/vendor\/select2\/select2_locale_th.min.js",
-      "fileType" : 64
-    },
     "\/scss\/vendor\/_fullcalendar.print.scss" : {
       "ignoreWasSetByUser" : 0,
       "ignore" : 1,
@@ -104,6 +93,17 @@
       "outputAbbreviatedPath" : "\/scss\/css\/_fullcalendar.print.css",
       "fileType" : 4,
       "debugStyle" : 0
+    },
+    "\/js\/vendor\/select2\/select2_locale_th.js" : {
+      "ignoreWasSetByUser" : 0,
+      "ignore" : 0,
+      "hidden" : 0,
+      "outputPathIsSetByUser" : 0,
+      "inputAbbreviatedPath" : "\/js\/vendor\/select2\/select2_locale_th.js",
+      "outputStyle" : 1,
+      "syntaxCheckerStyle" : 1,
+      "outputAbbreviatedPath" : "\/js\/vendor\/select2\/select2_locale_th.min.js",
+      "fileType" : 64
     },
     "\/js\/vendor\/angularstrap\/modules\/date-parser.js" : {
       "ignoreWasSetByUser" : 0,
@@ -171,17 +171,16 @@
       "initialSize" : 158,
       "fileType" : 8192
     },
-    "\/scss\/_base.scss" : {
+    "\/img\/datatables\/back_enabled.png" : {
       "ignoreWasSetByUser" : 0,
-      "ignore" : 1,
+      "ignore" : 0,
       "hidden" : 0,
       "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/scss\/_base.scss",
-      "outputStyle" : 0,
-      "shouldRunBless" : 0,
-      "outputAbbreviatedPath" : "\/css\/_base.css",
-      "fileType" : 4,
-      "debugStyle" : 0
+      "inputAbbreviatedPath" : "\/img\/datatables\/back_enabled.png",
+      "processed" : 0,
+      "outputAbbreviatedPath" : "\/img\/datatables\/back_enabled.png",
+      "initialSize" : 457,
+      "fileType" : 8192
     },
     "\/js\/vendor\/angular-route.js" : {
       "ignoreWasSetByUser" : 0,
@@ -194,16 +193,17 @@
       "outputAbbreviatedPath" : "\/js\/vendor\/angular-route.min.js",
       "fileType" : 64
     },
-    "\/img\/datatables\/back_enabled.png" : {
+    "\/scss\/_base.scss" : {
       "ignoreWasSetByUser" : 0,
-      "ignore" : 0,
+      "ignore" : 1,
       "hidden" : 0,
       "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/img\/datatables\/back_enabled.png",
-      "processed" : 0,
-      "outputAbbreviatedPath" : "\/img\/datatables\/back_enabled.png",
-      "initialSize" : 457,
-      "fileType" : 8192
+      "inputAbbreviatedPath" : "\/scss\/_base.scss",
+      "outputStyle" : 0,
+      "shouldRunBless" : 0,
+      "outputAbbreviatedPath" : "\/css\/_base.css",
+      "fileType" : 4,
+      "debugStyle" : 0
     },
     "\/js\/vendor\/angular-ui-calendar.js" : {
       "ignoreWasSetByUser" : 0,
@@ -227,16 +227,16 @@
       "outputAbbreviatedPath" : "\/js\/vendor\/angular-cookies.min.min.js",
       "fileType" : 64
     },
-    "\/img\/datatables\/forward_enabled.png" : {
+    "\/js\/vendor\/angularstrap\/modules\/tab.tpl.min.js" : {
       "ignoreWasSetByUser" : 0,
-      "ignore" : 0,
+      "ignore" : 1,
       "hidden" : 0,
       "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/img\/datatables\/forward_enabled.png",
-      "processed" : 0,
-      "outputAbbreviatedPath" : "\/img\/datatables\/forward_enabled.png",
-      "initialSize" : 448,
-      "fileType" : 8192
+      "inputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/tab.tpl.min.js",
+      "outputStyle" : 1,
+      "syntaxCheckerStyle" : 1,
+      "outputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/tab.tpl.min.min.js",
+      "fileType" : 64
     },
     "\/js\/vendor\/angularstrap\/angular-strap.js" : {
       "ignoreWasSetByUser" : 0,
@@ -249,16 +249,16 @@
       "outputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/angular-strap.min.js",
       "fileType" : 64
     },
-    "\/js\/vendor\/angularstrap\/modules\/tab.tpl.min.js" : {
+    "\/img\/datatables\/forward_enabled.png" : {
       "ignoreWasSetByUser" : 0,
-      "ignore" : 1,
+      "ignore" : 0,
       "hidden" : 0,
       "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/tab.tpl.min.js",
-      "outputStyle" : 1,
-      "syntaxCheckerStyle" : 1,
-      "outputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/tab.tpl.min.min.js",
-      "fileType" : 64
+      "inputAbbreviatedPath" : "\/img\/datatables\/forward_enabled.png",
+      "processed" : 0,
+      "outputAbbreviatedPath" : "\/img\/datatables\/forward_enabled.png",
+      "initialSize" : 448,
+      "fileType" : 8192
     },
     "\/js\/vendor\/angularstrap\/modules\/dropdown.min.js" : {
       "ignoreWasSetByUser" : 0,
@@ -572,15 +572,6 @@
       "outputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/dropdown.tpl.min.js",
       "fileType" : 64
     },
-    "\/partials\/child-detail.html" : {
-      "ignoreWasSetByUser" : 0,
-      "ignore" : 0,
-      "hidden" : 0,
-      "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/partials\/child-detail.html",
-      "outputAbbreviatedPath" : "No Output Path",
-      "fileType" : 2048
-    },
     "\/js\/vendor\/angularstrap\/modules\/debounce.min.js" : {
       "ignoreWasSetByUser" : 0,
       "ignore" : 1,
@@ -591,6 +582,15 @@
       "syntaxCheckerStyle" : 1,
       "outputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/debounce.min.min.js",
       "fileType" : 64
+    },
+    "\/partials\/child-detail.html" : {
+      "ignoreWasSetByUser" : 0,
+      "ignore" : 0,
+      "hidden" : 0,
+      "outputPathIsSetByUser" : 0,
+      "inputAbbreviatedPath" : "\/partials\/child-detail.html",
+      "outputAbbreviatedPath" : "No Output Path",
+      "fileType" : 2048
     },
     "\/scss\/fontello\/_icons-sportfac-codes.scss" : {
       "ignoreWasSetByUser" : 0,
@@ -962,16 +962,16 @@
       "outputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/aside.min.min.js",
       "fileType" : 64
     },
-    "\/js\/vendor\/angularstrap\/modules\/modal.tpl.min.js" : {
+    "\/img\/logo-mini.png" : {
       "ignoreWasSetByUser" : 0,
-      "ignore" : 1,
+      "ignore" : 0,
       "hidden" : 0,
       "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/modal.tpl.min.js",
-      "outputStyle" : 1,
-      "syntaxCheckerStyle" : 1,
-      "outputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/modal.tpl.min.min.js",
-      "fileType" : 64
+      "inputAbbreviatedPath" : "\/img\/logo-mini.png",
+      "processed" : 0,
+      "outputAbbreviatedPath" : "\/img\/logo-mini.png",
+      "initialSize" : 2776,
+      "fileType" : 8192
     },
     "\/js\/vendor\/jquery-2.1.1.min.js" : {
       "ignoreWasSetByUser" : 0,
@@ -984,16 +984,16 @@
       "outputAbbreviatedPath" : "\/js\/vendor\/jquery-2.1.1.min.min.js",
       "fileType" : 64
     },
-    "\/img\/logo-mini.png" : {
+    "\/js\/vendor\/angularstrap\/modules\/modal.tpl.min.js" : {
       "ignoreWasSetByUser" : 0,
-      "ignore" : 0,
+      "ignore" : 1,
       "hidden" : 0,
       "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/img\/logo-mini.png",
-      "processed" : 0,
-      "outputAbbreviatedPath" : "\/img\/logo-mini.png",
-      "initialSize" : 2776,
-      "fileType" : 8192
+      "inputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/modal.tpl.min.js",
+      "outputStyle" : 1,
+      "syntaxCheckerStyle" : 1,
+      "outputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/modal.tpl.min.min.js",
+      "fileType" : 64
     },
     "\/js\/vendor\/angular-mocks.js" : {
       "ignoreWasSetByUser" : 0,
@@ -1039,15 +1039,15 @@
       "outputAbbreviatedPath" : "\/js\/activities\/controllers.min.js",
       "fileType" : 64
     },
-    "\/js\/vendor\/angularstrap\/modules\/popover.min.js" : {
+    "\/js\/vendor\/angularstrap\/modules\/button.js" : {
       "ignoreWasSetByUser" : 0,
-      "ignore" : 1,
+      "ignore" : 0,
       "hidden" : 0,
       "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/popover.min.js",
+      "inputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/button.js",
       "outputStyle" : 1,
       "syntaxCheckerStyle" : 1,
-      "outputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/popover.min.min.js",
+      "outputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/button.min.js",
       "fileType" : 64
     },
     "\/js\/vendor\/typeahead.js\/bloodhound.js" : {
@@ -1061,15 +1061,15 @@
       "outputAbbreviatedPath" : "\/js\/vendor\/typeahead.js\/bloodhound.min.js",
       "fileType" : 64
     },
-    "\/js\/vendor\/angularstrap\/modules\/button.js" : {
+    "\/js\/vendor\/angularstrap\/modules\/popover.min.js" : {
       "ignoreWasSetByUser" : 0,
-      "ignore" : 0,
+      "ignore" : 1,
       "hidden" : 0,
       "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/button.js",
+      "inputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/popover.min.js",
       "outputStyle" : 1,
       "syntaxCheckerStyle" : 1,
-      "outputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/button.min.js",
+      "outputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/popover.min.min.js",
       "fileType" : 64
     },
     "\/js\/vendor\/angularstrap\/modules\/raf.js" : {
@@ -1309,17 +1309,6 @@
       "outputAbbreviatedPath" : "\/js\/vendor\/select2\/select2_locale_lv.min.js",
       "fileType" : 64
     },
-    "\/js\/vendor\/typeahead.js\/typeahead.bundle.js" : {
-      "ignoreWasSetByUser" : 0,
-      "ignore" : 0,
-      "hidden" : 0,
-      "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/js\/vendor\/typeahead.js\/typeahead.bundle.js",
-      "outputStyle" : 1,
-      "syntaxCheckerStyle" : 1,
-      "outputAbbreviatedPath" : "\/js\/vendor\/typeahead.js\/typeahead.bundle.min.js",
-      "fileType" : 64
-    },
     "\/js\/activities\/services.js" : {
       "ignoreWasSetByUser" : 0,
       "ignore" : 1,
@@ -1329,6 +1318,17 @@
       "outputStyle" : 1,
       "syntaxCheckerStyle" : 1,
       "outputAbbreviatedPath" : "\/js\/activities\/services.min.js",
+      "fileType" : 64
+    },
+    "\/js\/vendor\/typeahead.js\/typeahead.bundle.js" : {
+      "ignoreWasSetByUser" : 0,
+      "ignore" : 0,
+      "hidden" : 0,
+      "outputPathIsSetByUser" : 0,
+      "inputAbbreviatedPath" : "\/js\/vendor\/typeahead.js\/typeahead.bundle.js",
+      "outputStyle" : 1,
+      "syntaxCheckerStyle" : 1,
+      "outputAbbreviatedPath" : "\/js\/vendor\/typeahead.js\/typeahead.bundle.min.js",
       "fileType" : 64
     },
     "\/js\/vendor\/select2\/select2_locale_rs.js" : {
@@ -1431,17 +1431,6 @@
       "fileType" : 4,
       "debugStyle" : 0
     },
-    "\/js\/vendor\/flot\/jquery.flot.errorbars.js" : {
-      "ignoreWasSetByUser" : 0,
-      "ignore" : 0,
-      "hidden" : 0,
-      "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/js\/vendor\/flot\/jquery.flot.errorbars.js",
-      "outputStyle" : 1,
-      "syntaxCheckerStyle" : 1,
-      "outputAbbreviatedPath" : "\/js\/vendor\/flot\/jquery.flot.errorbars.min.js",
-      "fileType" : 64
-    },
     "\/img\/datatables\/forward_enabled_hover.png" : {
       "ignoreWasSetByUser" : 0,
       "ignore" : 0,
@@ -1452,6 +1441,17 @@
       "outputAbbreviatedPath" : "\/img\/datatables\/forward_enabled_hover.png",
       "initialSize" : 447,
       "fileType" : 8192
+    },
+    "\/js\/vendor\/flot\/jquery.flot.errorbars.js" : {
+      "ignoreWasSetByUser" : 0,
+      "ignore" : 0,
+      "hidden" : 0,
+      "outputPathIsSetByUser" : 0,
+      "inputAbbreviatedPath" : "\/js\/vendor\/flot\/jquery.flot.errorbars.js",
+      "outputStyle" : 1,
+      "syntaxCheckerStyle" : 1,
+      "outputAbbreviatedPath" : "\/js\/vendor\/flot\/jquery.flot.errorbars.min.js",
+      "fileType" : 64
     },
     "\/scss\/_datepicker3.scss" : {
       "ignoreWasSetByUser" : 0,
@@ -1485,6 +1485,17 @@
       "outputStyle" : 1,
       "syntaxCheckerStyle" : 1,
       "outputAbbreviatedPath" : "\/js\/activities\/app.min.min.js",
+      "fileType" : 64
+    },
+    "\/js\/vendor\/flot\/jquery.flot.tooltip.min.js" : {
+      "ignoreWasSetByUser" : 0,
+      "ignore" : 0,
+      "hidden" : 0,
+      "outputPathIsSetByUser" : 0,
+      "inputAbbreviatedPath" : "\/js\/vendor\/flot\/jquery.flot.tooltip.min.js",
+      "outputStyle" : 1,
+      "syntaxCheckerStyle" : 1,
+      "outputAbbreviatedPath" : "\/js\/vendor\/flot\/jquery.flot.tooltip.min.min.js",
       "fileType" : 64
     },
     "\/js\/vendor\/angularstrap\/modules\/tab.min.js" : {
@@ -1522,17 +1533,6 @@
       "fileType" : 4,
       "debugStyle" : 0
     },
-    "\/js\/vendor\/flot\/jquery.flot.tooltip.min.js" : {
-      "ignoreWasSetByUser" : 0,
-      "ignore" : 0,
-      "hidden" : 0,
-      "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/js\/vendor\/flot\/jquery.flot.tooltip.min.js",
-      "outputStyle" : 1,
-      "syntaxCheckerStyle" : 1,
-      "outputAbbreviatedPath" : "\/js\/vendor\/flot\/jquery.flot.tooltip.min.min.js",
-      "fileType" : 64
-    },
     "\/partials\/add-child.html" : {
       "ignoreWasSetByUser" : 0,
       "ignore" : 0,
@@ -1541,17 +1541,6 @@
       "inputAbbreviatedPath" : "\/partials\/add-child.html",
       "outputAbbreviatedPath" : "No Output Path",
       "fileType" : 2048
-    },
-    "\/js\/vendor\/datatables\/jquery.dataTables.min.js" : {
-      "ignoreWasSetByUser" : 0,
-      "ignore" : 0,
-      "hidden" : 0,
-      "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/js\/vendor\/datatables\/jquery.dataTables.min.js",
-      "outputStyle" : 1,
-      "syntaxCheckerStyle" : 1,
-      "outputAbbreviatedPath" : "\/js\/vendor\/datatables\/jquery.dataTables.min.min.js",
-      "fileType" : 64
     },
     "\/js\/vendor\/typeahead.js\/bloodhound.min.js" : {
       "ignoreWasSetByUser" : 0,
@@ -1562,6 +1551,17 @@
       "outputStyle" : 1,
       "syntaxCheckerStyle" : 1,
       "outputAbbreviatedPath" : "\/js\/vendor\/typeahead.js\/bloodhound.min.min.js",
+      "fileType" : 64
+    },
+    "\/js\/vendor\/datatables\/jquery.dataTables.min.js" : {
+      "ignoreWasSetByUser" : 0,
+      "ignore" : 0,
+      "hidden" : 0,
+      "outputPathIsSetByUser" : 0,
+      "inputAbbreviatedPath" : "\/js\/vendor\/datatables\/jquery.dataTables.min.js",
+      "outputStyle" : 1,
+      "syntaxCheckerStyle" : 1,
+      "outputAbbreviatedPath" : "\/js\/vendor\/datatables\/jquery.dataTables.min.min.js",
       "fileType" : 64
     },
     "\/js\/vendor\/select2\/select2_locale_mk.js" : {
@@ -1840,15 +1840,15 @@
       "outputAbbreviatedPath" : "\/js\/vendor\/bootstrap-switch.min.js",
       "fileType" : 64
     },
-    "\/js\/vendor\/angularstrap\/modules\/alert.tpl.min.js" : {
+    "\/js\/vendor\/select2\/select2_locale_fi.js" : {
       "ignoreWasSetByUser" : 0,
-      "ignore" : 1,
+      "ignore" : 0,
       "hidden" : 0,
       "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/alert.tpl.min.js",
+      "inputAbbreviatedPath" : "\/js\/vendor\/select2\/select2_locale_fi.js",
       "outputStyle" : 1,
       "syntaxCheckerStyle" : 1,
-      "outputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/alert.tpl.min.min.js",
+      "outputAbbreviatedPath" : "\/js\/vendor\/select2\/select2_locale_fi.min.js",
       "fileType" : 64
     },
     "\/js\/vendor\/angularstrap\/modules\/select.min.js" : {
@@ -1862,15 +1862,15 @@
       "outputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/select.min.min.js",
       "fileType" : 64
     },
-    "\/js\/vendor\/select2\/select2_locale_fi.js" : {
+    "\/js\/vendor\/angularstrap\/modules\/alert.tpl.min.js" : {
       "ignoreWasSetByUser" : 0,
-      "ignore" : 0,
+      "ignore" : 1,
       "hidden" : 0,
       "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/js\/vendor\/select2\/select2_locale_fi.js",
+      "inputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/alert.tpl.min.js",
       "outputStyle" : 1,
       "syntaxCheckerStyle" : 1,
-      "outputAbbreviatedPath" : "\/js\/vendor\/select2\/select2_locale_fi.min.js",
+      "outputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/alert.tpl.min.min.js",
       "fileType" : 64
     },
     "\/js\/vendor\/angularstrap\/modules\/aside.tpl.js" : {
@@ -2159,17 +2159,6 @@
       "outputAbbreviatedPath" : "\/js\/vendor\/flot\/jquery.flot.selection.min.js",
       "fileType" : 64
     },
-    "\/js\/vendor\/angularstrap\/modules\/navbar.js" : {
-      "ignoreWasSetByUser" : 0,
-      "ignore" : 0,
-      "hidden" : 0,
-      "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/navbar.js",
-      "outputStyle" : 1,
-      "syntaxCheckerStyle" : 1,
-      "outputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/navbar.min.js",
-      "fileType" : 64
-    },
     "\/js\/vendor\/angularstrap\/modules\/parse-options.min.js" : {
       "ignoreWasSetByUser" : 0,
       "ignore" : 1,
@@ -2179,6 +2168,17 @@
       "outputStyle" : 1,
       "syntaxCheckerStyle" : 1,
       "outputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/parse-options.min.min.js",
+      "fileType" : 64
+    },
+    "\/js\/vendor\/angularstrap\/modules\/navbar.js" : {
+      "ignoreWasSetByUser" : 0,
+      "ignore" : 0,
+      "hidden" : 0,
+      "outputPathIsSetByUser" : 0,
+      "inputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/navbar.js",
+      "outputStyle" : 1,
+      "syntaxCheckerStyle" : 1,
+      "outputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/navbar.min.js",
       "fileType" : 64
     },
     "\/scss\/_wizard.scss" : {
@@ -2226,15 +2226,15 @@
       "outputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/affix.min.js",
       "fileType" : 64
     },
-    "\/js\/vendor\/mvpready-core.min.js" : {
+    "\/js\/vendor\/angularstrap\/modules\/select.js" : {
       "ignoreWasSetByUser" : 0,
-      "ignore" : 1,
+      "ignore" : 0,
       "hidden" : 0,
       "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/js\/vendor\/mvpready-core.min.js",
+      "inputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/select.js",
       "outputStyle" : 1,
       "syntaxCheckerStyle" : 1,
-      "outputAbbreviatedPath" : "\/js\/vendor\/mvpready-core.min.min.js",
+      "outputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/select.min.js",
       "fileType" : 64
     },
     "\/js\/vendor\/flot\/jquery.flot.fillbetween.js" : {
@@ -2246,17 +2246,6 @@
       "outputStyle" : 1,
       "syntaxCheckerStyle" : 1,
       "outputAbbreviatedPath" : "\/js\/vendor\/flot\/jquery.flot.fillbetween.min.js",
-      "fileType" : 64
-    },
-    "\/js\/vendor\/select2\/select2_locale_ro.js" : {
-      "ignoreWasSetByUser" : 0,
-      "ignore" : 0,
-      "hidden" : 0,
-      "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/js\/vendor\/select2\/select2_locale_ro.js",
-      "outputStyle" : 1,
-      "syntaxCheckerStyle" : 1,
-      "outputAbbreviatedPath" : "\/js\/vendor\/select2\/select2_locale_ro.min.js",
       "fileType" : 64
     },
     "\/scss\/_components.scss" : {
@@ -2271,15 +2260,26 @@
       "fileType" : 4,
       "debugStyle" : 0
     },
-    "\/js\/vendor\/angularstrap\/modules\/select.js" : {
+    "\/js\/vendor\/mvpready-core.min.js" : {
+      "ignoreWasSetByUser" : 0,
+      "ignore" : 1,
+      "hidden" : 0,
+      "outputPathIsSetByUser" : 0,
+      "inputAbbreviatedPath" : "\/js\/vendor\/mvpready-core.min.js",
+      "outputStyle" : 1,
+      "syntaxCheckerStyle" : 1,
+      "outputAbbreviatedPath" : "\/js\/vendor\/mvpready-core.min.min.js",
+      "fileType" : 64
+    },
+    "\/js\/vendor\/select2\/select2_locale_ro.js" : {
       "ignoreWasSetByUser" : 0,
       "ignore" : 0,
       "hidden" : 0,
       "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/select.js",
+      "inputAbbreviatedPath" : "\/js\/vendor\/select2\/select2_locale_ro.js",
       "outputStyle" : 1,
       "syntaxCheckerStyle" : 1,
-      "outputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/select.min.js",
+      "outputAbbreviatedPath" : "\/js\/vendor\/select2\/select2_locale_ro.min.js",
       "fileType" : 64
     },
     "\/js\/vendor\/select2\/select2_locale_ka.js" : {
@@ -2742,17 +2742,6 @@
       "outputAbbreviatedPath" : "\/js\/vendor\/select2\/select2_locale_de.min.js",
       "fileType" : 64
     },
-    "\/js\/vendor\/select2\/select2_locale_ms.js" : {
-      "ignoreWasSetByUser" : 0,
-      "ignore" : 0,
-      "hidden" : 0,
-      "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/js\/vendor\/select2\/select2_locale_ms.js",
-      "outputStyle" : 1,
-      "syntaxCheckerStyle" : 1,
-      "outputAbbreviatedPath" : "\/js\/vendor\/select2\/select2_locale_ms.min.js",
-      "fileType" : 64
-    },
     "\/js\/vendor\/angularstrap\/modules\/debounce.js" : {
       "ignoreWasSetByUser" : 0,
       "ignore" : 0,
@@ -2762,6 +2751,17 @@
       "outputStyle" : 1,
       "syntaxCheckerStyle" : 1,
       "outputAbbreviatedPath" : "\/js\/vendor\/angularstrap\/modules\/debounce.min.js",
+      "fileType" : 64
+    },
+    "\/js\/vendor\/select2\/select2_locale_ms.js" : {
+      "ignoreWasSetByUser" : 0,
+      "ignore" : 0,
+      "hidden" : 0,
+      "outputPathIsSetByUser" : 0,
+      "inputAbbreviatedPath" : "\/js\/vendor\/select2\/select2_locale_ms.js",
+      "outputStyle" : 1,
+      "syntaxCheckerStyle" : 1,
+      "outputAbbreviatedPath" : "\/js\/vendor\/select2\/select2_locale_ms.min.js",
       "fileType" : 64
     },
     "\/partials\/datepicker.tpl.html" : {
@@ -2863,6 +2863,17 @@
       "outputAbbreviatedPath" : "\/js\/vendor\/select2\/select2_locale_nb.min.js",
       "fileType" : 64
     },
+    "\/js\/vendor\/flot\/jquery.flot.min.js" : {
+      "ignoreWasSetByUser" : 0,
+      "ignore" : 1,
+      "hidden" : 0,
+      "outputPathIsSetByUser" : 0,
+      "inputAbbreviatedPath" : "\/js\/vendor\/flot\/jquery.flot.min.js",
+      "outputStyle" : 1,
+      "syntaxCheckerStyle" : 1,
+      "outputAbbreviatedPath" : "\/js\/vendor\/flot\/jquery.flot.min.min.js",
+      "fileType" : 64
+    },
     "\/scss\/_bootstrap-additions.scss" : {
       "ignoreWasSetByUser" : 0,
       "ignore" : 1,
@@ -2874,17 +2885,6 @@
       "outputAbbreviatedPath" : "\/css\/_bootstrap-additions.css",
       "fileType" : 4,
       "debugStyle" : 0
-    },
-    "\/js\/vendor\/flot\/jquery.flot.min.js" : {
-      "ignoreWasSetByUser" : 0,
-      "ignore" : 1,
-      "hidden" : 0,
-      "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/js\/vendor\/flot\/jquery.flot.min.js",
-      "outputStyle" : 1,
-      "syntaxCheckerStyle" : 1,
-      "outputAbbreviatedPath" : "\/js\/vendor\/flot\/jquery.flot.min.min.js",
-      "fileType" : 64
     },
     "\/scss\/vendor\/mvpready\/_mvpready-admin-carrot.scss" : {
       "ignoreWasSetByUser" : 0,
@@ -2931,6 +2931,18 @@
       "outputAbbreviatedPath" : "\/js\/vendor\/angular-touch.min.js",
       "fileType" : 64
     },
+    "\/scss\/vendor\/mvpready\/_mvpready-admin-slate.scss" : {
+      "ignoreWasSetByUser" : 0,
+      "ignore" : 1,
+      "hidden" : 0,
+      "outputPathIsSetByUser" : 0,
+      "inputAbbreviatedPath" : "\/scss\/vendor\/mvpready\/_mvpready-admin-slate.scss",
+      "outputStyle" : 0,
+      "shouldRunBless" : 0,
+      "outputAbbreviatedPath" : "\/scss\/vendor\/css\/_mvpready-admin-slate.css",
+      "fileType" : 4,
+      "debugStyle" : 0
+    },
     "\/js\/vendor\/angularstrap\/modules\/scrollspy.min.js" : {
       "ignoreWasSetByUser" : 0,
       "ignore" : 1,
@@ -2952,18 +2964,6 @@
       "outputAbbreviatedPath" : "\/img\/logo-terre-sainte.png",
       "initialSize" : 8918,
       "fileType" : 8192
-    },
-    "\/scss\/vendor\/mvpready\/_mvpready-admin-slate.scss" : {
-      "ignoreWasSetByUser" : 0,
-      "ignore" : 1,
-      "hidden" : 0,
-      "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/scss\/vendor\/mvpready\/_mvpready-admin-slate.scss",
-      "outputStyle" : 0,
-      "shouldRunBless" : 0,
-      "outputAbbreviatedPath" : "\/scss\/vendor\/css\/_mvpready-admin-slate.css",
-      "fileType" : 4,
-      "debugStyle" : 0
     },
     "\/js\/vendor\/select2\/select2_locale_sv.js" : {
       "ignoreWasSetByUser" : 0,
