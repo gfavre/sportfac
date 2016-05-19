@@ -42,7 +42,6 @@ class UserListView(BackendMixin, ListView):
     
     def get_queryset(self):
         return FamilyUser.objects.annotate(num_children=Count('children'))\
-                         .filter(num_children__gt=0)\
                          .annotate(
                             valid_registrations=Count(
                                 Case(When(children__registrations__in= Registration.objects.validated(), then=1))
