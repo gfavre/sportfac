@@ -32,7 +32,7 @@ class HomePageView(BackendMixin, TemplateView):
     def get_additional_context_phase1(self, context):
         context['nb_teachers'] = Teacher.objects.count()
         context['last_teacher_update'] = Teacher.objects.aggregate(
-                                            latest=Max('modified'))['latest']
+                                            latest=Max('modified'))['latest'] or 'n/a'
         years = SchoolYear.objects\
                           .annotate(num_teachers=(Count('teacher')))\
                           .filter(num_teachers__gt=0)
@@ -48,8 +48,7 @@ class HomePageView(BackendMixin, TemplateView):
         context['total_sessions'] = courses.aggregate(Sum('number_of_sessions')).values()[0] or 0
         context['total_responsibles'] = Group.objects.get(name=RESPONSIBLE_GROUP).user_set.count()
         
-        context['last_course_update'] = courses.aggregate(
-                                            latest=Max('modified'))['latest']
+        context['last_course_update'] = courses.aggregate(latest=Max('modified'))['latest'] or 'n/a'
         
         return context
     
@@ -105,7 +104,7 @@ class HomePageView(BackendMixin, TemplateView):
         context['nb_courses'] = courses.count()
         activities = Activity.objects.all()
         context['nb_activities'] = activities.count()
-        context['total_sessions'] = courses.aggregate(Sum('number_of_sessions')).values()[0]
+        context['total_sessions'] = courses.aggregate(Sum('number_of_sessions')).values()[0] or 0
         context['total_responsibles'] = Group.objects.get(name=RESPONSIBLE_GROUP).user_set.count()
         timedeltas = []
         for course in courses:
