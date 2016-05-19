@@ -45,7 +45,7 @@ class HomePageView(BackendMixin, TemplateView):
 
         context['ready_courses'] = courses.filter(uptodate=True).count()
         context['notready_courses'] = context['nb_courses'] - context['ready_courses']
-        context['total_sessions'] = courses.aggregate(Sum('number_of_sessions')).values()[0]
+        context['total_sessions'] = courses.aggregate(Sum('number_of_sessions')).values()[0] or 0
         context['total_responsibles'] = Group.objects.get(name=RESPONSIBLE_GROUP).user_set.count()
         
         context['last_course_update'] = courses.aggregate(
