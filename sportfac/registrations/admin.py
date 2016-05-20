@@ -25,23 +25,10 @@ class RegistrationAdmin(admin.ModelAdmin):
         qs = self.model._default_manager.all_with_deleted()
         return qs.select_related('course', 'course__activity', 'child')
     
-    def save_model(self, request, obj, form, change):
-        obj.save()
-        obj.child.family.update_total()
-        obj.child.family.save()
-
     def get_actions(self, request):
         actions = super(RegistrationAdmin, self).get_actions(request)
         del actions['delete_selected']
         return actions
-
-    def delete_model(self, request, queryset):
-        for registration in queryset.all():
-            family = registration.child.family
-            registration.delete()
-            family.update_total()
-            family.save()
-    delete_model.short_description = _('Delete selected registration')
 
     def export(self, request, queryset):
         response = HttpResponse(content_type='text/csv')
