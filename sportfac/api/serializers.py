@@ -1,9 +1,19 @@
 from rest_framework import serializers
 
+from absences.models import Absence
 from activities.models import Activity, Course, ExtraNeed
 from profiles.models import FamilyUser, SchoolYear
 from registrations.models import Child, ExtraInfo, Registration
 from schools.models import Teacher
+
+
+class AbsenceSerializer(serializers.ModelSerializer):
+    child = serializers.PrimaryKeyRelatedField(queryset=Child.objects.all())
+    course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all().select_related('activity'))
+
+    class Meta:
+        model = Absence
+        fields = ('id', 'status', 'date', 'child', 'course')
 
 
 class ActivitySerializer(serializers.ModelSerializer):

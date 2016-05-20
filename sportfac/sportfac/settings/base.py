@@ -249,7 +249,7 @@ SHARED_APPS = (
 
 
 TENANT_APPS = (
-    # third party apps
+    'absences',
     'activities',
     'registrations',
     'schools',

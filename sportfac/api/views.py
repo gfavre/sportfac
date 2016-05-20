@@ -8,13 +8,21 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework import mixins, generics, status, filters
 
 
+from absences.models import Absence
 from activities.models import Activity, Course
 from registrations.models import Child, ExtraInfo, Registration
 from schools.models import Teacher
-from .serializers import (ActivitySerializer, ActivityDetailedSerializer, 
+from .permissions import ManagerPermission, FamilyOrAdminPermission, ResponsiblePermission
+from .serializers import (AbsenceSerializer, ActivitySerializer, ActivityDetailedSerializer, 
                           ChildrenSerializer, CourseSerializer, TeacherSerializer,
                           RegistrationSerializer, ExtraSerializer, SimpleChildrenSerializer)
 
+
+class AbsenceViewSet(viewsets.ModelViewSet):
+    model = Absence
+    queryset = Absence.objects.all()
+    permission_classes = (ResponsiblePermission,)
+    serializer_class = AbsenceSerializer
 
 class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ActivityDetailedSerializer
@@ -57,26 +65,6 @@ class FamilyView(mixins.ListModelMixin, generics.GenericAPIView):
     
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
-
-
-class ManagerPermission(permissions.IsAuthenticated):
-    def has_object_permission(self, request, view, obj):
-        """
-        Return `True` if permission is granted, `False` otherwise.
-        """
-        if request.user.is_manager:
-            return True
-        return False
-
-
-class FamilyOrAdminPermission(permissions.IsAuthenticated):
-    def has_object_permission(self, request, view, obj):
-        """
-        Return `True` if permission is granted, `False` otherwise.
-        """
-        if request.user.is_manager or request.user == obj.family:
-            return True
-        return False
 
 
 class ChildrenViewSet(viewsets.ModelViewSet):
