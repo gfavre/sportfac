@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load duration switzerland %}
+
+{% block title %}{{ course.activity.name }} - {% trans "Absences" %}{{ block.super }}{% endblock %}
+{% block page_title %}{{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }} - Absences{% endblocktrans %}{% endblock %}
+
+{% block content %}
+
+<table class="table">
+  <thead>
+    <tr>
+        <th></th>
+        {% for session in course.sessions.all %}
+        <th class="date">{{ session.date | date:"j F Y" }}</th>
+        {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+  {% for registration in course.participants.all %}
+    <tr>
+        <th>{{ registration.child.full_name }}</th> 
+        {% for session in course.sessions.all %}
+        <td class="{% if registration.child in session.absentees %}absent{% endif %}"></td>
+        {% endfor %}   
+    </tr>
+  {% endfor %}
+  </tbody>  
+</table>
+{% endblock content %}

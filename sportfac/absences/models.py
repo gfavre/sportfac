@@ -16,10 +16,16 @@ class Absence(StatusModel, TimeStampedModel):
                     )
 
     child = models.ForeignKey('registrations.Child')
-    session = models.ForeignKey('Session')
+    session = models.ForeignKey('Session', related_name="absences")
 
 
 class Session(TimeStampedModel):
-    course = models.ForeignKey('activities.Course')
+    course = models.ForeignKey('activities.Course', related_name="sessions")
     date = models.DateTimeField()
+
+    def absentees(self):
+        return [absence.child for absence in self.absences.all()]
+    
+    class Meta:
+        ordering = ('date', 'course')
 

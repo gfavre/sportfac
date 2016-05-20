@@ -3,6 +3,7 @@ from django.contrib.sitemaps import  GenericSitemap
 
 import views
 
+from absences.views import AbsenceView
 from .models import Activity
 
 urlpatterns = [
@@ -25,6 +26,10 @@ urlpatterns = [
     url(r'^courses/(?P<course>\d+)/mail/preview$', 
         view=views.CustomMailPreview.as_view(),
         name="mail-preview"),
+    
+    url(r'^courses/(?P<course>\d+)/absences$', view=AbsenceView.as_view(), 
+        name='course-absence'),
+
 ]
 
 sitemap = GenericSitemap({'queryset': Activity.objects.all() })
