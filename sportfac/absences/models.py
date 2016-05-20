@@ -16,5 +16,10 @@ class Absence(StatusModel, TimeStampedModel):
                     )
 
     child = models.ForeignKey('registrations.Child')
+    session = models.ForeignKey('Session')
+
+
+class Session(TimeStampedModel):
     course = models.ForeignKey('activities.Course')
     date = models.DateTimeField()
+
