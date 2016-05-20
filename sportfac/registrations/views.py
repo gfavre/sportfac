@@ -58,12 +58,17 @@ class RegisteredActivitiesListView(WizardMixin, FormView):
 
     def form_valid(self, form):
         with transaction.atomic():
+            total = self.get_queryset().aggregate(
+                        Sum('course__price')
+                    ).get('course__price__sum')
             bill = Bill.objects.create(
                 status = Bill.STATUS.just_created,
                 family = self.request.user
             )
             for registration in self.get_queryset().all():
                 registration.set_valid()
+                if total == 0:
+                    registration.paid = True
                 registration.bill = bill
                 registration.save()
             bill.save()

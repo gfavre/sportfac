@@ -17,46 +17,4 @@
 <p>Si nécessaire, il est également possible de déposer cette somme au secrétariat des écoles, Chemin du Chaucey 7, 1296 Coppet, en se munissant du présent récapitulatif.</p>
 <p><strong>Aucun remboursement ne pourra être demandé en cas de désistement.</strong></p>
 
-<hr />
-<h3>Inscriptions</h3>
-<table class=" table table-striped">
-  <thead>
-    <tr>
-      <th>{% trans "Name" %}</th>
-      <th>{% trans "Activity" %}</th>
-      <th>{% trans "Period" %}</th>
-      <th>{% trans "Time" %}</th>
-      <th>{% trans "Place" %}</th>
-      <th>{% trans "Price" %}</th>
-    </tr>
-  </thead>
-  
- <tfoot>
-    <tr>
-      <th colspan="5" style="text-align: right">{% trans "Total" %}</th>
-      <th class="nowrap">{{ bill.total|money }}</th>
-    </tr>
-  </tfoot>
-
-  <tbody>
-  {% for registered in bill.registrations.all %}
-    <tr>
-      <td>
-        <span class="nowrap">{{ registered.child.first_name }} {{ registered.child.last_name }}</span>
-      </td>
-      <td>{{ registered.course.activity.name }}
-    </td>
-      <td>
-        <span class="nowrap">{{ registered.course.start_date }}</span> – <span class="nowrap">{{ registered.course.end_date }}</span>
-      </td>
-      <td>
-        {{ registered.course.day_name }} / <span class="nowrap">{{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</span>
-      </td>
-      <td>{{ registered.course.place }}</td>
-      <td class="nowrap">{{ registered.course.price|money }}</td>
-    </tr>
-  {% endfor %}
-  </tbody>
-  
-</table>
 ​

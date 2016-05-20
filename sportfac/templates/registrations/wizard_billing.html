@@ -1,12 +1,59 @@
 {% extends "wizard.html" %}
-{% load i18n  sekizai_tags %}
+{% load i18n  sekizai_tags switzerland%}
 
 
-{% block page_title %}Paiement{% endblock page_title%}
+{% block page_title %}{% if bill.total > 0 %}{% trans "Billing" %}{% else %}{% trans "Registrations validated" %}{% endif %}{% endblock page_title%}
 
 {% block content %}
+{% if bill.total > 0 %}
   {% include "registrations/billing_partial.html" %}
+{% else %}
+  {% include "registrations/wizard-complete.html" %}
+{% endif %}
+
+<hr />
+<h3>Inscriptions</h3>
+<table class=" table table-striped">
+  <thead>
+    <tr>
+      <th>{% trans "Name" %}</th>
+      <th>{% trans "Activity" %}</th>
+      <th>{% trans "Period" %}</th>
+      <th>{% trans "Time" %}</th>
+      <th>{% trans "Place" %}</th>
+      <th>{% trans "Price" %}</th>
+    </tr>
+  </thead>
   
+ <tfoot>
+    <tr>
+      <th colspan="5" style="text-align: right">{% trans "Total" %}</th>
+      <th class="nowrap">{{ bill.total|money }}</th>
+    </tr>
+  </tfoot>
+
+  <tbody>
+  {% for registered in bill.registrations.all %}
+    <tr>
+      <td>
+        <span class="nowrap">{{ registered.child.first_name }} {{ registered.child.last_name }}</span>
+      </td>
+      <td>{{ registered.course.activity.name }}
+    </td>
+      <td>
+        <span class="nowrap">{{ registered.course.start_date }}</span> – <span class="nowrap">{{ registered.course.end_date }}</span>
+      </td>
+      <td>
+        {{ registered.course.day_name }} / <span class="nowrap">{{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</span>
+      </td>
+      <td>{{ registered.course.place }}</td>
+      <td class="nowrap">{{ registered.course.price|money }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+  
+</table>
+
   <p class="hidden-print text-center"><button class="btn btn-success btn-large print-button"><i class="icon icon-print"></i> {% trans "Print" %}</button></p>
 
 
