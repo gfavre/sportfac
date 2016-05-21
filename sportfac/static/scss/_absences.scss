@@ -1,0 +1,10 @@
+.absences {
+    .current-session {
+        cursor: pointer;
+    }
+    
+    .unavailable {
+        background-color: #f9f9f9 !important;
+        cursor: not-allowed;
+    }
+}

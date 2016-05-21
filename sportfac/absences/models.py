@@ -1,5 +1,4 @@
 from __future__ import unicode_literals
-
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -21,7 +20,7 @@ class Absence(StatusModel, TimeStampedModel):
 
 class Session(TimeStampedModel):
     course = models.ForeignKey('activities.Course', related_name="sessions")
-    date = models.DateTimeField()
+    date = models.DateField()
 
     def absentees(self):
         return [absence.child for absence in self.absences.all()]

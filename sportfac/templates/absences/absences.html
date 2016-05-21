@@ -1,19 +1,22 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load duration switzerland %}
+{% load duration switzerland sekizai_tags %}
 
 {% block title %}{{ course.activity.name }} - {% trans "Absences" %}{{ block.super }}{% endblock %}
 {% block page_title %}{{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }} - Absences{% endblocktrans %}{% endblock %}
 
 {% block content %}
 
-<table class="table">
+<table class="table table-bordered table-hover table-condensed absences">
   <thead>
     <tr>
-        <th></th>
+        <th><!-- child name column --></th>
         {% for session in course.sessions.all %}
         <th class="date">{{ session.date | date:"j F Y" }}</th>
         {% endfor %}
+        <th>
+            <a class="btn btn-success btn-sm" id="create_session"><i class="icon icon-plus"></i>&nbsp;{% trans "New session" %}</a>
+        </th>
     </tr>
   </thead>
   <tbody>
@@ -22,9 +25,25 @@
         <th>{{ registration.child.full_name }}</th> 
         {% for session in course.sessions.all %}
         <td class="{% if registration.child in session.absentees %}absent{% endif %}"></td>
-        {% endfor %}   
+        {% endfor %}
+        <td class="current-session unavailable"></td>
     </tr>
   {% endfor %}
   </tbody>  
 </table>
 {% endblock content %}
+
+{% block extra_js %}
+<script>
+$('#create_session').click(function(evt){
+    $('.current-session').removeClass('unavailable').addClass('bg-success');
+    evt.stopPropagation();
+    /* changer le bouton en input avec la date du jour */
+});
+/*
+    un clic sur une .current_sesison ouvre un menu popup (ex: https://www.bananabandy.com/project/5666c3ea44c44)
+    
+    
+*/
+</script>
+{% endblock %}
