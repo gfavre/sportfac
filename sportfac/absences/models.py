@@ -1,4 +1,6 @@
 from __future__ import unicode_literals
+
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -27,6 +29,9 @@ class Session(TimeStampedModel):
     
     def __unicode__(self):
         return '%s - %s' % (self.course.short_name, self.date)
+    
+    def get_api_url(self):
+        return reverse('api:session-detail', kwargs={'pk': self.pk})
     
     class Meta:
         ordering = ('date', 'course')

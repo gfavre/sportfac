@@ -12,7 +12,22 @@
     <tr>
       <th><!-- child name column --></th>
       {% for session in course.sessions.all %}
-      <th class="date" style="width: 200px;">{{ session.date | date:"j F Y" }}</th>
+      <th class="date">
+        <span class="session-date">{{ session.date | date:"d.m.Y" }}</span>
+        <a href="" class="session-edit-date"><i class="icon-pencil"></i></a>
+        <a href="" class="session-delete" data-session-url="{{ session.get_api_url }}">
+            <i class="icon-trash"></i>
+        </a>
+        <div class="input-group date datetimepicker session-update" 
+            data-session-url="{{ session.get_api_url }}" 
+            style="display: none">
+          <input type="text" class="form-control" value="{{ session.date | date:'d.m.Y' }}"
+                 data-date-pickTime="false"/>
+          <span class="input-group-addon">
+            <span class="icon-calendar"></span>
+          </span>
+        </div>
+      </th>
       {% endfor %}
       <th >
         <div class="input-group date datetimepicker" id="create_session_date" style="display: none">
@@ -79,34 +94,80 @@
 <script src="{{ STATIC_URL }}js/vendor/bootstrap-datetimepicker.min.js"></script>
 <script src="{% static 'js/vendor/js.cookie.js' %}"></script>
 
-<script type="text/javascript">
-  $(function () {
-    $('.datetimepicker').datetimepicker({
-        language: '{{ LANGUAGE_CODE }}',
-        format: 'DD.MM.YYYY',
-        icons: {date: 'icon-calendar', 
-                up:   'icon-up-open', 
-                down: 'icon-down-open'}
-        });
-  });
-</script>
 
 <script>
 $(function(){
+    var HUMAN_FMT = 'DD.MM.YYYY';
+    var API_FMT = 'YYYY-MM-DD'
+    
     $.ajaxSetup({
         headers: { "X-CSRFToken": Cookies.get("csrftoken") }
     });
+    
+    $('.datetimepicker').datetimepicker({
+        language: '{{ LANGUAGE_CODE }}',
+        format: HUMAN_FMT,
+        icons: {date: 'icon-calendar', 
+                up:   'icon-up-open', 
+                down: 'icon-down-open'}
+    });
+    $('.datetimepicker').on('dp.change', function(evt){
+        var parent = $(this).parent();
+        $.ajax({
+            url: $(this).data('session-url'),
+            type: 'PUT',
+            data: { date: $(this).data('DateTimePicker').date.format(API_FMT),
+                    course: {{ course.id }} },
+            success: function(response){
+                $('.session-date', parent).text( 
+                    $('.session-update', parent).data('DateTimePicker').date.format(HUMAN_FMT)
+                );
+                $('.session-edit-date', parent).toggle();
+                $('.session-delete', parent).toggle();
+                $('.session-date', parent).toggle();
+                $('.session-update', parent).toggle();
+            }
+        });        
+    });
+    
     var newSession = function(){
         $.post("{% url 'api:session-list' %}",
            { course: {{ course.id }},
-             date: $('#create_session_date').data('DateTimePicker').date.format('YYYY-MM-DD')
+             date: $('#create_session_date').data('DateTimePicker').date.format(API_FMT)
            },
            function(data){
                console.log(data);
+               
            },
            'json'
         );
     }
+    $('.session-edit-date').click(function(evt){
+        var parent = $(this).parent();
+        $('.session-edit-date', parent).toggle();
+        $('.session-delete', parent).toggle();
+        $('.session-date', parent).toggle();
+        $('.session-update', parent).toggle();
+        evt.preventDefault();
+    });
+    
+    $('.session-delete').click(function(evt){
+        var parent = $(this).parent();
+        $.ajax({
+            url: $(this).data('session-url'),
+            type: 'DELETE',
+            success: function(response){
+                var col_nb = parent.index();
+                parent.remove();
+                $('.absences tr').each(function(){
+                    $('td:nth-child(' + col_nb + ')', this).remove();
+                });
+            }
+        });
+        evt.preventDefault();
+    });
+    
+    
     
     $('#create_session_button').click(function(evt){
         $(this).hide();
