@@ -8,12 +8,13 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework import mixins, generics, status, filters
 
 
-from absences.models import Absence
+from absences.models import Absence, Session
 from activities.models import Activity, Course
 from registrations.models import Child, ExtraInfo, Registration
 from schools.models import Teacher
 from .permissions import ManagerPermission, FamilyOrAdminPermission, ResponsiblePermission
-from .serializers import (AbsenceSerializer, ActivitySerializer, ActivityDetailedSerializer, 
+from .serializers import (AbsenceSerializer, SessionSerializer,
+                          ActivitySerializer, ActivityDetailedSerializer, 
                           ChildrenSerializer, CourseSerializer, TeacherSerializer,
                           RegistrationSerializer, ExtraSerializer, SimpleChildrenSerializer)
 
@@ -23,6 +24,14 @@ class AbsenceViewSet(viewsets.ModelViewSet):
     queryset = Absence.objects.all()
     permission_classes = (ResponsiblePermission,)
     serializer_class = AbsenceSerializer
+
+
+class SessionViewSet(viewsets.ModelViewSet):
+    model = Session
+    serializer_class = SessionSerializer
+    queryset = Session.objects.all()
+    permission_classes = (ResponsiblePermission,)
+
 
 class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ActivityDetailedSerializer

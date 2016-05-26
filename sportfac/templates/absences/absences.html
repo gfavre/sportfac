@@ -1,49 +1,135 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load duration switzerland sekizai_tags %}
+{% load duration switzerland sekizai_tags staticfiles %}
 
 {% block title %}{{ course.activity.name }} - {% trans "Absences" %}{{ block.super }}{% endblock %}
 {% block page_title %}{{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }} - Absences{% endblocktrans %}{% endblock %}
 
 {% block content %}
-
+<div class="table-responsive">
 <table class="table table-bordered table-hover table-condensed absences">
   <thead>
     <tr>
-        <th><!-- child name column --></th>
-        {% for session in course.sessions.all %}
-        <th class="date">{{ session.date | date:"j F Y" }}</th>
-        {% endfor %}
-        <th>
-            <a class="btn btn-success btn-sm" id="create_session"><i class="icon icon-plus"></i>&nbsp;{% trans "New session" %}</a>
-        </th>
+      <th><!-- child name column --></th>
+      {% for session in course.sessions.all %}
+      <th class="date" style="width: 200px;">{{ session.date | date:"j F Y" }}</th>
+      {% endfor %}
+      <th >
+        <div class="input-group date datetimepicker" id="create_session_date" style="display: none">
+          <input type="text" class="form-control" value="{% now "d.m.Y" %}"
+                 data-date-pickTime="false"/>
+          <span class="input-group-addon">
+            <span class="icon-calendar"></span>
+          </span>
+        </div>
+        <a class="btn btn-success btn-sm" id="create_session_button">
+          <i class="icon icon-plus"></i>&nbsp;{% trans "New session" %}
+        </a>
+      </th>
     </tr>
   </thead>
   <tbody>
   {% for registration in course.participants.all %}
-    <tr>
-        <th>{{ registration.child.full_name }}</th> 
+    <tr data-child="{{ registration.child.id }}">
+        <th class="text-nowrap">{{ registration.child.full_name }}</th> 
         {% for session in course.sessions.all %}
-        <td class="{% if registration.child in session.absentees %}absent{% endif %}"></td>
+        <td class="{% if registration.child in session.absentees %}absent danger{% else %}present success{% endif %}">
+            
+        </td>
         {% endfor %}
-        <td class="current-session unavailable"></td>
+        <td class="current-session unavailable ">
+            <a tabindex="{{ forloop.counter }}" role="button" class="btn btn-sm has-popover"
+                             data-toggle="popover" 
+                             data-trigger="click focus">{% trans "Change" %}</a>
+        </td>
     </tr>
   {% endfor %}
   </tbody>  
 </table>
+</div>
+<div class="hide" id="status-window">
+  <form>
+    <div class="radio">
+      <label>
+        <input type="radio" name="status" id="present" value="present" checked>{% trans "Present" %}
+      </label>
+    </div>
+     <div class="radio">
+      <label>
+        <input type="radio" name="status" id="absent" value="absent">{% trans "Absent" %}
+      </label>
+    </div>
+     <div class="radio">
+      <label>
+        <input type="radio" name="status" id="excused" value="excused">{% trans "Excused" %}
+      </label>
+    </div>
+     <div class="radio">
+      <label>
+        <input type="radio" name="status" id="late" value="late">{% trans "Late" %}
+      </label>
+    </div>
+    </form>
+</div>
+
 {% endblock content %}
 
 {% block extra_js %}
+<script src="{{ STATIC_URL }}js/vendor/moment-with-locales.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/bootstrap-datetimepicker.min.js"></script>
+<script src="{% static 'js/vendor/js.cookie.js' %}"></script>
+
+<script type="text/javascript">
+  $(function () {
+    $('.datetimepicker').datetimepicker({
+        language: '{{ LANGUAGE_CODE }}',
+        format: 'DD.MM.YYYY',
+        icons: {date: 'icon-calendar', 
+                up:   'icon-up-open', 
+                down: 'icon-down-open'}
+        });
+  });
+</script>
+
 <script>
-$('#create_session').click(function(evt){
-    $('.current-session').removeClass('unavailable').addClass('bg-success');
-    evt.stopPropagation();
-    /* changer le bouton en input avec la date du jour */
+$(function(){
+    $.ajaxSetup({
+        headers: { "X-CSRFToken": Cookies.get("csrftoken") }
+    });
+    var newSession = function(){
+        $.post("{% url 'api:session-list' %}",
+           { course: {{ course.id }},
+             date: $('#create_session_date').data('DateTimePicker').date.format('YYYY-MM-DD')
+           },
+           function(data){
+               console.log(data);
+           },
+           'json'
+        );
+    }
+    
+    $('#create_session_button').click(function(evt){
+        $(this).hide();
+        $('#create_session_date').show();
+        $('.current-session').removeClass('unavailable').addClass('available').addClass('success');
+        newSession();
+    });
+    
+    $('body').on('change', 'input[name=status]', function(event){
+        var status = $(this).val();
+        var child = $(this).parents('tr').data('child');
+        var session = $()
+    });
+    $('.absences').popover(
+        {
+            selector: '.has-popover',
+            content: function(){
+                var window = $('#status-window').html();
+                return window;
+            },
+            html: true
+        }
+    );
 });
-/*
-    un clic sur une .current_sesison ouvre un menu popup (ex: https://www.bananabandy.com/project/5666c3ea44c44)
-    
-    
-*/
 </script>
 {% endblock %}

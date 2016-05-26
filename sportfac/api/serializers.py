@@ -9,7 +9,7 @@ from schools.models import Teacher
 
 class SessionSerializer(serializers.ModelSerializer):
     course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all().select_related('activity'))
-    date = serializers.DateTimeField()
+    date = serializers.DateField()
     
     class Meta:
         model = Session
@@ -18,7 +18,7 @@ class SessionSerializer(serializers.ModelSerializer):
 
 class AbsenceSerializer(serializers.ModelSerializer):
     child = serializers.PrimaryKeyRelatedField(queryset=Child.objects.all())
-    session = SessionSerializer()
+    session = serializers.PrimaryKeyRelatedField(queryset=Session.objects.all())
     
     class Meta:
         model = Absence

@@ -25,6 +25,9 @@ class Session(TimeStampedModel):
     def absentees(self):
         return [absence.child for absence in self.absences.all()]
     
+    def __unicode__(self):
+        return '%s - %s' % (self.course.short_name, self.date)
+    
     class Meta:
         ordering = ('date', 'course')
 
