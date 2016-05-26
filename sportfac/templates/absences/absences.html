@@ -30,8 +30,13 @@
       </th>
       {% endfor %}
       <th >
-        <div class="input-group date datetimepicker" id="create_session_date" style="display: none">
-          <input type="text" class="form-control" value="{% now "d.m.Y" %}"
+        <span class="session-date" style="display: none"></span>
+        <a href="" class="session-edit-date" style="display: none"><i class="icon-pencil"></i></a>
+        <a href="" class="session-delete" data-session-url="{{ session.get_api_url }}" style="display: none">
+            <i class="icon-trash"></i>
+        </a>
+        <div class="input-group date datetimepicker session-update"  id="create_session_date" style="display: none">
+          <input type="text" class="form-control" value="{% now 'd.m.Y' %}"
                  data-date-pickTime="false"/>
           <span class="input-group-addon">
             <span class="icon-calendar"></span>
@@ -131,16 +136,25 @@ $(function(){
     });
     
     var newSession = function(){
-        $.post("{% url 'api:session-list' %}",
-           { course: {{ course.id }},
-             date: $('#create_session_date').data('DateTimePicker').date.format(API_FMT)
+        var parent = $('#create_session_date').parent();
+        
+        $.ajax({
+            url: "{% url 'api:session-list' %}",
+            type: 'POST',
+            data: { course: {{ course.id }},
+                    date: $('#create_session_date').data('DateTimePicker').date.format(API_FMT)
+            },
+            success: function(data){
+               $('.session-update', parent).data('session-url', "{% url 'api:session-list' %}" + data.id + '/');
+               $('.session-date', parent).text( 
+                    $('.session-update', parent).data('DateTimePicker').date.format(HUMAN_FMT)
+               );
+               $('.session-edit-date', parent).toggle();
+               $('.session-delete', parent).toggle();
+               $('.session-date', parent).toggle();
+               $('.session-update', parent).toggle();
            },
-           function(data){
-               console.log(data);
-               
-           },
-           'json'
-        );
+        });
     }
     $('.session-edit-date').click(function(evt){
         var parent = $(this).parent();
