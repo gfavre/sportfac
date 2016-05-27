@@ -10,4 +10,4 @@ class AbsenceView(ResponsibleMixin, DetailView):
     model = Course
     template_name = 'absences/absences.html'
     pk_url_kwarg = 'course'
-    queryset = Course.objects.prefetch_related('sessions')
+    queryset = Course.objects.prefetch_related('sessions', 'sessions__absences', 'participants__child')
