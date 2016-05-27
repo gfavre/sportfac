@@ -53,8 +53,12 @@
     <tr data-child="{{ registration.child.id }}">
         <th class="text-nowrap">{{ registration.child.full_name }}</th> 
         {% for session in course.sessions.all %}
-        <td class="{% if registration.child in session.absentees %}absent danger{% else %}present success{% endif %}">
-            
+        <td class="{% if registration.child in session.absentees %}absent danger{% else %}present success{% endif %}"
+            data-session={{ session.id }}
+            data-child={{ registration.child.id }}>
+            <a tabindex="{{ forloop.counter }}" role="button" class="btn btn-sm has-popover"
+                             data-toggle="popover" 
+                             data-trigger="click focus">{% trans "Change" %}</a>
         </td>
         {% endfor %}
         <td class="current-session unavailable ">
@@ -191,9 +195,19 @@ $(function(){
     });
     
     $('body').on('change', 'input[name=status]', function(event){
-        var status = $(this).val();
-        var child = $(this).parents('tr').data('child');
-        var session = $()
+        var data = {
+            session: $(this).parents('td').data('session'),
+            child: $(this).parents('td').data('child'),
+            status: $(this).val()
+        }
+        $.ajax({
+            url: "{% url 'api:absence-list' %}",
+            type: 'POST',
+            data: data,
+            success: function(response){
+                alert('absence created')
+            }
+        })
     });
     $('.absences').popover(
         {
