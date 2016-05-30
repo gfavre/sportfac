@@ -48,6 +48,10 @@ domain.save()
 
 Moving from non multi db to multidb
 -----------------------------------
+git checkout b9f805d1a28179527e23a5c38efc5079b3d69e39
+python manage.py migrate profiles 0001
+python manage.py migrate registrations 0001
+
 python manage.py loaddata ../backup/school-years.json
 
 sed 's/profiles\.teacher/schools\.teacher/g' ../backup/teachers.json > ../backup/teachers-fixed.json
@@ -75,3 +79,7 @@ sed 's/profiles\.extrainfo/registrations\.extrainfo/g' ../backup/extra.json > ..
 python manage.py tenant_command loaddata ../backup/extra-fixed.json
 
 python manage.py loaddata ../backup/mail.json
+
+git checkout master
+python manage.py migrate profiles
+python manage.py migrate registrations
