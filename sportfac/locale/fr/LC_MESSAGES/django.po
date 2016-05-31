@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-20 18:21+0200\n"
+"POT-Creation-Date: 2016-05-30 18:21+0200\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -16,6 +16,24 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: \n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: absences/models.py:14 absences/templatetags/status.py:10
+#: templates/absences/absences.html:87
+msgid "Absent"
+msgstr "Absent"
+
+#: absences/models.py:15 absences/templatetags/status.py:11
+#: templates/absences/absences.html:92
+msgid "Excused"
+msgstr "Excusé"
+
+#: absences/models.py:16 absences/templatetags/status.py:12
+msgid "Late arrival"
+msgstr "Arrivée tardive"
+
+#: absences/templatetags/status.py:13 templates/absences/absences.html.py:82
+msgid "Present"
+msgstr "Présent"
 
 #: activities/admin.py:23
 msgid "Dates"
@@ -961,11 +979,7 @@ msgstr "Années scolaires"
 msgid "Your contact informations have been saved."
 msgstr "Vos informations de contact ont été mises à jour."
 
-#: registrations/admin.py:44
-msgid "Delete selected registration"
-msgstr "Supprimer les inscriptions sélectionnées"
-
-#: registrations/admin.py:106
+#: registrations/admin.py:93
 msgid "Export selected registrations"
 msgstr "Exporter les inscriptions sélectionnées"
 
@@ -1149,6 +1163,26 @@ msgstr ""
 #: templates/500.html:10
 msgid "Administrators have been warned."
 msgstr "Les administrateurs ont été prévenus du problème."
+
+#: templates/absences/absences.html:5
+msgid "Absences"
+msgstr "Absences"
+
+#: templates/absences/absences.html:6
+msgid "course #%(identifier)s - Absences"
+msgstr "cours #%(identifier)s - Absences"
+
+#: templates/absences/absences.html:46
+msgid "New session"
+msgstr "Nouvelle session"
+
+#: templates/absences/absences.html:71
+msgid "Change"
+msgstr "Modifier"
+
+#: templates/absences/absences.html:97
+msgid "Late"
+msgstr "En retard"
 
 #: templates/activities/activity_detail.html:27
 #: templates/backend/activity/detail.html:35
@@ -2299,28 +2333,35 @@ msgid "Period is not ready to use yet"
 msgstr "La période n'est pas encore prête à être utilisée"
 
 #: templates/contact/contact.html:4 templates/contact/contact.html.py:5
-#: templates/footer.html:10 themes/montreux/templates/contact/contact.html:4
+#: templates/footer.html:10 themes/coppet/templates/contact/contact.html:4
+#: themes/coppet/templates/contact/contact.html:5
+#: themes/coppet/templates/footer.html:10
+#: themes/montreux/templates/contact/contact.html:4
 #: themes/montreux/templates/contact/contact.html:5
 #: themes/montreux/templates/footer.html:10
 msgid "Contact"
 msgstr "Contact"
 
 #: templates/contact/contact.html:19
+#: themes/coppet/templates/contact/contact.html:19
 #: themes/montreux/templates/contact/contact.html:19
 msgid "Send message"
 msgstr "Envoyer ce message"
 
 #: templates/contact/thanks.html:4
+#: themes/coppet/templates/contact/thanks.html:4
 #: themes/montreux/templates/contact/thanks.html:4
 msgid "Thank you!"
 msgstr "Merci!"
 
 #: templates/contact/thanks.html:6
+#: themes/coppet/templates/contact/thanks.html:6
 #: themes/montreux/templates/contact/thanks.html:6
 msgid "Thanks for your message"
 msgstr "Merci pour votre message"
 
 #: templates/contact/thanks.html:9
+#: themes/coppet/templates/contact/thanks.html:9
 #: themes/montreux/templates/contact/thanks.html:9
 msgid "Your message has been sent. We'll get in touch soon."
 msgstr "Votre message a bien été envoyé. Nous vous recontacterons rapidement."
@@ -2335,6 +2376,7 @@ msgid "... or login"
 msgstr "... ou connexion"
 
 #: templates/footer.html:12 templates/navbar.html.py:15
+#: themes/coppet/templates/footer.html:12
 #: themes/montreux/templates/footer.html:12
 msgid "Terms and conditions"
 msgstr "Règlement de participation"
@@ -2613,11 +2655,18 @@ msgid ""
 "The following registrations have been validated. You can find the full "
 "summary of your registrations <a href=\"%(account_url)s\">in your account</"
 "a> at any time.\n"
-"Les inscriptions suivantes ont été enregistrées. Vous pouvez en tous temps accéder à <a href=\"%(account_url)s\">la liste de vos inscriptions</a> dans votre compte."
+msgstr ""
+"\n"
+"Les inscriptions suivantes ont été enregistrées. Vous pouvez en tous temps "
+"accéder à <a href=\"%(account_url)s\">la liste de vos inscriptions</a> dans "
+"votre compte.\n"
 
 #: templates/registrations/wizard_billing.html:5
 msgid "Registrations validated"
 msgstr "Inscriptions enregistrées"
+
+#~ msgid "Delete selected registration"
+#~ msgstr "Supprimer les inscriptions sélectionnées"
 
 #~ msgid "Terms of payement"
 #~ msgstr "Mes modalités de paiement"

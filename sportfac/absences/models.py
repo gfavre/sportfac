@@ -26,13 +26,20 @@ class Session(TimeStampedModel):
 
     def absentees(self):
         return [absence.child for absence in self.absences.all()]
-    
+
+    def get_absence_for_child(self, child):
+        absences = [absence for absence in self.absences.all() if absence.child==child]
+        if absences:
+            return absences[0]
+        else:
+            return None
+
     def __unicode__(self):
         return '%s - %s' % (self.course.short_name, self.date)
-    
+
     def get_api_url(self):
         return reverse('api:session-detail', kwargs={'pk': self.pk})
-    
+
     class Meta:
         ordering = ('date', 'course')
 

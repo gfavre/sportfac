@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load duration switzerland sekizai_tags staticfiles %}
+{% load duration switzerland sekizai_tags staticfiles matrix status %}
 
 {% block title %}{{ course.activity.name }} - {% trans "Absences" %}{{ block.super }}{% endblock %}
 {% block page_title %}{{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }} - Absences{% endblocktrans %}{% endblock %}
@@ -53,18 +53,22 @@
     <tr data-child="{{ registration.child.id }}">
         <th class="text-nowrap">{{ registration.child.full_name }}</th> 
         {% for session in course.sessions.all %}
-        <td class="{% if registration.child in session.absentees %}absent danger{% else %}present success{% endif %}"
+        {% with status=absence_matrix|index:forloop.parentloop.counter0|index:forloop.counter0 %}
+
+        <td class="{{ status}} {% if status == 'present' %}success{% elif status == 'late' %}info{% else %}danger{% endif %}"
             data-session={{ session.id }}
             data-child={{ registration.child.id }}>
             <a tabindex="{{ forloop.counter }}" role="button" class="btn btn-sm has-popover"
                              data-toggle="popover" 
-                             data-trigger="click focus">{% trans "Change" %}</a>
+                             data-trigger="click focus">{{ status|absence_status }}</a>
         </td>
+        {% endwith %}       
+
         {% endfor %}
         <td class="current-session unavailable ">
             <a tabindex="{{ forloop.counter }}" role="button" class="btn btn-sm has-popover"
                              data-toggle="popover" 
-                             data-trigger="click focus">{% trans "Change" %}</a>
+                             data-trigger="click focus">{% trans "Present" %}</a>
         </td>
     </tr>
   {% endfor %}
@@ -195,6 +199,7 @@ $(function(){
     });
     
     $('body').on('change', 'input[name=status]', function(event){
+        var parent = $(this).parents('td');
         var data = {
             session: $(this).parents('td').data('session'),
             child: $(this).parents('td').data('child'),
@@ -205,7 +210,30 @@ $(function(){
             type: 'POST',
             data: data,
             success: function(response){
-                alert('absence created')
+                console.log(response);
+                var label = '';
+                var classes = '';
+                switch(response.status){
+                    case 'present':
+                        label = "{% trans 'Present' %}";
+                        classes = "success present";
+                        break;
+                    case 'absent':
+                        label = "{% trans 'Absent' %}";
+                        classes = "danger absent";
+                        break;
+                    case 'excused':
+                        label = "{% trans 'Excused' %}";
+                        classes = "danger excused";
+                        break;
+                    case 'late':
+                        label = "{% trans 'Late arrival' %}";
+                        classes = "info late";
+                        break;
+                }
+                $('a', parent).text(label);
+                parent.removeClass().addClass(classes);
+                $('.has-popover', parent).popover('hide');
             }
         })
     });

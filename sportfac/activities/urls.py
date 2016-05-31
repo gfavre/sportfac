@@ -27,7 +27,7 @@ urlpatterns = [
         view=views.CustomMailPreview.as_view(),
         name="mail-preview"),
     
-    url(r'^courses/(?P<course>\d+)/absences$', view=AbsenceView.as_view(), 
+    url(r'^courses/(?P<course>\d+)/absences/$', view=AbsenceView.as_view(), 
         name='course-absence'),
 
 ]
