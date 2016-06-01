@@ -56,8 +56,9 @@
         {% with status=absence_matrix|index:forloop.parentloop.counter0|index:forloop.counter0 %}
 
         <td class="{{ status}} {% if status == 'present' %}success{% elif status == 'late' %}info{% else %}danger{% endif %}"
-            data-session={{ session.id }}
-            data-child={{ registration.child.id }}>
+            data-session="{{ session.id }}"
+            data-child="{{ registration.child.id }}"
+            data-status="{{ status }}">
             <a tabindex="{{ forloop.counter }}" role="button" class="btn btn-sm has-popover"
                              data-toggle="popover" 
                              data-trigger="click focus">{{ status|absence_status }}</a>
@@ -200,13 +201,15 @@ $(function(){
     
     $('body').on('change', 'input[name=status]', function(event){
         var parent = $(this).parents('td');
+        var status =  $(this).val();
         var data = {
-            session: $(this).parents('td').data('session'),
-            child: $(this).parents('td').data('child'),
-            status: $(this).val()
+            'session': parent.data('session'),
+            'child': parent.data('child'),
+            'status': status
         }
+        
         $.ajax({
-            url: "{% url 'api:absence-list' %}",
+            url: "{% url 'api:absence-set' %}",
             type: 'POST',
             data: data,
             success: function(response){
@@ -233,6 +236,7 @@ $(function(){
                 }
                 $('a', parent).text(label);
                 parent.removeClass().addClass(classes);
+                parent.data('status', response.status);
                 $('.has-popover', parent).popover('hide');
             }
         })
@@ -241,12 +245,18 @@ $(function(){
         {
             selector: '.has-popover',
             content: function(){
-                var window = $('#status-window').html();
-                return window;
+                return $('#status-window').html();                
+                //$('input[value=' + $(this).parents('td').data('status') + ']', pop).prop('checked', true);
+
             },
             html: true
         }
     );
+    $('.absences td').on('shown.bs.popover', function(){
+        var status = $(this).data('status');
+        var $popover_btn = $('.has-popover', $(this));
+        $('input[value=' + status + ']', $(this)).prop('checked', true);
+    });
 });
 </script>
 {% endblock %}
