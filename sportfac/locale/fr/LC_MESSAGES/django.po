@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-30 18:21+0200\n"
+"POT-Creation-Date: 2016-06-03 16:46+0200\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -18,20 +18,22 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: absences/models.py:14 absences/templatetags/status.py:10
-#: templates/absences/absences.html:87
+#: templates/absences/absences.html:76 templates/absences/absences.html:247
 msgid "Absent"
 msgstr "Absent"
 
 #: absences/models.py:15 absences/templatetags/status.py:11
-#: templates/absences/absences.html:92
+#: templates/absences/absences.html:81 templates/absences/absences.html:251
 msgid "Excused"
 msgstr "Excusé"
 
 #: absences/models.py:16 absences/templatetags/status.py:12
+#: templates/absences/absences.html:255
 msgid "Late arrival"
 msgstr "En retard"
 
-#: absences/templatetags/status.py:13 templates/absences/absences.html.py:82
+#: absences/templatetags/status.py:13 api/serializers.py:33
+#: templates/absences/absences.html:71 templates/absences/absences.html:243
 msgid "Present"
 msgstr "Présent"
 
@@ -43,11 +45,11 @@ msgstr "Dates"
 msgid "Limitations"
 msgstr "Limitations"
 
-#: activities/admin.py:27 activities/admin.py:92 activities/models.py:241
+#: activities/admin.py:27 activities/admin.py:92 activities/models.py:244
 msgid "course"
 msgstr "cours"
 
-#: activities/admin.py:28 activities/admin.py:93 activities/models.py:242
+#: activities/admin.py:28 activities/admin.py:93 activities/models.py:245
 #: templates/backend/portlets/courses.html:9
 #: templates/backend/portlets/registration_courses_phase3.html:9
 msgid "courses"
@@ -1169,18 +1171,15 @@ msgid "Absences"
 msgstr "Absences"
 
 #: templates/absences/absences.html:6
+#, python-format
 msgid "course #%(identifier)s - Absences"
 msgstr "cours #%(identifier)s - Absences"
 
-#: templates/absences/absences.html:46
+#: templates/absences/absences.html:34
 msgid "New session"
 msgstr "Nouvelle session"
 
-#: templates/absences/absences.html:71
-msgid "Change"
-msgstr "Modifier"
-
-#: templates/absences/absences.html:97
+#: templates/absences/absences.html:86
 msgid "Late"
 msgstr "En retard"
 
@@ -1338,17 +1337,21 @@ msgid "Actions"
 msgstr "Actions"
 
 #: templates/activities/course_list.html:63
+msgid "Manage absences"
+msgstr "Gestion des absences"
+
+#: templates/activities/course_list.html:64
 #: templates/backend/activity/detail.html:63
 #: templates/backend/course/list.html:63
 #: templates/backend/user/detail-responsible.html:84
 msgid "Check registrations"
 msgstr "Vérifier les inscriptions"
 
-#: templates/activities/course_list.html:64
+#: templates/activities/course_list.html:65
 msgid "Mail participants"
 msgstr "Email aux participants"
 
-#: templates/activities/course_list.html:65
+#: templates/activities/course_list.html:66
 msgid "Send course informations"
 msgstr "Récupérer les documents de cours"
 
@@ -2664,6 +2667,9 @@ msgstr ""
 #: templates/registrations/wizard_billing.html:5
 msgid "Registrations validated"
 msgstr "Inscriptions enregistrées"
+
+#~ msgid "Change"
+#~ msgstr "Modifier"
 
 #~ msgid "Delete selected registration"
 #~ msgstr "Supprimer les inscriptions sélectionnées"
