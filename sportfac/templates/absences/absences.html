@@ -13,11 +13,11 @@
       <th><!-- child name column --></th>
       {% for session in course.sessions.all %}
       <th class="date">
-        <span class="session-date">{{ session.date | date:"d.m.Y" }}</span>
-        <a href="" class="session-edit-date"><i class="icon-pencil"></i></a>
-        <a href="" class="session-delete" data-session-url="{{ session.get_api_url }}">
+        <div class="session-date">{{ session.date | date:"d.m.Y" }}</div>
+          <a href="" class="session-edit-date"><i class="icon-pencil"></i></a>
+          <a href="" class="session-delete" data-session-url="{{ session.get_api_url }}">
             <i class="icon-trash"></i>
-        </a>
+          </a>
         <div class="input-group date datetimepicker session-update" 
             data-session-url="{{ session.get_api_url }}" 
             style="display: none">
@@ -26,7 +26,7 @@
           <span class="input-group-addon">
             <span class="icon-calendar"></span>
           </span>
-        </div>      
+        </div>
       </th>
       {% endfor %}
       <th>
@@ -40,7 +40,9 @@
   {% for registration in course.participants.all %}
   {% with units=forloop.counter0 %}
     <tr data-child="{{ registration.child.id }}">
-        <th class="text-nowrap">{{ registration.child.full_name }}</th> 
+        <th class="text-nowrap child-name">
+            {{ registration.child.full_name }}
+        </th> 
         
         {% for session in course.sessions.all %}
         {% with status=absence_matrix|index:units|index:forloop.counter0 decade=forloop.counter|mul:100 %}
@@ -54,14 +56,15 @@
         </td>
         {% endwith %}
         {% endfor %}
-        <td class="current-session unavailable "></td>
+        <td class="unavailable"></td>
     </tr>
   {% endwith %}
   {% endfor %}
   </tbody>  
 </table>
 </div>
-<div class="hide" id="status-window">
+
+<script type="text/html" id="status-window">
   <form>
     <div class="radio">
       <label>
@@ -84,11 +87,11 @@
       </label>
     </div>
     </form>
-</div>
+</script>
 
 <script id="column-header" type="text/html">
     <th class="date">
-        <span class="session-date"></span>
+        <div class="session-date"></div>
         <a href="" class="session-edit-date"><i class="icon-pencil"></i></a>
         <a href="" class="session-delete">
             <i class="icon-trash"></i>
@@ -115,10 +118,9 @@
 {% endblock content %}
 
 {% block extra_js %}
-<script src="{{ STATIC_URL }}js/vendor/moment-with-locales.min.js"></script>
-<script src="{{ STATIC_URL }}js/vendor/bootstrap-datetimepicker.min.js"></script>
+<script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
+<script src="{% static 'js/vendor/bootstrap-datetimepicker.min.js' %}"></script>
 <script src="{% static 'js/vendor/js.cookie.js' %}"></script>
-
 
 <script>
 $(function(){
@@ -264,11 +266,7 @@ $(function(){
     $('.absences').popover(
         {
             selector: '.has-popover',
-            content: function(){
-                return $('#status-window').html();                
-                //$('input[value=' + $(this).parents('td').data('status') + ']', pop).prop('checked', true);
-
-            },
+            content: function(){ return $('#status-window').html(); },
             html: true
         }
     );

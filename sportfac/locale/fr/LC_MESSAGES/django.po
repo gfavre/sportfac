@@ -29,7 +29,7 @@ msgstr "Excusé"
 
 #: absences/models.py:16 absences/templatetags/status.py:12
 msgid "Late arrival"
-msgstr "Arrivée tardive"
+msgstr "En retard"
 
 #: absences/templatetags/status.py:13 templates/absences/absences.html.py:82
 msgid "Present"

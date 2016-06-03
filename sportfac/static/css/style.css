@@ -14421,13 +14421,11 @@ html[dir="rtl"] .select2-container-multi .select2-search-choice-close {
     -webkit-transform: translateX(-100%);
     transform: translateX(-100%); } }
 
-.absences .current-session {
-  cursor: pointer; }
+.absences .child-name {
+  padding: 10px;
+  line-height: 1.5; }
 .absences .unavailable {
-  background-color: #ddd !important;
-  cursor: not-allowed; }
-  .absences .unavailable a {
-    display: none; }
+  background-color: #ddd !important; }
 
 .pager li > button {
   display: inline-block;
