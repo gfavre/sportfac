@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load duration switzerland sekizai_tags staticfiles matrix status %}
+{% load duration switzerland sekizai_tags staticfiles matrix status mathfilters %}
 
 {% block title %}{{ course.activity.name }} - {% trans "Absences" %}{{ block.super }}{% endblock %}
 {% block page_title %}{{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }} - Absences{% endblocktrans %}{% endblock %}
@@ -26,22 +26,10 @@
           <span class="input-group-addon">
             <span class="icon-calendar"></span>
           </span>
-        </div>
+        </div>      
       </th>
       {% endfor %}
-      <th >
-        <span class="session-date" style="display: none"></span>
-        <a href="" class="session-edit-date" style="display: none"><i class="icon-pencil"></i></a>
-        <a href="" class="session-delete" data-session-url="{{ session.get_api_url }}" style="display: none">
-            <i class="icon-trash"></i>
-        </a>
-        <div class="input-group date datetimepicker session-update"  id="create_session_date" style="display: none">
-          <input type="text" class="form-control" value="{% now 'd.m.Y' %}"
-                 data-date-pickTime="false"/>
-          <span class="input-group-addon">
-            <span class="icon-calendar"></span>
-          </span>
-        </div>
+      <th>
         <a class="btn btn-success btn-sm" id="create_session_button">
           <i class="icon icon-plus"></i>&nbsp;{% trans "New session" %}
         </a>
@@ -50,28 +38,25 @@
   </thead>
   <tbody>
   {% for registration in course.participants.all %}
+  {% with units=forloop.counter0 %}
     <tr data-child="{{ registration.child.id }}">
         <th class="text-nowrap">{{ registration.child.full_name }}</th> 
+        
         {% for session in course.sessions.all %}
-        {% with status=absence_matrix|index:forloop.parentloop.counter0|index:forloop.counter0 %}
-
+        {% with status=absence_matrix|index:units|index:forloop.counter0 decade=forloop.counter|mul:100 %}
         <td class="{{ status}} {% if status == 'present' %}success{% elif status == 'late' %}info{% else %}danger{% endif %}"
             data-session="{{ session.id }}"
             data-child="{{ registration.child.id }}"
             data-status="{{ status }}">
-            <a tabindex="{{ forloop.counter }}" role="button" class="btn btn-sm has-popover"
+            <a tabindex="{{ decade|add:units }}" role="button" class="btn btn-sm has-popover"
                              data-toggle="popover" 
                              data-trigger="click focus">{{ status|absence_status }}</a>
         </td>
-        {% endwith %}       
-
+        {% endwith %}
         {% endfor %}
-        <td class="current-session unavailable ">
-            <a tabindex="{{ forloop.counter }}" role="button" class="btn btn-sm has-popover"
-                             data-toggle="popover" 
-                             data-trigger="click focus">{% trans "Present" %}</a>
-        </td>
+        <td class="current-session unavailable "></td>
     </tr>
+  {% endwith %}
   {% endfor %}
   </tbody>  
 </table>
@@ -100,6 +85,32 @@
     </div>
     </form>
 </div>
+
+<script id="column-header" type="text/html">
+    <th class="date">
+        <span class="session-date"></span>
+        <a href="" class="session-edit-date"><i class="icon-pencil"></i></a>
+        <a href="" class="session-delete">
+            <i class="icon-trash"></i>
+        </a>
+        <div class="input-group date datetimepicker session-update" 
+             style="display: none">
+          <input type="text" class="form-control" value=""
+                 data-date-pickTime="false" />
+          <span class="input-group-addon">
+            <span class="icon-calendar"></span>
+          </span>
+        </div>
+    </th>
+</script>
+<script id="column-content" type="text/html">
+    <td class="present success"
+        data-status="present">
+        <a role="button" class="btn btn-sm has-popover"
+           data-toggle="popover" 
+           data-trigger="click focus">{{ "present"|absence_status }}</a>
+    </td>
+</script>
 
 {% endblock content %}
 
@@ -151,21 +162,39 @@ $(function(){
             url: "{% url 'api:session-list' %}",
             type: 'POST',
             data: { course: {{ course.id }},
-                    date: $('#create_session_date').data('DateTimePicker').date.format(API_FMT)
-            },
+                    date: moment().format(API_FMT) },
             success: function(data){
-               $('.session-update', parent).data('session-url', "{% url 'api:session-list' %}" + data.id + '/');
-               $('.session-date', parent).text( 
-                    $('.session-update', parent).data('DateTimePicker').date.format(HUMAN_FMT)
+               var $th_tmpl = $($('#column-header').html());
+               var date = moment().format(API_FMT);
+               $('input', $th_tmpl).val(moment(data.date, API_FMT).format(HUMAN_FMT));
+               $('.session-update', $th_tmpl).data('session-url', "{% url 'api:session-list' %}" + data.id + '/');
+               $('.session-delete', $th_tmpl).data('session-url', "{% url 'api:session-list' %}" + data.id + '/');
+
+               $('.datetimepicker', $th_tmpl).datetimepicker({
+                 language: '{{ LANGUAGE_CODE }}',
+                 format: HUMAN_FMT,
+                 icons: {date: 'icon-calendar', 
+                         up:   'icon-up-open', 
+                         down: 'icon-down-open'}
+               });
+               $('.session-date',  $th_tmpl).text( 
+                    $('.session-update',  $th_tmpl).data('DateTimePicker').date.format(HUMAN_FMT)
                );
-               $('.session-edit-date', parent).toggle();
-               $('.session-delete', parent).toggle();
-               $('.session-date', parent).toggle();
-               $('.session-update', parent).toggle();
+               $('.absences thead th:last').before($th_tmpl);
+               
+               $('.absences tbody tr').each(function(idx){
+                  var $td_tmpl = $($('#column-content').html());
+                  $td_tmpl.data('session', data.id);
+                  $td_tmpl.data('child', $(this).data('child'));
+                  $('a', $td_tmpl).attr('tabindex', $('td:last', $(this)).index() * 100 + idx)                  
+                  $('td:last', $(this)).before($td_tmpl);
+               });
            },
         });
     }
-    $('.session-edit-date').click(function(evt){
+    $('#create_session_button').click(newSession);
+
+    $('.absences').on('click', '.session-edit-date', function(evt){
         var parent = $(this).parent();
         $('.session-edit-date', parent).toggle();
         $('.session-delete', parent).toggle();
@@ -174,7 +203,7 @@ $(function(){
         evt.preventDefault();
     });
     
-    $('.session-delete').click(function(evt){
+    $('.absences').on('click', '.session-delete', function(evt){
         var parent = $(this).parent();
         $.ajax({
             url: $(this).data('session-url'),
@@ -190,16 +219,8 @@ $(function(){
         evt.preventDefault();
     });
     
-    
-    
-    $('#create_session_button').click(function(evt){
-        $(this).hide();
-        $('#create_session_date').show();
-        $('.current-session').removeClass('unavailable').addClass('available').addClass('success');
-        newSession();
-    });
-    
-    $('body').on('change', 'input[name=status]', function(event){
+        
+    $('.absences').on('change', 'input[name=status]', function(event){
         var parent = $(this).parents('td');
         var status =  $(this).val();
         var data = {
@@ -213,7 +234,6 @@ $(function(){
             type: 'POST',
             data: data,
             success: function(response){
-                console.log(response);
                 var label = '';
                 var classes = '';
                 switch(response.status){

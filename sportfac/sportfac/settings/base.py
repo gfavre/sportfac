@@ -236,6 +236,7 @@ SHARED_APPS = (
     #'django_select2', # select2 widget (enhanced select box)
     'dbtemplates', # store templates in db (used by mailer module)
     'dynamic_preferences',
+    'mathfilters',
 
     # local apps
     'api',
