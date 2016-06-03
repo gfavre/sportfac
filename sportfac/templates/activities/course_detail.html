@@ -32,7 +32,9 @@
   {% ifequal user course.responsible %}
   <h4 class="content-title"><u>{% trans "Management" %}</u></h4>
   <a href="{{ course.get_custom_mail_responsible_url }}" class="btn btn-default hidden-print"><i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}</a> &nbsp;
+  {% if USE_ABSENCES %}
   <a href="{{ course.get_absences_url }}" class="btn btn-default hidden-print"><i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}</a>
+  {% endif %}
   {% endifequal %}
 
     </div>

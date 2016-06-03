@@ -35,9 +35,11 @@
     <a href="{{ course.get_custom_mail_url }}" class="btn btn-default">
       <i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}
     </a>&nbsp;
+    {% if USE_ABSENCES %}
     <a href="{{ course.get_backend_absences_url }}" class="btn btn-default">
       <i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}
     </a>
+    {% endif %}
   </div>
 </section>
 

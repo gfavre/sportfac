@@ -167,6 +167,7 @@ TEMPLATES = [
                 'sportfac.context_processors.registration_opened_context',
                 'sportfac.context_processors.activities_context',
                 'sportfac.context_processors.tenants_context',
+                'sportfac.context_processors.kepchup_context',
                 'sekizai.context_processors.sekizai',
             ],
             'loaders': [
@@ -423,3 +424,12 @@ CELERY_RESULT_SERIALIZER = 'json'
 
 PHANTOMJS = os.environ['PHANTOMJS']
 DBTEMPLATES_USE_CODEMIRROR = True
+
+
+
+
+################################################################################
+# Kepchup Options
+################################################################################
+
+KEPCHUP_USE_ABSENCES = False

@@ -32,9 +32,11 @@
     
     <h4 class="content-title"><u>{% trans "Management"%}</u></h4>      
     
+    {% if USE_ABSENCES %}
     <a href="{{ course.get_backend_absences_url }}" class="btn btn-sm">
         <i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}
     </a> &nbsp; 
+    {% endif %}
     
     <a href="{{ course.get_custom_mail_url }}" class="btn btn-sm">
         <i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}

@@ -52,7 +52,7 @@ class PDFRenderer(object):
         site = Site.objects.all()[0]
         request = {'site': site}
         context_data['request'] = request
-        self.context = Context(context_data)
+        self.context = context_data
 
     def resolve_template(self, template):
         "Accepts a template object, path-to-template or list of paths"
@@ -122,7 +122,7 @@ class CourseParticipantsPresence(PDFRenderer):
     def __init__(self, context_data):
         course = context_data['course']
         context_data['sessions'] = range(0, course.number_of_sessions)
-        self.context = Context(context_data)
+        self.context = context_data
 
 
 class MyCourses(PDFRenderer):
