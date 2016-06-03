@@ -11,3 +11,4 @@ STATICFILES_DIRS = (
     normpath(join(SITE_ROOT, 'themes', 'coppet', 'static')),
     normpath(join(SITE_ROOT, 'static')),
 )
+KEPCHUP_USE_ABSENCES = True
