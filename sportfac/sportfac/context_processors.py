@@ -1,5 +1,5 @@
+from django.conf import settings
 from django.utils import timezone
-
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
 
@@ -94,3 +94,8 @@ def tenants_context(request):
     if request.user.is_authenticated() and request.user.is_manager:
         return {'tenants': YearTenant.objects.all()}
     return {}
+
+def kepchup_context(request):
+    return {
+        'USE_ABSENCES': settings.KEPCHUP_USE_ABSENCES,
+    }

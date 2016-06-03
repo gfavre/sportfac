@@ -234,6 +234,10 @@ class Child(TimeStampedModel):
         return full_name.strip()
     
     @property
+    def full_name(self):
+        return self.get_full_name()
+    
+    @property
     def backend_url(self):
         return self.get_backend_url()
 

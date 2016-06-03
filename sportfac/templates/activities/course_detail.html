@@ -28,7 +28,17 @@
       <div class="progress-bar {% if course.full %}progress-bar-danger{% elif course.minimal_participants_reached %}progress-bar-success{% else %}progress-bar-warning{% endif %}" style="width: {{ course.percentage_full }}%">{% if course.full %}{% trans "Course full" %}{% elif course.minimal_participants_reached %}{% trans "Minimal number of participants reached" %}{% else %}{% trans "Not enough participants" %}{% endif %}</div>
     </div>
     <p class="text-right"><small>{{ course.min_participants }} participants requis pour que l'activité ait lieu</small></p>
-  </div>
+  
+  {% ifequal user course.responsible %}
+  <h4 class="content-title"><u>{% trans "Management" %}</u></h4>
+  <a href="{{ course.get_custom_mail_responsible_url }}" class="btn btn-default hidden-print"><i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}</a> &nbsp;
+  {% if USE_ABSENCES %}
+  <a href="{{ course.get_absences_url }}" class="btn btn-default hidden-print"><i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}</a>
+  {% endif %}
+  {% endifequal %}
+
+    </div>
+
 </section>
 
 
@@ -88,8 +98,6 @@
     
     {% endfor %}
   </table>
-  {% ifequal user course.responsible %}
-  <a href="{{ course.get_custom_mail_responsible_url }}" class="btn btn-default hidden-print"><i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}</a>
-  {% endifequal %}
-</section>   
+  </section> 
+  
 {% endblock content %}

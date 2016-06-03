@@ -55,12 +55,13 @@ def send_responsible_email(subject, message, from_email, course_pk, reply_to):
     email.attach(filename, open(filepath).read(), 'application/pdf')
     logger.debug("Participants.pdf attached")
 
-    filename = '%s-presences.pdf' % course.number
-    filepath = os.path.join(tempdir, filename)
-    cp_generator = CourseParticipantsPresence({'course': course})
-    cp_generator.render_to_pdf(filepath)
-    email.attach(filename, open(filepath).read(), 'application/pdf')
-    logger.debug("Presences.pdf attached")
+    if not settings.KEPCHUP_USE_ABSENCES:
+        filename = '%s-presences.pdf' % course.number
+        filepath = os.path.join(tempdir, filename)
+        cp_generator = CourseParticipantsPresence({'course': course})
+        cp_generator.render_to_pdf(filepath)
+        email.attach(filename, open(filepath).read(), 'application/pdf')
+        logger.debug("Presences.pdf attached")
 
     filename = 'mes_cours.pdf'
     filepath = os.path.join(tempdir, filename)

@@ -2,18 +2,56 @@
 from django.http import Http404
 
 from rest_framework import viewsets, permissions
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, list_route
 from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication
 from rest_framework import mixins, generics, status, filters
 
 
+from absences.models import Absence, Session
 from activities.models import Activity, Course
 from registrations.models import Child, ExtraInfo, Registration
 from schools.models import Teacher
-from .serializers import (ActivitySerializer, ActivityDetailedSerializer, 
+from .permissions import ManagerPermission, FamilyOrAdminPermission, ResponsiblePermission
+from .serializers import (AbsenceSerializer, SetAbsenceSerializer, SessionSerializer,
+                          ActivitySerializer, ActivityDetailedSerializer, 
                           ChildrenSerializer, CourseSerializer, TeacherSerializer,
                           RegistrationSerializer, ExtraSerializer, SimpleChildrenSerializer)
+
+
+class AbsenceViewSet(viewsets.ModelViewSet):
+    model = Absence
+    queryset = Absence.objects.all()
+    permission_classes = (ResponsiblePermission,)
+    serializer_class = AbsenceSerializer
+    
+    @list_route(methods=['post'])
+    def set(self, request):
+        serializer = SetAbsenceSerializer(data=request.data)
+        if serializer.is_valid():
+            status = serializer.data['status']
+            obj, created = Absence.objects.get_or_create(
+                session=Session.objects.get(pk=serializer.data['session']), 
+                child=Child.objects.get(pk=serializer.data['child'])
+            )
+            if status == 'present':
+                self.perform_destroy(obj)
+            else:
+                obj.status = status
+                obj.save()
+            return Response({'status': status}) 
+        else:
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST) 
+    
+
+
+class SessionViewSet(viewsets.ModelViewSet):
+    model = Session
+    serializer_class = SessionSerializer
+    queryset = Session.objects.all()
+    permission_classes = (ResponsiblePermission,)
+    
 
 
 class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
@@ -57,26 +95,6 @@ class FamilyView(mixins.ListModelMixin, generics.GenericAPIView):
     
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
-
-
-class ManagerPermission(permissions.IsAuthenticated):
-    def has_object_permission(self, request, view, obj):
-        """
-        Return `True` if permission is granted, `False` otherwise.
-        """
-        if request.user.is_manager:
-            return True
-        return False
-
-
-class FamilyOrAdminPermission(permissions.IsAuthenticated):
-    def has_object_permission(self, request, view, obj):
-        """
-        Return `True` if permission is granted, `False` otherwise.
-        """
-        if request.user.is_manager or request.user == obj.family:
-            return True
-        return False
 
 
 class ChildrenViewSet(viewsets.ModelViewSet):

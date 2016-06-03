@@ -2,6 +2,7 @@ from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.contrib.sitemaps import GenericSitemap
 from django.contrib.sitemaps import views as sitemapviews
 from django.contrib.flatpages import views as flatviews
@@ -32,6 +33,7 @@ urlpatterns = [
 
     url(r'^api/', include('api.urls', namespace="api")),
     url(r'^activities/', include('activities.urls', namespace="activities")),
+    url(r'^account/login$', auth_views.login),
     url(r'^account/', include('profiles.urls')),
     url(r'^backend/', include('backend.urls', namespace="backend", app_name="backend")),
     url(r'^contact/', include('contact.urls')),

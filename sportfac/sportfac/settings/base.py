@@ -167,6 +167,7 @@ TEMPLATES = [
                 'sportfac.context_processors.registration_opened_context',
                 'sportfac.context_processors.activities_context',
                 'sportfac.context_processors.tenants_context',
+                'sportfac.context_processors.kepchup_context',
                 'sekizai.context_processors.sekizai',
             ],
             'loaders': [
@@ -236,6 +237,7 @@ SHARED_APPS = (
     #'django_select2', # select2 widget (enhanced select box)
     'dbtemplates', # store templates in db (used by mailer module)
     'dynamic_preferences',
+    'mathfilters',
 
     # local apps
     'api',
@@ -249,7 +251,7 @@ SHARED_APPS = (
 
 
 TENANT_APPS = (
-    # third party apps
+    'absences',
     'activities',
     'registrations',
     'schools',
@@ -422,3 +424,12 @@ CELERY_RESULT_SERIALIZER = 'json'
 
 PHANTOMJS = os.environ['PHANTOMJS']
 DBTEMPLATES_USE_CODEMIRROR = True
+
+
+
+
+################################################################################
+# Kepchup Options
+################################################################################
+
+KEPCHUP_USE_ABSENCES = False

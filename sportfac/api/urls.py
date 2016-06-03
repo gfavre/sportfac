@@ -5,6 +5,8 @@ from rest_framework.routers import DefaultRouter, SimpleRouter
 from . import  views
 
 router = DefaultRouter()
+router.register(r'sessions', views.SessionViewSet, base_name='session')
+router.register(r'absences', views.AbsenceViewSet, base_name='absence')
 router.register(r'activities', views.ActivityViewSet, base_name='activity')
 router.register(r'courses', views.CourseViewSet, base_name='course')
 router.register(r'children', views.ChildrenViewSet, base_name='child')

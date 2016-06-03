@@ -30,3 +30,4 @@ xlrd == 0.9.4
 -e git+git://github.com/jazzband/django-dbtemplates.git#egg=dbtemplates
 -e git+git://github.com/gfavre/pypdftk@84215dedae1fc5b8629e13043a1b5183e7960a37#egg=pypdftk
 django-dynamic-preferences == 0.8.1
+django-mathfilters==0.4.0

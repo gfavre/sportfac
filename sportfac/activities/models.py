@@ -205,6 +205,13 @@ class Course(TimeStampedModel):
     def get_mail_confirmation_url(self):
         return reverse('backend:course-mail-confirmation', kwargs={'course': self.pk})
     
+    def get_absences_url(self):
+        return reverse('activities:course-absence', kwargs={'course': self.pk})
+
+    def get_backend_absences_url(self):
+        return reverse('backend:course-absence', kwargs={'course': self.pk})
+
+    
     def get_js_export_url(self):
         return reverse('backend:course-js-export', kwargs={'course': self.pk})
     

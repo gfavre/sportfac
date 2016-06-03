@@ -1,9 +1,36 @@
+from django.utils.translation import ugettext_lazy as _
+
 from rest_framework import serializers
 
+from absences.models import Absence, Session
 from activities.models import Activity, Course, ExtraNeed
 from profiles.models import FamilyUser, SchoolYear
 from registrations.models import Child, ExtraInfo, Registration
 from schools.models import Teacher
+
+
+class SessionSerializer(serializers.ModelSerializer):
+    course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all().select_related('activity'))
+    date = serializers.DateField()
+    
+    class Meta:
+        model = Session
+        fields = ('id', 'date', 'course')
+
+
+class AbsenceSerializer(serializers.ModelSerializer):
+    child = serializers.PrimaryKeyRelatedField(queryset=Child.objects.all())
+    session = serializers.PrimaryKeyRelatedField(queryset=Session.objects.all())
+    
+    class Meta:
+        model = Absence
+        fields = ('id', 'status', 'child', 'session',)
+
+
+class SetAbsenceSerializer(serializers.Serializer):
+    child = serializers.PrimaryKeyRelatedField(queryset=Child.objects.all())
+    session = serializers.PrimaryKeyRelatedField(queryset=Session.objects.all())
+    status = serializers.ChoiceField(choices=Absence.STATUS + ('present', _("Present")))    
 
 
 class ActivitySerializer(serializers.ModelSerializer):

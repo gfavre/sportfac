@@ -7,13 +7,14 @@ from django.utils.safestring import mark_safe
 from django.views.generic import CreateView, DeleteView, DetailView, \
                                 ListView, UpdateView
 
+from absences.models import Absence
 from activities.models import Course, Activity
 from activities.forms import CourseForm
 from sportfac.views import CSVMixin
 from .mixins import BackendMixin
 
 __all__ = ('CourseCreateView', 'CourseDeleteView', 'CourseDetailView',
-           'CourseJSCSVView',
+           'CourseJSCSVView', 'CourseAbsenceView',
            'CourseListView', 'CourseUpdateView', 'CourseParticipantsView')
 
 
@@ -31,6 +32,26 @@ class CourseDetailView(BackendMixin, DetailView):
             return 'backend/course/detail-phase2.html'
         return 'backend/course/detail.html'
     
+
+class CourseAbsenceView(BackendMixin, DetailView):
+    model = Course
+    template_name = 'backend/course/absences.html'
+    pk_url_kwarg = 'course'
+    queryset = Course.objects.prefetch_related('sessions', 'sessions__absences', 'participants__child')
+    
+    def get_context_data(self, **kwargs):
+        context = super(CourseAbsenceView, self).get_context_data(**kwargs)
+        course = self.get_object()
+        all_absences = dict(
+            [((absence.child, absence.session), absence.status) for absence 
+                                                                in Absence.objects.filter(session__course=course)]
+        )
+        context['absence_matrix'] = [[all_absences.get((registration.child, session), 'present') for session 
+                                                                     in course.sessions.all()] 
+         for registration in course.participants.all()]
+
+        return context
+
 
 class CourseJSCSVView(CSVMixin, CourseDetailView):
     def get_csv_filename(self):
