@@ -88,8 +88,14 @@
     
     {% endfor %}
   </table>
+  </section> 
   {% ifequal user course.responsible %}
-  <a href="{{ course.get_custom_mail_responsible_url }}" class="btn btn-default hidden-print"><i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}</a>
-  {% endifequal %}
-</section>   
+
+<section style="margin-bottom: 20px;">
+  <h2>{% trans "Management" %}</h2>
+  <a href="{{ course.get_custom_mail_responsible_url }}" class="btn btn-default hidden-print"><i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}</a> &nbsp;
+  <a href="{{ course.get_absences_url }}" class="btn btn-default hidden-print"><i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}</a>
+</section>
+{% endifequal %}
+
 {% endblock content %}

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-03 16:46+0200\n"
+"POT-Creation-Date: 2016-06-03 16:51+0200\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -1295,11 +1295,20 @@ msgstr "Téléphone des parents"
 msgid "Parents email"
 msgstr "Email des parents"
 
-#: templates/activities/course_detail.html:92
+#: templates/activities/course_detail.html:95
+msgid "Management"
+msgstr "Gestion"
+
+#: templates/activities/course_detail.html:96
 #: templates/backend/course/detail-phase2.html:98
 #: templates/backend/course/detail.html:94
 msgid "Mail all participants"
 msgstr "Email à tous les participants"
+
+#: templates/activities/course_detail.html:97
+#: templates/activities/course_list.html:63
+msgid "Manage absences"
+msgstr "Gestion des absences"
 
 #: templates/activities/course_list.html:4
 #: templates/activities/course_list.html:5 templates/navbar.html.py:84
@@ -1335,10 +1344,6 @@ msgstr "Heure"
 #: templates/backend/year/list.html:35
 msgid "Actions"
 msgstr "Actions"
-
-#: templates/activities/course_list.html:63
-msgid "Manage absences"
-msgstr "Gestion des absences"
 
 #: templates/activities/course_list.html:64
 #: templates/backend/activity/detail.html:63
