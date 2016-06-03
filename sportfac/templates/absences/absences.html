@@ -6,6 +6,30 @@
 {% block page_title %}{{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }} - Absences{% endblocktrans %}{% endblock %}
 
 {% block content %}
+
+<section class="portlet hidden-print">
+  <div class="pricing-plan">
+    <header class="pricing-header">
+      <p class="pricing-plan-label">{{ course.start_date | date:"j F Y" }} – {{ course.end_date | date:'j F Y'  }}</p>
+      <p class="lead">Chaque {{ course.day_name|lower }} de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }} ({{ course.duration|duration }})</p>
+    </header>
+    <dl class="dl-horizontal">
+      <dt>{% trans "Responsible" %}</dt>
+      <dd><a href="{{ course.responsible.get_backend_url }}">{{ course.responsible.full_name  }}</a></dd>
+      <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
+      <dt>{% trans "Number of sessions" %}</dt><dd>{{ course.number_of_sessions }} cours</dd>
+      <dt>{% trans "Price" %}</dt><dd>{{ course.price|money }}</dd>
+      <dt>{% trans "School years" %}</dt>
+      <dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
+    </dl>  
+  <h4 class="content-title"><u>{% trans "Management" %}</u></h4>
+  <a href="{{ course.get_custom_mail_responsible_url }}" class="btn btn-default hidden-print"><i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}</a> &nbsp;
+  <a href="{{ course.get_absolute_url }}" class="btn btn-default hidden-print"><i class="icon-check"></i>&nbsp;{% trans "Check registrations" %}</a>
+
+    </div>
+
+</section>
+
 <div class="table-responsive">
 <table class="table table-bordered table-hover table-condensed absences">
   <thead>
@@ -14,11 +38,11 @@
       {% for session in course.sessions.all %}
       <th class="date">
         <div class="session-date">{{ session.date | date:"d.m.Y" }}</div>
-          <a href="" class="session-edit-date"><i class="icon-pencil"></i></a>
-          <a href="" class="session-delete" data-session-url="{{ session.get_api_url }}">
+          <a href="" class="session-edit-date hidden-print"><i class="icon-pencil"></i></a>
+          <a href="" class="session-delete hidden-print" data-session-url="{{ session.get_api_url }}">
             <i class="icon-trash"></i>
           </a>
-        <div class="input-group date datetimepicker session-update" 
+        <div class="input-group date datetimepicker session-update hidden-print" 
             data-session-url="{{ session.get_api_url }}" 
             style="display: none">
           <input type="text" class="form-control" value="{{ session.date | date:'d.m.Y' }}"
@@ -29,7 +53,7 @@
         </div>
       </th>
       {% endfor %}
-      <th>
+      <th class="hidden-print">
         <a class="btn btn-success btn-sm" id="create_session_button">
           <i class="icon icon-plus"></i>&nbsp;{% trans "New session" %}
         </a>
@@ -56,7 +80,7 @@
         </td>
         {% endwith %}
         {% endfor %}
-        <td class="unavailable"></td>
+        <td class="unavailable hidden-print"></td>
     </tr>
   {% endwith %}
   {% endfor %}
