@@ -8,20 +8,18 @@
       <th><!-- child name column --></th>
       {% for session in course.sessions.all %}
       <th class="date">
-        <div class="session-date">{{ session.date | date:"d.m.Y" }}</div>
-          <a href="" class="session-edit-date hidden-print"><i class="icon-pencil"></i></a>
-          <a href="" class="session-delete hidden-print" data-session-url="{{ session.get_api_url }}">
-            <i class="icon-trash"></i>
-          </a>
-        <div class="input-group date datetimepicker session-update hidden-print" 
-            data-session-url="{{ session.get_api_url }}" 
-            style="display: none">
-          <input type="text" class="form-control" value="{{ session.date | date:'d.m.Y' }}"
+        <span class="session-date">{{ session.date | date:"d.m.Y" }}</span>
+        <!--<a href="" class="session-edit-date hidden-print"><i class="icon-pencil"></i></a>-->
+        &nbsp;      
+        <span class="date datetimepicker session-update hidden-print" 
+             data-session-url="{{ session.get_api_url }}" >
+          <a href="#"><i class="icon-calendar"></i></a>
+          <input type="hidden" class="form-control" value="{{ session.date | date:'d.m.Y' }}"
                  data-date-pickTime="false"/>
-          <span class="input-group-addon">
-            <span class="icon-calendar"></span>
-          </span>
-        </div>
+        </span>
+        <a href="#" class="session-delete hidden-print" data-session-url="{{ session.get_api_url }}">
+          <i class="icon-trash"></i>
+        </a>
       </th>
       {% endfor %}
       <th class="hidden-print">
@@ -90,19 +88,17 @@
 
 <script id="column-header" type="text/html">
     <th class="date">
-        <div class="session-date"></div>
-        <a href="" class="session-edit-date"><i class="icon-pencil"></i></a>
-        <a href="" class="session-delete">
-            <i class="icon-trash"></i>
-        </a>
-        <div class="input-group date datetimepicker session-update" 
-             style="display: none">
-          <input type="text" class="form-control" value=""
+        <span class="session-date"></span>
+        
+        <span class="date datetimepicker session-update hidden-print">
+          <input type="hidden" class="form-control" value=""
                  data-date-pickTime="false" />
-          <span class="input-group-addon">
-            <span class="icon-calendar"></span>
-          </span>
-        </div>
+          <a href="#" class="hidden-print"><i class="icon-calendar"></i></a>
+        </span>
+        <a href="#" class="session-delete hidden-print">
+          <i class="icon-trash"></i>
+        </a>
+
     </th>
 </script>
 <script id="column-content" type="text/html">
@@ -136,21 +132,19 @@ $(function(){
                 up:   'icon-up-open', 
                 down: 'icon-down-open'}
     });
-    $('.datetimepicker').on('dp.change', function(evt){
-        var parent = $(this).parent();
+    $('.absences').on('dp.change', '.datetimepicker', function(evt){
+        var parent = $(this).parent('th');
+        evt.stopPropagation();
+        
         $.ajax({
             url: $(this).data('session-url'),
             type: 'PUT',
             data: { date: $(this).data('DateTimePicker').date.format(API_FMT),
                     course: {{ course.id }} },
             success: function(response){
-                $('.session-date', parent).text( 
-                    $('.session-update', parent).data('DateTimePicker').date.format(HUMAN_FMT)
+                $('.session-date', parent).text(
+                    moment(response.date, API_FMT).format(HUMAN_FMT)
                 );
-                $('.session-edit-date', parent).toggle();
-                $('.session-delete', parent).toggle();
-                $('.session-date', parent).toggle();
-                $('.session-update', parent).toggle();
             }
         });        
     });
@@ -193,15 +187,6 @@ $(function(){
         });
     }
     $('#create_session_button').click(newSession);
-
-    $('.absences').on('click', '.session-edit-date', function(evt){
-        var parent = $(this).parent();
-        $('.session-edit-date', parent).toggle();
-        $('.session-delete', parent).toggle();
-        $('.session-date', parent).toggle();
-        $('.session-update', parent).toggle();
-        evt.preventDefault();
-    });
     
     $('.absences').on('click', '.session-delete', function(evt){
         var parent = $(this).parent();
