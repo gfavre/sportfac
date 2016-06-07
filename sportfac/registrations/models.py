@@ -180,6 +180,8 @@ class Bill(TimeStampedModel, StatusModel):
     def save(self, *args, **kwargs):
         self.update_total()
         self.update_billing_identifier()
+        if self.total == 0:
+            self.status = 'paid'
         super(Bill, self).save(*args, **kwargs)
 
 
