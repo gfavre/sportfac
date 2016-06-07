@@ -87,6 +87,8 @@ class BillDetailView(LoginRequiredMixin, DetailView):
 
     
     def get_queryset(self):
+        if self.request.user.is_manager:
+            return Bill.objects.all()
         return Bill.objects.filter(family=self.request.user)
     
 
