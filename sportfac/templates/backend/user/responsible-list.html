@@ -87,7 +87,6 @@ $(function () {
         <ul class="list-unstyled">
           <li class="text-nowrap"><a href="{% url 'backend:responsible-detail' pk=user.pk %}" class="btn btn-sm"><i class="icon-user"></i>&nbsp;&nbsp;{% trans "User details" %}</a></li>
           <li class="text-nowrap"><a href="{{ user.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Update user" %}</a></li>
-          <li class="text-nowrap"><a href="{{ user.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;&nbsp;{% trans "Delete user" %}</a></li>
         </ul>
       </td>
     </tr>

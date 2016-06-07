@@ -79,6 +79,7 @@ def registration_opened_context(request):
     minutes_spent = int((now - start).total_seconds() / 60)
     minutes_total = int((end - start).total_seconds() / 60)
     return {'registration_opened': request.REGISTRATION_OPENED,
+            'registration_phase': request.PHASE,
             'registration_start': start,
             'registration_end': end,
             'registration_past': start <= end <= now,

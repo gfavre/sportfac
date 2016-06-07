@@ -95,25 +95,31 @@ $(function () {
       </td>
 
       <td data-order="{{ user.finished_registrations }}" data-search="{% if user.finished_registrations %}{% trans 'finished' %}{% endif %}">
+      {% if registration_phase == 1 %}
+      N/A
+      {% else %}
         {% if user.finished_registrations %}
         <i class="icon-ok-circled success"></i>
         {% else %}
         <i class="icon-cancel-circled  danger"></i>
         {% endif %}
+      {% endif %}
       </td>
       <td data-order="{{ user.paid }}" data-search="{% if user.paid %}{% trans 'paid' %}{% endif %}">
+      {% if registration_phase == 1 %}
+      N/A
+      {% else %}
         {% if user.paid %}
         <i class="icon-ok-circled success"></i>
         {% else %}
         <i class="icon-cancel-circled danger"></i>
         {% endif %}
+      {% endif %}
       </td>
       <td>
         <ul class="list-unstyled">
           <li class="text-nowrap"><a href="{{ user.get_backend_url }}" class="btn btn-sm"><i class="icon-user"></i>&nbsp;&nbsp;{% trans "User details" %}</a></li>
           <li class="text-nowrap"><a href="{{ user.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Update user" %}</a></li>
-          <li class="text-nowrap"><a href="{{ user.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;&nbsp;{% trans "Delete user" %}</a></li>
-          {% comment %}<li class="text-nowrap"><a href="{{ user.get_payment_url }}" class="btn btn-sm"><i class="icon-credit-card-1"></i>&nbsp;&nbsp;{% trans "Change payment status" %}</a></li>{% endcomment %}
         </ul>
       </td>
     </tr>
