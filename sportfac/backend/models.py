@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.utils import timezone
 
 from django_tenants.models import TenantMixin, DomainMixin
 from model_utils import Choices
@@ -40,11 +41,11 @@ class YearTenant(TenantMixin):
     
     @property
     def is_past(self):
-        return self.end_date < date.today()
+        return self.end_date <  timezone.now().date()
     
     @property
     def is_future(self):
-        return self.start_date > date.today()
+        return self.start_date >  timezone.now().date()
         
     @property
     def is_ready(self):

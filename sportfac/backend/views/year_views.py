@@ -60,6 +60,11 @@ class YearUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
     success_url = reverse_lazy('backend:year-list')
     success_message = _('Period has been updated.')
     template_name = 'backend/year/update.html'
+    
+    def post(self, request, *args, **kwargs):
+        connection.set_schema_to_public()
+        return super(YearUpdateView, self).post(request, *args, **kwargs)
+    
 
 
 class YearDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
