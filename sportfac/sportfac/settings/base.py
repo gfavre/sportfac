@@ -433,3 +433,4 @@ DBTEMPLATES_USE_CODEMIRROR = True
 ################################################################################
 
 KEPCHUP_USE_ABSENCES = False
+KEPCHUP_SEND_PRESENCE_LIST = True 

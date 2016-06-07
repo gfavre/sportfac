@@ -55,7 +55,7 @@ def send_responsible_email(subject, message, from_email, course_pk, reply_to):
     email.attach(filename, open(filepath).read(), 'application/pdf')
     logger.debug("Participants.pdf attached")
 
-    if not settings.KEPCHUP_USE_ABSENCES:
+    if settings.KEPCHUP_SEND_PRESENCE_LIST:
         filename = '%s-presences.pdf' % course.number
         filepath = os.path.join(tempdir, filename)
         cp_generator = CourseParticipantsPresence({'course': course})
