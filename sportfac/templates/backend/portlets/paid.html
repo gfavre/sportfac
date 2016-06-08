@@ -21,6 +21,11 @@
     </div>
  </div> <!-- /.portlet-body -->
  <ul class="list-unstyled">
+   <li>
+     <a href="{% url 'backend:bill-list' %}">
+       <i class="icon-credit-card-1"></i>&nbsp;{% trans "All bills" %}
+     </a>
+   </li>
    <li><a href="{% url 'backend:user-list' %}"><i class="icon-group"></i>&nbsp;{% trans "List users" %}</a></li>
    <li><a href="{% url 'backend:mail-notpaidyet' %}"><i class="icon-mail"></i>&nbsp;{% trans "Send reminder email" %}</a></li>
  </ul>
