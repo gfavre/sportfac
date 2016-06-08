@@ -118,7 +118,7 @@ class BillListView(BackendMixin, ListView):
     template_name = 'backend/registration/bill-list.html'
     
     def get_queryset(self):
-        return Bill.objects.all().select_related('family')
+        return Bill.objects.all().select_related('family').order_by('status', 'billing_identifier')
     
  
 class BillDetailView(BackendMixin, DetailView):

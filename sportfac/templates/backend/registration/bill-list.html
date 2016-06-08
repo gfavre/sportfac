@@ -1,5 +1,5 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags switzerland %}
+{% load i18n sekizai_tags switzerland staticfiles %}
 
 
 {% block title %}{% trans "List bills" %} - {{ block.super }}{% endblock %}
@@ -7,19 +7,20 @@
 
 {% block content %}
 {% addtoblock  "js" %}    
-<script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
-<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
+<script src="{% static 'js/vendor/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'js/vendor/datatables/dataTables.bootstrap.js' %}"></script>
 <script>
 $(function () {
   $(".table").dataTable({
 {% if LANGUAGE_CODE == 'fr' %}
       "language": {
-            "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+            "url": "{% static 'js/vendor/datatables/French.json' %}"
       },
 {% endif %}
       "aoColumnDefs": [
           { 'bSortable': false, 'bSearchable': false, 'aTargets': [ 5 ] }
       ],
+      "order": [[4, "asc"], [0, 'asc']],
       "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "{% trans 'All bills' %}"] ]
   });
 });

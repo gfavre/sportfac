@@ -27,7 +27,9 @@
      </a>
    </li>
    <li><a href="{% url 'backend:user-list' %}"><i class="icon-group"></i>&nbsp;{% trans "List users" %}</a></li>
+   {% if payement_due > 0 %}
    <li><a href="{% url 'backend:mail-notpaidyet' %}"><i class="icon-mail"></i>&nbsp;{% trans "Send reminder email" %}</a></li>
+   {% endif %}
  </ul>
 
  
@@ -41,7 +43,7 @@
 $(function () {
   var data, placeholder;
   data = [
-      { label: "{% trans 'Not yet' %}", data: Math.max({{ payement_due }} - {{ paid }}, 0) },
+      { label: "{% trans 'Not yet' %}", data: {{ payement_due }} },
       { label: "{% trans 'Validated' %}", data:  {{ paid }} }
   ];
   placeholder = $("#pie-chart-paid");

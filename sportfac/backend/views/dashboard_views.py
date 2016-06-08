@@ -129,8 +129,8 @@ class HomePageView(BackendMixin, TemplateView):
                 if max_participants == count_participants:
                     context['nb_full_courses'] += 1
         
-        context['payement_due'] = Bill.waiting.filter(total__gt=0).count()
-        paid =  Bill.paid.filter(total__gt=0)
+        context['payement_due'] = Bill.waiting.count()
+        paid =  Bill.paid.all()
         context['paid'] = paid.count()
         context['total_due'] = Bill.objects.aggregate(Sum('total')).values()[0] or 0
         context['total_paid'] = paid.aggregate(Sum('total')).values()[0] or 0
