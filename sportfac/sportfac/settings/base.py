@@ -3,8 +3,9 @@
 import os
 from os.path import abspath, basename, dirname, join, normpath
 from sys import path
-from datetime import datetime
+from datetime import datetime, timedelta
 from pytz import timezone
+from celery.schedules import crontab
 
 ugettext = lambda s: s
 
@@ -421,6 +422,12 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
+CELERYBEAT_SCHEDULE = {
+    'update-periods': {
+        'task': 'backend.tasks.update_current_tenant',
+        'schedule': crontab(hour=0, minute=0),
+    },
+}
 
 PHANTOMJS = os.environ['PHANTOMJS']
 DBTEMPLATES_USE_CODEMIRROR = True

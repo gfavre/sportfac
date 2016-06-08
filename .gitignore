@@ -41,3 +41,7 @@ Thumbs.db
 # Testing
 .coverage
 htmlcov/
+
+# celery
+celerybeat-schedule
+celerybeat.pid
