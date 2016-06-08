@@ -213,11 +213,14 @@ class Child(TimeStampedModel):
     nationality = models.CharField(choices=NATIONALITY, max_length=3, default=NATIONALITY.CH)
     language = models.CharField(choices=LANGUAGE, max_length=2, default=LANGUAGE.F)
 
-    school_year = models.ForeignKey('profiles.SchoolYear')
+    school_year = models.ForeignKey('profiles.SchoolYear', null=True)
     teacher = models.ForeignKey('schools.Teacher', related_name="students", null=True, on_delete=models.SET_NULL)
 
-    family = models.ForeignKey('profiles.FamilyUser', related_name='children')
+    family = models.ForeignKey('profiles.FamilyUser', related_name='children', null=True)
     courses = models.ManyToManyField('activities.Course', through="registrations.Registration")
+    
+    id_lagapeo = models.IntegerField(db_index=True, unique=True, null=True, blank=True, 
+                                     verbose_name=_("Lagapeo Identification number"))
  
     class Meta:
         ordering = ('last_name', 'first_name',)
