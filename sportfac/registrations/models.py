@@ -179,7 +179,8 @@ class Bill(TimeStampedModel, StatusModel):
     @transaction.atomic
     def save(self, *args, **kwargs):
         self.update_total()
-        self.update_billing_identifier()
+        if not self.billing_identifier:
+            self.update_billing_identifier()
         if self.total == 0:
             self.status = 'paid'
         super(Bill, self).save(*args, **kwargs)
