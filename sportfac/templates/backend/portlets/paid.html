@@ -1,4 +1,4 @@
-{% load i18n sekizai_tags switzerland %}
+{% load i18n sekizai_tags switzerland staticfiles %}
 
 
 <section class="portlet">
@@ -31,12 +31,12 @@
 </section>
    
 {% addtoblock  "js" %}    
-<script src="{{ STATIC_URL }}js/vendor/flot/jquery.flot.pie.min.js"></script>
+<script src="{% static 'js/vendor/flot/jquery.flot.pie.min.js' %}"></script>
 <script>
 $(function () {
   var data, placeholder;
   data = [
-      { label: "{% trans 'Not yet' %}", data: {{ payement_due }} - {{ paid }} },
+      { label: "{% trans 'Not yet' %}", data: Math.max({{ payement_due }} - {{ paid }}, 0) },
       { label: "{% trans 'Validated' %}", data:  {{ paid }} }
   ];
   placeholder = $("#pie-chart-paid");
