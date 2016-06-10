@@ -116,6 +116,7 @@ class YearCreateView(SuccessMessageMixin, BackendMixin, FormView):
         if form.cleaned_data.get('copy_activities', None):
             copy_from_id = form.cleaned_data.get('copy_activities').pk
         create_tenant.delay(start.strftime('%Y%m%d'), end.strftime('%Y%m%d'), 
-                            tenant.pk, copy_from_id)
+                            tenant.pk, copy_from_id,
+                            self.request.user.pk)
         return response
         
