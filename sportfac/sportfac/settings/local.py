@@ -55,7 +55,8 @@ DATABASES['default']['PASSWORD'] = os.environ['DB_PASSWORD']
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#caches
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
+        'LOCATION': '127.0.0.1:11211',
     }
 }
 ########## END CACHE CONFIGURATION

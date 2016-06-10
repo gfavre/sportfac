@@ -18,7 +18,7 @@ try:
                              VIRTUALENVS, SETTINGS_SUBDIR, 
                              DBNAME, DBUSER, DBPASSWORD, 
                              MAILHOST, MAILUSER, MAILPASSWORD, MAILADDRESS,
-                             BROKER_URL, PHANTOMJS)
+                             BROKER_URL, PHANTOMJS, MEMCACHED_SOCKET)
 except ImportError:
     print("""
 ImportError: Couldn't find fabsettings.py, it either does not exist or is
@@ -43,6 +43,7 @@ MAILPASSWORD    = "************"
 MAILADDRESS     = "gregory@dealguru.ch"
 BROKER_URL      = "redis://localhost:14387/0"
 PHANTOMJS       = '/home/grfavre/bin/phantomjs'
+MEMCACHED_SOCKET = '/home/grfavre/memcached.sock'
 """)
     sys.exit(1)
 
@@ -101,6 +102,7 @@ env.mailuser          = MAILUSER
 env.mailpassword      = MAILPASSWORD
 env.mailaddress       = MAILADDRESS
 env.broker            = BROKER_URL
+env.memcached         = MEMCACHED_SOCKET
 env.phantomjs         = PHANTOMJS
 
 env.domain            = "kepchup.ch"
