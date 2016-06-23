@@ -99,4 +99,5 @@ def tenants_context(request):
 def kepchup_context(request):
     return {
         'USE_ABSENCES': settings.KEPCHUP_USE_ABSENCES,
+        'IMPORT_CHILDREN': settings.KEPCHUP_IMPORT_CHILDREN,
     }

@@ -8,6 +8,11 @@ from registrations.models import Bill, Child, Registration
 from .models import YearTenant
 
 
+
+class ChildImportForm(forms.Form):
+    thefile = forms.FileField(label=_("File"), help_text=_("Extraction from LAGAPEO, excel format"))
+
+
 class DateTimePickerInput(forms.DateTimeInput):
     template_name = 'floppyforms/datetime.html'
 

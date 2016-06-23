@@ -1,4 +1,5 @@
 import json
+import tempfile
 
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.models import Group
@@ -12,6 +13,8 @@ from django.views.generic import CreateView, DeleteView, DetailView, \
                                 ListView, UpdateView, View, FormView
 
 from backend import MANAGERS_GROUP, RESPONSIBLE_GROUP
+from backend.forms import ChildImportForm
+from backend.tasks import import_children
 from profiles.forms import (ManagerForm, ManagerWithPasswordForm, 
                             ResponsibleForm, ResponsibleWithPasswordForm)
 from profiles.models import FamilyUser
@@ -22,7 +25,7 @@ from .mixins import BackendMixin
 
 __all__ = ('UserListView', 'UserCreateView', 'PasswordSetView',
            'UserUpdateView', 'UserDeleteView', 'UserDetailView',
-           'ChildCreateView', 'ChildUpdateView', 'ChildDeleteView',
+           'ChildCreateView', 'ChildUpdateView', 'ChildDeleteView', 'ChildImportView',
             'ManagerListView', 'ManagerCreateView', 
             'ResponsibleListView', 'ResponsibleCreateView', 'ResponsibleDetailView'
            )
@@ -247,3 +250,20 @@ class ChildDeleteView(ChildView, SuccessMessageMixin, DeleteView):
     model = Child
     template_name = 'backend/user/child-confirm_delete.html'
     success_message = _("Child has been removed.")
+
+
+class ChildImportView(BackendMixin, SuccessMessageMixin, FormView):
+    form_class = ChildImportForm
+    success_url = reverse_lazy('backend:user-list')
+    success_message = _("Children are being imported")
+    template_name = 'backend/user/child-import.html'
+
+    def form_valid(self, form):
+        temp_file = tempfile.NamedTemporaryFile(delete=False)
+        for chunk in self.request.FILES['thefile'].chunks():
+            temp_file.write(chunk)
+        temp_file.close()
+        import_children.delay(temp_file.name, 
+                              tenant_id=self.request.tenant.pk, 
+                              user_id=self.request.user.pk)
+        return super(ChildImportView, self).form_valid(form)

@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.utils.translation import ugettext_lazy as _
 
-from .models import Registration
+from .models import Registration, Child
 from sportfac.utils import UnicodeWriter
 
 
@@ -93,3 +93,8 @@ class RegistrationAdmin(admin.ModelAdmin):
     export.short_description = _('Export selected registrations')
 
 admin.site.register(Registration, RegistrationAdmin)
+
+class ChildAdmin(admin.ModelAdmin):
+    list_display = ('first_name', 'last_name', 'family', 'school_year')
+
+admin.site.register(Child, ChildAdmin)

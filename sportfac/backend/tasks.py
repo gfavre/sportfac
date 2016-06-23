@@ -6,19 +6,23 @@ from tempfile import NamedTemporaryFile
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import Group
+from django.contrib.messages import constants
 from django.contrib.sessions.models import Session
 from django.db import connection, transaction
 from django.utils import timezone, translation
 from django.utils.html import format_html
+from django.utils.six import moves
 from django.utils.translation import ugettext as _
 
 
-from async_messages import messages
+from async_messages import messages, message_user
 from celery import shared_task
 from celery.utils.log import get_task_logger
+import xlrd
 
 from activities.models import Course
 from profiles.models import FamilyUser
+from registrations.utils import load_children
 from sportfac.decorators import respects_language
 from .models import YearTenant, Domain
 
@@ -96,5 +100,29 @@ def update_current_tenant():
             params = {'start': new_domain.tenant.start_date.isoformat(),
                       'end': new_domain.tenant.end_date.isoformat()}
             messages.info(user, msg % params)        
-        
-        
+
+
+@shared_task
+@respects_language
+def import_children(filepath, tenant_id, user_id=None):
+    tenant = YearTenant.objects.get(pk=tenant_id)
+    connection.set_tenant(tenant)
+    status = ''
+    message = ''
+    with open(filepath) as filelike:
+        try:
+            (nb_created, nb_updated) = load_children(filelike)
+            status = constants.SUCCESS
+            message = _("Children import successful. %(added)s children have been added, %(updated)s have been updated") % {
+                'added': nb_created,
+                'updated': nb_updated
+            }
+        except ValueError, msg:
+            status = constants.ERROR
+            message = msg
+    
+    try:
+        user = FamilyUser.objects.get(pk=user_id)
+        message_user(user, message, status)
+    except FamilyUser.DoesNotExist:
+        pass

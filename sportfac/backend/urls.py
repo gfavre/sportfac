@@ -128,6 +128,9 @@ users_patterns = [
         name='child-update'),
     url(r'^(?P<user>\d+)/child/(?P<pk>\d+)/delete$', view=views.ChildDeleteView.as_view(), 
         name='child-delete'),
+    
+    url(r'^import$', view=views.ChildImportView.as_view(),
+        name='child-import'),
 ]
 
 years_patterns = [

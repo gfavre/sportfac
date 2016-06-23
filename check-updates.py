@@ -3,7 +3,7 @@
 import xmlrpclib
 import pip
 
-pypi = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
+pypi = xmlrpclib.ServerProxy('https://pypi.python.org/pypi')
 for dist in pip.get_installed_distributions():
     available = pypi.package_releases(dist.project_name)
     if not available:
