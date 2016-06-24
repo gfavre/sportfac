@@ -92,10 +92,15 @@ angular.module('sportfacChildren.services', [])
             return children;
           });
         },
-        get: function(registrationId){
-          return $http.get(base + registrationId + '/').then(function(response){
+        get: function(childId){
+          return $http.get(base + childId + '/').then(function(response){
             return new Child(response.data);
           });
+        },
+        lookup: function(extId){
+            return $http.get(base + '?ext=' + extId).then(function(response){
+                return new Child(response.data)
+            });
         },
         del: function(obj){
           return $http.delete(base + obj.id + '/');

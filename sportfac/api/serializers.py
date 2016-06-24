@@ -111,10 +111,11 @@ class ChildrenSerializer(serializers.ModelSerializer):
     teacher = serializers.PrimaryKeyRelatedField(many=False, read_only=False,
                                                  queryset=Teacher.objects.all())
     school_year = SchoolYearField(many=False, read_only=False, queryset=SchoolYear.objects.all())
+    ext_id = serializers.IntegerField(source='id_lagapeo', required=False, allow_null=True)
     
     class Meta:
         model = Child
-        fields = ('id', 'first_name', 'last_name', 'sex', 
+        fields = ('id', 'ext_id', 'first_name', 'last_name', 'sex', 
                   'nationality', 'language',
                   'birth_date', 'school_year', 'teacher',)
         depth = 1

@@ -47,17 +47,18 @@ function($scope, $routeParams, $http, ChildrenService) {
   };
   
   $scope.toHarmos = function(year) {
-    return {1: "1P HARMOS",
-            2: "2P HARMOS",
-            3: "3P HARMOS",
-            4: "4P HARMOS",
-            5: "5P HARMOS",
-            6: "6P HARMOS",
-            7: "7P HARMOS",
-            8: "8P HARMOS",
-            9: "9S HARMOS",
-            10: "10S HARMOS",
-            11: "11S HARMOS",}[year];
+    return {1: "1P",
+            2: "2P",
+            3: "3P",
+            4: "4P",
+            5: "5P",
+            6: "6P",
+            7: "7P",
+            8: "8P",
+            9: "9S",
+            10: "10S",
+            11: "11S",
+            12: "12R"}[year];
     
   };
 }])
@@ -124,6 +125,15 @@ function($scope, $location, ChildrenService) {
   $scope.updateSchoolYear = function(){
     $scope.detailedChild.school_year = $scope.detailedChild.teacher.years[0];
   };
+  
+  $scope.lookupChild = function(){
+      ChildrenService.lookup($scope.detailedChild.ext_id).then(function(children){
+          if (0 in children){
+              $scope.detailedChild = children[0];
+          }
+          
+      });
+  }
   
   $scope.saveChild = function(){
     ChildrenService.save($scope.detailedChild, $scope.errors).then(function(){

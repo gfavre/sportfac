@@ -104,8 +104,16 @@ class ChildrenViewSet(viewsets.ModelViewSet):
     model = Child        
     
     def get_queryset(self):
-        user = self.request.user
-        queryset = Child.objects.filter(family=user)
+        ext_id = self.request.query_params.get('ext', None)
+        if ext_id is not None:
+            try:
+                ext_id = int(ext_id)
+                queryset = Child.objects.filter(id_lagapeo=ext_id)
+            except:
+                queryset = Child.objects.none()
+        else:
+            user = self.request.user
+            queryset = Child.objects.filter(family=user)
         return queryset.prefetch_related('school_year').select_related('teacher')
         
     
@@ -119,7 +127,7 @@ class ChildrenViewSet(viewsets.ModelViewSet):
                             headers=headers)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    
 
 class SimpleChildrenViewSet(viewsets.ReadOnlyModelViewSet):
     model = Child
