@@ -100,4 +100,5 @@ def kepchup_context(request):
     return {
         'USE_ABSENCES': settings.KEPCHUP_USE_ABSENCES,
         'IMPORT_CHILDREN': settings.KEPCHUP_IMPORT_CHILDREN,
+        'PREFILL_YEARS_WITH_TEACHERS': settings.KEPCHUP_PREFILL_YEARS_WITH_TEACHERS
     }

@@ -1,6 +1,10 @@
 // Declare app level module which depends on filters, and services
 
-angular.module('sportfacChildren', ['sportfacChildren.services', 'sportfacChildren.controllers', 'ngRoute', 'ngCookies', 'mgcrea.ngStrap.datepicker']).
+angular.module('sportfacChildren', ['sportfacChildren.services',
+                                    'sportfacChildren.controllers',
+                                    'ngRoute',
+                                    'ngCookies',
+                                    'mgcrea.ngStrap.datepicker']).
 
 config(['$routeProvider', function($routeProvider) {
   'use strict';
@@ -9,6 +13,7 @@ config(['$routeProvider', function($routeProvider) {
 
   $routeProvider.otherwise({templateUrl: '/static/partials/add-child.html', controller: 'childAddCtrl'});
 }]).
+
 config(["$datepickerProvider", function($datepickerProvider) {
   angular.extend($datepickerProvider.defaults, {
     dateFormat: "dd.MM.yyyy",
@@ -17,7 +22,16 @@ config(["$datepickerProvider", function($datepickerProvider) {
     iconRight: "icon-right-open"
   });
 }]).
+
 config(["$interpolateProvider", function($interpolateProvider) {
     $interpolateProvider.startSymbol('{[{');
     $interpolateProvider.endSymbol('}]}');
-}]);
+}]).
+
+directive('initData', function($parse){
+    return function(scope, element, attrs){
+        var model = $parse(attrs.initData);
+        model(scope);
+        console.log('undeux');
+    };
+});

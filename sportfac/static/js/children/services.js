@@ -11,11 +11,6 @@ angular.module('sportfacChildren.services', [])
     };
         
     var ModelUtils = {
-        /*get: function(url, id) {
-          $http.get(url + id + '/').
-            success(
-            function(data, status, headers, config) { return data });
-        },*/
         get: function(url, id){
           return $http.get(url + id + '/').then(function(response){
             return response.data;
@@ -99,7 +94,10 @@ angular.module('sportfacChildren.services', [])
         },
         lookup: function(extId){
             return $http.get(base + '?ext=' + extId).then(function(response){
-                return new Child(response.data)
+                if (response.data.length === 1){
+                    return new Child(response.data[0]);
+                }
+                return new Child(response.data);
             });
         },
         del: function(obj){

@@ -1,8 +1,10 @@
 angular.module('sportfacChildren.controllers', [])
 
-.controller('ListCtrl', ["$scope", "$routeParams", "$http", "ChildrenService",
-function($scope, $routeParams, $http, ChildrenService) {
+.controller('ListCtrl', ["$scope", "$attrs", "$routeParams", "$http", "ChildrenService",
+function($scope, $attrs, $routeParams, $http, ChildrenService) {
   'use strict';
+  if (!$attrs.prefill) throw new Error("No prefill option set");
+  $scope.prefillTeachers = $attrs.prefill === 'true';
   $scope.routeParams = $routeParams;
 
   $scope.loadChildren = function(){
@@ -20,16 +22,23 @@ function($scope, $routeParams, $http, ChildrenService) {
   };
   
   $scope.loadTeachers = function(){
-    $http.get('/api/teachers/').
-      success(function(data, status, headers, config ){
+    $http.get('/api/teachers/').success(function(data, status, headers, config ){
         $scope.teachers = data;
     });
   };
   
+  $scope.loadYears = function(){
+    $http.get('/api/years/').success(function(data, status, headers, config ){
+        $scope.years = data.map(function(year){ return year.year; });
+    });
+  };
+  
   $scope.teachers = [];
-  $scope.loadTeachers();
-  
-  
+  if ($scope.prefillTeachers){
+    $scope.loadTeachers();
+  } else {
+    $scope.loadYears();
+  }
   $scope.loadChildren();
   
   $scope.selectChild = function(child){
@@ -61,6 +70,7 @@ function($scope, $routeParams, $http, ChildrenService) {
             12: "12R"}[year];
     
   };
+  
 }])
 
 .controller('childDetailCtrl', ["$scope", "$routeParams", "$location", "ChildrenService",
@@ -114,6 +124,7 @@ function($scope, $routeParams, $location, ChildrenService) {
     return angular.equals(this.initialValue, $scope.detailedChild);
   };
 }])
+
 .controller('childAddCtrl', ["$scope", "$location", "ChildrenService",
 function($scope, $location, ChildrenService) {
   $scope.unselectChild();
@@ -127,13 +138,17 @@ function($scope, $location, ChildrenService) {
   };
   
   $scope.lookupChild = function(){
-      ChildrenService.lookup($scope.detailedChild.ext_id).then(function(children){
-          if (0 in children){
-              $scope.detailedChild = children[0];
-          }
-          
-      });
-  }
+    ChildrenService.lookup($scope.detailedChild.ext_id).then(function(child){
+      for (var i=0; i< $scope.teachers.length; i++){
+        var teacher = $scope.teachers[i];
+        if (teacher.id === child.teacher){
+          child.teacher = teacher;
+          break;
+        }
+      }
+      $scope.detailedChild = child;
+    });
+  };
   
   $scope.saveChild = function(){
     ChildrenService.save($scope.detailedChild, $scope.errors).then(function(){

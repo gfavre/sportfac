@@ -15,7 +15,16 @@ class FamilyOrAdminPermission(permissions.IsAuthenticated):
         """
         Return `True` if permission is granted, `False` otherwise.
         """
-        if request.user.is_manager or request.user == obj.family:
+        if request.user.is_manager or request.user == obj.family or obj.family == None:
+            return True
+        return False
+
+class FamilyPermission(permissions.IsAuthenticated):
+    def has_object_permission(self, request, view, obj):
+        """
+        Return `True` if permission is granted, `False` otherwise.
+        """
+        if request.user == obj.family or obj.family == None:
             return True
         return False
 

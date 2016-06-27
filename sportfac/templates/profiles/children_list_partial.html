@@ -1,5 +1,5 @@
 {% load i18n sekizai_tags %}
-{% addtoblock "extra_html" %}ng-app="sportfacChildren" ng-controller="ListCtrl"{% endaddtoblock %}
+{% addtoblock "extra_html" %}ng-app="sportfacChildren" ng-controller="ListCtrl" prefill="{{ PREFILL_YEARS_WITH_TEACHERS|yesno:'true,false' }}"{% endaddtoblock %}
 <div class="row">
   <div class="col-sm-4  col-sm-push-8"  data-ng-animate="'fade'">
     <div ng-show="userChildren.length !== 0">
@@ -32,6 +32,9 @@
 {% else %}
   <script src="{{ STATIC_URL }}js/children/app.min.js"></script>
 {% endif %}
+  <script>
+      angular.module('sportfacChildren').value()
+      </script>
 {% endaddtoblock %}
 
 

@@ -441,5 +441,6 @@ DBTEMPLATES_USE_CODEMIRROR = True
 ################################################################################
 
 KEPCHUP_USE_ABSENCES = False
-KEPCHUP_SEND_PRESENCE_LIST = True 
 KEPCHUP_IMPORT_CHILDREN = False
+KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = False
+KEPCHUP_SEND_PRESENCE_LIST = True 

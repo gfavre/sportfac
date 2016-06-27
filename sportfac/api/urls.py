@@ -13,6 +13,8 @@ router.register(r'children', views.ChildrenViewSet, base_name='child')
 router.register(r'teachers', views.TeacherViewSet, base_name='teacher')
 router.register(r'registrations', views.RegistrationViewSet, base_name='registration')
 router.register(r'extra', views.ExtraInfoViewSet, base_name="api-extra")
+router.register(r'years', views.YearViewSet, base_name="year")
+
 router.register(r'all-children', views.SimpleChildrenViewSet, base_name='allchildren')
 
 

@@ -1,4 +1,5 @@
 # Create your views here.
+from django.db.models import Q
 from django.http import Http404
 
 from rest_framework import viewsets, permissions
@@ -11,12 +12,14 @@ from rest_framework import mixins, generics, status, filters
 from absences.models import Absence, Session
 from activities.models import Activity, Course
 from registrations.models import Child, ExtraInfo, Registration
+from profiles.models import SchoolYear
 from schools.models import Teacher
-from .permissions import ManagerPermission, FamilyOrAdminPermission, ResponsiblePermission
+from .permissions import ManagerPermission, FamilyOrAdminPermission, FamilyPermission, ResponsiblePermission
 from .serializers import (AbsenceSerializer, SetAbsenceSerializer, SessionSerializer,
                           ActivitySerializer, ActivityDetailedSerializer, 
                           ChildrenSerializer, CourseSerializer, TeacherSerializer,
-                          RegistrationSerializer, ExtraSerializer, SimpleChildrenSerializer)
+                          RegistrationSerializer, ExtraSerializer, SimpleChildrenSerializer,
+                          YearSerializer)
 
 
 class AbsenceViewSet(viewsets.ModelViewSet):
@@ -67,6 +70,12 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
         return queryset
 
 
+class YearViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = YearSerializer
+    model = SchoolYear
+    queryset = SchoolYear.objects.all()
+
+
 class CourseViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CourseSerializer
     model = Course
@@ -99,23 +108,35 @@ class FamilyView(mixins.ListModelMixin, generics.GenericAPIView):
 
 class ChildrenViewSet(viewsets.ModelViewSet):
     authentication_classes = (SessionAuthentication,)
-    permission_classes = (FamilyOrAdminPermission, )
+    permission_classes = (FamilyPermission, )
     serializer_class = ChildrenSerializer
-    model = Child        
-    
+    model = Child
+
     def get_queryset(self):
+        return Child.objects.filter(Q(family=None) | Q(family=self.request.user))\
+                            .prefetch_related('school_year')\
+                            .select_related('teacher')
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
         ext_id = self.request.query_params.get('ext', None)
         if ext_id is not None:
             try:
                 ext_id = int(ext_id)
-                queryset = Child.objects.filter(id_lagapeo=ext_id)
+                queryset = queryset.filter(id_lagapeo=ext_id)
             except:
-                queryset = Child.objects.none()
+                queryset = queryset.none()
         else:
-            user = self.request.user
-            queryset = Child.objects.filter(family=user)
-        return queryset.prefetch_related('school_year').select_related('teacher')
-        
+            queryset = queryset.filter(family=request.user)
+        queryset = self.filter_queryset(queryset)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
     
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -128,6 +149,10 @@ class ChildrenViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+    def perform_update(self, serializer):
+        serializer.validated_data['family'] = self.request.user
+        serializer.save()
+
 
 class SimpleChildrenViewSet(viewsets.ReadOnlyModelViewSet):
     model = Child

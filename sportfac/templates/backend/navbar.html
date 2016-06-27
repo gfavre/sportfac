@@ -111,13 +111,7 @@
                   <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New user" %}
                 </a>
               </li>
-              {% if IMPORT_CHILDREN %}
-              <li>
-                <a href="{% url 'backend:child-import' %}">
-                  <i class="icon-doc-new"></i>&nbsp;&nbsp;{% trans "Import children" %}
-                </a>
-
-              {% endif %}
+              
             </ul>
           </li>
           <li class="dropdown">
@@ -146,6 +140,14 @@
                   <i class="icon-doc-new"></i>&nbsp;&nbsp;{% trans "Import teachers" %}
                 </a>
               </li>
+              {% if IMPORT_CHILDREN %}
+              <li class="divider"></li>
+              <li>
+                <a href="{% url 'backend:child-import' %}">
+                  <i class="icon-doc-new"></i>&nbsp;&nbsp;{% trans "Import children" %}
+                </a>
+
+              {% endif %}
             </ul>
           </li>
 

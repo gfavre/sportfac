@@ -99,6 +99,11 @@ class TeacherSerializer(serializers.ModelSerializer):
         model = Teacher
         fields = ('id', 'first_name', 'last_name', 'years' )
 
+class YearSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SchoolYear
+        fields = ('year',)
+    
 
 class SimpleChildrenSerializer(serializers.ModelSerializer):
     class Meta:
