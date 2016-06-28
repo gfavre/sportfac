@@ -151,6 +151,8 @@ class ChildrenViewSet(viewsets.ModelViewSet):
     
     def perform_update(self, serializer):
         serializer.validated_data['family'] = self.request.user
+        if 'ext_id' in serializer.validated_data:
+            del serializer.validated_data['ext_id']
         serializer.save()
 
 
