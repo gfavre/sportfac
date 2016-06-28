@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-23 17:34+0200\n"
+"POT-Creation-Date: 2016-06-28 09:14+0200\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -535,7 +535,9 @@ msgstr ""
 msgid ""
 "Children import successful. %(added)s children have been added, %(updated)s "
 "have been updated"
-msgstr "L'importation de la liste d'ênfdants s'est bien déroulée. %(added)s enfants ont été ajoutés, %(updated)s ont été mis à jour"
+msgstr ""
+"L'importation de la liste d'ênfdants s'est bien déroulée. %(added)s enfants "
+"ont été ajoutés, %(updated)s ont été mis à jour"
 
 #: sportfac/backend/views/activity_views.py:36
 #, python-format
@@ -1894,28 +1896,21 @@ msgstr "Tous les administrateurs"
 msgid "New user"
 msgstr "Nouvel utilisateur"
 
-#: sportfac/templates/backend/navbar.html:117
-#: sportfac/templates/backend/user/child-import.html:4
-#: sportfac/templates/backend/user/child-import.html:5
-#: sportfac/templates/backend/user/child-import.html:17
-msgid "Import children"
-msgstr "Importer une liste d'enfants"
-
-#: sportfac/templates/backend/navbar.html:126
+#: sportfac/templates/backend/navbar.html:120
 msgid "School"
 msgstr "École"
 
-#: sportfac/templates/backend/navbar.html:135
+#: sportfac/templates/backend/navbar.html:129
 #: sportfac/templates/backend/portlets/teachers.html:16
 msgid "All teachers"
 msgstr "Tous les enseignants"
 
-#: sportfac/templates/backend/navbar.html:140
+#: sportfac/templates/backend/navbar.html:134
 #: sportfac/templates/backend/teacher/list.html:32
 msgid "New teacher"
 msgstr "Nouvel enseignant"
 
-#: sportfac/templates/backend/navbar.html:146
+#: sportfac/templates/backend/navbar.html:140
 #: sportfac/templates/backend/portlets/teachers.html:17
 #: sportfac/templates/backend/teacher/import.html:4
 #: sportfac/templates/backend/teacher/import.html:5
@@ -1923,6 +1918,13 @@ msgstr "Nouvel enseignant"
 #: sportfac/templates/backend/teacher/list.html:32
 msgid "Import teachers"
 msgstr "Importer des enseignants"
+
+#: sportfac/templates/backend/navbar.html:147
+#: sportfac/templates/backend/user/child-import.html:4
+#: sportfac/templates/backend/user/child-import.html:5
+#: sportfac/templates/backend/user/child-import.html:17
+msgid "Import children"
+msgstr "Importer une liste d'enfants"
 
 #: sportfac/templates/backend/portlets/courses.html:5
 #: sportfac/templates/backend/portlets/registration_courses_phase3.html:5
@@ -2480,6 +2482,10 @@ msgstr "En train de réviser"
 #: sportfac/templates/navbar.html:47 sportfac/themes/coppet/navbar.html:47
 msgid "Review"
 msgstr "Réviser"
+
+#: sportfac/templates/backend/year/list.html:53
+msgid "View"
+msgstr "Afficher"
 
 #: sportfac/templates/backend/year/list.html:57
 #: sportfac/templates/backend/year/update.html:4

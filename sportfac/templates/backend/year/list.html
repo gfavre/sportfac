@@ -50,7 +50,7 @@ $(function () {
             <a href="#" class="btn btn-sm" 
                         onclick="$('#tenant-change input[name=tenant]').val({{ tenant.pk }}); $('#tenant-change').submit();">
               <i class="icon icon-loop-alt"></i>
-              {% if tenant.is_past %}{% trans "Review" %}{% elif tenant.is_future %}{% trans "Preview" %}{% else %}View{% endif %}
+              {% if tenant.is_past %}{% trans "Review" %}{% elif tenant.is_future %}{% trans "Preview" %}{% else %}{% trans "View" %}{% endif %}
             </a>
           </li>
           <li class="text-no-wrap">
