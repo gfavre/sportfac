@@ -1,0 +1,110 @@
+{% extends "backend/base.html" %}
+{% load i18n sekizai_tags %}
+{% get_current_language as LANGUAGE_CODE %}
+
+{% block title %}{% trans "List students" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "List students" %}{% endblock %}
+
+{% block content %}
+
+{% addtoblock  "js" %}    
+<script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.tableTools.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
+<script>
+$(function () {
+  var t = $(".table").dataTable({
+{% if LANGUAGE_CODE == 'fr' %}
+      "language": {
+            "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+      },
+{% endif %}
+      aoColumnDefs: [
+          { 'sType': 'numeric', 'aTargets': [ 'lagapeo' ]},
+          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ 'actions' ] }
+      ],
+      'lengthMenu': [[10, 25, 50, -1], [10, 25, 50, "{% trans 'All students' %}"] ],
+      dom: 'T<"clear">lfrtip',
+      tableTools: {
+            "sRowSelect": "multi",
+            "aButtons": [ ],
+            'fnRowSelected': function(){ 
+                $('.needs-select').removeClass('disabled'); 
+            },
+            'fnRowDeselected': function(){ 
+                if ($('tr.active').length == 0){ 
+                    $('.needs-select').addClass('disabled');
+                } 
+            }
+      }
+
+  });
+  
+  
+  $('.selectall').click(function(){
+      var tabletools = TableTools.fnGetInstance(t[0]);
+      tabletools.fnSelectAll(true);
+  });
+  $('.deselectall').click(function(){
+      var tabletools = TableTools.fnGetInstance(t[0]);
+      tabletools.fnSelectNone();
+  });
+  
+  $('form.mail').submit(function(){
+    var tabletools = TableTools.fnGetInstance(t[0]);
+    var ids = tabletools.fnGetSelected().map(function(elem){  
+        return elem.getAttribute('data-userid'); 
+    });
+    $('input[name="data"]').val(JSON.stringify(ids));
+  });
+  
+});
+</script>
+{% endaddtoblock %}
+
+<a href="{% url 'backend:child-import' %}" class="btn btn-success">
+   <i class="icon-doc-new"></i>&nbsp;&nbsp;{% trans "Import students" %}
+</a>
+
+
+<hr />
+
+<table class="table" id="users">
+  <thead>
+    <tr>
+      {% if IMPORT_CHILDREN %}
+      <th class="lagapeo">{% trans "Lagapeo ID" %}</th>
+      {% endif %}
+      <th>{% trans "Name" %}</th>
+      <th>{% trans "Family" %}</th>
+      <th>{% trans "School year" %}</th>
+      <th class="actions">{% trans "Actions" %}</th>
+    </tr>
+  </thead>
+  {% for child in object_list %}
+    <tr data-userid="{{ child.id }}">
+      {% if IMPORT_CHILDREN %}
+      <td data-order="{{ child.id_lagapeo|default:"0" }}">{{ child.id_lagapeo|default:"n/a" }}</td>
+      {% endif %}
+      <td data-order="{{ child.last_name}} {{ child.first_name}}">{{ child.full_name }}</td>
+      <td data-order="{{ child.family.last_name }} {{ child.family.first_name }}">
+        {% if child.family %}
+        <a href="{{ child.family.get_backend_url }}">{{ child.family.full_name }}</a>
+        {% else %}
+            n/a
+        {% endif %}
+      </td>
+      <td>{{ child.school_year|default:"n/a" }}</td>
+      <td>
+          <ul class="list-unstyled">
+            <li class="text-nowrap"><a href="{{ child.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Edit student" %}</a></li>
+            <li class="text-nowrap"><a href="{{ child.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;&nbsp;{% trans "Delete student"  %}</a></li>
+
+          </ul>
+      </td>
+     </tr>
+    
+  {% endfor %}
+</table>
+
+{% endblock content %}

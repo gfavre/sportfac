@@ -25,7 +25,8 @@ from .mixins import BackendMixin
 
 __all__ = ('UserListView', 'UserCreateView', 'PasswordSetView',
            'UserUpdateView', 'UserDeleteView', 'UserDetailView',
-           'ChildCreateView', 'ChildUpdateView', 'ChildDeleteView', 'ChildImportView',
+           'ChildListView', 'ChildCreateView', 'ChildUpdateView', 
+           'ChildDeleteView', 'ChildImportView',
             'ManagerListView', 'ManagerCreateView', 
             'ResponsibleListView', 'ResponsibleCreateView', 'ResponsibleDetailView'
            )
@@ -37,6 +38,7 @@ FamilyUser.objects.annotate(
     waiting_registrations=Count(Case(When(children__registrations__in=Registration.objects.waiting(), then=1))),
     opened_bills=Count(Case(When(bills__status=Bill.STATUS.waiting, then=1))),
 )
+
 
 
 class UserListView(BackendMixin, ListView):
@@ -209,6 +211,7 @@ class PasswordSetView(BackendMixin, SuccessMessageMixin, FormView):
         user.save()
         return super(PasswordSetView, self).form_valid(form)    
 
+
 class ChildView(BackendMixin, View):
     def get_context_data(self, **kwargs):
         context = super(ChildView, self).get_context_data(**kwargs)
@@ -218,6 +221,15 @@ class ChildView(BackendMixin, View):
     def get_success_url(self):
         user = get_object_or_404(FamilyUser, pk=self.kwargs['user'])
         return user.get_backend_url()
+
+
+class ChildListView(BackendMixin, ListView):
+    model = Child
+    template_name = 'backend/user/child-list.html'
+    
+    def get_queryset(self):
+        return Child.objects.select_related('family', 'school_year')
+    
 
 
 class ChildCreateView(ChildView, SuccessMessageMixin, CreateView):
@@ -237,18 +249,20 @@ class ChildCreateView(ChildView, SuccessMessageMixin, CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class ChildUpdateView(ChildView, SuccessMessageMixin, UpdateView):
+class ChildUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
     model = Child
     form_class = ChildForm
     template_name = 'backend/user/child-update.html'
-
+    success_url = reverse_lazy('backend:child-list')
+    
     def get_success_message(self, cleaned_data):
         return _("Child %s has been updated.") % self.object.full_name
 
 
-class ChildDeleteView(ChildView, SuccessMessageMixin, DeleteView):
+class ChildDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
     model = Child
     template_name = 'backend/user/child-confirm_delete.html'
+    success_url = reverse_lazy('backend:child-list')
     success_message = _("Child has been removed.")
 
 

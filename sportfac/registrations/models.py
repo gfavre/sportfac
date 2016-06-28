@@ -227,10 +227,10 @@ class Child(TimeStampedModel):
         abstract = False
 
     def get_update_url(self):
-        return reverse('backend:child-update', kwargs={'pk': self.pk, 'user': self.family.pk})
+        return reverse('backend:child-update', kwargs={'pk': self.pk})
 
     def get_delete_url(self):
-        return reverse('backend:child-delete', kwargs={'pk': self.pk, 'user': self.family.pk})
+        return reverse('backend:child-delete', kwargs={'pk': self.pk})
 
     def get_backend_url(self):
         return reverse('backend:user-detail', kwargs={'pk': self.family.pk})

@@ -18,18 +18,21 @@
 
 {% endaddtoblock %}
 
-  <div class="form-group">
-    <label class="control-label col-sm-2" for="parent_name">{% trans "Parent" %}</label>
-    <p class="col-sm-10 form-control-static" id="parent_name">{{ family.full_name }}</p>
-  </div>
-  {% form form using %}
-  {% formconfig row using "floppyforms/rows/bootstrap.html" %}
-  {% formrow form.first_name form.last_name %}
+{% form form using %}
+{% formconfig row using "floppyforms/rows/bootstrap.html" %}
 
-  {% formconfig row using "floppyforms/rows/bootstrap-sm-3.html" %}
-  {% formrow form.sex form.birth_date form.nationality form.language form.school_year %}
-  {% formconfig row using "floppyforms/rows/bootstrap.html" %}
-  {% formrow form.teacher %}
+{% formrow form.family %}
+{% formrow form.first_name form.last_name %}
+{% formrow form.sex form.birth_date form.nationality form.language  %}
 
-  {% endform %}
-  
+{% formconfig row using "floppyforms/rows/bootstrap-sm-3.html" %}
+<fieldset>
+    <legend>{% trans "School informations" %}</legend>
+    {% if IMPORT_CHILDREN %}
+      {% formrow form.id_lagapeo %}
+    {% endif %}
+    {% formrow form.school_year  %}
+    {% formconfig row using "floppyforms/rows/bootstrap.html" %}
+    {% formrow form.teacher %}
+</fieldset>
+{% endform %}

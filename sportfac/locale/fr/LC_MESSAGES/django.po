@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-28 09:14+0200\n"
+"POT-Creation-Date: 2016-06-28 11:05+0200\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -239,6 +239,7 @@ msgstr "12S HARMOS"
 #: sportfac/templates/backend/activity/list.html:37
 #: sportfac/templates/backend/registration/bill-detail.html:41
 #: sportfac/templates/backend/teacher/list.html:37
+#: sportfac/templates/backend/user/child-list.html:78
 #: sportfac/templates/backend/user/list.html:79
 #: sportfac/templates/backend/user/manager-list.html:79
 #: sportfac/templates/backend/user/responsible-list.html:79
@@ -682,51 +683,51 @@ msgstr ""
 "%i enseignants ont été créés, %i ont été mis à jour. %i n'ont pas été "
 "importés car ils n'ont pas de maîtrise de classe."
 
-#: sportfac/backend/views/user_views.py:95
+#: sportfac/backend/views/user_views.py:97
 #, python-format
 msgid "User %s has been added."
 msgstr "L'utilisateur %s a été ajouté"
 
-#: sportfac/backend/views/user_views.py:113
+#: sportfac/backend/views/user_views.py:115
 #, python-format
 msgid "Manager %s has been added."
 msgstr "Le gestionnaire %s a été ajouté"
 
-#: sportfac/backend/views/user_views.py:132
+#: sportfac/backend/views/user_views.py:134
 #, python-format
 msgid "Responsible %s has been added."
 msgstr "Le responsable %s a été ajouté"
 
-#: sportfac/backend/views/user_views.py:166
+#: sportfac/backend/views/user_views.py:168
 #, python-format
 msgid "Contact informations of %s have been updated."
 msgstr "Les informations de contact de %s ont été mises à jour."
 
-#: sportfac/backend/views/user_views.py:174
-#: sportfac/backend/views/user_views.py:227
+#: sportfac/backend/views/user_views.py:176
+#: sportfac/backend/views/user_views.py:239
 msgid "User has been deleted."
 msgstr "L'utilisateur a été supprimé"
 
-#: sportfac/backend/views/user_views.py:191
+#: sportfac/backend/views/user_views.py:193
 #, python-format
 msgid "Password changed for user %s."
 msgstr "Mot de passe changé pour l'utilisateur %s."
 
-#: sportfac/backend/views/user_views.py:230
+#: sportfac/backend/views/user_views.py:242
 #, python-format
 msgid "Child %s has been added."
 msgstr "L'e cours a été supprimé'enfant %s a été ajouté."
 
-#: sportfac/backend/views/user_views.py:246
+#: sportfac/backend/views/user_views.py:259
 #, python-format
 msgid "Child %s has been updated."
 msgstr "L'enfant %s a été mise à jour."
 
-#: sportfac/backend/views/user_views.py:252
+#: sportfac/backend/views/user_views.py:266
 msgid "Child has been removed."
 msgstr "L'enfant a été supprimé"
 
-#: sportfac/backend/views/user_views.py:258
+#: sportfac/backend/views/user_views.py:272
 msgid "Children are being imported"
 msgstr "Les enfants sont en cours d'importation"
 
@@ -922,7 +923,7 @@ msgid "IBAN"
 msgstr "IBAN"
 
 #: sportfac/profiles/forms.py:108 sportfac/profiles/models.py:97
-#: sportfac/registrations/models.py:212
+#: sportfac/registrations/forms.py:12 sportfac/registrations/models.py:212
 #: sportfac/templates/activities/course_detail.html:54
 #: sportfac/templates/backend/course/detail-phase2.html:55
 #: sportfac/templates/backend/course/detail.html:69
@@ -932,7 +933,7 @@ msgstr "IBAN"
 msgid "Birth date"
 msgstr "Date de naissance"
 
-#: sportfac/profiles/forms.py:110 sportfac/registrations/forms.py:12
+#: sportfac/profiles/forms.py:110 sportfac/registrations/forms.py:14
 msgid "Format: 31.12.2012"
 msgstr "Format: 31.12.2012"
 
@@ -1042,10 +1043,12 @@ msgid "date joined"
 msgstr "Date d'inscription"
 
 #: sportfac/profiles/models.py:241 sportfac/profiles/models.py:250
+#: sportfac/registrations/forms.py:22
 #: sportfac/templates/activities/course_detail.html:55
 #: sportfac/templates/backend/course/detail-phase2.html:56
 #: sportfac/templates/backend/course/detail.html:70
 #: sportfac/templates/backend/registration/detail.html:44
+#: sportfac/templates/backend/user/child-list.html:80
 #: sportfac/templates/backend/user/detail.html:89
 msgid "School year"
 msgstr "Année scolaire"
@@ -1070,6 +1073,30 @@ msgstr "Vos informations de contact ont été mises à jour."
 #: sportfac/registrations/admin.py:93
 msgid "Export selected registrations"
 msgstr "Exporter les inscriptions sélectionnées"
+
+#: sportfac/registrations/forms.py:15 sportfac/registrations/models.py:211
+#: sportfac/templates/backend/user/detail.html:86
+msgid "Sex"
+msgstr "Sexe"
+
+#: sportfac/registrations/forms.py:16
+#: sportfac/templates/backend/user/detail.html:90
+msgid "Teacher"
+msgstr "Enseignant"
+
+#: sportfac/registrations/forms.py:20
+#: sportfac/templates/backend/user/detail.html:87
+msgid "Nationality"
+msgstr "Nationalité"
+
+#: sportfac/registrations/forms.py:21
+#: sportfac/templates/backend/user/detail.html:88
+msgid "Language"
+msgstr "Langue"
+
+#: sportfac/registrations/forms.py:24
+msgid "Parent"
+msgstr "Parent"
 
 #: sportfac/registrations/models.py:35
 msgid "Waiting parent's confirmation"
@@ -1155,11 +1182,6 @@ msgstr "Suisse"
 #: sportfac/registrations/models.py:201
 msgid "Other"
 msgstr "Autre"
-
-#: sportfac/registrations/models.py:211
-#: sportfac/templates/backend/user/detail.html:86
-msgid "Sex"
-msgstr "Sexe"
 
 #: sportfac/registrations/models.py:223
 msgid "Lagapeo Identification number"
@@ -1450,6 +1472,7 @@ msgstr "Heure"
 #: sportfac/templates/backend/registration/bill-detail.html:46
 #: sportfac/templates/backend/registration/detail.html:47
 #: sportfac/templates/backend/teacher/list.html:39
+#: sportfac/templates/backend/user/child-list.html:81
 #: sportfac/templates/backend/user/detail.html:100
 #: sportfac/templates/backend/user/list.html:83
 #: sportfac/templates/backend/user/manager-list.html:80
@@ -1910,7 +1933,7 @@ msgstr "Tous les enseignants"
 msgid "New teacher"
 msgstr "Nouvel enseignant"
 
-#: sportfac/templates/backend/navbar.html:140
+#: sportfac/templates/backend/navbar.html:139
 #: sportfac/templates/backend/portlets/teachers.html:17
 #: sportfac/templates/backend/teacher/import.html:4
 #: sportfac/templates/backend/teacher/import.html:5
@@ -1920,11 +1943,14 @@ msgid "Import teachers"
 msgstr "Importer des enseignants"
 
 #: sportfac/templates/backend/navbar.html:147
-#: sportfac/templates/backend/user/child-import.html:4
-#: sportfac/templates/backend/user/child-import.html:5
-#: sportfac/templates/backend/user/child-import.html:17
-msgid "Import children"
-msgstr "Importer une liste d'enfants"
+#: sportfac/templates/backend/user/child-list.html:26
+msgid "All students"
+msgstr "Tous les élèves"
+
+#: sportfac/templates/backend/navbar.html:152
+#: sportfac/templates/backend/user/child-list.html:66
+msgid "Import students"
+msgstr "Importer des élèves"
 
 #: sportfac/templates/backend/portlets/courses.html:5
 #: sportfac/templates/backend/portlets/registration_courses_phase3.html:5
@@ -2254,9 +2280,36 @@ msgstr "Supprimer l'enfant"
 msgid "Create child"
 msgstr "Nouvel enfant"
 
-#: sportfac/templates/backend/user/child-form.html:22
-msgid "Parent"
-msgstr "Parent"
+#: sportfac/templates/backend/user/child-form.html:30
+msgid "School informations"
+msgstr "Informations scolaires"
+
+#: sportfac/templates/backend/user/child-import.html:4
+#: sportfac/templates/backend/user/child-import.html:5
+#: sportfac/templates/backend/user/child-import.html:17
+msgid "Import children"
+msgstr "Importer une liste d'enfants"
+
+#: sportfac/templates/backend/user/child-list.html:5
+#: sportfac/templates/backend/user/child-list.html:6
+msgid "List students"
+msgstr "Liste des élèves"
+
+#: sportfac/templates/backend/user/child-list.html:76
+msgid "Lagapeo ID"
+msgstr "Lagapeo"
+
+#: sportfac/templates/backend/user/child-list.html:79
+msgid "Family"
+msgstr "Famille"
+
+#: sportfac/templates/backend/user/child-list.html:100
+msgid "Edit student"
+msgstr "Mettre à jour l'élève"
+
+#: sportfac/templates/backend/user/child-list.html:101
+msgid "Delete student"
+msgstr "Supprimer l'élève"
 
 #: sportfac/templates/backend/user/child-update.html:4
 #: sportfac/templates/backend/user/child-update.html:5
@@ -2326,18 +2379,6 @@ msgstr "Mettre à jour les informations"
 #: sportfac/templates/backend/user/list.html:80
 msgid "Children"
 msgstr "Enfants"
-
-#: sportfac/templates/backend/user/detail.html:87
-msgid "Nationality"
-msgstr "Nationalité"
-
-#: sportfac/templates/backend/user/detail.html:88
-msgid "Language"
-msgstr "Langue"
-
-#: sportfac/templates/backend/user/detail.html:90
-msgid "Teacher"
-msgstr "Enseignant"
 
 #: sportfac/templates/backend/user/detail.html:117
 msgid "No registration for this child"
@@ -2839,6 +2880,11 @@ msgstr ""
 #: sportfac/templates/registrations/wizard_billing.html:5
 msgid "Registrations validated"
 msgstr "Inscriptions enregistrées"
+
+#, fuzzy
+#~| msgid "children"
+#~ msgid "All children"
+#~ msgstr "enfants"
 
 #~ msgid "Change"
 #~ msgstr "Modifier"

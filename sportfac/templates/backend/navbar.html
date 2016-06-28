@@ -79,7 +79,7 @@
 
           <li class="dropdown">
 
-            <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
+            <a href="" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
                 {% trans "Users" %}
 
             <i class="icon-down-open"></i>
@@ -116,7 +116,7 @@
           </li>
           <li class="dropdown">
 
-            <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
+            <a href="" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
                 {% trans "School" %}
 
             <i class="icon-down-open"></i>
@@ -134,7 +134,6 @@
                   <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New teacher" %}
                 </a>
               </li>
-              <li class="divider"></li>
               <li>
                 <a href="{% url 'backend:teacher-import' %}">
                   <i class="icon-doc-new"></i>&nbsp;&nbsp;{% trans "Import teachers" %}
@@ -143,8 +142,14 @@
               {% if IMPORT_CHILDREN %}
               <li class="divider"></li>
               <li>
+                <a href="{% url 'backend:child-list' %}">
+                  <i class="icon-child"></i> 
+                  &nbsp;&nbsp;{% trans "All students" %}
+                </a>
+              </li>
+              <li>
                 <a href="{% url 'backend:child-import' %}">
-                  <i class="icon-doc-new"></i>&nbsp;&nbsp;{% trans "Import children" %}
+                  <i class="icon-doc-new"></i>&nbsp;&nbsp;{% trans "Import students" %}
                 </a>
 
               {% endif %}

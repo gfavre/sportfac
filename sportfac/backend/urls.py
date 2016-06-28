@@ -124,14 +124,21 @@ users_patterns = [
  
     url(r'^(?P<user>\d+)/child/new$', view=views.ChildCreateView.as_view(), 
         name='child-create'),
-    url(r'^(?P<user>\d+)/child/(?P<pk>\d+)/update$', view=views.ChildUpdateView.as_view(), 
-        name='child-update'),
-    url(r'^(?P<user>\d+)/child/(?P<pk>\d+)/delete$', view=views.ChildDeleteView.as_view(), 
-        name='child-delete'),
-    
+     
     url(r'^import$', view=views.ChildImportView.as_view(),
         name='child-import'),
 ]
+
+children_patterns = [
+    url(r'^$', view=views.ChildListView.as_view(),
+        name='child-list'),
+    url(r'^(?P<pk>\d+)/update$', view=views.ChildUpdateView.as_view(), 
+        name='child-update'),
+    url(r'^(?P<pk>\d+)/delete$', view=views.ChildDeleteView.as_view(), 
+        name='child-delete'),
+        
+]
+
 
 years_patterns = [
     url(r'^$', view=views.YearListView.as_view(), name='year-list'),
@@ -145,9 +152,10 @@ years_patterns = [
 
 urlpatterns = [
     url(r'^$', views.HomePageView.as_view(), name="home"),
-    url(r'^dates$', views.RegistrationDatesView.as_view(), name='dates'),
     url(r'^activity/', include(activities_patterns)),
+    url(r'^child/', include(children_patterns)),
     url(r'^course/', include(courses_patterns)),
+    url(r'^dates$', views.RegistrationDatesView.as_view(), name='dates'),
     url(r'^mail/', include(mail_patterns)),
     url(r'^registrations/', include(registrations_patterns)),
     url(r'^teacher/', include(teachers_patterns)),
