@@ -26,12 +26,4 @@ config(["$datepickerProvider", function($datepickerProvider) {
 config(["$interpolateProvider", function($interpolateProvider) {
     $interpolateProvider.startSymbol('{[{');
     $interpolateProvider.endSymbol('}]}');
-}]).
-
-directive('initData', function($parse){
-    return function(scope, element, attrs){
-        var model = $parse(attrs.initData);
-        model(scope);
-        console.log('undeux');
-    };
-});
+}]);
