@@ -29,16 +29,17 @@
       <div class="progress-bar {% if course.full %}progress-bar-danger{% elif course.minimal_participants_reached %}progress-bar-success{% else %}progress-bar-warning{% endif %}" style="width: {{ course.percentage_full }}%">{% if course.full %}{% trans "Course full" %}{% elif course.minimal_participants_reached %}{% trans "Minimal number of participants reached" %}{% else %}{% trans "Not enough participants" %}{% endif %}</div>
     </div>
     <p class="text-right"><small>{{ course.min_participants }} participants requis pour que l'activité ait lieu</small></p>
-    
+   
+    {% if course.count_participants %}
     <h4 class="content-title"><u>{% trans "Management"%}</u></h4>      
-    
+   
     {% if USE_ABSENCES %}
     <a href="{{ course.get_backend_absences_url }}" class="btn btn-sm">
         <i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}
     </a> &nbsp; 
     {% endif %}
     
-    <a href="{{ course.get_custom_mail_url }}" class="btn btn-sm">
+    <a href="{{ course.get_custom_mail_url }}" class="btn btn-sm" >
         <i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}
     </a> &nbsp;   
     
@@ -53,11 +54,11 @@
     <a href="{{ course.get_mail_confirmation_url }}" class="btn btn-sm">
         <i class="icon-mail"></i>&nbsp;{% trans "Send confirmation email" %}
     </a>
-    
+    {% endif %}
   </div>
 </section>
 
-
+{% if course.count_participants %}
 <section>
   <h2>{% trans "Registrations" %}</h2>
   
@@ -118,5 +119,6 @@
   </table>
  
 
-</section>   
+</section>
+{% endif %}  
 {% endblock content %}

@@ -31,19 +31,22 @@
     </div>
     <p class="text-right"><small>{{ course.min_participants }} participants requis pour que l'activité ait lieu</small></p>
     
-    <h4 class="content-title"><u>{% trans "Management"%}</u></h4>
-    <a href="{{ course.get_custom_mail_url }}" class="btn btn-default">
-      <i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}
-    </a>&nbsp;
-    {% if USE_ABSENCES %}
-    <a href="{{ course.get_backend_absences_url }}" class="btn btn-default">
-      <i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}
-    </a>
+    {% if course.count_participants %}
+      <h4 class="content-title"><u>{% trans "Management"%}</u></h4>
+
+      <a href="{{ course.get_custom_mail_url }}" class="btn btn-default">
+        <i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}
+      </a>&nbsp;
+      {% if USE_ABSENCES %}
+      <a href="{{ course.get_backend_absences_url }}" class="btn btn-default">
+        <i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}
+      </a>
+      {% endif %}
     {% endif %}
   </div>
 </section>
 
-
+{% if course.count_participants %}
 <section>
   <h2>{% trans "Registrations" %}</h2>
   
@@ -106,5 +109,6 @@
     {% endfor %}
   </table>
 
-</section>   
+</section>
+{% endif %}
 {% endblock content %}
