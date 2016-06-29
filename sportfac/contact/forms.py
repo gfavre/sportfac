@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from django.utils.translation import ugettext_lazy as _
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.conf import settings
 
 import floppyforms as forms
-
+from dynamic_preferences.registries import global_preferences_registry
 
 class ContactForm(forms.Form):
     name = forms.CharField(label=_("Name"),
@@ -18,12 +18,23 @@ class ContactForm(forms.Form):
                               widget=forms.Textarea())
     
     def send_mail(self, fail_silently=False):
-        message_dict = {'from_email': settings.DEFAULT_FROM_EMAIL,
-                        'message': u'%s <%s> a utilisé le formulaire de contact.\n\n %s' % (
-                            self.cleaned_data['name'],
-                            self.cleaned_data['email'],
-                            self.cleaned_data['message']),
-                        'recipient_list': [mail_tuple[1] for mail_tuple in settings.MANAGERS],
-                        'subject': self.cleaned_data['subject'] + ' [sportfac - formulaire de contact]'}
-        send_mail(fail_silently=fail_silently, **message_dict)
-    
+        global_preferences = global_preferences_registry.manager()
+        
+        bcc = None
+        if settings.KEPCHUP_SEND_COPY_CONTACT_MAIL_TO_ADMIN:
+            bcc = ['%s <%s>' % (mail_tuple[0], mail_tuple[1]) for mail_tuple in settings.MANAGERS]
+        
+        email = EmailMessage(
+            subject = u'%s [%s - formulaire de contact]' % (
+                self.cleaned_data['subject'], 
+                global_preferences['email__SCHOOL_NAME']),
+            body = u'%s <%s> a utilisé le formulaire de contact.\n\n %s' % (
+                self.cleaned_data['name'],
+                self.cleaned_data['email'],
+                self.cleaned_data['message']),
+            from_email = global_preferences['email__FROM_MAIL'],
+            to = [global_preferences['email__CONTACT_MAIL']],
+            bcc = bcc,
+            reply_to = ['%s <%s>' % (self.cleaned_data['name'], self.cleaned_data['email'])]
+        )
+        email.send(fail_silently=fail_silently)

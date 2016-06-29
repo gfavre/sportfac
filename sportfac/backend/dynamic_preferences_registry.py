@@ -56,6 +56,12 @@ class ReplyToMail(StringPreference):
     name = 'REPLY_TO_MAIL'
     default = 'info@kepchup.ch'
 
+@global_preferences_registry.register
+class ContactRecipientMail(StringPreference):
+    section = email
+    name = 'CONTACT_MAIL'
+    default = 'info@kepchup.ch'
+
 
 @global_preferences_registry.register
 class SchoolName(StringPreference):
