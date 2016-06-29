@@ -7,24 +7,17 @@
     <title>{{ title|default:"" }}</title>
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">    
     <style>
-body {
-    font-size: 12px;
-}
-h1,h2 {
-    margin-top: 0;
-}
-h1,h2 {
-    font-size: 18px;
+h1 {
+    font-size: 0.6cm;
     font-weight: 700;
     line-height: 1.5;
-    text-transform: uppercase
 }
 h2 {
-    font-size: 14px;
+    font-size: 0.5cm;
+    line-height: 1.5;
 }
-
 header {
-    margin-bottom: 0.4cm;
+    margin-bottom: 2cm;
 }
 .logo {
     height: 3.5cm; 
@@ -79,23 +72,22 @@ border-right: 1px solid #ccc;
     border-right:   border: 1px solid #ccc;
 
 }
-address span:first-child {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 0;
-}
+
 </style>
 </head>
 <body>
   <header>
     <div class="header">        
         <img src="http://{{ request.site.domain }}{% static 'img/logo-etat-vd.svg' %}" class="logo" />
-        {% include "address.html" %}
-        
+        <p class="name"><strong>Etablissement primaire<br />
+        de Coppet</strong></p>
+        <p>Chemin du Chaucey<br />
+        Bâtiment de la Doye<br />
+        1296 Coppet</p>
     </div>
     <div class="title">
-       <h1>Sport Scolaire facultatif</h1>
-        <h2>{% block page_header %}{%endblock%}</h2>
+        <h1>Activités scolaires facultatives</h1>
+        <h2>{% block page_header%}{% endblock %}</h2>
     </div>
     <div style="clear:both;"></div>
   </header>

@@ -63,9 +63,15 @@ class RegistrationForm(forms.ModelForm):
         else:
             course_qs = course_qs.filter(nb_participants__lt=F('max_participants')) 
         try:
+            if self.instance.child.school_year:
+                min_year = max_year = self.instance.child.school_year.year
+                max_year = self.instance.child.school_year.year
+            else:
+                min_year = 99
+                max_year = 0
             course_qs = course_qs.filter(
-                schoolyear_min__lte=self.instance.child.school_year.year,
-                schoolyear_max__gte=self.instance.child.school_year.year,
+                schoolyear_min__lte=min_year,
+                schoolyear_max__gte=max_year,
             )
         except Child.DoesNotExist:
             pass

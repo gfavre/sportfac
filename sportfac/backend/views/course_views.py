@@ -63,13 +63,16 @@ class CourseJSCSVView(CSVMixin, CourseDetailView):
     
 
 class CourseParticipantsView(CourseDetailView):
-    template_name = 'mailer/pdf_participants_presence.html'
+    template_name = 'mailer/pdf_participants_list.html'
 
     def get_context_data(self, **kwargs):
         context = super(CourseParticipantsView, self).get_context_data(**kwargs)
         context['sessions'] = range(0, self.object.number_of_sessions)
         return context
-
+    
+    def get_template_names(self):
+        return self.template_name
+    
 
 class CourseListView(BackendMixin, ListView):
     model = Course

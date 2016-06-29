@@ -24,25 +24,35 @@ h2 {
 }
 
 header {
-    margin-bottom: 0.4cm;
+    margin-bottom: 2cm;
 }
+address {
+    margin-bottom: 0;
+}
+
 .logo {
-    height: 3.5cm; 
+    width: 3cm; 
     float: left;
     margin-right: 0.4cm;
+    margin-bottom: 1cm;
 }
+.header, .title {
+    vertical-align: top;
+}
+
 .header {
-    float: left;
-    width: 7.5cm;
+    display: inline-block;
+    width: 7cm;
     border-right: 1px solid #000;
+    padding-right: 0.5cm;
 }
 .name {
     font-weight: bold; 
     margin-bottom: 1cm;
 }
 .title {
-    float: left;
-    width: auto;
+    display: inline-block;
+    width: 10.5cm;
     padding:  0cm 0 0 0.75cm;
     
 }
@@ -76,7 +86,7 @@ border-right: 1px solid #ccc;
 .table-header-rotated th.fixed, .table-header-rotated td.fixed {
     width:40px;
     border-left: 1px solid #ccc;
-    border-right:   border: 1px solid #ccc;
+    border-right:  1px solid #ccc;
 
 }
 address span:first-child {
@@ -89,15 +99,14 @@ address span:first-child {
 <body>
   <header>
     <div class="header">        
-        <img src="http://{{ request.site.domain }}{% static 'img/logo-etat-vd.svg' %}" class="logo" />
+        <img src="http://{{ request.site.domain }}{% static 'img/logo.png' %}" class="logo" />
         {% include "address.html" %}
         
     </div>
     <div class="title">
-       <h1>Sport Scolaire facultatif</h1>
-        <h2>{% block page_header %}{%endblock%}</h2>
+        <h1>Sport Scolaire facultatif</h1>
+        <h2>{% block page_header%}{% endblock %}</h2>
     </div>
-    <div style="clear:both;"></div>
   </header>
   <div>
   {%block content%}
