@@ -163,9 +163,7 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.request',
-                
-                'dynamic_preferences.processors.global_preferences',
-                
+                                
                 'sportfac.context_processors.wizard_context',
                 'sportfac.context_processors.registration_opened_context',
                 'sportfac.context_processors.activities_context',

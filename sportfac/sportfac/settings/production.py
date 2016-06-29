@@ -85,7 +85,7 @@ DATABASES['default']['PASSWORD'] = environ.get('DB_PASSWORD')
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': environ.get('MEMCACHED_SOCKET'),
+        'LOCATION': 'unix:' + environ.get('MEMCACHED_SOCKET'),
     }
 }
 
