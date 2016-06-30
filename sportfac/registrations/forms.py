@@ -25,7 +25,7 @@ class ChildForm(forms.ModelForm):
                                      queryset=FamilyUser.objects.all(), 
                                      widget=Select2Widget(),
                                      required=False)
-    id_lagapeo = forms.CharField(label=_("Identifier"), required=False)
+    id_lagapeo = forms.IntegerField(label=_("Identifier"), required=False)
     
     class Meta:
         model = Child
