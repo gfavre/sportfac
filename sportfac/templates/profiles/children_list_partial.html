@@ -1,5 +1,10 @@
 {% load i18n sekizai_tags %}
-{% addtoblock "extra_html" %}ng-app="sportfacChildren" ng-controller="ListCtrl" prefill="{{ PREFILL_YEARS_WITH_TEACHERS|yesno:'true,false' }}"{% endaddtoblock %}
+{% addtoblock "extra_html" %}
+ng-app="sportfacChildren" 
+ng-controller="ListCtrl" 
+prefill="{{ PREFILL_YEARS_WITH_TEACHERS|yesno:'true,false' }}"
+external="{{ IMPORT_CHILDREN|yesno:'true,false' }}"
+{% endaddtoblock %}
 <div class="row">
   <div class="col-sm-4  col-sm-push-8"  data-ng-animate="'fade'">
     <div ng-show="userChildren.length !== 0">

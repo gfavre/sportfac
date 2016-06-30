@@ -1,10 +1,10 @@
 <h3>{[{ detailedChild.first_name }]} {[{ detailedChild.last_name }]} - données personnelles</h3>
 <br />
 <form name="childform" class="form-horizontal" role="form">
-  <div class="form-group" ng-show="{[{ detailedChild.ext_id }]}">
-    <label class="col-sm-2 control-label" for="ext_id">Identifiant LAGAPEO</label>
+  <div class="form-group" ng-show="{[{ useExternalIdentifiers }]}">
+    <label class="col-sm-2 control-label" for="ext_id">Identifiant</label>
     <div class="col-sm-10">
-      {[{ detailedChild.ext_id }]}
+      <p class="form-control-static">{[{ detailedChild.ext_id || "n/a" }]}</p>
     </div>
   </div>
     

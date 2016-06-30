@@ -5,8 +5,10 @@ function($scope, $attrs, $routeParams, $http, ChildrenService) {
   'use strict';
   if (!$attrs.prefill) throw new Error("No prefill option set");
   $scope.prefillTeachers = $attrs.prefill === 'true';
+  if (!$attrs.external) throw new Error("No external option set");
+  $scope.useExternalIdentifiers = $attrs.external === 'true';
+  
   $scope.routeParams = $routeParams;
-
   $scope.loadChildren = function(){
     ChildrenService.all().then(function(children){
       $scope.userChildren = children;
