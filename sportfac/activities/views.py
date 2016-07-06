@@ -1,9 +1,10 @@
-from django.views.generic import DetailView, ListView
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
+from django.db.models import Min, Max
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.views.generic import DetailView, ListView
 
 from braces.views import GroupRequiredMixin, LoginRequiredMixin
 
@@ -63,6 +64,12 @@ class ActivityListView(LoginRequiredMixin, WizardMixin, ListView):
         context = super(ActivityListView, self).get_context_data(**kwargs)
         from backend.dynamic_preferences_registry import global_preferences_registry
         context['MAX_REGISTRATIONS'] = global_preferences_registry.manager()['MAX_REGISTRATIONS']
+        times = Course.objects.all().aggregate(Max('end_time'), Min('start_time'))
+        context['START_HOUR'] = times['start_time__min'].hour
+        if times['end_time__max'].minute == 0:
+            context['END_HOUR'] = times['end_time__max'].hour
+        else:
+            context['END_HOUR'] = (times['end_time__max'].hour + 1) % 24
         return context
     
 

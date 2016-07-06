@@ -5,6 +5,12 @@ function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, Regi
   'use strict';
   if (!$attrs.maxregistrations) throw new Error("No maxregistrations option set");
     $scope.maxregistrations = parseInt($attrs.maxregistrations);
+  if (!$attrs.starthour) throw new Error("No starthour option set");
+    $scope.startHour = parseInt($attrs.starthour);
+  if (!$attrs.endhour) throw new Error("No endhour option set");
+    $scope.endHour = parseInt($attrs.endhour);
+  
+  
   
   $scope.loadRegistrations = function(){
     RegistrationsService.all().then(function(registrations){
@@ -253,14 +259,17 @@ function($scope, $filter, $modal, CoursesService){
     return $scope.registeredEvents.length > 0 || $scope.othersRegisteredEvents.length > 0;
   };
 
-
+  $scope.slotMinutes = 15;
+  if (($scope.endHour - $scope.startHour) % 24 > 8) {
+      $scope.slotMinutes = 30;
+  }
 
   $scope.uiConfig = {
     calendar:{
       height: 650, aspectRatio: 3, editable: false,
       year: year, month: month, date: day,
       defaultView: 'agendaWeek', weekends: false, allDaySlot: false,
-      slotMinutes: 15, maxTime: 19, minTime: 11,
+      slotMinutes: $scope.slotMinutes, maxTime: $scope.endHour, minTime: $scope.startHour,
       axisFormat: 'H:mm', columnFormat: 'dddd', header:{left: '', center: '', right: ''},
       dayNames: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
       dayNamesShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
