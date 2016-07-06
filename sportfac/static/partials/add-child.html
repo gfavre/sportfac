@@ -87,7 +87,7 @@
       <div class="col-sm-5">
         <select id="inputTeacher" class="form-control" ng-model="detailedChild.teacher"  
                 ng-options="teacher.last_name + ' ' + teacher.first_name for teacher in teachers" 
-                ng-change="updateSchoolYear()" required></select>
+                ng-change="updateSchoolYear()" ng-required="prefillTeachers"></select>
       </div>
     </div>
     <div class="form-group"  ng-switch on="detailedChild.teacher.years.length">
