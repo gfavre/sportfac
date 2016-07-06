@@ -103,3 +103,9 @@ class CurrentPhase(IntegerPreference):
 class MaintenanceMode(BooleanPreference):
     name = 'maintenance_mode'
     default = False
+
+
+@global_preferences_registry.register
+class MaxRegistrations(IntegerPreference):
+    name = 'MAX_REGISTRATIONS'
+    default = 4

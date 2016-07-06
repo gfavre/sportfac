@@ -1,8 +1,10 @@
 angular.module('sportfacCalendar.controllers', [])
   
-.controller('ChildrenCtrl', ["$scope", "$routeParams", "$location", "$filter", "ChildrenService", "RegistrationsService",
-function($scope, $routeParams, $location, $filter, ChildrenService, RegistrationsService) {
+.controller('ChildrenCtrl', ["$scope", "$routeParams", "$attrs", "$location", "$filter", "ChildrenService", "RegistrationsService",
+function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, RegistrationsService) {
   'use strict';
+  if (!$attrs.maxregistrations) throw new Error("No maxregistrations option set");
+    $scope.maxregistrations = parseInt($attrs.maxregistrations);
   
   $scope.loadRegistrations = function(){
     RegistrationsService.all().then(function(registrations){

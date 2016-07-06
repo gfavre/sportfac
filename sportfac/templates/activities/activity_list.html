@@ -9,7 +9,10 @@
 {% addtoblock "extra_html" %}
 xmlns:ng="http://angularjs.org" 
 ng-app="sportfacCalendar" 
-ng-controller="ChildrenCtrl" id="ng-app"{% endaddtoblock %}
+ng-controller="ChildrenCtrl" id="ng-app"
+maxregistrations="{{ MAX_REGISTRATIONS }}" 
+
+{% endaddtoblock %}
 
 <nav>
   <ul class="nav nav-tabs children">

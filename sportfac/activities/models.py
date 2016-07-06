@@ -122,7 +122,7 @@ class Course(TimeStampedModel):
     min_participants = models.PositiveSmallIntegerField(verbose_name=ugettext_lazy("Minimal number of participants"))
     max_participants = models.PositiveSmallIntegerField(verbose_name=ugettext_lazy("Maximal number of participants"))
     schoolyear_min = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="1", verbose_name=ugettext_lazy("Minimal school year"))
-    schoolyear_max = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="8", verbose_name=ugettext_lazy("Maximal school year"))
+    schoolyear_max = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="12", verbose_name=ugettext_lazy("Maximal school year"))
     
     
     @property

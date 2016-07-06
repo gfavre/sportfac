@@ -58,6 +58,13 @@ class ActivityDetailView(DetailView):
 
 class ActivityListView(LoginRequiredMixin, WizardMixin, ListView):
     model = Activity
+    
+    def get_context_data(self, **kwargs):
+        context = super(ActivityListView, self).get_context_data(**kwargs)
+        from backend.dynamic_preferences_registry import global_preferences_registry
+        context['MAX_REGISTRATIONS'] = global_preferences_registry.manager()['MAX_REGISTRATIONS']
+        return context
+    
 
 
 class MyCoursesListView(ResponsibleMixin, ListView):

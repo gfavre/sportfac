@@ -196,7 +196,6 @@ class RegistrationViewSet(viewsets.ModelViewSet):
             if data:
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-                
         else:
             serializer = RegistrationSerializer(data=request.data)
             if serializer.is_valid():

@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 from absences.models import Absence, Session
 from activities.models import Activity, Course, ExtraNeed
+from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser, SchoolYear
 from registrations.models import Child, ExtraInfo, Registration
 from schools.models import Teacher
@@ -133,6 +134,24 @@ class RegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Registration
         fields = ('id', 'child', 'course', 'status')
+    
+    def validate(self, data):        
+        if data['course'].full:
+            raise serializers.ValidationError(_("Course is full"))
+        
+        if data['child'].school_year and \
+           data['child'].school_year.year not in data['course'].school_years:
+            raise serializers.ValidationError(
+                _("This course is not opened to children of school year %(year)s") % {'year': child.school_year}
+            )
+        if data["child"].registrations.count() >= global_preferences_registry.manager()['MAX_REGISTRATIONS']:
+            raise serializers.ValidationError(
+                _("Max number of registrations reached.")
+            )
+
+
+        return data
+    
 
 
 class ExtraSerializer(serializers.ModelSerializer):
