@@ -1,4 +1,4 @@
-import re, htmlentitydefs
+import os, re, htmlentitydefs
 from django import template
 
 register = template.Library()
@@ -24,3 +24,12 @@ def unescape(value):
                 pass
         return text # leave as is
     return re.sub("&#?\w+;", fixup, value)
+
+
+@register.filter
+def filename(value):
+    return os.path.basename(value.file.name)
+    
+@register.filter
+def fileurl(value):
+    return os.path.basename(value.file.url)

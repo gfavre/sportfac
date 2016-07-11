@@ -18,7 +18,7 @@ from django.core.urlresolvers import reverse, reverse_lazy
 
 from dbtemplates.models import Template
 
-from .models import MailArchive
+from .models import MailArchive, Attachment
 from .tasks import send_mail, send_responsible_email
 from .forms import MailForm
 from activities.models import Course
@@ -35,6 +35,7 @@ class MailMixin(ContextMixin):
     from_address = None
     reply_to_address = None
     success_message = ''
+    attachments = None
 
     def __init__(self, *args, **kwargs):
         self.global_preferences = global_preferences_registry.manager()
@@ -47,7 +48,12 @@ class MailMixin(ContextMixin):
         context['site_name'] = current_site.name
         context['site_url'] = 'http://%s' % current_site.domain
         return context
-
+    
+    def get_attachments(self):
+        if self.attachments is None:
+            return []
+        return self.attachments
+    
     def get_recipients_list(self):
         if self.recipients_queryset is None:
             raise ImproperlyConfigured(
@@ -131,6 +137,8 @@ class MailMixin(ContextMixin):
         subject = self.get_subject()
         from_email = self.get_from_address()
         reply_to = [self.get_reply_to_address()]
+        attachments = [fileobj.file.name for fileobj in self.get_attachments()]
+        
         if reply_to[0] != from_email:
             reply_to = []
         for recipient in recipients:
@@ -138,11 +146,13 @@ class MailMixin(ContextMixin):
             self.add_recipient_context(recipient, mail_context)
             message = self.get_mail_body(mail_context)
             recipient_address = self.get_recipient_address(recipient)
+            
             send_mail.delay(subject=subject,
                             message=message,
                             from_email=from_email,
                             recipients=[recipient_address, ],
-                            reply_to=reply_to)
+                            reply_to=reply_to,
+                            attachments=attachments)
             emails.append(message)
             recipients_addresses.append(recipient_address)
         MailArchive.objects.create(subject=subject, messages=emails,
@@ -218,6 +228,7 @@ class MailView(MailMixin, TemplateView):
         context['from_email'] = self.get_from_address()
         context['subject'] = self.get_subject()
         context['message'] = self.get_mail_body(context)
+        context['attachments'] = self.get_attachments()
 
     def get(self, request, *args, **kwargs):
         "Preview emails."
@@ -228,6 +239,32 @@ class MailView(MailMixin, TemplateView):
         self.add_recipient_context(recipients[mailnumber], context)
         self.add_mail_context(mailnumber, context)
         return self.render_to_response(context)
+
+
+class MailParticipantsView(CourseMixin, MailView):
+
+    def add_recipient_context(self, recipient, context):
+        context['recipient'] = recipient.child.family
+        context['child'] = recipient.child
+        context['registration'] = recipient
+
+    def add_mail_context(self, mailnumber, context):
+        "Get context, add navigation"
+        context['to_email'] = self.get_recipient_address(
+            context['registration'])
+        context['from_email'] = self.get_from_address()
+        context['subject'] = self.get_subject()
+        context['message'] = self.get_mail_body(context)
+        context['attachments'] = self.get_attachments()
+    
+    def get_recipient_address(self, recipient):
+        return super(
+            MailParticipantsView,
+            self).get_recipient_address(
+            recipient.child.family)
+
+    def get_recipients_list(self):
+        return self.course.participants.all()
 
 
 class MailCreateView(FormView):
@@ -281,14 +318,27 @@ class MailCreateView(FormView):
                 messages=[],
                 template=template.name)
             self.request.session['mail'] = archive.id
-
+        for attachment in form.cleaned_data['attachments']:
+            Attachment.objects.create(file=attachment, mail=archive)
+        
         template.content = form.cleaned_data['message']
         template.save()
         return super(MailCreateView, self).form_valid(form)
 
 
 class CustomMailMixin(object):
+    
+    def get_attachments(self):
+        mail_id = self.request.session.get('mail', None)
+        attachments = []
+        try:
+            mail = MailArchive.objects.get(id=mail_id)
+            attachments = [attachment.file for attachment in mail.attachments.all()]
+        except MailArchive.DoesNotExist:
+            raise Http404()
+        return attachments
 
+    
     def get_subject(self):
         mail_id = self.request.session.get('mail', None)
         try:
@@ -306,26 +356,3 @@ class CustomMailMixin(object):
         return self.resolve_template(mail.template)
 
 
-class MailParticipantsView(CourseMixin, MailView):
-
-    def add_recipient_context(self, recipient, context):
-        context['recipient'] = recipient.child.family
-        context['child'] = recipient.child
-        context['registration'] = recipient
-
-    def add_mail_context(self, mailnumber, context):
-        "Get context, add navigation"
-        context['to_email'] = self.get_recipient_address(
-            context['registration'])
-        context['from_email'] = self.get_from_address()
-        context['subject'] = self.get_subject()
-        context['message'] = self.get_mail_body(context)
-
-    def get_recipient_address(self, recipient):
-        return super(
-            MailParticipantsView,
-            self).get_recipient_address(
-            recipient.child.family)
-
-    def get_recipients_list(self):
-        return self.course.participants.all()

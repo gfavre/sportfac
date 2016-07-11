@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n mail_tags %}
 
 {% block title %}{% trans "Send email" %} - {{ block.super }}{% endblock %}
 {% block page_title %}<i class="icon icon-mail"></i>&nbsp;&nbsp;{% trans "Please confirm email" %}{% endblock %}
@@ -20,6 +20,17 @@
   <dt>{% trans "From" %}</dt><dd>{{ from_email }}</dd>
   <dt>{% trans "To" %}</dt><dd>{{ to_email }}</dd>
   <dt>{% trans "Subject" %}</dt><dd>{{ subject }}</dd>
+  {% if attachments %}
+  <dt>{% trans "Attachments" %}</dt>
+  <dd>
+    <ul class="list-inline list-unstyled">
+    {% for attachment in attachments %}
+      <li>{{ attachment|filename }}</li>
+    {% endfor %}
+    </ul>
+  </dd>
+  {% endif %}
+
 </dl>
 <div class="well">{{ message|linebreaks }}</div>
 

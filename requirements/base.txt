@@ -18,6 +18,7 @@ django-localflavor == 1.2
 django-ckeditor == 5.0.3
 django-formtools == 1.0
 django-picklefield == 0.3.2
+django-multiupload == 0.5.1
 
 logutils==0.3.3
 Pillow == 3.2.0

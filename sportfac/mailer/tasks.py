@@ -18,14 +18,19 @@ logger = get_task_logger(__name__)
 
 
 @shared_task
-def send_mail(subject, message, from_email, recipients, reply_to):
+def send_mail(subject, message, from_email, recipients, reply_to, attachments=None):
+    if attachments is None:
+        attachments = []
     logger.debug("Sending email to %s" % recipients)
     email = EmailMessage(subject=subject,
                          body=message,
                          from_email=from_email,
-                         bcc=recipients,
+                         to=recipients,
                          reply_to=reply_to)
-    return email.send()
+    for attachment in attachments:
+        email.attach_file(attachment)
+
+    return email.send(fail_silently=not(settings.DEBUG))
 
 
 @shared_task
@@ -73,4 +78,4 @@ def send_responsible_email(subject, message, from_email, course_pk, reply_to):
 
     shutil.rmtree(tempdir)
     logger.debug("Email forged, sending...")
-    return email.send()
+    return email.send(fail_silently=not(settings.DEBUG))

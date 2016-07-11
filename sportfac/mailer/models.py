@@ -1,4 +1,6 @@
 import re
+import os
+
 from django.db import models
 from django.utils.html import linebreaks
 from django.utils.translation import ugettext as _
@@ -38,6 +40,7 @@ class MailArchive(TimeStampedModel, StatusModel):
     recipients = ListField(verbose_name=_("Recipients"))
     messages = ListField(verbose_name=_("Message"))
     template = models.CharField(max_length=255, verbose_name=_("Template"))
+    
 
     objects = models.Manager()
     draft = DraftMailManager()
@@ -61,3 +64,13 @@ class MailArchive(TimeStampedModel, StatusModel):
             return linebreaks(self.messages[0])
         return ''
     admin_message.allow_tags = True
+
+
+def attachment_path(instance, filename):
+    return os.path.join('attachments', str(instance.mail.pk), filename)
+
+class Attachment(TimeStampedModel):
+    mail = models.ForeignKey('MailArchive', on_delete=models.CASCADE,
+                             related_name='attachments')
+    file = models.FileField(upload_to=attachment_path)
+    
