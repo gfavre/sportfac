@@ -100,7 +100,9 @@ class CustomUserCustomMailPreview(BackendMixin, CustomMailMixin, MailView):
     success_url = reverse_lazy('backend:user-list')
 
     def get_recipients_list(self):
-        return FamilyUser.objects.filter(id__in=self.request.session['mail-userids'])
+        if 'mail-userids' in request.session:
+            return FamilyUser.objects.filter(id__in=self.request.session['mail-userids'])
+        return []
 
     def get_context_data(self, **kwargs):
         context = super(CustomUserCustomMailPreview, self).get_context_data(**kwargs)
