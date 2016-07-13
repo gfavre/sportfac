@@ -25,24 +25,24 @@ ImportError: Couldn't find fabsettings.py, it either does not exist or is
 missing specific settings.
 It should be of this form:
 
-WF_HOST         = "web392"
-APP_NAME        = 'sportfac'
-PROJECT_NAME    = "sportfac"
-REPOSITORY      = "https://grfavre@kis-git.epfl.ch/repo/sportfac.git"
-BRANCH          = 'master'
-USER            = "grfavre"
-PASSWORD        = "************"
-DBNAME          = "sportfac"
-DBUSER          = "sportfac"
-DBPASSWORD      = "************"
-SETTINGS_SUBDIR = "sportfac"
-VIRTUALENVS     = "/home/grfavre/.virtualenvs"
-MAILHOST        = "smtp.webfaction.com"
-MAILUSER        = "grfavre"
-MAILPASSWORD    = "************"
-MAILADDRESS     = "gregory@dealguru.ch"
-BROKER_URL      = "redis://localhost:14387/0"
-PHANTOMJS       = '/home/grfavre/bin/phantomjs'
+WF_HOST          = "web392"
+APP_NAME         = 'sportfac'
+PROJECT_NAME     = "sportfac"
+REPOSITORY       = "https://grfavre@kis-git.epfl.ch/repo/sportfac.git"
+BRANCH           = 'master'
+USER             = "grfavre"
+PASSWORD         = "************"
+DBNAME           = "sportfac"
+DBUSER           = "sportfac"
+DBPASSWORD       = "************"
+SETTINGS_SUBDIR  = "sportfac"
+VIRTUALENVS      = "/home/grfavre/.virtualenvs"
+MAILHOST         = "smtp.webfaction.com"
+MAILUSER         = "grfavre"
+MAILPASSWORD     = "************"
+MAILADDRESS      = "gregory@dealguru.ch"
+BROKER_URL       = "redis://localhost:14387/0"
+PHANTOMJS        = '/home/grfavre/bin/phantomjs'
 MEMCACHED_SOCKET = '/home/grfavre/memcached.sock'
 """)
     sys.exit(1)
@@ -81,7 +81,7 @@ env.user              = USER
 env.password          = PASSWORD
 env.project           = PROJECT_NAME
 env.app_name          = APP_NAME
-env.settings          = 'montreux'
+env.settings          = 'coppet'
 env.dbname            = DBNAME
 env.dbuser            = DBUSER
 env.dbpassword        = DBPASSWORD
