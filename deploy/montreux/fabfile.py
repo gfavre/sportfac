@@ -43,7 +43,7 @@ MAILPASSWORD     = "************"
 MAILADDRESS      = "gregory@dealguru.ch"
 BROKER_URL       = "redis://localhost:14387/0"
 PHANTOMJS        = '/home/grfavre/bin/phantomjs'
-MEMCACHED_SOCKET = '/home/grfavre/memcached.sock'
+MEMCACHED_SOCKET = 'memcached.sock'
 """)
     sys.exit(1)
 
