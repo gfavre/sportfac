@@ -10,8 +10,9 @@ from backend.dynamic_preferences_registry import tenant_preferences_registry
 
 class RegistrationOpenedMiddleware(object):
     def process_request(self, request):
-        start = request.tenant.preferences['phase__START_REGISTRATION']
-        end = request.tenant.preferences['phase__END_REGISTRATION']
+        preferences = request.tenant.preferences.by_name()
+        start = request.tenant.preferences.by_name()['START_REGISTRATION']
+        end = request.tenant.preferences.by_name()['END_REGISTRATION']
         now = timezone.now()
 
         request.PHASE = 1
