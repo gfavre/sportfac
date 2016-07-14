@@ -108,12 +108,12 @@ CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 
 
 TEMPLATES[0]['DIRS'] = [
-    normpath(join(SITE_ROOT, 'themes', 'coppet', 'templates')),
+    normpath(join(SITE_ROOT, 'themes', 'nyon', 'templates')),
     normpath(join(SITE_ROOT, 'templates')),
 ]
 
 STATICFILES_DIRS = (
-    normpath(join(SITE_ROOT, 'themes', 'coppet', 'static')),
+    normpath(join(SITE_ROOT, 'themes', 'nyon', 'static')),
     normpath(join(SITE_ROOT, 'static')),
 )
 
