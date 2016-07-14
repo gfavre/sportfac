@@ -33,6 +33,8 @@
     {% endif %}
     {% formrow form.school_year  %}
     {% formconfig row using "floppyforms/rows/bootstrap.html" %}
+{% if PREFILL_YEARS_WITH_TEACHERS %}
     {% formrow form.teacher %}
+{% endif %}
 </fieldset>
 {% endform %}

@@ -50,8 +50,11 @@ def wizard_context(request):
     billing = Step(request, 'billing-step', _("Billing"), 'wizard_billing', 
                    can_pay(request))
     
+    if settings.KEPCHUP_NO_PAYMENT:
+        steps = [about, children, activities, confirmation]
+    else:
+        steps = [about, children, activities, confirmation, billing]
     
-    steps = [about, children, activities, confirmation, billing]
     current = 0
     for idx, step in enumerate(steps):
         if step.current:
@@ -102,4 +105,5 @@ def kepchup_context(request):
         'IMPORT_CHILDREN': settings.KEPCHUP_IMPORT_CHILDREN,
         'PREFILL_YEARS_WITH_TEACHERS': settings.KEPCHUP_PREFILL_YEARS_WITH_TEACHERS,
         'NO_PAYMENT': settings.KEPCHUP_NO_PAYMENT,
+        'NO_TERMS': settings.KEPCHUP_NO_TERMS,
     }

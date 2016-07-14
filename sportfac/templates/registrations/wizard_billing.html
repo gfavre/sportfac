@@ -2,10 +2,10 @@
 {% load i18n  sekizai_tags switzerland%}
 
 
-{% block page_title %}{% if bill.total > 0 %}{% trans "Billing" %}{% else %}{% trans "Registrations validated" %}{% endif %}{% endblock page_title%}
+{% block page_title %}{% if bill.total > 0 and not NO_PAYMENT %}{% trans "Billing" %}{% else %}{% trans "Registrations validated" %}{% endif %}{% endblock page_title%}
 
 {% block content %}
-{% if bill.total > 0 %}
+{% if bill.total > 0 and not NO_PAYMENT %}
   {% include "registrations/billing_partial.html" %}
 {% else %}
   {% include "registrations/wizard-complete.html" %}
@@ -21,16 +21,20 @@
       <th>{% trans "Period" %}</th>
       <th>{% trans "Time" %}</th>
       <th>{% trans "Place" %}</th>
+{% if not NO_PAYMENT  %}
       <th>{% trans "Price" %}</th>
+{% endif %}
     </tr>
   </thead>
-  
+
+{% if not NO_PAYMENT  %} 
  <tfoot>
     <tr>
       <th colspan="5" style="text-align: right">{% trans "Total" %}</th>
       <th class="nowrap">{{ bill.total|money }}</th>
     </tr>
   </tfoot>
+{% endif %}
 
   <tbody>
   {% for registered in bill.registrations.all %}
@@ -47,7 +51,9 @@
         {{ registered.course.day_name }} / <span class="nowrap">{{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</span>
       </td>
       <td>{{ registered.course.place }}</td>
+{% if not NO_PAYMENT  %}
       <td class="nowrap">{{ registered.course.price|money }}</td>
+{% endif %}
     </tr>
   {% endfor %}
   </tbody>

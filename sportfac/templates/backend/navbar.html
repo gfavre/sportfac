@@ -67,12 +67,14 @@
                 <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New registration" %}
                 </a>
               </li>
+              {% if not NO_PAYMENT %}
               <li class="divider"></li>
               <li>
                 <a href="{% url 'backend:bill-list' %}">
                   <i class="icon-credit-card-1"></i>&nbsp;&nbsp;{% trans "All bills" %}
                 </a>
               </li>
+              {% endif %}
             </ul>
           </li>
 

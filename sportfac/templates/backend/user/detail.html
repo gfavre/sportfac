@@ -51,24 +51,28 @@
       <i class="icon-cancel-circled2 text-danger"></i>
     {% endif %}
     </dd>
-    
-     <dt>{% trans "Paid" %}?</dt>
-      <dd>
+{% if not NO_PAYMENT %}
+    <dt>{% trans "Paid" %}?</dt>
+    <dd>
     {% if object.paid %}
       <i class="icon-ok-circled2 text-success"></i>
     {% else %}
       <i class="icon-cancel-circled2 text-danger"></i>
     {% endif %}
     </dd>
-     
     <dt>{% trans "Total to be paid" %}</dt>
     <dd>{{ object.total|money }}</dd>
     <dt>{% trans "Transaction identifier" %}</dt>
     <dd>{{ object.billing_identifier }}</dd>
+{% endif %}
   </dl>
+
+{% if not NO_PAYMENT %}     
   <p class="text-center">
     <a href="{{ object.get_payment_url }}" class="btn btn-default btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Update payement informations" %}</a>
   </p>
+{% endif %}
+
 </section>
 {% endcomment %}
 
@@ -87,7 +91,9 @@
           <dt>{% trans "Nationality" %}</dt><dd> {{ child.get_nationality_display }}</dd>
           <dt>{% trans "Language" %}</dt><dd> {{ child.get_language_display }}</dd>
           <dt>{% trans "School year" %}</dt><dd> {{ child.school_year }}</dd>
+{% if PREFILL_YEARS_WITH_TEACHERS %}
           <dt>{% trans "Teacher" %}</dt><dd> {{ child.teacher.get_full_name }}</dd>
+{% endif %}
         </dl>
         <p class="text-center">
            <a href="{{ child.get_update_url }}" class="btn btn-default btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Update child" %}</a>&nbsp; <a href="{{ child.get_delete_url }}" class="btn btn-danger btn-sm"><i class="icon-trash"></i>&nbsp;&nbsp;{% trans "Delete child" %}</a>

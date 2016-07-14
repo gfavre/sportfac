@@ -8,10 +8,13 @@
 {%  formrow form.activity form.responsible form.number  %}
 
 
+{% if NO_PAYMENT %}
+  {% formrow form.number_of_sessions form.day  %}
+{% else %}
+  {% formrow form.price form.number_of_sessions form.day  %}
+{% endif %}
 
-{% formrow form.price form.number_of_sessions form.day  %}
 {% formrow form.start_date form.end_date form.start_time form.end_time %}
-
 
 {%  formrow form.place using "floppyforms/rows/bootstrap-basic-row.html" %}
 

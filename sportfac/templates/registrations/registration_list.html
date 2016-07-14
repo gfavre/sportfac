@@ -38,17 +38,21 @@
       <th class="text-center">{% trans "Period" %}</th>
       <th class="text-center">{% trans "Time" %}</th>
       <th class="text-center">{% trans "Place" %}</th>
+{% if not NO_PAYMENT  %}
       <th class="text-center">{% trans "Price" %}</th>
+{% endif %}
     </tr>
   </thead>
   
+{% if not NO_PAYMENT  %}
   <tfoot>
   <tr>
       <th colspan="5" class="text-right">{% trans "Total" %}</th>
       <th class="nowrap">{{ total_price|money }}</th>
     </tr>
   </tfoot>
-  
+{% endif %}
+
   <tbody>
   {% for registered in registered_list %}
     <tr id="{{ registered.id }}" {% if registered.id in overlapped %}class="warning"{% endif %}>
@@ -94,7 +98,10 @@
         {{ registered.course.day_name }} <br /> <span class="nowrap">{{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</span>
       </td>
       <td>{{ registered.course.place }}</td>
+
+{% if not NO_PAYMENT  %}
       <td class="nowrap">{{ registered.course.price|money }}</td>
+{% endif %}
     </tr>
   {% endfor %}
   </tbody>
@@ -109,19 +116,30 @@
 <form class="form form-inline" id="accept" method="post">{% csrf_token %}
   {{ form.non_field_errors }}
   {{ form.accept.errors }}
-  
-  <div class="checkbox pull-right">
-    <label>{{ form.accept }} {{ form.accept.label }}</label>
+  <div class="text-right has-error">
+  {% if not NO_TERMS %}
+  <div class="hidden">
+    <input type="checkbox" name="{{ form.accept.name }}"  checked="checked" />
   </div>
-  <div class="clearfix"></div>
-  <span class="pull-right"><small ><i class="icon-warning"></i>{% trans "Confirmation is definitive. You will not be able to change your registrations again." %}</small> </span>   
+  {% else %}
+  <div class="checkbox text-right error" style="display: block;">
+    <label>
+      <input type="checkbox" name="{{ form.accept.name }}" /> {{ form.accept.label }}
+    </label> 
+  </div>
+  {% endif %}
+  <small ><i class="icon-warning"></i>{% trans "Confirmation is definitive. You will not be able to change your registrations again." %}</small>   
+  </div>
+
 <nav >
   <ul class="pager">
     <li class="previous">
       <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span> {% trans "Previous"%}</a>
     </li>
     <li class="next">
-      <button type="submit" class="btn btn-primary btn-large btn-next pull-right">{% trans "Confirm and proceed to checkout"%}</button>
+      <button type="submit" class="btn btn-primary btn-large btn-next pull-right">
+      {% if NO_PAYMENT %}{% trans "Confirm" %}{% else %}{% trans "Confirm and proceed to checkout" %}{% endif %}
+      </button>
     </li>
   </ul>
   
@@ -144,8 +162,9 @@
       $('.highlight').hover(function(){
          $('#' + $(this).attr('rel')).toggleClass('warning');
       });        
-      $('#accept button').prop('disabled', true); 
+      $('#accept button').prop('disabled', !$('#accept input[type=checkbox]').prop('checked')); 
       $('#accept input:checkbox').click(function(){
+        $(this).parents('.has-error').removeClass('has-error');
         $('#accept button').prop('disabled', !$('#accept button').prop('disabled'));
       });
             

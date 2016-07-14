@@ -39,8 +39,10 @@
         <dt>{% trans "Number of sessions" %}</dt>
         <dd>{{ course.number_of_sessions }} cours
         </dd>
+{% if not NO_PAYMENT %}
         {% if course.price %}<dt>{% trans "Price" %}</dt><dd>{{ course.price|money }}</dd>{% endif %}
         <dt>{% trans "School years" %}</dt><dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
+{% endif %}
       </dl>
       <h4 class="content-title">
         <u>{% trans "Availability"%}</u>
