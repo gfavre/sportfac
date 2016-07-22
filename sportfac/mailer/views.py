@@ -76,6 +76,8 @@ class MailMixin(ContextMixin):
         return url
 
     def get_recipient_address(self, recipient):
+        if not recipient:
+            return ''
         to = '%s %s <%s>'
         return to % (recipient.first_name,
                      recipient.last_name, recipient.email)
@@ -142,6 +144,8 @@ class MailMixin(ContextMixin):
         if reply_to[0] != from_email:
             reply_to = []
         for recipient in recipients:
+            if not recipient:
+                continue
             mail_context = context.copy()
             self.add_recipient_context(recipient, mail_context)
             message = self.get_mail_body(mail_context)
@@ -250,18 +254,14 @@ class MailParticipantsView(CourseMixin, MailView):
 
     def add_mail_context(self, mailnumber, context):
         "Get context, add navigation"
-        context['to_email'] = self.get_recipient_address(
-            context['registration'])
+        context['to_email'] = self.get_recipient_address(context['registration'])
         context['from_email'] = self.get_from_address()
         context['subject'] = self.get_subject()
         context['message'] = self.get_mail_body(context)
         context['attachments'] = self.get_attachments()
     
     def get_recipient_address(self, recipient):
-        return super(
-            MailParticipantsView,
-            self).get_recipient_address(
-            recipient.child.family)
+        return super(MailParticipantsView, self).get_recipient_address(recipient.child.family)
 
     def get_recipients_list(self):
         return self.course.participants.all()
