@@ -9,6 +9,7 @@ register = template.Library()
 def absence_status(status):
     vals = {'absent': _("Absent"),
             'excused': _("Excused"),
+            'medical': _("Medical certificate"),
             'late': _("Late arrival"),
             'present': _("Present")}
     return vals.get(status)

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-14 17:20+0200\n"
+"POT-Creation-Date: 2016-07-22 17:58+0200\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -17,26 +17,32 @@ msgstr ""
 "Language: \n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: sportfac/absences/models.py:14 sportfac/absences/templatetags/status.py:10
+#: sportfac/absences/models.py:15 sportfac/absences/templatetags/status.py:10
 #: sportfac/templates/absences/absences-table.html:73
-#: sportfac/templates/absences/absences-table.html:230
+#: sportfac/templates/absences/absences-table.html:235
 msgid "Absent"
 msgstr "Absent"
 
-#: sportfac/absences/models.py:15 sportfac/absences/templatetags/status.py:11
+#: sportfac/absences/models.py:16 sportfac/absences/templatetags/status.py:11
 #: sportfac/templates/absences/absences-table.html:78
-#: sportfac/templates/absences/absences-table.html:234
+#: sportfac/templates/absences/absences-table.html:239
 msgid "Excused"
 msgstr "Excusé"
 
-#: sportfac/absences/models.py:16 sportfac/absences/templatetags/status.py:12
-#: sportfac/templates/absences/absences-table.html:238
+#: sportfac/absences/models.py:17 sportfac/absences/templatetags/status.py:12
+#: sportfac/templates/absences/absences-table.html:83
+#: sportfac/templates/absences/absences-table.html:243
+msgid "Medical certificate"
+msgstr "Certificat médical"
+
+#: sportfac/absences/models.py:18 sportfac/absences/templatetags/status.py:13
+#: sportfac/templates/absences/absences-table.html:247
 msgid "Late arrival"
 msgstr "En retard"
 
-#: sportfac/absences/templatetags/status.py:13 sportfac/api/serializers.py:34
+#: sportfac/absences/templatetags/status.py:14 sportfac/api/serializers.py:34
 #: sportfac/templates/absences/absences-table.html:68
-#: sportfac/templates/absences/absences-table.html:226
+#: sportfac/templates/absences/absences-table.html:231
 msgid "Present"
 msgstr "Présent"
 
@@ -108,7 +114,6 @@ msgstr "Exporter les cours sélectionnés"
 
 #: sportfac/activities/forms.py:20 sportfac/activities/forms.py:41
 #: sportfac/activities/models.py:49 sportfac/activities/models.py:107
-#: sportfac/registrations/forms.py:28
 #: sportfac/templates/activities/course_list.html:35
 #: sportfac/templates/backend/activity/list.html:36
 #: sportfac/templates/backend/course/list-phase1.html:37
@@ -825,11 +830,11 @@ msgstr "Destinataires"
 msgid "Template"
 msgstr "Modèle"
 
-#: sportfac/mailer/views.py:125
+#: sportfac/mailer/views.py:127
 msgid "Message has been scheduled to be sent."
 msgstr "Le message est en cours d'envoi."
 
-#: sportfac/mailer/views.py:180
+#: sportfac/mailer/views.py:184
 msgid "No course found"
 msgstr "Aucun cours n'a été trouvé"
 
@@ -1119,6 +1124,10 @@ msgstr "Langue"
 msgid "Parent"
 msgstr "Parent"
 
+#: sportfac/registrations/forms.py:28
+msgid "SSF number"
+msgstr "Numéro SSF"
+
 #: sportfac/registrations/models.py:35
 msgid "Waiting parent's confirmation"
 msgstr "En attente de la confirmation du parent"
@@ -1301,7 +1310,7 @@ msgstr "Les administrateurs ont été prévenus du problème."
 msgid "New session"
 msgstr "Nouvelle session"
 
-#: sportfac/templates/absences/absences-table.html:83
+#: sportfac/templates/absences/absences-table.html:88
 msgid "Late"
 msgstr "En retard"
 
@@ -1358,9 +1367,7 @@ msgid "Availability"
 msgstr "Places disponibles"
 
 #: sportfac/templates/activities/activity_list.html:5
-#: sportfac/templates/backend/navbar.html:23 sportfac/templates/navbar.html:17
-#: sportfac/themes/coppet/templates/navbar.html:17
-#: sportfac/themes/nyon/templates/navbar.html:16
+#: sportfac/templates/backend/navbar.html:23 sportfac/templates/navbar.html:19
 msgid "Activities"
 msgstr "Activités"
 
@@ -1467,9 +1474,7 @@ msgstr "Email des parents"
 
 #: sportfac/templates/activities/course_list.html:4
 #: sportfac/templates/activities/course_list.html:5
-#: sportfac/templates/navbar.html:84
-#: sportfac/themes/coppet/templates/navbar.html:84
-#: sportfac/themes/nyon/templates/navbar.html:83
+#: sportfac/templates/navbar.html:86
 msgid "My courses"
 msgstr "Mes cours"
 
@@ -1535,9 +1540,7 @@ msgstr "Merci de vérifier l'email"
 #: sportfac/templates/backend/mail/preview-editlink.html:9
 #: sportfac/templates/backend/mail/preview.html:9
 #: sportfac/templates/backend/year/list.html:53
-#: sportfac/templates/navbar.html:47
-#: sportfac/themes/coppet/templates/navbar.html:47
-#: sportfac/themes/nyon/templates/navbar.html:46
+#: sportfac/templates/navbar.html:49
 msgid "Preview"
 msgstr "Prévisualisation"
 
@@ -1799,9 +1802,7 @@ msgstr "Mettre à jour le cours"
 #: sportfac/templates/backend/dashboard-phase3.html:5
 #: sportfac/templates/backend/dashboard-phase3.html:9
 #: sportfac/templates/backend/home.html:4
-#: sportfac/templates/backend/home.html:7 sportfac/templates/navbar.html:90
-#: sportfac/themes/coppet/templates/navbar.html:90
-#: sportfac/themes/nyon/templates/navbar.html:89
+#: sportfac/templates/backend/home.html:7 sportfac/templates/navbar.html:92
 msgid "Administration"
 msgstr "Administration"
 
@@ -2543,9 +2544,7 @@ msgid "Currently reviewing"
 msgstr "En train de réviser"
 
 #: sportfac/templates/backend/year/list.html:53
-#: sportfac/templates/navbar.html:47
-#: sportfac/themes/coppet/templates/navbar.html:47
-#: sportfac/themes/nyon/templates/navbar.html:46
+#: sportfac/templates/navbar.html:49
 msgid "Review"
 msgstr "Réviser"
 
@@ -2606,10 +2605,8 @@ msgstr "Merci pour votre message"
 msgid "Your message has been sent. We'll get in touch soon."
 msgstr "Votre message a bien été envoyé. Nous vous recontacterons rapidement."
 
-#: sportfac/templates/flatpages/home.html:14 sportfac/templates/navbar.html:74
+#: sportfac/templates/flatpages/home.html:14 sportfac/templates/navbar.html:76
 #: sportfac/templates/profiles/baseprofile.html:46
-#: sportfac/themes/coppet/templates/navbar.html:74
-#: sportfac/themes/nyon/templates/navbar.html:73
 msgid "My registered activities"
 msgstr "Mes inscriptions pour cette année"
 
@@ -2617,59 +2614,44 @@ msgstr "Mes inscriptions pour cette année"
 msgid "... or login"
 msgstr "... ou connexion"
 
-#: sportfac/templates/footer.html:12 sportfac/templates/navbar.html.py:15
+#: sportfac/templates/footer.html:12 sportfac/templates/navbar.html.py:16
 #: sportfac/themes/coppet/templates/footer.html:12
-#: sportfac/themes/coppet/templates/navbar.html:15
 #: sportfac/themes/montreux/templates/footer.html:12
 msgid "Terms and conditions"
 msgstr "Règlement de participation"
 
 #: sportfac/templates/navbar.html:7
-#: sportfac/themes/coppet/templates/navbar.html:7
-#: sportfac/themes/nyon/templates/navbar.html:7
 msgid "Toggle navigation"
 msgstr "Afficher la navigation"
 
-#: sportfac/templates/navbar.html:54
-#: sportfac/themes/coppet/templates/navbar.html:54
-#: sportfac/themes/nyon/templates/navbar.html:53
+#: sportfac/templates/navbar.html:56
 msgid "Manage periods"
 msgstr "Gestion des périodes"
 
-#: sportfac/templates/navbar.html:66
+#: sportfac/templates/navbar.html:68
 #: sportfac/templates/profiles/account.html:4
 #: sportfac/templates/profiles/account.html:5
 #: sportfac/templates/profiles/baseprofile.html:3
 #: sportfac/templates/profiles/baseprofile.html:4
 #: sportfac/templates/profiles/wizard_account.html:5
 #: sportfac/templates/profiles/wizard_account.html:6
-#: sportfac/themes/coppet/templates/navbar.html:66
-#: sportfac/themes/nyon/templates/navbar.html:65
 msgid "My account"
 msgstr "Mon compte"
 
-#: sportfac/templates/navbar.html:69
-#: sportfac/themes/coppet/templates/navbar.html:69
-#: sportfac/themes/nyon/templates/navbar.html:68
+#: sportfac/templates/navbar.html:71
 msgid "My family"
 msgstr "Ma famille"
 
-#: sportfac/templates/navbar.html:77
+#: sportfac/templates/navbar.html:79
 #: sportfac/templates/profiles/baseprofile.html:54
-#: sportfac/themes/coppet/templates/navbar.html:77
-#: sportfac/themes/nyon/templates/navbar.html:76
 msgid "My bills"
 msgstr "Mes factures"
 
-#: sportfac/templates/navbar.html:100
-#: sportfac/themes/coppet/templates/navbar.html:100
-#: sportfac/themes/nyon/templates/navbar.html:99
+#: sportfac/templates/navbar.html:102
 msgid "logout"
 msgstr "Déconnexion"
 
-#: sportfac/templates/navbar.html:105
-#: sportfac/themes/coppet/templates/navbar.html:105
-#: sportfac/themes/nyon/templates/navbar.html:104
+#: sportfac/templates/navbar.html:107
 msgid "login"
 msgstr "Connexion"
 

@@ -11,10 +11,12 @@ from sportfac.models import TimeStampedModel
 
 
 class Absence(StatusModel, TimeStampedModel):
-    STATUS = Choices(('absent', _("Absent")),
-                     ('excused', _("Excused")),
-                     ('late', _("Late arrival"))
-                    )
+    STATUS = Choices(
+        ('absent', _("Absent")),
+        ('excused', _("Excused")),
+        ('medical', _("Medical certificate")),
+        ('late', _("Late arrival")),
+    )
 
     child = models.ForeignKey('registrations.Child')
     session = models.ForeignKey('Session', related_name="absences")
