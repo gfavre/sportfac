@@ -222,6 +222,9 @@ class Child(TimeStampedModel):
     id_lagapeo = models.IntegerField(db_index=True, unique=True, null=True, blank=True, 
                                      verbose_name=_("Lagapeo Identification number"))
  
+    school = models.ForeignKey('schools.School', related_name="students", null=True)
+    other_school = models.CharField(_("Other school"),  blank=True, max_length=50)
+ 
     class Meta:
         ordering = ('last_name', 'first_name',)
         abstract = False

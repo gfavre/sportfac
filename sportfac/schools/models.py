@@ -43,3 +43,11 @@ class Teacher(TimeStampedModel):
         ordering = ('last_name', 'first_name')
         verbose_name = _("teacher")
         verbose_name_plural = _("teachers")
+
+
+class School(TimeStampedModel):
+    name = models.CharField(_("Name"), max_length=50)
+    
+    class Meta:
+        verbose_name = _("school")
+        verbose_name_plural = _("schools")
