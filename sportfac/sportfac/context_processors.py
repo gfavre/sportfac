@@ -106,4 +106,5 @@ def kepchup_context(request):
         'PREFILL_YEARS_WITH_TEACHERS': settings.KEPCHUP_PREFILL_YEARS_WITH_TEACHERS,
         'NO_PAYMENT': settings.KEPCHUP_NO_PAYMENT,
         'NO_TERMS': settings.KEPCHUP_NO_TERMS,
+        'CHILD_SCHOOL': settings.KEPCHUP_CHILD_SCHOOL,
     }
