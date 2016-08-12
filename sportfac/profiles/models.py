@@ -250,3 +250,14 @@ class SchoolYear(models.Model):
         verbose_name = _("School year")
         verbose_name_plural = _("School years")
         ordering = ('year',)
+
+
+class School(models.Model):
+    name = models.CharField(_("Name"), max_length=50)
+
+    def __unicode__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = _("school")
+        verbose_name_plural = _("schools")

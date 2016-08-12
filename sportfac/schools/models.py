@@ -45,9 +45,3 @@ class Teacher(TimeStampedModel):
         verbose_name_plural = _("teachers")
 
 
-class School(TimeStampedModel):
-    name = models.CharField(_("Name"), max_length=50)
-    
-    class Meta:
-        verbose_name = _("school")
-        verbose_name_plural = _("schools")

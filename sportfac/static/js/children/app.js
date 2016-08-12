@@ -8,10 +8,10 @@ angular.module('sportfacChildren', ['sportfacChildren.services',
 
 config(['$routeProvider', function($routeProvider) {
   'use strict';
-  $routeProvider.when('/edit/:childId', {templateUrl: '/static/partials/child-detail.html', controller: 'childDetailCtrl'});
-  $routeProvider.when('/new', {templateUrl: '/static/partials/add-child.html', controller: 'childAddCtrl'});
+  $routeProvider.when('/edit/:childId', {templateUrl: 'child-detail.html', controller: 'childDetailCtrl'});
+  $routeProvider.when('/new', {templateUrl: 'add-child.html', controller: 'childAddCtrl'});
 
-  $routeProvider.otherwise({templateUrl: '/static/partials/add-child.html', controller: 'childAddCtrl'});
+  $routeProvider.otherwise({templateUrl: 'add-child.html', controller: 'childAddCtrl'});
 }]).
 
 config(["$datepickerProvider", function($datepickerProvider) {

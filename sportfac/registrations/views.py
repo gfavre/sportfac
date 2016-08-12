@@ -1,3 +1,6 @@
+import json
+
+from django.conf import settings
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.db import transaction
 from django.db.models import Sum
@@ -8,12 +11,22 @@ from braces.views import LoginRequiredMixin
 
 from sportfac.views import WizardMixin, PhaseForbiddenMixin
 from profiles.forms import AcceptTermsForm
+from profiles.models import School
 from .models import Bill, Child, Registration
 
 
 class ChildrenListView(LoginRequiredMixin, ListView):
     template_name = 'registrations/children.html'
     context_object_name = 'children'
+    
+    def get_context_data(self, **kwargs):
+        context = super(ChildrenListView, self).get_context_data(**kwargs)
+        if settings.KEPCHUP_CHILD_SCHOOL:
+            context['schools'] = json.dumps(list(School.objects.values('id', 'name')))
+        else:
+            context['school'] = json.dumps([])
+        return context
+        
     
     def get_queryset(self):
         return Child.objects.filter(family=self.request.user).order_by('first_name')

@@ -1,10 +1,11 @@
+from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 import floppyforms.__future__ as forms
 
 from .models import Bill, Child
 from backend.forms import Select2Widget, DatePickerInput
-from profiles.models import FamilyUser, SchoolYear
+from profiles.models import FamilyUser, School, SchoolYear
 from schools.models import Teacher
 
 
@@ -27,10 +28,13 @@ class ChildForm(forms.ModelForm):
                                      required=False)
     id_lagapeo = forms.IntegerField(label=_("SSF number"), required=False)
     
+    school = forms.ModelChoiceField(label=_("School"), queryset=School.objects.all(), required=False)
+
+    
     class Meta:
         model = Child
         fields = ('id_lagapeo', 'family', 'first_name', 'last_name', 'sex', 'birth_date', 'nationality', 
-                  'language', 'school_year', 'teacher')
+                  'language', 'school', 'other_school', 'school_year', 'teacher')
 
 
 class BillForm(forms.ModelForm):

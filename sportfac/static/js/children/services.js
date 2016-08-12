@@ -51,7 +51,8 @@ angular.module('sportfacChildren.services', [])
       angular.extend(this, {
         toModel: function(){
           var converted = angular.copy(this);
-          if (typeof converted.teacher === 'object'){
+          console.log(converted)
+          if (converted.teacher && typeof converted.teacher === 'object'){
             converted.teacher = converted.teacher.id;
           }
           if (typeof converted.birth_date === 'object'){

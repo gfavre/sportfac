@@ -5,7 +5,7 @@ from rest_framework import serializers
 from absences.models import Absence, Session
 from activities.models import Activity, Course, ExtraNeed
 from backend.dynamic_preferences_registry import global_preferences_registry
-from profiles.models import FamilyUser, SchoolYear
+from profiles.models import FamilyUser, School, SchoolYear
 from registrations.models import Child, ExtraInfo, Registration
 from schools.models import Teacher
 
@@ -115,7 +115,9 @@ class SimpleChildrenSerializer(serializers.ModelSerializer):
 class ChildrenSerializer(serializers.ModelSerializer):
     birth_date = serializers.DateField(format='iso-8601', input_formats=('iso-8601', '%d/%m/%Y', '%d.%m.%Y'))
     teacher = serializers.PrimaryKeyRelatedField(many=False, read_only=False,
-                                                 queryset=Teacher.objects.all(), required=False)
+                                                 queryset=Teacher.objects.all(), required=False, allow_null=True)
+    school = serializers.PrimaryKeyRelatedField(many=False, read_only=False,
+                                                queryset=School.objects.all(), required=False, allow_null=True)
     school_year = SchoolYearField(many=False, read_only=False, queryset=SchoolYear.objects.all())
     ext_id = serializers.IntegerField(source='id_lagapeo', required=False, allow_null=True)
     
@@ -123,7 +125,7 @@ class ChildrenSerializer(serializers.ModelSerializer):
         model = Child
         fields = ('id', 'ext_id', 'first_name', 'last_name', 'sex', 
                   'nationality', 'language',
-                  'birth_date', 'school_year', 'teacher',)
+                  'birth_date', 'school_year', 'teacher', 'school', 'other_school')
         depth = 1
 
 

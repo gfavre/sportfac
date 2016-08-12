@@ -4,6 +4,7 @@ ng-app="sportfacChildren"
 ng-controller="ListCtrl" 
 prefill="{{ PREFILL_YEARS_WITH_TEACHERS|yesno:'true,false' }}"
 external="{{ IMPORT_CHILDREN|yesno:'true,false' }}"
+schools="{{ schools }}"
 {% endaddtoblock %}
 <div class="row">
   <div class="col-sm-4  col-sm-push-8"  data-ng-animate="'fade'">
@@ -20,6 +21,17 @@ external="{{ IMPORT_CHILDREN|yesno:'true,false' }}"
   </div>
   <div class="col-sm-8 col-sm-pull-4" ng-view></div>
 </div><!-- end row -->
+
+
+
+<script type="text/ng-template" id="add-child.html">
+   {% include 'profiles/add-children-form.html' %}
+</script>
+<script type="text/ng-template" id="child-detail.html">
+   {% include 'profiles/child-detail-form.html' %}
+</script>
+
+
 
 {% addtoblock "js" %}
 {% if debug %}

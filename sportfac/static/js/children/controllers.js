@@ -7,6 +7,11 @@ function($scope, $attrs, $routeParams, $http, ChildrenService) {
   $scope.prefillTeachers = $attrs.prefill === 'true';
   if (!$attrs.external) throw new Error("No external option set");
   $scope.useExternalIdentifiers = $attrs.external === 'true';
+  if (!$attrs.schools){
+      $scope.schools = [];
+  } else {
+      $scope.schools = angular.fromJson($attrs.schools);
+  }
   
   $scope.routeParams = $routeParams;
   $scope.loadChildren = function(){
@@ -130,7 +135,12 @@ function($scope, $routeParams, $location, ChildrenService) {
 .controller('childAddCtrl', ["$scope", "$location", "ChildrenService",
 function($scope, $location, ChildrenService) {
   $scope.unselectChild();
-  $scope.detailedChild = {};
+  if ($scope.schools.length){
+      $scope.detailedChild = {school: $scope.schools[0]['id']};
+  } else {
+      $scope.detailedChild = {};
+  }
+  
   $scope.errors = {};
   $scope.resetForm = function(){
     $scope.detailedChild = {};

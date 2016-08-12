@@ -6,7 +6,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.utils.translation import ugettext_lazy as _
 
-from .models import FamilyUser, SchoolYear
+from .models import FamilyUser, School, SchoolYear
 from registrations.models import Child
 
 
@@ -115,3 +115,4 @@ class FamilyAdmin(UserAdmin):
 
 admin.site.register(FamilyUser, FamilyAdmin)
 admin.site.register(SchoolYear)
+admin.site.register(School)
