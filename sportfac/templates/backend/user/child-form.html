@@ -28,13 +28,18 @@
 {% formconfig row using "floppyforms/rows/bootstrap-sm-3.html" %}
 <fieldset>
     <legend>{% trans "School informations" %}</legend>
-    {% if IMPORT_CHILDREN %}
-      {% formrow form.id_lagapeo %}
-    {% endif %}
+{% if IMPORT_CHILDREN %}
+    {% formrow form.id_lagapeo %}
+{% endif %}
     {% formrow form.school_year  %}
     {% formconfig row using "floppyforms/rows/bootstrap.html" %}
 {% if PREFILL_YEARS_WITH_TEACHERS %}
     {% formrow form.teacher %}
+{% endif %}
+{% if CHILD_SCHOOL %}
+    {% formrow form.school %}
+    {% formrow form.other_school %}
+
 {% endif %}
 </fieldset>
 {% endform %}

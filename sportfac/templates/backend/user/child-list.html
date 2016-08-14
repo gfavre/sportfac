@@ -77,7 +77,7 @@ $(function () {
       {% endif %}
       <th>{% trans "Name" %}</th>
       <th>{% trans "Family" %}</th>
-      <th>{% trans "School year" %}</th>
+      <th>{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
       <th class="actions">{% trans "Actions" %}</th>
     </tr>
   </thead>
@@ -94,7 +94,12 @@ $(function () {
             n/a
         {% endif %}
       </td>
-      <td>{{ child.school_year|default:"n/a" }}</td>
+      <td>
+          {{ child.school_year|default:"n/a" }}
+          {% if CHILD_SCHOOL and child.school %}<br>
+            {{ child.school }}
+          {% endif %}
+      </td>
       <td>
           <ul class="list-unstyled">
             <li class="text-nowrap"><a href="{{ child.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Edit student" %}</a></li>

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-12 18:03+0200\n"
+"POT-Creation-Date: 2016-08-14 08:26+0200\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -238,6 +238,7 @@ msgstr "12S HARMOS"
 
 #: activities/models.py:45 contact/forms.py:10 profiles/models.py:256
 #: templates/backend/activity/list.html:37
+#: templates/backend/course/detail.html:70
 #: templates/backend/registration/bill-detail.html:41
 #: templates/backend/teacher/list.html:37
 #: templates/backend/user/child-list.html:78
@@ -922,7 +923,7 @@ msgstr "IBAN"
 #: profiles/forms.py:108 profiles/models.py:97 registrations/forms.py:13
 #: registrations/models.py:212 templates/activities/course_detail.html.py:56
 #: templates/backend/course/detail-phase2.html:60
-#: templates/backend/course/detail.html:72
+#: templates/backend/course/detail.html:71
 #: templates/backend/registration/detail.html:43
 #: templates/backend/user/detail-responsible.html:37
 #: templates/backend/user/detail.html:89
@@ -936,7 +937,6 @@ msgstr "Format: 31.12.2012"
 #: profiles/forms.py:153 profiles/models.py:85 registrations/models.py:209
 #: schools/models.py:16 templates/activities/course_detail.html.py:53
 #: templates/backend/course/detail-phase2.html:58
-#: templates/backend/course/detail.html:70
 #: templates/backend/registration/detail.html:41
 msgid "First name"
 msgstr "Prénom"
@@ -944,7 +944,6 @@ msgstr "Prénom"
 #: profiles/forms.py:154 profiles/models.py:86 registrations/models.py:210
 #: schools/models.py:17 templates/activities/course_detail.html.py:54
 #: templates/backend/course/detail-phase2.html:59
-#: templates/backend/course/detail.html:71
 #: templates/backend/registration/detail.html:42
 msgid "Last name"
 msgstr "Nom"
@@ -1035,7 +1034,7 @@ msgstr "Date d'inscription"
 #: profiles/models.py:241 profiles/models.py:250 registrations/forms.py:23
 #: templates/activities/course_detail.html:57
 #: templates/backend/course/detail-phase2.html:61
-#: templates/backend/course/detail.html:73
+#: templates/backend/course/detail.html:72
 #: templates/backend/registration/detail.html:44
 #: templates/backend/user/child-list.html:80
 #: templates/backend/user/detail.html:93
@@ -1429,14 +1428,14 @@ msgstr "Gestion des absences"
 
 #: templates/activities/course_detail.html:60
 #: templates/backend/course/detail-phase2.html:62
-#: templates/backend/course/detail.html:74
+#: templates/backend/course/detail.html:73
 #: templates/backend/registration/detail.html:45
 msgid "Parents phone"
 msgstr "Téléphone des parents"
 
 #: templates/activities/course_detail.html:61
 #: templates/backend/course/detail-phase2.html:63
-#: templates/backend/course/detail.html:75
+#: templates/backend/course/detail.html:74
 #: templates/backend/registration/detail.html:46
 msgid "Parents email"
 msgstr "Email des parents"
@@ -1463,7 +1462,7 @@ msgstr "Heure"
 #: templates/activities/course_list.html:44
 #: templates/backend/activity/list.html:38
 #: templates/backend/course/detail-phase2.html:65
-#: templates/backend/course/detail.html:76
+#: templates/backend/course/detail.html:75
 #: templates/backend/course/list-phase1.html:45
 #: templates/backend/course/list.html:45
 #: templates/backend/registration/bill-detail.html:46
@@ -1711,7 +1710,7 @@ msgid "Status"
 msgstr "Statut"
 
 #: templates/backend/course/detail-phase2.html:103
-#: templates/backend/course/detail.html:112
+#: templates/backend/course/detail.html:117
 #: templates/backend/registration/bill-detail.html:74
 #: templates/backend/registration/list.html:57
 #: templates/backend/registration/update.html:4
@@ -1721,7 +1720,7 @@ msgid "Update registration"
 msgstr "Modifier l'inscription"
 
 #: templates/backend/course/detail-phase2.html:104
-#: templates/backend/course/detail.html:113
+#: templates/backend/course/detail.html:118
 #: templates/backend/registration/bill-detail.html:75
 #: templates/backend/registration/confirm_delete.html:4
 #: templates/backend/registration/confirm_delete.html:5
@@ -1730,6 +1729,11 @@ msgstr "Modifier l'inscription"
 #: templates/backend/user/detail.html:117
 msgid "Cancel registration"
 msgstr "Annuler l'inscription"
+
+#: templates/backend/course/detail.html:72
+#: templates/backend/user/child-list.html:80
+msgid "School infos"
+msgstr "Informations scolaires"
 
 #: templates/backend/course/list-phase1.html:4
 #: templates/backend/course/list.html:4
@@ -2267,11 +2271,11 @@ msgstr "Liste des élèves"
 msgid "Family"
 msgstr "Famille"
 
-#: templates/backend/user/child-list.html:100
+#: templates/backend/user/child-list.html:105
 msgid "Edit student"
 msgstr "Mettre à jour l'élève"
 
-#: templates/backend/user/child-list.html:101
+#: templates/backend/user/child-list.html:106
 msgid "Delete student"
 msgstr "Supprimer l'élève"
 
