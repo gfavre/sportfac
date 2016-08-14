@@ -14,7 +14,7 @@
       {{ object.zipcode }} {{ object.city }}<br />
       {{ object.get_country_display }}
     </dd>
-    <dt>Email</dt><dd><a href="mailto:{{ object.email }}">{{ object.email }} </a></dd>
+    <dt>Email</dt><dd>{{ object.email | urlize }}</dd>
     {% if object.private_phone %}
     <dt>{% trans "Home phone" %}</dt>
     <dd>
@@ -93,6 +93,9 @@
           <dt>{% trans "School year" %}</dt><dd> {{ child.school_year }}</dd>
 {% if PREFILL_YEARS_WITH_TEACHERS %}
           <dt>{% trans "Teacher" %}</dt><dd> {{ child.teacher.get_full_name }}</dd>
+{% endif %}
+{% if CHILD_SCHOOL %}
+          <dt>{% trans "School" %}</dt><dd>{{ child.school_name }}</dd>
 {% endif %}
         </dl>
         <p class="text-center">

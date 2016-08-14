@@ -261,6 +261,13 @@ class Child(TimeStampedModel):
     @property
     def full_name(self):
         return self.get_full_name()
+    
+    @property
+    def school_name(self):
+        if self.school:
+            return self.school.name
+        else:
+            return self.other_school
 
     @property
     def js_sex(self):
