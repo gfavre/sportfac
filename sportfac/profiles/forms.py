@@ -61,7 +61,7 @@ class PhoneRequiredMixin(object):
 class UserForm(PhoneRequiredMixin, forms.ModelForm):
     address = forms.CharField(label=_("Address"),
                               widget=forms.Textarea(attrs={'rows': 3}),
-                              required = True)
+                              required=True)
 
     email = forms.EmailField(label=_("E-mail"), 
                              widget=forms.EmailInput(attrs={'placeholder': 'john@example.com'}))
@@ -154,7 +154,7 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
     last_name = forms.CharField(label=_("Last name"),  max_length=30, required=True)
     address = forms.CharField(label=_("Address"),
                               #widget=forms.Textarea(attrs={'rows': 3}),
-                              required = False)
+                              required = True)
     zipcode = forms.CharField(label=_("NPA"), required=True,
                               max_length=5, 
                               widget=forms.TextInput(attrs={'placeholder': _("NPA")}))
