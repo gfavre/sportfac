@@ -29,12 +29,12 @@ class FamilyPermission(permissions.IsAuthenticated):
         return False
 
 
-class ResponsiblePermission(permissions.IsAuthenticated):
+class InstructorPermission(permissions.IsAuthenticated):
     def has_object_permission(self, request, view, obj):
         """
         Return `True` if permission is granted, `False` otherwise.
         """
         if request.user.is_manager or request.user.is_staff or request.user.is_superuser:
             return True
-        return obj.course.responsible == request.user
+        return request.user in obj.course.instructors.all()
     

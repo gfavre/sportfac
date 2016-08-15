@@ -14,7 +14,7 @@ from activities.models import Activity, Course
 from registrations.models import Child, ExtraInfo, Registration
 from profiles.models import SchoolYear
 from schools.models import Teacher
-from .permissions import ManagerPermission, FamilyOrAdminPermission, FamilyPermission, ResponsiblePermission
+from .permissions import ManagerPermission, FamilyOrAdminPermission, FamilyPermission, InstructorPermission
 from .serializers import (AbsenceSerializer, SetAbsenceSerializer, SessionSerializer,
                           ActivitySerializer, ActivityDetailedSerializer, 
                           ChildrenSerializer, CourseSerializer, TeacherSerializer,
@@ -25,7 +25,7 @@ from .serializers import (AbsenceSerializer, SetAbsenceSerializer, SessionSerial
 class AbsenceViewSet(viewsets.ModelViewSet):
     model = Absence
     queryset = Absence.objects.all()
-    permission_classes = (ResponsiblePermission,)
+    permission_classes = (InstructorPermission,)
     serializer_class = AbsenceSerializer
     
     @list_route(methods=['post'])
@@ -53,7 +53,7 @@ class SessionViewSet(viewsets.ModelViewSet):
     model = Session
     serializer_class = SessionSerializer
     queryset = Session.objects.all()
-    permission_classes = (ResponsiblePermission,)
+    permission_classes = (InstructorPermission,)
     
 
 
@@ -62,7 +62,7 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
     model = Activity
     
     def get_queryset(self):
-        queryset = Activity.objects.prefetch_related('courses', 'courses__responsible')
+        queryset = Activity.objects.prefetch_related('courses', 'courses__instructors')
         school_year = self.request.query_params.get('year', None)
         if school_year is not None:
             queryset = queryset.filter(courses__schoolyear_min__lte=school_year,
@@ -81,7 +81,7 @@ class CourseViewSet(viewsets.ReadOnlyModelViewSet):
     model = Course
     
     def get_queryset(self):
-        return Course.objects.visible().select_related('activity', 'responsible').prefetch_related('participants')
+        return Course.objects.visible().select_related('activity', 'instructors').prefetch_related('participants')
     
 
 class TeacherViewSet(viewsets.ReadOnlyModelViewSet):

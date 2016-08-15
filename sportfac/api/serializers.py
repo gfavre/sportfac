@@ -40,7 +40,7 @@ class ActivitySerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'number')
 
 
-class ResponsibleSerializer(serializers.ModelSerializer):
+class InstructorSerializer(serializers.ModelSerializer):
     first = serializers.CharField(source='first_name')
     last  = serializers.CharField(source='last_name')
     phone = serializers.CharField(source='best_phone')
@@ -52,26 +52,26 @@ class ResponsibleSerializer(serializers.ModelSerializer):
 
 
 class CourseInlineSerializer(serializers.ModelSerializer):
-    responsible = ResponsibleSerializer(read_only=True)
+    instructors = InstructorSerializer(read_only=True, many=True)
     start_time = serializers.TimeField(format='%H:%M')
     end_time = serializers.TimeField(format='%H:%M')
 
     class Meta:
         model = Course
         fields = ('id', 'number', 'day', 'start_date', 'end_date', 'start_time', 'end_time', 
-                  'schoolyear_min', 'schoolyear_max', 'responsible')
+                  'schoolyear_min', 'schoolyear_max', 'instructors')
 
 
 class CourseSerializer(serializers.ModelSerializer):
     activity = ActivitySerializer(many=False)
-    responsible = ResponsibleSerializer(many=False)
+    instructors = InstructorSerializer(read_only=True, many=True)
     count_participants = serializers.IntegerField()
     start_time = serializers.TimeField(format='%H:%M')
     end_time = serializers.TimeField(format='%H:%M')
     
     class Meta:
         model = Course
-        fields = ('id', 'number', 'responsible', 'activity', 'price', 'number_of_sessions', 'day', 
+        fields = ('id', 'number', 'instructors', 'activity', 'price', 'number_of_sessions', 'day', 
                   'start_date', 'end_date', 'start_time', 'end_time', 'place',
                   'min_participants', 'max_participants', 'count_participants',
                   'schoolyear_min', 'schoolyear_max')

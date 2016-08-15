@@ -258,8 +258,8 @@ class Course(TimeStampedModel):
 
     def save(self, *args, **kwargs):
         super(Course, self).save(*args, **kwargs)
-        self.responsible.is_responsible = True
-
+        for instructor in self.instructors.all():
+            instructor.is_responsible = True
         
     class Meta:
         ordering = ('activity__name', 'number', )

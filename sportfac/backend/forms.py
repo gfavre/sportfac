@@ -32,6 +32,13 @@ class TimePickerInput(forms.TimeInput):
 class Select2Widget(forms.Select):
     template_name = 'floppyforms/select2.html'
 
+class Select2MultipleWidget(forms.SelectMultiple):
+    template_name = 'floppyforms/select2.html'
+    
+    def build_attrs(self, extra_attrs=None, **kwargs):
+        self.attrs.setdefault('multiple', 'multiple')
+        return super(Select2MultipleWidget, self).build_attrs(extra_attrs, **kwargs) 
+
 
 class RegistrationDatesForm(forms.Form):
     opening_date = forms.DateTimeField(label=_("Opening date"), required=True, 

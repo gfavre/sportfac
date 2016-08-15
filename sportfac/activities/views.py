@@ -34,7 +34,7 @@ class ActivityDetailView(DetailView):
     model = Activity
     
     def get_queryset(self):
-        prefetched = Activity.objects.prefetch_related('courses', 'courses__participants', 'courses__responsible')
+        prefetched = Activity.objects.prefetch_related('courses', 'courses__participants', 'courses__instructors')
         return prefetched.all()
     
     def get_context_data(self, **kwargs):
@@ -78,16 +78,17 @@ class MyCoursesListView(ResponsibleMixin, ListView):
     template_name = 'activities/course_list.html'
 
     def get_queryset(self):
-        return Course.objects.filter(responsible=self.request.user)
+        return Course.objects.filter(instructor=self.request.user)
 
 
 class MyCourseDetailView(CourseAccessMixin, DetailView):
     model = Course
     template_name = 'activities/course_detail.html'
     pk_url_kwarg = 'course'
-    queryset = Course.objects.select_related('activity', 
-                                             'responsible' 
-                            ).prefetch_related('participants__child__school_year', 'participants__child__family')
+    queryset = Course.objects.select_related('activity').\
+                              prefetch_related('participants__child__school_year', 
+                                               'participants__child__family',
+                                               'instructors')
 
 
 class CustomMailCreateView(ResponsibleMixin, MailCreateView):
