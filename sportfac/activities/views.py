@@ -64,7 +64,7 @@ class ActivityListView(LoginRequiredMixin, WizardMixin, ListView):
         context = super(ActivityListView, self).get_context_data(**kwargs)
         from backend.dynamic_preferences_registry import global_preferences_registry
         context['MAX_REGISTRATIONS'] = global_preferences_registry.manager()['MAX_REGISTRATIONS']
-        times = Course.objects.all().aggregate(Max('end_time'), Min('start_time'))
+        times = Course.objects.visible().aggregate(Max('end_time'), Min('start_time'))
         context['START_HOUR'] = times['start_time__min'].hour
         if times['end_time__max'].minute == 0:
             context['END_HOUR'] = times['end_time__max'].hour

@@ -97,6 +97,12 @@ class ExtraNeed(TimeStampedModel):
         return self.question_label
 
 
+
+class CourseManager(models.Manager):
+    def visible(self):
+        return self.get_queryset().filter(visible=True)
+        
+
 class Course(TimeStampedModel):
     "A course, i.e. an instance of an activity"
     activity = models.ForeignKey('Activity', related_name='courses', 
@@ -106,6 +112,8 @@ class Course(TimeStampedModel):
                               null=True, blank=True, 
                               verbose_name=ugettext_lazy("Identifier"))
     uptodate = models.BooleanField(verbose_name=ugettext_lazy("Course up to date"), default=True)
+    visible = models.BooleanField(verbose_name=ugettext_lazy("Course visible"), default=True)
+
     responsible = models.ForeignKey('profiles.FamilyUser', verbose_name=ugettext_lazy("Responsible"), related_name='courses')
 
     price = models.DecimalField(max_digits=5, decimal_places=2, 
@@ -124,6 +132,7 @@ class Course(TimeStampedModel):
     schoolyear_min = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="1", verbose_name=ugettext_lazy("Minimal school year"))
     schoolyear_max = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="12", verbose_name=ugettext_lazy("Maximal school year"))
     
+    objects = CourseManager()
     
     @property
     def day_name(self):
