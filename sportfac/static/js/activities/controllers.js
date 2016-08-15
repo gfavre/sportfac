@@ -268,7 +268,7 @@ function($scope, $filter, $modal, CoursesService){
     calendar:{
       height: 650, aspectRatio: 3, editable: false,
       year: year, month: month, date: day,
-      defaultView: 'agendaWeek', weekends: false, allDaySlot: false,
+      defaultView: 'agendaWeek', weekends: true, firstDay:1, allDaySlot: false,
       slotMinutes: $scope.slotMinutes, maxTime: $scope.endHour, minTime: $scope.startHour,
       axisFormat: 'H:mm', columnFormat: 'dddd', header:{left: '', center: '', right: ''},
       dayNames: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
