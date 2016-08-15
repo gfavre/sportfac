@@ -46,8 +46,13 @@ $(function () {
     </tr>
   </thead>
   {% for course in object_list %}
-    <tr>
-      <td><a href="{{ course.get_backend_url }}">{{ course.number }}</a></td>
+    <tr {% if not course.visible %}class="warning"{% endif %}>
+      <td data-order="{{ course.number }}">
+          <a href="{{ course.get_backend_url }}">{{ course.number }}</a>
+          {% if not course.visible %}<br>
+          <span class="text-muted"><small>{% trans "Invisible" %}</small></span>
+          {% endif %}
+      </td>
       <td><a href="{{ course.activity.get_backend_url }}">{{ course.activity.name }}</a></td>
       <td>{{ course.day_name }}</td>
       <td data-order="{{ course.start_date|date:'c'}}">{{ course.start_date|date:"SHORT_DATE_FORMAT" }}</td>

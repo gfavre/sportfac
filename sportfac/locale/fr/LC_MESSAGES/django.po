@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-14 08:26+0200\n"
+"POT-Creation-Date: 2016-08-15 11:45+0200\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -54,11 +54,11 @@ msgstr "Dates"
 msgid "Limitations"
 msgstr "Limitations"
 
-#: activities/admin.py:27 activities/admin.py:92 activities/models.py:248
+#: activities/admin.py:27 activities/admin.py:92 activities/models.py:266
 msgid "course"
 msgstr "cours"
 
-#: activities/admin.py:28 activities/admin.py:93 activities/models.py:249
+#: activities/admin.py:28 activities/admin.py:93 activities/models.py:267
 #: templates/backend/portlets/courses.html:9
 #: templates/backend/portlets/registration_courses_phase3.html:9
 msgid "courses"
@@ -72,11 +72,11 @@ msgstr "Question complémentaire"
 msgid "Extra needs"
 msgstr "Questions complémentaires"
 
-#: activities/admin.py:43 activities/models.py:85
+#: activities/admin.py:43 activities/models.py:94
 msgid "activity"
 msgstr "activité"
 
-#: activities/admin.py:44 activities/models.py:86
+#: activities/admin.py:44 activities/models.py:95
 #: templates/backend/portlets/courses.html:9
 #: templates/backend/portlets/registration_courses_phase3.html:9
 msgid "activities"
@@ -109,8 +109,8 @@ msgstr "Durée"
 msgid "Export selected courses"
 msgstr "Exporter les cours sélectionnés"
 
-#: activities/forms.py:20 activities/forms.py:41 activities/models.py:49
-#: activities/models.py:107 templates/activities/course_list.html.py:35
+#: activities/forms.py:20 activities/forms.py:42 activities/models.py:56
+#: activities/models.py:122 templates/activities/course_list.html.py:35
 #: templates/backend/activity/list.html:36
 #: templates/backend/course/list-phase1.html:37
 #: templates/backend/course/list.html:37
@@ -119,7 +119,7 @@ msgstr "Exporter les cours sélectionnés"
 msgid "Identifier"
 msgstr "Identifiant"
 
-#: activities/forms.py:21 activities/models.py:112
+#: activities/forms.py:21 activities/models.py:129
 #: templates/absences/absences.html:21
 #: templates/activities/activity_detail.html:43
 #: templates/activities/course_detail.html:21
@@ -137,7 +137,7 @@ msgstr "Identifiant"
 msgid "Price"
 msgstr "Prix"
 
-#: activities/forms.py:23 activities/models.py:117
+#: activities/forms.py:23 activities/models.py:134
 #: templates/activities/course_list.html:38
 #: templates/backend/course/list-phase1.html:40
 #: templates/backend/course/list.html:40
@@ -146,97 +146,98 @@ msgstr "Prix"
 msgid "Start date"
 msgstr "Date de début"
 
-#: activities/forms.py:25 activities/models.py:118
+#: activities/forms.py:25 activities/models.py:135
 #: templates/activities/course_list.html:39
 #: templates/backend/year/list.html:34 templates/mailer/pdf_my_courses.html:20
 msgid "End date"
 msgstr "Date de fin"
 
-#: activities/forms.py:27 activities/models.py:119
+#: activities/forms.py:27 activities/models.py:136
 msgid "Start time"
 msgstr "Heure de début"
 
-#: activities/forms.py:29 activities/models.py:120
+#: activities/forms.py:29 activities/models.py:137
 msgid "End time"
 msgstr "Heure de fin"
 
-#: activities/models.py:17
+#: activities/models.py:18
 msgid "Monday"
 msgstr "Lundi"
 
-#: activities/models.py:18
+#: activities/models.py:19
 msgid "Tuesday"
 msgstr "Mardi"
 
-#: activities/models.py:19
+#: activities/models.py:20
 msgid "Wednesday"
 msgstr "Mercredi"
 
-#: activities/models.py:20
+#: activities/models.py:21
 msgid "Thursday"
 msgstr "Jeudi"
 
-#: activities/models.py:21
+#: activities/models.py:22
 msgid "Friday"
 msgstr "Vendredi"
 
-#: activities/models.py:22
+#: activities/models.py:23
 msgid "Saturday"
 msgstr "Samedi"
 
-#: activities/models.py:23
+#: activities/models.py:24
 msgid "Sunday"
 msgstr "Dimanche"
 
-#: activities/models.py:27
+#: activities/models.py:28
 msgid "1st HARMOS"
 msgstr "1p HARMOS"
 
-#: activities/models.py:28
+#: activities/models.py:29
 msgid "2nd HARMOS"
 msgstr "2p HARMOS"
 
-#: activities/models.py:29
+#: activities/models.py:30
 msgid "3rd HARMOS"
 msgstr "3p HARMOS"
 
-#: activities/models.py:30
+#: activities/models.py:31
 msgid "4th HARMOS"
 msgstr "4p HARMOS"
 
-#: activities/models.py:31
+#: activities/models.py:32
 msgid "5th HARMOS"
 msgstr "5p HARMOS"
 
-#: activities/models.py:32
+#: activities/models.py:33
 msgid "6th HARMOS"
 msgstr "6p HARMOS"
 
-#: activities/models.py:33
+#: activities/models.py:34
 msgid "7th HARMOS"
 msgstr "7p HARMOS"
 
-#: activities/models.py:34
+#: activities/models.py:35
 msgid "8th HARMOS"
 msgstr "8p HARMOS"
 
-#: activities/models.py:35
+#: activities/models.py:36
 msgid "9th HARMOS"
 msgstr "9S HARMOS"
 
-#: activities/models.py:36
+#: activities/models.py:37
 msgid "10th HARMOS"
 msgstr "10S HARMOS"
 
-#: activities/models.py:37
+#: activities/models.py:38
 msgid "11th HARMOS"
 msgstr "11S HARMOS"
 
-#: activities/models.py:38
+#: activities/models.py:39
 msgid "12th HARMOS"
 msgstr "12S HARMOS"
 
-#: activities/models.py:45 contact/forms.py:10 profiles/models.py:256
+#: activities/models.py:52 contact/forms.py:10 profiles/models.py:256
+#: templates/activities/course_detail.html:53
 #: templates/backend/activity/list.html:37
 #: templates/backend/course/detail.html:70
 #: templates/backend/registration/bill-detail.html:41
@@ -252,36 +253,36 @@ msgstr "12S HARMOS"
 msgid "Name"
 msgstr "Nom"
 
-#: activities/models.py:51
+#: activities/models.py:58
 msgid ""
 "Part of the url. Cannot contain punctuation, spaces or accentuated letters"
 msgstr ""
 "Partie de l'URL. Ne peut contenit de ponctuation, d'espaces ou de caractères "
 "accentués"
 
-#: activities/models.py:52 templates/backend/activity/detail.html.py:18
+#: activities/models.py:59 templates/backend/activity/detail.html.py:18
 #: templates/registrations/summary.html:35
 msgid "Informations"
 msgstr "Informations"
 
-#: activities/models.py:53
+#: activities/models.py:60
 msgid "Specific informations like outfit."
 msgstr "Informations spécifiques comme la tenue souhaitée."
 
-#: activities/models.py:54 templates/backend/activity/detail.html.py:10
+#: activities/models.py:61 templates/backend/activity/detail.html.py:10
 #: templates/backend/activity/detail.html:15
 msgid "Description"
 msgstr "Description"
 
-#: activities/models.py:93
+#: activities/models.py:102
 msgid "Question"
 msgstr "Question"
 
-#: activities/models.py:94
+#: activities/models.py:103
 msgid "e.g. Shoes size?"
 msgstr "p. ex. Taille des chaussures?"
 
-#: activities/models.py:103 templates/activities/course_list.html.py:36
+#: activities/models.py:118 templates/activities/course_list.html.py:36
 #: templates/backend/course/list-phase1.html:38
 #: templates/backend/course/list.html:38
 #: templates/backend/registration/bill-detail.html:42
@@ -294,11 +295,15 @@ msgstr "p. ex. Taille des chaussures?"
 msgid "Activity"
 msgstr "Activité"
 
-#: activities/models.py:108
+#: activities/models.py:123
 msgid "Course up to date"
-msgstr "cours à jour"
+msgstr "Cours à jour"
 
-#: activities/models.py:109 templates/absences/absences.html.py:17
+#: activities/models.py:124
+msgid "Course visible"
+msgstr "Cours visible"
+
+#: activities/models.py:126 templates/absences/absences.html.py:17
 #: templates/activities/activity_detail.html:36
 #: templates/activities/course_detail.html:16
 #: templates/backend/activity/detail.html:44
@@ -313,7 +318,7 @@ msgstr "cours à jour"
 msgid "Responsible"
 msgstr "Responsable"
 
-#: activities/models.py:115 templates/absences/absences.html.py:20
+#: activities/models.py:132 templates/absences/absences.html.py:20
 #: templates/activities/activity_detail.html:39
 #: templates/activities/course_detail.html:19
 #: templates/backend/activity/detail.html:47
@@ -325,7 +330,7 @@ msgstr "Responsable"
 msgid "Number of sessions"
 msgstr "Nombre de sessions"
 
-#: activities/models.py:116 templates/activities/course_list.html.py:37
+#: activities/models.py:133 templates/activities/course_list.html.py:37
 #: templates/backend/course/list-phase1.html:39
 #: templates/backend/course/list.html:39
 #: templates/backend/registration/list.html:37
@@ -333,7 +338,7 @@ msgstr "Nombre de sessions"
 msgid "Day"
 msgstr "Jour"
 
-#: activities/models.py:121 templates/absences/absences.html.py:19
+#: activities/models.py:138 templates/absences/absences.html.py:19
 #: templates/activities/activity_detail.html:38
 #: templates/activities/course_detail.html:18
 #: templates/backend/activity/detail.html:46
@@ -350,23 +355,23 @@ msgstr "Jour"
 msgid "Place"
 msgstr "Lieu"
 
-#: activities/models.py:122
+#: activities/models.py:139
 msgid "Minimal number of participants"
 msgstr "Nombre minimum de participants"
 
-#: activities/models.py:123
+#: activities/models.py:140
 msgid "Maximal number of participants"
 msgstr "Nombre maximum de participants"
 
-#: activities/models.py:124
+#: activities/models.py:141
 msgid "Minimal school year"
 msgstr "Année scolaire minimale"
 
-#: activities/models.py:125
+#: activities/models.py:142
 msgid "Maximal school year"
 msgstr "Année scolaire maximale"
 
-#: activities/models.py:165
+#: activities/models.py:183
 #, python-format
 msgid ""
 "%(activity)s (%(number)s): from %(start)s to %(end)s, every %(day)s at %"
@@ -374,7 +379,7 @@ msgid ""
 msgstr ""
 "%(activity)s (%(number)s): du %(start)s au %(end)s, les %(day)s à %(hour)s."
 
-#: activities/models.py:178 templates/activities/course_detail.html.py:30
+#: activities/models.py:196 templates/activities/course_detail.html.py:30
 #: templates/backend/activity/detail.html:59
 #: templates/backend/course/detail-phase2.html:32
 #: templates/backend/course/detail.html:31
@@ -383,7 +388,7 @@ msgstr ""
 msgid "Course full"
 msgstr "Cours complet"
 
-#: activities/models.py:180
+#: activities/models.py:198
 #, python-format
 msgid "%(available)s out of %(total)s places remaining"
 msgstr "%(available)s sur %(total)s places disponibles"
@@ -613,7 +618,7 @@ msgstr "Enfant"
 
 #: backend/views/registration_views.py:42 registrations/models.py:41
 #: templates/backend/teacher/detail.html:25
-#: templates/backend/user/detail.html:105
+#: templates/backend/user/detail.html:108
 msgid "Course"
 msgstr "Cours"
 
@@ -887,7 +892,7 @@ msgid "NPA"
 msgstr "NPA"
 
 #: profiles/forms.py:69 profiles/forms.py:162 profiles/forms.py:163
-#: profiles/models.py:90 templates/activities/course_detail.html.py:59
+#: profiles/models.py:90 templates/activities/course_detail.html.py:58
 #: templates/backend/user/create.html:63 templates/backend/user/update.html:66
 #: templates/profiles/account_form.html:29
 #: templates/profiles/registration_form.html:38
@@ -921,7 +926,7 @@ msgid "IBAN"
 msgstr "IBAN"
 
 #: profiles/forms.py:108 profiles/models.py:97 registrations/forms.py:13
-#: registrations/models.py:212 templates/activities/course_detail.html.py:56
+#: registrations/models.py:212 templates/activities/course_detail.html.py:55
 #: templates/backend/course/detail-phase2.html:60
 #: templates/backend/course/detail.html:71
 #: templates/backend/registration/detail.html:43
@@ -935,15 +940,13 @@ msgid "Format: 31.12.2012"
 msgstr "Format: 31.12.2012"
 
 #: profiles/forms.py:153 profiles/models.py:85 registrations/models.py:209
-#: schools/models.py:16 templates/activities/course_detail.html.py:53
-#: templates/backend/course/detail-phase2.html:58
+#: schools/models.py:16 templates/backend/course/detail-phase2.html.py:58
 #: templates/backend/registration/detail.html:41
 msgid "First name"
 msgstr "Prénom"
 
 #: profiles/forms.py:154 profiles/models.py:86 registrations/models.py:210
-#: schools/models.py:17 templates/activities/course_detail.html.py:54
-#: templates/backend/course/detail-phase2.html:59
+#: schools/models.py:17 templates/backend/course/detail-phase2.html.py:59
 #: templates/backend/registration/detail.html:42
 msgid "Last name"
 msgstr "Nom"
@@ -1032,7 +1035,7 @@ msgid "date joined"
 msgstr "Date d'inscription"
 
 #: profiles/models.py:241 profiles/models.py:250 registrations/forms.py:23
-#: templates/activities/course_detail.html:57
+#: templates/activities/course_detail.html:56
 #: templates/backend/course/detail-phase2.html:61
 #: templates/backend/course/detail.html:72
 #: templates/backend/registration/detail.html:44
@@ -1096,6 +1099,7 @@ msgid "SSF number"
 msgstr "Numéro SSF"
 
 #: registrations/forms.py:31 templates/backend/navbar.html.py:122
+#: templates/backend/user/detail.html:98
 msgid "School"
 msgstr "École"
 
@@ -1131,7 +1135,7 @@ msgstr "Inscription"
 #: templates/backend/portlets/registrations_phase3.html:5
 #: templates/backend/registration/bill-detail.html:37
 #: templates/backend/registration/detail.html:36
-#: templates/backend/user/detail.html:101
+#: templates/backend/user/detail.html:104
 #: templates/registrations/bill-detail.html:64
 msgid "Registrations"
 msgstr "Inscriptions"
@@ -1426,14 +1430,20 @@ msgstr "Pas assez de participants"
 msgid "Manage absences"
 msgstr "Gestion des absences"
 
-#: templates/activities/course_detail.html:60
+#: templates/activities/course_detail.html:56
+#: templates/backend/course/detail.html:72
+#: templates/backend/user/child-list.html:80
+msgid "School infos"
+msgstr "Informations scolaires"
+
+#: templates/activities/course_detail.html:59
 #: templates/backend/course/detail-phase2.html:62
 #: templates/backend/course/detail.html:73
 #: templates/backend/registration/detail.html:45
 msgid "Parents phone"
 msgstr "Téléphone des parents"
 
-#: templates/activities/course_detail.html:61
+#: templates/activities/course_detail.html:60
 #: templates/backend/course/detail-phase2.html:63
 #: templates/backend/course/detail.html:74
 #: templates/backend/registration/detail.html:46
@@ -1469,7 +1479,7 @@ msgstr "Heure"
 #: templates/backend/registration/detail.html:47
 #: templates/backend/teacher/list.html:39
 #: templates/backend/user/child-list.html:81
-#: templates/backend/user/detail.html:106 templates/backend/user/list.html:85
+#: templates/backend/user/detail.html:109 templates/backend/user/list.html:85
 #: templates/backend/user/manager-list.html:80
 #: templates/backend/user/responsible-list.html:80
 #: templates/backend/year/list.html:35
@@ -1689,7 +1699,7 @@ msgstr "Envoyer l'email de confirmation"
 
 #: templates/backend/course/confirm_delete.html:4
 #: templates/backend/course/confirm_delete.html:10
-#: templates/backend/course/list-phase1.html:60
+#: templates/backend/course/list-phase1.html:67
 #: templates/backend/course/list.html:69
 msgid "Delete course"
 msgstr "Supprimer le cours"
@@ -1715,7 +1725,7 @@ msgstr "Statut"
 #: templates/backend/registration/list.html:57
 #: templates/backend/registration/update.html:4
 #: templates/backend/registration/update.html:5
-#: templates/backend/user/detail.html:116
+#: templates/backend/user/detail.html:119
 msgid "Update registration"
 msgstr "Modifier l'inscription"
 
@@ -1726,14 +1736,9 @@ msgstr "Modifier l'inscription"
 #: templates/backend/registration/confirm_delete.html:5
 #: templates/backend/registration/detail.html:70
 #: templates/backend/registration/list.html:58
-#: templates/backend/user/detail.html:117
+#: templates/backend/user/detail.html:120
 msgid "Cancel registration"
 msgstr "Annuler l'inscription"
-
-#: templates/backend/course/detail.html:72
-#: templates/backend/user/child-list.html:80
-msgid "School infos"
-msgstr "Informations scolaires"
 
 #: templates/backend/course/list-phase1.html:4
 #: templates/backend/course/list.html:4
@@ -1750,11 +1755,15 @@ msgstr "Liste des cours"
 msgid "Up to date?"
 msgstr "À jour?"
 
-#: templates/backend/course/list-phase1.html:57
+#: templates/backend/course/list-phase1.html:53
+msgid "Invisible"
+msgstr "Invisible"
+
+#: templates/backend/course/list-phase1.html:62
 msgid "up to date"
 msgstr "à jour"
 
-#: templates/backend/course/list-phase1.html:59
+#: templates/backend/course/list-phase1.html:66
 #: templates/backend/course/list.html:67
 #: templates/backend/course/update.html:4
 #: templates/backend/course/update.html:5
@@ -2242,7 +2251,7 @@ msgid "Delete Child"
 msgstr "Supprimer l'enfant"
 
 #: templates/backend/user/child-confirm_delete.html:10
-#: templates/backend/user/detail.html:99
+#: templates/backend/user/detail.html:102
 msgid "Delete child"
 msgstr "Supprimer l'enfant"
 
@@ -2282,7 +2291,7 @@ msgstr "Supprimer l'élève"
 #: templates/backend/user/child-update.html:4
 #: templates/backend/user/child-update.html:5
 #: templates/backend/user/child-update.html:15
-#: templates/backend/user/detail.html:99
+#: templates/backend/user/detail.html:102
 msgid "Update child"
 msgstr "Mettre à jour"
 
@@ -2340,11 +2349,11 @@ msgstr "Mettre à jour les informations"
 msgid "Children"
 msgstr "Enfants"
 
-#: templates/backend/user/detail.html:123
+#: templates/backend/user/detail.html:126
 msgid "No registration for this child"
 msgstr "Aucune inscription pour cet enfant"
 
-#: templates/backend/user/detail.html:130
+#: templates/backend/user/detail.html:133
 #: templates/profiles/children_list_partial.html:19
 msgid "Add child"
 msgstr "Ajouter un enfant"
