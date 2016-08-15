@@ -42,7 +42,7 @@ SCHOOL_YEARS = (
 
 class ActivityManager(models.Manager):
     def visible(self):
-        return self.get_queryset().filter(visible=True)
+        return self.get_queryset().filter(courses__visible=True).annotate(count=Count('courses')).filter(count__gt=0)
 
 
 class Activity(TimeStampedModel):
@@ -59,6 +59,8 @@ class Activity(TimeStampedModel):
     informations = RichTextField(verbose_name=_("Informations"), blank=True, 
                                  help_text=ugettext_lazy("Specific informations like outfit."))
     description = RichTextField(verbose_name=_("Description"), blank=True)
+    
+    objects = ActivityManager()
     
     def get_absolute_url(self):
         return reverse('activities:activity-detail', kwargs={"slug": self.slug})
