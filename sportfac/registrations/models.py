@@ -124,10 +124,8 @@ class Registration(TimeStampedModel, StatusModel):
             self.bill.save()
 
     def delete(self, *args, **kwargs):
-        bill = self.bill
         super(Registration, self).delete(*args, **kwargs)
-        if bill:
-            bill.save()
+        self.bill.save()
     
 
 class Bill(TimeStampedModel, StatusModel):
@@ -239,7 +237,9 @@ class Child(TimeStampedModel):
         return reverse('backend:child-delete', kwargs={'pk': self.pk})
 
     def get_backend_url(self):
-        return reverse('backend:user-detail', kwargs={'pk': self.family.pk})
+        if self.family:
+            return reverse('backend:user-detail', kwargs={'pk': self.family.pk})
+        return reverse('backend:child-update', kwargs={'pk': self.pk})
 
     def get_full_name(self):
         full_name = '%s %s' % (self.first_name.title(), self.last_name.title())
