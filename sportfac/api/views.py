@@ -142,7 +142,7 @@ class ChildrenViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.validated_data['family'] = request.user
-            if serializer.validated_data.get('school', None):
+            if serializer.validated_data.get('school', None) and 'other_school' in serializer.validated_data:
                 del serializer.validated_data['other_school']
             self.object = serializer.save()
             headers = self.get_success_headers(serializer.data)
