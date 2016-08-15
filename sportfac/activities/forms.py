@@ -16,7 +16,7 @@ class CourseForm(forms.ModelForm):
                                       widget=Select2Widget())    
     responsible = forms.ModelChoiceField(queryset=FamilyUser.objects, 
                                          empty_label=None,
-                                         widget=Select2Widget()) 
+                                         widget=Select2Widget())
     number = forms.CharField(label=_("Identifier"), required=True)
     price = forms.DecimalField(label=_("Price"), required=True)
 

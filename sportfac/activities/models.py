@@ -123,7 +123,7 @@ class Course(TimeStampedModel):
     uptodate = models.BooleanField(verbose_name=ugettext_lazy("Course up to date"), default=True)
     visible = models.BooleanField(verbose_name=ugettext_lazy("Course visible"), default=True)
 
-    responsible = models.ForeignKey('profiles.FamilyUser', verbose_name=ugettext_lazy("Responsible"), related_name='courses')
+    instructors = models.ManyToManyField('profiles.FamilyUser', verbose_name=ugettext_lazy("Instructors"), related_name='course')
 
     price = models.DecimalField(max_digits=5, decimal_places=2, 
                                 verbose_name=ugettext_lazy("Price"), 
