@@ -221,7 +221,8 @@ class Child(TimeStampedModel):
     
     id_lagapeo = models.IntegerField(db_index=True, unique=True, null=True, blank=True, 
                                      verbose_name=_("Lagapeo Identification number"))
- 
+    
+    emergency_number = models.CharField(_("Emergency number"), max_length=30, blank=True)
     school = models.ForeignKey('profiles.School', related_name="students", null=True)
     other_school = models.CharField(_("Other school"),  blank=True, max_length=50)
  

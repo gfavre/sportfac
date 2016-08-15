@@ -107,4 +107,6 @@ def kepchup_context(request):
         'NO_PAYMENT': settings.KEPCHUP_NO_PAYMENT,
         'NO_TERMS': settings.KEPCHUP_NO_TERMS,
         'CHILD_SCHOOL': settings.KEPCHUP_CHILD_SCHOOL,
+        'EMERGENCY_NUMBER_MANDATORY': settings.KEPCHUP_EMERGENCY_NUMBER_MANDATORY,
+
     }

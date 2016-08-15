@@ -124,7 +124,7 @@ class ChildrenSerializer(serializers.ModelSerializer):
     class Meta:
         model = Child
         fields = ('id', 'ext_id', 'first_name', 'last_name', 'sex', 
-                  'nationality', 'language',
+                  'nationality', 'language', 'emergency_number',
                   'birth_date', 'school_year', 'teacher', 'school', 'other_school')
         depth = 1
 
