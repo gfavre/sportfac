@@ -92,7 +92,7 @@ def registration_opened_context(request):
 
 
 def activities_context(request):
-    return {'activities': Activity.objects.all()}
+    return {'activities': Activity.objects.visible()}
 
 def tenants_context(request):
     if request.user.is_authenticated() and request.user.is_manager:

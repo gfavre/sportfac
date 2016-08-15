@@ -2,6 +2,7 @@
 from datetime import datetime, date
 
 from django.db import models
+from django.db.models.aggregates import Count
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy
 from django.utils.translation import ugettext as _
@@ -37,6 +38,12 @@ SCHOOL_YEARS = (
     (11, ugettext_lazy("11th HARMOS")),
     (12, ugettext_lazy("12th HARMOS")),
 )
+
+
+class ActivityManager(models.Manager):
+    def visible(self):
+        return self.get_queryset().filter(visible=True)
+
 
 class Activity(TimeStampedModel):
     """
