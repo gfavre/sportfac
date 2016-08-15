@@ -20,7 +20,7 @@
   <u>Cours</u>
 </h3>
 <div class="row">
-  {% for course in activity.courses.all %}
+  {% for course in activity.courses.visible %}
   <section class="col-sm-6 topped">
     <div class="pricing-plan">
       <header class="pricing-header">

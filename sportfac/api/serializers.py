@@ -131,7 +131,7 @@ class ChildrenSerializer(serializers.ModelSerializer):
 
 class RegistrationSerializer(serializers.ModelSerializer):
     child = serializers.PrimaryKeyRelatedField(queryset=Child.objects.all())
-    course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all().select_related('activity'))
+    course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.visible().select_related('activity'))
     
     class Meta:
         model = Registration

@@ -34,7 +34,8 @@ class CourseForm(forms.ModelForm):
         fields = ('activity', 'number', 'responsible', 'price', 
                   'number_of_sessions', 'day', 'start_date', 'end_date',
                   'start_time', 'end_time', 'place', 'min_participants',
-                  'max_participants', 'schoolyear_min', 'schoolyear_max', 'uptodate')
+                  'max_participants', 'schoolyear_min', 'schoolyear_max', 
+                  'uptodate', 'visible')
 
 
 class ActivityForm(forms.ModelForm):
