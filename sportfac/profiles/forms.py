@@ -61,7 +61,7 @@ class PhoneRequiredMixin(object):
 class UserForm(PhoneRequiredMixin, forms.ModelForm):
     address = forms.CharField(label=_("Address"),
                               widget=forms.Textarea(attrs={'rows': 3}),
-                              required = False)
+                              required = True)
 
     email = forms.EmailField(label=_("E-mail"), 
                              widget=forms.EmailInput(attrs={'placeholder': 'john@example.com'}))
