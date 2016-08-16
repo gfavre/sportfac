@@ -23,13 +23,17 @@
   <dd>{{ registered.course.day_name }}, {{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</dd>  
   <dt>{% trans "Place" %}</dt>
   <dd>{{ registered.course.place }}</dd>
-  <dt>{% trans "Responsible" %}</dt>
+  <dt>{% trans "Instructors" %}</dt>
   <dd>
-    {{ registered.course.responsible.full_name }} <br />
-    <a href="{{ registered.course.responsible.best_phone|phone:'RFC3966' }}">
-      {{ registered.course.responsible.best_phone|phone }}
-    </a><br />
-    <a href="mailto:{{ registered.course.responsible.email }}">{{ registered.course.responsible.email }}</a>
+    <ul class="list-unstyled">
+    {% for instructor in registered.course.instructors.all %}
+      <li>
+        <a href="{{ instructor.get_backend_url }}">{{ instructor.full_name  }}</a><br />
+        <a href="{{ instructor.best_phone|phone:'RFC3966' }}">{{ instructor.best_phone|phone }}</a><br/>
+        <a href="{{ instructor.email|urlize }}">{{ instructor.email }}</a>
+      </li>
+    {% endfor %}
+    </ul>
   </dd>    
   {% if registered.course.activity.informations%}
   <dt>{% trans "Informations" %}</dt>

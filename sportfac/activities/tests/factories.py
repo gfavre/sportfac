@@ -25,7 +25,6 @@ class CourseFactory(factory.DjangoModelFactory):
         model = Course
 
     activity = factory.SubFactory(ActivityFactory)
-    responsible = factory.SubFactory(FamilyUserFactory)
 
     number = factory.Sequence(lambda x: "{0}".format(x))
     number_of_sessions = factory.fuzzy.FuzzyInteger(0, 42)
@@ -43,3 +42,13 @@ class CourseFactory(factory.DjangoModelFactory):
     )
     schoolyear_min = factory.fuzzy.FuzzyChoice(YEARS[:-1])
     schoolyear_max = factory.fuzzy.FuzzyChoice(YEARS[1:])
+    
+    price = factory.fuzzy.FuzzyInteger(1, 100)
+    
+    @factory.post_generation
+    def instructors(self, create, extracted, **kwargs):
+        if not create:
+            return
+        if extracted:
+            for instructor in extracted:
+                self.instructors.add(instructor)

@@ -14,7 +14,7 @@ from backend.forms import Select2Widget, DatePickerInput
 __all__ = ('AuthenticationForm', 'PasswordChangeForm', 'PasswordResetForm',
            'AcceptTermsForm', 'RegistrationForm',
            'UserForm', 'ManagerForm', 'ManagerWithPasswordForm',
-           'ResponsibleForm', 'ResponsibleWithPasswordForm')
+           'InstructorForm', 'InstructorWithPasswordForm')
 
 
 class AuthenticationForm(auth_forms.AuthenticationForm):
@@ -101,7 +101,7 @@ class ManagerWithPasswordForm(ManagerForm):
             raise forms.ValidationError(_("You must type the same password"
                                               " each time."))
 
-class ResponsibleForm(ManagerForm):
+class InstructorForm(ManagerForm):
     iban = IBANFormField(label=_("IBAN"), 
                          widget=forms.TextInput(attrs={'placeholder': 'CH37...'}), 
                          required=False)
@@ -116,7 +116,7 @@ class ResponsibleForm(ManagerForm):
                   'birth_date', 'iban', 'ahv')
     
 
-class ResponsibleWithPasswordForm(ResponsibleForm):
+class InstructorWithPasswordForm(InstructorForm):
     password1 = forms.CharField(widget=forms.PasswordInput,
                                 label=_("Password"),
                                 required=True)
@@ -125,7 +125,7 @@ class ResponsibleWithPasswordForm(ResponsibleForm):
                                 required=True)
 
     def clean(self):
-        super(ResponsibleWithPasswordForm, self).clean()
+        super(InstructorWithPasswordForm, self).clean()
         c = self.cleaned_data
         if self.cleaned_data.get("password1") != self.cleaned_data.get("password2"):
             raise forms.ValidationError(_("You must type the same password"

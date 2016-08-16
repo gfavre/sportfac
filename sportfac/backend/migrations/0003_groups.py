@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 
-from backend import RESPONSIBLE_GROUP, MANAGERS_GROUP
+from backend import INSTRUCTORS_GROUP, MANAGERS_GROUP
 
 
 def create_responsible_group(apps, schema_editor):
@@ -11,7 +11,7 @@ def create_responsible_group(apps, schema_editor):
        and give this group proper permissions.
     """
     Group = apps.get_app_config('auth').get_model('Group')
-    grp, created = Group.objects.get_or_create(name=RESPONSIBLE_GROUP)
+    grp, created = Group.objects.get_or_create(name=INSTRUCTORS_GROUP)
     grp.save()
     grp, created = Group.objects.get_or_create(name=MANAGERS_GROUP)
     grp.save()

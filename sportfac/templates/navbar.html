@@ -80,7 +80,7 @@
             </li>
             {% endif %}
 
-            {% if user.is_responsible %}
+            {% if user.is_instructor %}
               <li class="divider"></li>
               <li>
                 <a href="{% url 'activities:my-courses' %}"><i class="icon-graduation-cap"></i> {% trans "My courses" %}</a>

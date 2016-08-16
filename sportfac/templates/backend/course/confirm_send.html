@@ -7,7 +7,7 @@
 {% block content %}
 <form action="" method="post">{% csrf_token %}
 
-  <p>{% blocktrans with recipient=course.responsible.full_name %}Are you sure you want to send confirmation email to {{ recipient }} ?{% endblocktrans %}</p>
+  <p>{% blocktrans %}Are you sure you want to send confirmation email to each instructor ?{% endblocktrans %}</p>
   <button type="submit" class="btn btn-danger"><i class="icon icon-mail"></i>&nbsp;{% trans 'Send email' %}</button> &nbsp; &nbsp;
   <a href="{{ course.get_backend_url }}" class="btn btn-default"><i class="icon icon-cancel"></i> {% trans "Cancel" %}</a>
 </form>

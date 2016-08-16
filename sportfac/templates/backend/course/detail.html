@@ -13,8 +13,14 @@
     </header>
     <dl class="dl-horizontal">
       <dt>{% trans "Activity number" %}</dt><dd><a href="{{ course.activity.get_backend_url }}">{{ course.activity.number }}</a></dd>  
-      <dt>{% trans "Responsible" %}</dt>
-      <dd><a href="{{ course.responsible.get_backend_url }}">{{ course.responsible.full_name  }}</a></dd>
+      <dt>{% trans "Instructors" %}</dt>
+      <dd>
+        <ul class="list-unstyled">
+        {% for instructor in course.instructors.all %}
+          <li><a href="{{ instructor.get_backend_url }}">{{ instructor.full_name  }}</a></li>
+        {% endfor %}
+        </ul>
+      </dd>
       <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
       <dt>{% trans "Number of sessions" %}</dt><dd>{{ course.number_of_sessions }} cours</dd>
       {% if not NO_PAYMENT %}
@@ -45,8 +51,8 @@
         <i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}
     </a> &nbsp;   
     
-    <a href="{{ course.get_mail_responsible_url }}" class="btn btn-sm">
-        <i class="icon-tasks"></i>&nbsp;{% trans "Send infos to responsible" %}
+    <a href="{{ course.get_mail_instructors_url }}" class="btn btn-sm">
+        <i class="icon-tasks"></i>&nbsp;{% trans "Send infos to instructors" %}
     </a> &nbsp;
     
     <a href="{{ course.get_js_export_url }}" class="btn btn-sm">

@@ -13,8 +13,17 @@
       <p class="lead">Chaque {{ course.day_name|lower }} de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }} ({{ course.duration|duration }})</p>
     </header>
     <dl class="dl-horizontal">
-      <dt>{% trans "Responsible" %}</dt>
-      <dd><a href="{{ course.responsible.get_backend_url }}">{{ course.responsible.full_name  }}</a></dd>
+      <dt>{% trans "Instructors" %}</dt>
+      <dd>
+        <ul class="list-unstyled">
+        {% for instructor in course.instructors.all %}
+          <li>
+            <a href="mailto:{{ instructor.email }}">{{ instructor.full_name  }}</a><br />
+            <a href="{{ instructor.best_phone|phone:'RFC3966' }}">{{ instructor.best_phone|phone }}</a>
+          </li>
+        {% endfor %}
+        </ul>       
+      </dd>
       <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
       <dt>{% trans "Number of sessions" %}</dt><dd>{{ course.number_of_sessions }} cours</dd>
 {% if not NO_PAYMENT  %}
@@ -31,13 +40,13 @@
     </div>
     <p class="text-right"><small>{{ course.min_participants }} participants requis pour que l'activité ait lieu</small></p>
   
-  {% ifequal user course.responsible %}
+{% if user in course.instructors.all %}
   <h4 class="content-title"><u>{% trans "Management" %}</u></h4>
-  <a href="{{ course.get_custom_mail_responsible_url }}" class="btn btn-default hidden-print"><i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}</a> &nbsp;
+  <a href="{{ course.get_custom_mail_instructors_url }}" class="btn btn-default hidden-print"><i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}</a> &nbsp;
   {% if USE_ABSENCES %}
   <a href="{{ course.get_absences_url }}" class="btn btn-default hidden-print"><i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}</a>
   {% endif %}
-  {% endifequal %}
+{% endif %}
 
     </div>
 
@@ -51,10 +60,10 @@
     <thead>
       <tr>
         <th>{% trans "Name" %}</th>
-        {% ifequal user course.responsible %}
+        {% if user in course.instructors.all %}
         <th>{% trans "Birth date" %}</th>
         <th>{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
-        {% endifequal %}
+        {% endif %}
         <th>{% trans "City" %}</th>
         <th>{% trans "Parents phone" %}</th>
         <th>{% trans "Parents email" %}</th>
@@ -62,7 +71,7 @@
     {% for registration in course.participants.all %}
       <tr>
         <td>{{ registration.child.full_name }}</td>
-        {% ifequal user course.responsible %}
+      {% if user in course.instructors.all %}
         <td>{{ registration.child.birth_date }}</td>
         <td>
             {{ registration.child.school_year }}
@@ -70,7 +79,7 @@
             {{ child.school_name }}
         {% endif %}
         </td>
-        {% endifequal %}
+      {% endif %}
         <td>{{ registration.child.family.city|title }}</td>
 
         <td>

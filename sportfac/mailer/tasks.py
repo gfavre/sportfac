@@ -34,48 +34,50 @@ def send_mail(subject, message, from_email, recipients, reply_to, attachments=No
 
 
 @shared_task
-def send_responsible_email(subject, message, from_email, course_pk, reply_to):
-    logger.debug("Forging email to responsible of course #%s" % course_pk)
+def send_instructors_email(subject, message, from_email, course_pk, reply_to):
+    logger.debug("Forging email to instructors of course #%s" % course_pk)
 
     course = Course.objects.get(pk=course_pk)
-    recipients = (course.responsible.get_from_address(), )
-    email = EmailMessage(subject=subject,
-                         body=message,
-                         from_email=from_email,
-                         to=recipients,
-                         reply_to=reply_to)
-    logger.debug("Message created")
-
-    filepath = get_ssf_decompte_heures(course)
-    filename = 'E_SSF_decompte_heures_%s_%s.pdf' % (
-        course.responsible.first_name, course.responsible.last_name)
-    email.attach(filename, open(filepath).read(), 'application/pdf')
-    logger.debug("Decompte.pdf attached")
-    tempdir = mkdtemp()
-
-    filename = '%s-participants.pdf' % course.number
-    filepath = os.path.join(tempdir, filename)
-    cp_generator = CourseParticipants({'course': course})
-    cp_generator.render_to_pdf(filepath)
-    email.attach(filename, open(filepath).read(), 'application/pdf')
-    logger.debug("Participants.pdf attached")
-
-    if settings.KEPCHUP_SEND_PRESENCE_LIST:
-        filename = '%s-presences.pdf' % course.number
+    for instructor in course.instructors.all():
+        recipients = (instructor.get_from_address(), )
+        email = EmailMessage(subject=subject,
+                             body=message,
+                             from_email=from_email,
+                             to=recipients,
+                             reply_to=reply_to)
+        logger.debug("Message created")
+        
+        filepath = get_ssf_decompte_heures(course, instructor)
+        filename = 'E_SSF_decompte_heures_%s_%s.pdf' % (
+            instructor.first_name, instructor.last_name)
+        email.attach(filename, open(filepath).read(), 'application/pdf')
+        logger.debug("Decompte.pdf attached")
+        tempdir = mkdtemp()
+        
+        filename = '%s-participants.pdf' % course.number
         filepath = os.path.join(tempdir, filename)
-        cp_generator = CourseParticipantsPresence({'course': course})
+        cp_generator = CourseParticipants({'course': course})
         cp_generator.render_to_pdf(filepath)
         email.attach(filename, open(filepath).read(), 'application/pdf')
-        logger.debug("Presences.pdf attached")
-
-    filename = 'mes_cours.pdf'
-    filepath = os.path.join(tempdir, filename)
-    cp_generator = MyCourses({'responsible': course.responsible,
-                              'courses': Course.objects.filter(responsible=course.responsible)})
-    cp_generator.render_to_pdf(filepath)
-    email.attach(filename, open(filepath).read(), 'application/pdf')
-    logger.debug("Courses.pdf attached")
-
-    shutil.rmtree(tempdir)
-    logger.debug("Email forged, sending...")
-    return email.send(fail_silently=not(settings.DEBUG))
+        logger.debug("Participants.pdf attached")
+        
+        if settings.KEPCHUP_SEND_PRESENCE_LIST:
+            filename = '%s-presences.pdf' % course.number
+            filepath = os.path.join(tempdir, filename)
+            cp_generator = CourseParticipantsPresence({'course': course})
+            cp_generator.render_to_pdf(filepath)
+            email.attach(filename, open(filepath).read(), 'application/pdf')
+            logger.debug("Presences.pdf attached")
+        
+        filename = 'mes_cours.pdf'
+        filepath = os.path.join(tempdir, filename)
+        cp_generator = MyCourses({'instructor': instructor,
+                                  'courses': Course.objects.filter(instructors=instructor)})
+        cp_generator.render_to_pdf(filepath)
+        email.attach(filename, open(filepath).read(), 'application/pdf')
+        logger.debug("Courses.pdf attached")
+        
+        shutil.rmtree(tempdir)
+        logger.debug("Email forged, sending...")
+        email.send(fail_silently=not(settings.DEBUG))
+    

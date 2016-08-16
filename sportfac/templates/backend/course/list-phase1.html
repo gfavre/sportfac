@@ -40,13 +40,13 @@ $(function () {
       <th class="text-nowrap">{% trans "Start date" %}</th>
       <th class="text-nowrap">{% trans "Time" %}</th>
       <th class="text-nowrap">{% trans "Duration" %}</th>
-      <th class="text-nowrap">{% trans "Responsible" %}</th>
+      <th class="text-nowrap">{% trans "Instructors" %}</th>
       <th class="text-nowrap">{% trans "Up to date?" %}</th>
       <th class="text-nowrap">{% trans "Actions" %}</th>
     </tr>
   </thead>
   {% for course in object_list %}
-    <tr {% if not course.visible %}class="warning"{% endif %} >
+    <tr {% if not course.visible %}class="info"{% endif %} >
       <td data-order="{{ course.number }}"> 
           <a href="{{ course.get_backend_url }}">{{ course.number }}</a>
           {% if not course.visible %}<br>
@@ -58,7 +58,13 @@ $(function () {
       <td data-order="{{ course.start_date|date:'c'}}">{{ course.start_date|date:"SHORT_DATE_FORMAT" }}</td>
       <td>{{ course.start_time|time:"H:i" }}</td>
       <td data-order="{{ course.duration|seconds }}">{{ course.duration|duration }}</td>
-      <td><a href="{{ course.responsible.get_backend_url }}">{{ course.responsible.full_name }}</td>
+      <td>
+        <ul class="list-unstyled">
+        {% for instructor in course.instructors.all %}
+          <li><a href="{{ instructor.get_backend_url }}">{{ instructor.full_name  }}</a></li>
+        {% endfor %}
+        </ul>
+      </td>
       <td data-order="{{ course.uptodate }}" data-search="{% trans 'up to date' %}">{% if course.uptodate %}<i class="icon-ok-circled success"></i>{% else %}<i class="icon-cancel-circled  danger"></i>{% endif %}</td>      
       
       <td>

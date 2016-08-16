@@ -8,22 +8,22 @@ from django.views.generic import DetailView, ListView
 
 from braces.views import GroupRequiredMixin, LoginRequiredMixin
 
-from backend import RESPONSIBLE_GROUP
+from backend import INSTRUCTORS_GROUP
 from sportfac.views import WizardMixin
-from mailer.views import MailView, MailCreateView, CustomMailMixin, MailParticipantsView, MailCourseResponsibleView
+from mailer.views import MailView, MailCreateView, CustomMailMixin, MailParticipantsView, MailCourseInstructorsView
 
 from .models import Activity, Course
 
-__all__ = ('ResponsibleMixin', 'ActivityDetailView', 'ActivityListView', 
+__all__ = ('InstructorMixin', 'ActivityDetailView', 'ActivityListView', 
            'MyCoursesListView', 'MyCourseDetailView')
 
-class ResponsibleMixin(GroupRequiredMixin, LoginRequiredMixin):
+class InstructorMixin(GroupRequiredMixin, LoginRequiredMixin):
     """Mixin for backend. Ensure that the user is logged in and is a member 
        of sports responisbles group."""
-    group_required = RESPONSIBLE_GROUP
+    group_required = INSTRUCTORS_GROUP
 
 
-class CourseAccessMixin(ResponsibleMixin):
+class CourseAccessMixin(InstructorMixin):
     def check_membership(self, group):
         if not super(CourseAccessMixin, self).check_membership(group):
             return self.request.user in [p.child.family for p in self.get_object().participants.all()]
@@ -34,7 +34,7 @@ class ActivityDetailView(DetailView):
     model = Activity
     
     def get_queryset(self):
-        prefetched = Activity.objects.prefetch_related('courses', 'courses__participants', 'courses__responsible')
+        prefetched = Activity.objects.prefetch_related('courses', 'courses__participants', 'courses__instructors')
         return prefetched.all()
     
     def get_context_data(self, **kwargs):
@@ -74,23 +74,24 @@ class ActivityListView(LoginRequiredMixin, WizardMixin, ListView):
     
 
 
-class MyCoursesListView(ResponsibleMixin, ListView):
+class MyCoursesListView(InstructorMixin, ListView):
     template_name = 'activities/course_list.html'
 
     def get_queryset(self):
-        return Course.objects.filter(responsible=self.request.user)
+        return Course.objects.filter(instructors=self.request.user)
 
 
 class MyCourseDetailView(CourseAccessMixin, DetailView):
     model = Course
     template_name = 'activities/course_detail.html'
     pk_url_kwarg = 'course'
-    queryset = Course.objects.select_related('activity', 
-                                             'responsible' 
-                            ).prefetch_related('participants__child__school_year', 'participants__child__family')
+    queryset = Course.objects.select_related('activity').\
+                              prefetch_related('participants__child__school_year', 
+                                               'participants__child__family',
+                                               'instructors')
 
 
-class CustomMailCreateView(ResponsibleMixin, MailCreateView):
+class CustomMailCreateView(InstructorMixin, MailCreateView):
     template_name = 'activities/mail-create.html'
     
     def get_success_url(self):
@@ -98,7 +99,7 @@ class CustomMailCreateView(ResponsibleMixin, MailCreateView):
         return reverse('activities:mail-preview', 
                        kwargs={'course': course })
           
-class CustomMailPreview(ResponsibleMixin, CustomMailMixin, MailParticipantsView):
+class CustomMailPreview(InstructorMixin, CustomMailMixin, MailParticipantsView):
     template_name = 'activities/mail-preview-editlink.html'
         
     def get_success_url(self):
@@ -113,7 +114,7 @@ class CustomMailPreview(ResponsibleMixin, CustomMailMixin, MailParticipantsView)
         return redirect 
 
 
-class ResponsibleMailView(ResponsibleMixin, MailCourseResponsibleView):
+class InstructorsMailView(InstructorMixin, MailCourseInstructorsView):
     template_name = 'activities/confirm_send.html'
     
     def get_success_url(self):

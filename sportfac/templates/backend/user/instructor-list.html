@@ -2,8 +2,8 @@
 {% load i18n sekizai_tags %}
 {% get_current_language as LANGUAGE_CODE %}
 
-{% block title %}{% trans "List responsibles" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "List responsibles" %}{% endblock %}
+{% block title %}{% trans "List instructors" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "List instructors" %}{% endblock %}
 
 {% block content %}
 
@@ -61,7 +61,7 @@ $(function () {
 </script>
 {% endaddtoblock %}
 
-<a href="{% url 'backend:responsible-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New responsible" %}</a>
+<a href="{% url 'backend:instructor-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New instructor" %}</a>
 <hr />
 <div class="btn-group">
   <a class="btn btn-default selectall">{% trans "Select all" %}</span></a>
@@ -85,7 +85,7 @@ $(function () {
       <td data-order="{{ user.last_name}} {{ user.first_name}}"><a href="{{ user.get_backend_url }}">{{ user.full_name }}</a></td>
       <td>
         <ul class="list-unstyled">
-          <li class="text-nowrap"><a href="{% url 'backend:responsible-detail' pk=user.pk %}" class="btn btn-sm"><i class="icon-user"></i>&nbsp;&nbsp;{% trans "User details" %}</a></li>
+          <li class="text-nowrap"><a href="{% url 'backend:instructor-detail' pk=user.pk %}" class="btn btn-sm"><i class="icon-user"></i>&nbsp;&nbsp;{% trans "User details" %}</a></li>
           <li class="text-nowrap"><a href="{{ user.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Update user" %}</a></li>
         </ul>
       </td>

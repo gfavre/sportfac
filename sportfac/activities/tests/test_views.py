@@ -37,8 +37,8 @@ class ActivityViewsTests(TestCase):
 class CourseViewsTests(TestCase):
     def setUp(self):
         super(CourseViewsTests, self).setUp()
-        self.responsible = FamilyUserFactory()
-        self.course = CourseFactory(responsible=self.responsible)
+        self.instructor = FamilyUserFactory()
+        self.course = CourseFactory(instructors=(self.instructor,))
         self.family = FamilyUserFactory()
         self.year = SchoolYearFactory()
         self.child = ChildFactory(family=self.family, school_year=self.year)
@@ -78,14 +78,14 @@ class CourseViewsTests(TestCase):
         self.assertEqual(response.status_code, 302)    
     
     def test_my_courses(self):
-        self.client.login(username=self.responsible.email, password=DEFAULT_PASS)
+        self.client.login(username=self.instructor.email, password=DEFAULT_PASS)
         url = reverse('activities:my-courses')
         response = self.client.get(url)
-        # Responsible of course can get access
+        # Instructor of course can get access
         self.assertEqual(response.status_code, 200)
         
     def test_mail_participants_access(self):
-        url = self.course.get_custom_mail_responsible_url()
+        url = self.course.get_custom_mail_instructors_url()
         
         response = self.client.get(url)
         # anonymous users send emails
@@ -103,10 +103,10 @@ class CourseViewsTests(TestCase):
 
     @mock.patch.object(MailMixin, 'mail')
     def test_mail_participants(self, mail_method):
-        url = self.course.get_custom_mail_responsible_url()
-        self.client.login(username=self.responsible.email, password=DEFAULT_PASS)
+        url = self.course.get_custom_mail_instructors_url()
+        self.client.login(username=self.instructor.email, password=DEFAULT_PASS)
         response = self.client.get(url)
-        # Responsible of course can get access
+        # Instructors of course can get access
         self.assertEqual(response.status_code, 200)
         response = self.client.post(url, data={'subject': '1234', 'message': '1234'})
         self.assertEqual(response.status_code, 302)
@@ -119,7 +119,7 @@ class CourseViewsTests(TestCase):
         self.assertTrue(mail_method.called_once())
     
     def test_send_documents_access(self):
-        url = self.course.get_custom_mail_responsible_url()
+        url = self.course.get_custom_mail_instructors_url()
      
         response = self.client.get(url)
         # anonymous users send emails
@@ -138,9 +138,9 @@ class CourseViewsTests(TestCase):
     @mock.patch.object(MailMixin, 'mail')
     def test_send_documents(self, mail_method):
         url = self.course.get_mail_infos_url()
-        self.client.login(username=self.responsible.email, password=DEFAULT_PASS)
+        self.client.login(username=self.instructor.email, password=DEFAULT_PASS)
         response = self.client.get(url)
-        # Responsible of course can get access
+        # Instructors of course can get access
         self.assertEqual(response.status_code, 200)
         # confirm page
         response = self.client.post(url, data={}, follow=True)

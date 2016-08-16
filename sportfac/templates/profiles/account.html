@@ -7,7 +7,7 @@
 {% block content %}
 {% addtoblock "js" %}
 {{ form.media }}
-{% if object.is_responsible %}
+{% if object.is_instructor %}
 <script src="{{ STATIC_URL }}js/vendor/moment-with-locales.min.js"></script>
 <script src="{{ STATIC_URL }}js/vendor/bootstrap-datetimepicker.min.js"></script>
 <script type="text/javascript">

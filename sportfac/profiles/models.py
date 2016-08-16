@@ -12,7 +12,7 @@ from localflavor.generic.models import IBANField
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 
 from activities.models import SCHOOL_YEARS
-from backend import MANAGERS_GROUP, RESPONSIBLE_GROUP
+from backend import MANAGERS_GROUP, INSTRUCTORS_GROUP
 from sportfac.models import TimeStampedModel
 from .ahv import AHVField
 from registrations.models import Registration, Bill
@@ -64,9 +64,9 @@ class FamilyManager(BaseUserManager):
           return user
 
 
-class ResponsibleFamilyUserManager(BaseUserManager):
+class InstructorFamilyUserManager(BaseUserManager):
     def get_queryset(self):
-        return super(ResponsibleFamilyUserManager, self).get_queryset().filter(groups__name=RESPONSIBLE_GROUP)
+        return super(InstructorFamilyUserManager, self).get_queryset().filter(groups__name=INSTRUCTORS_GROUP)
 
 
 class ManagerFamilyUserManager(BaseUserManager):
@@ -107,7 +107,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
 
 
     objects = FamilyManager()
-    responsible_objects = ResponsibleFamilyUserManager()
+    instructors_objects = InstructorFamilyUserManager()
     managers_objects = ManagerFamilyUserManager()
 
     USERNAME_FIELD = 'email'
@@ -190,23 +190,23 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
 
     is_manager = property(get_manager, set_manager)
 
-    def get_responsible_status(self):
-        from backend import RESPONSIBLE_GROUP
+    def get_instructor_status(self):
+        from backend import INSTRUCTORS_GROUP
         if self.is_superuser or self.is_admin:
             return True
-        return RESPONSIBLE_GROUP in self.groups.values_list("name", flat=True)
+        return INSTRUCTORS_GROUP in self.groups.values_list("name", flat=True)
 
-    def set_responsible_status(self, value):
-        from backend import RESPONSIBLE_GROUP
-        managers = Group.objects.get(name=RESPONSIBLE_GROUP)
+    def set_instructor_status(self, value):
+        from backend import INSTRUCTORS_GROUP
+        instructors = Group.objects.get(name=INSTRUCTORS_GROUP)
         if value:
-            managers.user_set.add(self)
+            instructors.user_set.add(self)
         else:
-            managers.user_set.remove(self)
+            instructors.user_set.remove(self)
 
-    is_responsible = property(get_responsible_status, set_responsible_status)
+    is_instructor = property(get_instructor_status, set_instructor_status)
 
-    def is_responsible_of(self, course):
+    def is_instructor_of(self, course):
         return course in self.courses.all()
 
     def has_module_perms(self, app_label):

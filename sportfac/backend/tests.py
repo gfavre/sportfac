@@ -4,8 +4,12 @@ from django.contrib.auth.models import AnonymousUser
 from django.core.urlresolvers import reverse
 from django.test.client import RequestFactory
 
-from profiles.tests.factories import FamilyUserFactory, DEFAULT_PASS
+from activities.tests.factories import CourseFactory
+from profiles.tests.factories import FamilyUserFactory, SchoolYearFactory, DEFAULT_PASS
+from registrations.models import Bill
+from registrations.tests.factories import RegistrationFactory, ChildFactory, BillFactory
 from sportfac.utils import TenantTestCase
+
 
 class BackendTestBase(TenantTestCase):
     def setUp(self):
@@ -74,8 +78,8 @@ class UsersViewsTests(BackendTestBase):
         url = reverse('backend:manager-list')
         self.generic_test_rights(url)
 
-    def test_responsible_list(self):
-        url = reverse('backend:responsible-list')
+    def test_instructors_list(self):
+        url = reverse('backend:instructor-list')
         self.generic_test_rights(url)
     
     def test_create(self):
@@ -107,11 +111,23 @@ class MailViewsTests(BackendTestBase):
         self.generic_test_rights(url)
     
     def test_confirmation(self):
+        self.year = SchoolYearFactory()
+        self.child = ChildFactory(family=self.user, school_year=self.year)
+        self.registration = RegistrationFactory(child=self.child)
+        self.registration.set_waiting()
+        self.registration.save()
         url = reverse('backend:mail-needconfirmation')
         self.generic_test_rights(url)
         
     def test_notpaid(self):
         url = reverse('backend:mail-notpaidyet')
+        self.year = SchoolYearFactory()
+        self.child = ChildFactory(family=self.user, school_year=self.year)
+        self.course = CourseFactory(price=20)
+        self.registration = RegistrationFactory(child=self.child, course=self.course)
+        self.bill = BillFactory(family=self.user, registrations=[self.registration])
+        self.bill.status = Bill.STATUS.waiting
+        self.bill.save()
         self.generic_test_rights(url)        
         
     def test_custom(self):

@@ -4,7 +4,7 @@ from django.utils.translation import ugettext as _
 from django.views.generic import ListView
 
 from mailer.views import (MailView, MailCreateView, CustomMailMixin,
-                          MailParticipantsView, MailCourseResponsibleView)
+                          MailParticipantsView, MailCourseInstructorsView)
 from mailer.models import MailArchive
 from profiles.models import FamilyUser
 from registrations.models import Bill, Registration
@@ -15,7 +15,7 @@ __all__ = ['MailArchiveListView', 'NeedConfirmationView',
            'MailConfirmationParticipantsView',
            'CustomMailParticipantsCreateView', 'CustomMailParticipantsPreview',
            'CustomUserCustomMailCreateView', 'CustomUserCustomMailPreview',
-           'BackendMailCourseResponsibleView', ]
+           'BackendMailCourseInstructorsView', ]
 
 
 class MailArchiveListView(BackendMixin, ListView):
@@ -30,7 +30,7 @@ class NeedConfirmationView(BackendMixin, MailView):
     message_template = 'mailer/need_confirmation.txt'
     
     def get_recipients_list(self):
-        parents = list(set([reg.child.family for reg in  Registration.objects.waiting()]))
+        parents = list(set([reg.child.family for reg in Registration.objects.waiting()]))
         return parents
     
     def get_context_data(self, **kwargs):
@@ -63,7 +63,7 @@ class MailConfirmationParticipantsView(BackendMixin, MailParticipantsView):
     
 
 
-class BackendMailCourseResponsibleView(BackendMixin, MailCourseResponsibleView):
+class BackendMailCourseInstructorsView(BackendMixin, MailCourseInstructorsView):
     template_name = 'backend/course/confirm_send.html'
 
     def get_success_url(self):
@@ -100,7 +100,7 @@ class CustomUserCustomMailPreview(BackendMixin, CustomMailMixin, MailView):
     success_url = reverse_lazy('backend:user-list')
 
     def get_recipients_list(self):
-        if 'mail-userids' in request.session:
+        if 'mail-userids' in self.request.session:
             return FamilyUser.objects.filter(id__in=self.request.session['mail-userids'])
         return []
 

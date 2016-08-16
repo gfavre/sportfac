@@ -19,7 +19,7 @@ class CourseInline(admin.StackedInline):
     model = Course
     extra = 1
     fieldsets = (
-       (None, {'fields': ('number', 'responsible', 'price', 'number_of_sessions', 'place', 'uptodate')}),
+       (None, {'fields': ('number', 'instructors', 'price', 'number_of_sessions', 'place', 'uptodate')}),
        (_("Dates"), {'fields': ('start_date', 'end_date', 'day', 'start_time', 'end_time')}),
        (_("Limitations"), {'fields': ('min_participants', 'max_participants', 'schoolyear_min', 'schoolyear_max')}),
     )
@@ -98,7 +98,6 @@ class CoursesAdmin(admin.ModelAdmin):
     change_list_template = "admin/change_list_filter_sidebar.html"
     save_as = True
     
-    actions = ('export',)
     
     
     def get_queryset(self, request):
@@ -114,50 +113,7 @@ class CoursesAdmin(admin.ModelAdmin):
     def duration(self, obj):
         return obj.duration
     duration.short_description = _("Duration")
-    
-    
-    def export(self, request, queryset):
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=cours.csv'
-        writer = UnicodeWriter(response)
-        
-        field_names = (u'Cours n°',
-                       u'Activité',
-                       u'Activité n°',
-                       u'Responsable',
-                       u'Nombre de sessions',
-                       u'Jour',
-                       u'Durée (minutes)',
-                       u'Date de début',
-                       u'Heure de début',
-                       u'Date de fin',
-                       u'Heure de fin',
-                       u'Prix',
-                       u'Lieu',
-                       )
-        writer.writerow(field_names)
-        for course in queryset.select_related('responsible', 'activity').all():
-            writer.writerow((str(course.number),
-                             course.activity.name,
-                             str(course.activity.number),
-                             unicode(course.responsible),
-                             str(course.number_of_sessions),
-                             course.day_name,
-                             str(int(course.duration.total_seconds() / 60)),
-                             course.start_date.strftime('%d.%m.%Y'),
-                             course.start_time.strftime('%H:%M'),
-                             course.end_date.strftime('%d.%m.%Y'),
-                             course.end_time.strftime('%H:%M'),
-                             str(course.price),
-                             course.place,
-                             ))
-        #wrapped = ("<html><body>", response.content, "</body></html>")
-        #return HttpResponse(wrapped)
-        return response
-    export.short_description = _('Export selected courses')
 
-    
-    
 
 
 admin.site.register(Course, CoursesAdmin)

@@ -9,10 +9,13 @@
 
 <div class="modal-body">
   <dl class="dl-horizontal">
-    <dt>Responsable</dt>
-    <dd>{[{ selectedCourse.responsible.first  }]} {[{ selectedCourse.responsible.last  }]}
-    <div>{[{ selectedCourse.responsible.phone  }]}</div>
-    <div><a href="mailto:{[{ selectedCourse.responsible.email  }]}">email</a></div>
+    <dt>Moniteurs</dt>
+    <dd>
+      <ul class="list-unstyled">
+          
+        <li ng-repeat="instructor in selectedCourse.instructors">{[{ instructor.first  }]} {[{ instructor.last  }]} ( {[{ instructor.phone  }]}, <a href="mailto:{[{ instructor.email  }]}">email</a>)
+        </li>
+      </ul>
 
     </dd>
     <dt>Lieu</dt><dd>{[{ selectedCourse.place  }]}</dd>

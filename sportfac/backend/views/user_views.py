@@ -12,11 +12,11 @@ from django.utils.translation import ugettext as _
 from django.views.generic import CreateView, DeleteView, DetailView, \
                                 ListView, UpdateView, View, FormView
 
-from backend import MANAGERS_GROUP, RESPONSIBLE_GROUP
+from backend import MANAGERS_GROUP, INSTRUCTORS_GROUP
 from backend.forms import ChildImportForm
 from backend.tasks import import_children
 from profiles.forms import (ManagerForm, ManagerWithPasswordForm, 
-                            ResponsibleForm, ResponsibleWithPasswordForm)
+                            InstructorForm, InstructorWithPasswordForm)
 from profiles.models import FamilyUser
 from registrations.models import Bill, Child, Registration
 from registrations.forms import ChildForm
@@ -28,7 +28,7 @@ __all__ = ('UserListView', 'UserCreateView', 'PasswordSetView',
            'ChildListView', 'ChildCreateView', 'ChildUpdateView', 
            'ChildDeleteView', 'ChildImportView',
             'ManagerListView', 'ManagerCreateView', 
-            'ResponsibleListView', 'ResponsibleCreateView', 'ResponsibleDetailView'
+            'InstructorListView', 'InstructorCreateView', 'InstructorDetailView'
            )
 
 valid_registrations = Registration.objects.validated()
@@ -73,11 +73,11 @@ class ManagerListView(UserListView):
         return Group.objects.get(name=MANAGERS_GROUP).user_set.all()
 
 
-class ResponsibleListView(UserListView):
-    template_name = 'backend/user/responsible-list.html'
+class InstructorListView(UserListView):
+    template_name = 'backend/user/instructor-list.html'
     
     def get_queryset(self):
-        return Group.objects.get(name=RESPONSIBLE_GROUP).user_set.all()
+        return Group.objects.get(name=INSTRUCTORS_GROUP).user_set.all()
     
 
 class UserCreateView(BackendMixin, SuccessMessageMixin, CreateView):
@@ -115,23 +115,23 @@ class ManagerCreateView(UserCreateView):
         return _("Manager %s has been added.") % self.object.full_name
     
 
-class ResponsibleCreateView(UserCreateView):
-    success_url = reverse_lazy('backend:responsible-list')
-    form_class = ResponsibleWithPasswordForm
+class InstructorCreateView(UserCreateView):
+    success_url = reverse_lazy('backend:instructor-list')
+    form_class = InstructorWithPasswordForm
     
     def get_context_data(self, **kwargs):
-        ctx = super(ResponsibleCreateView, self).get_context_data(**kwargs)
-        ctx['is_responsible'] = True
+        ctx = super(InstructorCreateView, self).get_context_data(**kwargs)
+        ctx['is_instructor'] = True
         return ctx
     
     def form_valid(self, form):
         self.object = form.save()
         self.object.is_manager = form.cleaned_data['is_manager']
-        self.object.is_responsible = True
-        return super(ResponsibleCreateView, self).form_valid(form)
+        self.object.is_instructor = True
+        return super(InstructorCreateView, self).form_valid(form)
     
     def get_success_message(self, cleaned_data):
-        return _("Responsible %s has been added.") % self.object.full_name
+        return _("Instructor %s has been added.") % self.object.full_name
     
 
 class UserUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
@@ -144,13 +144,13 @@ class UserUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
         return initial
 
     def get_form_class(self):
-        if self.object.is_responsible:
-            return ResponsibleForm
+        if self.object.is_instructor:
+            return InstructorForm
         return ManagerForm
     
     def get_context_data(self, **kwargs):
         ctx = super(UserUpdateView, self).get_context_data(**kwargs)
-        ctx['is_responsible'] = self.object.is_responsible
+        ctx['is_instructor'] = self.object.is_instructor
         return ctx
 
     def form_valid(self, form):
@@ -160,8 +160,8 @@ class UserUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
         return super(UserUpdateView, self).form_valid(form)
        
     def get_success_url(self):
-        if self.object.is_responsible:
-            return reverse_lazy('backend:responsible-list')
+        if self.object.is_instructor:
+            return reverse_lazy('backend:instructor-list')
         return reverse_lazy('backend:user-list')
     
     def get_success_message(self, cleaned_data):
@@ -180,9 +180,9 @@ class UserDetailView(BackendMixin, DetailView):
     model = FamilyUser
     template_name = 'backend/user/detail.html'
 
-class ResponsibleDetailView(BackendMixin, DetailView):
+class InstructorDetailView(BackendMixin, DetailView):
     model = FamilyUser
-    template_name = 'backend/user/detail-responsible.html'
+    template_name = 'backend/user/detail-instructor.html'
 
 
 class PasswordSetView(BackendMixin, SuccessMessageMixin, FormView):

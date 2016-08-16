@@ -24,9 +24,10 @@ class CourseDetailView(BackendMixin, DetailView):
     #slug_field = 'number'
     #slug_url_kwarg = 'course'
     pk_url_kwarg = 'course'
-    queryset = Course.objects.select_related('activity', 'responsible')\
+    queryset = Course.objects.select_related('activity')\
                              .prefetch_related('participants__child__school_year',
-                                               'participants__child__family')
+                                               'participants__child__family',
+                                               'instructors')
     def get_template_names(self):
         if self.request.PHASE == 2:
             return 'backend/course/detail-phase2.html'
@@ -76,7 +77,8 @@ class CourseParticipantsView(CourseDetailView):
 
 class CourseListView(BackendMixin, ListView):
     model = Course
-    queryset = Course.objects.select_related('activity', 'responsible').prefetch_related('participants')
+    queryset = Course.objects.select_related('activity').\
+                              prefetch_related('participants', 'instructors')
     
     def get_template_names(self):
         if self.request.PHASE == 1:

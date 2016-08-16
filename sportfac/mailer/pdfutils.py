@@ -20,7 +20,7 @@ from backend.dynamic_preferences_registry import global_preferences_registry
 global_preferences = global_preferences_registry.manager()
 
 
-def get_ssf_decompte_heures(course):
+def get_ssf_decompte_heures(course, instructor):
     pdf_file = os.path.join(settings.STATIC_ROOT, 'pdf',
                             "E_SSF_decompte_heures_moniteur.pdf")
 
@@ -30,14 +30,14 @@ def get_ssf_decompte_heures(course):
         u"Groupe d'éléve": course.number,
         u"Période du": course.start_date.strftime('%d/%m/%Y'),
         u"période au": course.end_date.strftime('%d/%m/%Y'),
-        u'Nom': course.responsible.last_name,
-        u'Prénom': course.responsible.first_name,
-        u'Adresse': course.responsible.address,
-        u'localité': '%s %s' % (course.responsible.zipcode,
-                                course.responsible.city),
-        u'date de naissance': course.responsible.birth_date and course.responsible.birth_date.strftime('%d/%m/%Y') or '',
-        u'iban': course.responsible.iban,
-        u'No avs': course.responsible.ahv,
+        u'Nom': instructor.last_name,
+        u'Prénom': instructor.first_name,
+        u'Adresse': instructor.address,
+        u'localité': '%s %s' % (instructor.zipcode,
+                                instructor.city),
+        u'date de naissance': instructor.birth_date and instructor.birth_date.strftime('%d/%m/%Y') or '',
+        u'iban': instructor.iban,
+        u'No avs': instructor.ahv,
     }
     try:
         return pypdftk.fill_form(pdf_path=pdf_file, datas=fields)
@@ -127,18 +127,3 @@ class CourseParticipantsPresence(PDFRenderer):
 
 class MyCourses(PDFRenderer):
     message_template = 'mailer/pdf_my_courses.html'
-
-
-"""
-from mailer.pdfutils import MyCourses
-from activities.models import Course
-
-course = Course.objects.get(number=121)
-c=MyCourses({'responsible': course.responsible,
-             'courses':Course.objects.filter(responsible=course.responsible)})
-#filename='/Users/grfavre/Desktop/test.pdf'
-filename='/home/grfavre/test.pdf'
-c.render_to_pdf(filename)
-
-
-"""
