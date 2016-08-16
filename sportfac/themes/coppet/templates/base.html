@@ -26,6 +26,8 @@
     {% if not request.tenant.is_production %}
     <link href="{% static 'css/not_production.css' %}" rel="stylesheet" media="all" />
     {% endif %}
+    <link href="{% static 'css/coppet.css' %}" rel="stylesheet" media="all" />
+
     {% block extra_css %}{% endblock extra_css %}
     {% render_block "css" %}
 
@@ -70,7 +72,7 @@
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-      ga('create', 'UA-43479962-1', 'kepchup.ch');
+      ga('create', 'UA-43479962-1', 'auto');
       ga('send', 'pageview');
     </script>
 
