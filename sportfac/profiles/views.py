@@ -11,7 +11,7 @@ from registration.backends.simple.views import RegistrationView as BaseRegistrat
 from registration import signals
 
 from .models import FamilyUser
-from .forms import RegistrationForm, InstructorForm
+from .forms import RegistrationForm, InstructorForm, PasswordChangeForm, PasswordResetForm
 from registrations.models import Child, Registration
 from sportfac.views import WizardMixin
 
