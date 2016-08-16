@@ -46,7 +46,7 @@ $(function () {
     </tr>
   </thead>
   {% for course in object_list %}
-    <tr {% if not course.visible %}class="warning"{% endif %} >
+    <tr {% if not course.visible %}class="info"{% endif %} >
       <td data-order="{{ course.number }}"> 
           <a href="{{ course.get_backend_url }}">{{ course.number }}</a>
           {% if not course.visible %}<br>
