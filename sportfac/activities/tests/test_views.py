@@ -119,7 +119,7 @@ class CourseViewsTests(TestCase):
         self.assertTrue(mail_method.called_once())
     
     def test_send_documents_access(self):
-        url = self.course.get_custom_mail_rinstructors_url()
+        url = self.course.get_custom_mail_instructors_url()
      
         response = self.client.get(url)
         # anonymous users send emails

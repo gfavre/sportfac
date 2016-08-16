@@ -43,6 +43,8 @@ class CourseFactory(factory.DjangoModelFactory):
     schoolyear_min = factory.fuzzy.FuzzyChoice(YEARS[:-1])
     schoolyear_max = factory.fuzzy.FuzzyChoice(YEARS[1:])
     
+    price = factory.fuzzy.FuzzyInteger(1, 100)
+    
     @factory.post_generation
     def instructors(self, create, extracted, **kwargs):
         if not create:

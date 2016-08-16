@@ -144,7 +144,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         if data['child'].school_year and \
            data['child'].school_year.year not in data['course'].school_years:
             raise serializers.ValidationError(
-                _("This course is not opened to children of school year %(year)s") % {'year': child.school_year}
+                _("This course is not opened to children of school year %(year)s") % {'year': data['child'].school_year}
             )
         if data["child"].registrations.count() >= global_preferences_registry.manager()['MAX_REGISTRATIONS']:
             raise serializers.ValidationError(

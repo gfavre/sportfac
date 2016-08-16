@@ -30,7 +30,7 @@ class NeedConfirmationView(BackendMixin, MailView):
     message_template = 'mailer/need_confirmation.txt'
     
     def get_recipients_list(self):
-        parents = list(set([reg.child.family for reg in  Registration.objects.waiting()]))
+        parents = list(set([reg.child.family for reg in Registration.objects.waiting()]))
         return parents
     
     def get_context_data(self, **kwargs):

@@ -6,7 +6,7 @@ import faker
 
 from activities.tests.factories import CourseFactory
 from profiles.tests.factories import FamilyUserFactory, SchoolYearFactory
-from registrations.models import Registration, Child
+from registrations.models import Registration, Child, Bill
 from schools.tests.factories import TeacherFactory
 
 fake = faker.Factory.create('fr_CH')
@@ -30,4 +30,19 @@ class RegistrationFactory(factory.DjangoModelFactory):
     
     course = factory.SubFactory(CourseFactory)
     child = factory.SubFactory(ChildFactory)
+
+
+class BillFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = Bill
+
+    billing_identifier = factory.fuzzy.FuzzyText(length=10)
+    family = factory.SubFactory(FamilyUserFactory)
     
+    @factory.post_generation
+    def registrations(self, create, extracted, **kwargs):
+        if not create:
+            return
+        if extracted:
+            for registration in extracted:
+                self.registrations.add(registration)

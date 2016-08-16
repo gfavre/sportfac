@@ -1,3 +1,5 @@
+import json
+
 from django.core.urlresolvers import reverse
 
 import faker
@@ -116,8 +118,6 @@ class ChildrenAPITests(UserMixin, TenantTestCase):
         response = self.tenant_client.get(url)
         self.assertEqual(response.status_code, 200)
         self.login(self.admin)
-        response = self.tenant_client.get(url)
-        self.assertEqual(response.status_code, 200)
 
     def test_update(self):
         child = self.children1[0]
@@ -125,7 +125,8 @@ class ChildrenAPITests(UserMixin, TenantTestCase):
         self.login(self.user1)
         new_name = fake.last_name()
         child.last_name = new_name
-        response = self.tenant_client.put(url, ChildrenSerializer(child).data)
+        data = ChildrenSerializer(child).data
+        response = self.tenant_client.put(url, json.dumps(data), content_type="application/json")
         self.assertEqual(response.status_code, 200)
         child.refresh_from_db()
         self.assertEqual(child.last_name, new_name)
@@ -143,7 +144,8 @@ class RegistrationAPITests(UserMixin, TenantTestCase):
     def setUp(self):
         super(RegistrationAPITests, self).setUp()
         self.year = SchoolYearFactory()
-        self.course = CourseFactory()
+        self.course = CourseFactory(schoolyear_min=self.year.year, 
+                                    schoolyear_max=self.year.year)
         self.child1 = ChildFactory(school_year=self.year)
         self.child2 = ChildFactory(school_year=self.year)
         self.reg1 = RegistrationFactory(course=self.course, child=self.child1)
@@ -191,7 +193,8 @@ class RegistrationAPITests(UserMixin, TenantTestCase):
     def _test_create(self, user):
         url = reverse("api:registration-list")
         self.login(user)
-        course2 = CourseFactory()
+        course2 = CourseFactory(schoolyear_min=self.year.year, 
+                                schoolyear_max=self.year.year)
         response = self.tenant_client.post(url, {'child': self.child1.pk, 'course': course2.pk})
         self.assertEqual(response.status_code, 201)
         response = self.tenant_client.post(url, {'child': self.child1.pk, 'course': course2.pk})
@@ -206,9 +209,6 @@ class RegistrationAPITests(UserMixin, TenantTestCase):
     def test_detail(self):
         url = reverse("api:registration-detail", kwargs={'pk': self.reg1.pk})
         self.login(self.child1.family)
-        response = self.tenant_client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.login(self.admin)
         response = self.tenant_client.get(url)
         self.assertEqual(response.status_code, 200)
 

@@ -239,8 +239,13 @@ class MailView(MailMixin, TemplateView):
         mailnumber = int(self.request.GET.get('number', 1)) - 1
         context = self.get_context_data(**kwargs)
         recipients = self.get_recipients_list()
+           
         self.add_navigation_context(mailnumber, recipients, context)
-        self.add_recipient_context(recipients[mailnumber], context)
+        
+        try:
+            self.add_recipient_context(recipients[mailnumber], context)
+        except IndexError:
+            raise Http404(_("No recipient found"))
         self.add_mail_context(mailnumber, context)
         return self.render_to_response(context)
 
