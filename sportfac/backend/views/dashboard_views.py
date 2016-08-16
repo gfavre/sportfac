@@ -14,7 +14,7 @@ from profiles.models import FamilyUser, SchoolYear
 from registrations.models import Bill, Child, Registration
 from schools.models import Teacher
 from backend.forms import RegistrationDatesForm
-from backend import MANAGERS_GROUP, RESPONSIBLE_GROUP
+from backend import MANAGERS_GROUP, INSTRUCTORS_GROUP
 from .mixins import BackendMixin
 
 __all__ = ('HomePageView', 'RegistrationDatesView',)
@@ -46,7 +46,7 @@ class HomePageView(BackendMixin, TemplateView):
         context['ready_courses'] = courses.filter(uptodate=True).count()
         context['notready_courses'] = context['nb_courses'] - context['ready_courses']
         context['total_sessions'] = courses.aggregate(Sum('number_of_sessions')).values()[0] or 0
-        context['total_responsibles'] = Group.objects.get(name=RESPONSIBLE_GROUP).user_set.count()
+        context['total_instructors'] = Group.objects.get(name=INSTRUCTORS_GROUP).user_set.count()
         
         context['last_course_update'] = courses.aggregate(latest=Max('modified'))['latest'] or 'n/a'
         
@@ -105,7 +105,7 @@ class HomePageView(BackendMixin, TemplateView):
         activities = Activity.objects.all()
         context['nb_activities'] = activities.count()
         context['total_sessions'] = courses.aggregate(Sum('number_of_sessions')).values()[0] or 0
-        context['total_responsibles'] = Group.objects.get(name=RESPONSIBLE_GROUP).user_set.count()
+        context['total_instructors'] = Group.objects.get(name=INSTRUCTORS_GROUP).user_set.count()
         timedeltas = []
         for course in courses:
             timedeltas.append(course.number_of_sessions * course.duration)

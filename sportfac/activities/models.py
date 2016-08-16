@@ -211,14 +211,14 @@ class Course(TimeStampedModel):
     def get_custom_mail_url(self):
         return reverse('backend:mail-participants-custom', kwargs={'course': self.pk})
 
-    def get_custom_mail_responsible_url(self):
+    def get_custom_mail_instructors_url(self):
         return reverse('activities:mail-participants-custom', kwargs={'course': self.pk})
 
-    def get_mail_responsible_url(self):
-        return reverse('backend:course-mail-responsible', kwargs={'course': self.pk})
+    def get_mail_instructors_url(self):
+        return reverse('backend:course-mail-instructors', kwargs={'course': self.pk})
     
     def get_mail_infos_url(self):
-        return reverse('activities:mail-responsible', kwargs={'course': self.pk})
+        return reverse('activities:mail-instructors', kwargs={'course': self.pk})
     
     def get_mail_confirmation_url(self):
         return reverse('backend:course-mail-confirmation', kwargs={'course': self.pk})
@@ -238,7 +238,7 @@ class Course(TimeStampedModel):
     
     @property
     def get_js_name(self):
-        return '%s - %s' % (self.number, self.responsible.full_name)
+        return '%s - %s' % (self.number, self.activity.name)
     
     def get_absolute_url(self):
         return reverse('activities:course-detail', kwargs={"course": self.pk})
@@ -259,7 +259,7 @@ class Course(TimeStampedModel):
     def save(self, *args, **kwargs):
         super(Course, self).save(*args, **kwargs)
         for instructor in self.instructors.all():
-            instructor.is_responsible = True
+            instructor.is_instructor = True
         
     class Meta:
         ordering = ('activity__name', 'number', )

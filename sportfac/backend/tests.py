@@ -74,8 +74,8 @@ class UsersViewsTests(BackendTestBase):
         url = reverse('backend:manager-list')
         self.generic_test_rights(url)
 
-    def test_responsible_list(self):
-        url = reverse('backend:responsible-list')
+    def test_instructors_list(self):
+        url = reverse('backend:instructor-list')
         self.generic_test_rights(url)
     
     def test_create(self):

@@ -11,7 +11,7 @@ from registration.backends.simple.views import RegistrationView as BaseRegistrat
 from registration import signals
 
 from .models import FamilyUser
-from .forms import *
+from .forms import RegistrationForm, InstructorForm
 from registrations.models import Child, Registration
 from sportfac.views import WizardMixin
 
@@ -34,7 +34,8 @@ def password_reset(request):
 
 class _BaseAccount(LoginRequiredMixin, UpdateView):
     model = FamilyUser
-    form_class = ResponsibleForm
+    form_class = InstructorForm
+    
     def get_object(self, queryset=None):
         return self.request.user
 

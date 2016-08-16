@@ -66,7 +66,8 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
         school_year = self.request.query_params.get('year', None)
         if school_year is not None:
             queryset = queryset.filter(courses__schoolyear_min__lte=school_year,
-                                       courses__schoolyear_max__gte=school_year).distinct()
+                                       courses__schoolyear_max__gte=school_year,
+                                       courses__visible=True).distinct()
         return queryset
 
 
@@ -81,7 +82,7 @@ class CourseViewSet(viewsets.ReadOnlyModelViewSet):
     model = Course
     
     def get_queryset(self):
-        return Course.objects.visible().select_related('activity', 'instructors').prefetch_related('participants')
+        return Course.objects.visible().select_related('activity').prefetch_related('participants', 'instructors')
     
 
 class TeacherViewSet(viewsets.ReadOnlyModelViewSet):

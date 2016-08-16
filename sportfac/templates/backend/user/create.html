@@ -2,13 +2,13 @@
 {% load i18n floppyforms sekizai_tags %}
 
 {% block title %}{% trans "Create user" %} - {{ block.super }}{% endblock %}
-{% block page_title %}<i class="icon-user"></i>&nbsp;&nbsp;{% if is_responsible %}{% trans "Create responsible" %}{% elif is_manager %}{% trans "Create manager" %}{% else %}{% trans "Create user" %}{% endif %}{% endblock %}
+{% block page_title %}<i class="icon-user"></i>&nbsp;&nbsp;{% if is_instructor %}{% trans "Create instructor" %}{% elif is_manager %}{% trans "Create manager" %}{% else %}{% trans "Create user" %}{% endif %}{% endblock %}
 
 {% block content %}
 
 {% addtoblock "js" %}
 {{ form.media }}
-{% if is_responsible %}
+{% if is_instructor %}
 <script src="{{ STATIC_URL }}js/vendor/moment-with-locales.min.js"></script>
 <script src="{{ STATIC_URL }}js/vendor/bootstrap-datetimepicker.min.js"></script>
 <script type="text/javascript">
@@ -95,9 +95,9 @@
         </div>
       </div>
     </div>
-    {% if is_responsible %}
+    {% if is_instructor %}
     <fieldset>
-    <legend>{% trans "Responsible informations" %}</legend>
+    <legend>{% trans "Instructor informations" %}</legend>
     {% formconfig row using "floppyforms/rows/bootstrap-sm-3.html" %}
     {% formrow form.birth_date %}
     {% formconfig row using "floppyforms/rows/bootstrap.html" %}
@@ -114,7 +114,7 @@
 
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-success btn-large"><i class="icon-plus"></i>&nbsp;{% if is_responsible %}{% trans "Create responsible" %}{% elif is_manager %}{% trans "Create manager" %}{% else %}{% trans "Create user" %}{% endif %}</button>
+      <button type="submit" class="btn btn-success btn-large"><i class="icon-plus"></i>&nbsp;{% if is_instructor %}{% trans "Create instructor" %}{% elif is_manager %}{% trans "Create manager" %}{% else %}{% trans "Create user" %}{% endif %}</button>
     </div>
   </div>
 </form>

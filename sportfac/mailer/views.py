@@ -19,7 +19,7 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from dbtemplates.models import Template
 
 from .models import MailArchive, Attachment
-from .tasks import send_mail, send_responsible_email
+from .tasks import send_mail, send_instructors_email
 from .forms import MailForm
 from activities.models import Course
 from backend.dynamic_preferences_registry import global_preferences_registry
@@ -192,12 +192,12 @@ class CourseMixin(object):
         return self.course.get_backend_url()
 
 
-class MailCourseResponsibleView(MailMixin, CourseMixin, TemplateView):
-    message_template = 'mailer/responsible.txt'
-    subject_template = 'mailer/responsible_subject.txt'
+class MailCourseInstructorsView(MailMixin, CourseMixin, TemplateView):
+    message_template = 'mailer/instructor.txt'
+    subject_template = 'mailer/instructor_subject.txt'
 
     def get_recipients_list(self):
-        return (self.course.responsible, )
+        return self.course.instructors.all()
 
     def mail(self, context):
         recipients = self.get_recipients_list()
@@ -208,7 +208,7 @@ class MailCourseResponsibleView(MailMixin, CourseMixin, TemplateView):
             reply_to = []
         for recipient in recipients:
             message = self.get_mail_body(context)
-            send_responsible_email.delay(subject=subject,
+            send_instructors_email.delay(subject=subject,
                                          message=message,
                                          from_email=from_email,
                                          course_pk=self.course.pk,

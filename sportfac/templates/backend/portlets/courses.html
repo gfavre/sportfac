@@ -13,7 +13,7 @@
         <ul class="list-unstyled">
         <li><a href="{% url 'backend:activity-list' %}"><i class="icon-soccer-ball"></i>&nbsp;{% trans "Manage activities" %}</a></li>
         <li><a href="{% url 'backend:course-list' %}"><i class="icon-graduation-cap"></i>&nbsp;{% trans "Manage courses" %}</a></li>
-        <li><a href="{% url 'backend:responsible-list' %}"><i class="icon-user"></i>&nbsp;{% trans "Manage responsibles" %}</a></li>
+        <li><a href="{% url 'backend:instructor-list' %}"><i class="icon-user"></i>&nbsp;{% trans "Manage instructors" %}</a></li>
         </ul>
         </p>
     </div>
@@ -25,8 +25,8 @@
     </div>
      <div class="col-md-4">
       <div class="row-stat">
-        <p class="row-stat-label">{% trans "Total responsibles" %}</p>
-        <h3 class="row-stat-value">{{ total_responsibles }}</h3>
+        <p class="row-stat-label">{% trans "Total instructors" %}</p>
+        <h3 class="row-stat-value">{{ total_instructors }}</h3>
       </div>    
     </div>
     

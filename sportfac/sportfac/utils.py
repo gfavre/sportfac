@@ -9,7 +9,7 @@ from django_tenants.test.client import TenantClient
 from django_tenants.utils import get_tenant_model, get_tenant_domain_model
 from django.contrib.auth.models import Group
 
-from backend import RESPONSIBLE_GROUP, MANAGERS_GROUP
+from backend import INSTRUCTORS_GROUP, MANAGERS_GROUP
 from backend.models import TenantPreferenceModel
 
 class excel_semicolon(csv.excel):
@@ -80,7 +80,7 @@ class TenantTestCase(BaseTenantTestCase):
     
     def setUp(self):
         self.sync_shared()
-        grp, created = Group.objects.get_or_create(name=RESPONSIBLE_GROUP)
+        grp, created = Group.objects.get_or_create(name=INSTRUCTORS_GROUP)
         grp, created = Group.objects.get_or_create(name=MANAGERS_GROUP)
         self.tenant, created = get_tenant_model().objects.get_or_create(
             schema_name='test',
