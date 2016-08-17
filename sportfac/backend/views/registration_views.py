@@ -106,8 +106,13 @@ class RegistrationDeleteView(BackendMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
         success_url = self.get_success_url()
-        self.object.cancel()
-        self.object.save()
+        try:
+            self.object.cancel()
+            self.object.save()
+        except IntegrityError:
+            # The registration for child and course existed previously and 
+            # was already canceled. We do not need to cancel it again
+            self.object.delete()
         messages.add_message(self.request, messages.SUCCESS, 
                              _("Registration has been canceled."))
         return HttpResponseRedirect(success_url)
