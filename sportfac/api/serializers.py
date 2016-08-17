@@ -13,10 +13,11 @@ from schools.models import Teacher
 class SessionSerializer(serializers.ModelSerializer):
     course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all().select_related('activity'))
     date = serializers.DateField()
+    instructor = serializers.PrimaryKeyRelatedField(queryset=FamilyUser.instructors_objects.all(), required=False)
     
     class Meta:
         model = Session
-        fields = ('id', 'date', 'course')
+        fields = ('id', 'date', 'course', 'instructor')
 
 
 class AbsenceSerializer(serializers.ModelSerializer):

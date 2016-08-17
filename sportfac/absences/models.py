@@ -27,6 +27,7 @@ class Absence(StatusModel, TimeStampedModel):
 class Session(TimeStampedModel):
     course = models.ForeignKey('activities.Course', related_name="sessions")
     date = models.DateField()
+    instructor = models.ForeignKey('profiles.FamilyUser', related_name="sessions", null=True)
 
     def absentees(self):
         return [absence.child for absence in self.absences.all()]
