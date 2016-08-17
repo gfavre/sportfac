@@ -35,7 +35,8 @@ def can_confirm(request):
 
 def can_pay(request):
     return can_register_activities(request) and Bill.objects.filter(status=Bill.STATUS.just_created, family=request.user).count() > 0
-        
+
+
 
 
 def wizard_context(request):
@@ -49,7 +50,7 @@ def wizard_context(request):
                         can_confirm(request))
     billing = Step(request, 'billing-step', _("Billing"), 'wizard_billing', 
                    can_pay(request))
-    
+        
     if settings.KEPCHUP_NO_PAYMENT:
         steps = [about, children, activities, confirmation]
     else:

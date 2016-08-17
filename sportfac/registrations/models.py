@@ -46,7 +46,7 @@ class Registration(TimeStampedModel, StatusModel):
     objects = RegistrationManager()
 
     class Meta:
-        unique_together = ('course', 'child')
+        unique_together = ('course', 'child', 'status')
         verbose_name = _("Registration")
         verbose_name_plural = _("Registrations")
         ordering = ('child__last_name', 'child__first_name', 'course__start_date')
@@ -135,7 +135,7 @@ class Bill(TimeStampedModel, StatusModel):
                      ('canceled', _("Canceled by administrator")),
                      )
     billing_identifier = models.CharField(_('Billing identifier'), max_length=45, blank=True)
-    family = models.ForeignKey('profiles.FamilyUser', related_name='bills')
+    family = models.ForeignKey('profiles.FamilyUser', verbose_name=_('User'), related_name='bills')
     total = models.PositiveIntegerField(default=0, verbose_name=_("Total to be paid"))
 
     def update_total(self):
@@ -161,6 +161,11 @@ class Bill(TimeStampedModel, StatusModel):
         return self.status != self.STATUS.waiting
 
     @property
+    def is_paid(self):
+        return self.status in (self.STATUS.paid, self.STATUS.canceled)
+    
+
+    @property
     def backend_url(self):
         return self.get_backend_url()
  
@@ -181,8 +186,6 @@ class Bill(TimeStampedModel, StatusModel):
         self.update_total()
         if not self.billing_identifier:
             self.update_billing_identifier()
-        if self.total == 0:
-            self.status = 'paid'
         super(Bill, self).save(*args, **kwargs)
 
 

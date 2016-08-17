@@ -1,10 +1,12 @@
 import json
 
 from django.conf import settings
+from django.contrib import messages
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.db import transaction
 from django.db.models import Sum
 from django.shortcuts import render
+from django.utils.translation import ugettext as _
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 
 from braces.views import LoginRequiredMixin
@@ -40,7 +42,13 @@ class RegisteredActivitiesListView(WizardMixin, FormView):
     form_class = AcceptTermsForm
     success_url = reverse_lazy('wizard_billing')
     template_name = 'registrations/registration_list.html'
-
+    
+    def get_success_url(self):
+        if self.bill and self.bill.is_paid:
+            messages.success(self.request, _("Your registrations have been recorded, thank you!"))
+            return reverse_lazy('registrations_registered_activities')
+        return self.success_url
+    
     def get_queryset(self):
         return Registration.waiting\
                            .select_related('child', 
@@ -74,7 +82,7 @@ class RegisteredActivitiesListView(WizardMixin, FormView):
             total = self.get_queryset().aggregate(
                         Sum('course__price')
                     ).get('course__price__sum')
-            bill = Bill.objects.create(
+            self.bill = Bill.objects.create(
                 status = Bill.STATUS.just_created,
                 family = self.request.user
             )
@@ -82,9 +90,12 @@ class RegisteredActivitiesListView(WizardMixin, FormView):
                 registration.set_valid()
                 if total == 0:
                     registration.paid = True
-                registration.bill = bill
+                registration.bill = self.bill
                 registration.save()
-            bill.save()
+            self.bill.save()
+            if self.bill.total == 0:
+                self.bill.status = Bill.STATUS.paid
+                self.bill.save()            
         return super(RegisteredActivitiesListView, self).form_valid(form)
 
 
