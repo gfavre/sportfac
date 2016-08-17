@@ -55,6 +55,13 @@ class SessionViewSet(viewsets.ModelViewSet):
     queryset = Session.objects.all()
     permission_classes = (InstructorPermission,)
     
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = SessionSerializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+    
 
 
 class ActivityViewSet(viewsets.ReadOnlyModelViewSet):

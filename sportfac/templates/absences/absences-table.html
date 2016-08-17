@@ -29,6 +29,27 @@
       </th>
     </tr>
   </thead>
+  <tfoot>
+    <tr>
+      <th>{% trans "Instructor" %}</th>
+      {% for session in course.sessions.all %}
+      <th>
+          <select name="instructor" class="instructor" data-session-url="{{ session.get_api_url }}">
+            {% for instructor in course.instructors.all %}
+            <option value="{{ instructor.id }}"{% if session.instructor == instructor %} selected{% endif %}>
+              {{ instructor.full_name }}
+            </option>
+            {% endfor %}
+            <option value=""{% if not session.instructor %} selected{% endif %}>{% trans "other" %}</option>
+          </select>
+          <span class="message success" style="display: none"><i class="icon icon-ok-circled text-success"></i></span> 
+          <span class="message error" style="display: none"><i class="icon icon-cancel-circled text-danger"></i></span> 
+
+      </th>
+      {% endfor %}
+      <th class="hidden-print"></th>
+    </tr>
+  </tfoot>
   <tbody>
   {% for registration in course.participants.all %}
   {% with units=forloop.counter0 %}
@@ -120,7 +141,20 @@
 <script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
 <script src="{% static 'js/vendor/bootstrap-datetimepicker.min.js' %}"></script>
 <script src="{% static 'js/vendor/js.cookie.js' %}"></script>
-
+<script id="instructors-tmpl" type="text/template">
+<th>
+  <select name="instructor" class="instructor">
+    {% for instructor in course.instructors.all %}
+    <option value="{{ instructor.id }}"{% if user == instructor %} selected{% endif %}>
+        {{ instructor.full_name }}
+    </option>
+    {% endfor %}
+    <option value=""{% if not user in course.instructors.all %} selected{% endif %}>{% trans "other" %}</option>
+  </select>
+  <span class="message success" style="display: none"><i class="icon icon-ok-circled text-success"></i></span> 
+  <span class="message error" style="display: none"><i class="icon icon-cancel-circled text-danger"></i></span> 
+</th>
+</script>
 <script>
 $(function(){
     var HUMAN_FMT = 'DD.MM.YYYY';
@@ -161,13 +195,15 @@ $(function(){
             url: "{% url 'api:session-list' %}",
             type: 'POST',
             data: { course: {{ course.id }},
-                    date: moment().format(API_FMT) },
+                    date: moment().format(API_FMT),
+                    instructor: {% if user in course.instructors.all %}{{ user.pk }}{% else %}null{% endif %} },
             success: function(data){
                var $th_tmpl = $($('#column-header').html());
                var date = moment().format(API_FMT);
                $('input', $th_tmpl).val(moment(data.date, API_FMT).format(HUMAN_FMT));
-               $('.session-update', $th_tmpl).data('session-url', "{% url 'api:session-list' %}" + data.id + '/');
-               $('.session-delete', $th_tmpl).data('session-url', "{% url 'api:session-list' %}" + data.id + '/');
+               var url = "{% url 'api:session-list' %}" + data.id + '/';
+               $('.session-update', $th_tmpl).data('session-url', url);
+               $('.session-delete', $th_tmpl).data('session-url', url);
 
                $('.datetimepicker', $th_tmpl).datetimepicker({
                  language: '{{ LANGUAGE_CODE }}',
@@ -188,6 +224,11 @@ $(function(){
                   $('a', $td_tmpl).attr('tabindex', $('td:last', $(this)).index() * 100 + idx)                  
                   $('td:last', $(this)).before($td_tmpl);
                });
+               
+               var $instructor_tmpl = $($('#instructors-tmpl').html());
+               $('.absences tfoot th:last').before($instructor_tmpl);
+               var $inplace = $('.absences tfoot select').last();
+               $inplace.data('session-url', url);
            },
         });
     }
@@ -204,9 +245,28 @@ $(function(){
                 $('.absences tr').each(function(){
                     $('td:nth-child(' + col_nb + ')', this).remove();
                 });
+                $('.absences tfoot th:nth-child(' + col_nb + ')').remove();
             }
         });
         evt.preventDefault();
+    });
+    
+    $('.absences').on('change', 'select.instructor', function(event){
+       var parent = $(this).parent();
+       $('.message.error', parent).hide();
+       $('.message.success', parent).hide();
+       $.ajax({
+            url: $(this).data('session-url'),
+            type: 'PUT',
+            data: {'instructor': $(this).val() },
+            success: function(response){
+                $('.message.success', parent).show();
+            },
+            error: function(response){
+                $('.message.error', parent).show();
+            }
+        });
+
     });
     
         
