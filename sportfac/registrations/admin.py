@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.utils.translation import ugettext_lazy as _
 
-from .models import Registration, Child
+from .models import Registration, Child, Bill
 
 
 class RegistrationAdmin(admin.ModelAdmin):
@@ -36,3 +36,9 @@ class ChildAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'family', 'school_year')
 
 admin.site.register(Child, ChildAdmin)
+
+class BillAdmin(admin.ModelAdmin):
+    list_display = ('billing_identifier', 'total', 'family', 'status')
+    list_filter = ('status',)
+
+admin.site.register(Bill, BillAdmin)
