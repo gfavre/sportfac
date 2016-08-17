@@ -18,8 +18,9 @@
         <ul class="list-unstyled">
         {% for instructor in course.instructors.all %}
           <li>
-            <a href="mailto:{{ instructor.email }}">{{ instructor.full_name  }}</a><br />
-            <a href="{{ instructor.best_phone|phone:'RFC3966' }}">{{ instructor.best_phone|phone }}</a>
+            {{ instructor.full_name  }}<br />
+            <a href="{{ instructor.best_phone|phone:'RFC3966' }}">{{ instructor.best_phone|phone }}</a><br/>
+            {{ instructor.email|urlize  }}
           </li>
         {% endfor %}
         </ul>       

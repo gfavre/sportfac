@@ -21,21 +21,22 @@
   <dd>{{ registered.course.start_date }}&nbsp;&nbsp;<i class="icon-right" aria-hidden="true"></i>&nbsp;&nbsp;{{ registered.course.end_date }}</dd>
   <dt>{% trans "Time" %}</dt>
   <dd>{{ registered.course.day_name }}, {{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</dd>  
-  <dt>{% trans "Place" %}</dt>
-  <dd>{{ registered.course.place }}</dd>
   <dt>{% trans "Instructors" %}</dt>
   <dd>
     <ul class="list-unstyled">
     {% for instructor in registered.course.instructors.all %}
       <li>
-        <a href="{{ instructor.get_backend_url }}">{{ instructor.full_name  }}</a><br />
+        {{ instructor.full_name }}<br />
         <a href="{{ instructor.best_phone|phone:'RFC3966' }}">{{ instructor.best_phone|phone }}</a><br/>
-        <a href="{{ instructor.email|urlize }}">{{ instructor.email }}</a>
+        {{ instructor.email | urlize}}
       </li>
     {% endfor %}
     </ul>
   </dd>    
-  {% if registered.course.activity.informations%}
+
+  <dt>{% trans "Place" %}</dt>
+  <dd>{{ registered.course.place }}</dd>
+    {% if registered.course.activity.informations%}
   <dt>{% trans "Informations" %}</dt>
   <dd>{{ registered.course.activity.informations|safe}}</dd>
   {% endif %}
