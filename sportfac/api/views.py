@@ -37,7 +37,7 @@ class AbsenceViewSet(viewsets.ModelViewSet):
                 session=Session.objects.get(pk=serializer.data['session']), 
                 child=Child.objects.get(pk=serializer.data['child'])
             )
-            if status == 'present':
+            if res_status == 'present':
                 self.perform_destroy(obj)
             else:
                 obj.status = res_status
