@@ -89,7 +89,8 @@ class RegistrationForm(forms.ModelForm):
 class ChildSelectForm(forms.ModelForm):
     """Child selection, with select2 widget.
        Used in registration creation wizard"""
-    child = forms.ModelChoiceField(queryset=Child.objects, 
+    child = forms.ModelChoiceField(label=_("Child"),
+                                    queryset=Child.objects, 
                                    empty_label=None,
                                    widget=Select2Widget())    
     class Meta:
@@ -99,7 +100,8 @@ class ChildSelectForm(forms.ModelForm):
 
 class CourseSelectForm(RegistrationForm):
     "Course selection, used in registration creation wizard"
-    course = forms.ModelChoiceField(queryset=Course.objects, #overriden in __init__!
+    course = forms.ModelChoiceField(label=_("Course"),
+                                    queryset=Course.objects, #overriden in __init__!
                                     empty_label=None,
                                     widget=Select2Widget())    
     

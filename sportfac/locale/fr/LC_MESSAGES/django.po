@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-18 17:13+0200\n"
+"POT-Creation-Date: 2016-08-18 17:21+0200\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -489,32 +489,46 @@ msgstr "Date de fermeture"
 msgid "Closing date should come after opening date"
 msgstr "La date de fermeture doit être postérieuse à la date d'ouverture"
 
-#: sportfac/backend/forms.py:112
+#: sportfac/backend/forms.py:92
+#: sportfac/backend/views/registration_views.py:41
+#: sportfac/templates/backend/registration/list.html:40
+msgid "Child"
+msgstr "Enfant"
+
+#: sportfac/backend/forms.py:103
+#: sportfac/backend/views/registration_views.py:42
+#: sportfac/registrations/models.py:41
+#: sportfac/templates/backend/teacher/detail.html:25
+#: sportfac/templates/backend/user/detail.html:108
+msgid "Course"
+msgstr "Cours"
+
+#: sportfac/backend/forms.py:114
 msgid "Mark as paid?"
 msgstr "Marquer comme payé?"
 
-#: sportfac/backend/forms.py:112
+#: sportfac/backend/forms.py:114
 msgid "If not checked, a bill will be created"
 msgstr "Si la case n'est pas cochée, une facture sera créée."
 
-#: sportfac/backend/forms.py:125 sportfac/backend/forms.py:138
+#: sportfac/backend/forms.py:127 sportfac/backend/forms.py:140
 msgid "Period start date"
 msgstr "Date de début de période"
 
-#: sportfac/backend/forms.py:126 sportfac/backend/forms.py:129
-#: sportfac/backend/forms.py:139 sportfac/backend/forms.py:142
+#: sportfac/backend/forms.py:128 sportfac/backend/forms.py:131
+#: sportfac/backend/forms.py:141 sportfac/backend/forms.py:144
 msgid "Format: DD.MM.YYYY"
 msgstr "Format: JJ.MM.AAAA"
 
-#: sportfac/backend/forms.py:128 sportfac/backend/forms.py:141
+#: sportfac/backend/forms.py:130 sportfac/backend/forms.py:143
 msgid "Period end date"
 msgstr "Fin de la période"
 
-#: sportfac/backend/forms.py:132
+#: sportfac/backend/forms.py:134
 msgid "Copy courses"
 msgstr "Copier les cours"
 
-#: sportfac/backend/forms.py:133
+#: sportfac/backend/forms.py:135
 msgid "Copy all activities and courses from the selected period"
 msgstr "Copier toutes les activités et cours depuis la période sélectionnée"
 
@@ -625,18 +639,6 @@ msgstr "Les dates d'ouverture et de fermeture ont été mises à jour"
 #, python-format
 msgid "An error was found in form %s"
 msgstr "Une erreur a été trouvée dans le formulaire %s"
-
-#: sportfac/backend/views/registration_views.py:41
-#: sportfac/templates/backend/registration/list.html:40
-msgid "Child"
-msgstr "Enfant"
-
-#: sportfac/backend/views/registration_views.py:42
-#: sportfac/registrations/models.py:41
-#: sportfac/templates/backend/teacher/detail.html:25
-#: sportfac/templates/backend/user/detail.html:108
-msgid "Course"
-msgstr "Cours"
 
 #: sportfac/backend/views/registration_views.py:43
 #: sportfac/sportfac/context_processors.py:51
