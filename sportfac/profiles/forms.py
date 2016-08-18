@@ -181,7 +181,10 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
         """
         existing = get_user_model().objects.filter(email__iexact=self.cleaned_data['email'])
         if existing.exists():
-            raise forms.ValidationError(_("A user with that username already exists."))
+            message = _("A user with that username already exists.")
+            message += ' <a href="%s" class="btn-link" style="margin-right:1em"><i class="icon-lock-open"></i>%s</a>' % (reverse('auth_login'), _("Login"))
+            message += ' <a href="#" class="new-mail btn-link"><i class="icon-cancel-circled"></i>%s</a>' % _("Use another email address")
+            raise forms.ValidationError(mark_safe(message))
         else:
             return self.cleaned_data['email']
     

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-18 12:57+0200\n"
+"POT-Creation-Date: 2016-08-18 17:13+0200\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -1006,7 +1006,16 @@ msgstr "Autre téléphone"
 msgid "A user with that username already exists."
 msgstr "Cette adresse email est déjà utilisée."
 
-#: sportfac/profiles/forms.py:199
+#: sportfac/profiles/forms.py:185 sportfac/templates/registration/login.html:4
+#: sportfac/templates/registration/login.html:5
+msgid "Login"
+msgstr "Connexion"
+
+#: sportfac/profiles/forms.py:186
+msgid "Use another email address"
+msgstr "Utiliser une autre adresse email"
+
+#: sportfac/profiles/forms.py:202
 msgid "The two password fields didn't match."
 msgstr "Les deux mots de passe ne sont pas identiques."
 
@@ -2783,11 +2792,6 @@ msgstr ""
 #: sportfac/templates/registrations/registration_list.html:141
 msgid "Confirm and proceed to checkout"
 msgstr "Confirmer et passer au paiement"
-
-#: sportfac/templates/registration/login.html:4
-#: sportfac/templates/registration/login.html:5
-msgid "Login"
-msgstr "Connexion"
 
 #: sportfac/templates/registration/login.html:10
 msgid "Please correct the error below."

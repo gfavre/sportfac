@@ -66,3 +66,19 @@
 {% endblock %}
 
 {% block page_footer %}{% endblock page_footer %}
+
+{% block extra_js %}
+<script>
+jQuery(document).ready(function($){
+    $('form a.new-mail').on('click', function(evt){
+        evt.stopPropagation();
+        $email = $('#id_email');
+        $email.val('');
+        $email.parents('.has-error').removeClass('has-error');
+        $email.siblings('.help-inline').hide();
+        $email.focus();
+    })
+});
+    $('#id_username').focus();
+</script>
+{% endblock %}
