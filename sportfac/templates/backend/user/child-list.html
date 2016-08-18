@@ -1,5 +1,5 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags %}
+{% load i18n sekizai_tags switzerland %}
 {% get_current_language as LANGUAGE_CODE %}
 
 {% block title %}{% trans "List students" %} - {{ block.super }}{% endblock %}
@@ -78,6 +78,9 @@ $(function () {
       <th>{% trans "Name" %}</th>
       <th>{% trans "Family" %}</th>
       <th>{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
+      {% if EMERGENCY_NUMBER_MANDATORY %}
+      <th>{% trans "Emergency number" %}</th>
+      {% endif %}
       <th class="actions">{% trans "Actions" %}</th>
     </tr>
   </thead>
@@ -96,10 +99,18 @@ $(function () {
       </td>
       <td>
           {{ child.school_year|default:"n/a" }}
-          {% if CHILD_SCHOOL and child.school %}<br>
+          {% if CHILD_SCHOOL %}<br>
             {{ child.school_name }}
           {% endif %}
       </td>
+      {% if EMERGENCY_NUMBER_MANDATORY %}
+      <td>
+          <a href="{{ registration.child.emergency_number|phone:'RFC3966' }}">
+                {{ child.emergency_number|phone }}
+            </a>
+      </td>
+      {% endif %}
+
       <td>
           <ul class="list-unstyled">
             <li class="text-nowrap"><a href="{{ child.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Edit student" %}</a></li>

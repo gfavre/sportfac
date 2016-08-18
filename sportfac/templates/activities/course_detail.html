@@ -27,7 +27,7 @@
       </dd>
       <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
       <dt>{% trans "Number of sessions" %}</dt><dd>{{ course.number_of_sessions }} cours</dd>
-{% if not NO_PAYMENT  %}
+{% if not NO_PAYMENT %}
       <dt>{% trans "Price" %}</dt><dd>{{ course.price|money }}</dd>
 {% endif %}
       <dt>{% trans "School years" %}</dt>
@@ -58,31 +58,52 @@
   <h2>{% trans "Registrations" %}</h2>
   
   <table class="table">
+
     <thead>
       <tr>
         <th>{% trans "Name" %}</th>
-        {% if user in course.instructors.all %}
+        {% if DISPLAY_PARENT_CITY %}
+        <th>{% trans "City" %}</th>
+        {% endif %}
+
+    {% if user in course.instructors.all or user.is_manager %}
         <th>{% trans "Birth date" %}</th>
         <th>{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
+        {% if EMERGENCY_NUMBER_MANDATORY %}
+        <th>{% trans "Emergency number" %}</th>
         {% endif %}
-        <th>{% trans "City" %}</th>
-        <th>{% trans "Parents phone" %}</th>
+    {% endif %}
+        <th>{% trans "Parents phones" %}</th>
         <th>{% trans "Parents email" %}</th>
       </tr>
+    </thead>
+  
+
     {% for registration in course.participants.all %}
       <tr>
         <td>{{ registration.child.full_name }}</td>
-      {% if user in course.instructors.all %}
+        {% if DISPLAY_PARENT_CITY %}
+        <td>{{ registration.child.family.city|title }}</td>
+        {% endif %}
+      
+      {% if user in course.instructors.all or user.is_manager %}
         <td>{{ registration.child.birth_date }}</td>
         <td>
-            {{ registration.child.school_year }}
+            {{ registration.child.school_year|default:"n/a" }}
             {% if CHILD_SCHOOL %}<br>
             {{ registration.child.school_name }}
             {% endif %}
         </td>
+      
+        {% if EMERGENCY_NUMBER_MANDATORY %}
+        <td>
+            <a href="{{ registration.child.emergency_number|phone:'RFC3966' }}">
+                {{ registration.child.emergency_number|phone }}
+            </a>
+        </td>
+        {% endif %}
       {% endif %}
-        <td>{{ registration.child.family.city|title }}</td>
-
+        
         <td>
           <ul class="list-unstyled">
             {% if registration.child.family.private_phone %}
@@ -114,5 +135,4 @@
     {% endfor %}
   </table>
   </section> 
-  
 {% endblock content %}

@@ -25,6 +25,10 @@
 {% formrow form.first_name form.last_name %}
 {% formrow form.sex form.birth_date form.nationality form.language  %}
 
+{% if EMERGENCY_NUMBER_MANDATORY %}
+  {% formrow form.emergency_number %}
+{% endif %}
+
 {% formconfig row using "floppyforms/rows/bootstrap-sm-3.html" %}
 <fieldset>
     <legend>{% trans "School informations" %}</legend>
@@ -39,7 +43,6 @@
 {% if CHILD_SCHOOL %}
     {% formrow form.school %}
     {% formrow form.other_school %}
-
 {% endif %}
 </fieldset>
 {% endform %}

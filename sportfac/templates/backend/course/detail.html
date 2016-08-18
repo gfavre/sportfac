@@ -74,9 +74,11 @@
     <thead>
       <tr>
         <th>{% trans "Name" %}</th>
-        <th>{% trans "Birth date" %}</th>
         <th>{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
-        <th>{% trans "Parents phone" %}</th>
+        {% if EMERGENCY_NUMBER_MANDATORY %}
+        <th>{% trans "Emergency number" %}</th>
+        {% endif %}
+        <th>{% trans "Parents phones" %}</th>
         <th>{% trans "Parents email" %}</th>
         <th>{% trans "Actions" %}</th>
 
@@ -86,13 +88,19 @@
         <td>
             <a href="{{ registration.child.get_backend_url }}">{{ registration.child.full_name }}</a>
         </td>
-        <td>{{ registration.child.birth_date }}</td>
         <td>
-            {{ registration.child.school_year }}
+            {{ registration.child.school_year|default:"n/a" }}
             {% if CHILD_SCHOOL %}<br>
             {{ registration.child.school_name }}
             {% endif %}
         </td>
+        {% if EMERGENCY_NUMBER_MANDATORY %}
+        <td>
+            <a href="{{ registration.child.emergency_number|phone:'RFC3966' }}">
+                {{ registration.child.emergency_number|phone }}
+            </a>
+        </td>
+        {% endif %}
         <td>
           <ul>
             {% if registration.child.family.private_phone %}
