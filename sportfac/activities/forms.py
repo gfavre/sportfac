@@ -11,10 +11,12 @@ from profiles.models import FamilyUser
             
 
 class CourseForm(forms.ModelForm):
-    activity = forms.ModelChoiceField(queryset=Activity.objects, 
+    activity = forms.ModelChoiceField(label=_("Activity"),
+                                      queryset=Activity.objects, 
                                       empty_label=None,
                                       widget=Select2Widget())    
     instructors = forms.ModelMultipleChoiceField(
+        label=_("Instructors"),
         queryset=FamilyUser.objects, 
         widget=Select2MultipleWidget()
     )
