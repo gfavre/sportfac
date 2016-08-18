@@ -125,7 +125,8 @@ class Registration(TimeStampedModel, StatusModel):
 
     def delete(self, *args, **kwargs):
         super(Registration, self).delete(*args, **kwargs)
-        self.bill.save()
+        if self.bill:
+            self.bill.save()
     
 
 class Bill(TimeStampedModel, StatusModel):

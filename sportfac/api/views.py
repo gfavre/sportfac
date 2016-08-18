@@ -32,7 +32,7 @@ class AbsenceViewSet(viewsets.ModelViewSet):
     def set(self, request):
         serializer = SetAbsenceSerializer(data=request.data)
         if serializer.is_valid():
-            status = serializer.data['status']
+            res_status = serializer.data['status']
             obj, created = Absence.objects.get_or_create(
                 session=Session.objects.get(pk=serializer.data['session']), 
                 child=Child.objects.get(pk=serializer.data['child'])
@@ -40,9 +40,9 @@ class AbsenceViewSet(viewsets.ModelViewSet):
             if status == 'present':
                 self.perform_destroy(obj)
             else:
-                obj.status = status
+                obj.status = res_status
                 obj.save()
-            return Response({'status': status}) 
+            return Response({'status': res_status}) 
         else:
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST) 
