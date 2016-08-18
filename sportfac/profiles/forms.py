@@ -65,8 +65,8 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
 
     email = forms.EmailField(label=_("E-mail"), 
                              widget=forms.EmailInput(attrs={'placeholder': 'john@example.com'}))
-    zipcode = forms.CharField(label=_("NPA"), widget=forms.TextInput(attrs={'placeholder': '1296'}))
-    city = forms.CharField(label=_("City"), widget=forms.TextInput(attrs={'placeholder': 'Coppet'}))
+    zipcode = forms.CharField(label=_("NPA"), widget=forms.TextInput(attrs={'placeholder': _("NPA")}))
+    city = forms.CharField(label=_("City"), widget=forms.TextInput(attrs={'placeholder': _("City")}))
 
     class Meta:
         model = get_user_model()
