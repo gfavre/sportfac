@@ -241,10 +241,13 @@ $(function(){
             type: 'DELETE',
             success: function(response){
                 var col_nb = parent.index();
+                // remove thead th
                 parent.remove();
-                $('.absences tr').each(function(){
-                    $('td:nth-child(' + col_nb + ')', this).remove();
+                // remove tbody td
+                $('.absences tbody tr').each(function(){
+                    $('td', this)[col_nb - 1].remove();
                 });
+                // remove tfoot th
                 $('.absences tfoot th:nth-child(' + col_nb + ')').remove();
             }
         });
