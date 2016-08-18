@@ -153,7 +153,7 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
     first_name = forms.CharField(label=_("First name"), max_length=30, required=True)
     last_name = forms.CharField(label=_("Last name"),  max_length=30, required=True)
     address = forms.CharField(label=_("Address"),
-                              #widget=forms.Textarea(attrs={'rows': 3}),
+                              widget=forms.Textarea(attrs={'rows': 3}),
                               required = True)
     zipcode = forms.CharField(label=_("NPA"), required=True,
                               max_length=5, 
