@@ -64,7 +64,7 @@
         <th>{% trans "First name" %}</th>
         <th>{% trans "Last name" %}</th>
         <th>{% trans "Birth date" %}</th>
-        <th>{% trans "School year" %}</th>
+        <th>{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
         <th>{% trans "Parents phone" %}</th>
         <th>{% trans "Parents email" %}</th>
         <th>{% trans "Status" %}</th>
@@ -76,7 +76,13 @@
         <td>{{ registration.child.first_name|title }}</td>
         <td>{{ registration.child.last_name|title }}</td>
         <td>{{ registration.child.birth_date }}</td>
-        <td>{{ registration.child.school_year }}</td>
+        <td>
+            {{ registration.child.school_year }}
+            {% if CHILD_SCHOOL %}<br>
+            {{ registration.child.school_name }}
+            {% endif %}
+        </td>
+
         <td>
           <ul>
             {% if registration.child.family.private_phone %}

@@ -76,9 +76,9 @@
         <td>{{ registration.child.birth_date }}</td>
         <td>
             {{ registration.child.school_year }}
-        {% if CHILD_SCHOOL and child.school %}<br>
-            {{ child.school_name }}
-        {% endif %}
+            {% if CHILD_SCHOOL %}<br>
+            {{ registration.child.school_name }}
+            {% endif %}
         </td>
       {% endif %}
         <td>{{ registration.child.family.city|title }}</td>
