@@ -39,6 +39,8 @@ class ChildForm(forms.ModelForm):
 
 
 class BillForm(forms.ModelForm):
+    status = forms.ChoiceField(choices=list(Bill.STATUS)[1:])
+    
     class Meta:
         model = Bill
         fields = ('status',)
