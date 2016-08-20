@@ -90,7 +90,7 @@ class ChildSelectForm(forms.ModelForm):
     """Child selection, with select2 widget.
        Used in registration creation wizard"""
     child = forms.ModelChoiceField(label=_("Child"),
-                                    queryset=Child.objects, 
+                                   queryset=Child.objects.exclude(family=None), 
                                    empty_label=None,
                                    widget=Select2Widget())    
     class Meta:
