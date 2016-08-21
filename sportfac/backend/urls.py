@@ -147,6 +147,8 @@ years_patterns = [
 
     url(r'^new', view=views.YearCreateView.as_view(), name='year-create'),
     url(r'^change', view=views.ChangeYearFormView.as_view(), name='year-change'),
+    url(r'^update', view=views.ChangeProductionYearFormView.as_view(), name='year-update'),
+
 
 ]
 

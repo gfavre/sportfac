@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-18 17:21+0200\n"
+"POT-Creation-Date: 2016-08-21 09:36+0200\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -172,14 +172,14 @@ msgstr "Prix"
 #: sportfac/templates/backend/course/list-phase1.html:40
 #: sportfac/templates/backend/course/list.html:40
 #: sportfac/templates/backend/registration/list.html:38
-#: sportfac/templates/backend/year/list.html:33
+#: sportfac/templates/backend/year/list.html:40
 #: sportfac/templates/mailer/pdf_my_courses.html:19
 msgid "Start date"
 msgstr "Date de début"
 
 #: sportfac/activities/forms.py:28 sportfac/activities/models.py:135
 #: sportfac/templates/activities/course_list.html:39
-#: sportfac/templates/backend/year/list.html:34
+#: sportfac/templates/backend/year/list.html:41
 #: sportfac/templates/mailer/pdf_my_courses.html:20
 msgid "End date"
 msgstr "Date de fin"
@@ -756,39 +756,61 @@ msgstr "L'enfant a été supprimé"
 msgid "Children are being imported"
 msgstr "Les enfants sont en cours d'importation"
 
-#: sportfac/backend/views/year_views.py:42
+#: sportfac/backend/views/year_views.py:45
 #, python-format
 msgid "You are now editing %s"
 msgstr "Vous modifiez la période %s"
 
-#: sportfac/backend/views/year_views.py:44
+#: sportfac/backend/views/year_views.py:47
 msgid "You are now editing period currently in production"
 msgstr "Vous modifiez désormais la période actuellement en production"
 
-#: sportfac/backend/views/year_views.py:46
+#: sportfac/backend/views/year_views.py:49
 #, python-format
 msgid "You are now reviewing %s"
 msgstr "Vous révisez la période %s"
 
-#: sportfac/backend/views/year_views.py:48
+#: sportfac/backend/views/year_views.py:51
 #, python-format
 msgid "You are now previewing %s"
 msgstr "Vous prévisualisez la période %s"
 
-#: sportfac/backend/views/year_views.py:61
+#: sportfac/backend/views/year_views.py:90
+msgid ""
+"The period has been changed. However, it is in the future. It will be "
+"automatically switched back tonight"
+msgstr ""
+"La période en production a été changée. Cependant, celle-ci est située dans "
+"le futur. Sans changement, la période précédemment en production sera remise "
+"en fonction cette nuit."
+
+#: sportfac/backend/views/year_views.py:92
+msgid ""
+"The period has been changed. However, it is in the past. It will be "
+"automatically switched back tonight"
+msgstr ""
+"La période en production a été changée. Cependant, celle-ci est située dans "
+"le passé. Sans changement, la période précédemment en production sera remise "
+"en fonction cette nuit."
+
+#: sportfac/backend/views/year_views.py:94
+msgid "The period has been changed."
+msgstr "La période en production a été changée."
+
+#: sportfac/backend/views/year_views.py:107
 msgid "Period has been updated."
 msgstr "La période a été mise à jour."
 
-#: sportfac/backend/views/year_views.py:72
+#: sportfac/backend/views/year_views.py:118
 msgid "Period has been deleted."
 msgstr "La période a été supprimée."
 
-#: sportfac/backend/views/year_views.py:80
+#: sportfac/backend/views/year_views.py:126
 #, python-format
 msgid "Period %(identifier)s has been deleted."
 msgstr "La période %(identifier)s a bien été supprimée"
 
-#: sportfac/backend/views/year_views.py:90
+#: sportfac/backend/views/year_views.py:136
 #, python-format
 msgid "A new period, starting on %s and ending on %s has been defined"
 msgstr ""
@@ -1424,7 +1446,7 @@ msgid "Activities"
 msgstr "Activités"
 
 #: sportfac/templates/activities/activity_list.html:61
-#: sportfac/templates/backend/registration/wizard.html:47
+#: sportfac/templates/backend/registration/wizard.html:46
 #: sportfac/templates/profiles/registration_list.html:121
 #: sportfac/templates/registrations/registration_list.html:137
 #: sportfac/templates/registrations/wizard_children.html:17
@@ -1562,7 +1584,7 @@ msgstr "Heure"
 #: sportfac/templates/backend/user/instructor-list.html:80
 #: sportfac/templates/backend/user/list.html:85
 #: sportfac/templates/backend/user/manager-list.html:80
-#: sportfac/templates/backend/year/list.html:35
+#: sportfac/templates/backend/year/list.html:42
 msgid "Actions"
 msgstr "Actions"
 
@@ -1595,7 +1617,6 @@ msgstr "Merci de vérifier l'email"
 #: sportfac/templates/activities/mail-preview-editlink.html:9
 #: sportfac/templates/backend/mail/preview-editlink.html:9
 #: sportfac/templates/backend/mail/preview.html:9
-#: sportfac/templates/backend/year/list.html:53
 #: sportfac/templates/navbar.html:49
 msgid "Preview"
 msgstr "Prévisualisation"
@@ -1804,7 +1825,7 @@ msgstr "Téléphone des parents"
 
 #: sportfac/templates/backend/course/detail-phase2.html:69
 #: sportfac/templates/backend/registration/list.html:41
-#: sportfac/templates/backend/year/list.html:32
+#: sportfac/templates/backend/year/list.html:39
 msgid "Status"
 msgstr "Statut"
 
@@ -2291,7 +2312,7 @@ msgstr "Mettre à jour"
 msgid "Create a new registration"
 msgstr "Nouvelle inscription"
 
-#: sportfac/templates/backend/registration/wizard.html:54
+#: sportfac/templates/backend/registration/wizard.html:53
 #: sportfac/templates/wizard.html:40
 msgid "Next"
 msgstr "Suivant"
@@ -2566,7 +2587,7 @@ msgstr ""
 "supprimées définitivement."
 
 #: sportfac/templates/backend/year/confirm_delete.html:11
-#: sportfac/templates/backend/year/list.html:60
+#: sportfac/templates/backend/year/list.html:71
 msgid "Delete period"
 msgstr "Supprimer la période"
 
@@ -2588,35 +2609,43 @@ msgstr "Liste des périodes"
 msgid "New period"
 msgstr "Nouvelle période"
 
-#: sportfac/templates/backend/year/list.html:30
+#: sportfac/templates/backend/year/list.html:37
 msgid "In production"
 msgstr "En production"
 
-#: sportfac/templates/backend/year/list.html:30
+#: sportfac/templates/backend/year/list.html:37
 msgid "The period that is currently viewed by all users"
 msgstr "La période actuellement visible de tous les utilisateurs"
 
-#: sportfac/templates/backend/year/list.html:31
+#: sportfac/templates/backend/year/list.html:38
 msgid "Currently reviewing"
 msgstr "En train de réviser"
 
-#: sportfac/templates/backend/year/list.html:53
+#: sportfac/templates/backend/year/list.html:64
 #: sportfac/templates/navbar.html:49
 msgid "Review"
 msgstr "Réviser"
 
-#: sportfac/templates/backend/year/list.html:53
-msgid "View"
-msgstr "Afficher"
-
-#: sportfac/templates/backend/year/list.html:57
+#: sportfac/templates/backend/year/list.html:68
 #: sportfac/templates/backend/year/update.html:4
 #: sportfac/templates/backend/year/update.html:5
 #: sportfac/templates/backend/year/update.html:19
 msgid "Update period"
 msgstr "Mettre à jour la période"
 
-#: sportfac/templates/backend/year/list.html:69
+#: sportfac/templates/backend/year/list.html:78
+msgid ""
+"This will change the period that is currently viewed by all users. Every "
+"user will be logged off."
+msgstr ""
+"Cela change la période actuellement visible pour tous les utilisateurs. "
+"Chaque utilisateur sera automatiquement déconnecté."
+
+#: sportfac/templates/backend/year/list.html:81
+msgid "Force into production"
+msgstr "Forcer en production"
+
+#: sportfac/templates/backend/year/list.html:87
 msgid "Period is not ready to use yet"
 msgstr "La période n'est pas encore prête à être utilisée"
 
@@ -2963,6 +2992,9 @@ msgstr ""
 #: sportfac/templates/registrations/wizard_billing.html:5
 msgid "Registrations validated"
 msgstr "Inscriptions enregistrées"
+
+#~ msgid "View"
+#~ msgstr "Afficher"
 
 #~ msgid ""
 #~ "Are you sure you want to send confirmation email to all instructors ?"

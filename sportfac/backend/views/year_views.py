@@ -3,9 +3,11 @@ import os
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.sessions.models import Session
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.core.management import call_command
 from django.db import connection, transaction
+from django.utils import timezone
 from django.utils.http import is_safe_url
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
@@ -19,7 +21,8 @@ from ..tasks import create_tenant
 from .mixins import BackendMixin
 
 
-__all__ = ['ChangeYearFormView', 'YearCreateView', 'YearDeleteView', 'YearListView', 'YearUpdateView']
+__all__ = ['ChangeYearFormView', 'ChangeProductionYearFormView',
+           'YearCreateView', 'YearDeleteView', 'YearListView', 'YearUpdateView']
 
 
 class ChangeYearFormView(SuccessMessageMixin, BackendMixin, FormView):
@@ -47,6 +50,49 @@ class ChangeYearFormView(SuccessMessageMixin, BackendMixin, FormView):
         elif tenant.is_future:
             message = _("You are now previewing %s") % tenant        
         return mark_safe(message)
+
+
+class ChangeProductionYearFormView(SuccessMessageMixin, BackendMixin, FormView):
+    form_class = YearSelectForm
+
+    def get_success_url(self):
+        if not is_safe_url(url=self.success_url, host=self.request.get_host()):
+            return reverse('backend:home')
+        return self.success_url
+
+
+    @transaction.atomic
+    def form_valid(self, form):
+        self.success_url = form.cleaned_data['next']
+        tenant = form.cleaned_data['tenant']
+        response = super(ChangeProductionYearFormView, self).form_valid(form)
+        current_domain = Domain.objects.filter(is_current=True).first()
+        current_domain.is_current = False
+        current_domain.save()
+        new_domain = tenant.domains.first()
+        new_domain.is_current = True
+        new_domain.save()
+        # log every one out
+        Session.objects.exclude(session_key=self.request.session.session_key).delete()
+        self.request.session[settings.VERSION_SESSION_NAME] = new_domain.domain
+        return response
+    
+    def get_success_message(self, cleaned_data):
+        now = timezone.now()
+        tenant = cleaned_data['tenant']
+        possible_new_tenants = YearTenant.objects.filter(start_date__lte=now, 
+                                                         end_date__gte=now, 
+                                                         status=YearTenant.STATUS.ready)\
+                                                 .exclude(domains=tenant.domains.all())\
+                                                 .order_by('start_date', 'end_date')
+        
+        if tenant.is_future and possible_new_tenants.count():
+            message = _("The period has been changed. However, it is in the future. It will be automatically switched back tonight")
+        elif tenant.is_past and possible_new_tenants.count():
+            message =  _("The period has been changed. However, it is in the past. It will be automatically switched back tonight")
+        else:
+            message = _("The period has been changed.")
+        return mark_safe(message) 
 
 
 class YearListView(BackendMixin, ListView):

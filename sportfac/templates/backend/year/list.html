@@ -24,10 +24,17 @@ $(function () {
   <input type="hidden" name="next" value="{{ request.get_full_path }}" />
   <input type="hidden" name="tenant" value="{{ request.tenant.pk }}" />           
 </form>
+<form id="tenant-update" action="{% url 'backend:year-update' %}" method="post">
+{% csrf_token %}
+  <input type="hidden" name="next" value="{{ request.get_full_path }}" />
+  <input type="hidden" name="tenant" value="{{ request.tenant.pk }}" />           
+</form>
+
+
 <table class="table">
   <thead>
     <tr>
-      <th class="text-center">{% trans "In production" %} <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'The period that is currently viewed by all users' %}">[?]</th>
+      <th class="text-center">{% trans "In production" %} <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'The period that is currently viewed by all users' %}">[?]</a></th>
       <th class="text-center">{% trans "Currently reviewing" %}</th>
       <th>{% trans "Status" %}</th>
       <th>{% trans "Start date" %}</th>
@@ -47,10 +54,14 @@ $(function () {
         {% if tenant.is_ready %}
         <ul class="list-unstyled">
           <li class="text-nowrap">
-            <a href="#" class="btn btn-sm" 
-                        onclick="$('#tenant-change input[name=tenant]').val({{ tenant.pk }}); $('#tenant-change').submit();">
+            <a href="#" class="btn btn-sm"
+            {% if tenant == request.tenant %}
+               disabled
+            {% else %}
+               onclick="$('#tenant-change input[name=tenant]').val({{ tenant.pk }}); $('#tenant-change').submit();"
+            {% endif %}>
               <i class="icon icon-loop-alt"></i>
-              {% if tenant.is_past %}{% trans "Review" %}{% elif tenant.is_future %}{% trans "Preview" %}{% else %}{% trans "View" %}{% endif %}
+              {% trans "Review" %}
             </a>
           </li>
           <li class="text-no-wrap">
@@ -59,10 +70,18 @@ $(function () {
           <li class="text-nowrap">
             <a href="{{ tenant.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete period" %}</a>
           </li>
-          {% comment %}<li class="text-nowrap"><a href="{{ activity.get_backend_url }}" class="btn btn-sm"><i class="icon-graduation-cap"></i>&nbsp;{% trans "Check courses" %}</a></li>
-          <li class="text-nowrap"><a href="{{ activity.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update activity" %}</a></li>
-          <li class="text-nowrap"><a href="{{ activity.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete activity" %}</a></li>
-          {% endcomment %}
+          <li class="divider"><hr></li>
+          <li class="">
+            <a href="#" class="btn btn-sm" 
+                        onclick="$('#tenant-update input[name=tenant]').val({{ tenant.pk }}); $('#tenant-update').submit();"
+                            data-toggle="tooltip" data-placement="top" 
+                        title="{% trans 'This will change the period that is currently viewed by all users. Every user will be logged off.' %}"
+                    >
+              <i class="icon icon-warning"></i>
+             {% trans "Force into production" %} [?]
+            </a>
+          </li>
+
         </ul>
         {% else %}
         {% trans "Period is not ready to use yet" %}
