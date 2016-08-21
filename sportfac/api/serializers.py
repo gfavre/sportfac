@@ -121,7 +121,7 @@ class ChildrenSerializer(serializers.ModelSerializer):
     school = serializers.PrimaryKeyRelatedField(many=False, read_only=False,
                                                 queryset=School.objects.all(), required=False, allow_null=True)
     school_year = SchoolYearField(many=False, read_only=False, queryset=SchoolYear.objects.all())
-    ext_id = serializers.IntegerField(source='id_lagapeo', required=False, allow_null=True)
+    ext_id = serializers.IntegerField(source='id_lagapeo', required=False, allow_null=True, max_value=100000000)
     
     class Meta:
         model = Child
