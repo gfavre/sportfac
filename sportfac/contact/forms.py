@@ -27,13 +27,13 @@ class ContactForm(forms.Form):
         email = EmailMessage(
             subject = u'%s [%s - formulaire de contact]' % (
                 self.cleaned_data['subject'], 
-                global_preferences['email__SCHOOL_NAME']),
+                global_preferences['email__SCHOOL_NAME'].decode('utf-8')),
             body = u'%s <%s> a utilisé le formulaire de contact.\n\n %s' % (
                 self.cleaned_data['name'],
                 self.cleaned_data['email'],
                 self.cleaned_data['message']),
-            from_email = global_preferences['email__FROM_MAIL'],
-            to = [global_preferences['email__CONTACT_MAIL']],
+            from_email = global_preferences['email__FROM_MAIL'].decode('utf-8'),
+            to = [global_preferences['email__CONTACT_MAIL'].decode('utf-8')],
             bcc = bcc,
             reply_to = ['%s <%s>' % (self.cleaned_data['name'], self.cleaned_data['email'])]
         )
