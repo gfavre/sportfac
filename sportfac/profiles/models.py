@@ -116,6 +116,9 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     class Meta:
         get_latest_by = "date_joined"
         ordering =('last_name', 'first_name')
+        verbose_name = _("User")
+        verbose_name_plural = _("Users")
+
 
     def get_full_name(self):
         full_name = '%s %s' % (self.first_name, self.last_name)

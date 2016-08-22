@@ -7,7 +7,7 @@ from .models import Registration, Child, Bill
 
 
 class RegistrationAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'status')
+    list_display = ('__unicode__', 'status', 'created', 'modified')
     list_filter = ('status', 'course__activity__name')
     search_fields = (
         'child__first_name', 'child__last_name', 'course__activity__number',
@@ -33,12 +33,12 @@ class RegistrationAdmin(admin.ModelAdmin):
 admin.site.register(Registration, RegistrationAdmin)
 
 class ChildAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'family', 'school_year')
+    list_display = ('first_name', 'last_name', 'family', 'school_year', 'created', 'modified')
 
 admin.site.register(Child, ChildAdmin)
 
 class BillAdmin(admin.ModelAdmin):
-    list_display = ('billing_identifier', 'total', 'family', 'status')
+    list_display = ('billing_identifier', 'total', 'family', 'status', 'created', 'modified')
     list_filter = ('status',)
 
 admin.site.register(Bill, BillAdmin)

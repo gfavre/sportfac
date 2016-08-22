@@ -188,6 +188,11 @@ class Bill(TimeStampedModel, StatusModel):
         if not self.billing_identifier:
             self.update_billing_identifier()
         super(Bill, self).save(*args, **kwargs)
+    
+    class Meta:
+        verbose_name = _("Bill")
+        verbose_name_plural = _("Bills")
+
 
 
 class ExtraInfo(models.Model):
@@ -288,3 +293,7 @@ class Child(TimeStampedModel):
 
     def __unicode__(self):
         return self.get_full_name()
+
+    class Meta:
+        verbose_name = _("Child")
+        verbose_name_plural = _("Children")
