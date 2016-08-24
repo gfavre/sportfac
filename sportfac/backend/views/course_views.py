@@ -60,7 +60,6 @@ class CourseJSCSVView(CSVMixin, CourseDetailView):
     
     def write_csv(self, filelike):
         return self.object.get_js_csv(filelike)
-        
     
 
 class CourseParticipantsView(CourseDetailView):
@@ -73,7 +72,7 @@ class CourseParticipantsView(CourseDetailView):
     
     def get_template_names(self):
         return self.template_name
-    
+
 
 class CourseListView(BackendMixin, ListView):
     model = Course
@@ -84,7 +83,6 @@ class CourseListView(BackendMixin, ListView):
         if self.request.PHASE == 1:
             return 'backend/course/list-phase1.html'
         return 'backend/course/list.html'
-    
 
 
 class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
@@ -106,7 +104,12 @@ class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
             initial['activity'] = activity_obj
         return initial
 
-    
+    def form_valid(self, form):
+        for user in form.cleaned_data['instructors']:
+            user.is_instructor = True
+            user.save()
+        return super(CourseCreateView, self).form_valid(form)
+
 
 class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
     model = Course
@@ -122,6 +125,18 @@ class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
         url = self.object.get_backend_url()
         return mark_safe(self.success_message % {'url': url,
                                                  'number': self.object.number})
+    def form_valid(self, form):
+        course = self.get_object()
+        removed_instructors = set(course.instructors.all()) - set(form.cleaned_data['instructors'])
+        response = super(CourseUpdateView, self).form_valid(form)
+        
+        for instructor in removed_instructors:
+            if instructor.course.exclude(pk=course.pk).count() == 0:
+                instructor.is_instructor = False
+            
+        for user in form.cleaned_data['instructors']:
+            user.is_instructor = True
+        return response
 
 
 class CourseDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
@@ -140,4 +155,7 @@ class CourseDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
                              _("Course %(identifier)s has been deleted.") % {
                                 'identifier': identifier
                              })
+        for instructor in self.object.instructors.all():
+            if instructor.course.exclude(pk=self.object.pk).count() == 0:
+                instructor.is_instructor = False
         return super(CourseDeleteView, self).delete(request, *args, **kwargs)
