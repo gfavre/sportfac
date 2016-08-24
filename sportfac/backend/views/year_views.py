@@ -18,6 +18,7 @@ from activities.models import Course
 from ..forms import YearSelectForm, YearCreateForm, YearForm
 from ..models import YearTenant, Domain
 from ..tasks import create_tenant
+from ..utils import clean_instructors
 from .mixins import BackendMixin
 
 
@@ -75,6 +76,9 @@ class ChangeProductionYearFormView(SuccessMessageMixin, BackendMixin, FormView):
         # log every one out
         Session.objects.exclude(session_key=self.request.session.session_key).delete()
         self.request.session[settings.VERSION_SESSION_NAME] = new_domain.domain
+        
+        connection.set_tenant(tenant)
+        clean_instructors()
         return response
     
     def get_success_message(self, cleaned_data):

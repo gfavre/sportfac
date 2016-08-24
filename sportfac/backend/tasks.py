@@ -12,6 +12,7 @@ from django.db import connection, transaction
 from django.utils import timezone, translation
 from django.utils.html import format_html
 from django.utils.six import moves
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
 
@@ -25,7 +26,7 @@ from profiles.models import FamilyUser
 from registrations.utils import load_children
 from sportfac.decorators import respects_language
 from .models import YearTenant, Domain
-
+from .utils import clean_instructors
 
 logger = get_task_logger(__name__)
 
@@ -63,7 +64,7 @@ def create_tenant(start_date, end_date, new_tenant_id, copy_from_id=None, user_i
                   'end': tenant.end_date.isoformat(),
                   'link_start': format_html('<a href="{}">', reverse('backend:year-list')),
                   'link_end': format_html('</a>')}    
-        messages.success(user, msg % params)
+        messages.success(user, mark_safe(msg % params))
         logger.debug('Warned user for period activation')
     except FamilyUser.DoesNotExist:
         pass
@@ -86,20 +87,22 @@ def update_current_tenant():
         if not (current_domain.tenant.is_past or current_domain.tenant.is_future):
             # do not switch if current tenant is still valid
             return
-        else:
-            current_domain.is_current = False
-            current_domain.save()
-            new_domain = possible_new_tenants.first().domains.first()
-            new_domain.is_current = True
-            new_domain.save()
-            # log out everyone
-            Session.objects.all().delete()
+        current_domain.is_current = False
+        current_domain.save()
+        new_domain = possible_new_tenants.first().domains.first()
+        new_domain.is_current = True
+        new_domain.save()
+        # log out everyone
+        Session.objects.all().delete()
     
         for manager in Group.objects.get(name=MANAGERS_GROUP).user_set.all():
             msg = _("The active period has been automatically changed to %(start)s - %(end)s")
             params = {'start': new_domain.tenant.start_date.isoformat(),
                       'end': new_domain.tenant.end_date.isoformat()}
             messages.info(user, msg % params)        
+        
+        connection.set_tenant(new_domain.tenant)
+        clean_instructors()
 
 
 @shared_task
