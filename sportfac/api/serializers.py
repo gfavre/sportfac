@@ -166,4 +166,4 @@ class ExtraSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = ExtraInfo
-        fields = ('id', 'registration', 'key', 'info')
+        fields = ('id', 'registration', 'key', 'value')
