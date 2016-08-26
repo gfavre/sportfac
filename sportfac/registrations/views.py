@@ -37,7 +37,7 @@ class WizardChildrenListView(WizardMixin, ChildrenListView):
     template_name = 'registrations/wizard_children.html'
 
 
-class RegisteredActivitiesListView(WizardMixin, FormView):
+class RegisteredActivitiesListView(WizardMixin, LoginRequiredMixin, FormView):
     model = Registration
     form_class = AcceptTermsForm
     success_url = reverse_lazy('wizard_billing')
@@ -117,7 +117,7 @@ class BillDetailView(LoginRequiredMixin, DetailView):
     
 
 
-class WizardBillingView(WizardMixin, TemplateView):
+class WizardBillingView(WizardMixin, LoginRequiredMixin, TemplateView):
     template_name = "registrations/wizard_billing.html"
 
     def get_context_data(self, **kwargs):
