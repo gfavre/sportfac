@@ -1,71 +1,18 @@
 {% extends "base.html" %}
-{% load i18n switzerland static sekizai_tags %}
+{% load i18n sekizai_tags switzerland %}
 
 {% block title %}{% trans "Bill detail" %}{% endblock %}
 {% block page_title %}{% endblock %}
 
+
+
 {% block extra_body %}class="bill"{% endblock %}
 
 {% block content %}
-
-<section>  
-  <div class="row">
-    <div class="col-xs-6 visible-print-block">
-      <img src="{% static 'img/logo.png' %}" class="logo"/>
-      {% include "address.html" %}
-    </div>
-
-    <div class="col-xs-6 col-xs-offset-6 visible-print-block">
-      <address>
-        {{ bill.family.full_name }}<br/>
-        {{ bill.family.address }}<br/>
-        {{ bill.family.zipcode }} {{ bill.family.city }}<br />
-        {{ bill.family.get_country_display }}
-      </address>
-    </div>
-  </div>
-  <h1>{% trans "Bill detail" %}</h1>
-  
-  <div class="row">
-    <div class="col-xs-6">
-      <p><strong>{% trans "Billing identifier" %}:</strong> {{ bill.billing_identifier }}</p>
-    </div>
-    <div class="col-xs-6">
-      <p><strong>{% trans "Billing date" %}:</strong> {{ bill.created|date:"SHORT_DATE_FORMAT" }}</p>
-    </div>
-  </div>
-</section>
-
-{% include "registrations/billing_partial.html" %}
-{% comment %}<p>Les inscriptions seront définitivement validées à la suite du règlement de la finance de participation pour les cours choisis.</p>
-<p>Nous vous remercions de verser cette somme d’ici au 31 décembre, en indiquant, sous communications ou motif, votre identifiant de transaction.</p>
-<div class="well">
-  <div class="row">
-    <div class="col-xs-3">
-      <p class="text-right">
-        <strong>Montant</strong><br>
-        <strong>Identifiant</strong><br>
-        <strong>IBAN</strong><br>
-        <strong>Adresse</strong>
-      </p>
-    </div>
-    <div class="col-xs-9">
-      <p>
-        {{ bill.total|money }}<br>
-        {{ bill.billing_identifier }}<br>
-        CH...<br>
-        ...<br>
-        1820 Montreux
-      </p>
-    </div>
-  </div>
-</div>
+{% include "registrations/bill-partial.html" %}
 
 <section>
   <h3>{% trans "Registrations" %}</h3>
-  
-
-  
   <table class=" table table-striped">
     <thead>
       <tr>
@@ -105,7 +52,6 @@
   </table>
   <p class="hidden-print text-center"><button class="btn btn-success btn-large print-button"><i class="icon icon-print"></i> Imprimer</button></p>
 </section>
-{% endcomment %}
 
 {% addtoblock "js" %}
 <script>
@@ -113,3 +59,6 @@
 </script>
 {% endaddtoblock %}
 {% endblock content %}
+
+
+

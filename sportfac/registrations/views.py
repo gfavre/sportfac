@@ -1,3 +1,4 @@
+import datetime
 import json
 
 from django.conf import settings
@@ -11,9 +12,11 @@ from django.views.generic import DetailView, FormView, ListView, TemplateView
 
 from braces.views import LoginRequiredMixin
 
-from sportfac.views import WizardMixin, PhaseForbiddenMixin
+
+from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.forms import AcceptTermsForm
 from profiles.models import School
+from sportfac.views import WizardMixin, PhaseForbiddenMixin
 from .models import Bill, Child, Registration
 
 
@@ -37,7 +40,7 @@ class WizardChildrenListView(WizardMixin, ChildrenListView):
     template_name = 'registrations/wizard_children.html'
 
 
-class RegisteredActivitiesListView(WizardMixin, LoginRequiredMixin, FormView):
+class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
     model = Registration
     form_class = AcceptTermsForm
     success_url = reverse_lazy('wizard_billing')
@@ -99,17 +102,30 @@ class RegisteredActivitiesListView(WizardMixin, LoginRequiredMixin, FormView):
         return super(RegisteredActivitiesListView, self).form_valid(form)
 
 
-class BillingView(LoginRequiredMixin, ListView):
+class BillMixin(object):
+   def get_context_data(self, **kwargs):
+        context = super(BillMixin, self).get_context_data(**kwargs)
+        preferences = global_preferences_registry.manager()
+        offset_days = preferences['payment__DELAY_DAYS']
+        base_date = self.request.REGISTRATION_END
+        context['delay'] = base_date + datetime.timedelta(days=offset_days)
+        context['iban'] = preferences['payment__IBAN']
+        context['address'] = preferences['payment__ADDRESS']
+        context['place'] = preferences['payment__PLACE']
+
+        return context
+
+
+class BillingView(LoginRequiredMixin, BillMixin, ListView):
     template_name = "registrations/billing.html"
     
     def get_queryset(self):
         return Bill.objects.filter(family=self.request.user).order_by('created')
         
 
-class BillDetailView(LoginRequiredMixin, DetailView):
+class BillDetailView(LoginRequiredMixin, BillMixin, DetailView):
     template_name = 'registrations/bill-detail.html'
-
-    
+        
     def get_queryset(self):
         if self.request.user.is_manager:
             return Bill.objects.all()
@@ -117,7 +133,7 @@ class BillDetailView(LoginRequiredMixin, DetailView):
     
 
 
-class WizardBillingView(WizardMixin, LoginRequiredMixin, TemplateView):
+class WizardBillingView(LoginRequiredMixin, WizardMixin, BillMixin, TemplateView):
     template_name = "registrations/wizard_billing.html"
 
     def get_context_data(self, **kwargs):

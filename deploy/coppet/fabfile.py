@@ -250,9 +250,8 @@ def reload_app(arg=None):
         with cd(env.project_dir):
             _ve_run(env.project, "pip install -r requirements.txt --upgrade")
             djangoadmin('migrate_schemas')
-
             djangoadmin('collectstatic --noinput')
-    
+            djangoadmin('checkpreferences')
     restart_app()
 
 

@@ -15,6 +15,7 @@ from formtools.wizard.views import SessionWizardView
 from activities.models import Course
 from registrations.models import Bill, Registration
 from registrations.forms import BillForm
+from registrations.views import BillMixin
 from backend.forms import BillingForm, ChildSelectForm, CourseSelectForm, RegistrationForm
 from .mixins import BackendMixin
 
@@ -126,7 +127,7 @@ class BillListView(BackendMixin, ListView):
         return Bill.objects.all().select_related('family').order_by('status', 'billing_identifier')
     
  
-class BillDetailView(BackendMixin, DetailView):
+class BillDetailView(BackendMixin, BillMixin, DetailView):
     model = Bill
     template_name = 'backend/registration/bill-detail.html'
 

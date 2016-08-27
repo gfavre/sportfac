@@ -156,7 +156,7 @@ class Bill(TimeStampedModel, StatusModel):
     
     def get_pay_url(self):
         return reverse('backend:bill-update', kwargs={'pk': self.pk})
-    
+        
     @property
     def is_ok(self):
         return self.status != self.STATUS.waiting
