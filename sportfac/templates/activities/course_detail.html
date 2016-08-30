@@ -62,18 +62,21 @@
     <thead>
       <tr>
         <th>{% trans "Name" %}</th>
+        
         {% if DISPLAY_PARENT_CITY %}
         <th>{% trans "City" %}</th>
         {% endif %}
-
-    {% if user in course.instructors.all or user.is_manager %}
-        <th>{% trans "Birth date" %}</th>
+        
         <th>{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
+    {% if user in course.instructors.all  %}
+        <th>{% trans "Birth date" %}</th>
         {% if EMERGENCY_NUMBER_MANDATORY %}
         <th>{% trans "Emergency number" %}</th>
         {% endif %}
-    {% endif %}
         <th>{% trans "Parents phones" %}</th>
+    {% else %}
+        <th>{% trans "Teacher" %}</th>
+    {% endif %}
         <th>{% trans "Parents email" %}</th>
       </tr>
     </thead>
@@ -82,18 +85,20 @@
     {% for registration in course.participants.all %}
       <tr>
         <td>{{ registration.child.full_name }}</td>
-        {% if DISPLAY_PARENT_CITY %}
+        
+      {% if DISPLAY_PARENT_CITY %}
         <td>{{ registration.child.family.city|title }}</td>
-        {% endif %}
-      
-      {% if user in course.instructors.all or user.is_manager %}
-        <td>{{ registration.child.birth_date }}</td>
+      {% endif %}
+        
         <td>
             {{ registration.child.school_year|default:"n/a" }}
             {% if CHILD_SCHOOL %}<br>
             {{ registration.child.school_name }}
             {% endif %}
         </td>
+      
+      {% if user in course.instructors.all %}
+        <td>{{ registration.child.birth_date }}</td>
       
         {% if EMERGENCY_NUMBER_MANDATORY %}
         <td>
@@ -102,7 +107,6 @@
             </a>
         </td>
         {% endif %}
-      {% endif %}
         
         <td>
           <ul class="list-unstyled">
@@ -128,6 +132,10 @@
             </li>
             {% endif %}
         </td>
+      {% else %}
+        <td>{% if registration.child.teacher %}{{ registration.child.teacher.full_name }}{% else %}n/a{% endif %}</td>
+      {% endif %}
+        
         <td>{{ registration.child.family.email | urlize }}</td>
       </tr>
     {% empty %}

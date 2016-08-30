@@ -24,7 +24,11 @@ class Teacher(TimeStampedModel):
         return '%s %s (%s)' % (self.first_name, self.last_name, years)
 
     def get_full_name(self):
-        return '%s %s ' % (self.first_name, self.last_name)
+        return '%s %s' % (self.first_name, self.last_name)
+
+    @property
+    def full_name(self):
+        return self.get_full_name()
 
     def get_update_url(self):
         return reverse('backend:teacher-update', kwargs={'pk': self.pk})
