@@ -82,7 +82,7 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
 class YearViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = YearSerializer
     model = SchoolYear
-    queryset = SchoolYear.objects.all()
+    queryset = SchoolYear.visible_objects.all()
 
 
 class CourseViewSet(viewsets.ReadOnlyModelViewSet):

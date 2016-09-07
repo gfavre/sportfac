@@ -33,7 +33,7 @@ class HomePageView(BackendMixin, TemplateView):
         context['nb_teachers'] = Teacher.objects.count()
         context['last_teacher_update'] = Teacher.objects.aggregate(
                                             latest=Max('modified'))['latest'] or 'n/a'
-        years = SchoolYear.objects\
+        years = SchoolYear.visible_objects\
                           .annotate(num_teachers=(Count('teacher')))\
                           .filter(num_teachers__gt=0)
         context['teachers_per_year'] = [(year.get_year_display(), year.num_teachers) for year in years]

@@ -240,9 +240,19 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         return self.get_from_address()
 
 
+class VisibleYearManager(models.Manager):
+    def get_queryset(self):
+        return super(VisibleYearManager, self).get_queryset().filter(visible=True)
+    
+
+
 class SchoolYear(models.Model):
     year = models.PositiveIntegerField(_("School year"), choices=SCHOOL_YEARS, unique=True)
-
+    visible = models.BooleanField(default=True)
+    
+    objects = models.Manager()
+    visible_objects = VisibleYearManager()
+    
     def __unicode__(self):
         try:
             return unicode(dict(SCHOOL_YEARS)[self.year])
