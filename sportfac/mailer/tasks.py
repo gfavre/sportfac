@@ -46,21 +46,21 @@ def send_instructors_email(subject, message, from_email, course_pk, reply_to):
                              to=recipients,
                              reply_to=reply_to)
         logger.debug("Message created")
-        
+
         filepath = get_ssf_decompte_heures(course, instructor)
         filename = 'E_SSF_decompte_heures_%s_%s.pdf' % (
             instructor.first_name, instructor.last_name)
         email.attach(filename, open(filepath).read(), 'application/pdf')
         logger.debug("Decompte.pdf attached")
         tempdir = mkdtemp()
-        
+
         filename = '%s-participants.pdf' % course.number
         filepath = os.path.join(tempdir, filename)
         cp_generator = CourseParticipants({'course': course})
         cp_generator.render_to_pdf(filepath)
         email.attach(filename, open(filepath).read(), 'application/pdf')
         logger.debug("Participants.pdf attached")
-        
+
         if settings.KEPCHUP_SEND_PRESENCE_LIST:
             filename = '%s-presences.pdf' % course.number
             filepath = os.path.join(tempdir, filename)
@@ -68,7 +68,7 @@ def send_instructors_email(subject, message, from_email, course_pk, reply_to):
             cp_generator.render_to_pdf(filepath)
             email.attach(filename, open(filepath).read(), 'application/pdf')
             logger.debug("Presences.pdf attached")
-        
+
         filename = 'mes_cours.pdf'
         filepath = os.path.join(tempdir, filename)
         cp_generator = MyCourses({'instructor': instructor,
@@ -76,12 +76,11 @@ def send_instructors_email(subject, message, from_email, course_pk, reply_to):
         cp_generator.render_to_pdf(filepath)
         email.attach(filename, open(filepath).read(), 'application/pdf')
         logger.debug("Courses.pdf attached")
-        
+
         for additional_doc in settings.KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS:
             filepath = os.path.join(settings.STATIC_ROOT, additional_doc)
             email.attach_file(filepath)
-        
+
         shutil.rmtree(tempdir)
         logger.debug("Email forged, sending...")
         email.send(fail_silently=not(settings.DEBUG))
-    
