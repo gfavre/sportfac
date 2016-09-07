@@ -42,7 +42,7 @@ $(function () {
   {% for bill in bill_list %}
    <tr>
       <td><a href="{{ bill.backend_url }}">{{ bill.billing_identifier }}</a></td>
-      <td>{{ bill.created|date:"SHORT_DATE_FORMAT" }}</td>
+      <td data-order="{{ bill.created|date:'c' }}">{{ bill.created|date:"SHORT_DATE_FORMAT" }}</td>
       <td data-order="{{ bill.family.last_name}} {{ bill.family.first_name}}"><a href="{{ family.get_backend_url }}">{{ bill.family.full_name }}</a></td>
       <td data-order="{{ bill.total }}">{{ bill.total|money }}</td>
       <td data-order="{{ bill.is_ok }}" data-search="{% if bill.is_ok %}{% trans 'paid' %}{% endif %}">
