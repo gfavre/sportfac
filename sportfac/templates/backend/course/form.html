@@ -9,6 +9,7 @@
 
 
 {% if NO_PAYMENT %}
+  {{ form.price }}
   {% formrow form.number_of_sessions form.day  %}
 {% else %}
   {% formrow form.price form.number_of_sessions form.day  %}

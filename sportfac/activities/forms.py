@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.utils.translation import ugettext as _
 
 import floppyforms.__future__ as forms
@@ -21,16 +22,21 @@ class CourseForm(forms.ModelForm):
         widget=Select2MultipleWidget()
     )
     number = forms.CharField(label=_("Identifier"), required=True)
-    price = forms.DecimalField(label=_("Price"), required=True)
+    price = forms.DecimalField(label=_("Price"), initial=0, required=True, 
+                               widget=settings.KEPCHUP_NO_PAYMENT and forms.HiddenInput or forms.NumberInput)
 
     start_date = forms.DateTimeField(label=_("Start date"), required=True, 
-                                     widget=DatePickerInput(format='%d.%m.%Y'))
+                                     widget=DatePickerInput(format='%d.%m.%Y'),
+                                     help_text=_("format: dd.mm.yyyy, e.g. 31.07.2016"))
     end_date = forms.DateTimeField(label=_("End date"), required=True, 
-                                   widget=DatePickerInput(format='%d.%m.%Y'))
+                                   widget=DatePickerInput(format='%d.%m.%Y'),
+                                   help_text=_("format: dd.mm.yyyy, e.g. 31.07.2016"))
     start_time = forms.TimeField(label=_("Start time"), required=True, 
-                                 widget=TimePickerInput(format='%H:%M'))
+                                 widget=TimePickerInput(format='%H:%M'),
+                                 help_text=_("format: hh:mm, e.g. 17:45"))
     end_time = forms.TimeField(label=_("End time"), required=True, 
-                               widget=TimePickerInput(format='%H:%M'))
+                               widget=TimePickerInput(format='%H:%M'),
+                               help_text=_("format: hh:mm, e.g. 17:45"))
     
     class Meta:
         model = Course
