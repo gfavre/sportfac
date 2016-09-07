@@ -1,3 +1,4 @@
+# coding: utf-8
 """Development settings and globals."""
 
 import os
@@ -39,6 +40,9 @@ ALLOWED_HOSTS = ('127.0.0.1', 'localhost',)
 ########## EMAIL CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = '/tmp/app-messages' # change this to a proper location
+
 ########## END EMAIL CONFIGURATION
 
 
@@ -108,12 +112,12 @@ CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 
 
 TEMPLATES[0]['DIRS'] = [
-    normpath(join(SITE_ROOT, 'themes', 'coppet', 'templates')),
+    normpath(join(SITE_ROOT, 'themes', 'montreux', 'templates')),
     normpath(join(SITE_ROOT, 'templates')),
 ]
 
 STATICFILES_DIRS = (
-    normpath(join(SITE_ROOT, 'themes', 'coppet', 'static')),
+    normpath(join(SITE_ROOT, 'themes', 'montreux', 'static')),
     normpath(join(SITE_ROOT, 'static')),
 )
 
@@ -125,3 +129,4 @@ KEPCHUP_SEND_COPY_CONTACT_MAIL_TO_ADMIN = True
 KEPCHUP_NO_PAYMENT = False
 KEPCHUP_NO_TERMS = False
 KEPCHUP_CHILD_SCHOOL = True
+KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS = ['pdf/Guide des mesures de securite 16-17.pdf']

@@ -1,5 +1,5 @@
+# coding: utf-8
 """Common settings and globals."""
-
 import os
 from os.path import abspath, basename, dirname, join, normpath
 from sys import path
@@ -450,3 +450,4 @@ KEPCHUP_NO_TERMS = False
 KEPCHUP_CHILD_SCHOOL = False
 KEPCHUP_EMERGENCY_NUMBER_MANDATORY = True
 KEPCHUP_DISPLAY_PARENT_CITY = False
+KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS = []

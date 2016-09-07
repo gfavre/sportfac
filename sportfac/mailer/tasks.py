@@ -77,6 +77,10 @@ def send_instructors_email(subject, message, from_email, course_pk, reply_to):
         email.attach(filename, open(filepath).read(), 'application/pdf')
         logger.debug("Courses.pdf attached")
         
+        for additional_doc in settings.KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS:
+            filepath = os.path.join(settings.STATIC_ROOT, additional_doc)
+            email.attach_file(filepath)
+        
         shutil.rmtree(tempdir)
         logger.debug("Email forged, sending...")
         email.send(fail_silently=not(settings.DEBUG))
