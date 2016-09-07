@@ -20,12 +20,13 @@ from backend.dynamic_preferences_registry import global_preferences_registry
 global_preferences = global_preferences_registry.manager()
 
 
+
 def get_ssf_decompte_heures(course, instructor):
     pdf_file = os.path.join(settings.STATIC_ROOT, 'pdf',
                             "E_SSF_decompte_heures_moniteur.pdf")
 
     fields = {
-        u'Etablissement': global_preferences['email__SCHOOL_NAME'],
+        u'Etablissement': global_preferences['email__SCHOOL_NAME'].decode('utf-8'),
         u'Discipline': course.activity.name,
         u"Groupe d'éléve": course.number,
         u"Période du": course.start_date.strftime('%d/%m/%Y'),
