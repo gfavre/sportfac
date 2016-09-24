@@ -17,6 +17,8 @@ build
 # Logs:
 *.log
 
+.idea
+
 #No postactivate tmpl:
 config/postactivate
 
