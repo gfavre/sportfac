@@ -121,9 +121,9 @@ class CourseParticipantsPresence(PDFRenderer):
     message_template = 'mailer/pdf_participants_presence.html'
 
     def __init__(self, context_data):
+        super(CourseParticipantsPresence, self).__init__(context_data)
         course = context_data['course']
-        context_data['sessions'] = range(0, course.number_of_sessions)
-        self.context = context_data
+        self.context['sessions'] = range(0, course.number_of_sessions)
 
 
 class MyCourses(PDFRenderer):
