@@ -17,9 +17,12 @@ IBAN {{ iban }}
 {{ address }}
 
 
-en précisant vo{{ recipient.bills.waiting.count | pluralize:"tre,s" }} identifiant{{ recipient.bills.waiting.count | pluralize }} dans les communications: {{ recipient.billing_identifier }}
+en précisant vo{{ recipient.bills.waiting.count | pluralize:"tre,s" }} identifiant{{ recipient.bills.waiting.count | pluralize }} dans les communications
 
 Vous pouvez également passer à notre secrétariat (avec une copie imprimée du présent mail) qui pourra encaisser directement votre finance d’inscription.
+
+Si ce courriel s'était croisé avec votre versement, nous vous prions évidemment de ne pas le prendre en considération.
+
 En vous remerciant d’ores et déjà de votre prompte réaction, nous vous adressons nos cordiaux messages.
 
 {{ signature }}
