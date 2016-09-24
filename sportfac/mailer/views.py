@@ -1,28 +1,27 @@
-import six
-import time
 import itertools
+import time
 
-from django.conf import settings
+import six
+
 from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ImproperlyConfigured
+from django.core.urlresolvers import reverse
+from django.http import Http404
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
-from django.template import loader, Context, RequestContext
+from django.template import loader, Context
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext as _
 from django.views.generic.base import TemplateView, ContextMixin
 from django.views.generic.edit import FormView
-from django.http import Http404
-from django.core.urlresolvers import reverse, reverse_lazy
 
 from dbtemplates.models import Template
 
-from .models import MailArchive, Attachment
-from .tasks import send_mail, send_instructors_email
-from .forms import MailForm
 from activities.models import Course
 from backend.dynamic_preferences_registry import global_preferences_registry
+from .forms import MailForm
+from .models import MailArchive, Attachment
+from .tasks import send_mail, send_instructors_email
 
 
 class MailMixin(ContextMixin):

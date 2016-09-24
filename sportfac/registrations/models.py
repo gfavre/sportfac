@@ -129,6 +129,20 @@ class Registration(TimeStampedModel, StatusModel):
             self.bill.save()
     
 
+class BillManager(models.Manager):
+    def get_queryset(self):
+        return super(BillManager, self).get_queryset().exclude(status=Bill.STATUS.canceled)
+
+    def all_with_deleted(self):
+        return super(BillManager, self).get_queryset().all()
+
+    def waiting(self):
+        return self.get_queryset().filter(status__in=(Bill.STATUS.just_created, Registration.STATUS.waiting))
+
+    def paid(self):
+        return self.get_queryset().filter(status=Bill.STATUS.paid)
+
+
 class Bill(TimeStampedModel, StatusModel):
     STATUS = Choices(('just_created', _("Just created")),
                      ('waiting', _("Waiting parent's payment")),
@@ -138,6 +152,8 @@ class Bill(TimeStampedModel, StatusModel):
     billing_identifier = models.CharField(_('Billing identifier'), max_length=45, blank=True)
     family = models.ForeignKey('profiles.FamilyUser', verbose_name=_('User'), related_name='bills')
     total = models.PositiveIntegerField(default=0, verbose_name=_("Total to be paid"))
+
+    objects = BillManager()
 
     def update_total(self):
         total = self.registrations.aggregate(models.Sum('course__price')).get('course__price__sum')

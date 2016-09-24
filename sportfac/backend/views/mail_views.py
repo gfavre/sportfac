@@ -8,6 +8,7 @@ from mailer.views import (MailView, MailCreateView, CustomMailMixin,
 from mailer.models import MailArchive
 from profiles.models import FamilyUser
 from registrations.models import Bill, Registration
+from registrations.views import BillMixin
 from .mixins import BackendMixin
 
 __all__ = ['MailArchiveListView', 'NeedConfirmationView',
@@ -41,7 +42,7 @@ class NeedConfirmationView(BackendMixin, MailView):
         return context
  
 
-class NotPaidYetView(BackendMixin, MailView):
+class NotPaidYetView(BackendMixin, BillMixin, MailView):
     "Mail to people having registered to courses but not paid yet"
     
     success_url = reverse_lazy('backend:home')

@@ -1,15 +1,23 @@
-Madame, Monsieur,
+{% load i18n l10n humanize sekizai_tags switzerland %}Madame, Monsieur,
 
-À ce jour jour et sauf erreur de notre part, nous n’avons pas reçu votre paiement pour les activités de sport scolaire facultatif de votre enfant.
-Nous vous saurions gré d’effectuer votre versement:
+À ce jour jour et sauf erreur de notre part, nous n’avons pas reçu vo{{ recipient.bills.waiting.count | pluralize:"tre,s" }} paiement{{ recipient.bills.waiting.count | pluralize }} pour les activités de sport scolaire facultatif de votre enfant.
+Nous vous saurions gré d’effectuer vo{{ recipient.bills.waiting.count | pluralize:"tre,s" }} versement{{ recipient.bills.waiting.count | pluralize }}:
 
-total dû: CHF {{ recipient.total }}.-
+{% for bill in recipient.bills.waiting %}
+Identifiant: {{ bill.billing_identifier }}
+Total dû: {{ bill.total|money }}
+{% if recipient.bills.waiting.count > 1 and not forloop.last %}
+---------------------------
+{% endif %}
+{% endfor %}
 
 sur le compte :
-IBAN: CH77 0076 7000 C507 0682 4
-Adresse: AIIP, 1201 Genève
+IBAN {{ iban }}
 
-en précisant votre identifiant dans les communications: {{ recipient.billing_identifier }}
+{{ address }}
+
+
+en précisant vo{{ recipient.bills.waiting.count | pluralize:"tre,s" }} identifiant{{ recipient.bills.waiting.count | pluralize }} dans les communications: {{ recipient.billing_identifier }}
 
 Vous pouvez également passer à notre secrétariat (avec une copie imprimée du présent mail) qui pourra encaisser directement votre finance d’inscription.
 En vous remerciant d’ores et déjà de votre prompte réaction, nous vous adressons nos cordiaux messages.
