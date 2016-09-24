@@ -47,13 +47,14 @@ def send_instructors_email(subject, message, from_email, course_pk, reply_to):
                              reply_to=reply_to)
         logger.debug("Message created")
 
-        filepath = get_ssf_decompte_heures(course, instructor)
-        filename = 'E_SSF_decompte_heures_%s_%s.pdf' % (
-            instructor.first_name, instructor.last_name)
-        email.attach(filename, open(filepath).read(), 'application/pdf')
-        logger.debug("Decompte.pdf attached")
-        tempdir = mkdtemp()
+        if not settings.KEPCHUP_NO_SSF:
+            filepath = get_ssf_decompte_heures(course, instructor)
+            filename = 'E_SSF_decompte_heures_%s_%s.pdf' % (
+                instructor.first_name, instructor.last_name)
+            email.attach(filename, open(filepath).read(), 'application/pdf')
+            logger.debug("Decompte.pdf attached")
 
+        tempdir = mkdtemp()
         filename = '%s-participants.pdf' % course.number
         filepath = os.path.join(tempdir, filename)
         cp_generator = CourseParticipants({'course': course})

@@ -18,6 +18,7 @@ build
 *.log
 
 .idea
+.idea/workspace.xml
 
 #No postactivate tmpl:
 config/postactivate
