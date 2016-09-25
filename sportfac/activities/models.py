@@ -180,8 +180,9 @@ class Course(TimeStampedModel):
         return '%s (%s)' % (self.activity.name, self.number)    
     
     def __unicode__(self):
-        base = _(u'%(activity)s (%(number)s): from %(start)s to %(end)s, every %(day)s at %(hour)s.')
-        base %= {'activity': self.activity.name,
+        base = _(u'%(invisible)s%(activity)s (%(number)s): from %(start)s to %(end)s, every %(day)s at %(hour)s.')
+        base %= {'invisible': not self.visible and _("Invisible") + ' - ' or '',
+                 'activity': self.activity.name,
                  'number': self.number,
                  'start': self.start_date.strftime("%d/%m/%Y"), 
                  'end': self.end_date.strftime("%d/%m/%Y"),

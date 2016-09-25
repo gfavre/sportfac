@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load i18n floppyforms %}
+
+{% block title %}{% trans "Contact" %}{% endblock title %}
+{% block page_title %}{% trans "Contact" %}{% endblock page_title %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-6">
+    <form action="." method="post" class="form-horizontal">{% csrf_token %}  
+      {% form form using %}
+        {% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
+        {% formrow form.name %}
+        {% formrow form.email %}
+        {% formrow form.subject %}
+        {% formrow form.message %}
+      {% endform %}
+      <div class="pull-right">
+        <button type="submit" class="btn btn-primary btn-large"><i class="icon icon-envelope-alt"></i>  {% trans "Send message" %}</button>
+      </div>
+    </form>
+  </div>
+  <div class="col-md-6" itemscope itemtype="http://schema.org/Organization">
+
+    <section style="padding-top: 0">          
+      <h4 itemprop="name">Sport scolaire facultatif de Demo</h4>
+      <address itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+        <span itemprop="streetAddress">Chemin de la Gare</span><br />
+        <abbr itemprop="addressCountry" title="Switzerland">CH</abbr>-<span itemprop="postalCode">8000</span> <span itemprop="addressLocality">Zurich</span>
+      </address>
+      <dl class="dl-horizontal">
+        <dt>Email</dt><dd><a itemprop="email" href="mailto:greg@kepchup.ch">grego@kepchup.ch</a></dd>
+      </dl>
+    </section>
+
+    <section itemprop="member" itemscope itemtype="http://www.schema.org/Person">          
+      <h4 itemprop="jobTitle">Responsable Sport Scolaire Facultatif (Questions administratives)</h4>
+      <p itemprop="name"><strong>Gregory Favre</strong></p>
+      <dl class="dl-horizontal">
+        <dt>Portable</dt><dd itemprop="telephone"><a href="tel:0041795990906">+41 79 599 09 06</a></dd>
+      </dl>
+    </section>
+
+
+  </div>
+</div>
+{% endblock %}
+

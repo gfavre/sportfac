@@ -1,5 +1,4 @@
 from __future__ import absolute_import
-from datetime import datetime
 import os
 from tempfile import NamedTemporaryFile
 
@@ -9,9 +8,8 @@ from django.contrib.auth.models import Group
 from django.contrib.messages import constants
 from django.contrib.sessions.models import Session
 from django.db import connection, transaction
-from django.utils import timezone, translation
+from django.utils import timezone
 from django.utils.html import format_html
-from django.utils.six import moves
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
@@ -19,7 +17,6 @@ from django.utils.translation import ugettext as _
 from async_messages import messages, message_user
 from celery import shared_task
 from celery.utils.log import get_task_logger
-import xlrd
 
 from activities.models import Course
 from profiles.models import FamilyUser
@@ -27,6 +24,7 @@ from registrations.utils import load_children
 from sportfac.decorators import respects_language
 from .models import YearTenant, Domain
 from .utils import clean_instructors
+from . import MANAGERS_GROUP
 
 logger = get_task_logger(__name__)
 
