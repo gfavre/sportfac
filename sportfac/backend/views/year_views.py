@@ -28,6 +28,7 @@ __all__ = ['ChangeYearFormView', 'ChangeProductionYearFormView',
 
 class ChangeYearFormView(SuccessMessageMixin, BackendMixin, FormView):
     form_class = YearSelectForm
+    template_name = 'backend/year/change.html'
         
     def get_success_url(self):
         if not is_safe_url(url=self.success_url, host=self.request.get_host()):

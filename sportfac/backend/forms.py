@@ -119,7 +119,7 @@ class BillingForm(forms.ModelForm):
 
 
 class YearSelectForm(forms.Form):
-    tenant = forms.ModelChoiceField(queryset=YearTenant.objects.all(), required=True)
+    tenant = forms.ModelChoiceField(label=_("Period"), queryset=YearTenant.objects.all(), required=True)
     next = forms.CharField(max_length=255, required=True)
 
 
