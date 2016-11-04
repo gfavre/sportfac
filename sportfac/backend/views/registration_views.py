@@ -57,8 +57,11 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
 
         try:
             if not self.instance.paid:
+                status = Bill.STATUS.waiting
+                if self.instance.course.price == 0:
+                    status = Bill.STATUS.paid
                 bill = Bill.objects.create(
-                    status=Bill.STATUS.waiting,
+                    status=status,
                     family=user 
                 )
                 bill.update_billing_identifier()
@@ -96,6 +99,24 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
         else:
             course_obj = get_object_or_404(Course, number=course)
             return course_obj.get_backend_url()
+
+    @transaction.atomic
+    def form_valid(self, form):
+        self.object = form.save()
+        if self.object.status == Registration.STATUS.confirmed and not self.object.paid and not self.object.bill:
+            status = Bill.STATUS.waiting
+            if self.object.course.price == 0:
+                status = Bill.STATUS.paid
+            bill = Bill.objects.create(
+                status=status,
+                family=self.request.user,
+            )
+
+            self.object.bill = bill
+            self.object.save()
+            bill.save()
+        return HttpResponseRedirect(self.get_success_url())
+
 
 class RegistrationDeleteView(BackendMixin, DeleteView):
     model = Registration
