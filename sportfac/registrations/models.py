@@ -4,14 +4,11 @@ from datetime import datetime, date
 
 from django.core.urlresolvers import reverse
 from django.db import models, transaction
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
 from model_utils import Choices
 from model_utils.models import StatusModel
-from model_utils.fields import StatusField
 
 from sportfac.models import TimeStampedModel
 
@@ -60,8 +57,8 @@ class Registration(TimeStampedModel, StatusModel):
 
     def __unicode__(self):
         return _(u'%(child)s ⇒ course %(number)s (%(activity)s)') % {'child': unicode(self.child), 
-                                                                      'number': self.course.number,
-                                                                      'activity': self.course.activity.name}
+                                                                     'number': self.course.number,
+                                                                     'activity': self.course.activity.name}
 
     def set_waiting(self):
         self.status = self.STATUS.waiting
