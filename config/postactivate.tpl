@@ -15,4 +15,4 @@ export STATIC_ROOT="%(static_root)s"
 export MEDIA_ROOT="%(media_root)s"
 export BROKER_URL="%(broker)s"
 export PHANTOMJS="%(phantomjs)s"
-export MEMCACHED_SOCKET = '%(project_dir)s/%(memcached)s'
+export MEMCACHED_SOCKET='%(project_dir)s/%(memcached)s'
