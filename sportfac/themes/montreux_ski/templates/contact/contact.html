@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load i18n floppyforms %}
+
+{% block title %}{% trans "Contact" %}{% endblock title %}
+{% block page_title %}{% trans "Contact" %}{% endblock page_title %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-6">
+    <form action="." method="post" class="form-horizontal">{% csrf_token %}  
+      {% form form using %}
+        {% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
+        {% formrow form.name %}
+        {% formrow form.email %}
+        {% formrow form.subject %}
+        {% formrow form.message %}
+      {% endform %}
+      <div class="pull-right">
+        <button type="submit" class="btn btn-primary btn-large"><i class="icon icon-envelope-alt"></i>  {% trans "Send message" %}</button>
+      </div>
+    </form>
+  </div>
+  <div class="col-md-6" itemscope itemtype="http://schema.org/Organization">
+
+    <section style="padding-top: 0">          
+      <h4 itemprop="name">Sport scolaire facultatif de Montreux</h4>
+      <address itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+        <span itemprop="streetAddress">Chemin de la Gare 33</span><br />
+        <abbr itemprop="addressCountry" title="Switzerland">CH</abbr>-<span itemprop="postalCode">1820</span> <span itemprop="addressLocality">Montreux</span>
+      </address>
+      <dl class="dl-horizontal">
+        <dt>Email</dt><dd><a itemprop="email" href="mailto:ssf.montreux@gmail.com">ssf.montreux@gmail.com</a></dd>
+      </dl>
+    </section>
+
+    <section itemprop="member" itemscope itemtype="http://www.schema.org/Person">          
+      <h4 itemprop="jobTitle">Responsable Sport Scolaire Facultatif (Questions administratives)</h4>
+      <p itemprop="name"><strong>Marco Moreira</strong></p>
+      <dl class="dl-horizontal">
+        <dt>Portable</dt><dd itemprop="telephone">+41 76 615 01 84 (uniquement le lundi, mercredi ou jeudi entre 18h et 19h)</dd>
+        <dt>En dehors des heures</dt><dd><a itemprop="email" href="mailto:ssf.montreux@gmail.com">ssf.montreux@gmail.com</a></dd>
+      </dl>
+    </section>
+    <section itemprop="member" itemscope itemtype="http://www.schema.org/Person">          
+      <h4 itemprop="jobTitle">Responsables techniques (Questions sur les cours)</h4>
+      <dl class="dl-horizontal">
+        <dt>Carole Cuperly </dt><dd itemprop="telephone">+41 79 765 56 65</dd>
+        <dt>André Wismer </dt><dd itemprop="telephone">+41 79 204 47 78</dd>
+      </dl>
+    </section>
+
+  </div>
+</div>
+{% endblock %}
+
