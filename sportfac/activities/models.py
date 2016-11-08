@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, date
 
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models.aggregates import Count
 from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext_lazy
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from ckeditor.fields import RichTextField
 from autoslug import AutoSlugField
@@ -15,28 +15,28 @@ from .utils import course_to_js_csv
 
 
 DAYS_OF_WEEK = (
-    (1, ugettext_lazy('Monday')),
-    (2, ugettext_lazy('Tuesday')),
-    (3, ugettext_lazy('Wednesday')),
-    (4, ugettext_lazy('Thursday')),
-    (5, ugettext_lazy('Friday')),
-    (6, ugettext_lazy('Saturday')),
-    (7, ugettext_lazy('Sunday')),
+    (1, _('Monday')),
+    (2, _('Tuesday')),
+    (3, _('Wednesday')),
+    (4, _('Thursday')),
+    (5, _('Friday')),
+    (6, _('Saturday')),
+    (7, _('Sunday')),
 )
 
 SCHOOL_YEARS = (
-    (1, ugettext_lazy("1st HARMOS")),
-    (2, ugettext_lazy("2nd HARMOS")),
-    (3, ugettext_lazy("3rd HARMOS")),
-    (4, ugettext_lazy("4th HARMOS")),
-    (5, ugettext_lazy("5th HARMOS")),
-    (6, ugettext_lazy("6th HARMOS")),
-    (7, ugettext_lazy("7th HARMOS")),
-    (8, ugettext_lazy("8th HARMOS")),
-    (9, ugettext_lazy("9th HARMOS")),
-    (10, ugettext_lazy("10th HARMOS")),
-    (11, ugettext_lazy("11th HARMOS")),
-    (12, ugettext_lazy("12th HARMOS")),
+    (1, _("1st HARMOS")),
+    (2, _("2nd HARMOS")),
+    (3, _("3rd HARMOS")),
+    (4, _("4th HARMOS")),
+    (5, _("5th HARMOS")),
+    (6, _("6th HARMOS")),
+    (7, _("7th HARMOS")),
+    (8, _("8th HARMOS")),
+    (9, _("9th HARMOS")),
+    (10, _("10th HARMOS")),
+    (11, _("11th HARMOS")),
+    (12, _("12th HARMOS")),
 )
 
 
@@ -49,15 +49,15 @@ class Activity(TimeStampedModel):
     """
     An activity
     """
-    name = models.CharField(max_length=50, db_index=True, unique=True, verbose_name=ugettext_lazy("Name"))
+    name = models.CharField(max_length=50, db_index=True, unique=True, verbose_name=_("Name"))
     number = models.CharField(max_length=30,
                               db_index=True, unique=True, 
                               null=True, blank=True, 
-                              verbose_name=ugettext_lazy("Identifier"))
+                              verbose_name=_("Identifier"))
     slug = AutoSlugField(populate_from='name', max_length=50, db_index=True, unique=True, 
-                         help_text=ugettext_lazy("Part of the url. Cannot contain punctuation, spaces or accentuated letters"))
+                         help_text=_("Part of the url. Cannot contain punctuation, spaces or accentuated letters"))
     informations = RichTextField(verbose_name=_("Informations"), blank=True, 
-                                 help_text=ugettext_lazy("Specific informations like outfit."))
+                                 help_text=_("Specific informations like outfit."))
     description = RichTextField(verbose_name=_("Description"), blank=True)
     
     objects = ActivityManager()
@@ -95,16 +95,29 @@ class Activity(TimeStampedModel):
         verbose_name_plural = _("activities")
 
 
-           
-
 class ExtraNeed(TimeStampedModel):
     activity = models.ForeignKey('Activity', related_name='extra')
-    question_label = models.CharField(max_length=255, verbose_name=ugettext_lazy("Question"), 
-                                      help_text=ugettext_lazy("e.g. Shoes size?"))
+    question_label = models.CharField(max_length=255, verbose_name=_("Question"), 
+                                      help_text=_("e.g. Shoes size?"))
+    mandatory = models.BooleanField(default=True)
+    type = models.CharField(verbose_name=_("Type of answer"),
+                            choices=(('B', _("Boolean")), ('C', _('Characters')),
+                                     ('I', _("Integer")),),
+                            default='C',
+                            max_length=2)
+    choices = ArrayField(verbose_name=_("Limit to values (separator: comma)"),
+                         base_field=models.CharField(max_length=255),
+                         blank = True,
+                         null=True)
+    default = models.CharField(verbose_name=_("Default value"),
+                               null=True, blank=True, max_length=255)
     
     def __unicode__(self):
         return self.question_label
 
+    class Meta:
+        verbose_name = _("extra question")
+        verbose_name_plural = _("extra questions")
 
 
 class CourseManager(models.Manager):
@@ -115,31 +128,31 @@ class CourseManager(models.Manager):
 class Course(TimeStampedModel):
     "A course, i.e. an instance of an activity"
     activity = models.ForeignKey('Activity', related_name='courses', 
-                                 verbose_name=ugettext_lazy("Activity"))
+                                 verbose_name=_("Activity"))
     number = models.CharField(max_length=30,
                               db_index=True, unique=True, 
                               null=True, blank=True, 
-                              verbose_name=ugettext_lazy("Identifier"))
-    uptodate = models.BooleanField(verbose_name=ugettext_lazy("Course up to date"), default=True)
-    visible = models.BooleanField(verbose_name=ugettext_lazy("Course visible"), default=True)
+                              verbose_name=_("Identifier"))
+    uptodate = models.BooleanField(verbose_name=_("Course up to date"), default=True)
+    visible = models.BooleanField(verbose_name=_("Course visible"), default=True)
 
-    instructors = models.ManyToManyField('profiles.FamilyUser', verbose_name=ugettext_lazy("Instructors"), related_name='course')
+    instructors = models.ManyToManyField('profiles.FamilyUser', verbose_name=_("Instructors"), related_name='course')
 
     price = models.DecimalField(max_digits=5, decimal_places=2, 
-                                verbose_name=ugettext_lazy("Price"), 
+                                verbose_name=_("Price"), 
                                 null=True, 
                                 blank=True)
-    number_of_sessions = models.PositiveSmallIntegerField(verbose_name=ugettext_lazy("Number of sessions"))
-    day = models.PositiveSmallIntegerField(choices=DAYS_OF_WEEK, verbose_name=ugettext_lazy("Day"), default=1)
-    start_date = models.DateField(verbose_name=ugettext_lazy("Start date"))
-    end_date = models.DateField(verbose_name=ugettext_lazy("End date"))
-    start_time = models.TimeField(verbose_name=ugettext_lazy("Start time"))
-    end_time = models.TimeField(verbose_name=ugettext_lazy("End time"))
-    place = models.TextField(verbose_name=ugettext_lazy("Place"))
-    min_participants = models.PositiveSmallIntegerField(verbose_name=ugettext_lazy("Minimal number of participants"))
-    max_participants = models.PositiveSmallIntegerField(verbose_name=ugettext_lazy("Maximal number of participants"))
-    schoolyear_min = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="1", verbose_name=ugettext_lazy("Minimal school year"))
-    schoolyear_max = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="12", verbose_name=ugettext_lazy("Maximal school year"))
+    number_of_sessions = models.PositiveSmallIntegerField(verbose_name=_("Number of sessions"))
+    day = models.PositiveSmallIntegerField(choices=DAYS_OF_WEEK, verbose_name=_("Day"), default=1)
+    start_date = models.DateField(verbose_name=_("Start date"))
+    end_date = models.DateField(verbose_name=_("End date"))
+    start_time = models.TimeField(verbose_name=_("Start time"))
+    end_time = models.TimeField(verbose_name=_("End time"))
+    place = models.TextField(verbose_name=_("Place"))
+    min_participants = models.PositiveSmallIntegerField(verbose_name=_("Minimal number of participants"))
+    max_participants = models.PositiveSmallIntegerField(verbose_name=_("Maximal number of participants"))
+    schoolyear_min = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="1", verbose_name=_("Minimal school year"))
+    schoolyear_max = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="12", verbose_name=_("Maximal school year"))
     
     objects = CourseManager()
     

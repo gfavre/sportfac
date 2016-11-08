@@ -1,13 +1,12 @@
 # Create your views here.
 from django.db.models import Q
 from django.db import IntegrityError
-from django.http import Http404
 
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import api_view, list_route
 from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication
-from rest_framework import mixins, generics, status, filters
+from rest_framework import mixins, generics, status, filters, views
 
 
 from absences.models import Absence, Session
@@ -239,3 +238,18 @@ class ExtraInfoViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         return ExtraInfo.objects.filter(registration__child__in=user.children.all())
+
+    def create(self, request, *args, **kwargs):
+        base_data = {'registration': request.data.get('registration', None)}
+        output = []
+        for (key, value) in request.data.iteritems():
+            if key.startswith('extra-') and value:
+                data = base_data.copy()
+                data['key'] = key.split('-')[1]
+                data['value'] = value
+                serializer = self.get_serializer(data=data)
+                serializer.is_valid(raise_exception=True)
+                self.perform_create(serializer)
+                output.append(serializer.data)
+
+        return Response(output, status=status.HTTP_201_CREATED)
