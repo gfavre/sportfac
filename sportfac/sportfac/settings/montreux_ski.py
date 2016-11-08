@@ -26,3 +26,4 @@ KEPCHUP_CHILD_SCHOOL = True
 
 
 STATIC_URL = '/hiver/static/'
+FORCE_SCRIPT_NAME = '/hiver'
