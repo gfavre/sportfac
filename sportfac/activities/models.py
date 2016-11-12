@@ -25,18 +25,18 @@ DAYS_OF_WEEK = (
 )
 
 SCHOOL_YEARS = (
-    (1, _("1st HARMOS")),
-    (2, _("2nd HARMOS")),
-    (3, _("3rd HARMOS")),
-    (4, _("4th HARMOS")),
-    (5, _("5th HARMOS")),
-    (6, _("6th HARMOS")),
-    (7, _("7th HARMOS")),
-    (8, _("8th HARMOS")),
-    (9, _("9th HARMOS")),
-    (10, _("10th HARMOS")),
-    (11, _("11th HARMOS")),
-    (12, _("12th HARMOS")),
+    (1, _("1P")),
+    (2, _("2P")),
+    (3, _("3P")),
+    (4, _("4P")),
+    (5, _("5P")),
+    (6, _("6P")),
+    (7, _("7P")),
+    (8, _("8P")),
+    (9, _("9S")),
+    (10, _("10S")),
+    (11, _("11S")),
+    (12, _("12S")),
 )
 
 
@@ -93,31 +93,6 @@ class Activity(TimeStampedModel):
         ordering = ['name']
         verbose_name = _("activity")
         verbose_name_plural = _("activities")
-
-
-class ExtraNeed(TimeStampedModel):
-    activity = models.ForeignKey('Activity', related_name='extra')
-    question_label = models.CharField(max_length=255, verbose_name=_("Question"), 
-                                      help_text=_("e.g. Shoes size?"))
-    mandatory = models.BooleanField(default=True)
-    type = models.CharField(verbose_name=_("Type of answer"),
-                            choices=(('B', _("Boolean")), ('C', _('Characters')),
-                                     ('I', _("Integer")),),
-                            default='C',
-                            max_length=2)
-    choices = ArrayField(verbose_name=_("Limit to values (separator: comma)"),
-                         base_field=models.CharField(max_length=255),
-                         blank = True,
-                         null=True)
-    default = models.CharField(verbose_name=_("Default value"),
-                               null=True, blank=True, max_length=255)
-    
-    def __unicode__(self):
-        return self.question_label
-
-    class Meta:
-        verbose_name = _("extra question")
-        verbose_name_plural = _("extra questions")
 
 
 class CourseManager(models.Manager):
@@ -279,7 +254,37 @@ class Course(TimeStampedModel):
         ordering = ('activity__name', 'number', )
         verbose_name = _("course")
         verbose_name_plural = _("courses")
-    
+
+
+class ExtraNeed(TimeStampedModel):
+    courses = models.ManyToManyField('Course', related_name='extra', null=True)
+
+    question_label = models.CharField(max_length=255, verbose_name=_("Question"),
+                                      help_text=_("e.g. Shoes size?"))
+    extra_info = models.TextField(blank=True)
+    mandatory = models.BooleanField(default=True)
+    type = models.CharField(verbose_name=_("Type of answer"),
+                            choices=(('B', _("Boolean")), ('C', _('Characters')),
+                                     ('I', _("Integer")),),
+                            default='C',
+                            max_length=2)
+    choices = ArrayField(verbose_name=_("Limit to values (internal name, display name),(internal name 2, display name 2)"),
+                         base_field=models.CharField(max_length=255),
+                         blank=True,
+                         null=True)
+    default = models.CharField(verbose_name=_("Default value"),
+                               null=True, blank=True, max_length=255)
+
+    def __unicode__(self):
+        if self.choices:
+            return '%s (%s)' % (self.question_label, ', '.join(self.choices))
+        return self.question_label
+
+    class Meta:
+        verbose_name = _("extra question")
+        verbose_name_plural = _("extra questions")
+
+
 """
 from StringIO import StringIO
 from activities.models import Course

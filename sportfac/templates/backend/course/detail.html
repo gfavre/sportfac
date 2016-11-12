@@ -67,6 +67,28 @@
 </section>
 
 {% if course.count_participants %}
+{% addtoblock  "js" %}
+<script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.tableTools.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
+<script>
+$(function () {
+  $(".table").dataTable({
+{% if LANGUAGE_CODE == 'fr' %}
+      "language": {
+            "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+      },
+{% endif %}
+      aoColumnDefs: [
+          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ -1] }
+      ],
+      paging: false
+
+  });
+});
+</script>
+{% endaddtoblock %}
+
 <section>
   <h2>{% trans "Registrations" %}</h2>
   
@@ -77,12 +99,17 @@
         <th>{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
         {% if EMERGENCY_NUMBER_MANDATORY %}
         <th>{% trans "Emergency number" %}</th>
+        {% else %}
+        <th>{% trans "Parents phone" %}</th>
         {% endif %}
-        <th>{% trans "Parents phones" %}</th>
         <th>{% trans "Parents email" %}</th>
+        {% for extra in course.extra.all %}
+        <th>{{ extra.question_label }}</th>
+        {% endfor %}
         <th>{% trans "Actions" %}</th>
-
       </tr>
+    </thead>
+    <tbody>
     {% for registration in course.participants.all %}
       <tr>
         <td>
@@ -100,7 +127,7 @@
                 {{ registration.child.emergency_number|phone }}
             </a>
         </td>
-        {% endif %}
+        {% else %}
         <td>
           <ul>
             {% if registration.child.family.private_phone %}
@@ -125,7 +152,25 @@
             </li>
             {% endif %}
         </td>
+        {% endif %}
         <td>{{ registration.child.family.email | urlize }}</td>
+      {% for extra in registration.extra_infos.all %}
+        <td data-order="{{ extra.value }}">
+        {% if extra.key.type == 'B' %}
+            {% if extra.value == '1' %}
+            <i class="icon-ok-circled text-success"></i>
+            {% else %}
+            <i class="icon-cancel-circled text-danger"></i>
+            {% endif %}
+        {% else %}
+            {{ extra.value }}
+        {% endif %}
+        </td>
+      {% empty %}
+        {% for extra in course.extra.all %}
+        <td></td>
+        {% endfor %}
+      {% endfor %}
         <td>
           <ul class="list-unstyled">
             <li class="text-nowrap"><a href="{{ registration.get_update_url }}?course={{ course.number }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update registration" %}</a></li>

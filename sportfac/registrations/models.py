@@ -50,7 +50,7 @@ class Registration(TimeStampedModel, StatusModel):
 
     @property
     def extra_needs(self):
-        return self.course.activity.extra.all().exclude(id__in=self.extra_infos.values_list('key'))  
+        return self.course.extra.all().exclude(id__in=self.extra_infos.values_list('key'))
 
     def is_valid(self):
         return self.extra_needs.count() == 0

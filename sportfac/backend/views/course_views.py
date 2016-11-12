@@ -32,7 +32,12 @@ class CourseDetailView(BackendMixin, DetailView):
         if self.request.PHASE == 2:
             return 'backend/course/detail-phase2.html'
         return 'backend/course/detail.html'
-    
+
+    def get_context_data(self, **kwargs):
+        context = super(CourseDetailView, self).get_context_data(**kwargs)
+        registrations = self.get_object().participants.all()
+        context['registrations'] = registrations
+        return context
 
 class CourseAbsenceView(BackendMixin, DetailView):
     model = Course

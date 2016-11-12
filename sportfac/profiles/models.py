@@ -13,7 +13,6 @@ from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 
 from activities.models import SCHOOL_YEARS
 from backend import MANAGERS_GROUP, INSTRUCTORS_GROUP
-from sportfac.models import TimeStampedModel
 from .ahv import AHVField
 from registrations.models import Registration, Bill
 

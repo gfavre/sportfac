@@ -13,6 +13,14 @@ from registrations.models import Registration
 from .models import Activity, Course, ExtraNeed
 
 
+class ExtraInline(admin.StackedInline):
+    model = Course.extra.through
+    extra = 0
+
+    verbose_name = _("Extra need")
+    verbose_name_plural = _("Extra needs")
+
+
 class CourseInline(admin.StackedInline):
     model = Course
     extra = 1
@@ -20,23 +28,16 @@ class CourseInline(admin.StackedInline):
        (None, {'fields': ('number', 'instructors', 'price', 'number_of_sessions', 'place', 'uptodate')}),
        (_("Dates"), {'fields': ('start_date', 'end_date', 'day', 'start_time', 'end_time')}),
        (_("Limitations"), {'fields': ('min_participants', 'max_participants', 'schoolyear_min', 'schoolyear_max')}),
+       (None, {'fields': ('extra',)}),
     )
     ordering=['start_date', 'start_time']
     verbose_name = _("course")
     verbose_name_plural = _("courses")
 
-class ExtraInline(admin.StackedInline):
-    model = ExtraNeed
-    extra = 0
-    
-    verbose_name = _("Extra need")
-    verbose_name_plural = _("Extra needs")
-
-
 
 class ActivityAdmin(admin.ModelAdmin):
     list_display = ('number', 'name')
-    inlines = [CourseInline, ExtraInline]
+    inlines = [CourseInline]
     
     verbose_name = _("activity")
     verbose_name_plural = _("activities")
@@ -96,7 +97,8 @@ class CoursesAdmin(admin.ModelAdmin):
     change_list_filter_template = "admin/filter_listing.html"
     change_list_template = "admin/change_list_filter_sidebar.html"
     save_as = True
-    
+    inlines = [ExtraInline,]
+
     
     
     def get_queryset(self, request):

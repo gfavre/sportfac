@@ -1,5 +1,5 @@
 {% extends "backend/base.html" %}
-{% load i18n %}
+{% load i18n sekizai_tags %}
 {% load duration switzerland %}
 
 {% block title %}{{ course.activity.name }} - {{ block.super }}{% endblock %}
@@ -55,6 +55,29 @@
 </section>
 
 {% if course.count_participants %}
+
+{% addtoblock  "js" %}
+<script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.tableTools.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
+<script>
+$(function () {
+  $(".table").dataTable({
+{% if LANGUAGE_CODE == 'fr' %}
+      "language": {
+            "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+      },
+{% endif %}
+      aoColumnDefs: [
+          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ -1] }
+      ],
+      paging: false
+
+  });
+});
+</script>
+{% endaddtoblock %}
+
 <section>
   <h2>{% trans "Registrations" %}</h2>
   
@@ -65,14 +88,19 @@
         <th>{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
         {% if EMERGENCY_NUMBER_MANDATORY %}
         <th>{% trans "Emergency number" %}</th>
-        {% endif %}
+        {% else %}
         <th>{% trans "Parents phone" %}</th>
+        {% endif %}
         <th>{% trans "Parents email" %}</th>
+        {% for extra in course.extra.all %}
+        <th>{{ extra.question_label }}</th>
+        {% endfor %}
         <th>{% trans "Status" %}</th>
         <th>{% trans "Actions" %}</th>
-
       </tr>
-    {% for registration in course.participants.all %}
+    </thead>
+    <tbody>
+    {% for registration in registrations %}
       <tr>
         <td>
             <a href="{{ registration.child.get_backend_url }}">{{ registration.child.full_name }}</a>
@@ -90,8 +118,7 @@
                 {{ registration.child.emergency_number|phone }}
             </a>
         </td>
-        {% endif %}
-
+        {% else %}
         <td>
           <ul>
             {% if registration.child.family.private_phone %}
@@ -116,7 +143,27 @@
             </li>
             {% endif %}
         </td>
-        <td>{{ registration.child.family.email  }}</td>
+        {% endif %}
+
+
+        <td>{{ registration.child.family.email | urlize }}</td>
+      {% for extra in registration.extra_infos.all %}
+        <td data-order="{{ extra.value }}">
+        {% if extra.key.type == 'B' %}
+            {% if extra.value == '1' %}
+            <i class="icon-ok-circled text-success"></i>
+            {% else %}
+            <i class="icon-cancel-circled text-danger"></i>
+            {% endif %}
+        {% else %}
+            {{ extra.value }}
+        {% endif %}
+        </td>
+      {% empty %}
+        {% for extra in course.extra.all %}
+        <td></td>
+        {% endfor %}
+      {% endfor %}
         <td>{{ registration.get_status_display }}</td>
 
         <td>
@@ -128,8 +175,9 @@
 
       </tr>
     {% empty %}
-    
+
     {% endfor %}
+    </tbody>
   </table>
 
 </section>

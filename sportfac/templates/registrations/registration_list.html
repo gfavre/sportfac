@@ -124,6 +124,9 @@
                 {% endif %}
                 <div class="help-block with-errors"></div>
               </div>
+              {% if extra.extra_info %}
+              <p class="help-block">{{ extra.extra_info }}</p>
+              {% endif %}
             </div>
           {% endfor %}
           <div class="form-group">
@@ -133,13 +136,13 @@
           </div>
         </form>
 
-        {% else %}
+      {% else %}
         <dl class="dl-horizontal">
           {% for extra in registered.extra_infos.all %}
             <dt>{{ extra.key.question_label }}</dt><dd>{{ extra.value }}</dd>
           {% endfor %}
         </dl>
-        {% endif %}
+      {% endif %}
 
 
         <p class="alert alert-info hide" role="alert">
