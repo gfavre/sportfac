@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
@@ -21,8 +22,6 @@ __all__ = ('CourseCreateView', 'CourseDeleteView', 'CourseDetailView',
 class CourseDetailView(BackendMixin, DetailView):
     model = Course
     template_name = 'backend/course/detail.html'
-    #slug_field = 'number'
-    #slug_url_kwarg = 'course'
     pk_url_kwarg = 'course'
     queryset = Course.objects.select_related('activity')\
                              .prefetch_related('participants__child__school_year',
@@ -38,6 +37,7 @@ class CourseDetailView(BackendMixin, DetailView):
         registrations = self.get_object().participants.all()
         context['registrations'] = registrations
         return context
+
 
 class CourseAbsenceView(BackendMixin, DetailView):
     model = Course
@@ -113,15 +113,16 @@ class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
         for user in form.cleaned_data['instructors']:
             user.is_instructor = True
             user.save()
-        return super(CourseCreateView, self).form_valid(form)
+        self.object = form.save()
+        for extra in form.cleaned_data['extra']:
+            self.object.extra.add(extra)
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
     model = Course
     form_class = CourseForm
     template_name = 'backend/course/update.html'
-    #slug_field = 'number'
-    #slug_url_kwarg = 'course'
     pk_url_kwarg = 'course'
     success_url = reverse_lazy('backend:course-list')
     success_message = _('<a href="%(url)s" class="alert-link">Course (%(number)s)</a> has been updated.')
@@ -130,6 +131,11 @@ class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
         url = self.object.get_backend_url()
         return mark_safe(self.success_message % {'url': url,
                                                  'number': self.object.number})
+    def get_initial(self):
+        initial = super(CourseUpdateView, self).get_initial()
+        initial['extra'] = self.get_object().extra.all()
+        return initial
+
     def form_valid(self, form):
         course = self.get_object()
         removed_instructors = set(course.instructors.all()) - set(form.cleaned_data['instructors'])
@@ -141,14 +147,18 @@ class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
             
         for user in form.cleaned_data['instructors']:
             user.is_instructor = True
+
+        removed_extras = set(course.extra.all()) - set(form.cleaned_data['extra'])
+        for removed_extra in removed_extras:
+            course.extra.remove(removed_extra)
+        for extra in form.cleaned_data['extra']:
+            course.extra.add(extra)
         return response
 
 
 class CourseDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
     model = Course
     template_name = 'backend/course/confirm_delete.html'
-    #slug_field = 'number'
-    #slug_url_kwarg = 'course'
     pk_url_kwarg = 'course'
     success_url = reverse_lazy('backend:course-list')
     success_message = _("Course has been deleted.")

@@ -1,5 +1,5 @@
 {% extends "backend/base.html" %}
-{% load i18n floppyforms %}
+{% load i18n floppyforms staticfiles sekizai_tags %}
 
 {% block title %}{% trans "Create a new course" %} - {{ block.super }}{% endblock %}
 {% block page_title %}<i class="icon-graduation-cap"></i>&nbsp;&nbsp;{% trans "Create a new course" %}{% endblock %}
@@ -7,25 +7,43 @@
 {% block content %}
 <form action="" method="post">{% csrf_token %}
   {% include "backend/course/form.html" %}
+  <fieldset>
+    <legend>{% trans "Extra questions" %}</legend>
+    {{ extraneed_form.management_form }}
+    {{ extraneed_form.non_form_errors }}
+    {% for form in extraneed_form %}
+      {{ form.id }}
+      <div class="inline {{ extraneed_form.prefix }}">
+        {% form form using %}
+        {% formconfig row using "floppyforms/rows/bootstrap-basic-row.html" %}
+        {% formconfig row using "floppyforms/rows/bootstrap-basic-sm-6.html" %}
+        {% formrow form.question_label form.extra_info form.type  %}
+        {% endform %}
+      </div>
+    {% endfor %}
+  </fieldset>
   <div class="form-group">
       <button type="submit" class="btn btn-success btn-large"><i class="icon-plus"></i>&nbsp;{% trans 'Create course' %}</button>
   </div>
 </form>
-{% endblock content %}
 
-{% block extra_js %}
-{{ block.super }}
-<script src="{{ STATIC_URL }}js/vendor/moment-with-locales.min.js"></script>
-<script src="{{ STATIC_URL }}js/vendor/bootstrap-datetimepicker.min.js"></script>
+{% addtoblock "js" %}
+<script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
+<script src="{% static 'js/vendor/bootstrap-datetimepicker.min.js' %}"></script>
+<script src="{% static 'js/vendor/jquery.formset.js' %}"></script>
+
 <script type="text/javascript">
   $(function () {
     $('.datetimepicker').datetimepicker({
         language: '{{ LANGUAGE_CODE }}',
-        icons: {time: 'icon-clock', 
-                date: 'icon-calendar', 
-                up:   'icon-up-open', 
+        icons: {time: 'icon-clock',
+                date: 'icon-calendar',
+                up:   'icon-up-open',
                 down: 'icon-down-open'}
-        });
-  });
+        }
+    );
+ });
 </script>
-{% endblock extra_js %}
+
+{% endaddtoblock %}
+{% endblock content %}

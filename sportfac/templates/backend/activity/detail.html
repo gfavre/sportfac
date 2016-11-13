@@ -55,6 +55,16 @@
         </dd>
         <dt>{% trans "Price" %}</dt><dd>{{ course.price|money }}</dd>
         <dt>{% trans "School years" %}</dt><dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
+        <dt>{% trans "Extra questions" %}</dt>
+        <dd>
+          <ul class="list-unstyled">
+          {% for extra in course.extra.all %}
+            <li>{{ extra.question_label }}{% if extra.choices %}: ({{ extra.choices|join:", " }}){% endif %}</li>
+          {% empty %}
+            <li>{% trans "No extra question required" %}</li>
+          {% endfor %}
+          </ul>
+        </dd>
       </dl>
       <p class="text-center"><a href="{{ course.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a> </p>
       <h4 class="content-title">

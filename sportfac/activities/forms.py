@@ -4,8 +4,7 @@ from django.utils.translation import ugettext as _
 import floppyforms.__future__ as forms
 
 from backend.forms import Select2Widget, Select2MultipleWidget, DatePickerInput, TimePickerInput
-from .models import Activity, Course
-
+from .models import Activity, Course, ExtraNeed
 from profiles.models import FamilyUser
 
 
@@ -37,14 +36,19 @@ class CourseForm(forms.ModelForm):
     end_time = forms.TimeField(label=_("End time"), required=True, 
                                widget=TimePickerInput(format='%H:%M'),
                                help_text=_("format: hh:mm, e.g. 17:45"))
-    
+
+    extra = forms.ModelMultipleChoiceField(queryset=ExtraNeed.objects.all(),
+                                           label=_("Extra questions"),
+                                           required=False,
+                                           widget=Select2MultipleWidget())
+
     class Meta:
         model = Course
         fields = ('activity', 'number', 'instructors', 'price', 
                   'number_of_sessions', 'day', 'start_date', 'end_date',
                   'start_time', 'end_time', 'place', 'min_participants',
                   'max_participants', 'schoolyear_min', 'schoolyear_max', 
-                  'uptodate', 'visible')
+                  'uptodate', 'visible', 'extra')
 
 
 class ActivityForm(forms.ModelForm):

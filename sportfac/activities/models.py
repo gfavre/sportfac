@@ -256,6 +256,11 @@ class Course(TimeStampedModel):
         verbose_name_plural = _("courses")
 
 
+
+EXTRA_TYPES = (('B', _("Boolean")),
+               ('C', _('Characters')),
+               ('I', _("Integer")))
+
 class ExtraNeed(TimeStampedModel):
     courses = models.ManyToManyField('Course', related_name='extra', null=True)
 
@@ -264,8 +269,7 @@ class ExtraNeed(TimeStampedModel):
     extra_info = models.TextField(blank=True)
     mandatory = models.BooleanField(default=True)
     type = models.CharField(verbose_name=_("Type of answer"),
-                            choices=(('B', _("Boolean")), ('C', _('Characters')),
-                                     ('I', _("Integer")),),
+                            choices=EXTRA_TYPES,
                             default='C',
                             max_length=2)
     choices = ArrayField(verbose_name=_("Limit to values (internal name, display name),(internal name 2, display name 2)"),
