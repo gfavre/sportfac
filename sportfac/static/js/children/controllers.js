@@ -12,10 +12,15 @@ function($scope, $attrs, $routeParams, $http, ChildrenService) {
   } else {
       $scope.schools = angular.fromJson($attrs.schools);
   }
-  
+  $scope.urls = {
+    child: $attrs.childserviceurl,
+    teacher: $attrs.teacherserviceurl,
+    year: $attrs.yearserviceurl
+  };
   $scope.routeParams = $routeParams;
   $scope.loadChildren = function(){
-    ChildrenService.all().then(function(children){
+    ChildrenService.all($scope.urls.child).then(function(children){
+
       $scope.userChildren = children;
       angular.forEach(children, function(child){
         if (child.id === parseInt($scope.routeParams.childId, 10)) {
@@ -27,15 +32,15 @@ function($scope, $attrs, $routeParams, $http, ChildrenService) {
       });
     });
   };
-  
+
   $scope.loadTeachers = function(){
-    $http.get('/api/teachers/').success(function(data, status, headers, config ){
+    $http.get($scope.urls.teacher).success(function(data, status, headers, config ){
         $scope.teachers = data;
     });
   };
-  
+
   $scope.loadYears = function(){
-    $http.get('/api/years/').success(function(data, status, headers, config ){
+    $http.get($scope.urls.year).success(function(data, status, headers, config ){
         $scope.years = data.map(function(year){ return year.year; });
     });
   };
@@ -77,18 +82,18 @@ function($scope, $attrs, $routeParams, $http, ChildrenService) {
             12: "12R"}[year];
     
   };
-  
 }])
 
 .controller('childDetailCtrl', ["$scope", "$routeParams", "$location", "ChildrenService",
-function($scope, $routeParams, $location, ChildrenService) {
+  function($scope, $routeParams, $location, ChildrenService) {
   'use strict';
+  console.log('$attrs');
   $scope.detailedChild = {};
   this.initialValue = {};
   $scope.errors = {};
   
   $scope.reloadChild = function(){
-    ChildrenService.get($routeParams.childId).then(function(child){
+    ChildrenService.get($scope.urls.child, $routeParams.childId).then(function(child){
       for (var i=0; i< $scope.teachers.length; i++){
         var teacher = $scope.teachers[i];
         if (teacher.id === child.teacher){
@@ -108,7 +113,7 @@ function($scope, $routeParams, $location, ChildrenService) {
   
   
   $scope.saveChild = function(){
-    ChildrenService.save($scope.detailedChild).then(function(){
+    ChildrenService.save($scope.urls.child, $scope.detailedChild).then(function(){
       $scope.loadChildren();
       $scope.selectedChild = {};
       $location.url('/');
@@ -116,7 +121,7 @@ function($scope, $routeParams, $location, ChildrenService) {
   };
   
   $scope.delChild = function(){
-     ChildrenService.del($scope.detailedChild, $scope.errors).then(function(){
+     ChildrenService.del($scope.urls.child, $scope.detailedChild, $scope.errors).then(function(){
       $scope.loadChildren();
       $scope.selectedChild = {};
       $location.url('/');
@@ -136,7 +141,7 @@ function($scope, $routeParams, $location, ChildrenService) {
 function($scope, $location, ChildrenService) {
   $scope.unselectChild();
   if ($scope.schools.length){
-      $scope.detailedChild = {school: $scope.schools[0]['id']};
+      $scope.detailedChild = {school: $scope.schools[0].id};
   } else {
       $scope.detailedChild = {};
   }
@@ -150,7 +155,7 @@ function($scope, $location, ChildrenService) {
   };
   
   $scope.lookupChild = function(){
-    ChildrenService.lookup($scope.detailedChild.ext_id).then(function(child){
+    ChildrenService.lookup($scope.urls.child, $scope.detailedChild.ext_id).then(function(child){
       for (var i=0; i< $scope.teachers.length; i++){
         var teacher = $scope.teachers[i];
         if (teacher.id === child.teacher){
@@ -163,7 +168,7 @@ function($scope, $location, ChildrenService) {
   };
   
   $scope.saveChild = function(){
-    ChildrenService.save($scope.detailedChild, $scope.errors).then(function(){
+    ChildrenService.save($scope.urls.child, $scope.detailedChild, $scope.errors).then(function(){
       $scope.loadChildren();
       $scope.selectedChild = {};
       $scope.detailedChild = {};

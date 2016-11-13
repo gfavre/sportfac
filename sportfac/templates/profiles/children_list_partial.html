@@ -5,6 +5,9 @@ ng-controller="ListCtrl"
 prefill="{{ PREFILL_YEARS_WITH_TEACHERS|yesno:'true,false' }}"
 external="{{ IMPORT_CHILDREN|yesno:'true,false' }}"
 schools="{{ schools }}"
+childServiceUrl="{% url 'api:child-list' %}"
+teacherServiceUrl="{% url 'api:teacher-list' %}"
+yearServiceUrl="{% url 'api:year-list' %}"
 {% endaddtoblock %}
 <div class="row">
   <div class="col-sm-4  col-sm-push-8"  data-ng-animate="'fade'">

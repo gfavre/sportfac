@@ -20,7 +20,6 @@ factory('Registration', function(){
 
 .factory('RegistrationsService', ["$http", "$cookies", "Registration", function($http, $cookies, Registration){
     $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
-    var base = '/api/registrations/';
     var handleErrors = function(serverResponse, status, errorDestination){
       if (angular.isDefined(errorDestination)){
         angular.forEach(serverResponse, function(value, key){
@@ -30,8 +29,8 @@ factory('Registration', function(){
     };
 
     var ModelUtils = {
-        all: function(){
-          return $http.get(base).then(function(response){
+        all: function(url){
+          return $http.get(url).then(function(response){
             var registrations = [];
             angular.forEach(response.data, function(registrationData){
               registrations.push(new Registration(registrationData));
@@ -39,16 +38,16 @@ factory('Registration', function(){
             return registrations;
           });
         },
-        get: function(registrationId){
-          return $http.get(base + registrationId + '/').then(function(response){
+        get: function(url, registrationId){
+          return $http.get(url + registrationId + '/').then(function(response){
             return new Registration(response.data);
           });
         },
-        del: function(obj){
-          return $http.delete(base + obj.id + '/');
+        del: function(url, obj){
+          return $http.delete(url + obj.id + '/');
         },
-        create: function(obj, errors){
-          return $http.post(base, obj).
+        create: function(url, obj, errors){
+          return $http.post(url, obj).
             success(function(response){
                 angular.extend(obj, response);
             }).
@@ -56,9 +55,9 @@ factory('Registration', function(){
                 handleErrors(response, status, errors);
             });
         },
-        save: function(obj, errors){
+        save: function(url, obj, errors){
           if (angular.isDefined(obj.id)){
-            return $http.put(base + obj.id + '/', obj).
+            return $http.put(url + obj.id + '/', obj).
                      success(function(response){
                         angular.extend(obj, response);
                      }).
@@ -66,9 +65,9 @@ factory('Registration', function(){
                        handleErrors(response, status, errors);
                      });
           } else {
-            return this.create(obj, errors);
+            return this.create(url, obj, errors);
           }
-        },
+        }
     };
     
     return ModelUtils;
@@ -93,8 +92,8 @@ factory('Registration', function(){
 .factory('ChildrenService', ["$http", "$cookies", "Child", function($http, $cookies, Child){
     $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
     var ModelUtils = {
-        all: function(){
-          return $http.get('/api/family/').then(function(response){
+        all: function(url){
+          return $http.get(url).then(function(response){
             var children = [];
             angular.forEach(response.data, function(childData){
               children.push(new Child(childData));
@@ -102,8 +101,8 @@ factory('Registration', function(){
             return children;
           });
         },
-        get: function(childId){
-          return $http.get('/api/child/' + childId + '/').then(function(response){
+        get: function(url, childId){
+          return $http.get(url + childId + '/').then(function(response){
             return new Child(response.data);
           });
         }
@@ -136,7 +135,7 @@ factory('Registration', function(){
                   allDay: false,
                   className: className,
                   clickable: className !== 'unavailable',
-                  course: this, activityId: this.activity.id};},
+                  course: this, activityId: this.activity.id};}
         
       });
       angular.extend(this, data);
@@ -147,8 +146,8 @@ factory('Registration', function(){
 .factory('CoursesService', ["$http", "$cookies", "Course", function($http, $cookies, Course){
   $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
   var ModelUtils = {
-    get: function(courseId){
-      return $http.get('/api/courses/' + courseId + '/').then(function(response){
+    get: function(url, courseId){
+      return $http.get(url + courseId + '/').then(function(response){
         return new Course(response.data);
       });
     }

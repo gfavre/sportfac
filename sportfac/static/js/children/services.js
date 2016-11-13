@@ -66,9 +66,9 @@ angular.module('sportfacChildren.services', [])
     return Child;
   }])
 
-.factory('ChildrenService', ["$http", "$cookies", "Child", function($http, $cookies, Child){
+.factory('ChildrenService', ["$http", "$cookies", "Child",
+  function($http, $cookies, Child){
     $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
-    var base = '/api/children/';
     var handleErrors = function(serverResponse, status, errorDestination){
       if (angular.isDefined(errorDestination)){
         angular.forEach(serverResponse, function(value, key){
@@ -78,8 +78,8 @@ angular.module('sportfacChildren.services', [])
     };
 
     var ModelUtils = {
-        all: function(){
-          return $http.get('/api/family/').then(function(response){
+        all: function(url){
+          return $http.get(url).then(function(response){
             var children = [];
             angular.forEach(response.data, function(childData){
               children.push(new Child(childData));
@@ -87,25 +87,25 @@ angular.module('sportfacChildren.services', [])
             return children;
           });
         },
-        get: function(childId){
-          return $http.get(base + childId + '/').then(function(response){
+        get: function(url, childId){
+          return $http.get(url + childId + '/').then(function(response){
             return new Child(response.data);
           });
         },
-        lookup: function(extId){
-            return $http.get(base + '?ext=' + extId).then(function(response){
+        lookup: function(url, extId){
+            return $http.get(url + '?ext=' + extId).then(function(response){
                 if (response.data.length === 1){
                     return new Child(response.data[0]);
                 }
                 return new Child(response.data);
             });
         },
-        del: function(obj){
-          return $http.delete(base + obj.id + '/');
+        del: function(url, obj){
+          return $http.delete(url + obj.id + '/');
         },
-        create: function(obj, errors){
+        create: function(url, obj, errors){
           var child = new Child(obj);
-          return $http.post(base, child.toModel()).
+          return $http.post(url, child.toModel()).
             success(function(response){
                 angular.extend(child, response);
             }).
@@ -113,9 +113,9 @@ angular.module('sportfacChildren.services', [])
                 handleErrors(response, status, errors);
             });
         },
-        save: function(obj, errors){
+        save: function(url, obj, errors){
           if (angular.isDefined(obj.id)){
-            return $http.put(base + obj.id + '/', obj.toModel()).
+            return $http.put(url + obj.id + '/', obj.toModel()).
                      success(function(response){
                         angular.extend(obj, response);
                      }).
@@ -123,9 +123,9 @@ angular.module('sportfacChildren.services', [])
                        handleErrors(response, status, errors);
                      });
           } else {
-            return this.create(obj, errors);
+            return this.create(url, obj, errors);
           }
-        },
+        }
     };
     
     return ModelUtils;

@@ -10,10 +10,16 @@ function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, Regi
   if (!$attrs.endhour) throw new Error("No endhour option set");
     $scope.endHour = parseInt($attrs.endhour);
   
-  
+  $scope.urls = {
+    activity: $attrs.activityserviceurl,
+    child: $attrs.childserviceurl,
+    course: $attrs.courseserviceurl,
+    family: $attrs.familyserviceurl,
+    registration: $attrs.registrationserviceurl
+  };
   
   $scope.loadRegistrations = function(){
-    RegistrationsService.all().then(function(registrations){
+    RegistrationsService.all($scope.urls.registration).then(function(registrations){
       $scope.registrations = registrations;
     });
   };
@@ -34,13 +40,13 @@ function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, Regi
     };
     
     var registration = $filter('filter')($scope.registrations, compare)[0];
-    RegistrationsService.del(registration);
+    RegistrationsService.del($scope.urls.registration, registration);
     $scope.registrations.remove(registration);
   };
   
   $scope.registerCourse = function(child, course){
     var registration = {child: child.id, course: course.id};
-    RegistrationsService.save(registration).then(function(){
+    RegistrationsService.save($scope.urls.registration, registration).then(function(){
       $scope.registrations.push(registration);
     });
   };
@@ -56,7 +62,7 @@ function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, Regi
     });
   };
     
-  ChildrenService.all().then(function(children){
+  ChildrenService.all($scope.urls.family).then(function(children){
     $scope.userChildren = children;
     var childId = parseInt($routeParams.childId, 10);
     if (isNaN(childId)) {
@@ -89,7 +95,7 @@ function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, Regi
   };
   
   $scope.loadActivities = function(){
-    var url = '/api/activities/?year=' + $scope.selectedChild.school_year;
+    var url = $scope.urls.activity + '?year=' + $scope.selectedChild.school_year;
     $http({method: 'GET', url: url, cache: true})
        .success(function(response){
            $scope.activities = response;
@@ -158,9 +164,9 @@ function($scope, $filter, $modal, CoursesService){
     };
     angular.forEach($scope.getRegistrations($scope.selectedChild), function(registration){
       if (registration.status === 'valid'){
-          CoursesService.get(registration.course).then(addToValidated);
+          CoursesService.get($scope.urls.course, registration.course).then(addToValidated);
       } else {
-          CoursesService.get(registration.course).then(addToRegistered);
+          CoursesService.get($scope.urls.course, registration.course).then(addToRegistered);
       }
       
     });
@@ -176,7 +182,7 @@ function($scope, $filter, $modal, CoursesService){
     angular.forEach($scope.userChildren, function(child){
       if (child !== $scope.selectedChild) {
         angular.forEach($scope.getRegistrations(child), function(registration){
-          CoursesService.get(registration.course).then(function(course){
+          CoursesService.get($scope.urls.course, registration.course).then(function(course){
             var event = course.toEvent("unavailable");
             event.registeredChild = child;
             $scope.othersRegisteredEvents.push(event);
@@ -215,9 +221,9 @@ function($scope, $filter, $modal, CoursesService){
       var registered = registeredCourses.indexOf(course.id) !== -1;
       if (!registered && available){
         if (activityRegistered){
-          CoursesService.get(course.id).then(addUnavailableCourse);
+          CoursesService.get($scope.urls.course, course.id).then(addUnavailableCourse);
         } else {
-          CoursesService.get(course.id).then(addAvailableCourse);
+          CoursesService.get($scope.urls.course, course.id).then(addAvailableCourse);
         }
       }
     });
