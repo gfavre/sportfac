@@ -1,10 +1,23 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
-from django.http import HttpResponse
-from django.utils.translation import ugettext_lazy as _
 
-from .models import Registration, Child, Bill
+from .models import Registration, Child, Bill, ExtraInfo
 
+
+class ExtraInfoAdmin(admin.ModelAdmin):
+    list_display = ('registration', 'key', 'value')
+    search_fields = ('registration__child__first_name',
+                     'registration__child__last_name',
+                     'registration__course__activity__name',
+                     'registration__course__number',
+                     'key__question_label', 'value')
+    list_filter = ('key',)
+
+admin.site.register(ExtraInfo, ExtraInfoAdmin)
+
+class ExtraInfoInline(admin.StackedInline):
+    model = ExtraInfo
+    extra = 0
 
 class RegistrationAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'status', 'created', 'modified')
@@ -15,7 +28,7 @@ class RegistrationAdmin(admin.ModelAdmin):
     )
     change_list_template = "admin/change_list_filter_sidebar.html"
     change_list_filter_template = "admin/filter_listing.html"
-
+    inlines = [ExtraInfoInline]
     actions = ['delete_model',]
 
     def get_queryset(self, request):
