@@ -276,8 +276,7 @@ class ExtraNeed(TimeStampedModel):
                          base_field=models.CharField(max_length=255),
                          blank=True,
                          null=True)
-    default = models.CharField(verbose_name=_("Default value"),
-                               null=True, blank=True, max_length=255)
+    default = models.CharField(verbose_name=_("Default value"), default="", blank=True, max_length=255)
 
     def __unicode__(self):
         if self.choices:

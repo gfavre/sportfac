@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
 from django.db import IntegrityError, transaction
+from django.db.models import Count
 from django.http import HttpResponseRedirect
 from django.views.generic import DeleteView, DetailView, \
                                 ListView, UpdateView
@@ -13,10 +14,10 @@ from django.shortcuts import get_object_or_404
 from formtools.wizard.views import SessionWizardView
 
 from activities.models import Course
-from registrations.models import Bill, Registration
+from registrations.models import Bill, Registration, ExtraInfo
 from registrations.forms import BillForm
 from registrations.views import BillMixin
-from backend.forms import BillingForm, ChildSelectForm, CourseSelectForm, RegistrationForm
+from backend.forms import BillingForm, ChildSelectForm, CourseSelectForm, RegistrationForm, ExtraInfoFormSet
 from .mixins import BackendMixin
 
 
@@ -37,12 +38,20 @@ class RegistrationListView(BackendMixin, ListView):
     def get_queryset(self):
         return Registration.objects.select_related('course', 'child', 'child__family').prefetch_related('course__activity').all()
 
+def show_extra_questions(wizard):
+    cleaned_data = wizard.get_cleaned_data_for_step(_('Course')) or {}
+    course = cleaned_data.get('course')
+    if course and course.extra.count():
+        return True
+    return False
 
 class RegistrationCreateView(BackendMixin, SessionWizardView):
     form_list = ((_('Child'), ChildSelectForm),
                  (_('Course'), CourseSelectForm),
+                 #(_('Questions'), CourseSelectForm),
                  (_('Billing'), BillingForm)
                 )
+    #condition_dict = {_('Extra questions'): show_extra_questions}
     template_name = 'backend/registration/wizard.html'
     instance = None
     
@@ -77,7 +86,7 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
             message %= {'child': self.instance.child,
                         'course': self.instance.course.short_name}
             messages.add_message(self.request, messages.WARNING, message)
-        return HttpResponseRedirect(reverse_lazy('backend:registration-list'))
+        return HttpResponseRedirect(self.instance.course.get_backend_url())
     
     def get_form_instance(self, step):
         if self.instance is None:
@@ -100,9 +109,43 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
             course_obj = get_object_or_404(Course, number=course)
             return course_obj.get_backend_url()
 
+    def get_context_data(self, **kwargs):
+        context = super(RegistrationUpdateView, self).get_context_data(**kwargs)
+        object = self.get_object()
+        extras = {}
+        courses = Course.objects.prefetch_related('extra').annotate(nb_extra=Count('extra'))
+        for course in courses.exclude(nb_extra=0):
+            extras[course.id] = course.extra.all()
+        context['extra_questions'] = extras
+        context['need_extra'] = object.course.id in extras
+        return context
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        for question in self.object.course.extra.all():
+            try:
+                self.object.extra_infos.get(key=question)
+            except ExtraInfo.DoesNotExist:
+                ExtraInfo.objects.create(registration=self.object, key=question, value=question.default)
+        extrainfo_form = ExtraInfoFormSet(instance=self.object)
+        return self.render_to_response(self.get_context_data(form=form, extrainfo_form=extrainfo_form))
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        extrainfo_form = ExtraInfoFormSet(self.request.POST, instance=self.object)
+        if form.is_valid() and extrainfo_form.is_valid():
+            return self.form_valid(form, extrainfo_form)
+        return self.form_invalid(form, extrainfo_form)
+
     @transaction.atomic
-    def form_valid(self, form):
+    def form_valid(self, form, extrainfo_form):
         self.object = form.save()
+        extrainfo_form.instance = self.object
+        extrainfo_form.save()
         if self.object.status == Registration.STATUS.confirmed and not self.object.paid and not self.object.bill:
             status = Bill.STATUS.waiting
             if self.object.course.price == 0:
@@ -117,6 +160,8 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
             bill.save()
         return HttpResponseRedirect(self.get_success_url())
 
+    def form_invalid(self, form, extrainfo_form):
+        return self.render_to_response(self.get_context_data(form=form, extrainfo_form=extrainfo_form))
 
 class RegistrationDeleteView(BackendMixin, DeleteView):
     model = Registration

@@ -10,6 +10,15 @@
 <form action="" method="post" class="form-horizontal">{% csrf_token %}
   {% block errors %}{% endblock %}
   {% form form using "floppyforms/layouts/bootstrap.html" %}
+
+{% if need_extra %}
+    <fieldset>
+      <legend>{% trans "Extra questions" %}</legend>
+      {{ extrainfo_form.management_form }}
+      {% form extrainfo_form using "floppyforms/layouts/bootstrap.html" %}
+    </fieldset>
+
+{% endif %}
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
       <button type="submit" class="btn btn-success btn-large">{% trans "Update" %}</button>

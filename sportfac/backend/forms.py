@@ -1,10 +1,11 @@
 from django.db.models import Count, F, Q
+from django.forms import inlineformset_factory
 from django.utils.translation import ugettext as _
 
 import floppyforms.__future__ as forms
 
-from activities.models import Course
-from registrations.models import Bill, Child, Registration
+from activities.models import Course, ExtraNeed
+from registrations.models import Bill, Child, Registration, ExtraInfo
 from .models import YearTenant
 
 
@@ -54,13 +55,14 @@ class RegistrationDatesForm(forms.Form):
         super(RegistrationDatesForm, self).clean()
 
 
-class RegistrationForm(forms.ModelForm):
-    class Meta:
-        model = Registration
-        fields = ('child', 'course', 'status')
-    
+class CourseSelectMixin(object):
+    course = forms.ModelChoiceField(label=_("Course"),
+                                    queryset=Course.objects,
+                                    empty_label=None,
+                                    widget=Select2Widget())
+
     def __init__(self, *args, **kwargs):
-        super(RegistrationForm, self).__init__(*args, **kwargs)
+        super(CourseSelectMixin, self).__init__(*args, **kwargs)
         course_qs = Course.objects.select_related('activity').annotate(
                         nb_participants=Count('participants'))
         if self.instance.pk:
@@ -68,7 +70,7 @@ class RegistrationForm(forms.ModelForm):
                  Q(pk=self.instance.course.pk) | Q(nb_participants__lt=F('max_participants'))
             )
         else:
-            course_qs = course_qs.filter(nb_participants__lt=F('max_participants')) 
+            course_qs = course_qs.filter(nb_participants__lt=F('max_participants'))
         try:
             if self.instance.child.school_year:
                 min_year = max_year = self.instance.child.school_year.year
@@ -83,7 +85,35 @@ class RegistrationForm(forms.ModelForm):
         except Child.DoesNotExist:
             pass
         self.fields['course'].queryset = course_qs.prefetch_related('participants')
-        
+
+
+class RegistrationForm(CourseSelectMixin, forms.ModelForm):
+    child = forms.ModelChoiceField(label=_("Child"),
+                                   queryset=Child.objects.exclude(family=None),
+                                   empty_label=None,
+                                   widget=Select2Widget())
+
+    status = forms.ChoiceField(label=_("Status"), choices=Registration.STATUS)
+
+    class Meta:
+        model = Registration
+        fields = ('child', 'course', 'status')
+    
+
+class ExtraInfoForm(forms.ModelForm):
+    key = forms.ModelChoiceField(label=_("Question"),
+                                 queryset=ExtraNeed.objects,
+                                 empty_label=None,
+                                 disabled=True)
+    value = forms.CharField(required=True, label=_("Value"))
+
+    class Meta:
+        model = ExtraInfo
+        fields = ('key', 'value')
+
+ExtraInfoFormSet = inlineformset_factory(Registration, ExtraInfo, form=ExtraInfoForm, fields=('key', 'value'),
+                                         extra=0, can_delete=False)
+
 
 
 class ChildSelectForm(forms.ModelForm):
@@ -98,12 +128,8 @@ class ChildSelectForm(forms.ModelForm):
         fields = ('child',)
 
 
-class CourseSelectForm(RegistrationForm):
+class CourseSelectForm(CourseSelectMixin, forms.ModelForm):
     "Course selection, used in registration creation wizard"
-    course = forms.ModelChoiceField(label=_("Course"),
-                                    queryset=Course.objects, #overriden in __init__!
-                                    empty_label=None,
-                                    widget=Select2Widget())    
     
     class Meta:
         model = Registration

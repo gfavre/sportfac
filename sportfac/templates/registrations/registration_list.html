@@ -122,11 +122,8 @@
                   </label>
                   {% endif %}
                 {% endif %}
-                <div class="help-block with-errors"></div>
+                <div class="help-block with-errors">{{ extra.extra_info }}</div>
               </div>
-              {% if extra.extra_info %}
-              <p class="help-block">{{ extra.extra_info }}</p>
-              {% endif %}
             </div>
           {% endfor %}
           <div class="form-group">

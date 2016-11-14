@@ -211,7 +211,7 @@ class Bill(TimeStampedModel, StatusModel):
 class ExtraInfo(models.Model):
     registration = models.ForeignKey('registrations.Registration', related_name='extra_infos')
     key =  models.ForeignKey('activities.ExtraNeed')
-    value = models.CharField(max_length=255)
+    value = models.CharField(max_length=255, blank=True)
 
 
 class Child(TimeStampedModel):
