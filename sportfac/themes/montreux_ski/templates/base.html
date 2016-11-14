@@ -55,7 +55,7 @@
   <body  {% block extra_body %}{% endblock %}>
     <div id="wrapper">
       {% include "navbar.html" %} 
-      {% block localnav %}{% endblock %}   
+      {% block localnav %}{% endblock %}
       <div id="pagecontent" {% render_block "extra_html" %}>
         {% block page_header %} 
         <div class="container">      
@@ -71,11 +71,10 @@
           {% block content %}Use this document as a way to quick start any new project.{% endblock content %}
         </div>
         {% endblock main-content %}
-          
+
         <footer class="container">{% block page_footer %}{% endblock page_footer %}</footer>
       </div>
     </div>
-    
     {% include "footer.html" %} 
 
     <script src="{% static 'js/vendor/jquery-2.1.1.min.js' %}"></script>

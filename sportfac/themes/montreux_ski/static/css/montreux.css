@@ -34,3 +34,14 @@ legend{
     background: url("../img/snow-kid.jpg") no-repeat center fixed;
     background-size: cover;
 }
+
+#pagecontent .container {
+    background-color: rgba(255,255,255,0.95);
+    -webkit-box-shadow: 0px 2px 5px 0px rgba(204,233,255,0.66);
+    -moz-box-shadow: 0px 2px 5px 0px rgba(204,233,255,0.66);
+    box-shadow: 0px 2px 5px 0px rgba(204,233,255,0.66);
+
+}
+.flatpage-2 #pagecontent {
+    margin-top: 3em;
+}

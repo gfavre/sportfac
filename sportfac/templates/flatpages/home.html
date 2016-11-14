@@ -1,11 +1,9 @@
-{% extends "base.html" %}
+{% extends "flatpages/default.html" %}
 {% load i18n humanize l10n %}
 
-{% block page_title %}{{ flatpage.title }}{% endblock page_title%}
 
 {% block content %}
-{{ flatpage.content }}     
-
+{{ flatpage.content }}
 
 {% if registration_opened %}
 <p style="text-align: center">
