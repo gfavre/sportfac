@@ -30,3 +30,7 @@ dt {
 legend{
     font-family: Oswald;
 }
+#wrapper {
+    background: url("../img/snow-kid.jpg") no-repeat center fixed;
+    background-size: cover;
+}
