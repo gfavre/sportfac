@@ -1,5 +1,6 @@
 {% extends "backend/base.html" %}
-{% load i18n duration switzerland %}
+{% load i18n sekizai_tags %}
+{% load duration switzerland %}
 
 {% block title %}{{ course.activity.name }} - {{ block.super }}{% endblock %}
 {% block page_title %}{{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }}{% endblocktrans %}{% endblock %}
