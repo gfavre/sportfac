@@ -133,7 +133,23 @@ function($scope, $filter, $modal, CoursesService){
              animation: "am-flip-x",
              scope: $scope,
   });
-  
+
+  $scope.overlap = function(event1, event2){
+    // Two dates overlap if StartA <= EndB and startB <= EndA
+    // Here wee need periods to overlap and running day to be the same.
+    // Moreover, times of day should overlap
+    var start1 = new Date(event1.start_date);
+    var start2 = new Date(event2.start_date);
+    var end1   = new Date(event1.end_date);
+    var end2   = new Date(event2.end_date)
+    if (( start1 <= end2 ) && (start2 <= end1) && event1.day == event2.day) {
+      // dates overlap. Let's see if times overlap
+      return event1.start_time <= event2.end_time && event2.start_time <= event1.end_time;
+    }
+    return false;
+  };
+
+
   
   $scope.$watch('registrations.length', function(){
     if (!angular.isDefined($scope.registrations)){ return; }
@@ -206,7 +222,7 @@ function($scope, $filter, $modal, CoursesService){
         return registration.course;
       });
     }
-    
+
     $scope.availableEvents.length = 0;
     
     var activityRegistered = false;
@@ -219,8 +235,18 @@ function($scope, $filter, $modal, CoursesService){
       var available = course.schoolyear_min <= $scope.selectedChild.school_year &&
                       course.schoolyear_max >= $scope.selectedChild.school_year;
       var registered = registeredCourses.indexOf(course.id) !== -1;
+
+
+      var overlapping = $scope.registeredEvents.map(
+        function(evt){
+          return $scope.overlap(evt.course, course);
+        }
+      ).reduce(function(overlap1, overlap2) {
+          return overlap1 || overlap2;
+      });
+
       if (!registered && available){
-        if (activityRegistered){
+        if (activityRegistered || overlapping){
           CoursesService.get($scope.urls.course, course.id).then(addUnavailableCourse);
         } else {
           CoursesService.get($scope.urls.course, course.id).then(addAvailableCourse);

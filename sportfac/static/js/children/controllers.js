@@ -91,7 +91,7 @@ function($scope, $attrs, $routeParams, $http, ChildrenService) {
   $scope.detailedChild = {};
   this.initialValue = {};
   $scope.errors = {};
-  
+
   $scope.reloadChild = function(){
     ChildrenService.get($scope.urls.child, $routeParams.childId).then(function(child){
       for (var i=0; i< $scope.teachers.length; i++){
@@ -145,7 +145,7 @@ function($scope, $location, ChildrenService) {
   } else {
       $scope.detailedChild = {};
   }
-  
+
   $scope.errors = {notfound: false};
   $scope.resetForm = function(){
     $scope.detailedChild = {};
