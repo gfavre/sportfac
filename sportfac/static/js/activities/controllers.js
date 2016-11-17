@@ -141,8 +141,8 @@ function($scope, $filter, $modal, CoursesService){
     var start1 = new Date(event1.start_date);
     var start2 = new Date(event2.start_date);
     var end1   = new Date(event1.end_date);
-    var end2   = new Date(event2.end_date)
-    if (( start1 <= end2 ) && (start2 <= end1) && event1.day == event2.day) {
+    var end2   = new Date(event2.end_date);
+    if (( start1 <= end2 ) && (start2 <= end1) && event1.day === event2.day) {
       // dates overlap. Let's see if times overlap
       return event1.start_time <= event2.end_time && event2.start_time <= event1.end_time;
     }
@@ -243,7 +243,7 @@ function($scope, $filter, $modal, CoursesService){
         }
       ).reduce(function(overlap1, overlap2) {
           return overlap1 || overlap2;
-      });
+      }, false);
 
       if (!registered && available){
         if (activityRegistered || overlapping){
