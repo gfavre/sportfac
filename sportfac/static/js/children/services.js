@@ -92,12 +92,13 @@ angular.module('sportfacChildren.services', [])
             return new Child(response.data);
           });
         },
-        lookup: function(url, extId){
+        lookup: function(url, extId, errors){
             return $http.get(url + '?ext=' + extId).then(function(response){
                 if (response.data.length === 1){
+                    errors.notfound = false;
                     return new Child(response.data[0]);
                 }
-                return new Child(response.data);
+                errors.notfound = true;
             });
         },
         del: function(url, obj){

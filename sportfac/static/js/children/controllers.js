@@ -146,7 +146,7 @@ function($scope, $location, ChildrenService) {
       $scope.detailedChild = {};
   }
   
-  $scope.errors = {};
+  $scope.errors = {notfound: false};
   $scope.resetForm = function(){
     $scope.detailedChild = {};
   };
@@ -155,15 +155,20 @@ function($scope, $location, ChildrenService) {
   };
   
   $scope.lookupChild = function(){
-    ChildrenService.lookup($scope.urls.child, $scope.detailedChild.ext_id).then(function(child){
-      for (var i=0; i< $scope.teachers.length; i++){
-        var teacher = $scope.teachers[i];
-        if (teacher.id === child.teacher){
-          child.teacher = teacher;
-          break;
+    ChildrenService.lookup($scope.urls.child, $scope.detailedChild.ext_id, $scope.errors).then(function(child){
+      if (child !== undefined) {
+        for (var i=0; i< $scope.teachers.length; i++){
+          var teacher = $scope.teachers[i];
+          if (teacher.id === child.teacher){
+            child.teacher = teacher;
+            break;
+          }
         }
+        $scope.detailedChild = child;
+      } else {
+        $scope.detailedChild.ext_id = '';
       }
-      $scope.detailedChild = child;
+
     });
   };
   
