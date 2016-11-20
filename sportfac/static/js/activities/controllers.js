@@ -9,7 +9,13 @@ function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, Regi
     $scope.startHour = parseInt($attrs.starthour);
   if (!$attrs.endhour) throw new Error("No endhour option set");
     $scope.endHour = parseInt($attrs.endhour);
-  
+  if (!$attrs.displaydates) throw new Error("No displaydates option set");
+    $scope.displaydates = $attrs.displaydates === 'true';
+  if (!$attrs.displaycoursenames) throw new Error("No displaycoursenames option set");
+    $scope.displaycoursenames = $attrs.displaycoursenames === 'true';
+
+
+
   $scope.urls = {
     activity: $attrs.activityserviceurl,
     child: $attrs.childserviceurl,
@@ -306,16 +312,26 @@ function($scope, $filter, $modal, CoursesService){
       dayNames: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
       dayNamesShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
       timeFormat: {agenda: 'd'}, lazyFetching: true,
-      eventClick: $scope.eventClick,
-      eventAfterRender: function(event, element){
-        var text = $filter('date')(event.course.start_date, 'shortDate') +' - ' + $filter('date')(event.course.end_date, 'shortDate');
-        $('.fc-event-time', element).text(text);
-        if (angular.isDefined(event.registeredChild)){
-            $('.fc-event-title', element).after('<div class="fc-event-child">' + event.registeredChild.first_name + '</div>');
+      eventClick: $scope.eventClick, slotEventOverlap: false,
+      eventAfterRender: function(event, element) {
+        var dateText = '';
+        if ($scope.displaydates) {
+          dateText = $filter('date')(event.course.start_date, 'shortDate') + ' - ' + $filter('date')(event.course.end_date, 'shortDate');
         }
-        
+        $('.fc-event-time', element).text(dateText);
+        if ($scope.displaycoursenames) {
+          var timeDiff = Math.abs(event.course.getEndDate().getTime() - event.course.getStartDate().getTime());
+          var diffHours = timeDiff / (1000 * 3600 );
+          if (diffHours >= 2) {
+            $('.fc-event-title', element).after('<div class="fc-event-course">' + event.course.number + '</div>');
+          }
+        }
+
+        /*if (angular.isDefined(event.registeredChild)){
+            $('.fc-event-title', element).after('<div class="fc-event-child">' + event.registeredChild.first_name + '</div>');
+        }*/
       }
-    }
+     }
   };
 
   $scope.othersRegisteredEvents = [];

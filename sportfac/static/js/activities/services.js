@@ -128,7 +128,6 @@ factory('Registration', function(){
           return new Date(y, m, d + (this.day - date.getDay()),
                           this.end_time.split(':')[0],
                           this.end_time.split(':')[1]);},
-        
         toEvent: function(className){
           return {title: this.activity.name,
                   start: this.getStartDate(), end: this.getEndDate(),
