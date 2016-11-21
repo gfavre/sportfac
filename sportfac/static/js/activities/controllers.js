@@ -269,9 +269,7 @@ function($scope, $filter, $modal, CoursesService){
         modalwindow.show();
       });
   };
-  
-    
-  
+
   $scope.register = function(event){
     if (!$scope.selectedChild.canRegister(event.course)){
       return;
@@ -319,15 +317,17 @@ function($scope, $filter, $modal, CoursesService){
           dateText = $filter('date')(event.course.start_date, 'shortDate') + ' - ' + $filter('date')(event.course.end_date, 'shortDate');
         }
         $('.fc-event-time', element).text(dateText);
-        if ($scope.displaycoursenames) {
+        if ($scope.displaycoursenames && event.course.name !== null) {
+          /* commented out: perhaps an overkill.
           var timeDiff = Math.abs(event.course.getEndDate().getTime() - event.course.getStartDate().getTime());
           var diffHours = timeDiff / (1000 * 3600 );
-          if (diffHours >= 2) {
-            $('.fc-event-title', element).after('<div class="fc-event-course">' + event.course.number + '</div>');
-          }
+          if (diffHours >= 2) {*/
+            $('.fc-event-title', element).after('<div class="fc-event-course">' + event.course.name + '</div>');
+          /*}*/
         }
 
-        /*if (angular.isDefined(event.registeredChild)){
+        /* Commented out: graphically not adapted
+        if (angular.isDefined(event.registeredChild)){
             $('.fc-event-title', element).after('<div class="fc-event-child">' + event.registeredChild.first_name + '</div>');
         }*/
       }

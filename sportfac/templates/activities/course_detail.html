@@ -3,7 +3,12 @@
 {% load duration switzerland %}
 
 {% block title %}{{ course.activity.name }} - {{ block.super }}{% endblock %}
-{% block page_title %}{{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }}{% endblocktrans %}{% endblock %}
+{% block page_title %}
+    {{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }}{% endblocktrans %}
+    {% if CALENDAR_DISPLAY_COURSE_NAMES and course.name %}
+    - {{ course.name }}
+    {% endif %}
+{% endblock %}
 
 {% block content %}
 <section class="portlet">

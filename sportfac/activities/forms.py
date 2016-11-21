@@ -20,6 +20,7 @@ class CourseForm(forms.ModelForm):
         queryset=FamilyUser.objects, 
         widget=Select2MultipleWidget()
     )
+    name = forms.CharField(label=_("Displayed name (optional)"), required=False, help_text=_("Displayed on calendar under activity name"))
     number = forms.CharField(label=_("Identifier"), required=True)
     price = forms.DecimalField(label=_("Price"), initial=0, required=True, 
                                widget=settings.KEPCHUP_NO_PAYMENT and forms.HiddenInput or forms.NumberInput)
@@ -44,7 +45,7 @@ class CourseForm(forms.ModelForm):
 
     class Meta:
         model = Course
-        fields = ('activity', 'number', 'instructors', 'price', 
+        fields = ('activity', 'name', 'number', 'instructors', 'price',
                   'number_of_sessions', 'day', 'start_date', 'end_date',
                   'start_time', 'end_time', 'place', 'min_participants',
                   'max_participants', 'schoolyear_min', 'schoolyear_max', 

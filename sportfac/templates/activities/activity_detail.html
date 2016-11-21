@@ -24,7 +24,10 @@
   <section class="col-sm-6 topped">
     <div class="pricing-plan">
       <header class="pricing-header">
-        <p class="pricing-plan-label">{% blocktrans with number=course.number %}Course #{{ number }}{% endblocktrans %}</p>
+        <p class="pricing-plan-label">
+          {% blocktrans with number=course.number %}Course #{{ number }}{% endblocktrans %}
+          {% if CALENDAR_DISPLAY_COURSE_NAMES and course.name %}- {{ course.name }}{% endif %}
+        </p>
 
         <h4 class="pricing-plan-title">
           {{ course.start_date | date:"j F Y" }} – {{ course.end_date | date:'j F Y'  }}

@@ -108,6 +108,8 @@ class Course(TimeStampedModel):
                               db_index=True, unique=True, 
                               null=True, blank=True, 
                               verbose_name=_("Identifier"))
+    name = models.CharField(null=True, blank=True, max_length=50,
+                            verbose_name=_("Displayed name"))
     uptodate = models.BooleanField(verbose_name=_("Course up to date"), default=True)
     visible = models.BooleanField(verbose_name=_("Course visible"), default=True)
 

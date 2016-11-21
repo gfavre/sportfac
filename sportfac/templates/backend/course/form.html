@@ -5,8 +5,11 @@
 
 {% formconfig row using "floppyforms/rows/bootstrap-basic-sm-6.html" %}
 
-{%  formrow form.activity form.instructors form.number  %}
-
+{% if CALENDAR_DISPLAY_COURSE_NAMES %}
+    {% formrow form.activity form.instructors form.number form.name %}
+{% else %}
+    {% formrow form.activity form.instructors form.number %}
+{% endif %}
 
 {% if NO_PAYMENT %}
   {{ form.price }}
