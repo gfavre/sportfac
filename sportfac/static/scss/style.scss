@@ -25,7 +25,6 @@
 @import "responsive";
 @import "print";
 
-
 $headerheight: 50px;
 
 #footer {
@@ -408,4 +407,8 @@ table.dataTable .sorting_desc:before {
     display: none;
 }
 
+/* Calendar */
 
+div.fc-event-course {
+  margin-top: 1em;
+}
