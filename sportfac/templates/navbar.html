@@ -99,7 +99,7 @@
               </li>
             {% endif %}
             <li class="divider"></li>
-            <li><a href="{% url 'auth_logout' %}?next=/">{% trans "logout" %}</a></li>
+            <li><a href="{% url 'auth_logout' %}?next={% url 'home' %}">{% trans "logout" %}</a></li>
           </ul>
         </li>
         {% else %}
