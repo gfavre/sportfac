@@ -1,5 +1,4 @@
 from django.conf.urls import include, url
-from django.views.generic import TemplateView
 
 
 import views
@@ -62,6 +61,8 @@ mail_patterns = [
 registrations_patterns = [
     url(r'^$', view=views.RegistrationListView.as_view(), 
         name='registration-list'),
+    url(r'^export/xlsx', view=views.RegistrationExportView.as_view(),
+        name='registration-export'),
     url(r'^new$', view=views.RegistrationCreateView.as_view(), 
         name='registration-create'),
     url(r'^(?P<pk>\d+)/$', view=views.RegistrationDetailView.as_view(), 

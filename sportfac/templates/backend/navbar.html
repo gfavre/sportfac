@@ -58,10 +58,15 @@
             <ul class="dropdown-menu" role="menu">
               <li>
                 <a href="{% url 'backend:registration-list' %}">
-                <i class="fa fa-bars"></i> 
+                <i class="icon-group"></i>
                 &nbsp;&nbsp;{% trans "All registrations" %}
                 </a>
               </li>
+              <li>
+                <a href="{% url 'backend:registration-export' %}">
+                  <i class="icon-file-excel"></i>
+                &nbsp;&nbsp;{% trans "Export registrations" %}
+                </a>
               <li>
                 <a href="{% url 'backend:registration-create' %}">
                 <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New registration" %}

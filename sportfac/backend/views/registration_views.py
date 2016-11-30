@@ -4,8 +4,8 @@ from django.core.urlresolvers import reverse_lazy
 from django.db import IntegrityError, transaction
 from django.db.models import Count
 from django.http import HttpResponseRedirect
-from django.views.generic import DeleteView, DetailView, \
-                                ListView, UpdateView
+from django.views.generic import (DeleteView, DetailView,
+                                ListView, UpdateView, View)
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
@@ -13,16 +13,17 @@ from django.shortcuts import get_object_or_404
 
 from formtools.wizard.views import SessionWizardView
 
-from activities.models import Course
+from activities.models import Course, ExtraNeed
+from registrations.resources import RegistrationResource
 from registrations.models import Bill, Registration, ExtraInfo
 from registrations.forms import BillForm
 from registrations.views import BillMixin
 from backend.forms import BillingForm, ChildSelectForm, CourseSelectForm, RegistrationForm, ExtraInfoFormSet
-from .mixins import BackendMixin
+from .mixins import BackendMixin, ExcelResponseMixin
 
 
 __all__ = ('RegistrationCreateView', 'RegistrationDeleteView', 'RegistrationDetailView', 
-           'RegistrationListView', 'RegistrationUpdateView',
+           'RegistrationListView', 'RegistrationExportView', 'RegistrationUpdateView',
            'BillListView', 'BillDetailView', 'BillUpdateView')
 
 
@@ -37,6 +38,16 @@ class RegistrationListView(BackendMixin, ListView):
 
     def get_queryset(self):
         return Registration.objects.select_related('course', 'child', 'child__family').prefetch_related('course__activity').all()
+
+
+class RegistrationExportView(BackendMixin, ExcelResponseMixin, View):
+
+    def get_resource(self):
+        return RegistrationResource()
+
+    def get(self, request, *args, **kwargs):
+        return self.render_to_response()
+
 
 def show_extra_questions(wizard):
     cleaned_data = wizard.get_cleaned_data_for_step(_('Course')) or {}
