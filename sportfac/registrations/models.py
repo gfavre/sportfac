@@ -207,11 +207,13 @@ class Bill(TimeStampedModel, StatusModel):
         verbose_name_plural = _("Bills")
 
 
-
 class ExtraInfo(models.Model):
     registration = models.ForeignKey('registrations.Registration', related_name='extra_infos')
     key =  models.ForeignKey('activities.ExtraNeed')
     value = models.CharField(max_length=255, blank=True)
+
+    class Meta:
+        ordering = ('key', 'registration')
 
 
 class Child(TimeStampedModel):
