@@ -41,6 +41,7 @@ class RegistrationListView(BackendMixin, ListView):
 
 
 class RegistrationExportView(BackendMixin, ExcelResponseMixin, View):
+    filename = _("registrations")
 
     def get_resource(self):
         return RegistrationResource()

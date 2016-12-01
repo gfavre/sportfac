@@ -27,7 +27,8 @@ class RegistrationResource(resources.ModelResource):
     course = fields.Field(attribute='course__number', column_name=_("Course"))
     child = fields.Field(attribute='child', column_name=_("Child"))
     child_id = fields.Field(attribute='child', column_name=_("Child identifier"))
-
+    birth_date = fields.Field(attribute='child', column_name=_("Birth date"))
+    emergency_number = fields.Field(attribute='child', column_name=_("Emergency number"))
 
     def __init__(self, *args, **kwargs):
         self.course = kwargs.pop('course', None)
@@ -47,6 +48,12 @@ class RegistrationResource(resources.ModelResource):
         if settings.KEPCHUP_IMPORT_CHILDREN:
             return obj.child.id_lagapeo or ''
         return obj.child.id
+
+    def dehydrate_emergency_number(self, obj):
+        return obj.child.emergency_number
+
+    def dehydrate_birth_date(self, obj):
+        return obj.child.birth_date.isoformat()
 
     def export(self, queryset=None, *args, **kwargs):
         """
@@ -74,8 +81,7 @@ class RegistrationResource(resources.ModelResource):
             queryset = queryset.filter(course=self.course)
         return queryset
 
-
     class Meta:
         model = Registration
-        fields = ('id', 'activity', 'course', 'child', 'child_id')
-        export_order = ('id', 'activity', 'course', 'child', 'child_id')
+        fields = ('id', 'activity', 'course', 'child', 'child_id', 'birth_date', 'emergency_number')
+        export_order = ('id', 'activity', 'course', 'child', 'child_id', 'birth_date', 'emergency_number')
