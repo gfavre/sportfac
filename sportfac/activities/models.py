@@ -220,10 +220,12 @@ class Course(TimeStampedModel):
     def get_backend_absences_url(self):
         return reverse('backend:course-absence', kwargs={'course': self.pk})
 
-    
     def get_js_export_url(self):
         return reverse('backend:course-js-export', kwargs={'course': self.pk})
-    
+
+    def get_xls_export_url(self):
+        return reverse('backend:course-xls-export', kwargs={'course': self.pk})
+
     def get_js_csv(self, filelike):
         course_to_js_csv(self, filelike)
     

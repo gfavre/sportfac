@@ -30,8 +30,13 @@ class RegistrationResource(resources.ModelResource):
 
 
     def __init__(self, *args, **kwargs):
+        self.course = kwargs.pop('course', None)
         super(RegistrationResource, self).__init__(*args, **kwargs)
-        for extra in ExtraNeed.objects.all():
+        if self.course:
+            queryset = ExtraNeed.objects.filter(courses__in=[self.course])
+        else:
+            queryset = ExtraNeed.objects.all()
+        for extra in queryset:
             field = ExtraNeedField(extra_need=extra)
             self.fields['extra_{}'.format(extra.id)] = field
 
@@ -63,8 +68,12 @@ class RegistrationResource(resources.ModelResource):
         return data
 
     def get_queryset(self):
-        return Registration.objects.select_related('course', 'child')\
-                                   .prefetch_related('course__activity', 'extra_infos').all()
+        queryset = Registration.objects.select_related('course', 'child')\
+                                       .prefetch_related('course__activity', 'extra_infos')
+        if self.course:
+            queryset = queryset.filter(course=self.course)
+        return queryset
+
 
     class Meta:
         model = Registration

@@ -5,17 +5,19 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
-from django.views.generic import CreateView, DeleteView, DetailView, \
-                                ListView, UpdateView
+from django.views.generic import (CreateView, DeleteView, DetailView,
+                                  ListView, UpdateView, View)
+from django.views.generic.detail import SingleObjectMixin
 
 from absences.models import Absence
 from activities.models import Course, Activity
 from activities.forms import CourseForm
+from registrations.resources import RegistrationResource
 from sportfac.views import CSVMixin
-from .mixins import BackendMixin
+from .mixins import BackendMixin, ExcelResponseMixin
 
 __all__ = ('CourseCreateView', 'CourseDeleteView', 'CourseDetailView',
-           'CourseJSCSVView', 'CourseAbsenceView',
+           'CourseJSCSVView', 'CourseParticipantsExportView', 'CourseAbsenceView',
            'CourseListView', 'CourseUpdateView', 'CourseParticipantsView')
 
 
@@ -88,6 +90,18 @@ class CourseListView(BackendMixin, ListView):
         if self.request.PHASE == 1:
             return 'backend/course/list-phase1.html'
         return 'backend/course/list.html'
+
+
+class CourseParticipantsExportView(BackendMixin, SingleObjectMixin, ExcelResponseMixin, View):
+    model = Course
+    pk_url_kwarg = 'course'
+
+    def get_resource(self):
+        return RegistrationResource(course=self.object)
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return self.render_to_response()
 
 
 class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):

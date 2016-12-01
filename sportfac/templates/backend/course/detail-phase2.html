@@ -45,7 +45,9 @@
         </ul>
       </dd>
     </dl>
-    <p class="text-center"><a href="{{ course.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a> </p>
+    <p class="text-center">
+        <a href="{{ course.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a>
+    </p>
       
     <h4 class="content-title"><u>{% trans "Availability"%}</u></h4>      
     <p>{{ course.count_participants  }} participants <span class="pull-right strong"> {{ course.max_participants }} places</span></p>
@@ -56,6 +58,9 @@
     
     {% if course.count_participants %}
       <h4 class="content-title"><u>{% trans "Management"%}</u></h4>
+      <a href="{{ course.get_xls_export_url }}" class="btn btn-default">
+        <i class="icon-file-excel"></i> {% trans "Export participants" %}
+      </a>
 
       <a href="{{ course.get_custom_mail_url }}" class="btn btn-default">
         <i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}
@@ -95,7 +100,9 @@ $(function () {
 
 <section>
   <h2>{% trans "Registrations" %}</h2>
-  
+  <a href="{{ course.get_xls_export_url }}" class="btn btn-default">
+    <i class="icon-file-excel"></i> {% trans "Export participants" %}
+  </a>
   <table class="table">
     <thead>
       <tr>

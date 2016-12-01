@@ -56,8 +56,8 @@
     <p class="text-right"><small>{{ course.min_participants }} participants requis pour que l'activité ait lieu</small></p>
    
     {% if course.count_participants %}
-    <h4 class="content-title"><u>{% trans "Management"%}</u></h4>      
-   
+    <h4 class="content-title"><u>{% trans "Management"%}</u></h4>
+
     {% if USE_ABSENCES %}
     <a href="{{ course.get_backend_absences_url }}" class="btn btn-sm">
         <i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}
@@ -108,7 +108,9 @@ $(function () {
 
 <section>
   <h2>{% trans "Registrations" %}</h2>
-  
+  <a href="{{ course.get_xls_export_url }}" class="btn btn-default">
+    <i class="icon-file-excel"></i> {% trans "Export participants" %}
+  </a>
   <table class="table">
     <thead>
       <tr>
