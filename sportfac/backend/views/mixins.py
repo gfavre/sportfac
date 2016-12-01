@@ -2,7 +2,6 @@ from django.http import HttpResponse
 from django.utils.text import slugify
 
 from braces.views import GroupRequiredMixin, LoginRequiredMixin
-import tablib
 
 from backend import MANAGERS_GROUP
 

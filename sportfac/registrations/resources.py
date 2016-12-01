@@ -25,7 +25,8 @@ class ExtraNeedField(fields.Field):
 class RegistrationResource(resources.ModelResource):
     activity = fields.Field(attribute='course__activity__name', column_name=_("Activity"))
     course = fields.Field(attribute='course__number', column_name=_("Course"))
-    child = fields.Field(attribute='child', column_name=_("Child"))
+    first_name = fields.Field(attribute='child', column_name=_("First name"))
+    last_name = fields.Field(attribute='child', column_name=_("Last name"))
     child_id = fields.Field(attribute='child', column_name=_("Child identifier"))
     birth_date = fields.Field(attribute='child', column_name=_("Birth date"))
     emergency_number = fields.Field(attribute='child', column_name=_("Emergency number"))
@@ -41,8 +42,11 @@ class RegistrationResource(resources.ModelResource):
             field = ExtraNeedField(extra_need=extra)
             self.fields['extra_{}'.format(extra.id)] = field
 
-    def dehydrate_child(self, obj):
-        return obj.child.full_name
+    def dehydrate_first_name(self, obj):
+        return obj.child.first_name
+
+    def dehydrate_last_name(self, obj):
+        return obj.child.last_name
 
     def dehydrate_child_id(self, obj):
         if settings.KEPCHUP_IMPORT_CHILDREN:
@@ -83,5 +87,7 @@ class RegistrationResource(resources.ModelResource):
 
     class Meta:
         model = Registration
-        fields = ('id', 'activity', 'course', 'child', 'child_id', 'birth_date', 'emergency_number')
-        export_order = ('id', 'activity', 'course', 'child', 'child_id', 'birth_date', 'emergency_number')
+        fields = ('id', 'activity', 'course',
+                  'first_name', 'last_name', 'child_id', 'birth_date', 'emergency_number')
+        export_order = ('id', 'activity', 'course',
+                        'first_name', 'last_name', 'child_id', 'birth_date', 'emergency_number')
