@@ -5,6 +5,7 @@ from import_export import resources, fields
 import tablib
 
 from activities.models import ExtraNeed
+from backend.templatetags.switzerland import phone
 from .models import Registration
 
 
@@ -54,7 +55,8 @@ class RegistrationResource(resources.ModelResource):
         return obj.child.id
 
     def dehydrate_emergency_number(self, obj):
-        return obj.child.emergency_number
+        value = obj.child.emergency_number
+        return phone(value)
 
     def dehydrate_birth_date(self, obj):
         return obj.child.birth_date.isoformat()
