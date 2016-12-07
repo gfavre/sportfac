@@ -96,6 +96,9 @@ class CourseParticipantsExportView(BackendMixin, SingleObjectMixin, ExcelRespons
     model = Course
     pk_url_kwarg = 'course'
 
+    def get_filename(self):
+        return self.object.number
+
     def get_resource(self):
         return RegistrationResource(course=self.object)
 

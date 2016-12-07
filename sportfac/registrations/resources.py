@@ -26,11 +26,24 @@ class ExtraNeedField(fields.Field):
 class RegistrationResource(resources.ModelResource):
     activity = fields.Field(attribute='course__activity__name', column_name=_("Activity"))
     course = fields.Field(attribute='course__number', column_name=_("Course"))
-    first_name = fields.Field(attribute='child', column_name=_("First name"))
-    last_name = fields.Field(attribute='child', column_name=_("Last name"))
+    price = fields.Field(attribute='course__price', column_name=_("Price"))
+    first_name = fields.Field(attribute='child__first_name', column_name=_("First name"))
+    last_name = fields.Field(attribute='child__last_name', column_name=_("Last name"))
     child_id = fields.Field(attribute='child', column_name=_("Child identifier"))
     birth_date = fields.Field(attribute='child', column_name=_("Birth date"))
+    school_year = fields.Field(attribute='child__school_year__year', column_name=_("School year"))
+    school = fields.Field(attribute='child__school__name', column_name=_("School"))
+    parent_first_name= fields.Field(attribute='child__family__first_name', column_name=_("Parent's first name"))
+    parent_last_name= fields.Field(attribute='child__family__last_name', column_name=_("Parent's last name"))
+    parent_email= fields.Field(attribute='child__family__email', column_name=_("Email"))
+    parent_address= fields.Field(attribute='child__family__address', column_name=_("Address"))
+    parent_zipcode= fields.Field(attribute='child__family__zipcode', column_name=_("NPA"))
+    parent_city= fields.Field(attribute='child__family__city', column_name=_("City"))
+    parent_country= fields.Field(attribute='child__family__country', column_name=_("Country"))
+
+
     emergency_number = fields.Field(attribute='child', column_name=_("Emergency number"))
+
 
     def __init__(self, *args, **kwargs):
         self.course = kwargs.pop('course', None)
@@ -42,12 +55,6 @@ class RegistrationResource(resources.ModelResource):
         for extra in queryset:
             field = ExtraNeedField(extra_need=extra)
             self.fields['extra_{}'.format(extra.id)] = field
-
-    def dehydrate_first_name(self, obj):
-        return obj.child.first_name
-
-    def dehydrate_last_name(self, obj):
-        return obj.child.last_name
 
     def dehydrate_child_id(self, obj):
         if settings.KEPCHUP_IMPORT_CHILDREN:
@@ -81,15 +88,16 @@ class RegistrationResource(resources.ModelResource):
         return data
 
     def get_queryset(self):
-        queryset = Registration.objects.select_related('course', 'child')\
-                                       .prefetch_related('course__activity', 'extra_infos')
+        queryset = Registration.objects.select_related('course', 'child', 'child__family')\
+                                       .prefetch_related('course__activity', 'extra_infos', 'child__school',
+                                                         'child__school_year')
         if self.course:
             queryset = queryset.filter(course=self.course)
         return queryset
 
     class Meta:
         model = Registration
-        fields = ('id', 'activity', 'course',
+        fields = ('id', 'activity', 'course', 'price',
                   'first_name', 'last_name', 'child_id', 'birth_date', 'emergency_number')
-        export_order = ('id', 'activity', 'course',
+        export_order = ('id', 'activity', 'course', 'price',
                         'first_name', 'last_name', 'child_id', 'birth_date', 'emergency_number')

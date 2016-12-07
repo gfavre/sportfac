@@ -19,9 +19,12 @@ class ExcelResponseMixin(object):
     def get_resource(self):
         raise NotImplementedError
 
+    def get_filename(self):
+        return self.filename
+
     def render_to_response(self, **response_kwargs):
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response['Content-Disposition'] = 'attachment; filename="%s.xlsx"' % slugify(self.filename)
+        response['Content-Disposition'] = 'attachment; filename="%s.xlsx"' % slugify(self.get_filename())
         resource = self.get_resource()
         response.write(resource.export().xlsx)
         return response
