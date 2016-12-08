@@ -32,7 +32,7 @@ class RegistrationResource(resources.ModelResource):
     child_id = fields.Field(attribute='child', column_name=_("Child identifier"))
     birth_date = fields.Field(attribute='child', column_name=_("Birth date"))
     school_year = fields.Field(attribute='child__school_year__year', column_name=_("School year"))
-    school = fields.Field(attribute='child__school__name', column_name=_("School"))
+    school = fields.Field(attribute='child', column_name=_("School"))
     parent_first_name= fields.Field(attribute='child__family__first_name', column_name=_("Parent's first name"))
     parent_last_name= fields.Field(attribute='child__family__last_name', column_name=_("Parent's last name"))
     parent_email= fields.Field(attribute='child__family__email', column_name=_("Email"))
@@ -55,11 +55,18 @@ class RegistrationResource(resources.ModelResource):
         for extra in queryset:
             field = ExtraNeedField(extra_need=extra)
             self.fields['extra_{}'.format(extra.id)] = field
+        if not settings.KEPCHUP_CHILD_SCHOOL:
+            del self.fields['school']
 
     def dehydrate_child_id(self, obj):
         if settings.KEPCHUP_IMPORT_CHILDREN:
             return obj.child.id_lagapeo or ''
         return obj.child.id
+
+    def dehydrate_school(self, obj):
+        if obj.child.school:
+            return obj.child.school.name
+        return obj.child.other_school
 
     def dehydrate_emergency_number(self, obj):
         value = obj.child.emergency_number
