@@ -32,7 +32,7 @@ class RegistrationResource(resources.ModelResource):
     child_id = fields.Field(attribute='child', column_name=_("Child identifier"))
     birth_date = fields.Field(attribute='child', column_name=_("Birth date"))
     school_year = fields.Field(attribute='child__school_year__year', column_name=_("School year"))
-    school = fields.Field(attribute='child', column_name=_("School"))
+    school_name = fields.Field(attribute='child', column_name=_("School"))
     parent_first_name= fields.Field(attribute='child__family__first_name', column_name=_("Parent's first name"))
     parent_last_name= fields.Field(attribute='child__family__last_name', column_name=_("Parent's last name"))
     parent_email= fields.Field(attribute='child__family__email', column_name=_("Email"))
@@ -56,14 +56,15 @@ class RegistrationResource(resources.ModelResource):
             field = ExtraNeedField(extra_need=extra)
             self.fields['extra_{}'.format(extra.id)] = field
         if not settings.KEPCHUP_CHILD_SCHOOL:
-            del self.fields['school']
+            del self.fields['school_name']
+
 
     def dehydrate_child_id(self, obj):
         if settings.KEPCHUP_IMPORT_CHILDREN:
             return obj.child.id_lagapeo or ''
         return obj.child.id
 
-    def dehydrate_school(self, obj):
+    def dehydrate_school_name(self, obj):
         if obj.child.school:
             return obj.child.school.name
         return obj.child.other_school
@@ -102,9 +103,18 @@ class RegistrationResource(resources.ModelResource):
             queryset = queryset.filter(course=self.course)
         return queryset
 
+    def get_export_order(self):
+        order = tuple(self._meta.export_order or ())
+        if not settings.KEPCHUP_CHILD_SCHOOL:
+            order = tuple([field for field in order if field != 'school_name'])
+        return order + tuple(k for k in self.fields.keys() if k not in order)
+
+
     class Meta:
         model = Registration
         fields = ('id', 'activity', 'course', 'price',
-                  'first_name', 'last_name', 'child_id', 'birth_date', 'emergency_number')
-        export_order = ('id', 'activity', 'course', 'price',
-                        'first_name', 'last_name', 'child_id', 'birth_date', 'emergency_number')
+                  'first_name', 'last_name', 'child_id', 'birth_date', 'school_year', 'school_name',
+                  'emergency_number',
+                  'parent_first_name', 'parent_last_name', 'parent_email', 'parent_address',
+                  'parent_zipcode', 'parent_city', 'parent_country')
+        export_order =  fields
