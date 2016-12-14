@@ -18,17 +18,20 @@ from backend.tasks import import_children
 from profiles.forms import (ManagerForm, ManagerWithPasswordForm, 
                             InstructorForm, InstructorWithPasswordForm)
 from profiles.models import FamilyUser
+from profiles.resources import UserResource, InstructorResource
 from registrations.models import Bill, Child, Registration
 from registrations.forms import ChildForm
 
-from .mixins import BackendMixin
+from .mixins import BackendMixin, ExcelResponseMixin
 
 __all__ = ('UserListView', 'UserCreateView', 'PasswordSetView',
            'UserUpdateView', 'UserDeleteView', 'UserDetailView',
+           'UserExportView',
            'ChildListView', 'ChildCreateView', 'ChildUpdateView', 
            'ChildDeleteView', 'ChildImportView',
-            'ManagerListView', 'ManagerCreateView', 
-            'InstructorListView', 'InstructorCreateView', 'InstructorDetailView'
+            'ManagerListView', 'ManagerCreateView',  'ManagerExportView',
+            'InstructorListView', 'InstructorCreateView', 'InstructorDetailView',
+           'InstructorExportView',
            )
 
 valid_registrations = Registration.objects.validated()
@@ -66,19 +69,36 @@ class UserListView(BackendMixin, ListView):
         return HttpResponseRedirect(reverse('backend:custom-mail-custom-users'))
 
 
-class ManagerListView(UserListView):
-    template_name = 'backend/user/manager-list.html'
-    
+class UserExportView(BackendMixin, ExcelResponseMixin, View):
+    filename = _("users")
+    resource_class = UserResource
+
+
+class ManagerMixin(object):
     def get_queryset(self):
         return Group.objects.get(name=MANAGERS_GROUP).user_set.all()
 
 
-class InstructorListView(UserListView):
-    template_name = 'backend/user/instructor-list.html'
-    
+class ManagerListView(ManagerMixin, UserListView):
+    template_name = 'backend/user/manager-list.html'
+
+
+class ManagerExportView(BackendMixin, ExcelResponseMixin, ManagerMixin, View):
+    filename = _("managers")
+    resource_class = InstructorResource
+
+
+class InstructorMixin(object):
     def get_queryset(self):
         return Group.objects.get(name=INSTRUCTORS_GROUP).user_set.all()
-    
+
+class InstructorListView(InstructorMixin, UserListView):
+    template_name = 'backend/user/instructor-list.html'
+
+
+class InstructorExportView(BackendMixin, ExcelResponseMixin, InstructorMixin, View):
+    filename = _("instructors")
+    resource_class = InstructorResource
 
 class UserCreateView(BackendMixin, SuccessMessageMixin, CreateView):
     model = FamilyUser

@@ -117,4 +117,4 @@ class RegistrationResource(resources.ModelResource):
                   'emergency_number',
                   'parent_first_name', 'parent_last_name', 'parent_email', 'parent_address',
                   'parent_zipcode', 'parent_city', 'parent_country')
-        export_order =  fields
+        export_order = fields

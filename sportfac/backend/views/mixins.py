@@ -15,9 +15,19 @@ class BackendMixin(GroupRequiredMixin, LoginRequiredMixin):
 
 class ExcelResponseMixin(object):
     filename = 'download'
+    resource_class = None
+
+    def get_resource_class(self):
+        assert self.resource_class is not None, (
+            "'%s' should either include a `resource_class` attribute, "
+            "or override the `get_resource_class()` method."
+            % self.__class__.__name__
+        )
+
+        return self.resource_class
 
     def get_resource(self):
-        raise NotImplementedError
+        return self.get_resource_class()()
 
     def get_filename(self):
         return self.filename
@@ -26,6 +36,12 @@ class ExcelResponseMixin(object):
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response['Content-Disposition'] = 'attachment; filename="%s.xlsx"' % slugify(self.get_filename())
         resource = self.get_resource()
-        response.write(resource.export().xlsx)
+        try:
+            export = resource.export(queryset=self.get_queryset())
+        except AttributeError:
+            export = resource.export()
+        response.write(export.xlsx)
         return response
 
+    def get(self, request, *args, **kwargs):
+        return self.render_to_response()

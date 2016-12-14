@@ -62,6 +62,10 @@ $(function () {
 {% endaddtoblock %}
 
 <a href="{% url 'backend:user-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New user" %}</a>
+<a href="{% url 'backend:user-export' %}" class="btn btn-default">
+    <i class="icon-file-excel"></i>
+   &nbsp;&nbsp;{% trans "Export users" %}
+</a>
 <hr />
 <div class="btn-group">
   <a class="btn btn-default selectall">{% trans "Select all" %}</span></a>
