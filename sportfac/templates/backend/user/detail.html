@@ -83,7 +83,12 @@
     <div class="col-sm-6 col-lg-4">
       <div class="pricing-plan">
         <header class="pricing-header">
-          <h4 class="pricing-plan-title">{{  child }}</h4>
+          <h4 class="pricing-plan-title">
+            {{  child }}
+            {% if BIB_NUMBERS %}
+            <small> &mdash; {{ child.bib_number|default:_("No bib number") }}</small>
+            {% endif %}
+          </h4>
         </header>
         <dl class="dl-horizontal">
           <dt>{% trans "Birth date" %}</dt><dd> {{ child.birth_date | date:"j F Y" }}</dd>

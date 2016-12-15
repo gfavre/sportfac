@@ -29,6 +29,11 @@
   {% formrow form.emergency_number %}
 {% endif %}
 
+
+{% if BIB_NUMBERS %}
+  {% formrow form.bib_number %}
+{% endif %}
+
 {% formconfig row using "floppyforms/rows/bootstrap-sm-3.html" %}
 <fieldset>
     <legend>{% trans "School informations" %}</legend>

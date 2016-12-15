@@ -75,6 +75,9 @@ $(function () {
       {% if IMPORT_CHILDREN %}
       <th class="lagapeo">{% trans "Identifier" %}</th>
       {% endif %}
+      {% if BIB_NUMBERS %}
+      <th>{% trans "Bib number" %}</th>
+      {% endif %}
       <th>{% trans "Name" %}</th>
       <th>{% trans "Family" %}</th>
       <th>{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
@@ -88,6 +91,9 @@ $(function () {
     <tr data-userid="{{ child.id }}">
       {% if IMPORT_CHILDREN %}
       <td data-order="{{ child.id_lagapeo|default:"0" }}">{{ child.id_lagapeo|default:"n/a" }}</td>
+      {% endif %}
+      {% if BIB_NUMBERS %}
+      <td data-order="{{ child.bib_number|default:"0" }}">{{ child.bib_number|default:"n/a" }}</td>
       {% endif %}
       <td data-order="{{ child.last_name}} {{ child.first_name}}">{{ child.full_name }}</td>
       <td data-order="{{ child.family.last_name }} {{ child.family.first_name }}">

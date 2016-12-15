@@ -249,6 +249,7 @@ class Child(TimeStampedModel):
     emergency_number = models.CharField(_("Emergency number"), max_length=30, blank=True)
     school = models.ForeignKey('profiles.School', related_name="students", null=True)
     other_school = models.CharField(_("Other school"),  blank=True, max_length=50)
+    bib_number = models.CharField(_("Bib number"), blank=True, max_length=20)
  
     class Meta:
         ordering = ('last_name', 'first_name',)

@@ -30,12 +30,13 @@ class ChildForm(forms.ModelForm):
     
     school = forms.ModelChoiceField(label=_("School"), queryset=School.objects.all(), required=False)
     emergency_number = forms.CharField(label=_("Emergency number"), required=settings.KEPCHUP_EMERGENCY_NUMBER_MANDATORY)
-
+    bib_number = forms.CharField(label=_("Bib number"), required=False)
     
     class Meta:
         model = Child
         fields = ('id_lagapeo', 'family', 'first_name', 'last_name', 'sex', 'birth_date', 'nationality', 
-                  'language', 'school', 'other_school', 'school_year', 'teacher', 'emergency_number')
+                  'language', 'school', 'other_school', 'school_year', 'teacher', 'emergency_number',
+                  'bib_number')
 
 
 class BillForm(forms.ModelForm):

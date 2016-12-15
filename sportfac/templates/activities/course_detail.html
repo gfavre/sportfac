@@ -66,6 +66,9 @@
 
     <thead>
       <tr>
+        {% if BIB_NUMBERS and user in course.instructors.all %}
+        <th>{% trans "Bib number" %}</th>
+        {% endif %}
         <th>{% trans "Name" %}</th>
         
         {% if DISPLAY_PARENT_CITY %}
@@ -89,6 +92,9 @@
 
     {% for registration in course.participants.all %}
       <tr>
+        {% if BIB_NUMBERS and user in course.instructors.all %}
+        <td data-order="{{ registration.child.bib_number|default:"0" }}">{{ registration.child.bib_number|default:"n/a" }}</td>
+        {% endif %}
         <td>{{ registration.child.full_name }}</td>
         
       {% if DISPLAY_PARENT_CITY %}

@@ -106,6 +106,9 @@ $(function () {
   <table class="table">
     <thead>
       <tr>
+        {{% if BIB_NUMBERS %}
+        <th>{% trans "Bib number" %}</th>
+        {% endif %}
         <th>{% trans "Name" %}</th>
         <th>{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
         {% if EMERGENCY_NUMBER_MANDATORY %}
@@ -124,6 +127,9 @@ $(function () {
     <tbody>
     {% for registration in registrations %}
       <tr>
+        {% if BIB_NUMBERS %}
+        <td data-order="{{ child.bib_number|default:"0" }}">{{ child.bib_number|default:"n/a" }}</td>
+        {% endif %}
         <td>
             <a href="{{ registration.child.get_backend_url }}">{{ registration.child.full_name }}</a>
         </td>
