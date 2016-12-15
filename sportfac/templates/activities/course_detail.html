@@ -1,14 +1,17 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n staticfiles sekizai_tags %}
 {% load duration switzerland %}
 
 {% block title %}{{ course.activity.name }} - {{ block.super }}{% endblock %}
+
+
 {% block page_title %}
-    {{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }}{% endblocktrans %}
-    {% if CALENDAR_DISPLAY_COURSE_NAMES and course.name %}
-    - {{ course.name }}
-    {% endif %}
+{{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }}{% endblocktrans %}
+{% if CALENDAR_DISPLAY_COURSE_NAMES and course.name %}
+  - {{ course.name }}
+{% endif %}
 {% endblock %}
+
 
 {% block content %}
 <section class="portlet">
@@ -21,137 +24,200 @@
       <dt>{% trans "Instructors" %}</dt>
       <dd>
         <ul class="list-unstyled">
-        {% for instructor in course.instructors.all %}
-          <li>
-            {{ instructor.full_name  }}<br />
-            <a href="{{ instructor.best_phone|phone:'RFC3966' }}">{{ instructor.best_phone|phone }}</a><br/>
-            {{ instructor.email|urlize  }}
-          </li>
-        {% endfor %}
-        </ul>       
+          {% for instructor in course.instructors.all %}
+            <li>
+              {{ instructor.full_name  }}<br />
+              <a href="{{ instructor.best_phone|phone:'RFC3966' }}">{{ instructor.best_phone|phone }}</a><br/>
+              {{ instructor.email|urlize  }}
+            </li>
+          {% endfor %}
+        </ul>
       </dd>
       <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
       <dt>{% trans "Number of sessions" %}</dt><dd>{{ course.number_of_sessions }} cours</dd>
-{% if not NO_PAYMENT %}
-      <dt>{% trans "Price" %}</dt><dd>{{ course.price|money }}</dd>
-{% endif %}
+      {% if not NO_PAYMENT %}
+        <dt>{% trans "Price" %}</dt><dd>{{ course.price|money }}</dd>
+      {% endif %}
       <dt>{% trans "School years" %}</dt>
       <dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
     </dl>
-      
-    <h4 class="content-title"><u>{% trans "Availability"%}</u></h4>      
+
+    <h4 class="content-title"><u>{% trans "Availability"%}</u></h4>
     <p>{{ course.count_participants  }} participants <span class="pull-right strong"> {{ course.max_participants }} places</span></p>
     <div class="progress" style="margin-bottom: 0;">
       <div class="progress-bar {% if course.full %}progress-bar-danger{% elif course.minimal_participants_reached %}progress-bar-success{% else %}progress-bar-warning{% endif %}" style="width: {{ course.percentage_full }}%">{% if course.full %}{% trans "Course full" %}{% elif course.minimal_participants_reached %}{% trans "Minimal number of participants reached" %}{% else %}{% trans "Not enough participants" %}{% endif %}</div>
     </div>
     <p class="text-right"><small>{{ course.min_participants }} participants requis pour que l'activité ait lieu</small></p>
-  
-{% if user in course.instructors.all %}
-  <h4 class="content-title"><u>{% trans "Management" %}</u></h4>
-  <a href="{{ course.get_custom_mail_instructors_url }}" class="btn btn-default hidden-print"><i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}</a> &nbsp;
-  {% if USE_ABSENCES %}
-  <a href="{{ course.get_absences_url }}" class="btn btn-default hidden-print"><i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}</a>
-  {% endif %}
-{% endif %}
 
-    </div>
-
+    {% if user in course.instructors.all %}
+      <h4 class="content-title"><u>{% trans "Management" %}</u></h4>
+      {% if USE_ABSENCES %}
+        <a href="{{ course.get_absences_url }}" class="btn btn-default hidden-print"><i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}</a>
+      {% endif %}
+    {% endif %}
+  </div>
 </section>
 
+{% if user in course.instructors.all %}
+  {% addtoblock  "js" %}
+    <script src="{% static 'js/vendor/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'js/vendor/datatables/dataTables.tableTools.min.js' %}"></script>
+    <script src="{% static 'js/vendor/datatables/dataTables.bootstrap.js' %}"></script>
+    <script>
+      $(function () {
+        var t = $(".table").dataTable({
+          {% if LANGUAGE_CODE == 'fr' %}
+            "language": {
+              "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+            },
+          {% endif %}
+          aoColumnDefs: [
+            { 'bSortable': false, 'bSearchable': false, 'aTargets': [ -1] }
+          ],
+          dom: 'T<"clear">lfrtip',
+          paging: false,
+          tableTools: {
+            "sRowSelect": "multi",
+            "aButtons": [ ],
+            'fnRowSelected': function(){
+              $('.needs-select').removeClass('disabled');
+            },
+            'fnRowDeselected': function(){
+              if ($('tr.active').length == 0){
+                $('.needs-select').addClass('disabled');
+              }
+            }
+          }
+        });
 
+        $('.selectall').click(function(){
+          var tabletools = TableTools.fnGetInstance(t[0]);
+          tabletools.fnSelectAll(true);
+        });
+        $('.deselectall').click(function(){
+          var tabletools = TableTools.fnGetInstance(t[0]);
+          tabletools.fnSelectNone();
+        });
+        $('form.mail').submit(function(){
+          var tabletools = TableTools.fnGetInstance(t[0]);
+          var ids = tabletools.fnGetSelected().map(function(elem){
+            return elem.getAttribute('data-user-id');
+          });
+          $('input[name="data"]').val(JSON.stringify(ids));
+        });
+
+      });
+
+
+
+    </script>
+  {% endaddtoblock %}
+{% endif %}
 <section>
   <h2>{% trans "Registrations" %}</h2>
-  
+  {% if user in course.instructors.all %}
+    <div class="btn-group">
+      <a class="btn btn-default selectall">{% trans "Select all" %}</span></a>
+      <a class="btn btn-default deselectall needs-select disabled">{% trans "Deselect all" %}</a>
+    </div>
+    <div class="btn-group">
+      <form class="mail" method="post"
+            action="{{ course.get_custom_mail_custom_users_instructors_url }}">{% csrf_token %}
+        <input type="hidden" name="data" value='' />
+        <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-mail"></i>&nbsp;&nbsp;{% trans "Send email..." %}</button>
+      </form>
+    </div>
+  {% endif %}
   <table class="table">
 
     <thead>
-      <tr>
-        {% if BIB_NUMBERS and user in course.instructors.all %}
+    <tr>
+      {% if BIB_NUMBERS and user in course.instructors.all %}
         <th>{% trans "Bib number" %}</th>
-        {% endif %}
-        <th>{% trans "Name" %}</th>
-        
-        {% if DISPLAY_PARENT_CITY %}
+      {% endif %}
+      <th>{% trans "Name" %}</th>
+
+      {% if DISPLAY_PARENT_CITY %}
         <th>{% trans "City" %}</th>
-        {% endif %}
-        
-        <th>{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
-    {% if user in course.instructors.all  %}
+      {% endif %}
+
+      <th>{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
+      {% if user in course.instructors.all  %}
         <th>{% trans "Birth date" %}</th>
         {% if EMERGENCY_NUMBER_MANDATORY %}
-        <th>{% trans "Emergency number" %}</th>
+          <th>{% trans "Emergency number" %}</th>
         {% endif %}
         <th>{% trans "Parents phones" %}</th>
-    {% else %}
+      {% else %}
         <th>{% trans "Teacher" %}</th>
-    {% endif %}
-        <th>{% trans "Parents email" %}</th>
-      </tr>
+      {% endif %}
+      <th>{% trans "Parents email" %}</th>
+    </tr>
     </thead>
-  
+
 
     {% for registration in course.participants.all %}
-      <tr>
+      <tr data-user-id="{{ registration.child.family.id }}">
         {% if BIB_NUMBERS and user in course.instructors.all %}
-        <td data-order="{{ registration.child.bib_number|default:"0" }}">{{ registration.child.bib_number|default:"n/a" }}</td>
+          <td data-order="{{ registration.child.bib_number|default:"0" }}">{{ registration.child.bib_number|default:"n/a" }}</td>
         {% endif %}
         <td>{{ registration.child.full_name }}</td>
-        
-      {% if DISPLAY_PARENT_CITY %}
-        <td>{{ registration.child.family.city|title }}</td>
-      {% endif %}
-        
-        <td>
-            {{ registration.child.school_year|default:"n/a" }}
-            {% if CHILD_SCHOOL %}<br>
-            {{ registration.child.school_name }}
-            {% endif %}
-        </td>
-      
-      {% if user in course.instructors.all %}
-        <td>{{ registration.child.birth_date }}</td>
-      
-        {% if EMERGENCY_NUMBER_MANDATORY %}
-        <td>
-            <a href="{{ registration.child.emergency_number|phone:'RFC3966' }}">
-                {{ registration.child.emergency_number|phone }}
-            </a>
-        </td>
+
+        {% if DISPLAY_PARENT_CITY %}
+          <td>{{ registration.child.family.city|title }}</td>
         {% endif %}
-        
+
         <td>
-          <ul class="list-unstyled">
-            {% if registration.child.family.private_phone %}
-            <li>
-              <a href="{{ registration.child.family.private_phone|phone:'RFC3966' }}">
-                {{ registration.child.family.private_phone|phone }}
-              </a>
-            </li>
-            {% endif %}
-            {% if registration.child.family.private_phone2 %}
-            <li>
-              <a href="{{ registration.child.family.private_phone2|phone:'RFC3966' }}">
-                {{ registration.child.family.private_phone2|phone }}
-              </a>
-            </li>
-            {% endif %}
-            {% if registration.child.family.private_phone3 %}
-            <li>
-              <a href="{{ registration.child.family.private_phone3|phone:'RFC3966' }}">
-                {{ registration.child.family.private_phone3|phone }}
-              </a>
-            </li>
-            {% endif %}
+          {{ registration.child.school_year|default:"n/a" }}
+          {% if CHILD_SCHOOL %}<br>
+            {{ registration.child.school_name }}
+          {% endif %}
         </td>
-      {% else %}
-        <td>{% if registration.child.teacher %}{{ registration.child.teacher.full_name }}{% else %}n/a{% endif %}</td>
-      {% endif %}
-        
+
+        {% if user in course.instructors.all %}
+          <td>{{ registration.child.birth_date }}</td>
+
+          {% if EMERGENCY_NUMBER_MANDATORY %}
+            <td>
+              <a href="{{ registration.child.emergency_number|phone:'RFC3966' }}">
+                {{ registration.child.emergency_number|phone }}
+              </a>
+            </td>
+          {% endif %}
+
+          <td>
+            <ul class="list-unstyled">
+              {% if registration.child.family.private_phone %}
+                <li>
+                  <a href="{{ registration.child.family.private_phone|phone:'RFC3966' }}">
+                    {{ registration.child.family.private_phone|phone }}
+                  </a>
+                </li>
+              {% endif %}
+              {% if registration.child.family.private_phone2 %}
+                <li>
+                  <a href="{{ registration.child.family.private_phone2|phone:'RFC3966' }}">
+                    {{ registration.child.family.private_phone2|phone }}
+                  </a>
+                </li>
+              {% endif %}
+              {% if registration.child.family.private_phone3 %}
+                <li>
+                  <a href="{{ registration.child.family.private_phone3|phone:'RFC3966' }}">
+                    {{ registration.child.family.private_phone3|phone }}
+                  </a>
+                </li>
+              {% endif %}
+          </td>
+        {% else %}
+          <td>{% if registration.child.teacher %}{{ registration.child.teacher.full_name }}{% else %}n/a{% endif %}</td>
+        {% endif %}
+
         <td>{{ registration.child.family.email | urlize }}</td>
       </tr>
-    {% empty %}
-    
+      {% empty %}
+
     {% endfor %}
   </table>
-  </section> 
+</section>
 {% endblock content %}

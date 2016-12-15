@@ -88,7 +88,11 @@ class CustomMailParticipantsPreview(CustomMailMixin, BackendMailParticipantsView
 
     def post(self, request, *args, **kwargs):
         redirect = super(CustomMailParticipantsPreview, self).post(request, *args, **kwargs)
-        del self.request.session['mail']
+        try:
+            del self.request.session['mail']
+            del self.request.session['mail-userids']
+        except KeyError:
+            pass
         return redirect
 
 

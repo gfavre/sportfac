@@ -269,7 +269,10 @@ class MailParticipantsView(CourseMixin, MailView):
         return super(MailParticipantsView, self).get_recipient_address(recipient.child.family)
 
     def get_recipients_list(self):
-        return self.course.participants.all()
+        qs = self.course.participants.all()
+        if 'mail-userids' in self.request.session:
+            qs = qs.filter(child__family__in=self.request.session['mail-userids'])
+        return qs
 
 
 class MailCreateView(FormView):
@@ -349,7 +352,6 @@ class CustomMailMixin(object):
             raise Http404()
         return attachments
 
-    
     def get_subject(self):
         mail_id = self.request.session.get('mail', None)
         try:

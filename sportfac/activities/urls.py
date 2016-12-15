@@ -18,7 +18,11 @@ urlpatterns = [
     url(r'^courses/(?P<course>\d+)/mail$', 
         view=views.CustomMailCreateView.as_view(),
         name="mail-participants-custom"),
-    
+
+    url(r'^courses/(?P<course>\d+)/mail/select$',
+        view=views.CustomParticipantsCustomerMailView.as_view(),
+        name="mail-custom-participants-custom"),
+
     url(r'^courses/(?P<course>\d+)/send-infos$', 
         view=views.InstructorsMailView.as_view(),
         name="mail-instructors"),

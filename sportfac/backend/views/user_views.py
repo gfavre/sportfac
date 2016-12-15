@@ -107,6 +107,7 @@ class InstructorExportView(BackendMixin, ExcelResponseMixin, InstructorMixin, Vi
     filename = _("instructors")
     resource_class = InstructorResource
 
+
 class UserCreateView(BackendMixin, SuccessMessageMixin, CreateView):
     model = FamilyUser
     form_class = ManagerWithPasswordForm

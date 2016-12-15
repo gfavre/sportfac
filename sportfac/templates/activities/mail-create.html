@@ -6,10 +6,22 @@
 
 {% block content %}
 <form action="" method="post" class="form-horizontal" enctype="multipart/form-data">{% csrf_token %}
+  {% if recipients %}
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="id_recipients">{% trans "To" %}</label>
+      <div class=" field-recipient col-sm-10">
+        {% for recipient in recipients %}
+          <span class="label label-primary">{{ recipient }}</span>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
   {{ form }}
-    <div class="col-sm-offset-2"> 
+  <div class="form-group">
+    <div class="col-sm-offset-2">
       <button type="submit" class="btn btn-success btn-large"><i class="icon-check"></i>&nbsp;{% trans 'Save and preview' %}</button>
     </div>
+  </div>
 </form>
 {% endblock content %}
 

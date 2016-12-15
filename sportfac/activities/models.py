@@ -205,6 +205,9 @@ class Course(TimeStampedModel):
     def get_custom_mail_instructors_url(self):
         return reverse('activities:mail-participants-custom', kwargs={'course': self.pk})
 
+    def get_custom_mail_custom_users_instructors_url(self):
+        return reverse('activities:mail-custom-participants-custom', kwargs={'course': self.pk})
+
     def get_mail_instructors_url(self):
         return reverse('backend:course-mail-instructors', kwargs={'course': self.pk})
     
