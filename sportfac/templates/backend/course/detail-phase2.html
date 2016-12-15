@@ -1,5 +1,5 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags %}
+{% load i18n sekizai_tags staticfiles %}
 {% load duration switzerland %}
 
 {% block title %}{{ course.activity.name }} - {{ block.super }}{% endblock %}
@@ -77,24 +77,63 @@
 {% if course.count_participants %}
 
 {% addtoblock  "js" %}
-<script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
-<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.tableTools.min.js"></script>
-<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
+<script src="{% static 'js/vendor/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'js/vendor/datatables/dataTables.tableTools.min.js' %}"></script>
+<script src="{% static 'js/vendor/datatables/dataTables.bootstrap.js' %}"></script>
 <script>
 $(function () {
-  $(".table").dataTable({
-{% if LANGUAGE_CODE == 'fr' %}
+  var t = $(".table").dataTable({
+    {% if LANGUAGE_CODE == 'fr' %}
       "language": {
-            "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+        "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
       },
-{% endif %}
-      aoColumnDefs: [
-          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ -1] }
-      ],
-      paging: false
-
+    {% endif %}
+    aoColumnDefs: [
+      { 'bSortable': false, 'bSearchable': false, 'aTargets': [ -1] }
+    ],
+    dom: 'T<"clear">lfrtip',
+    paging: false,
+    tableTools: {
+      "sRowSelect": "multi",
+      "aButtons": [ ],
+      'fnRowSelected': function(){
+        $('.needs-select').removeClass('disabled');
+      },
+      'fnRowDeselected': function(){
+        if ($('tr.active').length == 0){
+          $('.needs-select').addClass('disabled');
+        }
+      }
+    }
   });
+
+  $('.selectall').click(function(){
+    var tabletools = TableTools.fnGetInstance(t[0]);
+    tabletools.fnSelectAll(true);
+  });
+  $('.deselectall').click(function(){
+    var tabletools = TableTools.fnGetInstance(t[0]);
+    tabletools.fnSelectNone();
+  });
+  $('form.mail').submit(function(){
+    var tabletools = TableTools.fnGetInstance(t[0]);
+    var ids = tabletools.fnGetSelected().map(function(elem){
+        return elem.getAttribute('data-user-id');
+    });
+    $('input[name="data"]').val(JSON.stringify(ids));
+  });
+  $('form.move').submit(function(){
+    var tabletools = TableTools.fnGetInstance(t[0]);
+    var ids = tabletools.fnGetSelected().map(function(elem){
+        return elem.getAttribute('data-registration-id');
+    });
+    $('input[name="data"]').val(JSON.stringify(ids));
+  });
+
 });
+
+
+
 </script>
 {% endaddtoblock %}
 
@@ -103,10 +142,27 @@ $(function () {
   <a href="{{ course.get_xls_export_url }}" class="btn btn-default">
     <i class="icon-file-excel"></i> {% trans "Export participants" %}
   </a>
+  <hr/>
+  <div class="btn-group">
+    <a class="btn btn-default selectall">{% trans "Select all" %}</span></a>
+    <a class="btn btn-default deselectall needs-select disabled">{% trans "Deselect all" %}</a>
+  </div>
+  <div class="btn-group">
+    <form class="mail" method="post" action="{%  url 'backend:mail-users' %}">{% csrf_token %}
+      <input type="hidden" name="data" value='' />
+      <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-mail"></i>&nbsp;&nbsp;{% trans "Send email..." %}</button>
+    </form>
+  </div>
+  <div class="btn-group">
+    <form class="move" method="post">{% csrf_token %}
+      <input type="hidden" name="data" value='' />
+      <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-loop-alt"></i>&nbsp;&nbsp;{% trans "Move to another course..." %}</button>
+    </form>
+  </div>
   <table class="table">
     <thead>
       <tr>
-        {{% if BIB_NUMBERS %}
+        {% if BIB_NUMBERS %}
         <th>{% trans "Bib number" %}</th>
         {% endif %}
         <th>{% trans "Name" %}</th>
@@ -126,9 +182,11 @@ $(function () {
     </thead>
     <tbody>
     {% for registration in registrations %}
-      <tr>
+      <tr data-registration-id="{{ registration.id }}" data-user-id="{{ registration.child.family.id }}">
         {% if BIB_NUMBERS %}
-        <td data-order="{{ child.bib_number|default:"0" }}">{{ child.bib_number|default:"n/a" }}</td>
+        <td data-order="{{ registration.child.bib_number|default:"0" }}">
+          {{ registration.child.bib_number|default:"n/a" }}
+        </td>
         {% endif %}
         <td>
             <a href="{{ registration.child.get_backend_url }}">{{ registration.child.full_name }}</a>

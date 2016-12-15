@@ -99,6 +99,7 @@ teachers_patterns = [
 users_patterns = [
     url(r'^$', view=views.UserListView.as_view(), 
         name='user-list'),
+    url(r'^mail$', view=views.MailUsersView.as_view(), name='mail-users'),
     url(r'^export$', view=views.UserExportView.as_view(),
         name='user-export'),
     url(r'^managers$', view=views.ManagerListView.as_view(), 

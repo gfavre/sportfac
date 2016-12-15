@@ -26,11 +26,11 @@ from .mixins import BackendMixin, ExcelResponseMixin
 
 __all__ = ('UserListView', 'UserCreateView', 'PasswordSetView',
            'UserUpdateView', 'UserDeleteView', 'UserDetailView',
-           'UserExportView',
+           'UserExportView', 'MailUsersView',
            'ChildListView', 'ChildCreateView', 'ChildUpdateView', 
            'ChildDeleteView', 'ChildImportView',
-            'ManagerListView', 'ManagerCreateView',  'ManagerExportView',
-            'InstructorListView', 'InstructorCreateView', 'InstructorDetailView',
+           'ManagerListView', 'ManagerCreateView',  'ManagerExportView',
+           'InstructorListView', 'InstructorCreateView', 'InstructorDetailView',
            'InstructorExportView',
            )
 
@@ -63,6 +63,13 @@ class UserListView(BackendMixin, ListView):
                          )\
                          .prefetch_related('children')
     
+    def post(self, request, *args, **kwargs):
+        userids = list(set(json.loads(request.POST.get('data', '[]'))))
+        self.request.session['mail-userids'] = userids
+        return HttpResponseRedirect(reverse('backend:custom-mail-custom-users'))
+
+
+class MailUsersView(BackendMixin, View):
     def post(self, request, *args, **kwargs):
         userids = list(set(json.loads(request.POST.get('data', '[]'))))
         self.request.session['mail-userids'] = userids

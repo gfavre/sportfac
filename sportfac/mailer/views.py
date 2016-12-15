@@ -19,6 +19,7 @@ from dbtemplates.models import Template
 
 from activities.models import Course
 from backend.dynamic_preferences_registry import global_preferences_registry
+from profiles.models import FamilyUser
 from .forms import MailForm
 from .models import MailArchive, Attachment
 from .tasks import send_mail, send_instructors_email
@@ -273,6 +274,12 @@ class MailParticipantsView(CourseMixin, MailView):
 
 class MailCreateView(FormView):
     form_class = MailForm
+
+    def get_context_data(self, *args, **kwargs):
+        kwargs['recipients'] = FamilyUser.objects.none()
+        if 'mail-userids' in self.request.session:
+            kwargs['recipients'] = FamilyUser.objects.filter(id__in=self.request.session['mail-userids'])
+        return super(MailCreateView, self).get_context_data(**kwargs)
 
     def get_archive_from_session(self):
         if not 'mail' in self.request.session:
