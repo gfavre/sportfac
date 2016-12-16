@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.db.models import Count, Case, When
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
+from django.template.defaultfilters import urlencode
 from django.utils.translation import ugettext as _
 from django.views.generic import CreateView, DeleteView, DetailView, \
                                 ListView, UpdateView, View, FormView
@@ -73,7 +74,10 @@ class MailUsersView(BackendMixin, View):
     def post(self, request, *args, **kwargs):
         userids = list(set(json.loads(request.POST.get('data', '[]'))))
         self.request.session['mail-userids'] = userids
-        return HttpResponseRedirect(reverse('backend:custom-mail-custom-users'))
+        params = ''
+        if 'prev' in request.GET:
+            params = '?prev=' + urlencode(request.GET.get('prev'))
+        return HttpResponseRedirect(reverse('backend:custom-mail-custom-users') + params)
 
 class UserExportView(BackendMixin, ExcelResponseMixin, View):
     filename = _("users")

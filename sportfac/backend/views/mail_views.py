@@ -1,6 +1,6 @@
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.urlresolvers import reverse, reverse_lazy
-from django.utils.translation import ugettext as _
+from django.template.defaultfilters import urlencode
 from django.views.generic import ListView
 
 from mailer.views import (MailView, MailCreateView, CustomMailMixin,
@@ -83,6 +83,10 @@ class CustomMailParticipantsCreateView(BackendMixin, MailCreateView):
 class CustomMailParticipantsPreview(CustomMailMixin, BackendMailParticipantsView):
     template_name = 'backend/mail/preview-editlink.html'
 
+    def get_context_data(self, **kwargs):
+        kwargs['prev'] = self.request.GET.get('prev', None)
+        return super(CustomUserCustomMailCreateView, self).get_context_data(**kwargs)
+
     def get_success_url(self):
         return reverse('backend:course-detail', kwargs=self.kwargs)
 
@@ -100,6 +104,16 @@ class CustomUserCustomMailCreateView(BackendMixin, MailCreateView):
     template_name = 'backend/mail/create.html'
     success_url = reverse_lazy('backend:custom-mail-custom-users-preview')
 
+    def get_success_url(self):
+        params = ''
+        if 'prev' in self.request.GET:
+            params = '?prev=' + urlencode(self.request.GET.get('prev'))
+        return self.success_url + params
+
+    def get_context_data(self, **kwargs):
+        kwargs['prev'] = self.request.GET.get('prev', None)
+        return super(CustomUserCustomMailCreateView, self).get_context_data(**kwargs)
+
 
 class CustomUserCustomMailPreview(BackendMixin, CustomMailMixin, MailView):
     success_url = reverse_lazy('backend:user-list')
@@ -110,11 +124,11 @@ class CustomUserCustomMailPreview(BackendMixin, CustomMailMixin, MailView):
         return []
 
     def get_context_data(self, **kwargs):
-        context = super(CustomUserCustomMailPreview, self).get_context_data(**kwargs)
-        context['url'] = ''.join(('http://', 
-                                  get_current_site(self.request).domain,
-                                  reverse('wizard_confirm')))
-        return context
+        kwargs['cancel_url'] = self.request.GET.get('prev', None)
+        kwargs['url'] = ''.join(('http://',
+                                 get_current_site(self.request).domain,
+                                 reverse('wizard_confirm')))
+        return super(CustomUserCustomMailPreview, self).get_context_data(**kwargs)
 
     def post(self, request, *args, **kwargs):
         redirect = super(CustomUserCustomMailPreview, self).post(request, *args, **kwargs)

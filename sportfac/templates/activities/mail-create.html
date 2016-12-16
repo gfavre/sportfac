@@ -10,9 +10,11 @@
     <div class="form-group">
       <label class="control-label col-sm-2" for="id_recipients">{% trans "To" %}</label>
       <div class=" field-recipient col-sm-10">
+        <p class="form-control-static">
         {% for recipient in recipients %}
           <span class="label label-primary">{{ recipient }}</span>
         {% endfor %}
+        </p>
       </div>
     </div>
   {% endif %}

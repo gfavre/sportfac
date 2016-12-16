@@ -10,9 +10,11 @@
     <div class="form-group">
       <label class="control-label col-sm-2" for="id_recipients">{% trans "To" %}</label>
       <div class=" field-recipient col-sm-10">
+        <p class="form-control-static">
         {% for recipient in recipients %}
           <span class="label label-primary">{{ recipient }}</span>
         {% endfor %}
+        </p>
       </div>
     </div>
   {% endif %}
@@ -20,6 +22,9 @@
   <div class="form-group">
     <div class="col-sm-offset-2">
       <button type="submit" class="btn btn-success btn-large"><i class="icon-check"></i>&nbsp;{% trans 'Save and preview' %}</button>
+      {% if prev %}&nbsp;
+        <a href="{{ prev }}" class="btn btn-default">{% trans 'Cancel' %}</a>
+      {% endif %}
     </div>
   </div>
 </form>

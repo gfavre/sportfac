@@ -39,6 +39,9 @@
     <p>{% blocktrans %}Are you sure you want to send this mail ?{% endblocktrans %}</p>
     <div class="form-group">
       <button type="submit" class="btn btn-danger"><i class="icon icon-email"></i>&nbsp;{% trans 'Send all emails' %}</button>
+      {% if cancel_url %}&nbsp;
+        <a href="{{ cancel_url }}" class="btn btn-default">{% trans 'Cancel' %}</a>
+      {% endif %}
     </div>
   </form>
 </section>
