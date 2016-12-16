@@ -119,12 +119,19 @@ $(function () {
     });
     $('input[name="data"]').val(JSON.stringify(ids));
   });
-  $('form.move').submit(function(){
+  $('form.move').submit(function(evt){
+    var form = this;
     var tabletools = TableTools.fnGetInstance(t[0]);
     var ids = tabletools.fnGetSelected().map(function(elem){
         return elem.getAttribute('data-registration-id');
     });
-    $('input[name="data"]').val(JSON.stringify(ids));
+    $('input[name=registrations]', form).remove();
+    ids.forEach(function(regId){
+      $('<input type="hidden">').attr('id', 'registrations_' + regId)
+                                .attr('name', 'registrations')
+                                .val(regId)
+                                .prependTo(form);
+    });
   });
 
 });
@@ -151,8 +158,7 @@ $(function () {
     </form>
   </div>
   <div class="btn-group">
-    <form class="move" method="post">{% csrf_token %}
-      <input type="hidden" name="data" value='' />
+    <form class="move" method="post" action="{% url 'backend:registrations-move' %}?prev={{ course.id }}">{% csrf_token %}
       <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-loop-alt"></i>&nbsp;&nbsp;{% trans "Move to another course..." %}</button>
     </form>
   </div>
@@ -231,6 +237,7 @@ $(function () {
 
         <td>{{ registration.child.family.email | urlize }}</td>
       {% for extra in registration.extra_infos.all %}
+        {% if extra.key in course.extra.all %}
         <td data-order="{{ extra.value }}">
         {% if extra.key.type == 'B' %}
             {% if extra.value == '1' %}
@@ -242,6 +249,8 @@ $(function () {
             {{ extra.value }}
         {% endif %}
         </td>
+        {% endif %}
+
       {% empty %}
         {% for extra in course.extra.all %}
         <td></td>

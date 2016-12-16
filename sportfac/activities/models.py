@@ -5,7 +5,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models.aggregates import Count
 from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, ugettext
 
 from ckeditor.fields import RichTextField
 from autoslug import AutoSlugField
@@ -143,11 +143,14 @@ class Course(TimeStampedModel):
     
     @property
     def available_places(self):
-        return self.max_participants - self.participants.count()
+        return self.max_participants - self.count_participants
     
     @property
     def count_participants(self):
-        return self.participants.count()
+        try:
+            return self.nb_participants
+        except AttributeError:
+            return self.participants.count()
     
     @property
     def percentage_full(self):
@@ -184,9 +187,9 @@ class Course(TimeStampedModel):
     def detailed_label(self):
         base = unicode(self)
         if self.full:
-            fullness = _('Course full')
+            fullness = ugettext('Course full')
         else:
-            fullness = _('%(available)s out of %(total)s places remaining') 
+            fullness = ugettext('%(available)s out of %(total)s places remaining')
             fullness %= {'available': self.available_places, 'total': self.max_participants}
         return base + ' ' + fullness
         

@@ -75,7 +75,6 @@ class MailUsersView(BackendMixin, View):
         self.request.session['mail-userids'] = userids
         return HttpResponseRedirect(reverse('backend:custom-mail-custom-users'))
 
-
 class UserExportView(BackendMixin, ExcelResponseMixin, View):
     filename = _("users")
     resource_class = UserResource

@@ -1,9 +1,11 @@
 from django.conf import settings
+from django.db.models import Count
 from django.utils.translation import ugettext_lazy as _
 
 import floppyforms.__future__ as forms
 
-from .models import Bill, Child
+from .models import Bill, Child, Registration
+from activities.models import Course
 from backend.forms import Select2Widget, DatePickerInput
 from profiles.models import FamilyUser, School, SchoolYear
 from schools.models import Teacher
@@ -45,3 +47,17 @@ class BillForm(forms.ModelForm):
     class Meta:
         model = Bill
         fields = ('status',)
+
+
+class RegistrationModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.detailed_label()
+
+
+class MoveRegistrationsForm(forms.Form):
+    registrations = forms.ModelMultipleChoiceField(queryset=Registration.objects.all(),
+                                                   widget=forms.MultipleHiddenInput)
+    destination = RegistrationModelChoiceField(
+            queryset=Course.objects.select_related('activity')\
+                                   .annotate(nb_participants=Count('participants')),
+            widget=Select2Widget())

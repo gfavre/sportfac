@@ -67,6 +67,8 @@ registrations_patterns = [
         name='registration-export'),
     url(r'^new$', view=views.RegistrationCreateView.as_view(), 
         name='registration-create'),
+    url(r'^move$', view=views.RegistrationsMoveView.as_view(),
+        name='registrations-move'),
     url(r'^(?P<pk>\d+)/$', view=views.RegistrationDetailView.as_view(), 
         name='registration-detail'),
     url(r'^(?P<pk>\d+)/update$', view=views.RegistrationUpdateView.as_view(), 
@@ -79,6 +81,7 @@ registrations_patterns = [
         name='bill-detail'),    
     url(r'^bills/(?P<pk>\d+)/pay$', view=views.BillUpdateView.as_view(), 
         name='bill-update'),
+
 ]
 
 teachers_patterns = [

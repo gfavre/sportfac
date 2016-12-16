@@ -4,26 +4,26 @@ from django.core.urlresolvers import reverse_lazy
 from django.db import IntegrityError, transaction
 from django.db.models import Count
 from django.http import HttpResponseRedirect
-from django.views.generic import (DeleteView, DetailView,
-                                ListView, UpdateView, View)
+from django.views.generic import (DeleteView, DetailView, ListView, UpdateView,
+                                  View, FormView)
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-
 from django.shortcuts import get_object_or_404
 
 from formtools.wizard.views import SessionWizardView
 
 from activities.models import Course, ExtraNeed
+from backend.forms import (BillingForm, ChildSelectForm, CourseSelectForm,
+                           RegistrationForm, ExtraInfoFormSet)
 from registrations.resources import RegistrationResource
 from registrations.models import Bill, Registration, ExtraInfo
-from registrations.forms import BillForm
+from registrations.forms import BillForm, MoveRegistrationsForm
 from registrations.views import BillMixin
-from backend.forms import BillingForm, ChildSelectForm, CourseSelectForm, RegistrationForm, ExtraInfoFormSet
 from .mixins import BackendMixin, ExcelResponseMixin
-
 
 __all__ = ('RegistrationCreateView', 'RegistrationDeleteView', 'RegistrationDetailView', 
            'RegistrationListView', 'RegistrationExportView', 'RegistrationUpdateView',
+           'RegistrationsMoveView',
            'BillListView', 'BillDetailView', 'BillUpdateView')
 
 
@@ -37,7 +37,8 @@ class RegistrationListView(BackendMixin, ListView):
     template_name = 'backend/registration/list.html'
 
     def get_queryset(self):
-        return Registration.objects.select_related('course', 'child', 'child__family').prefetch_related('course__activity').all()
+        return Registration.objects.select_related('course', 'child', 'child__family')\
+                                   .prefetch_related('course__activity')
 
 
 class RegistrationExportView(BackendMixin, ExcelResponseMixin, View):
@@ -48,6 +49,36 @@ class RegistrationExportView(BackendMixin, ExcelResponseMixin, View):
 
     def get(self, request, *args, **kwargs):
         return self.render_to_response()
+
+
+class RegistrationsMoveView(BackendMixin, FormView):
+    form_class = MoveRegistrationsForm
+    template_name = 'backend/registration/move.html'
+
+    def form_valid(self, form):
+        course = form.cleaned_data['destination']
+        form.cleaned_data['registrations'].update(course=course,
+                                                  status=Registration.STATUS.confirmed)
+        message = _("Registrations of %(nb)s children have been moved.")
+        message %= {'nb':  form.cleaned_data['registrations'].count()}
+        messages.add_message(self.request, messages.SUCCESS, message)
+        return HttpResponseRedirect(course.get_backend_url())
+
+    def get_context_data(self, **kwargs):
+        try:
+            prev = int(self.request.GET.get('prev'))
+        except:
+            prev = None
+        kwargs['origin'] = None
+        if prev:
+            try:
+                kwargs['origin'] = Course.objects.get(pk=prev)
+            except Course.DoesNotExist:
+                pass
+        form = self.get_form()
+        form.is_valid()
+        kwargs['children'] = [reg.child for reg in form.cleaned_data.get('registrations', [])]
+        return super(RegistrationsMoveView, self).get_context_data(**kwargs)
 
 
 def show_extra_questions(wizard):
