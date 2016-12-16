@@ -1,5 +1,5 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags %}
+{% load i18n sekizai_tags staticfiles %}
 {% load duration switzerland %}
 
 {% block title %}{{ course.activity.name }} - {{ block.super }}{% endblock %}
@@ -64,10 +64,6 @@
     </a> &nbsp; 
     {% endif %}
     
-    <a href="{{ course.get_custom_mail_url }}" class="btn btn-sm" >
-        <i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}
-    </a> &nbsp;   
-    
     <a href="{{ course.get_mail_instructors_url }}" class="btn btn-sm">
         <i class="icon-tasks"></i>&nbsp;{% trans "Send infos to instructors" %}
     </a> &nbsp;
@@ -85,22 +81,64 @@
 
 {% if course.count_participants %}
 {% addtoblock  "js" %}
-<script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
-<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.tableTools.min.js"></script>
-<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
+<script src="{% static 'js/vendor/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'js/vendor/datatables/dataTables.tableTools.min.js' %}"></script>
+<script src="{% static 'js/vendor/datatables/dataTables.bootstrap.js' %}"></script>
 <script>
 $(function () {
-  $(".table").dataTable({
-{% if LANGUAGE_CODE == 'fr' %}
+  var t = $(".table").dataTable({
+    {% if LANGUAGE_CODE == 'fr' %}
       "language": {
-            "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+        "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
       },
-{% endif %}
-      aoColumnDefs: [
-          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ -1] }
-      ],
-      paging: false
+    {% endif %}
+    aoColumnDefs: [
+      { 'bSortable': false, 'bSearchable': false, 'aTargets': [ -1] }
+    ],
+    dom: 'T<"clear">lfrtip',
+    paging: false,
+    tableTools: {
+      "sRowSelect": "multi",
+      "aButtons": [ ],
+      'fnRowSelected': function(){
+        $('.needs-select').removeClass('disabled');
+      },
+      'fnRowDeselected': function(){
+        if ($('tr.active').length == 0){
+          $('.needs-select').addClass('disabled');
+        }
+      }
+    }
+  });
 
+  $('.selectall').click(function(){
+    var tabletools = TableTools.fnGetInstance(t[0]);
+    tabletools.fnSelectAll(true);
+  });
+  $('.deselectall').click(function(){
+    var tabletools = TableTools.fnGetInstance(t[0]);
+    tabletools.fnSelectNone();
+  });
+  $('form.mail').submit(function(){
+    var tabletools = TableTools.fnGetInstance(t[0]);
+    var ids = tabletools.fnGetSelected().map(function(elem){
+        return elem.getAttribute('data-user-id');
+    });
+    $('input[name="data"]').val(JSON.stringify(ids));
+  });
+  $('form.move').submit(function(evt){
+    var form = this;
+    var tabletools = TableTools.fnGetInstance(t[0]);
+    var ids = tabletools.fnGetSelected().map(function(elem){
+        return elem.getAttribute('data-registration-id');
+    });
+    $('input[name=registrations]', form).remove();
+    ids.forEach(function(regId){
+      $('<input type="hidden">').attr('id', 'registrations_' + regId)
+                                .attr('name', 'registrations')
+                                .val(regId)
+                                .prependTo(form);
+    });
   });
 });
 </script>
@@ -111,12 +149,29 @@ $(function () {
   <a href="{{ course.get_xls_export_url }}" class="btn btn-default">
     <i class="icon-file-excel"></i> {% trans "Export participants" %}
   </a>
-
-
+  <hr/>
+  <div class="btn-group">
+    <a class="btn btn-default selectall">{% trans "Select all" %}</span></a>
+    <a class="btn btn-default deselectall needs-select disabled">{% trans "Deselect all" %}</a>
+  </div>
+  <div class="btn-group">
+    <form class="mail" method="post" action="{%  url 'backend:mail-users' %}?prev={{ request.get_full_path | urlencode }}">{% csrf_token %}
+      <input type="hidden" name="data" value='' />
+      <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-mail"></i>&nbsp;&nbsp;{% trans "Send email..." %}</button>
+    </form>
+  </div>
+  <div class="btn-group">
+    <form class="move" method="post" action="{% url 'backend:registrations-move' %}?prev={{ course.id }}">{% csrf_token %}
+      <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-loop-alt"></i>&nbsp;&nbsp;{% trans "Move to another course..." %}</button>
+    </form>
+  </div>
 
   <table class="table">
     <thead>
       <tr>
+        {% if BIB_NUMBERS %}
+        <th>{% trans "Bib number" %}</th>
+        {% endif %}
         <th>{% trans "Name" %}</th>
         <th>{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
         {% if EMERGENCY_NUMBER_MANDATORY %}
@@ -133,7 +188,12 @@ $(function () {
     </thead>
     <tbody>
     {% for registration in course.participants.all %}
-      <tr>
+      <tr data-registration-id="{{ registration.id }}" data-user-id="{{ registration.child.family.id }}">
+        {% if BIB_NUMBERS %}
+        <td data-order="{{ registration.child.bib_number|default:"0" }}">
+          {{ registration.child.bib_number|default:"n/a" }}
+        </td>
+        {% endif %}
         <td>
             <a href="{{ registration.child.get_backend_url }}">{{ registration.child.full_name }}</a>
         </td>
@@ -177,6 +237,7 @@ $(function () {
         {% endif %}
         <td>{{ registration.child.family.email | urlize }}</td>
       {% for extra in registration.extra_infos.all %}
+        {% if extra.key in course.extra.all %}
         <td data-order="{{ extra.value }}">
         {% if extra.key.type == 'B' %}
             {% if extra.value == '1' %}
@@ -188,6 +249,7 @@ $(function () {
             {{ extra.value }}
         {% endif %}
         </td>
+        {% endif %}
       {% empty %}
         {% for extra in course.extra.all %}
         <td></td>
