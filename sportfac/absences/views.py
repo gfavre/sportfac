@@ -1,9 +1,8 @@
-from django.shortcuts import render
 from django.views.generic import DetailView, ListView
 
 from activities.views import InstructorMixin
 from activities.models import Course
-from .models import Absence, Session
+from .models import Absence
 
 
 class AbsenceView(InstructorMixin, DetailView):

@@ -3,22 +3,26 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
+from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
-from django.views.generic import (CreateView, DeleteView, DetailView,
-                                  ListView, UpdateView, View)
+from django.views.generic import (CreateView, DeleteView, DetailView, FormView,
+                                  ListView, TemplateView, UpdateView, View)
 from django.views.generic.detail import SingleObjectMixin
 
 from absences.models import Absence
 from activities.models import Course, Activity
 from activities.forms import CourseForm
+from profiles.models import FamilyUser
 from registrations.resources import RegistrationResource
 from sportfac.views import CSVMixin
 from .mixins import BackendMixin, ExcelResponseMixin
+from ..forms import PayslipMontreuxForm
 
 __all__ = ('CourseCreateView', 'CourseDeleteView', 'CourseDetailView',
            'CourseJSCSVView', 'CourseParticipantsExportView', 'CourseAbsenceView',
-           'CourseListView', 'CourseUpdateView', 'CourseParticipantsView')
+           'CourseListView', 'CourseUpdateView', 'CourseParticipantsView',
+           'PaySlipMontreux')
 
 
 class CourseDetailView(BackendMixin, DetailView):
@@ -191,3 +195,52 @@ class CourseDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
             if instructor.course.exclude(pk=self.object.pk).count() == 0:
                 instructor.is_instructor = False
         return super(CourseDeleteView, self).delete(request, *args, **kwargs)
+
+
+class PaySlipMontreux(BackendMixin, FormView):
+    template_name = 'backend/course/pay-slip-montreux-form.html'
+    form_class = PayslipMontreuxForm
+
+    def form_valid(self, form, **kwargs):
+        context = self.get_context_data(**kwargs)
+        context['rate'] = float(form.cleaned_data['rate'])
+        context['function'] = form.cleaned_data['function']
+        duration = context['course'].duration
+        hours = duration.seconds / 3600.0 + duration.days * 24
+        context['amount'] = context['rate'] * context['sessions'].count() * hours
+        return TemplateResponse(
+            request=self.request,
+            template=['backend/course/pay-slip-montreux.html'],
+            context=context
+        )
+
+    def form_invalid(self, form, **kwargs):
+        """
+        If the form is invalid, re-render the context data with the
+        data-filled form and errors.
+        """
+        return self.render_to_response(self.get_context_data(form=form, **kwargs))
+
+    def get_context_data(self, **kwargs):
+        kwargs['instructor'] = get_object_or_404(FamilyUser, pk=kwargs['instructor'])
+        kwargs['course'] = get_object_or_404(Course, pk=kwargs['course'])
+        kwargs['sessions'] = kwargs['course'].sessions.filter(instructor=kwargs['instructor'])
+        kwargs['avg'] = sum([session.presentees_nb() for session in kwargs['sessions']]) / max(len(kwargs['sessions']), 1)
+        return super(PaySlipMontreux, self).get_context_data(**kwargs)
+
+    def get(self, request, *args, **kwargs):
+        """
+        Handles GET requests and instantiates a blank version of the form.
+        """
+        return self.render_to_response(self.get_context_data(**kwargs))
+
+    def post(self, request, *args, **kwargs):
+        """
+        Handles POST requests, instantiating a form instance with the passed
+        POST variables and then checked for validity.
+        """
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form, **kwargs)
+        else:
+            return self.form_invalid(form, **kwargs)

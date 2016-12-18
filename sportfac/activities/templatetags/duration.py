@@ -66,4 +66,16 @@ def seconds(value):
         return out + value.seconds        
     except AttributeError:
         return 0
-        
+
+@register.filter(is_safe=True)
+def hours(value):
+    if value in (None, ''):
+        return 0.0
+    try:
+        out = 0.0
+        out += value.seconds / 3600.0
+        if value.days:
+            out += 24.0 * value.days
+        return out
+    except AttributeError:
+        return 0.0

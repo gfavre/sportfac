@@ -1,5 +1,5 @@
 from django.conf.urls import include, url
-
+from django.conf import settings
 
 import views
 
@@ -38,8 +38,13 @@ courses_patterns = [
     url(r'(?P<course>[\w-]+)/mail-confirmation$', view=views.MailConfirmationParticipantsView.as_view(),
         name='course-mail-confirmation'),
     url(r'^(?P<course>[\w-]+)/participants$', view=views.CourseParticipantsView.as_view(), 
-        name='course-participants'),     
+        name='course-participants'),
 ]
+if settings.KEPCHUP_FICHE_SALAIRE_MONTREUX:
+    courses_patterns += [
+        url(r'^(?P<course>[\w-]+)/pay/(?P<instructor>\d+)$', view=views.PaySlipMontreux.as_view(),
+            name='pay-slip-montreux')]
+
 
 mail_patterns = [
     url(r'^archive', view=views.MailArchiveListView.as_view(), 

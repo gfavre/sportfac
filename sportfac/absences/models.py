@@ -45,6 +45,9 @@ class Session(TimeStampedModel):
     def get_api_url(self):
         return reverse('api:session-detail', kwargs={'pk': self.pk})
 
+    def presentees_nb(self):
+        return self.course.count_participants - self.absences.exclude(status__in=(Absence.STATUS.late,)).count()
+
     class Meta:
         ordering = ('date', 'course')
 

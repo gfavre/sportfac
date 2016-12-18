@@ -5,6 +5,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models.aggregates import Count
 from django.core.urlresolvers import reverse
+from django.template.defaultfilters import date as _date
 from django.utils.translation import ugettext_lazy as _, ugettext
 
 from ckeditor.fields import RichTextField
@@ -254,6 +255,14 @@ class Course(TimeStampedModel):
     def delete_url(self):
         return self.get_delete_url()
 
+    def get_period_text(self):
+        if self.start_date.year == self.end_date.year:
+            if self.start_date.month == self.end_date.month:
+                return _date(self.start_date, 'F Y')
+            else:
+                return _date(self.start_date, 'F') + ' - ' + _date(self.end_date, 'F Y')
+        else:
+            return _date(self.start_date, 'F Y') + ' - ' + _date(self.end_date, 'F Y')
 
     def save(self, *args, **kwargs):
         super(Course, self).save(*args, **kwargs)

@@ -4,270 +4,275 @@
 
 {% block title %}{{ course.activity.name }} - {{ block.super }}{% endblock %}
 {% block page_title %}
-    {{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }}{% endblocktrans %}
-    {% if CALENDAR_DISPLAY_COURSE_NAMES and course.name %}
+  {{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }}{% endblocktrans %}
+  {% if CALENDAR_DISPLAY_COURSE_NAMES and course.name %}
     - {{ course.name }}
-    {% endif %}
+  {% endif %}
 {% endblock %}
 
 {% block content %}
-<section class="portlet">
-  <div class="pricing-plan">
-    <header class="pricing-header">
-      <p class="pricing-plan-label">{{ course.start_date | date:"j F Y" }} – {{ course.end_date | date:'j F Y'  }}</p>
-      <p class="lead">Chaque {{ course.day_name|lower }} de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }} ({{ course.duration|duration }})</p>
-    </header>
-    <dl class="dl-horizontal">
-      <dt>{% trans "Course number" %}</dt><dd><a href="{{ course.activity.get_backend_url }}">{{ course.activity.number }}</a></dd>
-      <dt>{% trans "Instructors" %}</dt>
-      <dd>
-        <ul class="list-unstyled">
-        {% for instructor in course.instructors.all %}
-          <li><a href="{{ instructor.get_backend_url }}">{{ instructor.full_name  }}</a></li>
-        {% endfor %}
-        </ul>
-      </dd>
-      <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
-      <dt>{% trans "Number of sessions" %}</dt><dd>{{ course.number_of_sessions }} cours</dd>
-      {% if not NO_PAYMENT %}
-      <dt>{% trans "Price" %}</dt><dd>{{ course.price|money }}</dd>
-      {% endif %}
-      <dt>{% trans "School years" %}</dt>
-      <dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
-      <dt>{% trans "Extra questions" %}</dt>
-      <dd>
-        <ul class="list-unstyled">
-        {% for extra in course.extra.all %}
-          <li>{{ extra.question_label }}{% if extra.choices %}: ({{ extra.choices|join:", " }}){% endif %}</li>
-        {% empty %}
-            <li>{% trans "No extra question required" %}</li>
-        {% endfor %}
-        </ul>
-      </dd>
-    </dl>
-    <p class="text-center">
+  <section class="portlet">
+    <div class="pricing-plan">
+      <header class="pricing-header">
+        <p class="pricing-plan-label">{{ course.start_date | date:"j F Y" }} – {{ course.end_date | date:'j F Y'  }}</p>
+        <p class="lead">Chaque {{ course.day_name|lower }} de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }} ({{ course.duration|duration }})</p>
+      </header>
+      <dl class="dl-horizontal">
+        <dt>{% trans "Course number" %}</dt><dd><a href="{{ course.activity.get_backend_url }}">{{ course.activity.number }}</a></dd>
+        <dt>{% trans "Instructors" %}</dt>
+        <dd>
+          <ul class="list-unstyled">
+            {% for instructor in course.instructors.all %}
+              <li>
+                <a href="{{ instructor.get_backend_url }}">{{ instructor.full_name  }}</a>
+                {% if FICHE_SALAIRE_MONTREUX %}
+                  &mdash;<a href="{% url 'backend:pay-slip-montreux' course=course.pk instructor=instructor.pk %}" ><i class="icon-doc-text"></i> {% trans "Create pay slip" %}</a>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        </dd>
+        <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
+        <dt>{% trans "Number of sessions" %}</dt><dd>{{ course.number_of_sessions }} cours</dd>
+        {% if not NO_PAYMENT %}
+          <dt>{% trans "Price" %}</dt><dd>{{ course.price|money }}</dd>
+        {% endif %}
+        <dt>{% trans "School years" %}</dt>
+        <dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
+        <dt>{% trans "Extra questions" %}</dt>
+        <dd>
+          <ul class="list-unstyled">
+            {% for extra in course.extra.all %}
+              <li>{{ extra.question_label }}{% if extra.choices %}: ({{ extra.choices|join:", " }}){% endif %}</li>
+              {% empty %}
+              <li>{% trans "No extra question required" %}</li>
+            {% endfor %}
+          </ul>
+        </dd>
+      </dl>
+      <p class="text-center">
         <a href="{{ course.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a>
-    </p>
-      
-    <h4 class="content-title"><u>{% trans "Availability"%}</u></h4>      
-    <p>{{ course.count_participants  }} participants <span class="pull-right strong"> {{ course.max_participants }} places</span></p>
-    <div class="progress" style="margin-bottom: 0;">
-      <div class="progress-bar {% if course.full %}progress-bar-danger{% elif course.minimal_participants_reached %}progress-bar-success{% else %}progress-bar-warning{% endif %}" style="width: {{ course.percentage_full }}%">{% if course.full %}{% trans "Course full" %}{% elif course.minimal_participants_reached %}{% trans "Minimal number of participants reached" %}{% else %}{% trans "Not enough participants" %}{% endif %}</div>
+      </p>
+
+      <h4 class="content-title"><u>{% trans "Availability"%}</u></h4>
+      <p>{{ course.count_participants  }} participants <span class="pull-right strong"> {{ course.max_participants }} places</span></p>
+      <div class="progress" style="margin-bottom: 0;">
+        <div class="progress-bar {% if course.full %}progress-bar-danger{% elif course.minimal_participants_reached %}progress-bar-success{% else %}progress-bar-warning{% endif %}" style="width: {{ course.percentage_full }}%">{% if course.full %}{% trans "Course full" %}{% elif course.minimal_participants_reached %}{% trans "Minimal number of participants reached" %}{% else %}{% trans "Not enough participants" %}{% endif %}</div>
+      </div>
+      <p class="text-right"><small>{{ course.min_participants }} participants requis pour que l'activité ait lieu</small></p>
+
+      {% if course.count_participants %}
+        <h4 class="content-title"><u>{% trans "Management"%}</u></h4>
+        <a href="{{ course.get_xls_export_url }}" class="btn btn-default">
+          <i class="icon-file-excel"></i> {% trans "Export participants" %}
+        </a>
+
+        {% if USE_ABSENCES %}
+          <a href="{{ course.get_backend_absences_url }}" class="btn btn-default">
+            <i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}
+          </a>
+        {% endif %}
+      {% endif %}
     </div>
-    <p class="text-right"><small>{{ course.min_participants }} participants requis pour que l'activité ait lieu</small></p>
-    
-    {% if course.count_participants %}
-      <h4 class="content-title"><u>{% trans "Management"%}</u></h4>
+  </section>
+
+  {% if course.count_participants %}
+
+    {% addtoblock  "js" %}
+      <script src="{% static 'js/vendor/datatables/jquery.dataTables.min.js' %}"></script>
+      <script src="{% static 'js/vendor/datatables/dataTables.tableTools.min.js' %}"></script>
+      <script src="{% static 'js/vendor/datatables/dataTables.bootstrap.js' %}"></script>
+      <script>
+        $(function () {
+          var t = $(".table").dataTable({
+            {% if LANGUAGE_CODE == 'fr' %}
+              "language": {
+                "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+              },
+            {% endif %}
+            aoColumnDefs: [
+              { 'bSortable': false, 'bSearchable': false, 'aTargets': [ -1] }
+            ],
+            dom: 'T<"clear">lfrtip',
+            paging: false,
+            tableTools: {
+              "sRowSelect": "multi",
+              "aButtons": [ ],
+              'fnRowSelected': function(){
+                $('.needs-select').removeClass('disabled');
+              },
+              'fnRowDeselected': function(){
+                if ($('tr.active').length == 0){
+                  $('.needs-select').addClass('disabled');
+                }
+              }
+            }
+          });
+
+          $('.selectall').click(function(){
+            var tabletools = TableTools.fnGetInstance(t[0]);
+            tabletools.fnSelectAll(true);
+          });
+          $('.deselectall').click(function(){
+            var tabletools = TableTools.fnGetInstance(t[0]);
+            tabletools.fnSelectNone();
+          });
+          $('form.mail').submit(function(){
+            var tabletools = TableTools.fnGetInstance(t[0]);
+            var ids = tabletools.fnGetSelected().map(function(elem){
+              return elem.getAttribute('data-user-id');
+            });
+            $('input[name="data"]').val(JSON.stringify(ids));
+          });
+          $('form.move').submit(function(evt){
+            var form = this;
+            var tabletools = TableTools.fnGetInstance(t[0]);
+            var ids = tabletools.fnGetSelected().map(function(elem){
+              return elem.getAttribute('data-registration-id');
+            });
+            $('input[name=registrations]', form).remove();
+            ids.forEach(function(regId){
+              $('<input type="hidden">').attr('id', 'registrations_' + regId)
+                  .attr('name', 'registrations')
+                  .val(regId)
+                  .prependTo(form);
+            });
+          });
+        });
+      </script>
+    {% endaddtoblock %}
+
+    <section>
+      <h2>{% trans "Registrations" %}</h2>
       <a href="{{ course.get_xls_export_url }}" class="btn btn-default">
         <i class="icon-file-excel"></i> {% trans "Export participants" %}
       </a>
-
-      {% if USE_ABSENCES %}
-      <a href="{{ course.get_backend_absences_url }}" class="btn btn-default">
-        <i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}
-      </a>
-      {% endif %}
-    {% endif %}
-  </div>
-</section>
-
-{% if course.count_participants %}
-
-{% addtoblock  "js" %}
-<script src="{% static 'js/vendor/datatables/jquery.dataTables.min.js' %}"></script>
-<script src="{% static 'js/vendor/datatables/dataTables.tableTools.min.js' %}"></script>
-<script src="{% static 'js/vendor/datatables/dataTables.bootstrap.js' %}"></script>
-<script>
-$(function () {
-  var t = $(".table").dataTable({
-    {% if LANGUAGE_CODE == 'fr' %}
-      "language": {
-        "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
-      },
-    {% endif %}
-    aoColumnDefs: [
-      { 'bSortable': false, 'bSearchable': false, 'aTargets': [ -1] }
-    ],
-    dom: 'T<"clear">lfrtip',
-    paging: false,
-    tableTools: {
-      "sRowSelect": "multi",
-      "aButtons": [ ],
-      'fnRowSelected': function(){
-        $('.needs-select').removeClass('disabled');
-      },
-      'fnRowDeselected': function(){
-        if ($('tr.active').length == 0){
-          $('.needs-select').addClass('disabled');
-        }
-      }
-    }
-  });
-
-  $('.selectall').click(function(){
-    var tabletools = TableTools.fnGetInstance(t[0]);
-    tabletools.fnSelectAll(true);
-  });
-  $('.deselectall').click(function(){
-    var tabletools = TableTools.fnGetInstance(t[0]);
-    tabletools.fnSelectNone();
-  });
-  $('form.mail').submit(function(){
-    var tabletools = TableTools.fnGetInstance(t[0]);
-    var ids = tabletools.fnGetSelected().map(function(elem){
-        return elem.getAttribute('data-user-id');
-    });
-    $('input[name="data"]').val(JSON.stringify(ids));
-  });
-  $('form.move').submit(function(evt){
-    var form = this;
-    var tabletools = TableTools.fnGetInstance(t[0]);
-    var ids = tabletools.fnGetSelected().map(function(elem){
-        return elem.getAttribute('data-registration-id');
-    });
-    $('input[name=registrations]', form).remove();
-    ids.forEach(function(regId){
-      $('<input type="hidden">').attr('id', 'registrations_' + regId)
-                                .attr('name', 'registrations')
-                                .val(regId)
-                                .prependTo(form);
-    });
-  });
-});
-</script>
-{% endaddtoblock %}
-
-<section>
-  <h2>{% trans "Registrations" %}</h2>
-  <a href="{{ course.get_xls_export_url }}" class="btn btn-default">
-    <i class="icon-file-excel"></i> {% trans "Export participants" %}
-  </a>
-  <hr/>
-  <div class="btn-group">
-    <a class="btn btn-default selectall">{% trans "Select all" %}</span></a>
-    <a class="btn btn-default deselectall needs-select disabled">{% trans "Deselect all" %}</a>
-  </div>
-  <div class="btn-group">
-    <form class="mail" method="post" action="{%  url 'backend:mail-users' %}?prev={{ request.get_full_path | urlencode }}">{% csrf_token %}
-      <input type="hidden" name="data" value='' />
-      <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-mail"></i>&nbsp;&nbsp;{% trans "Send email..." %}</button>
-    </form>
-  </div>
-  <div class="btn-group">
-    <form class="move" method="post" action="{% url 'backend:registrations-move' %}?prev={{ course.id }}">{% csrf_token %}
-      <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-loop-alt"></i>&nbsp;&nbsp;{% trans "Move to another course..." %}</button>
-    </form>
-  </div>
-  <table class="table">
-    <thead>
-      <tr>
-        {% if BIB_NUMBERS %}
-        <th>{% trans "Bib number" %}</th>
-        {% endif %}
-        <th>{% trans "Name" %}</th>
-        <th>{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
-        {% if EMERGENCY_NUMBER_MANDATORY %}
-        <th>{% trans "Emergency number" %}</th>
-        {% else %}
-        <th>{% trans "Parents phone" %}</th>
-        {% endif %}
-        <th>{% trans "Parents email" %}</th>
-        {% for extra in course.extra.all %}
-        <th>{{ extra.question_label }}</th>
-        {% endfor %}
-        <th>{% trans "Status" %}</th>
-        <th>{% trans "Actions" %}</th>
-      </tr>
-    </thead>
-    <tbody>
-    {% for registration in registrations %}
-      <tr data-registration-id="{{ registration.id }}" data-user-id="{{ registration.child.family.id }}">
-        {% if BIB_NUMBERS %}
-        <td data-order="{{ registration.child.bib_number|default:"0" }}">
-          {{ registration.child.bib_number|default:"n/a" }}
-        </td>
-        {% endif %}
-        <td>
-            <a href="{{ registration.child.get_backend_url }}">{{ registration.child.full_name }}</a>
-        </td>
-
-        <td>
-            {{ registration.child.school_year|default:"n/a" }}
-            {% if CHILD_SCHOOL %}<br>
-            {{ registration.child.school_name }}
+      <hr/>
+      <div class="btn-group">
+        <a class="btn btn-default selectall">{% trans "Select all" %}</span></a>
+        <a class="btn btn-default deselectall needs-select disabled">{% trans "Deselect all" %}</a>
+      </div>
+      <div class="btn-group">
+        <form class="mail" method="post" action="{%  url 'backend:mail-users' %}?prev={{ request.get_full_path | urlencode }}">{% csrf_token %}
+          <input type="hidden" name="data" value='' />
+          <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-mail"></i>&nbsp;&nbsp;{% trans "Send email..." %}</button>
+        </form>
+      </div>
+      <div class="btn-group">
+        <form class="move" method="post" action="{% url 'backend:registrations-move' %}?prev={{ course.id }}">{% csrf_token %}
+          <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-loop-alt"></i>&nbsp;&nbsp;{% trans "Move to another course..." %}</button>
+        </form>
+      </div>
+      <table class="table">
+        <thead>
+        <tr>
+          {% if BIB_NUMBERS %}
+            <th>{% trans "Bib number" %}</th>
+          {% endif %}
+          <th>{% trans "Name" %}</th>
+          <th>{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
+          {% if EMERGENCY_NUMBER_MANDATORY %}
+            <th>{% trans "Emergency number" %}</th>
+          {% else %}
+            <th>{% trans "Parents phone" %}</th>
+          {% endif %}
+          <th>{% trans "Parents email" %}</th>
+          {% for extra in course.extra.all %}
+            <th>{{ extra.question_label }}</th>
+          {% endfor %}
+          <th>{% trans "Status" %}</th>
+          <th>{% trans "Actions" %}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for registration in registrations %}
+          <tr data-registration-id="{{ registration.id }}" data-user-id="{{ registration.child.family.id }}">
+            {% if BIB_NUMBERS %}
+              <td data-order="{{ registration.child.bib_number|default:"0" }}">
+                {{ registration.child.bib_number|default:"n/a" }}
+              </td>
             {% endif %}
-        </td>
-        {% if EMERGENCY_NUMBER_MANDATORY %}
-        <td>
-            <a href="{{ registration.child.emergency_number|phone:'RFC3966' }}">
-                {{ registration.child.emergency_number|phone }}
-            </a>
-        </td>
-        {% else %}
-        <td>
-          <ul>
-            {% if registration.child.family.private_phone %}
-            <li>
-              <a href="{{ registration.child.family.private_phone|phone:'RFC3966' }}">
-                {{ registration.child.family.private_phone|phone }}
-              </a>
-            </li>
-            {% endif %}
-            {% if registration.child.family.private_phone2 %}
-            <li>
-              <a href="{{ registration.child.family.private_phone2|phone:'RFC3966' }}">
-                {{ registration.child.family.private_phone2|phone }}
-              </a>
-            </li>
-            {% endif %}
-            {% if registration.child.family.private_phone3 %}
-            <li>
-              <a href="{{ registration.child.family.private_phone3|phone:'RFC3966' }}">
-                {{ registration.child.family.private_phone3|phone }}
-              </a>
-            </li>
-            {% endif %}
-        </td>
-        {% endif %}
+            <td>
+              <a href="{{ registration.child.get_backend_url }}">{{ registration.child.full_name }}</a>
+            </td>
 
-
-        <td>{{ registration.child.family.email | urlize }}</td>
-      {% for extra in registration.extra_infos.all %}
-        {% if extra.key in course.extra.all %}
-        <td data-order="{{ extra.value }}">
-        {% if extra.key.type == 'B' %}
-            {% if extra.value == '1' %}
-            <i class="icon-ok-circled text-success"></i>
+            <td>
+              {{ registration.child.school_year|default:"n/a" }}
+              {% if CHILD_SCHOOL %}<br>
+                {{ registration.child.school_name }}
+              {% endif %}
+            </td>
+            {% if EMERGENCY_NUMBER_MANDATORY %}
+              <td>
+                <a href="{{ registration.child.emergency_number|phone:'RFC3966' }}">
+                  {{ registration.child.emergency_number|phone }}
+                </a>
+              </td>
             {% else %}
-            <i class="icon-cancel-circled text-danger"></i>
+              <td>
+                <ul>
+                  {% if registration.child.family.private_phone %}
+                    <li>
+                      <a href="{{ registration.child.family.private_phone|phone:'RFC3966' }}">
+                        {{ registration.child.family.private_phone|phone }}
+                      </a>
+                    </li>
+                  {% endif %}
+                  {% if registration.child.family.private_phone2 %}
+                    <li>
+                      <a href="{{ registration.child.family.private_phone2|phone:'RFC3966' }}">
+                        {{ registration.child.family.private_phone2|phone }}
+                      </a>
+                    </li>
+                  {% endif %}
+                  {% if registration.child.family.private_phone3 %}
+                    <li>
+                      <a href="{{ registration.child.family.private_phone3|phone:'RFC3966' }}">
+                        {{ registration.child.family.private_phone3|phone }}
+                      </a>
+                    </li>
+                  {% endif %}
+              </td>
             {% endif %}
-        {% else %}
-            {{ extra.value }}
-        {% endif %}
-        </td>
-        {% endif %}
 
-      {% empty %}
-        {% for extra in course.extra.all %}
-        <td></td>
+
+            <td>{{ registration.child.family.email | urlize }}</td>
+            {% for extra in registration.extra_infos.all %}
+              {% if extra.key in course.extra.all %}
+                <td data-order="{{ extra.value }}">
+                  {% if extra.key.type == 'B' %}
+                    {% if extra.value == '1' %}
+                      <i class="icon-ok-circled text-success"></i>
+                    {% else %}
+                      <i class="icon-cancel-circled text-danger"></i>
+                    {% endif %}
+                  {% else %}
+                    {{ extra.value }}
+                  {% endif %}
+                </td>
+              {% endif %}
+
+              {% empty %}
+              {% for extra in course.extra.all %}
+                <td></td>
+              {% endfor %}
+            {% endfor %}
+            <td>{{ registration.get_status_display }}</td>
+
+            <td>
+              <ul class="list-unstyled">
+                <li class="text-nowrap"><a href="{% url 'backend:registration-update' pk=registration.pk %}?course={{ course.number }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update registration" %}</a></li>
+                <li class="text-nowrap"><a href="{% url 'backend:registration-delete' pk=registration.pk %}" class="btn btn-sm"><i class="icon-cancel"></i>&nbsp;{% trans "Cancel registration" %}</a></li>
+              </ul>
+            </td>
+
+          </tr>
+          {% empty %}
+
         {% endfor %}
-      {% endfor %}
-        <td>{{ registration.get_status_display }}</td>
+        </tbody>
+      </table>
 
-        <td>
-          <ul class="list-unstyled">
-            <li class="text-nowrap"><a href="{% url 'backend:registration-update' pk=registration.pk %}?course={{ course.number }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update registration" %}</a></li>
-            <li class="text-nowrap"><a href="{% url 'backend:registration-delete' pk=registration.pk %}" class="btn btn-sm"><i class="icon-cancel"></i>&nbsp;{% trans "Cancel registration" %}</a></li>
-          </ul>
-        </td>
-
-      </tr>
-    {% empty %}
-
-    {% endfor %}
-    </tbody>
-  </table>
-
-</section>
-{% endif %}
+    </section>
+  {% endif %}
 {% endblock content %}

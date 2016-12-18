@@ -173,3 +173,8 @@ class YearForm(forms.ModelForm):
     class Meta:
         model = YearTenant
         fields = ('start_date', 'end_date')
+
+
+class PayslipMontreuxForm(forms.Form):
+    function = forms.CharField(label=_("Function"), required=True)
+    rate = forms.DecimalField(label=_("Rate"), max_digits=6, decimal_places=2, required=True)
