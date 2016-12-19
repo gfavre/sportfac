@@ -40,4 +40,6 @@ django-mathfilters==0.4.0
 django-async-messages == 0.3.1
 # Excel export
 django-import-export == 0.5.1
+# open xlsx documents
+openpyxl == 2.4.1
 python-dateutil == 2.5.3

@@ -39,7 +39,8 @@ class Registration(TimeStampedModel, StatusModel):
     child = models.ForeignKey('Child', related_name="registrations")
     bill = models.ForeignKey('Bill', related_name="registrations", null=True, blank=True)
     paid = models.BooleanField(default=False, verbose_name=_("Has paid"))
-    
+    transport_info = models.CharField(_('Transport information'), max_length=60, blank=True)
+
     objects = RegistrationManager()
 
     class Meta:
