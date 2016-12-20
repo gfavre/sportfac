@@ -149,7 +149,7 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
         if not course:
             return self.success_url
         else:
-            course_obj = get_object_or_404(Course, number=course)
+            course_obj = get_object_or_404(Course, pk=course)
             return course_obj.get_backend_url()
 
     def get_context_data(self, **kwargs):

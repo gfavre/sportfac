@@ -262,7 +262,7 @@
           {% endfor %}
           <td>
             <ul class="list-unstyled">
-              <li class="text-nowrap"><a href="{{ registration.get_update_url }}?course={{ course.number }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update registration" %}</a></li>
+              <li class="text-nowrap"><a href="{{ registration.get_update_url }}?course={{ course.pk }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update registration" %}</a></li>
               <li class="text-nowrap"><a href="{{ registration.get_delete_url }}" class="btn btn-sm"><i class="icon-cancel"></i>&nbsp;{% trans "Cancel registration" %}</a></li>
             </ul>
           </td>

@@ -261,7 +261,7 @@
 
             <td>
               <ul class="list-unstyled">
-                <li class="text-nowrap"><a href="{% url 'backend:registration-update' pk=registration.pk %}?course={{ course.number }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update registration" %}</a></li>
+                <li class="text-nowrap"><a href="{% url 'backend:registration-update' pk=registration.pk %}?course={{ course.pk }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update registration" %}</a></li>
                 <li class="text-nowrap"><a href="{% url 'backend:registration-delete' pk=registration.pk %}" class="btn btn-sm"><i class="icon-cancel"></i>&nbsp;{% trans "Cancel registration" %}</a></li>
               </ul>
             </td>
