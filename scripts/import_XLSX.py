@@ -1,9 +1,9 @@
 from import_export.formats.base_formats import XLSX
 
-from registrations.models import Registration
+from registrations.models import Child, Registration
 
 fmt = XLSX()
-f = open('/Users/grfavre/Desktop/montreux.xlsx', fmt.get_read_mode())
+f = open('/home/grfavre/montreux.xlsx', fmt.get_read_mode())
 dataset = fmt.create_dataset(f.read())
 
 for (registration_id, id_lagapeo, bib_number, transport_info, last, first) in dataset:
@@ -14,7 +14,12 @@ for (registration_id, id_lagapeo, bib_number, transport_info, last, first) in da
         child = registration.child
         child.id_lagapeo = id_lagapeo
         child.bib_number = bib_number
-        child.save()
+        try:
+            child.save()
+        except:
+            c2 = Child.objects.get(id_lagapeo=id_lagapeo, family=None)
+            c2.delete()
+            child.save()
         print (u'Child {} updated'.format(child.full_name))
         registration.transport_info = transport_info
         registration.save()
