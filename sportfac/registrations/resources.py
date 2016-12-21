@@ -74,7 +74,7 @@ class RegistrationResource(resources.ModelResource):
         return phone(value)
 
     def dehydrate_birth_date(self, obj):
-        return obj.child.birth_date.isoformat()
+        return obj.child.birth_date.strftime('%d.%m.%Y')
 
     def export(self, queryset=None, *args, **kwargs):
         """
