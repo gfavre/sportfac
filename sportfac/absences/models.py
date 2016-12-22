@@ -46,8 +46,11 @@ class Session(TimeStampedModel):
         return reverse('api:session-detail', kwargs={'pk': self.pk})
 
     def presentees_nb(self):
-        return self.course.count_participants - self.absences.exclude(status__in=(Absence.STATUS.late,)).count()
+        children = [registration.child for registration in self.course.participants.all()]
+        absentees_nb = self.absences.filter(child__in=children)\
+                                    .exclude(status__in=(Absence.STATUS.late,)).count()
+        return self.course.count_participants - absentees_nb
 
-    class Meta:
+    class Meta:s
         ordering = ('date', 'course')
 

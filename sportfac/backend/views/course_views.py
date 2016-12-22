@@ -225,7 +225,8 @@ class PaySlipMontreux(BackendMixin, FormView):
         kwargs['instructor'] = get_object_or_404(FamilyUser, pk=kwargs['instructor'])
         kwargs['course'] = get_object_or_404(Course, pk=kwargs['course'])
         kwargs['sessions'] = kwargs['course'].sessions.filter(instructor=kwargs['instructor'])
-        kwargs['avg'] = sum([session.presentees_nb() for session in kwargs['sessions']]) / max(len(kwargs['sessions']), 1)
+        total_presentees = sum([session.presentees_nb() for session in kwargs['sessions']])
+        kwargs['avg'] = round(float(total_presentees) / max(len(kwargs['sessions']), 1), 1)
         return super(PaySlipMontreux, self).get_context_data(**kwargs)
 
     def get(self, request, *args, **kwargs):
