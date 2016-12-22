@@ -51,6 +51,6 @@ class Session(TimeStampedModel):
                                     .exclude(status__in=(Absence.STATUS.late,)).count()
         return self.course.count_participants - absentees_nb
 
-    class Meta:s
+    class Meta:
         ordering = ('date', 'course')
 
