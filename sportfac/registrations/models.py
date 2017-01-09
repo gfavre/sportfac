@@ -28,18 +28,31 @@ class RegistrationManager(models.Manager):
         return self.get_queryset().filter(status__in=(Registration.STATUS.valid, Registration.STATUS.confirmed))
 
 
+
 class Registration(TimeStampedModel, StatusModel):
     STATUS = Choices(('waiting', _("Waiting parent's confirmation")),
                      ('valid', _("Validated by parent")),
                      ('canceled', _("Canceled by administrator")),
                      ('confirmed', _("Confirmed by administrator")),
                      )
-    course = models.ForeignKey('activities.Course', related_name="participants", 
+    LEVELS = Choices('NP',
+                     '1A', '1B', '1C',
+                     '2A', '2B', '2C',
+                     '3A', '3B', '3C',
+                     '4A', '4B', '4C',
+                     '5A', '5B', '5C',
+                     '6A', '6B', '6C',
+                     '7A', '7B', '7C',
+                     )
+    course = models.ForeignKey('activities.Course', related_name="participants",
                                verbose_name=_("Course"))
     child = models.ForeignKey('Child', related_name="registrations")
     bill = models.ForeignKey('Bill', related_name="registrations", null=True, blank=True)
     paid = models.BooleanField(default=False, verbose_name=_("Has paid"))
     transport_info = models.CharField(_('Transport information'), max_length=60, blank=True)
+
+    before_level = models.CharField(choices=LEVELS, verbose_name=_("Level -1"), max_length=5, blank=True)
+    after_level = models.CharField(choices=LEVELS, verbose_name=_("End course level"), max_length=5, blank=True)
 
     objects = RegistrationManager()
 

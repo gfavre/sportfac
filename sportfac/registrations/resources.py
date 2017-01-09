@@ -33,16 +33,16 @@ class RegistrationResource(resources.ModelResource):
     birth_date = fields.Field(attribute='child', column_name=_("Birth date"))
     school_year = fields.Field(attribute='child__school_year__year', column_name=_("School year"))
     school_name = fields.Field(attribute='child', column_name=_("School"))
-    parent_first_name= fields.Field(attribute='child__family__first_name', column_name=_("Parent's first name"))
-    parent_last_name= fields.Field(attribute='child__family__last_name', column_name=_("Parent's last name"))
-    parent_email= fields.Field(attribute='child__family__email', column_name=_("Email"))
-    parent_address= fields.Field(attribute='child__family__address', column_name=_("Address"))
-    parent_zipcode= fields.Field(attribute='child__family__zipcode', column_name=_("NPA"))
-    parent_city= fields.Field(attribute='child__family__city', column_name=_("City"))
-    parent_country= fields.Field(attribute='child__family__country', column_name=_("Country"))
-
-
+    parent_first_name = fields.Field(attribute='child__family__first_name', column_name=_("Parent's first name"))
+    parent_last_name = fields.Field(attribute='child__family__last_name', column_name=_("Parent's last name"))
+    parent_email = fields.Field(attribute='child__family__email', column_name=_("Email"))
+    parent_address = fields.Field(attribute='child__family__address', column_name=_("Address"))
+    parent_zipcode = fields.Field(attribute='child__family__zipcode', column_name=_("NPA"))
+    parent_city = fields.Field(attribute='child__family__city', column_name=_("City"))
+    parent_country = fields.Field(attribute='child__family__country', column_name=_("Country"))
     emergency_number = fields.Field(attribute='child', column_name=_("Emergency number"))
+    before_level = fields.Field(attribute='before_level', column_name=_("Level -1"))
+    after_level = fields.Field(attribute='after_level', column_name=_("Level 0"))
 
 
     def __init__(self, *args, **kwargs):
@@ -57,7 +57,9 @@ class RegistrationResource(resources.ModelResource):
             self.fields['extra_{}'.format(extra.id)] = field
         if not settings.KEPCHUP_CHILD_SCHOOL:
             del self.fields['school_name']
-
+        if not settings.KEPCHUP_REGISTRATION_LEVELS:
+            del self.fields['before_level']
+            del self.fields['after_level']
 
     def dehydrate_child_id(self, obj):
         if settings.KEPCHUP_IMPORT_CHILDREN:
@@ -105,8 +107,13 @@ class RegistrationResource(resources.ModelResource):
 
     def get_export_order(self):
         order = tuple(self._meta.export_order or ())
+        removable_fields = []
         if not settings.KEPCHUP_CHILD_SCHOOL:
-            order = tuple([field for field in order if field != 'school_name'])
+            removable_fields.append('school_name')
+        if not settings.KEPCHUP_REGISTRATION_LEVELS:
+            removable_fields.append('before_level')
+            removable_fields.append('after_level')
+        order = tuple([field for field in order if field not in removable_fields])
         return order + tuple(k for k in self.fields.keys() if k not in order)
 
 
@@ -116,5 +123,7 @@ class RegistrationResource(resources.ModelResource):
                   'first_name', 'last_name', 'child_id', 'birth_date', 'school_year', 'school_name',
                   'emergency_number',
                   'parent_first_name', 'parent_last_name', 'parent_email', 'parent_address',
-                  'parent_zipcode', 'parent_city', 'parent_country')
+                  'parent_zipcode', 'parent_city', 'parent_country',
+                  'before_level', 'after_level',
+                  )
         export_order = fields
