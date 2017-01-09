@@ -1,11 +1,25 @@
 {% load i18n %}
-{% load duration switzerland sekizai_tags staticfiles matrix status mathfilters %}
+{% load duration switzerland extra sekizai_tags staticfiles matrix status mathfilters %}
 
 <div class="table-responsive">
-<table class="table table-bordered table-hover table-condensed absences">
+<table class="table table-bordered table-hover table-condensed absences" style="table-layout: fixed;">
   <thead>
     <tr>
-      <th><!-- child name column --></th>
+      <th>{% trans "Name" %}</th>
+
+      {% if BIB_NUMBERS %}
+      <th class="small-col">{% trans "Bib number" %}</th>
+      {% endif %}
+      {% if REGISTRATION_LEVELS %}
+      <th class="small-col">{% trans "Announced level" %}</th>
+      <th class="small-col">{% trans "level -1" %}</th>
+      <th class="small-col">{% trans "level 0" %}</th>
+      {% endif %}
+      {% if DISPLAY_CAR_NUMBER %}
+      <th class="small-col">
+        {% trans "Bus" %}
+      </th>
+      {% endif %}
       {% for session in course.sessions.all %}
       <th class="date">
         <span class="session-date">{{ session.date | date:"d.m.Y" }}</span>
@@ -31,7 +45,16 @@
   </thead>
   <tfoot>
     <tr>
-      <th>{% trans "Instructor" %}</th>
+      <th></th>
+      {% if BIB_NUMBERS %}
+      <th></th>
+      {% endif %}
+      {% if REGISTRATION_LEVELS %}
+      <th></th><th></th><th></th>
+      {% endif %}
+      {% if DISPLAY_CAR_NUMBER %}
+      <th></th>
+      {% endif %}
       {% for session in course.sessions.all %}
       <th>
           <select name="instructor" class="instructor" data-session-url="{{ session.get_api_url }}">
@@ -54,14 +77,28 @@
   {% for registration in course.participants.all %}
   {% with units=forloop.counter0 %}
     <tr data-child="{{ registration.child.id }}">
-        <th class="text-nowrap child-name">
+       <th class="text-nowrap child-name">
             {% if request.user.is_manager %}
             <a href="{{ registration.child.get_backend_url}}">{{ registration.child.full_name }}</a>
             {% else %}
             {{ registration.child.full_name }}
             {% endif %}
-        </th> 
-        
+        </th>
+        {% if BIB_NUMBERS %}
+        <th data-order="{{ registration.child.bib_number|default:"0" }}">
+              {{ registration.child.bib_number|default:"n/a" }}
+        </th>
+        {% endif %}
+        {% if REGISTRATION_LEVELS %}
+        <th>{{ registration|answer_to:"Niveau de ski/snowboard" }}</th>
+        <th>{{ registration.before_level }}</th>
+        <th>{{ registration.after_level }}</th>
+        {% endif %}
+        {% if DISPLAY_CAR_NUMBER %}
+        <th>
+          {{ registration.transport_info}}
+        </th>
+        {% endif %}
         {% for session in course.sessions.all %}
         {% with status=absence_matrix|index:units|index:forloop.counter0 decade=forloop.counter|mul:100 %}
         <td class="{{ status}} {% if status == 'present' %}success{% elif status == 'late' %}info{% else %}danger{% endif %}"

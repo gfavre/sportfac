@@ -56,3 +56,25 @@ for (email, last_name, first_name, phone, zipcode, city, birth_date, ahv_val) in
         supervisor.set_password('montreux')
     supervisor.is_instructor = True
     supervisor.save()
+
+
+from import_export.formats.base_formats import XLSX
+from registrations.models import Child, Registration
+
+fmt = XLSX()
+f = open('/home/grfavre/niveau-1.xlsx', fmt.get_read_mode())
+dataset = fmt.create_dataset(f.read())
+for (registration_id, first, level_before) in dataset:
+    if not level_before:
+        continue
+    try:
+        registration = Registration.objects.get(pk=registration_id)
+        assert (registration.child.first_name == first)
+        lvl = level_before[-2:]
+        if lvl in Registration.LEVELS:
+            registration.before_level = lvl
+            print('New level: %s' % lvl)
+            registration.save()
+    except Registration.DoesNotExist:
+        print('NO registration found')
+        continue

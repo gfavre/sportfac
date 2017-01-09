@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-09 16:15+0100\n"
+"POT-Creation-Date: 2017-01-09 18:36+0100\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -18,31 +18,31 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: sportfac/absences/models.py:15 sportfac/absences/templatetags/status.py:10
-#: sportfac/templates/absences/absences-table.html:94
-#: sportfac/templates/absences/absences-table.html:298
+#: sportfac/templates/absences/absences-table.html:124
+#: sportfac/templates/absences/absences-table.html:328
 msgid "Absent"
 msgstr "Absent"
 
 #: sportfac/absences/models.py:16 sportfac/absences/templatetags/status.py:11
-#: sportfac/templates/absences/absences-table.html:99
-#: sportfac/templates/absences/absences-table.html:302
+#: sportfac/templates/absences/absences-table.html:129
+#: sportfac/templates/absences/absences-table.html:332
 msgid "Excused"
 msgstr "Excusé"
 
 #: sportfac/absences/models.py:17 sportfac/absences/templatetags/status.py:12
-#: sportfac/templates/absences/absences-table.html:104
-#: sportfac/templates/absences/absences-table.html:306
+#: sportfac/templates/absences/absences-table.html:134
+#: sportfac/templates/absences/absences-table.html:336
 msgid "Medical certificate"
 msgstr "Certificat médical"
 
 #: sportfac/absences/models.py:18 sportfac/absences/templatetags/status.py:13
-#: sportfac/templates/absences/absences-table.html:310
+#: sportfac/templates/absences/absences-table.html:340
 msgid "Late arrival"
 msgstr "En retard"
 
 #: sportfac/absences/templatetags/status.py:14 sportfac/api/serializers.py:36
-#: sportfac/templates/absences/absences-table.html:89
-#: sportfac/templates/absences/absences-table.html:294
+#: sportfac/templates/absences/absences-table.html:119
+#: sportfac/templates/absences/absences-table.html:324
 msgid "Present"
 msgstr "Présent"
 
@@ -299,6 +299,7 @@ msgstr "12S"
 
 #: sportfac/activities/models.py:53 sportfac/contact/forms.py:10
 #: sportfac/profiles/models.py:268
+#: sportfac/templates/absences/absences-table.html:11
 #: sportfac/templates/activities/course_detail.html:138
 #: sportfac/templates/backend/activity/list.html:37
 #: sportfac/templates/backend/course/detail-phase2.html:172
@@ -1375,6 +1376,7 @@ msgid "Emergency number"
 msgstr "Numéro d'urgence"
 
 #: sportfac/registrations/forms.py:35 sportfac/registrations/models.py:266
+#: sportfac/templates/absences/absences-table.html:9
 #: sportfac/templates/activities/course_detail.html:136
 #: sportfac/templates/backend/course/detail-phase2.html:170
 #: sportfac/templates/backend/course/detail.html:178
@@ -1598,21 +1600,41 @@ msgstr ""
 msgid "Administrators have been warned."
 msgstr "Les administrateurs ont été prévenus du problème."
 
-#: sportfac/templates/absences/absences-table.html:27
+#: sportfac/templates/absences/absences-table.html:12
+msgid "Note"
+msgstr "Note"
+
+#: sportfac/templates/absences/absences-table.html:14
+msgid "Announced level"
+msgstr "Niv. annoncé"
+
+#: sportfac/templates/absences/absences-table.html:15
+msgid "level -1"
+msgstr "Niv. -1"
+
+#: sportfac/templates/absences/absences-table.html:16
+msgid "level 0"
+msgstr "Niv. 0"
+
+#: sportfac/templates/absences/absences-table.html:20
+msgid "Bus"
+msgstr "Car"
+
+#: sportfac/templates/absences/absences-table.html:41
 msgid "New session"
 msgstr "Nouvelle session"
 
-#: sportfac/templates/absences/absences-table.html:34
+#: sportfac/templates/absences/absences-table.html:48
 #: sportfac/templates/backend/course/pay-slip-montreux-form.html:11
 msgid "Instructor"
 msgstr "Moniteur"
 
-#: sportfac/templates/absences/absences-table.html:43
-#: sportfac/templates/absences/absences-table.html:152
+#: sportfac/templates/absences/absences-table.html:58
+#: sportfac/templates/absences/absences-table.html:182
 msgid "other"
 msgstr "autre"
 
-#: sportfac/templates/absences/absences-table.html:109
+#: sportfac/templates/absences/absences-table.html:139
 msgid "Late"
 msgstr "En retard"
 
