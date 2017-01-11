@@ -167,3 +167,9 @@ class ExtraSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExtraInfo
         fields = ('id', 'registration', 'key', 'value')
+
+
+class LevelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Registration
+        fields = ('id', 'before_level', 'after_level')

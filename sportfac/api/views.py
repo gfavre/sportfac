@@ -1,25 +1,25 @@
 # Create your views here.
-from django.db.models import Q
 from django.db import IntegrityError
+from django.db.models import Q
 
+from rest_framework import mixins, generics, status, filters
 from rest_framework import viewsets, permissions
-from rest_framework.decorators import api_view, list_route
-from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication
-from rest_framework import mixins, generics, status, filters, views
-
+from rest_framework.decorators import list_route
+from rest_framework.response import Response
 
 from absences.models import Absence, Session
 from activities.models import Activity, Course
-from registrations.models import Child, ExtraInfo, Registration
 from profiles.models import SchoolYear
+from registrations.models import Child, ExtraInfo, Registration
 from schools.models import Teacher
-from .permissions import ManagerPermission, FamilyOrAdminPermission, FamilyPermission, InstructorPermission
+
+from .permissions import ManagerPermission, FamilyPermission, InstructorPermission
 from .serializers import (AbsenceSerializer, SetAbsenceSerializer, SessionSerializer,
-                          ActivitySerializer, ActivityDetailedSerializer, 
+                          ActivityDetailedSerializer,
                           ChildrenSerializer, CourseSerializer, TeacherSerializer,
-                          RegistrationSerializer, ExtraSerializer, SimpleChildrenSerializer,
-                          YearSerializer)
+                          RegistrationSerializer, ExtraSerializer, LevelSerializer,
+                          SimpleChildrenSerializer, YearSerializer)
 
 
 class AbsenceViewSet(viewsets.ModelViewSet):
@@ -45,8 +45,13 @@ class AbsenceViewSet(viewsets.ModelViewSet):
             return Response({'status': res_status}) 
         else:
             return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST) 
-    
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+class UpdateLevelView(generics.UpdateAPIView):
+    queryset = Registration.objects.all()
+    permission_classes = (InstructorPermission,)
+    serializer_class = LevelSerializer
 
 
 class SessionViewSet(viewsets.ModelViewSet):

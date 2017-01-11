@@ -24,6 +24,7 @@ router.register(r'all-children', views.SimpleChildrenViewSet, base_name='allchil
 urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^family/', views.FamilyView.as_view(), name='family-list'),
+    url(r'^levels/(?P<pk>\d+)/$', views.UpdateLevelView.as_view(), name='update-level'),
 
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
