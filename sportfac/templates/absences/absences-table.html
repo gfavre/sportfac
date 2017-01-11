@@ -91,7 +91,14 @@
         {% endif %}
         {% if REGISTRATION_LEVELS %}
         <th>{{ registration|answer_to:"Niveau de ski/snowboard" }}</th>
-        <th>{{ registration.before_level }}</th>
+        <th class="set-level"
+            data-level="{{ registration.before_level }}"
+            data-key="before_level"
+            data-registration="{{ registration.update_level_url }}">
+           <a class="level has-popover" role="button"
+           data-toggle="popover"
+           data-trigger="click focus">{{ registration.before_level|default:'NP' }}</a>
+        </th>
         <th class="set-level"
             data-level="{{ registration.after_level }}"
             data-key="after_level"
