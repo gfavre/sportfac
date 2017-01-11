@@ -72,7 +72,11 @@
             },
           {% endif %}
           aoColumnDefs: [
-            { 'bSortable': false, 'bSearchable': false, 'aTargets': [ -1] }
+            { 'bSortable': true, 'aTargets': ['bibnumber', 'child-name', 'school', 'birth-date', 'teacher']},
+            { 'bSortable': false, 'aTargets': ['_all']},
+            { 'bSearchable': true, 'aTargets': ['bibnumber', 'child-name',]},
+            { 'bSearchable': false, 'aTargets': ['_all']}
+
           ],
           dom: 'T<"clear">lfrtip',
           paging: false,
@@ -133,23 +137,23 @@
     <thead>
     <tr>
       {% if BIB_NUMBERS and user in course.instructors.all %}
-        <th>{% trans "Bib number" %}</th>
+        <th class="bibnumber">{% trans "Bib number" %}</th>
       {% endif %}
-      <th>{% trans "Name" %}</th>
+      <th class="child-name">{% trans "Name" %}</th>
 
       {% if DISPLAY_PARENT_CITY %}
         <th>{% trans "City" %}</th>
       {% endif %}
 
-      <th>{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
+      <th class="school">{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
       {% if user in course.instructors.all  %}
-        <th>{% trans "Birth date" %}</th>
+        <th class="birth-date">{% trans "Birth date" %}</th>
         {% if EMERGENCY_NUMBER_MANDATORY %}
           <th>{% trans "Emergency number" %}</th>
         {% endif %}
         <th>{% trans "Parents phones" %}</th>
       {% else %}
-        <th>{% trans "Teacher" %}</th>
+        <th class="teacher">{% trans "Teacher" %}</th>
       {% endif %}
       <th>{% trans "Parents email" %}</th>
     </tr>
@@ -175,7 +179,7 @@
         </td>
 
         {% if user in course.instructors.all %}
-          <td>{{ registration.child.birth_date }}</td>
+          <td data-order="{{ registration.child.birth_date|date:"c" }}">{{ registration.child.birth_date }}</td>
 
           {% if EMERGENCY_NUMBER_MANDATORY %}
             <td>

@@ -98,7 +98,11 @@
             },
           {% endif %}
           aoColumnDefs: [
-            { 'bSortable': false, 'bSearchable': false, 'aTargets': [ -1] }
+            { 'bSortable': true, 'aTargets': ['bibnumber', 'child-name', 'school', 'extra']},
+            { 'bSortable': false, 'aTargets': ['_all']},
+            { 'bSearchable': true, 'aTargets': ['bibnumber', 'child-name',]},
+            { 'bSearchable': false, 'aTargets': ['_all']}
+
           ],
           dom: 'T<"clear">lfrtip',
           paging: false,
@@ -175,10 +179,10 @@
       <thead>
       <tr>
         {% if BIB_NUMBERS %}
-          <th>{% trans "Bib number" %}</th>
+          <th class="bibnumber">{% trans "Bib number" %}</th>
         {% endif %}
-        <th>{% trans "Name" %}</th>
-        <th>{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
+        <th class="child-name">{% trans "Name" %}</th>
+        <th class="school">{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
         {% if EMERGENCY_NUMBER_MANDATORY %}
           <th>{% trans "Emergency number" %}</th>
         {% else %}
@@ -186,7 +190,7 @@
         {% endif %}
         <th>{% trans "Parents email" %}</th>
         {% for extra in course.extra.all %}
-          <th>{{ extra.question_label }}</th>
+          <th class="extra">{{ extra.question_label }}</th>
         {% endfor %}
         <th>{% trans "Actions" %}</th>
       </tr>
