@@ -275,7 +275,9 @@ hr.soften {
 
 /* Misc
 -------------------------------------------------- */
-
+a[role="button"] {
+  cursor: pointer;
+}
 /* Make tables spaced out a bit more */
 h2 + table,
 h3 + table,

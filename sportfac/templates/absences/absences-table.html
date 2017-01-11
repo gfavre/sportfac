@@ -12,8 +12,8 @@
       {% endif %}
       {% if REGISTRATION_LEVELS %}
       <th>{% trans "Announced level" %}</th>
-      <th class="small-col">{% trans "level -1" %}</th>
-      <th class="small-col">{% trans "level 0" %}</th>
+      <th class="small-col level">{% trans "level -1" %}</th>
+      <th class="small-col level">{% trans "level 0" %}</th>
       {% endif %}
       {% if DISPLAY_CAR_NUMBER %}
       <th class="small-col">
@@ -92,7 +92,14 @@
         {% if REGISTRATION_LEVELS %}
         <th>{{ registration|answer_to:"Niveau de ski/snowboard" }}</th>
         <th>{{ registration.before_level }}</th>
-        <th>{{ registration.after_level }}</th>
+        <th class="set-level"
+            data-level="{{ registration.after_level }}"
+            data-key="after_level"
+            data-registration="{{ registration.update_level_url }}">
+          <a class="level has-popover" role="button"
+           data-toggle="popover"
+           data-trigger="click focus">{{ registration.after_level|default:'NP' }}</a>
+        </th>
         {% endif %}
         {% if DISPLAY_CAR_NUMBER %}
         <th>
@@ -105,7 +112,7 @@
             data-session="{{ session.id }}"
             data-child="{{ registration.child.id }}"
             data-status="{{ status }}">
-            <a tabindex="{{ decade|add:units }}" role="button" class="btn btn-sm has-popover"
+            <a tabindex="{{ decade|add:units }}" role="button" class="btn btn-sm absence has-popover"
                              data-toggle="popover" 
                              data-trigger="click focus">{{ status|absence_status }}</a>
         </td>
@@ -149,6 +156,16 @@
   </form>
 </script>
 
+<script type="text/html" id="level-window">
+  <form>
+    <select class="form-control" name="level">
+      {% for level in levels %}
+      <option value="{{ level.0 }}">{{ level.1 }}</option>
+      {% endfor %}
+    </select>
+  </form>
+</script>
+
 <script id="column-header" type="text/html">
     <th class="date">
         <span class="session-date"></span>
@@ -167,7 +184,7 @@
 <script id="column-content" type="text/html">
     <td class="present success"
         data-status="present">
-        <a role="button" class="btn btn-sm has-popover"
+        <a role="button" class="btn btn-sm absence has-popover"
            data-toggle="popover" 
            data-trigger="click focus">{{ "present"|absence_status }}</a>
     </td>
@@ -357,8 +374,15 @@
 
     $('.absences').popover(
         {
-          selector: '.has-popover',
+          selector: '.absence.has-popover',
           content: function(){ return $('#status-window').html(); },
+          html: true
+        }
+    );
+    $('.absences').popover(
+        {
+          selector: '.level.has-popover',
+          content: function(){ return $('#level-window').html(); },
           html: true
         }
     );
@@ -367,6 +391,33 @@
       var status = $(this).data('status');
       $('input[value=' + status + ']', $(this)).prop('checked', true);
     });
+
+    $('.absences .set-level').on('shown.bs.popover', function(){
+      var level = $(this).data('level');
+      if (level.length) {
+       $('option[value=' + level + ']', $(this)).prop('selected', true);
+      }
+    });
+
+    $('.absences').on('change', 'select[name=level]', function(event){
+      var level =  $(this).val();
+      var parent = $(this).parents('.set-level');
+      var data = {};
+      data[parent.data('key')] = level;
+      $.ajax({
+        url: parent.data('registration'),
+        type: 'PUT',
+        data: data,
+        success: function(response){
+          var newLevel = response[parent.data('key')];
+          $('a', parent).text(newLevel);
+          parent.data('level', newLevel);
+          $('.has-popover', parent).popover('hide');
+        }
+      });
+
+    });
+
   });
 </script>
 {% endaddtoblock %}

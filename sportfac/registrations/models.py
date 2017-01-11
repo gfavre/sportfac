@@ -120,7 +120,10 @@ class Registration(TimeStampedModel, StatusModel):
 
     def get_update_url(self):
         return reverse('backend:registration-update', kwargs={'pk': self.pk})
-       
+
+    def get_update_level_url(self):
+        return reverse('api:update-level', kwargs={'pk': self.pk})
+
     @property
     def update_url(self):
         return self.get_update_url()
@@ -128,6 +131,10 @@ class Registration(TimeStampedModel, StatusModel):
     @property
     def delete_url(self):
         return self.get_delete_url()
+
+    @property
+    def update_level_url(self):
+        return self.get_update_level_url()
 
     def save(self, *args, **kwargs):
         super(Registration, self).save(*args, **kwargs)

@@ -2,6 +2,7 @@ from django.views.generic import DetailView, ListView
 
 from activities.views import InstructorMixin
 from activities.models import Course
+from registrations.models import Registration
 from .models import Absence
 
 
@@ -21,5 +22,5 @@ class AbsenceView(InstructorMixin, DetailView):
         context['absence_matrix'] = [[all_absences.get((registration.child, session), 'present') for session 
                                                                      in course.sessions.all()] 
          for registration in course.participants.all()]
-
+        context['levels'] = Registration.LEVELS
         return context
