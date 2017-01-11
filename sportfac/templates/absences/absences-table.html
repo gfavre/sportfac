@@ -37,7 +37,7 @@
       </th>
       {% endfor %}
       <th class="hidden-print">
-        <a class="btn btn-success btn-sm" id="create_session_button">
+        <a class="btn btn-success btn-xs" id="create_session_button">
           <i class="icon icon-plus"></i>&nbsp;{% trans "New session" %}
         </a>
       </th>
@@ -77,7 +77,7 @@
   {% for registration in course.participants.all %}
   {% with units=forloop.counter0 %}
     <tr data-child="{{ registration.child.id }}">
-       <th class="text-nowrap child-name">
+       <th class="text-nowrap child-name" style="width: 1%;">
             {% if request.user.is_manager %}
             <a href="{{ registration.child.get_backend_url}}">{{ registration.child.full_name }}</a>
             {% else %}
@@ -146,7 +146,7 @@
         <input type="radio" name="status" id="late" value="late">{% trans "Late" %}
       </label>
     </div>
-    </form>
+  </form>
 </script>
 
 <script id="column-header" type="text/html">
@@ -193,180 +193,180 @@
 </th>
 </script>
 <script>
-$(function(){
+  $(function(){
     var HUMAN_FMT = 'DD.MM.YYYY';
     var API_FMT = 'YYYY-MM-DD'
-    
+
+    $.fn.column = function() {
+      return $(this)
+          .filter('th, td')
+          .filter(':not([colspan])')
+          .closest('table')
+          .find('tr')
+          .filter(':not(:has([colspan]))')
+          .children(':nth-child(' + ($(this).index()+1) + ')');
+    };
+
     $.ajaxSetup({
-        headers: { "X-CSRFToken": Cookies.get("csrftoken") }
+      headers: { "X-CSRFToken": Cookies.get("csrftoken") }
     });
-    
+
     $('.datetimepicker').datetimepicker({
-        language: '{{ LANGUAGE_CODE }}',
-        format: HUMAN_FMT,
-        icons: {date: 'icon-calendar', 
-                up:   'icon-up-open', 
-                down: 'icon-down-open'}
+      language: '{{ LANGUAGE_CODE }}',
+      format: HUMAN_FMT,
+      icons: {date: 'icon-calendar',
+        up:   'icon-up-open',
+        down: 'icon-down-open'}
     });
+
     $('.absences').on('dp.change', '.datetimepicker', function(evt){
-        var parent = $(this).parent('th');
-        evt.stopPropagation();
-        
-        $.ajax({
-            url: $(this).data('session-url'),
-            type: 'PUT',
-            data: { date: $(this).data('DateTimePicker').date.format(API_FMT),
-                    course: {{ course.id }} },
-            success: function(response){
-                $('.session-date', parent).text(
-                    moment(response.date, API_FMT).format(HUMAN_FMT)
-                );
-            }
-        });        
-    });
-    
-    var newSession = function(){
-        var parent = $('#create_session_date').parent();
-        
-        $.ajax({
-            url: "{% url 'api:session-list' %}",
-            type: 'POST',
-            data: { course: {{ course.id }},
-                    date: moment().format(API_FMT),
-                    instructor: {% if user in course.instructors.all %}{{ user.pk }}{% else %}null{% endif %} },
-            success: function(data){
-               var $th_tmpl = $($('#column-header').html());
-               var date = moment().format(API_FMT);
-               $('input', $th_tmpl).val(moment(data.date, API_FMT).format(HUMAN_FMT));
-               var url = "{% url 'api:session-list' %}" + data.id + '/';
-               $('.session-update', $th_tmpl).data('session-url', url);
-               $('.session-delete', $th_tmpl).data('session-url', url);
+      var parent = $(this).parent('th');
+      evt.stopPropagation();
 
-               $('.datetimepicker', $th_tmpl).datetimepicker({
-                 language: '{{ LANGUAGE_CODE }}',
-                 format: HUMAN_FMT,
-                 icons: {date: 'icon-calendar', 
-                         up:   'icon-up-open', 
-                         down: 'icon-down-open'}
-               });
-               $('.session-date',  $th_tmpl).text( 
-                    $('.session-update',  $th_tmpl).data('DateTimePicker').date.format(HUMAN_FMT)
-               );
-               $('.absences thead th:last').before($th_tmpl);
-               
-               $('.absences tbody tr').each(function(idx){
-                  var $td_tmpl = $($('#column-content').html());
-                  $td_tmpl.data('session', data.id);
-                  $td_tmpl.data('child', $(this).data('child'));
-                  $('a', $td_tmpl).attr('tabindex', $('td:last', $(this)).index() * 100 + idx)                  
-                  $('td:last', $(this)).before($td_tmpl);
-               });
-               
-               var $instructor_tmpl = $($('#instructors-tmpl').html());
-               $('.absences tfoot th:last').before($instructor_tmpl);
-               var $inplace = $('.absences tfoot select').last();
-               $inplace.data('session-url', url);
-           },
-        });
-    }
-    $('#create_session_button').click(newSession);
-    
-    $('.absences').on('click', '.session-delete', function(evt){
-        var parent = $(this).parent();
-        $.ajax({
-            url: $(this).data('session-url'),
-            type: 'DELETE',
-            success: function(response){
-                var col_nb = parent.index();
-                // remove thead th
-                parent.remove();
-                // remove tbody td
-                $('.absences tbody tr').each(function(){
-                    $('td', this)[col_nb - 1].remove();
-                });
-                // remove tfoot th
-                $('.absences tfoot th:nth-child(' + col_nb + ')').remove();
-            }
-        });
-        evt.preventDefault();
-    });
-    
-    $('.absences').on('change', 'select.instructor', function(event){
-       var parent = $(this).parent();
-       $('.message.error', parent).hide();
-       $('.message.success', parent).hide();
-       $.ajax({
-            url: $(this).data('session-url'),
-            type: 'PUT',
-            data: {'instructor': $(this).val() },
-            success: function(response){
-                $('.message.success', parent).show();
-            },
-            error: function(response){
-                $('.message.error', parent).show();
-            }
-        });
-
-    });
-    
-        
-    $('.absences').on('change', 'input[name=status]', function(event){
-        var parent = $(this).parents('td');
-        var status =  $(this).val();
-        var data = {
-            'session': parent.data('session'),
-            'child': parent.data('child'),
-            'status': status
+      $.ajax({
+        url: $(this).data('session-url'),
+        type: 'PUT',
+        data: { date: $(this).data('DateTimePicker').date.format(API_FMT),
+          course: {{ course.id }} },
+        success: function(response){
+          $('.session-date', parent).text(
+              moment(response.date, API_FMT).format(HUMAN_FMT)
+          );
         }
-        
-        $.ajax({
-            url: "{% url 'api:absence-set' %}",
-            type: 'POST',
-            data: data,
-            success: function(response){
-                var label = '';
-                var classes = '';
-                switch(response.status){
-                    case 'present':
-                        label = "{% trans 'Present' %}";
-                        classes = "success present";
-                        break;
-                    case 'absent':
-                        label = "{% trans 'Absent' %}";
-                        classes = "danger absent";
-                        break;
-                    case 'excused':
-                        label = "{% trans 'Excused' %}";
-                        classes = "danger excused";
-                        break;
-                    case 'medical':
-                        label = "{% trans 'Medical certificate' %}";
-                        classes = "danger medical";
-                        break;
-                    case 'late':
-                        label = "{% trans 'Late arrival' %}";
-                        classes = "info late";
-                        break;
-                }
-                $('a', parent).text(label);
-                parent.removeClass().addClass(classes);
-                parent.data('status', response.status);
-                $('.has-popover', parent).popover('hide');
-            }
-        })
+      });
     });
+
+    var newSession = function(){
+      $.ajax({
+        url: "{% url 'api:session-list' %}",
+        type: 'POST',
+        data: { course: {{ course.id }},
+          date: moment().format(API_FMT),
+          instructor: {% if user in course.instructors.all %}{{ user.pk }}{% else %}null{% endif %} },
+        success: function(data){
+          var $th_tmpl = $($('#column-header').html());
+          var date = moment().format(API_FMT);
+          $('input', $th_tmpl).val(moment(data.date, API_FMT).format(HUMAN_FMT));
+          var url = "{% url 'api:session-list' %}" + data.id + '/';
+          $('.session-update', $th_tmpl).data('session-url', url);
+          $('.session-delete', $th_tmpl).data('session-url', url);
+
+          $('.datetimepicker', $th_tmpl).datetimepicker({
+            language: '{{ LANGUAGE_CODE }}',
+            format: HUMAN_FMT,
+            icons: {date: 'icon-calendar',
+              up:   'icon-up-open',
+              down: 'icon-down-open'}
+          });
+          $('.session-date',  $th_tmpl).text(
+              $('.session-update',  $th_tmpl).data('DateTimePicker').date.format(HUMAN_FMT)
+          );
+          $('.absences thead th:last').before($th_tmpl);
+
+          $('.absences tbody tr').each(function(idx){
+            var $td_tmpl = $($('#column-content').html());
+            $td_tmpl.data('session', data.id);
+            $td_tmpl.data('child', $(this).data('child'));
+            $('a', $td_tmpl).attr('tabindex', $('td:last', $(this)).index() * 100 + idx)
+            $('td:last', $(this)).before($td_tmpl);
+          });
+
+          var $instructor_tmpl = $($('#instructors-tmpl').html());
+          $('.absences tfoot th:last').before($instructor_tmpl);
+          var $inplace = $('.absences tfoot select').last();
+          $inplace.data('session-url', url);
+        }
+      });
+    };
+    $('#create_session_button').click(newSession);
+
+    $('.absences').on('click', '.session-delete', function(evt){
+      var parent = $(this).parent();
+      $.ajax({
+        url: $(this).data('session-url'),
+        type: 'DELETE',
+        success: function(){
+          parent.column().remove();
+        }
+      });
+      evt.preventDefault();
+    });
+
+    $('.absences').on('change', 'select.instructor', function(event){
+      var parent = $(this).parent();
+      $('.message.error', parent).hide();
+      $('.message.success', parent).hide();
+      $.ajax({
+        url: $(this).data('session-url'),
+        type: 'PUT',
+        data: {'instructor': $(this).val() },
+        success: function(){
+          $('.message.success', parent).show();
+        },
+        error: function(){
+          $('.message.error', parent).show();
+        }
+      });
+    });
+
+    $('.absences').on('change', 'input[name=status]', function(event){
+      var parent = $(this).parents('td');
+      var status =  $(this).val();
+      var data = {
+        'session': parent.data('session'),
+        'child': parent.data('child'),
+        'status': status
+      };
+
+      $.ajax({
+        url: "{% url 'api:absence-set' %}",
+        type: 'POST',
+        data: data,
+        success: function(response){
+          var label = '';
+          var classes = '';
+          switch(response.status){
+            case 'present':
+              label = "{% trans 'Present' %}";
+              classes = "success present";
+              break;
+            case 'absent':
+              label = "{% trans 'Absent' %}";
+              classes = "danger absent";
+              break;
+            case 'excused':
+              label = "{% trans 'Excused' %}";
+              classes = "danger excused";
+              break;
+            case 'medical':
+              label = "{% trans 'Medical certificate' %}";
+              classes = "danger medical";
+              break;
+            case 'late':
+              label = "{% trans 'Late arrival' %}";
+              classes = "info late";
+              break;
+          }
+          $('a', parent).text(label);
+          parent.removeClass().addClass(classes);
+          parent.data('status', response.status);
+          $('.has-popover', parent).popover('hide');
+        }
+      })
+    });
+
     $('.absences').popover(
         {
-            selector: '.has-popover',
-            content: function(){ return $('#status-window').html(); },
-            html: true
+          selector: '.has-popover',
+          content: function(){ return $('#status-window').html(); },
+          html: true
         }
     );
+
     $('.absences td').on('shown.bs.popover', function(){
-        var status = $(this).data('status');
-        var $popover_btn = $('.has-popover', $(this));
-        $('input[value=' + status + ']', $(this)).prop('checked', true);
+      var status = $(this).data('status');
+      $('input[value=' + status + ']', $(this)).prop('checked', true);
     });
-});
+  });
 </script>
 {% endaddtoblock %}
