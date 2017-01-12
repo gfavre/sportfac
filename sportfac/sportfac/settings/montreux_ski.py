@@ -34,3 +34,8 @@ STATIC_URL = '/hiver/static/'
 FORCE_SCRIPT_NAME = '/hiver'
 SESSION_COOKIE_NAME = 'ssf_hiver_sessionid'
 SESSION_COOKIE_PATH = FORCE_SCRIPT_NAME
+
+CELERYBEAT_SCHEDULE['notify-absences'] = {
+        'task': 'absences.tasks.notify_absences',
+        'schedule': crontab(hour=19, minute=0),
+}

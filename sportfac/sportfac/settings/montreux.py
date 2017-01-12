@@ -24,3 +24,8 @@ KEPCHUP_NO_PAYMENT = False
 KEPCHUP_NO_TERMS = False
 KEPCHUP_CHILD_SCHOOL = True
 KEPCHUP_FICHE_SALAIRE_MONTREUX = True
+
+CELERYBEAT_SCHEDULE['notify-absences'] = {
+        'task': 'absences.tasks.notify_absences',
+        'schedule': crontab(hour=19, minute=0),
+}
