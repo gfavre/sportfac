@@ -6,12 +6,10 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.db import transaction
 from django.db.models import Sum
-from django.shortcuts import render
 from django.utils.translation import ugettext as _
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 
 from braces.views import LoginRequiredMixin
-
 
 from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.forms import AcceptTermsForm
@@ -31,10 +29,10 @@ class ChildrenListView(LoginRequiredMixin, ListView):
         else:
             context['school'] = json.dumps([])
         return context
-        
-    
+
     def get_queryset(self):
         return Child.objects.filter(family=self.request.user).order_by('first_name')
+
 
 class WizardChildrenListView(WizardMixin, ChildrenListView):
     template_name = 'registrations/wizard_children.html'

@@ -20,9 +20,11 @@ class Absence(StatusModel, TimeStampedModel):
 
     child = models.ForeignKey('registrations.Child')
     session = models.ForeignKey('Session', related_name="absences")
+    notification_sent = models.BooleanField(default=False)
     
     class Meta:
         unique_together = ('child', 'session')
+
 
 class Session(TimeStampedModel):
     course = models.ForeignKey('activities.Course', related_name="sessions")

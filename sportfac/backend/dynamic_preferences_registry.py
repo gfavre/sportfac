@@ -155,3 +155,10 @@ class PaymentAddress(LongStringPreference):
     help_text = _("Payment address")
 
 
+@global_preferences_registry.register
+class AbsenceNotificationDelay(IntegerPreference):
+    "Delay (in days) before sending notification of absence to parents"
+    name = 'ABSENCE_DELAY'
+    default = 1
+    help_text = _("Days between course absence and notification")
+

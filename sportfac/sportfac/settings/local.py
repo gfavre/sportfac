@@ -136,3 +136,8 @@ KEPCHUP_BIB_NUMBERS = True
 KEPCHUP_FICHE_SALAIRE_MONTREUX = True
 KEPCHUP_REGISTRATION_LEVELS = True
 KEPCHUP_DISPLAY_CAR_NUMBER = True
+
+CELERYBEAT_SCHEDULE['notify-absences'] = {
+        'task': 'absences.tasks.notify_absences',
+        'schedule': crontab(hour=19, minute=0),
+}

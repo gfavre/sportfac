@@ -281,7 +281,7 @@ EXTRA_TYPES = (('B', _("Boolean")),
                ('I', _("Integer")))
 
 class ExtraNeed(TimeStampedModel):
-    courses = models.ManyToManyField('Course', related_name='extra', null=True)
+    courses = models.ManyToManyField('Course', related_name='extra', blank=True)
 
     question_label = models.CharField(max_length=255, verbose_name=_("Question"),
                                       help_text=_("e.g. Shoes size?"))

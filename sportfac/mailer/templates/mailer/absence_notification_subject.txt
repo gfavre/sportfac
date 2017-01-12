@@ -1,0 +1,1 @@
+{{ site_name }} - Absence de {{ child.first_name }} lors du cours {{ course.short_name }}

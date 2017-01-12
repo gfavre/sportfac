@@ -9,7 +9,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.http import HttpResponseRedirect
-from django.template import loader, Context
+from django.template import loader
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext as _
 from django.views.generic.base import TemplateView, ContextMixin
@@ -93,7 +93,7 @@ class MailMixin(ContextMixin):
 
     def get_subject(self):
         context = self.get_context_data()
-        return self.get_subject_template().render(Context(context))
+        return self.get_subject_template().render(context)
 
     def get_subject_template(self):
         if self.subject_template is None:
@@ -127,7 +127,7 @@ class MailMixin(ContextMixin):
         return _("Message has been scheduled to be sent.")
 
     def get_mail_body(self, context):
-        return self.get_message_template().render(Context(context))
+        return self.get_message_template().render(context)
 
     def add_recipient_context(self, recipient, context):
         context['recipient'] = recipient
@@ -206,13 +206,12 @@ class MailCourseInstructorsView(MailMixin, CourseMixin, TemplateView):
         reply_to = [self.get_reply_to_address()]
         if reply_to[0] != from_email:
             reply_to = []
-        for recipient in recipients:
-            message = self.get_mail_body(context)
-            send_instructors_email.delay(subject=subject,
-                                         message=message,
-                                         from_email=from_email,
-                                         course_pk=self.course.pk,
-                                         reply_to=reply_to)
+        message = self.get_mail_body(context)
+        send_instructors_email.delay(subject=subject,
+                                     message=message,
+                                     from_email=from_email,
+                                     course_pk=self.course.pk,
+                                     reply_to=reply_to)
 
 
 class MailView(MailMixin, TemplateView):

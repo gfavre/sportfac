@@ -1,0 +1,13 @@
+{% load duration mail_tags %}
+Madame, Monsieur,
+
+Votre enfant, {{ child }}, était absent lors du cours {{ course.short_name }} du {{ session.date|date:"j F Y" }} :
+
+Nous vous remercions, à l'avenir de transmettre une excuse par SMS au moniteur:
+{% for instructor in course.instructors.all %}
+* {{ instructor.full_name }}: {{ instructor.best_phone }}
+{% endfor%}
+
+En restant à votre disposition pour tout complément d'information, nous vous adressons, Madame, Monsieur, nos cordiaux messages.
+
+{{ signature }}
