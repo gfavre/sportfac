@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.db import IntegrityError, transaction
 from django.db.models import Count
 from django.http import HttpResponseRedirect
-from django.views.generic import (DeleteView, DetailView, ListView, UpdateView,
+from django.views.generic import (CreateView, DeleteView, DetailView, ListView, UpdateView,
                                   View, FormView)
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
@@ -16,15 +16,17 @@ from activities.models import Course, ExtraNeed
 from backend.forms import (BillingForm, ChildSelectForm, CourseSelectForm,
                            RegistrationForm, ExtraInfoFormSet)
 from registrations.resources import RegistrationResource
-from registrations.models import Bill, Registration, ExtraInfo
-from registrations.forms import BillForm, MoveRegistrationsForm
+from registrations.models import Bill, Registration, ExtraInfo, Transport
+from registrations.forms import BillForm, MoveRegistrationsForm, MoveTransportForm, TransportForm
 from registrations.views import BillMixin
 from .mixins import BackendMixin, ExcelResponseMixin
 
 __all__ = ('RegistrationCreateView', 'RegistrationDeleteView', 'RegistrationDetailView', 
            'RegistrationListView', 'RegistrationExportView', 'RegistrationUpdateView',
            'RegistrationsMoveView',
-           'BillListView', 'BillDetailView', 'BillUpdateView')
+           'BillListView', 'BillDetailView', 'BillUpdateView',
+           'TransportListView', 'TransportCreateView', 'TransportUpdateView',
+           'TransportDetailView', 'TransportDeleteView', 'TransportMoveView',)
 
 
 class RegistrationDetailView(BackendMixin, DetailView):
@@ -62,7 +64,7 @@ class RegistrationsMoveView(BackendMixin, FormView):
         message = _("Registrations of %(nb)s children have been moved.")
         message %= {'nb':  form.cleaned_data['registrations'].count()}
         messages.add_message(self.request, messages.SUCCESS, message)
-        return HttpResponseRedirect(course.get_backend_url())
+        return HttpResponseRedirect(course.backend_url)
 
     def get_context_data(self, **kwargs):
         try:
@@ -255,3 +257,66 @@ class BillUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
         else:
             self.object = form.save()
         return HttpResponseRedirect(self.get_success_url())
+
+
+class TransportListView(BackendMixin, ListView):
+    model = Transport
+    template_name = 'backend/registration/transport-list.html'
+
+
+class TransportDetailView(BackendMixin, DetailView):
+    model = Transport
+    template_name = 'backend/registration/transport-detail.html'
+
+
+class TransportCreateView(SuccessMessageMixin, BackendMixin, CreateView):
+    model = Transport
+    form_class = TransportForm
+    template_name = 'backend/registration/transport-create.html'
+    success_url = reverse_lazy('backend:transport-list')
+    success_message = _('Transport has been created.')
+
+
+class TransportUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
+    model = Transport
+    form_class = TransportForm
+    template_name = 'backend/registration/transport-update.html'
+    success_message = _('Transport has been updated.')
+    success_url = reverse_lazy('backend:transport-list')
+
+
+class TransportDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
+    model = Transport
+    template_name = 'backend/registration/transport_confirm_delete.html'
+    success_url = reverse_lazy('backend:transport-list')
+    success_message = _("Transport has been deleted.")
+
+
+class TransportMoveView(BackendMixin, FormView):
+    form_class = MoveTransportForm
+    template_name = 'backend/registration/move.html'
+
+    def form_valid(self, form):
+        transport = form.cleaned_data['destination']
+        form.cleaned_data['registrations'].update(transport=transport,
+                                                  status=Registration.STATUS.confirmed)
+        message = _("Registrations of %(nb)s children have been moved.")
+        message %= {'nb':  form.cleaned_data['registrations'].count()}
+        messages.add_message(self.request, messages.SUCCESS, message)
+        return HttpResponseRedirect(transport.backend_url)
+
+    def get_context_data(self, **kwargs):
+        try:
+            prev = int(self.request.GET.get('prev'))
+        except:
+            prev = None
+        kwargs['origin'] = None
+        if prev:
+            try:
+                kwargs['origin'] = Transport.objects.get(pk=prev)
+            except Transport.DoesNotExist:
+                pass
+        form = self.get_form()
+        form.is_valid()
+        kwargs['children'] = [reg.child for reg in form.cleaned_data.get('registrations', [])]
+        return super(TransportMoveView, self).get_context_data(**kwargs)

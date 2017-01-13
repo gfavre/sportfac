@@ -8,7 +8,9 @@
 <form action="" method="post">{% csrf_token %}
   <p>{% blocktrans %}Are you sure you want to delete "{{ object }}"?{% endblocktrans %}</p>
   <p class="text-danger lead">{% blocktrans %}All data related to this period will be lost forever.{% endblocktrans %}</p>
-  <button type="submit" class="btn btn-danger"><i class="icon icon-trash"></i>&nbsp;{% trans 'Delete period' %}</button>
+  <div class="form-group">
+    <button type="submit" class="btn btn-danger"><i class="icon icon-trash"></i>&nbsp;{% trans 'Delete period' %}</button>
+  </div>
 </form>
 
 {% endblock content %}

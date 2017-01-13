@@ -30,7 +30,7 @@
       <button type="submit" class="btn btn-success btn-large">{% trans "Update" %}</button>
 
       {% if origin %}&nbsp;
-        <a href="{{ origin.get_backend_url }}" class="btn btn-default">{% trans 'Cancel' %}</a>
+        <a href="{{ origin.backend_url }}" class="btn btn-default">{% trans 'Cancel' %}</a>
       {% endif %}
     </div>
   </div>

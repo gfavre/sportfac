@@ -7,7 +7,9 @@
 {% block content %}
 <form action="" method="post">{% csrf_token %}
   <p>{% blocktrans %}Are you sure you want to delete "{{ object }}"?{% endblocktrans %}</p>
-  <button type="submit" class="btn btn-danger"><i class="icon icon-trash"></i>&nbsp;{% trans 'Delete activity' %}</button>
+  <div class="form-group">
+    <button type="submit" class="btn btn-danger"><i class="icon icon-trash"></i>&nbsp;{% trans 'Delete activity' %}</button>
+  </div>
 </form>
 
 {% endblock content %}

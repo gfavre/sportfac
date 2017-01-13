@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
 
-from .models import Registration, Child, Bill, ExtraInfo
+from .models import Registration, Child, Bill, ExtraInfo, Transport
 
 
 class ExtraInfoAdmin(admin.ModelAdmin):
@@ -20,8 +20,8 @@ class ExtraInfoInline(admin.StackedInline):
     extra = 0
 
 class RegistrationAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'status', 'created', 'modified')
-    list_filter = ('status', 'course__activity__name')
+    list_display = ('__unicode__', 'transport', 'status', 'created', 'modified')
+    list_filter = ('status', 'transport', 'course__activity__name')
     search_fields = (
         'child__first_name', 'child__last_name', 'course__activity__number',
         'course__activity__name', 'course__number',
@@ -32,10 +32,8 @@ class RegistrationAdmin(admin.ModelAdmin):
     actions = ['delete_model',]
 
     def get_queryset(self, request):
-        #qs = super(RegistrationAdmin, self).get_queryset(request)
-        #return qs 19
         qs = self.model._default_manager.all_with_deleted()
-        return qs.select_related('course', 'course__activity', 'child')
+        return qs.select_related('course', 'course__activity', 'child', 'transport')
     
     def get_actions(self, request):
         actions = super(RegistrationAdmin, self).get_actions(request)
@@ -55,3 +53,5 @@ class BillAdmin(admin.ModelAdmin):
     list_filter = ('status',)
 
 admin.site.register(Bill, BillAdmin)
+
+admin.site.register(Transport)

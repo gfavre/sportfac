@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 
 import floppyforms.__future__ as forms
 
-from .models import Bill, Child, Registration
+from .models import Bill, Child, Registration, Transport
 from activities.models import Course
 from backend.forms import Select2Widget, DatePickerInput
 from profiles.models import FamilyUser, School, SchoolYear
@@ -54,10 +54,23 @@ class RegistrationModelChoiceField(forms.ModelChoiceField):
         return obj.detailed_label()
 
 
+class TransportForm(forms.ModelForm):
+    class Meta:
+        model = Transport
+        fields = ('name',)
+
 class MoveRegistrationsForm(forms.Form):
     registrations = forms.ModelMultipleChoiceField(queryset=Registration.objects.all(),
                                                    widget=forms.MultipleHiddenInput)
     destination = RegistrationModelChoiceField(
             queryset=Course.objects.select_related('activity')\
                                    .annotate(nb_participants=Count('participants')),
+            widget=Select2Widget())
+
+
+class MoveTransportForm(forms.Form):
+    registrations = forms.ModelMultipleChoiceField(queryset=Registration.objects.all(),
+                                                   widget=forms.MultipleHiddenInput)
+    destination = forms.ModelChoiceField(
+            queryset=Transport.objects.all(),
             widget=Select2Widget())

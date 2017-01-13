@@ -1,0 +1,14 @@
+{% extends "backend/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Delete transport" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "Delete transport" %}{% endblock %}
+
+{% block content %}
+  <form action="" method="post">{% csrf_token %}
+    <p>{% blocktrans with name=object.name %}Are you sure you want to delete transport {{ name }}?{% endblocktrans %}</p>
+    <div class="form-group">
+      <button type="submit" class="btn btn-danger"><i class="icon icon-trash"></i>&nbsp;{% trans 'confirm' %}</button>
+    </div>
+  </form>
+{% endblock content %}

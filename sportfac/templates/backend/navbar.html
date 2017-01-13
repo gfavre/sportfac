@@ -73,13 +73,27 @@
               </a>
             </li>
             {% if not NO_PAYMENT %}
+            <li class="divider"></li>
+            <li>
+              <a href="{% url 'backend:bill-list' %}">
+                <i class="icon-credit-card-1"></i>&nbsp;&nbsp;{% trans "All bills" %}
+              </a>
+            </li>
+            {% endif %}
+            {% if DISPLAY_CAR_NUMBER %}
               <li class="divider"></li>
               <li>
-                <a href="{% url 'backend:bill-list' %}">
-                  <i class="icon-credit-card-1"></i>&nbsp;&nbsp;{% trans "All bills" %}
+                <a href="{% url 'backend:transport-list' %}">
+                  <i class="icon-bus"></i>&nbsp;&nbsp;{% trans "All transports" %}
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'backend:transport-create' %}">
+                  <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "Create transport" %}
                 </a>
               </li>
             {% endif %}
+
           </ul>
         </li>
 

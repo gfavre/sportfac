@@ -13,7 +13,6 @@ from model_utils.models import StatusModel
 from sportfac.models import TimeStampedModel
 
 
-
 class RegistrationManager(models.Manager):
     def get_queryset(self):
         return super(RegistrationManager, self).get_queryset().exclude(status=Registration.STATUS.canceled)
@@ -26,7 +25,6 @@ class RegistrationManager(models.Manager):
 
     def validated(self):
         return self.get_queryset().filter(status__in=(Registration.STATUS.valid, Registration.STATUS.confirmed))
-
 
 
 class Registration(TimeStampedModel, StatusModel):
@@ -49,10 +47,14 @@ class Registration(TimeStampedModel, StatusModel):
     child = models.ForeignKey('Child', related_name="registrations")
     bill = models.ForeignKey('Bill', related_name="registrations", null=True, blank=True)
     paid = models.BooleanField(default=False, verbose_name=_("Has paid"))
-    transport_info = models.CharField(_('Transport information'), max_length=60, blank=True)
+    transport = models.ForeignKey('Transport', related_name='participants',
+                                  verbose_name=_("Transport information"),
+                                  null=True)
 
-    before_level = models.CharField(choices=LEVELS, verbose_name=_("Level -1"), max_length=5, blank=True)
-    after_level = models.CharField(choices=LEVELS, verbose_name=_("End course level"), max_length=5, blank=True)
+    before_level = models.CharField(choices=LEVELS, max_length=5, blank=True,
+                                    verbose_name=_("Level -1"),)
+    after_level = models.CharField(choices=LEVELS, max_length=5, blank=True,
+                                   verbose_name=_("End course level"))
 
     objects = RegistrationManager()
 
@@ -70,7 +72,7 @@ class Registration(TimeStampedModel, StatusModel):
         return self.extra_needs.count() == 0
 
     def __unicode__(self):
-        return _(u'%(child)s ⇒ course %(number)s (%(activity)s)') % {'child': unicode(self.child), 
+        return _(u'%(child)s ⇒ course %(number)s (%(activity)s)') % {'child': unicode(self.child),
                                                                      'number': self.course.number,
                                                                      'activity': self.course.activity.name}
 
@@ -84,15 +86,15 @@ class Registration(TimeStampedModel, StatusModel):
         self.status = self.STATUS.confirmed
 
     def cancel(self):
-        self.status = self.STATUS.canceled 
+        self.status = self.STATUS.canceled
 
     def overlap(self, r2):
-        "Test if another registration object overlaps with this one."  
+        "Test if another registration object overlaps with this one."
         # no overlap if course are not the same day
         if self.course.day != r2.course.day:
             return False
 
-        same_days = min(self.course.end_date - r2.course.start_date, 
+        same_days = min(self.course.end_date - r2.course.start_date,
                         r2.course.end_date - self.course.start_date).days + 1
 
         # no overlap if periods do not superpose
@@ -102,18 +104,18 @@ class Registration(TimeStampedModel, StatusModel):
         if self.course == r2.course and self.child != r2.child:
             return False
 
-        interval = min(datetime.combine(date.today(), self.course.start_time) - 
-                       datetime.combine(date.today(), r2.course.end_time), 
-                       datetime.combine(date.today(), r2.course.start_time) - 
+        interval = min(datetime.combine(date.today(), self.course.start_time) -
+                       datetime.combine(date.today(), r2.course.end_time),
+                       datetime.combine(date.today(), r2.course.start_time) -
                        datetime.combine(date.today(), self.course.end_time))
 
         if interval.days < 0:
             # overlap
             return True
-        elif interval.seconds < (60*30):
+        elif interval.seconds < (60 * 30):
             # less than half an hour between courses
             return True
-        return False   
+        return False
 
     def get_delete_url(self):
         return reverse('backend:registration-delete', kwargs={'pk': self.pk})
@@ -145,7 +147,30 @@ class Registration(TimeStampedModel, StatusModel):
         super(Registration, self).delete(*args, **kwargs)
         if self.bill:
             self.bill.save()
-    
+
+
+class Transport(TimeStampedModel):
+    name = models.CharField(_('Label'), max_length=60, db_index=True, blank=False)
+
+    class Meta:
+        verbose_name = _("Transport")
+        verbose_name_plural = _("Transports")
+
+    def __unicode__(self):
+        return self.name
+
+    @property
+    def backend_url(self):
+        return reverse('backend:transport-detail', kwargs={'pk': self.pk})
+
+    @property
+    def update_url(self):
+        return reverse('backend:transport-update', kwargs={'pk': self.pk})
+
+    @property
+    def delete_url(self):
+        return reverse('backend:transport-delete', kwargs={'pk': self.pk})
+
 
 class BillManager(models.Manager):
     def get_queryset(self):
@@ -183,14 +208,13 @@ class Bill(TimeStampedModel, StatusModel):
 
     def get_absolute_url(self):
         return reverse('registrations_bill_detail', kwargs={'pk': self.pk})
- 
 
     def get_backend_url(self):
         return reverse('backend:bill-detail', kwargs={'pk': self.pk})
-    
+
     def get_pay_url(self):
         return reverse('backend:bill-update', kwargs={'pk': self.pk})
-        
+
     @property
     def is_ok(self):
         return self.status != self.STATUS.waiting
@@ -198,31 +222,29 @@ class Bill(TimeStampedModel, StatusModel):
     @property
     def is_paid(self):
         return self.status in (self.STATUS.paid, self.STATUS.canceled)
-    
 
     @property
     def backend_url(self):
         return self.get_backend_url()
- 
+
     @property
     def pay_url(self):
         return self.get_pay_url()
 
-    
     @transaction.atomic
     def close(self):
         self.status = self.STATUS.paid
         for registration in self.registrations.filter(status=Registration.STATUS.valid):
             registration.paid = True
             registration.save()
-    
+
     @transaction.atomic
     def save(self, *args, **kwargs):
         self.update_total()
         if not self.billing_identifier:
             self.update_billing_identifier()
         super(Bill, self).save(*args, **kwargs)
-    
+
     class Meta:
         verbose_name = _("Bill")
         verbose_name_plural = _("Bills")
@@ -230,7 +252,7 @@ class Bill(TimeStampedModel, StatusModel):
 
 class ExtraInfo(models.Model):
     registration = models.ForeignKey('registrations.Registration', related_name='extra_infos')
-    key =  models.ForeignKey('activities.ExtraNeed')
+    key = models.ForeignKey('activities.ExtraNeed')
     value = models.CharField(max_length=255, blank=True)
 
     class Meta:
@@ -240,16 +262,16 @@ class ExtraInfo(models.Model):
 class Child(TimeStampedModel):
     SEX = Choices(('M', _('Male')),
                   ('F', _('Female')),
-    )
+                  )
     NATIONALITY = Choices(('CH', _('Swiss')),
                           ('FL', _('Liechtenstein')),
                           ('DIV', _('Other')),
-    )
+                          )
     LANGUAGE = Choices(('D', 'Deutsch'),
                        ('E', 'English'),
                        ('F', u'Français'),
                        ('I', 'Italiano'),
-    )
+                       )
 
     first_name = models.CharField(_("First name"), max_length=50)
     last_name = models.CharField(_("Last name"), max_length=50)
@@ -263,15 +285,15 @@ class Child(TimeStampedModel):
 
     family = models.ForeignKey('profiles.FamilyUser', related_name='children', null=True)
     courses = models.ManyToManyField('activities.Course', through="registrations.Registration")
-    
-    id_lagapeo = models.IntegerField(db_index=True, unique=True, null=True, blank=True, 
+
+    id_lagapeo = models.IntegerField(db_index=True, unique=True, null=True, blank=True,
                                      verbose_name=_("Lagapeo Identification number"))
-    
+
     emergency_number = models.CharField(_("Emergency number"), max_length=30, blank=True)
     school = models.ForeignKey('profiles.School', related_name="students", null=True)
-    other_school = models.CharField(_("Other school"),  blank=True, max_length=50)
+    other_school = models.CharField(_("Other school"), blank=True, max_length=50)
     bib_number = models.CharField(_("Bib number"), blank=True, max_length=20)
- 
+
     class Meta:
         ordering = ('last_name', 'first_name',)
         abstract = False
@@ -290,11 +312,11 @@ class Child(TimeStampedModel):
     def get_full_name(self):
         full_name = '%s %s' % (self.first_name.title(), self.last_name.title())
         return full_name.strip()
-    
+
     @property
     def full_name(self):
         return self.get_full_name()
-    
+
     @property
     def backend_url(self):
         return self.get_backend_url()
@@ -306,11 +328,11 @@ class Child(TimeStampedModel):
     @property
     def delete_url(self):
         return self.get_delete_url()
-    
+
     @property
     def full_name(self):
         return self.get_full_name()
-    
+
     @property
     def school_name(self):
         if self.school:

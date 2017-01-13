@@ -7,7 +7,9 @@
 {% block content %}
 <form action="" method="post">{% csrf_token %}
   <p>{% blocktrans with child=object.child|title course=object.course %}Are you sure you want to cancel registration to {{ course }} for {{ child }}?{% endblocktrans %}</p>
-  <button type="submit" class="btn btn-danger"><i class="icon icon-trash"></i>&nbsp;{% trans 'confirm' %}</button>
+  <div class="form-group">
+    <button type="submit" class="btn btn-danger"><i class="icon icon-trash"></i>&nbsp;{% trans 'confirm' %}</button>
+  </div>
 </form>
 
 {% endblock content %}

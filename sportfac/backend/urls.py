@@ -86,7 +86,18 @@ registrations_patterns = [
         name='bill-detail'),    
     url(r'^bills/(?P<pk>\d+)/pay$', view=views.BillUpdateView.as_view(), 
         name='bill-update'),
-
+    url(r'^transport$', view=views.TransportListView.as_view(),
+        name='transport-list'),
+    url(r'^transport/(?P<pk>\d+)/$', view=views.TransportDetailView.as_view(),
+        name='transport-detail'),
+    url(r'^transport/(?P<pk>\d+)/update$', view=views.TransportUpdateView.as_view(),
+        name='transport-update'),
+    url(r'^transport/new$', view=views.TransportCreateView.as_view(),
+        name='transport-create'),
+    url(r'^transport/(?P<pk>\d+)/delete$', view=views.TransportDeleteView.as_view(),
+        name='transport-delete'),
+    url(r'^transport/move$', view=views.TransportMoveView.as_view(),
+        name='transport-move'),
 ]
 
 teachers_patterns = [

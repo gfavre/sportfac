@@ -178,21 +178,17 @@ class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
 
 class CourseDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
     model = Course
-    template_name = 'backend/course/confirm_delete.html'
-    pk_url_kwarg = 'course'
-    success_url = reverse_lazy('backend:course-list')
-    success_message = _("Course has been deleted.")
+    template_name = 'backend/transport/confirm_delete.html'
+    success_url = reverse_lazy('backend:transport-list')
+    success_message = _("Transport has been deleted.")
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
-        identifier = self.get_object().number
+        identifier = self.get_object().name
         messages.add_message(self.request, messages.SUCCESS,
-                             _("Course %(identifier)s has been deleted.") % {
+                             _("Transport %(identifier)s has been deleted.") % {
                                 'identifier': identifier
                              })
-        for instructor in self.object.instructors.all():
-            if instructor.course.exclude(pk=self.object.pk).count() == 0:
-                instructor.is_instructor = False
         return super(CourseDeleteView, self).delete(request, *args, **kwargs)
 
 

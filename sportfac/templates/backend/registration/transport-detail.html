@@ -1,0 +1,139 @@
+{% extends "backend/base.html" %}
+{% load i18n staticfiles sekizai_tags extra %}
+
+{% block title %}{% trans "Transport detail" %}{% endblock %}
+{% block page_title %}{% endblock %}
+
+
+
+{% block extra_body %}class="transport"{% endblock %}
+
+{% block content %}
+
+<section>
+  <h2><i class="icon-bus"></i>&nbsp;{% blocktrans with name=transport.name %}Transport details: {{ name }}{% endblocktrans %}</h2>
+
+  <div class="btn-group">
+    <a class="btn btn-default selectall">{% trans "Select all" %}</span></a>
+    <a class="btn btn-default deselectall needs-select disabled">{% trans "Deselect all" %}</a>
+  </div>
+
+  <div class="btn-group">
+    <form class="move" method="post" action="{% url 'backend:transport-move' %}?prev={{ transport.id }}">{% csrf_token %}
+      <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-loop-alt"></i>&nbsp;&nbsp;{% trans "Move to another transport..." %}</button>
+    </form>
+  </div>
+
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        {% if BIB_NUMBERS %}<th class="bibnumber">{% trans "Bib number" %}</th>{% endif %}
+        <th class="child-name">{% trans "Name" %}</th>
+        <th class="course">{% trans "Course" %}</th>
+        {% comment %}
+        <th class="transport">{% trans "Info" %}</th>
+        {% endcomment %}
+      </tr>
+    </thead> 
+    <tfoot>
+      <tr>
+        <th colspan="3" class="nowrap" >{% trans "Total" %}: {{ transport.participants.count }}</th>
+      </tr>
+    </tfoot>
+    <tbody>
+    {% for registration in transport.participants.all %}
+      <tr data-registration-id="{{ registration.id }}">
+        {% if BIB_NUMBERS %}
+        <td>
+          <a href="{{ registration.child.backend_url }}">{{ registration.child.bib_number }}</a>
+        </td>
+        {% endif %}
+        <td>
+          <span class="nowrap"><a href="{{ registration.child.backend_url }}">{{ registration.child.full_name }}</a></span>
+        </td>
+        <td>
+          <span class="nowrap"><a href="{{ registration.course.backend_url }}">{{ registration.course.short_name }}</a>
+        </td>
+        {% comment %}
+        <td>
+          {{ registration|answer_to:"2" }}
+        </td>
+        {% endcomment %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p class="hidden-print text-center"><button class="btn btn-success btn-large print-button"><i class="icon icon-print"></i> {% trans "Print" %}</button></p>
+</section>
+
+{% addtoblock "js" %}
+<script>
+  $('.print-button').click(function(){window.print()});
+</script>
+<script src="{% static 'js/vendor/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'js/vendor/datatables/dataTables.tableTools.min.js' %}"></script>
+<script src="{% static 'js/vendor/datatables/dataTables.bootstrap.js' %}"></script>
+<script>
+  $(function () {
+    var t = $(".table").dataTable({
+      {% if LANGUAGE_CODE == 'fr' %}
+        "language": {
+          "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+        },
+      {% endif %}
+      aoColumnDefs: [
+        { 'bSortable': true, 'aTargets': ['bibnumber', 'child-name', 'course', 'extra']},
+        { 'bSortable': false, 'aTargets': ['_all']},
+        { 'bSearchable': true, 'aTargets': ['bibnumber', 'child-name',]},
+        { 'bSearchable': false, 'aTargets': ['_all']}
+
+      ],
+      dom: 'T<"clear">lfrtip',
+      paging: false,
+      tableTools: {
+        "sRowSelect": "multi",
+        "aButtons": [ ],
+        'fnRowSelected': function(){
+          $('.needs-select').removeClass('disabled');
+        },
+        'fnRowDeselected': function(){
+          if ($('tr.active').length == 0){
+            $('.needs-select').addClass('disabled');
+          }
+        }
+      }
+    });
+
+    $('.selectall').click(function(){
+      var tabletools = TableTools.fnGetInstance(t[0]);
+      tabletools.fnSelectAll(true);
+    });
+    $('.deselectall').click(function(){
+      var tabletools = TableTools.fnGetInstance(t[0]);
+      tabletools.fnSelectNone();
+    });
+    $('form.move').submit(function(evt){
+      var form = this;
+      var tabletools = TableTools.fnGetInstance(t[0]);
+      var ids = tabletools.fnGetSelected().map(function(elem){
+        return elem.getAttribute('data-registration-id');
+      });
+      $('input[name=registrations]', form).remove();
+      ids.forEach(function(regId){
+        $('<input type="hidden">').attr('id', 'registrations_' + regId)
+            .attr('name', 'registrations')
+            .val(regId)
+            .prependTo(form);
+      });
+    });
+  });
+</script>
+
+
+
+{% endaddtoblock %}
+{% endblock content %}
+
+
+
