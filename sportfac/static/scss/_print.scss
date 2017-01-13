@@ -48,7 +48,14 @@
         }
         
     }
-    
-    
+    .dataTables_filter, .dataTables_info {
+        display: none;
+    }
+    body table.dataTable thead th.sorting_asc:after,
+    body table.dataTable thead th.sorting_desc:after,
+    body table.dataTable thead th.sorting:after {
+        display: none;
+        content: '';
+    }
     
 }

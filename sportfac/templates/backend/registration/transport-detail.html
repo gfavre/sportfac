@@ -2,7 +2,7 @@
 {% load i18n staticfiles sekizai_tags extra %}
 
 {% block title %}{% trans "Transport detail" %}{% endblock %}
-{% block page_title %}{% endblock %}
+{% block page_title %}<i class="icon-bus"></i>&nbsp;{% blocktrans with name=transport.name %}Transport details: {{ name }}{% endblocktrans %}{% endblock %}
 
 
 
@@ -10,15 +10,12 @@
 
 {% block content %}
 
-<section>
-  <h2><i class="icon-bus"></i>&nbsp;{% blocktrans with name=transport.name %}Transport details: {{ name }}{% endblocktrans %}</h2>
-
-  <div class="btn-group">
+  <div class="btn-group hidden-print">
     <a class="btn btn-default selectall">{% trans "Select all" %}</span></a>
     <a class="btn btn-default deselectall needs-select disabled">{% trans "Deselect all" %}</a>
   </div>
 
-  <div class="btn-group">
+  <div class="btn-group hidden-print">
     <form class="move" method="post" action="{% url 'backend:transport-move' %}?prev={{ transport.id }}">{% csrf_token %}
       <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-loop-alt"></i>&nbsp;&nbsp;{% trans "Move to another transport..." %}</button>
     </form>
@@ -65,7 +62,6 @@
     </tbody>
   </table>
   <p class="hidden-print text-center"><button class="btn btn-success btn-large print-button"><i class="icon icon-print"></i> {% trans "Print" %}</button></p>
-</section>
 
 {% addtoblock "js" %}
 <script>
