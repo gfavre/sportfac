@@ -6,19 +6,6 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 
-def move_transport_info(apps, schema_editor):
-    # We can't import the Person model directly as it may be a newer
-    # version than this migration expects. We use the historical version.
-    Registration = apps.get_model("registrations", "Registration")
-    Transport = apps.get_model("registrations", "Transport")
-
-    for registration in Registration.objects.all():
-        if registration.transport_info:
-            transport, created = Transport.objects.get_or_create(name=registration.transport_info)
-            registration.transport = transport
-            registration.save()
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -48,5 +35,4 @@ class Migration(migrations.Migration):
             name='transport',
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='participants', to='registrations.Transport', verbose_name='Transport information'),
         ),
-        migrations.RunPython(move_transport_info)
     ]
