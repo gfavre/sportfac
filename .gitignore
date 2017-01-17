@@ -48,3 +48,7 @@ htmlcov/
 # celery
 celerybeat-schedule
 celerybeat.pid
+
+# Codekit
+sportfac/static/codekit-config.json
+codekit-config.json

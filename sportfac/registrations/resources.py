@@ -55,10 +55,13 @@ class RegistrationResource(resources.ModelResource):
         for extra in queryset:
             field = ExtraNeedField(extra_need=extra)
             self.fields['extra_{}'.format(extra.id)] = field
-        if not settings.KEPCHUP_CHILD_SCHOOL:
+        if not settings.KEPCHUP_CHILD_SCHOOL and 'school_name' in self.fields:
+            # Resource objects are cached by the import-export library. Therefore we could
+            # try to remove an already removed field :(
             del self.fields['school_name']
-        if not settings.KEPCHUP_REGISTRATION_LEVELS:
+        if not settings.KEPCHUP_REGISTRATION_LEVELS and 'before_level' in self.fields:
             del self.fields['before_level']
+        if not settings.KEPCHUP_REGISTRATION_LEVELS and 'after_level' in self.fields:
             del self.fields['after_level']
 
     def dehydrate_child_id(self, obj):
