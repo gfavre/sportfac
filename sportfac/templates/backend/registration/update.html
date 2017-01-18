@@ -11,10 +11,11 @@
   {% block errors %}{% endblock %}
   {% form form using "floppyforms/layouts/bootstrap.html" %}
 
+{{ extrainfo_form.management_form }}
 {% if need_extra %}
     <fieldset>
       <legend>{% trans "Extra questions" %}</legend>
-      {{ extrainfo_form.management_form }}
+
       {% form extrainfo_form using "floppyforms/layouts/bootstrap.html" %}
     </fieldset>
 
