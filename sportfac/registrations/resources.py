@@ -30,6 +30,8 @@ class RegistrationResource(resources.ModelResource):
     first_name = fields.Field(attribute='child__first_name', column_name=_("First name"))
     last_name = fields.Field(attribute='child__last_name', column_name=_("Last name"))
     child_id = fields.Field(attribute='child', column_name=_("Child identifier"))
+    bib_number = fields.Field(attribute='child__bib_number', column_name=_("Bib number"))
+    transport =  fields.Field(attribute='transport__name', column_name=_("Transport"))
     birth_date = fields.Field(attribute='child', column_name=_("Birth date"))
     school_year = fields.Field(attribute='child__school_year__year', column_name=_("School year"))
     school_name = fields.Field(attribute='child', column_name=_("School"))
@@ -59,10 +61,14 @@ class RegistrationResource(resources.ModelResource):
             # Resource objects are cached by the import-export library. Therefore we could
             # try to remove an already removed field :(
             del self.fields['school_name']
+        if not settings.KEPCHUP_BIB_NUMBERS and 'bib_number' in self.fields:
+            del self.fields['bib_number']
         if not settings.KEPCHUP_REGISTRATION_LEVELS and 'before_level' in self.fields:
             del self.fields['before_level']
         if not settings.KEPCHUP_REGISTRATION_LEVELS and 'after_level' in self.fields:
             del self.fields['after_level']
+        if not settings.KEPCHUP_DISPLAY_CAR_NUMBER and 'transport' in self.fields:
+            del self.fields['transport']
 
     def dehydrate_child_id(self, obj):
         if settings.KEPCHUP_IMPORT_CHILDREN:
@@ -101,7 +107,7 @@ class RegistrationResource(resources.ModelResource):
         return data
 
     def get_queryset(self):
-        queryset = Registration.objects.select_related('course', 'child', 'child__family')\
+        queryset = Registration.objects.select_related('course', 'child', 'child__family', 'transport')\
                                        .prefetch_related('course__activity', 'extra_infos', 'child__school',
                                                          'child__school_year')
         if self.course:
@@ -116,13 +122,17 @@ class RegistrationResource(resources.ModelResource):
         if not settings.KEPCHUP_REGISTRATION_LEVELS:
             removable_fields.append('before_level')
             removable_fields.append('after_level')
+        if not settings.KEPCHUP_BIB_NUMBERS:
+            removable_fields.append('bib_number')
+        if not settings.KEPCHUP_DISPLAY_CAR_NUMBER:
+            removable_fields.append('transport')
         order = tuple([field for field in order if field not in removable_fields])
         return order + tuple(k for k in self.fields.keys() if k not in order)
 
 
     class Meta:
         model = Registration
-        fields = ('id', 'activity', 'course', 'price',
+        fields = ('id', 'activity', 'course', 'price', 'bib_number', 'transport',
                   'first_name', 'last_name', 'child_id', 'birth_date', 'school_year', 'school_name',
                   'emergency_number',
                   'parent_first_name', 'parent_last_name', 'parent_email', 'parent_address',
