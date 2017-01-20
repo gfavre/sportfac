@@ -79,7 +79,7 @@ class CSVMixin(object):
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         response = HttpResponse(content_type='text/csv')
-        cd = 'attachment; filename="{0}"'.format(self.get_csv_filename())
+        cd = u'attachment; filename="{0}"'.format(self.get_csv_filename())
         response['Content-Disposition'] = cd
         self.write_csv(response)
         return response
