@@ -59,12 +59,13 @@ class RegistrationsMoveView(BackendMixin, FormView):
 
     def form_valid(self, form):
         course = form.cleaned_data['destination']
+        origin = form.cleaned_data['registrations'].first().course
         form.cleaned_data['registrations'].update(course=course,
                                                   status=Registration.STATUS.confirmed)
         message = _("Registrations of %(nb)s children have been moved.")
         message %= {'nb':  form.cleaned_data['registrations'].count()}
         messages.add_message(self.request, messages.SUCCESS, message)
-        return HttpResponseRedirect(course.backend_url)
+        return HttpResponseRedirect(origin.backend_url)
 
     def get_context_data(self, **kwargs):
         try:
