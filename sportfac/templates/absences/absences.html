@@ -37,5 +37,24 @@
 </section>
 
 {% include 'absences/absences-table.html' %}
+{% if courses_list.count > 1 %}
+<div class="form-group">
+  <label for="select-course">{% trans "Manage absences for" %}:</label>
+  <select class="form-control" id="select-course">
+    {% for c in courses_list %}
+      <option{% if course == c %} selected{% endif %} value="{{ c.get_absences_url }}">{{ c.short_name }}</option>
+    {% endfor %}
+  </select>
+</div>
 
+{% addtoblock "js" %}
+<script>
+  $(function(){
+    $('#select-course').on('change', function(){
+      window.location.href = this.value;
+    });
+  });
+</script>
+{% endaddtoblock %}
+{% endif %}
 {% endblock content %}

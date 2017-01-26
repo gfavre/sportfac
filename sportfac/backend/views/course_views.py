@@ -61,7 +61,7 @@ class CourseAbsenceView(BackendMixin, DetailView):
         context['absence_matrix'] = [[all_absences.get((registration.child, session), 'present') for session 
                                                                      in course.sessions.all()] 
          for registration in course.participants.all()]
-
+        context['courses_list'] = Course.objects.all()
         return context
 
 

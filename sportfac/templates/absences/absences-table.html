@@ -86,7 +86,7 @@
         </th>
         {% if BIB_NUMBERS %}
         <th data-order="{{ registration.child.bib_number|default:"0" }}">
-              {{ registration.child.bib_number|default:"n/a" }}
+              {{ registration.child.bib_number|default:"" }}
         </th>
         {% endif %}
         {% if REGISTRATION_LEVELS %}
@@ -110,7 +110,7 @@
         {% endif %}
         {% if DISPLAY_CAR_NUMBER %}
         <th>
-          {{ registration.transport }}
+          {{ registration.transport|default:"" }}
         </th>
         {% endif %}
         {% for session in course.sessions.all %}
@@ -132,6 +132,9 @@
   </tbody>  
 </table>
 </div>
+
+
+
 
 <script type="text/html" id="status-window">
   <form>

@@ -23,4 +23,5 @@ class AbsenceView(InstructorMixin, DetailView):
                                                                      in course.sessions.all()] 
          for registration in course.participants.all()]
         context['levels'] = Registration.LEVELS
+        context['courses_list'] = self.request.user.course.all()
         return context
