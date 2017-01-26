@@ -173,3 +173,9 @@ class LevelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Registration
         fields = ('id', 'before_level', 'after_level')
+
+
+class RegistrationNoteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Registration
+        fields = ('id', 'note')

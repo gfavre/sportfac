@@ -20,6 +20,11 @@
         {% trans "Bus" %}
       </th>
       {% endif %}
+      {% if DISPLAY_REGISTRATION_NOTE %}
+      <th class="note">
+        {% trans "Note" %}
+      </th>
+      {% endif %}
       {% for session in course.sessions.all %}
       <th class="date">
         <span class="session-date">{{ session.date | date:"d.m.Y" }}</span>
@@ -53,6 +58,9 @@
       <th></th><th></th><th></th>
       {% endif %}
       {% if DISPLAY_CAR_NUMBER %}
+      <th></th>
+      {% endif %}
+      {% if DISPLAY_REGISTRATION_NOTE %}
       <th></th>
       {% endif %}
       {% for session in course.sessions.all %}
@@ -111,6 +119,13 @@
         {% if DISPLAY_CAR_NUMBER %}
         <th>
           {{ registration.transport|default:"" }}
+        </th>
+        {% endif %}
+        {% if DISPLAY_REGISTRATION_NOTE %}
+        <th class="set-note">
+          <form class="note-form">
+            <input class="form-control" type="text" value="{{ registration.note }}" name="note" />
+          </form>
         </th>
         {% endif %}
         {% for session in course.sessions.all %}

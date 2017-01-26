@@ -25,6 +25,6 @@ urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^family/', views.FamilyView.as_view(), name='family-list'),
     url(r'^levels/(?P<pk>\d+)/$', views.UpdateLevelView.as_view(), name='update-level'),
-
+    url(r'^note/(?P<pk>\d+)/$', views.UpdateRegistrationNoteView.as_view(), name='update-note'),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]

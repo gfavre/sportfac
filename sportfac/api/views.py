@@ -19,6 +19,7 @@ from .serializers import (AbsenceSerializer, SetAbsenceSerializer, SessionSerial
                           ActivityDetailedSerializer,
                           ChildrenSerializer, CourseSerializer, TeacherSerializer,
                           RegistrationSerializer, ExtraSerializer, LevelSerializer,
+                          RegistrationNoteSerializer,
                           SimpleChildrenSerializer, YearSerializer)
 
 
@@ -52,6 +53,12 @@ class UpdateLevelView(generics.UpdateAPIView):
     queryset = Registration.objects.all()
     permission_classes = (InstructorPermission,)
     serializer_class = LevelSerializer
+
+
+class UpdateRegistrationNoteView(generics.UpdateAPIView):
+    queryset = Registration.objects.all()
+    permissions_classes = (InstructorPermission,)
+    serializer_class = RegistrationNoteSerializer
 
 
 class SessionViewSet(viewsets.ModelViewSet):
