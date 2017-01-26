@@ -18,9 +18,10 @@ $(function () {
       },
 {% endif %}
       "aoColumnDefs": [
-          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ 7 ] }
+          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ -1 ] }
       ],
-      "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "{% trans 'All registrations' %}"] ]
+      "lengthMenu": [[50, 100, -1], [50, 100, "{% trans 'All registrations' %}"] ],
+      "pageLength": 50
   });
 });
 </script>
@@ -32,13 +33,16 @@ $(function () {
 <table class="table">
   <thead>
     <tr>
-      <th class="text-nowrap">{% trans "Course Identifier" %}</th>
-      <th class="text-nowrap">{% trans "Activity" %}</th>
-      <th class="text-nowrap">{% trans "Day" %}</th>
-      <th class="text-nowrap">{% trans "Start date" %}</th>
-      <th class="text-nowrap">{% trans "Time" %}</th>
-      <th class="text-nowrap">{% trans "Child" %}</th>
-      <th class="text-nowrap">{% trans "Status" %}</th>
+      <th class="text-nowrap course">{% trans "Course Identifier" %}</th>
+      <th class="text-nowrap activity">{% trans "Activity" %}</th>
+      <th class="text-nowrap day">{% trans "Day" %}</th>
+      <th class="text-nowrap start">{% trans "Start date" %}</th>
+      <th class="text-nowrap time">{% trans "Time" %}</th>
+      {% if BIB_NUMBERS %}
+      <th class="text-nowrap bibnumber">{% trans "Bib number" %}</th>
+      {% endif %}
+      <th class="text-nowrap child">{% trans "Child" %}</th>
+      <th class="text-nowrap status">{% trans "Status" %}</th>
       <th class="text-nowrap">{% trans "Action" %}</th>
     </tr>
   </thead>
@@ -50,6 +54,9 @@ $(function () {
       <td>{{ course.day_name }}</td>
       <td data-order="{{ course.start_date|date:'c'}}">{{ course.start_date|date:"SHORT_DATE_FORMAT" }}</td>
       <td>{{ course.start_time|time:"H:i" }}</td>
+      {% if BIB_NUMBERS %}
+      <td>{{ child.bib_number }}</th>
+      {% endif %}
       <td><a href="{{ child.get_backend_url }}">{{ child }}</a></td>
       <td>{{ registration.get_status_display }}</td>
       <td>
