@@ -379,8 +379,8 @@ DYNAMIC_PREFERENCES = {
 ########## USER and REGISTRATION
 AUTH_USER_MODEL = 'profiles.FamilyUser'
 REGISTRATION_OPEN = True
-LOGIN_URL = '/account/login'
-LOGOUT_URL = '/account/logout'
+LOGIN_URL = '/account/login/'
+LOGOUT_URL = '/account/logout/'
 
 ########## END USER and REGISTRAION
 

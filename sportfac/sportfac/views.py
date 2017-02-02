@@ -1,9 +1,7 @@
 from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
-from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponse
 from django.shortcuts import redirect
-from django.template import RequestContext
 from django.views.generic.base import RedirectView
 
 from braces.views import LoginRequiredMixin
@@ -83,3 +81,4 @@ class CSVMixin(object):
         response['Content-Disposition'] = cd
         self.write_csv(response)
         return response
+

@@ -7,7 +7,7 @@ from backend import MANAGERS_GROUP
 
 
 
-class BackendMixin(GroupRequiredMixin, LoginRequiredMixin):
+class BackendMixin(LoginRequiredMixin, GroupRequiredMixin):
     """Mixin for backend. Ensure that the user is logged in and is a member 
        of sports managers group."""
     group_required = MANAGERS_GROUP

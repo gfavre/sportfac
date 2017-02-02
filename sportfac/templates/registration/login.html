@@ -6,21 +6,15 @@
 
 
 {% block content %}
-{% if form.errors and not form.non_field_errors and not form.this_is_the_login_form.errors %}
-<p class="text-error">{% blocktrans %}Please correct the error below.{% endblocktrans %}</p>
-{% endif %}
-
-{% if form.non_field_errors or form.this_is_the_login_form.errors %}
-  {% for error in form.non_field_errors|add:form.this_is_the_login_form.errors %}
-  <p class="text-error">{{ error }}</p>
-  {% endfor %}
-{% endif %}
-
-
-
 <form action="{{ app_path }}" method="post" id="login-form" class="form-horizontal">{% csrf_token %}
+  {% for error in form.non_field_errors %}
+    <div class="alert alert-danger"  role="alert">
+      <a class="close" href="#" data-dismiss="alert">×</a>
+      <i class="icon-cancel"></i>&nbsp;&nbsp;{{ error }}
+    </div>
+  {% endfor %}
   <input type="hidden" name="next" value="{{ next }}" />
-  
+
   {% form form using  %}
   {% formconfig row using "floppyforms/rows/bootstrap.html" %}
   {% formrow form.username  %}

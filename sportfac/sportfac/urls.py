@@ -3,13 +3,11 @@ from django.conf.urls import patterns, include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from django.contrib.sitemaps import GenericSitemap
 from django.contrib.sitemaps import views as sitemapviews
 from django.contrib.flatpages import views as flatviews
 from django.contrib.flatpages.sitemaps import FlatPageSitemap
 
 from django.views.generic import TemplateView, RedirectView
-from django.core.urlresolvers import reverse
 
 from activities.urls import sitemap as activity_sitemap
 from contact.urls import Sitemap as ContactSitemap
