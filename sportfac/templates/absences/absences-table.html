@@ -65,7 +65,8 @@
       {% endif %}
       {% for session in course.sessions.all %}
       <th>
-          <select name="instructor" class="instructor" data-session-url="{{ session.get_api_url }}">
+          <select name="instructor" class="instructor hidden-print"
+                  data-session-url="{{ session.get_api_url }}">
             {% for instructor in course.instructors.all %}
             <option value="{{ instructor.id }}"{% if session.instructor == instructor %} selected{% endif %}>
               {{ instructor.full_name }}
@@ -73,8 +74,9 @@
             {% endfor %}
             <option value=""{% if not session.instructor %} selected{% endif %}>{% trans "other" %}</option>
           </select>
-          <span class="message success" style="display: none"><i class="icon icon-ok-circled text-success"></i></span> 
-          <span class="message error" style="display: none"><i class="icon icon-cancel-circled text-danger"></i></span> 
+          <span class="visible-print-inline">{{ session.instructor.full_name}}</span>
+          <span class="message success hidden-print" style="display: none"><i class="icon icon-ok-circled text-success"></i></span>
+          <span class="message error hidden-print" style="display: none"><i class="icon icon-cancel-circled text-danger"></i></span>
 
       </th>
       {% endfor %}
@@ -122,10 +124,13 @@
         </th>
         {% endif %}
         {% if DISPLAY_REGISTRATION_NOTE %}
-        <th class="set-note">
-          <form class="note-form">
-            <input class="form-control" type="text" value="{{ registration.note }}" name="note" />
-          </form>
+        <th class="set-note"
+            data-key="note"
+            data-note="{{ registration.note }}"
+            data-registration="{{ registration.update_note_url }}">
+          <div class="note">{{ registration.note }}</div>
+          <a class="note has-popover hidden-print" role="button" data-toggle="popover"
+           data-trigger="click focus"><i class="icon-pencil"></i>&nbsp;{% trans "Edit note" %}</a>
         </th>
         {% endif %}
         {% for session in course.sessions.all %}
@@ -147,6 +152,10 @@
   </tbody>  
 </table>
 </div>
+
+<p class="hidden-print text-center">
+  <button class="btn btn-success btn-large print-button"><i class="icon icon-print"></i> Imprimer</button>
+</p>
 
 
 
@@ -190,6 +199,15 @@
     </select>
   </form>
 </script>
+
+<script type="text/html" id="note-window">
+  <form class="note-form">
+    <textarea></textarea>
+    <input type="submit" class="form-control  btn-primary" value="{% trans "Save" %}">
+  </form>
+</script>
+
+
 
 <script id="column-header" type="text/html">
     <th class="date">
@@ -443,6 +461,39 @@
 
     });
 
+    $('.absences').popover(
+        {
+          selector: '.note.has-popover',
+          content: function(){ return $('#note-window').html(); },
+          html: true
+        }
+    );
+    $('.absences .set-note').on('shown.bs.popover', function(){
+      var note = $(this).data('note');
+      $('textarea', this).val(note);
+    });
+
+    $('.absences').on('submit', 'form.note-form', function(event){
+      event.preventDefault();
+      var note =  $('textarea', this).val();
+      var parent = $(this).parents(".set-note");
+      var data = {};
+      data[parent.data('key')] = note;
+      $.ajax({
+        url: parent.data('registration'),
+        type: 'PUT',
+        data: data,
+        success: function(response){
+          var newNote = response[parent.data('key')];
+          $('div.note', parent).text(newNote);
+          parent.data('note', newNote);
+          $('.has-popover', parent).popover('hide');
+        }
+      });
+
+    });
+
+    $('.print-button').click(function(){window.print()});
   });
 </script>
 {% endaddtoblock %}

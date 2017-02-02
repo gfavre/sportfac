@@ -413,18 +413,7 @@ table.dataTable .sorting_asc:before,
 table.dataTable .sorting_desc:before {
     display: none;
 }
-table.table thead tr th:not(.small-col) {
-  vertical-align: bottom;
-}
-table.table th.small-col {
-  height: 100px;
-  white-space: nowrap;
-  width: 30px;
-  transform: rotate(-90deg) translate(-33px, 0px) ;
-}
-.table>tbody>tr>th {
-  vertical-align: middle;
-}
+
 
 
 

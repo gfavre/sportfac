@@ -18,9 +18,9 @@
       <dd>
         <ul class="list-horizontal">
           {% for instructor in course.instructors.all %}
-          <li>
-            <a href="{{ instructor.get_backend_url }}">{{ instructor.full_name  }}</a>
-          </li>
+            <li>
+              <a href="{{ instructor.get_backend_url }}">{{ instructor.full_name  }}</a>
+            </li>
           {% endfor %}
       </dd>
       <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
@@ -28,12 +28,11 @@
       <dt>{% trans "Price" %}</dt><dd>{{ course.price|money }}</dd>
       <dt>{% trans "School years" %}</dt>
       <dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
-    </dl>  
-  <h4 class="content-title"><u>{% trans "Management" %}</u></h4>
-  <a href="{{ course.get_custom_mail_monitors_url }}" class="btn btn-default hidden-print"><i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}</a> &nbsp;
-  <a href="{{ course.get_absolute_url }}" class="btn btn-default hidden-print"><i class="icon-check"></i>&nbsp;{% trans "Check registrations" %}</a>
-
-    </div>
+    </dl>
+    <h4 class="content-title"><u>{% trans "Management" %}</u></h4>
+    <a href="{{ course.get_custom_mail_monitors_url }}" class="btn btn-default hidden-print"><i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}</a> &nbsp;
+    <a href="{{ course.get_absolute_url }}" class="btn btn-default hidden-print"><i class="icon-check"></i>&nbsp;{% trans "Check registrations" %}</a>
+  </div>
 </section>
 
 {% include 'absences/absences-table.html' %}

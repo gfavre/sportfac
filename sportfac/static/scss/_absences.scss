@@ -1,10 +1,29 @@
 .absences {
-    
-    .child-name {
-        padding: 10px;
-        line-height: 1.5;
-    }
-    .unavailable {
-        background-color: #ddd !important;
-    }
+
+  .child-name {
+    padding: 10px;
+    line-height: 1.5;
+
+  }
+  .unavailable {
+    background-color: #ddd !important;
+  }
+
+  thead tr th:not(.small-col) {
+    vertical-align: bottom;
+  }
+
+  thead th.small-col {
+    height: 100px;
+    white-space: nowrap;
+    width: 40px;
+    transform: rotate(-90deg) translate(-33px, 0px) ;
+  }
+
+  tbody th, tfoot th {
+    vertical-align: middle;
+    font-weight: normal;
+  }
+
+
 }
