@@ -21,7 +21,7 @@ class AuthenticationForm(auth_forms.AuthenticationForm):
     def __init__(self, *args, **kwargs):
         "Convert to floppyform"
         super(AuthenticationForm, self).__init__(*args, **kwargs)
-        self.fields['username'].widget = forms.EmailInput()
+        self.fields['username'].widget = forms.TextInput()
         self.fields['password'].widget = forms.PasswordInput()
 
 
