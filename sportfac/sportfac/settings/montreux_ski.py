@@ -15,6 +15,10 @@ RAVEN_CONFIG = {
     'dsn': 'https://226a25de763049f1aa6b2405815ad74f:f3ec6c3228264c5289854488cb3bd928@sentry.evoe.wine/4',
 }
 
+
+LOGIN_URL = '/hiver/account/login/'
+LOGOUT_URL = '/hiver/account/logout/'
+
 KEPCHUP_USE_ABSENCES = True
 KEPCHUP_IMPORT_CHILDREN = True
 KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = False
