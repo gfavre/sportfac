@@ -57,7 +57,7 @@ class UpdateLevelView(generics.UpdateAPIView):
 
 class UpdateRegistrationNoteView(generics.UpdateAPIView):
     queryset = Registration.objects.all()
-    permissions_classes = (InstructorPermission,)
+    permission_classes = (InstructorPermission,)
     serializer_class = RegistrationNoteSerializer
 
 

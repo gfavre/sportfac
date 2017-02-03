@@ -1,5 +1,6 @@
 from rest_framework import permissions
 
+
 class ManagerPermission(permissions.IsAuthenticated):
     def has_object_permission(self, request, view, obj):
         """
@@ -37,4 +38,3 @@ class InstructorPermission(permissions.IsAuthenticated):
         if request.user.is_manager or request.user.is_staff or request.user.is_superuser:
             return True
         return request.user in obj.course.instructors.all()
-    
