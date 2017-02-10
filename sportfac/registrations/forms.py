@@ -30,7 +30,9 @@ class ChildForm(forms.ModelForm):
                                      required=False)
     id_lagapeo = forms.IntegerField(label=_("SSF number"), required=False)
     
-    school = forms.ModelChoiceField(label=_("School"), queryset=School.objects.all(), required=False)
+    school = forms.ModelChoiceField(label=_("School"),
+                                    queryset=School.objects.filter(selectable=True),
+                                    required=False)
     emergency_number = forms.CharField(label=_("Emergency number"), required=settings.KEPCHUP_EMERGENCY_NUMBER_MANDATORY)
     bib_number = forms.CharField(label=_("Bib number"), required=False)
     

@@ -119,7 +119,7 @@ class ChildrenSerializer(serializers.ModelSerializer):
     teacher = serializers.PrimaryKeyRelatedField(many=False, read_only=False,
                                                  queryset=Teacher.objects.all(), required=False, allow_null=True)
     school = serializers.PrimaryKeyRelatedField(many=False, read_only=False,
-                                                queryset=School.objects.all(), required=False, allow_null=True)
+                                                queryset=School.objects.filter(selectable=True), required=False, allow_null=True)
     school_year = SchoolYearField(many=False, read_only=False, queryset=SchoolYear.visible_objects.all())
     ext_id = serializers.IntegerField(source='id_lagapeo', required=False, allow_null=True, max_value=100000000)
     

@@ -266,6 +266,7 @@ class SchoolYear(models.Model):
 
 class School(models.Model):
     name = models.CharField(_("Name"), max_length=50)
+    selectable = models.BooleanField(default=True)
 
     def __unicode__(self):
         return self.name

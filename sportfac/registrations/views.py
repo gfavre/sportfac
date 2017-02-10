@@ -25,7 +25,7 @@ class ChildrenListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super(ChildrenListView, self).get_context_data(**kwargs)
         if settings.KEPCHUP_CHILD_SCHOOL:
-            context['schools'] = json.dumps(list(School.objects.values('id', 'name')))
+            context['schools'] = json.dumps(list(School.objects.filter(selectable=True).values('id', 'name')))
         else:
             context['school'] = json.dumps([])
         return context
