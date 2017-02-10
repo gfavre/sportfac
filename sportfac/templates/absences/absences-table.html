@@ -2,13 +2,17 @@
 {% load duration switzerland extra sekizai_tags staticfiles matrix status mathfilters %}
 {% addtoblock "css" %}
 <style>
-.small-coll {
+.rotated-heading {
     height: 100px;
     white-space: nowrap;
+    vertical-align: middle;
 }
-.small-coll div {
+.rotated-heading div {
     transform: rotate(-90deg) translate(-33px, 0px);
     width: 40px;
+}
+.rotated-heading div span {
+    padding-left:10px;
 }
 
 </style>
@@ -20,12 +24,12 @@
       <th style="width:5.5cm;">{% trans "Name" %}</th>
 
       {% if BIB_NUMBERS %}
-      <th class="small-coll"><div><span>{% trans "Bib number" %}</span></div></th>
+      <th class="rotated-heading"><div><span>{% trans "Bib number" %}</span></div></th>
       {% endif %}
       {% if REGISTRATION_LEVELS %}
       <th>{% trans "Announced level" %}</th>
-      <th class="small-col level">{% trans "level -1" %}</th>
-      <th class="small-col level">{% trans "level 0" %}</th>
+      <th class="rotated-heading"><div><span>{% trans "level -1" %}</span></div></th>
+      <th class="rotated-heading"><div><span>{% trans "level 0" %}</span></div></th>
       {% endif %}
       {% if DISPLAY_CAR_NUMBER %}
       <th class="small-col">
