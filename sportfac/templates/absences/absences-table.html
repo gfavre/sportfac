@@ -67,6 +67,11 @@
       <th>
           <select name="instructor" class="instructor hidden-print"
                   data-session-url="{{ session.get_api_url }}">
+            {% if session.instructor not in course.instructors.all %}
+             <option value="{{ session.instructor.id }}" selected>
+               {{ session.instructor.full_name }}
+             </option>
+            {% endif %}
             {% for instructor in course.instructors.all %}
             <option value="{{ instructor.id }}"{% if session.instructor == instructor %} selected{% endif %}>
               {{ instructor.full_name }}
