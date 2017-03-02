@@ -85,7 +85,7 @@ class CustomMailParticipantsPreview(CustomMailMixin, BackendMailParticipantsView
 
     def get_context_data(self, **kwargs):
         kwargs['prev'] = self.request.GET.get('prev', None)
-        return super(CustomUserCustomMailCreateView, self).get_context_data(**kwargs)
+        return super(CustomMailParticipantsPreview, self).get_context_data(**kwargs)
 
     def get_success_url(self):
         return reverse('backend:course-detail', kwargs=self.kwargs)
