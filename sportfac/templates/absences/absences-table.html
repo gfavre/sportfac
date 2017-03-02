@@ -1,23 +1,40 @@
 {% load i18n %}
 {% load duration switzerland extra sekizai_tags staticfiles matrix status mathfilters %}
-
+{% addtoblock "css" %}
+<style>
+.rotated-heading {
+    height: 100px;
+    width: 50px;
+    white-space: nowrap;
+    vertical-align: middle!important;
+}
+.rotated-heading div {
+    transform: rotate(-90deg) translate(-33px, 0px);
+    width: 40px;
+}
+.rotated-heading div span {
+    padding-left:10px;
+}
+.absences tr
+</style>
+{% endaddtoblock %}
 <div class="table-responsive">
 <table class="table table-bordered table-hover table-condensed absences" style="table-layout: fixed;">
   <thead>
     <tr>
-      <th>{% trans "Name" %}</th>
+      <th style="width:5.5cm;">{% trans "Name" %}</th>
 
       {% if BIB_NUMBERS %}
-      <th class="small-col">{% trans "Bib number" %}</th>
+      <th class="rotated-heading"><div><span>{% trans "Bib number" %}</span></div></th>
       {% endif %}
       {% if REGISTRATION_LEVELS %}
       <th>{% trans "Announced level" %}</th>
-      <th class="small-col level">{% trans "level -1" %}</th>
-      <th class="small-col level">{% trans "level 0" %}</th>
+      <th class="rotated-heading"><div><span>{% trans "level -1" %}</span></div></th>
+      <th class="rotated-heading"><div><span>{% trans "level 0" %}</span></div></th>
       {% endif %}
       {% if DISPLAY_CAR_NUMBER %}
-      <th class="small-col">
-        {% trans "Bus" %}
+      <th class="rotated-heading">
+        <div><span>{% trans "Bus" %}</span></div>
       </th>
       {% endif %}
       {% if DISPLAY_REGISTRATION_NOTE %}
@@ -92,7 +109,7 @@
   {% for registration in course.participants.all %}
   {% with units=forloop.counter0 %}
     <tr data-child="{{ registration.child.id }}">
-       <th class="text-nowrap child-name" style="width: 1%;">
+       <th class=" child-name">
             {% if request.user.is_manager %}
             <a href="{{ registration.child.get_backend_url}}">{{ registration.child.full_name }}</a>
             {% else %}
