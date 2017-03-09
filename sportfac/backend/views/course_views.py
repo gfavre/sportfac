@@ -199,10 +199,16 @@ class PaySlipMontreux(BackendMixin, FormView):
     def form_valid(self, form, **kwargs):
         context = self.get_context_data(**kwargs)
         context['rate'] = float(form.cleaned_data['rate'])
+        context['rate_mode'] = form.cleaned_data['rate_mode']
         context['function'] = form.cleaned_data['function']
-        duration = context['course'].duration
-        hours = duration.seconds / 3600.0 + duration.days * 24
-        context['amount'] = context['rate'] * context['sessions'].count() * hours
+
+        if form.cleaned_data['rate_mode'] == 'hour':
+            duration = context['course'].duration
+            hours = duration.seconds / 3600.0 + duration.days * 24
+            context['amount'] = float(context['rate']) * float(context['sessions'].count()) * hours
+        else:
+            context['amount'] = float(context['sessions'].count()) * context['rate']
+
         return TemplateResponse(
             request=self.request,
             template=['backend/course/pay-slip-montreux.html'],

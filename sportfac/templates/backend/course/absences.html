@@ -17,7 +17,12 @@
       <dd>
         <ul class="list-unstyled">
         {% for instructor in course.instructors.all %}
-          <li><a href="{{ instructor.get_backend_url }}">{{ instructor.full_name  }}</a></li>
+          <li>
+            <a href="{{ instructor.get_backend_url }}">{{ instructor.full_name  }}</a>
+            {% if FICHE_SALAIRE_MONTREUX %}
+                &mdash;<a href="{% url 'backend:pay-slip-montreux' course=course.pk instructor=instructor.pk %}" ><i class="icon-doc-text"></i> {% trans "Create pay slip" %}</a>
+            {% endif %}
+          </li>
         {% endfor %}
         </ul>
       </dd>

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-02 18:37+0100\n"
+"POT-Creation-Date: 2017-03-09 18:26+0100\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -18,31 +18,31 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: sportfac/absences/models.py:15 sportfac/absences/templatetags/status.py:10
-#: sportfac/templates/absences/absences-table.html:166
-#: sportfac/templates/absences/absences-table.html:388
+#: sportfac/templates/absences/absences-table.html:194
+#: sportfac/templates/absences/absences-table.html:416
 msgid "Absent"
 msgstr "Absent"
 
 #: sportfac/absences/models.py:16 sportfac/absences/templatetags/status.py:11
-#: sportfac/templates/absences/absences-table.html:171
-#: sportfac/templates/absences/absences-table.html:392
+#: sportfac/templates/absences/absences-table.html:199
+#: sportfac/templates/absences/absences-table.html:420
 msgid "Excused"
 msgstr "Excusé"
 
 #: sportfac/absences/models.py:17 sportfac/absences/templatetags/status.py:12
-#: sportfac/templates/absences/absences-table.html:176
-#: sportfac/templates/absences/absences-table.html:396
+#: sportfac/templates/absences/absences-table.html:204
+#: sportfac/templates/absences/absences-table.html:424
 msgid "Medical certificate"
 msgstr "Certificat médical"
 
 #: sportfac/absences/models.py:18 sportfac/absences/templatetags/status.py:13
-#: sportfac/templates/absences/absences-table.html:400
+#: sportfac/templates/absences/absences-table.html:428
 msgid "Late arrival"
 msgstr "En retard"
 
 #: sportfac/absences/templatetags/status.py:14 sportfac/api/serializers.py:36
-#: sportfac/templates/absences/absences-table.html:161
-#: sportfac/templates/absences/absences-table.html:384
+#: sportfac/templates/absences/absences-table.html:189
+#: sportfac/templates/absences/absences-table.html:412
 msgid "Present"
 msgstr "Présent"
 
@@ -299,7 +299,7 @@ msgstr "12S"
 
 #: sportfac/activities/models.py:53 sportfac/contact/forms.py:10
 #: sportfac/profiles/models.py:268
-#: sportfac/templates/absences/absences-table.html:8
+#: sportfac/templates/absences/absences-table.html:25
 #: sportfac/templates/activities/course_detail.html:142
 #: sportfac/templates/backend/activity/list.html:38
 #: sportfac/templates/backend/course/detail-phase2.html:175
@@ -679,7 +679,19 @@ msgstr "Fonction"
 
 #: sportfac/backend/forms.py:180
 msgid "Rate"
-msgstr "Tarif horaire"
+msgstr "Tarif"
+
+#: sportfac/backend/forms.py:181
+msgid "Rate mode"
+msgstr "Type de tarification"
+
+#: sportfac/backend/forms.py:182
+msgid "Daily"
+msgstr "par jour"
+
+#: sportfac/backend/forms.py:183
+msgid "Hourly"
+msgstr "par heure"
 
 #: sportfac/backend/models.py:15
 msgid "Creating period"
@@ -1321,11 +1333,11 @@ msgstr "Année scolaire"
 msgid "School years"
 msgstr "Années scolaires"
 
-#: sportfac/profiles/models.py:274
+#: sportfac/profiles/models.py:275
 msgid "school"
 msgstr "école"
 
-#: sportfac/profiles/models.py:275
+#: sportfac/profiles/models.py:276
 msgid "schools"
 msgstr "écoles"
 
@@ -1384,7 +1396,7 @@ msgstr "Numéro SSF"
 msgid "School"
 msgstr "École"
 
-#: sportfac/registrations/forms.py:34 sportfac/registrations/models.py:299
+#: sportfac/registrations/forms.py:36 sportfac/registrations/models.py:299
 #: sportfac/registrations/resources.py:45
 #: sportfac/templates/activities/course_detail.html:152
 #: sportfac/templates/backend/course/detail-phase2.html:178
@@ -1393,9 +1405,9 @@ msgstr "École"
 msgid "Emergency number"
 msgstr "Numéro d'urgence"
 
-#: sportfac/registrations/forms.py:35 sportfac/registrations/models.py:302
+#: sportfac/registrations/forms.py:37 sportfac/registrations/models.py:302
 #: sportfac/registrations/resources.py:33
-#: sportfac/templates/absences/absences-table.html:11
+#: sportfac/templates/absences/absences-table.html:28
 #: sportfac/templates/activities/course_detail.html:140
 #: sportfac/templates/backend/course/detail-phase2.html:173
 #: sportfac/templates/backend/course/detail.html:182
@@ -1438,7 +1450,7 @@ msgid "End course level"
 msgstr "Niveau après le cours"
 
 #: sportfac/registrations/models.py:58
-#: sportfac/templates/absences/absences-table.html:25
+#: sportfac/templates/absences/absences-table.html:42
 msgid "Note"
 msgstr "Note"
 
@@ -1638,40 +1650,40 @@ msgstr ""
 msgid "Administrators have been warned."
 msgstr "Les administrateurs ont été prévenus du problème."
 
-#: sportfac/templates/absences/absences-table.html:14
+#: sportfac/templates/absences/absences-table.html:31
 msgid "Announced level"
 msgstr "Niv. annoncé"
 
-#: sportfac/templates/absences/absences-table.html:15
+#: sportfac/templates/absences/absences-table.html:32
 msgid "level -1"
 msgstr "Niv. -1"
 
-#: sportfac/templates/absences/absences-table.html:16
+#: sportfac/templates/absences/absences-table.html:33
 msgid "level 0"
 msgstr "Niv. 0"
 
-#: sportfac/templates/absences/absences-table.html:20
+#: sportfac/templates/absences/absences-table.html:37
 msgid "Bus"
 msgstr "Car"
 
-#: sportfac/templates/absences/absences-table.html:46
+#: sportfac/templates/absences/absences-table.html:63
 msgid "New session"
 msgstr "Nouvelle session"
 
-#: sportfac/templates/absences/absences-table.html:74
-#: sportfac/templates/absences/absences-table.html:243
+#: sportfac/templates/absences/absences-table.html:97
+#: sportfac/templates/absences/absences-table.html:271
 msgid "other"
 msgstr "autre"
 
-#: sportfac/templates/absences/absences-table.html:131
+#: sportfac/templates/absences/absences-table.html:155
 msgid "Edit note"
 msgstr "Editer la note"
 
-#: sportfac/templates/absences/absences-table.html:181
+#: sportfac/templates/absences/absences-table.html:209
 msgid "Late"
 msgstr "En retard"
 
-#: sportfac/templates/absences/absences-table.html:200
+#: sportfac/templates/absences/absences-table.html:228
 #: sportfac/templates/backend/portlets/registration_dates.html:19
 #: sportfac/templates/backend/registration/wizard.html:35
 #: sportfac/templates/backend/registration_dates.html:18
@@ -1713,8 +1725,8 @@ msgstr "Email à tous les participants"
 msgid "Check registrations"
 msgstr "Vérifier les inscriptions"
 
-#: sportfac/templates/absences/absences.html:42
-#: sportfac/templates/backend/course/absences.html:62
+#: sportfac/templates/absences/absences.html:41
+#: sportfac/templates/backend/course/absences.html:63
 msgid "Manage absences for"
 msgstr "Gérer les absences de"
 

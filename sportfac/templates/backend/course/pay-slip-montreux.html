@@ -155,8 +155,10 @@ th {
       <tr>
         <th>Fonction</th>
         <th>Nb cours</th>
+        {% if rate_mode == 'hour' %}
         <th></th>
         <th>Durée (heures)</th>
+        {% endif %}
         <th></th>
         <th>Tarif</th>
         <th></th>
@@ -167,8 +169,10 @@ th {
         {{ function }}
       </td>
       <td>{{ sessions.count }}</td>
+      {% if rate_mode == 'hour' %}
       <td>&times;</td>
       <td>{{ course.duration|hours|floatformat:2 }}</td>
+      {% endif %}
       <td>&times;</td>
       <td>{{ rate|money }}</td>
       <td>=</td>
