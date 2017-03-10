@@ -28,7 +28,7 @@
       <th class="rotated-heading"><div><span>{% trans "Bib number" %}</span></div></th>
       {% endif %}
       {% if REGISTRATION_LEVELS %}
-      <th>{% trans "Announced level" %}</th>
+      <th class="rotated-heading"><div><span>{% trans "Announced level" %}</span></div></th>
       <th class="rotated-heading"><div><span>{% trans "level -1" %}</span></div></th>
       <th class="rotated-heading"><div><span>{% trans "level 0" %}</span></div></th>
       {% endif %}
@@ -96,7 +96,7 @@
             {% endfor %}
             <option value=""{% if not session.instructor %} selected{% endif %}>{% trans "other" %}</option>
           </select>
-          <span class="visible-print-inline">{{ session.instructor.full_name}}</span>
+          <span class="visible-print-inline">{% if session.instructor %}{{ session.instructor.full_name }}{% else %}{% trans "other" %}{% endif %}</span>
           <span class="message success hidden-print" style="display: none"><i class="icon icon-ok-circled text-success"></i></span>
           <span class="message error hidden-print" style="display: none"><i class="icon icon-cancel-circled text-danger"></i></span>
 
@@ -122,7 +122,10 @@
         </th>
         {% endif %}
         {% if REGISTRATION_LEVELS %}
-        <th>{{ registration|answer_to:"Niveau de ski/snowboard" }}</th>
+        <th>
+          <span class="hidden-print">{{ registration|answer_to:"Niveau de ski/snowboard" }}</span>
+          <span class="visible-print">{{ registration|answer_to:"Niveau de ski/snowboard"|truncatewords:"1" }}</span>
+        </th>
         <th class="set-level"
             data-level="{{ registration.before_level }}"
             data-key="before_level"
@@ -270,6 +273,7 @@
     {% endfor %}
     <option value=""{% if not user in course.instructors.all %} selected{% endif %}>{% trans "other" %}</option>
   </select>
+  <span class="visible-print-inline"></span>
   <span class="message success" style="display: none"><i class="icon icon-ok-circled text-success"></i></span> 
   <span class="message error" style="display: none"><i class="icon icon-cancel-circled text-danger"></i></span> 
 </th>
@@ -378,12 +382,14 @@
       var parent = $(this).parent();
       $('.message.error', parent).hide();
       $('.message.success', parent).hide();
+
       $.ajax({
         url: $(this).data('session-url'),
         type: 'PUT',
         data: {'instructor': $(this).val() },
         success: function(){
           $('.message.success', parent).show();
+          $('.visible-print-inline', parent).text($('option:selected', parent).text());
         },
         error: function(){
           $('.message.error', parent).show();
