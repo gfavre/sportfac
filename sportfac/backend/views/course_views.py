@@ -14,6 +14,7 @@ from absences.models import Absence
 from activities.models import Course, Activity
 from activities.forms import CourseForm
 from profiles.models import FamilyUser
+from registrations.models import Registration
 from registrations.resources import RegistrationResource
 from sportfac.views import CSVMixin
 from .mixins import BackendMixin, ExcelResponseMixin
@@ -62,6 +63,8 @@ class CourseAbsenceView(BackendMixin, DetailView):
                                                                      in course.sessions.all()] 
          for registration in course.participants.all()]
         context['courses_list'] = Course.objects.all()
+        context['levels'] = Registration.LEVELS
+
         return context
 
 
