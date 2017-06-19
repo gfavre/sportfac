@@ -26,7 +26,7 @@ class RegistrationAdmin(admin.ModelAdmin):
         'child__first_name', 'child__last_name', 'course__activity__number',
         'course__activity__name', 'course__number',
     )
-    change_list_template = "admin/change_list_filter_sidebar.html"
+    #change_list_template = "admin/change_list_filter_sidebar.html"
     change_list_filter_template = "admin/filter_listing.html"
     inlines = [ExtraInfoInline]
     actions = ['delete_model',]

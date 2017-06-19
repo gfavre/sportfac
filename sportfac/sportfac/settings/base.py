@@ -233,13 +233,14 @@ SHARED_APPS = (
     'rest_framework', # REST API
     'registration', #user registration
     'floppyforms', # better forms
-    'grappelli', # admin interface
+    #'grappelli', # admin interface
     'ckeditor', # wysiwyg editor
     'sekizai', #add_to_block template tag
     #'django_select2', # select2 widget (enhanced select box)
     'dbtemplates', # store templates in db (used by mailer module)
     'dynamic_preferences',
     'mathfilters',
+    'import_export',
 
     # local apps
     'api',

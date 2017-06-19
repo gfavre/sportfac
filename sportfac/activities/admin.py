@@ -8,10 +8,11 @@ from django.contrib.flatpages.admin import FlatPageAdmin
 from django.contrib.flatpages.models import FlatPage
 
 from ckeditor.widgets import CKEditorWidget
+from import_export.admin import ImportExportModelAdmin
 
 from registrations.models import Registration
 from .models import Activity, Course, ExtraNeed
-
+from .resources import CourseResource
 
 class ExtraInline(admin.StackedInline):
     model = Course.extra.through
@@ -87,7 +88,7 @@ class ParticipantsListFilter(admin.SimpleListFilter):
                                    participants__count__gte=models.F('min_participants'))
 
 
-class CoursesAdmin(admin.ModelAdmin):
+class CoursesAdmin(ImportExportModelAdmin):
     list_display =('activity', 'number', 'day', 'start_date', 'start_time', 'duration', 'number_of_participants', 'uptodate',)
     verbose_name = _("course")
     verbose_name_plural = _("courses")
@@ -95,11 +96,10 @@ class CoursesAdmin(admin.ModelAdmin):
     ordering = ('number', 'activity__number', 'activity__name', 'start_date', 'start_time')
     list_filter=(ParticipantsListFilter, 'uptodate',)
     change_list_filter_template = "admin/filter_listing.html"
-    change_list_template = "admin/change_list_filter_sidebar.html"
     save_as = True
     inlines = [ExtraInline,]
 
-    
+    resource_class = CourseResource
     
     def get_queryset(self, request):
         qs = super(CoursesAdmin, self).get_queryset(request)

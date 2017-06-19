@@ -47,7 +47,7 @@ urlpatterns = [
     url(r'404$', TemplateView.as_view(template_name='404.html')),
     url(r'500$', TemplateView.as_view(template_name='500.html')),
 
-    url(r'^grappelli/', include('grappelli.urls')),
+    #url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', include(admin.site.urls)),
 ]
 

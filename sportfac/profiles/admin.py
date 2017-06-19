@@ -79,7 +79,7 @@ class FamilyAdmin(UserAdmin):
 
     list_display = ('email', 'first_name', 'last_name', 'children_names', 'last_login', 'date_joined')
     
-    change_list_template = "admin/change_list_filter_sidebar.html"
+    #change_list_template = "admin/change_list_filter_sidebar.html"
     change_list_filter_template = "admin/filter_listing.html"
 
     
