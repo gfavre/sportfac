@@ -155,7 +155,10 @@ class Course(TimeStampedModel):
     
     @property
     def percentage_full(self):
-        return int(100 * float(self.count_participants) / float(self.max_participants))
+        try:
+            return int(100 * float(self.count_participants) / float(self.max_participants))
+        except ZeroDivisionError:
+            return 100
     
     @property
     def minimal_participants_reached(self):
