@@ -129,7 +129,7 @@ class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
         initial = super(CourseCreateView, self).get_initial()
         activity = self.request.GET.get('activity', None)
         if activity:
-            activity_obj = get_object_or_404(Activity, pk=activity_id)
+            activity_obj = get_object_or_404(Activity, pk=activity)
             initial['activity'] = activity_obj
         return initial
 
