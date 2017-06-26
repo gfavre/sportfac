@@ -1,0 +1,167 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Backup whole database &#8212; Kepchup 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="nav-item nav-item-0"><a href="index.html">Kepchup 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="backup-whole-database">
+<h1>Backup whole database<a class="headerlink" href="#backup-whole-database" title="Permalink to this headline">¶</a></h1>
+<p>mkdir ../backup
+python manage.py dumpdata flatpages &gt; ../backup/flatpages.json
+python manage.py dumpdata profiles.SchoolYear &gt; ../backup/school-years.json
+python manage.py dumpdata profiles.Teacher &gt; ../backup/teachers.json
+python manage.py dumpdata auth.Group profiles.familyUser &gt; ../backup/users.json
+python manage.py dumpdata profiles.Child &gt; ../backup/children.json
+python manage.py dumpdata activities &gt; ../backup/activities.json
+python manage.py dumpdata profiles.Registration  &gt; ../backup/registrations.json
+python manage.py dumpdata profiles.ExtraInfo  &gt; ../backup/extra.json
+python manage.py dumpdata mailer &gt; ../backup/mail.json
+python manage.py dumpdata dbtemplates  &gt; ../backup/dbtemplates.json</p>
+</div>
+<div class="section" id="reload-backup">
+<h1>Reload backup<a class="headerlink" href="#reload-backup" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="migrate">
+<h2>Migrate<a class="headerlink" href="#migrate" title="Permalink to this headline">¶</a></h2>
+<p>python manage.py migrate_schemas –shared
+python manage.py shell:</p>
+<p>from datetime import datetime, timedelta</p>
+<p>from django.conf import settings
+from constance.admin import config</p>
+<p>from backend.models import YearTenant, Domain</p>
+<dl class="docutils">
+<dt>tenant = YearTenant(</dt>
+<dd>schema_name=’period_20150801_20160731’,
+start_date=datetime(2015, 8, 1),
+end_date=datetime(2016, 7, 31),
+status=’ready’</dd>
+</dl>
+<p>)
+tenant.save()
+tenant.create_schema(check_if_exists=True)</p>
+<p>domain = Domain()
+domain.domain = ‘2015-2016’
+domain.tenant = tenant
+domain.is_current = True
+domain.is_primary = True
+domain.save()</p>
+</div>
+<div class="section" id="moving-from-non-multi-db-to-multidb">
+<h2>Moving from non multi db to multidb<a class="headerlink" href="#moving-from-non-multi-db-to-multidb" title="Permalink to this headline">¶</a></h2>
+<p>git checkout b9f805d1a28179527e23a5c38efc5079b3d69e39
+python manage.py migrate profiles 0001
+python manage.py migrate registrations 0001</p>
+<p>python manage.py loaddata ../backup/school-years.json</p>
+<p>sed ‘s/profiles.teacher/schools.teacher/g’ ../backup/teachers.json &gt; ../backup/teachers-fixed.json
+python manage.py tenant_command loaddata ../backup/teachers-fixed.json</p>
+<p>sed ‘s/profiles.teacher/schools.teacher/g’ ../backup/users.json &gt; ../backup/users-fixed.json
+python manage.py loaddata ../backup/users-fixed.json</p>
+<p>sed ‘s/profiles.teacher/schools.teacher/g’ ../backup/children.json &gt; ../backup/children-model1.json
+sed ‘s/profiles.child/registrations.child/g’ ../backup/children-model1.json &gt; ../backup/children-fixed.json
+rm ../backup/children-model1.json
+python manage.py tenant_command loaddata ../backup/children-fixed.json</p>
+<p>python manage.py loaddata ../backup/flatpages.json</p>
+<p>python manage.py tenant_command loaddata ../backup/activities.json</p>
+<p>sed ‘s/profiles.registration/registrations.registration/g’ ../backup/registrations.json &gt; ../backup/registrations-model1.json
+sed ‘s/profiles.child/registrations.child/g’ ../backup/registrations-model1.json &gt; ../backup/registrations-fixed.json
+rm ../backup/registrations-model1.json
+python manage.py tenant_command loaddata ../backup/registrations-fixed.json</p>
+<p>sed ‘s/profiles.extrainfo/registrations.extrainfo/g’ ../backup/extra.json &gt; ../backup/extra-fixed.json
+python manage.py tenant_command loaddata ../backup/extra-fixed.json</p>
+<p>python manage.py loaddata ../backup/mail.json</p>
+<p>git checkout master
+python manage.py migrate profiles
+python manage.py migrate registrations</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Backup whole database</a></li>
+<li><a class="reference internal" href="#reload-backup">Reload backup</a><ul>
+<li><a class="reference internal" href="#migrate">Migrate</a></li>
+<li><a class="reference internal" href="#moving-from-non-multi-db-to-multidb">Moving from non multi db to multidb</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/backup.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="nav-item nav-item-0"><a href="index.html">Kepchup 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015, Beyond the Wall.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
+    </div>
+  </body>
+</html>

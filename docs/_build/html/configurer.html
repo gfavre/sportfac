@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Configuration &mdash; Kepchup 0.1 documentation</title>
+    <title>Configuration &#8212; Kepchup 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -17,16 +17,19 @@
         VERSION:     '0.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Kepchup 0.1 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Install" href="install.html" />
     <link rel="prev" title="Welcome to sportfac_project’s documentation!" href="index.html" /> 
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -34,9 +37,12 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
+          <a href="install.html" title="Install"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
           <a href="index.html" title="Welcome to sportfac_project’s documentation!"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Kepchup 0.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Kepchup 0.1 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -49,9 +55,9 @@
 <h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
 <img alt="_images/configure.png" src="_images/configure.png" />
 <div class="section" id="adresse">
-<h2>[1] Adresse<a class="headerlink" href="#adresse" title="Permalink to this headline">¶</a></h2>
-<p>L&#8217;adresse du site est celle qui sera communiquée aux utilisateurs, sous la forme, par exemple, <a class="reference external" href="http://nyon.kepchup.ch">http://nyon.kepchup.ch</a>.
-Les adresses du type votrenom.ch sont à réserver auprès d&#8217;un registrar, par exemple <a class="reference external" href="http://gandi.net">Gandi</a>.</p>
+<h2>Adresse<a class="headerlink" href="#adresse" title="Permalink to this headline">¶</a></h2>
+<p>L’adresse du site est celle qui sera communiquée aux utilisateurs, sous la forme, par exemple, <a class="reference external" href="https://nyon.kepchup.ch">https://nyon.kepchup.ch</a>.
+Les adresses du type votrenom.ch sont à réserver auprès d’un registrar, par exemple <a class="reference external" href="http://gandi.net">Gandi</a>.</p>
 <p>Les adresses du type votrenom.kepchup.ch sont gratuites.</p>
 <ul class="simple">
 <li>domaine personnel: _____________________</li>
@@ -61,10 +67,18 @@ Les adresses du type votrenom.ch sont à réserver auprès d&#8217;un registrar,
 <li>sous domaine de kepchup: _________________.kepchup.ch</li>
 </ul>
 </div>
+<div class="section" id="options">
+<h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
+<p>Certaines fonctionnalités peuvent être activées ou désactivées:</p>
+<ul class="simple">
+<li>Gestion de la facturation (inutile si toutes les activités sont gratuites) oui / non</li>
+<li>Gestion des absences oui / non</li>
+</ul>
+</div>
 <div class="section" id="personnalisation-du-site">
 <h2>Personnalisation du site<a class="headerlink" href="#personnalisation-du-site" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>[2] Titre du site: Il apparait dans la barre de titre du navigateur sur chaque page.</li>
+<li>Titre du site: Il apparait dans la barre de titre du navigateur sur chaque page.</li>
 </ul>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -78,7 +92,7 @@ Les adresses du type votrenom.ch sont à réserver auprès d&#8217;un registrar,
 </tbody>
 </table>
 <ul class="simple">
-<li>[3] Pied de page: il est identique sur toutes les pages. On y place généralement le nom et l&#8217;adresse de contact, ainsi qu&#8217;un logo.</li>
+<li>Pied de page: il est identique sur toutes les pages. On y place généralement le nom et l’adresse de contact, ainsi qu’un logo.</li>
 </ul>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -95,11 +109,12 @@ Les adresses du type votrenom.ch sont à réserver auprès d&#8217;un registrar,
 </tbody>
 </table>
 <ul class="simple">
-<li>[4] Logo: utilisé dans le pied de page, en petit dans la barre d&#8217;adresse.</li>
+<li>Logo: utilisé dans le pied de page, en petit dans la barre d’adresse.</li>
+<li>Image de fond: image éventuellement utilisée en fond de page (ex: <a class="reference external" href="https://ssfmontreux.ch">https://ssfmontreux.ch</a> )</li>
 </ul>
 <div class="section" id="page-d-accueil">
-<h3>Page d&#8217;accueil<a class="headerlink" href="#page-d-accueil" title="Permalink to this headline">¶</a></h3>
-<p>[5] Texte de bienvenue, visible sur la page d&#8217;accueil.</p>
+<h3>Page d’accueil<a class="headerlink" href="#page-d-accueil" title="Permalink to this headline">¶</a></h3>
+<p>Texte de bienvenue, visible sur la page d’accueil.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -126,7 +141,7 @@ Les adresses du type votrenom.ch sont à réserver auprès d&#8217;un registrar,
 </div>
 <div class="section" id="page-de-contact">
 <h3>Page de contact<a class="headerlink" href="#page-de-contact" title="Permalink to this headline">¶</a></h3>
-<p>À droite du formulaire de contact se trouvent les coordonnées complètes. <a class="reference external" href="http://kepchup.ch/contact/">http://kepchup.ch/contact/</a></p>
+<p>À droite du formulaire de contact se trouvent les coordonnées complètes. <a class="reference external" href="https://coppet.kepchup.ch/contact/">https://coppet.kepchup.ch/contact/</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -157,20 +172,20 @@ Les adresses du type votrenom.ch sont à réserver auprès d&#8217;un registrar,
 </div>
 <div class="section" id="page-du-reglement-de-participation">
 <h3>Page du règlement de participation<a class="headerlink" href="#page-du-reglement-de-participation" title="Permalink to this headline">¶</a></h3>
-<p>Un règlement de participation est à prévoir. À titre d&#8217;exemple, celui de Coppet: <a class="reference external" href="http://kepchup.ch/reglement/">http://kepchup.ch/reglement/</a></p>
+<p>Un règlement de participation est à prévoir. À titre d’exemple, celui de Coppet: <a class="reference external" href="https://coppet.kepchup.ch/reglement/">https://coppet.kepchup.ch/reglement/</a></p>
 </div>
 <div class="section" id="page-des-paiements">
 <h3>Page des paiements<a class="headerlink" href="#page-des-paiements" title="Permalink to this headline">¶</a></h3>
-<p>Les utilisateurs paient par virement bancaire, ou en apportant l&#8217;argent directement. Il n&#8217;y a pas de système de paiement en ligne pour le moment.</p>
+<p>Les utilisateurs paient par virement bancaire, ou en apportant l’argent directement. Il n’y a pas de système de paiement en ligne pour le moment.</p>
 <ul class="simple">
-<li>Texte d&#8217;explication.</li>
+<li>Texte d’explication.</li>
 </ul>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Exemple:</th><td class="field-body"><div class="first last line-block">
-<div class="line">Nous vous remercions de verser cette somme d’ici au  {{ registration_end|date:&#8221;j F Y&#8221; }} en privilégiant le virement bancaire sur le compte :</div>
+<div class="line">Nous vous remercions de verser cette somme d’ici au 31.10.2019 en privilégiant le virement bancaire sur le compte :</div>
 <div class="line">IBAN: CH77 0076 7000 C507 0682 4</div>
 <div class="line">Adresse: AIC, 1201 Genève</div>
 </div>
@@ -178,13 +193,22 @@ Les adresses du type votrenom.ch sont à réserver auprès d&#8217;un registrar,
 </tr>
 </tbody>
 </table>
+<ul class="simple">
+<li>Délai de paiement en jours depuis la fin des inscriptions (ex: 30)</li>
+</ul>
 </div>
+</div>
+<div class="section" id="inscriptions">
+<h2>Inscriptions<a class="headerlink" href="#inscriptions" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Nombre maximum d’inscriptions par élève (ex: 4)</li>
+</ul>
 </div>
 <div class="section" id="emails">
 <h2>Emails<a class="headerlink" href="#emails" title="Permalink to this headline">¶</a></h2>
-<p>Beaucoup d&#8217;emails peuvent être envoyés par le système: rappel d&#8217;inscription, de paiement, liste des participants d&#8217;un cours, etc.</p>
+<p>Beaucoup d’emails peuvent être envoyés par le système: rappel d’inscription, de paiement, liste des participants d’un cours, etc.</p>
 <ul class="simple">
-<li>Adresse utilisée pour l&#8217;envoi des emails automatiques</li>
+<li>Adresse utilisée pour l’envoi des emails automatiques</li>
 <li>Signature au bas de chaque email automatique, par exemple:</li>
 </ul>
 <table class="docutils field-list" frame="void" rules="none">
@@ -207,7 +231,7 @@ Les adresses du type votrenom.ch sont à réserver auprès d&#8217;un registrar,
 </table>
 <div class="section" id="fin-des-inscriptions">
 <h3>Fin des inscriptions<a class="headerlink" href="#fin-des-inscriptions" title="Permalink to this headline">¶</a></h3>
-<p>Email envoyé aux utilisateurs qui ont commencé leur inscription, mais ne l&#8217;ont pas terminée.</p>
+<p>Email envoyé aux utilisateurs qui ont commencé leur inscription, mais ne l’ont pas terminée.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -217,11 +241,11 @@ Les adresses du type votrenom.ch sont à réserver auprès d&#8217;un registrar,
 <tr class="field-even field"><th class="field-name">Message:</th><td class="field-body"><div class="first last line-block">
 <div class="line">Madame, Monsieur,</div>
 <div class="line"><br /></div>
-<div class="line">En passant en revue les inscriptions aux sports scolaires facultatifs, nous constatons que les inscriptions pour votre/vos enfant/s ne sont à ce jour pas encore confirmées (passage à l&#8217;étape du paiement).</div>
+<div class="line">En passant en revue les inscriptions aux sports scolaires facultatifs, nous constatons que les inscriptions pour votre/vos enfant/s ne sont à ce jour pas encore confirmées (passage à l’étape du paiement).</div>
 <div class="line"><br /></div>
-<div class="line">Nous vous serions reconnaissants de bien vouloir contrôler les inscriptions que vous avez saisies, de les modifier si nécessaire et de confirmer d&#8217;ici à demain soir afin que nous puissions terminer le processus d&#8217;inscription.</div>
+<div class="line">Nous vous serions reconnaissants de bien vouloir contrôler les inscriptions que vous avez saisies, de les modifier si nécessaire et de confirmer d’ici à demain soir afin que nous puissions terminer le processus d’inscription.</div>
 <div class="line"><br /></div>
-<div class="line">Le site des inscriptions: <a class="reference external" href="http://votrenom.com">http://votrenom.com</a></div>
+<div class="line">Le site des inscriptions: <a class="reference external" href="https://votrenom.com">https://votrenom.com</a></div>
 <div class="line"><br /></div>
 <div class="line">Enfin, nous vous saurions gré de verser le montant relatif à ces inscriptions sur le compte indiqué.</div>
 <div class="line">En vous remerciant de votre collaboration, nous vous adressons nos cordiaux messages.</div>
@@ -233,7 +257,7 @@ Les adresses du type votrenom.ch sont à réserver auprès d&#8217;un registrar,
 </div>
 <div class="section" id="rappel-de-paiement">
 <h3>​Rappel de paiement<a class="headerlink" href="#rappel-de-paiement" title="Permalink to this headline">¶</a></h3>
-<p>Envoyé aux utilisateurs qui n&#8217;ont pas encore payé. Le montant dû est calculé en fonction de l&#8217;utilisateur.</p>
+<p>Envoyé aux utilisateurs qui n’ont pas encore payé. Le montant dû est calculé en fonction de l’utilisateur.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -264,7 +288,7 @@ Les adresses du type votrenom.ch sont à réserver auprès d&#8217;un registrar,
 </div>
 <div class="section" id="infos-pour-le-moniteur">
 <h3>Infos pour le moniteur<a class="headerlink" href="#infos-pour-le-moniteur" title="Permalink to this headline">¶</a></h3>
-<p>Les moniteurs des cours reçoivent avant le début de leur cours un email personnalisé contenant divers formulaires (déclaration d&#8217;heures pour le canton, liste des participants, feuilles de présence).</p>
+<p>Les moniteurs des cours reçoivent avant le début de leur cours un email personnalisé contenant divers formulaires (déclaration d’heures pour le canton, liste des participants, feuilles de présence).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -274,26 +298,26 @@ Les adresses du type votrenom.ch sont à réserver auprès d&#8217;un registrar,
 <tr class="field-even field"><th class="field-name">Message:</th><td class="field-body"><div class="first last line-block">
 <div class="line">Chère monitrice, cher moniteur,</div>
 <div class="line"><br /></div>
-<div class="line">Nous te remercions de t&#8217;engager dans l&#8217;animation d&#8217;une activité du sport scolaire facultatif primaire au sein de notre région et ainsi contribuer à promouvoir la pratique sportive auprès de nos élèves.</div>
+<div class="line">Nous te remercions de t’engager dans l’animation d’une activité du sport scolaire facultatif primaire au sein de notre région et ainsi contribuer à promouvoir la pratique sportive auprès de nos élèves.</div>
 <div class="line">Tu trouveras en pièce jointe tous les documents relatifs au cours dont tu as la charge et qui débute prochainement :</div>
 <div class="line"><br /></div>
 <div class="line">• liste de tous les cours organisés, avec les informations détaillées de lieux, dates et heures</div>
-<div class="line">• liste des participants avec les n° en cas d&#8217;urgence</div>
+<div class="line">• liste des participants avec les n° en cas d’urgence</div>
 <div class="line">• liste de présence à retourner dès la fin du cours</div>
 <div class="line">• feuille de décompte monitrice/moniteur, à retourner dès la fin du cours également</div>
 <div class="line"><br /></div>
-<div class="line">Tu as la responsabilité de prendre toutes les mesures nécessaires lors d&#8217;une absence éventuelle à l&#8217;une ou l&#8217;autre de tes leçons, soit :</div>
+<div class="line">Tu as la responsabilité de prendre toutes les mesures nécessaires lors d’une absence éventuelle à l’une ou l’autre de tes leçons, soit :</div>
 <div class="line"><br /></div>
 <div class="line">• dans toute la mesure du possible, te faire remplacer par une personne compétente</div>
-<div class="line">• dans l&#8217;impossibilité de te faire remplacer, prévenir tous les participants afin d&#8217;éviter le déplacement inutile de ces derniers sur le lieu du cours</div>
+<div class="line">• dans l’impossibilité de te faire remplacer, prévenir tous les participants afin d’éviter le déplacement inutile de ces derniers sur le lieu du cours</div>
 <div class="line">• communiquer ton absence au secrétariat primaire (022-557.58.58)</div>
 <div class="line"><br /></div>
-<div class="line">Afin que nous puissions te régler dans les meilleurs délais, nous te prions de nous retourner, dès la fin d&#8217;un cours, mais au plus tard à la fin de l&#8217;année scolaire, les documents suivants, dûment complétés :</div>
+<div class="line">Afin que nous puissions te régler dans les meilleurs délais, nous te prions de nous retourner, dès la fin d’un cours, mais au plus tard à la fin de l’année scolaire, les documents suivants, dûment complétés :</div>
 <div class="line"><br /></div>
-<div class="line">• feuille de décompte, à compléter à l&#8217;écran, imprimer et signer - 1 feuille par cours et par monitrice/moniteur</div>
+<div class="line">• feuille de décompte, à compléter à l’écran, imprimer et signer - 1 feuille par cours et par monitrice/moniteur</div>
 <div class="line">• liste de présence</div>
 <div class="line"><br /></div>
-<div class="line">Nous restons à ta disposition pour tout complément d&#8217;information, te souhaitons bonne réception de ce courriel et plein succès dans ces activités.</div>
+<div class="line">Nous restons à ta disposition pour tout complément d’information, te souhaitons bonne réception de ce courriel et plein succès dans ces activités.</div>
 <div class="line"><br /></div>
 <div class="line">Meilleurs messages,</div>
 </div>
@@ -303,7 +327,7 @@ Les adresses du type votrenom.ch sont à réserver auprès d&#8217;un registrar,
 </table>
 </div>
 <div class="section" id="debut-d-un-cours">
-<h3>Début d&#8217;un cours<a class="headerlink" href="#debut-d-un-cours" title="Permalink to this headline">¶</a></h3>
+<h3>Début d’un cours<a class="headerlink" href="#debut-d-un-cours" title="Permalink to this headline">¶</a></h3>
 <p>Les parents sont informés par un mail personnalisé pour chacune de leur inscriptions.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -314,7 +338,7 @@ Les adresses du type votrenom.ch sont à réserver auprès d&#8217;un registrar,
 <tr class="field-even field"><th class="field-name">Message:</th><td class="field-body"><div class="first last line-block">
 <div class="line">Madame, Monsieur,</div>
 <div class="line"><br /></div>
-<div class="line">Nous avons le plaisir d&#8217;inviter votre enfant [Prénom et nom de l&#8217;enfant] à la première séance du cours suivant :</div>
+<div class="line">Nous avons le plaisir d’inviter votre enfant [Prénom et nom de l’enfant] à la première séance du cours suivant :</div>
 <div class="line"><br /></div>
 <div class="line">[nom du cours]</div>
 <div class="line">Responsable : [nom du moniteur]</div>
@@ -323,9 +347,37 @@ Les adresses du type votrenom.ch sont à réserver auprès d&#8217;un registrar,
 <div class="line">Nombre de séances : [nombre]</div>
 <div class="line">Rendez-vous/lieu du cours : [lieu]</div>
 <div class="line"><br /></div>
-<div class="line">L&#8217;animatrice/l&#8217;animateur vous donnera toutes les informations en lien avec son cours lors de la 1ère séance.</div>
+<div class="line">L’animatrice/l’animateur vous donnera toutes les informations en lien avec son cours lors de la 1ère séance.</div>
 <div class="line"><br /></div>
-<div class="line">En restant à votre disposition pour tout complément d&#8217;information, nous vous adressons, Madame, Monsieur, nos cordiaux messages.</div>
+<div class="line">En restant à votre disposition pour tout complément d’information, nous vous adressons, Madame, Monsieur, nos cordiaux messages.</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="notification-d-absence">
+<h3>Notification d’absence<a class="headerlink" href="#notification-d-absence" title="Permalink to this headline">¶</a></h3>
+<p>Si la fonctionnalité de gestion des absences est utilisée, nous pouvons configurer l’envoi automatique d’un email aux
+parents après une absence.</p>
+<ul class="simple">
+<li>Délai entre le cours et la notification en jours (ex: 1)</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Sujet:</th><td class="field-body">Sport scolaire facultatif - Absence de [prénom de l’élève] lors du cours [nom du cours]</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Message:</th><td class="field-body"><div class="first last line-block">
+<div class="line">Madame, Monsieur,</div>
+<div class="line"><br /></div>
+<div class="line">Votre enfant, [prénom nom], était absent lors du cours [nom du cours] du [date] :</div>
+<div class="line"><br /></div>
+<div class="line">Nous vous remercions, à l’avenir de transmettre une excuse par SMS au moniteur:</div>
+<div class="line">* [nom instructeur]: [numéro de téléphone]</div>
+<div class="line"><br /></div>
+<div class="line">En restant à votre disposition pour tout complément d’information, nous vous adressons, Madame, Monsieur, nos cordiaux messages.</div>
 </div>
 </td>
 </tr>
@@ -353,19 +405,22 @@ Les adresses du type votrenom.ch sont à réserver auprès d&#8217;un registrar,
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Configuration</a><ul>
-<li><a class="reference internal" href="#adresse">[1] Adresse</a></li>
+<li><a class="reference internal" href="#adresse">Adresse</a></li>
+<li><a class="reference internal" href="#options">Options</a></li>
 <li><a class="reference internal" href="#personnalisation-du-site">Personnalisation du site</a><ul>
-<li><a class="reference internal" href="#page-d-accueil">Page d&#8217;accueil</a></li>
+<li><a class="reference internal" href="#page-d-accueil">Page d’accueil</a></li>
 <li><a class="reference internal" href="#page-de-contact">Page de contact</a></li>
 <li><a class="reference internal" href="#page-du-reglement-de-participation">Page du règlement de participation</a></li>
 <li><a class="reference internal" href="#page-des-paiements">Page des paiements</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#inscriptions">Inscriptions</a></li>
 <li><a class="reference internal" href="#emails">Emails</a><ul>
 <li><a class="reference internal" href="#fin-des-inscriptions">Fin des inscriptions</a></li>
 <li><a class="reference internal" href="#rappel-de-paiement">​Rappel de paiement</a></li>
 <li><a class="reference internal" href="#infos-pour-le-moniteur">Infos pour le moniteur</a></li>
-<li><a class="reference internal" href="#debut-d-un-cours">Début d&#8217;un cours</a></li>
+<li><a class="reference internal" href="#debut-d-un-cours">Début d’un cours</a></li>
+<li><a class="reference internal" href="#notification-d-absence">Notification d’absence</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#admininistrateur">Admininistrateur</a></li>
@@ -375,25 +430,25 @@ Les adresses du type votrenom.ch sont à réserver auprès d&#8217;un registrar,
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
-                        title="previous chapter">Welcome to sportfac_project&#8217;s documentation!</a></p>
+                        title="previous chapter">Welcome to sportfac_project’s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="install.html"
+                        title="next chapter">Install</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/configurer.txt"
+      <li><a href="_sources/configurer.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -407,14 +462,17 @@ Les adresses du type votrenom.ch sont à réserver auprès d&#8217;un registrar,
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
+          <a href="install.html" title="Install"
+             >next</a> |</li>
+        <li class="right" >
           <a href="index.html" title="Welcome to sportfac_project’s documentation!"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Kepchup 0.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Kepchup 0.1 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2015, Beyond the Wall.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+        &#169; Copyright 2015, Beyond the Wall.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>

@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Install &mdash; Kepchup 0.1 documentation</title>
+    <title>Install &#8212; Kepchup 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -17,16 +17,18 @@
         VERSION:     '0.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Kepchup 0.1 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="Configuration" href="configurer.html" /> 
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -36,7 +38,7 @@
         <li class="right" >
           <a href="configurer.html" title="Configuration"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Kepchup 0.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Kepchup 0.1 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -48,15 +50,15 @@
   <div class="section" id="install">
 <h1>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h1>
 <p>This is where you write how to get a new laptop to run this project.</p>
-<div class="highlight-shell"><div class="highlight"><pre><span class="nb">export </span><span class="nv">PROJECT</span><span class="o">=</span>nyon
+<div class="highlight-shell"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PROJECT</span><span class="o">=</span>nyon
 
-<span class="nb">export </span><span class="nv">BASE_DIR</span><span class="o">=</span>~/Documents/Projets
-<span class="nb">export </span><span class="nv">PROJECT_NAME</span><span class="o">=</span>sportfac_<span class="nv">$PROJECT</span>
-<span class="nb">export </span><span class="nv">PROJECT_DIR</span><span class="o">=</span><span class="nv">$BASE_DIR</span>/<span class="nv">$PROJECT_NAME</span>
-<span class="nb">export </span><span class="nv">DB_NAME</span><span class="o">=</span><span class="nv">$PROJECT_NAME</span>
-<span class="nb">export </span><span class="nv">DB_USER</span><span class="o">=</span><span class="nv">$PROJECT_NAME</span>
-<span class="nb">export </span><span class="nv">DB_PASSWORD</span><span class="o">=</span><span class="nv">$PROJECT_NAME</span>
-<span class="nb">export </span><span class="nv">VENVDIR</span><span class="o">=</span>~/.virtualenvs/<span class="nv">$PROJECT_NAME</span>
+<span class="nb">export</span> <span class="nv">BASE_DIR</span><span class="o">=</span>~/Documents/Projets
+<span class="nb">export</span> <span class="nv">PROJECT_NAME</span><span class="o">=</span>sportfac_<span class="nv">$PROJECT</span>
+<span class="nb">export</span> <span class="nv">PROJECT_DIR</span><span class="o">=</span><span class="nv">$BASE_DIR</span>/<span class="nv">$PROJECT_NAME</span>
+<span class="nb">export</span> <span class="nv">DB_NAME</span><span class="o">=</span><span class="nv">$PROJECT_NAME</span>
+<span class="nb">export</span> <span class="nv">DB_USER</span><span class="o">=</span><span class="nv">$PROJECT_NAME</span>
+<span class="nb">export</span> <span class="nv">DB_PASSWORD</span><span class="o">=</span><span class="nv">$PROJECT_NAME</span>
+<span class="nb">export</span> <span class="nv">VENVDIR</span><span class="o">=</span>~/.virtualenvs/<span class="nv">$PROJECT_NAME</span>
 
 git clone http://git.pygreg.ch/sportfac.git <span class="nv">$PROJECT_DIR</span>
 <span class="nb">cd</span> <span class="nv">$PROJECT_DIR</span>
@@ -65,11 +67,11 @@ git push --set-upstream origin <span class="nv">$PROJECT</span>
 mkvirtualenv <span class="nv">$PROJECT_NAME</span>
 <span class="nb">echo</span> <span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span> &gt; <span class="nv">$VENVDIR</span>/.project
 
-<span class="c"># Database</span>
+<span class="c1"># Database</span>
 <span class="nb">echo</span> <span class="s2">&quot;CREATE ROLE </span><span class="nv">$DB_USER</span><span class="s2"> WITH LOGIN UNENCRYPTED PASSWORD &#39;</span><span class="nv">$DB_PASSWORD</span><span class="s2">&#39;&quot;</span> <span class="p">|</span> psql --user postgres
 <span class="nb">echo</span> <span class="s2">&quot;CREATE DATABASE </span><span class="nv">$DB_NAME</span><span class="s2"> WITH OWNER=</span><span class="nv">$DB_USER</span><span class="s2">&quot;</span> <span class="p">|</span> psql --user postgres
 
-<span class="c"># Env vars</span>
+<span class="c1"># Env vars</span>
 <span class="nb">echo</span> <span class="s2">&quot;export PYTHONPATH=</span><span class="nv">$PROJECT_DIR</span><span class="s2">/sportfac&quot;</span> &gt;&gt; <span class="nv">$VENVDIR</span>/bin/postactivate
 <span class="nb">echo</span> <span class="s1">&#39;export DJANGO_SETTINGS_MODULE=&quot;sportfac.settings.local&quot;&#39;</span> &gt;&gt; <span class="nv">$VENVDIR</span>/bin/postactivate
 <span class="nb">echo</span> <span class="s2">&quot;export DB_USER=</span><span class="nv">$DB_USER</span><span class="s2">&quot;</span> &gt;&gt; <span class="nv">$VENVDIR</span>/bin/postactivate
@@ -79,7 +81,7 @@ mkvirtualenv <span class="nv">$PROJECT_NAME</span>
 <span class="nb">echo</span> <span class="s2">&quot;export PHANTOMJS=/usr/local/bin/phantomjs&quot;</span> &gt;&gt; <span class="nv">$VENVDIR</span>/bin/postactivate
 
 
-<span class="c"># soft</span>
+<span class="c1"># soft</span>
 pip install -r requirements/local.txt
 django-admin syncdb
 django-admin migrate
@@ -100,21 +102,18 @@ django-admin loaddata sportfac/sportfac/fixtures/flatpages.json
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/install.txt"
+      <li><a href="_sources/install.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -130,12 +129,12 @@ django-admin loaddata sportfac/sportfac/fixtures/flatpages.json
         <li class="right" >
           <a href="configurer.html" title="Configuration"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Kepchup 0.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Kepchup 0.1 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2015, Beyond the Wall.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+        &#169; Copyright 2015, Beyond the Wall.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>
