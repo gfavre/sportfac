@@ -1,0 +1,47 @@
+#wrapper {
+    margin-bottom: -254px;
+    padding-bottom: 254px;
+}
+#footer {
+    height: 254px;
+}
+#footer .logo {
+    height: 100px;
+}
+
+/* MVP Ready
+-------------------------------------------------- */
+.pricing-plan{
+    max-width: none;
+    text-align: left;
+}
+.pricing-plan .pricing-header {
+    text-align: center;
+}
+.topped {
+    padding-top:0;
+    margin-top: 0;
+}
+
+dt {
+    font-weight: 600;
+}
+.page-header {
+    border: none;
+}
+
+legend{
+    font-family: Oswald;
+}
+
+
+#pagecontent .container {
+    background-color: rgba(255,255,255,0.95);
+    -webkit-box-shadow: 0px 2px 5px 0px rgba(204,233,255,0.66);
+    -moz-box-shadow: 0px 2px 5px 0px rgba(204,233,255,0.66);
+    box-shadow: 0px 2px 5px 0px rgba(204,233,255,0.66);
+
+}
+.flatpage-2 #pagecontent {
+    margin-top: 3em;
+}

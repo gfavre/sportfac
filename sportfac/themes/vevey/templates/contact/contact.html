@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load i18n floppyforms %}
+
+{% block title %}{% trans "Contact" %}{% endblock title %}
+{% block page_title %}{% trans "Contact" %}{% endblock page_title %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-6">
+    <form action="." method="post" class="form-horizontal">{% csrf_token %}  
+      {% form form using %}
+        {% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
+        {% formrow form.name %}
+        {% formrow form.email %}
+        {% formrow form.subject %}
+        {% formrow form.message %}
+      {% endform %}
+      <div class="pull-right">
+        <button type="submit" class="btn btn-primary btn-large"><i class="icon icon-envelope-alt"></i>  {% trans "Send message" %}</button>
+      </div>
+    </form>
+  </div>
+  <div class="col-md-6" itemscope itemtype="http://schema.org/Organization">
+
+    <section style="padding-top: 0">          
+      <h4 itemprop="name">DJEFS – Secteur sports</h4>
+      <address itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+        <span itemprop="streetAddress">Rue du Clos 9</span><br />
+        <abbr itemprop="addressCountry" title="Switzerland">CH</abbr>-<span itemprop="postalCode">1800</span> <span itemprop="addressLocality">Vevey</span>
+      </address>
+      <dl class="dl-horizontal">
+        <dt>Téléphone</dt><dd itemprop="telephone"><a href="tel:+41219255355">021 925 53 55</a></dd>
+        <dt>Email</dt><dd><a itemprop="email" href="mailto:ssf@vevey.ch">ssf@vevey.ch</a></dd>
+      </dl>
+    </section>
+
+  </div>
+</div>
+{% endblock %}
+
