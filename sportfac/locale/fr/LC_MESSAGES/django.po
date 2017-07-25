@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-25 14:03+0200\n"
+"POT-Creation-Date: 2017-07-25 17:34+0200\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -1015,8 +1015,8 @@ msgid "A new period, starting on %s and ending on %s has been defined"
 msgstr ""
 "Une nouvelle période, démarrant le %s et se terminant le %s a été définie"
 
-#: sportfac/contact/forms.py:12 sportfac/profiles/forms.py:66
-#: sportfac/profiles/forms.py:149
+#: sportfac/contact/forms.py:12 sportfac/profiles/forms.py:65
+#: sportfac/profiles/forms.py:147
 msgid "E-mail"
 msgstr "E-mail"
 
@@ -1069,11 +1069,6 @@ msgid "No recipient found"
 msgstr "Aucun destinataire n'a pu être trouvé"
 
 #: sportfac/profiles/admin.py:47
-#, fuzzy
-#| msgid ""
-#| "Raw passwords are not stored, so there is no way to see this user's "
-#| "password, but you can change the password using <a href=\"password/"
-#| "\">this form</a>."
 msgid ""
 "Raw passwords are not stored, so there is no way to see this user's "
 "password, but you can change the password using <a href=\"../password/"
@@ -1081,7 +1076,7 @@ msgid ""
 msgstr ""
 "Les mots de passe ne sont pas enregistrés dans leur état brut. Il est "
 "impossible d'afficher le mot de passe de cet utilisateur, mais vous pouvez "
-"le <a href=\"password/\">changer avec ce formulaire</a>"
+"le <a href=\"../password/\">changer avec ce formulaire</a>"
 
 #: sportfac/profiles/admin.py:69
 msgid "child"
@@ -1139,7 +1134,7 @@ msgstr "J'ai lu et j'accepte le  <a href=\"%s\">règlement de participation</a>"
 msgid "At least one phone number is mandatory"
 msgstr "Au moins un numéro de téléphone est obligatoire"
 
-#: sportfac/profiles/forms.py:62 sportfac/profiles/forms.py:155
+#: sportfac/profiles/forms.py:62 sportfac/profiles/forms.py:156
 #: sportfac/registrations/resources.py:41
 #: sportfac/templates/backend/user/detail-instructor.html:12
 #: sportfac/templates/backend/user/detail.html:11
@@ -1147,44 +1142,44 @@ msgstr "Au moins un numéro de téléphone est obligatoire"
 msgid "Address"
 msgstr "Adresse"
 
-#: sportfac/profiles/forms.py:68 sportfac/profiles/forms.py:158
-#: sportfac/profiles/forms.py:160 sportfac/profiles/models.py:88
+#: sportfac/profiles/forms.py:67 sportfac/profiles/forms.py:159
+#: sportfac/profiles/forms.py:161 sportfac/profiles/models.py:88
 #: sportfac/profiles/resources.py:25 sportfac/registrations/resources.py:42
 msgid "NPA"
 msgstr "NPA"
 
-#: sportfac/profiles/forms.py:69 sportfac/profiles/forms.py:162
-#: sportfac/profiles/forms.py:163 sportfac/profiles/models.py:89
+#: sportfac/profiles/forms.py:68 sportfac/profiles/forms.py:163
+#: sportfac/profiles/forms.py:164 sportfac/profiles/models.py:89
 #: sportfac/profiles/resources.py:26 sportfac/registrations/resources.py:43
 #: sportfac/templates/activities/course_detail.html:145
 #: sportfac/templates/backend/user/create.html:63
 #: sportfac/templates/backend/user/update.html:66
 #: sportfac/templates/profiles/account_form.html:29
-#: sportfac/templates/profiles/registration_form.html:38
+#: sportfac/templates/profiles/registration_form.html:32
 msgid "City"
 msgstr "Commune"
 
-#: sportfac/profiles/forms.py:80
+#: sportfac/profiles/forms.py:78
 msgid "Is a manager"
 msgstr "Gestionnaire de sport facultatif"
 
-#: sportfac/profiles/forms.py:81
+#: sportfac/profiles/forms.py:79
 msgid "Grant access for this user to this backend interface"
 msgstr ""
 "Donner les accès à cette interface d'administration pour cet utilisateur"
 
-#: sportfac/profiles/forms.py:91 sportfac/profiles/forms.py:121
-#: sportfac/profiles/forms.py:172
+#: sportfac/profiles/forms.py:90 sportfac/profiles/forms.py:122
+#: sportfac/profiles/forms.py:173
 #: sportfac/templates/registration/login.html:23
 msgid "Password"
 msgstr "Mot de passe"
 
-#: sportfac/profiles/forms.py:94 sportfac/profiles/forms.py:124
-#: sportfac/profiles/forms.py:174
+#: sportfac/profiles/forms.py:93 sportfac/profiles/forms.py:125
+#: sportfac/profiles/forms.py:175
 msgid "Password (again)"
 msgstr "Mot de passe (encore)"
 
-#: sportfac/profiles/forms.py:101 sportfac/profiles/forms.py:131
+#: sportfac/profiles/forms.py:100 sportfac/profiles/forms.py:132
 msgid "You must type the same password each time."
 msgstr "Vous devez entrer le même mot de passe dans chaque champ"
 
@@ -1202,26 +1197,34 @@ msgstr "Date de naissance"
 msgid "Format: 31.12.2012"
 msgstr "Format: 31.12.2012"
 
-#: sportfac/profiles/forms.py:153 sportfac/profiles/models.py:84
+#: sportfac/profiles/forms.py:150
+msgid "Email (again)"
+msgstr "Email (encore)"
+
+#: sportfac/profiles/forms.py:153
+msgid "Enter the same email as before, for verification."
+msgstr "Entrez la même adresse email qu'au-dessus, pour vérification."
+
+#: sportfac/profiles/forms.py:154 sportfac/profiles/models.py:84
 #: sportfac/profiles/resources.py:22 sportfac/registrations/models.py:302
 #: sportfac/registrations/resources.py:30 sportfac/schools/models.py:16
 #: sportfac/templates/backend/registration/detail.html:47
 msgid "First name"
 msgstr "Prénom"
 
-#: sportfac/profiles/forms.py:154 sportfac/profiles/models.py:85
+#: sportfac/profiles/forms.py:155 sportfac/profiles/models.py:85
 #: sportfac/profiles/resources.py:23 sportfac/registrations/models.py:303
 #: sportfac/registrations/resources.py:31 sportfac/schools/models.py:17
 #: sportfac/templates/backend/registration/detail.html:48
 msgid "Last name"
 msgstr "Nom"
 
-#: sportfac/profiles/forms.py:165 sportfac/profiles/models.py:90
+#: sportfac/profiles/forms.py:166 sportfac/profiles/models.py:90
 #: sportfac/profiles/resources.py:27 sportfac/registrations/resources.py:44
 msgid "Country"
 msgstr "Pays de résidence"
 
-#: sportfac/profiles/forms.py:167 sportfac/profiles/models.py:91
+#: sportfac/profiles/forms.py:168 sportfac/profiles/models.py:91
 #: sportfac/profiles/resources.py:29
 #: sportfac/templates/backend/user/create.html:84
 #: sportfac/templates/backend/user/detail-instructor.html:20
@@ -1230,11 +1233,11 @@ msgstr "Pays de résidence"
 msgid "Home phone"
 msgstr "Téléphone (domicile)"
 
-#: sportfac/profiles/forms.py:168
+#: sportfac/profiles/forms.py:169
 msgid "Mobile phone #1"
 msgstr "Téléphone portable"
 
-#: sportfac/profiles/forms.py:169
+#: sportfac/profiles/forms.py:170
 msgid "Mobile phone #2"
 msgstr "Autre téléphone"
 
@@ -1251,7 +1254,11 @@ msgstr "Connexion"
 msgid "Use another email address"
 msgstr "Utiliser une autre adresse email"
 
-#: sportfac/profiles/forms.py:202
+#: sportfac/profiles/forms.py:195
+msgid "The two email fields didn't match."
+msgstr "Les deux adresses email ne sont pas identiques."
+
+#: sportfac/profiles/forms.py:208
 msgid "The two password fields didn't match."
 msgstr "Les deux mots de passe ne sont pas identiques."
 
@@ -1352,7 +1359,7 @@ msgstr "école"
 msgid "schools"
 msgstr "écoles"
 
-#: sportfac/profiles/views.py:47
+#: sportfac/profiles/views.py:44
 msgid "Your contact informations have been saved."
 msgstr "Vos informations de contact ont été mises à jour."
 
@@ -2887,7 +2894,7 @@ msgstr "Créer un gestionnaire"
 
 #: sportfac/templates/backend/user/create.html:51
 #: sportfac/templates/backend/user/update.html:56
-#: sportfac/templates/profiles/registration_form.html:27
+#: sportfac/templates/profiles/registration_form.html:53
 msgid "Login informations"
 msgstr "Informations de connexion"
 
@@ -2896,7 +2903,7 @@ msgstr "Informations de connexion"
 #: sportfac/templates/backend/user/detail.html:9
 #: sportfac/templates/backend/user/update.html:61
 #: sportfac/templates/profiles/account_form.html:23
-#: sportfac/templates/profiles/registration_form.html:33
+#: sportfac/templates/profiles/registration_form.html:27
 msgid "Contact informations"
 msgstr "Informations de contact"
 
@@ -3232,7 +3239,7 @@ msgstr "Éditer les données de mes enfants"
 msgid "Inscription"
 msgstr "Inscription"
 
-#: sportfac/templates/profiles/registration_form.html:60
+#: sportfac/templates/profiles/registration_form.html:62
 #: sportfac/templates/profiles/wizard_account.html:16
 msgid "Save and continue"
 msgstr "Enregistrer et continuer"

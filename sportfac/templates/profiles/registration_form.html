@@ -24,12 +24,6 @@
 {% endblock errors %}
 
   <fieldset>
-    <legend>{% trans "Login informations" %}</legend>
-    {% formrow form.email %}
-    {% formrow form.password1 %}
-    {% formrow form.password2 %}
-  </fieldset>
-  <fieldset>
     <legend>{% trans "Contact informations" %}</legend>
     {% formrow form.first_name %}
     {% formrow form.last_name %}
@@ -53,6 +47,14 @@
     {% formrow form.private_phone2 %}
     {% formrow form.private_phone3 %}
     
+  </fieldset>
+
+   <fieldset>
+    <legend>{% trans "Login informations" %}</legend>
+    {% formrow form.email %}
+    {% formrow form.email2 %}
+    {% formrow form.password1 %}
+    {% formrow form.password2 %}
   </fieldset>
 
   <div class="form-actions">

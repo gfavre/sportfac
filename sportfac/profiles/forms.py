@@ -35,13 +35,13 @@ class PasswordChangeForm(auth_forms.PasswordChangeForm):
 
 
 class PasswordResetForm(auth_forms.PasswordResetForm):
-    email = forms.EmailField(label=_("Email"), max_length=254, 
+    email = forms.EmailField(label=_("Email"), max_length=254,
                              widget=forms.EmailInput(attrs={'placeholder': 'john@example.com'}))
 
 
 class AcceptTermsForm(forms.Form):
     accept = forms.BooleanField(required=True, widget=forms.CheckboxInput(attrs={'style': 'margin-top:0;'}))
-    
+
     def __init__(self, *args, **kwargs):
         super(AcceptTermsForm, self).__init__(*args, **kwargs)
         self.fields['accept'].label = mark_safe(
@@ -52,8 +52,8 @@ class AcceptTermsForm(forms.Form):
 class PhoneRequiredMixin(object):
     def clean(self):
         cleaned_data = super(PhoneRequiredMixin, self).clean()
-        if not (cleaned_data.get('private_phone', False) or \
-                cleaned_data.get('private_phone2', False) or \
+        if not (cleaned_data.get('private_phone', False) or
+                cleaned_data.get('private_phone2', False) or
                 cleaned_data.get('private_phone3', False)):
             raise forms.ValidationError(_("At least one phone number is mandatory"))
 
@@ -62,29 +62,28 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
     address = forms.CharField(label=_("Address"),
                               widget=forms.Textarea(attrs={'rows': 3}),
                               required=True)
-
-    email = forms.EmailField(label=_("E-mail"), 
+    email = forms.EmailField(label=_("E-mail"),
                              widget=forms.EmailInput(attrs={'placeholder': 'john@example.com'}))
     zipcode = forms.CharField(label=_("NPA"), widget=forms.TextInput(attrs={'placeholder': _("NPA")}))
     city = forms.CharField(label=_("City"), widget=forms.TextInput(attrs={'placeholder': _("City")}))
 
     class Meta:
         model = get_user_model()
-        fields = ('email', 'first_name', 'last_name', 'address', 
+        fields = ('email', 'first_name', 'last_name', 'address',
                   'zipcode', 'city', 'country',
                   'private_phone', 'private_phone2', 'private_phone3')
-        
-    
+
 
 class ManagerForm(UserForm):
-    is_manager = forms.BooleanField(required=False, label=_("Is a manager"), 
+    is_manager = forms.BooleanField(required=False, label=_("Is a manager"),
                                     help_text=_("Grant access for this user to this backend interface"))
-    
+
     def __init__(self, *args, **kwargs):
         super(UserForm, self).__init__(*args, **kwargs)
         instance = kwargs['instance']
         if instance:
             self.fields['is_manager'].initial = instance.is_manager
+
 
 class ManagerWithPasswordForm(ManagerForm):
     password1 = forms.CharField(widget=forms.PasswordInput,
@@ -101,20 +100,22 @@ class ManagerWithPasswordForm(ManagerForm):
             raise forms.ValidationError(_("You must type the same password"
                                               " each time."))
 
+
 class InstructorForm(ManagerForm):
-    iban = IBANFormField(label=_("IBAN"), 
-                         widget=forms.TextInput(attrs={'placeholder': 'CH37...'}), 
+    iban = IBANFormField(label=_("IBAN"),
+                         widget=forms.TextInput(attrs={'placeholder': 'CH37...'}),
                          required=False)
     birth_date = forms.DateTimeField(label=_("Birth date"),
                                      widget=DatePickerInput(format='%d.%m.%Y'),
                                      help_text=_("Format: 31.12.2012"), required=False)
+
     class Meta:
         model = get_user_model()
-        fields = ('email', 'first_name', 'last_name', 'address', 
+        fields = ('email', 'first_name', 'last_name', 'address',
                   'zipcode', 'city', 'country',
                   'private_phone', 'private_phone2', 'private_phone3',
                   'birth_date', 'iban', 'ahv')
-    
+
 
 class InstructorWithPasswordForm(InstructorForm):
     password1 = forms.CharField(widget=forms.PasswordInput,
@@ -128,38 +129,38 @@ class InstructorWithPasswordForm(InstructorForm):
         super(InstructorWithPasswordForm, self).clean()
         c = self.cleaned_data
         if self.cleaned_data.get("password1") != self.cleaned_data.get("password2"):
-            raise forms.ValidationError(_("You must type the same password"
-                                              " each time."))
+            raise forms.ValidationError(_("You must type the same password each time."))
 
-           
+
 class RegistrationForm(PhoneRequiredMixin, forms.Form):
     """
     Form for registering a new user account.
-    
+
     Validates that the requested username is not already in use, and
     requires the password to be entered twice to catch typos.
-    
+
     Subclasses should feel free to add any additional validation they
     need, but should avoid defining a ``save()`` method -- the actual
     saving of collected user data is delegated to the active
-    registration backend.
-
-    """
+    registration backend."""
     required_css_class = 'required'
-    email = forms.EmailField(label=_("E-mail"), 
+    email = forms.EmailField(label=_("E-mail"),
                              max_length=255,
                              widget=forms.EmailInput(attrs={'placeholder': 'john@example.com'}))
-    
+    email2 = forms.EmailField(label=_("Email (again)"),
+                              max_length=255,
+                              widget=forms.EmailInput(),
+                              help_text=_("Enter the same email as before, for verification."))
     first_name = forms.CharField(label=_("First name"), max_length=30, required=True)
-    last_name = forms.CharField(label=_("Last name"),  max_length=30, required=True)
+    last_name = forms.CharField(label=_("Last name"), max_length=30, required=True)
     address = forms.CharField(label=_("Address"),
                               widget=forms.Textarea(attrs={'rows': 3}),
-                              required = True)
+                              required=True)
     zipcode = forms.CharField(label=_("NPA"), required=True,
-                              max_length=5, 
+                              max_length=5,
                               widget=forms.TextInput(attrs={'placeholder': _("NPA")}))
     city = forms.CharField(
-                label=_("City"),max_length=100,required=True,
+                label=_("City"), max_length=100, required=True,
                 widget=forms.TextInput(attrs={'placeholder': _('City')})
             )
     country = forms.ChoiceField(label=_("Country"), choices=FamilyUser.COUNTRY)
@@ -172,12 +173,11 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
                                 label=_("Password"))
     password2 = forms.CharField(widget=forms.PasswordInput,
                                 label=_("Password (again)"))
-                                
+
     def clean_email(self):
         """
         Validate that the email is alphanumeric and is not already
         in use.
-        
         """
         existing = get_user_model().objects.filter(email__iexact=self.cleaned_data['email'])
         if existing.exists():
@@ -187,14 +187,20 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
             raise forms.ValidationError(mark_safe(message))
         else:
             return self.cleaned_data['email']
-    
+
+    def clean_email2(self):
+        email1 = self.cleaned_data.get("email")
+        email2 = self.cleaned_data.get("email2")
+        if email1 and email2 and email1 != email2:
+            raise forms.ValidationError(_("The two email fields didn't match."))
+        return email2
+
     def clean(self):
         """
         Verifiy that the values entered into the two password fields
         match. Note that an error here will end up in
         ``non_field_errors()`` because it doesn't apply to a single
         field.
-        
         """
         super(RegistrationForm, self).clean()
         if 'password1' in self.cleaned_data and 'password2' in self.cleaned_data:
