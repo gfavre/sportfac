@@ -520,6 +520,16 @@
       });
 
     });
+    $('html').on('click', function(e){
+        if (typeof $(e.target).data('original-title') == 'undefined' && !$(e.target).parents().is('.popover.in')) {
+          // close popovers when click is outside
+          $('[data-original-title]').popover('hide');
+        }
+        if (typeof $(e.target).data('original-title') != 'undefined') {
+          // one popover opened at a time
+          $('[data-original-title]').not(e.target).popover('hide');
+        }
+    });
 
     $('.print-button').click(function(){window.print()});
   });
