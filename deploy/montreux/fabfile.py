@@ -58,7 +58,7 @@ class _WebFactionXmlRPC():
         self.session_id, self.account = self.login(user, password)
     
     def login(self, user, password):
-        return self.server.login(user, password, version=2)
+        return self.server.login(user, password)
     
     def __getattr__(self, name):
         def _missing(*args, **kwargs):
@@ -301,7 +301,7 @@ def _ve_run(ve, cmd):
     run("""/bin/bash -l -c 'source %s/bin/virtualenvwrapper.sh && workon %s && %s'""" % (env.home, ve, cmd))
 
 def djangoadmin(cmd):
-    _ve_run(env.project, "django-admin.py %s" % cmd)
+    _ve_run(env.project, "django-admin %s" % cmd)
 
 
 def nero():
