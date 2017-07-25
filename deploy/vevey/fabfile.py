@@ -58,7 +58,7 @@ class _WebFactionXmlRPC():
         self.session_id, self.account = self.login(user, password)
     
     def login(self, user, password):
-        return self.server.login(user, password)
+        return self.server.login(user, password, env.machine, 2)
     
     def __getattr__(self, name):
         def _missing(*args, **kwargs):
@@ -81,7 +81,7 @@ env.user              = USER
 env.password          = PASSWORD
 env.project           = PROJECT_NAME
 env.app_name          = APP_NAME
-env.settings          = 'nyon'
+env.settings          = 'vevey'
 env.dbname            = DBNAME
 env.dbuser            = DBUSER
 env.dbpassword        = DBPASSWORD
@@ -105,9 +105,9 @@ env.broker            = BROKER_URL
 env.memcached         = MEMCACHED_SOCKET
 env.phantomjs         = PHANTOMJS
 
-env.domain            = "ssfmontreux.ch"
+env.domain            = "ssfvevey.ch"
 env.subdomains        = ['.',]
-env.https             = False
+env.https             = True
 env.website_name      = env.project
 env.django_app_name   = env.project
 env.static_app_name   = env.project + '_static'
@@ -118,6 +118,8 @@ env.media_root        = os.path.join(env.home, 'webapps', env.media_app_name)
 env.static_root       = os.path.join(env.home, 'webapps', env.static_app_name)
 env.allowed_hosts     = [__concat_domain(subdomain, env.domain) for subdomain in env.subdomains]
 env.allowed_hosts_str = ';'.join(env.allowed_hosts)
+env.certificate       = "SSFVevey"
+
 
 def bootstrap():
     "Initializes python libraries"
@@ -172,17 +174,22 @@ def _create_domain():
         if domain == env.domain and set(subdomains) == set(env.subdomains):
             print("Domain already exists")
             return
-    env.webfaction.create_domain(env.domain, *env.subdomains)
+    try:
+        env.webfaction.create_domain(env.domain, *env.subdomains)
+        print("...done")
+    except:
+        print('Error creating domain. Continuing.')
     print("...done")
-    
-def _create_website():
-    print("Creating website")    
+
+
+def create_no_ssl_website():
+    print("Creating website")
     website_fct = env.webfaction.create_website
+    website_name = env.website_name + '_no_ssl'
     for name_info in env.webfaction.list_websites():
-        if name_info.get('name') == env.website_name:
+        if name_info.get('name') == website_name:
             print("Website already exists")
             website_fct = env.webfaction.update_website
-
 
     machines = env.webfaction.list_ips()
     env.ip = None
@@ -190,16 +197,42 @@ def _create_website():
         if machine.get('machine') == env.machine:
             ip = machine.get('ip')
 
-
-    website_fct(env.website_name, ip, env.https,
+    website_fct(website_name,
+                ip,
+                False,  # https
                 env.allowed_hosts,
-                (env.django_app_name, '/'), 
+                '',  # certif
+                (env.django_app_name, '/'),
                 (env.static_app_name, '/static'),
                 (env.media_app_name, '/media'))
+
+
+def create_website():
+    print("Creating website")    
+    website_fct = env.webfaction.create_website
+    for name_info in env.webfaction.list_websites():
+        if name_info.get('name') == env.website_name:
+            print("Website already exists")
+            website_fct = env.webfaction.update_website
+
+    machines = env.webfaction.list_ips()
+    env.ip = None
+    for machine in machines:
+        if machine.get('machine') == env.machine:
+            ip = machine.get('ip')
+
+    website_fct(env.website_name,
+                ip,
+                True,
+                env.allowed_hosts,
+                env.certificate,
+                (env.django_app_name, '/'),
+                (env.static_app_name, '/static'),
+                (env.media_app_name, '/media'))
+
     print("...done")
 
 
-  
 def configure_supervisor():
     print("Configuring supervisor...")
     if not 'secret_key' in env:
@@ -298,7 +331,7 @@ def _ve_run(ve, cmd):
     run("""/bin/bash -l -c 'source %s/bin/virtualenvwrapper.sh && workon %s && %s'""" % (env.home, ve, cmd))
 
 def djangoadmin(cmd):
-    _ve_run(env.project, "django-admin.py %s" % cmd)
+    _ve_run(env.project, "django-admin %s" % cmd)
 
 
 def nero():

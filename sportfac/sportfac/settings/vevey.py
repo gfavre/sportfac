@@ -16,8 +16,8 @@ RAVEN_CONFIG = {
 }
 
 
-LOGIN_URL = '/hiver/account/login/'
-LOGOUT_URL = '/hiver/account/logout/'
+LOGIN_URL = '/account/login/'
+LOGOUT_URL = '/account/logout/'
 
 KEPCHUP_USE_ABSENCES = True
 KEPCHUP_IMPORT_CHILDREN = False

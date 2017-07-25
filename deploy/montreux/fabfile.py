@@ -58,7 +58,7 @@ class _WebFactionXmlRPC():
         self.session_id, self.account = self.login(user, password)
     
     def login(self, user, password):
-        return self.server.login(user, password)
+        return self.server.login(user, password, version=2)
     
     def __getattr__(self, name):
         def _missing(*args, **kwargs):
@@ -172,8 +172,11 @@ def _create_domain():
         if domain == env.domain and set(subdomains) == set(env.subdomains):
             print("Domain already exists")
             return
-    env.webfaction.create_domain(env.domain, *env.subdomains)
-    print("...done")
+    try:
+        env.webfaction.create_domain(env.domain, *env.subdomains)
+        print("...done")
+    except:
+        print('Error creating domain. Continuing.')
     
 def _create_website():
     print("Creating website")    
