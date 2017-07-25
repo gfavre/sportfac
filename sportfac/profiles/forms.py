@@ -6,9 +6,12 @@ from django.template.defaultfilters import mark_safe
 
 import floppyforms.__future__ as forms
 from localflavor.generic.forms import IBANFormField
+from phonenumber_field.formfields import PhoneNumberField
+from phonenumber_field.widgets import PhoneNumberInternationalFallbackWidget
+
 
 from .models import FamilyUser
-from backend.forms import Select2Widget, DatePickerInput
+from backend.forms import DatePickerInput
 
 
 __all__ = ('AuthenticationForm', 'PasswordChangeForm', 'PasswordResetForm',
@@ -66,6 +69,15 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
                              widget=forms.EmailInput(attrs={'placeholder': 'john@example.com'}))
     zipcode = forms.CharField(label=_("NPA"), widget=forms.TextInput(attrs={'placeholder': _("NPA")}))
     city = forms.CharField(label=_("City"), widget=forms.TextInput(attrs={'placeholder': _("City")}))
+    private_phone = PhoneNumberField(label=_("Home phone"), max_length=30,
+                                     widget=PhoneNumberInternationalFallbackWidget(attrs={'class': 'form-control'}),
+                                     required=False)
+    private_phone2 = PhoneNumberField(label=_("Mobile phone #1"), max_length=30,
+                                      widget=PhoneNumberInternationalFallbackWidget(attrs={'class': 'form-control'}),
+                                      required=False)
+    private_phone3 = PhoneNumberField(label=_("Mobile phone #2"), max_length=30,
+                                      widget=PhoneNumberInternationalFallbackWidget(attrs={'class': 'form-control'}),
+                                      required=False)
 
     class Meta:
         model = get_user_model()
@@ -165,9 +177,15 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
             )
     country = forms.ChoiceField(label=_("Country"), choices=FamilyUser.COUNTRY)
 
-    private_phone = forms.CharField(label=_("Home phone"), max_length=30, widget=forms.PhoneNumberInput(), required=False)
-    private_phone2 = forms.CharField(label=_("Mobile phone #1"), max_length=30, widget=forms.PhoneNumberInput(), required=False)
-    private_phone3 = forms.CharField(label=_("Mobile phone #2"), max_length=30, widget=forms.PhoneNumberInput(), required=False)
+    private_phone = PhoneNumberField(label=_("Home phone"), max_length=30,
+                                     widget=PhoneNumberInternationalFallbackWidget(attrs={'class': 'form-control'}),
+                                     required=False)
+    private_phone2 = PhoneNumberField(label=_("Mobile phone #1"), max_length=30,
+                                      widget=PhoneNumberInternationalFallbackWidget(attrs={'class': 'form-control'}),
+                                      required=False)
+    private_phone3 = PhoneNumberField(label=_("Mobile phone #2"), max_length=30,
+                                      widget=PhoneNumberInternationalFallbackWidget(attrs={'class': 'form-control'}),
+                                      required=False)
 
     password1 = forms.CharField(widget=forms.PasswordInput,
                                 label=_("Password"))
@@ -197,7 +215,7 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
 
     def clean(self):
         """
-        Verifiy that the values entered into the two password fields
+        Verify that the values entered into the two password fields
         match. Note that an error here will end up in
         ``non_field_errors()`` because it doesn't apply to a single
         field.

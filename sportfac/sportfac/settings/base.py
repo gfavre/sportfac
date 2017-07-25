@@ -241,6 +241,7 @@ SHARED_APPS = (
     'dynamic_preferences',
     'mathfilters',
     'import_export',
+    'phonenumber_field',
 
     # local apps
     'api',
@@ -435,7 +436,8 @@ PHANTOMJS = os.environ['PHANTOMJS']
 DBTEMPLATES_USE_CODEMIRROR = True
 
 
-
+############# Phonenumbers
+PHONENUMBER_DEFAULT_REGION = 'CH'
 
 ################################################################################
 # Kepchup Options
