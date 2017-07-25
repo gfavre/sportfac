@@ -1,0 +1,11 @@
+[flake8]
+# E12x continuation line indentation
+# E251 no spaces around keyword / parameter equals
+# E303 too many blank lines (3)
+ignore = E501, D101, D102, E731, D400, D300, E12,E251,E303
+max-line-length = 119
+exclude = migrations, node_modules
+
+[pep8]
+ignore = E501, D101, D102, E731, D400, D300, E12,E251,E303
+max-line-length = 119
