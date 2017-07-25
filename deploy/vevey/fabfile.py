@@ -3,13 +3,10 @@
 This fabfile deploys django apps on webfaction using gunicorn,
 and supervisor.
 """
-import os, re, xmlrpclib, sys, xmlrpclib, os.path, httplib, random
+import os, sys, xmlrpclib, os.path, random
 
 from fabric.api import *
-from fabric.contrib.console import confirm
-from fabric.contrib.files import sed, exists, upload_template, append
-from fabric.utils import abort
-from fabric.context_managers import prefix, path
+from fabric.contrib.files import exists, upload_template
 from fabric.operations import put
 
 try:
@@ -47,9 +44,10 @@ MEMCACHED_SOCKET = '/home/grfavre/memcached.sock'
 """)
     sys.exit(1)
 
+API_URL = 'https://api.webfaction.com/'
+
 class _WebFactionXmlRPC():
     def __init__(self, user, password):
-        API_URL = 'https://api.webfaction.com/'
         try:
             http_proxy = os.environ['http_proxy']
         except KeyError:
@@ -64,6 +62,7 @@ class _WebFactionXmlRPC():
         def _missing(*args, **kwargs):
             return getattr(self.server, name)(self.session_id, *args, **kwargs)
         return _missing
+
 
 def __concat_domain(subdomain, domain):
     if subdomain:
@@ -128,7 +127,6 @@ def bootstrap():
     run('pip-2.7 install virtualenv virtualenvwrapper')
 
 
-
 def _create_db():
     print("Creating db %s..." % env.dbname)
     for db_info in env.webfaction.list_dbs():
@@ -149,6 +147,7 @@ def _create_static_app():
     
     env.webfaction.create_app(env.project + '_static', 'static_only', False, '')    
 
+
 def _create_media_app():
     print("Creating static app...")
     for app_info in env.webfaction.list_apps():
@@ -166,7 +165,8 @@ def _create_main_app():
             env.app_port = app_info['port']
             return
         
-    port = env.webfaction.create_app(env.project, 'custom_app_with_port', False, '')
+    env.webfaction.create_app(env.project, 'custom_app_with_port', False, '')
+
 
 def _create_domain():
     print("Creating domain %s..." % env.domain)
@@ -177,12 +177,12 @@ def _create_domain():
     try:
         env.webfaction.create_domain(env.domain, *env.subdomains)
         print("...done")
-    except:
+    except xmlrpclib.Fault:
         print('Error creating domain. Continuing.')
     print("...done")
 
 
-def create_no_ssl_website():
+def _create_no_ssl_website():
     print("Creating website")
     website_fct = env.webfaction.create_website
     website_name = env.website_name + '_no_ssl'
@@ -192,11 +192,11 @@ def create_no_ssl_website():
             website_fct = env.webfaction.update_website
 
     machines = env.webfaction.list_ips()
-    env.ip = None
+    ip = None
     for machine in machines:
         if machine.get('machine') == env.machine:
             ip = machine.get('ip')
-
+    env.ip = ip
     website_fct(website_name,
                 ip,
                 False,  # https
@@ -207,7 +207,7 @@ def create_no_ssl_website():
                 (env.media_app_name, '/media'))
 
 
-def create_website():
+def _create_website():
     print("Creating website")    
     website_fct = env.webfaction.create_website
     for name_info in env.webfaction.list_websites():
@@ -216,11 +216,12 @@ def create_website():
             website_fct = env.webfaction.update_website
 
     machines = env.webfaction.list_ips()
-    env.ip = None
+    ip = None
     for machine in machines:
         if machine.get('machine') == env.machine:
             ip = machine.get('ip')
 
+    env.ip = ip
     website_fct(env.website_name,
                 ip,
                 True,
@@ -235,20 +236,21 @@ def create_website():
 
 def configure_supervisor():
     print("Configuring supervisor...")
-    if not 'secret_key' in env:
+    if 'secret_key' not in env:
         secret_chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$^&*(-_=+)'
         env.secretkey = ''.join([random.SystemRandom().choice(secret_chars) for i in range(50)])
-    if not 'app_port' in env:
-    	for app_config in env.webfaction.list_apps():
-    		if app_config.get('name') == env.project:
-    			env.app_port = app_config.get('port')
-    			break
+    if 'app_port' not in env:
+        for app_config in env.webfaction.list_apps():
+            if app_config.get('name') == env.project:
+                env.app_port = app_config.get('port')
+                break
     require('app_port')
     upload_template(os.path.join(env.local_config_dir, 'gunicorn.conf'),
                     env.supervisor_cfg, env)
 
     reload_supervisor()
- 
+
+
 def configure_webfaction():
     _create_db()
     _create_static_app()
@@ -256,9 +258,11 @@ def configure_webfaction():
     _create_main_app()
     _create_domain()
     _create_website()
+    _create_no_ssl_website()
+
 
 def install_app():
-    "Installs the django project in its own wf app and virtualenv"
+    """Installs the django project in its own wf app and virtualenv"""
     configure_webfaction()
     with cd(env.project_dir):
         if not exists('sportfac'):
@@ -273,13 +277,12 @@ def install_app():
     restart_app()
 
 
-
 def reload_app(arg=None):
-    "Pulls app and refreshes requirements"
+    """Pulls app and refreshes requirements"""
     with cd(env.project_dir):
         run('git pull origin %s' % env.branch) 
     
-    if arg <> "quick":
+    if arg != "quick":
         with cd(env.project_dir):
             _ve_run(env.project, "pip install -r requirements.txt --upgrade")
             djangoadmin('migrate_schemas')
@@ -289,24 +292,22 @@ def reload_app(arg=None):
 
 
 def reload_supervisor():
-    "Reload supervisor config"
+    """Reload supervisor config"""
     with cd(env.supervisor_dir):
-        _ve_run('supervisor','supervisorctl reread && supervisorctl update')
+        _ve_run('supervisor', 'supervisorctl reread && supervisorctl update')
+
 
 def restart_app():
-    "Restarts the app using supervisorctl"
+    """Restarts the app using supervisorctl"""
     with cd(env.supervisor_dir):            
-        _ve_run('supervisor','supervisorctl restart %s' % env.project)
-        _ve_run('supervisor','supervisorctl restart %s_worker' % env.project)
+        _ve_run('supervisor', 'supervisorctl restart %s' % env.project)
+        _ve_run('supervisor', 'supervisorctl restart %s_worker' % env.project)
 
 
-
-
-### Helper functions
+#  Helper functions
 
 def _create_ve(name):
-    """creates virtualenv using virtualenvwrapper
-    """
+    """creates virtualenv using virtualenvwrapper"""
     secret_chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$^&*(-_=+)'
     env.secretkey = ''.join([random.SystemRandom().choice(secret_chars) for i in range(50)])
     
@@ -314,7 +315,7 @@ def _create_ve(name):
         with cd(env.virtualenv_dir):
             run('mkvirtualenv -p /usr/local/bin/python2.7 --no-site-packages %s' % name)
     else:
-        print("Virtualenv with name %s already exists. Skipping.") % name
+        print("Virtualenv with name %s already exists. Skipping." % name)
     
     env.allowed_hosts = ''
     upload_template(os.path.join(env.local_config_dir, 'postactivate.tpl'),
@@ -323,12 +324,12 @@ def _create_ve(name):
     upload_template(os.path.join(env.local_config_dir, 'virtualenv_project'),
                     os.path.join(env.virtualenv, '.project'), 
                     env)
-    
-    
+
 
 def _ve_run(ve, cmd):
     """virtualenv wrapper for fabric commands"""
     run("""/bin/bash -l -c 'source %s/bin/virtualenvwrapper.sh && workon %s && %s'""" % (env.home, ve, cmd))
+
 
 def djangoadmin(cmd):
     _ve_run(env.project, "django-admin %s" % cmd)
@@ -340,23 +341,22 @@ def nero():
     
     try:
         env.webfaction.delete_app(env.project + '_static')
-    except xmlrpclib.Fault, msg:
-        print("Unable to delete static app (%s)") % msg
+    except xmlrpclib.Fault as err:
+        print("Unable to delete static app (%s)" % err)
     try:
         env.webfaction.delete_app(env.project)
-    except xmlrpclib.Fault, msg:
-        print("Unable to delete main app (%s)") % msg
-    
-    
+    except xmlrpclib.Fault as err:
+        print("Unable to delete main app (%s)" % err)
+
     try:
         env.webfaction.delete_db(env.dbname, env.dbtype)
-    except xmlrpclib.Fault, msg:
-        print("Unable to delete db (%s)") % msg
+    except xmlrpclib.Fault as err:
+        print("Unable to delete db (%s)" % err)
     
     try:
         env.webfaction.delete_db_user(env.dbuser,  env.dbtype)
-    except xmlrpclib.Fault, msg:
-        print("Unable to delete db user %s:\n%s") % (env.dbuser, msg)
+    except xmlrpclib.Fault as err:
+        print("Unable to delete db user %s:\n%s" % (env.dbuser, err))
     
 
 def test():
