@@ -109,7 +109,7 @@
   {% for registration in course.participants.all %}
   {% with units=forloop.counter0 %}
     <tr data-child="{{ registration.child.id }}">
-       <th class=" child-name">
+       <th class="child-name" data-order="{{ registration.child.last_name }} {{ registration.child.first_name }}">
             {% if request.user.is_manager %}
             <a href="{{ registration.child.get_backend_url}}">{{ registration.child.full_name }}</a>
             {% else %}

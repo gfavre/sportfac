@@ -203,7 +203,7 @@
               {{ registration.child.bib_number|default:"n/a" }}
             </td>
           {% endif %}
-          <td>
+          <td data-order="{{ registration.child.last_name }} {{ registration.child.first_name }}">
             <a href="{{ registration.child.get_backend_url }}">{{ registration.child.full_name }}</a>
           </td>
           <td>
