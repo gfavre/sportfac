@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from django.template.defaultfilters import date as _date
 from django.utils.translation import ugettext_lazy as _, ugettext
 
-from ckeditor.fields import RichTextField
+from ckeditor_uploader.fields import RichTextUploadingField
 from autoslug import AutoSlugField
 
 from sportfac.models import TimeStampedModel
@@ -57,9 +57,9 @@ class Activity(TimeStampedModel):
                               verbose_name=_("Identifier"))
     slug = AutoSlugField(populate_from='name', max_length=50, db_index=True, unique=True, 
                          help_text=_("Part of the url. Cannot contain punctuation, spaces or accentuated letters"))
-    informations = RichTextField(verbose_name=_("Informations"), blank=True, 
-                                 help_text=_("Specific informations like outfit."))
-    description = RichTextField(verbose_name=_("Description"), blank=True)
+    informations = RichTextUploadingField(verbose_name=_("Informations"), blank=True,
+                                          help_text=_("Specific informations like outfit."))
+    description = RichTextUploadingField(verbose_name=_("Description"), blank=True)
     
     objects = ActivityManager()
     

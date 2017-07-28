@@ -235,6 +235,7 @@ SHARED_APPS = (
     'floppyforms', # better forms
     #'grappelli', # admin interface
     'ckeditor', # wysiwyg editor
+    'ckeditor_uploader',
     'sekizai', #add_to_block template tag
     #'django_select2', # select2 widget (enhanced select box)
     'dbtemplates', # store templates in db (used by mailer module)
@@ -413,6 +414,10 @@ CKEDITOR_CONFIGS = {
         'format_tags': 'p;h1;h2;h3;h4;h5;h6;pre;address',
     },
 }
+CKEDITOR_UPLOAD_PATH = 'uploads/'
+CKEDITOR_BROWSE_SHOW_DIRS = True
+CKEDITOR_IMAGE_BACKEND = "pillow"
+
 
 ############# Select2
 AUTO_RENDER_SELECT2_STATICS = False

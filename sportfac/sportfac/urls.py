@@ -1,13 +1,13 @@
 from django.conf import settings
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.contrib.sitemaps import views as sitemapviews
 from django.contrib.flatpages import views as flatviews
 from django.contrib.flatpages.sitemaps import FlatPageSitemap
-
 from django.views.generic import TemplateView, RedirectView
+from django.views.static import serve
 
 from activities.urls import sitemap as activity_sitemap
 from contact.urls import Sitemap as ContactSitemap
@@ -47,6 +47,7 @@ urlpatterns = [
     url(r'404$', TemplateView.as_view(template_name='404.html')),
     url(r'500$', TemplateView.as_view(template_name='500.html')),
 
+    url(r'^ckeditor/', include('ckeditor_uploader.urls')),
     #url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', include(admin.site.urls)),
 ]
@@ -58,4 +59,7 @@ if settings.DEBUG:
 
     urlpatterns += [
         url(r'^__debug__/', include(debug_toolbar.urls)),
+        url(r'^media/(?P<path>.*)$', serve, {
+            'document_root': settings.MEDIA_ROOT
+        }),
     ]
