@@ -162,42 +162,41 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(RegistrationUpdateView, self).get_context_data(**kwargs)
-        obj = self.get_object()
         extras = {}
         courses = Course.objects.prefetch_related('extra').annotate(nb_extra=Count('extra'))
         for course in courses.exclude(nb_extra=0):
             extras[course.id] = course.extra.all()
         context['extra_questions'] = extras
-        context['need_extra'] = obj.course.id in extras
+        context['need_extra'] = self.object.course.id in extras
         return context
 
     def get(self, request, *args, **kwargs):
-        obj = self.get_object()
+        self.object = self.get_object()
         form_class = self.get_form_class()
         form = self.get_form(form_class)
-        for question in obj.course.extra.all():
+        for question in self.object.course.extra.all():
             try:
-                obj.extra_infos.get(key=question)
+                self.object.extra_infos.get(key=question)
             except ExtraInfo.DoesNotExist:
-                ExtraInfo.objects.create(registration=obj, key=question, value=question.default)
-        extrainfo_form = ExtraInfoFormSet(instance=obj)
+                ExtraInfo.objects.create(registration=self.object, key=question, value=question.default)
+        extrainfo_form = ExtraInfoFormSet(instance=self.object)
         return self.render_to_response(self.get_context_data(form=form, extrainfo_form=extrainfo_form))
 
     def post(self, request, *args, **kwargs):
-        obj = self.get_object()
+        self.object = self.get_object()
         form_class = self.get_form_class()
         form = self.get_form(form_class)
-        extrainfo_form = ExtraInfoFormSet(self.request.POST, instance=obj)
+        extrainfo_form = ExtraInfoFormSet(self.request.POST, instance=self.object)
         if form.is_valid() and extrainfo_form.is_valid():
             return self.form_valid(form, extrainfo_form)
         return self.form_invalid(form, extrainfo_form)
 
     @transaction.atomic
     def form_valid(self, form, extrainfo_form):
-        obj = form.save()
-        extrainfo_form.instance = obj
+        self.object = form.save()
+        extrainfo_form.instance = self.object
         extrainfo_form.save()
-        if obj.status == Registration.STATUS.confirmed and not obj.paid and not obj.bill:
+        if obj.status == Registration.STATUS.confirmed and not self.object.paid and not self.object.bill:
             status = Bill.STATUS.waiting
             if obj.course.price == 0:
                 status = Bill.STATUS.paid
@@ -206,8 +205,8 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
                 family=self.request.user,
             )
 
-            obj.bill = bill
-            obj.save()
+            self.object.bill = bill
+            self.object.save()
             bill.save()
         return HttpResponseRedirect(self.get_success_url())
 
@@ -223,15 +222,15 @@ class RegistrationDeleteView(BackendMixin, DeleteView):
         return self.object.course.get_backend_url()
 
     def delete(self, request, *args, **kwargs):
-        obj = self.get_object()
+        self.object = self.get_object()
         success_url = self.get_success_url()
         try:
-            obj.cancel()
-            obj.save()
+            self.object.cancel()
+            self.object.save()
         except IntegrityError:
             # The registration for child and course existed previously and
             # was already canceled. We do not need to cancel it again
-            obj.delete()
+            self.object.delete()
         messages.add_message(self.request, messages.SUCCESS,
                              _("Registration has been canceled."))
         return HttpResponseRedirect(success_url)
@@ -258,10 +257,10 @@ class BillUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
     success_url = reverse_lazy('backend:bill-list')
 
     def form_valid(self, form):
-        obj = self.get_object()
+        self.object = self.get_object()
         if form.cleaned_data['status'] == Bill.STATUS.paid:
-            obj.close()
-            obj.save()
+            self.object.close()
+            self.object.save()
         else:
             form.save()
         return HttpResponseRedirect(self.get_success_url())
