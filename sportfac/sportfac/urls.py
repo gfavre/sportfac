@@ -9,6 +9,10 @@ from django.contrib.flatpages.sitemaps import FlatPageSitemap
 from django.views.generic import TemplateView, RedirectView
 from django.views.static import serve
 
+from ckeditor_uploader import views as ckeditor_views
+
+from backend.utils import manager_required
+
 from activities.urls import sitemap as activity_sitemap
 from contact.urls import Sitemap as ContactSitemap
 
@@ -47,7 +51,10 @@ urlpatterns = [
     url(r'404$', TemplateView.as_view(template_name='404.html')),
     url(r'500$', TemplateView.as_view(template_name='500.html')),
 
-    url(r'^ckeditor/', include('ckeditor_uploader.urls')),
+    url(r'^ckeditor/upload/', manager_required(ckeditor_views.upload), name='ckeditor_upload'),
+    url(r'^ckeditor/browse/', manager_required(ckeditor_views.browse), name='ckeditor_browse'),
+
+
     #url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', include(admin.site.urls)),
 ]

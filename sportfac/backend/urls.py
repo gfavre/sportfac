@@ -1,7 +1,7 @@
 from django.conf.urls import include, url
 from django.conf import settings
 
-import views
+from . import views
 
 activities_patterns = [ 
     url(r'^$', view=views.ActivityListView.as_view(), 
@@ -192,5 +192,4 @@ urlpatterns = [
     url(r'^teacher/', include(teachers_patterns)),
     url(r'^user/', include(users_patterns)),
     url(r'^year/', include(years_patterns)),
-    
 ]
