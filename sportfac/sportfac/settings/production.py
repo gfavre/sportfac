@@ -58,8 +58,6 @@ MANAGERS = (
 ########## MEDIA CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-root
 MEDIA_ROOT = get_env_setting('MEDIA_ROOT')
-CKEDITOR_UPLOAD_PATH = MEDIA_ROOT
-
 
 ########## STATIC FILE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
