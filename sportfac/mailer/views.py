@@ -27,6 +27,7 @@ from .tasks import send_mail, send_instructors_email
 
 class MailMixin(ContextMixin):
     recipients_queryset = None
+    bcc_list = None
     success_url = None
     from_email = None
     subject = None
@@ -39,7 +40,7 @@ class MailMixin(ContextMixin):
 
     def __init__(self, *args, **kwargs):
         self.global_preferences = global_preferences_registry.manager()
-        return super(MailMixin, self).__init__(*args, **kwargs)
+        super(MailMixin, self).__init__(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(MailMixin, self).get_context_data(**kwargs)
@@ -60,11 +61,14 @@ class MailMixin(ContextMixin):
                 "MailMixin requires either a definition of "
                 "'recipients_queryset' or an implementation of 'get_subject_template'")
         else:
-            return self.recipients_queryset.all()
-
-        if self.recipients_queryset:
-            return self.recipients_queryset.all()
+            if self.recipients_queryset:
+                return self.recipients_queryset.all()
         return []
+
+    def get_bcc_list(self):
+        if self.bcc_list is None:
+            return []
+        return self.bcc_list
 
     def get_success_url(self):
         if self.success_url:
@@ -82,8 +86,9 @@ class MailMixin(ContextMixin):
         return to % (recipient.first_name,
                      recipient.last_name, recipient.email)
 
-    def resolve_template(self, template):
-        "Accepts a template object, path-to-template or list of paths"
+    @staticmethod
+    def resolve_template(template):
+        """Accepts a template object, path-to-template or list of paths"""
         if isinstance(template, (list, tuple)):
             return loader.select_template(template)
         elif isinstance(template, six.string_types):
@@ -117,9 +122,8 @@ class MailMixin(ContextMixin):
     
     def get_reply_to_address(self):
         if self.reply_to_address:
-            return reply_to_address
+            return self.reply_to_address
         return self.global_preferences['email__REPLY_TO_MAIL']
-    
 
     def get_success_message(self):
         if self.success_message:
@@ -156,6 +160,7 @@ class MailMixin(ContextMixin):
                             from_email=from_email,
                             recipients=[recipient_address, ],
                             reply_to=reply_to,
+                            bcc=self.get_bcc_list(),
                             attachments=attachments)
             emails.append(message)
             recipients_addresses.append(recipient_address)
@@ -200,7 +205,6 @@ class MailCourseInstructorsView(MailMixin, CourseMixin, TemplateView):
         return self.course.instructors.all()
 
     def mail(self, context):
-        recipients = self.get_recipients_list()
         subject = self.get_subject()
         from_email = self.get_from_address()
         reply_to = [self.get_reply_to_address()]
@@ -217,7 +221,8 @@ class MailCourseInstructorsView(MailMixin, CourseMixin, TemplateView):
 class MailView(MailMixin, TemplateView):
     template_name = 'backend/mail/preview.html'
 
-    def add_navigation_context(self, mailnumber, mails, context):
+    @staticmethod
+    def add_navigation_context(mailnumber, mails, context):
         context['total'] = len(mails)
         context['mailidentifier'] = mailnumber + 1
         context['has_prev'] = mailnumber != 0
@@ -226,7 +231,7 @@ class MailView(MailMixin, TemplateView):
         context['next'] = mailnumber + 2
 
     def add_mail_context(self, mailnumber, context):
-        "Get context, add navigation"
+        """Get context, add navigation"""
         context['to_email'] = self.get_recipient_address(context['recipient'])
         context['from_email'] = self.get_from_address()
         context['subject'] = self.get_subject()
@@ -234,7 +239,7 @@ class MailView(MailMixin, TemplateView):
         context['attachments'] = self.get_attachments()
 
     def get(self, request, *args, **kwargs):
-        "Preview emails."
+        """Preview emails."""
         mailnumber = int(self.request.GET.get('number', 1)) - 1
         context = self.get_context_data(**kwargs)
         recipients = self.get_recipients_list()
@@ -257,7 +262,7 @@ class MailParticipantsView(CourseMixin, MailView):
         context['registration'] = recipient
 
     def add_mail_context(self, mailnumber, context):
-        "Get context, add navigation"
+        """Get context, add navigation"""
         context['to_email'] = self.get_recipient_address(context['registration'])
         context['from_email'] = self.get_from_address()
         context['subject'] = self.get_subject()
@@ -277,6 +282,11 @@ class MailParticipantsView(CourseMixin, MailView):
 class MailCreateView(FormView):
     form_class = MailForm
 
+    @staticmethod
+    def get_template_from_archive(archive):
+        template, created = Template.objects.get_or_create(name=archive.template)
+        return template
+
     def get_context_data(self, *args, **kwargs):
         kwargs['recipients'] = FamilyUser.objects.none()
         if 'mail-userids' in self.request.session:
@@ -284,7 +294,7 @@ class MailCreateView(FormView):
         return super(MailCreateView, self).get_context_data(**kwargs)
 
     def get_archive_from_session(self):
-        if not 'mail' in self.request.session:
+        if 'mail' not in self.request.session:
             return None
         try:
             return MailArchive.objects.get(id=self.request.session['mail'])
@@ -292,13 +302,8 @@ class MailCreateView(FormView):
             del self.request.session['mail']
             return None
 
-    def get_template_from_archive(self, archive):
-        template, created = Template.objects.get_or_create(
-            name=archive.template)
-        return template
-
     def get_initial(self):
-        if not 'mail' in self.request.session:
+        if 'mail' not in self.request.session:
             return {}
         try:
             archive = MailArchive.objects.get(id=self.request.session['mail'])
@@ -343,13 +348,12 @@ class CustomMailMixin(object):
     
     def get_attachments(self):
         mail_id = self.request.session.get('mail', None)
-        attachments = []
         try:
             mail = MailArchive.objects.get(id=mail_id)
             attachments = [attachment.file for attachment in mail.attachments.all()]
+            return attachments
         except MailArchive.DoesNotExist:
             raise Http404()
-        return attachments
 
     def get_subject(self):
         mail_id = self.request.session.get('mail', None)
@@ -366,5 +370,3 @@ class CustomMailMixin(object):
         except MailArchive.DoesNotExist:
             raise Http404()
         return self.resolve_template(mail.template)
-
-

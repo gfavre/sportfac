@@ -3,22 +3,23 @@ from tempfile import mkdtemp
 import os
 import shutil
 
-from django.core.mail import send_mail as django_send_mail
 from django.core.mail import EmailMessage
 from django.conf import settings
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
-from .pdfutils import get_ssf_decompte_heures, CourseParticipants, CourseParticipantsPresence, MyCourses
 from activities.models import Course
+from .pdfutils import get_ssf_decompte_heures, CourseParticipants, CourseParticipantsPresence, MyCourses
 
 
 logger = get_task_logger(__name__)
 
 
 @shared_task
-def send_mail(subject, message, from_email, recipients, reply_to, attachments=None):
+def send_mail(subject, message, from_email, recipients, reply_to, bcc=None, attachments=None):
+    if bcc is None:
+        bcc = []
     if attachments is None:
         attachments = []
     logger.debug("Sending email to %s" % recipients)
@@ -26,16 +27,19 @@ def send_mail(subject, message, from_email, recipients, reply_to, attachments=No
                          body=message,
                          from_email=from_email,
                          to=recipients,
+                         bcc=bcc,
                          reply_to=reply_to)
     for attachment in attachments:
         email.attach_file(attachment)
 
-    return email.send(fail_silently=not(settings.DEBUG))
+    return email.send(fail_silently=not settings.DEBUG)
 
 
 @shared_task
-def send_instructors_email(subject, message, from_email, course_pk, reply_to):
+def send_instructors_email(subject, message, from_email, course_pk, reply_to, bcc=None):
     logger.debug("Forging email to instructors of course #%s" % course_pk)
+    if bcc is None:
+        bcc = []
 
     course = Course.objects.get(pk=course_pk)
     for instructor in course.instructors.all():
@@ -44,6 +48,7 @@ def send_instructors_email(subject, message, from_email, course_pk, reply_to):
                              body=message,
                              from_email=from_email,
                              to=recipients,
+                             bcc=bcc,
                              reply_to=reply_to)
         logger.debug("Message created")
 
