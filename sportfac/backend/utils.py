@@ -4,8 +4,9 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 
 from django.db import transaction
 
-from backend import INSTRUCTORS_GROUP, MANAGERS_GROUP
 from activities.models import Course
+from . import INSTRUCTORS_GROUP, MANAGERS_GROUP
+
 
 @transaction.atomic
 def clean_instructors():
@@ -16,16 +17,13 @@ def clean_instructors():
         for instructor in course.instructors.all():
             instructor.is_instructor = True
 
-def copy_courses(source_tenant, destination_tenant):
-    pass
 
-
-def manager_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):
+def manager_required(fct=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):
     actual_decorator = user_passes_test(
         lambda u: u.is_authenticated and u.groups.filter(name=MANAGERS_GROUP).exists() or u.is_superuser,
         login_url=login_url,
         redirect_field_name=redirect_field_name
     )
-    if function:
-        return actual_decorator(function)
+    if fct:
+        return actual_decorator(fct)
     return actual_decorator
