@@ -1,6 +1,5 @@
 import math
 
-from django.utils.translation import ugettext as _
 from django import template
 
 import phonenumbers
@@ -36,19 +35,31 @@ def phone(value, format='national'):
     "phone numbers and formats it"
     if value in (None, ''):
         return ''
+
+    if isinstance(value, phonenumbers.PhoneNumber):
+        if format.lower() == 'e164':
+            return value.as_e164
+        elif format.lower() == 'international':
+            return value.as_international
+        elif format.lower() == 'rfc3966':
+            return value.as_rfc3966
+        return value.as_national
+
+    fm = phonenumbers.PhoneNumberFormat.NATIONAL
+    if format.lower() == 'e164':
+        fm = phonenumbers.PhoneNumberFormat.E164
+    elif format.lower() == 'international':
+        fm = phonenumbers.PhoneNumberFormat.INTERNATIONAL
+    elif format.lower() == 'rfc3966':
+        fm = phonenumbers.PhoneNumberFormat.RFC3966
     try:
         number = phonenumbers.parse(value, 'CH')
-        fm = phonenumbers.PhoneNumberFormat.NATIONAL 
-        if format.lower() == 'e164':
-            fm = phonenumbers.PhoneNumberFormat.E164 
-        elif format.lower() == 'international':
-            fm = phonenumbers.PhoneNumberFormat.INTERNATIONAL 
-        elif format.lower() == 'rfc3966':
-            fm = phonenumbers.PhoneNumberFormat.RFC3966 
         return phonenumbers.format_number(number, fm)
-        
     except phonenumbers.NumberParseException:
         return value
+
+
+
 
 @register.filter(is_safe=True)
 def ahv(value):

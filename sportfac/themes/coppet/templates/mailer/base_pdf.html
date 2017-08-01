@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <title>{{ title|default:"" }}</title>
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <style>
 h1 {
     font-size: 0.6cm;
@@ -78,7 +78,7 @@ border-right: 1px solid #ccc;
 <body>
   <header>
     <div class="header">        
-        <img src="http://{{ request.site.domain }}{% static 'img/logo-etat-vd.svg' %}" class="logo" />
+        <img src="{{ PROTOCOL }}{{ request.site.domain }}{% static 'img/logo-etat-vd.svg' %}" class="logo" />
         <p class="name"><strong>Etablissement primaire<br />
         de Coppet - Terre Sainte</strong></p>
         <p>Chemin du Chaucey<br />

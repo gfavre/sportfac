@@ -10,6 +10,7 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 
 from activities.models import Course
+from profiles.models import FamilyUser
 from .pdfutils import get_ssf_decompte_heures, CourseParticipants, CourseParticipantsPresence, MyCourses
 
 
@@ -40,6 +41,8 @@ def send_instructors_email(subject, message, from_email, course_pk, reply_to, bc
     logger.debug("Forging email to instructors of course #%s" % course_pk)
     if bcc is None:
         bcc = []
+    else:
+        bcc = FamilyUser.objects.filter(pk__in=bcc)
 
     course = Course.objects.get(pk=course_pk)
     for instructor in course.instructors.all():

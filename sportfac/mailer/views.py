@@ -5,8 +5,11 @@ import six
 
 from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
+from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
+from django.db import transaction
+
 from django.http import Http404
 from django.http import HttpResponseRedirect
 from django.template import loader
@@ -20,7 +23,7 @@ from dbtemplates.models import Template
 from activities.models import Course
 from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser
-from .forms import MailForm
+from .forms import MailForm, CopiesForm
 from .models import MailArchive, Attachment
 from .tasks import send_mail, send_instructors_email
 
@@ -38,6 +41,8 @@ class MailMixin(ContextMixin):
     success_message = ''
     attachments = None
 
+    form_class = None
+
     def __init__(self, *args, **kwargs):
         self.global_preferences = global_preferences_registry.manager()
         super(MailMixin, self).__init__(*args, **kwargs)
@@ -47,7 +52,8 @@ class MailMixin(ContextMixin):
         context['signature'] = self.global_preferences['email__SIGNATURE']
         current_site = get_current_site(self.request)
         context['site_name'] = current_site.name
-        context['site_url'] = 'http://%s' % current_site.domain
+        context['site_url'] = settings.DEBUG and 'http://' + current_site.domain or 'https://' + current_site.domain
+        context['bcc'] = self.get_bcc_list()
         return context
     
     def get_attachments(self):
@@ -136,43 +142,60 @@ class MailMixin(ContextMixin):
     def add_recipient_context(self, recipient, context):
         context['recipient'] = recipient
 
+    def send_mail(self, recipient, base_context, attachments):
+        mail_context = base_context.copy()
+        self.add_recipient_context(recipient, mail_context)
+        message = self.get_mail_body(mail_context)
+        send_mail.delay(subject=self.get_subject(),
+                        message=self.get_mail_body(mail_context),
+                        from_email=self.get_from_address(),
+                        recipients=[self.get_recipient_address(recipient)],
+                        reply_to=[self.get_reply_to_address()],
+                        attachments=attachments)
+        return message
+
     def mail(self, context):
-        recipients = self.get_recipients_list()
         emails = []
         recipients_addresses = []
-        subject = self.get_subject()
-        from_email = self.get_from_address()
-        reply_to = [self.get_reply_to_address()]
+        bcc_addresses = []
+
         attachments = [fileobj.file.name for fileobj in self.get_attachments()]
-        
-        if reply_to[0] != from_email:
-            reply_to = []
-        for recipient in recipients:
+
+        for recipient in self.get_recipients_list():
             if not recipient:
                 continue
-            mail_context = context.copy()
-            self.add_recipient_context(recipient, mail_context)
-            message = self.get_mail_body(mail_context)
-            recipient_address = self.get_recipient_address(recipient)
-            
-            send_mail.delay(subject=subject,
-                            message=message,
-                            from_email=from_email,
-                            recipients=[recipient_address, ],
-                            reply_to=reply_to,
-                            bcc=self.get_bcc_list(),
-                            attachments=attachments)
+            message = self.send_mail(recipient, context, attachments)
             emails.append(message)
-            recipients_addresses.append(recipient_address)
+            recipients_addresses.append(self.get_recipient_address(recipient))
+
+        for bcc_recipient in self.get_bcc_list():
+            message = self.send_mail(bcc_recipient, context, attachments)
+            emails.append(message)
+            bcc_addresses.append(self.get_recipient_address(bcc_recipient))
+
         MailArchive.objects.create(subject=subject, messages=emails,
                                    recipients=recipients_addresses,
+                                   bcc_recipients=bcc_addresses,
                                    template=self.get_message_template())
 
+    def form_valid(self, form):
+        context = self.get_context_data(**self.kwargs)
+        self.mail(context)
+        messages.add_message(self.request, messages.SUCCESS, self.get_success_message())
+        success_url = self.get_success_url()
+        return HttpResponseRedirect(success_url)
+
     def post(self, request, *args, **kwargs):
+        if self.form_class:
+            form = self.form_class(data=self.request.POST, files=self.request.FILES)
+            if form.is_valid():
+                return self.form_valid(form)
+            else:
+                return self.form_invalid(form)
+
         context = self.get_context_data(**kwargs)
         self.mail(context)
-        messages.add_message(self.request, messages.SUCCESS,
-                             self.get_success_message())
+        messages.add_message(self.request, messages.SUCCESS, self.get_success_message())
         success_url = self.get_success_url()
         return HttpResponseRedirect(success_url)
 
@@ -188,7 +211,7 @@ class CourseMixin(object):
         except Course.DoesNotExist:
             raise Http404(_("No course found"))
 
-        context['url'] = ''.join(('http://',
+        context['url'] = ''.join((settings.DEBUG and 'http://' or 'https://',
                                   get_current_site(self.request).domain,
                                   reverse('wizard_confirm')))
         return context
@@ -197,25 +220,33 @@ class CourseMixin(object):
         return self.course.get_backend_url()
 
 
-class MailCourseInstructorsView(MailMixin, CourseMixin, TemplateView):
+class MailCourseInstructorsView(MailMixin, CourseMixin, FormView):
     message_template = 'mailer/instructor.txt'
     subject_template = 'mailer/instructor_subject.txt'
+    form_class = CopiesForm
 
     def get_recipients_list(self):
         return self.course.instructors.all()
+
+    def form_valid(self, form):
+        self.bcc_list = []
+        if form.cleaned_data['send_copy']:
+            self.bcc_list = [self.request.user.pk]
+        if form.cleaned_data['copy_all_admins']:
+            self.bcc_list += FamilyUser.managers_objects.exclude(pk=self.request.user.pk).values_list('pk')
+        return super(MailCourseInstructorsView, self).form_valid(form)
 
     def mail(self, context):
         subject = self.get_subject()
         from_email = self.get_from_address()
         reply_to = [self.get_reply_to_address()]
-        if reply_to[0] != from_email:
-            reply_to = []
         message = self.get_mail_body(context)
         send_instructors_email.delay(subject=subject,
                                      message=message,
                                      from_email=from_email,
                                      course_pk=self.course.pk,
-                                     reply_to=reply_to)
+                                     reply_to=reply_to,
+                                     bcc=self.get_bcc_list())
 
 
 class MailView(MailMixin, TemplateView):
@@ -241,6 +272,8 @@ class MailView(MailMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         """Preview emails."""
         mailnumber = int(self.request.GET.get('number', 1)) - 1
+        if self.request.GET.get('new', False) and 'mail-userids' in self.request.session:
+            del self.request.session['mail-userids']
         context = self.get_context_data(**kwargs)
         recipients = self.get_recipients_list()
            
@@ -261,6 +294,7 @@ class MailParticipantsView(CourseMixin, MailView):
         context['child'] = recipient.child
         context['registration'] = recipient
 
+
     def add_mail_context(self, mailnumber, context):
         """Get context, add navigation"""
         context['to_email'] = self.get_recipient_address(context['registration'])
@@ -268,7 +302,12 @@ class MailParticipantsView(CourseMixin, MailView):
         context['subject'] = self.get_subject()
         context['message'] = self.get_mail_body(context)
         context['attachments'] = self.get_attachments()
-    
+
+    def get_context_data(self, **kwargs):
+        context = super(MailParticipantsView, self).get_context_data()
+        context['bcc'] = self.get_bcc_list()
+        return context
+
     def get_recipient_address(self, recipient):
         return super(MailParticipantsView, self).get_recipient_address(recipient.child.family)
 
@@ -277,6 +316,16 @@ class MailParticipantsView(CourseMixin, MailView):
         if 'mail-userids' in self.request.session:
             qs = qs.filter(child__family__in=self.request.session['mail-userids'])
         return qs
+
+    def get_bcc_list(self):
+        if 'mail' not in self.request.session:
+            return []
+        try:
+            bcc_pks = MailArchive.objects.get(id=self.request.session['mail']).bcc_recipients
+            return FamilyUser.objects.filter(pk__in=bcc_pks)
+        except MailArchive.DoesNotExist:
+            del self.request.session['mail']
+            return []
 
 
 class MailCreateView(FormView):
@@ -315,11 +364,20 @@ class MailCreateView(FormView):
         except MailArchive.DoesNotExist:
             return {}
 
+    def get_bcc_from_form(self, form):
+        bcc_recipients = []
+        if form.cleaned_data.get('send_copy', False):
+            bcc_recipients += [self.request.user.pk]
+        if form.cleaned_data.get('copy_all_admins', False):
+            bcc_recipients += FamilyUser.managers_objects.exclude(pk=self.request.user.pk).values_list('pk')
+        return bcc_recipients
+
     def form_valid(self, form):
         archive = self.get_archive_from_session()
         if archive:
             template = self.get_template_from_archive(archive)
             archive.subject = form.cleaned_data['subject']
+            archive.bcc_recipients = self.get_bcc_from_form(form)
             archive.save()
         else:
             template = Template()
@@ -329,19 +387,28 @@ class MailCreateView(FormView):
                 if not Template.objects.filter(name=template.name).exists():
                     break
                 template.name = '%s-%d.txt' % (orig, x)
+
             archive = MailArchive.objects.create(
                 status=MailArchive.STATUS.draft,
                 subject=form.cleaned_data['subject'],
                 recipients=[],
+                bcc_recipients=self.get_bcc_from_form(form),
                 messages=[],
-                template=template.name)
+                template=template.name,
+            )
             self.request.session['mail'] = archive.id
+
         for attachment in form.cleaned_data['attachments']:
             Attachment.objects.create(file=attachment, mail=archive)
         
         template.content = form.cleaned_data['message']
         template.save()
         return super(MailCreateView, self).form_valid(form)
+
+    def get(self, *args, **kwargs):
+        if self.request.GET.get('new', False) and 'mail-userids' in self.request.session:
+            del self.request.session['mail-userids']
+        return super(MailCreateView, self).get(*args, **kwargs)
 
 
 class CustomMailMixin(object):
@@ -370,3 +437,83 @@ class CustomMailMixin(object):
         except MailArchive.DoesNotExist:
             raise Http404()
         return self.resolve_template(mail.template)
+
+###################################################################################################
+
+class MailCreateView(FormView):
+    """Create mail
+    GET params: prev - url
+    """
+    form_class = MailForm
+
+    def get_recipients(self):
+        user_ids = self.request.session.get('mail-userids', [])
+        users = FamilyUser.objects.filter(pk__in=user_ids)
+        return [user.get_from_address() for user in users]
+
+    def get_archive_from_session(self):
+        if 'mail' not in self.request.session:
+            return None
+        try:
+            return MailArchive.objects.get(id=self.request.session['mail'])
+        except MailArchive.DoesNotExist:
+            del self.request.session['mail']
+            return None
+
+    @staticmethod
+    def get_template_from_archive(archive):
+        template, created = Template.objects.get_or_create(name=archive.template)
+        return template
+
+    def get_initial(self):
+        if 'mail' not in self.request.session:
+            return {}
+        archive = self.get_archive_from_session()
+        if archive:
+            initial = {'subject': archive.subject,
+                       'attachments': archive.attachments.all()}
+            try:
+                template = Template.objects.get(name=archive.template)
+                initial['message'] = template.content
+            except Template.DoesNotExist:
+                pass
+            return initial
+        return {}
+
+    @transaction.atomic
+    def form_valid(self, form):
+        archive = self.get_archive_from_session()
+        if archive:
+            template = self.get_template_from_archive(archive)
+            archive.subject = form.cleaned_data['subject']
+            #archive.bcc_recipients = self.get_bcc_from_form(form)
+            archive.save()
+        else:
+            template = Template()
+            orig = time.strftime('%Y-%m-%d-%H-%M-custom')
+            template.name = orig + '.txt'
+            for x in itertools.count(1):
+                if not Template.objects.filter(name=template.name).exists():
+                    break
+                template.name = '%s-%d.txt' % (orig, x)
+
+            archive = MailArchive.objects.create(
+                status=MailArchive.STATUS.draft,
+                subject=form.cleaned_data['subject'],
+                recipients=[],
+                bcc_recipients=self.get_bcc_from_form(form),
+                messages=[],
+                template=template.name,
+            )
+            self.request.session['mail'] = archive.id
+
+        for attachment in form.cleaned_data['attachments']:
+            Attachment.objects.create(file=attachment, mail=archive)
+
+        template.content = form.cleaned_data['message']
+        template.save()
+        return super(MailCreateView, self).form_valid(form)
+
+    def form_invalid(self, form):
+        pass
+

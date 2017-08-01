@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 import json
 
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.core.urlresolvers import reverse
 from django.db.models import Min, Max
 from django.http import HttpResponseRedirect
 from django.views.generic import DetailView, ListView
@@ -10,15 +11,16 @@ from django.views.generic.detail import SingleObjectMixin
 from braces.views import GroupRequiredMixin, LoginRequiredMixin
 
 from backend import INSTRUCTORS_GROUP
-from mailer.views import (MailView, MailCreateView, CustomMailMixin,
+from mailer.views import (MailCreateView, CustomMailMixin,
                           MailParticipantsView, MailCourseInstructorsView)
+from mailer.forms import CourseMailForm
 from sportfac.views import WizardMixin
 
 from .models import Activity, Course
 
 
 __all__ = ('InstructorMixin', 'ActivityDetailView', 'ActivityListView',
-           'CustomParticipantsCustomerMailView',
+           'CustomParticipantsCustomMailView',
            'MyCoursesListView', 'MyCourseDetailView')
 
 
@@ -78,7 +80,6 @@ class ActivityListView(LoginRequiredMixin, WizardMixin, ListView):
         return context
     
 
-
 class MyCoursesListView(InstructorMixin, ListView):
     template_name = 'activities/course_list.html'
 
@@ -91,21 +92,20 @@ class MyCourseDetailView(CourseAccessMixin, DetailView):
     template_name = 'activities/course_detail.html'
     pk_url_kwarg = 'course'
     queryset = Course.objects.select_related('activity').\
-                              prefetch_related('participants__child__school_year', 
-                                               'participants__child__family',
-                                               'instructors')
+        prefetch_related('participants__child__school_year', 'participants__child__family', 'instructors')
 
 
 class CustomMailCreateView(InstructorMixin, MailCreateView):
     template_name = 'activities/mail-create.html'
-    
+    form_class = CourseMailForm
+
     def get_success_url(self):
         course = self.kwargs['course']                
         return reverse('activities:mail-preview', 
-                       kwargs={'course': course })
+                       kwargs={'course': course})
 
 
-class CustomParticipantsCustomerMailView(InstructorMixin, SingleObjectMixin, View):
+class CustomParticipantsCustomMailView(InstructorMixin, SingleObjectMixin, View):
     model = Course
     pk_url_kwarg = 'course'
 

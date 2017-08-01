@@ -22,7 +22,8 @@ class DatePickerInput(forms.DateInput):
 
     def __init__(self, attrs=None, format=None):
         super(DatePickerInput, self).__init__(attrs)
-        self.format = '%d.%m.%Y'
+        if not format:
+            self.format = '%d.%m.%Y'
 
 
 class TimePickerInput(forms.TimeInput):
@@ -82,7 +83,6 @@ class CourseSelectMixin(object):
         try:
             if self.instance.child.school_year:
                 min_year = max_year = self.instance.child.school_year.year
-                print min_year
             else:
                 min_year = 99
                 max_year = 0
@@ -123,7 +123,6 @@ ExtraInfoFormSet = inlineformset_factory(Registration, ExtraInfo, form=ExtraInfo
                                          extra=0, can_delete=False)
 
 
-
 class ChildSelectForm(forms.ModelForm):
     """Child selection, with select2 widget.
        Used in registration creation wizard"""
@@ -146,7 +145,8 @@ class CourseSelectForm(CourseSelectMixin, forms.ModelForm):
 
 
 class BillingForm(forms.ModelForm):
-    paid = forms.BooleanField(required=False, label=_("Mark as paid?"), help_text=_("If not checked, a bill will be created"))
+    paid = forms.BooleanField(required=False, label=_("Mark as paid?"),
+                              help_text=_("If not checked, a bill will be created"))
 
     class Meta:
         model = Registration
@@ -160,10 +160,10 @@ class YearSelectForm(forms.Form):
 
 class YearCreateForm(forms.Form):
     start_date = forms.DateField(label=_("Period start date"), required=True,
-                                 help_text =_("Format: DD.MM.YYYY"),
+                                 help_text=_("Format: DD.MM.YYYY"),
                                  widget=DatePickerInput())
     end_date = forms.DateField(label=_("Period end date"), required=True,
-                               help_text =_("Format: DD.MM.YYYY"),
+                               help_text=_("Format: DD.MM.YYYY"),
                                widget=DatePickerInput())
     copy_activities = forms.ModelChoiceField(
         label=_("Copy courses"),
@@ -173,10 +173,10 @@ class YearCreateForm(forms.Form):
 
 class YearForm(forms.ModelForm):
     start_date = forms.DateField(label=_("Period start date"), required=True,
-                                 help_text =_("Format: DD.MM.YYYY"),
+                                 help_text=_("Format: DD.MM.YYYY"),
                                  widget=DatePickerInput())
     end_date = forms.DateField(label=_("Period end date"), required=True,
-                               help_text =_("Format: DD.MM.YYYY"),
+                               help_text=_("Format: DD.MM.YYYY"),
                                widget=DatePickerInput())
 
     class Meta:

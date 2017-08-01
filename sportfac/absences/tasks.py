@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import
 import datetime
 
 from django.contrib.sites.models import Site
-from django.db import connection, transaction
+from django.conf import settings
+from django.db import connection
 from django.utils import timezone
 from django.template import loader
 
@@ -36,7 +38,7 @@ def notify_absences():
     base_context = {
         'signature': preferences['email__SIGNATURE'],
         'site_name': current_site.name,
-        'site_url': 'http://%s' % current_site.domain
+        'site_url': settings.debug and 'http://' + current_site.domain or 'https://' + current_site.domain
     }
     subject_tmpl = loader.get_template('mailer/absence_notification_subject.txt')
     body_tmpl = loader.get_template('mailer/absence_notification.txt')
@@ -57,5 +59,3 @@ def notify_absences():
         send_mail.s(subject, body, from_email, recipients, reply_to)
         absence.notification_sent = True
         absence.save()
-
-

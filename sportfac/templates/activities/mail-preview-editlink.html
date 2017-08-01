@@ -20,6 +20,12 @@
       <dt>{% trans "From" %}</dt><dd>{{ from_email }}</dd>
       <dt>{% trans "To" %}</dt><dd>{{ to_email }}</dd>
       <dt>{% trans "Subject" %}</dt><dd>{{ subject }}</dd>
+      {% if bcc %}
+      <dt>{% trans "Bcc" %}</dt>
+      <dd>
+        {{ bcc|join:", " }}
+      </dd>
+      {% endif %}
       {% if attachments %}
         <dt>{% trans "Attachments" %}</dt>
         <dd>
@@ -41,7 +47,7 @@
         <a href="{% url 'activities:mail-participants-custom' course=course.pk %}" class="btn btn-default">
           <i class="icon icon-edit"></i> {% trans "Modify mail" %}
         </a> &nbsp;
-        <button type="submit" class="btn btn-danger"><i class="icon icon-mail"></i>&nbsp;{% trans 'Send all emails' %}</button>
+        <button type="submit" class="btn btn-success"><i class="icon icon-mail"></i>&nbsp;{% trans 'Send all emails' %}</button>
       </div>
     </form>
   </section>

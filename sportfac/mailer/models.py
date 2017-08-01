@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import re
 import os
 
@@ -15,21 +16,13 @@ __all__ = ('MailArchive', )
 
 
 class SentMailManager(models.Manager):
-
     def get_queryset(self):
-        return super(
-            SentMailManager,
-            self).get_queryset().filter(
-            status=MailArchive.STATUS.sent)
+        return super(SentMailManager,self).get_queryset().filter(status=MailArchive.STATUS.sent)
 
 
 class DraftMailManager(models.Manager):
-
     def get_queryset(self):
-        return super(
-            SentMailManager,
-            self).get_queryset().filter(
-            status=MailArchive.STATUS.draft)
+        return super(SentMailManager, self).get_queryset().filter(status=MailArchive.STATUS.draft)
 
 
 class MailArchive(TimeStampedModel, StatusModel):
@@ -38,22 +31,21 @@ class MailArchive(TimeStampedModel, StatusModel):
 
     subject = models.CharField(max_length=255, verbose_name=_("Subject"))
     recipients = ListField(verbose_name=_("Recipients"))
+    bcc_recipients = ListField(verbose_name=_("BCC recipients"), null=True)
     messages = ListField(verbose_name=_("Message"))
     template = models.CharField(max_length=255, verbose_name=_("Template"))
-    
 
     objects = models.Manager()
     draft = DraftMailManager()
     sent = SentMailManager()
 
     def admin_recipients(self):
-        r = re.compile('(?P<name>[\w\s^\<]+) \<(?P<email>[^\>]+)\>', re.U)
+        r = re.compile(r'(?P<name>[\w\s^<]+) <(?P<email>[^>]+)>', re.U)
 
         def clean_email(name):
             m = r.search(name)
             if m:
-                return u'<a href="mailto:%s">%s</a>' % (
-                    m.group('email'), m.group('name'))
+                return u'<a href="mailto:{}">{}</a>'.format(m.group('email'), m.group('name'))
             return name
 
         return u'<br />'.join([clean_email(rec) for rec in self.recipients])
@@ -69,8 +61,7 @@ class MailArchive(TimeStampedModel, StatusModel):
 def attachment_path(instance, filename):
     return os.path.join('attachments', str(instance.mail.pk), filename)
 
+
 class Attachment(TimeStampedModel):
-    mail = models.ForeignKey('MailArchive', on_delete=models.CASCADE,
-                             related_name='attachments')
+    mail = models.ForeignKey('MailArchive', on_delete=models.CASCADE, related_name='attachments')
     file = models.FileField(upload_to=attachment_path)
-    

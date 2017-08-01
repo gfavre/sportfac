@@ -1,10 +1,13 @@
+# -*- coding: utf-8 -*-
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.urlresolvers import reverse, reverse_lazy
+from django.conf import settings
 from django.template.defaultfilters import urlencode
 from django.views.generic import ListView
 
 from mailer.views import (MailView, MailCreateView, CustomMailMixin,
                           MailParticipantsView, MailCourseInstructorsView)
+from mailer.forms import AdminMailForm, CourseMailForm
 from mailer.models import MailArchive
 from profiles.models import FamilyUser
 from registrations.models import Bill, Registration
@@ -25,7 +28,7 @@ class MailArchiveListView(BackendMixin, ListView):
 
 
 class NeedConfirmationView(BackendMixin, MailView):
-    "Mail to people having not confirmed activities yet."
+    """Mail to people having not confirmed activities yet."""
     success_url = reverse_lazy('backend:home')
     subject_template = 'mailer/need_confirmation_subject.txt'
     message_template = 'mailer/need_confirmation.txt'
@@ -36,14 +39,14 @@ class NeedConfirmationView(BackendMixin, MailView):
     
     def get_context_data(self, **kwargs):
         context = super(NeedConfirmationView, self).get_context_data(**kwargs)
-        context['url'] = ''.join(('http://', 
+        context['url'] = ''.join((settings.DEBUG and 'http://' or 'https://',
                                   get_current_site(self.request).domain,
                                   reverse('wizard_confirm')))
         return context
  
 
 class NotPaidYetView(BackendMixin, BillMixin, MailView):
-    "Mail to people having registered to courses but not paid yet"
+    """Mail to people having registered to courses but not paid yet"""
     
     success_url = reverse_lazy('backend:home')
     subject_template = 'mailer/notpaid_subject.txt'
@@ -61,7 +64,6 @@ class BackendMailParticipantsView(BackendMixin, MailParticipantsView):
 class MailConfirmationParticipantsView(BackendMixin, MailParticipantsView):
     subject_template = 'mailer/course_begin_subject.txt'
     message_template = 'mailer/course_begin.txt'
-    
 
 
 class BackendMailCourseInstructorsView(BackendMixin, MailCourseInstructorsView):
@@ -74,14 +76,16 @@ class BackendMailCourseInstructorsView(BackendMixin, MailCourseInstructorsView):
 class CustomMailParticipantsCreateView(BackendMixin, MailCreateView):
     template_name = 'backend/mail/create.html'
 
+
     def get_success_url(self):
         course = self.kwargs['course']                
         return reverse('backend:mail-participants-custom-preview', 
-                       kwargs={'course': course })
+                       kwargs={'course': course})
 
 
 class CustomMailParticipantsPreview(CustomMailMixin, BackendMailParticipantsView):
     template_name = 'backend/mail/preview-editlink.html'
+    form_class = CourseMailForm
 
     def get_context_data(self, **kwargs):
         kwargs['prev'] = self.request.GET.get('prev', None)
@@ -103,6 +107,8 @@ class CustomMailParticipantsPreview(CustomMailMixin, BackendMailParticipantsView
 class CustomUserCustomMailCreateView(BackendMixin, MailCreateView):
     template_name = 'backend/mail/create.html'
     success_url = reverse_lazy('backend:custom-mail-custom-users-preview')
+    form_class = AdminMailForm
+
 
     def get_success_url(self):
         params = ''
@@ -125,7 +131,7 @@ class CustomUserCustomMailPreview(BackendMixin, CustomMailMixin, MailView):
 
     def get_context_data(self, **kwargs):
         kwargs['cancel_url'] = self.request.GET.get('prev', None)
-        kwargs['url'] = ''.join(('http://',
+        kwargs['url'] = ''.join((settings.DEBUG and 'http://' or 'https://',
                                  get_current_site(self.request).domain,
                                  reverse('wizard_confirm')))
         return super(CustomUserCustomMailPreview, self).get_context_data(**kwargs)
