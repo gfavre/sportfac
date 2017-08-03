@@ -76,7 +76,6 @@ class BackendMailCourseInstructorsView(BackendMixin, MailCourseInstructorsView):
 class CustomMailParticipantsCreateView(BackendMixin, MailCreateView):
     template_name = 'backend/mail/create.html'
 
-
     def get_success_url(self):
         course = self.kwargs['course']                
         return reverse('backend:mail-participants-custom-preview', 

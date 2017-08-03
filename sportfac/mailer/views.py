@@ -446,10 +446,23 @@ class MailCreateView(FormView):
     """
     form_class = MailForm
 
+    @staticmethod
+    def get_template_from_archive(archive):
+        template, created = Template.objects.get_or_create(name=archive.template)
+        return template
+
     def get_recipients(self):
         user_ids = self.request.session.get('mail-userids', [])
         users = FamilyUser.objects.filter(pk__in=user_ids)
         return [user.get_from_address() for user in users]
+
+    def get_bcc_from_form(self, form):
+        bcc_recipients = []
+        if form.cleaned_data.get('send_copy', False):
+            bcc_recipients += [self.request.user.pk]
+        if form.cleaned_data.get('copy_all_admins', False):
+            bcc_recipients += FamilyUser.managers_objects.exclude(pk=self.request.user.pk).values_list('pk')
+        return [user.get_from_address() for user in bcc_recipients]
 
     def get_archive_from_session(self):
         if 'mail' not in self.request.session:
@@ -459,11 +472,6 @@ class MailCreateView(FormView):
         except MailArchive.DoesNotExist:
             del self.request.session['mail']
             return None
-
-    @staticmethod
-    def get_template_from_archive(archive):
-        template, created = Template.objects.get_or_create(name=archive.template)
-        return template
 
     def get_initial(self):
         if 'mail' not in self.request.session:
@@ -486,7 +494,8 @@ class MailCreateView(FormView):
         if archive:
             template = self.get_template_from_archive(archive)
             archive.subject = form.cleaned_data['subject']
-            #archive.bcc_recipients = self.get_bcc_from_form(form)
+            archive.recipients = self.get_recipients()
+            archive.bcc_recipients = self.get_bcc_from_form(form)
             archive.save()
         else:
             template = Template()
@@ -500,20 +509,67 @@ class MailCreateView(FormView):
             archive = MailArchive.objects.create(
                 status=MailArchive.STATUS.draft,
                 subject=form.cleaned_data['subject'],
-                recipients=[],
+                recipients=self.get_recipients(),
                 bcc_recipients=self.get_bcc_from_form(form),
                 messages=[],
                 template=template.name,
             )
-            self.request.session['mail'] = archive.id
 
         for attachment in form.cleaned_data['attachments']:
             Attachment.objects.create(file=attachment, mail=archive)
 
         template.content = form.cleaned_data['message']
         template.save()
+        self.request.session['mail'] = archive.id
+
         return super(MailCreateView, self).form_valid(form)
 
-    def form_invalid(self, form):
-        pass
 
+class GlobalPreferencesMixin(object):
+    def __init__(self, *args, **kwargs):
+        self.global_preferences = global_preferences_registry.manager()
+        super(GlobalPreferencesMixin, self).__init__(*args, **kwargs)
+
+
+class SendMailMixin(GlobalPreferencesMixin, object):
+    from_address = None
+    reply_to_address = None
+
+    def get_from_address(self):
+        if self.from_address:
+            return self.from_address
+        return self.global_preferences['email__FROM_MAIL']
+
+    def get_reply_to_address(self):
+        if self.reply_to_address:
+            return self.reply_to_address
+        return self.global_preferences['email__REPLY_TO_MAIL']
+
+
+class MailPreviewView(GlobalPreferencesMixin, TemplateView):
+    success_url = None
+    mail_archive = None
+
+    def get_success_url(self):
+        if self.success_url:
+            # Forcing possible reverse_lazy evaluation
+            url = force_text(self.success_url)
+        else:
+            raise ImproperlyConfigured("No URL to redirect to. Provide a success_url.")
+        return url
+
+    def get_mail_archive(self):
+        mail_id = self.request.session.get('mail', None)
+        try:
+            mail = MailArchive.objects.get(id=mail_id)
+        except MailArchive.DoesNotExist:
+            raise Http404()
+        return mail
+
+    def get_context_data(self, **kwargs):
+        current_site = get_current_site(self.request)
+        kwargs['site_name'] = current_site.name
+        kwargs['site_url'] = settings.DEBUG and 'http://' + current_site.domain or 'https://' + current_site.domain
+        kwargs['signature'] = self.global_preferences['email__SIGNATURE']
+        kwargs['mail'] = self.get_mail_archive()
+        return super(MailPreviewView, self).get_context_data(kwargs)
