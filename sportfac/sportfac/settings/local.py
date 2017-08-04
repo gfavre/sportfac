@@ -48,7 +48,7 @@ EMAIL_FILE_PATH = '/tmp/app-messages' # change this to a proper location
 
 ########## DATABASE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES['default']['NAME'] = os.environ['DB_NAME'] #os.environ['DB_NAME']
+DATABASES['default']['NAME'] = os.environ['DB_NAME']
 DATABASES['default']['USER'] = os.environ['DB_USER']
 DATABASES['default']['PASSWORD'] = os.environ['DB_PASSWORD']
 
