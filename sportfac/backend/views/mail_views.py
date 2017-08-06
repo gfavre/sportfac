@@ -6,7 +6,7 @@ from django.template.defaultfilters import urlencode
 from django.views.generic import ListView
 
 from mailer.views import (MailView, MailCreateView, CustomMailMixin,
-                          MailParticipantsView, MailCourseInstructorsView)
+                          MailParticipantsView, MailCourseInstructorsView, MailPreviewView)
 from mailer.forms import AdminMailForm, CourseMailForm
 from mailer.models import MailArchive
 from profiles.models import FamilyUser
@@ -45,7 +45,7 @@ class NeedConfirmationView(BackendMixin, MailView):
         return context
  
 
-class NotPaidYetView(BackendMixin, BillMixin, MailView):
+class NotPaidYetView(BackendMixin, BillMixin, MailPreviewView):
     """Mail to people having registered to courses but not paid yet"""
     
     success_url = reverse_lazy('backend:home')

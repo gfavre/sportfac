@@ -295,7 +295,6 @@ class MailParticipantsView(CourseMixin, MailView):
         context['child'] = recipient.child
         context['registration'] = recipient
 
-
     def add_mail_context(self, mailnumber, context):
         """Get context, add navigation"""
         context['to_email'] = self.get_recipient_address(context['registration'])
@@ -546,10 +545,43 @@ class SendMailMixin(GlobalPreferencesMixin, object):
             return self.reply_to_address
         return self.global_preferences['email__REPLY_TO_MAIL']
 
+    @staticmethod
+    def resolve_template(template):
+        """Accepts a template object, path-to-template or list of paths"""
+        if isinstance(template, (list, tuple)):
+            return loader.select_template(template)
+        elif isinstance(template, six.string_types):
+            return loader.get_template(template)
+        else:
+            return template
 
-class MailPreviewView(GlobalPreferencesMixin, TemplateView):
+    def send_mail(self, recipient, base_context, attachments):
+        mail_context = base_context.copy()
+        self.add_recipient_context(recipient, mail_context)
+        message = self.get_mail_body(mail_context)
+        # envoyer à chaque adresse séparément, quitte à créer des milliers de tâches.
+        send_mail.delay(subject=self.get_subject(),
+                        message=self.get_mail_body(mail_context),
+                        from_email=self.get_from_address(),
+                        recipients=[self.get_recipient_address(recipient)],
+                        reply_to=[self.get_reply_to_address()],
+                        attachments=attachments)
+        return message
+
+
+class MailPreviewView(SendMailMixin, TemplateView):
     success_url = None
-    mail_archive = None
+    edit_url = None
+    cancel_url = None
+    template_name = 'mailer/preview.html'
+
+    def add_mail_context(self, mailnumber, context):
+        """Get context, add navigation"""
+        context['to_email'] = self.get_recipient_address(context['registration'])
+        context['from_email'] = self.get_from_address()
+        context['subject'] = self.get_subject()
+        context['message'] = self.get_mail_body(context)
+        context['attachments'] = self.get_attachments()
 
     def get_success_url(self):
         if self.success_url:
@@ -559,6 +591,18 @@ class MailPreviewView(GlobalPreferencesMixin, TemplateView):
             raise ImproperlyConfigured("No URL to redirect to. Provide a success_url.")
         return url
 
+    def get_edit_url(self):
+        if self.edit_url:
+            # Forcing possible reverse_lazy evaluation
+            return force_text(self.edit_url)
+        return None
+
+    def get_cancel_url(self):
+        if self.cancel_url:
+            # Forcing possible reverse_lazy evaluation
+            return force_text(self.cancel_url)
+        return None
+
     def get_mail_archive(self):
         mail_id = self.request.session.get('mail', None)
         try:
@@ -567,10 +611,50 @@ class MailPreviewView(GlobalPreferencesMixin, TemplateView):
             raise Http404()
         return mail
 
+    @staticmethod
+    def get_recipient_addresses(context):
+        return context['mail_archive'].recipients
+
+    @staticmethod
+    def get_subject(context):
+        return context['mail_archive'].subject
+
+    @staticmethod
+    def get_message(context):
+        template = MailPreviewView.resolve_template(context['mail_archive'].template)
+        return template.render(context)
+
+    @staticmethod
+    def get_attachments(context):
+        return context['mail_archive'].attachments.all()
+
     def get_context_data(self, **kwargs):
         current_site = get_current_site(self.request)
         kwargs['site_name'] = current_site.name
         kwargs['site_url'] = settings.DEBUG and 'http://' + current_site.domain or 'https://' + current_site.domain
         kwargs['signature'] = self.global_preferences['email__SIGNATURE']
-        kwargs['mail'] = self.get_mail_archive()
+        kwargs['mail_archive'] = self.get_mail_archive()
+        kwargs['from_email'] = self.get_from_address()
+        kwargs['to_email'] = self.get_recipient_addresses(kwargs)
+        kwargs['subject'] = self.get_subject(kwargs)
+        kwargs['message'] = self.get_message(kwargs)
+        kwargs['attachments'] = self.get_attachments(kwargs)
+        kwargs['edit_url'] = self.get_edit_url()
+        kwargs['cancel_url'] = self.get_edit_url()
         return super(MailPreviewView, self).get_context_data(kwargs)
+
+
+class BrowsableMailPreviewView(MailPreviewView):
+    """MailPreview that offers rendering of individual mails"""
+    template_name = 'mailer/browsable-preview.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(MailPreviewView, self).get_context_data(kwargs)
+        mail_number = int(self.request.GET.get('number', 1)) - 1
+        context['mailidentifier'] = mail_number + 1
+        context['total'] = len(self.get_recipient_addresses())
+        context['has_prev'] = mail_number != 0
+        context['prev'] = mail_number
+        context['has_next'] = mail_number + 1 != context['total']
+        context['next'] = mail_number + 2
+        return context
