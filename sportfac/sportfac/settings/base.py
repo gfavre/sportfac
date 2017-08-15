@@ -3,8 +3,6 @@
 import os
 from os.path import abspath, basename, dirname, join, normpath
 from sys import path
-from datetime import datetime, timedelta
-from pytz import timezone
 from celery.schedules import crontab
 
 ugettext = lambda s: s
@@ -230,15 +228,13 @@ SHARED_APPS = (
     'django.contrib.sitemaps',
 
     # third party apps
-    'rest_framework', # REST API
-    'registration', #user registration
-    'floppyforms', # better forms
-    #'grappelli', # admin interface
-    'ckeditor', # wysiwyg editor
+    'rest_framework',  # REST API
+    'registration',  #user registration
+    'floppyforms',  # better forms
+    'ckeditor',  # wysiwyg editor
     'ckeditor_uploader',
-    'sekizai', #add_to_block template tag
-    #'django_select2', # select2 widget (enhanced select box)
-    'dbtemplates', # store templates in db (used by mailer module)
+    'sekizai',  # add_to_block template tag
+    'dbtemplates',  # store templates in db (used by mailer module)
     'dynamic_preferences',
     'mathfilters',
     'import_export',

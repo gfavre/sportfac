@@ -108,7 +108,6 @@ class CustomUserCustomMailCreateView(BackendMixin, MailCreateView):
     success_url = reverse_lazy('backend:custom-mail-custom-users-preview')
     form_class = AdminMailForm
 
-
     def get_success_url(self):
         params = ''
         if 'prev' in self.request.GET:
@@ -120,7 +119,7 @@ class CustomUserCustomMailCreateView(BackendMixin, MailCreateView):
         return super(CustomUserCustomMailCreateView, self).get_context_data(**kwargs)
 
 
-class CustomUserCustomMailPreview(BackendMixin, CustomMailMixin, MailView):
+class CustomUserCustomMailPreview(BackendMixin, MailPreviewView):
     success_url = reverse_lazy('backend:user-list')
 
     def get_recipients_list(self):

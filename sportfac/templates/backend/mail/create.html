@@ -1,5 +1,5 @@
 {% extends "backend/base.html" %}
-{% load i18n floppyforms %}
+{% load i18n floppyforms mail_tags %}
 
 {% block title %}{% trans "New email" %} - {{ block.super }}{% endblock %}
 {% block page_title %}<i class="icon icon-mail"></i>&nbsp;&nbsp;{% trans "New email" %}{% endblock %}
@@ -18,7 +18,31 @@
       </div>
     </div>
   {% endif %}
-  {{ form }}
+{% form form using %}
+  {% formconfig row using "floppyforms/rows/bootstrap.html" %}
+
+{% formrow form.subject %}
+{% formrow form.message %}
+{% formrow form.attachments %}
+{% if archive and archive.attachments.count %}
+<div class="form-group">
+  <div class="col-sm-10 col-sm-offset-2">
+    <ul>
+    {% for attachment in archive.attachments.all %}
+      <li>{{ attachment|filename }}</li>
+    {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endif %}
+{% formrow form.send_copy %}
+{% formrow copy_all_instructors %}
+{% formrow form.copy_all_admins %}
+
+
+
+
+{% endform %}
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
       <button type="submit" class="btn btn-success btn-large"><i class="icon-check"></i>&nbsp;{% trans 'Save and preview' %}</button>

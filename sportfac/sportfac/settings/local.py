@@ -18,7 +18,7 @@ SHARED_APPS += (
 
 INSTALLED_APPS += (
     'django_extensions', # more commands
-    'debug_toolbar', # debugging
+    #'debug_toolbar', # debugging
     'djcelery',
     'kombu.transport.django', 
 )
@@ -28,11 +28,11 @@ INTERNAL_IPS = ('127.0.0.1',)
 
 # See: https://github.com/django-debug-toolbar/django-debug-toolbar#installation
 MIDDLEWARE_CLASSES += (
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    #'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 
-ALLOWED_HOSTS = ('127.0.0.1', 'localhost',)
+ALLOWED_HOSTS = ('127.0.0.1', 'localhost', 'test.com', 'tenant.test.com', 'testserver')
 
 ########## END DEBUG CONFIGURATION
 
@@ -53,17 +53,6 @@ DATABASES['default']['USER'] = os.environ['DB_USER']
 DATABASES['default']['PASSWORD'] = os.environ['DB_PASSWORD']
 
 ########## END DATABASE CONFIGURATION
-
-
-########## CACHE CONFIGURATION
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#caches
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
-        'LOCATION': '127.0.0.1:11211',
-    }
-}
-########## END CACHE CONFIGURATION
 
 
 ########## TOOLBAR CONFIGURATION

@@ -3,25 +3,24 @@ from datetime import date
 
 from django.core.management import call_command
 from django.db import connection
-from django.conf import settings
 from django_tenants.test.cases import TenantTestCase as BaseTenantTestCase
 from django_tenants.test.client import TenantClient
 from django_tenants.utils import get_tenant_model, get_tenant_domain_model
 from django.contrib.auth.models import Group
 
 from backend import INSTRUCTORS_GROUP, MANAGERS_GROUP
-from backend.models import TenantPreferenceModel
 
-class excel_semicolon(csv.excel):
+
+class ExcelSemicolon(csv.excel):
     delimiter = ';'
+
 
 class UnicodeWriter:
     """
     A CSV writer which will write rows to CSV file "f",
     which is encoded in the given encoding.
     """
-
-    def __init__(self, f, dialect=excel_semicolon, encoding="utf-8", **kwds):
+    def __init__(self, f, dialect=ExcelSemicolon, encoding="utf-8", **kwds):
         # Redirect output to a queue
         self.queue = cStringIO.StringIO()
         self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
@@ -51,7 +50,7 @@ class ExcelWriter:
     which is encoded in the given encoding.
     """
 
-    def __init__(self, f, dialect=excel_semicolon, encoding="utf-8", **kwds):
+    def __init__(self, f, dialect=ExcelSemicolon, encoding="utf-8", **kwds):
         # Redirect output to a queue
         self.queue = cStringIO.StringIO()
         self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
@@ -77,7 +76,7 @@ class ExcelWriter:
 
 
 class TenantTestCase(BaseTenantTestCase):
-    
+
     def setUp(self):
         self.sync_shared()
         grp, created = Group.objects.get_or_create(name=INSTRUCTORS_GROUP)
@@ -88,13 +87,13 @@ class TenantTestCase(BaseTenantTestCase):
             end_date=date(2015, 12, 31),
             status='ready')
         self.tenant.create_schema(check_if_exists=True, verbosity=0)
-        
-        tenant_domain = 'test'
+
+        tenant_domain = 'testserver'
         self.domain, created = get_tenant_domain_model().objects.get_or_create(
-            tenant=self.tenant, 
-            domain=tenant_domain, 
+            tenant=self.tenant,
+            domain=tenant_domain,
             is_current=True)
-        
+
         connection.set_tenant(self.tenant)
         self.tenant_client = TenantClient(self.tenant)
     
@@ -115,8 +114,3 @@ class TenantTestCase(BaseTenantTestCase):
                          database=db_name, reset_sequences=False,
                          allow_cascade=True,
                          inhibit_post_migrate=inhibit_post_migrate)    
-    
-    #def tearDown(self):
-    #    pass
-        #TenantPreferenceModel.objects.all().delete()
-        #super(TenantTestCase, self).tearDown()
