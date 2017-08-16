@@ -7,25 +7,21 @@
 {% block content %}
 <section>
   <h4 class="content-title"><u>{% trans "Preview" %}</u></h4>
-  <h5 class="text-center">
-    {% if has_prev %}
-      <a href="?number={{ prev }}" title="{% trans 'Previous email' %}"><i class=" icon-left-dir"></i></a>
-    {% endif %}
-    {% blocktrans with identifier=mailidentifier total=total %}Message {{ identifier }} / {{ total }}{% endblocktrans %}
-    {% if has_next %}
-      <a href="?number={{ next }}" title="{% trans 'Next email' %}"><i class=" icon-right-dir"></i></a>
-    {% endif %}
-  </h5>
   <dl class="dl-horizontal">
     <dt>{% trans "From" %}</dt><dd>{{ from_email }}</dd>
-    <dt>{% trans "To" %}</dt><dd>{{ to_email }}</dd>
+    <dt>{% trans "To" %}</dt>
+    <dd>
+      {% for recipient in to_email %}
+          <span class="label label-primary">{{ recipient }}</span>
+      {% endfor %}
+    </dd>
     <dt>{% trans "Subject" %}</dt><dd>{{ subject }}</dd>
     {% if attachments %}
       <dt>{% trans "Attachments" %}</dt>
       <dd>
         <ul class="list-horizontal">
           {% for attachment in attachments %}
-            <li>{{ attachment|filename }}</li>
+            <li><a href="{{ attachment|fileurl }}"><i class="icon {{ attachment|fileicon }}"></i>&nbsp;{{ attachment|filename }}</a></li>
           {% endfor %}
         </ul>
       </dd>
@@ -37,6 +33,10 @@
 <section>
   <form action="" method="post">{% csrf_token %}
     <p>{% blocktrans %}Are you sure you want to send this mail ?{% endblocktrans %}</p>
+    <div class="form-group">
+      <a href="{{ edit_url }}" class="btn btn-default"><i class="icon icon-edit"></i> {% trans "Modify mail" %}</a> &nbsp;
+    </div>
+
     <div class="form-group">
       <button type="submit" class="btn btn-danger"><i class="icon icon-email"></i>&nbsp;{% trans 'Send all emails' %}</button>
       {% if cancel_url %}&nbsp;

@@ -489,6 +489,7 @@ class MailCreateView(FormView):
 
     def get_context_data(self, **kwargs):
         kwargs['archive'] = self.get_archive_from_session()
+        kwargs['recipients'] = self.get_recipients()
         return super(MailCreateView, self).get_context_data(**kwargs)
 
     @transaction.atomic

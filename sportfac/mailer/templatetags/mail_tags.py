@@ -1,5 +1,6 @@
 import os, re, htmlentitydefs
 from django import template
+from django.conf import settings
 
 register = template.Library()
 
@@ -29,7 +30,34 @@ def unescape(value):
 @register.filter
 def filename(value):
     return os.path.basename(value.file.name)
-    
+
+
+@register.filter
+def fileicon(value):
+    extension = value.file.name.split('.')[-1].lower()
+    if extension == 'pdf':
+        return 'icon-file-pdf'
+    elif extension in ('png', 'jpg', 'gif', 'tif', 'tiff'):
+        return 'icon-file-image'
+    elif extension in ('htm', 'html', 'xhtml'):
+        return 'icon-file-code'
+    elif extension in ('doc', 'docx'):
+        return 'icon-file-word'
+    elif extension in ('xls', 'xlsx'):
+        return 'icon-file-excel'
+    elif extension in ('ppt', 'pptx'):
+        return 'icon-file-powerpoint'
+    elif extension in ('zip', 'rar', 'gz', 'tar'):
+        return 'icon-file-archive'
+    elif extension in ('txt',):
+        return 'icon-doc-text'
+    elif extension in ('mp3', 'aac'):
+        return 'icon-file-audio'
+    elif extension in ('mpg', 'mp4', 'mkv'):
+        return 'icon-file-audio'
+    return 'icon-doc-1'
+
+
 @register.filter
 def fileurl(value):
-    return os.path.basename(value.file.url)
+    return value.file.url

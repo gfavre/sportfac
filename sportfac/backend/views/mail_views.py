@@ -121,21 +121,22 @@ class CustomUserCustomMailCreateView(BackendMixin, MailCreateView):
 
 class CustomUserCustomMailPreview(BackendMixin, MailPreviewView):
     success_url = reverse_lazy('backend:user-list')
-
-    def get_recipients_list(self):
-        if 'mail-userids' in self.request.session:
-            return FamilyUser.objects.filter(id__in=self.request.session['mail-userids'])
-        return []
-
-    def get_context_data(self, **kwargs):
-        kwargs['cancel_url'] = self.request.GET.get('prev', None)
-        kwargs['url'] = ''.join((settings.DEBUG and 'http://' or 'https://',
-                                 get_current_site(self.request).domain,
-                                 reverse('wizard_confirm')))
-        return super(CustomUserCustomMailPreview, self).get_context_data(**kwargs)
-
-    def post(self, request, *args, **kwargs):
-        redirect = super(CustomUserCustomMailPreview, self).post(request, *args, **kwargs)
-        del self.request.session['mail']
-        del self.request.session['mail-userids']
-        return redirect
+    template_name = 'backend/mail/preview.html'
+    edit_url = reverse_lazy('backend:custom-mail-custom-users')
+    #def get_recipients_list(self):
+    #    if 'mail-userids' in self.request.session:
+    #        return FamilyUser.objects.filter(id__in=self.request.session['mail-userids'])
+    #    return []
+#
+    #def get_context_data(self, **kwargs):
+    #    kwargs['cancel_url'] = self.request.GET.get('prev', None)
+    #    kwargs['url'] = ''.join((settings.DEBUG and 'http://' or 'https://',
+    #                             get_current_site(self.request).domain,
+    #                             reverse('wizard_confirm')))
+    #    return super(CustomUserCustomMailPreview, self).get_context_data(**kwargs)
+#
+    #def post(self, request, *args, **kwargs):
+    #    redirect = super(CustomUserCustomMailPreview, self).post(request, *args, **kwargs)
+    #    del self.request.session['mail']
+    #    del self.request.session['mail-userids']
+    #    return redirect
