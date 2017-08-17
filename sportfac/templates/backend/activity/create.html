@@ -10,13 +10,6 @@
 {{ form.media }}
 {% endaddtoblock %}
 
-<form action="" method="post" class="form-horizontal">{% csrf_token %}
-  {% include "backend/activity/form.html" %}
-  <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-success btn-large"><i class="icon-plus"></i>&nbsp;{% trans 'Create activity' %}</button>
-    </div>
-  </div>
-</form>
+
 
 {% endblock content %}

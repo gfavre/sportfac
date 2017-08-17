@@ -454,15 +454,17 @@ class MailCreateView(FormView):
 
     def get_recipients(self):
         user_ids = self.request.session.get('mail-userids', [])
-        users = FamilyUser.objects.filter(pk__in=user_ids)
-        return [user.get_from_address() for user in users]
+        return [user.pk for user in FamilyUser.objects.filter(pk__in=user_ids)]
+
+    def get_recipients_email(self):
+        return [user.get_from_address() for user in FamilyUser.objects.filter(pk__in=self.get_recipients())]
 
     def get_bcc_from_form(self, form):
         bcc_recipients = []
         if form.cleaned_data.get('send_copy', False):
             bcc_recipients += [self.request.user.pk]
         if form.cleaned_data.get('copy_all_admins', False):
-            bcc_recipients += FamilyUser.managers_objects.exclude(pk=self.request.user.pk).values_list('pk')
+            bcc_recipients += [user.pk for user in FamilyUser.managers_objects.exclude(pk=self.request.user.pk)]
         return bcc_recipients
 
     def get_archive_from_session(self):
@@ -489,7 +491,7 @@ class MailCreateView(FormView):
 
     def get_context_data(self, **kwargs):
         kwargs['archive'] = self.get_archive_from_session()
-        kwargs['recipients'] = self.get_recipients()
+        kwargs['recipients'] = self.get_recipients_email()
         return super(MailCreateView, self).get_context_data(**kwargs)
 
     @transaction.atomic
@@ -570,24 +572,26 @@ class SendMailMixin(GlobalPreferencesMixin):
             raise Http404()
         return mail
 
-    def add_recipient_context(self, recipient, context):
-        context['to_email'] = recipient
+    @staticmethod
+    def add_recipient_context(recipient, context):
+        context['to_email'] = recipient.get_from_address()
+        context['recipient'] = recipient
         return context
 
-    def get_recipients(self, archive):
+    def get_recipients(self):
         if self.recipients:
             return self.recipients
-        return self.archive.recipients
+        return [user for user in FamilyUser.objects.filter(pk__in=self.archive.recipients)]
 
     def get_bcc_recipients(self):
         if self.bcc_recipients:
             return self.bcc_recipients
-        return self.archive.bcc_recipients
+        return [user for user in FamilyUser.objects.filter(pk__in=self.archive.bcc_recipients)]
 
-    def get_attachments(self, context, recipient=None):
+    def get_attachments(self, context):
         return self.archive.attachments.all()
 
-    def get_subject(self, context, recipient=None):
+    def get_subject(self, context):
         return self.archive.subject
 
     def get_mail_body(self, context):
@@ -601,16 +605,20 @@ class SendMailMixin(GlobalPreferencesMixin):
         send_mail.delay(subject=self.get_subject(mail_context),
                         message=self.get_mail_body(mail_context),
                         from_email=self.get_from_address(),
-                        recipients=[self.get_recipient_address(recipient)],
+                        recipients=[recipient.get_from_address()],
+                        bcc_recipients=[user.get_from_address() for user in bcc_recipients],
                         reply_to=[self.get_reply_to_address()],
-                        attachments=attachments)
+                        attachments=[attachment.pk for attachment in attachments]
+        )
         return message
 
     def post(self, *args, **kwargs):
-        for recipient in self.get_recipients(self.archive):
+        all_recipients = self.get_recipients() + self.get_bcc_recipients()
+        for recipient in all_recipients:
             context = self.get_context_data()
             self.send_mail(recipient, self.get_bcc_recipients(),
                            context, self.get_attachments({}))
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class MailPreviewView(SendMailMixin, TemplateView):
@@ -649,7 +657,11 @@ class MailPreviewView(SendMailMixin, TemplateView):
 
     @staticmethod
     def get_recipient_addresses(archive):
-        return archive.recipients
+        return [user.get_from_address() for user in FamilyUser.objects.filter(pk__in=archive.recipients)]
+
+    @staticmethod
+    def get_bcc_addresses(archive):
+        return [user.get_from_address() for user in FamilyUser.objects.filter(pk__in=archive.bcc_recipients)]
 
     def get_context_data(self, **kwargs):
         current_site = get_current_site(self.request)
@@ -658,7 +670,10 @@ class MailPreviewView(SendMailMixin, TemplateView):
         kwargs['site_url'] = settings.DEBUG and 'http://' + current_site.domain or 'https://' + current_site.domain
         kwargs['signature'] = self.global_preferences['email__SIGNATURE']
         kwargs['from_email'] = self.get_from_address()
+        #kwargs['to'] = self.get_recipient_addresses(self.archive)
+        #kwargs['bcc'] = self.get_bcc_addresses(self.archive)
         kwargs['to_email'] = self.get_recipient_addresses(self.archive)
+        kwargs['bcc_email'] =  self.get_bcc_addresses(self.archive)
         kwargs['edit_url'] = self.get_edit_url()
         kwargs['cancel_url'] = self.get_edit_url()
 
