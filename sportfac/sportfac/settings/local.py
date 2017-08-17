@@ -41,7 +41,7 @@ ALLOWED_HOSTS = ('127.0.0.1', 'localhost', 'test.com', 'tenant.test.com', 'tests
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = '/tmp/app-messages' # change this to a proper location
+EMAIL_FILE_PATH = '/tmp/app-messages' #  change this to a proper location
 
 ########## END EMAIL CONFIGURATION
 

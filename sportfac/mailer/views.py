@@ -543,6 +543,10 @@ class SendMailMixin(GlobalPreferencesMixin):
     recipients = None
     bcc_recipients = None
     archive = None
+    success_message = _('Your email is being sent to %(number)s recipients.')
+
+    def get_success_message(self):
+        return self.success_message % {'number': len(set(self.archive.recipients))}
 
     def get_from_address(self):
         if self.from_address:
@@ -602,13 +606,14 @@ class SendMailMixin(GlobalPreferencesMixin):
         mail_context = base_context.copy()
         self.add_recipient_context(recipient, mail_context)
         message = self.get_mail_body(mail_context)
-        send_mail.delay(subject=self.get_subject(mail_context),
-                        message=self.get_mail_body(mail_context),
-                        from_email=self.get_from_address(),
-                        recipients=[recipient.get_from_address()],
-                        bcc_recipients=[user.get_from_address() for user in bcc_recipients],
-                        reply_to=[self.get_reply_to_address()],
-                        attachments=[attachment.pk for attachment in attachments]
+        send_mail.delay(
+            subject=self.get_subject(mail_context),
+            message=self.get_mail_body(mail_context),
+            from_email=self.get_from_address(),
+            recipients=[recipient.get_from_address()],
+            reply_to=[self.get_reply_to_address()],
+            bcc=[user.get_from_address() for user in bcc_recipients],
+            attachments=[attachment.pk for attachment in attachments]
         )
         return message
 
@@ -618,6 +623,9 @@ class SendMailMixin(GlobalPreferencesMixin):
             context = self.get_context_data()
             self.send_mail(recipient, self.get_bcc_recipients(),
                            context, self.get_attachments({}))
+        if 'mail' in self.request.session:
+            del self.request.session['mail']
+        messages.success(self.request, self.get_success_message())
         return HttpResponseRedirect(self.get_success_url())
 
 
@@ -673,7 +681,7 @@ class MailPreviewView(SendMailMixin, TemplateView):
         #kwargs['to'] = self.get_recipient_addresses(self.archive)
         #kwargs['bcc'] = self.get_bcc_addresses(self.archive)
         kwargs['to_email'] = self.get_recipient_addresses(self.archive)
-        kwargs['bcc_email'] =  self.get_bcc_addresses(self.archive)
+        kwargs['bcc_email'] = self.get_bcc_addresses(self.archive)
         kwargs['edit_url'] = self.get_edit_url()
         kwargs['cancel_url'] = self.get_edit_url()
 

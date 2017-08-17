@@ -15,7 +15,7 @@
           <span class="label label-primary">{{ recipient }}</span>
       {% endfor %}
     </dd>
-    {% if bcc %}
+    {% if bcc_email %}
     <dt>{% trans "BCC" %}</dt>
     <dd>
       {% for recipient in bcc_email %}

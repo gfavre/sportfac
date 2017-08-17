@@ -12,7 +12,7 @@ from celery.utils.log import get_task_logger
 from activities.models import Course
 from profiles.models import FamilyUser
 from .pdfutils import get_ssf_decompte_heures, CourseParticipants, CourseParticipantsPresence, MyCourses
-
+from .models import Attachment
 
 logger = get_task_logger(__name__)
 
@@ -23,6 +23,8 @@ def send_mail(subject, message, from_email, recipients, reply_to, bcc=None, atta
         bcc = []
     if attachments is None:
         attachments = []
+    else:
+        attachments = Attachment.objects.filter(pk__in=attachments)
     logger.debug("Sending email to %s" % recipients)
     email = EmailMessage(subject=subject,
                          body=message,
@@ -31,7 +33,7 @@ def send_mail(subject, message, from_email, recipients, reply_to, bcc=None, atta
                          bcc=bcc,
                          reply_to=reply_to)
     for attachment in attachments:
-        email.attach_file(attachment)
+        email.attach_file(attachment.file.path)
 
     return email.send(fail_silently=not settings.DEBUG)
 
