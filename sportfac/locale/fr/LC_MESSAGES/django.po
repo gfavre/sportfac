@@ -8,13 +8,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-25 17:34+0200\n"
+"POT-Creation-Date: 2017-08-04 10:09+0200\n"
 "PO-Revision-Date: 2013-09-10 09:00+0200\n"
 "Last-Translator: Gregory Favre <gregory.favre@gmail.com>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: sportfac/absences/models.py:15 sportfac/absences/templatetags/status.py:10
@@ -300,7 +300,7 @@ msgid "12S"
 msgstr "12S"
 
 #: sportfac/activities/models.py:53 sportfac/contact/forms.py:10
-#: sportfac/profiles/models.py:268
+#: sportfac/profiles/models.py:266
 #: sportfac/templates/absences/absences-table.html:25
 #: sportfac/templates/activities/course_detail.html:142
 #: sportfac/templates/backend/activity/list.html:38
@@ -419,8 +419,8 @@ msgstr "Année scolaire maximale"
 #: sportfac/activities/models.py:180
 #, python-format
 msgid ""
-"%(invisible)s%(activity)s (%(number)s): from %(start)s to %(end)s, every %"
-"(day)s at %(hour)s."
+"%(invisible)s%(activity)s (%(number)s): from %(start)s to %(end)s, every "
+"%(day)s at %(hour)s."
 msgstr ""
 "%(invisible)s%(activity)s (%(number)s): du %(start)s au %(end)s, les %(day)s "
 "à %(hour)s."
@@ -562,7 +562,7 @@ msgid "Days between end of registrations and payment"
 msgstr "Jours entre la fin des inscriptions et le paiement"
 
 #: sportfac/backend/dynamic_preferences_registry.py:136
-#: sportfac/profiles/forms.py:105 sportfac/profiles/resources.py:46
+#: sportfac/profiles/forms.py:117 sportfac/profiles/resources.py:46
 #: sportfac/templates/backend/user/detail-instructor.html:39
 #: sportfac/templates/registrations/bill-partial.html:33
 msgid "IBAN"
@@ -608,8 +608,7 @@ msgstr "Date de fermeture"
 msgid "Closing date should come after opening date"
 msgstr "La date de fermeture doit être postérieuse à la date d'ouverture"
 
-#: sportfac/backend/forms.py:59
-#: sportfac/backend/views/registration_views.py:89
+#: sportfac/backend/forms.py:59 sportfac/backend/views/registration_views.py:89
 #: sportfac/backend/views/registration_views.py:99
 #: sportfac/registrations/models.py:65 sportfac/registrations/resources.py:28
 #: sportfac/templates/backend/course/pay-slip-montreux-form.html:19
@@ -721,12 +720,12 @@ msgstr "préférences de période"
 #: sportfac/backend/tasks.py:60
 #, python-format
 msgid ""
-"The period %(start)s-%(end)s is ready to be used. You can preview it at the %"
-"(link_start)speriod management interface%(link_end)s."
+"The period %(start)s-%(end)s is ready to be used. You can preview it at the "
+"%(link_start)speriod management interface%(link_end)s."
 msgstr ""
 "La période %(start)s - %(end)s est prête à être utilisée. Vous pouvez la "
-"prévisualiser dans %(link_start)sl'interface de gestion des périodes%"
-"(link_end)s."
+"prévisualiser dans %(link_start)sl'interface de gestion des périodes"
+"%(link_end)s."
 
 #: sportfac/backend/tasks.py:97
 #, python-format
@@ -789,14 +788,12 @@ msgstr ""
 "à jour."
 
 #: sportfac/backend/views/course_views.py:187
-#: sportfac/backend/views/registration_views.py:300
-msgid "Transport has been deleted."
-msgstr "Le transport a été supprimé"
+msgid "Course has been deleted."
+msgstr "Le cours a été supprimé"
 
 #: sportfac/backend/views/course_views.py:193
-#, python-format
-msgid "Transport %(identifier)s has been deleted."
-msgstr "Le transport #%(identifier)s a bien été supprimé"
+msgid "Course %(identifier)s has been deleted."
+msgstr "Le cours %(identifier)s a bien été supprimé"
 
 #: sportfac/backend/views/dashboard_views.py:169
 msgid "Opening and closing dates have been changed"
@@ -812,7 +809,7 @@ msgid "registrations"
 msgstr "inscriptions"
 
 #: sportfac/backend/views/registration_views.py:66
-#: sportfac/backend/views/registration_views.py:311
+#: sportfac/backend/views/registration_views.py:310
 #, python-format
 msgid "Registrations of %(nb)s children have been moved."
 msgstr "Les inscriptions de %(nb)s enfants ont été déplacées."
@@ -848,21 +845,25 @@ msgstr "Une inscriptionpour %(child)s au cours %(course)s existe déjà."
 msgid "Registration has been updated."
 msgstr "L'inscription a été mise à jour."
 
-#: sportfac/backend/views/registration_views.py:236
+#: sportfac/backend/views/registration_views.py:235
 msgid "Registration has been canceled."
 msgstr "L'inscription a été annulée."
 
-#: sportfac/backend/views/registration_views.py:257
+#: sportfac/backend/views/registration_views.py:256
 msgid "Bill has been updated."
 msgstr "La facture a été mise à jour."
 
-#: sportfac/backend/views/registration_views.py:285
+#: sportfac/backend/views/registration_views.py:284
 msgid "Transport has been created."
 msgstr "Le transport a été créé."
 
-#: sportfac/backend/views/registration_views.py:292
+#: sportfac/backend/views/registration_views.py:291
 msgid "Transport has been updated."
 msgstr "Le transport a été mis à jour."
+
+#: sportfac/backend/views/registration_views.py:299
+msgid "Transport has been deleted."
+msgstr "Le transport a été supprimé"
 
 #: sportfac/backend/views/teacher_views.py:46
 #, python-format
@@ -1015,8 +1016,8 @@ msgid "A new period, starting on %s and ending on %s has been defined"
 msgstr ""
 "Une nouvelle période, démarrant le %s et se terminant le %s a été définie"
 
-#: sportfac/contact/forms.py:12 sportfac/profiles/forms.py:65
-#: sportfac/profiles/forms.py:147
+#: sportfac/contact/forms.py:12 sportfac/profiles/forms.py:68
+#: sportfac/profiles/forms.py:159
 msgid "E-mail"
 msgstr "E-mail"
 
@@ -1056,15 +1057,15 @@ msgstr "Destinataires"
 msgid "Template"
 msgstr "Modèle"
 
-#: sportfac/mailer/views.py:127
+#: sportfac/mailer/views.py:131
 msgid "Message has been scheduled to be sent."
 msgstr "Le message est en cours d'envoi."
 
-#: sportfac/mailer/views.py:184
+#: sportfac/mailer/views.py:189
 msgid "No course found"
 msgstr "Aucun cours n'a été trouvé"
 
-#: sportfac/mailer/views.py:247
+#: sportfac/mailer/views.py:252
 msgid "No recipient found"
 msgstr "Aucun destinataire n'a pu être trouvé"
 
@@ -1098,43 +1099,43 @@ msgstr "Le numéro AVS doit contenir 13 chiffres"
 msgid "Not a valid AHV number."
 msgstr "Numéro AVS invalide"
 
-#: sportfac/profiles/ahv.py:63 sportfac/profiles/models.py:97
+#: sportfac/profiles/ahv.py:63 sportfac/profiles/models.py:96
 #: sportfac/profiles/resources.py:48
 #: sportfac/templates/backend/user/detail-instructor.html:41
 msgid "AHV number"
 msgstr "N° AVS"
 
-#: sportfac/profiles/apps.py:9 sportfac/profiles/models.py:119
+#: sportfac/profiles/apps.py:9 sportfac/profiles/models.py:118
 #: sportfac/templates/backend/navbar.html:104
 msgid "Users"
 msgstr "Utilisateurs"
 
-#: sportfac/profiles/forms.py:29
+#: sportfac/profiles/forms.py:32
 msgid "Old password"
 msgstr "Ancien mot de passe"
 
-#: sportfac/profiles/forms.py:31
+#: sportfac/profiles/forms.py:34
 msgid "New password"
 msgstr "Nouveau mot de passe"
 
-#: sportfac/profiles/forms.py:33
+#: sportfac/profiles/forms.py:36
 msgid "New password confirmation"
 msgstr "Confirmation"
 
-#: sportfac/profiles/forms.py:38 sportfac/registrations/resources.py:40
+#: sportfac/profiles/forms.py:41 sportfac/registrations/resources.py:40
 msgid "Email"
 msgstr "E-mail"
 
-#: sportfac/profiles/forms.py:48
+#: sportfac/profiles/forms.py:51
 #, python-format
 msgid "I've read and agree to <a href=\"%s\"> terms and conditions</a>"
 msgstr "J'ai lu et j'accepte le  <a href=\"%s\">règlement de participation</a>"
 
-#: sportfac/profiles/forms.py:58
+#: sportfac/profiles/forms.py:61
 msgid "At least one phone number is mandatory"
 msgstr "Au moins un numéro de téléphone est obligatoire"
 
-#: sportfac/profiles/forms.py:62 sportfac/profiles/forms.py:156
+#: sportfac/profiles/forms.py:65 sportfac/profiles/forms.py:168
 #: sportfac/registrations/resources.py:41
 #: sportfac/templates/backend/user/detail-instructor.html:12
 #: sportfac/templates/backend/user/detail.html:11
@@ -1142,14 +1143,14 @@ msgstr "Au moins un numéro de téléphone est obligatoire"
 msgid "Address"
 msgstr "Adresse"
 
-#: sportfac/profiles/forms.py:67 sportfac/profiles/forms.py:159
-#: sportfac/profiles/forms.py:161 sportfac/profiles/models.py:88
+#: sportfac/profiles/forms.py:70 sportfac/profiles/forms.py:171
+#: sportfac/profiles/forms.py:173 sportfac/profiles/models.py:88
 #: sportfac/profiles/resources.py:25 sportfac/registrations/resources.py:42
 msgid "NPA"
 msgstr "NPA"
 
-#: sportfac/profiles/forms.py:68 sportfac/profiles/forms.py:163
-#: sportfac/profiles/forms.py:164 sportfac/profiles/models.py:89
+#: sportfac/profiles/forms.py:71 sportfac/profiles/forms.py:175
+#: sportfac/profiles/forms.py:176 sportfac/profiles/models.py:89
 #: sportfac/profiles/resources.py:26 sportfac/registrations/resources.py:43
 #: sportfac/templates/activities/course_detail.html:145
 #: sportfac/templates/backend/user/create.html:63
@@ -1159,31 +1160,47 @@ msgstr "NPA"
 msgid "City"
 msgstr "Commune"
 
-#: sportfac/profiles/forms.py:78
+#: sportfac/profiles/forms.py:72 sportfac/profiles/forms.py:180
+#: sportfac/profiles/models.py:91 sportfac/profiles/resources.py:29
+#: sportfac/templates/backend/user/create.html:84
+#: sportfac/templates/backend/user/detail-instructor.html:20
+#: sportfac/templates/backend/user/detail.html:19
+#: sportfac/templates/backend/user/update.html:87
+msgid "Home phone"
+msgstr "Téléphone (domicile)"
+
+#: sportfac/profiles/forms.py:75 sportfac/profiles/forms.py:183
+msgid "Mobile phone #1"
+msgstr "Téléphone portable"
+
+#: sportfac/profiles/forms.py:78 sportfac/profiles/forms.py:186
+msgid "Mobile phone #2"
+msgstr "Autre téléphone"
+
+#: sportfac/profiles/forms.py:90
 msgid "Is a manager"
 msgstr "Gestionnaire de sport facultatif"
 
-#: sportfac/profiles/forms.py:79
+#: sportfac/profiles/forms.py:91
 msgid "Grant access for this user to this backend interface"
 msgstr ""
 "Donner les accès à cette interface d'administration pour cet utilisateur"
 
-#: sportfac/profiles/forms.py:90 sportfac/profiles/forms.py:122
-#: sportfac/profiles/forms.py:173
-#: sportfac/templates/registration/login.html:23
+#: sportfac/profiles/forms.py:102 sportfac/profiles/forms.py:134
+#: sportfac/profiles/forms.py:191 sportfac/templates/registration/login.html:23
 msgid "Password"
 msgstr "Mot de passe"
 
-#: sportfac/profiles/forms.py:93 sportfac/profiles/forms.py:125
-#: sportfac/profiles/forms.py:175
+#: sportfac/profiles/forms.py:105 sportfac/profiles/forms.py:137
+#: sportfac/profiles/forms.py:193
 msgid "Password (again)"
 msgstr "Mot de passe (encore)"
 
-#: sportfac/profiles/forms.py:100 sportfac/profiles/forms.py:132
+#: sportfac/profiles/forms.py:112 sportfac/profiles/forms.py:144
 msgid "You must type the same password each time."
 msgstr "Vous devez entrer le même mot de passe dans chaque champ"
 
-#: sportfac/profiles/forms.py:108 sportfac/profiles/models.py:96
+#: sportfac/profiles/forms.py:120 sportfac/profiles/models.py:95
 #: sportfac/profiles/resources.py:47 sportfac/registrations/forms.py:15
 #: sportfac/registrations/models.py:305 sportfac/registrations/resources.py:35
 #: sportfac/templates/activities/course_detail.html:150
@@ -1193,100 +1210,83 @@ msgstr "Vous devez entrer le même mot de passe dans chaque champ"
 msgid "Birth date"
 msgstr "Date de naissance"
 
-#: sportfac/profiles/forms.py:110 sportfac/registrations/forms.py:17
+#: sportfac/profiles/forms.py:122 sportfac/registrations/forms.py:17
 msgid "Format: 31.12.2012"
 msgstr "Format: 31.12.2012"
 
-#: sportfac/profiles/forms.py:150
+#: sportfac/profiles/forms.py:162
 msgid "Email (again)"
 msgstr "Email (encore)"
 
-#: sportfac/profiles/forms.py:153
+#: sportfac/profiles/forms.py:165
 msgid "Enter the same email as before, for verification."
 msgstr "Entrez la même adresse email qu'au-dessus, pour vérification."
 
-#: sportfac/profiles/forms.py:154 sportfac/profiles/models.py:84
+#: sportfac/profiles/forms.py:166 sportfac/profiles/models.py:85
 #: sportfac/profiles/resources.py:22 sportfac/registrations/models.py:302
 #: sportfac/registrations/resources.py:30 sportfac/schools/models.py:16
 #: sportfac/templates/backend/registration/detail.html:47
 msgid "First name"
 msgstr "Prénom"
 
-#: sportfac/profiles/forms.py:155 sportfac/profiles/models.py:85
+#: sportfac/profiles/forms.py:167 sportfac/profiles/models.py:86
 #: sportfac/profiles/resources.py:23 sportfac/registrations/models.py:303
 #: sportfac/registrations/resources.py:31 sportfac/schools/models.py:17
 #: sportfac/templates/backend/registration/detail.html:48
 msgid "Last name"
 msgstr "Nom"
 
-#: sportfac/profiles/forms.py:166 sportfac/profiles/models.py:90
+#: sportfac/profiles/forms.py:178 sportfac/profiles/models.py:90
 #: sportfac/profiles/resources.py:27 sportfac/registrations/resources.py:44
 msgid "Country"
 msgstr "Pays de résidence"
 
-#: sportfac/profiles/forms.py:168 sportfac/profiles/models.py:91
-#: sportfac/profiles/resources.py:29
-#: sportfac/templates/backend/user/create.html:84
-#: sportfac/templates/backend/user/detail-instructor.html:20
-#: sportfac/templates/backend/user/detail.html:19
-#: sportfac/templates/backend/user/update.html:87
-msgid "Home phone"
-msgstr "Téléphone (domicile)"
-
-#: sportfac/profiles/forms.py:169
-msgid "Mobile phone #1"
-msgstr "Téléphone portable"
-
-#: sportfac/profiles/forms.py:170
-msgid "Mobile phone #2"
-msgstr "Autre téléphone"
-
-#: sportfac/profiles/forms.py:184
+#: sportfac/profiles/forms.py:202
 msgid "A user with that username already exists."
 msgstr "Cette adresse email est déjà utilisée."
 
-#: sportfac/profiles/forms.py:185 sportfac/templates/registration/login.html:4
+#: sportfac/profiles/forms.py:203 sportfac/templates/registration/login.html:4
 #: sportfac/templates/registration/login.html:5
 msgid "Login"
 msgstr "Connexion"
 
-#: sportfac/profiles/forms.py:186
+#: sportfac/profiles/forms.py:204
 msgid "Use another email address"
 msgstr "Utiliser une autre adresse email"
 
-#: sportfac/profiles/forms.py:195
+#: sportfac/profiles/forms.py:213
 msgid "The two email fields didn't match."
 msgstr "Les deux adresses email ne sont pas identiques."
 
-#: sportfac/profiles/forms.py:208
+#: sportfac/profiles/forms.py:226
 msgid "The two password fields didn't match."
 msgstr "Les deux mots de passe ne sont pas identiques."
 
-#: sportfac/profiles/models.py:77
+#: sportfac/profiles/models.py:78
 msgid "Switzerland"
 msgstr "Suisse"
 
-#: sportfac/profiles/models.py:78 sportfac/registrations/models.py:293
+#: sportfac/profiles/models.py:79 sportfac/registrations/models.py:293
 msgid "Liechtenstein"
 msgstr "Liechtenstein"
 
-#: sportfac/profiles/models.py:79
+#: sportfac/profiles/models.py:80
 msgid "Germany"
 msgstr "Allemagne"
 
-#: sportfac/profiles/models.py:80
+#: sportfac/profiles/models.py:81
 msgid "France"
 msgstr "France"
 
-#: sportfac/profiles/models.py:81
+#: sportfac/profiles/models.py:82
 msgid "Italy"
 msgstr "Italie"
 
-#: sportfac/profiles/models.py:82
+#: sportfac/profiles/models.py:83
 msgid "Austria"
 msgstr "Autriche"
 
-#: sportfac/profiles/models.py:83 sportfac/schools/models.py:19
+#: sportfac/profiles/models.py:84 sportfac/schools/models.py:19
 msgid "Email address"
 msgstr "Email"
 
@@ -1308,7 +1308,7 @@ msgstr "Téléphone portable"
 msgid "Other phone"
 msgstr "Autre téléphone"
 
-#: sportfac/profiles/models.py:98
+#: sportfac/profiles/models.py:97
 msgid "New AHV number, e.g. 756.1234.5678.90"
 msgstr "Nouveau numéro AVS, p.ex. 756.1234.5678.90"
 
@@ -1321,13 +1321,13 @@ msgstr ""
 msgid "date joined"
 msgstr "Date d'inscription"
 
-#: sportfac/profiles/models.py:118 sportfac/registrations/models.py:222
+#: sportfac/profiles/models.py:117 sportfac/registrations/models.py:222
 #: sportfac/templates/backend/registration/bill-list.html:36
 #: sportfac/templates/registrations/pay-bill.html:24
 msgid "User"
 msgstr "Utilisateur"
 
-#: sportfac/profiles/models.py:249 sportfac/profiles/models.py:262
+#: sportfac/profiles/models.py:247 sportfac/profiles/models.py:260
 #: sportfac/registrations/forms.py:25 sportfac/registrations/resources.py:36
 #: sportfac/templates/activities/course_detail.html:148
 #: sportfac/templates/backend/course/detail-phase2.html:176
@@ -1338,7 +1338,7 @@ msgstr "Utilisateur"
 msgid "School year"
 msgstr "Année scolaire"
 
-#: sportfac/profiles/models.py:263 sportfac/schools/models.py:18
+#: sportfac/profiles/models.py:261 sportfac/schools/models.py:18
 #: sportfac/templates/absences/absences.html:29
 #: sportfac/templates/activities/activity_detail.html:53
 #: sportfac/templates/activities/course_detail.html:41
@@ -1351,11 +1351,11 @@ msgstr "Année scolaire"
 msgid "School years"
 msgstr "Années scolaires"
 
-#: sportfac/profiles/models.py:275
+#: sportfac/profiles/models.py:273
 msgid "school"
 msgstr "école"
 
-#: sportfac/profiles/models.py:276
+#: sportfac/profiles/models.py:274
 msgid "schools"
 msgstr "écoles"
 
@@ -1646,7 +1646,7 @@ msgstr ""
 msgid "Review my registered activities"
 msgstr "Revoir mes inscriptions pour cette année"
 
-#: sportfac/templates/404.html:4 sportfac/templates/404.html.py:6
+#: sportfac/templates/404.html:4 sportfac/templates/404.html:6
 msgid "Page not found"
 msgstr "Page non trouvée"
 
@@ -1654,7 +1654,7 @@ msgstr "Page non trouvée"
 msgid "Sorry, this is probably not the page you were looking for."
 msgstr "Désolé, cette page n'est probablement pas celle que vous cherchiez."
 
-#: sportfac/templates/500.html:4 sportfac/templates/500.html.py:6
+#: sportfac/templates/500.html:4 sportfac/templates/500.html:6
 msgid "Internal Error"
 msgstr "Erreur interne"
 
@@ -3174,7 +3174,7 @@ msgstr "Mes inscriptions pour cette année"
 msgid "... or login"
 msgstr "... ou connexion"
 
-#: sportfac/templates/footer.html:12 sportfac/templates/navbar.html.py:16
+#: sportfac/templates/footer.html:12 sportfac/templates/navbar.html:16
 #: sportfac/themes/coppet/templates/footer.html:12
 #: sportfac/themes/demo/templates/footer.html:12
 #: sportfac/themes/montreux/templates/footer.html:12
@@ -3191,8 +3191,7 @@ msgstr "Afficher la navigation"
 msgid "Manage periods"
 msgstr "Gestion des périodes"
 
-#: sportfac/templates/navbar.html:68
-#: sportfac/templates/profiles/account.html:4
+#: sportfac/templates/navbar.html:68 sportfac/templates/profiles/account.html:4
 #: sportfac/templates/profiles/account.html:5
 #: sportfac/templates/profiles/baseprofile.html:3
 #: sportfac/templates/profiles/baseprofile.html:4
@@ -3474,11 +3473,11 @@ msgstr ""
 msgid "Registrations validated"
 msgstr "Inscriptions enregistrées"
 
+#~ msgid "Transport %(identifier)s has been deleted."
+#~ msgstr "Le transport #%(identifier)s a bien été supprimé"
+
 #~ msgid "Please correct the error below."
 #~ msgstr "Veuillez corriger l'erreur ci-dessous."
-
-#~ msgid "Course has been deleted."
-#~ msgstr "Le cours a été supprimé"
 
 #~ msgid "1st HARMOS"
 #~ msgstr "1p HARMOS"
