@@ -2,12 +2,12 @@
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.conf import settings
-from django.template.defaultfilters import urlencode
 from django.views.generic import ListView
 
-from mailer.views import (MailView, MailCreateView, CustomMailMixin,
-                          MailParticipantsView, MailCourseInstructorsView, MailPreviewView)
-from mailer.forms import AdminMailForm, CourseMailForm
+from mailer.views import (MailView, MailCreateView, MailPreviewView,
+                          ParticipantsMailCreateView, ParticipantsMailPreviewView,
+                          MailParticipantsView, MailCourseInstructorsView)
+from mailer.forms import AdminMailForm
 from mailer.models import MailArchive
 from profiles.models import FamilyUser
 from registrations.models import Bill, Registration
@@ -17,8 +17,8 @@ from .mixins import BackendMixin
 __all__ = ['MailArchiveListView', 'NeedConfirmationView',
            'NotPaidYetView', 'BackendMailParticipantsView', 
            'MailConfirmationParticipantsView',
-           'CustomMailParticipantsCreateView', 'CustomMailParticipantsPreview',
-           'CustomUserCustomMailCreateView', 'CustomUserCustomMailPreview',
+           'BackendParticipantsCreateView', 'BackendMailParticipantsPreview',
+           'BackendMailCreateView', 'BackendMailPreview',
            'BackendMailCourseInstructorsView', ]
 
 
@@ -73,70 +73,40 @@ class BackendMailCourseInstructorsView(BackendMixin, MailCourseInstructorsView):
         return reverse('backend:course-detail', kwargs=self.kwargs)
 
 
-class CustomMailParticipantsCreateView(BackendMixin, MailCreateView):
-    template_name = 'backend/mail/create.html'
-
-    def get_success_url(self):
-        course = self.kwargs['course']                
-        return reverse('backend:mail-participants-custom-preview', 
-                       kwargs={'course': course})
-
-
-class CustomMailParticipantsPreview(CustomMailMixin, BackendMailParticipantsView):
-    template_name = 'backend/mail/preview-editlink.html'
-    form_class = CourseMailForm
-
-    def get_context_data(self, **kwargs):
-        kwargs['prev'] = self.request.GET.get('prev', None)
-        return super(CustomMailParticipantsPreview, self).get_context_data(**kwargs)
-
-    def get_success_url(self):
-        return reverse('backend:course-detail', kwargs=self.kwargs)
-
-    def post(self, request, *args, **kwargs):
-        redirect = super(CustomMailParticipantsPreview, self).post(request, *args, **kwargs)
-        try:
-            del self.request.session['mail']
-            del self.request.session['mail-userids']
-        except KeyError:
-            pass
-        return redirect
-
-
-class CustomUserCustomMailCreateView(BackendMixin, MailCreateView):
+class BackendMailCreateView(BackendMixin, MailCreateView):
+    """Send email to a given set of users - form"""
     template_name = 'backend/mail/create.html'
     success_url = reverse_lazy('backend:custom-mail-custom-users-preview')
     form_class = AdminMailForm
 
-    def get_success_url(self):
-        params = ''
-        if 'prev' in self.request.GET:
-            params = '?prev=' + urlencode(self.request.GET.get('prev'))
-        return self.success_url + params
 
-    def get_context_data(self, **kwargs):
-        kwargs['prev'] = self.request.GET.get('prev', None)
-        return super(CustomUserCustomMailCreateView, self).get_context_data(**kwargs)
-
-
-class CustomUserCustomMailPreview(BackendMixin, MailPreviewView):
+class BackendMailPreview(BackendMixin, MailPreviewView):
+    """Send email to a given set of users - preview"""
     success_url = reverse_lazy('backend:user-list')
     template_name = 'backend/mail/preview.html'
     edit_url = reverse_lazy('backend:custom-mail-custom-users')
-    #def get_recipients_list(self):
-    #    if 'mail-userids' in self.request.session:
-    #        return FamilyUser.objects.filter(id__in=self.request.session['mail-userids'])
-    #    return []
-#
-    #def get_context_data(self, **kwargs):
-    #    kwargs['cancel_url'] = self.request.GET.get('prev', None)
-    #    kwargs['url'] = ''.join((settings.DEBUG and 'http://' or 'https://',
-    #                             get_current_site(self.request).domain,
-    #                             reverse('wizard_confirm')))
-    #    return super(CustomUserCustomMailPreview, self).get_context_data(**kwargs)
-#
-    #def post(self, request, *args, **kwargs):
-    #    redirect = super(CustomUserCustomMailPreview, self).post(request, *args, **kwargs)
-    #    del self.request.session['mail']
-    #    del self.request.session['mail-userids']
-    #    return redirect
+
+    def get_cancel_url(self):
+        return self.request.GET.get('prev', None)
+
+    def get_context_data(self, **kwargs):
+        kwargs['url'] = ''.join((settings.DEBUG and 'http://' or 'https://',
+                                 get_current_site(self.request).domain,
+                                 reverse('wizard_confirm')))
+        return super(BackendMailPreview, self).get_context_data(**kwargs)
+
+
+class BackendParticipantsCreateView(BackendMixin, ParticipantsMailCreateView):
+    """Send email to all participants of a course - form"""
+    template_name = 'backend/mail/create.html'
+
+    def get_success_url(self):
+        return reverse('backend:mail-participants-custom-preview', kwargs={'course': self.course.pk})
+
+
+class BackendMailParticipantsPreview(BackendMixin, ParticipantsMailPreviewView):
+    """Send email to all participants of a course - preview"""
+    template_name = 'backend/mail/preview.html'
+
+    def get_success_url(self):
+        return reverse('backend:course-detail', kwargs=self.kwargs)

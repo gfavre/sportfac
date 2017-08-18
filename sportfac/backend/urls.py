@@ -53,15 +53,15 @@ mail_patterns = [
         name='mail-needconfirmation'),
     url(r'^not-paid-yet', view=views.NotPaidYetView.as_view(), 
         name='mail-notpaidyet'),    
-    url(r'^participants/(?P<course>[\w-]+)/custom$', 
-        view=views.CustomMailParticipantsCreateView.as_view(),
+    url(r'^participants/(?P<course>[\w-]+)/custom$',
+        view=views.BackendParticipantsCreateView.as_view(),
         name="mail-participants-custom"),
-    url(r'^participants/(?P<course>[\w-]+)/custom/preview$', 
-        view=views.CustomMailParticipantsPreview.as_view(),
+    url(r'^participants/(?P<course>[\w-]+)/custom/preview$',
+        view=views.BackendMailParticipantsPreview.as_view(),
         name="mail-participants-custom-preview"),     
-    url(r'^custom$', view=views.CustomUserCustomMailCreateView.as_view(),
+    url(r'^custom$', view=views.BackendMailCreateView.as_view(),
         name='custom-mail-custom-users'),
-    url(r'^custom/preview$', view=views.CustomUserCustomMailPreview.as_view(),
+    url(r'^custom/preview$', view=views.BackendMailPreview.as_view(),
         name='custom-mail-custom-users-preview')
 ]
 

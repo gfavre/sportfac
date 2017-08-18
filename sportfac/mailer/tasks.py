@@ -34,7 +34,7 @@ def send_mail(subject, message, from_email, recipients, reply_to, bcc=None, atta
                          reply_to=reply_to)
     for attachment in attachments:
         email.attach_file(attachment.file.path)
-
+    logger.info('Sending email to {}'.format(recipients))
     return email.send(fail_silently=not settings.DEBUG)
 
 

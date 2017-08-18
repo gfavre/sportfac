@@ -11,7 +11,7 @@ from django.views.generic.detail import SingleObjectMixin
 from braces.views import GroupRequiredMixin, LoginRequiredMixin
 
 from backend import INSTRUCTORS_GROUP
-from mailer.views import (MailCreateView, CustomMailMixin,
+from mailer.views import (MailCreateView, ParticipantsMailCreateView, CustomMailMixin,
                           MailParticipantsView, MailCourseInstructorsView)
 from mailer.forms import CourseMailForm
 from sportfac.views import WizardMixin
@@ -95,25 +95,13 @@ class MyCourseDetailView(CourseAccessMixin, DetailView):
         prefetch_related('participants__child__school_year', 'participants__child__family', 'instructors')
 
 
-class CustomMailCreateView(InstructorMixin, MailCreateView):
+class CustomMailCreateView(InstructorMixin, ParticipantsMailCreateView):
     template_name = 'activities/mail-create.html'
     form_class = CourseMailForm
 
     def get_success_url(self):
         course = self.kwargs['course']                
-        return reverse('activities:mail-preview', 
-                       kwargs={'course': course})
-
-
-class CustomParticipantsCustomMailView(InstructorMixin, SingleObjectMixin, View):
-    model = Course
-    pk_url_kwarg = 'course'
-
-    def post(self, request, *args, **kwargs):
-        course = self.get_object()
-        userids = list(set(json.loads(request.POST.get('data', '[]'))))
-        self.request.session['mail-userids'] = userids
-        return HttpResponseRedirect(course.get_custom_mail_instructors_url())
+        return reverse('activities:mail-preview', kwargs={'course': course})
 
 
 class CustomMailPreview(InstructorMixin, CustomMailMixin, MailParticipantsView):
@@ -134,6 +122,17 @@ class CustomMailPreview(InstructorMixin, CustomMailMixin, MailParticipantsView):
             pass
 
         return redirect 
+
+
+class CustomParticipantsCustomMailView(InstructorMixin, SingleObjectMixin, View):
+    model = Course
+    pk_url_kwarg = 'course'
+
+    def post(self, request, *args, **kwargs):
+        course = self.get_object()
+        userids = list(set(json.loads(request.POST.get('data', '[]'))))
+        self.request.session['mail-userids'] = userids
+        return HttpResponseRedirect(course.get_custom_mail_instructors_url())
 
 
 class InstructorsMailView(InstructorMixin, MailCourseInstructorsView):
