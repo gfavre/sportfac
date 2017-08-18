@@ -196,9 +196,9 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
         self.object = form.save()
         extrainfo_form.instance = self.object
         extrainfo_form.save()
-        if self.object.obj.status == Registration.STATUS.confirmed and not self.object.paid and not self.object.bill:
+        if self.object.status == Registration.STATUS.confirmed and not self.object.paid and not self.object.bill:
             status = Bill.STATUS.waiting
-            if self.objectobj.course.price == 0:
+            if self.object.course.price == 0:
                 status = Bill.STATUS.paid
             bill = Bill.objects.create(
                 status=status,
