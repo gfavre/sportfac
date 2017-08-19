@@ -4,9 +4,7 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.conf import settings
 from django.views.generic import ListView
 
-from mailer.views import (MailView, MailCreateView, MailPreviewView,
-                          ParticipantsMailCreateView, ParticipantsMailPreviewView,
-                          MailParticipantsView, MailCourseInstructorsView)
+import mailer.views as mailer_views
 from mailer.forms import AdminMailForm
 from mailer.models import MailArchive
 from profiles.models import FamilyUser
@@ -15,11 +13,12 @@ from registrations.views import BillMixin
 from .mixins import BackendMixin
 
 __all__ = ['MailArchiveListView', 'NeedConfirmationView',
-           'NotPaidYetView', 'BackendMailParticipantsView', 
+           'NotPaidYetView',
            'MailConfirmationParticipantsView',
-           'BackendParticipantsCreateView', 'BackendMailParticipantsPreview',
-           'BackendMailCreateView', 'BackendMailPreview',
-           'BackendMailCourseInstructorsView', ]
+
+           'MailCreateView', 'MailPreview',
+           'ParticipantsMailCreateView', 'ParticipantsMailPreview',
+           'MailCourseInstructorsView', ]
 
 
 class MailArchiveListView(BackendMixin, ListView):
@@ -27,60 +26,15 @@ class MailArchiveListView(BackendMixin, ListView):
     template_name = 'backend/mail/list.html'
 
 
-class NeedConfirmationView(BackendMixin, MailView):
-    """Mail to people having not confirmed activities yet."""
-    success_url = reverse_lazy('backend:home')
-    subject_template = 'mailer/need_confirmation_subject.txt'
-    message_template = 'mailer/need_confirmation.txt'
-    
-    def get_recipients_list(self):
-        parents = list(set([reg.child.family for reg in Registration.objects.waiting()]))
-        return parents
-    
-    def get_context_data(self, **kwargs):
-        context = super(NeedConfirmationView, self).get_context_data(**kwargs)
-        context['url'] = ''.join((settings.DEBUG and 'http://' or 'https://',
-                                  get_current_site(self.request).domain,
-                                  reverse('wizard_confirm')))
-        return context
- 
-
-class NotPaidYetView(BackendMixin, BillMixin, MailPreviewView):
-    """Mail to people having registered to courses but not paid yet"""
-    
-    success_url = reverse_lazy('backend:home')
-    subject_template = 'mailer/notpaid_subject.txt'
-    message_template = 'mailer/notpaid.txt'
-    
-    def get_recipients_list(self):
-        bills = Bill.objects.filter(status=Bill.STATUS.waiting, total__gt=0)
-        return FamilyUser.objects.filter(pk__in=[bill.family.pk for bill in bills])
-
-
-class BackendMailParticipantsView(BackendMixin, MailParticipantsView):
-    pass 
-
-
-class MailConfirmationParticipantsView(BackendMixin, MailParticipantsView):
-    subject_template = 'mailer/course_begin_subject.txt'
-    message_template = 'mailer/course_begin.txt'
-
-
-class BackendMailCourseInstructorsView(BackendMixin, MailCourseInstructorsView):
-    template_name = 'backend/course/confirm_send.html'
-
-    def get_success_url(self):
-        return reverse('backend:course-detail', kwargs=self.kwargs)
-
-
-class BackendMailCreateView(BackendMixin, MailCreateView):
+class MailCreateView(BackendMixin, mailer_views.MailCreateView):
     """Send email to a given set of users - form"""
     template_name = 'backend/mail/create.html'
     success_url = reverse_lazy('backend:custom-mail-custom-users-preview')
     form_class = AdminMailForm
 
 
-class BackendMailPreview(BackendMixin, MailPreviewView):
+class MailPreview(BackendMixin, mailer_views.ArchivedMailMixin,
+                  mailer_views.MailPreviewView):
     """Send email to a given set of users - preview"""
     success_url = reverse_lazy('backend:user-list')
     template_name = 'backend/mail/preview.html'
@@ -93,10 +47,10 @@ class BackendMailPreview(BackendMixin, MailPreviewView):
         kwargs['url'] = ''.join((settings.DEBUG and 'http://' or 'https://',
                                  get_current_site(self.request).domain,
                                  reverse('wizard_confirm')))
-        return super(BackendMailPreview, self).get_context_data(**kwargs)
+        return super(MailPreview, self).get_context_data(**kwargs)
 
 
-class BackendParticipantsCreateView(BackendMixin, ParticipantsMailCreateView):
+class ParticipantsMailCreateView(BackendMixin, mailer_views.ParticipantsMailCreateView):
     """Send email to all participants of a course - form"""
     template_name = 'backend/mail/create.html'
 
@@ -104,9 +58,69 @@ class BackendParticipantsCreateView(BackendMixin, ParticipantsMailCreateView):
         return reverse('backend:mail-participants-custom-preview', kwargs={'course': self.course.pk})
 
 
-class BackendMailParticipantsPreview(BackendMixin, ParticipantsMailPreviewView):
+class ParticipantsMailPreview(BackendMixin,
+                              mailer_views.ArchivedMailMixin,
+                              mailer_views.ParticipantsMailPreviewView):
     """Send email to all participants of a course - preview"""
     template_name = 'backend/mail/preview.html'
 
     def get_success_url(self):
         return reverse('backend:course-detail', kwargs=self.kwargs)
+
+
+class MailCourseInstructorsView(BackendMixin, mailer_views.MailCourseInstructorsView):
+    template_name = 'backend/course/confirm_send.html'
+
+    def get_success_url(self):
+        return reverse('backend:course-detail', kwargs=self.kwargs)
+
+
+class MailConfirmationParticipantsView(BackendMixin,
+                                       mailer_views.ParticipantsMixin,
+                                       mailer_views.TemplatedEmailMixin,
+                                       mailer_views.BrowsableMailPreviewView):
+    subject_template = 'mailer/course_begin_subject.txt'
+    message_template = 'mailer/course_begin.txt'
+    template_name = 'backend/mail/preview-browse.html'
+    edit_url = None
+    group_mails = False
+
+    def get_success_url(self):
+        return self.course.backend_url
+
+    def get_cancel_url(self):
+        return self.course.backend_url
+
+
+class NotPaidYetView(BackendMixin,
+                     BillMixin,
+                     mailer_views.TemplatedEmailMixin,
+                     mailer_views.BrowsableMailPreviewView):
+    """Mail to people having registered to courses but not paid yet"""
+
+    subject_template = 'mailer/notpaid_subject.txt'
+    message_template = 'mailer/notpaid.txt'
+    template_name = 'backend/mail/preview-browse.html'
+    success_url = reverse_lazy('backend:home')
+
+    def get_recipients(self):
+        bills = Bill.objects.filter(status=Bill.STATUS.waiting, total__gt=0)
+        return list(FamilyUser.objects.filter(pk__in=[bill.family.pk for bill in bills]))
+
+
+class NeedConfirmationView(BackendMixin, mailer_views.TemplatedEmailMixin, mailer_views.BrowsableMailPreviewView):
+    """Mail to people having not confirmed activities yet."""
+    success_url = reverse_lazy('backend:home')
+    subject_template = 'mailer/need_confirmation_subject.txt'
+    message_template = 'mailer/need_confirmation.txt'
+    template_name = 'backend/mail/preview-browse.html'
+
+    def get_recipients(self):
+        parents = list(set([reg.child.family for reg in Registration.objects.waiting()]))
+        return parents
+
+    def get_context_data(self, **kwargs):
+        kwargs['url'] = ''.join((settings.DEBUG and 'http://' or 'https://',
+                                 get_current_site(self.request).domain,
+                                 reverse('wizard_confirm')))
+        return super(NeedConfirmationView, self).get_context_data(**kwargs)

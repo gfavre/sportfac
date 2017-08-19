@@ -52,7 +52,7 @@ def notify_absences():
         context['session'] = absence.session
         subject = subject_tmpl.render(context)
         body = body_tmpl.render(context)
-        recipients = [absence.child.family.get_from_address()]
+        recipients = [absence.child.family.get_email_string()]
         logger.debug('Forging email')
         logger.debug('Subject: ' + subject)
         logger.debug('Body: ' + body)

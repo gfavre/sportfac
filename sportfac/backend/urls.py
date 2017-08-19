@@ -33,7 +33,7 @@ courses_patterns = [
         name='course-js-export'),
     url(r'^(?P<course>[\w-]+)/delete$', view=views.CourseDeleteView.as_view(),
         name='course-delete'),
-    url(r'(?P<course>[\w-]+)/mail-instructors$', view=views.BackendMailCourseInstructorsView.as_view(),
+    url(r'(?P<course>[\w-]+)/mail-instructors$', view=views.MailCourseInstructorsView.as_view(),
         name='course-mail-instructors'),
     url(r'(?P<course>[\w-]+)/mail-confirmation$', view=views.MailConfirmationParticipantsView.as_view(),
         name='course-mail-confirmation'),
@@ -54,14 +54,14 @@ mail_patterns = [
     url(r'^not-paid-yet', view=views.NotPaidYetView.as_view(), 
         name='mail-notpaidyet'),    
     url(r'^participants/(?P<course>[\w-]+)/custom$',
-        view=views.BackendParticipantsCreateView.as_view(),
+        view=views.ParticipantsMailCreateView.as_view(),
         name="mail-participants-custom"),
     url(r'^participants/(?P<course>[\w-]+)/custom/preview$',
-        view=views.BackendMailParticipantsPreview.as_view(),
+        view=views.ParticipantsMailPreview.as_view(),
         name="mail-participants-custom-preview"),     
-    url(r'^custom$', view=views.BackendMailCreateView.as_view(),
+    url(r'^custom$', view=views.MailCreateView.as_view(),
         name='custom-mail-custom-users'),
-    url(r'^custom/preview$', view=views.BackendMailPreview.as_view(),
+    url(r'^custom/preview$', view=views.MailPreview.as_view(),
         name='custom-mail-custom-users-preview')
 ]
 

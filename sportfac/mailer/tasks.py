@@ -39,59 +39,57 @@ def send_mail(subject, message, from_email, recipients, reply_to, bcc=None, atta
 
 
 @shared_task
-def send_instructors_email(subject, message, from_email, course_pk, reply_to, bcc=None):
+def send_instructors_email(course_pk, instructor_pk, subject, message, from_email, reply_to, bcc=None):
     logger.debug("Forging email to instructors of course #%s" % course_pk)
     if bcc is None:
         bcc = []
-    else:
-        bcc = FamilyUser.objects.filter(pk__in=bcc)
-
     course = Course.objects.get(pk=course_pk)
-    for instructor in course.instructors.all():
-        recipients = (instructor.get_from_address(), )
-        email = EmailMessage(subject=subject,
-                             body=message,
-                             from_email=from_email,
-                             to=recipients,
-                             bcc=bcc,
-                             reply_to=reply_to)
-        logger.debug("Message created")
+    instructor = FamilyUser.objects.get(pk=instructor_pk)
 
-        if not settings.KEPCHUP_NO_SSF:
-            filepath = get_ssf_decompte_heures(course, instructor)
-            filename = 'E_SSF_decompte_heures_%s_%s.pdf' % (
-                instructor.first_name, instructor.last_name)
-            email.attach(filename, open(filepath).read(), 'application/pdf')
-            logger.debug("Decompte.pdf attached")
+    email = EmailMessage(subject=subject,
+                         body=message,
+                         from_email=from_email,
+                         to=[instructor.get_email_string()],
+                         bcc=bcc,
+                         reply_to=reply_to)
+    logger.debug("Message created")
 
-        tempdir = mkdtemp()
-        filename = '%s-participants.pdf' % course.number
+    tempdir = mkdtemp()
+
+    filename = '%s-participants.pdf' % course.number
+    filepath = os.path.join(tempdir, filename)
+    cp_generator = CourseParticipants({'course': course})
+    cp_generator.render_to_pdf(filepath)
+    email.attach(filename, open(filepath).read(), 'application/pdf')
+    logger.debug("Participants.pdf attached")
+
+    filename = 'mes_cours.pdf'
+    filepath = os.path.join(tempdir, filename)
+    cp_generator = MyCourses({'instructor': instructor,
+                              'courses': Course.objects.filter(instructors=instructor)})
+    cp_generator.render_to_pdf(filepath)
+    email.attach(filename, open(filepath).read(), 'application/pdf')
+    logger.debug("Courses.pdf attached")
+
+    if not settings.KEPCHUP_NO_SSF:
+        filepath = get_ssf_decompte_heures(course, instructor)
+        filename = 'E_SSF_decompte_heures_%s_%s.pdf' % (
+            instructor.first_name, instructor.last_name)
+        email.attach(filename, open(filepath).read(), 'application/pdf')
+        logger.debug("Decompte.pdf attached")
+
+    if settings.KEPCHUP_SEND_PRESENCE_LIST:
+        filename = '%s-presences.pdf' % course.number
         filepath = os.path.join(tempdir, filename)
-        cp_generator = CourseParticipants({'course': course})
+        cp_generator = CourseParticipantsPresence({'course': course})
         cp_generator.render_to_pdf(filepath)
         email.attach(filename, open(filepath).read(), 'application/pdf')
-        logger.debug("Participants.pdf attached")
+        logger.debug("Presences.pdf attached")
 
-        if settings.KEPCHUP_SEND_PRESENCE_LIST:
-            filename = '%s-presences.pdf' % course.number
-            filepath = os.path.join(tempdir, filename)
-            cp_generator = CourseParticipantsPresence({'course': course})
-            cp_generator.render_to_pdf(filepath)
-            email.attach(filename, open(filepath).read(), 'application/pdf')
-            logger.debug("Presences.pdf attached")
+    for additional_doc in settings.KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS:
+        filepath = os.path.join(settings.STATIC_ROOT, additional_doc)
+        email.attach_file(filepath)
 
-        filename = 'mes_cours.pdf'
-        filepath = os.path.join(tempdir, filename)
-        cp_generator = MyCourses({'instructor': instructor,
-                                  'courses': Course.objects.filter(instructors=instructor)})
-        cp_generator.render_to_pdf(filepath)
-        email.attach(filename, open(filepath).read(), 'application/pdf')
-        logger.debug("Courses.pdf attached")
-
-        for additional_doc in settings.KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS:
-            filepath = os.path.join(settings.STATIC_ROOT, additional_doc)
-            email.attach_file(filepath)
-
-        shutil.rmtree(tempdir)
-        logger.debug("Email forged, sending...")
-        email.send(fail_silently=not(settings.DEBUG))
+    shutil.rmtree(tempdir)
+    logger.debug("Email forged, sending...")
+    email.send(fail_silently=not(settings.DEBUG))

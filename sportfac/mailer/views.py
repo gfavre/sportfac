@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import itertools
 import time
-
 import six
 
 from django.contrib import messages
@@ -12,8 +11,8 @@ from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.http import Http404
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
 from django.template import loader
+from django.template.defaultfilters import urlencode
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext as _
 from django.views.generic.base import TemplateView, ContextMixin
@@ -26,6 +25,8 @@ from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser
 from .forms import MailForm, CopiesForm, CourseMailForm
 from .models import MailArchive, Attachment
+from .mixins import (CancelableMixin, EditableMixin, ArchivedMailMixin, TemplatedEmailMixin,
+                     ParticipantsBaseMixin, ParticipantsMixin)
 from .tasks import send_mail, send_instructors_email
 
 
@@ -221,33 +222,7 @@ class CourseMixin(object):
         return self.course.get_backend_url()
 
 
-class MailCourseInstructorsView(MailMixin, CourseMixin, FormView):
-    message_template = 'mailer/instructor.txt'
-    subject_template = 'mailer/instructor_subject.txt'
-    form_class = CopiesForm
 
-    def get_recipients_list(self):
-        return self.course.instructors.all()
-
-    def form_valid(self, form):
-        self.bcc_list = []
-        if form.cleaned_data['send_copy']:
-            self.bcc_list = [self.request.user.pk]
-        if form.cleaned_data['copy_all_admins']:
-            self.bcc_list += FamilyUser.managers_objects.exclude(pk=self.request.user.pk).values_list('pk')
-        return super(MailCourseInstructorsView, self).form_valid(form)
-
-    def mail(self, context):
-        subject = self.get_subject()
-        from_email = self.get_from_address()
-        reply_to = [self.get_reply_to_address()]
-        message = self.get_mail_body(context)
-        send_instructors_email.delay(subject=subject,
-                                     message=message,
-                                     from_email=from_email,
-                                     course_pk=self.course.pk,
-                                     reply_to=reply_to,
-                                     bcc=self.get_bcc_list())
 
 
 class MailView(MailMixin, TemplateView):
@@ -328,7 +303,6 @@ class MailParticipantsView(CourseMixin, MailView):
             return []
 
 
-
 class CustomMailMixin(object):
 
     def get_attachments(self):
@@ -384,7 +358,7 @@ class MailCreateView(FormView):
         return [user.pk for user in FamilyUser.objects.filter(pk__in=user_ids)]
 
     def get_recipients_email(self):
-        return [user.get_from_address() for user in FamilyUser.objects.filter(pk__in=self.get_recipients())]
+        return [user.get_email_string() for user in FamilyUser.objects.filter(pk__in=self.get_recipients())]
 
     def get_bcc_from_form(self, form):
         bcc_recipients = set()
@@ -463,119 +437,18 @@ class MailCreateView(FormView):
         return super(MailCreateView, self).form_valid(form)
 
 
-class GlobalPreferencesMixin(object):
-    def __init__(self, *args, **kwargs):
-        self.global_preferences = global_preferences_registry.manager()
-        super(GlobalPreferencesMixin, self).__init__(*args, **kwargs)
 
 
-class SendMailMixin(GlobalPreferencesMixin):
-    from_address = None
-    reply_to_address = None
-    recipients = None
-    bcc_recipients = None
-    archive = None
-    success_message = _('Your email is being sent to %(number)s recipients.')
 
-    def get_success_message(self):
-        return self.success_message % {'number': len(set(self.archive.recipients))}
-
-    def get_from_address(self):
-        if self.from_address:
-            return self.from_address
-        return self.global_preferences['email__FROM_MAIL']
-
-    def get_reply_to_address(self):
-        if self.reply_to_address:
-            return self.reply_to_address
-        return self.global_preferences['email__REPLY_TO_MAIL']
-
-    @staticmethod
-    def resolve_template(template):
-        """Accepts a template object, path-to-template or list of paths"""
-        if isinstance(template, (list, tuple)):
-            return loader.select_template(template)
-        elif isinstance(template, six.string_types):
-            return loader.get_template(template)
-        else:
-            return template
-
-    def get_mail_archive(self):
-        mail_id = self.request.session.get('mail', None)
-        try:
-            mail = MailArchive.objects.get(id=mail_id)
-        except MailArchive.DoesNotExist:
-            raise Http404()
-        return mail
-
-    @staticmethod
-    def add_recipient_context(recipient, context):
-        context['to_email'] = recipient.get_from_address()
-        context['recipient'] = recipient
-        return context
-
-    def get_recipients(self):
-        if self.recipients:
-            return self.recipients
-        return [user for user in FamilyUser.objects.filter(pk__in=self.archive.recipients)]
-
-    def get_bcc_recipients(self):
-        if self.bcc_recipients:
-            return self.bcc_recipients
-        return [user for user in FamilyUser.objects.filter(pk__in=self.archive.bcc_recipients)]
-
-    def get_attachments(self, context):
-        return self.archive.attachments.all()
-
-    def get_subject(self, context):
-        return self.archive.subject
-
-    def get_mail_body(self, context):
-        template = self.resolve_template(self.archive.template)
-        return template.render(context)
-
-    def send_mail(self, recipient, bcc_recipients, base_context, attachments):
-        mail_context = base_context.copy()
-        self.add_recipient_context(recipient, mail_context)
-        message = self.get_mail_body(mail_context)
-        send_mail.delay(
-            subject=self.get_subject(mail_context),
-            message=self.get_mail_body(mail_context),
-            from_email=self.get_from_address(),
-            recipients=[recipient.get_from_address()],
-            reply_to=[self.get_reply_to_address()],
-            bcc=[user.get_from_address() for user in bcc_recipients],
-            attachments=[attachment.pk for attachment in attachments]
-        )
-        return message
-
-    def post(self, *args, **kwargs):
-        all_recipients = self.get_recipients() + self.get_bcc_recipients()
-        for recipient in all_recipients:
-            context = self.get_context_data()
-            self.send_mail(recipient, self.get_bcc_recipients(),
-                           context, self.get_attachments({}))
-        if 'mail' in self.request.session:
-            del self.request.session['mail']
-        if 'mail-userids' in self.request.session:
-            del self.request.session['mail-userids']
-        messages.success(self.request, self.get_success_message())
-        return HttpResponseRedirect(self.get_success_url())
-
-
-class MailPreviewView(SendMailMixin, TemplateView):
+class MailPreviewView(CancelableMixin, EditableMixin, TemplateView):
     success_url = None
-    edit_url = None
-    cancel_url = None
     template_name = 'mailer/preview.html'
 
-    def get(self, request, *args, **kwargs):
-        self.archive = self.get_mail_archive()
-        return super(MailPreviewView, self).get(request, *args, **kwargs)
+    def get_mail_body(self, context):
+        raise NotImplementedError('Either inherit from ArchivedMailMixin or TemplatedMailMixin')
 
-    def post(self, request, *args, **kwargs):
-        self.archive = self.get_mail_archive()
-        return super(MailPreviewView, self).post(request, *args, **kwargs)
+    def get_subject(self, context):
+        raise NotImplementedError('Either inherit from ArchivedMailMixin or TemplatedMailMixin')
 
     def get_success_url(self):
         if self.success_url:
@@ -585,78 +458,85 @@ class MailPreviewView(SendMailMixin, TemplateView):
             raise ImproperlyConfigured("No URL to redirect to. Provide a success_url.")
         return url
 
-    def get_edit_url(self):
-        if self.edit_url:
-            # Forcing possible reverse_lazy evaluation
-            return force_text(self.edit_url)
-        return None
-
-    def get_cancel_url(self):
-        if self.cancel_url:
-            # Forcing possible reverse_lazy evaluation
-            return force_text(self.cancel_url)
-        return None
-
-    @staticmethod
-    def get_recipient_addresses(archive):
-        return [user.get_from_address() for user in FamilyUser.objects.filter(pk__in=archive.recipients)]
-
-    @staticmethod
-    def get_bcc_addresses(archive):
-        return [user.get_from_address() for user in FamilyUser.objects.filter(pk__in=archive.bcc_recipients)]
+    def add_mail_context(self, context):
+        context['subject'] = self.get_subject(context)
+        context['message'] = self.get_mail_body(context)
+        context['attachments'] = self.get_attachments(context)
+        context['from_email'] = self.get_from_address()
+        context['to_email'] = self.get_recipient_addresses()
+        context['bcc_email'] = self.get_bcc_addresses()
 
     def get_context_data(self, **kwargs):
         current_site = get_current_site(self.request)
         kwargs['site_name'] = current_site.name
         kwargs['site_url'] = settings.DEBUG and 'http://' + current_site.domain or 'https://' + current_site.domain
         kwargs['signature'] = self.global_preferences['email__SIGNATURE']
-        kwargs['mail_archive'] = self.archive
-        kwargs['from_email'] = self.get_from_address()
-        kwargs['to_email'] = self.get_recipient_addresses(self.archive)
-        kwargs['bcc_email'] = self.get_bcc_addresses(self.archive)
-        kwargs['subject'] = self.archive.subject
-        kwargs['message'] = self.get_mail_body(kwargs)
-        kwargs['attachments'] = self.get_attachments(kwargs)
         kwargs['edit_url'] = self.get_edit_url()
         kwargs['cancel_url'] = self.get_cancel_url()
+        self.add_mail_context(kwargs)
         return super(MailPreviewView, self).get_context_data(**kwargs)
+
+    def send_mail(self, recipient, bcc_recipients, base_context):
+        mail_context = self.get_mail_context(base_context, recipient, bcc_recipients)
+        message = self.get_mail_body(mail_context)
+        send_mail.delay(
+            subject=self.get_subject(mail_context),
+            message=self.get_mail_body(mail_context),
+            from_email=self.get_from_address(),
+            recipients=[recipient.get_email_string()],
+            reply_to=[self.get_reply_to_address()],
+            bcc=[user.get_email_string() for user in bcc_recipients],
+            attachments=[attachment.pk for attachment in self.get_attachments(mail_context)]
+        )
+        return message
+
+    def post(self, *args, **kwargs):
+        all_recipients = self.get_recipients() + self.get_bcc_recipients()
+        for recipient in all_recipients:
+            context = self.get_context_data()
+            self.send_mail(recipient, self.get_bcc_recipients(), context)
+        if 'mail' in self.request.session:
+            del self.request.session['mail']
+        if 'mail-userids' in self.request.session:
+            del self.request.session['mail-userids']
+        messages.success(self.request, self.get_success_message())
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class BrowsableMailPreviewView(MailPreviewView):
     """MailPreview that offers rendering of individual mails"""
     template_name = 'mailer/browsable-preview.html'
 
+    def add_nth_mail_context(self, context, nth):
+        pass
+
+    def add_mail_context(self, context):
+        recipient = self.get_recipients()[context['mail_number']]
+        context['recipient'] = recipient
+        context['to_email'] = [recipient.get_email_string()]
+        context['bcc'] = []
+        context['from_email'] = self.get_from_address()
+        context['bcc_email'] = self.get_bcc_addresses()
+        context['subject'] = self.get_subject(context)
+        context['message'] = self.get_mail_body(context)
+        context['attachments'] = self.get_attachments(context)
+
     def get_context_data(self, **kwargs):
-        context = super(MailPreviewView, self).get_context_data(kwargs)
         mail_number = int(self.request.GET.get('number', 1)) - 1
-        context['mailidentifier'] = mail_number + 1
-        context['total'] = len(self.get_recipient_addresses())
-        context['has_prev'] = mail_number != 0
-        context['prev'] = mail_number
-        context['has_next'] = mail_number + 1 != context['total']
-        context['next'] = mail_number + 2
-        return context
+        kwargs['mail_number'] = mail_number
+        kwargs['mailidentifier'] = mail_number + 1
+        kwargs['total'] = len(self.get_recipients())
+        kwargs['has_prev'] = mail_number != 0
+        kwargs['prev'] = mail_number
+        kwargs['has_next'] = mail_number + 1 != kwargs['total']
+        kwargs['next'] = mail_number + 2
+        self.add_nth_mail_context(kwargs, mail_number)
+        self.add_mail_context(kwargs)
+        return super(BrowsableMailPreviewView, self).get_context_data(**kwargs)
 
 
-class ParticipantsMixin(object):
-    def get(self, request, *args, **kwargs):
-        self.course = get_object_or_404(Course, pk=self.kwargs['course'])
-        return super(ParticipantsMixin, self).get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        self.course = get_object_or_404(Course, pk=self.kwargs['course'])
-        return super(ParticipantsMixin, self).post(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        kwargs['course'] = self.course
-        return super(ParticipantsMixin, self).get_context_data(**kwargs)
-
-
-class ParticipantsMailCreateView(ParticipantsMixin, MailCreateView):
+class ParticipantsMailCreateView(ParticipantsBaseMixin, MailCreateView):
     form_class = CourseMailForm
-
-    def get_recipients(self):
-        return [registration.child.family.pk for registration in self.course.participants.all()]
 
 
 class ParticipantsMailPreviewView(ParticipantsMixin, MailPreviewView):
@@ -666,3 +546,53 @@ class ParticipantsMailPreviewView(ParticipantsMixin, MailPreviewView):
     def get_context_data(self, **kwargs):
         kwargs['prev'] = self.request.GET.get('prev', None)
         return super(ParticipantsMailPreviewView, self).get_context_data(**kwargs)
+
+
+class MailCourseInstructorsView(ParticipantsMixin, TemplatedEmailMixin, CancelableMixin, FormView):
+    form_class = CopiesForm
+
+    message_template = 'mailer/instructor.txt'
+    subject_template = 'mailer/instructor_subject.txt'
+    form_class = CopiesForm
+
+    def get_recipients(self):
+        return self.course.instructors.all()
+
+    def get_instructor_context(self, recipient, bcc_list=None):
+        if not bcc_list:
+            bcc_list = []
+        current_site = get_current_site(self.request)
+        return {
+            'site_name': current_site.name,
+            'site_url': settings.DEBUG and 'http://' + current_site.domain or 'https://' + current_site.domain,
+            'signature': self.global_preferences['email__SIGNATURE'],
+            'from_email': self.get_from_address(),
+            'to_email': recipient.get_email_string(),
+            'bcc_email': [bcc_user.get_email_string() for bcc_user in bcc_list],
+            'recipient': recipient,
+            'course': self.course
+        }
+
+    def form_valid(self, form):
+        bcc_list = []
+        if form.cleaned_data['send_copy']:
+            bcc_list = [self.request.user]
+        if form.cleaned_data['copy_all_admins']:
+            bcc_list += list(FamilyUser.managers_objects.exclude(pk=self.request.user.pk))
+
+        for instructor in self.get_recipients():
+            context = self.get_instructor_context(instructor, bcc_list)
+            send_instructors_email.delay(
+                course_pk=self.course.pk,
+                instructor_pk=instructor.pk,
+                subject=self.get_subject(context),
+                message=self.get_mail_body(context),
+                from_email=self.get_from_address(),
+                reply_to=[self.get_reply_to_address()],
+                bcc=[bcc_user.get_email_string() for bcc_user in bcc_list]
+            )
+        messages.success(self.request,
+                         _('Your email is being sent to %(number)s recipients.') % {
+                             'number': len(self.get_recipients())
+                         })
+        return super(MailCourseInstructorsView, self).form_valid(form)

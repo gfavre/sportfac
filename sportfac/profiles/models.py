@@ -231,11 +231,11 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     def get_backend_url(self):
         return reverse('backend:user-detail', kwargs={'pk': self.pk})
 
-    def get_from_address(self):
+    def get_email_string(self):
         return "%s %s <%s>" % (self.first_name, self.last_name, self.email)
 
     def __unicode__(self):
-        return self.get_from_address()
+        return self.get_email_string()
 
 
 class VisibleYearManager(models.Manager):
