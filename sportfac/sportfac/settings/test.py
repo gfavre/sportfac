@@ -7,3 +7,5 @@ DATABASES = {
         "NAME": ":memory:",
      },
 }
+DEBUG = True
+ALLOWED_HOSTS = ['test.com', 'tenant.test.com']

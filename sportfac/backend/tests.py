@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AnonymousUser
 from django.core.urlresolvers import reverse
 from django.test.client import RequestFactory
 

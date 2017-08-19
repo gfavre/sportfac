@@ -3,12 +3,10 @@ from django.core.urlresolvers import reverse
 import mock
 
 from .factories import ActivityFactory, CourseFactory
-from mailer.views import MailMixin
 from profiles.tests.factories import FamilyUserFactory, SchoolYearFactory, DEFAULT_PASS
 from registrations.tests.factories import ChildFactory, RegistrationFactory
 from sportfac.utils import TenantTestCase as TestCase
 
-from profiles.models import SchoolYear
 
 class ActivityViewsTests(TestCase):
     def setUp(self):
@@ -99,9 +97,9 @@ class CourseViewsTests(TestCase):
         self.client.login(username=self.family.email, password=DEFAULT_PASS)
         response = self.client.get(url)
         # members of course cannot send emails
-        self.assertEqual(response.status_code, 302)    
+        self.assertEqual(response.status_code, 302)
 
-    @mock.patch.object(MailMixin, 'mail')
+    @mock.patch('mailer.tasks.send_mail')
     def test_mail_participants(self, mail_method):
         url = self.course.get_custom_mail_instructors_url()
         self.client.login(username=self.instructor.email, password=DEFAULT_PASS)
@@ -135,7 +133,7 @@ class CourseViewsTests(TestCase):
         # members of course cannot send emails
         self.assertEqual(response.status_code, 302)
     
-    @mock.patch.object(MailMixin, 'mail')
+    @mock.patch('mailer.tasks.send_instructors_email')
     def test_send_documents(self, mail_method):
         url = self.course.get_mail_infos_url()
         self.client.login(username=self.instructor.email, password=DEFAULT_PASS)

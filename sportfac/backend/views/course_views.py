@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+from decimal import Decimal
+
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
@@ -6,8 +9,7 @@ from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
-from django.views.generic import (CreateView, DeleteView, DetailView, FormView,
-                                  ListView, UpdateView, View)
+from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, UpdateView, View
 from django.views.generic.detail import SingleObjectMixin
 
 from absences.models import Absence
@@ -34,6 +36,7 @@ class CourseDetailView(BackendMixin, DetailView):
                              .prefetch_related('participants__child__school_year',
                                                'participants__child__family',
                                                'instructors')
+
     def get_template_names(self):
         if self.request.PHASE == 2:
             return 'backend/course/detail-phase2.html'
@@ -56,12 +59,13 @@ class CourseAbsenceView(BackendMixin, DetailView):
         context = super(CourseAbsenceView, self).get_context_data(**kwargs)
         course = self.get_object()
         all_absences = dict(
-            [((absence.child, absence.session), absence.status) for absence 
-                                                                in Absence.objects.filter(session__course=course)]
+            [((absence.child, absence.session), absence.status)
+             for absence in Absence.objects.filter(session__course=course)]
         )
-        context['absence_matrix'] = [[all_absences.get((registration.child, session), 'present') for session 
-                                                                     in course.sessions.all()] 
-         for registration in course.participants.all()]
+        context['absence_matrix'] = [
+            [all_absences.get((registration.child, session), 'present') for session in course.sessions.all()]
+            for registration in course.participants.all()
+        ]
         context['courses_list'] = Course.objects.all()
         context['levels'] = Registration.LEVELS
 
@@ -90,8 +94,7 @@ class CourseParticipantsView(CourseDetailView):
 
 class CourseListView(BackendMixin, ListView):
     model = Course
-    queryset = Course.objects.select_related('activity').\
-                              prefetch_related('participants', 'instructors')
+    queryset = Course.objects.select_related('activity').prefetch_related('participants', 'instructors')
     
     def get_template_names(self):
         if self.request.PHASE == 1:
@@ -155,6 +158,7 @@ class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
         url = self.object.get_backend_url()
         return mark_safe(self.success_message % {'url': url,
                                                  'number': self.object.number})
+
     def get_initial(self):
         initial = super(CourseUpdateView, self).get_initial()
         initial['extra'] = self.get_object().extra.all()
@@ -202,16 +206,16 @@ class PaySlipMontreux(BackendMixin, FormView):
 
     def form_valid(self, form, **kwargs):
         context = self.get_context_data(**kwargs)
-        context['rate'] = float(form.cleaned_data['rate'])
+        context['rate'] = Decimal(form.cleaned_data['rate'])
         context['rate_mode'] = form.cleaned_data['rate_mode']
         context['function'] = form.cleaned_data['function']
 
         if form.cleaned_data['rate_mode'] == 'hour':
             duration = context['course'].duration
             hours = duration.seconds / 3600.0 + duration.days * 24
-            context['amount'] = float(context['rate']) * float(context['sessions'].count()) * hours
+            context['amount'] = Decimal(context['rate']) * Decimal(context['sessions'].count()) * hours
         else:
-            context['amount'] = float(context['sessions'].count()) * context['rate']
+            context['amount'] = Decimal(context['sessions'].count()) * context['rate']
 
         return TemplateResponse(
             request=self.request,

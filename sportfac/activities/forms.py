@@ -1,14 +1,13 @@
+# -*- coding: utf-8 -*-
 from django.conf import settings
 from django.utils.translation import ugettext as _
 
 import floppyforms.__future__ as forms
 
 from backend.forms import Select2Widget, Select2MultipleWidget, DatePickerInput, TimePickerInput
-from .models import Activity, Course, ExtraNeed
 from profiles.models import FamilyUser
+from .models import Activity, Course, ExtraNeed
 
-
-            
 
 class CourseForm(forms.ModelForm):
     activity = forms.ModelChoiceField(label=_("Activity"),
@@ -20,7 +19,8 @@ class CourseForm(forms.ModelForm):
         queryset=FamilyUser.objects, 
         widget=Select2MultipleWidget()
     )
-    name = forms.CharField(label=_("Displayed name (optional)"), required=False, help_text=_("Displayed on calendar under activity name"))
+    name = forms.CharField(label=_("Displayed name (optional)"), required=False,
+                           help_text=_("Displayed on calendar under activity name"))
     number = forms.CharField(label=_("Identifier"), required=True)
     price = forms.DecimalField(label=_("Price"), initial=0, required=True, 
                                widget=settings.KEPCHUP_NO_PAYMENT and forms.HiddenInput or forms.NumberInput)

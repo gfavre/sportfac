@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import json
 import tempfile
 
@@ -10,20 +11,18 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import urlencode
 from django.utils.translation import ugettext as _
-from django.views.generic import CreateView, DeleteView, DetailView, \
-                                ListView, UpdateView, View, FormView
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView, View, FormView
 
-from backend import MANAGERS_GROUP, INSTRUCTORS_GROUP
-from backend.forms import ChildImportForm
-from backend.tasks import import_children
-from profiles.forms import (ManagerForm, ManagerWithPasswordForm, 
-                            InstructorForm, InstructorWithPasswordForm)
+from profiles.forms import ManagerForm, ManagerWithPasswordForm, InstructorForm, InstructorWithPasswordForm
 from profiles.models import FamilyUser
 from profiles.resources import UserResource, InstructorResource
 from registrations.models import Bill, Child, Registration
 from registrations.forms import ChildForm
-
 from .mixins import BackendMixin, ExcelResponseMixin
+from .. import MANAGERS_GROUP, INSTRUCTORS_GROUP
+from ..forms import ChildImportForm
+from ..tasks import import_children
+
 
 __all__ = ('UserListView', 'UserCreateView', 'PasswordSetView',
            'UserUpdateView', 'UserDeleteView', 'UserDetailView',
@@ -38,11 +37,10 @@ __all__ = ('UserListView', 'UserCreateView', 'PasswordSetView',
 valid_registrations = Registration.objects.validated()
 
 FamilyUser.objects.annotate(
-    valid_registrations=Count(Case(When(children__registrations__in= Registration.objects.validated(), then=1))),
+    valid_registrations=Count(Case(When(children__registrations__in=Registration.objects.validated(), then=1))),
     waiting_registrations=Count(Case(When(children__registrations__in=Registration.objects.waiting(), then=1))),
     opened_bills=Count(Case(When(bills__status=Bill.STATUS.waiting, then=1))),
 )
-
 
 
 class UserListView(BackendMixin, ListView):
@@ -53,7 +51,7 @@ class UserListView(BackendMixin, ListView):
         return FamilyUser.objects.annotate(num_children=Count('children'))\
                          .annotate(
                             valid_registrations=Count(
-                                Case(When(children__registrations__in= Registration.objects.validated(), then=1))
+                                Case(When(children__registrations__in=Registration.objects.validated(), then=1))
                             ),
                             waiting_registrations=Count(
                                 Case(When(children__registrations__in=Registration.objects.waiting(), then=1))
@@ -79,13 +77,15 @@ class MailUsersView(BackendMixin, View):
             params = '?prev=' + urlencode(request.GET.get('prev'))
         return HttpResponseRedirect(reverse('backend:custom-mail-custom-users') + params)
 
+
 class UserExportView(BackendMixin, ExcelResponseMixin, View):
     filename = _("users")
     resource_class = UserResource
 
 
 class ManagerMixin(object):
-    def get_queryset(self):
+    @staticmethod
+    def get_queryset():
         return Group.objects.get(name=MANAGERS_GROUP).user_set.all()
 
 
@@ -99,8 +99,10 @@ class ManagerExportView(BackendMixin, ExcelResponseMixin, ManagerMixin, View):
 
 
 class InstructorMixin(object):
-    def get_queryset(self):
+    @staticmethod
+    def get_queryset():
         return Group.objects.get(name=INSTRUCTORS_GROUP).user_set.all()
+
 
 class InstructorListView(InstructorMixin, UserListView):
     template_name = 'backend/user/instructor-list.html'
@@ -135,7 +137,6 @@ class ManagerCreateView(UserCreateView):
         ctx = super(ManagerCreateView, self).get_context_data(**kwargs)
         ctx['is_manager'] = True
         return ctx
-
 
     def get_initial(self):
         initial = super(ManagerCreateView, self).get_initial()
@@ -199,7 +200,6 @@ class UserUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
         return _("Contact informations of %s have been updated.") % self.object.full_name
 
 
-
 class UserDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
     model = FamilyUser
     template_name = 'backend/user/confirm_delete.html'
@@ -211,6 +211,7 @@ class UserDetailView(BackendMixin, DetailView):
     model = FamilyUser
     template_name = 'backend/user/detail.html'
 
+
 class InstructorDetailView(BackendMixin, DetailView):
     model = FamilyUser
     template_name = 'backend/user/detail-instructor.html'
@@ -218,7 +219,7 @@ class InstructorDetailView(BackendMixin, DetailView):
 
 class PasswordSetView(BackendMixin, SuccessMessageMixin, FormView):
     form_class = SetPasswordForm
-    template_name ='backend/user/password-change.html'
+    template_name = 'backend/user/password-change.html'
     
     def get_success_message(self, cleaned_data):
         return _("Password changed for user %s.") % self.get_object()
@@ -232,7 +233,6 @@ class PasswordSetView(BackendMixin, SuccessMessageMixin, FormView):
     
     def get_form_kwargs(self):
         kwargs = super(PasswordSetView, self).get_form_kwargs()
-        user_id = self.request.GET.get('user', None)
         kwargs['user'] = self.get_object()
         return kwargs
     
@@ -261,7 +261,6 @@ class ChildListView(BackendMixin, ListView):
     def get_queryset(self):
         return Child.objects.select_related('family', 'school_year')
     
-
 
 class ChildCreateView(ChildView, SuccessMessageMixin, CreateView):
     model = Child

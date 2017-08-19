@@ -2,6 +2,7 @@ import ast
 
 from django.db import models
 
+
 class ListField(models.TextField):
     description = "Stores a python list"
 
