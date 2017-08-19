@@ -4,18 +4,15 @@ import json
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.db.models import Min, Max
 from django.http import HttpResponseRedirect
-from django.views.generic import DetailView, ListView
-from django.views.generic.base import View
-from django.views.generic.detail import SingleObjectMixin
+from django.shortcuts import get_object_or_404
+from django.views.generic import DetailView, ListView, View
 
 from braces.views import GroupRequiredMixin, LoginRequiredMixin
 
 from backend import INSTRUCTORS_GROUP
 import mailer.views as mailer_views
-
 from mailer.forms import CourseMailForm
 from sportfac.views import WizardMixin
-
 from .models import Activity, Course
 
 
@@ -95,6 +92,17 @@ class MyCourseDetailView(CourseAccessMixin, DetailView):
         prefetch_related('participants__child__school_year', 'participants__child__family', 'instructors')
 
 
+class MailUsersView(CourseAccessMixin, View):
+    def post(self, request, *args, **kwargs):
+        userids = list(set(json.loads(request.POST.get('data', '[]'))))
+        self.request.session['mail-userids'] = userids
+        params = ''
+        if 'prev' in request.GET:
+            params = '?prev=' + urlencode(request.GET.get('prev'))
+        return HttpResponseRedirect(reverse('activities:mail-custom-participants-custom',
+                                            kwargs={'course': kwargs['course']}) + params)
+
+
 class CustomMailCreateView(InstructorMixin, mailer_views.ParticipantsMailCreateView):
     template_name = 'activities/mail-create.html'
     form_class = CourseMailForm
@@ -120,13 +128,20 @@ class CustomMailPreview(InstructorMixin, mailer_views.ArchivedMailMixin,
         return self.request.user.get_email_string()
 
 
-class CustomParticipantsCustomMailView(InstructorMixin, mailer_views.ParticipantsMailCreateView):
+class CustomParticipantsCustomMailView(InstructorMixin, mailer_views.MailCreateView):
     template_name = 'activities/mail-create.html'
     form_class = CourseMailForm
 
+    def get(self, *args, **kwargs):
+        self.course = get_object_or_404(Course, pk=self.kwargs['course'])
+        return super(CustomParticipantsCustomMailView, self).get(*args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        self.course = get_object_or_404(Course, pk=self.kwargs['course'])
+        return super(CustomParticipantsCustomMailView, self).post(*args, **kwargs)
+
     def get_success_url(self):
-        course = self.kwargs['course']
-        return reverse('activities:mail-preview', kwargs={'course': course})
+        return reverse('activities:mail-preview', kwargs={'course': self.course.pk})
 
 
 class MailCourseInstructorsView(InstructorMixin, mailer_views.MailCourseInstructorsView):

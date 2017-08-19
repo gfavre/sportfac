@@ -8,4 +8,4 @@ DATABASES = {
      },
 }
 DEBUG = True
-ALLOWED_HOSTS = list(ALLOWED_HOSTS) + ['test.com', 'tenant.test.com']
+ALLOWED_HOSTS = ['test.com', 'tenant.test.com']

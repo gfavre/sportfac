@@ -12,7 +12,7 @@ from activities.models import Course
 from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser
 from .models import MailArchive
-from .tasks import send_mail
+from . import tasks
 
 
 class GlobalPreferencesMixin(object):
@@ -208,7 +208,7 @@ class ParticipantsMixin(ParticipantsBaseMixin, BaseEmailMixin):
     def send_mail(self, recipient, bcc_recipients, base_context, child=None):
         mail_context = self.get_mail_context(base_context, recipient, bcc_recipients, child)
         message = self.get_mail_body(mail_context)
-        send_mail.delay(
+        tasks.send_mail.delay(
             subject=self.get_subject(mail_context),
             message=self.get_mail_body(mail_context),
             from_email=self.get_from_address(),

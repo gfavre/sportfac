@@ -7,330 +7,22 @@ from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django.core.urlresolvers import reverse
 from django.db import transaction
-from django.http import Http404
 from django.http import HttpResponseRedirect
-from django.template import loader
 from django.template.defaultfilters import urlencode
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext as _
-from django.views.generic.base import TemplateView, ContextMixin
+from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 
 from dbtemplates.models import Template
 
-from activities.models import Course
-from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser
 from .forms import MailForm, CopiesForm, CourseMailForm
 from .models import MailArchive, Attachment
 from .mixins import (CancelableMixin, EditableMixin, ArchivedMailMixin, TemplatedEmailMixin,
                      ParticipantsBaseMixin, ParticipantsMixin)
-from .tasks import send_mail, send_instructors_email
-
-
-class MailMixin(ContextMixin):
-    recipients_queryset = None
-    bcc_list = None
-    success_url = None
-    from_email = None
-    subject = None
-    subject_template = None
-    message_template = None
-    from_address = None
-    reply_to_address = None
-    success_message = ''
-    attachments = None
-
-    form_class = None
-
-    def __init__(self, *args, **kwargs):
-        self.global_preferences = global_preferences_registry.manager()
-        super(MailMixin, self).__init__(*args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super(MailMixin, self).get_context_data(**kwargs)
-        context['signature'] = self.global_preferences['email__SIGNATURE']
-        current_site = get_current_site(self.request)
-        context['site_name'] = current_site.name
-        context['site_url'] = settings.DEBUG and 'http://' + current_site.domain or 'https://' + current_site.domain
-        context['bcc'] = self.get_bcc_list()
-        return context
-    
-    def get_attachments(self):
-        if self.attachments is None:
-            return []
-        return self.attachments
-    
-    def get_recipients_list(self):
-        if self.recipients_queryset is None:
-            raise ImproperlyConfigured(
-                "MailMixin requires either a definition of "
-                "'recipients_queryset' or an implementation of 'get_subject_template'")
-        else:
-            if self.recipients_queryset:
-                return self.recipients_queryset.all()
-        return []
-
-    def get_bcc_list(self):
-        if self.bcc_list is None:
-            return []
-        return self.bcc_list
-
-    def get_success_url(self):
-        if self.success_url:
-            # Forcing possible reverse_lazy evaluation
-            url = force_text(self.success_url)
-        else:
-            raise ImproperlyConfigured(
-                "No URL to redirect to. Provide a success_url.")
-        return url
-
-    def get_recipient_address(self, recipient):
-        if not recipient:
-            return ''
-        to = '%s %s <%s>'
-        return to % (recipient.first_name,
-                     recipient.last_name, recipient.email)
-
-    @staticmethod
-    def resolve_template(template):
-        """Accepts a template object, path-to-template or list of paths"""
-        if isinstance(template, (list, tuple)):
-            return loader.select_template(template)
-        elif isinstance(template, six.string_types):
-            return loader.get_template(template)
-        else:
-            return template
-
-    def get_subject(self):
-        context = self.get_context_data()
-        return self.get_subject_template().render(context)
-
-    def get_subject_template(self):
-        if self.subject_template is None:
-            raise ImproperlyConfigured(
-                "MailMixin requires either a definition of "
-                "'subject' or an implementation of 'get_subject'")
-        return self.resolve_template(self.subject_template)
-
-    def get_message_template(self):
-        if self.message_template is None:
-            raise ImproperlyConfigured(
-                "MailMixin requires either a definition of "
-                "'message_template' or an implementation of 'get_subject_template'")
-        else:
-            return self.resolve_template(self.message_template)
-
-    def get_from_address(self):
-        if self.from_address:
-            return self.from_address
-        return self.global_preferences['email__FROM_MAIL']
-    
-    def get_reply_to_address(self):
-        if self.reply_to_address:
-            return self.reply_to_address
-        return self.global_preferences['email__REPLY_TO_MAIL']
-
-    def get_success_message(self):
-        if self.success_message:
-            return self.success_message
-        return _("Message has been scheduled to be sent.")
-
-    def get_mail_body(self, context):
-        return self.get_message_template().render(context)
-
-    def add_recipient_context(self, recipient, context):
-        context['recipient'] = recipient
-
-    def send_mail(self, recipient, base_context, attachments):
-        mail_context = base_context.copy()
-        self.add_recipient_context(recipient, mail_context)
-        message = self.get_mail_body(mail_context)
-        send_mail.delay(subject=self.get_subject(),
-                        message=self.get_mail_body(mail_context),
-                        from_email=self.get_from_address(),
-                        recipients=[self.get_recipient_address(recipient)],
-                        reply_to=[self.get_reply_to_address()],
-                        attachments=attachments)
-        return message
-
-    def mail(self, context):
-        emails = []
-        recipients_addresses = []
-        bcc_addresses = []
-
-        attachments = [fileobj.file.name for fileobj in self.get_attachments()]
-
-        for recipient in self.get_recipients_list():
-            if not recipient:
-                continue
-            message = self.send_mail(recipient, context, attachments)
-            emails.append(message)
-            recipients_addresses.append(self.get_recipient_address(recipient))
-
-        for bcc_recipient in self.get_bcc_list():
-            message = self.send_mail(bcc_recipient, context, attachments)
-            emails.append(message)
-            bcc_addresses.append(self.get_recipient_address(bcc_recipient))
-
-        MailArchive.objects.create(subject=subject, messages=emails,
-                                   recipients=recipients_addresses,
-                                   bcc_recipients=bcc_addresses,
-                                   template=self.get_message_template())
-
-    def form_valid(self, form):
-        context = self.get_context_data(**self.kwargs)
-        self.mail(context)
-        messages.add_message(self.request, messages.SUCCESS, self.get_success_message())
-        success_url = self.get_success_url()
-        return HttpResponseRedirect(success_url)
-
-    def post(self, request, *args, **kwargs):
-        if self.form_class:
-            form = self.form_class(data=self.request.POST, files=self.request.FILES)
-            if form.is_valid():
-                return self.form_valid(form)
-            else:
-                return self.form_invalid(form)
-
-        context = self.get_context_data(**kwargs)
-        self.mail(context)
-        messages.add_message(self.request, messages.SUCCESS, self.get_success_message())
-        success_url = self.get_success_url()
-        return HttpResponseRedirect(success_url)
-
-
-class CourseMixin(object):
-
-    def get_context_data(self, **kwargs):
-        context = super(CourseMixin, self).get_context_data(**kwargs)
-        try:
-            course = Course.objects.get(pk=self.kwargs.get('course'))
-            self.course = course
-            context['course'] = course
-        except Course.DoesNotExist:
-            raise Http404(_("No course found"))
-
-        context['url'] = ''.join((settings.DEBUG and 'http://' or 'https://',
-                                  get_current_site(self.request).domain,
-                                  reverse('wizard_confirm')))
-        return context
-
-    def get_success_url(self):
-        return self.course.get_backend_url()
-
-
-
-
-
-class MailView(MailMixin, TemplateView):
-    template_name = 'backend/mail/preview.html'
-
-    @staticmethod
-    def add_navigation_context(mailnumber, mails, context):
-        context['total'] = len(mails)
-        context['mailidentifier'] = mailnumber + 1
-        context['has_prev'] = mailnumber != 0
-        context['prev'] = mailnumber
-        context['has_next'] = mailnumber + 1 != context['total']
-        context['next'] = mailnumber + 2
-
-    def add_mail_context(self, mailnumber, context):
-        """Get context, add navigation"""
-        context['to_email'] = self.get_recipient_address(context['recipient'])
-        context['from_email'] = self.get_from_address()
-        context['subject'] = self.get_subject()
-        context['message'] = self.get_mail_body(context)
-        context['attachments'] = self.get_attachments()
-
-    def get(self, request, *args, **kwargs):
-        """Preview emails."""
-        mailnumber = int(self.request.GET.get('number', 1)) - 1
-        if self.request.GET.get('new', False) and 'mail-userids' in self.request.session:
-            del self.request.session['mail-userids']
-        context = self.get_context_data(**kwargs)
-        recipients = self.get_recipients_list()
-           
-        self.add_navigation_context(mailnumber, recipients, context)
-        
-        try:
-            self.add_recipient_context(recipients[mailnumber], context)
-        except IndexError:
-            raise Http404(_("No recipient found"))
-        self.add_mail_context(mailnumber, context)
-        return self.render_to_response(context)
-
-
-class MailParticipantsView(CourseMixin, MailView):
-
-    def add_recipient_context(self, recipient, context):
-        context['recipient'] = recipient.child.family
-        context['child'] = recipient.child
-        context['registration'] = recipient
-
-    def add_mail_context(self, mailnumber, context):
-        """Get context, add navigation"""
-        context['to_email'] = self.get_recipient_address(context['registration'])
-        context['from_email'] = self.get_from_address()
-        context['subject'] = self.get_subject()
-        context['message'] = self.get_mail_body(context)
-        context['attachments'] = self.get_attachments()
-
-    def get_context_data(self, **kwargs):
-        context = super(MailParticipantsView, self).get_context_data()
-        context['bcc'] = self.get_bcc_list()
-        return context
-
-    def get_recipient_address(self, recipient):
-        return super(MailParticipantsView, self).get_recipient_address(recipient.child.family)
-
-    def get_recipients_list(self):
-        qs = self.course.participants.all()
-        if 'mail-userids' in self.request.session:
-            qs = qs.filter(child__family__in=self.request.session['mail-userids'])
-        return qs
-
-    def get_bcc_list(self):
-        if 'mail' not in self.request.session:
-            return []
-        try:
-            bcc_pks = MailArchive.objects.get(id=self.request.session['mail']).bcc_recipients
-            return FamilyUser.objects.filter(pk__in=bcc_pks)
-        except MailArchive.DoesNotExist:
-            del self.request.session['mail']
-            return []
-
-
-class CustomMailMixin(object):
-
-    def get_attachments(self):
-        mail_id = self.request.session.get('mail', None)
-        try:
-            mail = MailArchive.objects.get(id=mail_id)
-            attachments = [attachment.file for attachment in mail.attachments.all()]
-            return attachments
-        except MailArchive.DoesNotExist:
-            raise Http404()
-
-    def get_subject(self):
-        mail_id = self.request.session.get('mail', None)
-        try:
-            mail = MailArchive.objects.get(id=mail_id)
-        except MailArchive.DoesNotExist:
-            raise Http404()
-        return mail.subject
-
-    def get_message_template(self):
-        mail_id = self.request.session.get('mail', None)
-        try:
-            mail = MailArchive.objects.get(id=mail_id)
-        except MailArchive.DoesNotExist:
-            raise Http404()
-        return self.resolve_template(mail.template)
-
-###################################################################################################
+from . import tasks
 
 
 class MailCreateView(FormView):
@@ -437,9 +129,6 @@ class MailCreateView(FormView):
         return super(MailCreateView, self).form_valid(form)
 
 
-
-
-
 class MailPreviewView(CancelableMixin, EditableMixin, TemplateView):
     success_url = None
     template_name = 'mailer/preview.html'
@@ -479,7 +168,7 @@ class MailPreviewView(CancelableMixin, EditableMixin, TemplateView):
     def send_mail(self, recipient, bcc_recipients, base_context):
         mail_context = self.get_mail_context(base_context, recipient, bcc_recipients)
         message = self.get_mail_body(mail_context)
-        send_mail.delay(
+        tasks.send_mail.delay(
             subject=self.get_subject(mail_context),
             message=self.get_mail_body(mail_context),
             from_email=self.get_from_address(),
@@ -582,7 +271,7 @@ class MailCourseInstructorsView(ParticipantsMixin, TemplatedEmailMixin, Cancelab
 
         for instructor in self.get_recipients():
             context = self.get_instructor_context(instructor, bcc_list)
-            send_instructors_email.delay(
+            tasks.send_instructors_email.delay(
                 course_pk=self.course.pk,
                 instructor_pk=instructor.pk,
                 subject=self.get_subject(context),

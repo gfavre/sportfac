@@ -126,7 +126,7 @@
     </div>
     <div class="btn-group">
       <form class="mail" method="post"
-            action="{{ course.get_custom_mail_custom_users_instructors_url }}">{% csrf_token %}
+            action="{% url 'activities:select-participants' course=course.pk %}">{% csrf_token %}
         <input type="hidden" name="data" value='' />
         <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-mail"></i>&nbsp;&nbsp;{% trans "Send email..." %}</button>
       </form>
