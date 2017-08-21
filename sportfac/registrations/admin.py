@@ -1,7 +1,35 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
 
+from import_export import fields, resources
+from import_export.admin import ImportExportModelAdmin
+
 from .models import Registration, Child, Bill, ExtraInfo, Transport
+
+
+class RegistrationResource(resources.ModelResource):
+    course_number = fields.Field('course__number', column_name="Cours")
+    course_name = fields.Field('course__name', column_name="Nom affiché du cours")
+
+    child_id = fields.Field('child__id', column_name="Enfant")
+    child_id_lagapeo = fields.Field('child__id_lagapeo', column_name="Identifiant SSF (LAGAPEO)")
+    child_name = fields.Field(column_name="Nom de l'enfant")
+
+    before_level = fields.Field(column_name='Niveau - 1')
+    after_level = fields.Field(column_name='Niveau + 1')
+
+    class Meta:
+        model = Registration
+        fields = ('id', 'course_number', 'course_name',
+                  'child_id', 'child_id_lagapeo', 'child_name',
+                  'before_level', 'after_level', 'note')
+        export_order = ('id', 'course_number', 'course_name',
+                        'child_id', 'child_id_lagapeo', 'child_name',
+                        'before_level', 'after_level', 'note')
+
+    def dehydrate_child_name(self, registration):
+        return registration.child.full_name
+
 
 
 class ExtraInfoAdmin(admin.ModelAdmin):
@@ -15,11 +43,13 @@ class ExtraInfoAdmin(admin.ModelAdmin):
 
 admin.site.register(ExtraInfo, ExtraInfoAdmin)
 
+
 class ExtraInfoInline(admin.StackedInline):
     model = ExtraInfo
     extra = 0
 
-class RegistrationAdmin(admin.ModelAdmin):
+
+class RegistrationAdmin(ImportExportModelAdmin):
     list_display = ('__unicode__', 'transport', 'status', 'created', 'modified')
     list_filter = ('status', 'transport', 'course__activity__name')
     search_fields = (
@@ -30,6 +60,7 @@ class RegistrationAdmin(admin.ModelAdmin):
     change_list_filter_template = "admin/filter_listing.html"
     inlines = [ExtraInfoInline]
     actions = ['delete_model',]
+    resource_class = RegistrationResource
 
     def get_queryset(self, request):
         qs = self.model._default_manager.all_with_deleted()
