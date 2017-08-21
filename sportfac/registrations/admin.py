@@ -15,8 +15,8 @@ class RegistrationResource(resources.ModelResource):
     child_id_lagapeo = fields.Field('child__id_lagapeo', column_name="Identifiant SSF (LAGAPEO)")
     child_name = fields.Field(column_name="Nom de l'enfant")
 
-    before_level = fields.Field(column_name='Niveau - 1')
-    after_level = fields.Field(column_name='Niveau + 1')
+    before_level = fields.Field('before_level', column_name='Niveau - 1')
+    after_level = fields.Field('after_level', column_name='Niveau + 1')
 
     class Meta:
         model = Registration
