@@ -87,7 +87,6 @@ function($scope, $attrs, $routeParams, $http, ChildrenService) {
 .controller('childDetailCtrl', ["$scope", "$routeParams", "$location", "ChildrenService",
   function($scope, $routeParams, $location, ChildrenService) {
   'use strict';
-  console.log('$attrs');
   $scope.detailedChild = {};
   this.initialValue = {};
   $scope.errors = {};
@@ -113,7 +112,7 @@ function($scope, $attrs, $routeParams, $http, ChildrenService) {
   
   
   $scope.saveChild = function(){
-    ChildrenService.save($scope.urls.child, $scope.detailedChild).then(function(){
+    ChildrenService.save($scope.urls.child, $scope.detailedChild, $scope.errors).then(function(){
       $scope.loadChildren();
       $scope.selectedChild = {};
       $location.url('/');
@@ -141,9 +140,9 @@ function($scope, $attrs, $routeParams, $http, ChildrenService) {
 function($scope, $location, ChildrenService) {
   $scope.unselectChild();
   if ($scope.schools.length){
-      $scope.detailedChild = {school: $scope.schools[0].id};
+      $scope.detailedChild = {school: $scope.schools[0].id, sex: 'F'};
   } else {
-      $scope.detailedChild = {};
+      $scope.detailedChild = {sex: 'F'};
   }
 
   $scope.errors = {notfound: false};

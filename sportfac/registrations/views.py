@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 import datetime
 import json
 
 from django.conf import settings
 from django.contrib import messages
-from django.core.urlresolvers import reverse_lazy, reverse
+from django.core.urlresolvers import reverse_lazy
 from django.db import transaction
 from django.db.models import Sum
 from django.utils.translation import ugettext as _
@@ -14,7 +15,7 @@ from braces.views import LoginRequiredMixin
 from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.forms import AcceptTermsForm
 from profiles.models import School
-from sportfac.views import WizardMixin, PhaseForbiddenMixin
+from sportfac.views import WizardMixin
 from .models import Bill, Child, Registration
 
 

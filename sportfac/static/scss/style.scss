@@ -425,3 +425,12 @@ table.dataTable .sorting_desc:before {
 div.fc-event-course {
   margin-top: 1em;
 }
+
+/* mobile fixes */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  select,
+  textarea,
+  input {
+    font-size: 16px;
+  }
+}
