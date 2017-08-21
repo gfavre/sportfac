@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.db.models import Case, When, F, IntegerField, Q, Sum
 from django.forms import inlineformset_factory
 from django.utils.translation import ugettext as _
@@ -68,7 +69,8 @@ class CourseSelectMixin(object):
                         nb_participants=Sum(
                             Case(
                                 When(participants__status__in=(Registration.STATUS.valid,
-                                                               Registration.STATUS.waiting),
+                                                               Registration.STATUS.waiting,
+                                                               Registration.STATUS.confirmed),
                                      then=1),
                                 output_field=IntegerField()
                             )
@@ -90,6 +92,9 @@ class CourseSelectMixin(object):
                 schoolyear_min__lte=min_year,
                 schoolyear_max__gte=max_year,
             )
+            if self.instance.child.registrations.count():
+                course_qs = course_qs.exclude(pk__in=[registration.course.pk for registration in
+                                                      self.instance.child.registrations.all()])
         except Child.DoesNotExist:
             pass
         self.fields['course'].queryset = course_qs.prefetch_related('participants')

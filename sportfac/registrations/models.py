@@ -92,9 +92,11 @@ class Registration(TimeStampedModel, StatusModel):
         return self.extra_needs.count() == 0
 
     def __unicode__(self):
-        return _(u'%(child)s ⇒ course %(number)s (%(activity)s)') % {'child': unicode(self.child),
-                                                                     'number': self.course.number,
-                                                                     'activity': self.course.activity.name}
+        return _(u'%(child)s ⇒ course %(number)s (%(activity)s)') % {
+            'child': self.child.full_name,
+            'number': self.course.number,
+            'activity': self.course.activity.name
+        }
 
     def set_waiting(self):
         self.status = self.STATUS.waiting
@@ -109,7 +111,7 @@ class Registration(TimeStampedModel, StatusModel):
         self.status = self.STATUS.canceled
 
     def overlap(self, r2):
-        "Test if another registration object overlaps with this one."
+        """Test if another registration object overlaps with this one."""
         # no overlap if course are not the same day
         if self.course.day != r2.course.day:
             return False
