@@ -47,10 +47,10 @@ class MailCreateView(FormView):
 
     def get_recipients(self):
         user_ids = self.request.session.get('mail-userids', [])
-        return [user.pk for user in FamilyUser.objects.filter(pk__in=user_ids)]
+        return list(FamilyUser.objects.filter(pk__in=user_ids))
 
     def get_recipients_email(self):
-        return [user.get_email_string() for user in FamilyUser.objects.filter(pk__in=self.get_recipients())]
+        return [user.get_email_string() for user in self.get_recipients()]
 
     def get_bcc_from_form(self, form):
         bcc_recipients = set()
@@ -98,7 +98,7 @@ class MailCreateView(FormView):
         if archive:
             template = self.get_template_from_archive(archive)
             archive.subject = form.cleaned_data['subject']
-            archive.recipients = self.get_recipients()
+            archive.recipients = [recipient.pk for recipient in self.get_recipients()]
             archive.bcc_recipients = self.get_bcc_from_form(form)
             archive.save()
         else:
@@ -113,7 +113,7 @@ class MailCreateView(FormView):
             archive = MailArchive.objects.create(
                 status=MailArchive.STATUS.draft,
                 subject=form.cleaned_data['subject'],
-                recipients=self.get_recipients(),
+                recipients=[recipient.pk for recipient in self.get_recipients()],
                 bcc_recipients=self.get_bcc_from_form(form),
                 messages=[],
                 template=template.name,
