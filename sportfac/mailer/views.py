@@ -236,7 +236,7 @@ class ParticipantsMailPreviewView(ParticipantsMixin, MailPreviewView):
         return super(ParticipantsMailPreviewView, self).get_context_data(**kwargs)
 
 
-class MailCourseInstructorsView(ParticipantsMixin, TemplatedEmailMixin, CancelableMixin, FormView):
+class MailCourseInstructorsView(ParticipantsBaseMixin, TemplatedEmailMixin, CancelableMixin, FormView):
     form_class = CopiesForm
 
     message_template = 'mailer/instructor.txt'
