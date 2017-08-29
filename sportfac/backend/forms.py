@@ -72,6 +72,7 @@ class CourseSelectMixin(object):
                                                                Registration.STATUS.waiting,
                                                                Registration.STATUS.confirmed),
                                      then=1),
+                                default=0,
                                 output_field=IntegerField()
                             )
                         )

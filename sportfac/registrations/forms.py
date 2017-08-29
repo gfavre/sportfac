@@ -61,6 +61,7 @@ class TransportForm(forms.ModelForm):
         model = Transport
         fields = ('name',)
 
+
 class MoveRegistrationsForm(forms.Form):
     registrations = forms.ModelMultipleChoiceField(queryset=Registration.objects.all(),
                                                    widget=forms.MultipleHiddenInput)
