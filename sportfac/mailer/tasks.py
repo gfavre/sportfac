@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from tempfile import mkdtemp
 import os
 import shutil
+from smtplib import SMTPException
 
 from django.core.mail import EmailMessage
 from django.conf import settings
@@ -90,6 +91,11 @@ def send_instructors_email(course_pk, instructor_pk, subject, message, from_emai
         filepath = os.path.join(settings.STATIC_ROOT, additional_doc)
         email.attach_file(filepath)
 
-    shutil.rmtree(tempdir)
     logger.debug("Email forged, sending...")
-    email.send(fail_silently=not(settings.DEBUG))
+    try:
+        email.send(fail_silently=not settings.DEBUG)
+        logger.info('Sent instructor email to {}'.format(instructor.get_email_string()))
+    except SMTPException:
+        raise
+    finally:
+        shutil.rmtree(tempdir)
