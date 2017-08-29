@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 import os
-import re
 import subprocess
 import six
 from tempfile import NamedTemporaryFile
 
 from django.conf import settings
 from django.contrib.sites.models import Site
+from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import activate
 from django.utils.encoding import smart_text
 from django.template import loader, Context, RequestContext
@@ -15,7 +15,7 @@ from django.template import loader, Context, RequestContext
 import pypdftk
 
 from backend.dynamic_preferences_registry import global_preferences_registry
-
+from sportfac.context_processors import kepchup_context
 
 global_preferences = global_preferences_registry.manager()
 
@@ -53,9 +53,11 @@ class PDFRenderer(object):
         site = Site.objects.all()[0]
         request = {'site': site}
         context_data['request'] = request
+        context_data.update(kepchup_context(request))
         self.context = context_data
 
-    def resolve_template(self, template):
+    @staticmethod
+    def resolve_template(template):
         "Accepts a template object, path-to-template or list of paths"
         if isinstance(template, (list, tuple)):
             return loader.select_template(template)

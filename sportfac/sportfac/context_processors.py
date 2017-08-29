@@ -15,17 +15,19 @@ class Step:
         self.url = reverse(urlname)
         self.activable = activable
         self.current = request.path == self.url
-    
 
 
 def is_authenticated(request):
     return request.user.is_authenticated()
 
+
 def can_register(request):
-    return True#not is_authenticated(request)
+    return True  # not is_authenticated(request)
+
 
 def can_register_activities(request):
     return is_authenticated(request) and request.user.children.count() > 0
+
 
 def can_confirm(request):
     return can_register_activities(request) and \
@@ -33,10 +35,9 @@ def can_confirm(request):
                 child__in=request.user.children.all()
            ).count() > 0
 
+
 def can_pay(request):
     return can_register_activities(request) and Bill.objects.filter(status=Bill.STATUS.just_created, family=request.user).count() > 0
-
-
 
 
 def wizard_context(request):
@@ -95,10 +96,12 @@ def registration_opened_context(request):
 def activities_context(request):
     return {'activities': Activity.objects.visible()}
 
+
 def tenants_context(request):
     if request.user.is_authenticated() and request.user.is_manager:
         return {'tenants': YearTenant.objects.all()}
     return {}
+
 
 def kepchup_context(request):
     return {
