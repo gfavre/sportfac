@@ -99,8 +99,8 @@ address span:first-child {
 <body>
   <header>
     <div class="header">        
-        <img src="{{ PROTOCOL }}{{ request.site.domain }}{% static 'img/logo.png' %}" class="logo" />
-        {% include "address.html" %}
+        <img src="http://{{ request.site.domain }}{% static 'img/logo.png' %}" class="logo" />
+{% include "address.html" %}
         
     </div>
     <div class="title">
