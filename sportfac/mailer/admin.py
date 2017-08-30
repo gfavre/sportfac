@@ -7,7 +7,7 @@ class MailArchiveAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'subject',
-        'admin_recipients',
+        #'admin_recipients',
         'admin_message',
         'created',
         'status',
