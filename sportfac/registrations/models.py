@@ -62,14 +62,16 @@ class Registration(TimeStampedModel, StatusModel):
                      ('7B', '7B'),
                      ('7C', '7C'),
                      )
-    course = models.ForeignKey('activities.Course', related_name="participants",
-                               verbose_name=_("Course"))
-    child = models.ForeignKey('Child', related_name="registrations")
-    bill = models.ForeignKey('Bill', related_name="registrations", null=True, blank=True)
+    course = models.ForeignKey('activities.Course', related_name="participants", verbose_name=_("Course"),
+                               on_delete=models.CASCADE)
+    child = models.ForeignKey('Child', related_name="registrations",
+                              on_delete=models.CASCADE)
+    bill = models.ForeignKey('Bill', related_name="registrations", null=True, blank=True,
+                             on_delete=models.SET_NULL)
     paid = models.BooleanField(default=False, verbose_name=_("Has paid"))
-    transport = models.ForeignKey('Transport', related_name='participants',
+    transport = models.ForeignKey('Transport', related_name='participants', null=True,
                                   verbose_name=_("Transport information"),
-                                  null=True)
+                                  on_delete=models.SET_NULL)
 
     before_level = models.CharField(choices=LEVELS, max_length=5, blank=True,
                                     verbose_name=_("Level -1"),)
@@ -222,7 +224,8 @@ class Bill(TimeStampedModel, StatusModel):
                      ('canceled', _("Canceled by administrator")),
                      )
     billing_identifier = models.CharField(_('Billing identifier'), max_length=45, blank=True)
-    family = models.ForeignKey('profiles.FamilyUser', verbose_name=_('User'), related_name='bills')
+    family = models.ForeignKey('profiles.FamilyUser', verbose_name=_('User'), related_name='bills',
+                               on_delete=models.CASCADE)
     total = models.PositiveIntegerField(default=0, verbose_name=_("Total to be paid"))
 
     objects = BillManager()
@@ -280,8 +283,9 @@ class Bill(TimeStampedModel, StatusModel):
 
 
 class ExtraInfo(models.Model):
-    registration = models.ForeignKey('registrations.Registration', related_name='extra_infos')
-    key = models.ForeignKey('activities.ExtraNeed')
+    registration = models.ForeignKey('registrations.Registration', related_name='extra_infos',
+                                     on_delete=models.CASCADE)
+    key = models.ForeignKey('activities.ExtraNeed', on_delete=models.CASCADE)
     value = models.CharField(max_length=255, blank=True)
 
     class Meta:
@@ -309,17 +313,17 @@ class Child(TimeStampedModel):
     nationality = models.CharField(choices=NATIONALITY, max_length=3, default=NATIONALITY.CH)
     language = models.CharField(choices=LANGUAGE, max_length=2, default=LANGUAGE.F)
 
-    school_year = models.ForeignKey('profiles.SchoolYear', null=True)
+    school_year = models.ForeignKey('profiles.SchoolYear', null=True, on_delete=models.SET_NULL)
     teacher = models.ForeignKey('schools.Teacher', related_name="students", null=True, on_delete=models.SET_NULL)
 
-    family = models.ForeignKey('profiles.FamilyUser', related_name='children', null=True)
+    family = models.ForeignKey('profiles.FamilyUser', related_name='children', null=True, on_delete=models.CASCADE)
     courses = models.ManyToManyField('activities.Course', through="registrations.Registration")
 
     id_lagapeo = models.IntegerField(db_index=True, unique=True, null=True, blank=True,
                                      verbose_name=_("Lagapeo Identification number"))
 
     emergency_number = PhoneNumberField(_("Emergency number"), max_length=30, blank=True)
-    school = models.ForeignKey('profiles.School', related_name="students", null=True)
+    school = models.ForeignKey('profiles.School', related_name="students", null=True, on_delete=models.SET_NULL)
     other_school = models.CharField(_("Other school"), blank=True, max_length=50)
     bib_number = models.CharField(_("Bib number"), blank=True, max_length=20)
 

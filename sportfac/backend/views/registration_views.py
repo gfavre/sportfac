@@ -202,9 +202,8 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
                 status = Bill.STATUS.paid
             bill = Bill.objects.create(
                 status=status,
-                family=self.request.user,
+                family=self.object.child.family,
             )
-
             self.object.bill = bill
             self.object.save()
             bill.save()

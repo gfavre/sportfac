@@ -146,9 +146,12 @@ class CourseSelectForm(CourseSelectMixin, forms.ModelForm):
         super(CourseSelectForm, self).__init__(*args, **kwargs)
         course_qs = self.fields['course'].queryset
         # do not offer registrations to already registered courses.
-        if self.instance.child.registrations.count():
-            course_qs = course_qs.exclude(pk__in=[registration.course.pk for registration in
-                                          self.instance.child.registrations.all()])
+        try:
+            if self.instance.child.registrations.count():
+                course_qs = course_qs.exclude(pk__in=[registration.course.pk for registration in
+                                              self.instance.child.registrations.all()])
+        except Child.DoesNotExist:
+            pass
         self.fields['course'].queryset = course_qs
 
     class Meta:
