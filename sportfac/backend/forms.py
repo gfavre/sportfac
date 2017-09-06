@@ -93,9 +93,6 @@ class CourseSelectMixin(object):
                 schoolyear_min__lte=min_year,
                 schoolyear_max__gte=max_year,
             )
-            if self.instance.child.registrations.count():
-                course_qs = course_qs.exclude(pk__in=[registration.course.pk for registration in
-                                                      self.instance.child.registrations.all()])
         except Child.DoesNotExist:
             pass
         self.fields['course'].queryset = course_qs.prefetch_related('participants')
@@ -144,6 +141,15 @@ class ChildSelectForm(forms.ModelForm):
 
 class CourseSelectForm(CourseSelectMixin, forms.ModelForm):
     """Course selection, used in registration creation wizard"""
+
+    def __init__(self, *args, **kwargs):
+        super(CourseSelectForm, self).__init__(*args, **kwargs)
+        course_qs = self.fields['course'].queryset
+        # do not offer registrations to already registered courses.
+        if self.instance.child.registrations.count():
+            course_qs = course_qs.exclude(pk__in=[registration.course.pk for registration in
+                                          self.instance.child.registrations.all()])
+        self.fields['course'].queryset = course_qs
 
     class Meta:
         model = Registration
