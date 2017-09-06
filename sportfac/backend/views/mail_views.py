@@ -103,6 +103,13 @@ class NotPaidYetView(BackendMixin,
     template_name = 'backend/mail/preview-browse.html'
     success_url = reverse_lazy('backend:home')
 
+    def get_context_data(self, **kwargs):
+        kwargs['delay'] = self.global_preferences['payment__DELAY_DAYS']
+        kwargs['iban'] = self.global_preferences['payment__IBAN']
+        kwargs['address'] = self.global_preferences['payment__ADDRESS']
+        kwargs['place'] = self.global_preferences['payment__PLACE']
+        return super(NotPaidYetView, self).get_context_data(**kwargs)
+
     def get_recipients(self):
         bills = Bill.objects.filter(status=Bill.STATUS.waiting, total__gt=0)
         return list(FamilyUser.objects.filter(pk__in=[bill.family.pk for bill in bills]))
