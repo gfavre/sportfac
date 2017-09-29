@@ -183,7 +183,7 @@ TEMPLATES = [
 
 ########## MIDDLEWARE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#middleware-classes
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_CLASSES = [
     # Default Django middleware.
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -199,7 +199,7 @@ MIDDLEWARE_CLASSES = (
     # asynchronous messages
     'async_messages.middleware.AsyncMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
-)
+]
 ########## END MIDDLEWARE CONFIGURATION
 
 

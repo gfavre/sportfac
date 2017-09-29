@@ -34,15 +34,13 @@ class AbsenceViewSet(viewsets.ModelViewSet):
         serializer = SetAbsenceSerializer(data=request.data)
         if serializer.is_valid():
             res_status = serializer.data['status']
-            obj, created = Absence.objects.get_or_create(
+            Absence.objects.update_or_create(
                 session=Session.objects.get(pk=serializer.data['session']), 
-                child=Child.objects.get(pk=serializer.data['child'])
+                child=Child.objects.get(pk=serializer.data['child']),
+                defaults={
+                    'status': res_status
+                }
             )
-            if res_status == 'present':
-                self.perform_destroy(obj)
-            else:
-                obj.status = res_status
-                obj.save()
             return Response({'status': res_status}) 
         else:
             return Response(serializer.errors,
@@ -66,7 +64,16 @@ class SessionViewSet(viewsets.ModelViewSet):
     serializer_class = SessionSerializer
     queryset = Session.objects.all()
     permission_classes = (InstructorPermission,)
-    
+
+    def perform_create(self, serializer):
+        # set all children as present as defauolt value
+        session = serializer.save()
+        course = Course.objects.get(pk=serializer.data.get('course'))
+        for registration in course.participants.all():
+            Absence.objects.update_or_create(child=registration.child,
+                                             session=session,
+                                             status=Absence.STATUS.present)
+
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = SessionSerializer(instance, data=request.data, partial=True)

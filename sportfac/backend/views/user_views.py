@@ -29,6 +29,7 @@ __all__ = ('UserListView', 'UserCreateView', 'PasswordSetView',
            'UserExportView', 'MailUsersView',
            'ChildListView', 'ChildCreateView', 'ChildUpdateView', 
            'ChildDeleteView', 'ChildImportView',
+           'ChildAbsencesView',
            'ManagerListView', 'ManagerCreateView',  'ManagerExportView',
            'InstructorListView', 'InstructorCreateView', 'InstructorDetailView',
            'InstructorExportView',
@@ -287,6 +288,30 @@ class ChildUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
     
     def get_success_message(self, cleaned_data):
         return _("Child %s has been updated.") % self.object.full_name
+
+
+class ChildAbsencesView(BackendMixin, DetailView):
+    model = Child
+    pk_url_kwarg = 'child'
+    queryset = Child.objects.prefetch_related()
+
+    def get_context_data(self, **kwargs):
+
+        child = self.get_object()
+
+        all_absences = dict(
+            [((absence.session.course, absence.session.date), absence.status)
+             for absence in Absence.objects.filter(child=child)]
+        )
+        kwargs['absence_matrix'] = [
+            [all_absences.get((registration.child, session), 'present') for session in course.sessions.all()]
+            for registration in course.participants.all()
+        ]
+        kwargs['courses_list'] = Course.objects.all()
+        kwargs['levels'] = Registration.LEVELS
+
+        return super(ChildAbsencesView, self).get_context_data(**kwargs)
+
 
 
 class ChildDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
