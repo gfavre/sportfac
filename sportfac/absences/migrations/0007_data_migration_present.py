@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
-
+from ..models import Absence as AbsenceModel
 
 def add_present_status(apps, schema_editor):
     Session = apps.get_model('absences', 'Session')
@@ -12,7 +12,8 @@ def add_present_status(apps, schema_editor):
         children_in = [absence.child for absence in session.absences.all()]
         for registration in session.course.participants.all():
             if registration.child not in children_in:
-                Absence.objects.create(session=session, child=registration.child, status=Absence.STATUS.present)
+                Absence.objects.create(session=session, child=registration.child,
+                                       status='present', notification_sent=True)
                 children_in.append(registration.child)
 
 
@@ -25,6 +26,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('absences', '0006_add_presence_status'),
+        ('activities', '0015_auto_20170728_1716')
     ]
 
     operations = [

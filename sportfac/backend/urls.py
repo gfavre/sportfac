@@ -159,12 +159,10 @@ users_patterns = [
 ]
 
 children_patterns = [
-    url(r'^$', view=views.ChildListView.as_view(),
-        name='child-list'),
-    url(r'^(?P<pk>\d+)/update$', view=views.ChildUpdateView.as_view(), 
-        name='child-update'),
-    url(r'^(?P<pk>\d+)/delete$', view=views.ChildDeleteView.as_view(), 
-        name='child-delete'),
+    url(r'^$', view=views.ChildListView.as_view(), name='child-list'),
+    url(r'^(?P<child>\d+)/update$', view=views.ChildUpdateView.as_view(), name='child-update'),
+    url(r'^(?P<child>\d+)/delete$', view=views.ChildDeleteView.as_view(), name='child-delete'),
+    url(r'^(?P<child>\d+)/absences', view=views.ChildAbsencesView.as_view(), name='child-absences')
         
 ]
 

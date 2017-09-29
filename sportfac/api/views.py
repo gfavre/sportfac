@@ -11,15 +11,14 @@ from rest_framework.response import Response
 from absences.models import Absence, Session
 from activities.models import Activity, Course
 from profiles.models import SchoolYear
-from registrations.models import Child, ExtraInfo, Registration
+from registrations.models import Child, ChildActivityLevel, ExtraInfo, Registration
 from schools.models import Teacher
 
 from .permissions import ManagerPermission, FamilyPermission, InstructorPermission
 from .serializers import (AbsenceSerializer, SetAbsenceSerializer, SessionSerializer,
                           ActivityDetailedSerializer,
                           ChildrenSerializer, CourseSerializer, TeacherSerializer,
-                          RegistrationSerializer, ExtraSerializer, LevelSerializer,
-                          RegistrationNoteSerializer,
+                          RegistrationSerializer, ExtraSerializer, ChildActivityLevelSerializer,
                           SimpleChildrenSerializer, YearSerializer)
 
 
@@ -47,16 +46,11 @@ class AbsenceViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
-class UpdateLevelView(generics.UpdateAPIView):
-    queryset = Registration.objects.all()
+class ChildActivityLevelViewSet(viewsets.ModelViewSet):
+    model = ChildActivityLevel
+    queryset = ChildActivityLevel.objects.all()
     permission_classes = (InstructorPermission,)
-    serializer_class = LevelSerializer
-
-
-class UpdateRegistrationNoteView(generics.UpdateAPIView):
-    queryset = Registration.objects.all()
-    permission_classes = (InstructorPermission,)
-    serializer_class = RegistrationNoteSerializer
+    serializer_class = ChildActivityLevelSerializer
 
 
 class SessionViewSet(viewsets.ModelViewSet):
@@ -70,9 +64,12 @@ class SessionViewSet(viewsets.ModelViewSet):
         session = serializer.save()
         course = Course.objects.get(pk=serializer.data.get('course'))
         for registration in course.participants.all():
-            Absence.objects.update_or_create(child=registration.child,
-                                             session=session,
-                                             status=Absence.STATUS.present)
+            Absence.objects.update_or_create(
+                child=registration.child, session=session,
+                defaults={
+                    'status': Absence.STATUS.present
+                }
+            )
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()

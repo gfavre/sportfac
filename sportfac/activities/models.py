@@ -283,6 +283,7 @@ EXTRA_TYPES = (('B', _("Boolean")),
                ('C', _('Characters')),
                ('I', _("Integer")))
 
+
 class ExtraNeed(TimeStampedModel):
     courses = models.ManyToManyField('Course', related_name='extra', blank=True)
 

@@ -6,7 +6,7 @@ from absences.models import Absence, Session
 from activities.models import Activity, Course, ExtraNeed
 from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser, School, SchoolYear
-from registrations.models import Child, ExtraInfo, Registration
+from registrations.models import Child, ExtraInfo, Registration, ChildActivityLevel
 from schools.models import Teacher
 
 
@@ -171,11 +171,20 @@ class ExtraSerializer(serializers.ModelSerializer):
 
 class LevelSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Registration
+        model = ChildActivityLevel
         fields = ('id', 'before_level', 'after_level')
 
 
-class RegistrationNoteSerializer(serializers.ModelSerializer):
+class NoteSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Registration
+        model = ChildActivityLevel
         fields = ('id', 'note')
+
+
+class ChildActivityLevelSerializer(serializers.ModelSerializer):
+    child = serializers.PrimaryKeyRelatedField(queryset=Child.objects.all())
+    activity = serializers.PrimaryKeyRelatedField(queryset=Activity.objects.all())
+
+    class Meta:
+        model = ChildActivityLevel
+        fields = ('id', 'child', 'activity', 'before_level', 'after_level', 'note')

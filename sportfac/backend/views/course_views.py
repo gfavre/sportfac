@@ -53,18 +53,20 @@ class CourseAbsenceView(BackendMixin, DetailView):
     model = Course
     template_name = 'backend/course/absences.html'
     pk_url_kwarg = 'course'
-    queryset = Course.objects.prefetch_related('sessions', 'sessions__absences', 'participants__child')
+    queryset = Course.objects.prefetch_related('sessions', 'sessions__absences', 'participants__child',
+                                               'instructors')\
+                             .select_related('activity',)
     
     def get_context_data(self, **kwargs):
         context = super(CourseAbsenceView, self).get_context_data(**kwargs)
         course = self.get_object()
         all_absences = dict(
             [((absence.child, absence.session), absence.status)
-             for absence in Absence.objects.filter(session__course=course)]
+             for absence in Absence.objects.select_related('child', 'session').filter(session__course=course)]
         )
         context['absence_matrix'] = [
             [all_absences.get((registration.child, session), 'present') for session in course.sessions.all()]
-            for registration in course.participants.all()
+            for registration in course.participants.select_related('child', 'child__family')
         ]
         context['courses_list'] = Course.objects.all()
         context['levels'] = Registration.LEVELS

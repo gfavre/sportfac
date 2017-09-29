@@ -1,0 +1,87 @@
+{% extends "backend/base.html" %}
+{% load i18n duration switzerland sekizai_tags %}
+
+{% block title %}{% blocktrans %}Absences of {{ child }} {% endblocktrans %} - {{ block.super }}{% endblock %}
+{% block page_title %}<i class="icon-calendar"></i>&nbsp;&nbsp;{% trans "Absences" %}{% endblock %}
+
+
+{% block content %}
+<section class="portlet hidden-print">
+  {% comment %}<div class="pricing-plan">
+    <header class="pricing-header">
+      <p class="pricing-plan-label">{{ course.start_date | date:"j F Y" }} – {{ course.end_date | date:'j F Y'  }}</p>
+      <p class="lead">Chaque {{ course.day_name|lower }} de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }} ({{ course.duration|duration }})</p>
+    </header>
+    <dl class="dl-horizontal">
+      <dt>{% trans "Activity number" %}</dt><dd><a href="{{ course.activity.get_backend_url }}">{{ course.activity.number }}</a></dd>  
+      <dt>{% trans "Instructors" %}</dt>
+      <dd>
+        <ul class="list-unstyled">
+        {% for instructor in course.instructors.all %}
+          <li>
+            <a href="{{ instructor.get_backend_url }}">{{ instructor.full_name  }}</a>
+            {% if FICHE_SALAIRE_MONTREUX %}
+                &mdash;<a href="{% url 'backend:pay-slip-montreux' course=course.pk instructor=instructor.pk %}" ><i class="icon-doc-text"></i> {% trans "Create pay slip" %}</a>
+            {% endif %}
+          </li>
+        {% endfor %}
+        </ul>
+      </dd>
+      <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
+      <dt>{% trans "Number of sessions" %}</dt><dd>{{ course.number_of_sessions }} cours</dd>
+      <dt>{% trans "Price" %}</dt><dd>{{ course.price|money }}</dd>
+      <dt>{% trans "School years" %}</dt>
+      <dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
+    </dl>
+    <p class="text-center"><a href="{{ course.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a> </p>
+      
+        
+    <h4 class="content-title"><u>{% trans "Management"%}</u></h4>      
+    
+    <a href="{{ course.get_backend_url }}" class="btn btn-sm">
+        <i class="icon-check"></i>&nbsp;{% trans "Check registrations" %}
+    </a> &nbsp;
+    
+    <a href="{{ course.get_custom_mail_url }}" class="btn btn-sm">
+        <i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}
+    </a> &nbsp;
+    
+    <a href="{{ course.get_mail_instructors_url }}" class="btn btn-sm">
+        <i class="icon-tasks"></i>&nbsp;{% trans "Send infos to instructors" %}
+    </a> &nbsp;
+    
+    <a href="{{ course.get_js_export_url }}" class="btn btn-sm">
+        <i class="icon-doc"></i>&nbsp;{% trans "Get BDNS: J+S export file" %}
+    </a> &nbsp;
+  
+    <a href="{{ course.get_mail_confirmation_url }}" class="btn btn-sm">
+        <i class="icon-mail"></i>&nbsp;{% trans "Send confirmation email" %}
+    </a> &nbsp;
+    
+  </div>{% endcomment %}
+</section>
+
+{% include 'absences/absences-table-child.html' %}
+
+
+{% if courses_list.count > 1 %}
+<div class="form-group hidden-print">
+  <label for="select-course">{% trans "Manage absences for" %}:</label>
+  <select class="form-control" id="select-course">
+    {% for c in courses_list %}
+      <option{% if course == c %} selected{% endif %} value="{{ c.get_backend_absences_url }}">{{ c.short_name }}</option>
+    {% endfor %}
+  </select>
+</div>
+
+{% addtoblock "js" %}
+<script>
+  $(function(){
+    $('#select-course').on('change', function(){
+      window.location.href = this.value;
+    });
+  });
+</script>
+{% endaddtoblock %}
+{% endif %}
+{% endblock content %}

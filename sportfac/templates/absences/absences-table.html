@@ -126,6 +126,7 @@
           <span class="hidden-print">{{ registration|answer_to:"Niveau de ski/snowboard" }}</span>
           <span class="visible-print">{{ registration|answer_to:"Niveau de ski/snowboard"|truncatewords:"1" }}</span>
         </th>
+          <!-- TODO Template tag pour récupérer le niveau d'un child/course -->
         <th class="set-level"
             data-level="{{ registration.before_level }}"
             data-key="before_level"
@@ -279,7 +280,7 @@
 </th>
 </script>
 <script>
-  $(function(){
+$(function(){
     var HUMAN_FMT = 'DD.MM.YYYY';
     var API_FMT = 'YYYY-MM-DD'
 
