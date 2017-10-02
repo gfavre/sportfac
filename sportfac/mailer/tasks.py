@@ -26,7 +26,7 @@ def send_mail(subject, message, from_email, recipients, reply_to, bcc=None, atta
         attachments = []
     else:
         attachments = Attachment.objects.filter(pk__in=attachments)
-    logger.debug("Sending email to %s" % recipients)
+    logger.debug(u"Sending email to %s" % recipients)
     email = EmailMessage(subject=subject,
                          body=message,
                          from_email=from_email,
@@ -35,13 +35,13 @@ def send_mail(subject, message, from_email, recipients, reply_to, bcc=None, atta
                          reply_to=reply_to)
     for attachment in attachments:
         email.attach_file(attachment.file.path)
-    logger.info('Sending email to {}'.format(recipients))
+    logger.info(u'Sending email to {}'.format(recipients))
     return email.send(fail_silently=not settings.DEBUG)
 
 
 @shared_task
 def send_instructors_email(course_pk, instructor_pk, subject, message, from_email, reply_to, bcc=None):
-    logger.debug("Forging email to instructors of course #%s" % course_pk)
+    logger.debug(u"Forging email to instructors of course #%s" % course_pk)
     if bcc is None:
         bcc = []
     course = Course.objects.get(pk=course_pk)
@@ -70,7 +70,7 @@ def send_instructors_email(course_pk, instructor_pk, subject, message, from_emai
                               'courses': Course.objects.filter(instructors=instructor)})
     cp_generator.render_to_pdf(filepath)
     email.attach(filename, open(filepath).read(), 'application/pdf')
-    logger.debug("Courses.pdf attached")
+    logger.debug(u"Courses.pdf attached")
 
     if not settings.KEPCHUP_NO_SSF:
         filepath = get_ssf_decompte_heures(course, instructor)
@@ -85,16 +85,16 @@ def send_instructors_email(course_pk, instructor_pk, subject, message, from_emai
         cp_generator = CourseParticipantsPresence({'course': course})
         cp_generator.render_to_pdf(filepath)
         email.attach(filename, open(filepath).read(), 'application/pdf')
-        logger.debug("Presences.pdf attached")
+        logger.debug(u"Presences.pdf attached")
 
     for additional_doc in settings.KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS:
         filepath = os.path.join(settings.STATIC_ROOT, additional_doc)
         email.attach_file(filepath)
 
-    logger.debug("Email forged, sending...")
+    logger.debug(u"Email forged, sending...")
     try:
         email.send(fail_silently=not settings.DEBUG)
-        logger.info('Sent instructor email to {}'.format(instructor.get_email_string()))
+        logger.info(u'Sent instructor email to {}'.format(instructor.get_email_string()))
     except SMTPException:
         raise
     finally:
