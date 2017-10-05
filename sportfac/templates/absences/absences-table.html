@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load duration switzerland extra sekizai_tags staticfiles matrix status mathfilters %}
+{% load duration switzerland extra sekizai_tags staticfiles matrix status mathfilters children %}
 {% addtoblock "css" %}
 <style>
 .rotated-heading {
@@ -122,27 +122,28 @@
         </th>
         {% endif %}
         {% if REGISTRATION_LEVELS %}
+        {% with level=registration.child|child_level:course %}
         <th>
           <span class="hidden-print">{{ registration|answer_to:"Niveau de ski/snowboard" }}</span>
           <span class="visible-print">{{ registration|answer_to:"Niveau de ski/snowboard"|truncatewords:"1" }}</span>
         </th>
-          <!-- TODO Template tag pour récupérer le niveau d'un child/course -->
         <th class="set-level"
-            data-level="{{ registration.before_level }}"
+            data-level="{{ level.before_level }}"
             data-key="before_level"
-            data-registration="{{ registration.update_level_url }}">
+            data-url="{{ level.api_url }}">
            <a class="level has-popover" role="button"
            data-toggle="popover"
-           data-trigger="click focus">{{ registration.before_level|default:'NP' }}</a>
+           data-trigger="click focus">{{ level.before_level|default:'NP' }}</a>
         </th>
         <th class="set-level"
-            data-level="{{ registration.after_level }}"
+            data-level="{{ level.after_level }}"
             data-key="after_level"
-            data-registration="{{ registration.update_level_url }}">
+            data-url="{{ level.api_url }}">
           <a class="level has-popover" role="button"
            data-toggle="popover"
-           data-trigger="click focus">{{ registration.after_level|default:'NP' }}</a>
+           data-trigger="click focus">{{ level.after_level|default:'NP' }}</a>
         </th>
+        {% endwith %}
         {% endif %}
         {% if DISPLAY_CAR_NUMBER %}
         <th>
@@ -150,14 +151,16 @@
         </th>
         {% endif %}
         {% if DISPLAY_REGISTRATION_NOTE %}
+        {% with level=registration.child|child_level:course %}
         <th class="set-note"
             data-key="note"
-            data-note="{{ registration.note }}"
-            data-registration="{{ registration.update_note_url }}">
-          <div class="note">{{ registration.note }}</div>
+            data-note="{{ level.note }}"
+            data-url="{{ level.api_url }}">
+          <div class="note">{{ level.note }}</div>
           <a class="note has-popover hidden-print" role="button" data-toggle="popover"
            data-trigger="click focus"><i class="icon-pencil"></i>&nbsp;{% trans "Edit note" %}</a>
         </th>
+        {% endwith %}
         {% endif %}
         {% for session in course.sessions.all %}
         {% with status=absence_matrix|index:units|index:forloop.counter0 decade=forloop.counter|mul:100 %}
@@ -477,8 +480,8 @@ $(function(){
       var data = {};
       data[parent.data('key')] = level;
       $.ajax({
-        url: parent.data('registration'),
-        type: 'PUT',
+        url: parent.data('url'),
+        type: 'PATCH',
         data: data,
         success: function(response){
           var newLevel = response[parent.data('key')];
@@ -509,8 +512,8 @@ $(function(){
       var data = {};
       data[parent.data('key')] = note;
       $.ajax({
-        url: parent.data('registration'),
-        type: 'PUT',
+        url: parent.data('url'),
+        type: 'PATCH',
         data: data,
         success: function(response){
           var newNote = response[parent.data('key')];

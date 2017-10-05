@@ -14,11 +14,11 @@ from django.template.defaultfilters import urlencode
 from django.utils.translation import ugettext as _
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView, View, FormView
 
-from absences.models import Absence, Session
+from absences.models import Absence
 from profiles.forms import ManagerForm, ManagerWithPasswordForm, InstructorForm, InstructorWithPasswordForm
 from profiles.models import FamilyUser
 from profiles.resources import UserResource, InstructorResource
-from registrations.models import Bill, Child, Registration
+from registrations.models import Bill, Child, ChildActivityLevel, Registration
 from registrations.forms import ChildForm
 from .mixins import BackendMixin, ExcelResponseMixin
 from .. import MANAGERS_GROUP, INSTRUCTORS_GROUP
@@ -321,6 +321,7 @@ class ChildAbsencesView(BackendMixin, DetailView):
                 activity_absences[course.activity] = [(course, absences)]
         kwargs['activity_absences'] = activity_absences
         kwargs['course_absences'] = course_absences
+        kwargs['levels'] = ChildActivityLevel.LEVELS
 
         return super(ChildAbsencesView, self).get_context_data(**kwargs)
 

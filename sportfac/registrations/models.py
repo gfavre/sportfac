@@ -390,16 +390,10 @@ class ChildActivityLevel(TimeStampedModel):
     class Meta:
         unique_together = ('activity', 'child')
 
-    def get_update_level_url(self):
-        return reverse('api:update-level', kwargs={'pk': self.pk})
-
-    def get_update_note_url(self):
-        return reverse('api:update-note', kwargs={'pk': self.pk})
+    def get_api_url(self):
+        return reverse('api:level-detail', kwargs={'pk': self.pk})
 
     @property
-    def update_level_url(self):
-        return self.get_update_level_url()
+    def api_url(self):
+        return self.get_api_url()
 
-    @property
-    def update_note_url(self):
-        return self.get_update_note_url()
