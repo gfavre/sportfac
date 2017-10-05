@@ -1,8 +1,8 @@
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView
 
 from activities.views import InstructorMixin
 from activities.models import Course
-from registrations.models import Registration
+from registrations.models import ChildActivityLevel
 from .models import Absence
 
 
@@ -22,6 +22,6 @@ class AbsenceView(InstructorMixin, DetailView):
         context['absence_matrix'] = [[all_absences.get((registration.child, session), 'present') for session 
                                                                      in course.sessions.all()] 
          for registration in course.participants.all()]
-        context['levels'] = Registration.LEVELS
+        context['levels'] = ChildActivityLevel.LEVELS
         context['courses_list'] = self.request.user.course.all()
         return context
