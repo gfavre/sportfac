@@ -164,13 +164,13 @@
         {% endif %}
         {% for session in course.sessions.all %}
         {% with status=absence_matrix|index:units|index:forloop.counter0 decade=forloop.counter|mul:100 %}
-        <td class="{{ status}} {% if status == 'present' %}success{% elif status == 'late' %}info{% else %}danger{% endif %}"
+        <td class="{{ status}} {% if status == 'present' %}success{% elif status == 'late' %}info{% elif absence.status == 'excused' %}warning{% else %}danger{% endif %}"
             data-session="{{ session.id }}"
             data-child="{{ registration.child.id }}"
             data-status="{{ status }}">
             <a tabindex="{{ decade|add:units }}" role="button" class="btn btn-sm absence has-popover"
                              data-toggle="popover" 
-                             data-trigger="click focus">{{ status|absence_status }}</a>
+                             data-trigger="click focus">{{ status|absence_short }}</a>
         </td>
         {% endwith %}
         {% endfor %}

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+import collections
 from decimal import Decimal
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
@@ -16,14 +18,15 @@ from absences.models import Absence
 from activities.models import Course, Activity
 from activities.forms import CourseForm
 from profiles.models import FamilyUser
-from registrations.models import Registration, ChildActivityLevel
+from registrations.models import ChildActivityLevel, ExtraInfo
 from registrations.resources import RegistrationResource
 from sportfac.views import CSVMixin
 from .mixins import BackendMixin, ExcelResponseMixin
 from ..forms import PayslipMontreuxForm
 
 __all__ = ('CourseCreateView', 'CourseDeleteView', 'CourseDetailView',
-           'CourseJSCSVView', 'CourseParticipantsExportView', 'CourseAbsenceView',
+           'CourseJSCSVView', 'CourseParticipantsExportView',
+           'CourseAbsenceView', 'CoursesAbsenceView',
            'CourseListView', 'CourseUpdateView', 'CourseParticipantsView',
            'PaySlipMontreux')
 
@@ -73,6 +76,44 @@ class CourseAbsenceView(BackendMixin, DetailView):
 
 
         return context
+
+
+class CoursesAbsenceView(BackendMixin, ListView):
+    model = Course
+    template_name = 'backend/course/multiple-absences.html'
+
+    def get_queryset(self):
+        courses_pk = [int(pk) for pk in self.request.GET.getlist('c') if pk.isdigit()]
+        return Course.objects.filter(pk__in=courses_pk)
+
+    def get_context_data(self, **kwargs):
+        qs = Absence.objects.filter(session__course__in=self.get_queryset())\
+                            .select_related('session', 'child', 'session__course', 'session__course__activity')\
+                            .order_by('child__last_name', 'child__first_name')
+        kwargs['all_dates'] = list(set(qs.values_list('session__date', flat=True)))
+        kwargs['all_dates'].sort()
+        course_absences = collections.OrderedDict()
+        if settings.KEPCHUP_REGISTRATION_LEVELS:
+            extras = ExtraInfo.objects.select_related('registration', 'key')\
+                                      .filter(registration__course__in=self.get_queryset(),
+                                              key__question_label='Niveau de ski/snowboard')
+            child_announced_levels = {extra.registration.child: extra.value for extra in extras}
+            levels = ChildActivityLevel.objects.select_related('child').\
+                                                filter(activity__in=set([absence.session.course.activity for absence in qs]))
+            child_levels = {level.child: level for level in levels}
+
+        for absence in qs:
+            if settings.KEPCHUP_REGISTRATION_LEVELS:
+                absence.child.announced_level = child_announced_levels.get(absence.child, '')
+                absence.child.level = child_levels.get(absence.child, '')
+            the_tuple = (absence.child, absence.session.course)
+            if the_tuple in course_absences:
+                course_absences[the_tuple][absence.session.date] = absence
+            else:
+                course_absences[the_tuple] = {absence.session.date: absence}
+        kwargs['course_absences'] = dict(course_absences)
+        kwargs['levels'] = ChildActivityLevel.LEVELS
+        return super(CoursesAbsenceView, self).get_context_data(**kwargs)
 
 
 class CourseJSCSVView(CSVMixin, CourseDetailView):

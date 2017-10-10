@@ -1,0 +1,33 @@
+{% extends "backend/base.html" %}
+{% load i18n duration switzerland sekizai_tags  %}
+
+{% block title %}{% blocktrans %}Absence management{% endblocktrans %} - {{ block.super }}{% endblock %}
+{% block page_title %}<i class="icon-calendar"></i>&nbsp;&nbsp;{% trans "Absences" %}{% endblock %}
+
+
+{% block content %}
+{{ course_list }}
+{% include 'absences/absences-table-courses.html' %}
+
+
+{% if courses_list.count > 1 %}
+<div class="form-group hidden-print">
+  <label for="select-course">{% trans "Manage absences for" %}:</label>
+  <select class="form-control" id="select-course">
+    {% for c in courses_list %}
+      <option{% if course == c %} selected{% endif %} value="{{ c.get_backend_absences_url }}">{{ c.short_name }}</option>
+    {% endfor %}
+  </select>
+</div>
+
+{% addtoblock "js" %}
+<script>
+  $(function(){
+    $('#select-course').on('change', function(){
+      window.location.href = this.value;
+    });
+  });
+</script>
+{% endaddtoblock %}
+{% endif %}
+{% endblock content %}
