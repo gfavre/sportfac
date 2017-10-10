@@ -212,7 +212,7 @@ class PaySlipMontreux(BackendMixin, FormView):
 
         if form.cleaned_data['rate_mode'] == 'hour':
             duration = context['course'].duration
-            hours = duration.seconds / 3600.0 + duration.days * 24
+            hours = Decimal(duration.seconds / 3600.0 + duration.days * 24)
             context['amount'] = Decimal(context['rate']) * Decimal(context['sessions'].count()) * hours
         else:
             context['amount'] = Decimal(context['sessions'].count()) * context['rate']
