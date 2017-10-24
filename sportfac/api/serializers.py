@@ -44,7 +44,7 @@ class ActivitySerializer(serializers.ModelSerializer):
 
 class InstructorSerializer(serializers.ModelSerializer):
     first = serializers.CharField(source='first_name')
-    last  = serializers.CharField(source='last_name')
+    last = serializers.CharField(source='last_name')
     phone = serializers.CharField(source='best_phone')
     
     class Meta:
@@ -102,6 +102,7 @@ class TeacherSerializer(serializers.ModelSerializer):
         model = Teacher
         fields = ('id', 'first_name', 'last_name', 'years' )
 
+
 class YearSerializer(serializers.ModelSerializer):
     class Meta:
         model = SchoolYear
@@ -152,10 +153,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 _("Max number of registrations reached.")
             )
-
-
         return data
-    
 
 
 class ExtraSerializer(serializers.ModelSerializer):

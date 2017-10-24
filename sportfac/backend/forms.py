@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import date
 from django.db.models import Case, When, F, IntegerField, Q, Sum
 from django.forms import inlineformset_factory
 from django.utils.translation import ugettext as _
@@ -166,6 +167,13 @@ class BillingForm(forms.ModelForm):
     class Meta:
         model = Registration
         fields = ('paid',)
+
+
+class SessionForm(forms.Form):
+    date = forms.DateField(label=_("Session date"), required=True,
+                           help_text=_("Format: DD.MM.YYYY"),
+                           widget=DatePickerInput(),
+                           initial=date.today())
 
 
 class YearSelectForm(forms.Form):

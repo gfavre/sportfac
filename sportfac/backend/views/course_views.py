@@ -5,7 +5,7 @@ from decimal import Decimal
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
@@ -14,7 +14,7 @@ from django.utils.safestring import mark_safe
 from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, UpdateView, View
 from django.views.generic.detail import SingleObjectMixin
 
-from absences.models import Absence
+from absences.models import Absence, Session
 from activities.models import Course, Activity
 from activities.forms import CourseForm
 from profiles.models import FamilyUser
@@ -22,7 +22,7 @@ from registrations.models import ChildActivityLevel, ExtraInfo
 from registrations.resources import RegistrationResource
 from sportfac.views import CSVMixin
 from .mixins import BackendMixin, ExcelResponseMixin
-from ..forms import PayslipMontreuxForm
+from ..forms import PayslipMontreuxForm, SessionForm
 
 __all__ = ('CourseCreateView', 'CourseDeleteView', 'CourseDetailView',
            'CourseJSCSVView', 'CourseParticipantsExportView',
@@ -86,6 +86,26 @@ class CoursesAbsenceView(BackendMixin, ListView):
         courses_pk = [int(pk) for pk in self.request.GET.getlist('c') if pk.isdigit()]
         return Course.objects.filter(pk__in=courses_pk)
 
+    def post(self, *args, **kwargs):
+        pks = self.request.GET.getlist('c')
+        courses = Course.objects.filter(pk__in=pks)
+        form = SessionForm(data=self.request.POST)
+        if form.is_valid():
+            for course in courses:
+                session, created = Session.objects.get_or_create(course=course, date=form.cleaned_data['date'])
+                if not created:
+                    continue
+                for registration in course.participants.all():
+                    Absence.objects.get_or_create(
+                        child=registration.child, session=session,
+                        defaults={
+                            'status': Absence.STATUS.present
+                        }
+                    )
+
+        params = '&'.join(['c={}'.format(course.id) for course in courses])
+        return HttpResponseRedirect(reverse('backend:courses-absence') + '?' + params)
+
     def get_context_data(self, **kwargs):
         qs = Absence.objects.filter(session__course__in=self.get_queryset())\
                             .select_related('session', 'child', 'session__course', 'session__course__activity')\
@@ -111,8 +131,9 @@ class CoursesAbsenceView(BackendMixin, ListView):
                 course_absences[the_tuple][absence.session.date] = absence
             else:
                 course_absences[the_tuple] = {absence.session.date: absence}
-        kwargs['course_absences'] = dict(course_absences)
+        kwargs['course_absences'] = collections.OrderedDict(course_absences)
         kwargs['levels'] = ChildActivityLevel.LEVELS
+        kwargs['session_form'] = SessionForm()
         return super(CoursesAbsenceView, self).get_context_data(**kwargs)
 
 
