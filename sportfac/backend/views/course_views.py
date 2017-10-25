@@ -18,7 +18,7 @@ from absences.models import Absence, Session
 from activities.models import Course, Activity
 from activities.forms import CourseForm
 from profiles.models import FamilyUser
-from registrations.models import ChildActivityLevel, ExtraInfo
+from registrations.models import ChildActivityLevel, ExtraInfo, Child
 from registrations.resources import RegistrationResource
 from sportfac.views import CSVMixin
 from .mixins import BackendMixin, ExcelResponseMixin
@@ -112,7 +112,6 @@ class CoursesAbsenceView(BackendMixin, ListView):
                             .order_by('child__last_name', 'child__first_name')
         kwargs['all_dates'] = list(set(qs.values_list('session__date', flat=True)))
         kwargs['all_dates'].sort()
-        course_absences = collections.OrderedDict()
         if settings.KEPCHUP_REGISTRATION_LEVELS:
             extras = ExtraInfo.objects.select_related('registration', 'key')\
                                       .filter(registration__course__in=self.get_queryset(),
@@ -122,16 +121,20 @@ class CoursesAbsenceView(BackendMixin, ListView):
                                                 filter(activity__in=set([absence.session.course.activity for absence in qs]))
             child_levels = {level.child: level for level in levels}
 
+        course_children = dict([(course, [reg.child for reg in course.participants.all()]) for course in self.get_queryset()])
+        course_absences = collections.OrderedDict()
         for absence in qs:
             if settings.KEPCHUP_REGISTRATION_LEVELS:
                 absence.child.announced_level = child_announced_levels.get(absence.child, '')
                 absence.child.level = child_levels.get(absence.child, '')
+            if absence.child not in course_children[absence.session.course]:
+                continue
             the_tuple = (absence.child, absence.session.course)
             if the_tuple in course_absences:
                 course_absences[the_tuple][absence.session.date] = absence
             else:
                 course_absences[the_tuple] = {absence.session.date: absence}
-        kwargs['course_absences'] = collections.OrderedDict(course_absences)
+        kwargs['course_absences'] = course_absences
         kwargs['levels'] = ChildActivityLevel.LEVELS
         kwargs['session_form'] = SessionForm()
         return super(CoursesAbsenceView, self).get_context_data(**kwargs)

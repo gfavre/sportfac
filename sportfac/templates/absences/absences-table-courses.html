@@ -1,41 +1,67 @@
 {% load i18n %}
 {% load duration switzerland extra sekizai_tags staticfiles matrix status mathfilters children %}
 {% addtoblock "css" %}
+<link rel="stylesheet" href="{% static 'css/datatables.min.css' %}">
 <style>
 .rotated-heading {
     height: 100px;
-    width: 50px;
+    width: 40px;
     white-space: nowrap;
     vertical-align: middle!important;
 }
 .rotated-heading div {
     transform: rotate(-90deg) translate(-33px, 0px);
-    width: 40px;
+    width: 35px;
 }
 .rotated-heading div span {
     padding-left:10px;
 }
-
+table.dataTable thead>tr>th.rotated-heading {
+  padding-left: 0;
+  padding-right: 0;
+}
+.absences>tbody>tr>td.absence {
+  padding: 0;
+  text-align: center;
+}
+.absences .popover .radio {
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.absences .popover .radio label{
+  padding-left: 20px;
+}
+.absences .popover .radio input[type=radio] {
+  position: absolute;
+  margin-left: -20px;
+  margin-top: 2px;
+}
+.absences .popover textarea {
+  width: 100%;
+}
 </style>
 {% endaddtoblock %}
 <div class="table-responsive">
-  <table class="table table-bordered table-hover table-condensed absences" style="table-layout: fixed;">
+  <table class="table table-bordered table-hover table-condensed absences table-fixed responsive">
     <thead>
       <tr>
-        <th>{% trans "Child" %}</th>
-        <th>{% trans "Course" %}</th>
+        <th class="all">{% trans "Child" %}</th>
+        <th class="min-mobile-l">{% trans "Course" %}</th>
         {% if REGISTRATION_LEVELS %}
-          <th class="rotated-heading"><div><span>{% trans "Announced level" %}</span></div></th>
-          <th class="rotated-heading"><div><span>{% trans "level -1" %}</span></div></th>
-          <th class="rotated-heading"><div><span>{% trans "level 0" %}</span></div></th>
+          <th class="min-tablet-l rotated-heading"><div><span>{% trans "Announced level" %}</span></div></th>
+          <th class="min-tablet-l rotated-heading"><div><span>{% trans "level -1" %}</span></div></th>
+          <th class="min-tablet-l rotated-heading"><div><span>{% trans "level 0" %}</span></div></th>
         {% endif %}
         {% if DISPLAY_REGISTRATION_NOTE %}
-        <th class="note">
+        <th class="min-tablet-l note">
           {% trans "Note" %}
         </th>
         {% endif %}
         {% for session_date in all_dates %}
-          <th class="rotated-heading"><div><span>{{ session_date | date:"j b. Y" }}</span></div></th>
+          <th class="rotated-heading{% if forloop.last %} all{% else %} min-tablet-l{% endif %}">
+            <div><span>{{ session_date | date:"j b. Y" }}</span></div>
+          </th>
         {% endfor %}
       </tr>
     </thead>
@@ -45,17 +71,17 @@
 {% for course_child, absences in course_absences.items %}
   {% with child=course_child.0 course=course_child.1 %}
       <tr>
-        <th>
+        <th data-order="{{ child.last_name }} {{ child.first_name }}">
           <a href="{{ child.get_backend_absences_url }}">{{ child }}</a>
         </th>
 
-        <th>
+        <th data-order="{{ course.number }}">
           <a href="{{ course.get_backend_absences_url }}">
             {{ course.short_name }}{% if course.name %} - {{ course.name }}{% endif %}
           </a>
         </th>
           {% if REGISTRATION_LEVELS %}
-        <th>
+        <th data-order="{{ child.announced_level }}">
           <span class="hidden-print">{{ child.announced_level }}</span>
           <span class="visible-print">{{ child.announced_level|truncatewords:"1" }}</span>
         </th>
@@ -63,6 +89,7 @@
             data-level="{{ child.level.before_level }}"
             data-key="before_level"
             data-url="{{ child.level.api_url }}"
+            data-order="{{ child.level.before_level }}"
         >
           <a class="level has-popover" role="button"
              data-toggle="popover"
@@ -72,6 +99,7 @@
             data-level="{{ child.level.after_level }}"
             data-key="after_level"
             data-url="{{ child.level.api_url }}"
+            data-order="{{ child.level.after_level }}"
         >
           <a class="level has-popover" role="button"
              data-toggle="popover"
@@ -83,6 +111,7 @@
             data-key="note"
             data-note="{{ child.level.note }}"
             data-url="{{ child.level.api_url }}"
+            data-order="{{ child.level.note }}"
         >
           <div class="note">{{ child.level.note }}</div>
           <a class="note has-popover hidden-print" role="button" data-toggle="popover" data-trigger="click focus">
@@ -94,11 +123,13 @@
         {% for session_date in all_dates %}
           {% if session_date in absences %}
           {% with absence=absences|get_item:session_date %}
-            <td class="{{ absence.status }} {% if absence.status == 'present' %}success{% elif absence.status == 'late' %}info{% elif absence.status == 'excused' %}warning{% else %}danger{% endif %}"
+            <td class="absence {{ absence.status }} {% if absence.status == 'present' %}success{% elif absence.status == 'late' %}info{% elif absence.status == 'excused' %}warning{% else %}danger{% endif %}"
                 data-pk="{{ absence.pk }}"
                 data-session="{{ absence.session.id }}"
                 data-child="{{ child.id }}"
-                data-status="{{ absence.status }}">
+                data-status="{{ absence.status }}"
+                data-order="{{ absence.status }}"
+            >
               <a role="button" class="btn btn-sm absence has-popover"  data-toggle="popover"
                  data-trigger="click focus">{{ absence|absence_to_status:1 }}</a>
             </td>
@@ -167,11 +198,23 @@
   </form>
 </script>
 <script src="{% static 'js/vendor/js.cookie.js' %}"></script>
+<script src="{{ STATIC_URL }}js/vendor/datatables/datatables.min.js"></script>
 <script>
 jQuery(function($){
   $.ajaxSetup({
     headers: { "X-CSRFToken": Cookies.get("csrftoken") }
   });
+
+  $('.absences').dataTable({
+{% if LANGUAGE_CODE == 'fr' %}
+      "language": {
+            "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+      },
+{% endif %}
+      "responsive": true,
+      "paging": false
+  });
+
 
   $('.absences').on('change', 'input[name=status]', function(event){
     var parent = $(this).parents('td');
@@ -223,7 +266,8 @@ jQuery(function($){
     {
       selector: '.absence.has-popover',
       content: function(){ return $('#status-window').html(); },
-      html: true
+      html: true,
+      placement: 'left'
     }
   );
 
