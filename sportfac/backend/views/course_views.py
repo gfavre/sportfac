@@ -59,23 +59,40 @@ class CourseAbsenceView(BackendMixin, DetailView):
     queryset = Course.objects.prefetch_related('sessions', 'sessions__absences', 'participants__child',
                                                'instructors')\
                              .select_related('activity',)
-    
+
+    def post(self, *args, **kwargs):
+        course = self.get_object()
+        form = SessionForm(data=self.request.POST)
+        if form.is_valid():
+            if self.request.user in course.instructors.all():
+                instructor = self.request.user
+            else:
+                instructor = None
+            session, created = Session.objects.get_or_create(instructor=instructor,
+                                                             course=course,
+                                                             date=form.cleaned_data['date'])
+            for registration in course.participants.all():
+                Absence.objects.get_or_create(
+                    child=registration.child, session=session,
+                    defaults={
+                        'status': Absence.STATUS.present
+                    }
+                )
+
     def get_context_data(self, **kwargs):
-        context = super(CourseAbsenceView, self).get_context_data(**kwargs)
         course = self.get_object()
         all_absences = dict(
             [((absence.child, absence.session), absence.status)
              for absence in Absence.objects.select_related('child', 'session').filter(session__course=course)]
         )
-        context['absence_matrix'] = [
+        kwargs['absence_matrix'] = [
             [all_absences.get((registration.child, session), 'present') for session in course.sessions.all()]
             for registration in course.participants.select_related('child', 'child__family')
         ]
-        context['courses_list'] = Course.objects.all()
-        context['levels'] = ChildActivityLevel.LEVELS
-
-
-        return context
+        kwargs['courses_list'] = Course.objects.all()
+        kwargs['levels'] = ChildActivityLevel.LEVELS
+        kwargs['session_form'] = SessionForm()
+        return super(CourseAbsenceView, self).get_context_data(**kwargs)
 
 
 class CoursesAbsenceView(BackendMixin, ListView):

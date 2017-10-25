@@ -17,7 +17,7 @@ class Absence(StatusModel, TimeStampedModel):
         ('excused', _("Excused")),
         ('medical', _("Medical certificate")),
         ('late', _("Late arrival")),
-        ('n/a', _("n/a")),
+        ('na', _("n/a")),
     )
 
     child = models.ForeignKey('registrations.Child', on_delete=models.CASCADE)

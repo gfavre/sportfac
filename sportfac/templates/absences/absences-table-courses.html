@@ -47,6 +47,9 @@ table.dataTable thead>tr>th.rotated-heading {
     <thead>
       <tr>
         <th class="all">{% trans "Child" %}</th>
+        {% if BIB_NUMBERS %}
+        <th class="rotated-heading"><div><span>{% trans "Bib number" %}</span></div></th>
+        {% endif %}
         <th class="min-mobile-l">{% trans "Course" %}</th>
         {% if REGISTRATION_LEVELS %}
           <th class="min-tablet-l rotated-heading"><div><span>{% trans "Announced level" %}</span></div></th>
@@ -74,6 +77,11 @@ table.dataTable thead>tr>th.rotated-heading {
         <th data-order="{{ child.last_name }} {{ child.first_name }}">
           <a href="{{ child.get_backend_absences_url }}">{{ child }}</a>
         </th>
+        {% if BIB_NUMBERS %}
+        <th data-order="{{ child.bib_number|default:"0" }}">
+              {{ child.bib_number|default:"" }}
+        </th>
+        {% endif %}
 
         <th data-order="{{ course.number }}">
           <a href="{{ course.get_backend_absences_url }}">
@@ -172,7 +180,7 @@ table.dataTable thead>tr>th.rotated-heading {
   <form>
     <div class="radio">
       <label>
-        <input type="radio" name="status" id="present" value="present" checked>{% trans "Present" %}
+        <input type="radio" name="status" id="present" value="present">{% trans "Present" %}
       </label>
     </div>
      <div class="radio">

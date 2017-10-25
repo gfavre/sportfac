@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load duration switzerland sekizai_tags %}
+{% load duration switzerland sekizai_tags floppyforms %}
 
 {% block title %}{{ course.activity.name }} - {% trans "Absences" %}{{ block.super }}{% endblock %}
 {% block page_title %}{{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }} - Absences{% endblocktrans %}{% endblock %}
@@ -34,7 +34,10 @@
     <a href="{{ course.get_absolute_url }}" class="btn btn-default hidden-print"><i class="icon-check"></i>&nbsp;{% trans "Check registrations" %}</a>
   </div>
 </section>
-
+<form method="POST" class="form-inline">{% csrf_token %}
+    {% form session_form using "floppyforms/layouts/bootstrap-inline.html" %}
+    <button type="submit" class="btn btn-secondary">{% trans "New session" %}</button>
+</form>
 {% include 'absences/absences-table.html' %}
 {% if courses_list.count > 1 %}
 <div class="form-group">
