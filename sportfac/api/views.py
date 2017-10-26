@@ -159,6 +159,8 @@ class ChildrenViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
     
     def create(self, request, *args, **kwargs):
+        if 'ext_id' in request.data and not request.data['ext_id']:
+            del request.data['ext_id']
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.validated_data['family'] = request.user
