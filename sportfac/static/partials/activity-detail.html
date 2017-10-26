@@ -21,11 +21,13 @@
     <dt>Lieu</dt><dd>{[{ selectedCourse.place  }]}</dd>
     <dt>Dates</dt>
     <dd ng-switch on="selectedCourse.day">{[{ selectedCourse.number_of_sessions }]} cours, tous les 
-      <span ng-switch-when="1">lundis</span>
-      <span ng-switch-when="2">mardis</span>
-      <span ng-switch-when="3">mercredis</span>
-      <span ng-switch-when="4">jeudis</span>
-      <span ng-switch-when="5">vendredis</span> de {[{ selectedCourse.start_time }]} à {[{ selectedCourse.end_time }]}<br /> entre le {[{ selectedCourse.start_date | date:'longDate' }]} et le {[{ selectedCourse.end_date | date:'longDate'  }]}
+      <span ng-switch-when="1">lundi</span>
+      <span ng-switch-when="2">mardi</span>
+      <span ng-switch-when="3">mercredi</span>
+      <span ng-switch-when="4">jeudi</span>
+      <span ng-switch-when="5">vendredi</span>
+      <span ng-switch-when="6">samedi</span>
+      <span ng-switch-when="7">dimanche</span>de {[{ selectedCourse.start_time }]} à {[{ selectedCourse.end_time }]}<br /> entre le {[{ selectedCourse.start_date | date:'longDate' }]} et le {[{ selectedCourse.end_date | date:'longDate'  }]}
     </dd>
     <dt>Prix</dt><dd>CHF {[{ selectedCourse.price }]}</dd>
   </dl>
