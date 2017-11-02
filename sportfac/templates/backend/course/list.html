@@ -10,7 +10,7 @@
 
 {% block content %}
 
-{% addtoblock  "js" %}    
+{% addtoblock  "js" %}
 <script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
 <script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.tableTools.min.js"></script>
 <script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
@@ -61,7 +61,7 @@ $(function () {
 <hr>
 <div class="btn-group">
   <form class="absences" method="POST" action="{% url 'backend:courses-absence' %}">{% csrf_token %}
-    <button type="submit" class="btn btn-secondary needs-select "><i class="icon-calendar"></i>&nbsp;&nbsp;{% trans "Manage multiple courses absences" %}</button>
+    <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-calendar"></i>&nbsp;&nbsp;{% trans "Manage multiple courses absences" %}</button>
   </form>
 </div>
 <table class="table">
@@ -103,7 +103,7 @@ $(function () {
           {% endfor %}
         </ul>
       </td>
-      <td data-order="{{ course.available_places }}" 
+      <td data-order="{{ course.available_places }}"
           class="{% if course.full %}bg-danger{% elif course.minimal_participants_reached %}bg-success{% else %}bg-warning{% endif %}">
         {{ course.count_participants  }}&nbsp;/&nbsp;{{ course.max_participants }}
       </td>
@@ -115,8 +115,8 @@ $(function () {
           {% endif %}
           <li class="text-nowrap"><a href="{{ course.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update course" %}</a></li>
           <li class="text-nowrap"><a href="{{ course.get_js_export_url }}" class="btn btn-sm"><i class="icon-doc"></i>&nbsp;{% trans "Get BDNS: J+S export file" %}</a></li>
-          <li class="text-nowrap"><a href="{{ course.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete course" %}</a></li>          
-          
+          <li class="text-nowrap"><a href="{{ course.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete course" %}</a></li>
+
 
 
         </ul>

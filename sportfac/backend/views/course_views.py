@@ -78,6 +78,7 @@ class CourseAbsenceView(BackendMixin, DetailView):
                         'status': Absence.STATUS.present
                     }
                 )
+        return HttpResponseRedirect(course.get_backend_absences_url())
 
     def get_context_data(self, **kwargs):
         course = self.get_object()
@@ -160,10 +161,10 @@ class CoursesAbsenceView(BackendMixin, ListView):
 class CourseJSCSVView(CSVMixin, CourseDetailView):
     def get_csv_filename(self):
         return '%s - J+S.csv' % self.object.number
-    
+
     def write_csv(self, filelike):
         return self.object.get_js_csv(filelike)
-    
+
 
 class CourseParticipantsView(CourseDetailView):
     template_name = 'mailer/pdf_participants_list.html'
@@ -172,7 +173,7 @@ class CourseParticipantsView(CourseDetailView):
         context = super(CourseParticipantsView, self).get_context_data(**kwargs)
         context['sessions'] = range(0, self.object.number_of_sessions)
         return context
-    
+
     def get_template_names(self):
         return self.template_name
 
@@ -180,7 +181,7 @@ class CourseParticipantsView(CourseDetailView):
 class CourseListView(BackendMixin, ListView):
     model = Course
     queryset = Course.objects.select_related('activity').prefetch_related('participants', 'instructors')
-    
+
     def get_template_names(self):
         if self.request.PHASE == 1:
             return 'backend/course/list-phase1.html'
@@ -207,12 +208,12 @@ class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
     template_name = 'backend/course/create.html'
     success_url = reverse_lazy('backend:course-list')
     success_message = _('<a href="%(url)s" class="alert-link">Course (%(number)s)</a> has been created.')
-    
+
     def get_success_message(self, cleaned_data):
         url = self.object.get_backend_url()
         return mark_safe(self.success_message % {'url': url,
                                                  'number': self.object.number})
-    
+
     def get_initial(self):
         initial = super(CourseCreateView, self).get_initial()
         activity = self.request.GET.get('activity', None)
@@ -238,7 +239,7 @@ class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
     pk_url_kwarg = 'course'
     success_url = reverse_lazy('backend:course-list')
     success_message = _('<a href="%(url)s" class="alert-link">Course (%(number)s)</a> has been updated.')
-    
+
     def get_success_message(self, cleaned_data):
         url = self.object.get_backend_url()
         return mark_safe(self.success_message % {'url': url,
@@ -253,11 +254,11 @@ class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
         course = self.get_object()
         removed_instructors = set(course.instructors.all()) - set(form.cleaned_data['instructors'])
         response = super(CourseUpdateView, self).form_valid(form)
-        
+
         for instructor in removed_instructors:
             if instructor.course.exclude(pk=course.pk).count() == 0:
                 instructor.is_instructor = False
-            
+
         for user in form.cleaned_data['instructors']:
             user.is_instructor = True
 

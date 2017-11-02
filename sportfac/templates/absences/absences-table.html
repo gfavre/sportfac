@@ -39,6 +39,14 @@ table.dataTable thead>tr>th.rotated-heading {
 .absences .popover textarea {
   width: 100%;
 }
+.edit-session .form-group {
+  margin-bottom: 15px;
+  display: block;
+}
+.edit-session .form-control {
+  width: 100%;
+  display: block;
+}
 </style>
 {% endaddtoblock %}
 <div class="table-responsive">
@@ -66,20 +74,11 @@ table.dataTable thead>tr>th.rotated-heading {
       </th>
       {% endif %}
       {% for session in course.sessions.all %}
-      <th class="rotated-heading date">
+      <th class="rotated-heading date" data-session="{{ session.id }}">
         <div>
           <span class="session-date">{{ session.date | date:"d.m.Y" }}</span>
-        <!--<a href="" class="session-edit-date hidden-print"><i class="icon-pencil"></i></a>-->
         </div>
-        <span class="date datetimepicker session-update hidden-print" 
-             data-session-url="{{ session.get_api_url }}" >
-          <a href="#"><i class="icon-calendar"></i></a>
-          <input type="hidden" class="form-control" value="{{ session.date | date:'d.m.Y' }}"
-                 data-date-pickTime="false"/>
-        </span>
-        <a href="#" class="session-delete hidden-print" data-session-url="{{ session.get_api_url }}">
-          <i class="icon-trash"></i>
-        </a>
+
       </th>
       {% endfor %}
     </tr>
@@ -100,33 +99,19 @@ table.dataTable thead>tr>th.rotated-heading {
       <th></th>
       {% endif %}
       {% for session in course.sessions.all %}
-      <th data-session="{{ session.id }}">
-        <abbr title="{{ session.instructor.full_name }}">{{ session.instructor.get_initials | default:"n/a"}}</abbr>
-        <br>
-        <a class="edit-session has-popover hidden-print" role="button" data-toggle="popover"
+      <th class="edit-session"
+          data-url="{{ session.get_api_url }}"
+          data-instructor="{{ session.instructor.id }}"
+          data-date="{{ session.date | date:"d.m.Y"  }}"
+      >
+        <a class="has-popover hidden-print" role="button" data-toggle="popover"
            title="{% trans "Edit session" %}"
            data-placement="top"
-           data-trigger="click focus"><i class="icon-pencil"></i>&nbsp;
+           data-trigger="click focus">
+          <abbr title="{{ session.instructor.full_name }}">{{ session.instructor.get_initials | default:"n/a"}}</abbr>
+          <br>
+          <i class="icon-pencil"></i>&nbsp;
         </a>
-        <!--
-        <select name="instructor" class="instructor hidden-print"
-                  data-session-url="{{ session.get_api_url }}">
-            {% if session.instructor not in course.instructors.all %}
-             <option value="{{ session.instructor.id }}" selected>
-               {{ session.instructor.full_name }}
-             </option>
-            {% endif %}
-            {% for instructor in course.instructors.all %}
-            <option value="{{ instructor.id }}"{% if session.instructor == instructor %} selected{% endif %}>
-              {{ instructor.full_name }}
-            </option>
-            {% endfor %}
-            <option value=""{% if not session.instructor %} selected{% endif %}>{% trans "other" %}</option>
-          </select>
-          <span class="visible-print-inline">{% if session.instructor %}{{ session.instructor.full_name }}{% else %}{% trans "other" %}{% endif %}</span>
-          <span class="message success hidden-print" style="display: none"><i class="icon icon-ok-circled text-success"></i></span>
-          <span class="message error hidden-print" style="display: none"><i class="icon icon-cancel-circled text-danger"></i></span>
-        -->
       </th>
       {% endfor %}
     </tr>
@@ -204,7 +189,7 @@ table.dataTable thead>tr>th.rotated-heading {
     </tr>
   {% endwith %}
   {% endfor %}
-  </tbody>  
+  </tbody>
 </table>
 </div>
 
@@ -214,26 +199,36 @@ table.dataTable thead>tr>th.rotated-heading {
 
 
 <script type="text/html" id="session-window">
-  <form>
-
-    <select name="instructor" class="instructor hidden-print">
-      {% for instructor in course.instructors.all %}
-      <option value="{{ instructor.id }}">
-        {{ instructor.full_name }}
-      </option>
-      {% endfor %}
-      <option value="">{% trans "other" %}</option>
-    </select>
-
-    <div class="input-group date datetimepicker session-update">
-      <input type="text" class="form-control" name="date" required data-date-format="DD.MM.YYYY"
-                 data-date-pickTime="false"/>
-      <span class="input-group-addon"><span class="icon-calendar"></span></span>
+  <form class="session-form">
+    <div class="form-group">
+      <label>{% trans "Instructor" %}</label>
+      <select name="instructor" class="form-control instructor">
+        {% for instructor in course.instructors.all %}
+        <option value="{{ instructor.id }}">
+          {{ instructor.full_name }}
+        </option>
+        {% endfor %}
+        <option value="" selected>{% trans "other" %}</option>
+      </select>
     </div>
-    <input type="submit" class="form-control  btn-primary" value="{% trans "Save" %}">
-    <a href="#" class="session-delete hidden-print btn-danger" data-session-url="{{ session.get_api_url }}">
+    <div class="form-group">
+      <label>{% trans "Date" %}</label>
+      <div class="input-group date datetimepicker session-update">
+        <input type="text" class="form-control" name="date" required
+               data-date-format="DD.MM.YYYY"
+               data-date-pickTime="false"/>
+        <div class="input-group-addon"><div class="icon-calendar"></div></div>
+      </div>
+    </div>
+    <div class="form-group">
+      <button type="submit" class="form-control  btn-primary"><i class="icon-ok"></i> {% trans "Save" %}</button>
+    </div>
+    <div class="form-group text-right">
+      <a href="#" class="session-delete hidden-print btn btn-sm btn-danger" data-session-url="{{ session.get_api_url }}">
         <i class="icon-trash"></i> {% trans "Delete session" %}
-    </a>
+      </a>
+    </div>
+
 
   </form>
 </script>
@@ -290,7 +285,7 @@ table.dataTable thead>tr>th.rotated-heading {
 <script id="column-header" type="text/html">
     <th class="date">
         <span class="session-date"></span>
-        
+
         <span class="date datetimepicker session-update hidden-print">
           <input type="hidden" class="form-control" value=""
                  data-date-pickTime="false" />
@@ -306,7 +301,7 @@ table.dataTable thead>tr>th.rotated-heading {
     <td class="present success"
         data-status="present">
         <a role="button" class="btn btn-sm absence has-popover"
-           data-toggle="popover" 
+           data-toggle="popover"
            data-trigger="click focus">{{ "present"|absence_status }}</a>
     </td>
 </script>
@@ -318,21 +313,7 @@ table.dataTable thead>tr>th.rotated-heading {
 <script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
 <script src="{% static 'js/vendor/bootstrap-datetimepicker.min.js' %}"></script>
 <script src="{% static 'js/vendor/js.cookie.js' %}"></script>
-<script id="instructors-tmpl" type="text/template">
-<th>
-  <select name="instructor" class="instructor">
-    {% for instructor in course.instructors.all %}
-    <option value="{{ instructor.id }}"{% if user == instructor %} selected{% endif %}>
-        {{ instructor.full_name }}
-    </option>
-    {% endfor %}
-    <option value=""{% if not user in course.instructors.all %} selected{% endif %}>{% trans "other" %}</option>
-  </select>
-  <span class="visible-print-inline"></span>
-  <span class="message success" style="display: none"><i class="icon icon-ok-circled text-success"></i></span> 
-  <span class="message error" style="display: none"><i class="icon icon-cancel-circled text-danger"></i></span> 
-</th>
-</script>
+
 <script>
 $(function(){
     var HUMAN_FMT = 'DD.MM.YYYY';
@@ -341,10 +322,8 @@ $(function(){
     $.fn.column = function() {
       return $(this)
           .filter('th, td')
-          .filter(':not([colspan])')
           .closest('table')
           .find('tr')
-          .filter(':not(:has([colspan]))')
           .children(':nth-child(' + ($(this).index()+1) + ')');
     };
 
@@ -369,54 +348,6 @@ $(function(){
       icons: {date: 'icon-calendar',
         up:   'icon-up-open',
         down: 'icon-down-open'}
-    });
-
-    $('.absences').on('dp.change', '.datetimepicker', function(evt){
-      var parent = $(this).parent('th');
-      evt.stopPropagation();
-
-      $.ajax({
-        url: $(this).data('session-url'),
-        type: 'PUT',
-        data: { date: $(this).data('DateTimePicker').date.format(API_FMT),
-          course: {{ course.id }} },
-        success: function(response){
-          $('.session-date', parent).text(
-              moment(response.date, API_FMT).format(HUMAN_FMT)
-          );
-        }
-      });
-    });
-
-    $('.absences').on('click', '.session-delete', function(evt){
-      var parent = $(this).parent();
-      $.ajax({
-        url: $(this).data('session-url'),
-        type: 'DELETE',
-        success: function(){
-          parent.column().remove();
-        }
-      });
-      evt.preventDefault();
-    });
-
-    $('.absences').on('change', 'select.instructor', function(event){
-      var parent = $(this).parent();
-      $('.message.error', parent).hide();
-      $('.message.success', parent).hide();
-
-      $.ajax({
-        url: $(this).data('session-url'),
-        type: 'PUT',
-        data: {'instructor': $(this).val() },
-        success: function(){
-          $('.message.success', parent).show();
-          $('.visible-print-inline', parent).text($('option:selected', parent).text());
-        },
-        error: function(){
-          $('.message.error', parent).show();
-        }
-      });
     });
 
     $('.absences').on('change', 'input[name=status]', function(event){
@@ -507,7 +438,6 @@ $(function(){
           $('.has-popover', parent).popover('hide');
         }
       });
-
     });
 
     $('.absences').popover(
@@ -544,14 +474,63 @@ $(function(){
 
     $('.absences').popover(
         {
-          selector: '.edit-session.has-popover',
+          selector: '.edit-session .has-popover',
           content: function(){ return $('#session-window').html(); },
           html: true
         }
     );
+    $('.absences .edit-session').on('shown.bs.popover', function(){
+      var instructor = $(this).data('instructor');
+      var date = $(this).data('date');
+      if (instructor){
+        $('[name=instructor] option[value=' + instructor +']', this).prop('selected', 'selected')
+      }
+      $('[name=date]', this).val(date);
+      $('.datetimepicker', this).datetimepicker({
+        language: '{{ LANGUAGE_CODE }}',
+        format: HUMAN_FMT,
+        icons: {date: 'icon-calendar',
+                up:   'icon-up-open',
+                down: 'icon-down-open'}
+      });
+    });
+
+    $('.absences').on('submit', 'form.session-form', function(event){
+      event.preventDefault();
+      var $parent = $(this).parents(".edit-session");
+      var data = {
+          'instructor': $('[name=instructor]', this).val(),
+          'date': moment($('[name=date]', this).val(), HUMAN_FMT).format(API_FMT)
+      };
+      $.ajax({
+        url: $parent.data('url'),
+        type: 'PATCH',
+        data: data,
+        success: function(response){
+          $parent.data('instructor', response.instructor);
+          $parent.data('date', response.date);
+          $('.date[data-session=' + response.id + '] .session-date').text(
+              moment(response.date, API_FMT).format(HUMAN_FMT)
+          );
+          $('.has-popover', $parent).popover('hide');
+        }
+      });
+    });
+
+    $('.absences').on('click', '.edit-session .session-delete', function(evt){
+      var $parent = $(this).parents(".edit-session");
+      $.ajax({
+        url: $parent.data('url'),
+        type: 'DELETE',
+        success: function(){
+          $parent.column().remove();
+        }
+      });
+      evt.preventDefault();
+    });
+
 
     $('html').on('click', function(e){
-        console.log($(e.target))
         if (typeof $(e.target).data('original-title') == 'undefined' &&
             typeof $(e.target).parent().data('original-title') == 'undefined' &&
             !$(e.target).parents().is('.popover.in')) {
