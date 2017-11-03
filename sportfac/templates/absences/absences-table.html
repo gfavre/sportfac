@@ -1,68 +1,85 @@
 {% load i18n %}
-{% load duration switzerland extra sekizai_tags staticfiles matrix status mathfilters %}
+{% load duration switzerland extra sekizai_tags staticfiles matrix status mathfilters children %}
 {% addtoblock "css" %}
 <style>
 .rotated-heading {
     height: 100px;
-    width: 50px;
+    width: 40px;
     white-space: nowrap;
     vertical-align: middle!important;
 }
 .rotated-heading div {
     transform: rotate(-90deg) translate(-33px, 0px);
-    width: 40px;
+    width: 35px;
 }
 .rotated-heading div span {
     padding-left:10px;
 }
-.absences tr
+table.dataTable thead>tr>th.rotated-heading {
+  padding-left: 0;
+  padding-right: 0;
+}
+.absences>tbody>tr>td.absence {
+  padding: 0;
+  text-align: center;
+}
+.absences .popover .radio {
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.absences .popover .radio label{
+  padding-left: 20px;
+}
+.absences .popover .radio input[type=radio] {
+  position: absolute;
+  margin-left: -20px;
+  margin-top: 2px;
+}
+.absences .popover textarea {
+  width: 100%;
+}
+.edit-session .form-group {
+  margin-bottom: 15px;
+  display: block;
+}
+.edit-session .form-control {
+  width: 100%;
+  display: block;
+}
 </style>
 {% endaddtoblock %}
-<div class="table-responsive">
-<table class="table table-bordered table-hover table-condensed absences" style="table-layout: fixed;">
+<table class="table table-bordered table-hover table-condensed absences table-fixed responsive">
   <thead>
     <tr>
-      <th style="width:5.5cm;">{% trans "Name" %}</th>
+      <th class="all">{% trans "Name" %}</th>
 
       {% if BIB_NUMBERS %}
-      <th class="rotated-heading"><div><span>{% trans "Bib number" %}</span></div></th>
+      <th class="rotated-heading all"><div><span>{% trans "Bib number" %}</span></div></th>
       {% endif %}
       {% if REGISTRATION_LEVELS %}
-      <th class="rotated-heading"><div><span>{% trans "Announced level" %}</span></div></th>
-      <th class="rotated-heading"><div><span>{% trans "level -1" %}</span></div></th>
-      <th class="rotated-heading"><div><span>{% trans "level 0" %}</span></div></th>
+      <th class="rotated-heading min-desktop"><div><span>{% trans "Announced level" %}</span></div></th>
+      <th class="rotated-heading min-tablet-l"><div><span>{% trans "level -1" %}</span></div></th>
+      <th class="rotated-heading min-tablet-l"><div><span>{% trans "level 0" %}</span></div></th>
       {% endif %}
       {% if DISPLAY_CAR_NUMBER %}
-      <th class="rotated-heading">
+      <th class="rotated-heading min-tablet-p">
         <div><span>{% trans "Bus" %}</span></div>
       </th>
       {% endif %}
       {% if DISPLAY_REGISTRATION_NOTE %}
-      <th class="note">
+      <th class="note min-desktop">
         {% trans "Note" %}
       </th>
       {% endif %}
       {% for session in course.sessions.all %}
-      <th class="date">
-        <span class="session-date">{{ session.date | date:"d.m.Y" }}</span>
-        <!--<a href="" class="session-edit-date hidden-print"><i class="icon-pencil"></i></a>-->
-        &nbsp;      
-        <span class="date datetimepicker session-update hidden-print" 
-             data-session-url="{{ session.get_api_url }}" >
-          <a href="#"><i class="icon-calendar"></i></a>
-          <input type="hidden" class="form-control" value="{{ session.date | date:'d.m.Y' }}"
-                 data-date-pickTime="false"/>
-        </span>
-        <a href="#" class="session-delete hidden-print" data-session-url="{{ session.get_api_url }}">
-          <i class="icon-trash"></i>
-        </a>
+      <th class="rotated-heading date {% if forloop.last %} all{% else %} min-tablet-p{% endif %}" data-session="{{ session.id }}">
+        <div>
+          <span class="session-date">{{ session.date | date:"d.m.Y" }}</span>
+        </div>
+
       </th>
       {% endfor %}
-      <th class="hidden-print">
-        <a class="btn btn-success btn-xs" id="create_session_button">
-          <i class="icon icon-plus"></i>&nbsp;{% trans "New session" %}
-        </a>
-      </th>
     </tr>
   </thead>
   <tfoot>
@@ -81,28 +98,22 @@
       <th></th>
       {% endif %}
       {% for session in course.sessions.all %}
-      <th>
-          <select name="instructor" class="instructor hidden-print"
-                  data-session-url="{{ session.get_api_url }}">
-            {% if session.instructor not in course.instructors.all %}
-             <option value="{{ session.instructor.id }}" selected>
-               {{ session.instructor.full_name }}
-             </option>
-            {% endif %}
-            {% for instructor in course.instructors.all %}
-            <option value="{{ instructor.id }}"{% if session.instructor == instructor %} selected{% endif %}>
-              {{ instructor.full_name }}
-            </option>
-            {% endfor %}
-            <option value=""{% if not session.instructor %} selected{% endif %}>{% trans "other" %}</option>
-          </select>
-          <span class="visible-print-inline">{% if session.instructor %}{{ session.instructor.full_name }}{% else %}{% trans "other" %}{% endif %}</span>
-          <span class="message success hidden-print" style="display: none"><i class="icon icon-ok-circled text-success"></i></span>
-          <span class="message error hidden-print" style="display: none"><i class="icon icon-cancel-circled text-danger"></i></span>
+      <th class="edit-session"
+          data-url="{{ session.get_api_url }}"
+          data-instructor="{{ session.instructor.id }}"
+          data-date="{{ session.date | date:"d.m.Y"  }}"
+      >
+        <a class="has-popover hidden-print" role="button" data-toggle="popover"
+           title="{% trans "Edit session" %}"
+           data-placement="top"
+           data-trigger="click focus">
 
+          <abbr title="{{ session.instructor.full_name | default:_("Unknown instructor") }}">{{ session.instructor.get_initials | default:"n/a"}}</abbr>
+          <br>
+          <i class="icon-pencil"></i>&nbsp;
+        </a>
       </th>
       {% endfor %}
-      <th class="hidden-print"></th>
     </tr>
   </tfoot>
   <tbody>
@@ -122,26 +133,32 @@
         </th>
         {% endif %}
         {% if REGISTRATION_LEVELS %}
+        {% with level=registration.child|child_level:course %}
         <th>
           <span class="hidden-print">{{ registration|answer_to:"Niveau de ski/snowboard" }}</span>
           <span class="visible-print">{{ registration|answer_to:"Niveau de ski/snowboard"|truncatewords:"1" }}</span>
         </th>
-        <th class="set-level"
-            data-level="{{ registration.before_level }}"
-            data-key="before_level"
-            data-registration="{{ registration.update_level_url }}">
-           <a class="level has-popover" role="button"
-           data-toggle="popover"
-           data-trigger="click focus">{{ registration.before_level|default:'NP' }}</a>
+        <th>
+          <span class="set-level"
+                data-level="{{ level.before_level }}"
+                data-key="before_level"
+                data-url="{{ level.api_url }}">
+            <a class="level has-popover" role="button"
+               data-toggle="popover"
+               data-trigger="click focus">{{ level.before_level|default:'NP' }}</a>
+          </span>
         </th>
-        <th class="set-level"
-            data-level="{{ registration.after_level }}"
-            data-key="after_level"
-            data-registration="{{ registration.update_level_url }}">
-          <a class="level has-popover" role="button"
-           data-toggle="popover"
-           data-trigger="click focus">{{ registration.after_level|default:'NP' }}</a>
+        <th>
+          <span class="set-level"
+                data-level="{{ level.after_level }}"
+                data-key="after_level"
+                data-url="{{ level.api_url }}">
+            <a class="level has-popover" role="button"
+               data-toggle="popover"
+               data-trigger="click focus">{{ level.after_level|default:'NP' }}</a>
+          </span>
         </th>
+        {% endwith %}
         {% endif %}
         {% if DISPLAY_CAR_NUMBER %}
         <th>
@@ -149,41 +166,80 @@
         </th>
         {% endif %}
         {% if DISPLAY_REGISTRATION_NOTE %}
-        <th class="set-note"
-            data-key="note"
-            data-note="{{ registration.note }}"
-            data-registration="{{ registration.update_note_url }}">
-          <div class="note">{{ registration.note }}</div>
-          <a class="note has-popover hidden-print" role="button" data-toggle="popover"
-           data-trigger="click focus"><i class="icon-pencil"></i>&nbsp;{% trans "Edit note" %}</a>
+        {% with level=registration.child|child_level:course %}
+        <th>
+          <span class="set-note"
+                data-key="note"
+                data-note="{{ level.note }}"
+                data-url="{{ level.api_url }}">
+            <div class="note">{{ level.note }}</div>
+            <a class="note has-popover hidden-print" role="button" data-toggle="popover"
+               data-trigger="click focus">
+              <i class="icon-pencil"></i>&nbsp;{% trans "Edit note" %}
+            </a>
+          </span>
         </th>
+        {% endwith %}
         {% endif %}
         {% for session in course.sessions.all %}
         {% with status=absence_matrix|index:units|index:forloop.counter0 decade=forloop.counter|mul:100 %}
-        <td class="{{ status}} {% if status == 'present' %}success{% elif status == 'late' %}info{% else %}danger{% endif %}"
-            data-session="{{ session.id }}"
-            data-child="{{ registration.child.id }}"
-            data-status="{{ status }}">
-            <a tabindex="{{ decade|add:units }}" role="button" class="btn btn-sm absence has-popover"
-                             data-toggle="popover" 
-                             data-trigger="click focus">{{ status|absence_status }}</a>
+        <td class="absence {{ status}} {% if status == 'present' %}success{% elif status == 'late' %}info{% elif absence.status == 'excused' %}warning{% else %}danger{% endif %}">
+            <span class="set-absence"
+                  data-session="{{ session.id }}"
+                  data-child="{{ registration.child.id }}"
+                  data-status="{{ status }}">
+              <a tabindex="{{ decade|add:units }}" role="button" class="btn btn-sm absence has-popover"
+                 data-toggle="popover"
+                 data-trigger="click focus">{{ status|absence_short }}</a>
+            </span>
         </td>
         {% endwith %}
         {% endfor %}
-        <td class="unavailable hidden-print"></td>
     </tr>
   {% endwith %}
   {% endfor %}
-  </tbody>  
+  </tbody>
 </table>
-</div>
 
 <p class="hidden-print text-center">
   <button class="btn btn-success btn-large print-button"><i class="icon icon-print"></i> Imprimer</button>
 </p>
 
 
+<script type="text/html" id="session-window">
+  <form class="session-form">
+    <div class="form-group">
+      <label>{% trans "Instructor" %}</label>
+      <select name="instructor" class="form-control instructor">
+        {% for instructor in course.instructors.all %}
+        <option value="{{ instructor.id }}">
+          {{ instructor.full_name }}
+        </option>
+        {% endfor %}
+        <option value="" selected>{% trans "other" %}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>{% trans "Date" %}</label>
+      <div class="input-group date datetimepicker session-update">
+        <input type="text" class="form-control" name="date" required
+               data-date-format="DD.MM.YYYY"
+               data-date-pickTime="false"/>
+        <div class="input-group-addon"><div class="icon-calendar"></div></div>
+      </div>
+    </div>
+    <div class="form-group">
+      <button type="submit" class="form-control  btn-primary"><i class="icon-ok"></i> {% trans "Save" %}</button>
+    </div>
+    <div class="form-group text-right">
+      <a href="#" class="session-delete hidden-print btn btn-sm btn-danger" data-session-url="{{ session.get_api_url }}">
+        <i class="icon-trash"></i> {% trans "Delete session" %}
+      </a>
+    </div>
 
+
+  </form>
+</script>
 
 <script type="text/html" id="status-window">
   <form>
@@ -237,7 +293,7 @@
 <script id="column-header" type="text/html">
     <th class="date">
         <span class="session-date"></span>
-        
+
         <span class="date datetimepicker session-update hidden-print">
           <input type="hidden" class="form-control" value=""
                  data-date-pickTime="false" />
@@ -253,48 +309,44 @@
     <td class="present success"
         data-status="present">
         <a role="button" class="btn btn-sm absence has-popover"
-           data-toggle="popover" 
+           data-toggle="popover"
            data-trigger="click focus">{{ "present"|absence_status }}</a>
     </td>
 </script>
 
 
 {% addtoblock "js" %}
+
 <script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
 <script src="{% static 'js/vendor/bootstrap-datetimepicker.min.js' %}"></script>
 <script src="{% static 'js/vendor/js.cookie.js' %}"></script>
-<script id="instructors-tmpl" type="text/template">
-<th>
-  <select name="instructor" class="instructor">
-    {% for instructor in course.instructors.all %}
-    <option value="{{ instructor.id }}"{% if user == instructor %} selected{% endif %}>
-        {{ instructor.full_name }}
-    </option>
-    {% endfor %}
-    <option value=""{% if not user in course.instructors.all %} selected{% endif %}>{% trans "other" %}</option>
-  </select>
-  <span class="visible-print-inline"></span>
-  <span class="message success" style="display: none"><i class="icon icon-ok-circled text-success"></i></span> 
-  <span class="message error" style="display: none"><i class="icon icon-cancel-circled text-danger"></i></span> 
-</th>
-</script>
+<script src="{% static 'js/vendor/datatables/datatables.min.js' %}"></script>
+
 <script>
-  $(function(){
+$(function(){
     var HUMAN_FMT = 'DD.MM.YYYY';
     var API_FMT = 'YYYY-MM-DD'
 
     $.fn.column = function() {
       return $(this)
           .filter('th, td')
-          .filter(':not([colspan])')
           .closest('table')
           .find('tr')
-          .filter(':not(:has([colspan]))')
           .children(':nth-child(' + ($(this).index()+1) + ')');
     };
 
     $.ajaxSetup({
       headers: { "X-CSRFToken": Cookies.get("csrftoken") }
+    });
+
+    $('.absences').dataTable({
+      {% if LANGUAGE_CODE == 'fr' %}
+      "language": {
+        "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+      },
+      {% endif %}
+      "responsive": true,
+      "paging": false
     });
 
     $('.datetimepicker').datetimepicker({
@@ -305,107 +357,27 @@
         down: 'icon-down-open'}
     });
 
-    $('.absences').on('dp.change', '.datetimepicker', function(evt){
-      var parent = $(this).parent('th');
-      evt.stopPropagation();
-
-      $.ajax({
-        url: $(this).data('session-url'),
-        type: 'PUT',
-        data: { date: $(this).data('DateTimePicker').date.format(API_FMT),
-          course: {{ course.id }} },
-        success: function(response){
-          $('.session-date', parent).text(
-              moment(response.date, API_FMT).format(HUMAN_FMT)
-          );
+    $('.absences').popover(
+      {
+        selector: '.absence.has-popover',
+        content: function(){ return $('#status-window').html(); },
+        html: true,
+        placement: function(context, source){
+          if ($(source).parents('.dtr-details').length > 0) {
+              return 'right';
+          }
+          return 'left';
         }
-      });
-    });
-
-    var newSession = function(){
-      $.ajax({
-        url: "{% url 'api:session-list' %}",
-        type: 'POST',
-        data: { course: {{ course.id }},
-          date: moment().format(API_FMT),
-          instructor: {% if user in course.instructors.all %}{{ user.pk }}{% else %}null{% endif %} },
-        success: function(data){
-          var $th_tmpl = $($('#column-header').html());
-          var date = moment().format(API_FMT);
-          $('input', $th_tmpl).val(moment(data.date, API_FMT).format(HUMAN_FMT));
-          var url = "{% url 'api:session-list' %}" + data.id + '/';
-          $('.session-update', $th_tmpl).data('session-url', url);
-          $('.session-delete', $th_tmpl).data('session-url', url);
-
-          $('.datetimepicker', $th_tmpl).datetimepicker({
-            language: '{{ LANGUAGE_CODE }}',
-            format: HUMAN_FMT,
-            icons: {date: 'icon-calendar',
-              up:   'icon-up-open',
-              down: 'icon-down-open'}
-          });
-          $('.session-date',  $th_tmpl).text(
-              $('.session-update',  $th_tmpl).data('DateTimePicker').date.format(HUMAN_FMT)
-          );
-          $('.absences thead th:last').before($th_tmpl);
-
-          $('.absences tbody tr').each(function(idx){
-            var $td_tmpl = $($('#column-content').html());
-            $td_tmpl.data('session', data.id);
-            $td_tmpl.data('child', $(this).data('child'));
-            $('a', $td_tmpl).attr('tabindex', $('td:last', $(this)).index() * 100 + idx)
-            $('td:last', $(this)).before($td_tmpl);
-          });
-
-          var $instructor_tmpl = $($('#instructors-tmpl').html());
-          $('.absences tfoot th:last').before($instructor_tmpl);
-          var $inplace = $('.absences tfoot select').last();
-          $inplace.data('session-url', url);
-        }
-      });
-    };
-    $('#create_session_button').click(newSession);
-
-    $('.absences').on('click', '.session-delete', function(evt){
-      var parent = $(this).parent();
-      $.ajax({
-        url: $(this).data('session-url'),
-        type: 'DELETE',
-        success: function(){
-          parent.column().remove();
-        }
-      });
-      evt.preventDefault();
-    });
-
-    $('.absences').on('change', 'select.instructor', function(event){
-      var parent = $(this).parent();
-      $('.message.error', parent).hide();
-      $('.message.success', parent).hide();
-
-      $.ajax({
-        url: $(this).data('session-url'),
-        type: 'PUT',
-        data: {'instructor': $(this).val() },
-        success: function(){
-          $('.message.success', parent).show();
-          $('.visible-print-inline', parent).text($('option:selected', parent).text());
-        },
-        error: function(){
-          $('.message.error', parent).show();
-        }
-      });
-    });
-
+      }
+    );
     $('.absences').on('change', 'input[name=status]', function(event){
-      var parent = $(this).parents('td');
+      var $parent = $(this).parents('.set-absence');
       var status =  $(this).val();
       var data = {
-        'session': parent.data('session'),
-        'child': parent.data('child'),
+        'session': $parent.data('session'),
+        'child': $parent.data('child'),
         'status': status
       };
-
       $.ajax({
         url: "{% url 'api:absence-set' %}",
         type: 'POST',
@@ -415,41 +387,35 @@
           var classes = '';
           switch(response.status){
             case 'present':
-              label = "{% trans 'Present' %}";
+              label = "{% trans 'P' %}";
               classes = "success present";
               break;
             case 'absent':
-              label = "{% trans 'Absent' %}";
+              label = "{% trans 'A' %}";
               classes = "danger absent";
               break;
             case 'excused':
-              label = "{% trans 'Excused' %}";
+              label = "{% trans 'E' %}";
               classes = "danger excused";
               break;
             case 'medical':
-              label = "{% trans 'Medical certificate' %}";
+              label = "{% trans 'MC' %}";
               classes = "danger medical";
               break;
             case 'late':
-              label = "{% trans 'Late arrival' %}";
+              label = "{% trans 'LA' %}";
               classes = "info late";
               break;
           }
-          $('a', parent).text(label);
-          parent.removeClass().addClass(classes);
-          parent.data('status', response.status);
-          $('.has-popover', parent).popover('hide');
+          $('a', $parent).text(label);
+          $parent.parent().removeClass().addClass(classes);
+          $parent.data('status', response.status);
+          $('.has-popover', $parent).popover('hide');
         }
       })
     });
 
-    $('.absences').popover(
-        {
-          selector: '.absence.has-popover',
-          content: function(){ return $('#status-window').html(); },
-          html: true
-        }
-    );
+
     $('.absences').popover(
         {
           selector: '.level.has-popover',
@@ -457,13 +423,12 @@
           html: true
         }
     );
-
-    $('.absences td').on('shown.bs.popover', function(){
+    $('.absences').on('shown.bs.popover', '.set-absence', function(){
       var status = $(this).data('status');
       $('input[value=' + status + ']', $(this)).prop('checked', true);
     });
 
-    $('.absences .set-level').on('shown.bs.popover', function(){
+    $('.absences').on('shown.bs.popover', '.set-level', function(){
       var level = $(this).data('level');
       if (level.length) {
        $('option[value=' + level + ']', $(this)).prop('selected', true);
@@ -476,8 +441,8 @@
       var data = {};
       data[parent.data('key')] = level;
       $.ajax({
-        url: parent.data('registration'),
-        type: 'PUT',
+        url: parent.data('url'),
+        type: 'PATCH',
         data: data,
         success: function(response){
           var newLevel = response[parent.data('key')];
@@ -486,21 +451,19 @@
           $('.has-popover', parent).popover('hide');
         }
       });
-
     });
 
     $('.absences').popover(
-        {
-          selector: '.note.has-popover',
-          content: function(){ return $('#note-window').html(); },
-          html: true
-        }
+      {
+        selector: '.note.has-popover',
+        content: function(){ return $('#note-window').html(); },
+        html: true
+      }
     );
-    $('.absences .set-note').on('shown.bs.popover', function(){
+    $('.absences').on('shown.bs.popover', '.set-note', function(){
       var note = $(this).data('note');
       $('textarea', this).val(note);
     });
-
     $('.absences').on('submit', 'form.note-form', function(event){
       event.preventDefault();
       var note =  $('textarea', this).val();
@@ -508,8 +471,8 @@
       var data = {};
       data[parent.data('key')] = note;
       $.ajax({
-        url: parent.data('registration'),
-        type: 'PUT',
+        url: parent.data('url'),
+        type: 'PATCH',
         data: data,
         success: function(response){
           var newNote = response[parent.data('key')];
@@ -520,8 +483,75 @@
       });
 
     });
+
+    $('.absences').popover(
+        {
+          selector: '.edit-session .has-popover',
+          content: function(){ return $('#session-window').html(); },
+          html: true
+        }
+    );
+    $('.absences').on('shown.bs.popover', '.edit-session', function(){
+      var instructor = $(this).data('instructor');
+      var date = $(this).data('date');
+      if (instructor){
+        $('[name=instructor] option[value=' + instructor +']', this).prop('selected', 'selected')
+      }
+      $('[name=date]', this).val(date);
+      $('.datetimepicker', this).datetimepicker({
+        language: '{{ LANGUAGE_CODE }}',
+        format: HUMAN_FMT,
+        icons: {date: 'icon-calendar',
+                up:   'icon-up-open',
+                down: 'icon-down-open'}
+      });
+    });
+
+    $('.absences').on('submit', 'form.session-form', function(event){
+      event.preventDefault();
+      var $parent = $(this).parents(".edit-session");
+      var data = {
+          'instructor': $('[name=instructor]', this).val(),
+          'date': moment($('[name=date]', this).val(), HUMAN_FMT).format(API_FMT)
+      };
+      $.ajax({
+        url: $parent.data('url'),
+        type: 'PATCH',
+        data: data,
+        success: function(response){
+          if (response.instructor) {
+              $parent.data('instructor', response.instructor.id);
+              $('abbr', $parent).text(response.instructor.initials).attr('title', response.instructor.full_name);
+          }  else {
+              $parent.data('instructor', null);
+          }
+
+          $parent.data('date', response.date);
+          $('.date[data-session=' + response.id + '] .session-date').text(
+              moment(response.date, API_FMT).format(HUMAN_FMT)
+          );
+          $('.has-popover', $parent).popover('hide');
+        }
+      });
+    });
+
+    $('.absences').on('click', '.edit-session .session-delete', function(evt){
+      var $parent = $(this).parents(".edit-session");
+      $.ajax({
+        url: $parent.data('url'),
+        type: 'DELETE',
+        success: function(){
+          $parent.column().remove();
+        }
+      });
+      evt.preventDefault();
+    });
+
+
     $('html').on('click', function(e){
-        if (typeof $(e.target).data('original-title') == 'undefined' && !$(e.target).parents().is('.popover.in')) {
+        if (typeof $(e.target).data('original-title') == 'undefined' &&
+            typeof $(e.target).parent().data('original-title') == 'undefined' &&
+            !$(e.target).parents().is('.popover.in')) {
           // close popovers when click is outside
           $('[data-original-title]').popover('hide');
         }

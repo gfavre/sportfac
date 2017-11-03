@@ -6,34 +6,8 @@ from absences.models import Absence, Session
 from activities.models import Activity, Course, ExtraNeed
 from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser, School, SchoolYear
-from registrations.models import Child, ExtraInfo, Registration
+from registrations.models import Child, ExtraInfo, Registration, ChildActivityLevel
 from schools.models import Teacher
-
-
-class SessionSerializer(serializers.ModelSerializer):
-    course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all().select_related('activity'))
-    date = serializers.DateField()
-    instructor = serializers.PrimaryKeyRelatedField(queryset=FamilyUser.instructors_objects.all(), 
-                                                    allow_null=True)
-    
-    class Meta:
-        model = Session
-        fields = ('id', 'date', 'course', 'instructor')
-
-
-class AbsenceSerializer(serializers.ModelSerializer):
-    child = serializers.PrimaryKeyRelatedField(queryset=Child.objects.all())
-    session = serializers.PrimaryKeyRelatedField(queryset=Session.objects.all())
-    
-    class Meta:
-        model = Absence
-        fields = ('id', 'status', 'child', 'session',)
-
-
-class SetAbsenceSerializer(serializers.Serializer):
-    child = serializers.PrimaryKeyRelatedField(queryset=Child.objects.all())
-    session = serializers.PrimaryKeyRelatedField(queryset=Session.objects.all())
-    status = serializers.ChoiceField(choices=Absence.STATUS + ('present', _("Present")))    
 
 
 class ActivitySerializer(serializers.ModelSerializer):
@@ -44,13 +18,15 @@ class ActivitySerializer(serializers.ModelSerializer):
 
 class InstructorSerializer(serializers.ModelSerializer):
     first = serializers.CharField(source='first_name')
-    last  = serializers.CharField(source='last_name')
+    last = serializers.CharField(source='last_name')
     phone = serializers.CharField(source='best_phone')
-    
+    initials = serializers.CharField(source='get_initials', read_only=True)
+    full_name = serializers.CharField(source='get_full_name', read_only=True)
+
     class Meta:
         model = FamilyUser
-        fields = ('id', 'first', 'last', 'phone', 'email')
-        read_only_fields = ('email',)
+        fields = ('id', 'first', 'last', 'phone', 'email', 'initials', 'full_name')
+        read_only_fields = ('email', 'initials')
 
 
 class CourseInlineSerializer(serializers.ModelSerializer):
@@ -60,7 +36,7 @@ class CourseInlineSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ('id', 'number', 'day', 'start_date', 'end_date', 'start_time', 'end_time', 
+        fields = ('id', 'number', 'day', 'start_date', 'end_date', 'start_time', 'end_time',
                   'schoolyear_min', 'schoolyear_max', 'instructors')
 
 
@@ -70,7 +46,7 @@ class CourseSerializer(serializers.ModelSerializer):
     count_participants = serializers.IntegerField()
     start_time = serializers.TimeField(format='%H:%M')
     end_time = serializers.TimeField(format='%H:%M')
-    
+
     class Meta:
         model = Course
         fields = ('id', 'number', 'name', 'instructors', 'activity', 'price', 'number_of_sessions', 'day',
@@ -81,7 +57,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
 class ActivityDetailedSerializer(serializers.ModelSerializer):
     courses = CourseInlineSerializer(many=True)
-    
+
     class Meta:
         model = Activity
         fields = ('id', 'name', 'number', 'courses')
@@ -90,23 +66,24 @@ class ActivityDetailedSerializer(serializers.ModelSerializer):
 class SchoolYearField(serializers.RelatedField):
     def to_representation(self, value):
         return value.year
-    
+
     def to_internal_value(self, data):
         return SchoolYear.objects.get(year=data)
 
 
 class TeacherSerializer(serializers.ModelSerializer):
     years = SchoolYearField(many=True, required=False, read_only=True)
-    
+
     class Meta:
         model = Teacher
         fields = ('id', 'first_name', 'last_name', 'years' )
+
 
 class YearSerializer(serializers.ModelSerializer):
     class Meta:
         model = SchoolYear
         fields = ('year',)
-    
+
 
 class SimpleChildrenSerializer(serializers.ModelSerializer):
     class Meta:
@@ -122,10 +99,10 @@ class ChildrenSerializer(serializers.ModelSerializer):
                                                 queryset=School.objects.filter(selectable=True), required=False, allow_null=True)
     school_year = SchoolYearField(many=False, read_only=False, queryset=SchoolYear.visible_objects.all())
     ext_id = serializers.IntegerField(source='id_lagapeo', required=False, allow_null=True, max_value=100000000)
-    
+
     class Meta:
         model = Child
-        fields = ('id', 'ext_id', 'first_name', 'last_name', 'sex', 
+        fields = ('id', 'ext_id', 'first_name', 'last_name', 'sex',
                   'nationality', 'language', 'emergency_number',
                   'birth_date', 'school_year', 'teacher', 'school', 'other_school')
         depth = 1
@@ -134,15 +111,15 @@ class ChildrenSerializer(serializers.ModelSerializer):
 class RegistrationSerializer(serializers.ModelSerializer):
     child = serializers.PrimaryKeyRelatedField(queryset=Child.objects.all())
     course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.visible().select_related('activity'))
-    
+
     class Meta:
         model = Registration
         fields = ('id', 'child', 'course', 'status')
-    
-    def validate(self, data):        
+
+    def validate(self, data):
         if data['course'].full:
             raise serializers.ValidationError(_("Course is full"))
-        
+
         if data['child'].school_year and \
            data['child'].school_year.year not in data['course'].school_years:
             raise serializers.ValidationError(
@@ -152,10 +129,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 _("Max number of registrations reached.")
             )
-
-
         return data
-    
 
 
 class ExtraSerializer(serializers.ModelSerializer):
@@ -163,7 +137,7 @@ class ExtraSerializer(serializers.ModelSerializer):
                                                       queryset=Registration.objects.all())
     key = serializers.PrimaryKeyRelatedField(many=False, read_only=False,
                                              queryset=ExtraNeed.objects.all())
-    
+
     class Meta:
         model = ExtraInfo
         fields = ('id', 'registration', 'key', 'value')
@@ -171,11 +145,65 @@ class ExtraSerializer(serializers.ModelSerializer):
 
 class LevelSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Registration
+        model = ChildActivityLevel
         fields = ('id', 'before_level', 'after_level')
 
 
-class RegistrationNoteSerializer(serializers.ModelSerializer):
+class NoteSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Registration
+        model = ChildActivityLevel
         fields = ('id', 'note')
+
+
+class ChildActivityLevelSerializer(serializers.ModelSerializer):
+    child = serializers.PrimaryKeyRelatedField(queryset=Child.objects.all())
+    activity = serializers.PrimaryKeyRelatedField(queryset=Activity.objects.all())
+
+    class Meta:
+        model = ChildActivityLevel
+        fields = ('id', 'child', 'activity', 'before_level', 'after_level', 'note')
+
+
+class SessionSerializer(serializers.ModelSerializer):
+    course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all().select_related('activity'))
+    date = serializers.DateField()
+    instructor = InstructorSerializer(allow_null=True)
+
+    class Meta:
+        model = Session
+        fields = ('id', 'date', 'course', 'instructor')
+
+
+class SessionUpdateSerializer(SessionSerializer):
+    instructor = serializers.PrimaryKeyRelatedField(queryset=FamilyUser.instructors_objects.all(),
+                                                    allow_null=True)
+
+
+class AbsenceSerializer(serializers.ModelSerializer):
+    child = serializers.PrimaryKeyRelatedField(queryset=Child.objects.all())
+    session = serializers.PrimaryKeyRelatedField(queryset=Session.objects.all())
+
+    class Meta:
+        model = Absence
+        fields = ('id', 'status', 'child', 'session',)
+
+
+class SetAbsenceSerializer(serializers.Serializer):
+    child = serializers.PrimaryKeyRelatedField(queryset=Child.objects.all())
+    session = serializers.PrimaryKeyRelatedField(queryset=Session.objects.all())
+    status = serializers.ChoiceField(choices=Absence.STATUS + ('present', _("Present")))
+
+
+class ChangeCourseSerializer(serializers.Serializer):
+    child = serializers.PrimaryKeyRelatedField(queryset=Child.objects.all())
+    previous_course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all())
+    new_course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all())
+
+
+class CourseChangedSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source='long_name')
+    absence_url = serializers.CharField(source='get_backend_absences_url')
+
+    class Meta:
+        model = Course
+        fields = ('id', 'name', 'absence_url')

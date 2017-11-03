@@ -10,15 +10,31 @@
 
 {% block content %}
 
-{% addtoblock  "js" %}    
+{% addtoblock  "js" %}
 <script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.tableTools.min.js"></script>
 <script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
 <script>
 $(function () {
-  $(".table").dataTable({
+  var t = $('.table').dataTable({
 {% if LANGUAGE_CODE == 'fr' %}
       "language": {
             "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+      },
+{% endif %}
+{% if USE_ABSENCES %}
+      dom: 'T<"clear">lfrtip',
+      tableTools: {
+          'sRowSelect': 'multi',
+          "aButtons": [ ],
+          'fnRowSelected': function () {
+              $('.needs-select').removeClass('disabled');
+          },
+          'fnRowDeselected': function () {
+              if ($('tr.active').length == 0) {
+                  $('.needs-select').addClass('disabled');
+              }
+          },
       },
 {% endif %}
       "aoColumnDefs": [
@@ -26,12 +42,28 @@ $(function () {
       ],
       "paging": false
   });
+{% if USE_ABSENCES %}
+  $('form.absences').submit(function(event){
+    var tabletools = TableTools.fnGetInstance(t[0]);
+    var ids = tabletools.fnGetSelected().map(function(elem){
+        return elem.getAttribute('data-courseid');
+    });
+    for (var i=0; i<ids.length; i++) {
+      $(this).append($('<input name="c" value="' + ids[i] + '" type="hidden">'))
+    }
+  });
+{% endif %}
 });
 </script>
 {% endaddtoblock %}
 
 <a href="{% url 'backend:course-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New course" %}</a>
 <hr>
+<div class="btn-group">
+  <form class="absences" method="GET" action="{% url 'backend:courses-absence' %}">
+    <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-calendar"></i>&nbsp;&nbsp;{% trans "Manage multiple courses absences" %}</button>
+  </form>
+</div>
 <table class="table">
   <thead>
     <tr>
@@ -47,7 +79,7 @@ $(function () {
     </tr>
   </thead>
   {% for course in object_list %}
-    <tr {% if not course.visible %}class="info"{% endif %}>
+    <tr {% if not course.visible %}class="info"{% endif %} data-courseid="{{ course.id }}">
       <td data-order="{{ course.number }}">
           <a href="{{ course.get_backend_url }}">{{ course.number }}</a>
           {% if not course.visible %}<br>
@@ -71,7 +103,7 @@ $(function () {
           {% endfor %}
         </ul>
       </td>
-      <td data-order="{{ course.available_places }}" 
+      <td data-order="{{ course.available_places }}"
           class="{% if course.full %}bg-danger{% elif course.minimal_participants_reached %}bg-success{% else %}bg-warning{% endif %}">
         {{ course.count_participants  }}&nbsp;/&nbsp;{{ course.max_participants }}
       </td>
@@ -83,8 +115,8 @@ $(function () {
           {% endif %}
           <li class="text-nowrap"><a href="{{ course.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update course" %}</a></li>
           <li class="text-nowrap"><a href="{{ course.get_js_export_url }}" class="btn btn-sm"><i class="icon-doc"></i>&nbsp;{% trans "Get BDNS: J+S export file" %}</a></li>
-          <li class="text-nowrap"><a href="{{ course.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete course" %}</a></li>          
-          
+          <li class="text-nowrap"><a href="{{ course.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete course" %}</a></li>
+
 
 
         </ul>

@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+import collections
 from decimal import Decimal
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
@@ -12,18 +14,19 @@ from django.utils.safestring import mark_safe
 from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, UpdateView, View
 from django.views.generic.detail import SingleObjectMixin
 
-from absences.models import Absence
+from absences.models import Absence, Session
 from activities.models import Course, Activity
 from activities.forms import CourseForm
 from profiles.models import FamilyUser
-from registrations.models import Registration
+from registrations.models import ChildActivityLevel, ExtraInfo, Child
 from registrations.resources import RegistrationResource
 from sportfac.views import CSVMixin
 from .mixins import BackendMixin, ExcelResponseMixin
-from ..forms import PayslipMontreuxForm
+from ..forms import PayslipMontreuxForm, SessionForm
 
 __all__ = ('CourseCreateView', 'CourseDeleteView', 'CourseDetailView',
-           'CourseJSCSVView', 'CourseParticipantsExportView', 'CourseAbsenceView',
+           'CourseJSCSVView', 'CourseParticipantsExportView',
+           'CourseAbsenceView', 'CoursesAbsenceView',
            'CourseListView', 'CourseUpdateView', 'CourseParticipantsView',
            'PaySlipMontreux')
 
@@ -53,32 +56,115 @@ class CourseAbsenceView(BackendMixin, DetailView):
     model = Course
     template_name = 'backend/course/absences.html'
     pk_url_kwarg = 'course'
-    queryset = Course.objects.prefetch_related('sessions', 'sessions__absences', 'participants__child')
-    
+    queryset = Course.objects.prefetch_related('sessions', 'sessions__absences', 'participants__child',
+                                               'instructors')\
+                             .select_related('activity',)
+
+    def post(self, *args, **kwargs):
+        course = self.get_object()
+        form = SessionForm(data=self.request.POST)
+        if form.is_valid():
+            if self.request.user in course.instructors.all():
+                instructor = self.request.user
+            else:
+                instructor = None
+            session, created = Session.objects.get_or_create(instructor=instructor,
+                                                             course=course,
+                                                             date=form.cleaned_data['date'])
+            for registration in course.participants.all():
+                Absence.objects.get_or_create(
+                    child=registration.child, session=session,
+                    defaults={
+                        'status': Absence.STATUS.present
+                    }
+                )
+        return HttpResponseRedirect(course.get_backend_absences_url())
+
     def get_context_data(self, **kwargs):
-        context = super(CourseAbsenceView, self).get_context_data(**kwargs)
         course = self.get_object()
         all_absences = dict(
             [((absence.child, absence.session), absence.status)
-             for absence in Absence.objects.filter(session__course=course)]
+             for absence in Absence.objects.select_related('child', 'session').filter(session__course=course)]
         )
-        context['absence_matrix'] = [
+        kwargs['absence_matrix'] = [
             [all_absences.get((registration.child, session), 'present') for session in course.sessions.all()]
-            for registration in course.participants.all()
+            for registration in course.participants.select_related('child', 'child__family')
         ]
-        context['courses_list'] = Course.objects.all()
-        context['levels'] = Registration.LEVELS
+        kwargs['courses_list'] = Course.objects.all()
+        kwargs['levels'] = ChildActivityLevel.LEVELS
+        kwargs['session_form'] = SessionForm()
+        return super(CourseAbsenceView, self).get_context_data(**kwargs)
 
-        return context
+
+class CoursesAbsenceView(BackendMixin, ListView):
+    model = Course
+    template_name = 'backend/course/multiple-absences.html'
+
+    def get_queryset(self):
+        courses_pk = [int(pk) for pk in self.request.GET.getlist('c') if pk.isdigit()]
+        return Course.objects.filter(pk__in=courses_pk)
+
+    def post(self, *args, **kwargs):
+        pks = self.request.GET.getlist('c')
+        courses = Course.objects.filter(pk__in=pks)
+        form = SessionForm(data=self.request.POST)
+        if form.is_valid():
+            for course in courses:
+                session, created = Session.objects.get_or_create(course=course, date=form.cleaned_data['date'])
+                if not created:
+                    continue
+                for registration in course.participants.all():
+                    Absence.objects.get_or_create(
+                        child=registration.child, session=session,
+                        defaults={
+                            'status': Absence.STATUS.present
+                        }
+                    )
+
+        params = '&'.join(['c={}'.format(course.id) for course in courses])
+        return HttpResponseRedirect(reverse('backend:courses-absence') + '?' + params)
+
+    def get_context_data(self, **kwargs):
+        qs = Absence.objects.filter(session__course__in=self.get_queryset())\
+                            .select_related('session', 'child', 'session__course', 'session__course__activity')\
+                            .order_by('child__last_name', 'child__first_name')
+        kwargs['all_dates'] = list(set(qs.values_list('session__date', flat=True)))
+        kwargs['all_dates'].sort()
+        if settings.KEPCHUP_REGISTRATION_LEVELS:
+            extras = ExtraInfo.objects.select_related('registration', 'key')\
+                                      .filter(registration__course__in=self.get_queryset(),
+                                              key__question_label='Niveau de ski/snowboard')
+            child_announced_levels = {extra.registration.child: extra.value for extra in extras}
+            levels = ChildActivityLevel.objects.select_related('child').\
+                                                filter(activity__in=set([absence.session.course.activity for absence in qs]))
+            child_levels = {level.child: level for level in levels}
+
+        course_children = dict([(course, [reg.child for reg in course.participants.all()]) for course in self.get_queryset()])
+        course_absences = collections.OrderedDict()
+        for absence in qs:
+            if settings.KEPCHUP_REGISTRATION_LEVELS:
+                absence.child.announced_level = child_announced_levels.get(absence.child, '')
+                absence.child.level = child_levels.get(absence.child, '')
+            if absence.child not in course_children[absence.session.course]:
+                continue
+            the_tuple = (absence.child, absence.session.course)
+            if the_tuple in course_absences:
+                course_absences[the_tuple][absence.session.date] = absence
+            else:
+                course_absences[the_tuple] = {absence.session.date: absence}
+        kwargs['course_absences'] = course_absences
+        kwargs['levels'] = ChildActivityLevel.LEVELS
+        kwargs['session_form'] = SessionForm()
+        return super(CoursesAbsenceView, self).get_context_data(**kwargs)
 
 
 class CourseJSCSVView(CSVMixin, CourseDetailView):
     def get_csv_filename(self):
         return '%s - J+S.csv' % self.object.number
-    
+
     def write_csv(self, filelike):
         return self.object.get_js_csv(filelike)
-    
+
 
 class CourseParticipantsView(CourseDetailView):
     template_name = 'mailer/pdf_participants_list.html'
@@ -87,7 +173,7 @@ class CourseParticipantsView(CourseDetailView):
         context = super(CourseParticipantsView, self).get_context_data(**kwargs)
         context['sessions'] = range(0, self.object.number_of_sessions)
         return context
-    
+
     def get_template_names(self):
         return self.template_name
 
@@ -95,7 +181,7 @@ class CourseParticipantsView(CourseDetailView):
 class CourseListView(BackendMixin, ListView):
     model = Course
     queryset = Course.objects.select_related('activity').prefetch_related('participants', 'instructors')
-    
+
     def get_template_names(self):
         if self.request.PHASE == 1:
             return 'backend/course/list-phase1.html'
@@ -122,12 +208,12 @@ class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
     template_name = 'backend/course/create.html'
     success_url = reverse_lazy('backend:course-list')
     success_message = _('<a href="%(url)s" class="alert-link">Course (%(number)s)</a> has been created.')
-    
+
     def get_success_message(self, cleaned_data):
         url = self.object.get_backend_url()
         return mark_safe(self.success_message % {'url': url,
                                                  'number': self.object.number})
-    
+
     def get_initial(self):
         initial = super(CourseCreateView, self).get_initial()
         activity = self.request.GET.get('activity', None)
@@ -153,7 +239,7 @@ class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
     pk_url_kwarg = 'course'
     success_url = reverse_lazy('backend:course-list')
     success_message = _('<a href="%(url)s" class="alert-link">Course (%(number)s)</a> has been updated.')
-    
+
     def get_success_message(self, cleaned_data):
         url = self.object.get_backend_url()
         return mark_safe(self.success_message % {'url': url,
@@ -168,11 +254,11 @@ class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
         course = self.get_object()
         removed_instructors = set(course.instructors.all()) - set(form.cleaned_data['instructors'])
         response = super(CourseUpdateView, self).form_valid(form)
-        
+
         for instructor in removed_instructors:
             if instructor.course.exclude(pk=course.pk).count() == 0:
                 instructor.is_instructor = False
-            
+
         for user in form.cleaned_data['instructors']:
             user.is_instructor = True
 

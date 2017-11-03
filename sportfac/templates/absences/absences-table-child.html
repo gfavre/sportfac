@@ -1,0 +1,308 @@
+{% load i18n %}
+{% load duration switzerland extra sekizai_tags staticfiles matrix status mathfilters children %}
+{% addtoblock "css" %}
+<style>
+.rotated-heading {
+    height: 100px;
+    width: 50px;
+    white-space: nowrap;
+    vertical-align: middle!important;
+}
+.rotated-heading div {
+    transform: rotate(-90deg) translate(-33px, 0px);
+    width: 40px;
+}
+.rotated-heading div span {
+    padding-left:10px;
+}
+
+</style>
+{% endaddtoblock %}
+<div class="table-responsive">
+  <table class="table table-bordered table-hover table-condensed absences" style="table-layout: fixed;">
+    <thead>
+      <tr>
+        <th>{% trans "Activity" %}</th>
+        {% if REGISTRATION_LEVELS %}
+          <th class="rotated-heading"><div><span>{% trans "Announced level" %}</span></div></th>
+          <th class="rotated-heading"><div><span>{% trans "level -1" %}</span></div></th>
+          <th class="rotated-heading"><div><span>{% trans "level 0" %}</span></div></th>
+        {% endif %}
+        {% if DISPLAY_REGISTRATION_NOTE %}
+        <th class="note">
+          {% trans "Note" %}
+        </th>
+        {% endif %}
+        <th>{% trans "Course" %}</th>
+        {% for session_date in all_dates %}
+          <th class="rotated-heading"><div><span>{{ session_date | date:"j b. Y" }}</span></div></th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tfoot></tfoot>
+    <tbody>
+
+
+    {% for activity, course_absences in activity_absences.items %}
+      {% for course, absences in course_absences %}
+      <tr>
+        {% if forloop.first %}
+        <th rowspan="{{ course_absences|length }}">{{ activity }}</th>
+          {% if REGISTRATION_LEVELS %}{% with level=child|child_level:course %}
+        <th rowspan="{{ course_absences|length }}">
+          <span class="hidden-print">{{ child|child_announced_level:course }}</span>
+          <span class="visible-print">{{ child|child_announced_level:course|truncatewords:"1" }}</span>
+        </th>
+        <th rowspan="{{ course_absences|length }}" class="set-level"
+            data-level="{{ level.before_level }}"
+            data-key="before_level"
+            data-url="{{ level.api_url }}"
+        >
+          <a class="level has-popover" role="button"
+             data-toggle="popover"
+             data-trigger="click focus">{{ level.before_level|default:'NP' }}</a>
+        </th>
+        <th rowspan="{{ course_absences|length }}" class="set-level"
+            data-level="{{ level.after_level }}"
+            data-key="after_level"
+            data-url="{{ level.api_url }}"
+        >
+          <a class="level has-popover" role="button"
+             data-toggle="popover"
+             data-trigger="click focus">{{ level.after_level|default:'NP' }}</a>
+        </th>
+          {% endwith %}{% endif %}
+        {% if DISPLAY_REGISTRATION_NOTE %}{% with level=child|child_level:course %}
+        <th rowspan="{{ course_absences|length }}" class="set-note"
+            data-key="note"
+            data-note="{{ level.note }}"
+            data-url="{{ level.api_url }}"
+        >
+          <div class="note">{{ level.note }}</div>
+          <a class="note has-popover hidden-print" role="button" data-toggle="popover" data-trigger="click focus">
+            <i class="icon-pencil"></i>&nbsp;{% trans "Edit note" %}
+          </a>
+        </th>
+
+        {% endwith %}{% endif %}
+        {% endif %}
+        <th class="child-name">
+          {{ course.number }}{% if course.name %} - {{ course.name }}{% endif %}
+        </th>
+        {% for session_date in all_dates %}
+          {% if session_date in absences %}
+          {% with absence=absences|get_item:session_date %}
+            <td class="{{ absence.status }} {% if absence.status == 'present' %}success{% elif absence.status == 'late' %}info{% elif absence.status == 'excused' %}warning{% else %}danger{% endif %}"
+                data-pk="{{ absence.pk }}"
+                data-session="{{ absence.session.id }}"
+                data-child="{{ child.id }}"
+                data-status="{{ absence.status }}">
+              <a role="button" class="btn btn-sm absence has-popover"  data-toggle="popover"
+                 data-trigger="click focus">{{ absence|absence_to_status:1 }}</a>
+            </td>
+          {% endwith %}
+          {% else %}
+            <td class="text-muted active"></td>
+          {% endif %}
+        </td>
+        {% endfor %}
+      </tr>
+        {% endfor %}
+    {% endfor %}
+
+
+    </tbody>
+
+
+  </table>
+</div>
+
+
+{% addtoblock "js" %}
+<script type="text/html" id="level-window">
+  <form>
+    <select class="form-control" name="level">
+      {% for level in levels %}
+      <option value="{{ level.0 }}">{{ level.1 }}</option>
+      {% endfor %}
+    </select>
+  </form>
+</script>
+<script type="text/html" id="note-window">
+  <form class="note-form">
+    <textarea></textarea>
+    <input type="submit" class="form-control  btn-primary" value="{% trans "Save" %}">
+  </form>
+</script>
+<script type="text/html" id="status-window">
+  <form>
+    <div class="radio">
+      <label>
+        <input type="radio" name="status" id="present" value="present" checked>{% trans "Present" %}
+      </label>
+    </div>
+     <div class="radio">
+      <label>
+        <input type="radio" name="status" id="absent" value="absent">{% trans "Absent" %}
+      </label>
+    </div>
+     <div class="radio">
+      <label>
+        <input type="radio" name="status" id="excused" value="excused">{% trans "Excused" %}
+      </label>
+    </div>
+    <div class="radio">
+      <label>
+        <input type="radio" name="status" id="medical" value="medical">{% trans "Medical certificate" %}
+      </label>
+    </div>
+    <div class="radio">
+      <label>
+        <input type="radio" name="status" id="late" value="late">{% trans "Late" %}
+      </label>
+    </div>
+  </form>
+</script>
+<script src="{% static 'js/vendor/js.cookie.js' %}"></script>
+<script>
+jQuery(function($){
+  $.ajaxSetup({
+    headers: { "X-CSRFToken": Cookies.get("csrftoken") }
+  });
+
+  $('.absences').on('change', 'input[name=status]', function(event){
+    var parent = $(this).parents('td');
+    var status =  $(this).val();
+    var data = {
+      'session': parent.data('session'),
+      'child': parent.data('child'),
+      'status': status
+    };
+
+    $.ajax({
+      url: "{% url 'api:absence-set' %}",
+      type: 'POST',
+      data: data,
+      success: function(response){
+        var label = '';
+        var classes = '';
+        switch(response.status){
+          case 'present':
+            label = "{% trans 'P' %}";
+            classes = "success present";
+            break;
+          case 'absent':
+            label = "{% trans 'A' %}";
+            classes = "danger absent";
+            break;
+          case 'excused':
+            label = "{% trans 'E' %}";
+            classes = "warning excused";
+            break;
+          case 'medical':
+            label = "{% trans 'MC' %}";
+            classes = "danger medical";
+            break;
+          case 'late':
+            label = "{% trans 'LA' %}";
+            classes = "info late";
+            break;
+        }
+        $('a', parent).text(label);
+        parent.removeClass().addClass(classes);
+        parent.data('status', response.status);
+        $('.has-popover', parent).popover('hide');
+      }
+    })
+  });
+
+  $('.absences').popover(
+    {
+      selector: '.absence.has-popover',
+      content: function(){ return $('#status-window').html(); },
+      html: true
+    }
+  );
+
+  $('.absences td').on('shown.bs.popover', function(){
+    var status = $(this).data('status');
+    $('input[value=' + status + ']', $(this)).prop('checked', true);
+  });
+
+  $('.absences').popover(
+    {
+      selector: '.level.has-popover',
+      content: function(){ return $('#level-window').html(); },
+      html: true
+    }
+  );
+  $('.absences .set-level').on('shown.bs.popover', function(){
+    var level = $(this).data('level');
+    if (level.length) {
+     $('option[value=' + level + ']', $(this)).prop('selected', true);
+    }
+  });
+
+  $('.absences').on('change', 'select[name=level]', function(event){
+    var level =  $(this).val();
+    var parent = $(this).parents('.set-level');
+    var data = {};
+    data[parent.data('key')] = level;
+    $.ajax({
+      url: parent.data('url'),
+      type: 'PATCH',
+      data: data,
+      success: function(response){
+        var newLevel = response[parent.data('key')];
+        $('a', parent).text(newLevel);
+        parent.data('level', newLevel);
+        $('.has-popover', parent).popover('hide');
+      }
+    });
+  });
+
+  $('.absences').popover(
+        {
+          selector: '.note.has-popover',
+          content: function(){ return $('#note-window').html(); },
+          html: true
+        }
+    );
+    $('.absences .set-note').on('shown.bs.popover', function(){
+      var note = $(this).data('note');
+      $('textarea', this).val(note);
+    });
+
+  $('.absences').on('submit', 'form.note-form', function(event){
+    event.preventDefault();
+    var note =  $('textarea', this).val();
+    var parent = $(this).parents(".set-note");
+    var data = {};
+    data[parent.data('key')] = note;
+    $.ajax({
+      url: parent.data('url'),
+      type: 'PATCH',
+      data: data,
+      success: function(response){
+        var newNote = response[parent.data('key')];
+        $('div.note', parent).text(newNote);
+        parent.data('note', newNote);
+        $('.has-popover', parent).popover('hide');
+      }
+    });
+  });
+
+  $('html').on('click', function(e){
+    if (typeof $(e.target).data('original-title') == 'undefined' && !$(e.target).parents().is('.popover.in')) {
+      // close popovers when click is outside
+      $('[data-original-title]').popover('hide');
+    }
+    if (typeof $(e.target).data('original-title') != 'undefined') {
+      // one popover opened at a time
+      $('[data-original-title]').not(e.target).popover('hide');
+    }
+  });
+
+});
+</script>
+{% endaddtoblock %}

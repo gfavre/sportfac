@@ -47,7 +47,7 @@ $(function () {
     </tr>
   </thead>
   {% for registration in registration_list %}
-  {% with course=registration.course child=registration.child%}
+  {% with course=registration.course child=registration.child %}
    <tr>
       <td><a href="{{ course.get_backend_url }}">{{ course.number }}</a></td>
       <td><a href="{{ course.activity.get_backend_url }}">{{ course.activity.name }}</a></td>

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import collections
 import json
 import tempfile
 
@@ -13,10 +14,11 @@ from django.template.defaultfilters import urlencode
 from django.utils.translation import ugettext as _
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView, View, FormView
 
+from absences.models import Absence
 from profiles.forms import ManagerForm, ManagerWithPasswordForm, InstructorForm, InstructorWithPasswordForm
 from profiles.models import FamilyUser
 from profiles.resources import UserResource, InstructorResource
-from registrations.models import Bill, Child, Registration
+from registrations.models import Bill, Child, ChildActivityLevel, Registration
 from registrations.forms import ChildForm
 from .mixins import BackendMixin, ExcelResponseMixin
 from .. import MANAGERS_GROUP, INSTRUCTORS_GROUP
@@ -29,6 +31,7 @@ __all__ = ('UserListView', 'UserCreateView', 'PasswordSetView',
            'UserExportView', 'MailUsersView',
            'ChildListView', 'ChildCreateView', 'ChildUpdateView', 
            'ChildDeleteView', 'ChildImportView',
+           'ChildAbsencesView',
            'ManagerListView', 'ManagerCreateView',  'ManagerExportView',
            'InstructorListView', 'InstructorCreateView', 'InstructorDetailView',
            'InstructorExportView',
@@ -284,9 +287,43 @@ class ChildUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
     form_class = ChildForm
     template_name = 'backend/user/child-update.html'
     success_url = reverse_lazy('backend:child-list')
+    pk_url_kwarg = 'child'
     
     def get_success_message(self, cleaned_data):
         return _("Child %s has been updated.") % self.object.full_name
+
+
+class ChildAbsencesView(BackendMixin, DetailView):
+    model = Child
+    pk_url_kwarg = 'child'
+    template_name = 'backend/user/absences.html'
+    queryset = Child.objects.prefetch_related()
+
+    def get_context_data(self, **kwargs):
+        child = self.get_object()
+        qs = Absence.objects.filter(child=child)\
+                            .select_related('session', 'session__course', 'session__course__activity')\
+                            .order_by('session__course__activity', 'session__course')
+        kwargs['all_dates'] = list(set(qs.values_list('session__date', flat=True)))
+        kwargs['all_dates'].sort()
+        course_absences = collections.OrderedDict()
+        activity_absences = collections.OrderedDict()
+        for absence in qs:
+            if absence.session.course in course_absences:
+                course_absences[absence.session.course][absence.session.date] = absence
+            else:
+                course_absences[absence.session.course] = {absence.session.date: absence}
+
+        for course, absences in course_absences.items():
+            if course.activity in activity_absences:
+                activity_absences[course.activity].append((course, absences))
+            else:
+                activity_absences[course.activity] = [(course, absences)]
+        kwargs['activity_absences'] = activity_absences
+        kwargs['course_absences'] = course_absences
+        kwargs['levels'] = ChildActivityLevel.LEVELS
+
+        return super(ChildAbsencesView, self).get_context_data(**kwargs)
 
 
 class ChildDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
@@ -294,6 +331,7 @@ class ChildDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
     template_name = 'backend/user/child-confirm_delete.html'
     success_url = reverse_lazy('backend:child-list')
     success_message = _("Child has been removed.")
+    pk_url_kwarg = 'child'
 
 
 class ChildImportView(BackendMixin, SuccessMessageMixin, FormView):

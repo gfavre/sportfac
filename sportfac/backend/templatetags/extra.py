@@ -1,6 +1,8 @@
 from django import template
 
+
 register = template.Library()
+
 
 @register.filter(is_safe=True)
 def answer_to(registration, question):
@@ -13,6 +15,7 @@ def answer_to(registration, question):
     if qs.count():
         return qs.last().value
     return ''
+
 
 @register.filter(is_safe=True)
 def has_question(registration, question):

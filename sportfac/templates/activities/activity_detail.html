@@ -8,12 +8,12 @@
 {% block content %}
 <div class="portlet">
 {{ activity.description|safe }}
-  
+
 {% if activity.informations %}
 <h4 >Informations spécifiques</h4>
 {{ activity.informations | safe }}
 {% endif %}
-  
+
 </div>
 
 <h3 class="content-title">
@@ -34,15 +34,15 @@
         </h4>
         <p class="pricing-plan-label">Chaque {{ course.day_name|lower }} de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }} ({{ course.duration|duration }})</p>
       </header>
-      
+
       <dl class="dl-horizontal">
         <dt>{% trans "Instructors" %}</dt>
         <dd>
           <ul class="list-unstyled">
           {% for instructor in course.instructors.all %}
-              <li>{{ instructor.full_name  }}</li>
+              <li>{{ instructor.full_name }}</li>
           {% endfor %}
-          </ul>              
+          </ul>
         </dd>
         <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
         <dt>{% trans "Number of sessions" %}</dt>
@@ -55,7 +55,7 @@
       </dl>
       <h4 class="content-title">
         <u>{% trans "Availability"%}</u>
-      </h4>      
+      </h4>
         <p>{{ course.count_participants  }} participants <span class="pull-right strong"> {{ course.max_participants }} places</span></p>
         <div class="progress" style="margin-bottom: 0;">
           <div class="progress-bar {% if course.full %}progress-bar-danger{% elif course.minimal_participants_reached %}progress-bar-success{% else %}progress-bar-warning{% endif %}" style="width: {{ course.percentage_full }}%"></div>

@@ -34,34 +34,7 @@ class Registration(TimeStampedModel, StatusModel):
                      ('canceled', _("Canceled by administrator")),
                      ('confirmed', _("Confirmed by administrator")),
                      )
-    LEVELS = Choices(('NP', 'NP'),
-                     ('CM', 'CM'),
-                     ('ABS', 'ABS'),
-                     ('NPA', 'NPA'),
-                     ('NPB', 'NPB'),
-                     ('NPC', 'NPC'),
-                     ('1A', '1A'),
-                     ('1B', '1B'),
-                     ('1C', '1C'),
-                     ('2A', '2A'),
-                     ('2B', '2B'),
-                     ('2C', '2C'),
-                     ('3A', '3A'),
-                     ('3B', '3B'),
-                     ('3C', '3C'),
-                     ('4A', '4A'),
-                     ('4B', '4B'),
-                     ('4C', '4C'),
-                     ('5A', '5A'),
-                     ('5B', '5B'),
-                     ('5C', '5C'),
-                     ('6A', '6A'),
-                     ('6B', '6B'),
-                     ('6C', '6C'),
-                     ('7A', '7A'),
-                     ('7B', '7B'),
-                     ('7C', '7C'),
-                     )
+
     course = models.ForeignKey('activities.Course', related_name="participants", verbose_name=_("Course"),
                                on_delete=models.CASCADE)
     child = models.ForeignKey('Child', related_name="registrations",
@@ -73,11 +46,6 @@ class Registration(TimeStampedModel, StatusModel):
                                   verbose_name=_("Transport information"),
                                   on_delete=models.SET_NULL)
 
-    before_level = models.CharField(choices=LEVELS, max_length=5, blank=True,
-                                    verbose_name=_("Level -1"),)
-    after_level = models.CharField(choices=LEVELS, max_length=5, blank=True,
-                                   verbose_name=_("End course level"))
-    note = models.CharField(max_length=50, verbose_name=_("Note"), blank=True)
     objects = RegistrationManager()
 
     class Meta:
@@ -147,12 +115,6 @@ class Registration(TimeStampedModel, StatusModel):
     def get_update_url(self):
         return reverse('backend:registration-update', kwargs={'pk': self.pk})
 
-    def get_update_level_url(self):
-        return reverse('api:update-level', kwargs={'pk': self.pk})
-
-    def get_update_note_url(self):
-        return reverse('api:update-note', kwargs={'pk': self.pk})
-
     @property
     def update_url(self):
         return self.get_update_url()
@@ -160,14 +122,6 @@ class Registration(TimeStampedModel, StatusModel):
     @property
     def delete_url(self):
         return self.get_delete_url()
-
-    @property
-    def update_level_url(self):
-        return self.get_update_level_url()
-
-    @property
-    def update_note_url(self):
-        return self.get_update_note_url()
 
     def save(self, *args, **kwargs):
         super(Registration, self).save(*args, **kwargs)
@@ -332,18 +286,21 @@ class Child(TimeStampedModel):
         abstract = False
 
     def get_update_url(self):
-        return reverse('backend:child-update', kwargs={'pk': self.pk})
+        return reverse('backend:child-update', kwargs={'child': self.pk})
 
     def get_delete_url(self):
-        return reverse('backend:child-delete', kwargs={'pk': self.pk})
+        return reverse('backend:child-delete', kwargs={'child': self.pk})
 
     def get_backend_url(self):
         if self.family:
             return reverse('backend:user-detail', kwargs={'pk': self.family.pk})
-        return reverse('backend:child-update', kwargs={'pk': self.pk})
+        return self.get_update_url()
+
+    def get_backend_absences_url(self):
+        return reverse('backend:child-absences', kwargs={'child': self.pk})
 
     def get_full_name(self):
-        full_name = '%s %s' % (self.first_name.title(), self.last_name.title())
+        full_name = u'%s %s' % (self.first_name.title(), self.last_name.title())
         return full_name.strip()
 
     @property
@@ -389,3 +346,54 @@ class Child(TimeStampedModel):
     class Meta:
         verbose_name = _("Child")
         verbose_name_plural = _("Children")
+
+
+class ChildActivityLevel(TimeStampedModel):
+    LEVELS = Choices(('NP', 'NP'),
+                     ('CM', 'CM'),
+                     ('ABS', 'ABS'),
+                     ('NPA', 'NPA'),
+                     ('NPB', 'NPB'),
+                     ('NPC', 'NPC'),
+                     ('1A', '1A'),
+                     ('1B', '1B'),
+                     ('1C', '1C'),
+                     ('2A', '2A'),
+                     ('2B', '2B'),
+                     ('2C', '2C'),
+                     ('3A', '3A'),
+                     ('3B', '3B'),
+                     ('3C', '3C'),
+                     ('4A', '4A'),
+                     ('4B', '4B'),
+                     ('4C', '4C'),
+                     ('5A', '5A'),
+                     ('5B', '5B'),
+                     ('5C', '5C'),
+                     ('6A', '6A'),
+                     ('6B', '6B'),
+                     ('6C', '6C'),
+                     ('7A', '7A'),
+                     ('7B', '7B'),
+                     ('7C', '7C'),
+                     )
+
+    before_level = models.CharField(choices=LEVELS, max_length=5, blank=True,
+                                    verbose_name=_("Level -1"),)
+    after_level = models.CharField(choices=LEVELS, max_length=5, blank=True,
+                                   verbose_name=_("End course level"))
+    note = models.CharField(max_length=50, verbose_name=_("Note"), blank=True)
+    activity = models.ForeignKey('activities.Activity', related_name="levels", verbose_name=_("Course"),
+                                 on_delete=models.CASCADE)
+    child = models.ForeignKey('Child', related_name="levels", on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('activity', 'child')
+
+    def get_api_url(self):
+        return reverse('api:level-detail', kwargs={'pk': self.pk})
+
+    @property
+    def api_url(self):
+        return self.get_api_url()
+

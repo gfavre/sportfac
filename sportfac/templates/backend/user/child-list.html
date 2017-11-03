@@ -120,6 +120,9 @@ $(function () {
       <td>
           <ul class="list-unstyled">
             <li class="text-nowrap"><a href="{{ child.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Edit student" %}</a></li>
+            {% if USE_ABSENCES %}
+            <li class="text-nowrap"><a href="{{ child.get_backend_absences_url }}" class="btn btn-sm"><i class="icon-calendar"></i>&nbsp;{% trans "Review absences" %}</a></li>
+            {% endif %}
             <li class="text-nowrap"><a href="{{ child.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;&nbsp;{% trans "Delete student"  %}</a></li>
 
           </ul>

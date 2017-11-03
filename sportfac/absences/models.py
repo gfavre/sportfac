@@ -12,18 +12,24 @@ from sportfac.models import TimeStampedModel
 
 class Absence(StatusModel, TimeStampedModel):
     STATUS = Choices(
+        ('present', _("Present")),
         ('absent', _("Absent")),
         ('excused', _("Excused")),
         ('medical', _("Medical certificate")),
         ('late', _("Late arrival")),
+        ('na', _("n/a")),
     )
 
-    child = models.ForeignKey('registrations.Child')
-    session = models.ForeignKey('Session', related_name="absences")
+    child = models.ForeignKey('registrations.Child', on_delete=models.CASCADE)
+    session = models.ForeignKey('Session', related_name="absences", on_delete=models.CASCADE)
     notification_sent = models.BooleanField(default=False)
     
     class Meta:
         unique_together = ('child', 'session')
+
+    def __unicode__(self):
+        return u"{} - {} - {} - {}".format(self.child, self.session.course.short_name,
+                                           self.session.date.isoformat(), self.status)
 
 
 class Session(TimeStampedModel):

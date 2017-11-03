@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+import re
+
 from django.db import models
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.core.urlresolvers import reverse
-
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 
@@ -132,6 +133,20 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
 
     def get_short_name(self):
         return self.first_name
+
+    def get_initials(self):
+        if self.first_name and self.last_name:
+            initial = self.first_name[:1].upper()
+            match = re.search(r'[A-Z]', self.last_name)
+            if match:
+                # Use first capital letter
+                initial += match.group()
+            else:
+                # No capitals found; just use first letter
+                initial += self.last_name[:1].upper()
+        else:
+            initial = self.username[:1].upper()
+        return initial
 
     @property
     def children_names(self):

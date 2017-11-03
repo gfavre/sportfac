@@ -1,8 +1,9 @@
 # Create your views here.
 from django.db import IntegrityError
 from django.db.models import Q
+from django.http import Http404
 
-from rest_framework import mixins, generics, status, filters
+from rest_framework import mixins, generics, status, filters, views
 from rest_framework import viewsets, permissions
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import list_route
@@ -11,15 +12,15 @@ from rest_framework.response import Response
 from absences.models import Absence, Session
 from activities.models import Activity, Course
 from profiles.models import SchoolYear
-from registrations.models import Child, ExtraInfo, Registration
+from registrations.models import Child, ChildActivityLevel, ExtraInfo, Registration
 from schools.models import Teacher
 
 from .permissions import ManagerPermission, FamilyPermission, InstructorPermission
-from .serializers import (AbsenceSerializer, SetAbsenceSerializer, SessionSerializer,
+from .serializers import (AbsenceSerializer, SetAbsenceSerializer, SessionSerializer, SessionUpdateSerializer,
                           ActivityDetailedSerializer,
                           ChildrenSerializer, CourseSerializer, TeacherSerializer,
-                          RegistrationSerializer, ExtraSerializer, LevelSerializer,
-                          RegistrationNoteSerializer,
+                          RegistrationSerializer, ExtraSerializer, ChildActivityLevelSerializer,
+                          ChangeCourseSerializer, CourseChangedSerializer,
                           SimpleChildrenSerializer, YearSerializer)
 
 
@@ -28,37 +29,30 @@ class AbsenceViewSet(viewsets.ModelViewSet):
     queryset = Absence.objects.all()
     permission_classes = (InstructorPermission,)
     serializer_class = AbsenceSerializer
-    
+
     @list_route(methods=['post'])
     def set(self, request):
         serializer = SetAbsenceSerializer(data=request.data)
         if serializer.is_valid():
             res_status = serializer.data['status']
-            obj, created = Absence.objects.get_or_create(
-                session=Session.objects.get(pk=serializer.data['session']), 
-                child=Child.objects.get(pk=serializer.data['child'])
+            Absence.objects.update_or_create(
+                session=Session.objects.get(pk=serializer.data['session']),
+                child=Child.objects.get(pk=serializer.data['child']),
+                defaults={
+                    'status': res_status
+                }
             )
-            if res_status == 'present':
-                self.perform_destroy(obj)
-            else:
-                obj.status = res_status
-                obj.save()
-            return Response({'status': res_status}) 
+            return Response({'status': res_status})
         else:
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
 
 
-class UpdateLevelView(generics.UpdateAPIView):
-    queryset = Registration.objects.all()
+class ChildActivityLevelViewSet(viewsets.ModelViewSet):
+    model = ChildActivityLevel
+    queryset = ChildActivityLevel.objects.all()
     permission_classes = (InstructorPermission,)
-    serializer_class = LevelSerializer
-
-
-class UpdateRegistrationNoteView(generics.UpdateAPIView):
-    queryset = Registration.objects.all()
-    permission_classes = (InstructorPermission,)
-    serializer_class = RegistrationNoteSerializer
+    serializer_class = ChildActivityLevelSerializer
 
 
 class SessionViewSet(viewsets.ModelViewSet):
@@ -66,20 +60,37 @@ class SessionViewSet(viewsets.ModelViewSet):
     serializer_class = SessionSerializer
     queryset = Session.objects.all()
     permission_classes = (InstructorPermission,)
-    
+
+    def get_serializer_class(self):
+        if self.action in ('retrieve', 'list'):
+            return SessionSerializer
+        return SessionUpdateSerializer
+
+    def perform_create(self, serializer):
+        # set all children as present as defauolt value
+        session = serializer.save()
+        course = Course.objects.get(pk=serializer.data.get('course'))
+        for registration in course.participants.all():
+            Absence.objects.update_or_create(
+                child=registration.child, session=session,
+                defaults={
+                    'status': Absence.STATUS.present
+                }
+            )
+
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = SessionSerializer(instance, data=request.data, partial=True)
+        serializer = self.get_serializer_class()(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data)
-    
+        return Response(SessionSerializer(instance).data)
+
 
 
 class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ActivityDetailedSerializer
     model = Activity
-    
+
     def get_queryset(self):
         queryset = Activity.objects.prefetch_related('courses', 'courses__instructors')
         school_year = self.request.query_params.get('year', None)
@@ -99,15 +110,15 @@ class YearViewSet(viewsets.ReadOnlyModelViewSet):
 class CourseViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CourseSerializer
     model = Course
-    
+
     def get_queryset(self):
         return Course.objects.visible().select_related('activity').prefetch_related('participants', 'instructors')
-    
+
 
 class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = TeacherSerializer
     model = Teacher
-    
+
     def get_queryset(self):
         return Teacher.objects.prefetch_related('years')
 
@@ -117,11 +128,11 @@ class FamilyView(mixins.ListModelMixin, generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = ChildrenSerializer
     model = Child
-    
+
     def get_queryset(self):
         user = self.request.user
         return Child.objects.filter(family=user)
-    
+
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
 
@@ -157,7 +168,7 @@ class ChildrenViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-    
+
     def create(self, request, *args, **kwargs):
         if 'ext_id' in request.data and not request.data['ext_id']:
             del request.data['ext_id']
@@ -175,7 +186,7 @@ class ChildrenViewSet(viewsets.ModelViewSet):
                             headers=headers)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
     def perform_update(self, serializer):
         serializer.validated_data['family'] = self.request.user
         if 'ext_id' in serializer.validated_data:
@@ -208,11 +219,11 @@ class RegistrationViewSet(viewsets.ModelViewSet):
     permission_classes = (ChildOrAdminPermission, )
     serializer_class = RegistrationSerializer
     model = Registration
-    
+
     def get_queryset(self):
         user = self.request.user
         return Registration.objects.filter(child__in=user.children.all())
-    
+
     def create(self, request, format=None):
         if type(request.data) is list:
             data = []
@@ -231,7 +242,7 @@ class RegistrationViewSet(viewsets.ModelViewSet):
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
 
 class RegistrationOwnerAdminPermission(permissions.IsAuthenticated):
     def has_object_permission(self, request, view, obj):
@@ -248,7 +259,7 @@ class ExtraInfoViewSet(viewsets.ModelViewSet):
     permission_classes = (RegistrationOwnerAdminPermission, )
     serializer_class = ExtraSerializer
     model = ExtraInfo
-    
+
     def get_queryset(self):
         user = self.request.user
         return ExtraInfo.objects.filter(registration__child__in=user.children.all())
@@ -267,3 +278,23 @@ class ExtraInfoViewSet(viewsets.ModelViewSet):
                 output.append(serializer.data)
 
         return Response(output, status=status.HTTP_201_CREATED)
+
+
+class ChangeCourse(views.APIView):
+    permission_classes = (ManagerPermission,)
+    serializer_class = ChangeCourseSerializer
+
+    def put(self, request, format=None):
+        serializer = ChangeCourseSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
+        try:
+            registration = Registration.objects.validated().get(child=serializer.validated_data['child'],
+                                                                course=serializer.validated_data['previous_course'])
+        except Registration.DoesNotExist:
+            raise Http404
+        new_course = serializer.validated_data['new_course']
+        registration.course = new_course
+        registration.save()
+        return Response(CourseChangedSerializer(new_course).data, status=status.HTTP_200_OK)
