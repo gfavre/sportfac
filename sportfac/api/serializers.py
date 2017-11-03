@@ -164,7 +164,6 @@ class ChildActivityLevelSerializer(serializers.ModelSerializer):
         fields = ('id', 'child', 'activity', 'before_level', 'after_level', 'note')
 
 
-
 class SessionSerializer(serializers.ModelSerializer):
     course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all().select_related('activity'))
     date = serializers.DateField()
@@ -179,6 +178,7 @@ class SessionUpdateSerializer(SessionSerializer):
     instructor = serializers.PrimaryKeyRelatedField(queryset=FamilyUser.instructors_objects.all(),
                                                     allow_null=True)
 
+
 class AbsenceSerializer(serializers.ModelSerializer):
     child = serializers.PrimaryKeyRelatedField(queryset=Child.objects.all())
     session = serializers.PrimaryKeyRelatedField(queryset=Session.objects.all())
@@ -192,3 +192,18 @@ class SetAbsenceSerializer(serializers.Serializer):
     child = serializers.PrimaryKeyRelatedField(queryset=Child.objects.all())
     session = serializers.PrimaryKeyRelatedField(queryset=Session.objects.all())
     status = serializers.ChoiceField(choices=Absence.STATUS + ('present', _("Present")))
+
+
+class ChangeCourseSerializer(serializers.Serializer):
+    child = serializers.PrimaryKeyRelatedField(queryset=Child.objects.all())
+    previous_course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all())
+    new_course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all())
+
+
+class CourseChangedSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source='long_name')
+    absence_url = serializers.CharField(source='get_backend_absences_url')
+
+    class Meta:
+        model = Course
+        fields = ('id', 'name', 'absence_url')

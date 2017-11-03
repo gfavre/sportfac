@@ -42,28 +42,27 @@ table.dataTable thead>tr>th.rotated-heading {
 }
 </style>
 {% endaddtoblock %}
-<div class="table-responsive">
   <table class="table table-bordered table-hover table-condensed absences table-fixed responsive">
     <thead>
       <tr>
         <th class="all">{% trans "Child" %}</th>
         {% if BIB_NUMBERS %}
-        <th class="rotated-heading"><div><span>{% trans "Bib number" %}</span></div></th>
+        <th class="rotated-heading all"><div><span>{% trans "Bib number" %}</span></div></th>
         {% endif %}
         <th class="min-mobile-l">{% trans "Course" %}</th>
         {% if REGISTRATION_LEVELS %}
-          <th class="min-tablet-l rotated-heading"><div><span>{% trans "Announced level" %}</span></div></th>
+          <th class="min-desktop rotated-heading"><div><span>{% trans "Announced level" %}</span></div></th>
           <th class="min-tablet-l rotated-heading"><div><span>{% trans "level -1" %}</span></div></th>
           <th class="min-tablet-l rotated-heading"><div><span>{% trans "level 0" %}</span></div></th>
         {% endif %}
         {% if DISPLAY_REGISTRATION_NOTE %}
-        <th class="min-tablet-l note">
+        <th class="min-desktop note">
           {% trans "Note" %}
         </th>
         {% endif %}
         {% for session_date in all_dates %}
-          <th class="rotated-heading{% if forloop.last %} all{% else %} min-tablet-l{% endif %}">
-            <div><span>{{ session_date | date:"j b. Y" }}</span></div>
+          <th class="rotated-heading {% if forloop.last %} all{% else %} min-tablet-p{% endif %}">
+            <div><span>{{ session_date|date:"j b. Y" }}</span></div>
           </th>
         {% endfor %}
       </tr>
@@ -79,67 +78,83 @@ table.dataTable thead>tr>th.rotated-heading {
         </th>
         {% if BIB_NUMBERS %}
         <th data-order="{{ child.bib_number|default:"0" }}">
-              {{ child.bib_number|default:"" }}
+          {{ child.bib_number|default:"" }}
         </th>
         {% endif %}
 
         <th data-order="{{ course.number }}">
-          <a href="{{ course.get_backend_absences_url }}">
-            {{ course.short_name }}{% if course.name %} - {{ course.name }}{% endif %}
-          </a>
+          <span class="set-course"
+                data-child="{{ child.id }}"
+                data-course="{{ course.id }}">
+            <a href="{{ course.get_backend_absences_url }}" class="course-link">
+              {{ course.short_name }}{% if course.name %} - {{ course.name }}{% endif %}
+            </a><br>
+            <a class="course has-popover" role="button"
+               data-toggle="popover"
+               data-trigger="click focus">
+              <i class="icon-pencil"></i> {% trans "Changer de cours" %}
+            </a>
+          </span>
         </th>
-          {% if REGISTRATION_LEVELS %}
+
+        {% if REGISTRATION_LEVELS %}
         <th data-order="{{ child.announced_level }}">
           <span class="hidden-print">{{ child.announced_level }}</span>
           <span class="visible-print">{{ child.announced_level|truncatewords:"1" }}</span>
         </th>
-        <th class="set-level"
+        <th>
+          <span class="set-level"
             data-level="{{ child.level.before_level }}"
             data-key="before_level"
             data-url="{{ child.level.api_url }}"
-            data-order="{{ child.level.before_level }}"
-        >
-          <a class="level has-popover" role="button"
-             data-toggle="popover"
-             data-trigger="click focus">{{ child.level.before_level|default:'NP' }}</a>
+            data-order="{{ child.level.before_level }}">
+            <a class="level has-popover" role="button"
+               data-toggle="popover"
+               data-trigger="click focus">{{ child.level.before_level|default:'NP' }}</a>
+          </span>
         </th>
-        <th class="set-level"
+        <th>
+          <span class="set-level"
             data-level="{{ child.level.after_level }}"
             data-key="after_level"
             data-url="{{ child.level.api_url }}"
-            data-order="{{ child.level.after_level }}"
-        >
-          <a class="level has-popover" role="button"
-             data-toggle="popover"
-             data-trigger="click focus">{{ child.level.after_level|default:'NP' }}</a>
+            data-order="{{ child.level.after_level }}">
+            <a class="level has-popover" role="button"
+               data-toggle="popover"
+               data-trigger="click focus">{{ child.level.after_level|default:'NP' }}</a>
+          </span>
         </th>
         {% endif %}
         {% if DISPLAY_REGISTRATION_NOTE %}
-        <th class="set-note"
-            data-key="note"
-            data-note="{{ child.level.note }}"
-            data-url="{{ child.level.api_url }}"
-            data-order="{{ child.level.note }}"
-        >
-          <div class="note">{{ child.level.note }}</div>
-          <a class="note has-popover hidden-print" role="button" data-toggle="popover" data-trigger="click focus">
-            <i class="icon-pencil"></i>&nbsp;{% trans "Edit note" %}
-          </a>
+        <th>
+          <span class="set-note"
+                data-key="note"
+                data-note="{{ child.level.note }}"
+                data-url="{{ child.level.api_url }}"
+                data-order="{{ child.level.note }}">
+            <div class="note">{{ child.level.note }}</div>
+            <a class="note has-popover hidden-print" role="button"
+               data-toggle="popover"
+               data-trigger="click focus">
+              <i class="icon-pencil"></i>&nbsp;{% trans "Edit note" %}
+            </a>
+          </span>
         </th>
         {% endif %}
 
         {% for session_date in all_dates %}
           {% if session_date in absences %}
           {% with absence=absences|get_item:session_date %}
-            <td class="absence {{ absence.status }} {% if absence.status == 'present' %}success{% elif absence.status == 'late' %}info{% elif absence.status == 'excused' %}warning{% else %}danger{% endif %}"
-                data-pk="{{ absence.pk }}"
-                data-session="{{ absence.session.id }}"
-                data-child="{{ child.id }}"
-                data-status="{{ absence.status }}"
-                data-order="{{ absence.status }}"
-            >
+            <td class="absence {{ absence.status }} {% if absence.status == 'present' %}success{% elif absence.status == 'late' %}info{% elif absence.status == 'excused' %}warning{% else %}danger{% endif %}">
+              <span class="set-absence"
+                    data-pk="{{ absence.pk }}"
+                    data-session="{{ absence.session.id }}"
+                    data-child="{{ child.id }}"
+                    data-status="{{ absence.status }}"
+                    data-order="{{ absence.status }}">
               <a role="button" class="btn btn-sm absence has-popover"  data-toggle="popover"
                  data-trigger="click focus">{{ absence|absence_to_status:1 }}</a>
+              </span>
             </td>
           {% endwith %}
           {% else %}
@@ -150,14 +165,8 @@ table.dataTable thead>tr>th.rotated-heading {
       </tr>
   {% endwith %}
 {% endfor %}
-
-
-
     </tbody>
-
-
   </table>
-</div>
 
 
 {% addtoblock "js" %}
@@ -170,6 +179,16 @@ table.dataTable thead>tr>th.rotated-heading {
     </select>
   </form>
 </script>
+<script type="text/html" id="course-window">
+  <form>
+    <select class="form-control" name="course">
+      {% for course in course_list %}
+      <option value="{{ course.id }}">{{ course.short_name }}{% if course.name %} - {{ course.name }}{% endif %}</option>
+      {% endfor %}
+    </select>
+  </form>
+</script>
+
 <script type="text/html" id="note-window">
   <form class="note-form">
     <textarea></textarea>
@@ -206,14 +225,14 @@ table.dataTable thead>tr>th.rotated-heading {
   </form>
 </script>
 <script src="{% static 'js/vendor/js.cookie.js' %}"></script>
-<script src="{{ STATIC_URL }}js/vendor/datatables/datatables.min.js"></script>
+<script src="{% static 'js/vendor/datatables/datatables.min.js' %}"></script>
 <script>
 jQuery(function($){
   $.ajaxSetup({
     headers: { "X-CSRFToken": Cookies.get("csrftoken") }
   });
 
-  $('.absences').dataTable({
+  var table = $('.absences').dataTable({
 {% if LANGUAGE_CODE == 'fr' %}
       "language": {
             "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
@@ -225,11 +244,11 @@ jQuery(function($){
 
 
   $('.absences').on('change', 'input[name=status]', function(event){
-    var parent = $(this).parents('td');
+    var $parent = $(this).parents('.set-absence');
     var status =  $(this).val();
     var data = {
-      'session': parent.data('session'),
-      'child': parent.data('child'),
+      'session': $parent.data('session'),
+      'child': $parent.data('child'),
       'status': status
     };
 
@@ -262,10 +281,10 @@ jQuery(function($){
             classes = "info late";
             break;
         }
-        $('a', parent).text(label);
-        parent.removeClass().addClass(classes);
-        parent.data('status', response.status);
-        $('.has-popover', parent).popover('hide');
+        $('a', $parent).text(label);
+        $parent.parent().removeClass().addClass(classes);
+        $parent.data('status', response.status);
+        $('.has-popover', $parent).popover('hide');
       }
     })
   });
@@ -275,13 +294,50 @@ jQuery(function($){
       selector: '.absence.has-popover',
       content: function(){ return $('#status-window').html(); },
       html: true,
-      placement: 'left'
+      placement: function(context, source){
+          if ($(source).parents('.dtr-details').length > 0) {
+              return 'right';
+          }
+          return 'left';
+      }
     }
   );
 
-  $('.absences td').on('shown.bs.popover', function(){
-    var status = $(this).data('status');
+  $('.absences').on('shown.bs.popover', '.set-absence', function(){
+      var status = $(this).data('status');
     $('input[value=' + status + ']', $(this)).prop('checked', true);
+  });
+
+  $('.absences').popover(
+    {
+      selector: '.course.has-popover',
+      content: function(){ return $('#course-window').html(); },
+      html: true
+    }
+  );
+  $('.absences').on('shown.bs.popover', '.set-course', function(){
+    var course = $(this).data('course');
+    $('option[value=' + course + ']', $(this)).prop('selected', true);
+  });
+  $('.absences').on('change', 'select[name=course]', function(event){
+    var course =  $(this).val();
+    var $parent = $(this).parents('.set-course');
+    var data = {
+      'previous_course': $parent.data('course'),
+      'new_course': course,
+      'child': $parent.data('child')
+    };
+    $.ajax({
+      url: '{% url "api:change-course" %}',
+      type: 'PUT',
+      data: data,
+      success: function(response){
+        $('a.course-link', $parent).text(response.name).attr('href', response.absence_url);
+        $parent.data('course', response.id);
+        parent.data('level', newLevel);
+        $('.has-popover', $parent).popover('hide');
+      }
+    });
   });
 
   $('.absences').popover(
@@ -291,7 +347,7 @@ jQuery(function($){
       html: true
     }
   );
-  $('.absences .set-level').on('shown.bs.popover', function(){
+  $('.absences').on('shown.bs.popover', '.set-level', function(){
     var level = $(this).data('level');
     if (level.length) {
      $('option[value=' + level + ']', $(this)).prop('selected', true);
@@ -323,7 +379,7 @@ jQuery(function($){
           html: true
         }
     );
-    $('.absences .set-note').on('shown.bs.popover', function(){
+    $('.absences').on('shown.bs.popover', '.set-note', function(){
       var note = $(this).data('note');
       $('textarea', this).val(note);
     });
@@ -357,6 +413,11 @@ jQuery(function($){
       $('[data-original-title]').not(e.target).popover('hide');
     }
   });
+  /*
+  window.addEventListener("resize", function() {
+    // Get screen size (inner/outerWidth, inner/outerHeight)
+    table.api().columns.adjust().responsive.recalc();
+  }, false);*/
 
 });
 </script>

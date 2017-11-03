@@ -1,8 +1,9 @@
 # Create your views here.
 from django.db import IntegrityError
 from django.db.models import Q
+from django.http import Http404
 
-from rest_framework import mixins, generics, status, filters
+from rest_framework import mixins, generics, status, filters, views
 from rest_framework import viewsets, permissions
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import list_route
@@ -19,6 +20,7 @@ from .serializers import (AbsenceSerializer, SetAbsenceSerializer, SessionSerial
                           ActivityDetailedSerializer,
                           ChildrenSerializer, CourseSerializer, TeacherSerializer,
                           RegistrationSerializer, ExtraSerializer, ChildActivityLevelSerializer,
+                          ChangeCourseSerializer, CourseChangedSerializer,
                           SimpleChildrenSerializer, YearSerializer)
 
 
@@ -274,3 +276,23 @@ class ExtraInfoViewSet(viewsets.ModelViewSet):
                 output.append(serializer.data)
 
         return Response(output, status=status.HTTP_201_CREATED)
+
+
+class ChangeCourse(views.APIView):
+    permission_classes = (ManagerPermission,)
+    serializer_class = ChangeCourseSerializer
+
+    def put(self, request, format=None):
+        serializer = ChangeCourseSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
+        try:
+            registration = Registration.objects.validated().get(child=serializer.validated_data['child'],
+                                                                course=serializer.validated_data['previous_course'])
+        except Registration.DoesNotExist:
+            raise Http404
+        new_course = serializer.validated_data['new_course']
+        registration.course = new_course
+        registration.save()
+        return Response(CourseChangedSerializer(new_course).data, status=status.HTTP_200_OK)

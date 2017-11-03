@@ -49,31 +49,31 @@ table.dataTable thead>tr>th.rotated-heading {
 }
 </style>
 {% endaddtoblock %}
-<table class="table table-bordered table-hover table-condensed absences responsive" style="table-layout: fixed;">
+<table class="table table-bordered table-hover table-condensed absences table-fixed responsive">
   <thead>
     <tr>
       <th class="all">{% trans "Name" %}</th>
 
       {% if BIB_NUMBERS %}
-      <th class="rotated-heading"><div><span>{% trans "Bib number" %}</span></div></th>
+      <th class="rotated-heading all"><div><span>{% trans "Bib number" %}</span></div></th>
       {% endif %}
       {% if REGISTRATION_LEVELS %}
-      <th class="rotated-heading"><div><span>{% trans "Announced level" %}</span></div></th>
-      <th class="rotated-heading"><div><span>{% trans "level -1" %}</span></div></th>
-      <th class="rotated-heading"><div><span>{% trans "level 0" %}</span></div></th>
+      <th class="rotated-heading min-desktop"><div><span>{% trans "Announced level" %}</span></div></th>
+      <th class="rotated-heading min-tablet-l"><div><span>{% trans "level -1" %}</span></div></th>
+      <th class="rotated-heading min-tablet-l"><div><span>{% trans "level 0" %}</span></div></th>
       {% endif %}
       {% if DISPLAY_CAR_NUMBER %}
-      <th class="rotated-heading">
+      <th class="rotated-heading min-tablet-p">
         <div><span>{% trans "Bus" %}</span></div>
       </th>
       {% endif %}
       {% if DISPLAY_REGISTRATION_NOTE %}
-      <th class="note">
+      <th class="note min-desktop">
         {% trans "Note" %}
       </th>
       {% endif %}
       {% for session in course.sessions.all %}
-      <th class="rotated-heading date" data-session="{{ session.id }}">
+      <th class="rotated-heading date {% if forloop.last %} all{% else %} min-tablet-p{% endif %}" data-session="{{ session.id }}">
         <div>
           <span class="session-date">{{ session.date | date:"d.m.Y" }}</span>
         </div>
@@ -138,21 +138,25 @@ table.dataTable thead>tr>th.rotated-heading {
           <span class="hidden-print">{{ registration|answer_to:"Niveau de ski/snowboard" }}</span>
           <span class="visible-print">{{ registration|answer_to:"Niveau de ski/snowboard"|truncatewords:"1" }}</span>
         </th>
-        <th class="set-level"
-            data-level="{{ level.before_level }}"
-            data-key="before_level"
-            data-url="{{ level.api_url }}">
-           <a class="level has-popover" role="button"
-           data-toggle="popover"
-           data-trigger="click focus">{{ level.before_level|default:'NP' }}</a>
+        <th>
+          <span class="set-level"
+                data-level="{{ level.before_level }}"
+                data-key="before_level"
+                data-url="{{ level.api_url }}">
+            <a class="level has-popover" role="button"
+               data-toggle="popover"
+               data-trigger="click focus">{{ level.before_level|default:'NP' }}</a>
+          </span>
         </th>
-        <th class="set-level"
-            data-level="{{ level.after_level }}"
-            data-key="after_level"
-            data-url="{{ level.api_url }}">
-          <a class="level has-popover" role="button"
-           data-toggle="popover"
-           data-trigger="click focus">{{ level.after_level|default:'NP' }}</a>
+        <th>
+          <span class="set-level"
+                data-level="{{ level.after_level }}"
+                data-key="after_level"
+                data-url="{{ level.api_url }}">
+            <a class="level has-popover" role="button"
+               data-toggle="popover"
+               data-trigger="click focus">{{ level.after_level|default:'NP' }}</a>
+          </span>
         </th>
         {% endwith %}
         {% endif %}
@@ -163,26 +167,31 @@ table.dataTable thead>tr>th.rotated-heading {
         {% endif %}
         {% if DISPLAY_REGISTRATION_NOTE %}
         {% with level=registration.child|child_level:course %}
-        <th class="set-note"
-            data-key="note"
-            data-note="{{ level.note }}"
-            data-url="{{ level.api_url }}">
-          <div class="note">{{ level.note }}</div>
-          <a class="note has-popover hidden-print" role="button" data-toggle="popover"
-           data-trigger="click focus"><i class="icon-pencil"></i>&nbsp;{% trans "Edit note" %}</a>
+        <th>
+          <span class="set-note"
+                data-key="note"
+                data-note="{{ level.note }}"
+                data-url="{{ level.api_url }}">
+            <div class="note">{{ level.note }}</div>
+            <a class="note has-popover hidden-print" role="button" data-toggle="popover"
+               data-trigger="click focus">
+              <i class="icon-pencil"></i>&nbsp;{% trans "Edit note" %}
+            </a>
+          </span>
         </th>
         {% endwith %}
         {% endif %}
         {% for session in course.sessions.all %}
         {% with status=absence_matrix|index:units|index:forloop.counter0 decade=forloop.counter|mul:100 %}
-        <td class="absence {{ status}} {% if status == 'present' %}success{% elif status == 'late' %}info{% elif absence.status == 'excused' %}warning{% else %}danger{% endif %}"
-            data-session="{{ session.id }}"
-            data-child="{{ registration.child.id }}"
-            data-status="{{ status }}">
-            <a tabindex="{{ decade|add:units }}" role="button" class="btn btn-sm absence has-popover"
-                             data-toggle="popover"
-                             data-placement="left"
-                             data-trigger="click focus">{{ status|absence_short }}</a>
+        <td class="absence {{ status}} {% if status == 'present' %}success{% elif status == 'late' %}info{% elif absence.status == 'excused' %}warning{% else %}danger{% endif %}">
+            <span class="set-absence"
+                  data-session="{{ session.id }}"
+                  data-child="{{ registration.child.id }}"
+                  data-status="{{ status }}">
+              <a tabindex="{{ decade|add:units }}" role="button" class="btn btn-sm absence has-popover"
+                 data-toggle="popover"
+                 data-trigger="click focus">{{ status|absence_short }}</a>
+            </span>
         </td>
         {% endwith %}
         {% endfor %}
@@ -307,11 +316,11 @@ table.dataTable thead>tr>th.rotated-heading {
 
 
 {% addtoblock "js" %}
-<script src="{{ STATIC_URL }}js/vendor/datatables/datatables.min.js"></script>
 
 <script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
 <script src="{% static 'js/vendor/bootstrap-datetimepicker.min.js' %}"></script>
 <script src="{% static 'js/vendor/js.cookie.js' %}"></script>
+<script src="{% static 'js/vendor/datatables/datatables.min.js' %}"></script>
 
 <script>
 $(function(){
@@ -333,13 +342,12 @@ $(function(){
     $('.absences').dataTable({
       {% if LANGUAGE_CODE == 'fr' %}
       "language": {
-            "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+        "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
       },
       {% endif %}
       "responsive": true,
       "paging": false
-  });
-
+    });
 
     $('.datetimepicker').datetimepicker({
       language: '{{ LANGUAGE_CODE }}',
@@ -349,15 +357,27 @@ $(function(){
         down: 'icon-down-open'}
     });
 
+    $('.absences').popover(
+      {
+        selector: '.absence.has-popover',
+        content: function(){ return $('#status-window').html(); },
+        html: true,
+        placement: function(context, source){
+          if ($(source).parents('.dtr-details').length > 0) {
+              return 'right';
+          }
+          return 'left';
+        }
+      }
+    );
     $('.absences').on('change', 'input[name=status]', function(event){
-      var parent = $(this).parents('td');
+      var $parent = $(this).parents('.set-absence');
       var status =  $(this).val();
       var data = {
-        'session': parent.data('session'),
-        'child': parent.data('child'),
+        'session': $parent.data('session'),
+        'child': $parent.data('child'),
         'status': status
       };
-
       $.ajax({
         url: "{% url 'api:absence-set' %}",
         type: 'POST',
@@ -367,41 +387,35 @@ $(function(){
           var classes = '';
           switch(response.status){
             case 'present':
-              label = "{% trans 'Present' %}";
+              label = "{% trans 'P' %}";
               classes = "success present";
               break;
             case 'absent':
-              label = "{% trans 'Absent' %}";
+              label = "{% trans 'A' %}";
               classes = "danger absent";
               break;
             case 'excused':
-              label = "{% trans 'Excused' %}";
+              label = "{% trans 'E' %}";
               classes = "danger excused";
               break;
             case 'medical':
-              label = "{% trans 'Medical certificate' %}";
+              label = "{% trans 'MC' %}";
               classes = "danger medical";
               break;
             case 'late':
-              label = "{% trans 'Late arrival' %}";
+              label = "{% trans 'LA' %}";
               classes = "info late";
               break;
           }
-          $('a', parent).text(label);
-          parent.removeClass().addClass(classes);
-          parent.data('status', response.status);
-          $('.has-popover', parent).popover('hide');
+          $('a', $parent).text(label);
+          $parent.parent().removeClass().addClass(classes);
+          $parent.data('status', response.status);
+          $('.has-popover', $parent).popover('hide');
         }
       })
     });
 
-    $('.absences').popover(
-        {
-          selector: '.absence.has-popover',
-          content: function(){ return $('#status-window').html(); },
-          html: true
-        }
-    );
+
     $('.absences').popover(
         {
           selector: '.level.has-popover',
@@ -409,12 +423,12 @@ $(function(){
           html: true
         }
     );
-    $('.absences .absence').on('shown.bs.popover', function(){
+    $('.absences').on('shown.bs.popover', '.set-absence', function(){
       var status = $(this).data('status');
       $('input[value=' + status + ']', $(this)).prop('checked', true);
     });
 
-    $('.absences .set-level').on('shown.bs.popover', function(){
+    $('.absences').on('shown.bs.popover', '.set-level', function(){
       var level = $(this).data('level');
       if (level.length) {
        $('option[value=' + level + ']', $(this)).prop('selected', true);
@@ -440,17 +454,16 @@ $(function(){
     });
 
     $('.absences').popover(
-        {
-          selector: '.note.has-popover',
-          content: function(){ return $('#note-window').html(); },
-          html: true
-        }
+      {
+        selector: '.note.has-popover',
+        content: function(){ return $('#note-window').html(); },
+        html: true
+      }
     );
-    $('.absences .set-note').on('shown.bs.popover', function(){
+    $('.absences').on('shown.bs.popover', '.set-note', function(){
       var note = $(this).data('note');
       $('textarea', this).val(note);
     });
-
     $('.absences').on('submit', 'form.note-form', function(event){
       event.preventDefault();
       var note =  $('textarea', this).val();
@@ -478,7 +491,7 @@ $(function(){
           html: true
         }
     );
-    $('.absences .edit-session').on('shown.bs.popover', function(){
+    $('.absences').on('shown.bs.popover', '.edit-session', function(){
       var instructor = $(this).data('instructor');
       var date = $(this).data('date');
       if (instructor){

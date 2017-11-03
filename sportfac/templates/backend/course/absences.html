@@ -1,7 +1,7 @@
 {% extends "backend/base.html" %}
 {% load i18n duration switzerland sekizai_tags floppyforms %}
 
-{% block title %}{{ course.activity.name }} - {{ block.super }}{% endblock %}
+{% block title %}{{ course.activity.name }} - Absences - {{ block.super }}{% endblock %}
 {% block page_title %}{{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }}{% endblocktrans %} - {% trans "Absences" %}{% endblock %}
 
 {% block content %}
@@ -12,7 +12,7 @@
       <p class="lead">Chaque {{ course.day_name|lower }} de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }} ({{ course.duration|duration }})</p>
     </header>
     <dl class="dl-horizontal">
-      <dt>{% trans "Activity number" %}</dt><dd><a href="{{ course.activity.get_backend_url }}">{{ course.activity.number }}</a></dd>  
+      <dt>{% trans "Activity number" %}</dt><dd><a href="{{ course.activity.get_backend_url }}">{{ course.activity.number }}</a></dd>
       <dt>{% trans "Instructors" %}</dt>
       <dd>
         <ul class="list-unstyled">
@@ -33,37 +33,38 @@
       <dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
     </dl>
     <p class="text-center"><a href="{{ course.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a> </p>
-      
-        
-    <h4 class="content-title"><u>{% trans "Management"%}</u></h4>      
-    
+
+
+    <h4 class="content-title"><u>{% trans "Management"%}</u></h4>
+
     <a href="{{ course.get_backend_url }}" class="btn btn-sm">
         <i class="icon-check"></i>&nbsp;{% trans "Check registrations" %}
     </a> &nbsp;
-    
+
     <a href="{{ course.get_custom_mail_url }}" class="btn btn-sm">
         <i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}
     </a> &nbsp;
-    
+
     <a href="{{ course.get_mail_instructors_url }}" class="btn btn-sm">
         <i class="icon-tasks"></i>&nbsp;{% trans "Send infos to instructors" %}
     </a> &nbsp;
-    
+
     <a href="{{ course.get_js_export_url }}" class="btn btn-sm">
         <i class="icon-doc"></i>&nbsp;{% trans "Get BDNS: J+S export file" %}
     </a> &nbsp;
-  
+
     <a href="{{ course.get_mail_confirmation_url }}" class="btn btn-sm">
         <i class="icon-mail"></i>&nbsp;{% trans "Send confirmation email" %}
     </a> &nbsp;
-    
+
   </div>
 </section>
-<form method="POST" class="form-inline">{% csrf_token %}
+<div class="hidden-print">
+  <form method="POST" class="form-inline">{% csrf_token %}
     {% form session_form using "floppyforms/layouts/bootstrap-inline.html" %}
     <button type="submit" class="btn btn-secondary">{% trans "New session" %}</button>
-</form>
-
+  </form>
+</div>
 {% include 'absences/absences-table.html' %}
 
 
