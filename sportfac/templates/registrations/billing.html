@@ -1,6 +1,6 @@
 {% extends "profiles/baseprofile.html" %}
 {% load i18n sekizai_tags switzerland %}
-{% block page_title %}Paiement{% endblock page_title%}
+{% block page_title %}{% trans "My bills" %}{% endblock page_title%}
 {% block content %}
 
  <table class="table">
@@ -34,8 +34,8 @@
   {% endfor %}
 </table>
 
- 
- 
+
+
 
   <p class="hidden-print text-center"><button class="btn btn-success btn-large print-button"><i class="icon icon-print"></i> {% trans "Print" %}</button></p>
 
