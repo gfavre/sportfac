@@ -1890,10 +1890,8 @@ msgid "Bus"
 msgstr "Car"
 
 #: sportfac/templates/absences/absences-table.html:108
-#, fuzzy
-#| msgid "New session"
 msgid "Edit session"
-msgstr "Nouvelle session"
+msgstr "Editer la session"
 
 #: sportfac/templates/absences/absences-table.html:204
 #: sportfac/templates/backend/course/pay-slip-montreux-form.html:11
@@ -1911,10 +1909,8 @@ msgid "Date"
 msgstr "Dates"
 
 #: sportfac/templates/absences/absences-table.html:228
-#, fuzzy
-#| msgid "Delete period"
 msgid "Delete session"
-msgstr "Supprimer la période"
+msgstr "Supprimer la session"
 
 #: sportfac/templates/absences/absences.html:5
 #: sportfac/templates/backend/course/absences.html:5

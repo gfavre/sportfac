@@ -60,7 +60,7 @@ $(function () {
 <a href="{% url 'backend:course-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New course" %}</a>
 <hr>
 <div class="btn-group">
-  <form class="absences" method="POST" action="{% url 'backend:courses-absence' %}">{% csrf_token %}
+  <form class="absences" method="GET" action="{% url 'backend:courses-absence' %}">
     <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-calendar"></i>&nbsp;&nbsp;{% trans "Manage multiple courses absences" %}</button>
   </form>
 </div>
