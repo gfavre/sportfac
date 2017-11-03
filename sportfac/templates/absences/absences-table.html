@@ -49,7 +49,6 @@ table.dataTable thead>tr>th.rotated-heading {
 }
 </style>
 {% endaddtoblock %}
-<div class="table-responsive">
 <table class="table table-bordered table-hover table-condensed absences responsive" style="table-layout: fixed;">
   <thead>
     <tr>
@@ -108,7 +107,8 @@ table.dataTable thead>tr>th.rotated-heading {
            title="{% trans "Edit session" %}"
            data-placement="top"
            data-trigger="click focus">
-          <abbr title="{{ session.instructor.full_name }}">{{ session.instructor.get_initials | default:"n/a"}}</abbr>
+
+          <abbr title="{{ session.instructor.full_name | default:_("Unknown instructor") }}">{{ session.instructor.get_initials | default:"n/a"}}</abbr>
           <br>
           <i class="icon-pencil"></i>&nbsp;
         </a>
@@ -191,7 +191,6 @@ table.dataTable thead>tr>th.rotated-heading {
   {% endfor %}
   </tbody>
 </table>
-</div>
 
 <p class="hidden-print text-center">
   <button class="btn btn-success btn-large print-button"><i class="icon icon-print"></i> Imprimer</button>
@@ -507,7 +506,13 @@ $(function(){
         type: 'PATCH',
         data: data,
         success: function(response){
-          $parent.data('instructor', response.instructor);
+          if (response.instructor) {
+              $parent.data('instructor', response.instructor.id);
+              $('abbr', $parent).text(response.instructor.initials).attr('title', response.instructor.full_name);
+          }  else {
+              $parent.data('instructor', null);
+          }
+
           $parent.data('date', response.date);
           $('.date[data-session=' + response.id + '] .session-date').text(
               moment(response.date, API_FMT).format(HUMAN_FMT)

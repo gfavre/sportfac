@@ -15,7 +15,7 @@ from registrations.models import Child, ChildActivityLevel, ExtraInfo, Registrat
 from schools.models import Teacher
 
 from .permissions import ManagerPermission, FamilyPermission, InstructorPermission
-from .serializers import (AbsenceSerializer, SetAbsenceSerializer, SessionSerializer,
+from .serializers import (AbsenceSerializer, SetAbsenceSerializer, SessionSerializer, SessionUpdateSerializer,
                           ActivityDetailedSerializer,
                           ChildrenSerializer, CourseSerializer, TeacherSerializer,
                           RegistrationSerializer, ExtraSerializer, ChildActivityLevelSerializer,
@@ -27,20 +27,20 @@ class AbsenceViewSet(viewsets.ModelViewSet):
     queryset = Absence.objects.all()
     permission_classes = (InstructorPermission,)
     serializer_class = AbsenceSerializer
-    
+
     @list_route(methods=['post'])
     def set(self, request):
         serializer = SetAbsenceSerializer(data=request.data)
         if serializer.is_valid():
             res_status = serializer.data['status']
             Absence.objects.update_or_create(
-                session=Session.objects.get(pk=serializer.data['session']), 
+                session=Session.objects.get(pk=serializer.data['session']),
                 child=Child.objects.get(pk=serializer.data['child']),
                 defaults={
                     'status': res_status
                 }
             )
-            return Response({'status': res_status}) 
+            return Response({'status': res_status})
         else:
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
@@ -59,6 +59,11 @@ class SessionViewSet(viewsets.ModelViewSet):
     queryset = Session.objects.all()
     permission_classes = (InstructorPermission,)
 
+    def get_serializer_class(self):
+        if self.action in ('retrieve', 'list'):
+            return SessionSerializer
+        return SessionUpdateSerializer
+
     def perform_create(self, serializer):
         # set all children as present as defauolt value
         session = serializer.save()
@@ -73,17 +78,17 @@ class SessionViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = SessionSerializer(instance, data=request.data, partial=True)
+        serializer = self.get_serializer_class()(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data)
-    
+        return Response(SessionSerializer(instance).data)
+
 
 
 class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ActivityDetailedSerializer
     model = Activity
-    
+
     def get_queryset(self):
         queryset = Activity.objects.prefetch_related('courses', 'courses__instructors')
         school_year = self.request.query_params.get('year', None)
@@ -103,15 +108,15 @@ class YearViewSet(viewsets.ReadOnlyModelViewSet):
 class CourseViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CourseSerializer
     model = Course
-    
+
     def get_queryset(self):
         return Course.objects.visible().select_related('activity').prefetch_related('participants', 'instructors')
-    
+
 
 class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = TeacherSerializer
     model = Teacher
-    
+
     def get_queryset(self):
         return Teacher.objects.prefetch_related('years')
 
@@ -121,11 +126,11 @@ class FamilyView(mixins.ListModelMixin, generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = ChildrenSerializer
     model = Child
-    
+
     def get_queryset(self):
         user = self.request.user
         return Child.objects.filter(family=user)
-    
+
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
 
@@ -161,7 +166,7 @@ class ChildrenViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-    
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
@@ -177,7 +182,7 @@ class ChildrenViewSet(viewsets.ModelViewSet):
                             headers=headers)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
     def perform_update(self, serializer):
         serializer.validated_data['family'] = self.request.user
         if 'ext_id' in serializer.validated_data:
@@ -210,11 +215,11 @@ class RegistrationViewSet(viewsets.ModelViewSet):
     permission_classes = (ChildOrAdminPermission, )
     serializer_class = RegistrationSerializer
     model = Registration
-    
+
     def get_queryset(self):
         user = self.request.user
         return Registration.objects.filter(child__in=user.children.all())
-    
+
     def create(self, request, format=None):
         if type(request.data) is list:
             data = []
@@ -233,7 +238,7 @@ class RegistrationViewSet(viewsets.ModelViewSet):
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
 
 class RegistrationOwnerAdminPermission(permissions.IsAuthenticated):
     def has_object_permission(self, request, view, obj):
@@ -250,7 +255,7 @@ class ExtraInfoViewSet(viewsets.ModelViewSet):
     permission_classes = (RegistrationOwnerAdminPermission, )
     serializer_class = ExtraSerializer
     model = ExtraInfo
-    
+
     def get_queryset(self):
         user = self.request.user
         return ExtraInfo.objects.filter(registration__child__in=user.children.all())
