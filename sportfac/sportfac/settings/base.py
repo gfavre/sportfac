@@ -161,7 +161,7 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.request',
-                                
+
                 'sportfac.context_processors.wizard_context',
                 'sportfac.context_processors.registration_opened_context',
                 'sportfac.context_processors.activities_context',
@@ -213,8 +213,8 @@ ROOT_URLCONF = '%s.urls' % SITE_NAME
 
 SHARED_APPS = (
     'django_tenants',
-    'backend', # you must list the app where your tenant model resides in
-    
+    'backend',  # you must list the app where your tenant model resides in
+
     # Default Django apps:
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -222,23 +222,24 @@ SHARED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    
+
     'django.contrib.sites',
     'django.contrib.flatpages',
     'django.contrib.sitemaps',
 
     # third party apps
-    'rest_framework',  # REST API
-    'registration',  #user registration
-    'floppyforms',  # better forms
+
     'ckeditor',  # wysiwyg editor
     'ckeditor_uploader',
-    'sekizai',  # add_to_block template tag
     'dbtemplates',  # store templates in db (used by mailer module)
     'dynamic_preferences',
-    'mathfilters',
+    'floppyforms',  # better forms
     'import_export',
+    'mathfilters',
     'phonenumber_field',
+    'registration',  # user registration
+    'rest_framework',  # REST API
+    'sekizai',  # add_to_block template tag
 
     # local apps
     'api',
@@ -337,7 +338,7 @@ REST_FRAMEWORK = {
 
 ########## END REST FRAMEWORK CONFIGURATION
 
-########## DYNAMIC PREFERENCES CONFIGURATION 
+########## DYNAMIC PREFERENCES CONFIGURATION
 # see http://django-dynamic-preferences.readthedocs.io
 
 DYNAMIC_PREFERENCES = {
@@ -369,7 +370,7 @@ DYNAMIC_PREFERENCES = {
     'VALIDATE_NAMES': True,
 }
 
-########## END DYNAMIC PREFERENCES CONFIGURATION 
+########## END DYNAMIC PREFERENCES CONFIGURATION
 
 
 
@@ -420,7 +421,7 @@ AUTO_RENDER_SELECT2_STATICS = False
 
 
 ############ Celery
-# Asynchrnous tasks. 
+# Asynchrnous tasks.
 # See http://celery.readthedocs.org/en/latest/configuration.html
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
@@ -434,6 +435,16 @@ CELERYBEAT_SCHEDULE = {
 }
 
 PHANTOMJS = os.environ['PHANTOMJS']
+
+PDF_GENERATOR = {
+    'UPLOAD_TO': 'pdfs',
+    'PHANTOMJS_BIN_PATH': PHANTOMJS,
+    'DEFAULT_RASTERIZE_SCRIPT': join(dirname(SITE_ROOT), 'bin', 'rasterize.js'),
+    'DEFAULT_TEMP_DIR': join(dirname(SITE_ROOT), 'temp'),
+    'TEMPLATES_DIR': join(SITE_ROOT, 'templates/pdf_generator')
+}
+
+
 DBTEMPLATES_USE_CODEMIRROR = True
 
 
@@ -447,7 +458,7 @@ PHONENUMBER_DEFAULT_REGION = 'CH'
 KEPCHUP_USE_ABSENCES = False
 KEPCHUP_IMPORT_CHILDREN = False
 KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = False
-KEPCHUP_SEND_PRESENCE_LIST = True 
+KEPCHUP_SEND_PRESENCE_LIST = True
 KEPCHUP_SEND_COPY_CONTACT_MAIL_TO_ADMIN = True
 KEPCHUP_NO_PAYMENT = False
 KEPCHUP_NO_TERMS = False

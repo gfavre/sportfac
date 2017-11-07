@@ -16,9 +16,9 @@
     <meta name="apple-mobile-web-app-title" content="ssfvevey">
     <meta name="application-name" content="ssfvevey">
     <link type="text/plain" rel="author" href="/humans.txt" >
-        
-    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Oswald:400,300,700">
-    <link href='//fonts.googleapis.com/css?family=Open+Sans:400italic,400,600,700,800&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald:400,300,700">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400italic,400,600,700,800&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
     <link href="{% static 'css/style.css' %}" rel="stylesheet" media="all" />
     <link href="{% static 'css/mvpready-admin-royal.css' %}" rel="stylesheet" media="all" />
 
@@ -39,20 +39,20 @@
 
   <body  {% block extra_body %}{% endblock %}>
     <div id="wrapper">
-      {% include "navbar.html" %} 
+      {% include "navbar.html" %}
       {% block localnav %}{% endblock %}
       <div id="pagecontent" {% render_block "extra_html" %}>
-        {% block page_header %} 
-        <div class="container">      
+        {% block page_header %}
+        <div class="container">
           <div class="page-header">
             <h1>{% block page_title %}Example Base Template{% endblock page_title %}</h1>
           </div>
         </div>
         {% endblock page_header %}
-          
+
         {% block main-content %}
-        <div class="container"> 
-          {% include "messages.html" %} 
+        <div class="container">
+          {% include "messages.html" %}
           {% block content %}Use this document as a way to quick start any new project.{% endblock content %}
         </div>
         {% endblock main-content %}
@@ -60,11 +60,11 @@
         <footer class="container">{% block page_footer %}{% endblock page_footer %}</footer>
       </div>
     </div>
-    {% include "footer.html" %} 
+    {% include "footer.html" %}
 
     <script src="{% static 'js/vendor/jquery-2.1.1.min.js' %}"></script>
     <script src="{% static 'js/vendor/bootstrap.min.js' %}"></script>
-            
+
     <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

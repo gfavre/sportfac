@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 import collections
 from decimal import Decimal
+import os
+from tempfile import mkdtemp
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy, reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
@@ -23,6 +25,7 @@ from registrations.resources import RegistrationResource
 from sportfac.views import CSVMixin
 from .mixins import BackendMixin, ExcelResponseMixin
 from ..forms import PayslipMontreuxForm, SessionForm
+from ..utils import AbsencePDFRenderer, AbsencesPDFRenderer
 
 __all__ = ('CourseCreateView', 'CourseDeleteView', 'CourseDetailView',
            'CourseJSCSVView', 'CourseParticipantsExportView',
@@ -104,26 +107,6 @@ class CoursesAbsenceView(BackendMixin, ListView):
         courses_pk = [int(pk) for pk in self.request.GET.getlist('c') if pk.isdigit()]
         return Course.objects.filter(pk__in=courses_pk)
 
-    def post(self, *args, **kwargs):
-        pks = self.request.GET.getlist('c')
-        courses = Course.objects.filter(pk__in=pks)
-        form = SessionForm(data=self.request.POST)
-        if form.is_valid():
-            for course in courses:
-                session, created = Session.objects.get_or_create(course=course, date=form.cleaned_data['date'])
-                if not created:
-                    continue
-                for registration in course.participants.all():
-                    Absence.objects.get_or_create(
-                        child=registration.child, session=session,
-                        defaults={
-                            'status': Absence.STATUS.present
-                        }
-                    )
-
-        params = '&'.join(['c={}'.format(course.id) for course in courses])
-        return HttpResponseRedirect(reverse('backend:courses-absence') + '?' + params)
-
     def get_context_data(self, **kwargs):
         qs = Absence.objects.filter(session__course__in=self.get_queryset())\
                             .select_related('session', 'child', 'session__course', 'session__course__activity')\
@@ -156,6 +139,40 @@ class CoursesAbsenceView(BackendMixin, ListView):
         kwargs['levels'] = ChildActivityLevel.LEVELS
         kwargs['session_form'] = SessionForm()
         return super(CoursesAbsenceView, self).get_context_data(**kwargs)
+
+    def post(self, *args, **kwargs):
+        pks = self.request.GET.getlist('c')
+        courses = Course.objects.filter(pk__in=pks)
+        form = SessionForm(data=self.request.POST)
+        if form.is_valid():
+            for course in courses:
+                session, created = Session.objects.get_or_create(course=course, date=form.cleaned_data['date'])
+                if not created:
+                    continue
+                for registration in course.participants.all():
+                    Absence.objects.get_or_create(
+                        child=registration.child, session=session,
+                        defaults={
+                            'status': Absence.STATUS.present
+                        }
+                    )
+
+        params = '&'.join(['c={}'.format(course.id) for course in courses])
+        return HttpResponseRedirect(reverse('backend:courses-absence') + '?' + params)
+
+    def get(self, request, *args, **kwargs):
+        if 'pdf' in self.request.GET:
+            self.object_list = self.get_queryset()
+            context = self.get_context_data()
+            renderer = AbsencesPDFRenderer(context, self.request)
+            tempdir = mkdtemp()
+            filename = u'absences-{}.pdf'.format('-'.join(self.request.GET.getlist('c')))
+            filepath = os.path.join(tempdir, filename)
+            renderer.render_to_pdf(filepath)
+            response = HttpResponse(open(filepath).read(), content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="%s.pdf"' % filename
+            return response
+        return super(CoursesAbsenceView, self).get(request, *args, **kwargs)
 
 
 class CourseJSCSVView(CSVMixin, CourseDetailView):

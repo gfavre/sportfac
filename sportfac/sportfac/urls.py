@@ -40,20 +40,19 @@ urlpatterns = [
     url(r'^backend/', include('backend.urls', namespace="backend", app_name="backend")),
     url(r'^contact/', include('contact.urls')),
     url(r'^registrations/', include('registrations.urls')),
-        
+
     url(r'^sitemap\.xml$', sitemapviews.sitemap, {'sitemaps': sitemaps}),
     url(r'^robots\.txt$', TextPlainView.as_view(template_name='robots.txt')),
     url(r'^humans\.txt$', TextPlainView.as_view(template_name='humans.txt')),
     url(r'^favicon\.ico$', RedirectView.as_view(url=settings.STATIC_URL + 'img/favicon.ico')),
-    
+
     url(r'^wizard/', include('sportfac.wizardurls')),
-    
+
     url(r'404$', TemplateView.as_view(template_name='404.html')),
     url(r'500$', TemplateView.as_view(template_name='500.html')),
 
     url(r'^ckeditor/upload/', manager_required(ckeditor_views.upload), name='ckeditor_upload'),
     url(r'^ckeditor/browse/', manager_required(ckeditor_views.browse), name='ckeditor_browse'),
-
 
     #url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', include(admin.site.urls)),

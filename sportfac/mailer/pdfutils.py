@@ -10,7 +10,7 @@ from django.contrib.sites.models import Site
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import activate
 from django.utils.encoding import smart_text
-from django.template import loader, Context, RequestContext
+from django.template import loader
 
 import pypdftk
 
@@ -18,7 +18,6 @@ from backend.dynamic_preferences_registry import global_preferences_registry
 from sportfac.context_processors import kepchup_context
 
 global_preferences = global_preferences_registry.manager()
-
 
 
 def get_ssf_decompte_heures(course, instructor):
@@ -34,31 +33,38 @@ def get_ssf_decompte_heures(course, instructor):
         u'Nom': instructor.last_name,
         u'Prénom': instructor.first_name,
         u'Adresse': instructor.address,
-        u'localité': '%s %s' % (instructor.zipcode,
-                                instructor.city),
+        u'localité': '%s %s' % (instructor.zipcode, instructor.city),
         u'date de naissance': instructor.birth_date and instructor.birth_date.strftime('%d/%m/%Y') or '',
         u'iban': instructor.iban,
         u'No avs': instructor.ahv,
     }
     try:
         return pypdftk.fill_form(pdf_path=pdf_file, datas=fields)
-    except:
+    except:  # noqa
         return pdf_file
+
+
+class FakeRequest(object):
+    pass
 
 
 class PDFRenderer(object):
     message_template = None
 
-    def __init__(self, context_data):
+    def __init__(self, context_data, request=None):
         site = Site.objects.all()[0]
-        request = {'site': site}
+        self.fake_request = request is None
+        if not request:
+            request = FakeRequest()
+        request.site = site
+        self.request = request
         context_data['request'] = request
         context_data.update(kepchup_context(request))
         self.context = context_data
 
     @staticmethod
     def resolve_template(template):
-        "Accepts a template object, path-to-template or list of paths"
+        """Accepts a template object, path-to-template or list of paths"""
         if isinstance(template, (list, tuple)):
             return loader.select_template(template)
         elif isinstance(template, six.string_types):
@@ -77,9 +83,25 @@ class PDFRenderer(object):
     def render_to_temporary_file(self, template_name, mode='w+b', bufsize=-1,
                                  suffix='.html', prefix='tmp', dir=None,
                                  delete=True):
-        activate(settings.LANGUAGE_CODE)
-        template = self.resolve_template(template_name)
-        content = smart_text(template.render(self.context))
+
+        initial_static_url = settings.STATIC_URL
+        if settings.STATIC_URL.startswith('/'):
+            settings.STATIC_URL = u'{}{}{}'.format(self.context.get('PROTOCOL'),
+                                                   self.request.site.domain,
+                                                   settings.STATIC_URL)
+        if self.fake_request:
+            activate(settings.LANGUAGE_CODE)
+            template = self.resolve_template(template_name)
+            content = smart_text(template.render(self.context))
+        else:
+            b=self.message_template
+            c=self.context
+            r=self.request
+            content = loader.render_to_string(template_name=self.message_template,
+                                              context=self.context,
+                                              request=self.request)
+
+        settings.STATIC_URL = initial_static_url
         try:
             # Python3 has 'buffering' arg instead of 'bufsize'
             tempfile = NamedTemporaryFile(mode=mode, buffering=bufsize,
@@ -99,9 +121,8 @@ class PDFRenderer(object):
             raise
 
     def render_to_pdf(self, output):
-        "output: filelike object"
+        """output: filelike object"""
         filelike = self.render_to_temporary_file(self.get_message_template())
-
         try:
             phandle = subprocess.Popen([
                 settings.PHANTOMJS,
@@ -113,6 +134,7 @@ class PDFRenderer(object):
 
         finally:
             filelike.close()
+
 
 
 class CourseParticipants(PDFRenderer):
