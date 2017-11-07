@@ -13,14 +13,14 @@ DEBUG = True
 
 SHARED_APPS += (
     'djcelery',
-    'kombu.transport.django', 
+    'kombu.transport.django',
 )
 
 INSTALLED_APPS += (
     'django_extensions', # more commands
     'debug_toolbar', # debugging
     'djcelery',
-    'kombu.transport.django', 
+    'kombu.transport.django',
 )
 
 # See: https://github.com/django-debug-toolbar/django-debug-toolbar#installation
@@ -88,7 +88,7 @@ EMAIL_SUBJECT_PREFIX = '[%s] ' % SITE_NAME
 
 
 ############ Celery
-# Asynchrnous tasks. 
+# Asynchrnous tasks.
 # See http://celery.readthedocs.org/en/latest/configuration.html
 BROKER_URL = 'django://'
 CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
@@ -108,7 +108,7 @@ STATICFILES_DIRS = (
 KEPCHUP_USE_ABSENCES = True
 KEPCHUP_IMPORT_CHILDREN = True
 KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = True
-KEPCHUP_SEND_PRESENCE_LIST = True 
+KEPCHUP_SEND_PRESENCE_LIST = True
 KEPCHUP_SEND_COPY_CONTACT_MAIL_TO_ADMIN = True
 KEPCHUP_NO_PAYMENT = False
 KEPCHUP_NO_TERMS = False
