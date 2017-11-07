@@ -94,9 +94,6 @@ class PDFRenderer(object):
             template = self.resolve_template(template_name)
             content = smart_text(template.render(self.context))
         else:
-            b=self.message_template
-            c=self.context
-            r=self.request
             content = loader.render_to_string(template_name=self.message_template,
                                               context=self.context,
                                               request=self.request)
