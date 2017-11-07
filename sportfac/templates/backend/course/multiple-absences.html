@@ -6,9 +6,46 @@
 
 
 {% block content %}
+{% addtoblock "css" %}
+<style>
+@media print {
+  .page-header {
+    margin: 0;
+  }
+  .page-header h1{
+    margin-bottom: 1cm;
+  }
+  .portlet {
+    margin-bottom: 0.5cm;
+  }
+
+  h4.portlet-title {
+    display: none;
+  }
+  .courses-list {
+    padding-left: 0;
+  }
+  .courses-list li {
+    display: inline-block;
+    margin-right: 1em;
+  }
+  .courses-list li:after {
+    content: "/";
+    padding-left: 1em;
+  }
+  .courses-list li:last-child:after {
+    content: "";
+    padding: 0;
+  }
+
+}
+</style>
+
+{% endaddtoblock %}
+
 <section class="portlet">
   <h4 class="portlet-title"><u>{% trans "Courses" %}</u></h4>
-  <ul>
+  <ul class="courses-list">
   {% for course in course_list %}
     <li>
       <a href="{{ course.get_absences_url }}">
@@ -17,11 +54,13 @@
     </li>
   {% endfor %}
   </ul>
-  <form method="POST" class="form-inline">{% csrf_token %}
-    {% form session_form using "floppyforms/layouts/bootstrap-inline.html" %}
-    <button type="submit" class="btn btn-secondary">{% trans "Create session for all courses" %}</button>
-  </form>
-<hr>
+  <div class="hidden-print">
+    <form method="POST" class="form-inline">{% csrf_token %}
+      {% form session_form using "floppyforms/layouts/bootstrap-inline.html" %}
+      <button type="submit" class="btn btn-secondary">{% trans "Create session for all courses" %}</button>
+    </form>
+    <hr>
+  </div>
 </section>
 
 {% addtoblock "js" %}

@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{% static 'css/datatables.min.css' %}">
 <style>
 .rotated-heading {
-    height: 100px;
+    height: 85px;
     width: 40px;
     white-space: nowrap;
     vertical-align: middle!important;
@@ -14,7 +14,7 @@
     width: 35px;
 }
 .rotated-heading div span {
-    padding-left:10px;
+    padding-left:12px;
 }
 table.dataTable thead>tr>th.rotated-heading {
   padding-left: 0;
@@ -40,28 +40,58 @@ table.dataTable thead>tr>th.rotated-heading {
 .absences .popover textarea {
   width: 100%;
 }
+.session-col.notavailable {
+  background-color:#ddd;
+}
+@media print {
+  .absences {
+    width: 100% !important;
+  }
+  .course-link .name-extended {
+    display: none;
+  }
+ .level-col {
+   display: none;
+ }
+ .note-col {
+   display: none;
+ }
+ .child-col{
+   width: 4cm! important;
+ }
+ .course-col {
+   width: 3cm !important;
+ }
+ .session-col {
+   width: 0.6cm !important;
+ }
+ table.table-bordered.dataTable {
+   border-collapse: collapse !important;
+ }
+}
+
 </style>
 {% endaddtoblock %}
   <table class="table table-bordered table-hover table-condensed absences table-fixed responsive">
     <thead>
       <tr>
-        <th class="all">{% trans "Child" %}</th>
+        <th class="all child-col">{% trans "Child" %}</th>
         {% if BIB_NUMBERS %}
-        <th class="rotated-heading all"><div><span>{% trans "Bib number" %}</span></div></th>
+        <th class="rotated-heading all bib-number-col"><div><span>{% trans "Bib number" %}</span></div></th>
         {% endif %}
-        <th class="min-mobile-l">{% trans "Course" %}</th>
+        <th class="min-mobile-l course-col">{% trans "Course" %}</th>
         {% if REGISTRATION_LEVELS %}
-          <th class="min-desktop rotated-heading"><div><span>{% trans "Announced level" %}</span></div></th>
-          <th class="min-tablet-l rotated-heading"><div><span>{% trans "level -1" %}</span></div></th>
-          <th class="min-tablet-l rotated-heading"><div><span>{% trans "level 0" %}</span></div></th>
+          <th class="min-desktop rotated-heading level-col"><div><span>{% trans "Announced level" %}</span></div></th>
+          <th class="min-tablet-l rotated-heading level-col"><div><span>{% trans "level -1" %}</span></div></th>
+          <th class="min-tablet-l rotated-heading level-col"><div><span>{% trans "level 0" %}</span></div></th>
         {% endif %}
         {% if DISPLAY_REGISTRATION_NOTE %}
-        <th class="min-desktop note">
+        <th class="min-desktop note note-col">
           {% trans "Note" %}
         </th>
         {% endif %}
         {% for session_date in all_dates %}
-          <th class="rotated-heading {% if forloop.last %} all{% else %} min-tablet-p{% endif %}">
+          <th class="rotated-heading session-col{% if forloop.last %} all{% else %} min-tablet-p{% endif %}">
             <div><span>{{ session_date|date:"j b. Y" }}</span></div>
           </th>
         {% endfor %}
@@ -73,23 +103,23 @@ table.dataTable thead>tr>th.rotated-heading {
 {% for course_child, absences in course_absences.items %}
   {% with child=course_child.0 course=course_child.1 %}
       <tr>
-        <th data-order="{{ child.last_name }} {{ child.first_name }}">
+        <th data-order="{{ child.last_name }} {{ child.first_name }}" class="child-col">
           <a href="{{ child.get_backend_absences_url }}">{{ child }}</a>
         </th>
         {% if BIB_NUMBERS %}
-        <th data-order="{{ child.bib_number|default:"0" }}">
+        <th data-order="{{ child.bib_number|default:"0" }}" class="bib-number-col">
           {{ child.bib_number|default:"" }}
         </th>
         {% endif %}
 
-        <th data-order="{{ course.number }}">
+        <th data-order="{{ course.number }}" class="course-col">
           <span class="set-course"
                 data-child="{{ child.id }}"
                 data-course="{{ course.id }}">
             <a href="{{ course.get_backend_absences_url }}" class="course-link">
-              {{ course.short_name }}{% if course.name %} - {{ course.name }}{% endif %}
+              {{ course.short_name }}{% if course.name %}<span class="name-extended"> - {{ course.name }}</span>{% endif %}
             </a><br>
-            <a class="course has-popover" role="button"
+            <a class="course has-popover hidden-print" role="button"
                data-toggle="popover"
                data-trigger="click focus">
               <i class="icon-pencil"></i> {% trans "Changer de cours" %}
@@ -98,11 +128,11 @@ table.dataTable thead>tr>th.rotated-heading {
         </th>
 
         {% if REGISTRATION_LEVELS %}
-        <th data-order="{{ child.announced_level }}">
+        <th data-order="{{ child.announced_level }}" class="level-col">
           <span class="hidden-print">{{ child.announced_level }}</span>
           <span class="visible-print">{{ child.announced_level|truncatewords:"1" }}</span>
         </th>
-        <th>
+        <th class="level-col">
           <span class="set-level"
             data-level="{{ child.level.before_level }}"
             data-key="before_level"
@@ -113,7 +143,7 @@ table.dataTable thead>tr>th.rotated-heading {
                data-trigger="click focus">{{ child.level.before_level|default:'NP' }}</a>
           </span>
         </th>
-        <th>
+        <th class="level-col">
           <span class="set-level"
             data-level="{{ child.level.after_level }}"
             data-key="after_level"
@@ -126,7 +156,7 @@ table.dataTable thead>tr>th.rotated-heading {
         </th>
         {% endif %}
         {% if DISPLAY_REGISTRATION_NOTE %}
-        <th>
+        <th class="note-col">
           <span class="set-note"
                 data-key="note"
                 data-note="{{ child.level.note }}"
@@ -145,7 +175,7 @@ table.dataTable thead>tr>th.rotated-heading {
         {% for session_date in all_dates %}
           {% if session_date in absences %}
           {% with absence=absences|get_item:session_date %}
-            <td class="absence {{ absence.status }} {% if absence.status == 'present' %}success{% elif absence.status == 'late' %}info{% elif absence.status == 'excused' %}warning{% else %}danger{% endif %}">
+            <td class="session-col absence {{ absence.status }} {% if absence.status == 'present' %}success{% elif absence.status == 'late' %}info{% elif absence.status == 'excused' %}warning{% else %}danger{% endif %}">
               <span class="set-absence"
                     data-pk="{{ absence.pk }}"
                     data-session="{{ absence.session.id }}"
@@ -158,7 +188,8 @@ table.dataTable thead>tr>th.rotated-heading {
             </td>
           {% endwith %}
           {% else %}
-            <td class="text-muted active"></td>
+            <td class="session-col unavailable text-muted active">
+            </td>
           {% endif %}
         </td>
         {% endfor %}

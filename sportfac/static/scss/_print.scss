@@ -1,20 +1,26 @@
 @media  print {
     /*@page {size: landscape;}*/
+     @page {
+        size: A4 portrait;
+        margin: 1cm;
+    }
     .wizard { display: none;}
     .navbar { display: none;}
     .form-actions { display: none;}
     a[href]:after {content: none;}
-    
+
     .col-print-12 {
         width: 100%;
-        
+
     }
     .layout-main-right .layout-main.col-print-12{
         padding-left: 15px;
     }
-    
+    #back-to-top {
+        display: none;
+    }
     @include footer_height(100px);
-    
+
     #footer {
         padding: 10px 0;
         page-break-inside: avoid;
@@ -22,13 +28,13 @@
             margin-bottom: 0;
         }
     }
-    
+
     .bill {
         font-size: 13px;
         .container {
             width: auto;
         }
-        
+
         .page-header {
             margin: 0;
             padding: 0;
@@ -46,7 +52,7 @@
         h3 {
             margin-top: 1em;
         }
-        
+
     }
     .dataTables_filter, .dataTables_info {
         display: none;
@@ -57,5 +63,5 @@
         display: none;
         content: '';
     }
-    
+
 }
