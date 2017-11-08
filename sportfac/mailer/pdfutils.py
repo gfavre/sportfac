@@ -50,6 +50,7 @@ class FakeRequest(object):
 
 class PDFRenderer(object):
     message_template = None
+    rasterizer = settings.PHANTOMJS_RASTERIZE_LANDSCAPE
 
     def __init__(self, context_data, request=None):
         site = Site.objects.all()[0]
@@ -98,6 +99,9 @@ class PDFRenderer(object):
                                               context=self.context,
                                               request=self.request)
 
+        import io
+        with io.open('/Users/grfavre/Desktop/debug.html', 'w', encoding='utf-8') as f:
+            f.write(content)
         settings.STATIC_URL = initial_static_url
         try:
             # Python3 has 'buffering' arg instead of 'bufsize'
@@ -123,7 +127,7 @@ class PDFRenderer(object):
         try:
             phandle = subprocess.Popen([
                 settings.PHANTOMJS,
-                os.path.join(os.path.dirname(settings.SITE_ROOT), 'bin', 'rasterize.js'),
+                self.rasterizer,
                 filelike.name.encode(), output,
                 'A4'
             ], close_fds=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)

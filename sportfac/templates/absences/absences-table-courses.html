@@ -1,7 +1,8 @@
 {% load i18n %}
 {% load duration switzerland extra sekizai_tags staticfiles matrix status mathfilters children %}
 {% addtoblock "css" %}
-<link rel="stylesheet" href="{% static 'css/datatables.min.css' %}">
+  {% comment %}Ne pas utiliser  sekizai a de la peine si static_url est absolu en prod {% endcomment %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/datatables.min.css">
 <style>
 .rotated-heading {
     height: 85px;
@@ -11,6 +12,7 @@
 }
 .rotated-heading div {
     transform: rotate(-90deg) translate(-33px, 0px);
+    -webkit-transform: rotate(-90deg) translate(-33px, 0px);
     width: 35px;
 }
 .rotated-heading div span {
@@ -44,6 +46,15 @@ table.dataTable thead>tr>th.rotated-heading {
   background-color:#ddd;
 }
 @media print {
+  table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child:before,
+  table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>th:first-child:before {
+    display: none;
+  }
+  table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child,
+  table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>th:first-child {
+    padding-left: 5px;
+  }
+
   .absences {
     width: 100% !important;
   }
@@ -191,7 +202,6 @@ table.dataTable thead>tr>th.rotated-heading {
             <td class="session-col unavailable text-muted active">
             </td>
           {% endif %}
-        </td>
         {% endfor %}
       </tr>
   {% endwith %}
@@ -255,8 +265,8 @@ table.dataTable thead>tr>th.rotated-heading {
     </div>
   </form>
 </script>
-<script src="{% static 'js/vendor/js.cookie.js' %}"></script>
-<script src="{% static 'js/vendor/datatables/datatables.min.js' %}"></script>
+<script src="{{ STATIC_URL }}js/vendor/js.cookie.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/datatables/datatables.min.js"></script>
 <script>
 jQuery(function($){
   $.ajaxSetup({

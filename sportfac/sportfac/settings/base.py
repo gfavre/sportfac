@@ -435,15 +435,8 @@ CELERYBEAT_SCHEDULE = {
 }
 
 PHANTOMJS = os.environ['PHANTOMJS']
-
-PDF_GENERATOR = {
-    'UPLOAD_TO': 'pdfs',
-    'PHANTOMJS_BIN_PATH': PHANTOMJS,
-    'DEFAULT_RASTERIZE_SCRIPT': join(dirname(SITE_ROOT), 'bin', 'rasterize.js'),
-    'DEFAULT_TEMP_DIR': join(dirname(SITE_ROOT), 'temp'),
-    'TEMPLATES_DIR': join(SITE_ROOT, 'templates/pdf_generator')
-}
-
+PHANTOMJS_RASTERIZE_PORTRAIT = join(dirname(SITE_ROOT), 'bin', 'rasterize-portrait.js')
+PHANTOMJS_RASTERIZE_LANDSCAPE = join(dirname(SITE_ROOT), 'bin', 'rasterize-landscape.js')
 
 DBTEMPLATES_USE_CODEMIRROR = True
 

@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import Group
 from django.contrib.auth import REDIRECT_FIELD_NAME
-
+from django.conf import settings
 from django.db import transaction
 
 from activities.models import Course
@@ -11,10 +11,13 @@ from . import INSTRUCTORS_GROUP, MANAGERS_GROUP
 
 class AbsencePDFRenderer(PDFRenderer):
     message_template = 'backend/course/absences.html'
+    rasterizer = settings.PHANTOMJS_RASTERIZE_PORTRAIT
+
 
 
 class AbsencesPDFRenderer(PDFRenderer):
     message_template = 'backend/course/multiple-absences.html'
+    rasterizer = settings.PHANTOMJS_RASTERIZE_PORTRAIT
 
 
 @transaction.atomic
