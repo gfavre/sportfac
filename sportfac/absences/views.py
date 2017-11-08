@@ -44,4 +44,4 @@ class AbsenceView(InstructorMixin, DetailView):
                         'status': Absence.STATUS.present
                     }
                 )
-        return HttpResponseRedirect(course.get_backend_absences_url())
+        return HttpResponseRedirect(course.get_absences_url())
