@@ -31,10 +31,10 @@ $headerheight: 50px;
   width: 100%;
   text-align: center;
   padding: 1em 0;
-  
+
   border-top: 1px solid #e5e5e5;
   background-color: #f5f5f5;
-  
+
   address {
     font-size: 0.9em;
     color: #777;
@@ -58,7 +58,7 @@ $headerheight: 50px;
 }
 
 
-/* MVP Ready 
+/* MVP Ready
 -------------------------------------------------- */
 .pricing-plan{
     max-width: none;
@@ -133,9 +133,9 @@ select.ng-invalid:focus{
 }
 
 
-/* 
+/*
     Animations
-    
+
 */
 .fade-hide, .fade-show {
   -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
@@ -175,7 +175,7 @@ font-size: 0.8em;
 letter-spacing: 0.15em;
 
 /* FF Chrome Opera etc */
--webkit-transform: rotate(-90deg); 
+-webkit-transform: rotate(-90deg);
 -webkit-transform-origin: right top;
 -moz-transform: rotate(-90deg);
 -moz-transform-origin: right top;
@@ -183,7 +183,7 @@ letter-spacing: 0.15em;
 -o-transform-origin: right top;
 -ms-transform: rotate(-90deg);
 -ms-transform-origin: right top;
-transform: rotate(-90deg); 
+transform: rotate(-90deg);
 transform-origin: right top;
 
 /* IE */
@@ -211,7 +211,7 @@ filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 
 .fc-event{
     cursor: pointer;
-    
+
 }
 .fc-event-vert .fc-event-time { white-space: normal; line-height: 12px;}
 
@@ -220,23 +220,23 @@ filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
   color: white;
   border-color: $unavailable;
   cursor: not-allowed;
-  
+
 }
 .fc-event.registered {
   background-color: $registered;
   color: white;
-  border-color: $registered; 
+  border-color: $registered;
 }
 .fc-event.validated {
   background-color: darken($registered, 5%);
   color: white;
-  border-color: darken($registered, 5%) 
+  border-color: darken($registered, 5%)
 }
 .fc-event.available {
   background-color: $available;
   color: white;
   border-color: $available;
-  
+
 }
 .fc-state-highlight { background: none; }
 

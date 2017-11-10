@@ -3,24 +3,27 @@
 {% addtoblock "css" %}
 <style>
 .rotated-heading {
-    height: 100px;
+    height: 85px;
     width: 40px;
     white-space: nowrap;
     vertical-align: middle!important;
 }
 .rotated-heading div {
     transform: rotate(-90deg) translate(-33px, 0px);
+    -webkit-transform: rotate(-90deg) translate(-33px, 0px);
     width: 35px;
 }
 .rotated-heading div span {
-    padding-left:10px;
+    padding-left:12px;
 }
 table.dataTable thead>tr>th.rotated-heading {
   padding-left: 0;
   padding-right: 0;
 }
-.absences>tbody>tr>td.absence {
+.set-absence .btn-sm{
   padding: 0;
+ }
+.absences>tbody>tr>td.absence {
   text-align: center;
 }
 .absences .popover .radio {
@@ -47,12 +50,48 @@ table.dataTable thead>tr>th.rotated-heading {
   width: 100%;
   display: block;
 }
+
+@media print {
+
+  table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:before,
+  table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child:before {
+    display: none;
+  }
+
+  table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child,
+  table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child {
+    padding-left: 5px;
+  }
+  table.table-bordered.dataTable {
+   border-collapse: collapse !important;
+  }
+  .absences {
+    width: 100% !important;
+  }
+   .child-col{
+   width: 4cm! important;
+ }
+ .session-col {
+   width: 0.4cm !important;
+ }
+ .edit-session abbr[title]:after {
+   display: none;
+ }
+ .edit-session abbr[title] {
+   border-bottom: none;
+   text-decoration: none;
+ }
+  .set-absence .btn-sm{
+   font-size:10px;
+ }
+}
+
 </style>
 {% endaddtoblock %}
 <table class="table table-bordered table-hover table-condensed absences table-fixed responsive">
   <thead>
     <tr>
-      <th class="all">{% trans "Name" %}</th>
+      <th class="all child-col">{% trans "Name" %}</th>
 
       {% if BIB_NUMBERS %}
       <th class="rotated-heading all"><div><span>{% trans "Bib number" %}</span></div></th>
@@ -73,7 +112,7 @@ table.dataTable thead>tr>th.rotated-heading {
       </th>
       {% endif %}
       {% for session in course.sessions.all %}
-      <th class="rotated-heading date {% if forloop.last %} all{% else %} min-tablet-p{% endif %}" data-session="{{ session.id }}">
+      <th class="rotated-heading session-col date {% if forloop.last %} all{% else %} min-tablet-p{% endif %}" data-session="{{ session.id }}">
         <div>
           <span class="session-date">{{ session.date | date:"d.m.Y" }}</span>
         </div>
@@ -84,7 +123,7 @@ table.dataTable thead>tr>th.rotated-heading {
   </thead>
   <tfoot>
     <tr>
-      <th></th>
+      <th class="child-col"></th>
       {% if BIB_NUMBERS %}
       <th></th>
       {% endif %}
@@ -98,19 +137,18 @@ table.dataTable thead>tr>th.rotated-heading {
       <th></th>
       {% endif %}
       {% for session in course.sessions.all %}
-      <th class="edit-session"
+      <th class="edit-session session-col"
           data-url="{{ session.get_api_url }}"
           data-instructor="{{ session.instructor.id }}"
           data-date="{{ session.date | date:"d.m.Y"  }}"
       >
-        <a class="has-popover hidden-print" role="button" data-toggle="popover"
+        <a class="has-popover" role="button" data-toggle="popover"
            title="{% trans "Edit session" %}"
            data-placement="top"
            data-trigger="click focus">
 
           <abbr title="{{ session.instructor.full_name | default:_("Unknown instructor") }}">{{ session.instructor.get_initials | default:"n/a"}}</abbr>
-          <br>
-          <i class="icon-pencil"></i>&nbsp;
+            <i class="icon-pencil hidden-print" style="clear:both;"></i>&nbsp;
         </a>
       </th>
       {% endfor %}
@@ -120,7 +158,7 @@ table.dataTable thead>tr>th.rotated-heading {
   {% for registration in course.participants.all %}
   {% with units=forloop.counter0 %}
     <tr data-child="{{ registration.child.id }}">
-       <th class="child-name" data-order="{{ registration.child.last_name }} {{ registration.child.first_name }}">
+       <th class="child-name child-col" data-order="{{ registration.child.last_name }} {{ registration.child.first_name }}">
             {% if request.user.is_manager %}
             <a href="{{ registration.child.get_backend_url}}">{{ registration.child.full_name }}</a>
             {% else %}
@@ -183,7 +221,7 @@ table.dataTable thead>tr>th.rotated-heading {
         {% endif %}
         {% for session in course.sessions.all %}
         {% with status=absence_matrix|index:units|index:forloop.counter0 decade=forloop.counter|mul:100 %}
-        <td class="absence {{ status}} {% if status == 'present' %}success{% elif status == 'late' %}info{% elif absence.status == 'excused' %}warning{% else %}danger{% endif %}">
+        <td class="session-col absence {{ status}} {% if status == 'present' %}success{% elif status == 'late' %}info{% elif absence.status == 'excused' %}warning{% else %}danger{% endif %}">
             <span class="set-absence"
                   data-session="{{ session.id }}"
                   data-child="{{ registration.child.id }}"
@@ -202,7 +240,7 @@ table.dataTable thead>tr>th.rotated-heading {
 </table>
 
 <p class="hidden-print text-center">
-  <button class="btn btn-success btn-large print-button"><i class="icon icon-print"></i> Imprimer</button>
+  <a class="btn btn-success btn-large" href="{{ request.get_full_path }}?pdf=1"><i class="icon icon-file-pdf"></i> {% trans "Export to PDF" %}</a>
 </p>
 
 

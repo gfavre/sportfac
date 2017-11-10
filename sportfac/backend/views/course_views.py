@@ -20,7 +20,7 @@ from absences.models import Absence, Session
 from activities.models import Course, Activity
 from activities.forms import CourseForm
 from profiles.models import FamilyUser
-from registrations.models import ChildActivityLevel, ExtraInfo, Child
+from registrations.models import ChildActivityLevel, ExtraInfo
 from registrations.resources import RegistrationResource
 from sportfac.views import CSVMixin
 from .mixins import BackendMixin, ExcelResponseMixin
@@ -84,19 +84,32 @@ class CourseAbsenceView(BackendMixin, DetailView):
         return HttpResponseRedirect(course.get_backend_absences_url())
 
     def get_context_data(self, **kwargs):
-        course = self.get_object()
         all_absences = dict(
             [((absence.child, absence.session), absence.status)
-             for absence in Absence.objects.select_related('child', 'session').filter(session__course=course)]
+             for absence in Absence.objects.select_related('child', 'session').filter(session__course=self.object)]
         )
         kwargs['absence_matrix'] = [
-            [all_absences.get((registration.child, session), 'present') for session in course.sessions.all()]
-            for registration in course.participants.select_related('child', 'child__family')
+            [all_absences.get((registration.child, session), 'present') for session in self.object.sessions.all()]
+            for registration in self.object.participants.select_related('child', 'child__family')
         ]
         kwargs['courses_list'] = Course.objects.all()
         kwargs['levels'] = ChildActivityLevel.LEVELS
         kwargs['session_form'] = SessionForm()
         return super(CourseAbsenceView, self).get_context_data(**kwargs)
+
+    def get(self, request, *args, **kwargs):
+        if 'pdf' in self.request.GET:
+            self.object = self.get_object()
+            context = self.get_context_data(object=self.object)
+            renderer = AbsencePDFRenderer(context, self.request)
+            tempdir = mkdtemp()
+            filename = u'absences-{}.pdf'.format(self.object.number)
+            filepath = os.path.join(tempdir, filename)
+            renderer.render_to_pdf(filepath)
+            response = HttpResponse(open(filepath).read(), content_type='application/pdf')
+            response['Content-Disposition'] = u'attachment; filename="{}"'.format(filename)
+            return response
+        return super(CourseAbsenceView, self).get(request, *args, **kwargs)
 
 
 class CoursesAbsenceView(BackendMixin, ListView):
@@ -166,11 +179,11 @@ class CoursesAbsenceView(BackendMixin, ListView):
             context = self.get_context_data()
             renderer = AbsencesPDFRenderer(context, self.request)
             tempdir = mkdtemp()
-            filename = u'absences-{}.pdf'.format('-'.join(self.request.GET.getlist('c')))
+            filename = u'absences-{}.pdf'.format('-'.join(self.object_list.values_list('number', flat=True)))
             filepath = os.path.join(tempdir, filename)
             renderer.render_to_pdf(filepath)
             response = HttpResponse(open(filepath).read(), content_type='application/pdf')
-            response['Content-Disposition'] = 'attachment; filename="%s.pdf"' % filename
+            response['Content-Disposition'] = u'attachment; filename="{}"'.format(filename)
             return response
         return super(CoursesAbsenceView, self).get(request, *args, **kwargs)
 

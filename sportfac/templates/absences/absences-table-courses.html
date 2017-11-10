@@ -54,7 +54,9 @@ table.dataTable thead>tr>th.rotated-heading {
   table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>th:first-child {
     padding-left: 5px;
   }
-
+  table.table-bordered.dataTable {
+    border-collapse: collapse !important;
+  }
   .absences {
     width: 100% !important;
   }
@@ -74,11 +76,12 @@ table.dataTable thead>tr>th.rotated-heading {
    width: 3cm !important;
  }
  .session-col {
-   width: 0.6cm !important;
+   width: 0.4cm !important;
  }
- table.table-bordered.dataTable {
-   border-collapse: collapse !important;
+ .set-absence .btn-sm{
+   font-size:10px;
  }
+
 }
 
 </style>
@@ -209,6 +212,9 @@ table.dataTable thead>tr>th.rotated-heading {
     </tbody>
   </table>
 
+<p class="hidden-print text-center">
+  <a class="btn btn-success btn-large" href="{{ request.get_full_path }}&pdf=1"><i class="icon icon-file-pdf"></i> {% trans "Export to PDF" %}</a>
+</p>
 
 {% addtoblock "js" %}
 <script type="text/html" id="level-window">

@@ -14,7 +14,6 @@ class AbsencePDFRenderer(PDFRenderer):
     rasterizer = settings.PHANTOMJS_RASTERIZE_PORTRAIT
 
 
-
 class AbsencesPDFRenderer(PDFRenderer):
     message_template = 'backend/course/multiple-absences.html'
     rasterizer = settings.PHANTOMJS_RASTERIZE_PORTRAIT

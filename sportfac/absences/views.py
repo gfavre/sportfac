@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
-from django.http import HttpResponseRedirect
+import os
+from tempfile import mkdtemp
+
+from django.http import HttpResponseRedirect, HttpResponse
 from django.views.generic import DetailView
 
 from activities.views import InstructorMixin
 from activities.models import Course
 from backend.forms import SessionForm  # TODO move sessionform to a more appropriate place
+from backend.utils import AbsencePDFRenderer  # TODO move pdfrenderer to a more appropriate place
+
 from registrations.models import ChildActivityLevel
 from .models import Absence, Session
 
@@ -45,3 +50,17 @@ class AbsenceView(InstructorMixin, DetailView):
                     }
                 )
         return HttpResponseRedirect(course.get_absences_url())
+
+    def get(self, request, *args, **kwargs):
+        if 'pdf' in self.request.GET:
+            self.object = self.get_object()
+            context = self.get_context_data(object=self.object)
+            renderer = AbsencePDFRenderer(context, self.request)
+            tempdir = mkdtemp()
+            filename = u'absences-{}.pdf'.format(self.object.number)
+            filepath = os.path.join(tempdir, filename)
+            renderer.render_to_pdf(filepath)
+            response = HttpResponse(open(filepath).read(), content_type='application/pdf')
+            response['Content-Disposition'] = u'attachment; filename="{}"'.format(filename)
+            return response
+        return super(AbsenceView, self).get(request, *args, **kwargs)
