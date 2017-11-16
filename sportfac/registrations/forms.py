@@ -43,7 +43,6 @@ class ChildForm(forms.ModelForm):
                   'language', 'school', 'other_school', 'school_year', 'teacher', 'emergency_number',
                   'bib_number')
 
-
     def clean_id_lagapeo(self):
         id_lagapeo = self.cleaned_data["id_lagapeo"]
         if not id_lagapeo:

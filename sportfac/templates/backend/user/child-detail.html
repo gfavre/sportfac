@@ -8,22 +8,28 @@
 <section class="portlet">
   <h4 class="portlet-title"><u>{% trans "Informations" %}</u></h4>
   <dl class="dl-horizontal">
-    <dt>{% trans "Parent" %}</dt>
-    <dd><a href="{{ child.family.get_backend_url }}">{{ child.family.full_name }}</a></dd>
     {% if BIB_NUMBERS %}
     <dt>{% trans "Bib number" %}</dt>
     <dd>{{ child.bib_number|default:_("No bib number") }}</dd>
     {% endif %}
+    {% if IMPORT_CHILDREN %}
+    <dt>{% trans "SSF number" %}</dt>
+    <dd>{{ child.id_lagapeo | default:'n/a' }}</dd>
+    {% endif %}
+  <hr>
+    <dt>{% trans "Parent" %}</dt>
+    <dd><a href="{{ child.family.get_backend_url }}">{{ child.family.full_name }}</a></dd>
     <dt>{% trans "Birth date" %}</dt><dd> {{ child.birth_date | date:"j F Y" }}</dd>
     <dt>{% trans "Sex" %}</dt><dd> {{ child.get_sex_display }}</dd>
     <dt>{% trans "Nationality" %}</dt><dd> {{ child.get_nationality_display }}</dd>
     <dt>{% trans "Language" %}</dt><dd> {{ child.get_language_display }}</dd>
+  <hr>
     <dt>{% trans "School year" %}</dt><dd> {{ child.school_year }}</dd>
 {% if PREFILL_YEARS_WITH_TEACHERS %}
     <dt>{% trans "Teacher" %}</dt><dd> {{ child.teacher.get_full_name }}</dd>
 {% endif %}
 {% if CHILD_SCHOOL %}
-    <dt>{% trans "School" %}</dt><dd>{{ child.school_name }}</dd>
+    <dt>{% trans "School" %}</dt><dd>{{ child.school_name|default:'n/a' }}</dd>
 {% endif %}
   </dl>
   <p class="text-center">
