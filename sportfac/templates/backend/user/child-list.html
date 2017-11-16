@@ -7,7 +7,7 @@
 
 {% block content %}
 
-{% addtoblock  "js" %}    
+{% addtoblock  "js" %}
 <script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
 <script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.tableTools.min.js"></script>
 <script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
@@ -28,19 +28,19 @@ $(function () {
       tableTools: {
             "sRowSelect": "multi",
             "aButtons": [ ],
-            'fnRowSelected': function(){ 
-                $('.needs-select').removeClass('disabled'); 
+            'fnRowSelected': function(){
+                $('.needs-select').removeClass('disabled');
             },
-            'fnRowDeselected': function(){ 
-                if ($('tr.active').length == 0){ 
+            'fnRowDeselected': function(){
+                if ($('tr.active').length == 0){
                     $('.needs-select').addClass('disabled');
-                } 
+                }
             }
       }
 
   });
-  
-  
+
+
   $('.selectall').click(function(){
       var tabletools = TableTools.fnGetInstance(t[0]);
       tabletools.fnSelectAll(true);
@@ -49,15 +49,15 @@ $(function () {
       var tabletools = TableTools.fnGetInstance(t[0]);
       tabletools.fnSelectNone();
   });
-  
+
   $('form.mail').submit(function(){
     var tabletools = TableTools.fnGetInstance(t[0]);
-    var ids = tabletools.fnGetSelected().map(function(elem){  
-        return elem.getAttribute('data-userid'); 
+    var ids = tabletools.fnGetSelected().map(function(elem){
+        return elem.getAttribute('data-userid');
     });
     $('input[name="data"]').val(JSON.stringify(ids));
   });
-  
+
 });
 </script>
 {% endaddtoblock %}
@@ -95,7 +95,7 @@ $(function () {
       {% if BIB_NUMBERS %}
       <td data-order="{{ child.bib_number|default:"0" }}">{{ child.bib_number|default:"n/a" }}</td>
       {% endif %}
-      <td data-order="{{ child.last_name}} {{ child.first_name}}">{{ child.full_name }}</td>
+      <td data-order="{{ child.last_name}} {{ child.first_name}}"><a href="{{ child.get_backend_detail_url }}">{{ child.full_name }}</a></td>
       <td data-order="{{ child.family.last_name }} {{ child.family.first_name }}">
         {% if child.family %}
         <a href="{{ child.family.get_backend_url }}">{{ child.family.full_name }}</a>
@@ -119,6 +119,7 @@ $(function () {
 
       <td>
           <ul class="list-unstyled">
+            <li class="text-nowrap"><a href="{{ child.get_backend_detail_url }}" class="btn btn-sm"><i class="icon-child"></i>&nbsp;&nbsp;{% trans "Child details" %}</a></a></li>
             <li class="text-nowrap"><a href="{{ child.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Edit student" %}</a></li>
             {% if USE_ABSENCES %}
             <li class="text-nowrap"><a href="{{ child.get_backend_absences_url }}" class="btn btn-sm"><i class="icon-calendar"></i>&nbsp;{% trans "Review absences" %}</a></li>
@@ -128,7 +129,7 @@ $(function () {
           </ul>
       </td>
      </tr>
-    
+
   {% endfor %}
 </table>
 

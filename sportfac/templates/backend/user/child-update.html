@@ -7,12 +7,17 @@
 {% block content %}
 
 <form action="" method="post" class="form-horizontal">{% csrf_token %}
-
+  {% if form.errors %}
+  <div class="alert alert-danger">
+    <a class="close" href="#" data-dismiss="alert">×</a>
+    <i class="icon-exclamation" aria-hidden="true"></i>&nbsp;{% trans "There are errors in this form." %}
+  </div><!--- .alert.alert-error -->
+  {% endif %}
   {% include "backend/user/child-form.html" %}
 
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-success">{% trans 'Update child' %}</button> 
+      <button type="submit" class="btn btn-success">{% trans 'Update child' %}</button>
       &nbsp;
       <a href="{{ parent.get_backend_url }}" class="btn  btn-default">{% trans 'Cancel' %}</a>
     </div>

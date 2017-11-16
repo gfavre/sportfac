@@ -296,6 +296,9 @@ class Child(TimeStampedModel):
             return reverse('backend:user-detail', kwargs={'pk': self.family.pk})
         return self.get_update_url()
 
+    def get_backend_detail_url(self):
+        return reverse('backend:child-detail', kwargs={'child': self.pk})
+
     def get_backend_absences_url(self):
         return reverse('backend:child-absences', kwargs={'child': self.pk})
 

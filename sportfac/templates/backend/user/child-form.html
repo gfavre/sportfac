@@ -8,9 +8,9 @@
   $(function () {
     $('.datetimepicker').datetimepicker({
         language: '{{ LANGUAGE_CODE }}',
-        icons: {time: 'icon-clock', 
-                date: 'icon-calendar', 
-                up:   'icon-up-open', 
+        icons: {time: 'icon-clock',
+                date: 'icon-calendar',
+                up:   'icon-up-open',
                 down: 'icon-down-open'}
         });
   });
@@ -34,12 +34,15 @@
   {% formrow form.bib_number %}
 {% endif %}
 
-{% formconfig row using "floppyforms/rows/bootstrap-sm-3.html" %}
 <fieldset>
     <legend>{% trans "School informations" %}</legend>
 {% if IMPORT_CHILDREN %}
+  {% formconfig row using "floppyforms/rows/bootstrap-sm-6.html" %}
+
     {% formrow form.id_lagapeo %}
 {% endif %}
+{% formconfig row using "floppyforms/rows/bootstrap-sm-3.html" %}
+
     {% formrow form.school_year  %}
     {% formconfig row using "floppyforms/rows/bootstrap.html" %}
 {% if PREFILL_YEARS_WITH_TEACHERS %}

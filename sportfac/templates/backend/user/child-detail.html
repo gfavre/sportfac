@@ -1,0 +1,61 @@
+{% extends "backend/base.html" %}
+{% load i18n switzerland %}
+
+{% block title %}{{ object.full_name }} - {{ block.super }}{% endblock %}
+{% block page_title %}<i class="icon-child"></i> {{ object.full_name }}{% endblock %}
+
+{% block content %}
+<section class="portlet">
+  <h4 class="portlet-title"><u>{% trans "Informations" %}</u></h4>
+  <dl class="dl-horizontal">
+    <dt>{% trans "Parent" %}</dt>
+    <dd><a href="{{ child.family.get_backend_url }}">{{ child.family.full_name }}</a></dd>
+    {% if BIB_NUMBERS %}
+    <dt>{% trans "Bib number" %}</dt>
+    <dd>{{ child.bib_number|default:_("No bib number") }}</dd>
+    {% endif %}
+    <dt>{% trans "Birth date" %}</dt><dd> {{ child.birth_date | date:"j F Y" }}</dd>
+    <dt>{% trans "Sex" %}</dt><dd> {{ child.get_sex_display }}</dd>
+    <dt>{% trans "Nationality" %}</dt><dd> {{ child.get_nationality_display }}</dd>
+    <dt>{% trans "Language" %}</dt><dd> {{ child.get_language_display }}</dd>
+    <dt>{% trans "School year" %}</dt><dd> {{ child.school_year }}</dd>
+{% if PREFILL_YEARS_WITH_TEACHERS %}
+    <dt>{% trans "Teacher" %}</dt><dd> {{ child.teacher.get_full_name }}</dd>
+{% endif %}
+{% if CHILD_SCHOOL %}
+    <dt>{% trans "School" %}</dt><dd>{{ child.school_name }}</dd>
+{% endif %}
+  </dl>
+  <p class="text-center">
+    <a href="{{ child.get_update_url }}" class="btn btn-default btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Update child" %}</a>&nbsp; <a href="{{ child.get_delete_url }}" class="btn btn-danger btn-sm"><i class="icon-trash"></i>&nbsp;&nbsp;{% trans "Delete child" %}</a>
+  </p>
+</section>
+<section class="portlet">
+  <h4 class="portlet-title"><u>{% trans "Registrations" %}</u></h4>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>{% trans "Course" %}</th>
+        <th>{% trans "Actions" %}</th>
+      </tr>
+    </thead>
+    {% for registration in child.registrations.all %}
+    <tr>
+      <td>
+       <a href="{{ registration.course.get_backend_url }}">{{ registration.course.short_name }}</a>
+      </td>
+      <td>
+        <ul class="list-unstyled">
+          <li class="text-nowrap"><a href="{{ registration.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update registration" %}</a></li>
+          <li class="text-nowrap"><a href="{{ registration.get_delete_url }}" class="btn btn-sm"><i class="icon-cancel"></i>&nbsp;{% trans "Cancel registration" %}</a></li>
+        </ul>
+
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="2">{% trans "No registration for this child" %}</td></tr>
+    {% endfor %}
+  </table>
+</section>
+
+{% endblock content %}

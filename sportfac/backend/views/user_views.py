@@ -29,7 +29,7 @@ from ..tasks import import_children
 __all__ = ('UserListView', 'UserCreateView', 'PasswordSetView',
            'UserUpdateView', 'UserDeleteView', 'UserDetailView',
            'UserExportView', 'MailUsersView',
-           'ChildListView', 'ChildCreateView', 'ChildUpdateView', 
+           'ChildDetailView', 'ChildListView', 'ChildCreateView', 'ChildUpdateView',
            'ChildDeleteView', 'ChildImportView',
            'ChildAbsencesView',
            'ManagerListView', 'ManagerCreateView',  'ManagerExportView',
@@ -49,7 +49,7 @@ FamilyUser.objects.annotate(
 class UserListView(BackendMixin, ListView):
     model = FamilyUser
     template_name = 'backend/user/list.html'
-    
+
     def get_queryset(self):
         return FamilyUser.objects.annotate(num_children=Count('children'))\
                          .annotate(
@@ -64,7 +64,7 @@ class UserListView(BackendMixin, ListView):
                             ),
                          )\
                          .prefetch_related('children')
-    
+
     def post(self, request, *args, **kwargs):
         userids = list(set(json.loads(request.POST.get('data', '[]'))))
         self.request.session['mail-userids'] = userids
@@ -120,8 +120,8 @@ class UserCreateView(BackendMixin, SuccessMessageMixin, CreateView):
     model = FamilyUser
     form_class = ManagerWithPasswordForm
     template_name = 'backend/user/create.html'
-    success_url = reverse_lazy('backend:user-list')    
-    
+    success_url = reverse_lazy('backend:user-list')
+
     def form_valid(self, form):
         self.object = form.save()
         self.object.set_password(form.cleaned_data['password1'])
@@ -134,7 +134,7 @@ class UserCreateView(BackendMixin, SuccessMessageMixin, CreateView):
 
 
 class ManagerCreateView(UserCreateView):
-    success_url = reverse_lazy('backend:manager-list')    
+    success_url = reverse_lazy('backend:manager-list')
 
     def get_context_data(self, **kwargs):
         ctx = super(ManagerCreateView, self).get_context_data(**kwargs)
@@ -148,26 +148,26 @@ class ManagerCreateView(UserCreateView):
 
     def get_success_message(self, cleaned_data):
         return _("Manager %s has been added.") % self.object.full_name
-    
+
 
 class InstructorCreateView(UserCreateView):
     success_url = reverse_lazy('backend:instructor-list')
     form_class = InstructorWithPasswordForm
-    
+
     def get_context_data(self, **kwargs):
         ctx = super(InstructorCreateView, self).get_context_data(**kwargs)
         ctx['is_instructor'] = True
         return ctx
-    
+
     def form_valid(self, form):
         self.object = form.save()
         self.object.is_manager = form.cleaned_data['is_manager']
         self.object.is_instructor = True
         return super(InstructorCreateView, self).form_valid(form)
-    
+
     def get_success_message(self, cleaned_data):
         return _("Instructor %s has been added.") % self.object.full_name
-    
+
 
 class UserUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
     model = FamilyUser
@@ -182,7 +182,7 @@ class UserUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
         if self.object.is_instructor:
             return InstructorForm
         return ManagerForm
-    
+
     def get_context_data(self, **kwargs):
         ctx = super(UserUpdateView, self).get_context_data(**kwargs)
         ctx['is_instructor'] = self.object.is_instructor
@@ -193,12 +193,12 @@ class UserUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
         self.object.is_manager = form.cleaned_data['is_manager']
         self.object.save()
         return super(UserUpdateView, self).form_valid(form)
-       
+
     def get_success_url(self):
         if self.object.is_instructor:
             return reverse_lazy('backend:instructor-list')
         return reverse_lazy('backend:user-list')
-    
+
     def get_success_message(self, cleaned_data):
         return _("Contact informations of %s have been updated.") % self.object.full_name
 
@@ -206,7 +206,7 @@ class UserUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
 class UserDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
     model = FamilyUser
     template_name = 'backend/user/confirm_delete.html'
-    success_url = reverse_lazy('backend:user-list')    
+    success_url = reverse_lazy('backend:user-list')
     success_message = _("User has been deleted.")
 
 
@@ -223,27 +223,27 @@ class InstructorDetailView(BackendMixin, DetailView):
 class PasswordSetView(BackendMixin, SuccessMessageMixin, FormView):
     form_class = SetPasswordForm
     template_name = 'backend/user/password-change.html'
-    
+
     def get_success_message(self, cleaned_data):
         return _("Password changed for user %s.") % self.get_object()
-    
+
     def get_success_url(self):
         return self.get_object().get_backend_url()
-    
+
     def get_object(self):
         user_id = self.kwargs.get('user', None)
         return get_object_or_404(FamilyUser, pk=user_id)
-    
+
     def get_form_kwargs(self):
         kwargs = super(PasswordSetView, self).get_form_kwargs()
         kwargs['user'] = self.get_object()
         return kwargs
-    
+
     def form_valid(self, form):
         user = self.get_object()
         user.set_password(form.cleaned_data['new_password1'])
         user.save()
-        return super(PasswordSetView, self).form_valid(form)    
+        return super(PasswordSetView, self).form_valid(form)
 
 
 class ChildView(BackendMixin, View):
@@ -257,13 +257,21 @@ class ChildView(BackendMixin, View):
         return user.get_backend_url()
 
 
+class ChildDetailView(BackendMixin, DetailView):
+    model = Child
+    template_name = 'backend/user/child-detail.html'
+    pk_url_kwarg = 'child'
+    slug_url_kwarg = 'lagapeo'
+    slug_field = 'id_lagapeo'
+
+
 class ChildListView(BackendMixin, ListView):
     model = Child
     template_name = 'backend/user/child-list.html'
-    
+
     def get_queryset(self):
         return Child.objects.select_related('family', 'school_year')
-    
+
 
 class ChildCreateView(ChildView, SuccessMessageMixin, CreateView):
     model = Child
@@ -288,7 +296,7 @@ class ChildUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
     template_name = 'backend/user/child-update.html'
     success_url = reverse_lazy('backend:child-list')
     pk_url_kwarg = 'child'
-    
+
     def get_success_message(self, cleaned_data):
         return _("Child %s has been updated.") % self.object.full_name
 
@@ -345,7 +353,7 @@ class ChildImportView(BackendMixin, SuccessMessageMixin, FormView):
         for chunk in self.request.FILES['thefile'].chunks():
             temp_file.write(chunk)
         temp_file.close()
-        import_children.delay(temp_file.name, 
-                              tenant_id=self.request.tenant.pk, 
+        import_children.delay(temp_file.name,
+                              tenant_id=self.request.tenant.pk,
                               user_id=self.request.user.pk)
         return super(ChildImportView, self).form_valid(form)

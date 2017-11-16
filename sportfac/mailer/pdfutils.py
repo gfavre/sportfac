@@ -99,6 +99,9 @@ class PDFRenderer(object):
                                               context=self.context,
                                               request=self.request)
 
+        import io
+        with io.open('/Users/grfavre/Desktop/debug.html', 'w', encoding='utf-8') as f:
+            f.write(content)
         settings.STATIC_URL = initial_static_url
         try:
             # Python3 has 'buffering' arg instead of 'bufsize'
