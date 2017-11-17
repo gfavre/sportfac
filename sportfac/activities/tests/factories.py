@@ -4,8 +4,7 @@ import factory
 import factory.fuzzy
 import faker
 
-from activities.models import Activity, Course, ExtraNeed, SCHOOL_YEARS
-from profiles.tests.factories import FamilyUserFactory
+from activities.models import Activity, Course, SCHOOL_YEARS
 
 
 fake = faker.Factory.create()
@@ -36,15 +35,15 @@ class CourseFactory(factory.DjangoModelFactory):
     end_time = datetime.time(hour=17)
     place = factory.lazy_attribute(lambda o: fake.address())
     min_participants = factory.fuzzy.FuzzyInteger(1, 20)
-    
+
     max_participants = factory.LazyAttribute(
         lambda c: c.min_participants + 5
     )
     schoolyear_min = factory.fuzzy.FuzzyChoice(YEARS[:-1])
     schoolyear_max = factory.fuzzy.FuzzyChoice(YEARS[1:])
-    
+
     price = factory.fuzzy.FuzzyInteger(1, 100)
-    
+
     @factory.post_generation
     def instructors(self, create, extracted, **kwargs):
         if not create:

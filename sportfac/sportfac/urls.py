@@ -35,7 +35,7 @@ urlpatterns = [
 
     url(r'^api/', include('api.urls', namespace="api")),
     url(r'^activities/', include('activities.urls', namespace="activities")),
-    url(r'^account/login$', auth_views.login),
+    url(r'^account/login$', auth_views.login, name='login'),
     url(r'^account/', include('profiles.urls')),
     url(r'^backend/', include('backend.urls', namespace="backend", app_name="backend")),
     url(r'^contact/', include('contact.urls')),

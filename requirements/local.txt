@@ -3,8 +3,7 @@
 
 coverage == 4.1b2
 mock == 2.0.0
-factory_boy >= 2.7.0
-faker == 0.7.6
+factory_boy >= 2.9.2
 django-debug-toolbar == 1.8
 Sphinx == 1.5.1
 fabric == 1.11.1

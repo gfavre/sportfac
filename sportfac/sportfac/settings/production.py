@@ -1,22 +1,6 @@
 """Production settings and globals."""
-
-
-from os import environ
-
 from base import *
 
-# Normally you should not import ANYTHING from Django directly
-# into your settings, but ImproperlyConfigured is an exception.
-from django.core.exceptions import ImproperlyConfigured
-
-
-def get_env_setting(setting):
-    """ Get the environment setting or return exception """
-    try:
-        return environ[setting]
-    except KeyError:
-        error_msg = "Set the %s env variable" % setting
-        raise ImproperlyConfigured(error_msg)
 
 INSTALLED_APPS += ('gunicorn', # web server
                    'raven.contrib.django.raven_compat', # sentry
@@ -27,13 +11,13 @@ INSTALLED_APPS += ('gunicorn', # web server
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-host
-EMAIL_HOST = environ.get('EMAIL_HOST', '')
+EMAIL_HOST = env('EMAIL_HOST', default='')
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-host-password
-EMAIL_HOST_PASSWORD = environ.get('EMAIL_HOST_PASSWORD', '')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', '')
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-host-user
-EMAIL_HOST_USER = environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', '')
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-subject-prefix
 EMAIL_SUBJECT_PREFIX = '[%s] ' % SITE_NAME
@@ -42,9 +26,9 @@ EMAIL_SUBJECT_PREFIX = '[%s] ' % SITE_NAME
 EMAIL_USE_TLS = True
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#server-email
-SERVER_EMAIL = get_env_setting('SERVER_EMAIL')
+SERVER_EMAIL = env('SERVER_EMAIL')
 
-DEFAULT_FROM_EMAIL = get_env_setting('DEFAULT_FROM_EMAIL')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 
 
 MANAGERS = (
@@ -57,11 +41,11 @@ MANAGERS = (
 
 ########## MEDIA CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-root
-MEDIA_ROOT = get_env_setting('MEDIA_ROOT')
+MEDIA_ROOT = env('MEDIA_ROOT')
 
 ########## STATIC FILE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
-STATIC_ROOT = get_env_setting('STATIC_ROOT')
+STATIC_ROOT = env('STATIC_ROOT')
 
 ########## END STATIC FILE CONFIGURATION
 
@@ -70,9 +54,9 @@ STATIC_ROOT = get_env_setting('STATIC_ROOT')
 ########## DATABASE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
 
-DATABASES['default']['NAME'] = environ.get('DB_NAME')
-DATABASES['default']['USER'] = environ.get('DB_USER')
-DATABASES['default']['PASSWORD'] = environ.get('DB_PASSWORD')
+DATABASES['default']['NAME'] = env('DB_NAME')
+DATABASES['default']['USER'] = env('DB_USER')
+DATABASES['default']['PASSWORD'] = env('DB_PASSWORD')
 
 ########## END DATABASE CONFIGURATION
 
@@ -83,7 +67,7 @@ DATABASES['default']['PASSWORD'] = environ.get('DB_PASSWORD')
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': 'unix:' + environ.get('MEMCACHED_SOCKET'),
+        'LOCATION': 'unix:' + env('MEMCACHED_SOCKET'),
     }
 }
 
@@ -92,9 +76,13 @@ CACHES = {
 
 
 
-########## SECRET CONFIGURATION
+# SECRET CONFIGURATION
+# ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
-SECRET_KEY = get_env_setting('SECRET_KEY')
+# Note: This key only used for development and testing.
+SECRET_KEY = env('DJANGO_SECRET_KEY')
+
+
 ########## END SECRET CONFIGURATION
 
 ########## SECURITY
@@ -106,12 +94,12 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_SECONDS = 3600
 #SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-ALLOWED_HOSTS = get_env_setting('ALLOWED_HOSTS').split(';')
+ALLOWED_HOSTS = env('ALLOWED_HOSTS').split(';')
 
 ############ Celery
-# Asynchrnous tasks. 
+# Asynchrnous tasks.
 # See http://celery.readthedocs.org/en/latest/configuration.html
-BROKER_URL = get_env_setting('BROKER_URL')
+BROKER_URL = env('BROKER_URL')
 
 
 ########### Sentry

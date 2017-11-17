@@ -1,9 +1,16 @@
 # coding: utf-8
 """Common settings and globals."""
-import os
 from os.path import abspath, basename, dirname, join, normpath
 from sys import path
+
+# Normally you should not import ANYTHING from Django directly
+# into your settings, but ImproperlyConfigured is an exception.
+from django.core.exceptions import ImproperlyConfigured
+
 from celery.schedules import crontab
+import environ
+
+env = environ.Env()
 
 ugettext = lambda s: s
 
@@ -128,10 +135,6 @@ STATICFILES_FINDERS = (
 ########## END STATIC FILE CONFIGURATION
 
 
-########## SECRET CONFIGURATION
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
-# Note: This key only used for development and testing.
-SECRET_KEY = os.environ['SECRET_KEY']
 ########## END SECRET CONFIGURATION
 
 
@@ -400,13 +403,13 @@ GRAPPELLI_ADMIN_TITLE = "Administration du sport scolaire facultatif"
 CKEDITOR_CONFIGS = {
     'default': {
         'toolbar': [
-                    [ 'Source','-','Save','-', 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo', '-', 'Find','Replace','-','SelectAll'],
-                    [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] ,'/',
-                    [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock','-','BidiLtr','BidiRtl' ],
-                    [ 'Link','Unlink' ],
-                    [ 'Image','Table','HorizontalRule','SpecialChar' ],
-                    [ 'TextColor', '-','Format'],
-                    [ 'Maximize', 'ShowBlocks','-'],
+                    ['Source', '-', 'Save', '-', 'Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Find', 'Replace', '-', 'SelectAll'],
+                    ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'], '/',
+                    ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl'],
+                    ['Link', 'Unlink'],
+                    ['Image', 'Table', 'HorizontalRule', 'SpecialChar'],
+                    ['TextColor', '-', 'Format'],
+                    ['Maximize', 'ShowBlocks', '-'],
                 ],
         'format_tags': 'p;h1;h2;h3;h4;h5;h6;pre;address',
     },
@@ -434,7 +437,7 @@ CELERYBEAT_SCHEDULE = {
     },
 }
 
-PHANTOMJS = os.environ['PHANTOMJS']
+PHANTOMJS = env('PHANTOMJS', default='/usr/local/bin/phantomjs')
 PHANTOMJS_RASTERIZE_PORTRAIT = join(dirname(SITE_ROOT), 'bin', 'rasterize-portrait.js')
 PHANTOMJS_RASTERIZE_LANDSCAPE = join(dirname(SITE_ROOT), 'bin', 'rasterize-landscape.js')
 

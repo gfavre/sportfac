@@ -1,15 +1,19 @@
 # coding: utf-8
 """Development settings and globals."""
-
-import os
-from os.path import join, normpath
-
 from base import *
 
 
 ########## DEBUG CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = True
+
+
+# SECRET CONFIGURATION
+# ------------------------------------------------------------------------------
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
+# Note: This key only used for development and testing.
+SECRET_KEY = env('DJANGO_SECRET_KEY', default='CHANGEME!!!')
+
 
 SHARED_APPS += (
     'djcelery',
@@ -41,16 +45,16 @@ ALLOWED_HOSTS = ('127.0.0.1', 'localhost', 'test.com', 'tenant.test.com', 'tests
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = '/tmp/app-messages' #  change this to a proper location
+EMAIL_FILE_PATH = env('EMAIL_FILE_PATH', default='/tmp/app-messages')
 
 ########## END EMAIL CONFIGURATION
 
 
 ########## DATABASE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES['default']['NAME'] = os.environ['DB_NAME']
-DATABASES['default']['USER'] = os.environ['DB_USER']
-DATABASES['default']['PASSWORD'] = os.environ['DB_PASSWORD']
+DATABASES['default']['NAME'] = env('DB_NAME')
+DATABASES['default']['USER'] = env('DB_USER')
+DATABASES['default']['PASSWORD'] = env('DB_PASSWORD')
 
 ########## END DATABASE CONFIGURATION
 
@@ -92,7 +96,6 @@ EMAIL_SUBJECT_PREFIX = '[%s] ' % SITE_NAME
 # See http://celery.readthedocs.org/en/latest/configuration.html
 BROKER_URL = 'django://'
 CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
-
 
 
 TEMPLATES[0]['DIRS'] = [

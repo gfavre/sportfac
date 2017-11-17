@@ -22,12 +22,18 @@ __all__ = ('InstructorMixin', 'ActivityDetailView', 'ActivityListView',
 
 
 class InstructorMixin(GroupRequiredMixin, LoginRequiredMixin):
-    """Mixin for backend. Ensure that the user is logged in and is a member 
+    """Mixin for backend. Ensure that the user is logged in and is a member
        of sports responisbles group."""
     group_required = INSTRUCTORS_GROUP
 
 
 class CourseAccessMixin(InstructorMixin):
+    pk_url_kwarg = 'course'
+
+    def get_object(self):
+        pk = self.kwargs.get(self.pk_url_kwarg)
+        return get_object_or_404(Course, pk=pk)
+
     def check_membership(self, group):
         if not super(CourseAccessMixin, self).check_membership(group):
             return self.request.user in [p.child.family for p in self.get_object().participants.all()]
@@ -36,18 +42,18 @@ class CourseAccessMixin(InstructorMixin):
 
 class ActivityDetailView(DetailView):
     model = Activity
-    
+
     def get_queryset(self):
         prefetched = Activity.objects.prefetch_related('courses', 'courses__participants', 'courses__instructors')
         return prefetched.all()
-    
+
     def get_context_data(self, **kwargs):
         context = super(ActivityDetailView, self).get_context_data(**kwargs)
         activity = kwargs['object']
         if not self.request.user.is_authenticated():
             context['registrations'] = {}
             return context
-        
+
         registrations = {}
         children = self.request.user.children.all()
         for course in activity.courses.prefetch_related('participants__child'):
@@ -56,14 +62,14 @@ class ActivityDetailView(DetailView):
                 if child in participants:
                     registrations[course] = participants
                     break
-            
+
         context['registrations'] = registrations
         return context
 
 
 class ActivityListView(LoginRequiredMixin, WizardMixin, ListView):
     model = Activity
-    
+
     def get_context_data(self, **kwargs):
         context = super(ActivityListView, self).get_context_data(**kwargs)
         from backend.dynamic_preferences_registry import global_preferences_registry
@@ -75,7 +81,7 @@ class ActivityListView(LoginRequiredMixin, WizardMixin, ListView):
         else:
             context['END_HOUR'] = (times['end_time__max'].hour + 1) % 24
         return context
-    
+
 
 class MyCoursesListView(InstructorMixin, ListView):
     template_name = 'activities/course_list.html'
@@ -93,6 +99,7 @@ class MyCourseDetailView(CourseAccessMixin, DetailView):
 
 
 class MailUsersView(CourseAccessMixin, View):
+
     def post(self, request, *args, **kwargs):
         userids = list(set(json.loads(request.POST.get('data', '[]'))))
         self.request.session['mail-userids'] = userids
@@ -108,22 +115,22 @@ class CustomMailCreateView(InstructorMixin, mailer_views.ParticipantsMailCreateV
     form_class = CourseMailForm
 
     def get_success_url(self):
-        course = self.kwargs['course']                
+        course = self.kwargs['course']
         return reverse('activities:mail-preview', kwargs={'course': course})
 
 
 class CustomMailPreview(InstructorMixin, mailer_views.ArchivedMailMixin,
                         mailer_views.ParticipantsMailPreviewView):
+    group_mails = True
     template_name = 'activities/mail-preview-editlink.html'
     edit_url = reverse_lazy('activities:mail-participants-custom')
 
     def get_edit_url(self):
         return self.course.get_custom_mail_instructors_url()
 
-
     def get_success_url(self):
         return reverse('activities:course-detail', kwargs=self.kwargs)
-    
+
     def get_from_address(self):
         return self.request.user.get_email_string()
 
@@ -146,6 +153,6 @@ class CustomParticipantsCustomMailView(InstructorMixin, mailer_views.MailCreateV
 
 class MailCourseInstructorsView(InstructorMixin, mailer_views.MailCourseInstructorsView):
     template_name = 'activities/confirm_send.html'
-    
+
     def get_success_url(self):
         return reverse('activities:my-courses')

@@ -42,8 +42,8 @@ class UnicodeWriter:
     def writerows(self, rows):
         for row in rows:
             self.writerow(row)
-            
-            
+
+
 class ExcelWriter:
     """
     A CSV writer which will write rows to CSV file "f",
@@ -96,7 +96,7 @@ class TenantTestCase(BaseTenantTestCase):
 
         connection.set_tenant(self.tenant)
         self.tenant_client = TenantClient(self.tenant)
-    
+
     def _fixture_teardown(self):
         # Allow TRUNCATE ... CASCADE and don't emit the post_migrate signal
         # when flushing only a subset of the apps
@@ -113,4 +113,16 @@ class TenantTestCase(BaseTenantTestCase):
             call_command('flush', verbosity=0, interactive=False,
                          database=db_name, reset_sequences=False,
                          allow_cascade=True,
-                         inhibit_post_migrate=inhibit_post_migrate)    
+                         inhibit_post_migrate=inhibit_post_migrate)
+
+
+def add_middleware_to_request(request, middleware_class):
+    middleware = middleware_class()
+    middleware.process_request(request)
+    return request
+
+
+def add_middleware_to_response(request, middleware_class):
+    middleware = middleware_class()
+    middleware.process_response(request)
+    return request

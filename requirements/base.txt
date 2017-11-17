@@ -22,6 +22,7 @@ django-formtools == 1.0
 django-picklefield == 0.3.2
 django-multiupload == 0.5.1
 -e git+git://github.com/gfavre/django-phonenumber-field#egg=phonenumber_field
+
 logutils==0.3.3
 Pillow == 3.2.0
 django-registration-redux == 1.4
@@ -43,3 +44,4 @@ django-import-export == 0.5.1
 # open xlsx documents
 openpyxl == 2.4.1
 python-dateutil == 2.5.3
+django_environ == 0.4.4
