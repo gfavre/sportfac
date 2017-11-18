@@ -63,6 +63,7 @@ class ParticipantsMailPreview(BackendMixin,
                               mailer_views.ParticipantsMailPreviewView):
     """Send email to all participants of a course - preview"""
     template_name = 'backend/mail/preview.html'
+    group_mails = True
 
     def get_success_url(self):
         return reverse('backend:course-detail', kwargs=self.kwargs)

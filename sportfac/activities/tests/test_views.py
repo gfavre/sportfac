@@ -13,7 +13,7 @@ from profiles.tests.factories import FamilyUserFactory, SchoolYearFactory, DEFAU
 from mailer.models import MailArchive
 from mailer.tests.factories import MailArchiveFactory
 from registrations.tests.factories import ChildFactory, RegistrationFactory
-from sportfac.utils import TenantTestCase as TestCase, add_middleware_to_request, add_middleware_to_response
+from sportfac.utils import TenantTestCase as TestCase, add_middleware_to_request
 from .factories import ActivityFactory, CourseFactory
 from ..views import MailUsersView, CustomParticipantsCustomMailView, CustomMailPreview
 
