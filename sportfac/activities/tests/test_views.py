@@ -1,5 +1,6 @@
 import json
 
+from django.conf import settings
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.contrib.messages.middleware import MessageMiddleware
 from django.core.urlresolvers import reverse
@@ -347,3 +348,16 @@ class CustomMailPreviewTest(TestCase):
         self.assertNotIn('mail', request.session)
         self.assertNotIn('mail-userids', request.session)
         self.assertEqual(sendmail_method.call_count, len(self.instructors) + len(self.other_users))
+
+    @mock.patch('mailer.tasks.send_mail.delay')
+    def test_adresses(self, sendmail_method):
+        request = self.factory.post(self.url, data={})
+        request.user = self.instructor
+        request = add_middleware_to_request(request, SessionMiddleware)
+        request = add_middleware_to_request(request, MessageMiddleware)
+        request.session['mail'] = self.archive.pk
+        request.session.save()
+        response = CustomMailPreview.as_view()(request, course=self.course.pk)
+        self.assertEqual(response.status_code, 302)
+        for (args, kwargs) in sendmail_method.call_args_list:
+            self.assertIn(self.instructor.email, kwargs['reply_to'][0])

@@ -131,7 +131,7 @@ class CustomMailPreview(InstructorMixin, mailer_views.ArchivedMailMixin,
     def get_success_url(self):
         return reverse('activities:course-detail', kwargs=self.kwargs)
 
-    def get_from_address(self):
+    def get_reply_to_address(self):
         return self.request.user.get_email_string()
 
 
