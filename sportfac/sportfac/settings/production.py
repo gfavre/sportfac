@@ -80,7 +80,7 @@ CACHES = {
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 # Note: This key only used for development and testing.
-SECRET_KEY = env('DJANGO_SECRET_KEY')
+SECRET_KEY = env('SECRET_KEY')
 
 
 ########## END SECRET CONFIGURATION

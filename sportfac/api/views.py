@@ -86,7 +86,6 @@ class SessionViewSet(viewsets.ModelViewSet):
         return Response(SessionSerializer(instance).data)
 
 
-
 class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ActivityDetailedSerializer
     model = Activity
