@@ -14,7 +14,7 @@ fake = faker.Factory.create('fr_CH')
 class ChildFactory(factory.DjangoModelFactory):
     class Meta:
         model = Child
-    
+
     first_name = factory.lazy_attribute(lambda o: fake.first_name())
     last_name = factory.lazy_attribute(lambda o: fake.last_name())
     sex = factory.fuzzy.FuzzyChoice(('M', 'F'))
@@ -27,9 +27,16 @@ class ChildFactory(factory.DjangoModelFactory):
 class RegistrationFactory(factory.DjangoModelFactory):
     class Meta:
         model = Registration
-    
+
     course = factory.SubFactory(CourseFactory)
     child = factory.SubFactory(ChildFactory)
+
+
+class WaitingRegistrationFactory(RegistrationFactory):
+    class Meta:
+        model = Registration
+
+    status = Registration.STATUS.waiting
 
 
 class BillFactory(factory.DjangoModelFactory):
@@ -38,7 +45,7 @@ class BillFactory(factory.DjangoModelFactory):
 
     billing_identifier = factory.fuzzy.FuzzyText(length=10)
     family = factory.SubFactory(FamilyUserFactory)
-    
+
     @factory.post_generation
     def registrations(self, create, extracted, **kwargs):
         if not create:
@@ -46,3 +53,10 @@ class BillFactory(factory.DjangoModelFactory):
         if extracted:
             for registration in extracted:
                 self.registrations.add(registration)
+
+
+class WaitingBillFactory(BillFactory):
+    class Meta:
+        model = Bill
+
+    status = Bill.STATUS.waiting
