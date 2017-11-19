@@ -1,6 +1,5 @@
 import json
 
-from django.conf import settings
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.contrib.messages.middleware import MessageMiddleware
 from django.core.urlresolvers import reverse
@@ -16,7 +15,7 @@ from mailer.tests.factories import MailArchiveFactory
 from registrations.tests.factories import ChildFactory, RegistrationFactory
 from sportfac.utils import TenantTestCase as TestCase, add_middleware_to_request
 from .factories import ActivityFactory, CourseFactory
-from ..views import MailUsersView, CustomParticipantsCustomMailView, CustomMailPreview
+from ..views import MailUsersView, CustomParticipantsCustomMailView, CustomMailPreview, MailCourseInstructorsView
 
 
 fake = faker.Factory.create()
@@ -361,3 +360,57 @@ class CustomMailPreviewTest(TestCase):
         self.assertEqual(response.status_code, 302)
         for (args, kwargs) in sendmail_method.call_args_list:
             self.assertIn(self.instructor.email, kwargs['reply_to'][0])
+
+
+class MailCourseInstructorsViewTest(TestCase):
+    def setUp(self):
+        super(MailCourseInstructorsViewTest, self).setUp()
+        self.factory = RequestFactory()
+        self.instructors = FamilyUserFactory.create_batch(2)
+        self.instructor = self.instructors[0]
+        self.course = CourseFactory(instructors=self.instructors)
+        self.url = reverse('activities:mail-instructors', kwargs={'course': self.course.pk})
+
+    def test_not_instructor_user(self):
+        request = self.factory.get(self.url)
+        request.user = FamilyUserFactory()
+        response = MailCourseInstructorsView.as_view()(request, course=self.course.pk)
+        # only instructors can use this function
+        self.assertEquals(response.status_code, 302)
+        self.assertTrue(response.url.startswith(reverse('login')))
+
+    def test_get(self):
+        request = self.factory.get(self.url)
+        request.user = self.instructor
+        request = add_middleware_to_request(request, SessionMiddleware)
+        response = MailCourseInstructorsView.as_view()(request, course=self.course.pk)
+        self.assertEqual(response.status_code, 200)
+
+    @mock.patch('mailer.tasks.send_instructors_email.delay')
+    def test_post(self, sendmail_method):
+        request = self.factory.post(self.url, data={})
+        request.user = self.instructor
+        request = add_middleware_to_request(request, SessionMiddleware)
+        request = add_middleware_to_request(request, MessageMiddleware)
+        response = MailCourseInstructorsView.as_view()(request, course=self.course.pk)
+        self.assertEqual(response.status_code, 302)
+
+    @mock.patch('mailer.tasks.send_instructors_email.delay')
+    def test_send_mail(self, sendmail_method):
+        request = self.factory.post(self.url, data={})
+        request.user = self.instructor
+        request = add_middleware_to_request(request, SessionMiddleware)
+        request = add_middleware_to_request(request, MessageMiddleware)
+        MailCourseInstructorsView.as_view()(request, course=self.course.pk)
+        self.assertEqual(sendmail_method.call_count, 1)
+
+    @mock.patch('mailer.tasks.send_instructors_email.delay')
+    def test_send_mail_copy(self, sendmail_method):
+        request = self.factory.post(self.url, data={
+            'copy_all_instructors': '1'
+        })
+        request.user = self.instructor
+        request = add_middleware_to_request(request, SessionMiddleware)
+        request = add_middleware_to_request(request, MessageMiddleware)
+        MailCourseInstructorsView.as_view()(request, course=self.course.pk)
+        self.assertEqual(sendmail_method.call_count, self.course.instructors.count())

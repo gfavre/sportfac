@@ -262,13 +262,18 @@ class MailCourseInstructorsView(ParticipantsBaseMixin, TemplatedEmailMixin, Canc
         }
 
     def form_valid(self, form):
-        bcc_list = []
-        if form.cleaned_data['send_copy']:
-            bcc_list = [self.request.user]
-        if form.cleaned_data['copy_all_admins']:
-            bcc_list += list(FamilyUser.managers_objects.exclude(pk=self.request.user.pk))
+        bcc_list = set()
+        if form.cleaned_data.get('send_copy', False):
+            bcc_list.add(self.request.user)
+        if form.cleaned_data.get('copy_all_admins', False):
+            for manager in FamilyUser.managers_objects.exclude(pk=self.request.user.pk):
+                bcc_list.add(manager)
+        if form.cleaned_data.get('copy_all_instructors', False):
+            recipients = self.course.instructors.all()
+        else:
+            recipients = self.get_recipients()
 
-        for instructor in self.get_recipients():
+        for instructor in recipients:
             context = self.get_instructor_context(instructor, bcc_list)
             tasks.send_instructors_email.delay(
                 course_pk=self.course.pk,

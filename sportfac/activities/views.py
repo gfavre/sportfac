@@ -11,7 +11,7 @@ from braces.views import GroupRequiredMixin, LoginRequiredMixin
 
 from backend import INSTRUCTORS_GROUP
 import mailer.views as mailer_views
-from mailer.forms import CourseMailForm
+from mailer.forms import CourseMailForm, InstructorCopiesForm
 from sportfac.views import WizardMixin
 from .models import Activity, Course
 
@@ -153,6 +153,10 @@ class CustomParticipantsCustomMailView(InstructorMixin, mailer_views.MailCreateV
 
 class MailCourseInstructorsView(InstructorMixin, mailer_views.MailCourseInstructorsView):
     template_name = 'activities/confirm_send.html'
+    form_class = InstructorCopiesForm
 
     def get_success_url(self):
         return reverse('activities:my-courses')
+
+    def get_recipients(self):
+        return [self.request.user]

@@ -18,6 +18,11 @@ class CopiesForm(forms.Form):
     copy_all_admins = forms.BooleanField(label=_("Send a copy to all other administrators"), required=False)
 
 
+class InstructorCopiesForm(forms.Form):
+    copy_all_instructors = forms.BooleanField(label=_("Send a copy to all other instructors"),
+                                              initial=True, required=False)
+
+
 class CourseMailForm(MailForm):
     copy_all_instructors = forms.BooleanField(label=_("Send a copy to all other instructors"),
                                               initial=True, required=False)
