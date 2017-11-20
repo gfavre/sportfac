@@ -7,23 +7,18 @@ INSTALLED_APPS += ('gunicorn', # web server
                    )
 
 ########## EMAIL CONFIGURATION
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#email-host
-EMAIL_HOST = env('EMAIL_HOST', default='')
-
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#email-host-password
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
-
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#email-host-user
-EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
+INSTALLED_APPS += [
+    'anymail',  # integrates several transactional email service providers into Django
+]
+ANYMAIL = {
+    "MAILGUN_API_KEY": env.str('MAILGUN_API_KEY'),
+    "MAILGUN_SENDER_DOMAIN": env.str('MAILGUN_SENDER_DOMAIN')
+}
+EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-subject-prefix
 EMAIL_SUBJECT_PREFIX = '[%s] ' % SITE_NAME
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#email-use-tls
-EMAIL_USE_TLS = True
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#server-email
 SERVER_EMAIL = env('SERVER_EMAIL')

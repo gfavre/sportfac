@@ -13,11 +13,11 @@ from fabric.context_managers import prefix, path
 from fabric.operations import put
 
 try:
-    from fabsettings import (WF_HOST, APP_NAME, PROJECT_NAME, REPOSITORY, BRANCH, 
-                             USER, PASSWORD, 
-                             VIRTUALENVS, SETTINGS_SUBDIR, 
-                             DBNAME, DBUSER, DBPASSWORD, 
-                             MAILHOST, MAILUSER, MAILPASSWORD, MAILADDRESS,
+    from fabsettings import (WF_HOST, APP_NAME, PROJECT_NAME, REPOSITORY, BRANCH,
+                             USER, PASSWORD,
+                             VIRTUALENVS, SETTINGS_SUBDIR,
+                             DBNAME, DBUSER, DBPASSWORD,
+                             MAILGUN_API_KEY, MAILGUN_SENDER_DOMAIN, MAILADDRESS,
                              BROKER_URL, PHANTOMJS, MEMCACHED_SOCKET)
 except ImportError:
     print("""
@@ -35,12 +35,10 @@ PASSWORD         = "************"
 DBNAME           = "sportfac"
 DBUSER           = "sportfac"
 DBPASSWORD       = "************"
+MAILGUN_API_KEY  = "key-1234567890abcdef"
+MAILGUN_SENDER_DOMAIN = "mg.kepchup.ch"
 SETTINGS_SUBDIR  = "sportfac"
 VIRTUALENVS      = "/home/grfavre/.virtualenvs"
-MAILHOST         = "smtp.webfaction.com"
-MAILUSER         = "grfavre"
-MAILPASSWORD     = "************"
-MAILADDRESS      = "gregory@dealguru.ch"
 BROKER_URL       = "redis://localhost:14387/0"
 PHANTOMJS        = '/home/grfavre/bin/phantomjs'
 MEMCACHED_SOCKET = '/home/grfavre/memcached.sock'
@@ -56,10 +54,10 @@ class _WebFactionXmlRPC():
             http_proxy = None
         self.server = xmlrpclib.Server(API_URL, transport=http_proxy)
         self.session_id, self.account = self.login(user, password)
-    
+
     def login(self, user, password):
         return self.server.login(user, password)
-    
+
     def __getattr__(self, name):
         def _missing(*args, **kwargs):
             return getattr(self.server, name)(self.session_id, *args, **kwargs)
@@ -97,9 +95,8 @@ env.virtualenv        = VIRTUALENVS + '/' + env.project
 env.supervisor_ve_dir = os.path.join(env.virtualenv_dir, '/supervisor')
 env.webfaction        = _WebFactionXmlRPC(USER, PASSWORD)
 env.supervisor_cfg    = '%s/conf.d/%s.conf' % (env.supervisor_dir, env.project)
-env.mailhost          = MAILHOST
-env.mailuser          = MAILUSER
-env.mailpassword      = MAILPASSWORD
+env.mailgun_api_key   = MAILGUN_API_KEY
+env.mailgun_sender_domain = MAILGUN_SENDER_DOMAIN
 env.mailaddress       = MAILADDRESS
 env.broker            = BROKER_URL
 env.memcached         = MEMCACHED_SOCKET
@@ -133,7 +130,7 @@ def _create_db():
         if db_info['name'] == env.dbname:
             print("Database already exists")
             return
-    
+
     env.webfaction.create_db(env.dbname, env.dbtype, env.dbpassword)
     print("... done.")
 
@@ -144,16 +141,16 @@ def _create_static_app():
     for app_info in env.webfaction.list_apps():
         if app_info['name'] == app_name:
             return
-    
-    env.webfaction.create_app(env.project + '_static', 'static_only', False, '')    
+
+    env.webfaction.create_app(env.project + '_static', 'static_only', False, '')
 
 def _create_media_app():
     print("Creating static app...")
     for app_info in env.webfaction.list_apps():
         if app_info['name'] == env.media_app_name:
             return
-    
-    env.webfaction.create_app(env.project + '_media', 'static_only', False, '')    
+
+    env.webfaction.create_app(env.project + '_media', 'static_only', False, '')
 
 
 def _create_main_app():
@@ -163,7 +160,7 @@ def _create_main_app():
         if app_info['name'] == app_name:
             env.app_port = app_info['port']
             return
-        
+
     port = env.webfaction.create_app(env.project, 'custom_app_with_port', False, '')
 
 def _create_domain():
@@ -174,9 +171,9 @@ def _create_domain():
             return
     env.webfaction.create_domain(env.domain, *env.subdomains)
     print("...done")
-    
+
 def _create_website():
-    print("Creating website")    
+    print("Creating website")
     website_fct = env.webfaction.create_website
     for name_info in env.webfaction.list_websites():
         if name_info.get('name') == env.website_name:
@@ -193,13 +190,13 @@ def _create_website():
 
     website_fct(env.website_name, ip, env.https,
                 env.allowed_hosts,
-                (env.django_app_name, '/'), 
+                (env.django_app_name, '/'),
                 (env.static_app_name, '/static'),
                 (env.media_app_name, '/media'))
     print("...done")
 
 
-  
+
 def configure_supervisor():
     print("Configuring supervisor...")
     if not 'secret_key' in env:
@@ -215,7 +212,7 @@ def configure_supervisor():
                     env.supervisor_cfg, env)
 
     reload_supervisor()
- 
+
 def configure_webfaction():
     _create_db()
     _create_static_app()
@@ -231,11 +228,11 @@ def install_app():
         if not exists('sportfac'):
             print("Grabbing sources...")
             run('git clone -b %s %s %s' % (env.branch, env.repo, env.project_dir))
-    
+
     print("Creating virtualenv...")
     _create_ve(env.project)
     configure_supervisor()
-            
+
     reload_app()
     restart_app()
 
@@ -244,8 +241,8 @@ def install_app():
 def reload_app(arg=None):
     "Pulls app and refreshes requirements"
     with cd(env.project_dir):
-        run('git pull origin %s' % env.branch) 
-    
+        run('git pull origin %s' % env.branch)
+
     if arg <> "quick":
         with cd(env.project_dir):
             _ve_run(env.project, "pip install -r requirements.txt --upgrade")
@@ -262,7 +259,7 @@ def reload_supervisor():
 
 def restart_app():
     "Restarts the app using supervisorctl"
-    with cd(env.supervisor_dir):            
+    with cd(env.supervisor_dir):
         _ve_run('supervisor','supervisorctl restart %s' % env.project)
         _ve_run('supervisor','supervisorctl restart %s_worker' % env.project)
 
@@ -276,22 +273,22 @@ def _create_ve(name):
     """
     secret_chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$^&*(-_=+)'
     env.secretkey = ''.join([random.SystemRandom().choice(secret_chars) for i in range(50)])
-    
+
     if not exists(env.virtualenv):
         with cd(env.virtualenv_dir):
             run('mkvirtualenv -p /usr/local/bin/python2.7 --no-site-packages %s' % name)
     else:
         print("Virtualenv with name %s already exists. Skipping.") % name
-    
+
     env.allowed_hosts = ''
     upload_template(os.path.join(env.local_config_dir, 'postactivate.tpl'),
-                    os.path.join(env.virtualenv, 'bin', 'postactivate'), 
+                    os.path.join(env.virtualenv, 'bin', 'postactivate'),
                     env)
     upload_template(os.path.join(env.local_config_dir, 'virtualenv_project'),
-                    os.path.join(env.virtualenv, '.project'), 
+                    os.path.join(env.virtualenv, '.project'),
                     env)
-    
-    
+
+
 
 def _ve_run(ve, cmd):
     """virtualenv wrapper for fabric commands"""
@@ -304,7 +301,7 @@ def djangoadmin(cmd):
 def nero():
     _ve_run('supervisor', 'supervisorctl stop %s' % env.project)
     run('rm -rf %s' % env.supervisor_cfg)
-    
+
     try:
         env.webfaction.delete_app(env.project + '_static')
     except xmlrpclib.Fault, msg:
@@ -313,23 +310,23 @@ def nero():
         env.webfaction.delete_app(env.project)
     except xmlrpclib.Fault, msg:
         print("Unable to delete main app (%s)") % msg
-    
-    
+
+
     try:
         env.webfaction.delete_db(env.dbname, env.dbtype)
     except xmlrpclib.Fault, msg:
         print("Unable to delete db (%s)") % msg
-    
+
     try:
         env.webfaction.delete_db_user(env.dbuser,  env.dbtype)
     except xmlrpclib.Fault, msg:
         print("Unable to delete db user %s:\n%s") % (env.dbuser, msg)
-    
+
 
 def test():
     run("hostname")
     with cd(env.home + '/webapps'):
         if not exists(env.project_dir + '/setup.py'):
             run('git clone %s %s' % (env.repo, env.project_dir))
-    
+
     put('config/gunicorn.conf', '%s/conf.d/%s.conf' % (env.supervisor_dir, env.project))
