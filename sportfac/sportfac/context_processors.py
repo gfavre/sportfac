@@ -41,35 +41,35 @@ def can_pay(request):
 
 
 def wizard_context(request):
-    about = Step(request, 'about-step', _("About you"), 'wizard_account', 
+    about = Step(request, 'about-step', _("About you"), 'wizard_account',
                  can_register(request))
-    children = Step(request, 'children-step', _("Your children"), 'wizard_children', 
+    children = Step(request, 'children-step', _("Your children"), 'wizard_children',
                     is_authenticated(request))
-    activities = Step(request, 'activities-step', _("Register activities"), 'wizard_activities', 
+    activities = Step(request, 'activities-step', _("Register activities"), 'wizard_activities',
                       can_register_activities(request))
-    confirmation = Step(request, 'confirm-step',_("Confirmation"), 'wizard_confirm', 
+    confirmation = Step(request, 'confirm-step',_("Confirmation"), 'wizard_confirm',
                         can_confirm(request))
-    billing = Step(request, 'billing-step', _("Billing"), 'wizard_billing', 
+    billing = Step(request, 'billing-step', _("Billing"), 'wizard_billing',
                    can_pay(request))
-        
+
     if settings.KEPCHUP_NO_PAYMENT:
         steps = [about, children, activities, confirmation]
     else:
         steps = [about, children, activities, confirmation, billing]
-    
+
     current = 0
     for idx, step in enumerate(steps):
         if step.current:
             current = idx
             break
-    
+
     previous_step = next_step = None
     if current != 0:
         previous_step = steps[current -1]
-    
+
     if current != len(steps) - 1:
         next_step = steps[current + 1]
-    
+
     return {'previous_step': previous_step,
             'next_step': next_step,
             'steps': steps,
@@ -116,6 +116,7 @@ def kepchup_context(request):
         'DISPLAY_PARENT_CITY': settings.KEPCHUP_DISPLAY_PARENT_CITY,
         'CALENDAR_DISPLAY_DATES': settings.KEPCHUP_CALENDAR_DISPLAY_DATES,
         'CALENDAR_DISPLAY_COURSE_NAMES': settings.KEPCHUP_CALENDAR_DISPLAY_COURSE_NAMES,
+        'ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE': settings.KEPCHUP_ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE,
         'BIB_NUMBERS': settings.KEPCHUP_BIB_NUMBERS,
         'FICHE_SALAIRE_MONTREUX': settings.KEPCHUP_FICHE_SALAIRE_MONTREUX,
         'REGISTRATION_LEVELS': settings.KEPCHUP_REGISTRATION_LEVELS,

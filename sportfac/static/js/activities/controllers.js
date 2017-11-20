@@ -1,5 +1,5 @@
 angular.module('sportfacCalendar.controllers', [])
-  
+
 .controller('ChildrenCtrl', ["$scope", "$routeParams", "$attrs", "$location", "$filter", "ChildrenService", "RegistrationsService",
 function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, RegistrationsService) {
   'use strict';
@@ -13,7 +13,11 @@ function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, Regi
     $scope.displaydates = $attrs.displaydates === 'true';
   if (!$attrs.displaycoursenames) throw new Error("No displaycoursenames option set");
     $scope.displaycoursenames = $attrs.displaycoursenames === 'true';
-
+  if ($attrs.canregistersameactivity){
+    $scope.canregistersameactivity = $attrs.canregistersameactivity === 'true';
+  } else {
+    $scope.canregistersameactivity = false;
+  }
 
 
   $scope.urls = {
@@ -23,13 +27,13 @@ function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, Regi
     family: $attrs.familyserviceurl,
     registration: $attrs.registrationserviceurl
   };
-  
+
   $scope.loadRegistrations = function(){
     RegistrationsService.all($scope.urls.registration).then(function(registrations){
       $scope.registrations = registrations;
     });
   };
-  
+
   $scope.getRegistrations = function(child){
     if (!angular.isDefined($scope.registrations)){
       return;
@@ -39,17 +43,17 @@ function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, Regi
     };
     return $filter('filter')($scope.registrations, compare);
   };
-   
+
   $scope.unregisterCourse = function(child, course){
     var compare = function(registration){
        return registration.child === child.id && registration.course === course.id;
     };
-    
+
     var registration = $filter('filter')($scope.registrations, compare)[0];
     RegistrationsService.del($scope.urls.registration, registration);
     $scope.registrations.remove(registration);
   };
-  
+
   $scope.registerCourse = function(child, course){
     var registration = {child: child.id, course: course.id};
     RegistrationsService.save($scope.urls.registration, registration).then(function(){
@@ -67,7 +71,7 @@ function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, Regi
       }
     });
   };
-    
+
   ChildrenService.all($scope.urls.family).then(function(children){
     $scope.userChildren = children;
     var childId = parseInt($routeParams.childId, 10);
@@ -93,13 +97,13 @@ function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, Regi
       $scope.selectedActivity = {};
     }
   });
-  
+
   $scope.selectActivity = function(activity){
     if ($scope.selectedActivity) { $scope.selectedActivity.selected = false;}
     activity.selected = true;
     $scope.selectedActivity = activity;
   };
-  
+
   $scope.loadActivities = function(){
     var url = $scope.urls.activity + '?year=' + $scope.selectedChild.school_year;
     $http({method: 'GET', url: url, cache: true})
@@ -121,14 +125,14 @@ function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, Regi
 /*******************************************************************************
                     Timeline
 *******************************************************************************/
-.controller('ActivityTimelineCtrl', ["$scope", "$filter", "$modal", "CoursesService",
+.controller('ActivityTimelineCtrl', ["$scope","$filter", "$modal", "CoursesService",
 function($scope, $filter, $modal, CoursesService){
   'use strict';
   var today = new Date();
   var year = today.getFullYear();
   var month = today.getMonth();
   var day = today.getDate();
-  
+
   var modalwindow = $modal(
             {template: '/static/partials/activity-detail.html',
              show: false,
@@ -156,21 +160,21 @@ function($scope, $filter, $modal, CoursesService){
   };
 
 
-  
+
   $scope.$watch('registrations.length', function(){
     if (!angular.isDefined($scope.registrations)){ return; }
-    
+
     $scope.updateAvailableEvents();
     $scope.updateRegisteredEvents();
     $scope.updateOthersEvents();
   });
-  
+
   $scope.$watch('selectedActivity', function(){
     if (angular.isDefined($scope.selectedActivity)){
       $scope.updateAvailableEvents();
     }
   });
-  
+
   $scope.updateRegisteredEvents = function() {
     if (!$scope.registrations){ return; }
     $scope.registeredEvents.length = 0;
@@ -190,16 +194,16 @@ function($scope, $filter, $modal, CoursesService){
       } else {
           CoursesService.get($scope.urls.course, registration.course).then(addToRegistered);
       }
-      
+
     });
   };
-  
-  
+
+
   $scope.updateOthersEvents = function(){
     if (!$scope.registrations){
       return;
     }
-    
+
     $scope.othersRegisteredEvents.length = 0;
     angular.forEach($scope.userChildren, function(child){
       if (child !== $scope.selectedChild) {
@@ -212,9 +216,9 @@ function($scope, $filter, $modal, CoursesService){
         });
       }
      });
-     
+
   };
-  
+
   $scope.updateAvailableEvents = function(){
     var addAvailableCourse = function(course){
       $scope.availableEvents.push(course.toEvent("available"));
@@ -230,10 +234,10 @@ function($scope, $filter, $modal, CoursesService){
     }
 
     $scope.availableEvents.length = 0;
-    
+
     var activityRegistered = false;
     angular.forEach($scope.selectedActivity.courses, function(course){
-      if (registeredCourses.indexOf(course.id) !== -1){
+      if ((registeredCourses.indexOf(course.id) !== -1) && !$scope.canregistersameactivity) {
         activityRegistered = true;
       }
     });
@@ -241,7 +245,6 @@ function($scope, $filter, $modal, CoursesService){
       var available = course.schoolyear_min <= $scope.selectedChild.school_year &&
                       course.schoolyear_max >= $scope.selectedChild.school_year;
       var registered = registeredCourses.indexOf(course.id) !== -1;
-
 
       var overlapping = $scope.registeredEvents.map(
         function(evt){
@@ -276,10 +279,10 @@ function($scope, $filter, $modal, CoursesService){
     }
     $scope.registerCourse($scope.selectedChild, event.course);
   };
-  
+
   $scope.unregister = function(event){
     $scope.unregisterCourse($scope.selectedChild, event.course);
-        
+
     if (event.clickable) {
         // registered to this child
         event.className = 'available';
@@ -290,7 +293,7 @@ function($scope, $filter, $modal, CoursesService){
         }
     }
   };
-  
+
   $scope.hasRegistered = function(){
     return $scope.registeredEvents.length > 0 || $scope.othersRegisteredEvents.length > 0;
   };

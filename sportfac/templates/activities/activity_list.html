@@ -7,10 +7,10 @@
 {% block content %}
 
 {% addtoblock "extra_html" %}
-xmlns:ng="http://angularjs.org" 
-ng-app="sportfacCalendar" 
+xmlns:ng="http://angularjs.org"
+ng-app="sportfacCalendar"
 ng-controller="ChildrenCtrl" id="ng-app"
-maxregistrations="{{ MAX_REGISTRATIONS }}" 
+maxregistrations="{{ MAX_REGISTRATIONS }}"
 starthour="{{ START_HOUR }}"
 endhour="{{ END_HOUR }}"
 activityserviceurl="{% url 'api:activity-list' %}"
@@ -20,12 +20,13 @@ familyserviceurl="{% url 'api:family-list' %}"
 registrationserviceurl="{% url 'api:registration-list' %}"
 displaydates="{{ CALENDAR_DISPLAY_DATES|yesno:'true,false' }}"
 displaycoursenames="{{ CALENDAR_DISPLAY_COURSE_NAMES|yesno:'true,false' }}"
+canregistersameactivity="{{ ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE|yesno:'true,false' }}"
 
 {% endaddtoblock %}
 
 <nav>
   <ul class="nav nav-tabs children">
-    <li role="presentation" ng-repeat="child in userChildren" 
+    <li role="presentation" ng-repeat="child in userChildren"
                             ng-class="{active: child.selected}">
       <a href="./#/child/{[{ child.id }]}/" ng-click="selectChild(child.id)">
         {[{ child.first_name }]}
@@ -33,24 +34,25 @@ displaycoursenames="{{ CALENDAR_DISPLAY_COURSE_NAMES|yesno:'true,false' }}"
     </li>
   </ul>
   <div class="tab-content">
-    <div class="tab-pane active" ng-view></div>
-  </div>  
+    <div class="tab-pane active" canregistersameactivity="{{ ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE|yesno:'true,false' }}"
+ ng-view></div>
+  </div>
 </nav><!-- end tabbable -->
 
 
 {% addtoblock "js" %}
 {% if debug %}
   <script src="{{ STATIC_URL }}js/vendor/fullcalendar.min.js"></script>
-  
+
   <script src="{{ STATIC_URL }}js/vendor/angular.min.js"></script>
   <script src="{{ STATIC_URL }}js/vendor/angular-locale_fr-ch.js"></script>
   <script src="{{ STATIC_URL }}js/vendor/angular-route.min.js"></script>
   <script src="{{ STATIC_URL }}js/vendor/angular-cookies.min.js"></script>
-  
+
   <script src="{{ STATIC_URL }}js/vendor/angular-ui-calendar.js"></script>
   <script src="{{ STATIC_URL }}js/vendor/angularstrap/angular-strap.min.js"></script>
   <script src="{{ STATIC_URL }}js/vendor/angularstrap/angular-strap.tpl.min.js"></script>
-  
+
   <script src="{{ STATIC_URL }}js/activities/services.js"></script>
   <script src="{{ STATIC_URL }}js/activities/controllers.js"></script>
   <script src="{{ STATIC_URL }}js/activities/app.js"></script>
