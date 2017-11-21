@@ -117,6 +117,9 @@ env.allowed_hosts     = [__concat_domain(subdomain, env.domain) for subdomain in
 env.allowed_hosts_str = ';'.join(env.allowed_hosts)
 env.certificate       = "SSFVevey"
 
+env.memcached_size    = 5
+env.nb_workers        = 1
+env.nb_web_workers    = 2
 
 def bootstrap():
     "Initializes python libraries"
