@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-16 21:43+0100\n"
+"POT-Creation-Date: 2017-11-21 17:44+0100\n"
 "PO-Revision-Date: 2017-10-25 12:55+0200\n"
 "Last-Translator: Gregory Favre <greg@beyondthewall.ch>\n"
 "Language-Team: \n"
@@ -1127,15 +1127,15 @@ msgstr "Pièces jointes"
 msgid "Send me a copy"
 msgstr "M'envoyer une copie"
 
-#: sportfac/mailer/forms.py:18 sportfac/mailer/forms.py:27
+#: sportfac/mailer/forms.py:18 sportfac/mailer/forms.py:32
 msgid "Send a copy to all other administrators"
 msgstr "Envoyer une copie aux autres administrateurs"
 
-#: sportfac/mailer/forms.py:22
+#: sportfac/mailer/forms.py:22 sportfac/mailer/forms.py:27
 msgid "Send a copy to all other instructors"
 msgstr "Envoyer une copie aux autres moniteurs"
 
-#: sportfac/mailer/mixins.py:32 sportfac/mailer/views.py:283
+#: sportfac/mailer/mixins.py:32 sportfac/mailer/views.py:288
 #, python-format
 msgid "Your email is being sent to %(number)s recipients."
 msgstr "Votre email est en cours d'envoi chez %(number)s destinataires."
@@ -1217,7 +1217,7 @@ msgid "Send all emails"
 msgstr "Envoyer l'email à tous les destinataires"
 
 #: sportfac/mailer/templates/mailer/preview.html:48
-#: sportfac/templates/activities/confirm_send.html:12
+#: sportfac/templates/activities/confirm_send.html:16
 #: sportfac/templates/activities/mail-create.html:48
 #: sportfac/templates/backend/activity/update.html:21
 #: sportfac/templates/backend/course/confirm_send.html:16
@@ -2015,7 +2015,7 @@ msgstr "Places disponibles"
 msgid "Activities"
 msgstr "Activités"
 
-#: sportfac/templates/activities/activity_list.html:69
+#: sportfac/templates/activities/activity_list.html:71
 #: sportfac/templates/backend/registration/wizard.html:46
 #: sportfac/templates/profiles/registration_list.html:121
 #: sportfac/templates/registrations/registration_list.html:193
@@ -2024,7 +2024,7 @@ msgstr "Activités"
 msgid "Previous"
 msgstr "Précédent"
 
-#: sportfac/templates/activities/activity_list.html:72
+#: sportfac/templates/activities/activity_list.html:74
 msgid "End registration"
 msgstr "Terminer l'inscription"
 
@@ -2035,13 +2035,7 @@ msgstr "Terminer l'inscription"
 msgid "Confirm sending"
 msgstr "Confirmer l'envoi"
 
-#: sportfac/templates/activities/confirm_send.html:10
-#: sportfac/templates/backend/course/confirm_send.html:9
-msgid "Are you sure you want to send confirmation email to each instructor ?"
-msgstr ""
-"Êtes vous sûr de vouloir envoyer l'email de confirmation à chaque moniteur ?"
-
-#: sportfac/templates/activities/confirm_send.html:11
+#: sportfac/templates/activities/confirm_send.html:15
 #: sportfac/templates/activities/mail-preview-editlink.html:4
 #: sportfac/templates/backend/course/confirm_send.html:13
 #: sportfac/templates/backend/mail/preview-browse.html:4
@@ -2356,6 +2350,11 @@ msgstr "Envoyer l'email de confirmation"
 #: sportfac/templates/backend/course/list.html:121
 msgid "Delete course"
 msgstr "Supprimer le cours"
+
+#: sportfac/templates/backend/course/confirm_send.html:9
+msgid "Are you sure you want to send confirmation email to each instructor ?"
+msgstr ""
+"Êtes vous sûr de vouloir envoyer l'email de confirmation à chaque moniteur ?"
 
 #: sportfac/templates/backend/course/create.html:4
 #: sportfac/templates/backend/course/create.html:5
@@ -3664,6 +3663,10 @@ msgstr ""
 #: sportfac/themes/vevey/templates/registrations/wizard_billing.html:5
 msgid "Registrations validated"
 msgstr "Inscriptions enregistrées"
+
+#: sportfac/themes/vevey/templates/footer.html:14
+msgid "Privacy"
+msgstr "Protection des données"
 
 #, fuzzy
 #~| msgid "SSF number"

@@ -32,6 +32,7 @@ class TextPlainView(TemplateView):
 urlpatterns = [
     url(r'^$', flatviews.flatpage, {'url': '/'}, name='home'),
     url(r'^reglement/$', flatviews.flatpage, {'url': '/reglement/'}, name='terms'),
+    url(r'^protection-des-donnees/$', flatviews.flatpage, {'url': '/protection-des-donnees/'}, name='privacy'),
 
     url(r'^api/', include('api.urls', namespace="api")),
     url(r'^activities/', include('activities.urls', namespace="activities")),
