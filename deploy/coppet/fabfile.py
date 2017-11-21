@@ -118,7 +118,7 @@ env.allowed_hosts_str = ';'.join(env.allowed_hosts)
 
 env.memcached_size    = 5
 env.nb_workers        = 1
-env.nb_web_workers    = 2
+env.nb_web_workers    = 1
 
 def bootstrap():
     "Initializes python libraries"
@@ -216,6 +216,13 @@ def configure_supervisor():
                     env.supervisor_cfg, env)
 
     reload_supervisor()
+
+def reconf():
+    configure_supervisor()
+    print("Configuring virtualenv...")
+    upload_template(os.path.join(env.local_config_dir, 'postactivate.tpl'),
+                    os.path.join(env.virtualenv, 'bin', 'postactivate'),
+                    env)
 
 def configure_webfaction():
     _create_db()
