@@ -20,7 +20,7 @@ class CopiesForm(forms.Form):
 
 class InstructorCopiesForm(forms.Form):
     copy_all_instructors = forms.BooleanField(label=_("Send a copy to all other instructors"),
-                                              initial=True, required=False)
+                                              initial=False, required=False)
 
 
 class CourseMailForm(MailForm):

@@ -1,13 +1,15 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n floppyforms %}
 
 {% block title %}{% trans "Confirm sending" %} - {{ block.super }}{% endblock %}
 {% block page_title %}{% trans "Confirm sending" %}{% endblock %}
 
 {% block content %}
 <form action="" method="post">{% csrf_token %}
-
-  {{ form }}
+{% form form using %}
+  {% formconfig row using "floppyforms/rows/bootstrap-sm-6.html" %}
+  {% formrow form.copy_all_instructors  %}
+{% endform %}
 <div class="clearfix"></div>
   <div class="form-group">
     <button type="submit" class="btn btn-danger"><i class="icon icon-mail"></i>&nbsp;{% trans 'Send email' %}</button> &nbsp; &nbsp;
