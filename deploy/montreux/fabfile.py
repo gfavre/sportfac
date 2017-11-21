@@ -121,12 +121,12 @@ env.memcached_size    = 5
 env.nb_workers        = 1
 env.nb_web_workers    = 1
 
+
 def bootstrap():
     "Initializes python libraries"
     run('mkdir -p %s/lib/python2.7' % env.home)
     run('easy_install-2.7 pip')
     run('pip-2.7 install virtualenv virtualenvwrapper')
-
 
 
 def _create_db():
@@ -168,6 +168,7 @@ def _create_main_app():
 
     port = env.webfaction.create_app(env.project, 'custom_app_with_port', False, '')
 
+
 def _create_domain():
     print("Creating domain %s..." % env.domain)
     for (domain_id, domain, subdomains) in env.webfaction.list_domains():
@@ -179,6 +180,7 @@ def _create_domain():
         print("...done")
     except:
         print('Error creating domain. Continuing.')
+
 
 def _create_website():
     print("Creating website")
@@ -204,22 +206,30 @@ def _create_website():
     print("...done")
 
 
-
 def configure_supervisor():
     print("Configuring supervisor...")
     if not 'secret_key' in env:
         secret_chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$^&*(-_=+)'
         env.secretkey = ''.join([random.SystemRandom().choice(secret_chars) for i in range(50)])
-    if not 'app_port' in env:
-    	for app_config in env.webfaction.list_apps():
-    		if app_config.get('name') == env.project:
-    			env.app_port = app_config.get('port')
-    			break
+    if 'app_port' not in env:
+        for app_config in env.webfaction.list_apps():
+            if app_config.get('name') == env.project:
+                env.app_port = app_config.get('port')
+                break
     require('app_port')
     upload_template(os.path.join(env.local_config_dir, 'gunicorn.conf'),
                     env.supervisor_cfg, env)
 
     reload_supervisor()
+
+
+def reconf():
+    configure_supervisor()
+    print("Configuring virtualenv...")
+    upload_template(os.path.join(env.local_config_dir, 'postactivate.tpl'),
+                    os.path.join(env.virtualenv, 'bin', 'postactivate'),
+                    env)
+
 
 def configure_webfaction():
     _create_db()
@@ -243,7 +253,6 @@ def install_app():
 
     reload_app()
     restart_app()
-
 
 
 def reload_app(arg=None):

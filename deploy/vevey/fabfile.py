@@ -121,6 +121,7 @@ env.memcached_size    = 5
 env.nb_workers        = 1
 env.nb_web_workers    = 2
 
+
 def bootstrap():
     "Initializes python libraries"
     run('mkdir -p %s/lib/python2.7' % env.home)
@@ -250,6 +251,14 @@ def configure_supervisor():
                     env.supervisor_cfg, env)
 
     reload_supervisor()
+
+
+def reconf():
+    configure_supervisor()
+    print("Configuring virtualenv...")
+    upload_template(os.path.join(env.local_config_dir, 'postactivate.tpl'),
+                    os.path.join(env.virtualenv, 'bin', 'postactivate'),
+                    env)
 
 
 def configure_webfaction():

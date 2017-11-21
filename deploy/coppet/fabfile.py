@@ -120,12 +120,12 @@ env.memcached_size    = 5
 env.nb_workers        = 1
 env.nb_web_workers    = 1
 
+
 def bootstrap():
     "Initializes python libraries"
     run('mkdir -p %s/lib/python2.7' % env.home)
     run('easy_install-2.7 pip')
     run('pip-2.7 install virtualenv virtualenvwrapper')
-
 
 
 def _create_db():
@@ -216,6 +216,7 @@ def configure_supervisor():
                     env.supervisor_cfg, env)
 
     reload_supervisor()
+
 
 def reconf():
     configure_supervisor()

@@ -121,12 +121,12 @@ env.memcached_size    = 5
 env.nb_workers        = 1
 env.nb_web_workers    = 1
 
+
 def bootstrap():
     "Initializes python libraries"
     run('mkdir -p %s/lib/python2.7' % env.home)
     run('easy_install-2.7 pip')
     run('pip-2.7 install virtualenv virtualenvwrapper')
-
 
 
 def _create_db():
@@ -149,6 +149,7 @@ def _create_static_app():
 
     env.webfaction.create_app(env.project + '_static', 'static_only', False, '')
 
+
 def _create_media_app():
     print("Creating static app...")
     for app_info in env.webfaction.list_apps():
@@ -168,6 +169,7 @@ def _create_main_app():
 
     port = env.webfaction.create_app(env.project, 'custom_app_with_port', False, '')
 
+
 def _create_domain():
     print("Creating domain %s..." % env.domain)
     for (domain_id, domain, subdomains) in env.webfaction.list_domains():
@@ -177,6 +179,7 @@ def _create_domain():
     env.webfaction.create_domain(env.domain, *env.subdomains)
     print("...done")
 
+
 def _create_website():
     print("Creating website")
     website_fct = env.webfaction.create_website
@@ -185,13 +188,11 @@ def _create_website():
             print("Website already exists")
             website_fct = env.webfaction.update_website
 
-
     machines = env.webfaction.list_ips()
     env.ip = None
     for machine in machines:
         if machine.get('machine') == env.machine:
             ip = machine.get('ip')
-
 
     website_fct(env.website_name, ip, env.https,
                 env.allowed_hosts,
@@ -201,22 +202,29 @@ def _create_website():
     print("...done")
 
 
-
 def configure_supervisor():
     print("Configuring supervisor...")
     if not 'secret_key' in env:
         secret_chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$^&*(-_=+)'
         env.secretkey = ''.join([random.SystemRandom().choice(secret_chars) for i in range(50)])
-    if not 'app_port' in env:
-    	for app_config in env.webfaction.list_apps():
-    		if app_config.get('name') == env.project:
-    			env.app_port = app_config.get('port')
-    			break
+    if 'app_port' not in env:
+        for app_config in env.webfaction.list_apps():
+            if app_config.get('name') == env.project:
+                env.app_port = app_config.get('port')
+                break
     require('app_port')
     upload_template(os.path.join(env.local_config_dir, 'gunicorn.conf'),
                     env.supervisor_cfg, env)
-
     reload_supervisor()
+
+
+def reconf():
+    configure_supervisor()
+    print("Configuring virtualenv...")
+    upload_template(os.path.join(env.local_config_dir, 'postactivate.tpl'),
+                    os.path.join(env.virtualenv, 'bin', 'postactivate'),
+                    env)
+
 
 def configure_webfaction():
     _create_db()
@@ -225,6 +233,7 @@ def configure_webfaction():
     _create_main_app()
     _create_domain()
     _create_website()
+
 
 def install_app():
     "Installs the django project in its own wf app and virtualenv"
@@ -240,7 +249,6 @@ def install_app():
 
     reload_app()
     restart_app()
-
 
 
 def reload_app(arg=None):
@@ -262,13 +270,12 @@ def reload_supervisor():
     with cd(env.supervisor_dir):
         _ve_run('supervisor','supervisorctl reread && supervisorctl update')
 
+
 def restart_app():
     "Restarts the app using supervisorctl"
     with cd(env.supervisor_dir):
         _ve_run('supervisor','supervisorctl restart %s' % env.project)
         _ve_run('supervisor','supervisorctl restart %s_worker' % env.project)
-
-
 
 
 ### Helper functions
@@ -294,10 +301,10 @@ def _create_ve(name):
                     env)
 
 
-
 def _ve_run(ve, cmd):
     """virtualenv wrapper for fabric commands"""
     run("""/bin/bash -l -c 'source %s/bin/virtualenvwrapper.sh && workon %s && %s'""" % (env.home, ve, cmd))
+
 
 def djangoadmin(cmd):
     _ve_run(env.project, "django-admin %s" % cmd)
@@ -315,7 +322,6 @@ def nero():
         env.webfaction.delete_app(env.project)
     except xmlrpclib.Fault, msg:
         print("Unable to delete main app (%s)") % msg
-
 
     try:
         env.webfaction.delete_db(env.dbname, env.dbtype)
