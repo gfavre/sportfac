@@ -117,6 +117,10 @@ env.static_root       = os.path.join(env.home, 'webapps', env.static_app_name)
 env.allowed_hosts     = ["sportfac.beyondthewall.ch", "demo.kepchup.ch"]
 env.allowed_hosts_str = ';'.join(env.allowed_hosts)
 
+env.memcached_size    = 5
+env.nb_workers        = 1
+env.nb_web_workers    = 1
+
 def bootstrap():
     "Initializes python libraries"
     run('mkdir -p %s/lib/python2.7' % env.home)

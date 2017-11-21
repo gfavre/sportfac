@@ -6,11 +6,11 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 
 from dynamic_preferences.types import BaseSerializer
-from dynamic_preferences.types import (BasePreferenceType, BooleanPreference, 
-                                       IntegerPreference, LongStringPreference, 
-                                       StringPreference, Section)
+from dynamic_preferences.types import (BasePreferenceType, BooleanPreference,
+                                       IntegerPreference, LongStringPreference,
+                                       StringPreference)
 from dynamic_preferences.registries import PerInstancePreferenceRegistry, global_preferences_registry, preference_models
-
+from dynamic_preferences.preferences import Section
 from .models import TenantPreferenceModel
 
 

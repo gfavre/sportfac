@@ -5,8 +5,8 @@ coverage == 4.1b2
 mock == 2.0.0
 factory_boy >= 2.9.2
 django-debug-toolbar == 1.8
-Sphinx == 1.5.1
+Sphinx == 1.6.5
 fabric == 1.11.1
-django-constance[database] == 1.1.2
+django-constance[database] == 1.2.1
 django_extensions == 1.6.1
 django-celery == 3.1.17

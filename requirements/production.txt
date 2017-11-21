@@ -2,8 +2,8 @@
 #	production that isn't in development.
 -r base.txt
 
-gunicorn==19.6.0
-redis==2.10.3
+gunicorn==19.7.1
+redis==2.10.6
 raven==5.1.1
-django-constance[redis] == 1.1.2
+django-constance[redis] == 1.2.1
 pylibmc == 1.5.2
