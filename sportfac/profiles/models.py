@@ -118,7 +118,6 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         verbose_name = _("User")
         verbose_name_plural = _("Users")
 
-
     def get_full_name(self):
         full_name = '%s %s' % (self.first_name, self.last_name)
         return full_name.strip()
@@ -145,7 +144,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
                 # No capitals found; just use first letter
                 initial += self.last_name[:1].upper()
         else:
-            initial = self.username[:1].upper()
+            initial = self.email[:1].upper()
         return initial
 
     @property
