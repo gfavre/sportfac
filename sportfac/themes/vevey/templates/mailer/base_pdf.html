@@ -5,36 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <title>{{ title|default:"" }}</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <style>
 body {
-    font-size: 12px;
+    font-size: 10px;
 }
 h1,h2 {
     margin-top: 0;
 }
 h1,h2 {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
     line-height: 1.5;
     text-transform: uppercase
 }
 h2 {
-    font-size: 14px;
+    font-size: 13px;
 }
 
 header {
-    margin-bottom: 2cm;
+    margin-bottom: 1cm;
 }
 address {
     margin-bottom: 0;
 }
 
 .logo {
-    width: 3cm; 
+    width: 2cm;
     float: left;
     margin-right: 0.4cm;
-    margin-bottom: 1cm;
 }
 .header, .title {
     vertical-align: top;
@@ -47,18 +46,32 @@ address {
     padding-right: 0.5cm;
 }
 .name {
-    font-weight: bold; 
+    font-weight: bold;
     margin-bottom: 1cm;
 }
 .title {
     display: inline-block;
-    width: 10.5cm;
-    padding:  0cm 0 0 0.75cm;
-    
+    width: auto;
+    padding:  0 0 0 0.75cm;
+
 }
+table { page-break-inside:auto }
+    tr    { page-break-inside:avoid; page-break-after:auto }
+    thead { display:table-header-group }
+    tfoot { display:table-footer-group }
+
 .table td {
-    border-top: 1px solid #ccc !important;
+  border-top: 1px solid #ccc !important;
 }
+.table>tbody>tr>td,
+.table>tbody>tr>th,
+.table>tfoot>tr>td,
+.table>tfoot>tr>th,
+.table>thead>tr>td,
+.table>thead>tr>th {
+  padding: 0.3rem;
+}
+
 .table-header-rotated {
   border-collapse: collapse;
 }
@@ -66,16 +79,16 @@ address {
   width: 30px;
 }*/
 .table-header-rotated th {
-border-right: 1px solid #ccc;
+border-right: 1pt solid #ccc;
 }
 .table-header-rotated td {
 }
 .table-header-rotated th.rotate {
-  height: 100px;
+  height: 7em;
   white-space: nowrap;
 }
 .table-header-rotated th.rotate > div {
-  -webkit-transform: translate(4px, 15px) rotate(-90deg);
+  -webkit-transform: translate(4px, 10px) rotate(-90deg);
       -ms-transform: translate(4px, 0px) rotate(-90deg);
           transform: translate(4px, 0px) rotate(-90deg);
   width: 1em;
@@ -84,7 +97,7 @@ border-right: 1px solid #ccc;
   padding: 5px 10px;
 }
 .table-header-rotated th.fixed, .table-header-rotated td.fixed {
-    width:40px;
+    width:2.5rem;
     border-left: 1px solid #ccc;
     border-right:  1px solid #ccc;
 
@@ -94,27 +107,29 @@ address span:first-child {
     font-weight: bold;
     margin-bottom: 0;
 }
+@media print {
+  a[href]:after {
+    content: "";
+  }
+}
 </style>
 </head>
 <body>
   <header>
-    <div class="header">        
-        <img src="{{ PROTOCOL }}{{ request.site.domain }}{% static 'img/logo-vevey.svg' %}" class="logo" />
-        {% include "address.html" %}
-        
+    <div class="header">
+      <img src="{% static 'img/logo-vevey.svg' %}" class="logo" />
+      {% include "address.html" %}
     </div>
     <div class="title">
-        <h1>Loisirs sportifs</h1>
-        <h2>{% block page_header%}{% endblock %}</h2>
+      <h1>Loisirs sportifs</h1>
+      <h2>{% block page_header %}{% endblock %}</h2>
     </div>
   </header>
   <div>
-  {%block content%}
-  {%endblock%}
+    {% block content %}{% endblock %}
   </div>
   <footer id="page-footer">
-    {%block page_foot%}
-    {%endblock%}
+    {% block page_foot %}{% endblock %}
   </footer>
 </body>
 </html>

@@ -25,7 +25,7 @@ Liste de présence<br>Cours n°{{ course.number }} | {{ course.activity.name }}
         <th class="fixed"></th>
         {% endif %}
         {% endfor %}
-        
+
       </tr>
     </thead>
     {% for registration in course.participants.all %}
@@ -34,18 +34,20 @@ Liste de présence<br>Cours n°{{ course.number }} | {{ course.activity.name }}
         <td style="margin-right: 2cm;">{{ registration.child.school_year|default:"" }}</td>
         {% for session in sessions %}
         <td class="text-center fixed">
-          <i class="glyphicon glyphicon-unchecked"></i>
-        </td>      
+
+        </td>
         {% endfor %}
       </tr>
     {% empty %}
-    
+
     {% endfor %}
     <tfoot>
-        <tr>
-            <th colspan="6">Total: {{ course.participants.count }} participants</th>
-        </tr>
+      <tr>
+        <th colspan="2">Total: {{ course.participants.count }} participants</th>
+        {% for session in sessions %}
+        <th></th>
+        {% endfor %}
+      </tr>
     </tfoot>
   </table>
-
 {% endblock %}

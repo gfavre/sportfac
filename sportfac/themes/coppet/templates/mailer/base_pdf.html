@@ -7,38 +7,43 @@
     <title>{{ title|default:"" }}</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <style>
-h1 {
-    font-size: 0.6cm;
+body {
+    font-size: 10px;
+}
+h1,h2 {
+    font-size: 16px;
     font-weight: 700;
     line-height: 1.5;
+    margin-top: 0;
 }
 h2 {
-    font-size: 0.5cm;
-    line-height: 1.5;
+  font-size: 13px;
 }
+
 header {
-    margin-bottom: 2cm;
+    margin-bottom: 1cm;
 }
 .logo {
-    height: 3.5cm; 
+    height: 3.5cm;
     float: left;
     margin-right: 0.4cm;
 }
 .header {
     float: left;
-    width: 7.5cm;
+    width: 6cm;
     border-right: 1px solid #000;
 }
 .name {
-    font-weight: bold; 
+    font-weight: bold;
     margin-bottom: 1cm;
 }
 .title {
     float: left;
     width: auto;
-    padding:  0cm 0 0 0.75cm;
-    
+    padding:  0 0 0 0.4cm;
+
 }
+
 .table td {
     border-top: 1px solid #ccc !important;
 }
@@ -48,17 +53,17 @@ header {
 /*.table-header-rotated td {
   width: 30px;
 }*/
-.table-header-rotated th {
-border-right: 1px solid #ccc;
+.table-header-rotated th, .table-header-rotated td{
+  border-right: 1px solid #ccc;
 }
 .table-header-rotated td {
 }
 .table-header-rotated th.rotate {
-  height: 100px;
+  height: 7rem;
   white-space: nowrap;
 }
 .table-header-rotated th.rotate > div {
-  -webkit-transform: translate(4px, 15px) rotate(-90deg);
+  -webkit-transform: translate(4px, 10px) rotate(-90deg);
       -ms-transform: translate(4px, 0px) rotate(-90deg);
           transform: translate(4px, 0px) rotate(-90deg);
   width: 1em;
@@ -67,37 +72,47 @@ border-right: 1px solid #ccc;
   padding: 5px 10px;
 }
 .table-header-rotated th.fixed, .table-header-rotated td.fixed {
-    width:40px;
+    width:2.5rem;
     border-left: 1px solid #ccc;
     border-right:   border: 1px solid #ccc;
-
+}
+.table>tbody>tr>td,
+.table>tbody>tr>th,
+.table>tfoot>tr>td,
+.table>tfoot>tr>th,
+.table>thead>tr>td,
+.table>thead>tr>th {
+  padding: 0.3rem;
 }
 
+@media print {
+  a[href]:after {
+    content: "";
+  }
+}
 </style>
 </head>
 <body>
   <header>
-    <div class="header">        
-        <img src="{{ PROTOCOL }}{{ request.site.domain }}{% static 'img/logo-etat-vd.svg' %}" class="logo" />
-        <p class="name"><strong>Etablissement primaire<br />
+    <div class="header">
+      <img src="{% static 'img/logo-etat-vd.svg' %}" class="logo" />
+      <p class="name"><strong>Etablissement primaire<br />
         de Coppet - Terre Sainte</strong></p>
-        <p>Chemin du Chaucey<br />
+      <p>Chemin du Chaucey<br />
         Bâtiment de la Doye<br />
         1296 Coppet</p>
     </div>
     <div class="title">
-        <h1>Activités scolaires facultatives</h1>
-        <h2>{% block page_header%}{% endblock %}</h2>
+      <h1>Activités scolaires facultatives</h1>
+      <h2>{% block page_header%}{% endblock %}</h2>
     </div>
     <div style="clear:both;"></div>
   </header>
   <div>
-  {%block content%}
-  {%endblock%}
+    {% block content %}{% endblock %}
   </div>
   <footer id="page-footer">
-    {%block page_foot%}
-    {%endblock%}
+    {% block page_foot %}{% endblock %}
   </footer>
 </body>
 </html>

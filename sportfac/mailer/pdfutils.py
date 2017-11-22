@@ -134,12 +134,13 @@ class PDFRenderer(object):
             filelike.close()
 
 
-
 class CourseParticipants(PDFRenderer):
+    rasterizer = settings.PHANTOMJS_RASTERIZE_LANDSCAPE
     message_template = 'mailer/pdf_participants_list.html'
 
 
 class CourseParticipantsPresence(PDFRenderer):
+    rasterizer = settings.PHANTOMJS_RASTERIZE_PORTRAIT
     message_template = 'mailer/pdf_participants_presence.html'
 
     def __init__(self, context_data):
@@ -149,4 +150,5 @@ class CourseParticipantsPresence(PDFRenderer):
 
 
 class MyCourses(PDFRenderer):
+    rasterizer = settings.PHANTOMJS_RASTERIZE_LANDSCAPE
     message_template = 'mailer/pdf_my_courses.html'
