@@ -6,7 +6,7 @@ import tablib
 
 from activities.models import ExtraNeed
 from backend.templatetags.switzerland import phone
-from .models import Registration
+from .models import Registration, ChildActivityLevel
 
 
 class ExtraNeedField(fields.Field):
@@ -43,9 +43,8 @@ class RegistrationResource(resources.ModelResource):
     parent_city = fields.Field(attribute='child__family__city', column_name=_("City"))
     parent_country = fields.Field(attribute='child__family__country', column_name=_("Country"))
     emergency_number = fields.Field(attribute='child', column_name=_("Emergency number"))
-    before_level = fields.Field(attribute='before_level', column_name=_("Level -1"))
-    after_level = fields.Field(attribute='after_level', column_name=_("Level 0"))
-
+    before_level = fields.Field(attribute='child', column_name=_("Level -1"))
+    after_level = fields.Field(attribute='child', column_name=_("Level 0"))
 
     def __init__(self, *args, **kwargs):
         self.course = kwargs.pop('course', None)
@@ -87,6 +86,22 @@ class RegistrationResource(resources.ModelResource):
     def dehydrate_birth_date(self, obj):
         return obj.child.birth_date.strftime('%d.%m.%Y')
 
+    def dehydrate_before_level(self, obj):
+        activity = obj.course.activity
+        try:
+            level = obj.child.levels.get(activity=activity)
+            return level.before_level
+        except ChildActivityLevel.DoesNotExist:
+            return ''
+
+    def dehydrate_after_level(self, obj):
+        activity = obj.course.activity
+        try:
+            level = obj.child.levels.get(activity=activity)
+            return level.after_level
+        except ChildActivityLevel.DoesNotExist:
+            return ''
+
     def export(self, queryset=None, *args, **kwargs):
         """
         Exports a resource.
@@ -109,7 +124,7 @@ class RegistrationResource(resources.ModelResource):
     def get_queryset(self):
         queryset = Registration.objects.select_related('course', 'child', 'child__family', 'transport')\
                                        .prefetch_related('course__activity', 'extra_infos', 'child__school',
-                                                         'child__school_year')
+                                                         'child__school_year', 'child__levels')
         if self.course:
             queryset = queryset.filter(course=self.course)
         return queryset
