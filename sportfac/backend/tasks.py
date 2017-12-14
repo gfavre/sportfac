@@ -13,7 +13,6 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
-
 from async_messages import messages, message_user
 from celery import shared_task
 from celery.utils.log import get_task_logger
@@ -31,27 +30,27 @@ logger = get_task_logger(__name__)
 
 @shared_task
 @respects_language
-def create_tenant(start_date, end_date, new_tenant_id, copy_from_id=None, user_id=None):
+def create_tenant(new_tenant_id, copy_from_id=None, user_id=None):
     connection.set_schema_to_public()
     tenant = YearTenant.objects.get(pk=new_tenant_id)
     tenant.create_schema(check_if_exists=True)
-    logger.debug('Created schema for period %s-%s' %(tenant.start_date.isoformat(), tenant.end_date.isoformat()))
+    logger.debug('Created schema for period %s-%s' % (tenant.start_date.isoformat(), tenant.end_date.isoformat()))
     if copy_from_id:
         try:
             copy_from = YearTenant.objects.get(id=copy_from_id)
             tenant.status = YearTenant.STATUS.copying
             tenant.save()
             f = NamedTemporaryFile(suffix='.json', delete=False)
-            call_command('tenant_command', 'dumpdata', 'activities', 
+            call_command('tenant_command', 'dumpdata', 'activities',
                          output=f.name, schema=copy_from.schema_name)
             f.close()
             call_command('tenant_command', 'loaddata', f.name, schema=tenant.schema_name)
             os.remove(f.name)
             connection.set_tenant(tenant)
-            Course.objects.all().update(uptodate=False)    
+            Course.objects.all().update(uptodate=False)
             logger.debug('Populated period %s-%s' %(tenant.start_date.isoformat(), tenant.end_date.isoformat()))
         except YearTenant.DoesNotExist:
-            pass                
+            pass
     tenant.status = YearTenant.STATUS.ready
     tenant.save()
     logger.info('Created / populated period %s-%s' %(tenant.start_date.isoformat(), tenant.end_date.isoformat()))
@@ -61,12 +60,12 @@ def create_tenant(start_date, end_date, new_tenant_id, copy_from_id=None, user_i
         params = {'start': tenant.start_date.isoformat(),
                   'end': tenant.end_date.isoformat(),
                   'link_start': format_html('<a href="{}">', reverse('backend:year-list')),
-                  'link_end': format_html('</a>')}    
+                  'link_end': format_html('</a>')}
         messages.success(user, mark_safe(msg % params))
         logger.debug('Warned user for period activation')
     except FamilyUser.DoesNotExist:
         pass
-    
+
 
 
 @shared_task
@@ -75,12 +74,12 @@ def create_tenant(start_date, end_date, new_tenant_id, copy_from_id=None, user_i
 def update_current_tenant():
     now = timezone.now()
     current_domain = Domain.objects.filter(is_current=True).first()
-    possible_new_tenants = YearTenant.objects.filter(start_date__lte=now, 
-                                                     end_date__gte=now, 
+    possible_new_tenants = YearTenant.objects.filter(start_date__lte=now,
+                                                     end_date__gte=now,
                                                      status=YearTenant.STATUS.ready)\
                                              .exclude(domains=current_domain)\
                                              .order_by('start_date', 'end_date')
-    
+
     if possible_new_tenants.count():
         if not (current_domain.tenant.is_past or current_domain.tenant.is_future):
             # do not switch if current tenant is still valid
@@ -92,13 +91,13 @@ def update_current_tenant():
         new_domain.save()
         # log out everyone
         Session.objects.all().delete()
-    
+
         for manager in Group.objects.get(name=MANAGERS_GROUP).user_set.all():
             msg = _("The active period has been automatically changed to %(start)s - %(end)s")
             params = {'start': new_domain.tenant.start_date.isoformat(),
                       'end': new_domain.tenant.end_date.isoformat()}
-            messages.info(user, msg % params)        
-        
+            messages.info(user, msg % params)
+
         connection.set_tenant(new_domain.tenant)
         clean_instructors()
 
@@ -121,7 +120,7 @@ def import_children(filepath, tenant_id, user_id=None):
         except ValueError, msg:
             status = constants.ERROR
             message = msg
-    
+
     try:
         user = FamilyUser.objects.get(pk=user_id)
         message_user(user, message, status)

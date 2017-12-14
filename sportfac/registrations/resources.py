@@ -86,21 +86,38 @@ class RegistrationResource(resources.ModelResource):
     def dehydrate_birth_date(self, obj):
         return obj.child.birth_date.strftime('%d.%m.%Y')
 
+    def montreux_prepend(self, obj):
+        activity = obj.course.activity
+        if activity.number.startswith('200'):
+            return u'A '
+        elif activity.number.startswith('270'):
+            return u'S '
+        elif obj.extra_infos.exists():
+            extra = obj.extra_infos.filter(key__question_label__startswith='Snowboard ou ski').last()
+            if not extra:
+                return u''
+            if extra.value.lower() == u'ski':
+                return u'A '
+            else:
+                return u'S '
+        return u''
+
     def dehydrate_before_level(self, obj):
         activity = obj.course.activity
+
         try:
             level = obj.child.levels.get(activity=activity)
-            return level.before_level
+            return self.montreux_prepend(obj) + level.before_level
         except ChildActivityLevel.DoesNotExist:
-            return ''
+            return u''
 
     def dehydrate_after_level(self, obj):
         activity = obj.course.activity
         try:
             level = obj.child.levels.get(activity=activity)
-            return level.after_level
+            return self.montreux_prepend(obj) + level.after_level
         except ChildActivityLevel.DoesNotExist:
-            return ''
+            return u''
 
     def export(self, queryset=None, *args, **kwargs):
         """

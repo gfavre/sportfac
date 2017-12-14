@@ -78,3 +78,56 @@ for (registration_id, first, level_before) in dataset:
     except Registration.DoesNotExist:
         print('NO registration found')
         continue
+
+
+from import_export.formats.base_formats import XLSX
+from registrations.models import Child, Registration, ChildActivityLevel
+
+fmt = XLSX()
+f = open('/home/grfavre/SSF_Hiver_Inscription.xlsx', fmt.get_read_mode())
+#f = open('/Users/grfavre/Desktop/SSF_Hiver_Inscription.xlsx', fmt.get_read_mode())
+dataset = fmt.create_dataset(f.read())
+all_ids = set(Child.objects.values_list('id_lagapeo', flat=True))
+for (junk, registration_id, a_name, c_name, price, first, last, id_lagapeo, bdate, s_year, s_name, emergency,
+     p_first, p_last, email, address, npa, city, country, level, train, abo_annonce, abo) in dataset:
+    if not registration_id:
+        continue
+    try:
+        registration = Registration.objects.get(pk=registration_id)
+        assert (registration.child.first_name == first)
+        child = registration.child
+        if not child.id_lagapeo and id_lagapeo and id_lagapeo in all_ids:
+            child2 = Child.objects.get(id_lagapeo=id_lagapeo)
+            if child2.registrations.exists():
+                print("dual registered child: {}".format(id_lagapeo))
+                continue
+            child2.delete()
+        child.id_lagapeo = id_lagapeo
+        child.save()
+        for extra in registration.extra_infos.all():
+            if extra.key.question_label == u'Niveau de ski/snowboard':
+                if extra.value != level:
+                    print(u'{} ≠ {}'.format(extra.value, level))
+                    extra.value = level or ''
+                    extra.save()
+            elif extra.key.question_label == u'Arrêt de Bus':
+                if extra.value != train:
+                    print(u'{} ≠ {}'.format(extra.value, train))
+                    extra.value = train or ''
+                    extra.save()
+            elif extra.key.question_label == u'Votre enfant aura-t-il un abonnement de ski saison?':
+                if extra.value != abo_annonce:
+                    print(u'{} ≠ {}'.format(extra.value, abo_annonce))
+            elif extra.key.question_label == u'Arrêt de train':
+                if extra.value != train:
+                    print(u'{} ≠ {}'.format(extra.value, train))
+                    extra.value = train or ''
+                    extra.save()
+            elif extra.key.question_label == u'Snowboard ou ski?':
+                pass
+    except AssertionError:
+        print('Bad name: {} != {} {}'.format(registration.child.full_name, first, last))
+        continue
+    except Registration.DoesNotExist:
+        print('NO registration found: {}'.format(registration_id))
+        continue
