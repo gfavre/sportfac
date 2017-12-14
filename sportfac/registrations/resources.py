@@ -107,7 +107,7 @@ class RegistrationResource(resources.ModelResource):
 
         try:
             level = obj.child.levels.get(activity=activity)
-            return self.montreux_prepend(obj) + level.before_level
+            return level.before_level and self.montreux_prepend(obj) + level.before_level or u''
         except ChildActivityLevel.DoesNotExist:
             return u''
 
@@ -115,7 +115,7 @@ class RegistrationResource(resources.ModelResource):
         activity = obj.course.activity
         try:
             level = obj.child.levels.get(activity=activity)
-            return self.montreux_prepend(obj) + level.after_level
+            return level.after_level and self.montreux_prepend(obj) + level.after_level or u''
         except ChildActivityLevel.DoesNotExist:
             return u''
 
