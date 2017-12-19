@@ -26,6 +26,7 @@ def send_mail(subject, message, from_email, recipients, reply_to, bcc=None, atta
         attachments = []
     else:
         attachments = Attachment.objects.filter(pk__in=attachments)
+    print (u'subject:{}\nrecipients:{}\nbcc:{}'.format(subject, unicode(recipients), unicode(bcc)))
     logger.debug(u"Sending email to %s" % recipients)
     email = EmailMessage(subject=subject,
                          body=message,

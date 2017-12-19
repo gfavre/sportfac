@@ -399,4 +399,3 @@ class ChildActivityLevel(TimeStampedModel):
     @property
     def api_url(self):
         return self.get_api_url()
-

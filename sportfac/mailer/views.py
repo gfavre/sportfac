@@ -182,7 +182,7 @@ class MailPreviewView(CancelableMixin, EditableMixin, TemplateView):
         all_recipients = self.get_recipients() + self.get_bcc_recipients()
         for recipient in all_recipients:
             context = self.get_context_data()
-            self.send_mail(recipient, self.get_bcc_recipients(), context)
+            self.send_mail(recipient, [], context)
         if 'mail' in self.request.session:
             del self.request.session['mail']
         if 'mail-userids' in self.request.session:
