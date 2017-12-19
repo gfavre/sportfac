@@ -23,7 +23,7 @@ class Absence(StatusModel, TimeStampedModel):
     child = models.ForeignKey('registrations.Child', on_delete=models.CASCADE)
     session = models.ForeignKey('Session', related_name="absences", on_delete=models.CASCADE)
     notification_sent = models.BooleanField(default=False)
-    
+
     class Meta:
         unique_together = ('child', 'session')
 
@@ -38,10 +38,12 @@ class Session(TimeStampedModel):
     instructor = models.ForeignKey('profiles.FamilyUser', related_name="sessions", null=True)
 
     def absentees(self):
-        return [absence.child for absence in self.absences.all()]
+        return [absence.child for absence in self.absences.exclude(status__in=(Absence.STATUS.present,
+                                                                               Absence.STATUS.na,
+                                                                               Absence.STATUS.late))]
 
     def get_absence_for_child(self, child):
-        absences = [absence for absence in self.absences.all() if absence.child==child]
+        absences = [absence for absence in self.absences.all() if absence.child == child]
         if absences:
             return absences[0]
         else:
@@ -54,10 +56,7 @@ class Session(TimeStampedModel):
         return reverse('api:session-detail', kwargs={'pk': self.pk})
 
     def presentees_nb(self):
-        children = [registration.child for registration in self.course.participants.all()]
-        absentees_nb = self.absences.filter(child__in=children)\
-                                    .exclude(status__in=(Absence.STATUS.late,)).count()
-        return self.course.count_participants - absentees_nb
+        return self.absences.filter(status__in=(Absence.STATUS.present, Absence.STATUS.late)).count()
 
     class Meta:
         ordering = ('date', 'course')

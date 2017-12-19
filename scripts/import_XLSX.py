@@ -131,3 +131,38 @@ for (junk, registration_id, a_name, c_name, price, first, last, id_lagapeo, bdat
     except Registration.DoesNotExist:
         print('NO registration found: {}'.format(registration_id))
         continue
+
+
+from import_export.formats.base_formats import XLSX
+from registrations.models import Child, Registration, ChildActivityLevel, Transport
+
+fmt = XLSX()
+f = open('/home/grfavre/Valeurs cars, dossard et autres au 14.12.17.xlsx', fmt.get_read_mode())
+#f = open('/Users/grfavre/Desktop/Valeurs cars, dossard et autres au 14.12.17.xlsx', fmt.get_read_mode())
+dataset = fmt.create_dataset(f.read())
+cars = {}
+
+for (registration_id, c_first, c_last, car, junk, junk, bib_number, junk, id_lagapeo, junk, c_name, level_before) in dataset:
+    try:
+        registration = Registration.objects.get(pk=registration_id)
+        if not car in cars:
+            car_obj, created = Transport.objects.get_or_create(name=car)
+            cars[car] = car_obj
+        else:
+            car_obj = cars[car]
+        registration.transport = car_obj
+        child = registration.child
+        if bib_number:
+            child.bib_number = bib_number
+            child.save()
+        if level_before:
+            level_before = level_before.split(' ')[-1]
+            lvl, created = ChildActivityLevel.objects.get_or_create(
+                activity=registration.course.activity,
+                child=child,
+                defaults={'before_level': level_before})
+            lvl.save()
+        registration.save()
+    except Registration.DoesNotExist:
+        print('NO registration found: {}'.format(registration_id))
+        continue
