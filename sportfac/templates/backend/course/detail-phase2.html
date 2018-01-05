@@ -18,13 +18,14 @@
         <p class="lead">Chaque {{ course.day_name|lower }} de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }} ({{ course.duration|duration }})</p>
       </header>
       <dl class="dl-horizontal">
-        <dt>{% trans "Course number" %}</dt><dd><a href="{{ course.activity.get_backend_url }}">{{ course.activity.number }}</a></dd>
+        <dt>{% trans "Activity" %}</dt><dd><a href="{{ course.activity.get_backend_url }}">{{ course.activity }}</a></dd>
+        <dt>{% trans "Course number" %}</dt><dd>{{ course.number }}</dd>
         <dt>{% trans "Instructors" %}</dt>
         <dd>
           <ul class="list-unstyled">
             {% for instructor in course.instructors.all %}
               <li>
-                <a href="{{ instructor.get_backend_url }}">{{ instructor.full_name  }}</a>
+                <a href="{{ instructor.get_backend_url }}">{{ instructor.full_name }}</a>
                 {% if FICHE_SALAIRE_MONTREUX %}
                   &mdash;<a href="{% url 'backend:pay-slip-montreux' course=course.pk instructor=instructor.pk %}" ><i class="icon-doc-text"></i> {% trans "Create pay slip" %}</a>
                 {% endif %}
@@ -43,7 +44,7 @@
         <dd>
           <ul class="list-unstyled">
             {% for extra in course.extra.all %}
-              <li>{{ extra.question_label }}{% if extra.choices %}: ({{ extra.choices|join:", " }}){% endif %}</li>
+              <li>{{ extra.question_label }}{% if extra.choices %}: <em>({{ extra.choices|join:", " }})</em>{% endif %}</li>
               {% empty %}
               <li>{% trans "No extra question required" %}</li>
             {% endfor %}
@@ -62,15 +63,11 @@
       <p class="text-right"><small>{{ course.min_participants }} participants requis pour que l'activité ait lieu</small></p>
 
       {% if course.count_participants %}
-        <h4 class="content-title"><u>{% trans "Management"%}</u></h4>
-        <a href="{{ course.get_xls_export_url }}" class="btn btn-default">
-          <i class="icon-file-excel"></i> {% trans "Export participants" %}
-        </a>
-
         {% if USE_ABSENCES %}
-          <a href="{{ course.get_backend_absences_url }}" class="btn btn-default">
-            <i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}
-          </a>
+        <h4 class="content-title"><u>{% trans "Management"%}</u></h4>
+        <a href="{{ course.get_backend_absences_url }}" class="btn btn-default">
+          <i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}
+        </a>
         {% endif %}
       {% endif %}
     </div>

@@ -26,7 +26,7 @@
         <ul class="list-unstyled">
           {% for instructor in course.instructors.all %}
             <li>
-              <a href="{{ instructor.get_backend_url }}">{{ instructor.full_name  }}</a>
+              <a href="{{ instructor.get_backend_url }}">{{ instructor.full_name }}</a>
               {% if FICHE_SALAIRE_MONTREUX %}
                 &mdash;<a href="{% url 'backend:pay-slip-montreux' course=course.pk instructor=instructor.pk %}" ><i class="icon-doc-text"></i> {% trans "Create pay slip" %}</a>
               {% endif %}
@@ -46,14 +46,16 @@
       <dd>
         <ul class="list-unstyled">
           {% for extra in course.extra.all %}
-            <li>{{ extra.question_label }}{% if extra.choices %}: ({{ extra.choices|join:", " }}){% endif %}</li>
+            <li>{{ extra.question_label }}{% if extra.choices %}: <em>({{ extra.choices|join:", " }})</em>{% endif %}</li>
             {% empty %}
             <li>{% trans "No extra question required" %}</li>
           {% endfor %}
         </ul>
       </dd>
     </dl>
-    <p class="text-center"><a href="{{ course.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a> </p>
+    <p class="text-center">
+      <a href="{{ course.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a>
+    </p>
 
     <h4 class="content-title"><u>{% trans "Availability"%}</u></h4>
     <p>{{ course.count_participants  }} participants <span class="pull-right strong"> {{ course.max_participants }} places</span></p>
@@ -66,21 +68,21 @@
       <h4 class="content-title"><u>{% trans "Management"%}</u></h4>
 
       {% if USE_ABSENCES %}
-        <a href="{{ course.get_backend_absences_url }}" class="btn btn-sm">
-          <i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}
-        </a> &nbsp;
+      <a href="{{ course.get_backend_absences_url }}" class="btn btn-sm">
+        <i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}
+      </a>
       {% endif %}
 
       <a href="{{ course.get_mail_instructors_url }}" class="btn btn-sm">
         <i class="icon-tasks"></i>&nbsp;{% trans "Send infos to instructors" %}
-      </a> &nbsp;
-
-      <a href="{{ course.get_js_export_url }}" class="btn btn-sm">
-        <i class="icon-doc"></i>&nbsp;{% trans "Get BDNS: J+S export file" %}
-      </a> &nbsp;
+      </a>
 
       <a href="{{ course.get_mail_confirmation_url }}" class="btn btn-sm">
         <i class="icon-mail"></i>&nbsp;{% trans "Send confirmation email" %}
+      </a>
+
+      <a href="{{ course.get_js_export_url }}" class="btn btn-sm">
+        <i class="icon-doc"></i>&nbsp;{% trans "Get BDNS: J+S export file" %}
       </a>
     {% endif %}
   </div>
