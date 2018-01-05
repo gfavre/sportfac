@@ -131,8 +131,9 @@ class CoursesAbsenceView(BackendMixin, ListView):
                                       .filter(registration__course__in=self.get_queryset(),
                                               key__question_label='Niveau de ski/snowboard')
             child_announced_levels = {extra.registration.child: extra.value for extra in extras}
-            levels = ChildActivityLevel.objects.select_related('child').\
-                                                filter(activity__in=set([absence.session.course.activity for absence in qs]))
+            levels = ChildActivityLevel.objects.select_related('child')\
+                                               .filter(activity__in=set([absence.session.course.activity for
+                                                                         absence in qs]))
             child_levels = {level.child: level for level in levels}
 
         course_children = dict([(course, [reg.child for reg in course.participants.all()]) for course in self.get_queryset()])
@@ -151,6 +152,7 @@ class CoursesAbsenceView(BackendMixin, ListView):
         kwargs['course_absences'] = course_absences
         kwargs['levels'] = ChildActivityLevel.LEVELS
         kwargs['session_form'] = SessionForm()
+
         return super(CoursesAbsenceView, self).get_context_data(**kwargs)
 
     def post(self, *args, **kwargs):

@@ -311,6 +311,10 @@ class Child(TimeStampedModel):
         return self.get_full_name()
 
     @property
+    def ordering_name(self):
+        return u'{} {}'.format(self.last_name.lower().strip(), self.first_name.lower().strip())
+
+    @property
     def backend_url(self):
         return self.get_backend_url()
 
