@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy, reverse
+from django.db import transaction
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
@@ -71,23 +72,36 @@ class CourseAbsenceView(BackendMixin, DetailView):
                 instructor = self.request.user
             else:
                 instructor = None
-            session, created = Session.objects.get_or_create(instructor=instructor,
-                                                             course=course,
-                                                             date=form.cleaned_data['date'])
-            for registration in course.participants.all():
-                Absence.objects.get_or_create(
-                    child=registration.child, session=session,
-                    defaults={
-                        'status': Absence.STATUS.present
-                    }
-                )
+            with transaction.atomic():
+                session, created = Session.objects.get_or_create(instructor=instructor,
+                                                                 course=course,
+                                                                 date=form.cleaned_data['date'])
+                for registration in course.participants.all():
+                    Absence.objects.get_or_create(
+                        child=registration.child, session=session,
+                        defaults={
+                            'status': Absence.STATUS.present
+                        }
+                    )
         return HttpResponseRedirect(course.get_backend_absences_url())
 
     def get_context_data(self, **kwargs):
+        qs = Absence.objects.select_related('child', 'session').filter(session__course=self.object)
+        kwargs['all_dates'] = list(set(qs.values_list('session__date', flat=True)))
+        kwargs['all_dates'].sort(reverse=True)
+        child_absences = collections.OrderedDict()
+        for absence in qs:
+            child = absence.child
+            if child in child_absences:
+                child_absences[child][absence.session.date] = absence
+            else:
+                child_absences[child] = {absence.session.date: absence}
+        kwargs['child_absences'] = child_absences
+
         all_absences = dict(
-            [((absence.child, absence.session), absence.status)
-             for absence in Absence.objects.select_related('child', 'session').filter(session__course=self.object)]
+            [((absence.child, absence.session), absence.status) for absence in qs.all()]
         )
+
         kwargs['absence_matrix'] = [
             [all_absences.get((registration.child, session), 'present') for session in self.object.sessions.all()]
             for registration in self.object.participants.select_related('child', 'child__family')
@@ -125,7 +139,7 @@ class CoursesAbsenceView(BackendMixin, ListView):
                             .select_related('session', 'child', 'session__course', 'session__course__activity')\
                             .order_by('child__last_name', 'child__first_name')
         kwargs['all_dates'] = list(set(qs.values_list('session__date', flat=True)))
-        kwargs['all_dates'].sort()
+        kwargs['all_dates'].sort(reverse=True)
         if settings.KEPCHUP_REGISTRATION_LEVELS:
             extras = ExtraInfo.objects.select_related('registration', 'key')\
                                       .filter(registration__course__in=self.get_queryset(),

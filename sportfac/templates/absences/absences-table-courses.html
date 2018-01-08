@@ -26,6 +26,11 @@ table.dataTable thead>tr>th.rotated-heading {
   padding: 0;
   text-align: center;
 }
+table.dataTable tbody tr.selected .popover,
+table.dataTable tbody th.selected .popover,
+table.dataTable tbody td.selected .popover {
+  color: black;
+}
 .absences .popover .radio {
   display: block;
   margin-top: 10px;
@@ -196,8 +201,8 @@ table.dataTable thead>tr>th.rotated-heading {
                     data-child="{{ child.id }}"
                     data-status="{{ absence.status }}"
                     data-order="{{ absence.status }}">
-              <a role="button" class="btn btn-sm absence has-popover"  data-toggle="popover"
-                 data-trigger="click focus">{{ absence|absence_to_status:1 }}</a>
+                <a role="button" class="btn btn-sm absence has-popover"  data-toggle="popover"
+                   data-trigger="click focus">{{ absence|absence_to_status:1 }}</a>
               </span>
             </td>
           {% endwith %}

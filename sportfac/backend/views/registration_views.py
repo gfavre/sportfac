@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import collections
+
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
@@ -13,7 +15,8 @@ from django.shortcuts import get_object_or_404
 
 from formtools.wizard.views import SessionWizardView
 
-from activities.models import Course
+from absences.models import Absence
+from activities.models import Course, ExtraNeed
 from backend.forms import (BillingForm, ChildSelectForm, CourseSelectForm,
                            RegistrationForm, ExtraInfoFormSet)
 from registrations.resources import RegistrationResource
@@ -273,6 +276,42 @@ class TransportListView(BackendMixin, ListView):
 class TransportDetailView(BackendMixin, DetailView):
     model = Transport
     template_name = 'backend/registration/transport-detail.html'
+    queryset = Transport.objects.prefetch_related('participants', 'participants__child', 'participants__course')
+
+    def get_context_data(self, **kwargs):
+        courses = set([registration.course for registration in self.object.participants.all()])
+        children = set([registration.child for registration in self.object.participants.all()])
+        registrations = dict([((registration.child, registration.course), registration) for registration in self.object.participants.all()])
+        qs = Absence.objects.filter(session__course__in=courses, child__in=children) \
+                            .select_related('session', 'child', 'session__course', 'session__course__activity') \
+                            .order_by('child__last_name', 'child__first_name')
+        kwargs['all_dates'] = list(set(qs.values_list('session__date', flat=True)))
+        kwargs['all_dates'].sort(reverse=True)
+        try:
+            question = ExtraNeed.objects.get(question_label__startswith=u'Arrêt')
+            all_extras = dict([(extra.registration.child, extra.value) for extra in ExtraInfo.objects.filter(
+                registration__child__in=children,
+                registration__course__in=courses,
+                key=question)])
+        except ExtraNeed.DoesNotExist:
+            all_extras = {}
+
+        child_absences = collections.OrderedDict()
+        for absence in qs:
+            child = absence.child
+            course = absence.session.course
+            if (child, course) not in registrations:
+                # another child in same course
+                continue
+            child.bus_stop = all_extras.get(child, '')
+            the_tuple = (child, course, registrations[(child, course)])
+            if the_tuple in child_absences:
+                child_absences[the_tuple][absence.session.date] = absence
+            else:
+                child_absences[the_tuple] = {absence.session.date: absence}
+        kwargs['child_absences'] = child_absences
+
+        return super(TransportDetailView, self).get_context_data(**kwargs)
 
 
 class TransportCreateView(SuccessMessageMixin, BackendMixin, CreateView):

@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load duration switzerland extra sekizai_tags staticfiles matrix status mathfilters children %}
 {% addtoblock "css" %}
-  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/dt-1.10.16/b-1.5.1/fc-3.2.4/fh-3.1.3/r-2.2.1/sc-1.4.3/sl-1.2.4/datatables.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/dt-1.10.16/b-1.5.1/fc-3.2.4/fh-3.1.3/r-2.2.1/sc-1.4.3/sl-1.2.4/datatables.min.css"/>
 <style>
 .rotated-heading {
     height: 85px;
@@ -138,6 +138,8 @@ table.dataTable thead>tr>th.rotated-heading {
       {% if DISPLAY_REGISTRATION_NOTE %}
       <th></th>
       {% endif %}
+    
+    {% comment %}
       {% for session in course.sessions.all %}
       <th class="edit-session session-col"
           data-url="{{ session.get_api_url }}"
@@ -154,6 +156,8 @@ table.dataTable thead>tr>th.rotated-heading {
         </a>
       </th>
       {% endfor %}
+    {% endcomment %}
+
     </tr>
   </tfoot>
   <tbody>

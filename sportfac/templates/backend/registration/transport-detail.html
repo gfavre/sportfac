@@ -1,5 +1,7 @@
 {% extends "backend/base.html" %}
-{% load i18n staticfiles sekizai_tags extra %}
+{% load i18n staticfiles sekizai_tags matrix status %}
+
+
 
 {% block title %}{% trans "Transport detail" %}{% endblock %}
 {% block page_title %}<i class="icon-bus"></i>&nbsp;{% blocktrans with name=transport.name %}Transport details: {{ name }}{% endblocktrans %}{% endblock %}
@@ -9,117 +11,349 @@
 {% block extra_body %}class="transport"{% endblock %}
 
 {% block content %}
+{% addtoblock "css" %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/dt-1.10.16/b-1.5.1/fc-3.2.4/fh-3.1.3/r-2.2.1/sc-1.4.3/sl-1.2.4/datatables.min.css"/>
+<style>
+.rotated-heading {
+    height: 85px;
+    width: 40px;
+    white-space: nowrap;
+    vertical-align: middle!important;
+}
+.rotated-heading div {
+    transform: rotate(-90deg) translate(-33px, 0px);
+    -webkit-transform: rotate(-90deg) translate(-33px, 0px);
+    width: 35px;
+}
+.rotated-heading div span {
+    padding-left:12px;
+}
+table.dataTable thead>tr>th.rotated-heading {
+  padding-left: 0;
+  padding-right: 0;
+}
+.set-absence .btn-sm{
+  padding: 0;
+ }
+.absences>tbody>tr>td.absence {
+  text-align: center;
+}
+table.dataTable tbody tr.selected .popover{
+  color: black;
+}
+table.dataTable tbody tr.selected .absence a {
+  color: rgb(51, 122, 183);
+}
 
-  <div class="btn-group hidden-print">
-    <a class="btn btn-default selectall">{% trans "Select all" %}</span></a>
-    <a class="btn btn-default deselectall needs-select disabled">{% trans "Deselect all" %}</a>
-  </div>
+.absences .popover .radio {
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.absences .popover .radio label{
+  padding-left: 20px;
+}
+.absences .popover .radio input[type=radio] {
+  position: absolute;
+  margin-left: -20px;
+  margin-top: 2px;
+}
+.absences .popover textarea {
+  width: 100%;
+}
+.edit-session .form-group {
+  margin-bottom: 15px;
+  display: block;
+}
+.edit-session .form-control {
+  width: 100%;
+  display: block;
+}
 
-  <div class="btn-group hidden-print">
-    <form class="move" method="post" action="{% url 'backend:transport-move' %}?prev={{ transport.id }}">{% csrf_token %}
-      <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-loop-alt"></i>&nbsp;&nbsp;{% trans "Move to another transport..." %}</button>
-    </form>
-  </div>
+@media print {
 
+  table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:before,
+  table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child:before {
+    display: none;
+  }
 
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        {% if BIB_NUMBERS %}<th class="bibnumber">{% trans "Bib number" %}</th>{% endif %}
-        <th class="child-name">{% trans "Name" %}</th>
-        <th class="course">{% trans "Course" %}</th>
-        <th class="transport">{% trans "Info" %}</th>
-      </tr>
-    </thead>
-    <tfoot>
-      <tr>
-        <th colspan="4" class="nowrap" >{% trans "Total" %}: {{ transport.participants.count }}</th>
-      </tr>
-    </tfoot>
-    <tbody>
-    {% for registration in transport.participants.all %}
-      <tr data-registration-id="{{ registration.id }}">
-        {% if BIB_NUMBERS %}
-        <td>
-          <a href="{{ registration.child.backend_url }}">{{ registration.child.bib_number }}</a>
-        </td>
-        {% endif %}
-        <td data-order="{{ registration.child.ordering_name }}">
-          <span class="nowrap"><a href="{{ registration.child.backend_url }}">{{ registration.child.full_name }}</a></span>
-        </td>
-        <td data-order="{{ registration.course.number }}">
-          <span class="nowrap"><a href="{{ registration.course.backend_url }}">{{ registration.course.short_name }}</a>
-        </td>
-        <td data-order="{{ registration|answer_to:"Arrêt"|cut:" "}}">
-          {{ registration|answer_to:"Arrêt" }}
-        </td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-  <p class="hidden-print text-center"><button class="btn btn-success btn-large print-button"><i class="icon icon-print"></i> {% trans "Print" %}</button></p>
+  table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child,
+  table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child {
+    padding-left: 5px;
+  }
+  table.table-bordered.dataTable {
+   border-collapse: collapse !important;
+  }
+  .absences {
+    width: 100% !important;
+  }
+   .child-col{
+   width: 4cm! important;
+ }
+ .session-col {
+   width: 0.4cm !important;
+ }
+ .edit-session abbr[title]:after {
+   display: none;
+ }
+ .edit-session abbr[title] {
+   border-bottom: none;
+   text-decoration: none;
+ }
+  .set-absence .btn-sm{
+   font-size:10px;
+ }
+}
+
+</style>
+{% endaddtoblock %}
+
+<div class="btn-group hidden-print">
+  <form class="move" method="post" action="{% url 'backend:transport-move' %}?prev={{ transport.id }}">{% csrf_token %}
+    <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-loop-alt"></i>&nbsp;&nbsp;{% trans "Move to another transport..." %}</button>
+  </form>
+</div>
+
+<table class="table table-bordered table-hover table-condensed absences table-fixed responsive">
+  <thead>
+    <tr>
+      {% if BIB_NUMBERS %}<th class="all rotated-heading bibnumber">
+        <div><span>{% trans "Bib number" %}</span></div></th>{% endif %}
+      <th class="all child-name">{% trans "Name" %}</th>
+      <th class="all course">{% trans "Course" %}</th>
+      <th class="all transport">{% trans "Info" %}</th>
+      {% for session_date in all_dates %}
+      <th class="rotated-heading session-col date {% if forloop.first %} all{% else %} min-tablet-p{% endif %}"
+          data-session="{{ session.id }}">
+        <div>
+          <span class="session-date">{{ session_date|date:"d.m.Y" }}</span>
+        </div>
+      </th>
+      {% endfor %}
+    </tr>
+  </thead>
+  {% comment %}<tfoot>
+    <tr>
+      <th colspan="99" class="nowrap" >{% trans "Total" %}: {{ transport.participants.count }}</th>
+    </tr>
+  </tfoot>{% endcomment %}
+  <tbody>
+  {% for child_course, absences in child_absences.items %}
+    {% with child=child_course.0 course=child_course.1 registration=child_course.2 %}
+    <tr data-registration-id="{{ registration.id }}">
+      {% if BIB_NUMBERS %}
+      <td data-order="{{ child.bib_number }}">
+        <a href="{{ child.get_backend_absences_url }}">{{ child.bib_number }}</a>
+      </td>
+      {% endif %}
+      <td data-order="{{ child.ordering_name }}">
+        <span class="nowrap"><a href="{{ child.get_backend_absences_url }}">{{ child.full_name }}</a></span>
+      </td>
+      <td data-order="{{ course.number }}">
+        <span class="nowrap"><a href="{{ course.backend_url }}">{{ course.short_name }}</a></span>
+      </td>
+      <td data-order="{{ child.bus_stop|cut:" "}}">
+        {{ child.bus_stop }}
+      </td>
+      {% for session_date in all_dates %}{% if session_date in absences %}
+      {% with absence=absences|get_item:session_date %}
+      <td class="session-col absence {{ absence.status }} {% if absence.status == 'present' %}success{% elif absence.status == 'late' %}info{% elif absence.status == 'excused' %}warning{% else %}danger{% endif %}">
+        <span class="set-absence"
+              data-pk="{{ absence.pk }}"
+              data-session="{{ absence.session.id }}"
+              data-child="{{ child.id }}"
+              data-status="{{ absence.status }}">
+          <a role="button" class="btn btn-sm absence has-popover"  data-toggle="popover"
+             data-trigger="click focus">{{ absence|absence_to_status:1 }}</a>
+        </span>
+      </td>
+      {% endwith %}
+      {% else %}
+      <td class="text-muted active"></td>
+      {% endif %}{% endfor %}
+    </tr>
+    {% endwith %}
+  {% endfor %}
+  </tbody>
+</table>
+<p class="hidden-print text-center"><button class="btn btn-success btn-large print-button"><i class="icon icon-print"></i> {% trans "Print" %}</button></p>
 
 {% addtoblock "js" %}
+<script type="text/html" id="status-window">
+  <form>
+    <div class="radio">
+      <label>
+        <input type="radio" name="status" id="present" value="present">{% trans "Present" %}
+      </label>
+    </div>
+     <div class="radio">
+      <label>
+        <input type="radio" name="status" id="absent" value="absent">{% trans "Absent" %}
+      </label>
+    </div>
+     <div class="radio">
+      <label>
+        <input type="radio" name="status" id="excused" value="excused">{% trans "Excused" %}
+      </label>
+    </div>
+    <div class="radio">
+      <label>
+        <input type="radio" name="status" id="medical" value="medical">{% trans "Medical certificate" %}
+      </label>
+    </div>
+    <div class="radio">
+      <label>
+        <input type="radio" name="status" id="late" value="late">{% trans "Late" %}
+      </label>
+    </div>
+  </form>
+</script>
 <script>
   $('.print-button').click(function(){window.print()});
 </script>
-<script src="{% static 'js/vendor/datatables/jquery.dataTables.min.js' %}"></script>
-<script src="{% static 'js/vendor/datatables/dataTables.tableTools.min.js' %}"></script>
-<script src="{% static 'js/vendor/datatables/dataTables.bootstrap.js' %}"></script>
+<script src="{% static 'js/vendor/js.cookie.js' %}"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.16/b-1.5.1/fc-3.2.4/fh-3.1.3/r-2.2.1/sc-1.4.3/sl-1.2.4/datatables.min.js"></script>
 <script>
-  $(function () {
-    var t = $(".table").dataTable({
-      {% if LANGUAGE_CODE == 'fr' %}
-        "language": {
-          "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
-        },
-      {% endif %}
-      aoColumnDefs: [
-        { 'bSortable': true, 'aTargets': ['bibnumber', 'child-name', 'course', 'extra']},
-        { 'bSortable': false, 'aTargets': ['_all']},
-        { 'bSearchable': true, 'aTargets': ['bibnumber', 'child-name',]},
-        { 'bSearchable': false, 'aTargets': ['_all']}
-
-      ],
-      dom: 'T<"clear">lfrtip',
-      paging: false,
-      tableTools: {
-        "sRowSelect": "multi",
-        "aButtons": [ ],
-        'fnRowSelected': function(){
-          $('.needs-select').removeClass('disabled');
-        },
-        'fnRowDeselected': function(){
-          if ($('tr.active').length == 0){
-            $('.needs-select').addClass('disabled');
-          }
-        }
-      }
-    });
-
-    $('.selectall').click(function(){
-      var tabletools = TableTools.fnGetInstance(t[0]);
-      tabletools.fnSelectAll(true);
-    });
-    $('.deselectall').click(function(){
-      var tabletools = TableTools.fnGetInstance(t[0]);
-      tabletools.fnSelectNone();
-    });
-    $('form.move').submit(function(evt){
-      var form = this;
-      var tabletools = TableTools.fnGetInstance(t[0]);
-      var ids = tabletools.fnGetSelected().map(function(elem){
-        return elem.getAttribute('data-registration-id');
-      });
-      $('input[name=registrations]', form).remove();
-      ids.forEach(function(regId){
-        $('<input type="hidden">').attr('id', 'registrations_' + regId)
-            .attr('name', 'registrations')
-            .val(regId)
-            .prependTo(form);
-      });
-    });
+$(function () {
+  $.fn.column = function() {
+      return $(this)
+          .filter('th, td')
+          .closest('table')
+          .find('tr')
+          .children(':nth-child(' + ($(this).index()+1) + ')');
+  };
+  $.ajaxSetup({
+    headers: { "X-CSRFToken": Cookies.get("csrftoken") }
   });
+
+  var dtable = $(".absences").DataTable({
+    {% if LANGUAGE_CODE == 'fr' %}
+    "language": {
+      "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+    },
+    {% endif %}
+    "responsive": true,
+    "paging": false,
+
+    dom: "<'row'<'col-sm-8'lB><'col-sm-4'f>>" +
+         "<'row'<'col-sm-12'tr>>" +
+         "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    buttons: [
+        {
+            extend: 'selectAll',
+            text: "{% trans "Select all" %}"
+        },
+        {
+            extend: 'selectNone',
+            text: "{% trans "Deselect all" %}"
+        },
+        {
+            extend: 'selected',
+            text: '<i class="icon-loop-alt"></i>&nbsp;&nbsp;{% trans "Move to another transport..." %}',
+            action: function(){
+                moveRegistrations();
+            }
+        }
+    ],
+    select: {
+        style: 'multi'
+    }
+  });
+
+    $('.absences').on('change', 'input[name=status]', function(event){
+    var $parent = $(this).parents('.set-absence');
+    var status =  $(this).val();
+    var data = {
+      'session': $parent.data('session'),
+      'child': $parent.data('child'),
+      'status': status
+    };
+
+    $.ajax({
+      url: "{% url 'api:absence-set' %}",
+      type: 'POST',
+      data: data,
+      success: function(response){
+        var label = '';
+        var classes = '';
+        switch(response.status){
+          case 'present':
+            label = "{% trans 'P' %}";
+            classes = "success present";
+            break;
+          case 'absent':
+            label = "{% trans 'A' %}";
+            classes = "danger absent";
+            break;
+          case 'excused':
+            label = "{% trans 'E' %}";
+            classes = "warning excused";
+            break;
+          case 'medical':
+            label = "{% trans 'MC' %}";
+            classes = "danger medical";
+            break;
+          case 'late':
+            label = "{% trans 'LA' %}";
+            classes = "info late";
+            break;
+        }
+        $('a', $parent).text(label);
+        $parent.parent().removeClass().addClass(classes);
+        $parent.data('status', response.status);
+        $('.has-popover', $parent).popover('hide');
+      }
+    })
+  });
+
+
+  $('.absences').popover(
+    {
+      selector: '.absence.has-popover',
+      content: function(){ return $('#status-window').html(); },
+      html: true,
+      placement: function(context, source){
+          if ($(source).parents('.dtr-details').length > 0) {
+              return 'right';
+          }
+          return 'left';
+      }
+    }
+  );
+
+  $('.absences').on('shown.bs.popover', '.set-absence', function(){
+      var status = $(this).data('status');
+    $('input[value=' + status + ']', $(this)).prop('checked', true);
+  });
+
+  var moveRegistrations = function(){
+      var $selected = dtable.rows( { selected: true } ).nodes();
+      var ids = $selected.map(function(elem){
+          return elem.getAttribute('data-registration-id');
+      });
+      var $form = $('form.move');
+      $('input[name=registrations]', $form).remove();
+      ids.each(function(regId){
+      $('<input type="hidden">').attr('id', 'registrations_' + regId)
+                                .attr('name', 'registrations')
+                                .val(regId)
+                                .prependTo($form);
+      });
+      $form.submit()
+  };
+
+  $('html').on('click', function(e){
+    if (typeof $(e.target).data('original-title') == 'undefined' && !$(e.target).parents().is('.popover.in')) {
+      // close popovers when click is outside
+      $('[data-original-title]').popover('hide');
+    }
+    if (typeof $(e.target).data('original-title') != 'undefined') {
+      // one popover opened at a time
+      $('[data-original-title]').not(e.target).popover('hide');
+    }
+  });
+
+});
 </script>
 
 
