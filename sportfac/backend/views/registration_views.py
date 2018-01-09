@@ -288,11 +288,11 @@ class TransportDetailView(BackendMixin, DetailView):
         kwargs['all_dates'] = list(set(qs.values_list('session__date', flat=True)))
         kwargs['all_dates'].sort(reverse=True)
         try:
-            question = ExtraNeed.objects.get(question_label__startswith=u'Arrêt')
+            questions = ExtraNeed.objects.filter(question_label__startswith=u'Arrêt')
             all_extras = dict([(extra.registration.child, extra.value) for extra in ExtraInfo.objects.filter(
                 registration__child__in=children,
                 registration__course__in=courses,
-                key=question)])
+                key__in=questions)])
         except ExtraNeed.DoesNotExist:
             all_extras = {}
 
