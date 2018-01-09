@@ -113,10 +113,10 @@ class CourseAbsenceView(BackendMixin, DetailView):
                                                                        .select_related('child')]
             )
             try:
-                question = ExtraNeed.objects.get(question_label__startswith=u'Niveau')
+                questions = ExtraNeed.objects.filter(question_label__startswith=u'Niveau')
                 all_extras = dict(
                     [(extra.registration.child, extra.value) for extra in
-                     ExtraInfo.objects.filter(registration__course=self.object, key=question)
+                     ExtraInfo.objects.filter(registration__course=self.object, key__in=questions)
                                       .select_related('registration__child')]
                 )
             except ExtraNeed.DoesNotExist:
