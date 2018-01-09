@@ -117,8 +117,11 @@ table.dataTable tbody tr.selected .absence a {
 <table class="table table-bordered table-hover table-condensed absences table-fixed responsive">
   <thead>
     <tr>
-      {% if BIB_NUMBERS %}<th class="all rotated-heading bibnumber">
-        <div><span>{% trans "Bib number" %}</span></div></th>{% endif %}
+      {% if BIB_NUMBERS %}
+      <th class="all rotated-heading bibnumber">
+        <div><span>{% trans "Bib number" %}</span></div>
+      </th>
+      {% endif %}
       <th class="all child-name">{% trans "Name" %}</th>
       <th class="all course">{% trans "Course" %}</th>
       <th class="all transport">{% trans "Info" %}</th>
@@ -132,11 +135,6 @@ table.dataTable tbody tr.selected .absence a {
       {% endfor %}
     </tr>
   </thead>
-  {% comment %}<tfoot>
-    <tr>
-      <th colspan="99" class="nowrap" >{% trans "Total" %}: {{ transport.participants.count }}</th>
-    </tr>
-  </tfoot>{% endcomment %}
   <tbody>
   {% for child_course, absences in child_absences.items %}
     {% with child=child_course.0 course=child_course.1 registration=child_course.2 %}

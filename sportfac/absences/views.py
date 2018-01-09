@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
+import collections
 import os
 from tempfile import mkdtemp
 
+from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponse
 from django.views.generic import DetailView
 
 from activities.views import InstructorMixin
-from activities.models import Course
+from activities.models import Course, ExtraNeed
 from backend.forms import SessionForm  # TODO move sessionform to a more appropriate place
 from backend.utils import AbsencePDFRenderer  # TODO move pdfrenderer to a more appropriate place
 
-from registrations.models import ChildActivityLevel
+from registrations.models import ChildActivityLevel, ExtraInfo
 from .models import Absence, Session
 
 
@@ -22,15 +24,44 @@ class AbsenceView(InstructorMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         course = self.get_object()
-        all_absences = dict(
-            [((absence.child, absence.session), absence.status) for absence
-                                                                in Absence.objects.filter(session__course=course)]
-        )
-        kwargs['absence_matrix'] = [[all_absences.get((registration.child, session), 'present') for session
-                                                                     in course.sessions.all()]
-         for registration in course.participants.all()]
-        kwargs['levels'] = ChildActivityLevel.LEVELS
-        kwargs['courses_list'] = self.request.user.course.all()
+        qs = Absence.objects.select_related('child', 'session').filter(session__course=self.object).order_by('child')
+
+        kwargs['sessions'] = dict([(absence.session.date, absence.session) for absence in qs])
+        kwargs['all_dates'] = sorted([session_date for session_date in kwargs['sessions'].keys()], reverse=True)
+
+        registrations = dict([(registration.child, registration) for registration in self.object.participants.all()])
+        child_absences = collections.OrderedDict()
+        for absence in qs:
+            child = absence.child
+            if not child in registrations:
+                # happens if child was previously attending this course but is no longer
+                continue
+            registration = registrations[child]
+
+            the_tuple = (child, registration)
+            if the_tuple in child_absences:
+                child_absences[the_tuple][absence.session.date] = absence
+            else:
+                child_absences[the_tuple] = {absence.session.date: absence}
+        kwargs['session_form'] = SessionForm()
+        kwargs['child_absences'] = child_absences
+        if settings.KEPCHUP_REGISTRATION_LEVELS:
+            kwargs['levels'] = dict(
+                [(lvl.child, lvl) for lvl in ChildActivityLevel.objects.filter(activity=self.object.activity)
+                                                                        .select_related('child')]
+            )
+            try:
+                question = ExtraNeed.objects.get(question_label__startswith=u'Niveau')
+                all_extras = dict(
+                    [(extra.registration.child, extra.value) for extra in
+                     ExtraInfo.objects.filter(registration__course=self.object, key=question)
+                                      .select_related('registration__child')]
+                )
+            except ExtraNeed.DoesNotExist:
+                all_extras = {}
+            kwargs['extras'] = all_extras
+
+        kwargs['courses_list'] = self.request.user.course.prefetch_related('activity')
         kwargs['session_form'] = SessionForm()
 
         return super(AbsenceView, self).get_context_data(**kwargs)
