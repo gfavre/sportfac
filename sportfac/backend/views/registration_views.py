@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import collections
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
@@ -146,7 +147,13 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
                 message = mark_safe(message % {'identifier': bill.billing_identifier,
                                                'url': bill.backend_url})
                 messages.add_message(self.request, messages.INFO, message)
+
             self.instance.save()
+            if settings.KEPCHUP_USE_ABSENCES:
+                now = timezone.now()
+                for future_session in self.instance.course.sessions.filter(date__gte=now):
+                    Absence.objects.create(child=self.instance.child, session=future_session,
+                                           status=Absence.STATUS.present)
         except IntegrityError:
             message = _("A registration for %(child)s to %(course)s already exists.")
             message %= {'child': self.instance.child,
@@ -208,6 +215,7 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
 
     @transaction.atomic
     def form_valid(self, form, extrainfo_form):
+        initial_course = self.get_object().course
         self.object = form.save()
         extrainfo_form.instance = self.object
         extrainfo_form.save()
@@ -222,6 +230,18 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
             self.object.bill = bill
             self.object.save()
             bill.save()
+
+        if settings.KEPCHUP_USE_ABSENCES and self.object.course != initial_course:
+            # move between courses:
+            now = timezone.now()
+            for future_session_new in self.object.course.sessions.filter(date__gte=now):
+                Absence.objects.create(child=self.object.child, session=future_session_new,
+                                       status=Absence.STATUS.present)
+            for future_session_initial in initial_course.sessions.filter(date__gte=now):
+                Absence.objects.filter(child=self.object.child, session=future_session_initial).delete()
+        success_message = self.get_success_message(form.cleaned_data)
+        if success_message:
+            messages.success(self.request, success_message)
         return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, form, extrainfo_form):

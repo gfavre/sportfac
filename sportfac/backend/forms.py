@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import date
+from django.conf import settings
 from django.db.models import Case, When, F, IntegerField, Q, Sum
 from django.forms import inlineformset_factory
 from django.utils.translation import ugettext as _
@@ -109,7 +110,12 @@ class RegistrationForm(CourseSelectMixin, forms.ModelForm):
 
     class Meta:
         model = Registration
-        fields = ('child', 'course', 'status')
+        fields = ('child', 'course', 'status', 'transport')
+
+    def __init__(self, *args, **kwargs):
+        super(RegistrationForm, self).__init__(*args, **kwargs)
+        if not settings.KEPCHUP_DISPLAY_CAR_NUMBER:
+            del self.fields['transport']
 
 
 class ExtraInfoForm(forms.ModelForm):
@@ -122,6 +128,7 @@ class ExtraInfoForm(forms.ModelForm):
     class Meta:
         model = ExtraInfo
         fields = ('key', 'value')
+
 
 ExtraInfoFormSet = inlineformset_factory(Registration, ExtraInfo, form=ExtraInfoForm, fields=('key', 'value'),
                                          extra=0, can_delete=False)

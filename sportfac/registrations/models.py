@@ -3,8 +3,10 @@ from __future__ import unicode_literals
 from datetime import datetime, date
 
 from django.core.urlresolvers import reverse
+from django.conf import settings
 from django.db import models, transaction
 from django.template.defaultfilters import slugify
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from model_utils import Choices
@@ -12,7 +14,7 @@ from model_utils.models import StatusModel
 from phonenumber_field.modelfields import PhoneNumberField
 
 from sportfac.models import TimeStampedModel
-
+from absences.models import Absence
 
 class RegistrationManager(models.Manager):
     def get_queryset(self):
@@ -124,9 +126,10 @@ class Registration(TimeStampedModel, StatusModel):
         return self.get_delete_url()
 
     def save(self, *args, **kwargs):
-        super(Registration, self).save(*args, **kwargs)
-        if self.bill:
-            self.bill.save()
+        with transaction.atomic():
+            super(Registration, self).save(*args, **kwargs)
+            if self.bill:
+                self.bill.save()
 
     def delete(self, *args, **kwargs):
         super(Registration, self).delete(*args, **kwargs)
