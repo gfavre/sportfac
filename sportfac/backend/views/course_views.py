@@ -86,7 +86,11 @@ class CourseAbsenceView(BackendMixin, DetailView):
         return HttpResponseRedirect(course.get_backend_absences_url())
 
     def get_context_data(self, **kwargs):
-        qs = Absence.objects.select_related('child', 'session').filter(session__course=self.object).order_by('child')
+        qs = Absence.objects.select_related('child', 'session').filter(session__course=self.object)
+        if settings.KEPCHUP_BIB_NUMBERS:
+            qs = qs.order_by('child__bib_number', 'child__last_name', 'child__first_name')
+        else:
+            qs = qs.order_by('child__last_name', 'child__first_name')
         kwargs['sessions'] = dict([(absence.session.date, absence.session) for absence in qs])
         kwargs['all_dates'] = sorted([session_date for session_date in kwargs['sessions'].keys()], reverse=True)
 
@@ -149,8 +153,11 @@ class CoursesAbsenceView(BackendMixin, ListView):
 
     def get_context_data(self, **kwargs):
         qs = Absence.objects.filter(session__course__in=self.get_queryset())\
-                            .select_related('session', 'child', 'session__course', 'session__course__activity')\
-                            .order_by('child__last_name', 'child__first_name')
+                            .select_related('session', 'child', 'session__course', 'session__course__activity')
+        if settings.KEPCHUP_BIB_NUMBERS:
+            qs = qs.order_by('child__bib_number', 'child__last_name', 'child__first_name')
+        else:
+            qs = qs.order_by('child__last_name', 'child__first_name')
         kwargs['all_dates'] = list(set(qs.values_list('session__date', flat=True)))
         kwargs['all_dates'].sort(reverse=True)
         if settings.KEPCHUP_REGISTRATION_LEVELS:
