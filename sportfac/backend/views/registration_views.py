@@ -12,6 +12,7 @@ from django.views.generic import (CreateView, DeleteView, DetailView, ListView, 
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 from formtools.wizard.views import SessionWizardView
 
@@ -64,8 +65,19 @@ class RegistrationsMoveView(BackendMixin, FormView):
     def form_valid(self, form):
         course = form.cleaned_data['destination']
         origin = form.cleaned_data['registrations'].first().course
-        form.cleaned_data['registrations'].update(course=course,
-                                                  status=Registration.STATUS.confirmed)
+        now = timezone.now()
+        with transaction.atomic():
+            for registration in form.cleaned_data['registrations']:
+                source = registration.course
+                registration.course=course
+                registration.status=Registration.STATUS.confirmed
+                registration.save()
+                for future_session_source in source.sessions.filter(date__gte=now):
+                    future_session_source.absences.filter(child=registration.child).delete()
+                for future_session_destination in course.sessions.filter(date__gte=now):
+                    Absence.objects.create(session=future_session_destination,
+                                           child=registration.child,
+                                           status=Absence.STATUS.present)
         message = _("Registrations of %(nb)s children have been moved.")
         message %= {'nb': form.cleaned_data['registrations'].count()}
         messages.add_message(self.request, messages.SUCCESS, message)
