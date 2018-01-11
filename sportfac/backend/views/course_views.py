@@ -112,7 +112,8 @@ class CourseAbsenceView(BackendMixin, DetailView):
         kwargs['child_absences'] = child_absences
         kwargs['courses_list'] = Course.objects.select_related('activity')
         if settings.KEPCHUP_REGISTRATION_LEVELS:
-            kwargs['levels'] = dict(
+            kwargs['levels'] = ChildActivityLevel.LEVELS
+            kwargs['child_levels'] = dict(
                 [(lvl.child, lvl) for lvl in ChildActivityLevel.objects.filter(activity=self.object.activity)
                                                                        .select_related('child')]
             )

@@ -187,7 +187,7 @@ table.dataTable thead>tr>th.rotated-heading {
         </th>
         {% endif %}
         {% if REGISTRATION_LEVELS %}
-        {% with level=levels|get_item:child extra=extras|get_item:child%}
+        {% with level=child_levels|get_item:child extra=extras|get_item:child%}
         <th>
           <span class="hidden-print">{{ extra|default:'' }}</span>
           <span class="visible-print">{{ extra|default:''|truncatewords:"1" }}</span>
@@ -222,7 +222,7 @@ table.dataTable thead>tr>th.rotated-heading {
         </th>
         {% endif %}
         {% if DISPLAY_REGISTRATION_NOTE %}
-        {% with level=levels|get_item:child %}
+        {% with level=child_levels|get_item:child %}
         <th>
           <span class="set-note"
                 data-key="note"

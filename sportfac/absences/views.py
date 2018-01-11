@@ -49,9 +49,10 @@ class AbsenceView(InstructorMixin, DetailView):
         kwargs['session_form'] = SessionForm()
         kwargs['child_absences'] = child_absences
         if settings.KEPCHUP_REGISTRATION_LEVELS:
-            kwargs['levels'] = dict(
+            kwargs['levels'] = ChildActivityLevel.LEVELS
+            kwargs['child_levels'] = dict(
                 [(lvl.child, lvl) for lvl in ChildActivityLevel.objects.filter(activity=self.object.activity)
-                                                                        .select_related('child')]
+                                                                       .select_related('child')]
             )
             try:
                 question = ExtraNeed.objects.get(question_label__startswith=u'Niveau')
