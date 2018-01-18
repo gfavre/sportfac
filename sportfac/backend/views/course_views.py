@@ -96,6 +96,8 @@ class CourseAbsenceView(BackendMixin, DetailView):
 
         registrations = dict([(registration.child, registration) for registration in self.object.participants.all()])
         child_absences = collections.OrderedDict()
+        for (child, registration) in registrations.items():
+            child_absences[(child, registration)] = {}
         for absence in qs:
             child = absence.child
             if not child in registrations:
@@ -173,6 +175,7 @@ class CoursesAbsenceView(BackendMixin, ListView):
 
         course_children = dict([(course, [reg.child for reg in course.participants.all()]) for course in self.get_queryset()])
         course_absences = collections.OrderedDict()
+
         for absence in qs:
             if settings.KEPCHUP_REGISTRATION_LEVELS:
                 absence.child.announced_level = child_announced_levels.get(absence.child, '')
