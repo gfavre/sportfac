@@ -29,7 +29,8 @@ class AbsenceView(InstructorMixin, DetailView):
             qs = qs.order_by('child__bib_number', 'child__last_name', 'child__first_name')
         else:
             qs = qs.order_by('child__last_name', 'child__first_name')
-        kwargs['sessions'] = dict([(absence.session.date, absence.session) for absence in qs])
+        kwargs['sessions'] = dict([(session.date, session) for session in self.object.sessions.all()])
+        # kwargs['sessions'] = dict([(absence.session.date, absence.session) for absence in qs])
         kwargs['all_dates'] = sorted([session_date for session_date in kwargs['sessions'].keys()], reverse=True)
 
         registrations = dict([(registration.child, registration) for registration in self.object.participants.all()])

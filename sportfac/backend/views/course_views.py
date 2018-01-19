@@ -83,6 +83,10 @@ class CourseAbsenceView(BackendMixin, DetailView):
                             'status': Absence.STATUS.present
                         }
                     )
+                if created:
+                    messages.add_message(self.request, messages.SUCCESS,
+                                         _("Session %s has been added.") % session.date.strftime('%d.%m.%Y'))
+
         return HttpResponseRedirect(course.get_backend_absences_url())
 
     def get_context_data(self, **kwargs):
@@ -91,7 +95,8 @@ class CourseAbsenceView(BackendMixin, DetailView):
             qs = qs.order_by('child__bib_number', 'child__last_name', 'child__first_name')
         else:
             qs = qs.order_by('child__last_name', 'child__first_name')
-        kwargs['sessions'] = dict([(absence.session.date, absence.session) for absence in qs])
+        kwargs['sessions'] = dict([(session.date, session) for session in self.object.sessions.all()])
+        # kwargs['sessions'] = dict([(absence.session.date, absence.session) for absence in qs])
         kwargs['all_dates'] = sorted([session_date for session_date in kwargs['sessions'].keys()], reverse=True)
 
         registrations = dict([(registration.child, registration) for registration in self.object.participants.all()])
@@ -161,7 +166,8 @@ class CoursesAbsenceView(BackendMixin, ListView):
             qs = qs.order_by('child__bib_number', 'child__last_name', 'child__first_name')
         else:
             qs = qs.order_by('child__last_name', 'child__first_name')
-        kwargs['all_dates'] = list(set(qs.values_list('session__date', flat=True)))
+        kwargs['all_dates'] = list(set(Session.objects.filter(course__in=self.get_queryset()).values_list('date',
+                                                                                                          flat=True)))
         kwargs['all_dates'].sort(reverse=True)
         if settings.KEPCHUP_REGISTRATION_LEVELS:
             extras = ExtraInfo.objects.select_related('registration', 'key')\
@@ -209,7 +215,9 @@ class CoursesAbsenceView(BackendMixin, ListView):
                             'status': Absence.STATUS.present
                         }
                     )
-
+            if created:
+                messages.add_message(self.request, messages.SUCCESS,
+                                     _("Session %s has been added.") % session.date.strftime('%d.%m.%Y'))
         params = '&'.join(['c={}'.format(course.id) for course in courses])
         return HttpResponseRedirect(reverse('backend:courses-absence') + '?' + params)
 
