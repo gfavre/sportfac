@@ -329,6 +329,8 @@ class TransportDetailView(BackendMixin, DetailView):
             all_extras = {}
 
         child_absences = collections.OrderedDict()
+        for registration in self.object.participants.order_by('child__last_name', 'child__first_name'):
+            child_absences[(registration.child, registration.course, registration)] = {}
         for absence in qs:
             child = absence.child
             course = absence.session.course
