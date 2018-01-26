@@ -9,13 +9,13 @@
   </p>
   <div class="form-group " ng-class="{'has-warning': errors.notfound }"
         ng-show="{[{ useExternalIdentifiers }]}">
-    <label class="col-sm-4 control-label" for="ext_id">Identifiant (numéro SSF)</label>
+    <label class="col-sm-4 control-label" for="ext_id">Identifiant (n° SSF)<span class="required"> *</span></label>
     <div class="col-sm-8">
       <input id="ext_id" ng-model="detailedChild.ext_id"
              type="number" class="form-control"
              max="100000000"
              ng-blur="lookupChild()" required />
-       <span class="help-block" ng-show="errors.notfound">L'identifiant est inconnu / invalide. Il n'est pas obligatoire pour continuer.</span>
+       <span class="help-block" ng-show="errors.notfound">L'identifiant est inconnu / invalide.</span>
        <span ng-show="childform.ext_id.$error.required">Ce champ est obligatoire</span>
     </div>
     <hr />

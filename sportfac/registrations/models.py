@@ -273,7 +273,7 @@ class Child(TimeStampedModel):
     school_year = models.ForeignKey('profiles.SchoolYear', null=True, on_delete=models.SET_NULL)
     teacher = models.ForeignKey('schools.Teacher', related_name="students", null=True, on_delete=models.SET_NULL)
 
-    family = models.ForeignKey('profiles.FamilyUser', related_name='children', null=True, on_delete=models.CASCADE)
+    family = models.ForeignKey('profiles.FamilyUser', related_name='children', null=True, blank=True, on_delete=models.CASCADE)
     courses = models.ManyToManyField('activities.Course', through="registrations.Registration")
 
     id_lagapeo = models.IntegerField(db_index=True, unique=True, null=True, blank=True,
