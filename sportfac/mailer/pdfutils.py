@@ -124,6 +124,8 @@ class PDFRenderer(object):
         try:
             phandle = subprocess.Popen([
                 settings.PHANTOMJS,
+                '--ssl-protocol=any',
+                '--ignore-ssl-errors=true',
                 self.rasterizer,
                 filelike.name.encode(), output,
                 'A4'
