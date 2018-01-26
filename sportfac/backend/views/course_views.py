@@ -101,7 +101,7 @@ class CourseAbsenceView(BackendMixin, DetailView):
 
         registrations = dict([(registration.child, registration) for registration in self.object.participants.all()])
         child_absences = collections.OrderedDict()
-        for (child, registration) in registrations.items():
+        for (child, registration) in sorted(registrations.items(), key=lambda x: x[0].ordering_name):
             child_absences[(child, registration)] = {}
         for absence in qs:
             child = absence.child
