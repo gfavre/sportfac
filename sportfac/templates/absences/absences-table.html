@@ -261,7 +261,8 @@ table.dataTable thead>tr>th.rotated-heading {
   {% endfor %}
   </tbody>
 </table>
- <form class="move" method="post" action="{% url 'backend:registrations-move' %}">{% csrf_token %}</form>
+
+<form class="move" method="post" action="{% url 'backend:registrations-move' %}">{% csrf_token %}</form>
 <p class="hidden-print text-center">
   <a class="btn btn-success btn-large" href="{{ request.get_full_path }}?pdf=1"><i class="icon icon-file-pdf"></i> {% trans "Export to PDF" %}</a>
 </p>
@@ -408,7 +409,7 @@ $(function(){
       {% endif %}
       "responsive": true,
       "paging": false,
-      dom: "<'row'<'col-sm-6'lB><'col-sm-6'f>>" +
+      dom: "<'row hidden-print'<'col-sm-6'lB><'col-sm-6'f>>" +
            "<'row'<'col-sm-12'tr>>" +
            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
       {% if request.user.is_manager %}
