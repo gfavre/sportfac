@@ -14,7 +14,10 @@ STATICFILES_DIRS = (
 RAVEN_CONFIG = {
     'dsn': 'https://226a25de763049f1aa6b2405815ad74f:f3ec6c3228264c5289854488cb3bd928@sentry.evoe.wine/4',
 }
-
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = env('EMAIL_HOST', default='')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
 
 LOGIN_URL = '/account/login/'
 LOGOUT_URL = '/account/logout/'

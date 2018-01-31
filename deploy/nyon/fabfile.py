@@ -18,7 +18,8 @@ try:
                              VIRTUALENVS, SETTINGS_SUBDIR,
                              DBNAME, DBUSER, DBPASSWORD,
                              MAILGUN_API_KEY, MAILGUN_SENDER_DOMAIN, MAILADDRESS,
-                             BROKER_URL, PHANTOMJS, MEMCACHED_SOCKET)
+                             BROKER_URL, PHANTOMJS, MEMCACHED_SOCKET,
+                             MAILHOST, MAILUSER, MAILPASSWORD)
 except ImportError:
     print("""
 ImportError: Couldn't find fabsettings.py, it either does not exist or is
@@ -99,6 +100,9 @@ env.supervisor_cfg    = '%s/conf.d/%s.conf' % (env.supervisor_dir, env.project)
 env.mailgun_api_key   = MAILGUN_API_KEY
 env.mailgun_sender_domain = MAILGUN_SENDER_DOMAIN
 env.mailaddress       = MAILADDRESS
+env.mailhost          = MAILHOST
+env.mailuser          = MAILUSER
+env.mailpassword      = MAILPASSWORD
 env.broker            = BROKER_URL
 env.memcached         = MEMCACHED_SOCKET
 env.phantomjs         = PHANTOMJS
