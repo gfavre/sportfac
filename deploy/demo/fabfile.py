@@ -257,7 +257,6 @@ def install_app():
     restart_app()
 
 
-
 def reload_app(arg=None):
     "Pulls app and refreshes requirements"
     with cd(env.project_dir):
