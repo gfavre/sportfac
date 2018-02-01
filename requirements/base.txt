@@ -46,3 +46,5 @@ openpyxl == 2.4.1
 python-dateutil == 2.5.3
 django_environ == 0.4.4
 django-anymail==1.2
+requests==2.18.4
+python-memcached==1.59
