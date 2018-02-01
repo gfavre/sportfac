@@ -11,7 +11,7 @@
     </div> <!-- /.navbar-header -->
 
     <nav class="collapse navbar-collapse hidden-print" role="navigation" id="topnav">
-      <ul class="nav navbar-nav  navbar-left">          
+      <ul class="nav navbar-nav  navbar-left">
         {% if not NO_TERMS %}
         <li><a href="{% url 'terms' %}">{% trans "Terms and conditions" %}</a></li>
         {% endif %}
@@ -35,7 +35,7 @@
              <form id="tenant-change" action="{% url 'backend:year-change' %}" method="post">
                {% csrf_token %}
                <input type="hidden" name="next" value="{{ request.get_full_path }}" />
-               <input type="hidden" name="tenant" value="{{ request.tenant.pk }}" />           
+               <input type="hidden" name="tenant" value="{{ request.tenant.pk }}" />
              </form>
 
             {% for tenant in tenants %}
@@ -57,7 +57,7 @@
             </li>
            </ul>
          </li>
-         {% endif %}
+        {% endif %}
         {% if user.is_authenticated %}
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -70,7 +70,7 @@
             <li>
               <a href="{% url 'registrations_children' %}"><i class="icon-group"></i> {% trans "My family" %}</a>
             </li>
-            
+
             {% if user.has_registrations %}
             <li>
               <a href="{% url 'registrations_registered_activities' %}"> <i class="icon-calendar"></i> {% trans "My registered activities" %}</a>

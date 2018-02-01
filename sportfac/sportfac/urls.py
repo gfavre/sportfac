@@ -6,6 +6,9 @@ from django.contrib.auth import views as auth_views
 from django.contrib.sitemaps import views as sitemapviews
 from django.contrib.flatpages import views as flatviews
 from django.contrib.flatpages.sitemaps import FlatPageSitemap
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+
 from django.views.generic import TemplateView, RedirectView
 from django.views.static import serve
 
@@ -23,10 +26,11 @@ sitemaps = {
     'activities': activity_sitemap,
     'contact': ContactSitemap,
 }
+
+
 class TextPlainView(TemplateView):
-  def render_to_response(self, context, **kwargs):
-    return super(TextPlainView, self).render_to_response(
-      context, content_type='text/plain', **kwargs)
+    def render_to_response(self, context, **kwargs):
+        return super(TextPlainView, self).render_to_response(context, content_type='text/plain', **kwargs)
 
 
 urlpatterns = [
@@ -58,6 +62,21 @@ urlpatterns = [
     #url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', include(admin.site.urls)),
 ]
+
+
+def handler404(request):
+    response = render_to_response('404.html', {},
+                                  context_instance=RequestContext(request))
+    response.status_code = 404
+    return response
+
+
+def handler500(request):
+    response = render_to_response('500.html', {},
+                                  context_instance=RequestContext(request))
+    response.status_code = 500
+    return response
+
 
 if settings.DEBUG:
     # static files (images, css, javascript, etc.)
