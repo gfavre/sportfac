@@ -14,8 +14,7 @@
     <a href="{{ max_step }}" class="btn btn-large btn-primary"><i class="icon-fixed-width icon-calendar"></i>{% trans "Register activities" %}</a>
     {% endif %}
   {% else %}
-  <a href="{% url 'wizard_register' %}" class="btn btn-large btn-primary">{% trans "Registration" %}</a>
-  <a href="{% url 'auth_login' %}?next={{ request.path }}">{% trans "... or login" %}</a>
+  <a href="{% url 'auth_login' %}?next={% url 'wizard' %}" class="btn btn-large btn-primary">{% trans "Registration" %}</a>
   {% endif %}
 </p>
 {% else %}
