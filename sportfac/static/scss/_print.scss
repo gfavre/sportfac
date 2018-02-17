@@ -4,9 +4,15 @@
         size: A4;
         margin: 1cm;
     }
-    html > body {
+    body {
         font-size: 12px;
     }
+
+    /* fixes safari zoom out bug */
+    .container {
+        width: auto;
+    }
+
     h1 {
         font-size: 24px;
     }
