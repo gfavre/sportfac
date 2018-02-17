@@ -14,6 +14,7 @@ from registrations.models import Registration
 from .models import Activity, Course, ExtraNeed
 from .resources import CourseResource
 
+
 class ExtraInline(admin.StackedInline):
     model = Course.extra.through
     extra = 0
@@ -39,15 +40,16 @@ class CourseInline(admin.StackedInline):
 class ActivityAdmin(admin.ModelAdmin):
     list_display = ('number', 'name')
     inlines = [CourseInline]
-    
+
     verbose_name = _("activity")
     verbose_name_plural = _("activities")
     ordering = ('number', 'name',)
-    
+
 
 admin.site.register(Activity, ActivityAdmin)
 
 admin.site.register(ExtraNeed)
+
 
 class ParticipantsListFilter(admin.SimpleListFilter):
     # Human-readable title which will be displayed in the
@@ -92,7 +94,7 @@ class CoursesAdmin(ImportExportModelAdmin):
     list_display =('activity', 'number', 'day', 'start_date', 'start_time', 'duration', 'number_of_participants', 'uptodate',)
     verbose_name = _("course")
     verbose_name_plural = _("courses")
-    
+
     ordering = ('number', 'activity__number', 'activity__name', 'start_date', 'start_time')
     list_filter=(ParticipantsListFilter, 'uptodate',)
     change_list_filter_template = "admin/filter_listing.html"
@@ -100,26 +102,23 @@ class CoursesAdmin(ImportExportModelAdmin):
     inlines = [ExtraInline,]
 
     resource_class = CourseResource
-    
+
     def get_queryset(self, request):
         qs = super(CoursesAdmin, self).get_queryset(request)
         qs = qs.annotate(models.Count('participants'))
         return qs
-    
+
     def number_of_participants(self, obj):
         return Registration.objects.filter(course=obj).count()
     number_of_participants.admin_order_field = 'participants__count'
     number_of_participants.short_description = _('number of participants')
-    
+
     def duration(self, obj):
         return obj.duration
     duration.short_description = _("Duration")
 
 
-
 admin.site.register(Course, CoursesAdmin)
-
-
 
 
 class FlatPageCustom(FlatPageAdmin):

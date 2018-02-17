@@ -102,7 +102,7 @@ class CourseManager(models.Manager):
 
 
 class Course(TimeStampedModel):
-    "A course, i.e. an instance of an activity"
+    """A course, i.e. an instance of an activity"""
     activity = models.ForeignKey('Activity', related_name='courses',
                                  verbose_name=_("Activity"))
     number = models.CharField(max_length=30,
