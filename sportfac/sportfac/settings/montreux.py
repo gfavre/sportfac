@@ -30,7 +30,7 @@ KEPCHUP_NO_TERMS = False
 KEPCHUP_CHILD_SCHOOL = True
 KEPCHUP_FICHE_SALAIRE_MONTREUX = True
 KEPCHUP_NO_SSF = True
-KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS = ['pdf/Lettre-Moniteurs-cours-automne-2017.pdf', 'pdf/GMS_2017-2018.pdf']
+KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS = ['pdf/infos-moniteurs-printemps-2018.pdf', 'pdf/GMS_2017-2018.pdf']
 
 CELERYBEAT_SCHEDULE['notify-absences'] = {
         'task': 'absences.tasks.notify_absences',
