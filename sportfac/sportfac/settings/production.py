@@ -98,6 +98,12 @@ BROKER_URL = env('BROKER_URL')
 
 
 ########### Sentry
+import os
+import raven
+
 RAVEN_CONFIG = {
-    'dsn': 'https://7490d3622e2140c6beb983ede7fd6c88:ebffe9eb0ff249da95e412296e1dad4d@beyond-sentry.herokuapp.com/2',
+    'dsn': 'https://3f862f015a1044e1962fd7a4e77ec5a2:5404be0237894b8fbfbf0122fd280280@sentry.io/1194911',
+    # If you are using git, you can also automatically configure the
+    # release based on the git info.
+    'release': raven.fetch_git_sha(os.path.abspath(os.pardir)),
 }

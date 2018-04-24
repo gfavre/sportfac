@@ -11,9 +11,6 @@ STATICFILES_DIRS = (
     normpath(join(SITE_ROOT, 'themes', 'montreux_ski', 'static')),
     normpath(join(SITE_ROOT, 'static')),
 )
-RAVEN_CONFIG = {
-    'dsn': 'https://226a25de763049f1aa6b2405815ad74f:f3ec6c3228264c5289854488cb3bd928@sentry.evoe.wine/4',
-}
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = env('EMAIL_HOST', default='')
