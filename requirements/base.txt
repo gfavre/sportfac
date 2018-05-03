@@ -14,7 +14,7 @@ django-floppyforms==1.7.0
 # Select2 widget (autocompletion on selects)
 Django-Select2==6.0.2
 django-autoslug == 1.9.3
-django-model-utils == 2.5
+django-model-utils==3.1.1
 django-localflavor == 1.5.3
 # WYSIWYG editor
 django-ckeditor == 5.0.3
