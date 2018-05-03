@@ -31,7 +31,7 @@ django-grappelli==2.11.1
 pytz==2018.4
 # addtoblock template tag (js embedding)
 django-sekizai == 0.10.0
-phonenumbers == 8.8.6
+phonenumbers==8.9.4
 xlrd == 1.1.0
 -e git+git://github.com/jazzband/django-dbtemplates.git#egg=dbtemplates
 -e git+git://github.com/gfavre/pypdftk@84215dedae1fc5b8629e13043a1b5183e7960a37#egg=pypdftk
