@@ -27,7 +27,7 @@ logutils==0.3.5
 Pillow==5.1.0
 django-registration-redux==2.4
 # skin for admin
-django-grappelli == 2.8.1
+django-grappelli==2.11.1
 pytz == 2017.3
 # addtoblock template tag (js embedding)
 django-sekizai == 0.10.0
