@@ -25,7 +25,7 @@ django-multiupload == 0.5.2
 
 logutils==0.3.5
 Pillow==5.1.0
-django-registration-redux == 1.4
+django-registration-redux==2.4
 # skin for admin
 django-grappelli == 2.8.1
 pytz == 2017.3
