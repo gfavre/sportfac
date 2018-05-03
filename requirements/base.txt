@@ -43,7 +43,7 @@ django-async-messages == 0.3.1
 django-import-export==1.0.0
 # open xlsx documents
 openpyxl==2.5.2
-python-dateutil == 2.5.3
+python-dateutil==2.7.2
 django_environ == 0.4.4
 django-anymail==1.2
 requests==2.18.4
