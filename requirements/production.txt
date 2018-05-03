@@ -5,5 +5,5 @@
 gunicorn==19.8.1
 redis==2.10.6
 raven==6.7.0
-django-constance[redis] == 1.2.1
+django-constance[redis]==2.2.0
 pylibmc == 1.5.2
