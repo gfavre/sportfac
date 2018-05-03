@@ -10,7 +10,7 @@ pylibmc == 1.5.2
 
 # Forms
 django-braces==1.13.0
-django-floppyforms == 1.6.2
+django-floppyforms==1.7.0
 # Select2 widget (autocompletion on selects)
 Django-Select2 == 5.11.1
 django-autoslug == 1.9.3
