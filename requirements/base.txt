@@ -17,7 +17,7 @@ django-autoslug == 1.9.3
 django-model-utils==3.1.1
 django-localflavor==2.0
 # WYSIWYG editor
-django-ckeditor == 5.0.3
+django-ckeditor==5.4.0
 django-formtools == 1.0
 django-picklefield == 1.0.0
 django-multiupload == 0.5.2
