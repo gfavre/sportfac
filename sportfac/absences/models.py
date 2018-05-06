@@ -60,4 +60,5 @@ class Session(TimeStampedModel):
 
     class Meta:
         ordering = ('date', 'course')
+        unique_together = (('date', 'course'),)
 
