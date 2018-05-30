@@ -10,13 +10,16 @@ class PhoneWidget(widgets.Widget):
     def render(self, value, obj=None):
         return phone(value)
 
+
 class AHVWidget(widgets.Widget):
     def render(self, value, obj=None):
         return ahv(value)
 
+
 class IBANWidget(widgets.Widget):
     def render(self, value, obj=None):
         return iban(value)
+
 
 class UserResource(resources.ModelResource):
     first_name = fields.Field(attribute='first_name', column_name=_("First name"))
@@ -34,11 +37,12 @@ class UserResource(resources.ModelResource):
     other_phone = fields.Field(attribute='private_phone3',
                                column_name=_("Other phone"),
                                widget=PhoneWidget())
+    email = fields.Field(attribute='email', column_name=_('Email address'))
 
     class Meta:
         model = FamilyUser
         fields = ('id', 'first_name', 'last_name', 'address', 'zipcode', 'city', 'country',
-                  'home_phone', 'mobile_phone', 'other_phone')
+                  'home_phone', 'mobile_phone', 'other_phone', 'email')
         export_order = fields
 
 
@@ -50,5 +54,5 @@ class InstructorResource(UserResource):
     class Meta:
         model = FamilyUser
         fields = ('id', 'first_name', 'last_name', 'address', 'zipcode', 'city', 'country',
-                  'home_phone', 'mobile_phone', 'other_phone', 'iban', 'birth_date', 'ahv')
+                  'home_phone', 'mobile_phone', 'other_phone', 'email', 'iban', 'birth_date', 'ahv')
         export_order = fields

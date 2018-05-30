@@ -284,7 +284,6 @@ class Course(TimeStampedModel):
         verbose_name_plural = _("courses")
 
 
-
 EXTRA_TYPES = (('B', _("Boolean")),
                ('C', _('Characters')),
                ('I', _("Integer")))
