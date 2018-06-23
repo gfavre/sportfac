@@ -7,7 +7,7 @@
 {% block content %}
 <div class="row">
   <div class="col-md-6">
-    <form action="." method="post" class="form-horizontal">{% csrf_token %}  
+    <form action="." method="post" class="form-horizontal">{% csrf_token %}
       {% form form using %}
         {% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
         {% formrow form.name %}
@@ -21,20 +21,26 @@
     </form>
   </div>
   <div class="col-md-6" itemscope itemtype="http://schema.org/Organization">
+    <section style="padding-top: 0">
+      <h4 itemprop="name">Sports scolaires facultatifs des villes de Nyon et Prangins</h4>
 
-    <section style="padding-top: 0">          
-      <h4 itemprop="name">Établissement secondaire de Nyon-Marens</h4>
-      <address itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
-        <span itemprop="streetAddress">Rte du Stand 5</span><br />
-        <abbr itemprop="addressCountry" title="Switzerland">CH</abbr>-<span itemprop="postalCode">1260</span> <span itemprop="addressLocality">Nyon</span>
-      </address>
-      <dl class="dl-horizontal">
-        <dt>Téléphone</dt><dd><a href="tel:+41225575400" itemprop="telephone">022 557 54 00</a></dd>
-        <dt>Fax</dt><dd><a href="fax:+41225575403" itemprop="faxNumber">022 557 54 03</a></dd>
-        <dt>Email</dt><dd><a itemprop="email" href="mailto:patrizia.maas@vd.ch">patrizia.maas@vd.ch</a></dd>
-      </dl>
     </section>
 
+    <section itemprop="member" itemscope itemtype="http://www.schema.org/Person">
+      <h5 itemprop="jobTitle">Responsable régional SSF</h5>
+      <p itemprop="name">Guillaume Strobino</p>
+      <address itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+        <span itemprop="streetAddress">
+          Collège de Nyon-Marens<br />
+          Route du stand 5
+        </span>
+        <abbr itemprop="addressCountry" title="Switzerland">CH</abbr>-<span itemprop="postalCode">1260</span> <span itemprop="addressLocality">Nyon</span><br>
+
+      Tél: <a href="tel:+41797260486">+41 79 726 04 86</a><br>
+      Email: <a itemprop="email" href="mailto:ssf@nyon.ch">ssf@nyon.ch</a>
+      </address>
+
+    </section>
 
   </div>
 </div>

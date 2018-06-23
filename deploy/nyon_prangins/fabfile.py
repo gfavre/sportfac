@@ -236,7 +236,7 @@ def configure_webfaction():
     _create_media_app()
     _create_main_app()
     _create_domain()
-    _create_website()
+    #_create_website()
 
 
 def install_app():
