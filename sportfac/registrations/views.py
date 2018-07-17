@@ -22,7 +22,7 @@ from .models import Bill, Child, Registration
 class ChildrenListView(LoginRequiredMixin, ListView):
     template_name = 'registrations/children.html'
     context_object_name = 'children'
-    
+
     def get_context_data(self, **kwargs):
         context = super(ChildrenListView, self).get_context_data(**kwargs)
         if settings.KEPCHUP_CHILD_SCHOOL:
@@ -44,29 +44,29 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
     form_class = AcceptTermsForm
     success_url = reverse_lazy('wizard_billing')
     template_name = 'registrations/registration_list.html'
-    
+
     def get_success_url(self):
         if self.bill and self.bill.is_paid:
             messages.success(self.request, _("Your registrations have been recorded, thank you!"))
             return reverse_lazy('registrations_registered_activities')
         return self.success_url
-    
+
     def get_queryset(self):
         return Registration.waiting\
-                           .select_related('child', 
+                           .select_related('child',
                                            'course',
                                            'course__activity')\
                            .prefetch_related('extra_infos')\
                            .filter(child__in=self.request.user.children.all())
 
     def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context        
+        # Call the base implementation first to get a context
         context = super(RegisteredActivitiesListView, self).get_context_data(**kwargs)
         context['registered_list'] = self.get_queryset()
-        registrations = context['registered_list'].order_by('course__start_date', 
+        registrations = context['registered_list'].order_by('course__start_date',
                                                             'course__end_date')
         context['total_price'] = registrations.aggregate(Sum('course__price'))['course__price__sum']
-        
+
         context['overlaps'] = []
         context['overlapped'] = set()
         for (idx, registration) in list(enumerate(registrations))[:-1]:
@@ -75,8 +75,7 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
                     context['overlaps'].append((registration, registration2))
                     context['overlapped'].add(registration.id)
                     context['overlapped'].add(registration2.id)
-        
-        
+
         return context
 
     def form_valid(self, form):
@@ -85,8 +84,8 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
                         Sum('course__price')
                     ).get('course__price__sum')
             self.bill = Bill.objects.create(
-                status = Bill.STATUS.just_created,
-                family = self.request.user
+                status=Bill.STATUS.just_created,
+                family=self.request.user
             )
             for registration in self.get_queryset().all():
                 registration.set_valid()
@@ -97,12 +96,12 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
             self.bill.save()
             if self.bill.total == 0:
                 self.bill.status = Bill.STATUS.paid
-                self.bill.save()            
+                self.bill.save()
         return super(RegisteredActivitiesListView, self).form_valid(form)
 
 
 class BillMixin(object):
-   def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs):
         context = super(BillMixin, self).get_context_data(**kwargs)
         preferences = global_preferences_registry.manager()
         offset_days = preferences['payment__DELAY_DAYS']
@@ -117,19 +116,18 @@ class BillMixin(object):
 
 class BillingView(LoginRequiredMixin, BillMixin, ListView):
     template_name = "registrations/billing.html"
-    
+
     def get_queryset(self):
         return Bill.objects.filter(family=self.request.user).order_by('created')
-        
+
 
 class BillDetailView(LoginRequiredMixin, BillMixin, DetailView):
     template_name = 'registrations/bill-detail.html'
-        
+
     def get_queryset(self):
         if self.request.user.is_manager:
             return Bill.objects.all()
         return Bill.objects.filter(family=self.request.user)
-    
 
 
 class WizardBillingView(LoginRequiredMixin, WizardMixin, BillMixin, TemplateView):
@@ -139,14 +137,14 @@ class WizardBillingView(LoginRequiredMixin, WizardMixin, BillMixin, TemplateView
         context = super(WizardBillingView, self).get_context_data(**kwargs)
         context['bill'] = Bill.objects.filter(family=self.request.user).order_by('created').last()
         return context
-    
+
     def get(self, request, *args, **kwargs):
         response = super(WizardBillingView, self).get(request, *args, **kwargs)
         for bill in Bill.objects.filter(status=Bill.STATUS.just_created, family=self.request.user):
-            bill.status = status=Bill.STATUS.waiting
+            bill.status = Bill.STATUS.waiting
             bill.save()
         return response
-    
+
 
 class SummaryView(LoginRequiredMixin, TemplateView):
     template_name = "registrations/summary.html"

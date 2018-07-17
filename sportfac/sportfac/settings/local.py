@@ -22,7 +22,7 @@ SHARED_APPS += (
 
 INSTALLED_APPS += (
     'django_extensions', # more commands
-    #'debug_toolbar', # debugging
+    'debug_toolbar', # debugging
     'djcelery',
     'kombu.transport.django',
 )
@@ -31,9 +31,9 @@ INSTALLED_APPS += (
 INTERNAL_IPS = ('127.0.0.1',)
 
 # See: https://github.com/django-debug-toolbar/django-debug-toolbar#installation
-#MIDDLEWARE_CLASSES = [
-#    'debug_toolbar.middleware.DebugToolbarMiddleware',
-#] + MIDDLEWARE_CLASSES
+MIDDLEWARE_CLASSES = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+] + MIDDLEWARE_CLASSES
 
 
 ALLOWED_HOSTS = ('127.0.0.1', 'localhost', 'test.com', 'tenant.test.com', 'testserver')
@@ -99,17 +99,16 @@ CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 
 
 TEMPLATES[0]['DIRS'] = [
-    normpath(join(SITE_ROOT, 'themes', 'nyon_prangins', 'templates')),
+    normpath(join(SITE_ROOT, 'themes', 'montreux', 'templates')),
     normpath(join(SITE_ROOT, 'templates')),
 ]
 
 STATICFILES_DIRS = (
-    normpath(join(SITE_ROOT, 'themes', 'nyon_prangins', 'static')),
+    normpath(join(SITE_ROOT, 'themes', 'montreux', 'static')),
     normpath(join(SITE_ROOT, 'static')),
 )
 
 KEPCHUP_USE_ABSENCES = True
-KEPCHUP_IMPORT_CHILDREN = False
 KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = True
 KEPCHUP_SEND_PRESENCE_LIST = True
 KEPCHUP_SEND_COPY_CONTACT_MAIL_TO_ADMIN = True
@@ -126,6 +125,8 @@ KEPCHUP_DISPLAY_CAR_NUMBER = True
 KEPCHUP_DISPLAY_REGISTRATION_NOTE = True
 KEPCHUP_REGISTRATION_LEVELS = True
 KEPCHUP_ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE = True
+KEPCHUP_NO_SSF = True
+KEPCHUP_IMPORT_CHILDREN = True
 
 
 CELERYBEAT_SCHEDULE['notify-absences'] = {
