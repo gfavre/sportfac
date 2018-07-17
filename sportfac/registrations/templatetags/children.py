@@ -24,3 +24,4 @@ def child_announced_level(child, course):
         return qs.last().value
     return ''
 
+
