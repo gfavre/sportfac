@@ -81,7 +81,7 @@ env.user              = USER
 env.password          = PASSWORD
 env.project           = PROJECT_NAME
 env.app_name          = APP_NAME
-env.settings          = 'rojalets'
+env.settings          = 'nyon_prangins'
 env.dbname            = DBNAME
 env.dbuser            = DBUSER
 env.dbpassword        = DBPASSWORD
@@ -108,7 +108,7 @@ env.memcached         = MEMCACHED_SOCKET
 env.phantomjs         = PHANTOMJS
 
 env.domain            = "kepchup.ch"
-env.subdomains        = ['rojalets',]
+env.subdomains        = ['ssf-nyon-prangins', 'ssf.nyon-prangins', 'nyon-prangins']
 env.https             = False
 env.website_name      = env.project
 env.django_app_name   = env.project
