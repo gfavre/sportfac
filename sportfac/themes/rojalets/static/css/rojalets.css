@@ -1,0 +1,57 @@
+#wrapper {
+    margin-bottom: -215px;
+    padding-bottom: 215px;
+}
+#footer {
+    height: 215px;
+}
+#footer img {
+    height: 75px;
+}
+
+/* MVP Ready
+-------------------------------------------------- */
+.pricing-plan{
+    max-width: none;
+    text-align: left;
+}
+.pricing-plan .pricing-header {
+    text-align: center;
+}
+.topped {
+    padding-top:0;
+    margin-top: 0;
+}
+
+dt {
+    font-weight: 600;
+}
+.page-header {
+    border: none;
+}
+
+legend{
+    font-family: Oswald;
+}
+#wrapper {
+    background: url("../img/20180706_130133.jpeg") no-repeat bottom fixed;
+    background-position: 50% 65%;
+    background-size: cover;
+}
+
+#pagecontent .container {
+    background-color: rgba(255,255,255,0.95);
+    -webkit-box-shadow: 0px 2px 5px 0px rgba(204,233,255,0.66);
+    -moz-box-shadow: 0px 2px 5px 0px rgba(204,233,255,0.66);
+    box-shadow: 0px 2px 5px 0px rgba(204,233,255,0.66);
+
+}
+.flatpage-2 #pagecontent {
+    margin-top: 3em;
+}
+
+.navbar-inverse {
+    background-color: rgba(0, 0, 0, .8);
+    background-image: none;
+
+}

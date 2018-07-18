@@ -1,0 +1,21 @@
+{% load static i18n %}
+
+
+<footer id="footer">
+  <div class="container">
+    <div>
+      {% include "address.html" %}
+      <a href="https://www.escoppet.ch">
+        <img src="{% static 'img/Les_Rojalets_logo_2017.png' %}" class="hidden-xs hidden-sm hidden-print"/>
+      </a>
+      <ul class="footer-links hidden-print">
+        <li><a href="{% url 'contact' %}">{% trans "Contact" %}</a></li>
+        <li class="muted">·</li>
+        <li><a href="{% url 'terms' %}">{% trans "Terms and conditions" %}</a></li>
+        <li class="muted">·</li>
+        <li><a href="{% url 'privacy' %}">{% trans "Privacy" %}</a></li>
+      </ul>
+      <small class="hidden-print"><a href="http://www.beyondthewall.ch">Développé par Beyond the Wall, Gland</a></small>
+    </div>
+  </div>
+</footer>
