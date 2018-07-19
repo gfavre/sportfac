@@ -14,21 +14,25 @@ from profiles.models import SchoolYear
 
 
 TEACHER_MANDATORY_FIELDS = (u'ID LAGAPEO', u'Nom', u'Prénom', u'Maîtrises')
-TEACHER_IMPORT_TO_FIELD = {u'ID LAGAPEO': 'number', 
-                   u'Nom': 'last_name', 
-                   u'Prénom': 'first_name', 
-                   u'Courriel 1': 'email',}
-def load_teachers(filelike):            
+TEACHER_IMPORT_TO_FIELD = {
+    u'ID LAGAPEO': 'number',
+    u'Nom': 'last_name',
+    u'Prénom': 'first_name',
+    u'Courriel 1': 'email',
+}
+
+
+def load_teachers(filelike, building=None):
     try:
         xls_book = xlrd.open_workbook(file_contents=filelike.read())
         sheet = xls_book.sheets()[0]
         header_row = sheet.row_values(0)
-                
+
         if not all(key in header_row for key in TEACHER_MANDATORY_FIELDS):
             raise ValueError(_("All these fields are mandatory: %s") % unicode(TEACHER_MANDATORY_FIELDS))
     except xlrd.XLRDError:
         raise ValueError(_("File format is unreadable"))
-    
+
     nb_created = 0
     nb_updated = 0
     nb_skipped = 0
@@ -45,8 +49,10 @@ def load_teachers(filelike):
             continue
         number = translated.pop('number')
         teacher, created = Teacher.objects.update_or_create(number=number, defaults=translated)
+        if building:
+            teacher.buildings.add(building)
         teacher.years.clear()
-        if created: 
+        if created:
             nb_created += 1
         else:
             nb_updated += 1
@@ -56,7 +62,7 @@ def load_teachers(filelike):
                 teacher.years.add(school_year)
             except SchoolYear.DoesNotExist:
                 continue
-    
-    return (nb_created, nb_updated, nb_skipped)
+
+    return nb_created, nb_updated, nb_skipped
 
 

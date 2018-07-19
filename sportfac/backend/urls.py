@@ -117,6 +117,19 @@ teachers_patterns = [
         name='teacher-delete'),
 ]
 
+buildings_patterns = [
+    url(r'^$', view=views.BuildingListView.as_view(),
+        name='building-list'),
+    url(r'^(?P<pk>\d+)/$', view=views.BuildingDetailView.as_view(),
+        name='building-detail'),
+    url(r'^new$', view=views.BuildingCreateView.as_view(),
+        name='building-create'),
+    url(r'^(?P<pk>\d+)/update$', view=views.BuildingUpdateView.as_view(),
+        name='building-update'),
+    url(r'^(?P<pk>\d+)/delete$', view=views.BuildingDeleteView.as_view(),
+        name='building-delete'),
+]
+
 users_patterns = [
     url(r'^$', view=views.UserListView.as_view(),
         name='user-list'),
@@ -148,8 +161,8 @@ users_patterns = [
         name='user-update'),
     url(r'^(?P<pk>\d+)/delete$', view=views.UserDeleteView.as_view(),
         name='user-delete'),
-    #url(r'^(?P<pk>\d+)/pay$', view=views.UserPayUpdateView.as_view(),
-    #    name='user-pay'),
+    # url(r'^(?P<pk>\d+)/pay$', view=views.UserPayUpdateView.as_view(),
+    #     name='user-pay'),
     url(r'^(?P<user>\d+)/password$', view=views.PasswordSetView.as_view(),
         name='password-change'),
 
@@ -187,6 +200,7 @@ years_patterns = [
 urlpatterns = [
     url(r'^$', views.HomePageView.as_view(), name="home"),
     url(r'^activity/', include(activities_patterns)),
+    url(r'^buildings/', include(buildings_patterns)),
     url(r'^child/', include(children_patterns)),
     url(r'^course/', include(courses_patterns)),
     url(r'^dates$', views.RegistrationDatesView.as_view(), name='dates'),

@@ -169,9 +169,22 @@
               </a>
             </li>
             {% endif %}
+            {% if USE_BUILDINGS %}
+            <li class="divider"></li>
+            <li>
+              <a href="{% url 'backend:building-list' %}">
+                <i class="icon-adult"></i>
+                &nbsp;&nbsp;{% trans "All buildings" %}
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'backend:building-create' %}">
+                <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New building" %}
+              </a>
+            </li>
+            {% endif %}
           </ul>
         </li>
-
       </ul>
     </nav>
   </div> <!-- /.container -->
