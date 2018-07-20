@@ -7,6 +7,8 @@ function($scope, $attrs, $routeParams, $http, ChildrenService) {
   $scope.prefillTeachers = $attrs.prefill === 'true';
   if (!$attrs.external) throw new Error("No external option set");
   $scope.useExternalIdentifiers = $attrs.external === 'true';
+  if (!$attrs.buildings) throw new Error("No building option set");
+  $scope.useBuildings = $attrs.buildings === 'true';
   if (!$attrs.schools){
       $scope.schools = [];
   } else {
@@ -14,6 +16,7 @@ function($scope, $attrs, $routeParams, $http, ChildrenService) {
   }
   $scope.urls = {
     child: $attrs.childserviceurl,
+    building: $attrs.buildingserviceurl,
     teacher: $attrs.teacherserviceurl,
     year: $attrs.yearserviceurl
   };
@@ -39,20 +42,29 @@ function($scope, $attrs, $routeParams, $http, ChildrenService) {
     });
   };
 
+  $scope.loadBuildings = function(){
+    $http.get($scope.urls.building).success(function(data, status, headers, config ){
+        $scope.buildings = data;
+    });
+  };
+
   $scope.loadYears = function(){
     $http.get($scope.urls.year).success(function(data, status, headers, config ){
         $scope.years = data.map(function(year){ return year.year; });
     });
   };
-  
+
   $scope.teachers = [];
   if ($scope.prefillTeachers){
     $scope.loadTeachers();
+    if ($scope.useBuildings){
+      $scope.loadBuildings();
+    }
   } else {
     $scope.loadYears();
   }
   $scope.loadChildren();
-  
+
   $scope.selectChild = function(child){
     if ($scope.selectedChild){
         $scope.selectedChild.selected = false;
@@ -66,7 +78,7 @@ function($scope, $attrs, $routeParams, $http, ChildrenService) {
     }
     $scope.selectedChild = undefined;
   };
-  
+
   $scope.toHarmos = function(year) {
     return {1: "1P",
             2: "2P",
@@ -80,7 +92,7 @@ function($scope, $attrs, $routeParams, $http, ChildrenService) {
             10: "10S",
             11: "11S",
             12: "12R"}[year];
-    
+
   };
 }])
 
@@ -90,6 +102,7 @@ function($scope, $attrs, $routeParams, $http, ChildrenService) {
   $scope.detailedChild = {};
   this.initialValue = {};
   $scope.errors = {};
+  $scope.availableTeachers = $scope.teachers.slice();
 
   $scope.reloadChild = function(){
     ChildrenService.get($scope.urls.child, $routeParams.childId).then(function(child){
@@ -109,8 +122,13 @@ function($scope, $attrs, $routeParams, $http, ChildrenService) {
   $scope.updateSchoolYear = function(){
     $scope.detailedChild.school_year = $scope.detailedChild.teacher.years[0];
   };
-  
-  
+
+  $scope.updateTeachers = function(){
+    $scope.availableTeachers = $scope.teachers.filter(function(teacher) {
+        return teacher.buildings.includes($scope.detailedChild.building.id);
+    });
+  };
+
   $scope.saveChild = function(){
     ChildrenService.save($scope.urls.child, $scope.detailedChild, $scope.errors).then(function(){
       $scope.loadChildren();
@@ -118,7 +136,7 @@ function($scope, $attrs, $routeParams, $http, ChildrenService) {
       $location.url('/');
     });
   };
-  
+
   $scope.delChild = function(){
      ChildrenService.del($scope.urls.child, $scope.detailedChild, $scope.errors).then(function(){
       $scope.loadChildren();
@@ -126,7 +144,7 @@ function($scope, $attrs, $routeParams, $http, ChildrenService) {
       $location.url('/');
     });
   };
-  
+
   $scope.resetForm = function(){
       $scope.detailedChild = {};
   };
@@ -152,7 +170,7 @@ function($scope, $location, ChildrenService) {
   $scope.updateSchoolYear = function(){
     $scope.detailedChild.school_year = $scope.detailedChild.teacher.years[0];
   };
-  
+
   $scope.lookupChild = function(){
     ChildrenService.lookup($scope.urls.child, $scope.detailedChild.ext_id, $scope.errors).then(function(child){
       if (child !== undefined) {
@@ -170,7 +188,7 @@ function($scope, $location, ChildrenService) {
 
     });
   };
-  
+
   $scope.saveChild = function(){
     ChildrenService.save($scope.urls.child, $scope.detailedChild, $scope.errors).then(function(){
       $scope.loadChildren();

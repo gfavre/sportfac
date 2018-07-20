@@ -1,10 +1,12 @@
 {% load i18n sekizai_tags %}
 {% addtoblock "extra_html" %}
-ng-app="sportfacChildren" 
-ng-controller="ListCtrl" 
-prefill="{{ PREFILL_YEARS_WITH_TEACHERS|yesno:'true,false' }}"
-external="{{ IMPORT_CHILDREN|yesno:'true,false' }}"
+ng-app="sportfacChildren"
+ng-controller="ListCtrl"
+prefill="{{ PREFILL_YEARS_WITH_TEACHERS|yesno:'true,false'}}"
+buildings="{{ USE_BUILDINGS|yesno:'true,false'}}"
+external="{{ IMPORT_CHILDREN|yesno:'true,false'}}"
 schools="{{ schools }}"
+buildingServiceUrl="{% url 'api:building-list' %}"
 childServiceUrl="{% url 'api:child-list' %}"
 teacherServiceUrl="{% url 'api:teacher-list' %}"
 yearServiceUrl="{% url 'api:year-list' %}"
@@ -42,10 +44,10 @@ yearServiceUrl="{% url 'api:year-list' %}"
   <script src="{{ STATIC_URL }}js/vendor/angular-locale_fr-ch.js"></script>
   <script src="{{ STATIC_URL }}js/vendor/angular-route.min.js"></script>
   <script src="{{ STATIC_URL }}js/vendor/angular-cookies.min.js"></script>
-  
+
   <script src="{{ STATIC_URL }}js/vendor/angularstrap/angular-strap.js"></script>
   <script src="{{ STATIC_URL }}js/vendor/angularstrap/angular-strap.tpl.js"></script>
-  
+
   <script src="{{ STATIC_URL }}js/children/services.js"></script>
   <script src="{{ STATIC_URL }}js/children/controllers.js"></script>
   <script src="{{ STATIC_URL }}js/children/app.js"></script>

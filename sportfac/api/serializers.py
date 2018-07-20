@@ -7,7 +7,7 @@ from activities.models import Activity, Course, ExtraNeed
 from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser, School, SchoolYear
 from registrations.models import Child, ExtraInfo, Registration, ChildActivityLevel
-from schools.models import Teacher
+from schools.models import Building, Teacher
 
 
 class ActivitySerializer(serializers.ModelSerializer):
@@ -71,12 +71,19 @@ class SchoolYearField(serializers.RelatedField):
         return SchoolYear.objects.get(year=data)
 
 
+class BuildingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Building
+        fields = ('id', 'name', 'address', 'zipcode', 'city', 'country')
+
+
 class TeacherSerializer(serializers.ModelSerializer):
     years = SchoolYearField(many=True, required=False, read_only=True)
+    buildings = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Teacher
-        fields = ('id', 'first_name', 'last_name', 'years' )
+        fields = ('id', 'first_name', 'last_name', 'years', 'buildings')
 
 
 class YearSerializer(serializers.ModelSerializer):

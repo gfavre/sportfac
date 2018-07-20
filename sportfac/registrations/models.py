@@ -271,6 +271,7 @@ class Child(TimeStampedModel):
     language = models.CharField(choices=LANGUAGE, max_length=2, default=LANGUAGE.F)
 
     school_year = models.ForeignKey('profiles.SchoolYear', null=True, on_delete=models.SET_NULL)
+    building = models.ForeignKey('schools.Building', related_name="students", null=True, on_delete=models.SET_NULL)
     teacher = models.ForeignKey('schools.Teacher', related_name="students", null=True, on_delete=models.SET_NULL)
 
     family = models.ForeignKey('profiles.FamilyUser', related_name='children', null=True, blank=True, on_delete=models.CASCADE)

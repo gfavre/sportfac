@@ -11,11 +11,11 @@
       <p class="form-control-static">{[{ detailedChild.ext_id || "n/a" }]}</p>
     </div>
   </div>
-    
+
   <div class="form-group">
     <label class="col-sm-4 control-label" for="first_name">Prénom<span class="required"> *</span></label>
     <div class="col-sm-8">
-      <input id="first_name" ng-model="detailedChild.first_name" 
+      <input id="first_name" ng-model="detailedChild.first_name"
              type="text" class="form-control" required />
       <span ng-show="childform.first_name.$error.required">Ce champ est obligatoire</span>
     </div>
@@ -23,7 +23,7 @@
   <div class="form-group">
     <label class="col-sm-4 control-label" for="last_name">Nom<span class="required"> *</span></label>
     <div class="col-sm-8">
-      <input id="last_name" ng-model="detailedChild.last_name" 
+      <input id="last_name" ng-model="detailedChild.last_name"
              type="text" class="form-control" required />
       <span ng-show="childform.last_name.$error.required">Ce champ est obligatoire</span>
     </div>
@@ -68,7 +68,7 @@
  <div class="form-group">
     <label class="col-sm-4 control-label" for="language">Langue<span class="required"> *</span></label>
     <div class="col-sm-8">
-     <select id="language" ng-model="detailedChild.language" 
+     <select id="language" ng-model="detailedChild.language"
              class="form-control" required>
         <option value="F">Français</option>
         <option value="D">Deutsch</option>
@@ -78,29 +78,39 @@
       <span ng-show="childform.language.$error.required">Ce champ est obligatoire</span>
     </div>
   </div>
-  
+
   {% if EMERGENCY_NUMBER_MANDATORY %}
   <div class="form-group" ng-class="{ 'has-error': errors.hasOwnProperty('emergency_number') }">
     <label class="col-sm-4 control-label" for="emergency_number">Numéro d'urgence<span class="required"> *</span></label>
     <div class="col-sm-8">
-      <input id="emergency_number" ng-model="detailedChild.emergency_number" 
+      <input id="emergency_number" ng-model="detailedChild.emergency_number"
              type="text" class="form-control" required />
       <span ng-show="childform.emergency_number.$error.required">Ce champ est obligatoire</span>
       <span ng-show="errors.emergency_number" class="help-block">{[{ errors.emergency_number[0] }]}</span>
     </div>
   </div>
   {% endif %}
-
+  {% if USE_BUILDINGS %}
+  <div ng-show="useBuildings">
+    <div class="form-group">
+      <label class="col-sm-4 control-label" for="inputBuilding">Bâtiment<span class="required"> *</span></label>
+      <div class="col-sm-5">
+        <select id="inputBuilding" class="form-control" ng-model="detailedChild.building"
+                ng-options="building.name for building in buildings"
+                ng-change="updateTeachers()" ng-required="useBuildings"></select>
+      </div>
+    </div>
+  </div>
+  {% endif %}
   <div ng-show="prefillTeachers">
     <div class="form-group">
-      <label class="col-sm-4 control-label" for="inputLastName">Enseignant principal<span class="required"> *</span></label>
+      <label class="col-sm-4 control-label" for="inputTeacher">Enseignant principal<span class="required"> *</span></label>
       <div class="col-sm-5">
-        <select id="inputTeacher" class="form-control" ng-model="detailedChild.teacher"  
-                ng-options="teacher.last_name + ' ' + teacher.first_name for teacher in teachers" 
+        <select id="inputTeacher" class="form-control" ng-model="detailedChild.teacher"
+                ng-options="teacher.last_name + ' ' + teacher.first_name for teacher in availableTeachers"
                 ng-change="updateSchoolYear()" ng-required="prefillTeachers"></select>
       </div>
     </div>
-    
     <div class="form-group" ng-switch on="detailedChild.teacher.years.length">
       <label class="col-sm-4 control-label" for="inputYear" ng-show="detailedChild.teacher.years.length > 1">Année<span class="required"> *</span></label>
        <div class="col-sm-8" ng-switch-when="undefined">
@@ -110,20 +120,20 @@
         <input type="hidden" ng-model="detailedChild.school_year" />
       </div>
       <div class="col-sm-5" ng-switch-default>
-        <select id="inputYear" class="form-control" ng-model="detailedChild.school_year" 
-                ng-disabled="detailedChild.teacher.years.length == 1" 
+        <select id="inputYear" class="form-control" ng-model="detailedChild.school_year"
+                ng-disabled="detailedChild.teacher.years.length == 1"
                 ng-options="toHarmos(year) + '' for year in detailedChild.teacher.years" required></select>
         <span ng-show="childform.name.$error.required">Ce champ est obligatoire</span>
       </div>
        <div class="clearfix"></div>
     </div>
   </div>
-  
+
   <div ng-show="!prefillTeachers">
     <div class="form-group">
       <label class="col-sm-4 control-label" for="inputYear">Année<span class="required"> *</span></label>
       <div class="col-sm-5">
-        <select id="inputYear" class="form-control" ng-model="detailedChild.school_year" 
+        <select id="inputYear" class="form-control" ng-model="detailedChild.school_year"
                 ng-options="toHarmos(year) + '' for year in years" required></select>
         <span ng-show="childform.name.$error.required">Ce champ est obligatoire</span>
       </div>
@@ -133,7 +143,7 @@
   <div class="form-group">
     <label class="col-sm-4 control-label" for="school">École<span class="required"> *</span></label>
     <div class="col-sm-5">
-      <select id="school" class="form-control" ng-model="detailedChild.school" 
+      <select id="school" class="form-control" ng-model="detailedChild.school"
               ng-options="school.id as school.name for school in schools">
         <option value="">Autre</option>
       </select>
@@ -143,13 +153,13 @@
   <div class="form-group" ng-hide="detailedChild.school">
     <label class="col-sm-4 control-label" for="school">Nom de l'école</label>
     <div class="col-sm-8">
-        <input type="text" class="form-control" id="other_school" 
-               ng-model="detailedChild.other_school" 
+        <input type="text" class="form-control" id="other_school"
+               ng-model="detailedChild.other_school"
                ng-required="!detailedChild.school">
     </div>
   </div>
   {% endif %}
-   
+
   <div>
     <div class="col-sm-4 col-xs-4">
       <button ng-click="saveChild()" ng-disabled="childform.$invalid" class="btn btn-right btn-success"><i class="icon-ok-sign icon-white"></i> Enregistrer</button>
@@ -159,5 +169,5 @@
       <button ng-click="delChild(child.id)" class="btn btn-danger btn-small"><i class="icon-trash icon-white"></i> Supprimer</button>
     </div>
   </div>
-  
+
 </form>

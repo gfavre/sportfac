@@ -9,7 +9,7 @@ from .models import Bill, Child, Registration, Transport
 from activities.models import Course
 from backend.forms import Select2Widget, DatePickerInput
 from profiles.models import FamilyUser, School, SchoolYear
-from schools.models import Teacher
+from schools.models import Building, Teacher
 
 
 class ChildForm(forms.ModelForm):
@@ -19,6 +19,10 @@ class ChildForm(forms.ModelForm):
     sex = forms.ChoiceField(label=_("Sex"),widget=forms.widgets.RadioSelect, choices=Child.SEX)
     teacher = forms.ModelChoiceField(label=_("Teacher"),
                                      queryset=Teacher.objects.prefetch_related('years'),
+                                     widget=Select2Widget(),
+                                     required=False)
+    building = forms.ModelChoiceField(label=_("Building"),
+                                     queryset=Building.objects.all(),
                                      widget=Select2Widget(),
                                      required=False)
     nationality = forms.ChoiceField(label=_("Nationality"), choices=Child.NATIONALITY)
@@ -40,8 +44,12 @@ class ChildForm(forms.ModelForm):
     class Meta:
         model = Child
         fields = ('id_lagapeo', 'family', 'first_name', 'last_name', 'sex', 'birth_date', 'nationality',
-                  'language', 'school', 'other_school', 'school_year', 'teacher', 'emergency_number',
+                  'language', 'school', 'other_school', 'school_year', 'teacher', 'building', 'emergency_number',
                   'bib_number')
+
+    def __init__(self):
+        if not settings.KEPCHUP_USE_BUILDINGS:
+            del self.fields['building']
 
     def clean_id_lagapeo(self):
         id_lagapeo = self.cleaned_data["id_lagapeo"]

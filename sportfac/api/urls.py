@@ -12,6 +12,7 @@ router.register(r'activities', views.ActivityViewSet, base_name='activity')
 router.register(r'courses', views.CourseViewSet, base_name='course')
 router.register(r'children', views.ChildrenViewSet, base_name='child')
 router.register(r'teachers', views.TeacherViewSet, base_name='teacher')
+router.register(r'buildings', views.BuildingViewSet, base_name='building')
 router.register(r'registrations', views.RegistrationViewSet, base_name='registration')
 router.register(r'levels', views.ChildActivityLevelViewSet, base_name='level')
 

@@ -13,12 +13,12 @@ from absences.models import Absence, Session
 from activities.models import Activity, Course
 from profiles.models import SchoolYear
 from registrations.models import Child, ChildActivityLevel, ExtraInfo, Registration
-from schools.models import Teacher
+from schools.models import Building, Teacher
 
 from .permissions import ManagerPermission, FamilyPermission, InstructorPermission
 from .serializers import (AbsenceSerializer, SetAbsenceSerializer, SessionSerializer, SessionUpdateSerializer,
                           ActivityDetailedSerializer,
-                          ChildrenSerializer, CourseSerializer, TeacherSerializer,
+                          ChildrenSerializer, CourseSerializer, TeacherSerializer, BuildingSerializer,
                           RegistrationSerializer, ExtraSerializer, ChildActivityLevelSerializer,
                           ChangeCourseSerializer, CourseChangedSerializer,
                           SimpleChildrenSerializer, YearSerializer)
@@ -122,6 +122,12 @@ class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
         return Teacher.objects.prefetch_related('years')
 
 
+class BuildingViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = BuildingSerializer
+    model = Building
+    queryset = Building.objects.all()
+
+
 class FamilyView(mixins.ListModelMixin, generics.GenericAPIView):
     authentication_classes = (SessionAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
@@ -154,7 +160,7 @@ class ChildrenViewSet(viewsets.ModelViewSet):
             try:
                 ext_id = int(ext_id)
                 queryset = queryset.filter(id_lagapeo=ext_id)
-            except:
+            except ValueError:
                 queryset = queryset.none()
         else:
             queryset = queryset.filter(family=request.user)
@@ -266,7 +272,7 @@ class ExtraInfoViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         base_data = {'registration': request.data.get('registration', None)}
         output = []
-        for (key, value) in request.data.iteritems():
+        for (key, value) in request.data.items():
             if key.startswith('extra-') and value:
                 data = base_data.copy()
                 data['key'] = key.split('-')[1]
