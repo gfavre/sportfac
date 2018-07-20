@@ -11,30 +11,30 @@ from .models import Activity, Course, ExtraNeed
 
 class CourseForm(forms.ModelForm):
     activity = forms.ModelChoiceField(label=_("Activity"),
-                                      queryset=Activity.objects, 
+                                      queryset=Activity.objects,
                                       empty_label=None,
-                                      widget=Select2Widget())    
+                                      widget=Select2Widget())
     instructors = forms.ModelMultipleChoiceField(
         label=_("Instructors"),
-        queryset=FamilyUser.objects, 
+        queryset=FamilyUser.objects,
         widget=Select2MultipleWidget()
     )
     name = forms.CharField(label=_("Displayed name (optional)"), required=False,
                            help_text=_("Displayed on calendar under activity name"))
     number = forms.CharField(label=_("Identifier"), required=True)
-    price = forms.DecimalField(label=_("Price"), initial=0, required=True, 
+    price = forms.DecimalField(label=_("Price"), initial=0, required=True,
                                widget=settings.KEPCHUP_NO_PAYMENT and forms.HiddenInput or forms.NumberInput)
 
-    start_date = forms.DateTimeField(label=_("Start date"), required=True, 
+    start_date = forms.DateTimeField(label=_("Start date"), required=True,
                                      widget=DatePickerInput(format='%d.%m.%Y'),
                                      help_text=_("format: dd.mm.yyyy, e.g. 31.07.2016"))
-    end_date = forms.DateTimeField(label=_("End date"), required=True, 
+    end_date = forms.DateTimeField(label=_("End date"), required=True,
                                    widget=DatePickerInput(format='%d.%m.%Y'),
                                    help_text=_("format: dd.mm.yyyy, e.g. 31.07.2016"))
-    start_time = forms.TimeField(label=_("Start time"), required=True, 
+    start_time = forms.TimeField(label=_("Start time"), required=True,
                                  widget=TimePickerInput(format='%H:%M'),
                                  help_text=_("format: hh:mm, e.g. 17:45"))
-    end_time = forms.TimeField(label=_("End time"), required=True, 
+    end_time = forms.TimeField(label=_("End time"), required=True,
                                widget=TimePickerInput(format='%H:%M'),
                                help_text=_("format: hh:mm, e.g. 17:45"))
 
@@ -48,13 +48,13 @@ class CourseForm(forms.ModelForm):
         fields = ('activity', 'name', 'number', 'instructors', 'price',
                   'number_of_sessions', 'day', 'start_date', 'end_date',
                   'start_time', 'end_time', 'place', 'min_participants',
-                  'max_participants', 'schoolyear_min', 'schoolyear_max', 
-                  'uptodate', 'visible', 'extra')
+                  'max_participants', 'schoolyear_min', 'schoolyear_max',
+                  'uptodate', 'announced_js', 'visible', 'extra',)
 
 
 class ActivityForm(forms.ModelForm):
     number = forms.CharField(label=_("Identifier"), required=True)
-    
+
     class Meta:
         model = Activity
         fields = ('name', 'number', 'description', 'informations')

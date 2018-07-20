@@ -132,6 +132,8 @@ class Course(TimeStampedModel):
     schoolyear_min = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="1", verbose_name=_("Minimal school year"))
     schoolyear_max = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="12", verbose_name=_("Maximal school year"))
 
+    announced_js = models.BooleanField(_("Course announced to J+S"), default=False)
+
     objects = CourseManager()
 
     @property

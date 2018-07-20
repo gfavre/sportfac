@@ -47,7 +47,8 @@ class ChildForm(forms.ModelForm):
                   'language', 'school', 'other_school', 'school_year', 'teacher', 'building', 'emergency_number',
                   'bib_number')
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super(ChildForm, self).__init__(*args, **kwargs)
         if not settings.KEPCHUP_USE_BUILDINGS:
             del self.fields['building']
 

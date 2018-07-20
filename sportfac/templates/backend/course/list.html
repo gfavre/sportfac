@@ -78,6 +78,7 @@ $(function () {
       <th class="text-nowrap">{% trans "Duration" %}</th>
       <th class="text-nowrap">{% trans "Instructors" %}</th>
       <th class="text-nowrap">{% trans "Registrations" %}</th>
+      <th class="text-nowrap">{% trans "J+S" %}</th>
       <th class="text-nowrap">{% trans "Actions" %}</th>
     </tr>
   </thead>
@@ -109,6 +110,14 @@ $(function () {
       <td data-order="{{ course.available_places }}"
           class="{% if course.full %}bg-danger{% elif course.minimal_participants_reached %}bg-success{% else %}bg-warning{% endif %}">
         {{ course.count_participants  }}&nbsp;/&nbsp;{{ course.max_participants }}
+      </td>
+      <td data-order="{{ course.announced_js }}"
+          data-search="{% if course.announced_js %}{% trans 'announced' %}{% endif %}">
+      {% if course.announced_js %}
+        <i class="icon-ok-circled success"></i>
+        {% else %}
+        <i class="icon-cancel-circled danger"></i>
+        {% endif %}
       </td>
       <td>
         <ul class="list-unstyled">
