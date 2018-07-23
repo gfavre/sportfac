@@ -9,44 +9,59 @@
 
 
 {% block content %}
-
+{% addtoblock "css" %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.css"/>
+{% endaddtoblock %}
 {% addtoblock  "js" %}
-<script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
-<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.tableTools.min.js"></script>
-<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
+
+  <script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.js"></script>
+
 <script>
 $(function () {
-  var t = $('.table').dataTable({
-{% if LANGUAGE_CODE == 'fr' %}
+  var table = $('.table').DataTable({
+      {% if LANGUAGE_CODE == 'fr' %}
       "language": {
-            "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+          "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
       },
-{% endif %}
-{% if USE_ABSENCES %}
-      dom: 'T<"clear">lfrtip',
-      tableTools: {
-          'sRowSelect': 'multi',
-          "aButtons": [ ],
-          'fnRowSelected': function () {
-              $('.needs-select').removeClass('disabled');
-          },
-          'fnRowDeselected': function () {
-              if ($('tr.active').length == 0) {
-                  $('.needs-select').addClass('disabled');
-              }
-          },
+      {% endif %}
+      {% if USE_ABSENCES %}
+      /*dom: 'T<"clear">Blfrtip',*/
+      select: {
+          style: 'multi'
       },
-{% endif %}
+      {% endif %}
       "aoColumnDefs": [
           { 'bSortable': false, 'bSearchable': false, 'aTargets': [ -1 ] }
       ],
       "paging": false
   });
+  table.on('select', function(){
+     $('.needs-select').removeClass('disabled');
+  });
+  table.on('deselect', function(){
+    if (table.rows( { selected: true } ).count() == 0) {
+        $('.needs-select').addClass('disabled');
+    }
+  });
+
+  $('input[type=radio][name="only_js"]').change(function(){
+    switch ($(this).val()){
+        case 'announced':
+            table.columns(8).search('true').draw();
+            break;
+        case 'notannounced':
+            table.columns(8).search('false').draw();
+            break;
+        case 'both':
+            table.columns(8).search('').draw();
+            break;
+    }
+  });
+
 {% if USE_ABSENCES %}
   $('form.absences').submit(function(event){
-    var tabletools = TableTools.fnGetInstance(t[0]);
-    var ids = tabletools.fnGetSelected().map(function(elem){
-        return elem.getAttribute('data-courseid');
+    var ids = table.rows( { selected: true } ).nodes().map(function(elem){
+        return $(elem).data('courseid');
     });
     for (var i=0; i<ids.length; i++) {
       $(this).append($('<input name="c" value="' + ids[i] + '" type="hidden">'))
@@ -54,6 +69,8 @@ $(function () {
   });
 {% endif %}
 });
+
+
 </script>
 {% endaddtoblock %}
 
@@ -67,6 +84,18 @@ $(function () {
   </form>
 </div>
   {% endif %}
+     <label class="radio-inline"> J+S:</label>
+
+    <label class="radio-inline">
+      <input type="radio" name="only_js" value="announced"> {% trans "Announced courses" %}
+    </label>
+    <label class="radio-inline ">
+      <input type="radio" name="only_js" value="notannounced"> {% trans "Not announced courses" %}
+    </label>
+    <label  class="radio-inline ">
+      <input type="radio" name="only_js" value="both" checked="checked" > {% trans "Both" %}
+    </label>
+
 <table class="table">
   <thead>
     <tr>
@@ -112,7 +141,7 @@ $(function () {
         {{ course.count_participants  }}&nbsp;/&nbsp;{{ course.max_participants }}
       </td>
       <td data-order="{{ course.announced_js }}"
-          data-search="{% if course.announced_js %}{% trans 'announced' %}{% endif %}">
+          data-search="{{ course.announced_js|yesno:"true,false" }}">
       {% if course.announced_js %}
         <i class="icon-ok-circled success"></i>
         {% else %}
