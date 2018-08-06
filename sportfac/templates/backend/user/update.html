@@ -15,9 +15,9 @@
   $(function () {
     $('.datetimepicker').datetimepicker({
         language: '{{ LANGUAGE_CODE }}',
-        icons: {time: 'icon-clock', 
-                date: 'icon-calendar', 
-                up:   'icon-up-open', 
+        icons: {time: 'icon-clock',
+                date: 'icon-calendar',
+                up:   'icon-up-open',
                 down: 'icon-down-open'}
         });
   });
@@ -105,6 +105,8 @@
     {% formrow form.birth_date %}
     {% formconfig row using "floppyforms/rows/bootstrap.html" %}
     {% formrow form.ahv form.iban %}
+    {% formrow form.js_identifier %}
+
     </fieldset>
     {% endif %}
   {%  formrow form.is_manager  %}

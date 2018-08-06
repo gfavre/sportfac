@@ -85,10 +85,10 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     email = models.EmailField(verbose_name = _('Email address'), max_length=255, unique=True, db_index=True)
     first_name = models.CharField(_('First name'), max_length=30, blank=True)
     last_name = models.CharField(_('Last name'), max_length=30, blank=True)
-    address = models.TextField(_("Street"), blank = True)
+    address = models.TextField(_("Street"), blank=True)
     zipcode = models.CharField(_("NPA"), blank=True, max_length=5)
     city = models.CharField(_('City'), max_length=100, blank=True)
-    country = models.CharField(_('Country'), max_length = 2, choices=COUNTRY, default=COUNTRY.CH)
+    country = models.CharField(_('Country'), max_length=2, choices=COUNTRY, default=COUNTRY.CH)
     private_phone = PhoneNumberField(_("Home phone"), max_length=30, blank=True)
     private_phone2 = PhoneNumberField(_("Mobile phone"), max_length=30, blank=True)
     private_phone3 = PhoneNumberField(_("Other phone"), max_length=30, blank=True)
@@ -97,7 +97,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     ahv = AHVField(_('AHV number'),
                    help_text=_("New AHV number, e.g. 756.1234.5678.90"),
                    blank=True)
-
+    js_identifier = models.CharField(_("J+S identifier"), max_length=30, blank=True)
     is_active = models.BooleanField(default=True, help_text='Designates whether this user should be treated as active.')
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField('staff status', default=False,

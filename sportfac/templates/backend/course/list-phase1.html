@@ -9,21 +9,45 @@
 
 
 {% block content %}
+{% addtoblock "css" %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.css"/>
+{% endaddtoblock %}
+{% addtoblock  "js" %}
 
-{% addtoblock  "js" %}    
-<script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
-<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.js"></script>
+
 <script>
 $(function () {
-  $(".table").dataTable({
-{% if LANGUAGE_CODE == 'fr' %}
+  var table = $('.table').DataTable({
+      {% if LANGUAGE_CODE == 'fr' %}
       "language": {
-            "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+          "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
       },
-{% endif %}
+      {% endif %}
+      {% if USE_ABSENCES %}
+      /*dom: 'T<"clear">Blfrtip',*/
+      select: {
+          style: 'multi'
+      },
+      {% endif %}
       "aoColumnDefs": [
           { 'bSortable': false, 'bSearchable': false, 'aTargets': [ -1 ] }
-      ]
+      ],
+      "paging": false
+  });
+
+  $('input[type=radio][name="only_js"]').change(function(){
+    switch ($(this).val()){
+        case 'announced':
+            table.columns(8).search('true').draw();
+            break;
+        case 'notannounced':
+            table.columns(8).search('false').draw();
+            break;
+        case 'both':
+            table.columns(8).search('').draw();
+            break;
+    }
   });
 });
 </script>
@@ -31,6 +55,18 @@ $(function () {
 
 <a href="{% url 'backend:course-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New course" %}</a>
 <hr>
+   <label class="radio-inline"> J+S:</label>
+
+    <label class="radio-inline">
+      <input type="radio" name="only_js" value="announced"> {% trans "Announced courses" %}
+    </label>
+    <label class="radio-inline ">
+      <input type="radio" name="only_js" value="notannounced"> {% trans "Not announced courses" %}
+    </label>
+    <label  class="radio-inline ">
+      <input type="radio" name="only_js" value="both" checked="checked" > {% trans "Both" %}
+    </label>
+
 <table class="table">
   <thead>
     <tr>
@@ -42,12 +78,13 @@ $(function () {
       <th class="text-nowrap">{% trans "Duration" %}</th>
       <th class="text-nowrap">{% trans "Instructors" %}</th>
       <th class="text-nowrap">{% trans "Up to date?" %}</th>
+      <th class="text-nowrap">{% trans "J+S" %}</th>
       <th class="text-nowrap">{% trans "Actions" %}</th>
     </tr>
   </thead>
   {% for course in object_list %}
     <tr {% if not course.visible %}class="info"{% endif %} >
-      <td data-order="{{ course.number }}"> 
+      <td data-order="{{ course.number }}">
           <a href="{{ course.get_backend_url }}">{{ course.number }}</a>
           {% if not course.visible %}<br>
           <span class="text-muted"><small>{% trans "Invisible" %}</small></span>
@@ -70,13 +107,22 @@ $(function () {
         {% endfor %}
         </ul>
       </td>
-      <td data-order="{{ course.uptodate }}" data-search="{% trans 'up to date' %}">{% if course.uptodate %}<i class="icon-ok-circled success"></i>{% else %}<i class="icon-cancel-circled  danger"></i>{% endif %}</td>      
-      
+      <td data-order="{{ course.uptodate }}"
+          data-search="{% trans 'up to date' %}">
+        {% if course.uptodate %}<i class="icon-ok-circled success"></i>{% else %}<i class="icon-cancel-circled  danger"></i>{% endif %}</td>
+      <td data-order="{{ course.announced_js }}"
+          data-search="{{ course.announced_js|yesno:"true,false" }}">
+      {% if course.announced_js %}
+        <i class="icon-ok-circled success"></i>
+        {% else %}
+        <i class="icon-cancel-circled danger"></i>
+        {% endif %}
+      </td>
       <td>
         <ul class="list-unstyled">
           <li class="text-nowrap"><a href="{{ course.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update course" %}</a></li>
-          <li class="text-nowrap"><a href="{{ course.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete course" %}</a></li>          
-          
+          <li class="text-nowrap"><a href="{{ course.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete course" %}</a></li>
+
 
 
         </ul>

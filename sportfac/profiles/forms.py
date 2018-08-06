@@ -126,7 +126,7 @@ class InstructorForm(ManagerForm):
         fields = ('email', 'first_name', 'last_name', 'address',
                   'zipcode', 'city', 'country',
                   'private_phone', 'private_phone2', 'private_phone3',
-                  'birth_date', 'iban', 'ahv')
+                  'birth_date', 'iban', 'ahv', 'js_identifier')
 
 
 class InstructorWithPasswordForm(InstructorForm):
