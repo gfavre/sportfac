@@ -270,9 +270,9 @@ class Child(TimeStampedModel):
     nationality = models.CharField(choices=NATIONALITY, max_length=3, default=NATIONALITY.CH)
     language = models.CharField(choices=LANGUAGE, max_length=2, default=LANGUAGE.F)
 
-    school_year = models.ForeignKey('profiles.SchoolYear', null=True, on_delete=models.SET_NULL)
-    building = models.ForeignKey('schools.Building', related_name="students", null=True, on_delete=models.SET_NULL)
-    teacher = models.ForeignKey('schools.Teacher', related_name="students", null=True, on_delete=models.SET_NULL)
+    school_year = models.ForeignKey('profiles.SchoolYear', null=True, blank=True, on_delete=models.SET_NULL)
+    building = models.ForeignKey('schools.Building', related_name="students", null=True, blank=True, on_delete=models.SET_NULL)
+    teacher = models.ForeignKey('schools.Teacher', related_name="students", null=True, blank=True, on_delete=models.SET_NULL)
 
     family = models.ForeignKey('profiles.FamilyUser', related_name='children', null=True, blank=True, on_delete=models.CASCADE)
     courses = models.ManyToManyField('activities.Course', through="registrations.Registration")
@@ -281,7 +281,7 @@ class Child(TimeStampedModel):
                                      verbose_name=_("Lagapeo Identification number"))
 
     emergency_number = PhoneNumberField(_("Emergency number"), max_length=30, blank=True)
-    school = models.ForeignKey('profiles.School', related_name="students", null=True, on_delete=models.SET_NULL)
+    school = models.ForeignKey('profiles.School', related_name="students", null=True, blank=True, on_delete=models.SET_NULL)
     other_school = models.CharField(_("Other school"), blank=True, max_length=50)
     bib_number = models.CharField(_("Bib number"), blank=True, max_length=20)
 
