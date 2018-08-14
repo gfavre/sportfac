@@ -20,7 +20,7 @@ CHILD_IMPORT_TO_FIELD = {
 class ChildParser:
 
     def __init__(self, book=None):
-        if book
+        if book:
             self.datemode = book.datemode
         else:
             self.datemode = 0
