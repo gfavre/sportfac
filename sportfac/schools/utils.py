@@ -1,7 +1,5 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 import re
-from datetime import datetime
 
 from django.db.models import Min, Max
 from django.utils.translation import ugettext as _
@@ -59,13 +57,18 @@ def load_teachers(filelike, building=None):
         if not classes:
             nb_skipped += 1
             continue
-        match = re.match('(\d+)(?:\-(\d+))?[a-zA-Z]+[\d]?/\w+', classes)
-        if not match:
-            years = ALL_YEARS
-        else:
-            years = match.groups()
+        years = set()
+        for classes_part in classes.split(','):
+            match = re.match('(\d+)(?:\-(\d+))?[a-zA-Z]+[\d]?/\w+', classes_part.strip())
+            if not match:
+                # ACC or DES
+                years = years.union(ALL_YEARS)
+            else:
+                years = years.union(match.groups())
 
         for year in years:
+            if year is None:
+                continue
             try:
                 school_year = SchoolYear.objects.get(year=year)
                 teacher.years.add(school_year)
