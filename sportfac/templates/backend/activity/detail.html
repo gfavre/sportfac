@@ -42,7 +42,7 @@
         <p class="pricing-plan-label">
         {% blocktrans with day=course.day_name|lower  start_time=course.start_time|time:"H:i" end_time=course.end_time|time:"H:i" duration=course.duration|duration %}Every {{ day }} from {{ start_time }} to {{ end_time }} ({{ duration }}){% endblocktrans %}</p>
       </header>
-      
+
       <dl class="dl-horizontal">
         <dt>{% trans "Instructors" %}</dt>
         <dd>
@@ -52,10 +52,11 @@
           {% endfor %}
           </ul>
         </dd>
-        <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
+        <dt>{% trans "Place" %}</dt><dd>{{ course.place }}</dd>
+        {% if DISPLAY_NUMBER_OF_SESSIONS %}
         <dt>{% trans "Number of sessions" %}</dt>
-        <dd>{{ course.number_of_sessions }} cours
-        </dd>
+        <dd>{% blocktrans with number=course.number_of_sessions %}{{ number }} courses{% endblocktrans %}</dd>
+        {% endif %}
         <dt>{% trans "Price" %}</dt><dd>{{ course.price|money }}</dd>
         <dt>{% trans "School years" %}</dt><dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
         <dt>{% trans "Extra questions" %}</dt>
@@ -72,19 +73,19 @@
       <p class="text-center"><a href="{{ course.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a> </p>
       <h4 class="content-title">
         <u>{% trans "Availability"%}</u>
-      </h4>      
+      </h4>
       <p>{% blocktrans with count=course.count_participants %}{{ count }} participants{% endblocktrans %} <span class="pull-right strong">{% blocktrans with max_number=course.max_participants %}{{ max_number }} places{% endblocktrans %}</span></p>
       <div class="progress" style="margin-bottom: 0;">
         <div class="progress-bar {% if course.full %}progress-bar-danger{% elif course.minimal_participants_reached %}progress-bar-success{% else %}progress-bar-warning{% endif %}" style="width: {{ course.percentage_full }}%">{% if course.full %}{% trans "Course full" %}{% elif course.minimal_participants_reached %}{% trans "Minimal number of participants reached" %}{% else %}{% trans "Not enough participants" %}{% endif %}</div>
-      </div>  
+      </div>
       <p class="text-right"><small>{% blocktrans with min_number=course.min_participants %}{{ min_number }} participants required for activity to take place{% endblocktrans %}</small></p>
-      
+
       <p class="text-center"><a href="{{ course.get_backend_url }}" class="btn btn-default"><i class="icon-check"></i>&nbsp;{% trans "Check registrations" %}</a> </p>
 
-      
-    </div>          
-  </section> 
+
+    </div>
+  </section>
   {% endfor %}
-</div>  
+</div>
 </section>
 {% endblock content %}

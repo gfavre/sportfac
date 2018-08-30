@@ -123,5 +123,6 @@ def kepchup_context(request):
         'REGISTRATION_LEVELS': settings.KEPCHUP_REGISTRATION_LEVELS,
         'DISPLAY_CAR_NUMBER': settings.KEPCHUP_DISPLAY_CAR_NUMBER,
         'DISPLAY_REGISTRATION_NOTE': settings.KEPCHUP_DISPLAY_REGISTRATION_NOTE,
+        'DISPLAY_NUMBER_OF_SESSIONS': settings.KEPCHUP_DISPLAY_NUMBER_OF_SESSIONS,
         'PROTOCOL': settings.DEBUG and 'http://' or 'https://'
     }
