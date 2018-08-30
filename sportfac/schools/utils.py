@@ -3,6 +3,7 @@
 import re
 from datetime import datetime
 
+from django.db.models import Min, Max
 from django.utils.translation import ugettext as _
 from django.utils.six import moves
 
@@ -20,6 +21,8 @@ TEACHER_IMPORT_TO_FIELD = {
     u'Prénom': 'first_name',
     u'Courriel 1': 'email',
 }
+YEARS_MINMAX = SchoolYear.objects.all().aggregate(Min('year'), Max('year'))
+ALL_YEARS = range(YEARS_MINMAX['year__min'], YEARS_MINMAX['year__max'] + 1)
 
 
 def load_teachers(filelike, building=None):
@@ -42,11 +45,7 @@ def load_teachers(filelike, building=None):
         for key, val in values.items():
             if key in TEACHER_IMPORT_TO_FIELD:
                 translated[TEACHER_IMPORT_TO_FIELD[key]] = val
-        classes = values.get(u'Maîtrises', '')
-        match = re.match('(\d+)(?:\-(\d+))?[a-zA-Z]+/\w+', classes)
-        if not classes or not match:
-            nb_skipped += 1
-            continue
+
         number = translated.pop('number')
         teacher, created = Teacher.objects.update_or_create(number=number, defaults=translated)
         if building:
@@ -56,7 +55,17 @@ def load_teachers(filelike, building=None):
             nb_created += 1
         else:
             nb_updated += 1
-        for year in match.groups():
+        classes = values.get(u'Maîtrises', '')
+        if not classes:
+            nb_skipped += 1
+            continue
+        match = re.match('(\d+)(?:\-(\d+))?[a-zA-Z]+[\d]?/\w+', classes)
+        if not match:
+            years = ALL_YEARS
+        else:
+            years = match.groups()
+
+        for year in years:
             try:
                 school_year = SchoolYear.objects.get(year=year)
                 teacher.years.add(school_year)

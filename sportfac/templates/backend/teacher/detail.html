@@ -4,21 +4,30 @@
 {% block title %}{{ teacher.get_full_name }} - {{ block.super }}{% endblock %}
 {% block page_title %}{{ teacher.get_full_name }}{% endblock %}
 
-{% block content %}  
+{% block content %}
 <section class="portlet">
-  <h4 class="portlet-title"><u>{% trans "Classes" %}</u></h4>
+  <h4 class="portlet-title"><u>{% trans "School years" %}</u></h4>
   <ul>
     {% for year in teacher.years.all %}
     <li>{{ year }}</li>
     {% endfor %}
   </ul>
+  {% if USE_BUILDINGS %}
+  <h4 class="portlet-title"><u>{% trans "Buildings" %}</u></h4>
+    <ul>
+      {% for building in teacher.buildings.all %}
+      <li><a href="{{ building.get_backend_url }}">{{ building.name }}</a></li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
   <p class="text-center"><a href="{{ teacher.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a> </p>
 
 </section>
 <section class="portlet">
   <h4 class="portlet-title"><u>{% trans "Students registered to courses" %}</u></h4>
-  
-  <table class="table table-condensed"> 
+
+  <table class="table table-condensed">
     <thead>
       <tr>
         <th>{% trans "Student" %}</th>
@@ -46,6 +55,6 @@
   </tr>
   {% endfor %}
   </table>
-</section> 
+</section>
 
 {% endblock content %}

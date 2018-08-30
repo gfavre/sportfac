@@ -107,7 +107,8 @@ teachers_patterns = [
         name='teacher-list'),
     url(r'^new$', view=views.TeacherCreateView.as_view(),
         name='teacher-create'),
-    url(r'^import$', view=views.TeacherImportView.as_view(),
+    url(r'^import$', view=settings.KEPCHUP_USE_BUILDINGS and views.BuildingTeacherImportView.as_view() or
+                          views.TeacherImportView.as_view(),
         name='teacher-import'),
     url(r'^(?P<pk>\d+)/$', view=views.TeacherDetailView.as_view(),
         name='teacher-detail'),

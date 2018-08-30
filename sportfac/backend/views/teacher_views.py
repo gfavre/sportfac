@@ -19,7 +19,7 @@ __all__ = ['TeacherDetailView', 'TeacherListView',
            'TeacherDeleteView', 'TeacherImportView',
            'BuildingDetailView', 'BuildingListView',
            'BuildingCreateView',  'BuildingUpdateView',
-           'BuildingDeleteView',
+           'BuildingDeleteView', 'BuildingTeacherImportView',
 
            ]
 
@@ -29,8 +29,8 @@ class TeacherDetailView(BackendMixin, DetailView):
     template_name = 'backend/teacher/detail.html'
 
     def get_context_data(self, **kwargs):
-        context = {'students': Child.objects.filter(teacher=self.get_object())\
-                                            .select_related('family',)\
+        context = {'students': Child.objects.filter(teacher=self.get_object())
+                                            .select_related('family',)
                                             .prefetch_related('registrations', 'registrations__course__activity')
                    }
         return super(TeacherDetailView, self).get_context_data(**context)
@@ -39,8 +39,7 @@ class TeacherDetailView(BackendMixin, DetailView):
 class TeacherListView(BackendMixin, ListView):
     model = Teacher
     template_name = 'backend/teacher/list.html'
-    queryset = Teacher.objects.prefetch_related('years')
-
+    queryset = Teacher.objects.prefetch_related('years', 'buildings')
 
 
 class TeacherCreateView(BackendMixin, SuccessMessageMixin, CreateView):
@@ -92,7 +91,10 @@ class TeacherImportView(BackendMixin, SuccessMessageMixin, FormView):
             context['form'] = form
             messages.add_message(self.request, messages.ERROR, msg)
             return self.render_to_response(context)
-        self.success_message = _("%i teachers have been created, %i have been updated. %i were skipped because they are not responsible of a class.") % (created, updated, skipped)
+        self.success_message = _("%i teachers have been created, %i have been updated. "
+                                 "%i were skipped because they are not responsible of a class.") % (created,
+                                                                                                    updated,
+                                                                                                    skipped)
         return super(TeacherImportView, self).form_valid(form)
 
 
@@ -150,11 +152,15 @@ class BuildingTeacherImportView(BackendMixin, SuccessMessageMixin, FormView):
 
     def form_valid(self, form):
         try:
-            (created, updated, skipped) = load_teachers(self.request.FILES['thefile'], building=form.cleaned_data['building'])
+            (created, updated, skipped) = load_teachers(self.request.FILES['thefile'],
+                                                        building=form.cleaned_data['building'])
         except ValueError as msg:
             context = self.get_context_data()
             context['form'] = form
             messages.add_message(self.request, messages.ERROR, msg)
             return self.render_to_response(context)
-        self.success_message = _("%i teachers have been created, %i have been updated. %i were skipped because they are not responsible of a class.") % (created, updated, skipped)
-        return super(TeacherImportView, self).form_valid(form)
+        self.success_message = _("%i teachers have been created, %i have been updated.") % (created, updated)
+        if skipped:
+            self.success_message += '<br>' + _("%i were skipped because they are not responsible of a class.") % skipped
+
+        return super(BuildingTeacherImportView, self).form_valid(form)

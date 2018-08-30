@@ -40,7 +40,7 @@
         <dt>{% trans "Price" %}</dt><dd>{{ course.price|money }}</dd>
       {% endif %}
       <dt>{% trans "School years" %}</dt>
-      <dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
+      <dd>{% for year in course.school_years_label %}{{year}}{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
       <dt></dt>
       <dt>{% trans "Extra questions" %}</dt>
       <dd>

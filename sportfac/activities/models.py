@@ -175,6 +175,10 @@ class Course(TimeStampedModel):
         return range(self.schoolyear_min, self.schoolyear_max + 1)
 
     @property
+    def school_years_label(self):
+        return [dict(SCHOOL_YEARS)[year] for year in self.school_years]
+
+    @property
     def short_name(self):
         return '%s (%s)' % (self.activity.name, self.number)
 

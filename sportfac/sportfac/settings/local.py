@@ -136,3 +136,4 @@ CELERYBEAT_SCHEDULE['notify-absences'] = {
         'task': 'absences.tasks.notify_absences',
         'schedule': crontab(hour=19, minute=0),
 }
+CELERY_ALWAYS_EAGER = True

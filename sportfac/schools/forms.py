@@ -8,12 +8,11 @@ from .models import Building, Teacher
 
 
 class TeacherForm(forms.ModelForm):
-
-    years = forms.ModelMultipleChoiceField(queryset=SchoolYear.visible_objects.all())
+    years = forms.ModelMultipleChoiceField(label=_("Years"), queryset=SchoolYear.visible_objects.all())
 
     class Meta:
         model = Teacher
-        fields = ('first_name', 'last_name', 'email', 'years')
+        fields = ('first_name', 'last_name', 'email', 'years', 'buildings')
 
 
 class TeacherImportForm(forms.Form):
