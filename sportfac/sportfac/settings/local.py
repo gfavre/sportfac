@@ -55,6 +55,8 @@ EMAIL_FILE_PATH = env('EMAIL_FILE_PATH', default='/tmp/app-messages')
 DATABASES['default']['NAME'] = env('DB_NAME')
 DATABASES['default']['USER'] = env('DB_USER')
 DATABASES['default']['PASSWORD'] = env('DB_PASSWORD')
+DATABASES['default']['PORT'] = env('DB_PORT', default='5432')
+
 
 ########## END DATABASE CONFIGURATION
 
