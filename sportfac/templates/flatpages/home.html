@@ -20,8 +20,8 @@
 {% else %}
 <div class="alert alert-info alert-block">
   <h4>{% trans "Registrations are currently closed" %}</h4>
-  {% countdown registration_start %}
   {%  if request.PHASE == 1 %}
+  {% countdown registration_start %}
   <p>{% blocktrans with registration_start=registration_start|date:"j F Y" registration_end=registration_end|date:"j F Y"%}They will open from {{ registration_start }} until {{ registration_end }}.{% endblocktrans %}</p>
   {% endif %}
   {%  if request.PHASE == 3 %}
