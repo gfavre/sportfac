@@ -6,7 +6,7 @@ Nous vous serions reconnaissants de bien vouloir contrôler les inscriptions que
 
 Le site des inscriptions: {{ url }}
 
-Enfin, nous vous saurions gré de verser le montant relatif à ces inscriptions sur le compte indiqué.
+{% if not KEPCHUP_NO_PAYMENT %}Enfin, nous vous saurions gré de verser le montant relatif à ces inscriptions sur le compte indiqué.{% endif %}
 En vous remerciant de votre collaboration, nous vous adressons nos cordiaux messages.
 
 

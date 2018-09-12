@@ -8,7 +8,7 @@
     <div class="col-md-8">
       <p><strong>{{ nb_courses }}</strong> <a href="{% url 'backend:course-list' %}">{% trans "courses" %}</a> {% trans "in" %} <strong>{{ nb_activities }}</strong> <a href="{% url 'backend:activity-list' %}">{% trans "activities" %}</a>. {% trans "Last update" %}: {{ last_course_update|naturaltime }}</p>
       <div id="courses-horizontal-chart" class="chart-holder-200" style="height: 100px;"></div>
-        
+
         <p>
         <ul class="list-unstyled">
         <li><a href="{% url 'backend:activity-list' %}"><i class="icon-soccer-ball"></i>&nbsp;{% trans "Manage activities" %}</a></li>
@@ -21,21 +21,19 @@
       <div class="row-stat">
         <p class="row-stat-label">{% trans "Total sessions" %}</p>
         <h3 class="row-stat-value">{{ total_sessions }}</h3>
-      </div>    
+      </div>
     </div>
-     <div class="col-md-4">
+    <div class="col-md-4">
       <div class="row-stat">
         <p class="row-stat-label">{% trans "Total instructors" %}</p>
         <h3 class="row-stat-value">{{ total_instructors }}</h3>
-      </div>    
+      </div>
     </div>
-    
-    <div class="col-md-12">
-        </div>
+
   </div> <!-- /.portlet-body -->
 </section>
 
-{% addtoblock  "js" %}    
+{% addtoblock  "js" %}
 
 <script>
 $(function () {
@@ -53,21 +51,21 @@ $(function () {
     label: 'Not Ready',
     data: ds[0]
   }]
-  
+
   data = [
-          {  label: "{% trans "Not Ready" %}", 
+          {  label: "{% trans "Not Ready" %}",
              data: [[{{ notready_courses }}, 1]]
           },
           {
-             label: "{% trans "Ready" %}", 
+             label: "{% trans "Ready" %}",
              data: [[{{ ready_courses }}, 1]]
-          } 
+          }
          ]
-  
-  
+
+
   chartOptions = {
     xaxis: {
-         
+
     },
     yaxis: {
         show: false,
