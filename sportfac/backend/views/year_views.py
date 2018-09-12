@@ -159,9 +159,11 @@ class YearCreateView(SuccessMessageMixin, BackendMixin, FormView):
             domain='%s-%s' % (start.strftime('%Y%m%d'),
                               end.strftime('%Y%m%d')),
         )
-        copy_from_id = None
+        copy_activities_from_id = None
         if form.cleaned_data.get('copy_activities', None):
-            copy_from_id = form.cleaned_data.get('copy_activities').pk
-        create_tenant.delay(tenant.pk, copy_from_id,
-                            self.request.user.pk)
+            copy_activities_from_id = form.cleaned_data.get('copy_activities').pk
+        copy_children_from_id = None
+        if form.cleaned_data.get('copy_children', None):
+            copy_children_from_id = form.cleaned_data.get('copy_children').pk
+        create_tenant.delay(tenant.pk, copy_activities_from_id, copy_children_from_id, self.request.user.pk)
         return response

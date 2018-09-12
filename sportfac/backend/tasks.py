@@ -30,14 +30,14 @@ logger = get_task_logger(__name__)
 
 @shared_task
 @respects_language
-def create_tenant(new_tenant_id, copy_from_id=None, user_id=None):
+def create_tenant(new_tenant_id, copy_activities_from_id=None, copy_children_from_id=None, user_id=None):
     connection.set_schema_to_public()
     tenant = YearTenant.objects.get(pk=new_tenant_id)
     tenant.create_schema(check_if_exists=True)
     logger.debug('Created schema for period %s-%s' % (tenant.start_date.isoformat(), tenant.end_date.isoformat()))
-    if copy_from_id:
+    if copy_activities_from_id:
         try:
-            copy_from = YearTenant.objects.get(id=copy_from_id)
+            copy_from = YearTenant.objects.get(id=copy_activities_from_id)
             tenant.status = YearTenant.STATUS.copying
             tenant.save()
             f = NamedTemporaryFile(suffix='.json', delete=False)
@@ -48,9 +48,36 @@ def create_tenant(new_tenant_id, copy_from_id=None, user_id=None):
             os.remove(f.name)
             connection.set_tenant(tenant)
             Course.objects.all().update(uptodate=False)
-            logger.debug('Populated period %s-%s' %(tenant.start_date.isoformat(), tenant.end_date.isoformat()))
+            logger.debug('Populated activities for period %s-%s' %(tenant.start_date.isoformat(), tenant.end_date.isoformat()))
         except YearTenant.DoesNotExist:
             pass
+
+    if copy_children_from_id:
+        try:
+            copy_from = YearTenant.objects.get(id=copy_children_from_id)
+            tenant.status = YearTenant.STATUS.copying
+            tenant.save()
+
+            f = NamedTemporaryFile(suffix='.json', delete=False)
+            call_command('tenant_command', 'dumpdata', 'schools',
+                         output=f.name, schema=copy_from.schema_name)
+            f.close()
+            call_command('tenant_command', 'loaddata', f.name, schema=tenant.schema_name)
+            os.remove(f.name)
+            logger.debug('Populated schools for period %s-%s' % (tenant.start_date.isoformat(), tenant.end_date.isoformat()))
+
+            f = NamedTemporaryFile(suffix='.json', delete=False)
+            call_command('tenant_command', 'dumpdata', 'registrations.Child',
+                         output=f.name, schema=copy_from.schema_name)
+            f.close()
+            call_command('tenant_command', 'loaddata', f.name, schema=tenant.schema_name)
+            os.remove(f.name)
+
+            connection.set_tenant(tenant)
+            logger.debug('Populated children for period %s-%s' % (tenant.start_date.isoformat(), tenant.end_date.isoformat()))
+        except YearTenant.DoesNotExist:
+            pass
+
     tenant.status = YearTenant.STATUS.ready
     tenant.save()
     logger.info('Created / populated period %s-%s' %(tenant.start_date.isoformat(), tenant.end_date.isoformat()))

@@ -199,6 +199,10 @@ class YearCreateForm(forms.Form):
         label=_("Copy courses"),
         help_text=_("Copy all activities and courses from the selected period"),
         queryset=YearTenant.objects.all(), required=False)
+    copy_children = forms.ModelChoiceField(
+        label=_("Copy children"),
+        help_text=_("Copy all children from the selected period"),
+        queryset=YearTenant.objects.all(), required=False)
 
 
 class YearForm(forms.ModelForm):

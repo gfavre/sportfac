@@ -17,6 +17,8 @@
   {% formrow form.start_date %}
   {% formrow form.end_date %}
   {% formrow form.copy_activities %}
+  {% formrow form.copy_children %}
+
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
       <button type="submit" class="btn btn-success btn-large"><i class="icon-plus"></i>&nbsp;{% trans 'Create period' %}</button>
@@ -34,14 +36,14 @@
   $(function () {
     var dt_settings = {
         language: '{{ LANGUAGE_CODE }}',
-        icons: {time: 'icon-clock', 
-                date: 'icon-calendar', 
-                up: 'icon-up-open', 
+        icons: {time: 'icon-clock',
+                date: 'icon-calendar',
+                up: 'icon-up-open',
                 down: 'icon-down-open'}
     };
     $('#dt-start_date').datetimepicker(dt_settings);
     $('#dt-end_date').datetimepicker(dt_settings);
-    
+
     $('#dt-start_date').on('dp.change', function(event){
         if (!$('#id_end_date').val()){
             var start_date = $('#dt-start_date').data("DateTimePicker").getDate();

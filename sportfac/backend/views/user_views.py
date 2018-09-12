@@ -270,7 +270,7 @@ class ChildListView(BackendMixin, ListView):
     template_name = 'backend/user/child-list.html'
 
     def get_queryset(self):
-        return Child.objects.select_related('family', 'school_year')
+        return Child.objects.select_related('family', 'school_year', 'school', 'building')
 
 
 class ChildCreateView(ChildView, SuccessMessageMixin, CreateView):
