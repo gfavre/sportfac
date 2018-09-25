@@ -87,9 +87,11 @@ class ChangeProductionYearFormView(SuccessMessageMixin, BackendMixin, FormView):
                                                  .order_by('start_date', 'end_date')
 
         if tenant.is_future and possible_new_tenants.count():
-            message = _("The period has been changed. However, it is in the future. It will be automatically switched back tonight")
+            message = _("The period has been changed. However, it is in the future. "
+                        "It will be automatically switched back tonight")
         elif tenant.is_past and possible_new_tenants.count():
-            message =  _("The period has been changed. However, it is in the past. It will be automatically switched back tonight")
+            message = _("The period has been changed. However, it is in the past. "
+                        "It will be automatically switched back tonight")
         else:
             message = _("The period has been changed.")
         return mark_safe(message)
@@ -165,5 +167,8 @@ class YearCreateView(SuccessMessageMixin, BackendMixin, FormView):
         copy_children_from_id = None
         if form.cleaned_data.get('copy_children', None):
             copy_children_from_id = form.cleaned_data.get('copy_children').pk
-        create_tenant.delay(tenant.pk, copy_activities_from_id, copy_children_from_id, self.request.user.pk)
+        create_tenant.delay(new_tenant_id=tenant.pk,
+                            copy_activities_from_id=copy_activities_from_id,
+                            copy_children_from_id=copy_children_from_id,
+                            user_id=self.request.user.pk)
         return response

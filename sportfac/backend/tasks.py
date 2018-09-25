@@ -119,7 +119,7 @@ def update_current_tenant():
         # log out everyone
         Session.objects.all().delete()
 
-        for manager in Group.objects.get(name=MANAGERS_GROUP).user_set.all():
+        for user in Group.objects.get(name=MANAGERS_GROUP).user_set.all():
             msg = _("The active period has been automatically changed to %(start)s - %(end)s")
             params = {'start': new_domain.tenant.start_date.isoformat(),
                       'end': new_domain.tenant.end_date.isoformat()}

@@ -4,8 +4,8 @@ from activities.models import Course
 
 activate('fr')
 
-print('\t'.join(['Activité', 'Cours', 'Lieu', 'Moniteur(s)', 'Téléphone(s)', 'Email(s)']))
-for course in Course.objects.all():
+print('\t'.join(['Activité', 'Cours', 'Lieu', 'Moniteur(s)', 'Téléphone(s)', 'Email(s)', 'Nombre d\'inscrits']))
+for course in Course.objects.prefetch_related('instructors', 'participants').select_related('activity'):
     place = course.place
     place = place.replace('\r\n', '\n')
     place = place.replace('\n', ', ')
@@ -16,5 +16,6 @@ for course in Course.objects.all():
                      '; '.join([unicode(s.full_name) for s in course.instructors.all()]),
                      ', '.join([unicode(s.best_phone) for s in course.instructors.all()]),
                      ', '.join([unicode(s.email) for s in course.instructors.all()]),
+                     str(course.count_participants)
 
                      ]))
