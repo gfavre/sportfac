@@ -19,7 +19,7 @@ from dbtemplates.models import Template
 from profiles.models import FamilyUser
 from .forms import MailForm, CopiesForm, CourseMailForm
 from .models import MailArchive, Attachment
-from .mixins import (CancelableMixin, EditableMixin, ArchivedMailMixin, TemplatedEmailMixin,
+from .mixins import (CancelableMixin, EditableMixin, TemplatedEmailMixin,
                      ParticipantsBaseMixin, ParticipantsMixin)
 from . import tasks
 

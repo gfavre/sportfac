@@ -6,6 +6,7 @@ from django.views.generic import ListView
 
 import mailer.views as mailer_views
 from mailer.forms import AdminMailForm
+from mailer.mixins import ArchivedMailMixin, ParticipantsMixin, TemplatedEmailMixin
 from mailer.models import MailArchive
 from profiles.models import FamilyUser
 from registrations.models import Bill, Registration
@@ -34,7 +35,7 @@ class MailCreateView(BackendMixin, mailer_views.MailCreateView):
     form_class = AdminMailForm
 
 
-class MailPreview(BackendMixin, mailer_views.ArchivedMailMixin,
+class MailPreview(BackendMixin, ArchivedMailMixin,
                   mailer_views.MailPreviewView):
     """Send email to a given set of users - preview"""
     success_url = reverse_lazy('backend:user-list')
@@ -59,8 +60,7 @@ class ParticipantsMailCreateView(BackendMixin, mailer_views.ParticipantsMailCrea
         return reverse('backend:mail-participants-custom-preview', kwargs={'course': self.course.pk})
 
 
-class ParticipantsMailPreview(BackendMixin,
-                              mailer_views.ArchivedMailMixin,
+class ParticipantsMailPreview(BackendMixin, ArchivedMailMixin,
                               mailer_views.ParticipantsMailPreviewView):
     """Send email to all participants of a course - preview"""
     template_name = 'backend/mail/preview.html'
@@ -77,9 +77,7 @@ class MailCourseInstructorsView(BackendMixin, mailer_views.MailCourseInstructors
         return reverse('backend:course-detail', kwargs=self.kwargs)
 
 
-class MailConfirmationParticipantsView(BackendMixin,
-                                       mailer_views.ParticipantsMixin,
-                                       mailer_views.TemplatedEmailMixin,
+class MailConfirmationParticipantsView(BackendMixin, ParticipantsMixin, TemplatedEmailMixin,
                                        mailer_views.BrowsableMailPreviewView):
     subject_template = 'mailer/course_begin_subject.txt'
     message_template = 'mailer/course_begin.txt'
@@ -94,9 +92,7 @@ class MailConfirmationParticipantsView(BackendMixin,
         return self.course.backend_url
 
 
-class NotPaidYetView(BackendMixin,
-                     BillMixin,
-                     mailer_views.TemplatedEmailMixin,
+class NotPaidYetView(BackendMixin, BillMixin, TemplatedEmailMixin,
                      mailer_views.BrowsableMailPreviewView):
     """Mail to people having registered to courses but not paid yet"""
 
@@ -117,7 +113,8 @@ class NotPaidYetView(BackendMixin,
         return list(FamilyUser.objects.filter(pk__in=[bill.family.pk for bill in bills]))
 
 
-class NeedConfirmationView(BackendMixin, mailer_views.TemplatedEmailMixin, mailer_views.BrowsableMailPreviewView):
+class NeedConfirmationView(BackendMixin, TemplatedEmailMixin,
+                           mailer_views.BrowsableMailPreviewView):
     """Mail to people having not confirmed activities yet."""
     success_url = reverse_lazy('backend:home')
     subject_template = 'mailer/need_confirmation_subject.txt'

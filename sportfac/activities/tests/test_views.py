@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 import json
 
 from django.contrib.sessions.middleware import SessionMiddleware
@@ -27,9 +28,6 @@ class ActivityViewsTests(TestCase):
         self.activity = ActivityFactory()
         self.user = FamilyUserFactory()
 
-    def tearDown(self):
-        pass
-
     def test_detail_view(self):
         url = self.activity.get_absolute_url()
         response = self.client.get(url)
@@ -39,7 +37,7 @@ class ActivityViewsTests(TestCase):
         self.client.login(username=self.user.email, password=DEFAULT_PASS)
         child = ChildFactory(family=self.user)
         course = CourseFactory(activity=self.activity)
-        registration=RegistrationFactory(child=child, course=course)
+        RegistrationFactory(child=child, course=course)
         url = self.activity.get_absolute_url()
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -59,7 +57,7 @@ class CourseViewsTests(TestCase):
     def test_detail_access(self):
         url = self.course.get_absolute_url()
         response = self.client.get(url)
-        #anonymous users cannot see details
+        # anonymous users cannot see details
         self.assertEqual(response.status_code, 302)
         self.client.login(username=self.other_user.email, password=DEFAULT_PASS)
         response = self.client.get(url)
