@@ -1,10 +1,10 @@
-# Create your views here.
+# -*- coding:utf-8 -*-
 from django.db import IntegrityError
 from django.db.models import Q
 from django.http import Http404
 
 from rest_framework import mixins, generics, status, filters, views
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
@@ -15,7 +15,8 @@ from profiles.models import SchoolYear
 from registrations.models import Child, ChildActivityLevel, ExtraInfo, Registration
 from schools.models import Building, Teacher
 
-from .permissions import ManagerPermission, FamilyPermission, InstructorPermission
+from .permissions import (IsAuthenticated, ManagerPermission, FamilyPermission, InstructorPermission,
+                          RegistrationOwnerAdminPermission, ChildOrAdminPermission)
 from .serializers import (AbsenceSerializer, SetAbsenceSerializer, SessionSerializer, SessionUpdateSerializer,
                           ActivityDetailedSerializer,
                           ChildrenSerializer, CourseSerializer, TeacherSerializer, BuildingSerializer,
@@ -130,7 +131,7 @@ class BuildingViewSet(viewsets.ReadOnlyModelViewSet):
 
 class FamilyView(mixins.ListModelMixin, generics.GenericAPIView):
     authentication_classes = (SessionAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = ChildrenSerializer
     model = Child
 
@@ -209,16 +210,6 @@ class SimpleChildrenViewSet(viewsets.ReadOnlyModelViewSet):
     search_fields = ('first_name', 'last_name')
 
 
-class ChildOrAdminPermission(permissions.IsAuthenticated):
-    def has_object_permission(self, request, view, obj):
-        """
-        Return `True` if permission is granted, `False` otherwise.
-        """
-        if request.user.is_manager or request.user == obj.child.family:
-            return True
-        return False
-
-
 class RegistrationViewSet(viewsets.ModelViewSet):
     authentication_classes = (SessionAuthentication,)
     permission_classes = (ChildOrAdminPermission, )
@@ -229,34 +220,27 @@ class RegistrationViewSet(viewsets.ModelViewSet):
         user = self.request.user
         return Registration.objects.filter(child__in=user.children.all())
 
-    def create(self, request, format=None):
+    def create(self, request, *args, **kwargs):
         if type(request.data) is list:
             data = []
+            errors = []
             self.get_queryset().exclude(validated=True).exclude(paid=True).delete()
             for registration in request.data:
                 serializer = RegistrationSerializer(data=registration)
                 if serializer.is_valid():
                     serializer.save()
                     data.append(serializer.data)
+                else:
+                    errors.append(serializer.errors)
             if data:
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response(data, status=status.HTTP_201_CREATED)
+            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             serializer = RegistrationSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class RegistrationOwnerAdminPermission(permissions.IsAuthenticated):
-    def has_object_permission(self, request, view, obj):
-        """
-        Return `True` if permission is granted, `False` otherwise.
-        """
-        if request.user.is_manager or request.user == obj.registration.child.family:
-            return True
-        return False
 
 
 class ExtraInfoViewSet(viewsets.ModelViewSet):
@@ -289,7 +273,7 @@ class ChangeCourse(views.APIView):
     permission_classes = (ManagerPermission,)
     serializer_class = ChangeCourseSerializer
 
-    def put(self, request, format=None):
+    def put(self, request, *args, **kwargs):
         serializer = ChangeCourseSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors,

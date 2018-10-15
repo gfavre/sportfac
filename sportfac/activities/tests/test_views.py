@@ -332,7 +332,6 @@ class CustomMailPreviewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context_data['to_email']), len(self.other_users))
         self.assertEqual(len(response.context_data['bcc_email']), len(self.instructors))
-        self.assertIn(self.instructor.email, response.context_data['from_email'])
 
     @mock.patch('mailer.tasks.send_mail.delay')
     def test_post(self, sendmail_method):

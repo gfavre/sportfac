@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 from django.conf.urls import include, url
 
 from rest_framework.routers import DefaultRouter
@@ -26,8 +27,5 @@ urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^family/', views.FamilyView.as_view(), name='family-list'),
     url(r'^change-course/$', views.ChangeCourse.as_view(), name='change-course'),
-
-    #url(r'^levels/(?P<pk>\d+)/$', views.UpdateLevelView.as_view(), name='update-level'),
-    #url(r'^note/(?P<pk>\d+)/$', views.UpdateRegistrationNoteView.as_view(), name='update-note'),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]

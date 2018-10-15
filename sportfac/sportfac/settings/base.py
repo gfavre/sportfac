@@ -1,4 +1,4 @@
-# coding: utf-8
+# -*- coding:utf-8 -*-
 """Common settings and globals."""
 from os.path import abspath, basename, dirname, join, normpath
 from sys import path

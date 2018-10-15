@@ -12,6 +12,7 @@ from registrations.models import Bill, Registration
 from registrations.views import BillMixin
 from .mixins import BackendMixin
 
+
 __all__ = ['MailArchiveListView', 'NeedConfirmationView',
            'NotPaidYetView',
            'MailConfirmationParticipantsView',

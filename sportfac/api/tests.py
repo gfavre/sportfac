@@ -1,10 +1,9 @@
+# -*- coding:utf-8 -*-
 import json
 
 from django.core.urlresolvers import reverse
 
 import faker
-from rest_framework.renderers import JSONRenderer
-from rest_framework.test import APITestCase, APIClient
 
 from activities.tests.factories import ActivityFactory, CourseFactory
 from api.serializers import ChildrenSerializer
@@ -27,7 +26,7 @@ class ActivityAPITests(TenantTestCase):
     def setUp(self):
         super(ActivityAPITests, self).setUp()
         self.activity = ActivityFactory()
-    
+
     def test_list(self):
         url = reverse("api:activity-list")
         response = self.tenant_client.get(url)
@@ -38,7 +37,7 @@ class CoursesAPITests(TenantTestCase):
     def setUp(self):
         super(CoursesAPITests, self).setUp()
         self.course = CourseFactory()
-    
+
     def test_list(self):
         url = reverse("api:course-list")
         response = self.tenant_client.get(url)
@@ -46,7 +45,7 @@ class CoursesAPITests(TenantTestCase):
 
 
 class ChildrenAPITests(UserMixin, TenantTestCase):
-    
+
     def setUp(self):
         super(ChildrenAPITests, self).setUp()
         self.year = SchoolYearFactory()
@@ -73,14 +72,14 @@ class ChildrenAPITests(UserMixin, TenantTestCase):
         self.assertEqual(response.status_code, 403)
         self.login(self.user2)
         response = self.tenant_client.get(url)
-        # when user is known but child is not his, we purposely do not inform 
+        # when user is known but child is not his, we purposely do not inform
         # him of child existence
         self.assertEqual(response.status_code, 404)
         response = self.tenant_client.put(url, {})
         self.assertEqual(response.status_code, 404)
         response = self.tenant_client.delete(url)
         self.assertEqual(response.status_code, 404)
-    
+
     def test_list(self):
         url = reverse("api:child-list")
         self.login(self.user1)
@@ -103,7 +102,7 @@ class ChildrenAPITests(UserMixin, TenantTestCase):
             'birth_date': fake.date(),
             'school_year': self.children2[0].school_year.year,
             'teacher': self.children2[0].teacher.pk
-            
+
         }
         response = self.tenant_client.post(url, new_child, format='json')
         self.assertEqual(response.status_code, 201)
@@ -111,7 +110,7 @@ class ChildrenAPITests(UserMixin, TenantTestCase):
         del(new_child['first_name'])
         response = self.tenant_client.post(url, new_child, format='json')
         self.assertEqual(response.status_code, 400)
-    
+
     def test_detail(self):
         url = reverse("api:child-detail", kwargs={'pk': self.children1[0].pk})
         self.login(self.user1)
@@ -144,7 +143,7 @@ class RegistrationAPITests(UserMixin, TenantTestCase):
     def setUp(self):
         super(RegistrationAPITests, self).setUp()
         self.year = SchoolYearFactory()
-        self.course = CourseFactory(schoolyear_min=self.year.year, 
+        self.course = CourseFactory(schoolyear_min=self.year.year,
                                     schoolyear_max=self.year.year)
         self.child1 = ChildFactory(school_year=self.year)
         self.child2 = ChildFactory(school_year=self.year)
@@ -152,7 +151,7 @@ class RegistrationAPITests(UserMixin, TenantTestCase):
         self.reg2 = RegistrationFactory(course=self.course, child=self.child2)
         self.admin = FamilyUserFactory()
         self.admin.is_manager = True
-            
+
     def test_rights(self):
         url = reverse("api:registration-list")
         response = self.tenant_client.get(url)
@@ -189,20 +188,20 @@ class RegistrationAPITests(UserMixin, TenantTestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['child'], self.child2.pk)
         self.assertEqual(response.data[0]['course'], self.course.pk)
-    
+
     def _test_create(self, user):
         url = reverse("api:registration-list")
         self.login(user)
-        course2 = CourseFactory(schoolyear_min=self.year.year, 
+        course2 = CourseFactory(schoolyear_min=self.year.year,
                                 schoolyear_max=self.year.year)
         response = self.tenant_client.post(url, {'child': self.child1.pk, 'course': course2.pk})
         self.assertEqual(response.status_code, 201)
         response = self.tenant_client.post(url, {'child': self.child1.pk, 'course': course2.pk})
         self.assertEqual(response.status_code, 400)
-    
+
     def test_user_registers(self):
         self._test_create(self.child1.family)
-    
+
     def test_admin_registers(self):
         self._test_create(self.admin)
 
@@ -219,10 +218,8 @@ class TeacherAPITests(UserMixin, TenantTestCase):
         self.year = SchoolYearFactory()
         self.teacher = TeacherFactory()
         self.teacher.years.add(self.year)
-    
+
     def test_list(self):
         url = reverse("api:teacher-list")
         response = self.tenant_client.get(url)
         self.assertEqual(response.status_code, 200)
-
-

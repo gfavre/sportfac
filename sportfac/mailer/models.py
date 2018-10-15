@@ -12,7 +12,7 @@ from model_utils import Choices
 from sportfac.models import ListField
 
 
-__all__ = ('MailArchive', )
+__all__ = ('MailArchive', 'Attachment')
 
 
 class SentMailManager(models.Manager):

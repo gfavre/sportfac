@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
@@ -6,9 +7,6 @@ from django.contrib.auth import views as auth_views
 from django.contrib.sitemaps import views as sitemapviews
 from django.contrib.flatpages import views as flatviews
 from django.contrib.flatpages.sitemaps import FlatPageSitemap
-from django.shortcuts import render_to_response
-from django.template import RequestContext
-
 from django.views.generic import TemplateView, RedirectView
 from django.views.static import serve
 
@@ -59,23 +57,11 @@ urlpatterns = [
     url(r'^ckeditor/upload/', manager_required(ckeditor_views.upload), name='ckeditor_upload'),
     url(r'^ckeditor/browse/', manager_required(ckeditor_views.browse), name='ckeditor_browse'),
 
-    #url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', include(admin.site.urls)),
 ]
 
-
-def handler404(request):
-    response = render_to_response('404.html', {},
-                                  context_instance=RequestContext(request))
-    response.status_code = 404
-    return response
-
-
-def handler500(request):
-    response = render_to_response('500.html', {},
-                                  context_instance=RequestContext(request))
-    response.status_code = 500
-    return response
+handler404 = 'sportfac.views.not_found'
+handler500 = 'sportfac.views.server_error'
 
 
 if settings.DEBUG:
