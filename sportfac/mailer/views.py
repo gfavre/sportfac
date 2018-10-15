@@ -221,7 +221,8 @@ class BrowsableMailPreviewView(MailPreviewView):
         kwargs['has_next'] = mail_number + 1 != kwargs['total']
         kwargs['next'] = mail_number + 2
         self.add_nth_mail_context(kwargs, mail_number)
-        self.add_mail_context(kwargs)
+        if kwargs['total'] > 0:
+            self.add_mail_context(kwargs)
         return super(BrowsableMailPreviewView, self).get_context_data(**kwargs)
 
 
