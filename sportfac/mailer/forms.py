@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.utils.translation import ugettext as _
-from django import forms
 from multiupload.fields import MultiFileField
 
 import floppyforms.__future__ as forms

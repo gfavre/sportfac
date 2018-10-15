@@ -2,10 +2,8 @@ import csv, codecs, cStringIO
 from datetime import date
 
 from django.core.management import call_command
-from django.db import connection
-from django_tenants.test.cases import TenantTestCase as BaseTenantTestCase
+from django_tenants.test.cases import FastTenantTestCase as BaseTenantTestCase
 from django_tenants.test.client import TenantClient
-from django_tenants.utils import get_tenant_model, get_tenant_domain_model
 from django.contrib.auth.models import Group
 
 from backend import INSTRUCTORS_GROUP, MANAGERS_GROUP
@@ -76,44 +74,27 @@ class ExcelWriter:
 
 
 class TenantTestCase(BaseTenantTestCase):
+    @classmethod
+    def setup_tenant(cls, tenant):
+        tenant.start_date = date(2015, 1, 1)
+        tenant.end_date = date(2015, 12, 31)
+        tenant.status = 'ready'
+
+    @classmethod
+    def setup_domain(cls, domain):
+        """
+        Add any additional setting to the domain before it get saved. This is required if you have
+        required fields.
+        :param domain:
+        :return:
+        """
+        domain.is_current = True
 
     def setUp(self):
-        self.sync_shared()
-        grp, created = Group.objects.get_or_create(name=INSTRUCTORS_GROUP)
-        grp, created = Group.objects.get_or_create(name=MANAGERS_GROUP)
-        self.tenant, created = get_tenant_model().objects.get_or_create(
-            schema_name='test',
-            start_date=date(2015, 1, 1),
-            end_date=date(2015, 12, 31),
-            status='ready')
-        self.tenant.create_schema(check_if_exists=True, verbosity=0)
-
-        tenant_domain = 'testserver'
-        self.domain, created = get_tenant_domain_model().objects.get_or_create(
-            tenant=self.tenant,
-            domain=tenant_domain,
-            is_current=True)
-
-        connection.set_tenant(self.tenant)
+        super(TenantTestCase, self).setUp()
+        Group.objects.get_or_create(name=INSTRUCTORS_GROUP)
+        Group.objects.get_or_create(name=MANAGERS_GROUP)
         self.tenant_client = TenantClient(self.tenant)
-
-    def _fixture_teardown(self):
-        # Allow TRUNCATE ... CASCADE and don't emit the post_migrate signal
-        # when flushing only a subset of the apps
-        for db_name in self._databases_names(include_mirrors=False):
-            # Flush the database
-            inhibit_post_migrate = (
-                self.available_apps is not None or
-                (   # Inhibit the post_migrate signal when using serialized
-                    # rollback to avoid trying to recreate the serialized data.
-                    self.serialized_rollback and
-                    hasattr(connections[db_name], '_test_serialized_contents')
-                )
-            )
-            call_command('flush', verbosity=0, interactive=False,
-                         database=db_name, reset_sequences=False,
-                         allow_cascade=True,
-                         inhibit_post_migrate=inhibit_post_migrate)
 
 
 def add_middleware_to_request(request, middleware_class):

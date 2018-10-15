@@ -19,7 +19,7 @@ class YearTenant(TenantMixin):
     end_date = models.DateField(null=False)
     created_on = models.DateTimeField(auto_now_add=True)
 
-    auto_create_schema = False
+    auto_create_schema = True
 
     class Meta:
         ordering = ('start_date',)
@@ -37,11 +37,11 @@ class YearTenant(TenantMixin):
 
     @property
     def is_past(self):
-        return self.end_date <  timezone.now().date()
+        return self.end_date < timezone.now().date()
 
     @property
     def is_future(self):
-        return self.start_date >  timezone.now().date()
+        return self.start_date > timezone.now().date()
 
     @property
     def is_ready(self):
@@ -52,7 +52,6 @@ class YearTenant(TenantMixin):
 
     def get_update_url(self):
         return reverse('backend:year-update', kwargs={'pk': self.pk})
-
 
 
 class Domain(DomainMixin):

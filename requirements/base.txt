@@ -1,17 +1,17 @@
-django>1.10.0,<1.10.100
+django>1.11.0,<1.11.100
 djangorestframework == 3.7.3
 django-filter == 0.15.3
 psycopg2 == 2.7.3.2
 celery == 3.1.23
 tenant-schemas-celery == 0.1.7
 # -e git+https://github.com/gfavre/django-tenants.git@96ced6c4fbfd29e6490d00178798168101ef75eb#egg=django_tenants
-django-tenants==1.2.0
+django-tenants==1.3.4
 bpython == 0.15.0
 pylibmc == 1.5.2
 
 # Forms
 django-braces == 1.8.1
-django-floppyforms == 1.6.2
+-e git+https://github.com/gfavre/django-floppyforms.git#egg=floppyforms
 # Select2 widget (autocompletion on selects)
 Django-Select2 == 5.11.1
 django-autoslug == 1.9.3
@@ -19,7 +19,7 @@ django-model-utils == 2.5
 django-localflavor == 1.5.3
 # WYSIWYG editor
 django-ckeditor == 5.0.3
-django-formtools == 1.0
+django-formtools == 2.1
 django-picklefield == 1.0.0
 django-multiupload == 0.5.2
 -e git+git://github.com/gfavre/django-phonenumber-field#egg=phonenumber_field
