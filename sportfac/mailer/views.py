@@ -161,7 +161,8 @@ class MailPreviewView(CancelableMixin, EditableMixin, TemplateView):
         kwargs['signature'] = self.global_preferences['email__SIGNATURE']
         kwargs['edit_url'] = self.get_edit_url()
         kwargs['cancel_url'] = self.get_cancel_url()
-        self.add_mail_context(kwargs)
+        if self.get_recipients():
+            self.add_mail_context(kwargs)
         return super(MailPreviewView, self).get_context_data(**kwargs)
 
     def send_mail(self, recipient, bcc_recipients, base_context):
@@ -221,8 +222,6 @@ class BrowsableMailPreviewView(MailPreviewView):
         kwargs['has_next'] = mail_number + 1 != kwargs['total']
         kwargs['next'] = mail_number + 2
         self.add_nth_mail_context(kwargs, mail_number)
-        if kwargs['total'] > 0:
-            self.add_mail_context(kwargs)
         return super(BrowsableMailPreviewView, self).get_context_data(**kwargs)
 
 
