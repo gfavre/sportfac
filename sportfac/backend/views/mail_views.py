@@ -109,7 +109,7 @@ class NotPaidYetView(BackendMixin, BillMixin, TemplatedEmailMixin,
         return super(NotPaidYetView, self).get_context_data(**kwargs)
 
     def get_recipients(self):
-        bills = Bill.objects.filter(status=Bill.STATUS.waiting, total__gt=0)
+        bills = Bill.objects.filter(status=Bill.STATUS.waiting, total__gt=0, reminder_sent=False)
         return list(FamilyUser.objects.filter(pk__in=[bill.family.pk for bill in bills]))
 
 

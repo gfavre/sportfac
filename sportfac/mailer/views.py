@@ -176,7 +176,7 @@ class MailPreviewView(CancelableMixin, EditableMixin, TemplateView):
             bcc=[user.get_email_string() for user in bcc_recipients],
             attachments=[attachment.pk for attachment in self.get_attachments(mail_context)],
             update_bills=True,
-            recipient_id=recipient.pk
+            recipient_pk =recipient.pk
         )
         return message
 

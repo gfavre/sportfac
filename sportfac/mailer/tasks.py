@@ -13,7 +13,6 @@ from celery.utils.log import get_task_logger
 from sportfac.celery import app
 from activities.models import Course
 from profiles.models import FamilyUser
-from registrations.models import Bill
 from .pdfutils import get_ssf_decompte_heures, CourseParticipants, CourseParticipantsPresence, MyCourses
 from .models import Attachment
 
