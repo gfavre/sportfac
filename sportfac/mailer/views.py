@@ -174,7 +174,9 @@ class MailPreviewView(CancelableMixin, EditableMixin, TemplateView):
             recipients=[recipient.get_email_string()],
             reply_to=[self.get_reply_to_address()],
             bcc=[user.get_email_string() for user in bcc_recipients],
-            attachments=[attachment.pk for attachment in self.get_attachments(mail_context)]
+            attachments=[attachment.pk for attachment in self.get_attachments(mail_context)],
+            update_bills=True,
+            recipient_id=recipient.pk
         )
         return message
 
@@ -241,7 +243,6 @@ class MailCourseInstructorsView(ParticipantsBaseMixin, TemplatedEmailMixin, Canc
 
     message_template = 'mailer/instructor.txt'
     subject_template = 'mailer/instructor_subject.txt'
-    form_class = CopiesForm
 
     def get_recipients(self):
         return self.course.instructors.all()

@@ -82,7 +82,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
                        ('F', _("France")),
                        ('I', _("Italy")),
                        ('A', _("Austria")))
-    email = models.EmailField(verbose_name = _('Email address'), max_length=255, unique=True, db_index=True)
+    email = models.EmailField(verbose_name=_('Email address'), max_length=255, unique=True, db_index=True)
     first_name = models.CharField(_('First name'), max_length=30, blank=True)
     last_name = models.CharField(_('Last name'), max_length=30, blank=True)
     address = models.TextField(_("Street"), blank=True)

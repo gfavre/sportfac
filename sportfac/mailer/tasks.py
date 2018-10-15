@@ -7,12 +7,13 @@ from smtplib import SMTPException
 
 from django.core.mail import EmailMessage
 from django.conf import settings
-
+from django.utils import timezone
 from celery.utils.log import get_task_logger
 
 from sportfac.celery import app
 from activities.models import Course
 from profiles.models import FamilyUser
+from registrations.models import Bill
 from .pdfutils import get_ssf_decompte_heures, CourseParticipants, CourseParticipantsPresence, MyCourses
 from .models import Attachment
 
@@ -20,7 +21,8 @@ logger = get_task_logger(__name__)
 
 
 @app.task(bind=True, max_retries=6)
-def send_mail(self, subject, message, from_email, recipients, reply_to, bcc=None, attachments=None):
+def send_mail(self, subject, message, from_email, recipients, reply_to, bcc=None, attachments=None,
+              update_bills=False, recipient_pk=None):
     if bcc is None:
         bcc = []
     if attachments is None:
@@ -39,6 +41,16 @@ def send_mail(self, subject, message, from_email, recipients, reply_to, bcc=None
     try:
         email.send()
         logger.info(u'Sent email "{}" to {}'.format(subject, recipients))
+        if update_bills and recipient_pk:
+            try:
+                recipient = FamilyUser.objects.get(pk=recipient_pk)
+                for bill in recipient.bills.waiting():
+                    bill.reminder_sent = True
+                    bill.reminder_sent_date = timezone.now()
+                    bill.save()
+                    logger.debug(u'Updated bill sent status for {}'.format(bill.id))
+            except FamilyUser.objects.DoesNotExist:
+                logger.warning(u'No user found for pk={} email={}'.format(recipient_pk, recipients[0]))
     except SMTPException as smtp_exc:
         logger.error(u"Message {} to {} could not be sent: {}".format(subject, recipients, smtp_exc.message))
         # 5s for first retry, 25 for second, 2mn for third ~10mn for fourth, 52mn for fifth

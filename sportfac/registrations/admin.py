@@ -82,7 +82,7 @@ admin.site.register(Child, ChildAdmin)
 
 
 class BillAdmin(admin.ModelAdmin):
-    list_display = ('billing_identifier', 'total', 'family', 'status', 'created', 'modified')
+    list_display = ('billing_identifier', 'total', 'family', 'status', 'created', 'modified', 'reminder_sent')
     list_filter = ('status',)
 
 

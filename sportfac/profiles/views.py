@@ -1,13 +1,15 @@
 from django.contrib.auth import authenticate, login
 import django.contrib.auth.views as auth_views
+from django.conf import settings
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib.messages.views import SuccessMessageMixin
+from django.shortcuts import redirect
 from django.utils.translation import ugettext as _
-from django.views.generic import UpdateView
+from django.views.generic import UpdateView, FormView
 
 from braces.views import LoginRequiredMixin
-from registration.backends.simple.views import RegistrationView as BaseRegistrationView
-from registration import signals
+#from registration.backends.simple.views import RegistrationView as BaseRegistrationView
+#from registration import signals
 
 from sportfac.views import WizardMixin
 from .models import FamilyUser
@@ -49,7 +51,7 @@ class WizardAccountView(WizardMixin, _BaseAccount):
     success_url = reverse_lazy('wizard_children')
 
 
-class WizardRegistrationView(WizardMixin, BaseRegistrationView):
+class WizardRegistrationView(WizardMixin, FormView):
     """
     A registration backend which implements the simplest possible
     workflow: a user supplies a username, email address and password
@@ -61,6 +63,32 @@ class WizardRegistrationView(WizardMixin, BaseRegistrationView):
 
     def get_success_url(self, user):
         return reverse('wizard_children')
+
+    def form_valid(self, form):
+        new_user = self.register(form)
+        success_url = self.get_success_url(new_user)
+
+        # success_url may be a simple string, or a tuple providing the
+        # full argument set for redirect(). Attempting to unpack it
+        # tells us which one it is.
+        try:
+            to, args, kwargs = success_url
+        except ValueError:
+            return redirect(success_url)
+        else:
+            return redirect(to, *args, **kwargs)
+
+    def registration_allowed(self):
+        """
+        Indicate whether account registration is currently permitted,
+        based on the value of the setting ``REGISTRATION_OPEN``. This
+        is determined as follows:
+        * If ``REGISTRATION_OPEN`` is not specified in settings, or is
+          set to ``True``, registration is permitted.
+        * If ``REGISTRATION_OPEN`` is both specified and set to
+          ``False``, registration is not permitted.
+        """
+        return getattr(settings, 'REGISTRATION_OPEN', True)
 
     def register(self, form):
         email, password = form.cleaned_data['email'], form.cleaned_data['password1']

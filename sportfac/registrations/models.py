@@ -182,6 +182,8 @@ class Bill(TimeStampedModel, StatusModel):
     family = models.ForeignKey('profiles.FamilyUser', verbose_name=_('User'), related_name='bills',
                                on_delete=models.CASCADE)
     total = models.PositiveIntegerField(default=0, verbose_name=_("Total to be paid"))
+    reminder_sent = models.BooleanField(_("Reminder sent"), default=False)
+    reminder_sent_date = models.DateTimeField(_("Reminder sent date"), null=True, blank=True)
 
     objects = BillManager()
 

@@ -9,7 +9,6 @@ from django.utils.safestring import mark_safe
 from registrations.models import Child
 from schools.models import Teacher, Building
 from schools.forms import TeacherForm, TeacherImportForm, BuildingForm
-from schools.utils import load_teachers
 
 
 from .mixins import BackendMixin
@@ -84,6 +83,7 @@ class TeacherImportView(BackendMixin, SuccessMessageMixin, FormView):
     template_name = 'backend/teacher/import.html'
 
     def form_valid(self, form):
+        from schools.utils import load_teachers
         try:
             (created, updated, skipped) = load_teachers(self.request.FILES['thefile'])
         except ValueError as msg:
@@ -151,6 +151,7 @@ class BuildingTeacherImportView(BackendMixin, SuccessMessageMixin, FormView):
     template_name = 'backend/teacher/import.html'
 
     def form_valid(self, form):
+        from schools.utils import load_teachers
         try:
             (created, updated, skipped) = load_teachers(self.request.FILES['thefile'],
                                                         building=form.cleaned_data['building'])
