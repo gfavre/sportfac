@@ -412,7 +412,9 @@ CKEDITOR_CONFIGS = {
         'toolbar': 'Custom',
         'toolbar_Custom': [
             ['Source', '-', 'Print'],  ['Undo', 'Redo'], ['Bold', 'Italic', 'Subscript', 'Superscript'],
-            ['NumberedList', 'BulletedList'], ['Format',]
+            ['NumberedList', 'BulletedList'], ['Format',],
+            ['Link', 'Unlink', 'Anchor'],
+
         ]
     }
 }
