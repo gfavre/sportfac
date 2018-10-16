@@ -122,6 +122,18 @@ admin.site.register(Course, CoursesAdmin)
 
 
 class FlatPageCustom(FlatPageAdmin):
+    fieldsets = (
+        (None, {'fields': ('url', 'title', 'content', 'sites')}),
+        (_('Advanced options'), {
+            'classes': ('collapse',),
+            'fields': (
+                'enable_comments',
+                'registration_required',
+                'template_name',
+            ),
+        }),
+    )
+
     formfield_overrides = {
         models.TextField: {'widget': CKEditorWidget}
     }
