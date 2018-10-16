@@ -24,7 +24,9 @@ class CourseForm(forms.ModelForm):
     number = forms.CharField(label=_("Identifier"), required=True)
     price = forms.DecimalField(label=_("Price"), initial=0, required=True,
                                widget=settings.KEPCHUP_NO_PAYMENT and forms.HiddenInput or forms.NumberInput)
-
+    price_description = forms.CharField(label=_("Informations about pricing"),
+                                        widget=forms.Textarea(attrs={'rows': 3}),
+                                        required=False)
     start_date = forms.DateTimeField(label=_("Start date"), required=True,
                                      widget=DatePickerInput(format='%d.%m.%Y'),
                                      help_text=_("format: dd.mm.yyyy, e.g. 31.07.2016"))
@@ -45,7 +47,7 @@ class CourseForm(forms.ModelForm):
 
     class Meta:
         model = Course
-        fields = ('activity', 'name', 'number', 'instructors', 'price',
+        fields = ('activity', 'name', 'number', 'instructors', 'price', 'price_description',
                   'number_of_sessions', 'day', 'start_date', 'end_date',
                   'start_time', 'end_time', 'place', 'min_participants',
                   'max_participants', 'schoolyear_min', 'schoolyear_max',

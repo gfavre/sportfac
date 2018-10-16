@@ -50,18 +50,22 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ('id', 'number', 'name', 'instructors', 'activity', 'price', 'number_of_sessions', 'day',
-                  'start_date', 'end_date', 'start_time', 'end_time', 'place',
+        fields = ('id', 'number', 'name', 'instructors', 'activity', 'price', 'price_description',
+                  'number_of_sessions', 'day', 'start_date', 'end_date', 'start_time', 'end_time', 'place',
                   'min_participants', 'max_participants', 'count_participants',
                   'schoolyear_min', 'schoolyear_max')
 
 
 class ActivityDetailedSerializer(serializers.ModelSerializer):
-    courses = CourseInlineSerializer(many=True)
+    courses = serializers.SerializerMethodField()
 
     class Meta:
         model = Activity
         fields = ('id', 'name', 'number', 'courses')
+
+    def get_courses(self, obj):
+        courses = [course for course in obj.courses.all() if course.visible]
+        return CourseInlineSerializer(courses, many=True, read_only=True).data
 
 
 class SchoolYearField(serializers.RelatedField):

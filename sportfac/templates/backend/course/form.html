@@ -15,7 +15,7 @@
   {{ form.price }}
   {% formrow form.number_of_sessions form.day  %}
 {% else %}
-  {% formrow form.price form.number_of_sessions form.day  %}
+  {% formrow form.price form.price_description form.number_of_sessions form.day %}
 {% endif %}
 
 {% formrow form.start_date form.end_date form.start_time form.end_time %}

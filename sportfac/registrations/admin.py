@@ -75,7 +75,7 @@ admin.site.register(Registration, RegistrationAdmin)
 
 
 class ChildAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'family', 'school_year', 'created', 'modified')
+    list_display = ('first_name', 'last_name', 'family', 'school_year', 'id_lagapeo', 'created', 'modified')
 
 
 admin.site.register(Child, ChildAdmin)

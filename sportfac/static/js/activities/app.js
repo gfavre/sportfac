@@ -63,7 +63,10 @@ if (!Array.prototype.filter){
 }
 
 // Declare app level module which depends on filters, and services
-angular.module('sportfacCalendar', ['sportfacCalendar.services', 'sportfacCalendar.controllers', 'ngRoute', 'ngCookies', 'ui.calendar', 'mgcrea.ngStrap']).
+angular.module('sportfacCalendar', ['sportfacCalendar.filters', 'sportfacCalendar.services',
+                                    'sportfacCalendar.controllers',
+                                    'ngRoute', 'ngCookies', 'ngSanitize',
+                                    'ui.calendar', 'mgcrea.ngStrap']).
 
 config(['$routeProvider', function($routeProvider) {
     'use strict';

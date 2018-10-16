@@ -36,7 +36,13 @@
         <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
         <dt>{% trans "Number of sessions" %}</dt><dd>{{ course.number_of_sessions }} cours</dd>
         {% if not NO_PAYMENT %}
-          <dt>{% trans "Price" %}</dt><dd>{{ course.price|money }}</dd>
+          <dt>{% trans "Price" %}</dt>
+          <dd>
+            {{ course.price|money }}
+            {% if course.price_description %}
+            <p>{{ course.price_description|linebreaksbr }}</p>
+            {% endif %}
+          </dd>
         {% endif %}
         <dt>{% trans "School years" %}</dt>
         <dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>

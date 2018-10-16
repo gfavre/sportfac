@@ -118,8 +118,8 @@ class Course(TimeStampedModel):
 
     price = models.DecimalField(max_digits=5, decimal_places=2,
                                 verbose_name=_("Price"),
-                                null=True,
-                                blank=True)
+                                null=True, blank=True)
+    price_description = models.TextField(_("Informations about pricing"), blank=True)
     number_of_sessions = models.PositiveSmallIntegerField(verbose_name=_("Number of sessions"))
     day = models.PositiveSmallIntegerField(choices=DAYS_OF_WEEK, verbose_name=_("Day"), default=1)
     start_date = models.DateField(verbose_name=_("Start date"))

@@ -1,10 +1,14 @@
-'use strict';
-
-/* Filters */
-
-angular.module('sportfac.filters', []).
+angular.module('sportfacCalendar.filters', []).
   filter('interpolate', ['version', function(version) {
     return function(text) {
       return String(text).replace(/\%VERSION\%/mg, version);
-    }
-  }]);
+    };
+  }]).
+  filter('newlines', function() {
+    return function(text) {
+      console.log('here');
+      if (text)
+        return text.replace(/\n/g, '<br/>');
+      return '';
+    };
+  });
