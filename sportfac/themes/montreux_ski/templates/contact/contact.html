@@ -7,7 +7,7 @@
 {% block content %}
 <div class="row">
   <div class="col-md-6">
-    <form action="." method="post" class="form-horizontal">{% csrf_token %}  
+    <form action="." method="post" class="form-horizontal">{% csrf_token %}
       {% form form using %}
         {% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
         {% formrow form.name %}
@@ -22,26 +22,34 @@
   </div>
   <div class="col-md-6" itemscope itemtype="http://schema.org/Organization">
 
-    <section style="padding-top: 0">          
+    <section style="padding-top: 0">
       <h4 itemprop="name">Sport scolaire facultatif de Montreux</h4>
       <address itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
-        <span itemprop="streetAddress">Rue de la Gare 33</span><br />
+        <span itemprop="streetAddress">Rue du Temple 11</span><br />
         <abbr itemprop="addressCountry" title="Switzerland">CH</abbr>-<span itemprop="postalCode">1820</span> <span itemprop="addressLocality">Montreux</span>
       </address>
       <dl class="dl-horizontal">
-        <dt>Email</dt><dd><a itemprop="email" href="mailto:ssf.montreux@gmail.com">ssf.montreux@gmail.com</a></dd>
+        <dt>Email</dt><dd><a itemprop="email" href="mailto:ssf@montreux.ch">ssf@montreux.ch</a></dd>
       </dl>
     </section>
 
-    <section itemprop="member" itemscope itemtype="http://www.schema.org/Person">          
+    <section itemprop="member" itemscope itemtype="http://www.schema.org/Person">
       <h4 itemprop="jobTitle">Responsable Sport Scolaire Facultatif (Questions administratives)</h4>
-      <p itemprop="name"><strong>Marco Moreira</strong></p>
+      <p itemprop="name"><strong>Fabien Aymon</strong></p>
       <dl class="dl-horizontal">
-        <dt>Portable</dt><dd itemprop="telephone"><a href="tel:+41766150184">076 615 01 84</a> (uniquement le lundi, mercredi ou jeudi entre 18h et 19h)</dd>
-        <dt>En dehors des heures</dt><dd><a itemprop="email" href="mailto:ssf.montreux@gmail.com">ssf.montreux@gmail.com</a></dd>
+        <dt>Portable</dt><dd itemprop="telephone"><a href="tel:+41219627737">021 962 77 37</a></dd>
       </dl>
     </section>
-    <section itemprop="member" itemscope itemtype="http://www.schema.org/Person">          
+    <section itemprop="member" itemscope itemtype="http://www.schema.org/Person">
+      <h4 itemprop="jobTitle">Responsable technique (Questions sur les cours)</h4>
+      <dl class="dl-horizontal">
+        <dt>Marco Moreira</dt>
+        <dd itemprop="telephone"><a href="tel:+41766150184">076 615 01 84 </a> (uniquement le lundi, mercredi ou jeudi entre 18h et 19h)<br>
+          En dehors des heures: <a href="mailto:ssf.montreux@gmail.com">ssf.montreux@gmail.com</a>
+        </dd>
+      </dl>
+    </section>
+    <section itemprop="member" itemscope itemtype="http://www.schema.org/Person">
       <h4 itemprop="jobTitle">Responsable matériel</h4>
       <dl class="dl-horizontal">
         <dt>Bernard Chevalley</dt><dd itemprop="telephone"><a href="tel:+41219627950">021 962 79 50</a> (le lundi entre 16h et 18h30 pour fixer un rendez-vous)</dd>
