@@ -415,9 +415,12 @@ CKEDITOR_CONFIGS = {
             ['Format', 'TextColor'], ['NumberedList', 'BulletedList'],
             ['Link', 'Unlink', 'Anchor'],
             '/',
-            ['Image', 'Table', 'HorizontalRule'], ['Smiley', 'SpecialChar']
+            ['Image', 'Table', 'HorizontalRule'],
+            [#'Emojione',
+             'SpecialChar']
 
-        ]
+        ],
+        'extraPlugins': ','.join(['emojione']),
     }
 }
 
