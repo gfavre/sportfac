@@ -22,7 +22,7 @@ SHARED_APPS += (
 
 INSTALLED_APPS += (
     'django_extensions', # more commands
-    'debug_toolbar', # debugging
+    #'debug_toolbar', # debugging
     'djcelery',
     'kombu.transport.django',
 )
@@ -31,9 +31,9 @@ INSTALLED_APPS += (
 INTERNAL_IPS = ('127.0.0.1',)
 
 # See: https://github.com/django-debug-toolbar/django-debug-toolbar#installation
-MIDDLEWARE_CLASSES = [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-] + MIDDLEWARE_CLASSES
+#MIDDLEWARE_CLASSES = [
+#    'debug_toolbar.middleware.DebugToolbarMiddleware',
+#] + MIDDLEWARE_CLASSES
 
 
 ALLOWED_HOSTS = ('127.0.0.1', 'localhost', 'test.com', 'tenant.test.com', 'testserver')

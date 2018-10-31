@@ -159,7 +159,9 @@ table.dataTable tbody td.selected .popover {
             data-level="{{ child.level.before_level }}"
             data-key="before_level"
             data-url="{{ child.level.api_url }}"
-            data-order="{{ child.level.before_level }}">
+            data-order="{{ child.level.before_level }}"
+            data-child="{{ child.id }}"
+            data-activity="{{ course.activity.id }}">
             <a class="level has-popover" role="button"
                data-toggle="popover"
                data-trigger="click focus">{{ child.level.before_level|default:'NP' }}</a>
@@ -170,7 +172,9 @@ table.dataTable tbody td.selected .popover {
             data-level="{{ child.level.after_level }}"
             data-key="after_level"
             data-url="{{ child.level.api_url }}"
-            data-order="{{ child.level.after_level }}">
+            data-order="{{ child.level.after_level }}"
+            data-child="{{ child.id }}"
+            data-activity="{{ course.activity.id }}">
             <a class="level has-popover" role="button"
                data-toggle="popover"
                data-trigger="click focus">{{ child.level.after_level|default:'NP' }}</a>
@@ -183,7 +187,9 @@ table.dataTable tbody td.selected .popover {
                 data-key="note"
                 data-note="{{ child.level.note }}"
                 data-url="{{ child.level.api_url }}"
-                data-order="{{ child.level.note }}">
+                data-order="{{ child.level.note }}"
+                data-child="{{ child.id }}"
+                data-activity="{{ course.activity.id }}">
             <div class="note">{{ child.level.note }}</div>
             <a class="note has-popover hidden-print" role="button"
                data-toggle="popover"
@@ -414,9 +420,18 @@ jQuery(function($){
     var parent = $(this).parents('.set-level');
     var data = {};
     data[parent.data('key')] = level;
+    if (parent.data('url')) {
+      var verb = 'PATCH';
+      var url = parent.data('url');
+    } else  {
+      var verb = 'POST';
+      var url = '{% url "api:level-list" %}';
+      data['child'] = parent.data('child');
+      data['activity'] = parent.data('activity');
+    }
     $.ajax({
-      url: parent.data('url'),
-      type: 'PATCH',
+      url: url,
+      type: verb,
       data: data,
       success: function(response){
         var newLevel = response[parent.data('key')];
@@ -445,9 +460,18 @@ jQuery(function($){
     var parent = $(this).parents(".set-note");
     var data = {};
     data[parent.data('key')] = note;
+    if (parent.data('url')) {
+      var verb = 'PATCH';
+      var url = parent.data('url');
+    } else  {
+      var verb = 'POST';
+      var url = '{% url "api:level-list" %}';
+      data['child'] = parent.data('child');
+      data['activity'] = parent.data('activity');
+    }
     $.ajax({
-      url: parent.data('url'),
-      type: 'PATCH',
+      url: url,
+      type: verb,
       data: data,
       success: function(response){
         var newNote = response[parent.data('key')];

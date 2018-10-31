@@ -198,7 +198,10 @@ table.dataTable thead>tr>th.rotated-heading {
           <span class="set-level"
                 data-level="{{ level.before_level }}"
                 data-key="before_level"
-                data-url="{{ level.api_url }}">
+                data-url="{{ level.api_url }}"
+                data-child="{{ child.id }}"
+                data-activity="{{ registration.course.activity.id }}"
+            >
             <a class="level has-popover" role="button"
                data-toggle="popover"
                data-trigger="click focus">{{ level.before_level|default:'NP' }}</a>
@@ -208,7 +211,10 @@ table.dataTable thead>tr>th.rotated-heading {
           <span class="set-level"
                 data-level="{{ level.after_level }}"
                 data-key="after_level"
-                data-url="{{ level.api_url }}">
+                data-url="{{ level.api_url }}"
+                data-child="{{ child.id }}"
+                data-activity="{{ registration.course.activity.id }}"
+            >
             <a class="level has-popover" role="button"
                data-toggle="popover"
                data-trigger="click focus">{{ level.after_level|default:'NP' }}</a>
@@ -229,7 +235,9 @@ table.dataTable thead>tr>th.rotated-heading {
           <span class="set-note"
                 data-key="note"
                 data-note="{{ level.note }}"
-                data-url="{{ level.api_url }}">
+                data-url="{{ level.api_url }}"
+                data-child="{{ child.id }}"
+                data-activity="{{ registration.course.activity.id }}">
             <div class="note">{{ level.note }}</div>
             <a class="note has-popover hidden-print" role="button" data-toggle="popover"
                data-trigger="click focus">
@@ -540,9 +548,19 @@ $(function(){
       var parent = $(this).parents('.set-level');
       var data = {};
       data[parent.data('key')] = level;
+
+      if (parent.data('url')) {
+          var verb = 'PATCH';
+          var url = parent.data('url');
+      } else  {
+          var verb = 'POST';
+          var url = '{% url "api:level-list" %}';
+          data['child'] = parent.data('child');
+          data['activity'] = parent.data('activity');
+      }
       $.ajax({
-        url: parent.data('url'),
-        type: 'PATCH',
+        url: url,
+        type: verb,
         data: data,
         success: function(response){
           var newLevel = response[parent.data('key')];
@@ -570,9 +588,19 @@ $(function(){
       var parent = $(this).parents(".set-note");
       var data = {};
       data[parent.data('key')] = note;
+      if (parent.data('url')) {
+          var verb = 'PATCH';
+          var url = parent.data('url');
+      } else  {
+          var verb = 'POST';
+          var url = '{% url "api:level-list" %}';
+          data['child'] = parent.data('child');
+          data['activity'] = parent.data('activity');
+      }
+
       $.ajax({
-        url: parent.data('url'),
-        type: 'PATCH',
+        url: url,
+        type: verb,
         data: data,
         success: function(response){
           var newNote = response[parent.data('key')];

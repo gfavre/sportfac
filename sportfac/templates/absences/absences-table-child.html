@@ -57,6 +57,8 @@
             data-level="{{ level.before_level }}"
             data-key="before_level"
             data-url="{{ level.api_url }}"
+            data-child="{{ child.id }}"
+            data-activity="{{ course.activity.id }}"
         >
           <a class="level has-popover" role="button"
              data-toggle="popover"
@@ -66,6 +68,8 @@
             data-level="{{ level.after_level }}"
             data-key="after_level"
             data-url="{{ level.api_url }}"
+            data-child="{{ child.id }}"
+            data-activity="{{ course.activity.id }}"
         >
           <a class="level has-popover" role="button"
              data-toggle="popover"
@@ -77,6 +81,8 @@
             data-key="note"
             data-note="{{ level.note }}"
             data-url="{{ level.api_url }}"
+            data-child="{{ child.id }}"
+            data-activity="{{ course.activity.id }}"
         >
           <div class="note">{{ level.note }}</div>
           <a class="note has-popover hidden-print" role="button" data-toggle="popover" data-trigger="click focus">
@@ -216,26 +222,22 @@ jQuery(function($){
     })
   });
 
-  $('.absences').popover(
-    {
-      selector: '.absence.has-popover',
-      content: function(){ return $('#status-window').html(); },
-      html: true
-    }
-  );
+  $('.absences').popover({
+    selector: '.absence.has-popover',
+    content: function(){ return $('#status-window').html(); },
+    html: true
+  });
 
   $('.absences td').on('shown.bs.popover', function(){
     var status = $(this).data('status');
     $('input[value=' + status + ']', $(this)).prop('checked', true);
   });
 
-  $('.absences').popover(
-    {
-      selector: '.level.has-popover',
-      content: function(){ return $('#level-window').html(); },
-      html: true
-    }
-  );
+  $('.absences').popover({
+    selector: '.level.has-popover',
+    content: function(){ return $('#level-window').html(); },
+    html: true
+  });
   $('.absences .set-level').on('shown.bs.popover', function(){
     var level = $(this).data('level');
     if (level.length) {
@@ -248,9 +250,18 @@ jQuery(function($){
     var parent = $(this).parents('.set-level');
     var data = {};
     data[parent.data('key')] = level;
+    if (parent.data('url')) {
+          var verb = 'PATCH';
+          var url = parent.data('url');
+      } else  {
+          var verb = 'POST';
+          var url = '{% url "api:level-list" %}';
+          data['child'] = parent.data('child');
+          data['activity'] = parent.data('activity');
+      }
     $.ajax({
-      url: parent.data('url'),
-      type: 'PATCH',
+      url: url,
+      type: verb,
       data: data,
       success: function(response){
         var newLevel = response[parent.data('key')];
@@ -261,17 +272,15 @@ jQuery(function($){
     });
   });
 
-  $('.absences').popover(
-        {
-          selector: '.note.has-popover',
-          content: function(){ return $('#note-window').html(); },
-          html: true
-        }
-    );
-    $('.absences .set-note').on('shown.bs.popover', function(){
-      var note = $(this).data('note');
-      $('textarea', this).val(note);
-    });
+  $('.absences').popover({
+    selector: '.note.has-popover',
+    content: function(){ return $('#note-window').html(); },
+    html: true
+  });
+  $('.absences .set-note').on('shown.bs.popover', function(){
+    var note = $(this).data('note');
+    $('textarea', this).val(note);
+  });
 
   $('.absences').on('submit', 'form.note-form', function(event){
     event.preventDefault();
@@ -279,9 +288,18 @@ jQuery(function($){
     var parent = $(this).parents(".set-note");
     var data = {};
     data[parent.data('key')] = note;
+    if (parent.data('url')) {
+      var verb = 'PATCH';
+      var url = parent.data('url');
+    } else  {
+      var verb = 'POST';
+      var url = '{% url "api:level-list" %}';
+      data['child'] = parent.data('child');
+      data['activity'] = parent.data('activity');
+    }
     $.ajax({
-      url: parent.data('url'),
-      type: 'PATCH',
+      url: url,
+      type: verb,
       data: data,
       success: function(response){
         var newNote = response[parent.data('key')];

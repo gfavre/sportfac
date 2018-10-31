@@ -2,6 +2,7 @@
 from django.db import IntegrityError
 from django.db.models import Q
 from django.http import Http404
+from django.shortcuts import get_object_or_404
 
 from rest_framework import mixins, generics, status, filters, views
 from rest_framework import viewsets
@@ -54,6 +55,39 @@ class ChildActivityLevelViewSet(viewsets.ModelViewSet):
     queryset = ChildActivityLevel.objects.all()
     permission_classes = (InstructorPermission,)
     serializer_class = ChildActivityLevelSerializer
+
+    def get_object(self):
+        """
+        Returns the object the view is displaying.
+        You may want to override this if you need to provide non-standard
+        queryset lookups.  Eg if objects are referenced using multiple
+        keyword arguments in the url conf.
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+
+        # Perform the lookup filtering.
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+        if lookup_url_kwarg in self.kwargs:
+            filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
+        else:
+            assert 'activity' in self.request.data, 'expected activity id in payload'
+            assert 'child' in self.request.data, ('expected child id in payload')
+            filter_kwargs = {
+                'activity__id': self.request.data['activity'],
+                'child__id': self.request.data['child']
+            }
+
+        obj = get_object_or_404(queryset, **filter_kwargs)
+        # May raise a permission denied
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid() and 'non_field_errors' in serializer.errors:
+            # non_field_errors: we are in a duplicate state (a level already exists for same child
+            return self.update(request, *args, **kwargs)
+        return super(ChildActivityLevelViewSet, self).create(request, *args, **kwargs)
 
 
 class SessionViewSet(viewsets.ModelViewSet):
