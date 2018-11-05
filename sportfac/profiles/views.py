@@ -9,7 +9,7 @@ from django.views.generic import UpdateView, FormView
 
 from braces.views import LoginRequiredMixin
 #from registration.backends.simple.views import RegistrationView as BaseRegistrationView
-#from registration import signals
+from registration import signals
 
 from sportfac.views import WizardMixin
 from .models import FamilyUser
@@ -17,7 +17,7 @@ from .forms import RegistrationForm, InstructorForm, PasswordChangeForm, Passwor
 
 
 __all__ = ('password_change', 'password_reset',
-           'AccountView', 'RegistrationView',
+           'AccountView',
            'WizardAccountView', 'WizardRegistrationView')
 
 
