@@ -20,7 +20,7 @@
     <ul>
     {% for overlap in overlaps %}
       <li>
-        <span class="highlight" rel="{{ overlap.0.id}}">{{ overlap.0.child.first_name }} - {{ overlap.0.course.activity.name }}</span> / 
+        <span class="highlight" rel="{{ overlap.0.id}}">{{ overlap.0.child.first_name }} - {{ overlap.0.course.activity.name }}</span> /
         <span class="highlight" rel="{{ overlap.1.id}}">{{ overlap.1.child.first_name }} - {{ overlap.1.course.activity.name }}</span>
       </li>
     {% endfor %}
@@ -28,7 +28,6 @@
   </p>
 </div>
 {% endif %}
-
 
 <table class=" table table-hover table-striped">
   <thead>
@@ -41,14 +40,14 @@
       <th class="text-center">{% trans "Price" %}</th>
     </tr>
   </thead>
-  
+
   <tfoot>
   <tr>
       <th colspan="5" class="text-right">{% trans "Total" %}</th>
       <th class="nowrap">{{ total_price|money }}</th>
     </tr>
   </tfoot>
-  
+
   <tbody>
   {% for registered in registered_list %}
     <tr id="{{ registered.id }}" {% if registered.id in overlapped %}class="warning"{% endif %}>
@@ -60,7 +59,7 @@
         <p class="alert alert-error form-error" style="display: none">
           <i class="icon-warning-sign icon-large"></i> {% trans "Please submit this form." %}</span>
         </p>
-      
+
         <form class=" extra-info" method="post" role="form">{% csrf_token %}
           <input type="hidden" name="registration" value="{{ registered.id }}" />
           <input type="hidden" name="key" value="{{ extra.id }}" />
@@ -98,7 +97,7 @@
     </tr>
   {% endfor %}
   </tbody>
-  
+
 </table>
 {% endblock content %}
 
@@ -109,12 +108,12 @@
 <form class="form form-inline" id="accept" method="post">{% csrf_token %}
   {{ form.non_field_errors }}
   {{ form.accept.errors }}
-  
+
   <div class="checkbox pull-right">
     <label>{{ form.accept }} {{ form.accept.label }}</label>
   </div>
   <div class="clearfix"></div>
-  <span class="pull-right"><small ><i class="icon-warning"></i>{% trans "Confirmation is definitive. You will not be able to change your registrations again." %}</small> </span>   
+  <span class="pull-right"><small ><i class="icon-warning"></i>{% trans "Confirmation is definitive. You will not be able to change your registrations again." %}</small> </span>
 <nav >
   <ul class="pager">
     <li class="previous">
@@ -124,7 +123,7 @@
       <button type="submit" class="btn btn-primary btn-large btn-next pull-right">{% trans "Confirm and proceed to checkout"%}</button>
     </li>
   </ul>
-  
+
 </nav>
 
 </form>
@@ -138,17 +137,17 @@
          if ($('.form-content').is(':visible')){
             $('.form-error').show();
             event.preventDefault();
-         } 
+         }
       });
-      
+
       $('.highlight').hover(function(){
          $('#' + $(this).attr('rel')).toggleClass('warning');
-      });        
-      $('#accept button').prop('disabled', true); 
+      });
+      $('#accept button').prop('disabled', true);
       $('#accept input:checkbox').click(function(){
         $('#accept button').prop('disabled', !$('#accept button').prop('disabled'));
       });
-            
+
       $('.extra-info input').keyup(function(){
           var button = $(this).closest('form').find('button[type=submit]');
           if ($(this).val().length > 0) {
@@ -157,7 +156,7 @@
              button.addClass('disabled');
           }
       })
-      
+
       $('.extra-info').ajaxForm({
           url: '{% url "api:api-extra-list" %}',
           success: function(res, status, xhr, form){

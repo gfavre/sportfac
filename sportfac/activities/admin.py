@@ -1,6 +1,4 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
-
 from django.db import models
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
@@ -48,7 +46,11 @@ class ActivityAdmin(admin.ModelAdmin):
 
 admin.site.register(Activity, ActivityAdmin)
 
-admin.site.register(ExtraNeed)
+
+class ExtraNeedAdmin(admin.ModelAdmin):
+    pass
+
+admin.site.register(ExtraNeed, ExtraNeedAdmin)
 
 
 class ParticipantsListFilter(admin.SimpleListFilter):

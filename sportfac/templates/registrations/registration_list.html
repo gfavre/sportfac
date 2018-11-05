@@ -1,5 +1,5 @@
 {% extends "wizard.html" %}
-{% load i18n l10n humanize switzerland %}
+{% load i18n l10n humanize switzerland json_tags %}
 
 
 {% block page_title %}{% trans "Confirmation" %}{% endblock page_title%}
@@ -20,7 +20,7 @@
     <ul>
     {% for overlap in overlaps %}
       <li>
-        <span class="highlight" rel="{{ overlap.0.id}}">{{ overlap.0.child.first_name }} - {{ overlap.0.course.activity.name }}</span> / 
+        <span class="highlight" rel="{{ overlap.0.id}}">{{ overlap.0.child.first_name }} - {{ overlap.0.course.activity.name }}</span> /
         <span class="highlight" rel="{{ overlap.1.id}}">{{ overlap.1.child.first_name }} - {{ overlap.1.course.activity.name }}</span>
       </li>
     {% endfor %}
@@ -28,7 +28,6 @@
   </p>
 </div>
 {% endif %}
-
 
 <table class=" table table-hover">
   <thead>
@@ -43,7 +42,7 @@
 {% endif %}
     </tr>
   </thead>
-  
+
 {% if not NO_PAYMENT  %}
   <tfoot>
   <tr>
@@ -161,7 +160,7 @@
 
   {% endfor %}
   </tbody>
-  
+
 </table>
 {% endblock content %}
 
@@ -181,10 +180,10 @@
   <div class="checkbox text-right error" style="display: block;">
     <label>
       <input type="checkbox" name="{{ form.accept.name }}" /> {{ form.accept.label }}
-    </label> 
+    </label>
   </div>
   {% endif %}
-  <small ><i class="icon-warning"></i>{% trans "Confirmation is definitive. You will not be able to change your registrations again." %}</small>   
+  <small ><i class="icon-warning"></i>{% trans "Confirmation is definitive. You will not be able to change your registrations again." %}</small>
   </div>
 
 <nav >
@@ -198,7 +197,7 @@
       </button>
     </li>
   </ul>
-  
+
 </nav>
 
 </form>
@@ -210,18 +209,20 @@
 
 <script>
   $(document).ready(function(){
+      var reductions = {{ reductions|to_json }};
+
       $('.btn-next').click(function(event){
          if ($('form.extra-info').is(':visible')){
             $('.form-error').show();
             $('form.extra-info:visible .form-control').first().focus()
             event.preventDefault();
-         } 
+         }
       });
-      
+
       $('.highlight').hover(function(){
          $('#' + $(this).attr('rel')).toggleClass('warning');
-      });        
-      $('#accept button').prop('disabled', !$('#accept input[type=checkbox]').prop('checked')); 
+      });
+      $('#accept button').prop('disabled', !$('#accept input[type=checkbox]').prop('checked'));
       $('#accept input:checkbox').click(function(){
         $(this).parents('.has-error').removeClass('has-error');
         $('#accept button').prop('disabled', !$('#accept button').prop('disabled'));
@@ -231,7 +232,7 @@
           url: '{% url "api:api-extra-list" %}',
           success: function(res, status, xhr, form){
             var $parent = form.parent('td');
-            $('.alert-info', $parent).addClass('hide');
+            $('form.alert-info', $parent).addClass('hide');
             $.each(res, function(){
                 $('.alert-success .value-' + this.key, $parent).html(this.value);
             });

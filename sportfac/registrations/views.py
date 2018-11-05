@@ -62,9 +62,15 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(RegisteredActivitiesListView, self).get_context_data(**kwargs)
-        context['registered_list'] = self.get_queryset()
-        registrations = context['registered_list'].order_by('course__start_date',
-                                                            'course__end_date')
+        registrations = self.get_queryset()
+        context['registered_list'] = registrations
+        registrations = registrations.order_by('course__start_date', 'course__end_date')
+        reductions = {}
+        for registration in registrations:
+            for extra in registration.course.extra.all():
+                reductions[extra.id] = extra.reduction_dict
+        context['reductions'] = reductions
+
         context['total_price'] = registrations.aggregate(Sum('course__price'))['course__price__sum']
 
         context['overlaps'] = []

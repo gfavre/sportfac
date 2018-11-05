@@ -310,6 +310,10 @@ class ExtraNeed(TimeStampedModel):
                          base_field=models.CharField(max_length=255),
                          blank=True,
                          null=True)
+    price_reduction = ArrayField(verbose_name=_("reduce price by xx francs if this value is selected"),
+                                 base_field=models.IntegerField(),
+                                 blank=True,
+                                 null=True)
     default = models.CharField(verbose_name=_("Default value"), default="", blank=True, max_length=255)
 
     def __unicode__(self):
@@ -320,6 +324,12 @@ class ExtraNeed(TimeStampedModel):
     class Meta:
         verbose_name = _("extra question")
         verbose_name_plural = _("extra questions")
+
+    @property
+    def reduction_dict(self):
+        if not self.price_reduction:
+            return {}
+        return dict(zip(self.choices, self.price_reduction))
 
 
 """
