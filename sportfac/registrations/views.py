@@ -71,7 +71,16 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
                 reductions[extra.id] = extra.reduction_dict
         context['reductions'] = reductions
 
-        context['total_price'] = registrations.aggregate(Sum('course__price'))['course__price__sum']
+        context['applied_reductions'] = {}
+        for registration in registrations:
+            for extra in registration.extra_infos.all():
+                if extra.key.id in reductions:
+                    reduction = reductions[extra.key.id].get(extra.value, 0)
+                    if reduction:
+                        context['applied_reductions'][extra.key.id] = reduction
+        context['has_reductions'] = len(context['applied_reductions']) > 0
+        context['subtotal'] = registrations.aggregate(Sum('course__price'))['course__price__sum']
+        context['total_price'] = context['subtotal'] - sum(context['applied_reductions'].values())
 
         context['overlaps'] = []
         context['overlapped'] = set()
@@ -86,16 +95,13 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
 
     def form_valid(self, form):
         with transaction.atomic():
-            total = self.get_queryset().aggregate(
-                        Sum('course__price')
-                    ).get('course__price__sum')
             self.bill = Bill.objects.create(
                 status=Bill.STATUS.just_created,
                 family=self.request.user
             )
             for registration in self.get_queryset().all():
                 registration.set_valid()
-                if total == 0:
+                if registration.price == 0:
                     registration.paid = True
                 registration.bill = self.bill
                 registration.save()

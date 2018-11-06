@@ -45,9 +45,23 @@
 
 {% if not NO_PAYMENT  %}
   <tfoot>
-  <tr>
+    <tr id="subtotal" {% if not has_reductions %} style="display:none"{% endif %}>
+      <th colspan="5" class="text-right">{% trans "Subtotal" %}</th>
+      <th class="nowrap">{{ subtotal|money }}</th>
+    </tr>
+    <tr id="reductions"{% if not has_reductions %} style="display:none"{% endif %}>
+      <th colspan="5" class="text-right">{% trans "Reductions" %}</th>
+      <th class="nowrap">
+        <ul class="list-unstyled">
+          {% for key, reduction in applied_reductions.items %}
+          <li id="reduction-{{ key }}" data.value="{{ reduction }}">- {{ reduction }}</li>
+          {% endfor %}
+        </ul>
+      </th>
+    </tr>
+    <tr>
       <th colspan="5" class="text-right">{% trans "Total" %}</th>
-      <th class="nowrap">{{ total_price|money }}</th>
+      <th class="nowrap" id="total-price">{{ total_price|money }}</th>
     </tr>
   </tfoot>
 {% endif %}
@@ -211,12 +225,40 @@
   $(document).ready(function(){
       var reductions = {{ reductions|to_json }};
 
+      var computePrice = function(){
+        var getSum = function(total, num) {
+          return total + num;
+        };
+        var arr = $('#reductions li').map(function(n, el){return parseInt($(el).data('value'))});
+        var new_total = {{ subtotal|to_json }} - $.makeArray(arr).reduce(getSum);
+        $('#total-price .value').text(new_total);
+      };
+
       $('.btn-next').click(function(event){
          if ($('form.extra-info').is(':visible')){
             $('.form-error').show();
             $('form.extra-info:visible .form-control').first().focus()
             event.preventDefault();
          }
+      });
+
+      $('form.extra-info select').change(function(){
+        var extra_id = $(this).attr('name').split('-')[1];
+        if (extra_id === undefined) return;
+        if (extra_id in reductions){
+          var value = $(this).val();
+          $('#reduction-' + extra_id).remove();
+          if ($('#reductions li').length == 0) $('#reductions').hide();
+          if ((value in reductions[extra_id]) && (reductions[extra_id][value] > 0)){
+              var intval = reductions[extra_id][value];
+              var $reduc = $('<li id="reduction-' + extra_id +'" data-value="' + intval + '">-' + intval + '</li>');
+              $reduc.appendTo($('#reductions ul'))
+              $('#subtotal').show();
+              $('#reductions').show();
+              computePrice();
+          }
+        }
+
       });
 
       $('.highlight').hover(function(){
@@ -232,7 +274,7 @@
           url: '{% url "api:api-extra-list" %}',
           success: function(res, status, xhr, form){
             var $parent = form.parent('td');
-            $('form.alert-info', $parent).addClass('hide');
+            $('.alert-info', $parent).addClass('hide');
             $.each(res, function(){
                 $('.alert-success .value-' + this.key, $parent).html(this.value);
             });

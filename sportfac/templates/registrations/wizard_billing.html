@@ -27,7 +27,7 @@
     </tr>
   </thead>
 
-{% if not NO_PAYMENT  %} 
+{% if not NO_PAYMENT  %}
  <tfoot>
     <tr>
       <th colspan="5" style="text-align: right">{% trans "Total" %}</th>
@@ -52,12 +52,14 @@
       </td>
       <td>{{ registered.course.place }}</td>
 {% if not NO_PAYMENT  %}
-      <td class="nowrap">{{ registered.course.price|money }}</td>
+      <td class="nowrap">
+        {{ registered.price|money }}
+      </td>
 {% endif %}
     </tr>
   {% endfor %}
   </tbody>
-  
+
 </table>
 
   <p class="hidden-print text-center"><button class="btn btn-success btn-large print-button"><i class="icon icon-print"></i> {% trans "Print" %}</button></p>

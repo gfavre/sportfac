@@ -123,6 +123,12 @@ class Registration(TimeStampedModel, StatusModel):
     def delete_url(self):
         return self.get_delete_url()
 
+    @property
+    def price(self):
+        subtotal = self.course.price
+        reductions = sum([extra.reduction for extra in self.extra_infos.all()])
+        return subtotal - reductions
+
     def save(self, *args, **kwargs):
         with transaction.atomic():
             super(Registration, self).save(*args, **kwargs)
@@ -188,8 +194,7 @@ class Bill(TimeStampedModel, StatusModel):
     objects = BillManager()
 
     def update_total(self):
-        total = self.registrations.aggregate(models.Sum('course__price')).get('course__price__sum')
-        self.total = total or 0
+        self.total = sum([registration.price for registration in self.registrations.all()])
 
     def update_billing_identifier(self):
         if self.pk:
@@ -247,6 +252,10 @@ class ExtraInfo(models.Model):
 
     class Meta:
         ordering = ('key', 'registration')
+
+    @property
+    def reduction(self):
+        return self.key.reduction_dict.get(self.value, 0)
 
 
 class Child(TimeStampedModel):

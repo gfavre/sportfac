@@ -2,6 +2,7 @@
 import math
 
 from django import template
+from django.utils.safestring import mark_safe
 
 import phonenumbers
 
@@ -15,9 +16,9 @@ def money(value):
         number = float(value)
         frac, integer = math.modf(number)
         if frac:
-            return "CHF {:1,.2f}".format(number).replace(',', "'")
+            return mark_safe('CHF <span class="value">{:1,.2f}</span>'.format(number).replace(',', "'"))
         else:
-            return "CHF {:1,.0f}.-".format(number).replace(',', "'")
+            return mark_safe('CHF <span class="value">{:1,.0f}.-</span>'.format(number).replace(',', "'"))
     except ValueError:
         return value
     except TypeError:
@@ -30,7 +31,7 @@ def iban(value):
             return value
     grouping = 4
     value = value.upper().replace(' ', '').replace('-', '')
-    return ' '.join(value[i:i + grouping] for i in range(0, len(value), grouping))   
+    return ' '.join(value[i:i + grouping] for i in range(0, len(value), grouping))
 
 
 @register.filter(is_safe=True)
