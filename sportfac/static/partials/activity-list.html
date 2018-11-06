@@ -1,13 +1,13 @@
 <div ng-controller="ActivityCtrl" class="row">
   <nav class="col-sm-3 bs-docs-sidebar" ng-controller="ActivityListCtrl" style="padding-bottom: 2em;">
     <ul class="nav nav-pills nav-stacked">
-    
+
       <li ng-repeat="activity in activities" ng-class="{active: activity.selected}">
         <a href ng-click="selectActivity(activity);">{[{ activity.name }]} <!--<i class="icon-chevron-right"></i>--></a>
       </li>
       <li ng-show="!activities.length" class="label label-warning">Aucune activité n'est disponible pour votre enfant</li>
     </ul>
-  </nav> 
+  </nav>
 
   <div class="col-sm-9" ng-controller="ActivityTimelineCtrl">
     <div class="alert alert-info" ng-show="getRegistrations(selectedChild).length >= 4">
@@ -21,16 +21,8 @@
       <li><span class="registered">&#9632;</span> cours choisis pour cet enfant</li>
       <li><span class="unavailable">&#9632;</span> cours choisis pour un autre de vos enfants</li>
     </ul>
-      
     <div ng-model="eventSources" calendar="weekagenda" ui-calendar="uiConfig.calendar"></div>
     </div>
-    <div class="portlet">
-      <h4 class="portlet-title">
-        <u>Fonctionnement</u>
-      </h4>
-      <p>Les activités disponibles pour chaque enfant se trouvent à gauche. Une fois l'activité sélectionnée, cliquez sur l'événement dans le calendrier pour inscrire votre enfant. Faites ainsi pour chaque enfant à inscrire. <br/>
-        Lorsque vous avez terminé, appuyez sur le bouton &quot;Terminer l'inscription&quot; au bas de cette page.
-      </p>
-    </div>
+
   </div>
 </div>

@@ -23,7 +23,14 @@ displaycoursenames="{{ CALENDAR_DISPLAY_COURSE_NAMES|yesno:'true,false' }}"
 canregistersameactivity="{{ ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE|yesno:'true,false' }}"
 
 {% endaddtoblock %}
-
+    <div class="portlet">
+      <h4 class="portlet-title">
+        <u>Fonctionnement</u>
+      </h4>
+      <p>Les activités disponibles pour chaque enfant se trouvent à gauche. Une fois l'activité sélectionnée, cliquez sur l'événement dans le calendrier pour inscrire votre enfant. Faites ainsi pour chaque enfant à inscrire. <br/>
+        Lorsque vous avez terminé, appuyez sur le bouton &quot;Terminer l'inscription&quot; au bas de cette page.
+      </p>
+    </div>
 <nav>
   <ul class="nav nav-tabs children">
     <li role="presentation" ng-repeat="child in userChildren"
