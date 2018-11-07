@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import ugettext as _
@@ -9,8 +10,8 @@ from registrations.models import Bill, Registration
 
 
 class Step:
-    def __init__(self, request, id, title, urlname, activable):
-        self.id = id
+    def __init__(self, request, identifier, title, urlname, activable):
+        self.id = identifier
         self.title = title
         self.url = reverse(urlname)
         self.activable = activable
@@ -37,7 +38,8 @@ def can_confirm(request):
 
 
 def can_pay(request):
-    return can_register_activities(request) and Bill.objects.filter(status=Bill.STATUS.just_created, family=request.user).count() > 0
+    return can_register_activities(request) and Bill.objects.filter(status=Bill.STATUS.just_created,
+                                                                    family=request.user).exists()
 
 
 def wizard_context(request):
@@ -47,13 +49,17 @@ def wizard_context(request):
                     is_authenticated(request))
     activities = Step(request, 'activities-step', _("Register activities"), 'wizard_activities',
                       can_register_activities(request))
-    confirmation = Step(request, 'confirm-step',_("Confirmation"), 'wizard_confirm',
+    confirmation = Step(request, 'confirm-step', _("Confirmation"), 'wizard_confirm',
                         can_confirm(request))
     billing = Step(request, 'billing-step', _("Billing"), 'wizard_billing',
                    can_pay(request))
+    alt_confirmation = Step(request, 'confirm-step', _("Validation"), 'wizard_confirm', can_confirm(request))
+    alt_billing = Step(request, 'billing-step', _("Confirmation"), 'wizard_billing',  can_pay(request))
 
     if settings.KEPCHUP_NO_PAYMENT:
         steps = [about, children, activities, confirmation]
+    elif settings.KEPCHUP_ALTERNATIVE_STEPS_NAMING:
+        steps = [about, children, activities, alt_confirmation, alt_billing]
     else:
         steps = [about, children, activities, confirmation, billing]
 
@@ -65,7 +71,7 @@ def wizard_context(request):
 
     previous_step = next_step = None
     if current != 0:
-        previous_step = steps[current -1]
+        previous_step = steps[current - 1]
 
     if current != len(steps) - 1:
         next_step = steps[current + 1]
@@ -83,14 +89,16 @@ def registration_opened_context(request):
     now = timezone.now()
     minutes_spent = int((now - start).total_seconds() / 60)
     minutes_total = int((end - start).total_seconds() / 60)
-    return {'registration_opened': request.REGISTRATION_OPENED,
-            'registration_phase': request.PHASE,
-            'registration_start': start,
-            'registration_end': end,
-            'registration_past': start <= end <= now,
-            'registration_due': now <= start <= end,
-            'minutes_spent': minutes_spent,
-            'minutes_total': minutes_total,}
+    return {
+        'registration_opened': request.REGISTRATION_OPENED,
+        'registration_phase': request.PHASE,
+        'registration_start': start,
+        'registration_end': end,
+        'registration_past': start <= end <= now,
+        'registration_due': now <= start <= end,
+        'minutes_spent': minutes_spent,
+        'minutes_total': minutes_total
+    }
 
 
 def activities_context(request):

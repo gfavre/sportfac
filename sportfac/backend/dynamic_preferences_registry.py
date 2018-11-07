@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
 import dateutil.parser
 
@@ -17,9 +18,9 @@ from .models import TenantPreferenceModel
 class TenantRegistry(PerInstancePreferenceRegistry):
     preference_model = TenantPreferenceModel
 
+
 tenant_preferences_registry = TenantRegistry()
 preference_models.register(TenantPreferenceModel, tenant_preferences_registry)
-
 
 
 email = Section('email')
@@ -53,11 +54,13 @@ class FromMail(StringPreference):
     name = 'FROM_MAIL'
     default = 'info@kepchup.ch'
 
+
 @global_preferences_registry.register
 class ReplyToMail(StringPreference):
     section = email
     name = 'REPLY_TO_MAIL'
     default = 'info@kepchup.ch'
+
 
 @global_preferences_registry.register
 class ContactRecipientMail(StringPreference):
@@ -120,7 +123,7 @@ class MaxRegistrations(IntegerPreference):
 
 @global_preferences_registry.register
 class PaymentDelay(IntegerPreference):
-    "Delay between end of registrations and payment. Displayed on bills"
+    """Delay between end of registrations and payment. Displayed on bills"""
     section = payment
     name = 'DELAY_DAYS'
     default = 30
@@ -129,7 +132,7 @@ class PaymentDelay(IntegerPreference):
 
 @global_preferences_registry.register
 class IBAN(StringPreference):
-    "IBAN used on bills"
+    """IBAN used on bills"""
     section = payment
     name = 'IBAN'
     default = ''
@@ -138,7 +141,7 @@ class IBAN(StringPreference):
 
 @global_preferences_registry.register
 class PaymentPlace(StringPreference):
-    "Payment address used on bills"
+    """Payment address used on bills"""
     section = payment
     name = 'PLACE'
     default = ''
@@ -147,7 +150,7 @@ class PaymentPlace(StringPreference):
 
 @global_preferences_registry.register
 class PaymentAddress(LongStringPreference):
-    "Payment address used on bills"
+    """Payment address used on bills"""
     section = payment
     name = 'ADDRESS'
     default = ''
@@ -157,8 +160,7 @@ class PaymentAddress(LongStringPreference):
 
 @global_preferences_registry.register
 class AbsenceNotificationDelay(IntegerPreference):
-    "Delay (in days) before sending notification of absence to parents"
+    """Delay (in days) before sending notification of absence to parents"""
     name = 'ABSENCE_DELAY'
     default = 1
     help_text = _("Days between course absence and notification")
-
