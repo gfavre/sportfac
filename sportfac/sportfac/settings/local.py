@@ -68,6 +68,7 @@ DATABASES['default']['PORT'] = env('DB_PORT', default='5432')
 DEBUG_TOOLBAR_CONFIG ={
     'INTERCEPT_REDIRECTS': False,
     'SHOW_TEMPLATE_CONTEXT': True,
+    'SKIP_TEMPLATE_PREFIXES': ('django/forms/widgets/', 'admin/widgets/', 'floppyforms/'),
 }
 DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.versions.VersionsPanel',

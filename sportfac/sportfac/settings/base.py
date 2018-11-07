@@ -235,6 +235,7 @@ SHARED_APPS = (
     'ckeditor',  # wysiwyg editor
     'ckeditor_uploader',
     'dbtemplates',  # store templates in db (used by mailer module)
+    'django_select2',  # select2 form input
     'dynamic_preferences',
     'floppyforms',  # better forms
     'import_export',

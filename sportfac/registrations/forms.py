@@ -30,7 +30,7 @@ class ChildForm(forms.ModelForm):
     school_year = forms.ModelChoiceField(label=_("School year"),
                                          queryset=SchoolYear.visible_objects.all(), required=False)
     family = forms.ModelChoiceField(label=_("Parent"),
-                                     queryset=FamilyUser.objects.all(),
+                                    queryset=FamilyUser.objects.all(),
                                      widget=Select2Widget(),
                                      required=False)
     id_lagapeo = forms.IntegerField(label=_("SSF number"), required=False)
@@ -66,6 +66,7 @@ class ChildForm(forms.ModelForm):
                 )
         except Child.DoesNotExist:
             return id_lagapeo
+        return id_lagapeo
 
 
 class BillForm(forms.ModelForm):

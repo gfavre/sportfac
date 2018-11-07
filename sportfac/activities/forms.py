@@ -11,6 +11,8 @@ from profiles.models import FamilyUser
 from .models import Activity, Course, ExtraNeed
 
 
+from django_select2.forms import Select2Widget, Select2MultipleWidget
+
 class CourseForm(forms.ModelForm):
     activity = forms.ModelChoiceField(label=_("Activity"),
                                       queryset=Activity.objects,
