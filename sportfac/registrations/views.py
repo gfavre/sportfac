@@ -5,7 +5,7 @@ import json
 from django.conf import settings
 from django.contrib import messages
 from django.core.urlresolvers import reverse_lazy
-from django.db import transaction
+from django.db import transaction, connection
 from django.db.models import Sum
 from django.utils.translation import ugettext as _, get_language
 from django.views.generic import DetailView, FormView, ListView, TemplateView
@@ -110,10 +110,14 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
         if self.bill.total == 0:
             self.bill.status = Bill.STATUS.paid
             self.bill.save()
-
+        try:
+            tenant_pk = connection.tenant.pk
+        except AttributeError:
+            tenant_pk = None
         transaction.on_commit(lambda: send_confirmation.delay(
             user_pk=self.request.user.pk,
             bill_pk=self.bill.pk,
+            tenant_pk=tenant_pk,
             language=get_language(),
         ))
         return super(RegisteredActivitiesListView, self).form_valid(form)
