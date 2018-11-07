@@ -95,7 +95,10 @@ def load_children(filelike):
     parser = ChildParser(xls_book)
     for i in moves.range(1, sheet.nrows):
         values = dict(zip(header_row, sheet.row_values(i)))
-        parsed = parser.parse(values)
+        try:
+            parsed = parser.parse(values)
+        except:
+            continue
         id_lagapeo = parsed.pop('id_lagapeo')
         child, created = Child.objects.update_or_create(id_lagapeo=id_lagapeo, defaults=parsed)
         if created:
