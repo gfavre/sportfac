@@ -48,7 +48,7 @@ def send_confirmation(user_pk, bill_pk, tenant_pk=None, language=settings.LANGUA
         body = render_to_string('registrations/confirmation_mail.txt', context=context)
         send_mail.delay(
             subject=subject, message=body,
-            from_mail=global_preferences['email__FROM_MAIL'],
+            from_email=global_preferences['email__FROM_MAIL'],
             recipients=[user.get_email_string()],
             reply_to=[global_preferences['email__REPLY_TO_MAIL']]
         )
