@@ -11,7 +11,7 @@ register = template.Library()
 
 
 @register.filter(is_safe=True)
-def money(value):
+def money_html(value):
     try:
         number = float(value)
         frac, integer = math.modf(number)
@@ -19,6 +19,21 @@ def money(value):
             return mark_safe('CHF <span class="value">{:1,.2f}</span>'.format(number).replace(',', "'"))
         else:
             return mark_safe('CHF <span class="value">{:1,.0f}.-</span>'.format(number).replace(',', "'"))
+    except ValueError:
+        return value
+    except TypeError:
+        return value
+
+
+@register.filter(is_safe=True)
+def money(value):
+    try:
+        number = float(value)
+        frac, integer = math.modf(number)
+        if frac:
+            return mark_safe('CHF {:1,.2f}'.format(number).replace(',', "'"))
+        else:
+            return mark_safe('CHF {:1,.0f}.-'.format(number).replace(',', "'"))
     except ValueError:
         return value
     except TypeError:

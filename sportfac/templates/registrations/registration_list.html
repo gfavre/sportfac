@@ -47,7 +47,7 @@
   <tfoot>
     <tr id="subtotal" {% if not has_reductions %} style="display:none"{% endif %}>
       <th colspan="5" class="text-right">{% trans "Subtotal" %}</th>
-      <th class="nowrap">{{ subtotal|money }}</th>
+      <th class="nowrap">{{ subtotal|money_html }}</th>
     </tr>
     <tr id="reductions"{% if not has_reductions %} style="display:none"{% endif %}>
       <th colspan="5" class="text-right">{% trans "Reductions" %}</th>
@@ -61,7 +61,7 @@
     </tr>
     <tr>
       <th colspan="5" class="text-right">{% trans "Total" %}</th>
-      <th class="nowrap" id="total-price">{{ total_price|money }}</th>
+      <th class="nowrap" id="total-price">{{ total_price|money_html }}</th>
     </tr>
   </tfoot>
 {% endif %}
