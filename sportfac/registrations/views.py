@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse_lazy
 from django.db import transaction
 from django.db.models import Sum
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext as _, get_language
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 
 from braces.views import LoginRequiredMixin
@@ -17,6 +17,7 @@ from profiles.forms import AcceptTermsForm
 from profiles.models import School
 from sportfac.views import WizardMixin
 from .models import Bill, Child, Registration
+from .tasks import send_confirmation
 
 
 class ChildrenListView(LoginRequiredMixin, ListView):
@@ -109,6 +110,12 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
             if self.bill.total == 0:
                 self.bill.status = Bill.STATUS.paid
                 self.bill.save()
+
+        transaction.on_commit(lambda: send_confirmation.delay(
+            user_pk=self.request.user.pk,
+            bill_pk=self.bill.pk,
+            language=get_language(),
+        ))
         return super(RegisteredActivitiesListView, self).form_valid(form)
 
 

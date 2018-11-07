@@ -179,11 +179,12 @@ class BillManager(models.Manager):
 
 
 class Bill(TimeStampedModel, StatusModel):
-    STATUS = Choices(('just_created', _("Just created")),
-                     ('waiting', _("Waiting parent's payment")),
-                     ('paid', _("Paid by parent")),
-                     ('canceled', _("Canceled by administrator")),
-                     )
+    STATUS = Choices(
+        ('just_created', _("Just created")),
+        ('waiting', _("Waiting parent's payment")),
+        ('paid', _("Paid by parent")),
+        ('canceled', _("Canceled by administrator")),
+    )
     billing_identifier = models.CharField(_('Billing identifier'), max_length=45, blank=True)
     family = models.ForeignKey('profiles.FamilyUser', verbose_name=_('User'), related_name='bills',
                                on_delete=models.CASCADE)

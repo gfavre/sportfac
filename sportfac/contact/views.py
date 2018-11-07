@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.views.generic.edit import FormView
 from django.core.urlresolvers import reverse_lazy
 
@@ -8,16 +9,14 @@ class ContactView(FormView):
     template_name = 'contact/contact.html'
     form_class = ContactForm
     success_url = reverse_lazy('contact_thanks')
-    
+
     def get_initial(self):
         initial = self.initial.copy()
         if self.request.user.is_authenticated():
-            initial['name'] = self.request.user.first_name + ' ' + self.request.user.last_name
+            initial['name'] = self.request.user.full_name
             initial['email'] = self.request.user.email
         return initial
-        
-        
-    
+
     def form_valid(self, form):
         form.send_mail()
         return super(ContactView, self).form_valid(form)
