@@ -13,7 +13,8 @@ from profiles.models import FamilyUser
 from registrations.models import Bill
 from sportfac.decorators import respect_language
 
-@shared_task()
+
+@shared_task
 @respect_language
 def send_confirmation(user_pk, bill_pk, tenant_pk=None):
     if tenant_pk:
