@@ -3,7 +3,7 @@ Madame, Monsieur,
 
 Nous avons bien reçu vos inscriptions pour les cours suivants:
 {% for registration in registrations %}
-• {{ registration.child.full_name }} - {{ registration.course.long_name }}{% if payment %} - {{ registration.price|money }}{% endif %}
+• {{ registration.child.full_name }} - {{ registration.course.short_name }}{% if payment %} - {{ registration.price|money }}{% endif %}
 {% endfor %}
 {% if payment %}
 Identifiant de paiement: {{ bill.billing_identifier }}

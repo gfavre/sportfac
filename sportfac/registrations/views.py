@@ -95,21 +95,21 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
         return context
 
     def form_valid(self, form):
-        with transaction.atomic():
-            self.bill = Bill.objects.create(
-                status=Bill.STATUS.just_created,
-                family=self.request.user
-            )
-            for registration in self.get_queryset().all():
-                registration.set_valid()
-                if registration.price == 0:
-                    registration.paid = True
-                registration.bill = self.bill
-                registration.save()
+        self.bill = Bill.objects.create(
+            status=Bill.STATUS.just_created,
+            family=self.request.user
+        )
+        for registration in self.get_queryset().all():
+            registration.set_valid()
+            if registration.price == 0:
+                registration.paid = True
+            registration.bill = self.bill
+            registration.save()
+
+        self.bill.save()
+        if self.bill.total == 0:
+            self.bill.status = Bill.STATUS.paid
             self.bill.save()
-            if self.bill.total == 0:
-                self.bill.status = Bill.STATUS.paid
-                self.bill.save()
 
         transaction.on_commit(lambda: send_confirmation.delay(
             user_pk=self.request.user.pk,
