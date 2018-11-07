@@ -14,16 +14,20 @@ from registrations.models import Bill
 from sportfac.decorators import respects_language
 
 
-@shared_task
+@shared_task(bind=True, max_retries=2)
 @respects_language
-def send_confirmation(user_pk, bill_pk):
+def send_confirmation(self, user_pk, bill_pk):
     current_domain = Domain.objects.filter(is_current=True).first()
     connection.set_tenant(current_domain.tenant)
 
     global_preferences = global_preferences_registry.manager()
 
     user = FamilyUser.objects.get(pk=user_pk)
-    bill = Bill.objects.get(pk=bill_pk)
+    try:
+        bill = Bill.objects.get(pk=bill_pk)
+    except Bill.DoesNotExist:
+        self.retry(countdown=5 ** self.request.retries)
+        return 
     registrations = bill.registrations.all()
     current_site = Site.objects.get_current()
 
