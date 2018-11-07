@@ -1,6 +1,6 @@
 {% load i18n mail_tags %}
 
-{% if recipient %}
+{% if to_email %}
 <section>
   <h4 class="content-title"><u>{% trans "Preview" %}</u></h4>
   {% block mail_nav %}{% endblock %}
