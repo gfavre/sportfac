@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 from django.utils.translation import ugettext as _
-from django.utils.text import force_text
 
-from django_select2.forms import Select2TagWidget
 import floppyforms.__future__ as forms
 
 from backend.forms import Select2Widget, Select2MultipleWidget, DatePickerInput, TimePickerInput
 from profiles.models import FamilyUser
 from .models import Activity, Course, ExtraNeed
 
-
-from django_select2.forms import Select2Widget, Select2MultipleWidget
 
 class CourseForm(forms.ModelForm):
     activity = forms.ModelChoiceField(label=_("Activity"),
