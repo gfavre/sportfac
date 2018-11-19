@@ -42,7 +42,7 @@ class Registration(TimeStampedModel, StatusModel):
     bill = models.ForeignKey('Bill', related_name="registrations", null=True, blank=True,
                              on_delete=models.SET_NULL)
     paid = models.BooleanField(default=False, verbose_name=_("Has paid"))
-    transport = models.ForeignKey('Transport', related_name='participants', null=True,
+    transport = models.ForeignKey('Transport', related_name='participants', null=True, blank=True,
                                   verbose_name=_("Transport information"),
                                   on_delete=models.SET_NULL)
 
