@@ -31,8 +31,17 @@ class TextPlainView(TemplateView):
         return super(TextPlainView, self).render_to_response(context, content_type='text/plain', **kwargs)
 
 
-urlpatterns = [
-    url(r'^$', flatviews.flatpage, {'url': '/'}, name='home'),
+if settings.KEPCHUP_SPLASH_PAGE:
+    urlpatterns = [
+        url(r'^$', flatviews.flatpage, {'url': '/splash/'}, name='splash'),
+        url(r'^accueil/$', flatviews.flatpage, {'url': '/'}, name='home'),
+    ]
+else:
+    urlpatterns = [
+        url(r'^$', flatviews.flatpage, {'url': '/'}, name='home')
+    ]
+
+urlpatterns += [
     url(r'^reglement/$', flatviews.flatpage, {'url': '/reglement/'}, name='terms'),
     url(r'^protection-des-donnees/$', flatviews.flatpage, {'url': '/protection-des-donnees/'}, name='privacy'),
 
