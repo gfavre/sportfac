@@ -1,7 +1,7 @@
 {% load i18n sekizai_tags staticfiles %}<!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
-     <title>{% block title %}Inscription au sport scolaire facultatif – Montreux{% endblock title %}</title>
+     <title>{% block title %}Sport scolaire facultatif – Montreux{% endblock title %}</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
@@ -39,12 +39,33 @@
   #wrapper {
     margin-bottom: -254px;
     padding-bottom: 254px;
+    background-image: url("{% static "img/sport-equipment.jpg" %}");
+    background-position:  40% 20%;
+  }
+  #pagecontent .container {
+    background-color: rgba(255,255,255,0.80);
+
+}
+  .btn {
+    display: inline-block;
+  }
+  .btn-primary {
+    width: 100%;
+    margin-bottom: 1em;
+
+  }
+  .btn-secondary {
+
+  }
+  p.text-center{
+    margin-bottom: 0;
   }
   #footer {
     height: 254px;
   }
   h1 {
-    margin-bottom: 3em;
+    margin-bottom: 1.5em;
+    margin-top: 1em;
   }
   @media only screen and (max-width : 480px) {
     h1 {
@@ -74,14 +95,15 @@
 </head>
 
 <body {% block extra_body %}{% endblock %}>
-<div id="wrapper">
-  <div class="container">
+<div id="wrapper" >
+<div id="pagecontent">
+  <div class="container" style="">
     <h1>Sport Scolaire Facultatif - Commune de Montreux</h1>
       {% block content %}
         {{ flatpage.content }}
       {% endblock %}
 
-    <div class="row">
+    <div class="row" style="margin-top: 3em;">
       <div class="col-sm-6 col-md-4 col-md-offset-1">
         <div class="pricing-plan">
           <div class="pricing-header">
@@ -92,12 +114,14 @@
                  style="margin-bottom:15px">
           </a>
           <p class="text-center">
-            <a href="{% url 'home' %}" class="btn btn-primary">
-              {% if preferences_period_name == "printemps" %}Inscription pour le printemps
-              {% elif preferences_period_name == "automne" %}Inscription pour l'automne
-              {% else %}Revoir mes inscriptions
-              {% endif %}</a>
-</a>
+            <a href="{% if registration_opened %}{% url 'auth_login' %}?next=/wizard/{% else %}{% url 'registrations_registered_activities' %}{% endif %}"
+               class="btn btn-primary">
+              Entrer
+            </a>
+            <br>
+            <a href="https://ssfmontreux.ch/static/pdf/Flyer_site_070818.pdf" class="btn btn-secondary">
+              <i class="icon-file-pdf"></i> Flyer
+            </a>
           </p>
         </div>
       </div>
@@ -112,15 +136,21 @@
                  style="margin-bottom:15px">
           </a>
           <p class="text-center">
-            <a href="/hiver/" class="btn btn-primary">
-              {% if preferences_period_name == "hiver" %}Inscription pour l'hiver{% else %}Revoir mes inscriptions{% endif %}</a>
+            <a href="{% if preferences_period_name == "hiver" %}/hiver/account/login/?next=/wizard/{% else %}/hiver/registrations/summary/{% endif %}"
+               class="btn btn-primary">
+              Entrer
+            </a>
+          <br>
+            <a href="https://ssfmontreux.ch/hiver/static/pdf/SSF_HIVER_2019_A5_prod_2.pdf" class="btn btn-secondary">
+              <i class="icon-file-pdf"></i> Flyer
+            </a>
           </p>
         </div>
       </div>
     </div>
   </div>
 </div>
-
+</div>
 {% include "footer.html" %}
 <script src="{% static 'js/vendor/jquery-2.1.1.min.js' %}"></script>
 <script src="{% static 'js/vendor/bootstrap.min.js' %}"></script>
