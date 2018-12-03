@@ -109,7 +109,7 @@
           <div class="pricing-header">
             <h3 class="pricing-plan-title">Printemps / Automne</h3>
           </div>
-          <a href="{% url 'home' %}">
+          <a href="{% if registration_opened %}{% url 'auth_login' %}?next=/wizard/{% else %}{% url 'registrations_registered_activities' %}{% endif %}">
             <img src="https://ssfmontreux.ch/static/img/shutterstock_208463827.jpg" class="img-responsive"
                  style="margin-bottom:15px">
           </a>
@@ -131,7 +131,7 @@
           <div class="pricing-header">
             <h3 class="pricing-plan-title">Hiver</h3>
           </div>
-          <a href="/hiver/" >
+          <a href="{% if preferences_period_name == "hiver" %}/hiver/account/login/?next=/wizard/{% else %}/hiver/registrations/summary/{% endif %}" >
             <img src="https://ssfmontreux.ch/hiver/static/img/snow-kid.jpg" class="img-responsive"
                  style="margin-bottom:15px">
           </a>
