@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-from datetime import date
+import datetime
 from django.conf import settings
 from django.db.models import Case, When, F, IntegerField, Q, Sum
 from django.forms import inlineformset_factory
 from django.utils.translation import ugettext as _
+from django.utils.text import mark_safe
 
 import floppyforms.__future__ as forms
 
@@ -121,16 +122,51 @@ class RegistrationForm(CourseSelectMixin, forms.ModelForm):
             del self.fields['transport']
 
 
+class PlainTextWidget(forms.Widget):
+    def render(self, name, value, attrs=None, renderer=None):
+        if isinstance(value, datetime.date):
+            value = value.strftime('%d-%m-%Y')
+        markup = u'<p class="form-control-static">{}</p>'
+
+        return mark_safe(markup.format(value))
+
+
+class PlainTextExtraNeedWidget(forms.Widget):
+    def render(self, name, value, attrs=None, renderer=None):
+        extra = ExtraNeed.objects.get(pk=value)
+        value = extra.question_label
+        markup = u'<p class="form-control-static">{}</p>'
+        return mark_safe(markup.format(value))
+
+
 class ExtraInfoForm(forms.ModelForm):
     key = forms.ModelChoiceField(label=_("Question"),
-                                 queryset=ExtraNeed.objects,
+                                 queryset=ExtraNeed.objects.all(),
                                  empty_label=None,
-                                 disabled=True)
-    value = forms.CharField(required=True, label=_("Value"))
+                                 disabled=True,
+                                 widget=PlainTextExtraNeedWidget)
+    value = forms.CharField(required=True, label=_("Answer"))
 
     class Meta:
         model = ExtraInfo
         fields = ('key', 'value')
+        read_only = ('key', )
+
+    def __init__(self, *args, **kwargs):
+        super(ExtraInfoForm, self).__init__(*args, **kwargs)
+        if self.instance:
+            if self.instance.key.choices:
+                self.fields['value'] = forms.ChoiceField(choices=zip(self.instance.key.choices,
+                                                                     self.instance.key.choices))
+            elif self.instance.type == 'B':
+                self.fields['value'] = forms.BooleanField()
+
+            elif self.instance.type == 'I':
+                self.fields['value'] = forms.IntegerField()
+
+        #self.fields['key'].widget = UneditablePlainTextSelect(
+        #    choices=[(f.id, f.question_label) for f in ExtraNeed.objects.all()],
+        #)
 
 
 ExtraInfoFormSet = inlineformset_factory(Registration, ExtraInfo, form=ExtraInfoForm, fields=('key', 'value'),
@@ -183,7 +219,7 @@ class SessionForm(forms.Form):
     date = forms.DateField(label=_("Session date"), required=True,
                            help_text=_("Format: DD.MM.YYYY"),
                            widget=DatePickerInput(),
-                           initial=date.today())
+                           initial=datetime.date.today())
 
 
 class YearSelectForm(forms.Form):

@@ -149,6 +149,7 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
                 messages.add_message(self.request, messages.INFO, message)
 
             self.instance.save()
+            # FIXME!! PRobablement jeter ce code??
             if settings.KEPCHUP_USE_ABSENCES:
                 now = timezone.now()
                 for future_session in self.instance.course.sessions.filter(date__gte=now):
