@@ -157,16 +157,13 @@ class ExtraInfoForm(forms.ModelForm):
         if self.instance:
             if self.instance.key.choices:
                 self.fields['value'] = forms.ChoiceField(choices=zip(self.instance.key.choices,
-                                                                     self.instance.key.choices))
+                                                                     self.instance.key.choices),
+                                                         label=_("Answer"))
             elif self.instance.type == 'B':
-                self.fields['value'] = forms.BooleanField()
+                self.fields['value'] = forms.BooleanField(label=_("Answer"))
 
             elif self.instance.type == 'I':
-                self.fields['value'] = forms.IntegerField()
-
-        #self.fields['key'].widget = UneditablePlainTextSelect(
-        #    choices=[(f.id, f.question_label) for f in ExtraNeed.objects.all()],
-        #)
+                self.fields['value'] = forms.IntegerField(label=_("Answer"))
 
 
 ExtraInfoFormSet = inlineformset_factory(Registration, ExtraInfo, form=ExtraInfoForm, fields=('key', 'value'),
