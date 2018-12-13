@@ -171,28 +171,29 @@
       </div>
       <table class="table">
         <thead>
-        <tr>
-          {% if BIB_NUMBERS %}
-            <th class="bibnumber">{% trans "Bib number" %}</th>
-          {% endif %}
-          <th class="child-name">{% trans "Name" %}</th>
-          <th class="school">{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
-          {% if EMERGENCY_NUMBER_MANDATORY %}
-            <th>{% trans "Emergency number" %}</th>
-          {% else %}
-            <th>{% trans "Parents phone" %}</th>
-          {% endif %}
-          <th>{% trans "Parents email" %}</th>
-          {% for extra in course.extra.all %}
-            <th>{{ extra.question_label }}</th>
-          {% endfor %}
-          <th class="status">{% trans "Status" %}</th>
-          <th>{% trans "Actions" %}</th>
-        </tr>
+          <tr>
+            {% if BIB_NUMBERS %}
+              <th class="bibnumber">{% trans "Bib number" %}</th>
+            {% endif %}
+            <th class="child-name">{% trans "Name" %}</th>
+            <th class="school">{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
+            {% if EMERGENCY_NUMBER_MANDATORY %}
+              <th>{% trans "Emergency number" %}</th>
+            {% else %}
+              <th>{% trans "Parents phone" %}</th>
+            {% endif %}
+            <th>{% trans "Parents email" %}</th>
+            {% for extra in course.extra.all %}
+              <th>{{ extra.question_label }}</th>
+            {% endfor %}
+            <th class="status">{% trans "Status" %}</th>
+            <th>{% trans "Actions" %}</th>
+          </tr>
         </thead>
         <tbody>
         {% for registration in registrations %}
-          <tr data-registration-id="{{ registration.id }}" data-user-id="{{ registration.child.family.id }}">
+          <tr data-registration-id="{{ registration.id }}"
+              data-user-id="{{ registration.child.family.id }}">
             {% if BIB_NUMBERS %}
               <td data-order="{{ registration.child.bib_number|default:"0" }}">
                 {{ registration.child.bib_number|default:"n/a" }}
@@ -260,7 +261,7 @@
 
               {% empty %}
               {% for extra in course.extra.all %}
-                <td></td>
+                <td data-order=""></td>
               {% endfor %}
             {% endfor %}
             <td>{{ registration.get_status_display }}</td>

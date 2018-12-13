@@ -7,7 +7,7 @@
         <span class="sr-only">{% trans "Toggle navigation" %}</span>
         <span class="icon-menu" style="color:#fff;"></span>
       </button>
-      <a href="{% url 'home' %}" class="navbar-brand navbar-brand-white">{% include "main-title.html" %}</a>
+      <a href="/" class="navbar-brand navbar-brand-white">{% include "main-title.html" %}</a>
     </div> <!-- /.navbar-header -->
 
     <nav class="collapse navbar-collapse hidden-print" role="navigation" id="topnav">
@@ -99,7 +99,7 @@
               </li>
             {% endif %}
             <li class="divider"></li>
-            <li><a href="{% url 'auth_logout' %}?next={% url 'home' %}">{% trans "logout" %}</a></li>
+            <li><a href="{% url 'auth_logout' %}?next=/">{% trans "logout" %}</a></li>
           </ul>
         </li>
         {% else %}
