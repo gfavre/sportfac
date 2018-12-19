@@ -41,12 +41,13 @@ def create_tenant(new_tenant_id, copy_activities_from_id=None, copy_children_fro
             tenant.status = YearTenant.STATUS.copying
             tenant.save()
             f = NamedTemporaryFile(suffix='.json', delete=False)
-            call_command('tenant_command', 'dumpdata', 'activities',
-                         output=f.name, schema=copy_from.schema_name)
+
+            connection.set_tenant(copy_from)
+            call_command('dumpdata', 'activities', output=f.name)
             f.close()
-            call_command('tenant_command', 'loaddata', f.name, schema=tenant.schema_name)
-            os.remove(f.name)
             connection.set_tenant(tenant)
+            call_command('loaddata', f.name)
+            os.remove(f.name)
             Course.objects.all().update(uptodate=False)
             logger.debug('Populated activities for period %s-%s' %(tenant.start_date.isoformat(), tenant.end_date.isoformat()))
         except YearTenant.DoesNotExist:
@@ -59,18 +60,20 @@ def create_tenant(new_tenant_id, copy_activities_from_id=None, copy_children_fro
             tenant.save()
 
             f = NamedTemporaryFile(suffix='.json', delete=False)
-            call_command('tenant_command', 'dumpdata', 'schools',
-                         output=f.name, schema=copy_from.schema_name)
+            connection.set_tenant(copy_from)
+            call_command('dumpdata', 'schools', output=f.name)
             f.close()
-            call_command('tenant_command', 'loaddata', f.name, schema=tenant.schema_name)
+            connection.set_tenant(tenant)
+            call_command('loaddata', f.name)
             os.remove(f.name)
             logger.debug('Populated schools for period %s-%s' % (tenant.start_date.isoformat(), tenant.end_date.isoformat()))
 
             f = NamedTemporaryFile(suffix='.json', delete=False)
-            call_command('tenant_command', 'dumpdata', 'registrations.Child',
-                         output=f.name, schema=copy_from.schema_name)
+            connection.set_tenant(copy_from)
+            call_command('dumpdata', 'registrations.Child', output=f.name)
             f.close()
-            call_command('tenant_command', 'loaddata', f.name, schema=tenant.schema_name)
+            connection.set_tenant(tenant)
+            call_command('loaddata', f.name)
             os.remove(f.name)
 
             connection.set_tenant(tenant)
