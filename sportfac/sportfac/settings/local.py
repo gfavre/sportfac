@@ -52,10 +52,11 @@ EMAIL_FILE_PATH = env('EMAIL_FILE_PATH', default='/tmp/app-messages')
 
 ########## DATABASE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES['default']['NAME'] = env('DB_NAME')
-DATABASES['default']['USER'] = env('DB_USER')
-DATABASES['default']['PASSWORD'] = env('DB_PASSWORD')
-DATABASES['default']['PORT'] = env('DB_PORT', default='5432')
+DATABASES = {
+    'default': env.db('DATABASE_URL', default='postgres:///sportfac'),
+}
+DATABASES['default']['ENGINE'] = 'django_tenants.postgresql_backend'
+
 
 
 ########## END DATABASE CONFIGURATION
@@ -112,6 +113,8 @@ STATICFILES_DIRS = (
 )
 
 KEPCHUP_USE_ABSENCES = True
+KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES = True
+
 KEPCHUP_USE_BUILDINGS = True
 KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = True
 KEPCHUP_SEND_PRESENCE_LIST = True

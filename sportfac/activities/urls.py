@@ -3,7 +3,7 @@ from django.contrib.sitemaps import  GenericSitemap
 
 import views
 
-from absences.views import AbsenceView
+from absences.views import AbsenceCourseView
 from .models import Activity
 
 urlpatterns = [
@@ -35,7 +35,7 @@ urlpatterns = [
         view=views.CustomMailPreview.as_view(),
         name="mail-preview"),
     
-    url(r'^courses/(?P<course>\d+)/absences/$', view=AbsenceView.as_view(), 
+    url(r'^courses/(?P<course>\d+)/absences/$', view=AbsenceCourseView.as_view(),
         name='course-absence'),
 
 ]

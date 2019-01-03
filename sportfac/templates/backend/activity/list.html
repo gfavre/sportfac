@@ -46,6 +46,9 @@ $(function () {
       <td>
         <ul class="list-unstyled">
           <li class="text-nowrap"><a href="{{ activity.get_backend_url }}" class="btn btn-sm"><i class="icon-graduation-cap"></i>&nbsp;{% trans "Check courses" %}</a></li>
+          {% if USE_ABSENCES and ABSENCES_RELATE_TO_ACTIVITIES %}
+          <li class="text-nowrap"><a href="{{ activity.backend_absences_url }}" class="btn btn-sm"><i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}</a></li>
+          {% endif %}
           <li class="text-nowrap"><a href="{{ activity.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update activity" %}</a></li>
           <li class="text-nowrap"><a href="{{ activity.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete activity" %}</a></li>
         </ul>

@@ -105,9 +105,11 @@ table.dataTable thead>tr>th.rotated-heading {
   <thead>
     <tr>
       <th class="all child-col">{% trans "Name" %}</th>
-
       {% if BIB_NUMBERS %}
       <th class="rotated-heading all"><div><span>{% trans "Bib number" %}</span></div></th>
+      {% endif %}
+      {% if from_activity %}
+      <th class="rotated-heading all"><div><span>{% trans "Course" %}</span></div></th>
       {% endif %}
       {% if REGISTRATION_LEVELS %}
       <th class="rotated-heading min-desktop"><div><span>{% trans "Announced level" %}</span></div></th>
@@ -138,6 +140,9 @@ table.dataTable thead>tr>th.rotated-heading {
   <tfoot>
     <tr>
       <th class="child-col"></th>
+      {% if from_activity %}
+      <th></th>
+      {% endif %}
       {% if BIB_NUMBERS %}
       <th></th>
       {% endif %}
@@ -152,21 +157,25 @@ table.dataTable thead>tr>th.rotated-heading {
       {% endif %}
 
       {% for session_date in all_dates %}
-      {% with session=sessions|get_item:session_date %}
-      <th class="edit-session session-col"
-          data-url="{{ session.get_api_url }}"
-          data-instructor="{{ session.instructor.id }}"
-          data-date="{{ session.date | date:"d.m.Y"  }}">
-        <a class="has-popover" role="button" data-toggle="popover"
-           title="{% trans "Edit session" %}"
-           data-placement="top"
-           data-trigger="click focus">
+      {% if course %}
+        {% with session=sessions|get_item:session_date %}
+        <th class="edit-session session-col"
+            data-url="{{ session.get_api_url }}"
+            data-instructor="{{ session.instructor.id }}"
+            data-date="{{ session.date | date:"d.m.Y"  }}">
+          <a class="has-popover" role="button" data-toggle="popover"
+             title="{% trans "Edit session" %}"
+             data-placement="top"
+             data-trigger="click focus">
 
-          <abbr title="{{ session.instructor.full_name | default:_("Unknown instructor") }}">{{ session.instructor.get_initials | default:"n/a"}}</abbr>
-            <i class="icon-pencil hidden-print" style="clear:both;"></i>&nbsp;
-        </a>
-      </th>
-      {% endwith %}
+            <abbr title="{{ session.instructor.full_name | default:_("Unknown instructor") }}">{{ session.instructor.get_initials | default:"n/a"}}</abbr>
+              <i class="icon-pencil hidden-print" style="clear:both;"></i>&nbsp;
+          </a>
+        </th>
+        {% endwith %}
+      {% else %}
+        <th></th>
+      {% endif %}
       {% endfor %}
 
     </tr>
@@ -187,6 +196,9 @@ table.dataTable thead>tr>th.rotated-heading {
         <th data-order="{{ child.bib_number|default:"0" }}">
             {{ child.bib_number|default:"" }}
         </th>
+        {% endif %}
+        {% if from_activity %}
+        <td data-order="{{ registration.course.pk }}">{{ registration.course.number }}</td>
         {% endif %}
         {% if REGISTRATION_LEVELS %}
         {% with level=child_levels|get_item:child extra=extras|get_item:child%}
@@ -258,6 +270,9 @@ table.dataTable thead>tr>th.rotated-heading {
             <a role="button" class="btn btn-sm absence has-popover"
                data-toggle="popover"
                data-trigger="click focus">{{ absence|absence_to_status:1 }}</a>
+            {% if from_activity %}
+            <br><small class="muted">{{ absence.session.course.number }}</small>
+            {% endif %}
           </span>
         </td>
         {% endwith %}
@@ -271,12 +286,15 @@ table.dataTable thead>tr>th.rotated-heading {
   {% endfor %}
   </tbody>
 </table>
-
-<form class="move" method="post" action="{% url 'backend:registrations-move' %}">{% csrf_token %}</form>
+{% if user.is_manager %}
+<form class="move" method="post"
+      action="{% url 'backend:registrations-move' %}{% if move_redirect_a %}?activity={{ move_redirect_a }}{% elif move_redirect_c %}?course={{ move_redirect_c }}{% endif %}">
+  {% csrf_token %}
+</form>
 <p class="hidden-print text-center">
   <a class="btn btn-success btn-large" href="{{ request.get_full_path }}?pdf=1"><i class="icon icon-file-pdf"></i> {% trans "Export to PDF" %}</a>
 </p>
-
+{% endif %}
 
 <script type="text/html" id="session-window">
   <form class="session-form">

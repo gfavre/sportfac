@@ -14,6 +14,8 @@ activities_patterns = [
         name='activity-update'),
     url(r'^(?P<activity>[\w-]+)/delete$', view=views.ActivityDeleteView.as_view(),
         name='activity-delete'),
+    url(r'^(?P<activity>[\w-]+)/absences', view=views.ActivityAbsenceView.as_view(),
+        name='activity-absences'),
 ]
 
 courses_patterns = [

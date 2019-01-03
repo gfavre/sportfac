@@ -14,6 +14,9 @@
       </p>
     </div>
   </div>
+  {% if success_url %}
+    <input type="hidden" name="success_url" value="{{ success_url }}" />
+  {% endif %}
   {% if origin %}
   <div class="form-group">
     <label class="col-sm-2 control-label" for="origin">{% trans "From" %}</label>
@@ -24,6 +27,7 @@
   {% endif %}
   {% block errors %}{% endblock %}
   {% form form using "floppyforms/layouts/bootstrap.html" %}
+
 
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
