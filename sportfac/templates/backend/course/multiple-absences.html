@@ -66,6 +66,18 @@
     </li>
   {% endfor %}
   </ul>
+  {% if not ABSENCES_RELATE_TO_ACTIVITIES %}
+  {% comment %}
+  3.1.2019
+  Si on laisse la création de sessions depuis ici, on pourrait créer arriver à la situation où deux
+  cours n'appartenant pas à la même activité se voient assignés une session et des absences.
+  Si les absences sont liées à l'activité plutôt qu'au cours, j'imagine que cela peut casser des choses.
+
+  En outre, tous les cours de l'activité n'auront alors plus le même nombre de sessions, ce qui est dangereux.
+
+  Préférons la prudence, donc. On peut créer des sessions depuis la vue "absences de l'activité" ou depuis le cours
+  lui-même (qui en fait est la vue "absences de l'activité" où l'on a filtré certains enfants...)
+  {% endcomment %}
   <div class="hidden-print">
     <form method="POST" class="form-inline">{% csrf_token %}
       {% form session_form using "floppyforms/layouts/bootstrap-inline.html" %}
@@ -73,6 +85,7 @@
     </form>
     <hr>
   </div>
+  {% endif %}
 </section>
 
 {% addtoblock "js" %}

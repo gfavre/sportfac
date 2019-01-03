@@ -74,6 +74,7 @@ class CourseAbsenceView(BackendMixin, DetailView):
                 instructor = None
             with transaction.atomic():
                 session, created = Session.objects.get_or_create(instructor=instructor,
+                                                                 activity=course.activity,
                                                                  course=course,
                                                                  date=form.cleaned_data['date'])
                 for registration in course.participants.all():
@@ -205,7 +206,8 @@ class CoursesAbsenceView(BackendMixin, ListView):
         form = SessionForm(data=self.request.POST)
         if form.is_valid():
             for course in courses:
-                session, created = Session.objects.get_or_create(course=course, date=form.cleaned_data['date'])
+                session, created = Session.objects.get_or_create(course=course, activity=course.activity,
+                                                                 date=form.cleaned_data['date'])
                 if not created:
                     continue
                 for registration in course.participants.all():
@@ -234,6 +236,8 @@ class CoursesAbsenceView(BackendMixin, ListView):
             response['Content-Disposition'] = u'attachment; filename="{}"'.format(filename)
             return response
         return super(CoursesAbsenceView, self).get(request, *args, **kwargs)
+
+
 
 
 class CourseJSCSVView(CSVMixin, CourseDetailView):

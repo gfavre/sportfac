@@ -116,6 +116,7 @@ def tenants_context(request):
 def kepchup_context(request):
     return {
         'USE_ABSENCES': settings.KEPCHUP_USE_ABSENCES,
+        'ABSENCES_RELATE_TO_ACTIVITIES': settings.KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES,
         'USE_BUILDINGS': settings.KEPCHUP_USE_BUILDINGS,
         'IMPORT_CHILDREN': settings.KEPCHUP_IMPORT_CHILDREN,
         'PREFILL_YEARS_WITH_TEACHERS': settings.KEPCHUP_PREFILL_YEARS_WITH_TEACHERS,

@@ -18,7 +18,7 @@ from django.utils import timezone
 from formtools.wizard.views import SessionWizardView
 
 from absences.models import Absence
-from activities.models import Course, ExtraNeed
+from activities.models import Activity, Course, ExtraNeed
 from backend.forms import (BillingForm, ChildSelectForm, CourseSelectForm,
                            RegistrationForm, ExtraInfoFormSet)
 from registrations.resources import RegistrationResource
@@ -63,15 +63,35 @@ class RegistrationsMoveView(BackendMixin, FormView):
     form_class = MoveRegistrationsForm
     template_name = 'backend/registration/move.html'
 
+    def get_initial(self):
+        initial = super(RegistrationsMoveView, self).get_initial()
+        if 'course' in self.request.GET:
+            try:
+                prev_course_id = int(self.request.GET.get('course'))
+                initial['origin_course_id'] = Course.objects.get(pk=prev_course_id).pk
+            except (IndexError, TypeError, Course.DoesNotExist):
+                pass
+        elif 'activity' in self.request.GET:
+            try:
+                prev_activity_id = int(self.request.GET.get('activity'))
+                initial['origin_activity_id'] = Activity.objects.get(pk=prev_activity_id).pk
+            except (IndexError, TypeError, Activity.DoesNotExist):
+                pass
+        return initial
+
     def form_valid(self, form):
         course = form.cleaned_data['destination']
-        origin = form.cleaned_data['registrations'].first().course
+        if 'success_url' in form.data:
+            redirect = form.data['success_url']
+        else:
+            redirect = form.cleaned_data['registrations'].first().course.backend_url
+
         now = timezone.now()
         with transaction.atomic():
             for registration in form.cleaned_data['registrations']:
                 source = registration.course
-                registration.course=course
-                registration.status=Registration.STATUS.confirmed
+                registration.course = course
+                registration.status = Registration.STATUS.confirmed
                 registration.save()
                 for future_session_source in source.sessions.filter(date__gte=now):
                     future_session_source.absences.filter(child=registration.child).delete()
@@ -82,22 +102,25 @@ class RegistrationsMoveView(BackendMixin, FormView):
         message = _("Registrations of %(nb)s children have been moved.")
         message %= {'nb': form.cleaned_data['registrations'].count()}
         messages.add_message(self.request, messages.SUCCESS, message)
-        return HttpResponseRedirect(origin.backend_url)
+        return HttpResponseRedirect(redirect)
 
     def get_context_data(self, **kwargs):
-        try:
-            prev = int(self.request.GET.get('prev'))
-        except (IndexError, TypeError):
-            prev = None
-        kwargs['origin'] = None
-        if prev:
-            try:
-                kwargs['origin'] = Course.objects.get(pk=prev)
-            except Course.DoesNotExist:
-                pass
         form = self.get_form()
         form.is_valid()
         kwargs['children'] = [reg.child for reg in form.cleaned_data.get('registrations', [])]
+
+        if 'activity' in self.request.GET:
+            try:
+                prev_activity_id = int(self.request.GET.get('activity'))
+                kwargs['success_url'] = Activity.objects.get(pk=prev_activity_id).backend_absences_url
+            except (IndexError, TypeError, Activity.DoesNotExist):
+                pass
+        elif 'course' in self.request.GET:
+            try:
+                prev_course_id = int(self.request.GET.get('course'))
+                kwargs['success_url'] = Course.objects.get(pk=prev_course_id).backend_absences_url
+            except (IndexError, TypeError, Course.DoesNotExist):
+                pass
         return super(RegistrationsMoveView, self).get_context_data(**kwargs)
 
 

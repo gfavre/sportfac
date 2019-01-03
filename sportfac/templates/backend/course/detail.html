@@ -181,7 +181,7 @@
       </form>
     </div>
     <div class="btn-group">
-      <form class="move" method="post" action="{% url 'backend:registrations-move' %}?prev={{ course.id }}">{% csrf_token %}
+      <form class="move" method="post" action="{% url 'backend:registrations-move' %}?course={{ course.id }}">{% csrf_token %}
         <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-loop-alt"></i>&nbsp;&nbsp;{% trans "Move to another course..." %}</button>
       </form>
     </div>

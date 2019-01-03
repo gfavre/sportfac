@@ -1,0 +1,20 @@
+{% extends "backend/base.html" %}
+{% load i18n duration switzerland sekizai_tags floppyforms %}
+
+{% block title %}{{ activity.name }} - Absences - {{ block.super }}{% endblock %}
+{% block page_title %}{{ activity.name }} - {% trans "Absences" %}{% endblock %}
+
+{% block content %}
+
+<div class="hidden-print">
+
+  <form method="POST" class="form-inline">{% csrf_token %}
+    {% form session_form using "floppyforms/layouts/bootstrap-inline.html" %}
+    <button type="submit" class="btn btn-secondary">{% trans "New session" %}</button>
+  </form>
+</div>
+
+
+{% include 'absences/absences-table.html' with from_activity="1" move_redirect_a=activity.pk %}
+
+{% endblock content %}

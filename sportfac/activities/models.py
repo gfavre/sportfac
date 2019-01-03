@@ -2,6 +2,7 @@
 from datetime import datetime, date
 
 from django.contrib.postgres.fields import ArrayField
+from django.conf import settings
 from django.db import models
 from django.db.models.aggregates import Count
 from django.core.urlresolvers import reverse
@@ -86,6 +87,15 @@ class Activity(TimeStampedModel):
     @property
     def delete_url(self):
         return self.get_delete_url()
+
+    @property
+    def backend_absences_url(self):
+        return reverse('backend:activity-absences', kwargs={'activity': self.slug})
+
+    @property
+    def participants(self):
+        from registrations.models import Registration
+        return Registration.objects.filter(course__in=self.courses.all())
 
     def __unicode__(self):
         return self.name
@@ -240,6 +250,9 @@ class Course(TimeStampedModel):
         return reverse('activities:course-absence', kwargs={'course': self.pk})
 
     def get_backend_absences_url(self):
+        if settings.KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES:
+            return reverse('backend:activity-absences',
+                           kwargs={'activity': self.activity.slug}) + '?c={}'.format(self.pk)
         return reverse('backend:course-absence', kwargs={'course': self.pk})
 
     def get_js_export_url(self):

@@ -8,7 +8,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.views.generic import DetailView
 
 from activities.views import InstructorMixin
-from activities.models import Course, ExtraNeed
+from activities.models import Activity, Course, ExtraNeed
 from backend.forms import SessionForm  # TODO move sessionform to a more appropriate place
 from backend.utils import AbsencePDFRenderer  # TODO move pdfrenderer to a more appropriate place
 
@@ -16,11 +16,12 @@ from registrations.models import ChildActivityLevel, ExtraInfo
 from .models import Absence, Session
 
 
-class AbsenceView(InstructorMixin, DetailView):
-    model = Course
+class AbsenceCourseView(InstructorMixin, DetailView):
     template_name = 'absences/absences.html'
     pk_url_kwarg = 'course'
-    queryset = Course.objects.prefetch_related('sessions', 'sessions__absences', 'participants__child')
+
+    def get_queryset(self):
+        return Course.objects.prefetch_related('sessions', 'sessions__absences', 'participants__child')
 
     def get_context_data(self, **kwargs):
         course = self.get_object()
@@ -69,7 +70,7 @@ class AbsenceView(InstructorMixin, DetailView):
         kwargs['courses_list'] = self.request.user.course.prefetch_related('activity')
         kwargs['session_form'] = SessionForm()
 
-        return super(AbsenceView, self).get_context_data(**kwargs)
+        return super(AbsenceCourseView, self).get_context_data(**kwargs)
 
     def post(self, *args, **kwargs):
         course = self.get_object()
@@ -99,4 +100,4 @@ class AbsenceView(InstructorMixin, DetailView):
             response = HttpResponse(open(filepath).read(), content_type='application/pdf')
             response['Content-Disposition'] = u'attachment; filename="{}"'.format(filename)
             return response
-        return super(AbsenceView, self).get(request, *args, **kwargs)
+        return super(AbsenceCourseView, self).get(request, *args, **kwargs)
