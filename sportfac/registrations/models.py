@@ -42,7 +42,7 @@ class Registration(TimeStampedModel, StatusModel):
     bill = models.ForeignKey('Bill', related_name="registrations", null=True, blank=True,
                              on_delete=models.SET_NULL)
     paid = models.BooleanField(default=False, verbose_name=_("Has paid"))
-    transport = models.ForeignKey('Transport', related_name='participants', null=True, blank=True,
+    transport = models.ForeignKey('Transport', related_name='participants', null=True,
                                   verbose_name=_("Transport information"),
                                   on_delete=models.SET_NULL)
 
@@ -127,7 +127,9 @@ class Registration(TimeStampedModel, StatusModel):
     def price(self):
         subtotal = self.course.price
         reductions = sum([extra.reduction for extra in self.extra_infos.all()])
-        return subtotal - reductions
+        if subtotal > reductions:
+            return subtotal - reductions
+        return 0
 
     def save(self, *args, **kwargs):
         with transaction.atomic():
