@@ -61,19 +61,21 @@ $(function () {
 </script>
 {% endaddtoblock %}
 
-<a href="{% url 'backend:user-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New user" %}</a>
-<hr />
-<div class="btn-group">
+<a href="{% url 'backend:user-create' %}" class="btn btn-success hidden-print">
+  <i class="icon-plus"></i> {% trans "New user" %}
+</a>
+<hr class="hidden-print" />
+<div class="btn-group hidden-print">
   <a class="btn btn-default selectall">{% trans "Select all" %}</span></a>
   <a class="btn btn-default deselectall needs-select disabled">{% trans "Deselect all" %}</a>
 </div>
-<div class="btn-group">
+<div class="btn-group hidden-print">
   <form class="mail" method="post">{% csrf_token %}
     <input type="hidden" name="data" value='' />
     <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-mail"></i>&nbsp;&nbsp;{% trans "Send email to selected users" %}</button>
   </form>
 </div>
-<div class="btn-group">
+<div class="btn-group hidden-print">
   <a href="{% url 'backend:user-export' %}">
     <i class="icon-file-excel"></i>
    &nbsp;&nbsp;{% trans "Export users" %}
@@ -88,7 +90,7 @@ $(function () {
 {% if not NO_PAYMENT %}
       <th>{% trans "Paid" %}</th>
 {% endif %}
-      <th>{% trans "Actions" %}</th>
+      <th class="hidden-print">{% trans "Actions" %}</th>
     </tr>
   </thead>
   {% for user in object_list %}
@@ -126,7 +128,7 @@ $(function () {
       {% endif %}
       </td>
 {% endif %}
-      <td>
+      <td class="hidden-print">
         <ul class="list-unstyled">
           <li class="text-nowrap"><a href="{{ user.get_backend_url }}" class="btn btn-sm"><i class="icon-user"></i>&nbsp;&nbsp;{% trans "User details" %}</a></li>
           <li class="text-nowrap"><a href="{{ user.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Update user" %}</a></li>
@@ -136,7 +138,7 @@ $(function () {
     
   {% endfor %}
 </table>
-<div class="form-group">
+<div class="form-group hidden-print">
   <div class="btn-group">
     <a class="btn btn-default selectall"><span>{% trans "Select all" %}</span></a>
     <a class="btn btn-default deselectall needs-select disabled"><span>{% trans "Deselect all" %}</span></a>

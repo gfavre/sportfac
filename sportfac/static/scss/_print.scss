@@ -4,10 +4,12 @@
         size: A4;
         margin: 1cm;
     }
-    body {
-        font-size: 12px;
+    html body {
+        font-size: 10px;
     }
-
+    #back-to-top {
+        display: none!important;
+    }
     /* fixes safari zoom out bug */
     .container {
         width: auto;
@@ -16,14 +18,12 @@
     h1 {
         font-size: 24px;
     }
-    table.dataTable thead>tr>th {
-        padding-left: 5px;
-        padding-right: 5px;
+    .page-header {
+      margin-bottom: 0;
+      margin-top: 0;
     }
-    .table-bordered thead tr th, .table-bordered tfoot tr th {
-        font-size: 10px!important;
-        font-weight: 600!important;
-    }
+
+
     .wizard { display: none;}
     .navbar { display: none;}
     .form-actions { display: none;}
@@ -82,6 +82,34 @@
     body table.dataTable thead th.sorting:after {
         display: none;
         content: '';
+    }
+    .dataTables_wrapper {
+        .dt-buttons, .dataTables_length {
+            display: None;
+        }
+    }
+
+    table.dataTable thead>tr>th {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+    .table-bordered thead tr th, .table-bordered tfoot tr th {
+        font-size: 10px!important;
+        font-weight: 600!important;
+    }
+
+    table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:before,
+    table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child:before {
+          display: none;
+    }
+
+    table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child,
+    table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child {
+      padding-left: 5px;
+    }
+
+    table.table-bordered.dataTable {
+      border-collapse: collapse !important;
     }
 
 }

@@ -271,7 +271,7 @@ table.dataTable thead>tr>th.rotated-heading {
                data-toggle="popover"
                data-trigger="click focus">{{ absence|absence_to_status:1 }}</a>
             {% if from_activity %}
-            <br><small class="muted">{{ absence.session.course.number }}</small>
+            <span class="hidden-print"><br><small class="muted">{{ absence.session.course.number }}</small></span>
             {% endif %}
           </span>
         </td>

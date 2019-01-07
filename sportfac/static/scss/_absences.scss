@@ -29,4 +29,21 @@
     display: inline-block;
     width: 100%;
   }
+
+  @media print {
+    .edit-session abbr[title]:after {
+          display: none;
+    }
+
+    .edit-session abbr[title] {
+      border-bottom: none;
+      text-decoration: none;
+    }
+
+    .set-absence .btn-sm {
+      font-size: 10px;
+    }
+
+  }
+
 }
