@@ -283,6 +283,11 @@ class Course(TimeStampedModel):
     def delete_url(self):
         return self.get_delete_url()
 
+    @@property
+    def backend_absences_url(self):
+        return self.get_backend_absences_url()
+
+
     def get_period_text(self):
         if self.start_date.year == self.end_date.year:
             if self.start_date.month == self.end_date.month:
