@@ -164,3 +164,11 @@ class AbsenceNotificationDelay(IntegerPreference):
     name = 'ABSENCE_DELAY'
     default = 1
     help_text = _("Days between course absence and notification")
+
+
+@global_preferences_registry.register
+class PeriodName(StringPreference):
+    """Delay (in days) before sending notification of absence to parents"""
+    name = 'PERIOD_NAME'
+    default = ''
+    help_text = _("Name of period, can be used in templates")

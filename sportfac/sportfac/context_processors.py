@@ -4,6 +4,8 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
 
+from dynamic_preferences.registries import global_preferences_registry
+
 from activities.models import Activity
 from backend.models import YearTenant
 from registrations.models import Bill, Registration
@@ -134,4 +136,11 @@ def kepchup_context(request):
         'DISPLAY_REGISTRATION_NOTE': settings.KEPCHUP_DISPLAY_REGISTRATION_NOTE,
         'DISPLAY_NUMBER_OF_SESSIONS': settings.KEPCHUP_DISPLAY_NUMBER_OF_SESSIONS,
         'PROTOCOL': settings.DEBUG and 'http://' or 'https://'
+    }
+
+
+def dynamic_preferences_context(request):
+    global_preferences = global_preferences_registry.manager()
+    return {
+        'preferences_period_name': global_preferences['PERIOD_NAME']
     }

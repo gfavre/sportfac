@@ -170,6 +170,8 @@ TEMPLATES = [
                 'sportfac.context_processors.activities_context',
                 'sportfac.context_processors.tenants_context',
                 'sportfac.context_processors.kepchup_context',
+                'sportfac.context_processors.dynamic_preferences_context',
+
                 'sekizai.context_processors.sekizai',
             ],
             'loaders': [
@@ -485,6 +487,7 @@ KEPCHUP_LEVELS_PREFIXER = {}
 KEPCHUP_USE_BUILDINGS = False
 KEPCHUP_DISPLAY_NUMBER_OF_SESSIONS = True
 KEPCHUP_ALTERNATIVE_STEPS_NAMING = False
+KEPCHUP_SPLASH_PAGE = False
 
 KEPCHUP_USE_ABSENCES = False
 KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES = False

@@ -103,12 +103,12 @@ CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 
 
 TEMPLATES[0]['DIRS'] = [
-    normpath(join(SITE_ROOT, 'themes', 'rojalets', 'templates')),
+    normpath(join(SITE_ROOT, 'themes', 'montreux', 'templates')),
     normpath(join(SITE_ROOT, 'templates')),
 ]
 
 STATICFILES_DIRS = (
-    normpath(join(SITE_ROOT, 'themes', 'rojalets', 'static')),
+    normpath(join(SITE_ROOT, 'themes', 'montreux', 'static')),
     normpath(join(SITE_ROOT, 'static')),
 )
 
@@ -136,6 +136,7 @@ KEPCHUP_NO_SSF = True
 KEPCHUP_IMPORT_CHILDREN = True
 KEPCHUP_DISPLAY_NUMBER_OF_SESSIONS = False
 KEPCHUP_ALTERNATIVE_STEPS_NAMING = True
+KEPCHUP_SPLASH_PAGE = True
 
 
 CELERYBEAT_SCHEDULE['notify-absences'] = {
