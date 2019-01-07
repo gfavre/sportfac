@@ -344,7 +344,7 @@ class TransportDetailView(BackendMixin, DetailView):
         kwargs['all_dates'] = list(set(qs.values_list('session__date', flat=True)))
         kwargs['all_dates'].sort(reverse=True)
         try:
-            questions = ExtraNeed.objects.filter(question_label__startswith=u'Arrêt')
+            questions = ExtraNeed.objects.filter(question_label__startswith=u'Arr')
             all_extras = dict([(extra.registration.child, extra.value) for extra in ExtraInfo.objects.filter(
                 registration__child__in=children,
                 registration__course__in=courses,
@@ -353,22 +353,23 @@ class TransportDetailView(BackendMixin, DetailView):
             all_extras = {}
 
         child_absences = collections.OrderedDict()
+        child_stop = {}
         for registration in self.object.participants.order_by('child__last_name', 'child__first_name'):
             child_absences[(registration.child, registration.course, registration)] = {}
+            child_stop[registration.child] = all_extras.get(registration.child, '')
+        kwargs['child_stop'] = child_stop
         for absence in qs:
             child = absence.child
             course = absence.session.course
             if (child, course) not in registrations:
                 # another child in same course
                 continue
-            child.bus_stop = all_extras.get(child, '')
             the_tuple = (child, course, registrations[(child, course)])
             if the_tuple in child_absences:
                 child_absences[the_tuple][absence.session.date] = absence
             else:
                 child_absences[the_tuple] = {absence.session.date: absence}
         kwargs['child_absences'] = child_absences
-
         return super(TransportDetailView, self).get_context_data(**kwargs)
 
 

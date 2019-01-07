@@ -39,6 +39,7 @@ class ExtraInfoAdmin(admin.ModelAdmin):
                      'registration__course__number',
                      'key__question_label', 'value')
     list_filter = ('key',)
+    raw_id_fields = ('registration', )
 
 
 admin.site.register(ExtraInfo, ExtraInfoAdmin)

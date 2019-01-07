@@ -156,8 +156,9 @@ class ExtraInfoForm(forms.ModelForm):
         super(ExtraInfoForm, self).__init__(*args, **kwargs)
         if self.instance:
             if self.instance.key.choices:
-                self.fields['value'] = forms.ChoiceField(choices=zip(self.instance.key.choices,
+                self.fields['value'] = forms.ChoiceField(choices=[('', '----')] + zip(self.instance.key.choices,
                                                                      self.instance.key.choices),
+
                                                          label=_("Answer"))
             elif self.instance.type == 'B':
                 self.fields['value'] = forms.BooleanField(label=_("Answer"))

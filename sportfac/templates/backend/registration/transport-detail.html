@@ -1,5 +1,5 @@
 {% extends "backend/base.html" %}
-{% load i18n staticfiles sekizai_tags matrix status %}
+{% load i18n staticfiles sekizai_tags matrix status switzerland %}
 
 
 
@@ -115,7 +115,6 @@ table.dataTable thead>tr>th.rotated-heading {
     <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-loop-alt"></i>&nbsp;&nbsp;{% trans "Move to another transport..." %}</button>
   </form>
 </div>
-
 <table class="table table-bordered table-hover table-condensed absences table-fixed responsive">
   <thead>
     <tr>
@@ -125,6 +124,7 @@ table.dataTable thead>tr>th.rotated-heading {
       </th>
       {% endif %}
       <th class="all child-name">{% trans "Name" %}</th>
+      <th class="all phone">{% trans "Phone" %}</th>
       <th class="all course">{% trans "Course" %}</th>
       <th class="all transport">{% trans "Info" %}</th>
       {% for session_date in all_dates %}
@@ -149,11 +149,14 @@ table.dataTable thead>tr>th.rotated-heading {
       <td data-order="{{ child.ordering_name }}">
         <span class="nowrap"><a href="{{ child.get_backend_absences_url }}">{{ child.full_name }}</a></span>
       </td>
+      <td data-order="{{ child.emergency_number|phone:'RFC3966' }}">
+        {{ child.emergency_number|phone }}
+      </td>
       <td data-order="{{ course.number }}">
         <span class="nowrap"><a href="{{ course.backend_url }}">{{ course.short_name }}</a></span>
       </td>
-      <td data-order="{{ child.bus_stop|cut:" "}}">
-        {{ child.bus_stop }}
+      <td data-order="{{ child_stop|get_item:child|cut:" "}}">
+       {{ child_stop|get_item:child }}
       </td>
       {% for session_date in all_dates %}{% if session_date in absences %}
       {% with absence=absences|get_item:session_date %}
