@@ -292,7 +292,8 @@ table.dataTable thead>tr>th.rotated-heading {
   {% csrf_token %}
 </form>
 <p class="hidden-print text-center">
-  <a class="btn btn-success btn-large" href="{{ request.get_full_path }}?pdf=1"><i class="icon icon-file-pdf"></i> {% trans "Export to PDF" %}</a>
+
+  <a class="btn btn-success btn-large" href="{{ request.get_full_path|add_pdf_param }}"><i class="icon icon-file-pdf"></i> {% trans "Export to PDF" %}</a>
 </p>
 {% endif %}
 

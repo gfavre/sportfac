@@ -7,7 +7,8 @@ Id Favre    num. ssf    NoCar    dossard    niveau                  SSF 18
 100	        96657       6        519        Moyen (niveau 4 à 6)    A 4B
 
 """
-from registrations.models import Transport, Registration, ChildActivityLevel
+from activities.models import ExtraNeed
+from registrations.models import Transport, Registration, ChildActivityLevel, ExtraInfo
 
 from import_export.formats.base_formats import XLSX
 
@@ -15,6 +16,10 @@ from import_export.formats.base_formats import XLSX
 fmt = XLSX()
 f = open('/home/grfavre/montreux-hiver-2019.xlsx', fmt.get_read_mode())
 dataset = fmt.create_dataset(f.read())
+
+
+level_extra_key = 'Niveau de ski/snowboard'
+question = ExtraNeed.objects.get(question_label=level_extra_key)
 
 for (registration_id, id_lagapeo, transport_name, bib_number, level, old_level) in dataset:
     try:
@@ -32,10 +37,29 @@ for (registration_id, id_lagapeo, transport_name, bib_number, level, old_level) 
     if bib_number:
         registration.child.bib_number = bib_number
         registration.child.save()
+
+
+for (registration_id, id_lagapeo, transport_name, bib_number, announced_level, old_level) in dataset:
+    try:
+        registration = Registration.objects.get(pk=registration_id)
+    except Registration.DoesNotExist:
+        print('Missing registration: {}'.format(registration_id))
+    if announced_level:
+        try:
+            answer = registration.extra_infos.get(key=question)
+        except:
+            answer = ExtraInfo.objects.create(key=question, registration=registration)
+        if answer.value != announced_level:
+            answer.value = announced_level
+            answer.save()
+
     level, created = ChildActivityLevel.objects.get_or_create(activity=registration.course.activity,
                                                               child=registration.child)
     if created:
         print('Created level for child {}'.format(registration.child))
     if old_level:
-        level.before_level = old_level.split(' ')[-1].upper()
-        level.save()
+        converted_level = old_level.split(' ')[-1].upper()
+        if level.before_level != converted_level:
+            print('update level')
+            level.before_level = converted_level
+            level.save()
