@@ -59,7 +59,6 @@ class ActivityAbsenceView(BackendMixin, DetailView):
 
     def post(self, *args, **kwargs):
         activity = self.get_object()
-        impo
         form = SessionForm(data=self.request.POST)
         if form.is_valid():
             msg = []
@@ -100,7 +99,11 @@ class ActivityAbsenceView(BackendMixin, DetailView):
             qs = qs.order_by('child__bib_number', 'child__last_name', 'child__first_name')
         else:
             qs = qs.order_by('child__last_name', 'child__first_name')
-        kwargs['sessions'] = dict([(session.date, session) for session in self.object.sessions.all()])
+
+        if 'course' in kwargs:
+            kwargs['sessions'] = dict([(session.date, session) for session in kwargs['course'].sessions.all()])
+        else:
+            kwargs['sessions'] = dict([(session.date, session) for session in self.object.sessions.all()])
         # kwargs['sessions'] = dict([(absence.session.date, absence.session) for absence in qs])
         kwargs['all_dates'] = sorted([session_date for session_date in kwargs['sessions'].keys()], reverse=True)
 

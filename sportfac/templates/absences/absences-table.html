@@ -158,11 +158,15 @@ table.dataTable thead>tr>th.rotated-heading {
 
       {% for session_date in all_dates %}
       {% if course %}
+        {% comment %}
+        NOTE: if multiple courses where to be given, it would create a trouble. Therefore, the activity-absences view
+        set course only if a single course is displayed at that time (and not the full activity).
+        {% endcomment %}
         {% with session=sessions|get_item:session_date %}
         <th class="edit-session session-col"
             data-url="{{ session.get_api_url }}"
             data-instructor="{{ session.instructor.id }}"
-            data-date="{{ session.date | date:"d.m.Y"  }}">
+            data-date="{{ session.date | date:"d.m.Y"  }}">{{ course.number }}
           <a class="has-popover" role="button" data-toggle="popover"
              title="{% trans "Edit session" %}"
              data-placement="top"
