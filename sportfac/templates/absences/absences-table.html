@@ -684,6 +684,7 @@ $(function(){
 
     $('.absences').on('click', '.edit-session .session-delete', function(evt){
       var $parent = $(this).parents(".edit-session");
+
       $.ajax({
         url: $parent.data('url'),
         type: 'DELETE',

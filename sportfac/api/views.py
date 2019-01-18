@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+from django.conf import settings
 from django.db import IntegrityError
 from django.db.models import Q
 from django.http import Http404
@@ -119,6 +120,14 @@ class SessionViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(SessionSerializer(instance).data)
+
+    def perform_destroy(self, instance):
+        if settings.KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES:
+            sister_sessions = instance.activity.sessions.filter(date=instance.date)
+            for session in sister_sessions:
+                session.delete()
+        else:
+            instance.delete()
 
 
 class ActivityViewSet(viewsets.ReadOnlyModelViewSet):

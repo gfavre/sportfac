@@ -59,6 +59,7 @@ class ActivityAbsenceView(BackendMixin, DetailView):
 
     def post(self, *args, **kwargs):
         activity = self.get_object()
+        impo
         form = SessionForm(data=self.request.POST)
         if form.is_valid():
             msg = []
