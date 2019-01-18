@@ -335,10 +335,14 @@ class TransportDetailView(BackendMixin, DetailView):
     queryset = Transport.objects.prefetch_related('participants', 'participants__child', 'participants__course')
 
     def get_context_data(self, **kwargs):
-        courses = set([registration.course for registration in self.object.participants.all()])
         children = set([registration.child for registration in self.object.participants.all()])
+        if settings.KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES:
+            courses = set([absence.session.course for child in children for absence in child.absence_set.all()])
+        else:
+            courses = set([registration.course for registration in self.object.participants.all()])
+
         registrations = dict([((registration.child, registration.course), registration) for registration in self.object.participants.all()])
-        qs = Absence.objects.filter(session__course__in=courses, child__in=children) \
+        qs = Absence.objects.filter(child__in=children, course__in=courses) \
                             .select_related('session', 'child', 'session__course', 'session__course__activity') \
                             .order_by('child__last_name', 'child__first_name')
         kwargs['all_dates'] = list(set(qs.values_list('session__date', flat=True)))
