@@ -166,7 +166,7 @@ table.dataTable thead>tr>th.rotated-heading {
         <th class="edit-session session-col"
             data-url="{{ session.get_api_url }}"
             data-instructor="{{ session.instructor.id }}"
-            data-date="{{ session.date | date:"d.m.Y"  }}">{{ course.number }}
+            data-date="{{ session.date | date:"d.m.Y"  }}">
           <a class="has-popover" role="button" data-toggle="popover"
              title="{% trans "Edit session" %}"
              data-placement="top"
