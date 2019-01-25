@@ -30,7 +30,10 @@ class DatePickerInput(forms.DateInput):
         super(DatePickerInput, self).__init__(attrs, format=format)
 
     def format_value(self, value):
-        return value.strftime('%d.%m.%Y')
+        try:
+            return value.strftime('%d.%m.%Y')
+        except AttributeError:
+            return value
 
 
 class TimePickerInput(forms.TimeInput):
