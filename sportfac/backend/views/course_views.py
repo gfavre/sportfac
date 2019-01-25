@@ -230,6 +230,8 @@ class CoursesAbsenceView(BackendMixin, ListView):
             renderer = AbsencesPDFRenderer(context, self.request)
             tempdir = mkdtemp()
             filename = u'absences-{}.pdf'.format('-'.join(self.object_list.values_list('number', flat=True)))
+            if len(filename) > 100:
+                filename = u'absences.pdf'
             filepath = os.path.join(tempdir, filename)
             renderer.render_to_pdf(filepath)
             response = HttpResponse(open(filepath).read(), content_type='application/pdf')
