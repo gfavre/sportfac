@@ -5,8 +5,8 @@
 {% addtoblock "css" %}
 <style>
 #clockdiv{
-  margin: 1em 0;
-	color: #fff;
+  margin: 0;
+	color: #000;
 	display: inline-block;
 	font-weight: 100;
 	text-align: center;
@@ -15,8 +15,8 @@
 
 #clockdiv > div{
 	padding: 10px;
-  box-shadow: 0 0 10px 0 rgba(0,0,0,0.5);
-  background-color: rgba(0,0,0,0.6);
+  //box-shadow: 0 0 10px 0 rgba(0,0,0,0.5);
+  //background-color: rgba(0,0,0,0.6);
 	display: inline-block;
 }
 
@@ -25,9 +25,11 @@
 	border-radius: 3px;
 	background-color: rgba(0,0,0,0.7);
 	display: inline-block;
+  color: #fff;
 }
 #clockdiv div > small {
   display: block;
+  font-size: .7em;
 }
 
 </style>
@@ -82,7 +84,7 @@ initializeClock('clockdiv', deadline);
 
 {% endaddtoblock %}
 <div id="clockdiv">
-  <div>
+   <div {% if remaining_days == 0 %}class="hidden"{% endif %}>
     <span class="days"></span>
     <small>{% trans "Days" %}</small>
   </div>

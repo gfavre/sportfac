@@ -1,4 +1,4 @@
-{% load i18n sekizai_tags staticfiles %}<!DOCTYPE html>
+{% load i18n sekizai_tags staticfiles humanize l10n countdowntimer %}<!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
      <title>{% block title %}Sport scolaire facultatif – Montreux{% endblock title %}</title>
@@ -113,7 +113,13 @@
             <img src="https://ssfmontreux.ch/static/img/shutterstock_208463827.jpg" class="img-responsive"
                  style="margin-bottom:15px">
           </a>
+
           <p class="text-center">
+        {%  if request.PHASE == 1 %}
+  <p>{% blocktrans with registration_start=registration_start|date:"j F Y" registration_end=registration_end|date:"j F Y"%}They will open from {{ registration_start }} until {{ registration_end }}.{% endblocktrans %}</p>
+  {% countdown registration_start %}
+
+  {% endif %}
             <a href="{% if registration_opened %}{% url 'auth_login' %}?next=/wizard/{% else %}{% url 'registrations_registered_activities' %}{% endif %}"
                class="btn btn-primary">
               Entrer
