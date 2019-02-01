@@ -344,7 +344,7 @@ class ChildDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
 
 class ChildImportView(BackendMixin, SuccessMessageMixin, FormView):
     form_class = ChildImportForm
-    success_url = reverse_lazy('backend:user-list')
+    success_url = reverse_lazy('backend:child-list')
     success_message = _("Children are being imported")
     template_name = 'backend/user/child-import.html'
 

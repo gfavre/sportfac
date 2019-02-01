@@ -84,7 +84,6 @@ def load_children(filelike):
         xls_book = xlrd.open_workbook(file_contents=filelike.read())
         sheet = xls_book.sheets()[0]
         header_row = sheet.row_values(0)
-
         if not all(key in header_row for key in CHILD_MANDATORY_FIELDS):
             raise ValueError(_("All these fields are mandatory: %s") % unicode(CHILD_MANDATORY_FIELDS))
     except xlrd.XLRDError:

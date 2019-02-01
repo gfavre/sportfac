@@ -31,6 +31,8 @@ KEPCHUP_NO_SSF = True
 KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS = ['pdf/infos-moniteurs-2018.pdf', 'pdf/GMS_2018-2019.pdf']
 KEPCHUP_SPLASH_PAGE = True
 KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES = True
+KEPCHUP_ALTERNATIVE_STEPS_NAMING = True
+KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = ['first_name', 'last_name', 'birth_date']
 
 CELERYBEAT_SCHEDULE['notify-absences'] = {
         'task': 'absences.tasks.notify_absences',

@@ -114,7 +114,22 @@ def tenants_context(request):
 
 
 def kepchup_context(request):
+
     return {
+        'FIRST_NAME_EDITABLE': 'first_name' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
+        'LAST_NAME_EDITABLE': 'last_name' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
+        'SEX_EDITABLE': 'sex' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
+        'BIRTH_DATE_EDITABLE': 'birth_date' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
+        'NATIONALITY_EDITABLE': 'nationality' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
+        'LANGUAGE_EDITABLE': 'language' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
+        'SCHOOL_YEAR_EDITABLE': 'school_year' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
+        'BUILDING_EDITABLE': 'building' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
+        'TEACHER_EDITABLE': 'teacher' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
+        'ID_LAGAPEO_EDITABLE': 'id_lagapeo' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
+        'EMERGENCY_NUMBER_EDITABLE': 'emergency_number' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
+        'SCHOOL_EDITABLE': 'school' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
+        'OTHER_SCHOOL_EDITABLE': 'other_school' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
+        'BIB_NUMBER_EDITABLE': 'bib_number' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
         'USE_ABSENCES': settings.KEPCHUP_USE_ABSENCES,
         'ABSENCES_RELATE_TO_ACTIVITIES': settings.KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES,
         'USE_BUILDINGS': settings.KEPCHUP_USE_BUILDINGS,
