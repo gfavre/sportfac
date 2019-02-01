@@ -139,6 +139,12 @@ KEPCHUP_ALTERNATIVE_STEPS_NAMING = True
 KEPCHUP_SPLASH_PAGE = True
 KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = ['first_name', 'last_name', 'birth_date']
 
+# Registration steps
+#########################################
+KEPCHUP_ALTERNATIVE_ACTIVITIES_LABEL = u'Inscription'
+KEPCHUP_ALTERNATIVE_CONFIRM_LABEL = u'Résumé'
+KEPCHUP_ALTERNATIVE_BILLING_LABEL = u'Confirmation'
+
 
 CELERYBEAT_SCHEDULE['notify-absences'] = {
         'task': 'absences.tasks.notify_absences',

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Production settings and globals."""
 
 from production import *
@@ -31,8 +32,15 @@ KEPCHUP_NO_SSF = True
 KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS = ['pdf/infos-moniteurs-2018.pdf', 'pdf/GMS_2018-2019.pdf']
 KEPCHUP_SPLASH_PAGE = True
 KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES = True
-KEPCHUP_ALTERNATIVE_STEPS_NAMING = True
 KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = ['first_name', 'last_name', 'birth_date']
+
+
+# Registration steps
+#########################################
+KEPCHUP_ALTERNATIVE_ACTIVITIES_LABEL = u'Inscription'
+KEPCHUP_ALTERNATIVE_CONFIRM_LABEL = u'Résumé'
+KEPCHUP_ALTERNATIVE_BILLING_LABEL = u'Confirmation'
+
 
 CELERYBEAT_SCHEDULE['notify-absences'] = {
         'task': 'absences.tasks.notify_absences',

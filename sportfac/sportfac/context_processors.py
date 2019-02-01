@@ -45,23 +45,27 @@ def can_pay(request):
 
 
 def wizard_context(request):
-    about = Step(request, 'about-step', _("About you"), 'wizard_account',
-                 can_register(request))
-    children = Step(request, 'children-step', _("Your children"), 'wizard_children',
-                    is_authenticated(request))
-    activities = Step(request, 'activities-step', _("Register activities"), 'wizard_activities',
-                      can_register_activities(request))
-    confirmation = Step(request, 'confirm-step', _("Confirmation"), 'wizard_confirm',
-                        can_confirm(request))
-    billing = Step(request, 'billing-step', _("Billing"), 'wizard_billing',
-                   can_pay(request))
-    alt_confirmation = Step(request, 'confirm-step', _("Validation"), 'wizard_confirm', can_confirm(request))
-    alt_billing = Step(request, 'billing-step', _("Confirmation"), 'wizard_billing',  can_pay(request))
+    about = Step(
+        request, 'about-step', settings.KEPCHUP_ALTERNATIVE_ABOUT_LABEL or _("About you"),
+        'wizard_account', can_register(request)
+    )
+    children = Step(
+        request, 'children-step', settings.KEPCHUP_ALTERNATIVE_CHILDREN_LABEL or _("Your children"),
+        'wizard_children', is_authenticated(request))
+    activities = Step(
+        request, 'activities-step', settings.KEPCHUP_ALTERNATIVE_ACTIVITIES_LABEL or _("Register activities"),
+        'wizard_activities', can_register_activities(request)
+    )
+    confirmation = Step(
+        request, 'confirm-step', settings.KEPCHUP_ALTERNATIVE_CONFIRM_LABEL or _("Confirmation"),
+        'wizard_confirm', can_confirm(request)
+    )
+    billing = Step(
+        request, 'billing-step', settings.KEPCHUP_ALTERNATIVE_BILLING_LABEL or _("Billing"),
+        'wizard_billing', can_pay(request))
 
     if settings.KEPCHUP_NO_PAYMENT:
         steps = [about, children, activities, confirmation]
-    elif settings.KEPCHUP_ALTERNATIVE_STEPS_NAMING:
-        steps = [about, children, activities, alt_confirmation, alt_billing]
     else:
         steps = [about, children, activities, confirmation, billing]
 
