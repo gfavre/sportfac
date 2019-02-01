@@ -48,7 +48,13 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
 
     def get_success_url(self):
         if self.bill and self.bill.is_paid:
-            messages.success(self.request, _("Your registrations have been recorded, thank you!"))
+            global_preferences = global_preferences_registry.manager()
+
+            messages.success(
+                self.request,
+                _("Your registrations have been recorded, thank you!") + '<br>' +
+                _("You'll receive a confirmation email from address: %s") % global_preferences['email__FROM_MAIL']
+            )
             return reverse_lazy('registrations_registered_activities')
         return self.success_url
 
