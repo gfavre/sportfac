@@ -464,30 +464,67 @@ PHONENUMBER_DEFAULT_REGION = 'CH'
 # Kepchup Options
 ################################################################################
 
-KEPCHUP_IMPORT_CHILDREN = False
-KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = False
-KEPCHUP_SEND_PRESENCE_LIST = True
-KEPCHUP_SEND_COPY_CONTACT_MAIL_TO_ADMIN = True
+# general
+#########################################
+
+# Use a splash page rather than home. Use by Montreux who has 2 kepchup instances
+KEPCHUP_SPLASH_PAGE = False
+# if true, disable invoicing system
 KEPCHUP_NO_PAYMENT = False
+# no terms and conditions
 KEPCHUP_NO_TERMS = False
-KEPCHUP_NO_SSF = False
-KEPCHUP_CHILD_SCHOOL = False
-KEPCHUP_EMERGENCY_NUMBER_MANDATORY = True
+# not used for the moment. TODO: do something with that for Coppet-primaire
 KEPCHUP_DISPLAY_PARENT_CITY = False
-KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS = []
-KEPCHUP_CALENDAR_DISPLAY_DATES = True
-KEPCHUP_CALENDAR_DISPLAY_COURSE_NAMES = False
-KEPCHUP_ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE = False
-KEPCHUP_BIB_NUMBERS = False
+# Use other step names during registration.  # TODO: have a dict of names here...
+KEPCHUP_ALTERNATIVE_STEPS_NAMING = False
+# Activate absence module
+KEPCHUP_USE_ABSENCES = False
+# By default, absences are connected to courses.
+KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES = False
+# Activate montreux specific feature to handle instructors pay slips
 KEPCHUP_FICHE_SALAIRE_MONTREUX = False
+
 KEPCHUP_REGISTRATION_LEVELS = False
 KEPCHUP_DISPLAY_CAR_NUMBER = False
 KEPCHUP_DISPLAY_REGISTRATION_NOTE = False
 KEPCHUP_LEVELS_PREFIXER = {}
-KEPCHUP_USE_BUILDINGS = False
-KEPCHUP_DISPLAY_NUMBER_OF_SESSIONS = True
-KEPCHUP_ALTERNATIVE_STEPS_NAMING = False
-KEPCHUP_SPLASH_PAGE = False
 
-KEPCHUP_USE_ABSENCES = False
-KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES = False
+
+# Children
+#########################################
+
+# Children have a bib number (n° dossard)
+KEPCHUP_BIB_NUMBERS = False
+# Ask for school of the child
+KEPCHUP_CHILD_SCHOOL = False
+# these fields are not editable by parent. Makes sense with KEPCHUP_IMPORT_CHILDREN
+KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = []
+# display nb of sessions on public pages. Disabled for Nyon-Prangins
+KEPCHUP_DISPLAY_NUMBER_OF_SESSIONS = True
+# make emergency number mandatory on children
+KEPCHUP_EMERGENCY_NUMBER_MANDATORY = True
+# Import children lists from lagapeo
+KEPCHUP_IMPORT_CHILDREN = False
+# School years are related to main teacher of the child
+KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = False
+# Ask for school building. Manage imports by building
+KEPCHUP_USE_BUILDINGS = False
+
+
+# Activities
+#########################################
+
+# In Coppet-Rojalets children can register Poterie at different periods of the year.
+KEPCHUP_ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE = False
+KEPCHUP_CALENDAR_DISPLAY_DATES = True
+KEPCHUP_CALENDAR_DISPLAY_COURSE_NAMES = False
+
+# Email
+#########################################
+
+# Send presence list to instructors
+KEPCHUP_SEND_PRESENCE_LIST = True
+KEPCHUP_SEND_COPY_CONTACT_MAIL_TO_ADMIN = True
+KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS = []
+# If true: do not send E_SSF_decompte_heures_%s_%s.pdf to instructors
+KEPCHUP_NO_SSF = False
