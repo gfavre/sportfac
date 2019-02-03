@@ -7,7 +7,7 @@ from django.utils.translation import ugettext as _
 import xlrd
 
 from registrations.models import Child
-
+from profiles.models import SchoolYear
 
 CHILD_MANDATORY_FIELDS = (u'ID LAGAPEO', u'Nom', u'Prénom', u'Genre', u'Date de naissance', u'Nationalité', u'Langue maternelle')
 CHILD_IMPORT_TO_FIELD = {
@@ -20,6 +20,8 @@ CHILD_IMPORT_TO_FIELD = {
 class ChildParser:
 
     def __init__(self, book=None):
+        self.schoolyears = dict([(year.year, year) for year in SchoolYear.objects.all()])
+
         if book:
             self.datemode = book.datemode
         else:
@@ -31,7 +33,8 @@ class ChildParser:
             u'Genre': ('sex', self.parse_sex),
             u'Date de naissance': ('birth_date', self.parse_birth_date),
             u'Nationalité': ('nationality', self.parse_nationality),
-            u'Langue maternelle': ('language', self.parse_language)
+            u'Langue maternelle': ('language', self.parse_language),
+            u'Année': ('school_year', self.parse_school_year)
         }
 
     def parse_sex(self, value):
@@ -69,6 +72,13 @@ class ChildParser:
             return Child.LANGUAGE.E
 
         return Child.LANGUAGE.F
+
+    def parse_school_year(self, value):
+        try:
+            value = int(value)
+            return self.schoolyears.get(value, None)
+        except ValueError:
+            return None
 
     def parse(self, row):
         out = {}
