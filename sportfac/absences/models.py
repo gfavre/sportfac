@@ -33,8 +33,8 @@ class Absence(StatusModel, TimeStampedModel):
 
 
 class Session(TimeStampedModel):
-    course = models.ForeignKey('activities.Course', related_name="sessions")
-    activity = models.ForeignKey('activities.Activity', related_name="sessions")
+    course = models.ForeignKey('activities.Course', related_name="sessions",)
+    activity = models.ForeignKey('activities.Activity', related_name="sessions", null=True)
 
     date = models.DateField()
     instructor = models.ForeignKey('profiles.FamilyUser', related_name="sessions", null=True)
