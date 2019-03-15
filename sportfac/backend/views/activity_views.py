@@ -64,9 +64,10 @@ class ActivityAbsenceView(BackendMixin, DetailView):
             msg = []
             with transaction.atomic():
                 for course in activity.courses.all():
-                    session, created = Session.objects.get_or_create(activity=activity,
-                                                                     course=course,
-                                                                     date=form.cleaned_data['date'])
+                    session, created = Session.objects.get_or_create(
+                        course=course, date=form.cleaned_data['date'],
+                        defaults={'activity': activity}
+                    )
                     for registration in course.participants.all():
                         Absence.objects.get_or_create(
                             child=registration.child, session=session,

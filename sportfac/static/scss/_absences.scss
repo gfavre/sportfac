@@ -31,6 +31,22 @@
   }
 
   @media print {
+    font-size: 8px!important;
+
+    thead tr th, tfoot tr th {
+        font-size: 8px!important;
+        font-weight: 600!important;
+    }
+    .session-col {
+      padding-left: 0;
+      padding-right: 0;
+      text-align: center;
+    }
+    a.btn.absence {
+      display: inline;
+      width: auto;
+    }
+
     .edit-session abbr[title]:after {
           display: none;
     }
