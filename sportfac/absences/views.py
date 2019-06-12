@@ -4,6 +4,7 @@ import os
 from tempfile import mkdtemp
 
 from django.conf import settings
+from django.db import transaction
 from django.http import HttpResponseRedirect, HttpResponse
 from django.views.generic import DetailView
 
@@ -76,16 +77,20 @@ class AbsenceCourseView(InstructorMixin, DetailView):
         course = self.get_object()
         form = SessionForm(data=self.request.POST)
         if form.is_valid():
-            session, created = Session.objects.get_or_create(instructor=self.request.user,
-                                                             course=course,
-                                                             date=form.cleaned_data['date'])
-            for registration in course.participants.all():
-                Absence.objects.get_or_create(
-                    child=registration.child, session=session,
-                    defaults={
-                        'status': Absence.STATUS.present
-                    }
-                )
+            with transaction.atomic():
+                session, created = Session.objects.get_or_create(instructor=self.request.user,
+                                                                 course=course,
+                                                                 date=form.cleaned_data['date'],
+                                                                 defaults={
+                                                                     'activity': course.activity
+                                                                 })
+                for registration in course.participants.all():
+                    Absence.objects.get_or_create(
+                        child=registration.child, session=session,
+                        defaults={
+                            'status': Absence.STATUS.present
+                        }
+                    )
         return HttpResponseRedirect(course.get_absences_url())
 
     def get(self, request, *args, **kwargs):
