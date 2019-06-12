@@ -78,10 +78,10 @@ class AbsenceCourseView(InstructorMixin, DetailView):
         form = SessionForm(data=self.request.POST)
         if form.is_valid():
             with transaction.atomic():
-                session, created = Session.objects.get_or_create(instructor=self.request.user,
-                                                                 course=course,
+                session, created = Session.objects.get_or_create(course=course,
                                                                  date=form.cleaned_data['date'],
                                                                  defaults={
+                                                                     'instructor': self.request.user,
                                                                      'activity': course.activity
                                                                  })
                 for registration in course.participants.all():
