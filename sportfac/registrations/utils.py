@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
+import re
 
 from django.utils.six import moves
 from django.utils.translation import ugettext as _
@@ -75,9 +76,14 @@ class ChildParser:
 
     def parse_school_year(self, value):
         try:
-            value = int(value)
+            match = re.match(r'\s*(\d+)\s?\w*.*', value)
+            if not match:
+                return None
+            value = int(match.group(1))
             return self.schoolyears.get(value, None)
         except ValueError:
+            return None
+        except IndexError:
             return None
 
     def parse(self, row):
