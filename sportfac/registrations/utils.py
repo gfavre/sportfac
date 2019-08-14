@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
+import logging
 import re
 
 from django.utils.six import moves
@@ -9,6 +10,10 @@ import xlrd
 
 from registrations.models import Child
 from profiles.models import SchoolYear
+
+
+logger = logging.getLogger(__name__)
+
 
 CHILD_MANDATORY_FIELDS = (u'ID LAGAPEO', u'Nom', u'Prénom', u'Genre', u'Date de naissance', u'Nationalité', u'Langue maternelle')
 CHILD_IMPORT_TO_FIELD = {
@@ -81,6 +86,9 @@ class ChildParser:
                 return None
             value = int(match.group(1))
             return self.schoolyears.get(value, None)
+        except TypeError:
+            value = int(value)
+            return self.schoolyears.get(value, None)
         except ValueError:
             return None
         except IndexError:
@@ -89,9 +97,13 @@ class ChildParser:
     def parse(self, row):
         out = {}
         for key, val in row.items():
-            translated, fct = self.fields_dict.get(key, (None, None))
-            if translated:
-                out[translated] = fct(val)
+            try:
+                translated, fct = self.fields_dict.get(key, (None, None))
+                if translated:
+                    out[translated] = fct(val)
+            except Exception as exc:
+                logger.warning(u'{}: Could not parse key={}, value={}'.format(exc, key, val))
+                continue
         return out
 
 
@@ -106,13 +118,13 @@ def load_children(filelike):
         raise ValueError(_("File format is unreadable"))
     nb_created = 0
     nb_updated = 0
-
     parser = ChildParser(xls_book)
     for i in moves.range(1, sheet.nrows):
         values = dict(zip(header_row, sheet.row_values(i)))
         try:
             parsed = parser.parse(values)
-        except:
+        except Exception as exc:
+            logger.warning(u'{}: Could not parse row={}, values={}'.format(exc, i, values))
             continue
         id_lagapeo = parsed.pop('id_lagapeo')
         child, created = Child.objects.update_or_create(id_lagapeo=id_lagapeo, defaults=parsed)
