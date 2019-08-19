@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-19 06:40+0200\n"
-"PO-Revision-Date: 2019-08-19 06:42+0200\n"
+"POT-Creation-Date: 2019-08-19 16:47+0200\n"
+"PO-Revision-Date: 2019-08-19 16:50+0200\n"
 "Last-Translator: Gregory Favre <greg@beyondthewall.ch>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -204,7 +204,7 @@ msgstr "Activité"
 
 #: sportfac/activities/forms.py:18 sportfac/activities/models.py:127
 #: sportfac/templates/absences/absences.html:17
-#: sportfac/templates/activities/activity_detail.html:39
+#: sportfac/templates/activities/activity_detail.html:40
 #: sportfac/templates/activities/course_detail.html:24
 #: sportfac/templates/backend/activity/detail.html:47
 #: sportfac/templates/backend/course/absences.html:17
@@ -241,8 +241,8 @@ msgstr "Identifiant"
 #: sportfac/activities/forms.py:25 sportfac/activities/models.py:130
 #: sportfac/registrations/resources.py:29
 #: sportfac/templates/absences/absences.html:28
-#: sportfac/templates/activities/activity_detail.html:54
-#: sportfac/templates/activities/activity_detail.html:62
+#: sportfac/templates/activities/activity_detail.html:56
+#: sportfac/templates/activities/activity_detail.html:64
 #: sportfac/templates/activities/course_detail.html:42
 #: sportfac/templates/backend/activity/detail.html:60
 #: sportfac/templates/backend/course/absences.html:38
@@ -447,7 +447,7 @@ msgstr "Cours visible"
 
 #: sportfac/activities/models.py:133
 #: sportfac/templates/absences/absences.html:27
-#: sportfac/templates/activities/activity_detail.html:49
+#: sportfac/templates/activities/activity_detail.html:51
 #: sportfac/templates/activities/course_detail.html:38
 #: sportfac/templates/backend/activity/detail.html:57
 #: sportfac/templates/backend/course/absences.html:36
@@ -469,7 +469,7 @@ msgstr "Jour"
 
 #: sportfac/activities/models.py:139
 #: sportfac/templates/absences/absences.html:26
-#: sportfac/templates/activities/activity_detail.html:47
+#: sportfac/templates/activities/activity_detail.html:48
 #: sportfac/templates/activities/course_detail.html:36
 #: sportfac/templates/backend/activity/detail.html:55
 #: sportfac/templates/backend/course/absences.html:34
@@ -811,11 +811,11 @@ msgstr "Type de tarification"
 
 #: sportfac/backend/forms.py:264
 msgid "Daily"
-msgstr "par jour"
+msgstr "Par jour"
 
 #: sportfac/backend/forms.py:265
 msgid "Hourly"
-msgstr "par heure"
+msgstr "Par heure"
 
 #: sportfac/backend/forms.py:268
 msgid "Rate"
@@ -1163,7 +1163,7 @@ msgid ""
 msgstr ""
 "La période en production a été changée. Cependant, celle-ci est située dans "
 "le futur. Sans changement, la période précédemment en production sera remise "
-"en fonction cette nuit."
+"en fonction cette nuit"
 
 #: sportfac/backend/views/year_views.py:93
 msgid ""
@@ -1172,7 +1172,7 @@ msgid ""
 msgstr ""
 "La période en production a été changée. Cependant, celle-ci est située dans "
 "le passé. Sans changement, la période précédemment en production sera remise "
-"en fonction cette nuit."
+"en fonction cette nuit"
 
 #: sportfac/backend/views/year_views.py:96
 msgid "The period has been changed."
@@ -1189,7 +1189,7 @@ msgstr "La période a été supprimée."
 #: sportfac/backend/views/year_views.py:127
 #, python-format
 msgid "Period %(identifier)s has been deleted."
-msgstr "La période %(identifier)s a bien été supprimée"
+msgstr "La période %(identifier)s a bien été supprimée."
 
 #: sportfac/backend/views/year_views.py:137
 #, python-format
@@ -1376,7 +1376,7 @@ msgid ""
 msgstr ""
 "Les mots de passe ne sont pas enregistrés dans leur état brut. Il est "
 "impossible d'afficher le mot de passe de cet utilisateur, mais vous pouvez "
-"le <a href=\"../password/\">changer avec ce formulaire</a>"
+"le <a href=\"../password/\">changer avec ce formulaire</a>."
 
 #: sportfac/profiles/admin.py:69
 msgid "child"
@@ -1392,11 +1392,11 @@ msgstr "Le numéro AVS ne peut contenir que des chiffres"
 
 #: sportfac/profiles/ahv.py:30
 msgid "AHV must be 13 numbers long."
-msgstr "Le numéro AVS doit contenir 13 chiffres"
+msgstr "Le numéro AVS doit contenir 13 chiffres."
 
 #: sportfac/profiles/ahv.py:33
 msgid "Not a valid AHV number."
-msgstr "Numéro AVS invalide"
+msgstr "Numéro AVS invalide."
 
 #: sportfac/profiles/ahv.py:63 sportfac/profiles/models.py:97
 #: sportfac/profiles/resources.py:52
@@ -1459,7 +1459,8 @@ msgstr "NPA"
 #: sportfac/templates/backend/user/create.html:63
 #: sportfac/templates/backend/user/update.html:66
 #: sportfac/templates/profiles/account_form.html:29
-#: sportfac/templates/profiles/registration_form.html:32
+#: sportfac/templates/profiles/registration_form.html:33
+#: sportfac/templates/profiles/wizard_registration_form.html:33
 msgid "City"
 msgstr "Commune"
 
@@ -1501,7 +1502,7 @@ msgstr "Mot de passe (encore)"
 
 #: sportfac/profiles/forms.py:112 sportfac/profiles/forms.py:144
 msgid "You must type the same password each time."
-msgstr "Vous devez entrer le même mot de passe dans chaque champ"
+msgstr "Vous devez entrer le même mot de passe dans chaque champ."
 
 #: sportfac/profiles/forms.py:120 sportfac/profiles/models.py:96
 #: sportfac/profiles/resources.py:51 sportfac/registrations/forms.py:16
@@ -1628,11 +1629,11 @@ msgstr "Identifiant J+S"
 #: sportfac/profiles/models.py:104
 msgid "Designates whether the user can log into this admin site."
 msgstr ""
-"Indique si cet utilisateur peut se logguer dans la partie d'administration"
+"Indique si cet utilisateur peut se logguer dans la partie d'administration."
 
 #: sportfac/profiles/models.py:106
 msgid "date joined"
-msgstr "Date d'inscription"
+msgstr "date d'inscription"
 
 #: sportfac/profiles/models.py:118 sportfac/registrations/models.py:191
 #: sportfac/templates/backend/registration/bill-list.html:36
@@ -1654,7 +1655,7 @@ msgstr "Année scolaire"
 
 #: sportfac/profiles/models.py:275 sportfac/schools/models.py:18
 #: sportfac/templates/absences/absences.html:29
-#: sportfac/templates/activities/activity_detail.html:71
+#: sportfac/templates/activities/activity_detail.html:73
 #: sportfac/templates/activities/course_detail.html:50
 #: sportfac/templates/backend/activity/detail.html:61
 #: sportfac/templates/backend/course/absences.html:40
@@ -1674,7 +1675,7 @@ msgstr "école"
 msgid "schools"
 msgstr "écoles"
 
-#: sportfac/profiles/views.py:46
+#: sportfac/profiles/views.py:47
 msgid "Your contact informations have been saved."
 msgstr "Vos informations de contact ont été mises à jour."
 
@@ -1800,7 +1801,8 @@ msgstr "Informations de transport"
 
 #: sportfac/registrations/models.py:53
 #: sportfac/templates/flatpages/home.html:17
-#: sportfac/templates/registration/login.html:48
+#: sportfac/templates/registration/login.html:49
+#: sportfac/templates/registration/login.html:55
 msgid "Registration"
 msgstr "Inscription"
 
@@ -2008,12 +2010,11 @@ msgid "Access not authorized"
 msgstr "Accès non autorisé"
 
 #: sportfac/templates/403.html:11 sportfac/templates/flatpages/home.html:22
-#: sportfac/templates/registration/login.html:52
+#: sportfac/templates/registration/login.html:59
 msgid "Registrations are currently closed"
-msgstr "Les inscriptions sont fermées pour le moment."
+msgstr "Les inscriptions sont fermées pour le moment"
 
 #: sportfac/templates/403.html:12 sportfac/templates/flatpages/home.html:25
-#: sportfac/templates/registration/login.html:54
 #: sportfac/themes/montreux/templates/flatpages/splash.html:119
 #, python-format
 msgid "They will open from %(registration_start)s until %(registration_end)s."
@@ -2021,7 +2022,7 @@ msgstr ""
 "La période d'inscription commence le %(registration_start)s et se termine le "
 "%(registration_end)s."
 
-#: sportfac/templates/403.html:15 sportfac/templates/flatpages/home.html:28
+#: sportfac/templates/403.html:15 sportfac/templates/flatpages/home.html:33
 msgid "Review my registered activities"
 msgstr "Revoir mes inscriptions pour cette année"
 
@@ -2057,13 +2058,13 @@ msgstr "Niv. annoncé"
 #: sportfac/templates/absences/absences-table-courses.html:106
 #: sportfac/templates/absences/absences-table.html:110
 msgid "level -1"
-msgstr "Niv. -1"
+msgstr "niv. -1"
 
 #: sportfac/templates/absences/absences-table-child.html:29
 #: sportfac/templates/absences/absences-table-courses.html:107
 #: sportfac/templates/absences/absences-table.html:111
 msgid "level 0"
-msgstr "Niv. 0"
+msgstr "niv. 0"
 
 #: sportfac/templates/absences/absences-table-child.html:89
 #: sportfac/templates/absences/absences-table-courses.html:196
@@ -2079,6 +2080,7 @@ msgstr "Editer la note"
 #: sportfac/templates/backend/registration/wizard.html:35
 #: sportfac/templates/backend/registration_dates.html:18
 #: sportfac/templates/profiles/account.html:36
+#: sportfac/templates/profiles/registration_form.html:63
 #: sportfac/templates/profiles/registration_list.html:71
 #: sportfac/templates/registrations/registration_list.html:144
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:144
@@ -2187,18 +2189,18 @@ msgstr "Gérer les absences de"
 msgid "Course #%(number)s"
 msgstr "Cours n°%(number)s"
 
-#: sportfac/templates/activities/activity_detail.html:50
+#: sportfac/templates/activities/activity_detail.html:52
 #: sportfac/templates/activities/course_detail.html:39
 #: sportfac/templates/backend/activity/detail.html:58
 #, python-format
 msgid "%(number)s courses"
 msgstr "%(number)s cours"
 
-#: sportfac/templates/activities/activity_detail.html:64
+#: sportfac/templates/activities/activity_detail.html:66
 msgid "Free"
 msgstr "Gratuit"
 
-#: sportfac/templates/activities/activity_detail.html:74
+#: sportfac/templates/activities/activity_detail.html:78
 #: sportfac/templates/activities/course_detail.html:54
 #: sportfac/templates/backend/activity/detail.html:75
 #: sportfac/templates/backend/course/detail-phase2.html:64
@@ -2702,7 +2704,7 @@ msgstr "Cours PAS annoncés"
 #: sportfac/templates/backend/course/list-phase1.html:67
 #: sportfac/templates/backend/course/list.html:96
 msgid "Both"
-msgstr "les deux"
+msgstr "Les deux"
 
 #: sportfac/templates/backend/course/list-phase1.html:80
 msgid "Up to date?"
@@ -3363,7 +3365,7 @@ msgstr "Supprimer l'élève"
 #: sportfac/templates/backend/user/child-update.html:13
 #: sportfac/templates/backend/user/update.html:35
 msgid "There are errors in this form."
-msgstr "Il y a des erreurs dans ce formulaire"
+msgstr "Il y a des erreurs dans ce formulaire."
 
 #: sportfac/templates/backend/user/confirm_delete.html:4
 #: sportfac/templates/backend/user/confirm_delete.html:11
@@ -3388,7 +3390,8 @@ msgstr "Créer un gestionnaire"
 
 #: sportfac/templates/backend/user/create.html:51
 #: sportfac/templates/backend/user/update.html:56
-#: sportfac/templates/profiles/registration_form.html:53
+#: sportfac/templates/profiles/registration_form.html:54
+#: sportfac/templates/profiles/wizard_registration_form.html:54
 msgid "Login informations"
 msgstr "Informations de connexion"
 
@@ -3397,7 +3400,8 @@ msgstr "Informations de connexion"
 #: sportfac/templates/backend/user/detail.html:9
 #: sportfac/templates/backend/user/update.html:61
 #: sportfac/templates/profiles/account_form.html:23
-#: sportfac/templates/profiles/registration_form.html:27
+#: sportfac/templates/profiles/registration_form.html:28
+#: sportfac/templates/profiles/wizard_registration_form.html:28
 msgid "Contact informations"
 msgstr "Informations de contact"
 
@@ -3665,6 +3669,10 @@ msgstr "Votre message a bien été envoyé. Nous vous recontacterons rapidement.
 msgid "My registered activities"
 msgstr "Mes inscriptions pour cette année"
 
+#: sportfac/templates/flatpages/home.html:29
+msgid "Create an account"
+msgstr "Créer un compte"
+
 #: sportfac/templates/footer.html:12 sportfac/templates/navbar.html:16
 #: sportfac/themes/coppet/templates/footer.html:12
 #: sportfac/themes/demo/templates/footer.html:12
@@ -3718,13 +3726,13 @@ msgstr "Mes factures"
 #: sportfac/themes/montreux/templates/navbar.html:102
 #: sportfac/themes/montreux_ski/templates/navbar.html:102
 msgid "logout"
-msgstr "Déconnexion"
+msgstr "déconnexion"
 
 #: sportfac/templates/navbar.html:107
 #: sportfac/themes/montreux/templates/navbar.html:107
 #: sportfac/themes/montreux_ski/templates/navbar.html:107
 msgid "login"
-msgstr "Connexion"
+msgstr "connexion"
 
 #: sportfac/templates/profiles/account.html:28
 msgid "Edit profile"
@@ -3744,13 +3752,10 @@ msgstr "Éditer les données de mes enfants"
 
 #: sportfac/templates/profiles/registration_form.html:4
 #: sportfac/templates/profiles/registration_form.html:5
+#: sportfac/templates/profiles/wizard_registration_form.html:4
+#: sportfac/templates/profiles/wizard_registration_form.html:5
 msgid "Inscription"
 msgstr "Inscription"
-
-#: sportfac/templates/profiles/registration_form.html:62
-#: sportfac/templates/profiles/wizard_account.html:16
-msgid "Save and continue"
-msgstr "Enregistrer et continuer"
 
 #: sportfac/templates/profiles/registration_list.html:11
 #: sportfac/templates/registrations/registration_list.html:11
@@ -3788,7 +3793,7 @@ msgstr ""
 #: sportfac/templates/registrations/registration_list.html:96
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:96
 msgid "Please submit this form."
-msgstr "Merci de remplir ce formulaire"
+msgstr "Merci de remplir ce formulaire."
 
 #: sportfac/templates/profiles/registration_list.html:74
 #: sportfac/templates/registrations/registration_list.html:159
@@ -3800,7 +3805,7 @@ msgstr "Envoi des informations..."
 #: sportfac/templates/registrations/registration_list.html:170
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:170
 msgid "An error has occurred. Please contact us."
-msgstr "Une erreur s'est produite, veuillez nous contacter"
+msgstr "Une erreur s'est produite, veuillez nous contacter."
 
 #: sportfac/templates/profiles/registration_list.html:116
 #: sportfac/templates/registrations/registration_list.html:200
@@ -3817,26 +3822,43 @@ msgstr ""
 msgid "Confirm and proceed to checkout"
 msgstr "Confirmer et passer au paiement"
 
+#: sportfac/templates/profiles/wizard_account.html:16
+#: sportfac/templates/profiles/wizard_registration_form.html:63
+msgid "Save and continue"
+msgstr "Enregistrer et continuer"
+
 #: sportfac/templates/registration/login.html:12
 msgid "You already have an account"
 msgstr "Vous vous êtes déjà inscrit"
 
-#: sportfac/templates/registration/login.html:32
+#: sportfac/templates/registration/login.html:33
 msgid "Forgotten your password or username?"
 msgstr "Mot de passe oublié?"
 
-#: sportfac/templates/registration/login.html:39
+#: sportfac/templates/registration/login.html:40
 #: sportfac/templates/registration/password_reset_complete.html:9
 msgid "Log in"
 msgstr "Connexion"
 
-#: sportfac/templates/registration/login.html:46
+#: sportfac/templates/registration/login.html:47
+#: sportfac/templates/registration/login.html:53
 msgid "You don't have an account?"
 msgstr "Vous ne vous êtes jamais inscrit?"
 
+#: sportfac/templates/registration/login.html:62
+#, python-format
+msgid ""
+"\n"
+"              They will open from %(registration_start)s until "
+"%(registration_end)s."
+msgstr ""
+"\n"
+"              La période d'inscription commence le %(registration_start)s et "
+"se termine le %(registration_end)s."
+
 #: sportfac/templates/registration/password_change_done.html:8
 msgid "Password successfully changed!"
-msgstr "Votre mot de passe a été changé."
+msgstr "Votre mot de passe a été changé!"
 
 #: sportfac/templates/registration/password_reset_complete.html:3
 #: sportfac/templates/registration/password_reset_complete.html:5
@@ -3876,7 +3898,7 @@ msgid ""
 "used.  Please request a new password reset."
 msgstr ""
 "Le lien de réinitialisation du mot de passe est invalide. Probablement qu'il "
-"a déjà été utilisé. Veuillez réitérer votre demande de réinitialisation"
+"a déjà été utilisé. Veuillez réitérer votre demande de réinitialisation."
 
 #: sportfac/templates/registration/password_reset_done.html:8
 msgid ""
@@ -3978,7 +4000,7 @@ msgstr "non"
 #: sportfac/templates/registrations/registration_list.html:162
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:162
 msgid "Extra infos saved"
-msgstr "Les informations complémentaires ont été enregistrées-"
+msgstr "Les informations complémentaires ont été enregistrées"
 
 #: sportfac/templates/registrations/registration_list.html:210
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:210
