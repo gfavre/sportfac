@@ -3,7 +3,7 @@ from django.contrib.auth import views as auth_views
 
 from .forms import RegistrationForm, AuthenticationForm
 from .views import (password_change, password_reset, 
-                    WizardRegistrationView, AccountView)
+                    RegistrationView, WizardRegistrationView, AccountView)
 
 
 urlpatterns = [
@@ -26,9 +26,10 @@ urlpatterns = [
     url(r'^password/reset/confirm/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$',
         auth_views.password_reset_confirm,
         name='password_reset_confirm'),
-    url(r'^register/$',  WizardRegistrationView.as_view(), name="registeraccount"),    
+    url(r'^new/$', RegistrationView.as_view(), name="anytime_registeraccount"),
+    url(r'^register/$',  WizardRegistrationView.as_view(), name="registeraccount"),
     url(r'^reset/$', password_reset, name="registration_reset"),
 
-    #and now add the registration urls
+
     url(r'', include('registration.backends.default.urls')),
 ]

@@ -136,8 +136,9 @@ KEPCHUP_NO_SSF = True
 KEPCHUP_IMPORT_CHILDREN = True
 KEPCHUP_DISPLAY_NUMBER_OF_SESSIONS = False
 KEPCHUP_ALTERNATIVE_STEPS_NAMING = True
-KEPCHUP_SPLASH_PAGE = True
+KEPCHUP_SPLASH_PAGE = False
 KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = ['first_name', 'last_name', 'birth_date', 'school_year']
+KEPCHUP_REGISTER_ACCOUNTS_AT_ANY_TIME = True
 
 # Registration steps
 #########################################

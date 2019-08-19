@@ -488,6 +488,10 @@ KEPCHUP_DISPLAY_CAR_NUMBER = False
 KEPCHUP_DISPLAY_REGISTRATION_NOTE = False
 KEPCHUP_LEVELS_PREFIXER = {}
 
+# User accounts
+#########################################
+KEPCHUP_REGISTER_ACCOUNTS_AT_ANY_TIME = False
+
 # Payment
 #########################################
 # if true, disable invoicing system
@@ -502,7 +506,6 @@ KEPCHUP_ALTERNATIVE_CHILDREN_LABEL = None
 KEPCHUP_ALTERNATIVE_ACTIVITIES_LABEL = None
 KEPCHUP_ALTERNATIVE_CONFIRM_LABEL = None
 KEPCHUP_ALTERNATIVE_BILLING_LABEL = None
-
 
 
 # Children

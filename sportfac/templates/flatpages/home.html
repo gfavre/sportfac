@@ -24,9 +24,15 @@
   {% countdown registration_start %}
   <p>{% blocktrans with registration_start=registration_start|date:"j F Y" registration_end=registration_end|date:"j F Y"%}They will open from {{ registration_start }} until {{ registration_end }}.{% endblocktrans %}</p>
   {% endif %}
-  {%  if request.PHASE == 3 %}
-  <p class="text-center"><a href="{% url 'registrations_registered_activities' %}" class="btn  btn-info"><i class="icon-fixed-width icon-calendar"></i> {% trans "Review my registered activities" %}</a></p>
+  <p class="text-center">
+  {% if not user.is_authenticated and REGISTER_ACCOUNTS_AT_ANY_TIME %}
+  <a href="{% url 'anytime_registeraccount' %}" class="btn  btn-info"><i class="icon-fixed-width icon-user"></i> {% trans "Create an account" %}</a>
   {% endif %}
+
+  {%  if request.PHASE == 3 %}
+  <a href="{% url 'registrations_registered_activities' %}" class="btn  btn-info"><i class="icon-fixed-width icon-calendar"></i> {% trans "Review my registered activities" %}</a>
+  {% endif %}
+  </p>
 </div>
 {% endif %}
 {% endblock content %}

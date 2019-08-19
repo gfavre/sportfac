@@ -10,10 +10,10 @@ from .context_processors import wizard_context
 
 
 class OpenedPeriodMixin(object):
-    "Raise a 403 status when period is not opened"
+    """Raise a 403 status when period is not opened"""
 
     def dispatch(self, request, *args, **kwargs):
-        "Called before get or post methods"
+        """Called before get or post methods"""
         if request.REGISTRATION_OPENED:
             return super(OpenedPeriodMixin, self).dispatch(request, *args, **kwargs)
         raise PermissionDenied
@@ -41,23 +41,21 @@ class PhaseForbiddenMixin(LoginRequiredMixin):
         if not correct_phase:
             if self.raise_exception:
                 raise PermissionDenied  # Return a 403
-            return redirect_to_login(request.get_full_path(),
-                                 self.get_login_url(),
-                                 self.get_redirect_field_name())
+            return redirect_to_login(request.get_full_path(), self.get_login_url(), self.get_redirect_field_name())
         return super(PhaseForbiddenMixin, self).dispatch(request, *args, **kwargs)
 
 
 class WizardMixin(OpenedPeriodMixin):
 
     def get(self, request, *args, **kwargs):
-        "If wizard is finished, go straight to last page."
+        """If wizard is finished, go straight to last page."""
         context = wizard_context(request)
         if not context['current_step'].activable:
             return redirect(context['max_step'])
-        #if request.user.finished_registration:
-        #    end_url = reverse('wizard_billing')
-        #    if not request.path == end_url:
-        #        return redirect(end_url)
+        # if request.user.finished_registration:
+        #     end_url = reverse('wizard_billing')
+        #     if not request.path == end_url:
+        #         return redirect(end_url)
         return super(WizardMixin, self).get(request, *args, **kwargs)
 
 
@@ -74,6 +72,7 @@ class CSVMixin(object):
     def write_csv(self, filelike):
         return NotImplementedError
 
+    # noinspection PyUnusedLocal
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         response = HttpResponse(content_type='text/csv')
@@ -83,12 +82,14 @@ class CSVMixin(object):
         return response
 
 
+# noinspection PyUnusedLocal
 def not_found(request, exception=None):
     response = render(request, '404.html', {})
     response.status_code = 404
     return response
 
 
+# noinspection PyUnusedLocal
 def server_error(request, exception=None):
     response = render(request, '500.html', {})
     response.status_code = 500
