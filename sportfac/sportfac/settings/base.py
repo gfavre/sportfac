@@ -469,8 +469,7 @@ PHONENUMBER_DEFAULT_REGION = 'CH'
 
 # Use a splash page rather than home. Use by Montreux who has 2 kepchup instances
 KEPCHUP_SPLASH_PAGE = False
-# if true, disable invoicing system
-KEPCHUP_NO_PAYMENT = False
+
 # no terms and conditions
 KEPCHUP_NO_TERMS = False
 # not used for the moment. TODO: do something with that for Coppet-primaire
@@ -488,6 +487,12 @@ KEPCHUP_REGISTRATION_LEVELS = False
 KEPCHUP_DISPLAY_CAR_NUMBER = False
 KEPCHUP_DISPLAY_REGISTRATION_NOTE = False
 KEPCHUP_LEVELS_PREFIXER = {}
+
+# Payment
+#########################################
+# if true, disable invoicing system
+KEPCHUP_NO_PAYMENT = False
+KEPCHUP_DISPLAY_FREE_WHEN_PRICE_IS_0 = False
 
 
 # Registration steps

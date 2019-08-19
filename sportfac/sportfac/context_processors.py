@@ -140,6 +140,7 @@ def kepchup_context(request):
         'IMPORT_CHILDREN': settings.KEPCHUP_IMPORT_CHILDREN,
         'PREFILL_YEARS_WITH_TEACHERS': settings.KEPCHUP_PREFILL_YEARS_WITH_TEACHERS,
         'NO_PAYMENT': settings.KEPCHUP_NO_PAYMENT,
+        'DISPLAY_FREE_WHEN_PRICE_IS_0': settings.KEPCHUP_DISPLAY_FREE_WHEN_PRICE_IS_0,
         'NO_TERMS': settings.KEPCHUP_NO_TERMS,
         'NO_SSF': settings.KEPCHUP_NO_SSF,
         'CHILD_SCHOOL': settings.KEPCHUP_CHILD_SCHOOL,
