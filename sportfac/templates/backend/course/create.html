@@ -5,67 +5,67 @@
 {% block page_title %}<i class="icon-graduation-cap"></i>&nbsp;&nbsp;{% trans "Create a new course" %}{% endblock %}
 
 {% block content %}
-<form action="" method="post">{% csrf_token %}
-  {% include "backend/course/form.html" %}
-  <fieldset>
-    <legend>{% trans "Extra questions" %}</legend>
-    {{ extraneed_form.management_form }}
-    {{ extraneed_form.non_form_errors }}
-    {% for form in extraneed_form %}
-      {{ form.id }}
-      <div class="inline {{ extraneed_form.prefix }}">
-        {% form form using %}
-        {% formconfig row using "floppyforms/rows/bootstrap-basic-row.html" %}
-        {% formconfig row using "floppyforms/rows/bootstrap-basic-sm-6.html" %}
-        {% formrow form.question_label form.extra_info form.type  %}
-        {% endform %}
-      </div>
-    {% endfor %}
-  </fieldset>
-  <div class="form-group">
-      <button type="submit" class="btn btn-success btn-large"><i class="icon-plus"></i>&nbsp;{% trans 'Create course' %}</button>
-  </div>
-</form>
+  <form action="" method="post">{% csrf_token %}
+    {% include "backend/course/form.html" %}
+    <fieldset>
+      <legend>{% trans "Extra questions" %}</legend>
+      {{ extraneed_form.management_form }}
+      {{ extraneed_form.non_form_errors }}
+      {% for form in extraneed_form %}
+        {{ form.id }}
+        <div class="inline {{ extraneed_form.prefix }}">
+          {% form form using %}
+            {% formconfig row using "floppyforms/rows/bootstrap-basic-row.html" %}
+            {% formconfig row using "floppyforms/rows/bootstrap-basic-sm-6.html" %}
+            {% formrow form.question_label form.extra_info form.type %}
+          {% endform %}
+        </div>
+      {% endfor %}
+    </fieldset>
+    <div class="form-group">
+      <button type="submit" class="btn btn-success btn-large"><i class="icon-plus"></i>&nbsp;{% trans 'Create course' %}
+      </button>
+    </div>
+  </form>
 
-{% addtoblock "js" %}
-<script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
-<script src="{% static 'js/vendor/bootstrap-datetimepicker.min.js' %}"></script>
-<script src="{% static 'js/vendor/bootstrap-datepicker.js' %}"></script>
-https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.fr.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.de.min.js"></script>
+  {% addtoblock "js" %}
+    <script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
+    {% if EXPLICIT_SESSION_DATES %}
+    <script src="{% static 'js/vendor/bootstrap-datepicker.js' %}"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.fr.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.de.min.js"></script>
+    {% else %}
+    <script src="{% static 'js/vendor/bootstrap-datetimepicker.min.js' %}"></script>
+    {% endif %}
+    <script src="{% static 'js/vendor/jquery.formset.js' %}"></script>
+    <script type="text/javascript">
+      $(function () {
+        {% if EXPLICIT_SESSION_DATES %}
+          $('.datepicker').datepicker({
+            multidate: true,
+            multidateSeparator: ',',
+            language: '{{ LANGUAGE_CODE }}',
+            format: "dd.mm.yyyy"
+          });
 
-  <script src="{% static 'js/vendor/jquery.formset.js' %}"></script>
-<script type="text/javascript">
-  $(function () {
-    $('.datetimepicker').datetimepicker({
-        language: '{{ LANGUAGE_CODE }}',
-        icons: {time: 'icon-clock',
+        {% else %}
+          $('.datetimepicker').datetimepicker({
+              language: '{{ LANGUAGE_CODE }}',
+              icons: {
+                time: 'icon-clock',
                 date: 'icon-calendar',
-                up:   'icon-up-open',
-                down: 'icon-down-open'}
-        }
-    );
+                up: 'icon-up-open',
+                down: 'icon-down-open'
+              }
+            }
+          );
+        {% endif %}
 
-    $('.datepicker').datepicker({
-        multidate: true,
-        multidateSeparator: ',',
-      language: '{{ LANGUAGE_CODE }}',
-      format: "dd.mm.yyyy"
-
-    });
-
- });
-</script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.css"
-      rel="stylesheet" media="all">
-{% endaddtoblock %}
-
-{% addtoblock "extra_css" %}
-
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.css"
-      rel="stylesheet" media="all">
-{% endaddtoblock %}
+      });
+    </script>
+  {% endaddtoblock %}
 
 
 {% endblock content %}

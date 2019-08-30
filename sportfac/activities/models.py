@@ -130,10 +130,10 @@ class Course(TimeStampedModel):
                                 verbose_name=_("Price"),
                                 null=True, blank=True)
     price_description = models.TextField(_("Informations about pricing"), blank=True)
-    number_of_sessions = models.PositiveSmallIntegerField(verbose_name=_("Number of sessions"))
+    number_of_sessions = models.PositiveSmallIntegerField(verbose_name=_("Number of sessions"), default=0)
     day = models.PositiveSmallIntegerField(choices=DAYS_OF_WEEK, verbose_name=_("Day"), default=1, blank=True)
-    start_date = models.DateField(verbose_name=_("Start date"))
-    end_date = models.DateField(verbose_name=_("End date"))
+    start_date = models.DateField(verbose_name=_("Start date"), null=True)
+    end_date = models.DateField(verbose_name=_("End date"), null=True)
     start_time = models.TimeField(verbose_name=_("Start time"))
     end_time = models.TimeField(verbose_name=_("End time"))
     place = models.TextField(verbose_name=_("Place"))
@@ -322,6 +322,7 @@ class Course(TimeStampedModel):
         self.start_date = min(dates)
         self.end_date = max(dates)
         self.day = self.start_date.isoweekday()
+        self.number_of_sessions = len(dates)
         if commit:
             self.save()
 

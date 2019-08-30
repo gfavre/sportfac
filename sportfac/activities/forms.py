@@ -90,7 +90,7 @@ class ExplicitDatesCourseForm(CourseForm):
                   'uptodate', 'announced_js', 'visible', 'extra',)
 
     def __init__(self, *args, **kwargs):
-        if 'instance' in kwargs:
+        if 'instance' in kwargs and kwargs['instance']:
             if 'initial' not in kwargs:
                 kwargs['initial'] = {}
             kwargs['initial']['session_dates'] = ','.join(
