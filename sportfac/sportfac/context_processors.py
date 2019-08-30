@@ -157,6 +157,7 @@ def kepchup_context(request):
         'DISPLAY_NUMBER_OF_SESSIONS': settings.KEPCHUP_DISPLAY_NUMBER_OF_SESSIONS,
         'PROTOCOL': settings.DEBUG and 'http://' or 'https://',
         'REGISTER_ACCOUNTS_AT_ANY_TIME': settings.KEPCHUP_REGISTER_ACCOUNTS_AT_ANY_TIME,
+        'EXPLICIT_SESSION_DATES': settings.KEPCHUP_EXPLICIT_SESSION_DATES,
     }
 
 

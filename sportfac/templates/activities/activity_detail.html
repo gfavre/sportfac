@@ -51,6 +51,17 @@
               <dt>{% trans "Number of sessions" %}</dt>
               <dd>{% blocktrans with number=course.number_of_sessions %}{{ number }} courses{% endblocktrans %}</dd>
             {% endif %}
+
+          {% if EXPLICIT_SESSION_DATES %}
+           <dt>{% trans "Dates" %}</dt>
+            <dd>
+              <ul class="list-unstyled">
+                {% for session in course.get_sessions %}
+                <li>{{ session.date|date:"j F Y" }}</li>
+                {% endfor %}
+              </ul>
+            </dd>
+          {% endif %}
             {% if not NO_PAYMENT %}
               {% if course.price %}
                 <dt>{% trans "Price" %}</dt>

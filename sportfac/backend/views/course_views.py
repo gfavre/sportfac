@@ -19,7 +19,7 @@ from django.views.generic.detail import SingleObjectMixin
 
 from absences.models import Absence, Session
 from activities.models import Course, Activity, ExtraNeed
-from activities.forms import CourseForm
+from activities.forms import CourseForm, ExplicitDatesCourseForm
 from profiles.models import FamilyUser
 from registrations.models import ChildActivityLevel, ExtraInfo
 from registrations.resources import RegistrationResource
@@ -241,8 +241,6 @@ class CoursesAbsenceView(BackendMixin, ListView):
         return super(CoursesAbsenceView, self).get(request, *args, **kwargs)
 
 
-
-
 class CourseJSCSVView(CSVMixin, CourseDetailView):
     def get_csv_filename(self):
         return '%s - J+S.csv' % self.object.number
@@ -289,10 +287,14 @@ class CourseParticipantsExportView(BackendMixin, SingleObjectMixin, ExcelRespons
 
 
 class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
-    form_class = CourseForm
     template_name = 'backend/course/create.html'
     success_url = reverse_lazy('backend:course-list')
     success_message = _('<a href="%(url)s" class="alert-link">Course (%(number)s)</a> has been created.')
+
+    def get_form_class(self):
+        if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
+            return ExplicitDatesCourseForm
+        return CourseForm
 
     def get_success_message(self, cleaned_data):
         url = self.object.get_backend_url()
@@ -319,11 +321,15 @@ class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
 
 class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
     model = Course
-    form_class = CourseForm
     template_name = 'backend/course/update.html'
     pk_url_kwarg = 'course'
     success_url = reverse_lazy('backend:course-list')
     success_message = _('<a href="%(url)s" class="alert-link">Course (%(number)s)</a> has been updated.')
+
+    def get_form_class(self):
+        if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
+            return ExplicitDatesCourseForm
+        return CourseForm
 
     def get_success_message(self, cleaned_data):
         url = self.object.get_backend_url()

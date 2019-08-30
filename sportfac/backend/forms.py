@@ -36,6 +36,10 @@ class DatePickerInput(forms.DateInput):
             return value
 
 
+class MultiDateInput(DatePickerInput):
+    template_name = 'floppyforms/date-multiple.html'
+
+
 class TimePickerInput(forms.TimeInput):
     template_name = 'floppyforms/time.html'
 

@@ -1,0 +1,11 @@
+
+
+<div class="input-group date datepicker" id="dt-{{ name }}">
+  <input type='text' name="{{ name }}" {% if value %}
+         value="{{ value }}"{% endif %}{% include "floppyforms/attrs.html" %}
+         class="form-control"
+         data-date-format="DD.MM.YYYY" data-date-useCurrent="false"  data-date-pickTime="false"
+  {% if required %} required{% endif %}
+  >
+  <span class="input-group-addon"><span class="icon-calendar"></span></span>
+</div>

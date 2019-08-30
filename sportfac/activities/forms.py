@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
+import datetime
+
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
 
 import floppyforms.__future__ as forms
 
-from backend.forms import Select2Widget, Select2MultipleWidget, DatePickerInput, TimePickerInput
+from absences.models import Session
+from backend.forms import Select2Widget, Select2MultipleWidget, DatePickerInput, TimePickerInput, MultiDateInput
 from profiles.models import FamilyUser
 from .models import Activity, Course, ExtraNeed
 
@@ -54,6 +58,58 @@ class CourseForm(forms.ModelForm):
                   'start_time', 'end_time', 'place', 'min_participants',
                   'max_participants', 'schoolyear_min', 'schoolyear_max',
                   'uptodate', 'announced_js', 'visible', 'extra',)
+
+
+class MultipleDatesField(forms.CharField):
+    date_format = '%d.%m.%Y'
+    separator = ','
+    widget = MultiDateInput()
+
+    def widget_attrs(self, widget):
+        attrs = super(MultipleDatesField, self).widget_attrs(widget)
+        attrs.update({'format': self.date_format})
+        return attrs
+
+    def to_python(self, value):
+        try:
+            output = [datetime.datetime.strptime(val, self.date_format) for val in value.split(self.separator)]
+        except (ValueError, TypeError):
+            raise ValidationError(self.error_messages['invalid'], code='invalid')
+        return output
+
+
+class ExplicitDatesCourseForm(CourseForm):
+    session_dates = MultipleDatesField(label=_("Session dates"), help_text=_("Separated by commas, e.g. 31.07.2019,22.08.2019"),
+                                    )
+
+    class Meta:
+        model = Course
+        fields = ('activity', 'name', 'number', 'instructors', 'price', 'price_description',
+                  'start_time', 'end_time', 'place', 'min_participants',
+                  'max_participants', 'schoolyear_min', 'schoolyear_max',
+                  'uptodate', 'announced_js', 'visible', 'extra',)
+
+    def __init__(self, *args, **kwargs):
+        if 'instance' in kwargs:
+            if 'initial' not in kwargs:
+                kwargs['initial'] = {}
+            kwargs['initial']['session_dates'] = ','.join(
+                [session.date.strftime('%d.%m.%Y') for session in kwargs['instance'].get_sessions()]
+            )
+        super(ExplicitDatesCourseForm, self).__init__(*args, **kwargs)
+        self.fields.pop('start_date')
+        self.fields.pop('end_date')
+
+    def save(self, commit=True):
+        instance = super(ExplicitDatesCourseForm, self).save(commit=commit)
+        dates = self.cleaned_data['session_dates']
+        for session in instance.get_sessions():
+            if session.date not in dates:
+                session.delete()
+        for date in dates:
+            instance.add_session(date=date)
+        instance.update_dates_from_sessions()
+        return instance
 
 
 class ActivityForm(forms.ModelForm):

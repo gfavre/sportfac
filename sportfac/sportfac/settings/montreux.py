@@ -32,6 +32,7 @@ KEPCHUP_NO_SSF = True
 KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS = ['pdf/infos-moniteurs-2019.pdf', 'pdf/GMS_2019-2020.pdf']
 KEPCHUP_SPLASH_PAGE = True
 KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = ['first_name', 'last_name', 'birth_date', 'school_year']
+KEPCHUP_EXPLICIT_SESSION_DATES = True
 
 
 # Registration steps

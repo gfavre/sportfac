@@ -15,11 +15,16 @@
   {{ form.price }}
   {% formrow form.number_of_sessions form.day  %}
 {% else %}
-  {% formrow form.price form.price_description form.number_of_sessions form.day %}
+  {% formrow form.price form.price_description %}
 {% endif %}
 
-{% formrow form.start_date form.end_date form.start_time form.end_time %}
+  {% if EXPLICIT_SESSION_DATES %}
+    {% formrow form.session_dates %}
+  {% formrow form.start_time form.end_time %}
 
+  {% else %}
+{% formrow  form.number_of_sessions form.day form.start_date form.end_date form.start_time form.end_time %}
+{% endif %}
 {%  formrow form.place using "floppyforms/rows/bootstrap-basic-row.html" %}
 
 {% formrow form.min_participants form.max_participants form.schoolyear_min form.schoolyear_max  %}

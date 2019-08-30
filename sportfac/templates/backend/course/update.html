@@ -1,12 +1,11 @@
 {% extends "backend/base.html" %}
-{% load i18n floppyforms %}
-
+{% load i18n floppyforms staticfiles %}
 {% block title %}{% trans "Update course" %} - {{ block.super }}{% endblock %}
 {% block page_title %}{% trans "Update course" %}{% endblock %}
 
 {% block content %}
 <form action="" method="post">{% csrf_token %}
-
+{{ form.errors }}
   {% include "backend/course/form.html" %}
   <div class=" form-group">
     <button type="submit" class="btn btn-success ">{% trans 'Update course' %}</button>
@@ -21,6 +20,10 @@
 {{ block.super }}
 <script src="{{ STATIC_URL }}js/vendor/moment-with-locales.min.js"></script>
 <script src="{{ STATIC_URL }}js/vendor/bootstrap-datetimepicker.min.js"></script>
+  <script src="{% static 'js/vendor/bootstrap-datepicker.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.fr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.de.min.js"></script>
+
 <script type="text/javascript">
   $(function () {
     $('.datetimepicker').datetimepicker({
@@ -30,6 +33,14 @@
                 up:   'icon-up-open', 
                 down: 'icon-down-open'}
         });
+     $('.datepicker').datepicker({
+        multidate: true,
+        multidateSeparator: ',',
+      language: '{{ LANGUAGE_CODE }}',
+      format: "dd.mm.yyyy"
+
+    });
   });
 </script>
+
 {% endblock extra_js %}

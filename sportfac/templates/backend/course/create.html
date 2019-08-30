@@ -30,8 +30,12 @@
 {% addtoblock "js" %}
 <script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
 <script src="{% static 'js/vendor/bootstrap-datetimepicker.min.js' %}"></script>
-<script src="{% static 'js/vendor/jquery.formset.js' %}"></script>
+<script src="{% static 'js/vendor/bootstrap-datepicker.js' %}"></script>
+https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.fr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.de.min.js"></script>
 
+  <script src="{% static 'js/vendor/jquery.formset.js' %}"></script>
 <script type="text/javascript">
   $(function () {
     $('.datetimepicker').datetimepicker({
@@ -42,8 +46,26 @@
                 down: 'icon-down-open'}
         }
     );
+
+    $('.datepicker').datepicker({
+        multidate: true,
+        multidateSeparator: ',',
+      language: '{{ LANGUAGE_CODE }}',
+      format: "dd.mm.yyyy"
+
+    });
+
  });
 </script>
-
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.css"
+      rel="stylesheet" media="all">
 {% endaddtoblock %}
+
+{% addtoblock "extra_css" %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.css"
+      rel="stylesheet" media="all">
+{% endaddtoblock %}
+
+
 {% endblock content %}

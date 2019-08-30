@@ -131,7 +131,7 @@ class Course(TimeStampedModel):
                                 null=True, blank=True)
     price_description = models.TextField(_("Informations about pricing"), blank=True)
     number_of_sessions = models.PositiveSmallIntegerField(verbose_name=_("Number of sessions"))
-    day = models.PositiveSmallIntegerField(choices=DAYS_OF_WEEK, verbose_name=_("Day"), default=1)
+    day = models.PositiveSmallIntegerField(choices=DAYS_OF_WEEK, verbose_name=_("Day"), default=1, blank=True)
     start_date = models.DateField(verbose_name=_("Start date"))
     end_date = models.DateField(verbose_name=_("End date"))
     start_time = models.TimeField(verbose_name=_("Start time"))
@@ -145,6 +145,27 @@ class Course(TimeStampedModel):
     announced_js = models.BooleanField(_("Course announced to J+S"), default=False)
 
     objects = CourseManager()
+
+    class Meta:
+        ordering = ('activity__name', 'number', )
+        verbose_name = _("course")
+        verbose_name_plural = _("courses")
+
+    def get_sessions(self):
+        return self.sessions.all()
+
+    def add_session(self, date, instructor=None):
+        from absences.models import Session
+        if settings.KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES:
+            session, created = Session.objects.get_or_create(activity=self.activity,
+                                                             course=self,
+                                                             date=date,
+                                                             defaults={'instructor': instructor})
+        else:
+            session, created = Session.objects.get_or_create(course=self,
+                                                             date=date,
+                                                             defaults={'instructor': instructor})
+        return session
 
     @property
     def day_name(self):
@@ -296,15 +317,20 @@ class Course(TimeStampedModel):
         else:
             return _date(self.start_date, 'F Y') + ' - ' + _date(self.end_date, 'F Y')
 
+    def update_dates_from_sessions(self, commit=True):
+        dates = self.sessions.values_list('date', flat=True)
+        self.start_date = min(dates)
+        self.end_date = max(dates)
+        self.day = self.start_date.isoweekday()
+        if commit:
+            self.save()
+
     def save(self, *args, **kwargs):
         super(Course, self).save(*args, **kwargs)
         for instructor in self.instructors.all():
             instructor.is_instructor = True
 
-    class Meta:
-        ordering = ('activity__name', 'number', )
-        verbose_name = _("course")
-        verbose_name_plural = _("courses")
+
 
 
 EXTRA_TYPES = (('B', _("Boolean")),

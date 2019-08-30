@@ -17,11 +17,26 @@
 <h4 class="content-title"><u>{{ registered.child.full_name }} - {{ registered.course.short_name }} </u><small class="hidden-print"><a href="{{ registered.course.get_absolute_url }}" class="" style="float: right"><i class="icon-check"></i>&nbsp;&nbsp;{% trans "Details" %}</a></small></h4>
 
 <dl class="dl-horizontal">
+  {% if EXPLICIT_SESSION_DATES %}
+  <dt>{% trans "Dates" %}</dt>
+  <dd>
+    <ul class="list-unstyled">
+      {% for session in registered.course.get_sessions %}
+      <li>{{ session.date|date:"l j F Y" }}</li>
+      {% endfor %}
+    </ul>
+  </dd>
+
+  <dt>{% trans "Time" %}</dt>
+  <dd>{{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</dd>
+
+  {% else %}
   <dt>{% trans "Period" %}</dt>
   <dd>{{ registered.course.start_date }}&nbsp;&nbsp;<i class="icon-right" aria-hidden="true"></i>&nbsp;&nbsp;{{ registered.course.end_date }}</dd>
   <dt>{% trans "Time" %}</dt>
   <dd>{{ registered.course.day_name }}, {{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</dd>
-  <dt>{% trans "Instructors" %}</dt>
+  {% endif %}
+    <dt>{% trans "Instructors" %}</dt>
   <dd>
     <ul class="list-unstyled">
     {% for instructor in registered.course.instructors.all %}
