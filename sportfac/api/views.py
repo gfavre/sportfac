@@ -95,7 +95,7 @@ class SessionViewSet(viewsets.ModelViewSet):
     model = Session
     serializer_class = SessionSerializer
     queryset = Session.objects.all()
-    permission_classes = (InstructorPermission,)
+    permission_classes = (InstructorPermission, )
 
     def get_serializer_class(self):
         if self.action in ('retrieve', 'list'):
@@ -103,7 +103,7 @@ class SessionViewSet(viewsets.ModelViewSet):
         return SessionUpdateSerializer
 
     def perform_create(self, serializer):
-        # set all children as present as defauolt value
+        # set all children as present as default value
         session = serializer.save()
         session.fill_absences()
         if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
