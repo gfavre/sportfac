@@ -308,6 +308,7 @@ table.dataTable thead>tr>th.rotated-heading {
         <option value="" selected>{% trans "other" %}</option>
       </select>
     </div>
+    {% if not EXPLICIT_SESSION_DATES %}
     <div class="form-group">
       <label>{% trans "Date" %}</label>
       <div class="input-group date datetimepicker session-update">
@@ -317,15 +318,17 @@ table.dataTable thead>tr>th.rotated-heading {
         <div class="input-group-addon"><div class="icon-calendar"></div></div>
       </div>
     </div>
+    {% endif %}
     <div class="form-group">
       <button type="submit" class="form-control  btn-primary"><i class="icon-ok"></i> {% trans "Save" %}</button>
     </div>
+    {% if not EXPLICIT_SESSION_DATES %}
     <div class="form-group text-right">
       <a href="#" class="session-delete hidden-print btn btn-sm btn-danger" data-session-url="{{ session.get_api_url }}">
         <i class="icon-trash"></i> {% trans "Delete session" %}
       </a>
     </div>
-
+    {% endif %}
 
   </form>
 </script>
@@ -655,10 +658,11 @@ $(function(){
     $('.absences').on('submit', 'form.session-form', function(event){
       event.preventDefault();
       var $parent = $(this).parents(".edit-session");
-      var data = {
-          'instructor': $('[name=instructor]', this).val(),
-          'date': moment($('[name=date]', this).val(), HUMAN_FMT).format(API_FMT)
-      };
+      var data = {'instructor': $('[name=instructor]', this).val()};
+      if ($('[name=date]', this).length) {
+        data.date = moment($('[name=date]', this).val(), HUMAN_FMT).format(API_FMT)
+      }
+
       $.ajax({
         url: $parent.data('url'),
         type: 'PATCH',
@@ -670,11 +674,9 @@ $(function(){
           }  else {
               $parent.data('instructor', null);
           }
-
-          $parent.data('date', response.date);
-          $('.date[data-session=' + response.id + '] .session-date').text(
-              moment(response.date, API_FMT).format(HUMAN_FMT)
-          );
+          var newDate = moment(response.date, API_FMT).format(HUMAN_FMT);
+          $parent.data('date', newDate);
+          $('.date[data-session=' + response.id + '] .session-date').text(newDate);
           $('.has-popover', $parent).popover('hide');
         }
       });

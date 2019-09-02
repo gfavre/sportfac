@@ -34,6 +34,7 @@
     <a href="{{ course.get_absolute_url }}" class="btn btn-default hidden-print"><i class="icon-check"></i>&nbsp;{% trans "Check registrations" %}</a>
   </div>
 </section>
+{% if not EXPLICIT_SESSION_DATES %}
 <div class="hidden-print">
   <form method="POST" class="form-inline">{% csrf_token %}
     {% form session_form using "floppyforms/layouts/bootstrap-inline.html" %}
@@ -41,7 +42,7 @@
   </form>
   <hr>
 </div>
-
+{% endif %}
 {% include 'absences/absences-table.html' %}
 {% if courses_list.count > 1 %}
 <div class="form-group">

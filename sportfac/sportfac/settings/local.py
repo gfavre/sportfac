@@ -139,7 +139,7 @@ KEPCHUP_ALTERNATIVE_STEPS_NAMING = True
 KEPCHUP_SPLASH_PAGE = False
 KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = ['first_name', 'last_name', 'birth_date', 'school_year']
 KEPCHUP_REGISTER_ACCOUNTS_AT_ANY_TIME = True
-KEPCHUP_EXPLICIT_SESSION_DATES = True
+KEPCHUP_EXPLICIT_SESSION_DATES = False
 
 # Registration steps
 #########################################
