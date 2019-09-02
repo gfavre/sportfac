@@ -165,6 +165,7 @@ class Course(TimeStampedModel):
             session, created = Session.objects.get_or_create(course=self,
                                                              date=date,
                                                              defaults={'instructor': instructor})
+        session.fill_absences()
         return session
 
     @property

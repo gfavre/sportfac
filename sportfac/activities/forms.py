@@ -7,7 +7,6 @@ from django.utils.translation import ugettext as _
 
 import floppyforms.__future__ as forms
 
-from absences.models import Session
 from backend.forms import Select2Widget, Select2MultipleWidget, DatePickerInput, TimePickerInput, MultiDateInput
 from profiles.models import FamilyUser
 from .models import Activity, Course, ExtraNeed
@@ -72,15 +71,17 @@ class MultipleDatesField(forms.CharField):
 
     def to_python(self, value):
         try:
-            output = [datetime.datetime.strptime(val, self.date_format) for val in value.split(self.separator)]
+            output = [datetime.datetime.strptime(val, self.date_format).date() for val in value.split(self.separator)]
         except (ValueError, TypeError):
             raise ValidationError(self.error_messages['invalid'], code='invalid')
         return output
 
 
 class ExplicitDatesCourseForm(CourseForm):
-    session_dates = MultipleDatesField(label=_("Session dates"), help_text=_("Separated by commas, e.g. 31.07.2019,22.08.2019"),
-                                    )
+    session_dates = MultipleDatesField(
+        label=_("Session dates"),
+        help_text=_("Separated by commas, e.g. 31.07.2019,22.08.2019"),
+    )
 
     class Meta:
         model = Course

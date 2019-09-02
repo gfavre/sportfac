@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.core.urlresolvers import reverse
+from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -59,6 +60,25 @@ class Session(TimeStampedModel):
 
     def presentees_nb(self):
         return self.absences.filter(status__in=(Absence.STATUS.present, Absence.STATUS.late)).count()
+
+    def fill_absences(self):
+        if settings.KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES:
+            for course in self.activity.courses.all():
+                for registration in course.participants.all():
+                    Absence.objects.get_or_create(
+                        child=registration.child, session=self,
+                        defaults={
+                            'status': Absence.STATUS.present
+                        }
+                    )
+        else:
+            for registration in self.course.participants.all():
+                Absence.objects.get_or_create(
+                    child=registration.child, session=self,
+                    defaults={
+                        'status': Absence.STATUS.present
+                    }
+                )
 
     class Meta:
         ordering = ('date', 'course')
