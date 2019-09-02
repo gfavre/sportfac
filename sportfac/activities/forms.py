@@ -109,7 +109,6 @@ class ExplicitDatesCourseForm(CourseForm):
                 session.delete()
         for date in dates:
             instance.add_session(date=date)
-        instance.update_dates_from_sessions()
         return instance
 
 

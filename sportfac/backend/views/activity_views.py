@@ -68,13 +68,9 @@ class ActivityAbsenceView(BackendMixin, DetailView):
                         course=course, date=form.cleaned_data['date'],
                         defaults={'activity': activity}
                     )
-                    for registration in course.participants.all():
-                        Absence.objects.get_or_create(
-                            child=registration.child, session=session,
-                            defaults={
-                                'status': Absence.STATUS.present
-                            }
-                        )
+                    session.fill_absences()
+                    if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
+                        session.update_courses_dates()
                     if created:
                         msg.append(_("Session of %(date)s for %(course)s has been added.") % {
                                                  'date': session.date.strftime('%d.%m.%Y'),

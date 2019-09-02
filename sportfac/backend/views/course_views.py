@@ -78,13 +78,9 @@ class CourseAbsenceView(BackendMixin, DetailView):
                                                                      'instructor': instructor,
                                                                      'activity': course.activity
                                                                  })
-                for registration in course.participants.all():
-                    Absence.objects.get_or_create(
-                        child=registration.child, session=session,
-                        defaults={
-                            'status': Absence.STATUS.present
-                        }
-                    )
+                session.fill_absences()
+                if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
+                    session.update_courses_dates()
                 if created:
                     messages.add_message(self.request, messages.SUCCESS,
                                          _("Session %s has been added.") % session.date.strftime('%d.%m.%Y'))
@@ -211,13 +207,9 @@ class CoursesAbsenceView(BackendMixin, ListView):
                                                                  date=form.cleaned_data['date'])
                 if not created:
                     continue
-                for registration in course.participants.all():
-                    Absence.objects.get_or_create(
-                        child=registration.child, session=session,
-                        defaults={
-                            'status': Absence.STATUS.present
-                        }
-                    )
+                session.fill_absences()
+                if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
+                    session.update_courses_dates()
             if created:
                 messages.add_message(self.request, messages.SUCCESS,
                                      _("Session %s has been added.") % session.date.strftime('%d.%m.%Y'))

@@ -166,6 +166,7 @@ class Course(TimeStampedModel):
                                                              date=date,
                                                              defaults={'instructor': instructor})
         session.fill_absences()
+        session.update_courses_dates()
         return session
 
     @property
