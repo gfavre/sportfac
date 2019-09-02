@@ -105,29 +105,32 @@ class SessionViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         # set all children as present as defauolt value
         session = serializer.save()
-        course = Course.objects.get(pk=serializer.data.get('course'))
-        for registration in course.participants.all():
-            Absence.objects.update_or_create(
-                child=registration.child, session=session,
-                defaults={
-                    'status': Absence.STATUS.present
-                }
-            )
+        session.fill_absences()
+        if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
+            session.update_courses_dates()
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer_class()(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
+            instance.update_courses_dates()
         return Response(SessionSerializer(instance).data)
 
     def perform_destroy(self, instance):
         if settings.KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES:
+            activity = instance.activity
             sister_sessions = instance.activity.sessions.filter(date=instance.date)
             for session in sister_sessions:
                 session.delete()
+            if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
+                for course in activity.courses.all():
+                    course.update_dates_from_sessions()
         else:
+            course = instance.course
             instance.delete()
+            course.update_dates_from_sessions()
 
 
 class ActivityViewSet(viewsets.ReadOnlyModelViewSet):

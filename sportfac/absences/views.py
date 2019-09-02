@@ -84,13 +84,9 @@ class AbsenceCourseView(InstructorMixin, DetailView):
                                                                      'instructor': self.request.user,
                                                                      'activity': course.activity
                                                                  })
-                for registration in course.participants.all():
-                    Absence.objects.get_or_create(
-                        child=registration.child, session=session,
-                        defaults={
-                            'status': Absence.STATUS.present
-                        }
-                    )
+                session.fill_absences()
+                if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
+                    course.update_dates_from_sessions()
         return HttpResponseRedirect(course.get_absences_url())
 
     def get(self, request, *args, **kwargs):

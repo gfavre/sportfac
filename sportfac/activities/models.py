@@ -320,10 +320,15 @@ class Course(TimeStampedModel):
 
     def update_dates_from_sessions(self, commit=True):
         dates = self.sessions.values_list('date', flat=True)
-        self.start_date = min(dates)
-        self.end_date = max(dates)
-        self.day = self.start_date.isoweekday()
-        self.number_of_sessions = len(dates)
+        if len(dates):
+            self.start_date = min(dates)
+            self.end_date = max(dates)
+            self.day = self.start_date.isoweekday()
+            self.number_of_sessions = len(dates)
+        else:
+            self.start_date = None
+            self.end_date = None
+            self.number_of_sessions = 0
         if commit:
             self.save()
 
