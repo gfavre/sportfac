@@ -45,6 +45,12 @@ def load_teachers(filelike, building=None):
                 translated[TEACHER_IMPORT_TO_FIELD[key]] = val
 
         number = translated.pop('number')
+
+        classes = values.get(u'Maîtrises', '')
+        if not classes:
+            nb_skipped += 1
+            continue
+
         teacher, created = Teacher.objects.update_or_create(number=number, defaults=translated)
         if building:
             teacher.buildings.add(building)
@@ -53,10 +59,7 @@ def load_teachers(filelike, building=None):
             nb_created += 1
         else:
             nb_updated += 1
-        classes = values.get(u'Maîtrises', '')
-        if not classes:
-            nb_skipped += 1
-            continue
+
         years = set()
         for classes_part in classes.split(','):
             match = re.match('(\d+)(?:\-(\d+))?[a-zA-Z]+[\d]?/\w+', classes_part.strip())
