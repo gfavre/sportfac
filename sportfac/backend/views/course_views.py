@@ -373,11 +373,27 @@ class PaySlipMontreux(BackendMixin, FormView):
     template_name = 'backend/course/pay-slip-montreux-form.html'
     form_class = PayslipMontreuxForm
 
+    def get_initial(self):
+        course = get_object_or_404(Course, pk=self.kwargs['course'])
+        session_dates = course.sessions.values_list('date', flat=True)
+        if session_dates:
+            return {'start_date': min(session_dates),
+                    'end_date': max(session_dates)}
+
+        else:
+            return {}
+
     def form_valid(self, form, **kwargs):
         context = self.get_context_data(**kwargs)
         context['rate'] = Decimal(form.cleaned_data['rate'])
         context['rate_mode'] = form.cleaned_data['rate_mode']
         context['function'] = form.cleaned_data['function']
+        context['sessions'] = context['course'].sessions.filter(instructor=context['instructor'])
+        context['start_date'] = form.cleaned_data['start_date']
+        context['end_date'] = form.cleaned_data['end_date']
+
+        total_presentees = sum([session.presentees_nb() for session in context['sessions']])
+        context['avg'] = round(float(total_presentees) / max(len(context['sessions']), 1), 1)
 
         if form.cleaned_data['rate_mode'] == 'hour':
             duration = context['course'].duration
@@ -402,9 +418,6 @@ class PaySlipMontreux(BackendMixin, FormView):
     def get_context_data(self, **kwargs):
         kwargs['instructor'] = get_object_or_404(FamilyUser, pk=kwargs['instructor'])
         kwargs['course'] = get_object_or_404(Course, pk=kwargs['course'])
-        kwargs['sessions'] = kwargs['course'].sessions.filter(instructor=kwargs['instructor'])
-        total_presentees = sum([session.presentees_nb() for session in kwargs['sessions']])
-        kwargs['avg'] = round(float(total_presentees) / max(len(kwargs['sessions']), 1), 1)
         return super(PaySlipMontreux, self).get_context_data(**kwargs)
 
     def get(self, request, *args, **kwargs):

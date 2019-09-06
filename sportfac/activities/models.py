@@ -226,8 +226,8 @@ class Course(TimeStampedModel):
         base %= {'invisible': not self.visible and _("Invisible") + ' - ' or '',
                  'activity': self.activity.name,
                  'number': self.number,
-                 'start': self.start_date.strftime("%d/%m/%Y"),
-                 'end': self.end_date.strftime("%d/%m/%Y"),
+                 'start': self.start_date and self.start_date.strftime("%d/%m/%Y"),
+                 'end': self.end_date and self.end_date.strftime("%d/%m/%Y"),
                  'day': self.day_name.lower(),
                  'hour': self.start_time.strftime("%H:%M"),
                  }

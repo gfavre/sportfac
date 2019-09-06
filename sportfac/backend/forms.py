@@ -6,6 +6,8 @@ from django.forms import inlineformset_factory
 from django.utils.translation import ugettext as _
 from django.utils.text import mark_safe
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Div, Field, HTML
 import floppyforms.__future__ as forms
 
 from activities.models import Course, ExtraNeed
@@ -270,3 +272,16 @@ class PayslipMontreuxForm(forms.Form):
                                   widget=forms.RadioSelect
                                   )
     rate = forms.DecimalField(label=_("Rate"), max_digits=6, decimal_places=2, required=True)
+    start_date = forms.DateField(label=_("Start date"), required=True,
+                                 help_text=_("Format: DD.MM.YYYY"),
+                                 widget=DatePickerInput())
+    end_date = forms.DateField(label=_("End date"), required=True,
+                               help_text=_("Format: DD.MM.YYYY"),
+                               widget=DatePickerInput())
+
+    def __init__(self, *args, **kwargs):
+        super(PayslipMontreuxForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_group_wrapper_class = 'row'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-10'

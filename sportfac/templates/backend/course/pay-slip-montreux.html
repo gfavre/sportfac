@@ -82,7 +82,7 @@ th {
     <div class="row">
       <div class="col-xs-6">
         <dl class="dl-horizontal">
-          <dt>Période:</dt><dd>{{ course.get_period_text }}</dd>
+          <dt>Période:</dt><dd>{{ start_date|date:"j.m.Y" }} - {{ end_date|date:"j.m.Y" }}</dd>
         </dl>
       </div>
       <div class="col-xs-6 ">

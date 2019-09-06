@@ -236,10 +236,11 @@ SHARED_APPS = (
 
     'ckeditor',  # wysiwyg editor
     'ckeditor_uploader',
+    'crispy_forms',  # better forms => DRY
     'dbtemplates',  # store templates in db (used by mailer module)
     'django_select2',  # select2 form input
     'dynamic_preferences',
-    'floppyforms',  # better forms
+    'floppyforms',  # better forms => bootstrap components
     'import_export',
     'mathfilters',
     'phonenumber_field',
@@ -460,6 +461,11 @@ DBTEMPLATES_USE_CODEMIRROR = True
 ############# Phonenumbers
 PHONENUMBER_DEFAULT_REGION = 'CH'
 
+
+############ Crispy
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+
 ################################################################################
 # Kepchup Options
 ################################################################################
@@ -547,3 +553,6 @@ KEPCHUP_SEND_COPY_CONTACT_MAIL_TO_ADMIN = True
 KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS = []
 # If true: do not send E_SSF_decompte_heures_%s_%s.pdf to instructors
 KEPCHUP_NO_SSF = False
+
+
+

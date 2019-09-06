@@ -23,6 +23,8 @@ django-formtools == 2.1
 django-picklefield == 1.0.0
 django-multiupload == 0.5.2
 -e git+git://github.com/gfavre/django-phonenumber-field#egg=phonenumber_field
+django-crispy-forms==1.7.2
+
 
 logutils==0.3.5
 Pillow == 3.2.0
