@@ -388,9 +388,11 @@ class PaySlipMontreux(BackendMixin, FormView):
         context['rate'] = Decimal(form.cleaned_data['rate'])
         context['rate_mode'] = form.cleaned_data['rate_mode']
         context['function'] = form.cleaned_data['function']
-        context['sessions'] = context['course'].sessions.filter(instructor=context['instructor'])
         context['start_date'] = form.cleaned_data['start_date']
         context['end_date'] = form.cleaned_data['end_date']
+        context['sessions'] = context['course'].sessions.filter(instructor=context['instructor'],
+                                                                date__gte=context['start_date'],
+                                                                date__lte=context['end_date'])
 
         total_presentees = sum([session.presentees_nb() for session in context['sessions']])
         context['avg'] = round(float(total_presentees) / max(len(context['sessions']), 1), 1)
