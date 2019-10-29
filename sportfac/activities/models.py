@@ -339,8 +339,6 @@ class Course(TimeStampedModel):
             instructor.is_instructor = True
 
 
-
-
 EXTRA_TYPES = (('B', _("Boolean")),
                ('C', _('Characters')),
                ('I', _("Integer")))
