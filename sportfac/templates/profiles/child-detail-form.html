@@ -188,7 +188,7 @@
       {% if SCHOOL_EDITABLE %}
       <select id="school" class="form-control" ng-model="detailedChild.school"
               ng-options="school.id as school.name for school in schools">
-        <option value="">Autre</option>
+        {% if CHILD_SCHOOL_DISPLAY_OTHER %}<option value="">Autre</option>{% endif %}
       </select>
       {% else %}
       <input type="text" class="form-control" ng-model="detailedChild.school" readonly />

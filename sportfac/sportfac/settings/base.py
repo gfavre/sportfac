@@ -521,6 +521,8 @@ KEPCHUP_ALTERNATIVE_BILLING_LABEL = None
 KEPCHUP_BIB_NUMBERS = False
 # Ask for school of the child
 KEPCHUP_CHILD_SCHOOL = False
+# Is other a valid choice?
+KEPCHUP_CHILD_SCHOOL_DISPLAY_OTHER = False
 # these fields are not editable by parent. Makes sense with KEPCHUP_IMPORT_CHILDREN
 KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = []
 # display nb of sessions on public pages. Disabled for Nyon-Prangins
