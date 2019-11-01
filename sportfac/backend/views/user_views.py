@@ -5,6 +5,7 @@ import tempfile
 
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.models import Group
+from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.db.models import Count, Case, When
@@ -246,17 +247,6 @@ class PasswordSetView(BackendMixin, SuccessMessageMixin, FormView):
         return super(PasswordSetView, self).form_valid(form)
 
 
-class ChildView(BackendMixin, View):
-    def get_context_data(self, **kwargs):
-        context = super(ChildView, self).get_context_data(**kwargs)
-        context['family'] = get_object_or_404(FamilyUser, pk=self.kwargs['user'])
-        return context
-
-    def get_success_url(self):
-        user = get_object_or_404(FamilyUser, pk=self.kwargs['user'])
-        return user.get_backend_url()
-
-
 class ChildDetailView(BackendMixin, DetailView):
     model = Child
     template_name = 'backend/user/child-detail.html'
@@ -273,20 +263,39 @@ class ChildListView(BackendMixin, ListView):
         return Child.objects.select_related('family', 'school_year', 'school', 'building')
 
 
-class ChildCreateView(ChildView, SuccessMessageMixin, CreateView):
+class ChildCreateView(BackendMixin, SuccessMessageMixin, CreateView):
     model = Child
     form_class = ChildForm
     template_name = 'backend/user/child-create.html'
-    success_message = _("User has been deleted.")
+
+    def get_context_data(self, **kwargs):
+        context = super(ChildCreateView, self).get_context_data(**kwargs)
+        if 'user' in self.kwargs:
+            context['family'] = get_object_or_404(FamilyUser, pk=self.kwargs['user'])
+        return context
+
+    def get_initial(self):
+        initial = super(ChildCreateView, self).get_initial()
+        if 'user' in self.kwargs:
+            initial = initial.copy()
+            initial['family'] = get_object_or_404(FamilyUser, pk=self.kwargs['user'])
+        return initial
+
+    def get_success_url(self):
+        if 'user' in self.kwargs:
+            return get_object_or_404(FamilyUser, pk=self.kwargs['user']).get_backend_url()
+        return reverse('backend:child-list')
 
     def get_success_message(self, cleaned_data):
-        return _("Child %s has been added.") % self.object.full_name
+        return
 
     def form_valid(self, form):
-        user = get_object_or_404(FamilyUser, pk=self.kwargs['user'])
         child = form.save(commit=False)
-        child.family = user
+        if 'user' in self.kwargs:
+            user = get_object_or_404(FamilyUser, pk=self.kwargs['user'])
+            child.family = user
         child.save()
+        messages.success(self.request, _("Child %s has been added.") % child.full_name)
         return HttpResponseRedirect(self.get_success_url())
 
 

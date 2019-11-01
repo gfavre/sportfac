@@ -179,6 +179,8 @@ users_patterns = [
 children_patterns = [
     url(r'^$', view=views.ChildListView.as_view(), name='child-list'),
     url(r'^(?P<child>\d+)/$', view=views.ChildDetailView.as_view(), name='child-detail'),
+    url(r'^new/$', view=views.ChildCreateView.as_view(), name='child-new'),
+
     url(r'^external/(?P<lagapeo>\d+)/$', view=views.ChildDetailView.as_view(), name='child-detail-lagapeo'),
 
     url(r'^(?P<child>\d+)/update$', view=views.ChildUpdateView.as_view(), name='child-update'),

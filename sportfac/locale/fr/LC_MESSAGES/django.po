@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-06 18:08+0200\n"
-"PO-Revision-Date: 2019-09-06 18:09+0200\n"
+"POT-Creation-Date: 2019-11-01 10:51+0100\n"
+"PO-Revision-Date: 2019-11-01 10:52+0100\n"
 "Last-Translator: Gregory Favre <greg@beyondthewall.ch>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 2.2.3\n"
+"X-Generator: Poedit 2.2.4\n"
 
 #: sportfac/absences/admin.py:16 sportfac/activities/admin.py:34
 #: sportfac/activities/admin.py:97 sportfac/activities/models.py:151
@@ -200,6 +200,7 @@ msgstr "Options avancées"
 #: sportfac/templates/registrations/registration_list.html:36
 #: sportfac/templates/registrations/wizard_billing.html:20
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:36
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:36
 #: sportfac/themes/montreux_ski/templates/registrations/wizard_billing.html:17
 #: sportfac/themes/vevey/templates/registrations/wizard_billing.html:17
 msgid "Activity"
@@ -236,7 +237,7 @@ msgstr "Affiché dans le calendrier sous le nom de l'activité"
 #: sportfac/templates/backend/activity/list.html:37
 #: sportfac/templates/backend/course/list-phase1.html:73
 #: sportfac/templates/backend/course/list.html:102
-#: sportfac/templates/backend/user/child-list.html:76
+#: sportfac/templates/backend/user/child-list.html:78
 #: sportfac/templates/mailer/pdf_my_courses.html:16
 msgid "Identifier"
 msgstr "Identifiant"
@@ -259,6 +260,7 @@ msgstr "Identifiant"
 #: sportfac/templates/registrations/registration_list.html:41
 #: sportfac/templates/registrations/wizard_billing.html:25
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:41
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:41
 #: sportfac/themes/montreux_ski/templates/registrations/wizard_billing.html:21
 #: sportfac/themes/vevey/templates/registrations/wizard_billing.html:21
 msgid "Price"
@@ -408,7 +410,7 @@ msgstr "12S"
 #: sportfac/templates/backend/registration/transport-detail.html:164
 #: sportfac/templates/backend/registration/transport-list.html:34
 #: sportfac/templates/backend/teacher/list.html:37
-#: sportfac/templates/backend/user/child-list.html:81
+#: sportfac/templates/backend/user/child-list.html:83
 #: sportfac/templates/backend/user/instructor-list.html:83
 #: sportfac/templates/backend/user/list.html:87
 #: sportfac/templates/backend/user/manager-list.html:83
@@ -417,6 +419,7 @@ msgstr "12S"
 #: sportfac/templates/registrations/registration_list.html:35
 #: sportfac/templates/registrations/wizard_billing.html:19
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:35
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:35
 #: sportfac/themes/montreux_ski/templates/registrations/wizard_billing.html:16
 #: sportfac/themes/vevey/templates/registrations/wizard_billing.html:16
 msgid "Name"
@@ -496,6 +499,7 @@ msgstr "Jour"
 #: sportfac/templates/registrations/summary.html:52
 #: sportfac/templates/registrations/wizard_billing.html:23
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:39
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:39
 #: sportfac/themes/montreux_ski/templates/registrations/wizard_billing.html:20
 #: sportfac/themes/vevey/templates/registrations/wizard_billing.html:20
 msgid "Place"
@@ -551,49 +555,49 @@ msgstr "Cours complet"
 msgid "%(available)s out of %(total)s places remaining"
 msgstr "%(available)s sur %(total)s places disponibles"
 
-#: sportfac/activities/models.py:344
+#: sportfac/activities/models.py:342
 msgid "Boolean"
 msgstr "Booléen"
 
-#: sportfac/activities/models.py:345
+#: sportfac/activities/models.py:343
 msgid "Characters"
 msgstr "Caractères"
 
-#: sportfac/activities/models.py:346
+#: sportfac/activities/models.py:344
 msgid "Integer"
 msgstr "Nombre entier"
 
-#: sportfac/activities/models.py:352 sportfac/backend/forms.py:152
+#: sportfac/activities/models.py:350 sportfac/backend/forms.py:152
 msgid "Question"
 msgstr "Question"
 
-#: sportfac/activities/models.py:353
+#: sportfac/activities/models.py:351
 msgid "e.g. Shoes size?"
 msgstr "p. ex. Taille des chaussures?"
 
-#: sportfac/activities/models.py:356
+#: sportfac/activities/models.py:354
 msgid "Type of answer"
 msgstr "Type de réponse"
 
-#: sportfac/activities/models.py:360
+#: sportfac/activities/models.py:358
 msgid ""
 "Limit to values (internal name, display name),(internal name 2, display name "
 "2)"
 msgstr "Limiter à ces valeurs (séparées par des virgules)"
 
-#: sportfac/activities/models.py:364
+#: sportfac/activities/models.py:362
 msgid "reduce price by xx francs if this value is selected"
 msgstr "réduit le prix de xx framcs si cette valeur est choisie"
 
-#: sportfac/activities/models.py:368
+#: sportfac/activities/models.py:366
 msgid "Default value"
 msgstr "Valeur par défaut"
 
-#: sportfac/activities/models.py:376
+#: sportfac/activities/models.py:374
 msgid "extra question"
 msgstr "question complémentaire"
 
-#: sportfac/activities/models.py:377
+#: sportfac/activities/models.py:375
 msgid "extra questions"
 msgstr "questions complémentaires"
 
@@ -784,6 +788,7 @@ msgstr "Format: JJ.MM.AAAA"
 #: sportfac/templates/registrations/summary.html:34
 #: sportfac/templates/registrations/wizard_billing.html:21
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:37
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:37
 #: sportfac/themes/montreux_ski/templates/registrations/wizard_billing.html:18
 #: sportfac/themes/vevey/templates/registrations/wizard_billing.html:18
 msgid "Period"
@@ -1091,63 +1096,62 @@ msgstr "%i enseignants ont été créés, %i ont été mis à jour."
 msgid "%i were skipped because they are not responsible of a class."
 msgstr "%i n'ont pas été importés car ils n'ont pas de maîtrise de classe."
 
-#: sportfac/backend/views/user_views.py:85
+#: sportfac/backend/views/user_views.py:86
 msgid "users"
 msgstr "utilisateurs"
 
-#: sportfac/backend/views/user_views.py:100
+#: sportfac/backend/views/user_views.py:101
 msgid "managers"
 msgstr "gestionnaires"
 
-#: sportfac/backend/views/user_views.py:115
+#: sportfac/backend/views/user_views.py:116
 msgid "instructors"
 msgstr "moniteurs"
 
-#: sportfac/backend/views/user_views.py:133
+#: sportfac/backend/views/user_views.py:134
 #, python-format
 msgid "User %s has been added."
 msgstr "L'utilisateur %s a été ajouté."
 
-#: sportfac/backend/views/user_views.py:150
+#: sportfac/backend/views/user_views.py:151
 #, python-format
 msgid "Manager %s has been added."
 msgstr "Le gestionnaire %s a été ajouté."
 
-#: sportfac/backend/views/user_views.py:169
+#: sportfac/backend/views/user_views.py:170
 #, python-format
 msgid "Instructor %s has been added."
 msgstr "Le moniteur %s a été ajouté."
 
-#: sportfac/backend/views/user_views.py:203
+#: sportfac/backend/views/user_views.py:204
 #, python-format
 msgid "Contact informations of %s have been updated."
 msgstr "Les informations de contact de %s ont été mises à jour."
 
-#: sportfac/backend/views/user_views.py:210
-#: sportfac/backend/views/user_views.py:280
+#: sportfac/backend/views/user_views.py:211
 msgid "User has been deleted."
 msgstr "L'utilisateur a été supprimé."
 
-#: sportfac/backend/views/user_views.py:228
+#: sportfac/backend/views/user_views.py:229
 #, python-format
 msgid "Password changed for user %s."
 msgstr "Mot de passe changé pour l'utilisateur %s."
 
-#: sportfac/backend/views/user_views.py:283
+#: sportfac/backend/views/user_views.py:298
 #, python-format
 msgid "Child %s has been added."
-msgstr "L'e cours a été supprimé'enfant %s a été ajouté."
+msgstr "L'enfant %s a été ajouté."
 
-#: sportfac/backend/views/user_views.py:301
+#: sportfac/backend/views/user_views.py:310
 #, python-format
 msgid "Child %s has been updated."
-msgstr "L'enfant %s a été mise à jour."
+msgstr "L'enfant %s a été mis à jour."
 
-#: sportfac/backend/views/user_views.py:341
+#: sportfac/backend/views/user_views.py:350
 msgid "Child has been removed."
 msgstr "L'enfant a été supprimé."
 
-#: sportfac/backend/views/user_views.py:348
+#: sportfac/backend/views/user_views.py:357
 msgid "Children are being imported"
 msgstr "Les enfants sont en cours d'importation"
 
@@ -1662,7 +1666,7 @@ msgstr "Utilisateur"
 #: sportfac/templates/backend/course/detail.html:196
 #: sportfac/templates/backend/registration/detail.html:50
 #: sportfac/templates/backend/user/child-detail.html:27
-#: sportfac/templates/backend/user/child-list.html:83
+#: sportfac/templates/backend/user/child-list.html:85
 #: sportfac/templates/backend/user/detail.html:98
 msgid "School year"
 msgstr "Année scolaire"
@@ -1681,11 +1685,15 @@ msgstr "Année scolaire"
 msgid "School years"
 msgstr "Années scolaires"
 
-#: sportfac/profiles/models.py:287
+#: sportfac/profiles/models.py:281
+msgid "Code name"
+msgstr "Nom de code"
+
+#: sportfac/profiles/models.py:288
 msgid "school"
 msgstr "école"
 
-#: sportfac/profiles/models.py:288
+#: sportfac/profiles/models.py:289
 msgid "schools"
 msgstr "écoles"
 
@@ -1761,7 +1769,7 @@ msgstr "École"
 #: sportfac/templates/activities/course_detail.html:161
 #: sportfac/templates/backend/course/detail-phase2.html:181
 #: sportfac/templates/backend/course/detail.html:198
-#: sportfac/templates/backend/user/child-list.html:85
+#: sportfac/templates/backend/user/child-list.html:87
 msgid "Emergency number"
 msgstr "Numéro d'urgence"
 
@@ -1775,7 +1783,7 @@ msgstr "Numéro d'urgence"
 #: sportfac/templates/backend/registration/list.html:42
 #: sportfac/templates/backend/registration/transport-detail.html:161
 #: sportfac/templates/backend/user/child-detail.html:12
-#: sportfac/templates/backend/user/child-list.html:79
+#: sportfac/templates/backend/user/child-list.html:81
 msgid "Bib number"
 msgstr "Dossard"
 
@@ -1937,12 +1945,12 @@ msgstr "Nom du parent"
 msgid "Level 0"
 msgstr "Niveau après le cours"
 
-#: sportfac/registrations/utils.py:116 sportfac/schools/utils.py:33
+#: sportfac/registrations/utils.py:120 sportfac/schools/utils.py:33
 #, python-format
 msgid "All these fields are mandatory: %s"
 msgstr "Tous ces champs sont obligatoires: %s"
 
-#: sportfac/registrations/utils.py:118 sportfac/schools/utils.py:35
+#: sportfac/registrations/utils.py:122 sportfac/schools/utils.py:35
 msgid "File format is unreadable"
 msgstr "Le fichier n'a pas pu être lu: mauvais format"
 
@@ -2012,6 +2020,7 @@ msgstr "Inscription aux activités"
 #: sportfac/templates/profiles/registration_list.html:5
 #: sportfac/templates/registrations/registration_list.html:5
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:5
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:5
 msgid "Confirmation"
 msgstr "Confirmation"
 
@@ -2029,7 +2038,7 @@ msgid "Registrations are currently closed"
 msgstr "Les inscriptions sont fermées pour le moment"
 
 #: sportfac/templates/403.html:12 sportfac/templates/flatpages/home.html:25
-#: sportfac/themes/montreux/templates/flatpages/splash.html:119
+#: sportfac/themes/montreux/templates/flatpages/splash.html:124
 #, python-format
 msgid "They will open from %(registration_start)s until %(registration_end)s."
 msgstr ""
@@ -2098,6 +2107,7 @@ msgstr "Editer la note"
 #: sportfac/templates/profiles/registration_list.html:71
 #: sportfac/templates/registrations/registration_list.html:144
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:144
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:147
 msgid "Save"
 msgstr "Enregistrer"
 
@@ -2238,6 +2248,7 @@ msgstr "Activités"
 #: sportfac/templates/registrations/wizard_children.html:17
 #: sportfac/templates/wizard.html:35
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:206
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:209
 msgid "Previous"
 msgstr "Précédent"
 
@@ -2332,7 +2343,7 @@ msgstr "Envoyer un email..."
 #: sportfac/templates/activities/course_detail.html:157
 #: sportfac/templates/backend/course/detail-phase2.html:179
 #: sportfac/templates/backend/course/detail.html:196
-#: sportfac/templates/backend/user/child-list.html:83
+#: sportfac/templates/backend/user/child-list.html:85
 msgid "School infos"
 msgstr "Informations scolaires"
 
@@ -2368,6 +2379,7 @@ msgstr "Mes cours"
 #: sportfac/templates/registrations/summary.html:36
 #: sportfac/templates/registrations/wizard_billing.html:22
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:38
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:38
 #: sportfac/themes/montreux_ski/templates/registrations/wizard_billing.html:19
 #: sportfac/themes/vevey/templates/registrations/wizard_billing.html:19
 msgid "Time"
@@ -2385,7 +2397,7 @@ msgstr "Heure"
 #: sportfac/templates/backend/registration/transport-list.html:36
 #: sportfac/templates/backend/teacher/list.html:42
 #: sportfac/templates/backend/user/child-detail.html:45
-#: sportfac/templates/backend/user/child-list.html:87
+#: sportfac/templates/backend/user/child-list.html:89
 #: sportfac/templates/backend/user/detail.html:114
 #: sportfac/templates/backend/user/instructor-list.html:84
 #: sportfac/templates/backend/user/list.html:93
@@ -3087,6 +3099,7 @@ msgstr "Facture"
 #: sportfac/templates/registrations/registration_list.html:63
 #: sportfac/templates/registrations/wizard_billing.html:33
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:63
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:63
 #: sportfac/themes/montreux_ski/templates/registrations/wizard_billing.html:28
 #: sportfac/themes/vevey/templates/registrations/wizard_billing.html:28
 msgid "Total"
@@ -3361,23 +3374,27 @@ msgstr "Importer une liste d'enfants"
 msgid "List students"
 msgstr "Liste des élèves"
 
-#: sportfac/templates/backend/user/child-list.html:82
+#: sportfac/templates/backend/user/child-list.html:69
+msgid "New student"
+msgstr "Nouvel élève"
+
+#: sportfac/templates/backend/user/child-list.html:84
 msgid "Family"
 msgstr "Famille"
 
-#: sportfac/templates/backend/user/child-list.html:122
+#: sportfac/templates/backend/user/child-list.html:124
 msgid "Child details"
 msgstr "Détail de l'élève"
 
-#: sportfac/templates/backend/user/child-list.html:123
+#: sportfac/templates/backend/user/child-list.html:125
 msgid "Edit student"
 msgstr "Mettre à jour l'élève"
 
-#: sportfac/templates/backend/user/child-list.html:125
+#: sportfac/templates/backend/user/child-list.html:127
 msgid "Review absences"
 msgstr "Gestion des absences"
 
-#: sportfac/templates/backend/user/child-list.html:127
+#: sportfac/templates/backend/user/child-list.html:129
 msgid "Delete student"
 msgstr "Supprimer l'élève"
 
@@ -3779,18 +3796,21 @@ msgstr "Inscription"
 #: sportfac/templates/profiles/registration_list.html:11
 #: sportfac/templates/registrations/registration_list.html:11
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:11
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:11
 msgid "Close"
 msgstr "Fermer"
 
 #: sportfac/templates/profiles/registration_list.html:13
 #: sportfac/templates/registrations/registration_list.html:13
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:13
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:13
 msgid "Warning!"
 msgstr "Attention!"
 
 #: sportfac/templates/profiles/registration_list.html:16
 #: sportfac/templates/registrations/registration_list.html:16
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:16
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:16
 msgid ""
 "The following courses occur at the same or close times. It may be difficult "
 "to bring your children."
@@ -3801,6 +3821,7 @@ msgstr ""
 #: sportfac/templates/profiles/registration_list.html:18
 #: sportfac/templates/registrations/registration_list.html:18
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:18
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:18
 msgid ""
 "The following courses occur at the same or close times. It may be difficult "
 "to bring your child."
@@ -3811,24 +3832,28 @@ msgstr ""
 #: sportfac/templates/profiles/registration_list.html:60
 #: sportfac/templates/registrations/registration_list.html:96
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:96
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:99
 msgid "Please submit this form."
 msgstr "Merci de remplir ce formulaire."
 
 #: sportfac/templates/profiles/registration_list.html:74
 #: sportfac/templates/registrations/registration_list.html:159
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:159
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:162
 msgid "Sending info..."
 msgstr "Envoi des informations..."
 
 #: sportfac/templates/profiles/registration_list.html:80
 #: sportfac/templates/registrations/registration_list.html:170
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:170
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:173
 msgid "An error has occurred. Please contact us."
 msgstr "Une erreur s'est produite, veuillez nous contacter."
 
 #: sportfac/templates/profiles/registration_list.html:116
 #: sportfac/templates/registrations/registration_list.html:200
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:200
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:203
 msgid ""
 "Confirmation is definitive. You will not be able to change your "
 "registrations again."
@@ -3838,6 +3863,7 @@ msgstr ""
 
 #: sportfac/templates/profiles/registration_list.html:123
 #: sportfac/templates/registrations/registration_list.html:210
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:213
 msgid "Confirm and proceed to checkout"
 msgstr "Confirmer et passer au paiement"
 
@@ -3998,31 +4024,37 @@ msgstr "À propos de vos enfants"
 
 #: sportfac/templates/registrations/registration_list.html:49
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:49
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:49
 msgid "Subtotal"
 msgstr "Sous-total"
 
 #: sportfac/templates/registrations/registration_list.html:53
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:53
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:53
 msgid "Reductions"
 msgstr "Réductions"
 
 #: sportfac/templates/registrations/registration_list.html:130
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:130
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:133
 msgid "yes"
 msgstr "oui"
 
 #: sportfac/templates/registrations/registration_list.html:134
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:134
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:137
 msgid "no"
 msgstr "non"
 
 #: sportfac/templates/registrations/registration_list.html:162
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:162
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:165
 msgid "Extra infos saved"
 msgstr "Les informations complémentaires ont été enregistrées"
 
 #: sportfac/templates/registrations/registration_list.html:210
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:210
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:213
 msgid "Confirm"
 msgstr "Confirmer"
 
