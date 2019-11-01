@@ -9,13 +9,13 @@ from django.utils.translation import ugettext as _
 import xlrd
 
 from registrations.models import Child
-from profiles.models import SchoolYear
+from profiles.models import School, SchoolYear
 
 
 logger = logging.getLogger(__name__)
 
 
-CHILD_MANDATORY_FIELDS = (u'ID LAGAPEO', u'Nom', u'Prénom', u'Genre', u'Date de naissance', u'Nationalité', u'Langue maternelle')
+CHILD_MANDATORY_FIELDS = (u'ID LAGAPEO', u'Nom', u'Prénom', u'Genre', u'Date de naissance', u'Nationalité')
 CHILD_IMPORT_TO_FIELD = {
     u'ID LAGAPEO': 'id_lagapeo',
     u'Nom': 'last_name',
@@ -27,7 +27,7 @@ class ChildParser:
 
     def __init__(self, book=None):
         self.schoolyears = dict([(year.year, year) for year in SchoolYear.objects.all()])
-
+        self.schools = dict([(school.code, school) for school in School.objects.all()])
         if book:
             self.datemode = book.datemode
         else:
@@ -40,7 +40,8 @@ class ChildParser:
             u'Date de naissance': ('birth_date', self.parse_birth_date),
             u'Nationalité': ('nationality', self.parse_nationality),
             u'Langue maternelle': ('language', self.parse_language),
-            u'Année': ('school_year', self.parse_school_year)
+            u'Année': ('school_year', self.parse_school_year),
+            u'Etablissement': ('school', self.parse_school),
         }
 
     def parse_sex(self, value):
@@ -78,6 +79,9 @@ class ChildParser:
             return Child.LANGUAGE.E
 
         return Child.LANGUAGE.F
+
+    def parse_school(self, value):
+        return self.schools.get(value, None)
 
     def parse_school_year(self, value):
         try:
