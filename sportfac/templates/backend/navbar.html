@@ -162,6 +162,12 @@
                 &nbsp;&nbsp;{% trans "All students" %}
               </a>
             </li>
+            <li>
+              <a href="{% url 'backend:child-new' %}">
+                <i class="icon-child"></i>
+                &nbsp;&nbsp;{% trans "New student" %}
+              </a>
+            </li>
             {% if IMPORT_CHILDREN %}
             <li>
               <a href="{% url 'backend:child-import' %}">

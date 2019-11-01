@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-11-01 10:51+0100\n"
+"POT-Creation-Date: 2019-11-01 11:00+0100\n"
 "PO-Revision-Date: 2019-11-01 10:52+0100\n"
 "Last-Translator: Gregory Favre <greg@beyondthewall.ch>\n"
 "Language-Team: \n"
@@ -2602,7 +2602,7 @@ msgid "List building"
 msgstr "Liste des bâtiments"
 
 #: sportfac/templates/backend/building/list.html:32
-#: sportfac/templates/backend/navbar.html:182
+#: sportfac/templates/backend/navbar.html:188
 msgid "New building"
 msgstr "Nouveau bâtiment"
 
@@ -2949,11 +2949,16 @@ msgid "All students"
 msgstr "Tous les élèves"
 
 #: sportfac/templates/backend/navbar.html:168
+#: sportfac/templates/backend/user/child-list.html:69
+msgid "New student"
+msgstr "Nouvel élève"
+
+#: sportfac/templates/backend/navbar.html:174
 #: sportfac/templates/backend/user/child-list.html:66
 msgid "Import students"
 msgstr "Importer des élèves"
 
-#: sportfac/templates/backend/navbar.html:177
+#: sportfac/templates/backend/navbar.html:183
 msgid "All buildings"
 msgstr "Tous les bâtiments"
 
@@ -3373,10 +3378,6 @@ msgstr "Importer une liste d'enfants"
 #: sportfac/templates/backend/user/child-list.html:6
 msgid "List students"
 msgstr "Liste des élèves"
-
-#: sportfac/templates/backend/user/child-list.html:69
-msgid "New student"
-msgstr "Nouvel élève"
 
 #: sportfac/templates/backend/user/child-list.html:84
 msgid "Family"
