@@ -11,11 +11,11 @@
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald:400,300,700">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400italic,400,600,700,800&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
-    <link href="{% static 'css/style.css' %}" rel="stylesheet" media="all" />
+    <link href="{{ STATIC_URL }}css/style.css" rel="stylesheet" media="all" />
     {% if not request.tenant.is_production %}
     <link href="{% static 'css/not_production.css' %}" rel="stylesheet" media="all" />
     {% endif %}
-    <link href="{% static 'css/nyon.css' %}" rel="stylesheet" media="all" />
+    <link href="{{ STATIC_URL }}css/nyon.css" rel="stylesheet" media="all" />
 
     {% block extra_css %}{% endblock extra_css %}
     {% render_block "css" %}
