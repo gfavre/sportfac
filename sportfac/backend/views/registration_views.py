@@ -342,7 +342,7 @@ class TransportDetailView(BackendMixin, DetailView):
             courses = set([registration.course for registration in self.object.participants.all()])
 
         registrations = dict([((registration.child, registration.course), registration) for registration in self.object.participants.all()])
-        qs = Absence.objects.filter(child__in=children, course__in=courses) \
+        qs = Absence.objects.filter(child__in=children, session__course__in=courses) \
                             .select_related('session', 'child', 'session__course', 'session__course__activity') \
                             .order_by('child__last_name', 'child__first_name')
         kwargs['all_dates'] = list(set(qs.values_list('session__date', flat=True)))
