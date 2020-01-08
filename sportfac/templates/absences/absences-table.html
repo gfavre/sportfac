@@ -1,247 +1,279 @@
 {% load i18n %}
 {% load duration switzerland extra sekizai_tags staticfiles matrix status mathfilters children %}
 {% addtoblock "css" %}
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/dt-1.10.16/b-1.5.1/fc-3.2.4/fh-3.1.3/r-2.2.1/sc-1.4.3/sl-1.2.4/datatables.min.css"/>
-<style>
-.dataTables_wrapper {
-  margin-top: 20px;
-}
-table.dataTable tbody tr.selected .popover{
-  color: black;
-}
-table.dataTable tbody tr.selected .absence a {
-  color: rgb(51, 122, 183);
-}
-.rotated-heading {
-    height: 85px;
-    width: 40px;
-    white-space: nowrap;
-    vertical-align: middle!important;
-}
-.rotated-heading div {
-    transform: rotate(-90deg) translate(-33px, 0px);
-    -webkit-transform: rotate(-90deg) translate(-33px, 0px);
-    width: 35px;
-}
-.rotated-heading div span {
-    padding-left:12px;
-}
-table.dataTable thead>tr>th.rotated-heading {
-  padding-left: 0;
-  padding-right: 0;
-}
-.set-absence .btn-sm{
-  padding: 0;
- }
-.absences>tbody>tr>td.absence {
-  text-align: center;
-}
-.absences .popover .radio {
-  display: block;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-.absences .popover .radio label{
-  padding-left: 20px;
-}
-.absences .popover .radio input[type=radio] {
-  position: absolute;
-  margin-left: -20px;
-  margin-top: 2px;
-}
-.absences .popover textarea {
-  width: 100%;
-}
-.edit-session .form-group {
-  margin-bottom: 15px;
-  display: block;
-}
-.edit-session .form-control {
-  width: 100%;
-  display: block;
-}
+  <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/v/bs/dt-1.10.16/b-1.5.1/fc-3.2.4/fh-3.1.3/r-2.2.1/sc-1.4.3/sl-1.2.4/datatables.min.css"/>
+  <style>
+    .dataTables_wrapper {
+      margin-top: 20px;
+    }
 
-@media print {
+    table.dataTable tbody tr.selected .popover {
+      color: black;
+    }
 
-  table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:before,
-  table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child:before {
-    display: none;
-  }
+    table.dataTable tbody tr.selected .absence a {
+      color: rgb(51, 122, 183);
+    }
 
-  table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child,
-  table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child {
-    padding-left: 5px;
-  }
-  table.table-bordered.dataTable {
-   border-collapse: collapse !important;
-  }
-  .absences {
-    width: 100% !important;
-  }
-   .child-col{
-   width: 4cm! important;
- }
+    .rotated-heading {
+      height: 85px;
+      width: 40px;
+      white-space: nowrap;
+      vertical-align: middle !important;
+    }
 
- .edit-session abbr[title]:after {
-   display: none;
- }
- .edit-session abbr[title] {
-   border-bottom: none;
-   text-decoration: none;
- }
+    .rotated-heading div {
+      transform: rotate(-90deg) translate(-33px, 0px);
+      -webkit-transform: rotate(-90deg) translate(-33px, 0px);
+      width: 35px;
+    }
 
-}
+    .rotated-heading div span {
+      padding-left: 12px;
+    }
 
-</style>
+    table.dataTable thead > tr > th.rotated-heading {
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .set-absence .btn-sm {
+      padding: 0;
+    }
+
+    .absences > tbody > tr > td.absence {
+      text-align: center;
+    }
+
+    .absences .popover .radio {
+      display: block;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    .absences .popover .radio label {
+      padding-left: 20px;
+    }
+
+    .absences .popover .radio input[type=radio] {
+      position: absolute;
+      margin-left: -20px;
+      margin-top: 2px;
+    }
+
+    .absences .popover textarea {
+      width: 100%;
+    }
+
+    .edit-session .form-group {
+      margin-bottom: 15px;
+      display: block;
+    }
+
+    .edit-session .form-control {
+      width: 100%;
+      display: block;
+    }
+
+    @media print {
+
+      table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:before,
+      table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child:before {
+        display: none;
+      }
+
+      table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child,
+      table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child {
+        padding-left: 5px;
+      }
+
+      table.table-bordered.dataTable {
+        border-collapse: collapse !important;
+      }
+
+      .absences {
+        width: 100% !important;
+      }
+
+      .child-col {
+        width: 4cm ! important;
+      }
+
+      .edit-session abbr[title]:after {
+        display: none;
+      }
+
+      .edit-session abbr[title] {
+        border-bottom: none;
+        text-decoration: none;
+      }
+
+    }
+
+  </style>
 {% endaddtoblock %}
 
 <table class="table table-bordered table-hover table-condensed absences table-fixed responsive">
   <thead>
-    <tr>
-      <th class="all child-col">{% trans "Name" %}</th>
-      {% if BIB_NUMBERS %}
-      <th class="rotated-heading all"><div><span>{% trans "Bib number" %}</span></div></th>
-      {% endif %}
-      {% if from_activity %}
-      <th class="rotated-heading all"><div><span>{% trans "Course" %}</span></div></th>
-      {% endif %}
-      {% if REGISTRATION_LEVELS %}
-      <th class="rotated-heading min-desktop"><div><span>{% trans "Announced level" %}</span></div></th>
-      <th class="rotated-heading min-tablet-l"><div><span>{% trans "level -1" %}</span></div></th>
-      <th class="rotated-heading min-tablet-l"><div><span>{% trans "level 0" %}</span></div></th>
-      {% endif %}
-      {% if DISPLAY_CAR_NUMBER %}
+  <tr>
+    <th class="all child-col">{% trans "Name" %}</th>
+    {% if BIB_NUMBERS %}
+      <th class="rotated-heading all">
+        <div><span>{% trans "Bib number" %}</span></div>
+      </th>
+    {% endif %}
+    {% if from_activity %}
+      <th class="rotated-heading all">
+        <div><span>{% trans "Course" %}</span></div>
+      </th>
+    {% endif %}
+    {% if REGISTRATION_LEVELS %}
+      <th class="rotated-heading min-desktop">
+        <div><span>{% trans "Announced level" %}</span></div>
+      </th>
+      <th class="rotated-heading min-tablet-l">
+        <div><span>{% trans "level -1" %}</span></div>
+      </th>
+      <th class="rotated-heading min-tablet-l">
+        <div><span>{% trans "level 0" %}</span></div>
+      </th>
+    {% endif %}
+    {% if DISPLAY_CAR_NUMBER %}
       <th class="rotated-heading min-tablet-p">
         <div><span>{% trans "Bus" %}</span></div>
       </th>
-      {% endif %}
-      {% if DISPLAY_REGISTRATION_NOTE %}
+    {% endif %}
+    {% if DISPLAY_REGISTRATION_NOTE %}
       <th class="note min-desktop">
         {% trans "Note" %}
       </th>
-      {% endif %}
-      {% for session_date in all_dates %}
+    {% endif %}
+    {% for session_date in all_dates %}
       {% with session=sessions|get_item:session_date %}
-      <th class="rotated-heading session-col date {% if forloop.first %} all{% else %} min-tablet-p{% endif %}"
-          data-session="{{ session.id }}">
-        <div>
-          <span class="session-date">{{ session_date|date:"d.m.Y" }}</span>
-        </div>
-      </th>
+        <th class="rotated-heading session-col date {% if forloop.first %} all{% else %} min-tablet-p{% endif %}"
+            data-session="{{ session.id }}">
+          <div>
+            <span class="session-date">{{ session_date|date:"d.m.Y" }}</span>
+          </div>
+        </th>
       {% endwith %}
     {% endfor %}
   </thead>
   <tfoot>
-    <tr>
-      <th class="child-col"></th>
-      {% if from_activity %}
+  <tr>
+    <th class="child-col"></th>
+    {% if from_activity %}
       <th></th>
-      {% endif %}
-      {% if BIB_NUMBERS %}
+    {% endif %}
+    {% if BIB_NUMBERS %}
       <th></th>
-      {% endif %}
-      {% if REGISTRATION_LEVELS %}
-      <th></th><th></th><th></th>
-      {% endif %}
-      {% if DISPLAY_CAR_NUMBER %}
+    {% endif %}
+    {% if REGISTRATION_LEVELS %}
       <th></th>
-      {% endif %}
-      {% if DISPLAY_REGISTRATION_NOTE %}
       <th></th>
-      {% endif %}
+      <th></th>
+    {% endif %}
+    {% if DISPLAY_CAR_NUMBER %}
+      <th></th>
+    {% endif %}
+    {% if DISPLAY_REGISTRATION_NOTE %}
+      <th></th>
+    {% endif %}
 
-      {% for session_date in all_dates %}
+    {% for session_date in all_dates %}
       {% if course %}
         {% comment %}
         NOTE: if multiple courses where to be given, it would create a trouble. Therefore, the activity-absences view
         set course only if a single course is displayed at that time (and not the full activity).
         {% endcomment %}
         {% with session=sessions|get_item:session_date %}
-        <th class="edit-session session-col"
-            data-url="{{ session.get_api_url }}"
-            data-instructor="{{ session.instructor.id }}"
-            data-date="{{ session.date | date:"d.m.Y"  }}">
-          <a class="has-popover" role="button" data-toggle="popover"
-             title="{% trans "Edit session" %}"
-             data-placement="top"
-             data-trigger="click focus">
+          <th class="edit-session session-col"
+              data-url="{{ session.get_api_url }}"
+              data-instructor="{{ session.instructor.id }}"
+              data-date="{{ session.date | date:"d.m.Y" }}">
+            <a class="has-popover" role="button" data-toggle="popover"
+               title="{% trans "Edit session" %}"
+               data-placement="top"
+               data-trigger="click focus">
 
-            <abbr title="{{ session.instructor.full_name | default:_("Unknown instructor") }}">{{ session.instructor.get_initials | default:"n/a"}}</abbr>
+              <abbr
+                  title="{{ session.instructor.full_name | default:_("Unknown instructor") }}">{{ session.instructor.get_initials | default:"n/a" }}</abbr>
               <i class="icon-pencil hidden-print" style="clear:both;"></i>&nbsp;
-          </a>
-        </th>
+            </a>
+          </th>
         {% endwith %}
       {% else %}
         <th></th>
       {% endif %}
-      {% endfor %}
+    {% endfor %}
 
-    </tr>
+  </tr>
   </tfoot>
   <tbody>
   {% for child_registration, absences in child_absences.items %}
-  {% with child=child_registration.0 registration=child_registration.1 %}
-    <tr data-child="{{ child.id }}"
-        data-registration-id="{{ registration.id }}">
-       <th class="child-name child-col" data-order="{{ child.ordering_name }}">
+    {% with child=child_registration.0 registration=child_registration.1 %}
+      <tr data-child="{{ child.id }}"
+          data-registration-id="{{ registration.id }}">
+        <th class="child-name child-col" data-order="{{ child.ordering_name }}">
           {% if request.user.is_manager %}
-          <a href="{{ child.get_backend_absences_url}}">{{ child.full_name }}</a>
+            <a href="{{ child.get_backend_absences_url }}">{{ child.full_name }}</a>
           {% else %}
-          {{ child.full_name }}
+            {{ child.full_name }}
           {% endif %}
         </th>
         {% if BIB_NUMBERS %}
-        <th data-order="{{ child.bib_number|default:"0" }}">
+          <th data-order="{{ child.bib_number|default:"0" }}">
             {{ child.bib_number|default:"" }}
-        </th>
+          </th>
         {% endif %}
         {% if from_activity %}
-        <td data-order="{{ registration.course.pk }}">{{ registration.course.number }}</td>
+          <td data-order="{{ registration.course.pk }}">{{ registration.course.number }}</td>
         {% endif %}
         {% if REGISTRATION_LEVELS %}
-        {% with level=child_levels|get_item:child extra=extras|get_item:child%}
-        <th>
-          <span class="hidden-print">{{ extra|default:'' }}</span>
-          <span class="visible-print">{{ extra|default:''|truncatewords:"1" }}</span>
-        </th>
-        <th data-order="{{ level.before_level }}">
+          {% with level=child_levels|get_item:child extra=extras|get_item:child %}
+            <th>
+              <span class="hidden-print">{{ extra|default:'' }}</span>
+              <span class="visible-print">{{ extra|default:''|truncatewords:"1" }}</span>
+            </th>
+            <th data-order="{{ level.before_level }}">
           <span class="set-level"
                 data-level="{{ level.before_level }}"
                 data-key="before_level"
                 data-url="{{ level.api_url }}"
                 data-child="{{ child.id }}"
                 data-activity="{{ registration.course.activity.id }}"
-            >
-            <a class="level has-popover" role="button"
+          >
+            <a class="before-level has-popover" role="button"
                data-toggle="popover"
                data-trigger="click focus">{{ level.before_level|default:'NP' }}</a>
           </span>
-        </th>
-        <th data-order="{{ level.after_level }}">
+            </th>
+            <th data-order="{{ level.after_level }}">
           <span class="set-level"
                 data-level="{{ level.after_level }}"
                 data-key="after_level"
                 data-url="{{ level.api_url }}"
                 data-child="{{ child.id }}"
                 data-activity="{{ registration.course.activity.id }}"
-            >
+          >
             <a class="level has-popover" role="button"
                data-toggle="popover"
                data-trigger="click focus">{{ level.after_level|default:'NP' }}</a>
           </span>
-        </th>
-        {% endwith %}
+            </th>
+          {% endwith %}
 
         {% endif %}
 
         {% if DISPLAY_CAR_NUMBER %}
-        <th>
-          {{ registration.transport|default:"" }}
-        </th>
+          <th>
+            {{ registration.transport|default:"" }}
+          </th>
         {% endif %}
         {% if DISPLAY_REGISTRATION_NOTE %}
-        {% with level=child_levels|get_item:child %}
-        <th>
+          {% with level=child_levels|get_item:child %}
+            <th>
           <span class="set-note"
                 data-key="note"
                 data-note="{{ level.note }}"
@@ -254,12 +286,12 @@ table.dataTable thead>tr>th.rotated-heading {
               <i class="icon-pencil"></i>&nbsp;{% trans "Edit note" %}
             </a>
           </span>
-        </th>
-        {% endwith %}
+            </th>
+          {% endwith %}
         {% endif %}
-      {% for session_date in all_dates %}{% if session_date in absences %}
-        {% with absence=absences|get_item:session_date %}
-        <td class="session-col absence {{ absence.status }} {% if absence.status == 'present' %}success{% elif absence.status == 'late' %}info{% elif absence.status == 'excused' %}warning{% else %}danger{% endif %}">
+        {% for session_date in all_dates %}{% if session_date in absences %}
+          {% with absence=absences|get_item:session_date %}
+            <td class="session-col absence {{ absence.status }} {% if absence.status == 'present' %}success{% elif absence.status == 'late' %}info{% elif absence.status == 'excused' %}warning{% else %}danger{% endif %}">
           <span class="set-absence"
                 data-pk="{{ absence.pk }}"
                 data-session="{{ absence.session.id }}"
@@ -269,30 +301,32 @@ table.dataTable thead>tr>th.rotated-heading {
                data-toggle="popover"
                data-trigger="click focus">{{ absence|absence_to_status:1 }}</a>
             {% if from_activity %}
-            <span class="hidden-print"><br><small class="muted">{{ absence.session.course.number }}</small></span>
+              <span class="hidden-print"><br><small class="muted">{{ absence.session.course.number }}</small></span>
             {% endif %}
           </span>
-        </td>
-        {% endwith %}
+            </td>
+          {% endwith %}
         {% else %}
-        <td class="text-muted active"></td>
+          <td class="text-muted active"></td>
         {% endif %}
-      {% endfor %}
+        {% endfor %}
 
-    </tr>
-  {% endwith %}
+      </tr>
+    {% endwith %}
   {% endfor %}
   </tbody>
 </table>
 {% if user.is_manager %}
-<form class="move" method="post"
-      action="{% url 'backend:registrations-move' %}{% if move_redirect_a %}?activity={{ move_redirect_a }}{% elif move_redirect_c %}?course={{ move_redirect_c }}{% endif %}">
-  {% csrf_token %}
-</form>
-<p class="hidden-print text-center">
+  <form class="move" method="post"
+        action="{% url 'backend:registrations-move' %}{% if move_redirect_a %}?activity=
+          {{ move_redirect_a }}{% elif move_redirect_c %}?course={{ move_redirect_c }}{% endif %}">
+    {% csrf_token %}
+  </form>
+  <p class="hidden-print text-center">
 
-  <a class="btn btn-success btn-large" href="{{ request.get_full_path|add_pdf_param }}"><i class="icon icon-file-pdf"></i> {% trans "Export to PDF" %}</a>
-</p>
+    <a class="btn btn-success btn-large" href="{{ request.get_full_path|add_pdf_param }}"><i
+        class="icon icon-file-pdf"></i> {% trans "Export to PDF" %}</a>
+  </p>
 {% endif %}
 
 <script type="text/html" id="session-window">
@@ -301,33 +335,36 @@ table.dataTable thead>tr>th.rotated-heading {
       <label>{% trans "Instructor" %}</label>
       <select name="instructor" class="form-control instructor">
         {% for instructor in course.instructors.all %}
-        <option value="{{ instructor.id }}">
-          {{ instructor.full_name }}
-        </option>
+          <option value="{{ instructor.id }}">
+            {{ instructor.full_name }}
+          </option>
         {% endfor %}
         <option value="" selected>{% trans "other" %}</option>
       </select>
     </div>
     {% if not EXPLICIT_SESSION_DATES %}
-    <div class="form-group">
-      <label>{% trans "Date" %}</label>
-      <div class="input-group date datetimepicker session-update">
-        <input type="text" class="form-control" name="date" required
-               data-date-format="DD.MM.YYYY"
-               data-date-pickTime="false"/>
-        <div class="input-group-addon"><div class="icon-calendar"></div></div>
+      <div class="form-group">
+        <label>{% trans "Date" %}</label>
+        <div class="input-group date datetimepicker session-update">
+          <input type="text" class="form-control" name="date" required
+                 data-date-format="DD.MM.YYYY"
+                 data-date-pickTime="false"/>
+          <div class="input-group-addon">
+            <div class="icon-calendar"></div>
+          </div>
+        </div>
       </div>
-    </div>
     {% endif %}
     <div class="form-group">
       <button type="submit" class="form-control  btn-primary"><i class="icon-ok"></i> {% trans "Save" %}</button>
     </div>
     {% if not EXPLICIT_SESSION_DATES %}
-    <div class="form-group text-right">
-      <a href="#" class="session-delete hidden-print btn btn-sm btn-danger" data-session-url="{{ session.get_api_url }}">
-        <i class="icon-trash"></i> {% trans "Delete session" %}
-      </a>
-    </div>
+      <div class="form-group text-right">
+        <a href="#" class="session-delete hidden-print btn btn-sm btn-danger"
+           data-session-url="{{ session.get_api_url }}">
+          <i class="icon-trash"></i> {% trans "Delete session" %}
+        </a>
+      </div>
     {% endif %}
 
   </form>
@@ -340,12 +377,12 @@ table.dataTable thead>tr>th.rotated-heading {
         <input type="radio" name="status" id="present" value="present" checked>{% trans "Present" %}
       </label>
     </div>
-     <div class="radio">
+    <div class="radio">
       <label>
         <input type="radio" name="status" id="absent" value="absent">{% trans "Absent" %}
       </label>
     </div>
-     <div class="radio">
+    <div class="radio">
       <label>
         <input type="radio" name="status" id="excused" value="excused">{% trans "Excused" %}
       </label>
@@ -367,10 +404,31 @@ table.dataTable thead>tr>th.rotated-heading {
   <form>
     <select class="form-control" name="level">
       {% for level in levels %}
-      <option value="{{ level.0 }}">{{ level.1 }}</option>
+        <option value="{{ level.0 }}">{{ level.1 }}</option>
       {% endfor %}
     </select>
   </form>
+</script>
+</script>
+
+<
+script
+type = "text/html"
+id = "before-level-window" >
+  < form
+class
+= 'before-level-form' >
+  < input
+type = "text"
+class
+= "form-control"
+name = "level" >
+  < input
+type = "submit"
+class
+= "form-control  btn-primary"
+value = "{% trans "Save" %}" >
+  < /form>
 </script>
 
 <script type="text/html" id="note-window">
@@ -381,325 +439,385 @@ table.dataTable thead>tr>th.rotated-heading {
 </script>
 
 
-
 <script id="column-header" type="text/html">
-    <th class="date">
-        <span class="session-date"></span>
+  <th class="date">
+    <span class="session-date"></span>
 
-        <span class="date datetimepicker session-update hidden-print">
+    <span class="date datetimepicker session-update hidden-print">
           <input type="hidden" class="form-control" value=""
-                 data-date-pickTime="false" />
+                 data-date-pickTime="false"/>
           <a href="#" class="hidden-print"><i class="icon-calendar"></i></a>
         </span>
-        <a href="#" class="session-delete hidden-print">
-          <i class="icon-trash"></i>
-        </a>
+    <a href="#" class="session-delete hidden-print">
+      <i class="icon-trash"></i>
+    </a>
 
-    </th>
+  </th>
 </script>
 <script id="column-content" type="text/html">
-    <td class="present success"
-        data-status="present">
-        <a role="button" class="btn btn-sm absence has-popover"
-           data-toggle="popover"
-           data-trigger="click focus">{{ "present"|absence_status }}</a>
-    </td>
+  <td class="present success"
+      data-status="present">
+    <a role="button" class="btn btn-sm absence has-popover"
+       data-toggle="popover"
+       data-trigger="click focus">{{ "present"|absence_status }}</a>
+  </td>
 </script>
 
 
 {% addtoblock "js" %}
 
-<script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
-<script src="{% static 'js/vendor/bootstrap-datetimepicker.min.js' %}"></script>
-<script src="{% static 'js/vendor/js.cookie.js' %}"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.16/b-1.5.1/fc-3.2.4/fh-3.1.3/r-2.2.1/sc-1.4.3/sl-1.2.4/datatables.min.js"></script>
-<script>
-$(function(){
-    var HUMAN_FMT = 'DD.MM.YYYY';
-    var API_FMT = 'YYYY-MM-DD'
+  <script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
+  <script src="{% static 'js/vendor/bootstrap-datetimepicker.min.js' %}"></script>
+  <script src="{% static 'js/vendor/js.cookie.js' %}"></script>
+  <script type="text/javascript"
+          src="https://cdn.datatables.net/v/bs/dt-1.10.16/b-1.5.1/fc-3.2.4/fh-3.1.3/r-2.2.1/sc-1.4.3/sl-1.2.4/datatables.min.js"></script>
+  <script>
+    $(function () {
+      var HUMAN_FMT = 'DD.MM.YYYY';
+      var API_FMT = 'YYYY-MM-DD'
 
-    $.fn.column = function() {
-      return $(this)
+      $.fn.column = function () {
+        return $(this)
           .filter('th, td')
           .closest('table')
           .find('tr')
-          .children(':nth-child(' + ($(this).index()+1) + ')');
-    };
+          .children(':nth-child(' + ($(this).index() + 1) + ')');
+      };
 
-    $.ajaxSetup({
-      headers: { "X-CSRFToken": Cookies.get("csrftoken") }
-    });
+      $.ajaxSetup({
+        headers: {"X-CSRFToken": Cookies.get("csrftoken")}
+      });
 
 
-    var dtable = $('.absences').DataTable({
-      {% if LANGUAGE_CODE == 'fr' %}
-      "language": {
-        "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
-      },
-      {% endif %}
-      "responsive": true,
-      "paging": false,
-      dom: "<'row hidden-print'<'col-sm-6'lB><'col-sm-6'f>>" +
-           "<'row'<'col-sm-12'tr>>" +
-           "<'row'<'col-sm-5'i><'col-sm-7'p>>",
-      {% if request.user.is_manager %}
-      buttons: [
-          {
+      var dtable = $('.absences').DataTable({
+        {% if LANGUAGE_CODE == 'fr' %}
+          "language": {
+            "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+          },
+        {% endif %}
+        "responsive": true,
+        "paging": false,
+        dom: "<'row hidden-print'<'col-sm-6'lB><'col-sm-6'f>>" +
+          "<'row'<'col-sm-12'tr>>" +
+          "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+        {% if request.user.is_manager %}
+          buttons: [
+            {
               extend: 'selected',
               text: '<i class="icon-loop-alt"></i>&nbsp;&nbsp;{% trans "Move to another course..." %}',
-              action: function(){
-                  moveChildren();
+              action: function () {
+                moveChildren();
               }
+            }
+          ],
+          select: {
+            style: 'multi'
           }
-      ],
-      select: {
-          style: 'multi'
-      }
-      {% else %}
-      buttons: []
-      {% endif %}
-    });
+        {% else %}
+          buttons: []
+        {% endif %}
+      });
 
-    var moveChildren = function(){
-      var $selected = dtable.rows( { selected: true } ).nodes();
-      var ids = $selected.map(function(elem){
+      var moveChildren = function () {
+        var $selected = dtable.rows({selected: true}).nodes();
+        var ids = $selected.map(function (elem) {
           return elem.getAttribute('data-registration-id');
-      });
-      var $form = $('form.move');
-      $('input[name=registrations]', $form).remove();
-      ids.each(function(regId){
-        $('<input type="hidden">').attr('id', 'registrations_' + regId)
-                                  .attr('name', 'registrations')
-                                  .val(regId)
-                                  .prependTo($form);
-      });
-      $form.submit();
-    };
-
-
-    $('.datetimepicker').datetimepicker({
-      language: '{{ LANGUAGE_CODE }}',
-      format: HUMAN_FMT,
-      icons: {date: 'icon-calendar',
-        up:   'icon-up-open',
-        down: 'icon-down-open'}
-    });
-
-    $('.absences').popover(
-      {
-        selector: '.absence.has-popover',
-        content: function(){ return $('#status-window').html(); },
-        html: true,
-        placement: function(context, source){
-          if ($(source).parents('.dtr-details').length > 0) {
-              return 'right';
-          }
-          return 'left';
-        }
-      }
-    );
-    $('.absences').on('change', 'input[name=status]', function(event){
-      var $parent = $(this).parents('.set-absence');
-      var status =  $(this).val();
-      var data = {
-        'session': $parent.data('session'),
-        'child': $parent.data('child'),
-        'status': status
+        });
+        var $form = $('form.move');
+        $('input[name=registrations]', $form).remove();
+        ids.each(function (regId) {
+          $('<input type="hidden">').attr('id', 'registrations_' + regId)
+            .attr('name', 'registrations')
+            .val(regId)
+            .prependTo($form);
+        });
+        $form.submit();
       };
-      $.ajax({
-        url: "{% url 'api:absence-set' %}",
-        type: 'POST',
-        data: data,
-        success: function(response){
-          var label = '';
-          var classes = '';
-          switch(response.status){
-            case 'present':
-              label = "{% trans 'P' %}";
-              classes = "success present";
-              break;
-            case 'absent':
-              label = "{% trans 'A' %}";
-              classes = "danger absent";
-              break;
-            case 'excused':
-              label = "{% trans 'E' %}";
-              classes = "danger excused";
-              break;
-            case 'medical':
-              label = "{% trans 'MC' %}";
-              classes = "danger medical";
-              break;
-            case 'late':
-              label = "{% trans 'LA' %}";
-              classes = "info late";
-              break;
-          }
-          $('a', $parent).text(label);
-          $parent.parent().removeClass().addClass(classes);
-          $parent.data('status', response.status);
-          $('.has-popover', $parent).popover('hide');
-        }
-      })
-    });
 
 
-    $('.absences').popover(
-        {
-          selector: '.level.has-popover',
-          content: function(){ return $('#level-window').html(); },
-          html: true
-        }
-    );
-    $('.absences').on('shown.bs.popover', '.set-absence', function(){
-      var status = $(this).data('status');
-      $('input[value=' + status + ']', $(this)).prop('checked', true);
-    });
-
-    $('.absences').on('shown.bs.popover', '.set-level', function(){
-      var level = $(this).data('level');
-      if (level.length) {
-       $('option[value=' + level + ']', $(this)).prop('selected', true);
-      }
-    });
-
-    $('.absences').on('change', 'select[name=level]', function(event){
-      var level =  $(this).val();
-      var parent = $(this).parents('.set-level');
-      var data = {};
-      data[parent.data('key')] = level;
-
-      if (parent.data('url')) {
-          var verb = 'PATCH';
-          var url = parent.data('url');
-      } else  {
-          var verb = 'POST';
-          var url = '{% url "api:level-list" %}';
-          data['child'] = parent.data('child');
-          data['activity'] = parent.data('activity');
-      }
-      $.ajax({
-        url: url,
-        type: verb,
-        data: data,
-        success: function(response){
-          var newLevel = response[parent.data('key')];
-          $('a', parent).text(newLevel);
-          parent.data('level', newLevel);
-          $('.has-popover', parent).popover('hide');
-        }
-      });
-    });
-
-    $('.absences').popover(
-      {
-        selector: '.note.has-popover',
-        content: function(){ return $('#note-window').html(); },
-        html: true
-      }
-    );
-    $('.absences').on('shown.bs.popover', '.set-note', function(){
-      var note = $(this).data('note');
-      $('textarea', this).val(note);
-    });
-    $('.absences').on('submit', 'form.note-form', function(event){
-      event.preventDefault();
-      var note =  $('textarea', this).val();
-      var parent = $(this).parents(".set-note");
-      var data = {};
-      data[parent.data('key')] = note;
-      if (parent.data('url')) {
-          var verb = 'PATCH';
-          var url = parent.data('url');
-      } else  {
-          var verb = 'POST';
-          var url = '{% url "api:level-list" %}';
-          data['child'] = parent.data('child');
-          data['activity'] = parent.data('activity');
-      }
-
-      $.ajax({
-        url: url,
-        type: verb,
-        data: data,
-        success: function(response){
-          var newNote = response[parent.data('key')];
-          $('div.note', parent).text(newNote);
-          parent.data('note', newNote);
-          $('.has-popover', parent).popover('hide');
-        }
-      });
-
-    });
-
-    $('.absences').popover(
-        {
-          selector: '.edit-session .has-popover',
-          content: function(){ return $('#session-window').html(); },
-          html: true
-        }
-    );
-    $('.absences').on('shown.bs.popover', '.edit-session', function(){
-      var instructor = $(this).data('instructor');
-      var date = $(this).data('date');
-      if (instructor){
-        $('[name=instructor] option[value=' + instructor +']', this).prop('selected', 'selected')
-      }
-      $('[name=date]', this).val(date);
-      $('.datetimepicker', this).datetimepicker({
+      $('.datetimepicker').datetimepicker({
         language: '{{ LANGUAGE_CODE }}',
         format: HUMAN_FMT,
-        icons: {date: 'icon-calendar',
-                up:   'icon-up-open',
-                down: 'icon-down-open'}
+        icons: {
+          date: 'icon-calendar',
+          up: 'icon-up-open',
+          down: 'icon-down-open'
+        }
       });
-    });
 
-    $('.absences').on('submit', 'form.session-form', function(event){
-      event.preventDefault();
-      var $parent = $(this).parents(".edit-session");
-      var data = {'instructor': $('[name=instructor]', this).val()};
-      if ($('[name=date]', this).length) {
-        data.date = moment($('[name=date]', this).val(), HUMAN_FMT).format(API_FMT)
-      }
+      $('.absences').popover(
+        {
+          selector: '.absence.has-popover',
+          content: function () {
+            return $('#status-window').html();
+          },
+          html: true,
+          placement: function (context, source) {
+            if ($(source).parents('.dtr-details').length > 0) {
+              return 'right';
+            }
+            return 'left';
+          }
+        }
+      );
+      $('.absences').on('change', 'input[name=status]', function (event) {
+        var $parent = $(this).parents('.set-absence');
+        var status = $(this).val();
+        var data = {
+          'session': $parent.data('session'),
+          'child': $parent.data('child'),
+          'status': status
+        };
+        $.ajax({
+          url: "{% url 'api:absence-set' %}",
+          type: 'POST',
+          data: data,
+          success: function (response) {
+            var label = '';
+            var classes = '';
+            switch (response.status) {
+              case 'present':
+                label = "{% trans 'P' %}";
+                classes = "success present";
+                break;
+              case 'absent':
+                label = "{% trans 'A' %}";
+                classes = "danger absent";
+                break;
+              case 'excused':
+                label = "{% trans 'E' %}";
+                classes = "danger excused";
+                break;
+              case 'medical':
+                label = "{% trans 'MC' %}";
+                classes = "danger medical";
+                break;
+              case 'late':
+                label = "{% trans 'LA' %}";
+                classes = "info late";
+                break;
+            }
+            $('a', $parent).text(label);
+            $parent.parent().removeClass().addClass(classes);
+            $parent.data('status', response.status);
+            $('.has-popover', $parent).popover('hide');
+          }
+        })
+      });
 
-      $.ajax({
-        url: $parent.data('url'),
-        type: 'PATCH',
-        data: data,
-        success: function(response){
-          if (response.instructor) {
+
+      $('.absences').popover(
+        {
+          selector: '.level.has-popover',
+          content: function () {
+            return $('#level-window').html();
+          },
+          html: true
+        }
+      );
+      $('.absences').popover(
+        {
+          selector: '.before-level.has-popover',
+          content: function () {
+            return $('#before-level-window').html();
+          },
+          html: true
+        }
+      );
+
+      $('.absences').on('shown.bs.popover', '.set-absence', function () {
+        var status = $(this).data('status');
+        $('input[value=' + status + ']', $(this)).prop('checked', true);
+      });
+
+      $('.absences').on('shown.bs.popover', '.set-level', function () {
+        var level = $(this).data('level');
+        if ($(this).data('key') == 'after-level') {
+          if (level.length) {
+            $('option[value=' + level + ']', $(this)).prop('selected', true);
+          }
+        } else {
+          let a = $('input', $(this))
+          if (level.length) {
+            $('input[name=level]', $(this)).val(level);
+          } else {
+            $('input[name=level]', $(this)).val('NP');
+          }
+        }
+      });
+
+      $('.absences').on('change', 'select[name=level]', function (event) {
+        var level = $(this).val();
+        var parent = $(this).parents('.set-level');
+        var data = {};
+        data[parent.data('key')] = level;
+
+        if (parent.data('url')) {
+          var verb = 'PATCH';
+          var url = parent.data('url');
+        } else {
+          var verb = 'POST';
+          var url = '{% url "api:level-list" %}';
+          data['child'] = parent.data('child');
+          data['activity'] = parent.data('activity');
+        }
+        $.ajax({
+          url: url,
+          type: verb,
+          data: data,
+          success: function (response) {
+            var newLevel = response[parent.data('key')];
+            $('a', parent).text(newLevel);
+            parent.data('level', newLevel);
+            $('.has-popover', parent).popover('hide');
+          }
+        });
+      });
+
+      $('.absences').on('submit', 'form.before-level-form', function (event) {
+        event.preventDefault();
+        var level = $('input[name=level]', this).val();
+        var parent = $(this).parents('.set-level');
+        var data = {};
+        data[parent.data('key')] = level;
+
+        if (parent.data('url')) {
+          var verb = 'PATCH';
+          var url = parent.data('url');
+        } else {
+          var verb = 'POST';
+          var url = '{% url "api:level-list" %}';
+          data['child'] = parent.data('child');
+          data['activity'] = parent.data('activity');
+        }
+        $.ajax({
+          url: url,
+          type: verb,
+          data: data,
+          success: function (response) {
+            var newLevel = response[parent.data('key')];
+            $('a', parent).text(newLevel);
+            parent.data('level', newLevel);
+            $('.has-popover', parent).popover('hide');
+          }
+        });
+      });
+
+      $('.absences').popover(
+        {
+          selector: '.note.has-popover',
+          content: function () {
+            return $('#note-window').html();
+          },
+          html: true
+        }
+      );
+      $('.absences').on('shown.bs.popover', '.set-note', function () {
+        var note = $(this).data('note');
+        $('textarea', this).val(note);
+      });
+      $('.absences').on('submit', 'form.note-form', function (event) {
+        event.preventDefault();
+        var note = $('textarea', this).val();
+        var parent = $(this).parents(".set-note");
+        var data = {};
+        data[parent.data('key')] = note;
+        if (parent.data('url')) {
+          var verb = 'PATCH';
+          var url = parent.data('url');
+        } else {
+          var verb = 'POST';
+          var url = '{% url "api:level-list" %}';
+          data['child'] = parent.data('child');
+          data['activity'] = parent.data('activity');
+        }
+
+        $.ajax({
+          url: url,
+          type: verb,
+          data: data,
+          success: function (response) {
+            var newNote = response[parent.data('key')];
+            $('div.note', parent).text(newNote);
+            parent.data('note', newNote);
+            $('.has-popover', parent).popover('hide');
+          }
+        });
+
+      });
+
+      $('.absences').popover(
+        {
+          selector: '.edit-session .has-popover',
+          content: function () {
+            return $('#session-window').html();
+          },
+          html: true
+        }
+      );
+      $('.absences').on('shown.bs.popover', '.edit-session', function () {
+        var instructor = $(this).data('instructor');
+        var date = $(this).data('date');
+        if (instructor) {
+          $('[name=instructor] option[value=' + instructor + ']', this).prop('selected', 'selected')
+        }
+        $('[name=date]', this).val(date);
+        $('.datetimepicker', this).datetimepicker({
+          language: '{{ LANGUAGE_CODE }}',
+          format: HUMAN_FMT,
+          icons: {
+            date: 'icon-calendar',
+            up: 'icon-up-open',
+            down: 'icon-down-open'
+          }
+        });
+      });
+
+      $('.absences').on('submit', 'form.session-form', function (event) {
+        event.preventDefault();
+        var $parent = $(this).parents(".edit-session");
+        var data = {'instructor': $('[name=instructor]', this).val()};
+        if ($('[name=date]', this).length) {
+          data.date = moment($('[name=date]', this).val(), HUMAN_FMT).format(API_FMT)
+        }
+
+        $.ajax({
+          url: $parent.data('url'),
+          type: 'PATCH',
+          data: data,
+          success: function (response) {
+            if (response.instructor) {
               $parent.data('instructor', response.instructor.id);
               $('abbr', $parent).text(response.instructor.initials).attr('title', response.instructor.full_name);
-          }  else {
+            } else {
               $parent.data('instructor', null);
+            }
+            var newDate = moment(response.date, API_FMT).format(HUMAN_FMT);
+            $parent.data('date', newDate);
+            $('.date[data-session=' + response.id + '] .session-date').text(newDate);
+            $('.has-popover', $parent).popover('hide');
           }
-          var newDate = moment(response.date, API_FMT).format(HUMAN_FMT);
-          $parent.data('date', newDate);
-          $('.date[data-session=' + response.id + '] .session-date').text(newDate);
-          $('.has-popover', $parent).popover('hide');
-        }
+        });
       });
-    });
 
-    $('.absences').on('click', '.edit-session .session-delete', function(evt){
-      var $parent = $(this).parents(".edit-session");
+      $('.absences').on('click', '.edit-session .session-delete', function (evt) {
+        var $parent = $(this).parents(".edit-session");
 
-      $.ajax({
-        url: $parent.data('url'),
-        type: 'DELETE',
-        success: function(){
-          $parent.column().remove();
-        }
+        $.ajax({
+          url: $parent.data('url'),
+          type: 'DELETE',
+          success: function () {
+            $parent.column().remove();
+          }
+        });
+        evt.preventDefault();
       });
-      evt.preventDefault();
-    });
 
 
-    $('html').on('click', function(e){
+      $('html').on('click', function (e) {
         if (typeof $(e.target).data('original-title') == 'undefined' &&
-            typeof $(e.target).parent().data('original-title') == 'undefined' &&
-            !$(e.target).parents().is('.popover.in')) {
+          typeof $(e.target).parent().data('original-title') == 'undefined' &&
+          !$(e.target).parents().is('.popover.in')) {
           // close popovers when click is outside
           $('[data-original-title]').popover('hide');
         }
@@ -707,9 +825,11 @@ $(function(){
           // one popover opened at a time
           $('[data-original-title]').not(e.target).popover('hide');
         }
-    });
+      });
 
-    $('.print-button').click(function(){window.print()});
-  });
-</script>
+      $('.print-button').click(function () {
+        window.print()
+      });
+    });
+  </script>
 {% endaddtoblock %}

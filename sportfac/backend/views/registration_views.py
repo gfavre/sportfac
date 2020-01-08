@@ -332,7 +332,8 @@ class TransportListView(BackendMixin, ListView):
 class TransportDetailView(BackendMixin, DetailView):
     model = Transport
     template_name = 'backend/registration/transport-detail.html'
-    queryset = Transport.objects.prefetch_related('participants', 'participants__child', 'participants__course')
+    queryset = Transport.objects.prefetch_related('participants', 'participants__child', 'participants__course',
+                                                  'participants__child__absence_set')
 
     def get_context_data(self, **kwargs):
         children = set([registration.child for registration in self.object.participants.all()])
@@ -341,7 +342,10 @@ class TransportDetailView(BackendMixin, DetailView):
         else:
             courses = set([registration.course for registration in self.object.participants.all()])
 
-        registrations = dict([((registration.child, registration.course), registration) for registration in self.object.participants.all()])
+        registrations = dict(
+            [((registration.child, registration.course), registration) for registration in
+             self.object.participants.all()]
+        )
         qs = Absence.objects.filter(child__in=children, session__course__in=courses) \
                             .select_related('session', 'child', 'session__course', 'session__course__activity') \
                             .order_by('child__last_name', 'child__first_name')

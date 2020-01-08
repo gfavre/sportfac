@@ -401,7 +401,7 @@ class ChildActivityLevel(TimeStampedModel):
                      ('7C', '7C'),
                      )
 
-    before_level = models.CharField(choices=LEVELS, max_length=5, blank=True,
+    before_level = models.CharField(max_length=10, blank=True,
                                     verbose_name=_("Level -1"),)
     after_level = models.CharField(choices=LEVELS, max_length=5, blank=True,
                                    verbose_name=_("End course level"))

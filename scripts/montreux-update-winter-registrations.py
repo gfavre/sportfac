@@ -21,7 +21,10 @@ dataset = fmt.create_dataset(f.read())
 level_extra_key = 'Niveau de ski/snowboard'
 question = ExtraNeed.objects.get(question_label=level_extra_key)
 
-for (registration_id, id_lagapeo, lasr_name, first_name, announced_level, old_level, transport_name, bib_number) in dataset:
+
+def convert_level(registration, level)
+
+for (registration_id, id_lagapeo, last_name, first_name, announced_level, old_level, transport_name, bib_number) in dataset:
     try:
         registration = Registration.objects.get(pk=registration_id)
     except Registration.DoesNotExist:
