@@ -318,8 +318,7 @@
 </table>
 {% if user.is_manager %}
   <form class="move" method="post"
-        action="{% url 'backend:registrations-move' %}{% if move_redirect_a %}?activity=
-          {{ move_redirect_a }}{% elif move_redirect_c %}?course={{ move_redirect_c }}{% endif %}">
+        action="{% url 'backend:registrations-move' %}{% if move_redirect_a %}?activity={{ move_redirect_a }}{% elif move_redirect_c %}?course={{ move_redirect_c }}{% endif %}">
     {% csrf_token %}
   </form>
   <p class="hidden-print text-center">
@@ -409,26 +408,12 @@
     </select>
   </form>
 </script>
-</script>
 
-<
-script
-type = "text/html"
-id = "before-level-window" >
-  < form
-class
-= 'before-level-form' >
-  < input
-type = "text"
-class
-= "form-control"
-name = "level" >
-  < input
-type = "submit"
-class
-= "form-control  btn-primary"
-value = "{% trans "Save" %}" >
-  < /form>
+<script type="text/html" id="before-level-window">
+  <form class="before-level-form">
+    <input type="text" class="form-control" name="level">
+    <input type="submit" class="form-control btn-primary" value="{% trans "Save" %}">
+  </form>
 </script>
 
 <script type="text/html" id="note-window">
@@ -437,7 +422,6 @@ value = "{% trans "Save" %}" >
     <input type="submit" class="form-control  btn-primary" value="{% trans "Save" %}">
   </form>
 </script>
-
 
 <script id="column-header" type="text/html">
   <th class="date">

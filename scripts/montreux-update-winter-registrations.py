@@ -22,8 +22,6 @@ level_extra_key = 'Niveau de ski/snowboard'
 question = ExtraNeed.objects.get(question_label=level_extra_key)
 
 
-def convert_level(registration, level)
-
 for (registration_id, id_lagapeo, last_name, first_name, announced_level, old_level, transport_name, bib_number) in dataset:
     try:
         registration = Registration.objects.get(pk=registration_id)
@@ -86,4 +84,23 @@ for (registration_id, id_lagapeo, transport_name, bib_number, announced_level, o
         if level.before_level != converted_level:
             print('update level')
             level.before_level = converted_level
+            level.save()
+
+
+## reload_levels
+for (registration_id, id_lagapeo, last_name, first_name, announced_level, old_level, transport_name, bib_number) in dataset:
+    try:
+        registration = Registration.objects.get(pk=registration_id)
+    except Registration.DoesNotExist:
+        print('Missing registration: {}'.format(registration_id))
+        continue
+    if unicode(registration.child.id_lagapeo) != id_lagapeo:
+        print('id_lagapeo coherence: {}/{}'.format(registration.child.id_lagapeo, id_lagapeo))
+        continue
+    level, created = ChildActivityLevel.objects.get_or_create(activity=registration.course.activity,
+                                                              child=registration.child)
+    if old_level:
+        if level.before_level != old_level:
+            print('update level')
+            level.before_level = old_level
             level.save()
