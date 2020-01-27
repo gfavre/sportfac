@@ -87,15 +87,24 @@ class ChildParser:
         try:
             match = re.match(r'\s*(\d+)\s?\w*.*', value)
             if not match:
+                logger.debug('Year not parsed: {}'.format(value))
                 return None
             value = int(match.group(1))
-            return self.schoolyears.get(value, None)
+            year = self.schoolyears.get(value, None)
+            if not year:
+                logger.debug('no corresponding year found: {}'.format(value))
+            return year
         except TypeError:
             value = int(value)
+            print('typeerror')
             return self.schoolyears.get(value, None)
         except ValueError:
+            print('valueerror')
+
             return None
         except IndexError:
+            print('indexerror')
+
             return None
 
     def parse(self, row):
@@ -136,7 +145,7 @@ def load_children(filelike):
             nb_created += 1
         else:
             nb_updated += 1
-    return (nb_created, nb_updated)
+    return nb_created, nb_updated
 
 """
 import re
