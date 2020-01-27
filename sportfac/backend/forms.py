@@ -3,6 +3,7 @@ import datetime
 from django.conf import settings
 from django.db.models import Case, When, F, IntegerField, Q, Sum
 from django.forms import inlineformset_factory
+from django.forms.widgets import TextInput
 from django.utils.translation import ugettext as _
 from django.utils.text import mark_safe
 
@@ -271,7 +272,7 @@ class PayslipMontreuxForm(forms.Form):
                                            ('hour', _("Hourly"))),
                                   widget=forms.RadioSelect
                                   )
-    rate = forms.DecimalField(label=_("Rate"), max_digits=6, decimal_places=2, required=True)
+    rate = forms.DecimalField(label=_("Rate"), max_digits=6, decimal_places=2, required=True, widget=TextInput())
     start_date = forms.DateField(label=_("Start date"), required=True,
                                  help_text=_("Format: DD.MM.YYYY"),
                                  widget=DatePickerInput())
