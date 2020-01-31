@@ -62,23 +62,13 @@ class Session(TimeStampedModel):
         return self.absences.filter(status__in=(Absence.STATUS.present, Absence.STATUS.late)).count()
 
     def fill_absences(self):
-        if settings.KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES:
-            for course in self.activity.courses.all():
-                for registration in course.participants.all():
-                    Absence.objects.get_or_create(
-                        child=registration.child, session=self,
-                        defaults={
-                            'status': Absence.STATUS.present
-                        }
-                    )
-        else:
-            for registration in self.course.participants.all():
-                Absence.objects.get_or_create(
-                    child=registration.child, session=self,
-                    defaults={
-                        'status': Absence.STATUS.present
-                    }
-                )
+        for registration in self.course.participants.all():
+            Absence.objects.get_or_create(
+                child=registration.child, session=self,
+                defaults={
+                    'status': Absence.STATUS.present
+                }
+            )
 
     def update_courses_dates(self):
         if settings.KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES:

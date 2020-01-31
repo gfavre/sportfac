@@ -96,9 +96,11 @@ class RegistrationsMoveView(BackendMixin, FormView):
                 for future_session_source in source.sessions.filter(date__gte=now):
                     future_session_source.absences.filter(child=registration.child).delete()
                 for future_session_destination in course.sessions.filter(date__gte=now):
-                    Absence.objects.create(session=future_session_destination,
-                                           child=registration.child,
-                                           status=Absence.STATUS.present)
+                    Absence.objects.get_or_create(
+                        session=future_session_destination,
+                        child=registration.child,
+                        defaults={'status': Absence.STATUS.present}
+                    )
         message = _("Registrations of %(nb)s children have been moved.")
         message %= {'nb': form.cleaned_data['registrations'].count()}
         messages.add_message(self.request, messages.SUCCESS, message)
@@ -176,8 +178,9 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
             if settings.KEPCHUP_USE_ABSENCES:
                 now = timezone.now()
                 for future_session in self.instance.course.sessions.filter(date__gte=now):
-                    Absence.objects.create(child=self.instance.child, session=future_session,
-                                           status=Absence.STATUS.present)
+                    Absence.objects.get_or_create(
+                        child=self.instance.child, session=future_session,
+                        defaults={'status': Absence.STATUS.present})
         except IntegrityError:
             message = _("A registration for %(child)s to %(course)s already exists.")
             message %= {'child': self.instance.child,
