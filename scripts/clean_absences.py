@@ -35,6 +35,47 @@ for child in Child.objects.all():
             break
 
 
+for child in Child.objects.prefetch_related('registrations'):
+    if not child.registrations.exists():
+        continue
+    latest_registration = child.registrations.first()
+    if not latest_registration.course.number[:3] in ('200', '210', '220'):
+        continue
+    date_dict = {}
+    for absence in child.absence_set.all():
+        if absence.session.date in date_dict:
+            date_dict[absence.session.date].append(absence)
+        else:
+            date_dict[absence.session.date] = [absence]
+    for dates in date_dict.values():
+        if len(dates) > 1:
+            to_keep = []
+            latest_absence = None
+            for absence in dates:
+                if absence.session.course == latest_registration.course:
+                    to_keep.append(absence)
+                    latest_absence = absence
+                    continue
+                if absence.status != 'present':
+                    to_keep.append(absence)
+                    continue
+            if len(to_keep) == 1:
+                to_remove = Absence.objects.filter(pk__in=[absence.pk for absence in dates if absence != to_keep[0]])
+                to_remove.delete()
+                continue
+            for count, absence in enumerate(to_keep):
+                print('{} - {} - {}'.format(count + 1, absence.modified, absence))
+            chosen_num = raw_input('Choose reason: ')
+            if not chosen_num:
+                continue
+            num = int(chosen_num) - 1
+            reason = to_keep[num].status
+            latest_absence.status = reason
+            latest_absence.save()
+            to_remove = Absence.objects.filter(pk__in=[absence.pk for absence in dates if absence != latest_absence])
+            to_remove.delete()
+
+
 for child in Child.objects.all():
     date_dict = {}
     for absence in child.absence_set.all():
