@@ -39,7 +39,7 @@ for child in Child.objects.prefetch_related('registrations'):
     if not child.registrations.exists():
         continue
     latest_registration = child.registrations.first()
-    if not latest_registration.course.number[:3] in ('200', '210', '220'):
+    if not latest_registration.course.number[:3] in ('262', ):
         continue
     date_dict = {}
     for absence in child.absence_set.all():
@@ -75,6 +75,54 @@ for child in Child.objects.prefetch_related('registrations'):
             to_remove = Absence.objects.filter(pk__in=[absence.pk for absence in dates if absence != latest_absence])
             to_remove.delete()
 
+from datetime import date
+for child in Child.objects.prefetch_related('registrations'):
+    if not child.registrations.exists():
+        continue
+    reg = child.registrations.first()
+    if not int(reg.course.number[:3]) >= 250:
+        continue
+    for absence in child.absence_set.all():
+        if absence.session.date== date(2020,1,11):
+           absence.delete()
+
+
+for child in Child.objects.prefetch_related('registrations'):
+    if not child.registrations.exists():
+        continue
+    latest_registration = child.registrations.first()
+    if not latest_registration.course.number[:2] in ('27', ):
+        continue
+    date_dict = {}
+    for absence in child.absence_set.all():
+        if absence.session.date in date_dict:
+            date_dict[absence.session.date].append(absence)
+        else:
+            date_dict[absence.session.date] = [absence]
+    for dates in date_dict.values():
+        if len(dates) > 1:
+            to_keep = []
+            latest_absence = None
+            for absence in dates:
+                if absence.session.course == latest_registration.course:
+                    to_keep.append(absence)
+                    continue
+                if absence.session.course.number[:2] == latest_registration.course.number[:2]:
+                    to_keep.append(absence)
+                    continue
+            if len(to_keep) == 1:
+                to_remove = Absence.objects.filter(pk__in=[absence.pk for absence in dates if absence != to_keep[0]])
+                to_remove.delete()
+                continue
+            print(child.registrations.first())
+            for count, absence in enumerate(to_keep):
+                print('{} - {} - {}'.format(count + 1, absence.modified, absence))
+            chosen_num = raw_input('Choose num: ')
+            if not chosen_num:
+                continue
+            num = int(chosen_num) - 1
+            Absence.objects.filter(pk__in=[absence.pk for absence in dates if absence != dates[num]]).delete()
+
 
 for child in Child.objects.all():
     date_dict = {}
@@ -99,10 +147,12 @@ for child in Child.objects.all():
             date_dict[absence.session.date] = [absence]
     for dates in date_dict.values():
         if len(dates) > 1:
-            print(date_dict)
+            print(child.registrations.last())
             for count, absence in enumerate(dates):
                 print('{} - {} - {}'.format(count + 1, absence.modified, absence))
             num = int(raw_input('Choose num: ')) - 1
+            if not num:
+                continue
             Absence.objects.filter(pk__in=[absence.pk for absence in dates if absence!=dates[num]]).delete()
 
 

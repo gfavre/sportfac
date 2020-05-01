@@ -120,7 +120,14 @@ h3 code {
 .course h4 {
   font-size:1.2em;
 }
-
+.activity {
+  @media screen and (max-width: 979px) {
+    img {
+      width: 100%!important;
+      height: auto!important;
+    }
+  }
+}
 
 /* forms */
 
