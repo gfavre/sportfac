@@ -151,7 +151,7 @@
     {% endif %}
     {% for session_date in all_dates %}
       {% with session=sessions|get_item:session_date %}
-        <th class="rotated-heading session-col date {% if forloop.first %} all{% else %} min-tablet-p{% endif %}"
+        <th class="rotated-heading session-col date {% if session == closest_session %} all{% else %} min-tablet-p{% endif %}"
             data-session="{{ session.id }}">
           <div>
             <span class="session-date">{{ session_date|date:"d.m.Y" }}</span>

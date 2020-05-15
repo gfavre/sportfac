@@ -15,6 +15,7 @@ from django.views.generic import CreateView, DeleteView, DetailView, \
                                 ListView, UpdateView
 
 from absences.models import Absence, Session
+from absences.utils import closest_session
 from activities.models import Activity, Course, ExtraNeed
 from activities.forms import ActivityForm
 from registrations.models import ChildActivityLevel, ExtraInfo
@@ -98,9 +99,11 @@ class ActivityAbsenceView(BackendMixin, DetailView):
             qs = qs.order_by('child__last_name', 'child__first_name')
 
         if 'course' in kwargs:
-            kwargs['sessions'] = dict([(session.date, session) for session in kwargs['course'].sessions.all()])
+            sessions = kwargs['course'].sessions.all()
         else:
-            kwargs['sessions'] = dict([(session.date, session) for session in self.object.sessions.all()])
+            sessions = self.object.sessions.all()
+        kwargs['sessions'] = dict([(session.date, session) for session in sessions])
+        kwargs['closest_session'] = closest_session(sessions)
         # kwargs['sessions'] = dict([(absence.session.date, absence.session) for absence in qs])
         kwargs['all_dates'] = sorted([session_date for session_date in kwargs['sessions'].keys()], reverse=True)
 

@@ -15,7 +15,7 @@ from backend.utils import AbsencePDFRenderer  # TODO move pdfrenderer to a more 
 
 from registrations.models import ChildActivityLevel, ExtraInfo
 from .models import Absence, Session
-
+from .utils import closest_session
 
 class AbsenceCourseView(InstructorMixin, DetailView):
     template_name = 'absences/absences.html'
@@ -31,7 +31,9 @@ class AbsenceCourseView(InstructorMixin, DetailView):
             qs = qs.order_by('child__bib_number', 'child__last_name', 'child__first_name')
         else:
             qs = qs.order_by('child__last_name', 'child__first_name')
-        kwargs['sessions'] = dict([(session.date, session) for session in self.object.sessions.all()])
+        sessions = self.object.sessions.all()
+        kwargs['sessions'] = dict([(session.date, session) for session in sessions])
+        kwargs['closest_session'] = closest_session(sessions)
         # kwargs['sessions'] = dict([(absence.session.date, absence.session) for absence in qs])
         kwargs['all_dates'] = sorted([session_date for session_date in kwargs['sessions'].keys()], reverse=True)
 
