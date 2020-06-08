@@ -261,7 +261,11 @@ class ExtraInfo(models.Model):
         return self.key.reduction_dict.get(self.value, 0)
 
 
-class Child(TimeStampedModel):
+class Child(TimeStampedModel, StatusModel):
+    STATUS = Choices(
+        ('updated', _("Updated")),
+        ('imported', _("Imported")),
+    )
     SEX = Choices(('M', _('Male')),
                   ('F', _('Female')),
                   )
@@ -274,7 +278,6 @@ class Child(TimeStampedModel):
                        ('F', u'Français'),
                        ('I', 'Italiano'),
                        )
-
     first_name = models.CharField(_("First name"), max_length=50)
     last_name = models.CharField(_("Last name"), max_length=50)
     sex = models.CharField(_("Sex"), max_length=1, choices=SEX)

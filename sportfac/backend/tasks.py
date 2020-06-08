@@ -19,11 +19,13 @@ from celery.utils.log import get_task_logger
 
 from activities.models import Course
 from profiles.models import FamilyUser
+from registrations.models import Child
 from registrations.utils import load_children
 from sportfac.decorators import respects_language
 from .models import YearTenant, Domain
 from .utils import clean_instructors
 from . import MANAGERS_GROUP
+
 
 logger = get_task_logger(__name__)
 
@@ -32,70 +34,87 @@ logger = get_task_logger(__name__)
 @respects_language
 def create_tenant(new_tenant_id, copy_activities_from_id=None, copy_children_from_id=None, user_id=None):
     connection.set_schema_to_public()
-    tenant = YearTenant.objects.get(pk=new_tenant_id)
-    tenant.create_schema(check_if_exists=True)
-    logger.debug('Created schema for period %s-%s' % (tenant.start_date.isoformat(), tenant.end_date.isoformat()))
+    destination_tenant = YearTenant.objects.get(pk=new_tenant_id)
+    destination_tenant.create_schema(check_if_exists=True)
+    logger.debug('Created schema for period %s-%s' % (destination_tenant.start_date.isoformat(),
+                                                      destination_tenant.end_date.isoformat()))
     if copy_activities_from_id:
         try:
             copy_from = YearTenant.objects.get(id=copy_activities_from_id)
-            tenant.status = YearTenant.STATUS.copying
-            tenant.save()
-            f = NamedTemporaryFile(suffix='.json', delete=False)
+            destination_tenant.status = YearTenant.STATUS.copying
+            destination_tenant.save()
 
             connection.set_tenant(copy_from)
+            f = NamedTemporaryFile(suffix='.json', delete=False)
             call_command('dumpdata', 'activities', output=f.name)
             f.close()
-            connection.set_tenant(tenant)
+
+            connection.set_tenant(destination_tenant)
             call_command('loaddata', f.name)
             os.remove(f.name)
+
             Course.objects.all().update(uptodate=False)
-            logger.debug('Populated activities for period %s-%s' %(tenant.start_date.isoformat(), tenant.end_date.isoformat()))
+            logger.debug('Populated activities for period {}-{}'.format(
+                destination_tenant.start_date.isoformat(),
+                destination_tenant.end_date.isoformat()
+            ))
         except YearTenant.DoesNotExist:
             pass
 
     if copy_children_from_id:
         try:
             copy_from = YearTenant.objects.get(id=copy_children_from_id)
-            tenant.status = YearTenant.STATUS.copying
-            tenant.save()
+            destination_tenant.status = YearTenant.STATUS.copying
+            destination_tenant.save()
 
-            f = NamedTemporaryFile(suffix='.json', delete=False)
             connection.set_tenant(copy_from)
+            f = NamedTemporaryFile(suffix='.json', delete=False)
             call_command('dumpdata', 'schools', output=f.name)
             f.close()
-            connection.set_tenant(tenant)
+
+            connection.set_tenant(destination_tenant)
             call_command('loaddata', f.name)
             os.remove(f.name)
-            logger.debug('Populated schools for period %s-%s' % (tenant.start_date.isoformat(), tenant.end_date.isoformat()))
+            logger.debug('Populated schools for period {}-{}'.format(
+                destination_tenant.start_date.isoformat(),
+                destination_tenant.end_date.isoformat()
+            ))
 
-            f = NamedTemporaryFile(suffix='.json', delete=False)
             connection.set_tenant(copy_from)
+            f = NamedTemporaryFile(suffix='.json', delete=False)
             call_command('dumpdata', 'registrations.Child', output=f.name)
             f.close()
-            connection.set_tenant(tenant)
+
+            connection.set_tenant(destination_tenant)
             call_command('loaddata', f.name)
             os.remove(f.name)
 
-            connection.set_tenant(tenant)
-            logger.debug('Populated children for period %s-%s' % (tenant.start_date.isoformat(), tenant.end_date.isoformat()))
+            Child.objects.all().update(status=Child.STATUS.imported)
+            logger.debug('Populated children for period {}-{}'.format(
+                destination_tenant.start_date.isoformat(),
+                destination_tenant.end_date.isoformat()
+            ))
         except YearTenant.DoesNotExist:
             pass
 
-    tenant.status = YearTenant.STATUS.ready
-    tenant.save()
-    logger.info('Created / populated period %s-%s' %(tenant.start_date.isoformat(), tenant.end_date.isoformat()))
+    destination_tenant.status = YearTenant.STATUS.ready
+    destination_tenant.save()
+    logger.info('Created / populated period {}-{}'.format(
+        destination_tenant.start_date.isoformat(),
+        destination_tenant.end_date.isoformat())
+    )
     try:
         user = FamilyUser.objects.get(pk=user_id)
-        msg = _("The period %(start)s-%(end)s is ready to be used. You can preview it at the %(link_start)speriod management interface%(link_end)s.")
-        params = {'start': tenant.start_date.isoformat(),
-                  'end': tenant.end_date.isoformat(),
+        msg = _("The period %(start)s-%(end)s is ready to be used. "
+                "You can preview it at the %(link_start)speriod management interface%(link_end)s.")
+        params = {'start': destination_tenant.start_date.isoformat(),
+                  'end': destination_tenant.end_date.isoformat(),
                   'link_start': format_html('<a href="{}">', reverse('backend:year-list')),
                   'link_end': format_html('</a>')}
         messages.success(user, mark_safe(msg % params))
         logger.debug('Warned user for period activation')
     except FamilyUser.DoesNotExist:
         pass
-
 
 
 @shared_task
@@ -106,9 +125,9 @@ def update_current_tenant():
     current_domain = Domain.objects.filter(is_current=True).first()
     possible_new_tenants = YearTenant.objects.filter(start_date__lte=now,
                                                      end_date__gte=now,
-                                                     status=YearTenant.STATUS.ready)\
-                                             .exclude(domains=current_domain)\
-                                             .order_by('start_date', 'end_date')
+                                                     status=YearTenant.STATUS.ready) \
+        .exclude(domains=current_domain) \
+        .order_by('start_date', 'end_date')
 
     if possible_new_tenants.count():
         if not (current_domain.tenant.is_past or current_domain.tenant.is_future):
@@ -137,19 +156,18 @@ def update_current_tenant():
 def import_children(filepath, tenant_id, user_id=None):
     tenant = YearTenant.objects.get(pk=tenant_id)
     connection.set_tenant(tenant)
-    status = ''
-    message = ''
     with open(filepath) as filelike:
         try:
             (nb_created, nb_updated) = load_children(filelike)
             status = constants.SUCCESS
-            message = _("Children import successful. %(added)s children have been added, %(updated)s have been updated") % {
-                'added': nb_created,
-                'updated': nb_updated
-            }
-        except ValueError, msg:
+            message = _("Children import successful. "
+                        "%(added)s children have been added, %(updated)s have been updated") % {
+                          'added': nb_created,
+                          'updated': nb_updated
+                      }
+        except ValueError as err:
             status = constants.ERROR
-            message = msg
+            message = err.message
 
     try:
         user = FamilyUser.objects.get(pk=user_id)

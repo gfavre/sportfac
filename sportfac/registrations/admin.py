@@ -78,7 +78,7 @@ admin.site.register(Registration, RegistrationAdmin)
 class ChildAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'family', 'school_year', 'id_lagapeo', 'created', 'modified')
     search_fields = ('first_name', 'last_name', 'id_lagapeo', 'family__first_name', 'family__last_name')
-    list_filter = ('school_year',)
+    list_filter = ('school_year', 'status')
 
 
 admin.site.register(Child, ChildAdmin)
