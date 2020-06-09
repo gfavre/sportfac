@@ -27,10 +27,10 @@
   </head>
 
   <body {% block extra_body %}{% endblock %}>
-    <div id="wrapper">
+    <div id="wrapper" {% render_block "extra_html" %}>
       {% include "navbar.html" %}
       {% block localnav %}{% endblock %}
-      <div id="pagecontent" {% render_block "extra_html" %}>
+      <div id="pagecontent">
         {% block page_header %}
         <div class="container">
           <div class="page-header">

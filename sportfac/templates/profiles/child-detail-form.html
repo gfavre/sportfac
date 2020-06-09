@@ -12,7 +12,7 @@
     </div>
   </div>
 
-  <div class="form-group">
+  <div class="form-group"  ng-class="{'has-error': !detailedChild.first_name}">
     <label class="col-sm-4 control-label" for="first_name">Prénom<span class="required"> *</span></label>
     <div class="col-sm-8">
       <input id="first_name" ng-model="detailedChild.first_name"
@@ -22,7 +22,7 @@
       <span ng-show="childform.first_name.$error.required">Ce champ est obligatoire</span>
     </div>
   </div>
-  <div class="form-group">
+  <div class="form-group"  ng-class="{'has-error': !detailedChild.last_name}">
     <label class="col-sm-4 control-label" for="last_name">Nom<span class="required"> *</span></label>
     <div class="col-sm-8">
       <input id="last_name" ng-model="detailedChild.last_name"
@@ -32,7 +32,7 @@
       <span ng-show="childform.last_name.$error.required">Ce champ est obligatoire</span>
     </div>
   </div>
-  <div class="form-group">
+  <div class="form-group"  ng-class="{'has-error': !detailedChild.sex}">
     <label class="col-sm-4 control-label" for="inputBirthDate">Sexe<span class="required"> *</span></label>
     <div class="col-sm-8">
       {% if SEX_EDITABLE %}
@@ -48,7 +48,7 @@
       {% endif %}
     </div>
   </div>
-  <div class="form-group">
+  <div class="form-group"  ng-class="{'has-error': !detailedChild.birth_date}">
     <label class="col-sm-4 control-label" for="inputBirthDate">Date de naissance<span class="required"> *</span></label>
     <div class="col-sm-5 strapdatepicker">
         <input type="text" ng-model="detailedChild.birth_date" id="inputBirthDate" required
@@ -65,7 +65,7 @@
     <p class="col-sm-8 col-sm-offset-4" ng-show="childform.inputBirthDate.$error.required">Ce champ est obligatoire</p>
   </div>
 
-   <div class="form-group">
+   <div class="form-group"  ng-class="{'has-error': !detailedChild.nationality}">
     <label class="col-sm-4 control-label" for="nationality">Nationalité<span class="required"> *</span></label>
     <div class="col-sm-8">
       <select id="nationality" class="form-control" ng-model="detailedChild.nationality" required
@@ -78,7 +78,7 @@
     </div>
   </div>
 
- <div class="form-group">
+ <div class="form-group"  ng-class="{'has-error': !detailedChild.language}">
     <label class="col-sm-4 control-label" for="language">Langue<span class="required"> *</span></label>
     <div class="col-sm-8">
       <select id="language" ng-model="detailedChild.language"
@@ -109,7 +109,7 @@
   {% endif %}
   {% if USE_BUILDINGS %}
   <div ng-show="useBuildings">
-    <div class="form-group">
+    <div class="form-group"  ng-class="{'has-error': !detailedChild.building}">
       <label class="col-sm-4 control-label" for="inputBuilding">Bâtiment<span class="required"> *</span></label>
       <div class="col-sm-5">
         <select id="inputBuilding" class="form-control" ng-model="detailedChild.building"
@@ -123,7 +123,7 @@
   {% endif %}
 
   <div ng-show="prefillTeachers">
-    <div class="form-group">
+    <div class="form-group" ng-class="{'has-error': !detailedChild.teacher}">
       <label class="col-sm-4 control-label" for="inputTeacher">Enseignant principal<span class="required"> *</span></label>
       <div class="col-sm-5">
         <select id="inputTeacher" class="form-control" ng-model="detailedChild.teacher"
@@ -133,7 +133,7 @@
         ></select>
       </div>
     </div>
-    <div class="form-group" ng-switch on="detailedChild.teacher.years.length">
+    <div class="form-group" ng-switch-on="detailedChild.teacher.years.length">
       <label class="col-sm-4 control-label" for="inputYear" ng-show="detailedChild.teacher.years.length > 1">Année<span class="required"> *</span></label>
       {% if SCHOOL_YEAR_EDITABLE %}
       <div class="col-sm-8" ng-switch-when="undefined">
@@ -158,7 +158,7 @@
   </div>
 
   <div ng-show="!prefillTeachers">
-    <div class="form-group">
+    <div class="form-group" ng-class="{'has-error': !detailedChild.school_year}">
       <label class="col-sm-4 control-label" for="inputYear">Année<span class="required"> *</span></label>
       <div class="col-sm-5">
         <select id="inputYear" class="form-control" ng-model="detailedChild.school_year"
@@ -171,7 +171,7 @@
   </div>
 
   {% if CHILD_SCHOOL %}
-  <div class="form-group">
+  <div class="form-group" ng-class="{'has-error': !detailedChild.school}">
     <label class="col-sm-4 control-label" for="school">École<span class="required"> *</span></label>
     <div class="col-sm-5">
       <select id="school" class="form-control" ng-model="detailedChild.school"

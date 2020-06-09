@@ -35,8 +35,10 @@
 
         <li {% if request.get_full_path == children_url %}class="active"{% endif %}>
           <a href="{{ children_url }}">
-            <i class="icon-group"></i>
-            &nbsp;&nbsp;{% trans "Family settings" %}
+            <i class="icon-group"></i>&nbsp;&nbsp;{% trans "Family settings" %}
+            {% if request.user.updatable_children %}
+              <span class="badge-danger badge">{{ request.user.updatable_children }}</span>
+            {% endif %}
           </a>
         </li>
         {% if request.PHASE != 1 %}

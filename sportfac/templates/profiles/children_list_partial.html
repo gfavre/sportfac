@@ -17,7 +17,10 @@ yearServiceUrl="{% url 'api:year-list' %}"
       <h4>{% trans "Edit my children data" %}</h4>
       <ul class="nav nav-pills nav-stacked">
         <li ng-repeat="child in userChildren" ng-class="{active: child.selected}">
-          <a href="#/edit/{[{ child.id }]}" data-toggle="tab" ng-click="selectChild(child)">{[{ child.first_name }]} {[{ child.last_name }]}</a>
+          <a href="#/edit/{[{ child.id }]}" data-toggle="tab" ng-click="selectChild(child)">
+            {[{ child.first_name }]} {[{ child.last_name }]}
+            <span class="badge badge-warning" ng-show="child.status == 'imported'"><i class="icon-warning"></i></span>
+          </a>
         </li>
       </ul>
       <br />

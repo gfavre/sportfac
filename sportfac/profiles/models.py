@@ -130,6 +130,15 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     def full_name(self):
         return self.get_full_name()
 
+    @property
+    def updatable_children(self):
+        from registrations.models import Child
+        return self.children.filter(status=Child.STATUS.imported).count()
+
+    @property
+    def nb_notifications(self):
+        return self.updatable_children
+
     def get_short_name(self):
         return self.first_name
 

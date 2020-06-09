@@ -31,7 +31,7 @@ class RegistrationResource(resources.ModelResource):
     last_name = fields.Field(attribute='child__last_name', column_name=_("Last name"))
     child_id = fields.Field(attribute='child', column_name=_("Child identifier"))
     bib_number = fields.Field(attribute='child__bib_number', column_name=_("Bib number"))
-    transport =  fields.Field(attribute='transport__name', column_name=_("Transport"))
+    transport = fields.Field(attribute='transport__name', column_name=_("Transport"))
     birth_date = fields.Field(attribute='child', column_name=_("Birth date"))
     school_year = fields.Field(attribute='child__school_year__year', column_name=_("School year"))
     school_name = fields.Field(attribute='child', column_name=_("School"))
@@ -160,7 +160,6 @@ class RegistrationResource(resources.ModelResource):
             removable_fields.append('transport')
         order = tuple([field for field in order if field not in removable_fields])
         return order + tuple(k for k in self.fields.keys() if k not in order)
-
 
     class Meta:
         model = Registration
