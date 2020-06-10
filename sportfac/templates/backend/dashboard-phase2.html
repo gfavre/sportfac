@@ -5,51 +5,42 @@
 {% block title %}{% trans "Administration" %} - {{ block.super }}{% endblock %}
 
 {% block page_header %}
-<div class="container">
-  <div class="page-header">
-    <h3 class="content-title"><u>{% trans "Administration" %} <small>- {% trans "registrations phase" %}</small></u></h3>
+  <div class="container">
+    <div class="page-header">
+      <h3 class="content-title"><u>{% trans "Administration" %} <small>- {% trans "registrations phase" %}</small></u>
+      </h3>
+    </div>
   </div>
-</div>
 {% endblock %}
 {% block content %}
 
-<div class="row">
-  <div class="col-md-6">
-    <section class="portlet">
-      <h4 class="portlet-title">
-        <u><i class="icon-hourglass"></i>{% trans "Opening & closing" %}</u>
-      </h4>
-      {% widthratio minutes_spent minutes_total 100|add:"0" as percentage %}
-      <div class="progress-stat">
-        <div class="progress-stat-label">{% trans "Registrations open"%}</div>
-        <div class="progress-stat-value">{% blocktrans with time=registration_end|timeuntil %}{{ time }} remaining{% endblocktrans %}</div>
-        <div class="progress progress-sm">
-          {% with pp=percentage|add:"0" %}
-          <div class="progress-bar {% if pp < 50 %}progress-bar-success{% elif pp < 80 %}progress-bar-warning{% else %}progress-bar-danger{% endif %}" role="progressbar" 
-               aria-valuenow="{{ minutes_spent }}" aria-valuemin="0" 
-               aria-valuemax="{{ minutes_total }}" 
-               style="width: {{ percentage }}%">
-            <span class="sr-only">{% blocktrans with time=registration_start|timesince %}{{ time }} since opening of registrations{% endblocktrans %}</span>
-          </div>
-          {% endwith %}
-        </div>
-      </div>
-      <dl class="dl-horizontal">
-        <dt>{% trans "Opening date"%}</dt><dd>{{ registration_start|date:"l j E Y, H:i" }}</dd>
-        <dt>{% trans "Closing date"%}</dt><dd>{{ registration_end|date:"l j E Y, H:i" }}</dd>
-      </dl>
-      <p class="text-center">[ <a href="{% url 'backend:dates' %}"><i class="icon-calendar"></i>&nbsp;{% trans "Change dates"%}</a> ]</p>
-    </section>
-  </div>
+  <div class="row">
+    <div class="col-md-4">
+      {% include 'backend/portlets/period.html' %}
+    </div>
 
-  <div class="col-md-6">
-    {% include 'backend/portlets/registration_courses.html' %}
+    <div class="col-md-8">
+      {% include 'backend/portlets/registration_courses_phase3.html' %}
+    </div>
+    <div class="col-sm-6 col-md-8">
+
+     {% if registrations_period == 'daily' %}
+        {% include 'backend/portlets/registrations_phase3.html' %}
+      {% else %}
+        {% include 'backend/portlets/monthly_registrations.html' %}
+      {% endif %}
+    </div>
+    <div class="col-sm-6 col-md-4">
+      {% include 'backend/portlets/validated.html' %}
+    </div>
   </div>
-  <div class="col-sm-6 col-md-6">
-    {% include 'backend/portlets/validated.html' %}
+  <div class="row">
+    <div class="col-md-6">
+      {% include 'backend/portlets/families.html' %}
+
+    </div>
+    <div class="col-md-6">
+      {% include 'backend/portlets/children.html' %}
+    </div>
   </div>
-  <div class="col-sm-6 col-md-6">
-    {% include 'backend/portlets/registrations.html' %}
-  </div>
-</div>
 {% endblock content %}

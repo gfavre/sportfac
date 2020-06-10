@@ -1,0 +1,61 @@
+{% load i18n sekizai_tags static %}
+
+<section class="portlet">
+  <h4 class="portlet-title">
+    <u><i class="icon-check"></i>&nbsp;&nbsp;{% trans "Registrations" %}</u>
+  </h4>
+  <div class="portlet-body row">
+    <div class="col-md-4 col-md-push-8">
+      <div class="row-stat">
+        <p class="row-stat-label">{% trans "Total registrations" %}</p>
+        <h3 class="row-stat-value">{{ nb_registrations }}</h3>
+      </div>    
+      <div class="row-stat">
+        <p class="row-stat-label">{% trans "Total children" %}</p>
+        <h3 class="row-stat-value">{{ nb_children }}</h3>
+      </div>    
+      <div class="row-stat">
+        <p class="row-stat-label">{% trans "Total families" %}</p>
+        <h3 class="row-stat-value">{{ nb_families }}</h3>
+      </div>    
+    </div>
+    <div class="col-md-8 col-md-pull-4">
+      <canvas id="line-chart-registrations" ></canvas>
+      <p class="text-center">
+        [&nbsp;<a href="{% url 'backend:registration-list' %}"><i class="icon-check"></i>&nbsp;{% trans "List registrations" %}</a>&nbsp;]
+      </p>
+    </div>
+  </div> <!-- /.portlet-body -->
+</section>
+
+    {% addtoblock  "js" %}
+      <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script src="{% static "js/vendor/chartjs-plugin-colorschemes.min.js" %}"></script>
+    <script>
+$(function () {
+  let labels = {{ monthly_registrations_labels|safe }};
+  let data = {{ monthly_registrations_data|safe }};
+  new Chart($("#line-chart-registrations"), {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: "{% trans "Registrations per month" %}",
+        data: data,
+        lineTension: 0.1
+      }]
+    },
+    options: {
+      plugins: {
+        colorschemes: {
+          scheme: 'brewer.Paired12'
+        }
+      },
+      legend: {
+        display: false
+      }
+    }
+  });
+});
+    </script>
+    {% endaddtoblock %}

@@ -6,7 +6,7 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.utils.translation import ugettext_lazy as _
 
 from registrations.models import Child
-from .models import FamilyUser, School, SchoolYear
+from .models import City, FamilyUser, School, SchoolYear
 
 
 class FamilyCreationForm(forms.ModelForm):
@@ -102,6 +102,13 @@ class FamilyAdmin(UserAdmin):
     def get_queryset(self, request):
         qs = super(FamilyAdmin, self).get_queryset(request)
         return qs.prefetch_related('children')
+
+
+@admin.register(City)
+class CityAdmin(admin.ModelAdmin):
+    list_display = ('zipcode', 'name', 'country')
+    search_fields = ('zipcode', 'name')
+    list_filter = ('country', )
 
 
 admin.site.register(FamilyUser, FamilyAdmin)

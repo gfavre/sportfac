@@ -296,3 +296,23 @@ class School(models.Model):
     class Meta:
         verbose_name = _("school")
         verbose_name_plural = _("schools")
+
+
+class City(models.Model):
+    COUNTRY = Choices(('CH', _("Switzerland")),
+                      ('FL', _("Liechtenstein")),
+                      ('D', _("Germany")),
+                      ('F', _("France")),
+                      ('I', _("Italy")),
+                      ('A', _("Austria")))
+    zipcode = models.CharField(_("NPA"), max_length=5)
+    name = models.CharField(_('Name'), max_length=100)
+    country = models.CharField(_('Country'), max_length=2, choices=COUNTRY, default=COUNTRY.CH)
+
+    class Meta:
+        verbose_name = _("City")
+        verbose_name_plural = _("Cities")
+        ordering = ('zipcode', 'name')
+
+    def __unicode__(self):
+        return u'{} {}'.format(self.zipcode, self.name)

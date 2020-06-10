@@ -1,0 +1,49 @@
+{% load i18n humanize sekizai_tags static %}
+
+<section class="portlet">
+  <h4 class="portlet-title">
+    <u>{% trans "Families" %}</u>
+  </h4>
+  <div class="portlet-body">
+    <canvas id="families-per-zip" class=""></canvas>
+    <ul class="list-unstyled">
+      <li><a href="{% url 'backend:user-list' %}"><i class="icon-adult"></i>&nbsp;{% trans "All families" %}</a></li>
+    </ul>
+  </div> <!-- /.portlet-body -->
+</section>
+
+
+{% addtoblock  "js" %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script src="{% static "js/vendor/chartjs-plugin-colorschemes.min.js" %}"></script>
+
+<script>
+$(function () {
+  let labels = {{ families_per_zip_labels|safe }};
+  let data = {{ families_per_zip_data|safe }};
+  new Chart($('#families-per-zip'), {
+    'type': 'horizontalBar',
+    'data': {
+      'labels': labels,
+      'datasets': [
+        {
+          'label': "{% trans 'Families per city' %}",
+          'data': data,
+          backgroundColor: Chart['colorschemes'].tableau.Classic20,
+        }
+      ]
+    },
+    'options': {
+      'plugins': {
+        'colorschemes': {
+          'scheme': 'brewer.Paired12'
+        }
+      },
+      'legend': {
+        display: false
+      }
+    }
+  });
+});
+</script>
+{% endaddtoblock %}

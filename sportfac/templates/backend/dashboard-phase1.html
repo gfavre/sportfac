@@ -16,19 +16,8 @@
 {% block content %}
 <div class="row">
   <section class="col-sm-12 col-md-4">
-    <div class="portlet">
-      <h4 class="portlet-title">
-        <u><i class="icon-hourglass"></i>{% trans "Opening & closing" %}</u>
-      </h4>
-      <div class="portlet-body">
-        <p>{% blocktrans with natural_time=registration_start|naturaltime %}Opening in {{ natural_time }}{% endblocktrans %}</p>
-        <dl class="dl-horizontal">
-          <dt>{% trans "Opening date"%}</dt><dd>{{ registration_start|date:"l j E Y, H:i" }}</dd>
-          <dt>{% trans "Closing date"%}</dt><dd>{{ registration_end|date:"l j E Y, H:i" }}</dd>
-        </dl>
-        <p class="text-center">[ <a href="{% url 'backend:dates' %}"><i class="icon-calendar"></i>&nbsp;{% trans "Change dates"%}</a> ]</p>
-      </div>
-    </div>
+    {% include 'backend/portlets/period.html.html'%}
+
   </section>
     
   <section class="col-sm-12 col-md-8">

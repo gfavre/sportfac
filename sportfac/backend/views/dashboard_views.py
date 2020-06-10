@@ -1,20 +1,24 @@
+from collections import OrderedDict
 from datetime import datetime, timedelta
+import json
 import time
 
 from django.contrib.auth.models import Group
-from django.core.urlresolvers import reverse_lazy
-from django.views.generic import FormView, TemplateView
 from django.contrib import messages
-from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse_lazy
+from django.db import models
+from django.db.models import Count, Max, Sum, Func
+from django.views.generic import FormView, TemplateView
 from django.utils.safestring import mark_safe
-from django.db.models import Count, Max, Sum, Avg
+from django.utils.timezone import now
+from django.utils.translation import ugettext as _
 
 from activities.models import Activity, Course
-from profiles.models import FamilyUser, SchoolYear
+from profiles.models import City, FamilyUser, SchoolYear
 from registrations.models import Bill, Child, Registration
 from schools.models import Teacher
 from backend.forms import RegistrationDatesForm
-from backend import MANAGERS_GROUP, INSTRUCTORS_GROUP
+from backend import INSTRUCTORS_GROUP
 from .mixins import BackendMixin
 
 __all__ = ('HomePageView', 'RegistrationDatesView',)
@@ -23,6 +27,18 @@ __all__ = ('HomePageView', 'RegistrationDatesView',)
 ###############################################################################
 # Homepage
        
+
+class Year(Func):
+    function = 'EXTRACT'
+    template = '%(function)s(YEAR from %(expressions)s)'
+    output_field = models.IntegerField()
+
+
+class Month(Func):
+    function = 'EXTRACT'
+    template = '%(function)s(MONTH from %(expressions)s)'
+    output_field = models.IntegerField()
+
 
 class HomePageView(BackendMixin, TemplateView):
     
@@ -51,21 +67,36 @@ class HomePageView(BackendMixin, TemplateView):
         context['last_course_update'] = courses.aggregate(latest=Max('modified'))['latest'] or 'n/a'
         
         return context
-    
+
     def _get_registrations_per_day(self):
         total_per_day = {}
         start = self.request.tenant.preferences['phase__START_REGISTRATION']
         end = self.request.tenant.preferences['phase__END_REGISTRATION']
-        registrations = [d.date() for d in Registration.objects\
-                                                       .filter(created__range=(start, end))\
-                                                       .values_list('created', flat=True)]
+        registrations = [d.date() for d in Registration.objects.filter(created__range=(start, end))
+                                                               .values_list('created', flat=True)]
+
         for date in registrations:
             milliseconds = int(time.mktime(date.timetuple()) * 1000)
-            total = total_per_day.setdefault(milliseconds, 0)
+            total_per_day.setdefault(milliseconds, 0)
             total_per_day[milliseconds] += 1
-        
+
         return [[k, total_per_day[k]] for k in sorted(total_per_day)]
-    
+
+    def _get_registrations_per_month(self):
+        start = self.request.tenant.preferences['phase__START_REGISTRATION']
+        end = self.request.tenant.preferences['phase__END_REGISTRATION']
+
+        registrations = Registration.objects.filter(created__range=(start, end))\
+            .order_by('created')\
+            .annotate(year=Year('created'), month=Month('created')) \
+            .order_by('year', 'month') \
+            .values('year', 'month') \
+            .annotate(total=Count('*')) \
+            .values('year', 'month', 'total')
+        return OrderedDict(
+            (datetime(reg['year'], reg['month'], 1).strftime('%b %Y'), reg['total']) for reg in registrations
+        )
+
     def get_additional_context_phase2(self, context):
         waiting = set(Registration.objects\
                                       .filter(status=Registration.STATUS.waiting)\
@@ -80,8 +111,6 @@ class HomePageView(BackendMixin, TemplateView):
         
         context['payement_due'] = Bill.waiting.filter(total__gt=0).count()
         context['paid'] = Bill.paid.filter(total__gt=0).count()
-                    
-        context['registrations_per_day'] = self._get_registrations_per_day()
         
         participants = Course.objects.annotate(count_participants=Count('participants'))\
                                      .values_list('min_participants', 
@@ -97,24 +126,12 @@ class HomePageView(BackendMixin, TemplateView):
                 if max_participants == count_participants:
                     context['nb_full_courses'] += 1
 
+        context = self._add_cities_context(context)
+        context = self._add_registrations_context(context)
+
         return context
     
-    def get_additional_context_phase3(self, context):        
-        courses = Course.objects.all()
-        context['nb_courses'] = courses.count()
-        activities = Activity.objects.all()
-        context['nb_activities'] = activities.count()
-        context['total_sessions'] = courses.aggregate(Sum('number_of_sessions')).values()[0] or 0
-        context['total_instructors'] = Group.objects.get(name=INSTRUCTORS_GROUP).user_set.count()
-        timedeltas = []
-        for course in courses:
-            timedeltas.append(course.number_of_sessions * course.duration)
-        
-        td = sum(timedeltas, timedelta())
-        context['total_hours'] =  td.days * 24 + td.seconds / 3600
-        context['total_remaining_minutes'] =  (td.seconds % 3600) / 60
-        
-        
+    def get_additional_context_phase3(self, context):
         participants = Course.objects.annotate(count_participants=Count('participants'))\
                                      .values_list('min_participants', 
                                                   'max_participants', 
@@ -130,23 +147,95 @@ class HomePageView(BackendMixin, TemplateView):
                     context['nb_full_courses'] += 1
         
         context['payement_due'] = Bill.waiting.count()
-        paid =  Bill.paid.all()
+        paid = Bill.paid.all()
         context['paid'] = paid.count()
         context['total_due'] = Bill.objects.aggregate(Sum('total')).values()[0] or 0
         context['total_paid'] = paid.aggregate(Sum('total')).values()[0] or 0
+        context = self._add_cities_context(context)
+        context = self._add_registrations_context(context)
+        return context
 
-        context['registrations_per_day'] = self._get_registrations_per_day()
-        
-        context['nb_registrations'] = Registration.objects.count()
+    def _add_cities_context(self, context):
+        qs = Registration.objects.exclude(status__in=(Registration.STATUS.canceled,
+                                                      Registration.STATUS.waiting)) \
+            .select_related('child', 'child__family')
+
+        context['nb_registrations'] = qs.count()
         families = FamilyUser.objects.filter(bills__in=Bill.objects.all())
         context['nb_families'] = families.count()
+
         context['nb_children'] = Child.objects.filter(family__in=families).count()
+
+        UNKNOWN = _("Unknown")
+        children_per_zip = {UNKNOWN: set()}
+        families_per_zip = {UNKNOWN: set()}
+
+        cities = dict(
+            City.objects.filter(zipcode__in=qs.values_list('child__family__zipcode').distinct()).values_list('zipcode',
+                                                                                                             'name'))
+        for zipcode, city in cities.items():
+            children_per_zip[zipcode] = set()
+            families_per_zip[zipcode] = set()
+
+        for registration in Registration.objects.exclude(status__in=(Registration.STATUS.canceled,
+                                                                     Registration.STATUS.waiting)) \
+                .select_related('child', 'child__family'):
+            zipcode = registration.child.family.zipcode
+            if zipcode not in cities:
+                zipcode = UNKNOWN
+            children_per_zip[zipcode].add(registration.child)
+            families_per_zip[zipcode].add(registration.child.family)
+
+        children_per_zip_ordered = list([(zipcode, len(children)) for (zipcode, children) in children_per_zip.items()])
+        children_per_zip_ordered.sort(lambda x, y: -cmp(x[1], y[1]))
+        context['children_per_zip_labels'] = json.dumps(
+            ['{} {}'.format(zipcode, cities.get(zipcode, '')).strip()
+             for zipcode, nb in children_per_zip_ordered])
+        context['children_per_zip_data'] = json.dumps([nb for zipcode, nb in children_per_zip_ordered])
+
+        families_per_zip_ordered = list([(zipcode, len(families)) for (zipcode, families) in families_per_zip.items()])
+        families_per_zip_ordered.sort(lambda x, y: -cmp(x[1], y[1]))
+        context['families_per_zip_labels'] = json.dumps(
+            ['{} {}'.format(zipcode, cities.get(zipcode, '')).strip()
+             for zipcode, nb in families_per_zip_ordered])
+        context['families_per_zip_data'] = json.dumps([nb for zipcode, nb in families_per_zip_ordered])
+
         return context
-    
+
+    def _add_registrations_context(self, context):
+        start = self.request.tenant.preferences['phase__START_REGISTRATION']
+        end = self.request.tenant.preferences['phase__END_REGISTRATION']
+        if (end-start).days > 45:
+            context['registrations_period'] = 'monthly'
+            registrations = self._get_registrations_per_month()
+            context['monthly_registrations_labels'] = registrations.keys()
+            context['monthly_registrations_data'] = registrations.values()
+        else:
+            context['registrations_period'] = 'daily'
+            context['registrations_per_day'] = self._get_registrations_per_day()
+        return context
+
+
     def get_context_data(self, **kwargs):
         context = super(HomePageView, self).get_context_data(**kwargs)
+        context['now'] = now()
+
+        courses = Course.objects.all()
+        context['nb_courses'] = courses.count()
+        activities = Activity.objects.all()
+        context['nb_activities'] = activities.count()
+        context['total_sessions'] = courses.aggregate(Sum('number_of_sessions')).values()[0] or 0
+        context['total_instructors'] = Group.objects.get(name=INSTRUCTORS_GROUP).user_set.count()
+        timedeltas = []
+        for course in courses:
+            timedeltas.append(course.number_of_sessions * course.duration)
+        td = sum(timedeltas, timedelta())
+        context['total_hours'] = td.days * 24 + td.seconds / 3600
+        context['total_remaining_minutes'] = (td.seconds % 3600) / 60
+
         method_name = 'get_additional_context_phase%i' % self.request.PHASE
-        context = getattr(self, method_name)(context)                              
+        context = getattr(self, method_name)(context)
+
         return context
 
 
