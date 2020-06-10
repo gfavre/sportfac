@@ -93,8 +93,10 @@ class HomePageView(BackendMixin, TemplateView):
             .values('year', 'month') \
             .annotate(total=Count('*')) \
             .values('year', 'month', 'total')
+        from django.template.defaultfilters import date as _date
+
         return OrderedDict(
-            (datetime(reg['year'], reg['month'], 1).strftime('%b %Y'), reg['total']) for reg in registrations
+            (_date(datetime(reg['year'], reg['month'], 1), "b Y"), reg['total']) for reg in registrations
         )
 
     def get_additional_context_phase2(self, context):
@@ -189,14 +191,14 @@ class HomePageView(BackendMixin, TemplateView):
         children_per_zip_ordered = list([(zipcode, len(children)) for (zipcode, children) in children_per_zip.items()])
         children_per_zip_ordered.sort(lambda x, y: -cmp(x[1], y[1]))
         context['children_per_zip_labels'] = json.dumps(
-            ['{} {}'.format(zipcode, cities.get(zipcode, '')).strip()
+            [u'{} {}'.format(zipcode, cities.get(zipcode, '')).strip()
              for zipcode, nb in children_per_zip_ordered])
         context['children_per_zip_data'] = json.dumps([nb for zipcode, nb in children_per_zip_ordered])
 
         families_per_zip_ordered = list([(zipcode, len(families)) for (zipcode, families) in families_per_zip.items()])
         families_per_zip_ordered.sort(lambda x, y: -cmp(x[1], y[1]))
         context['families_per_zip_labels'] = json.dumps(
-            ['{} {}'.format(zipcode, cities.get(zipcode, '')).strip()
+            [u'{} {}'.format(zipcode, cities.get(zipcode, '')).strip()
              for zipcode, nb in families_per_zip_ordered])
         context['families_per_zip_data'] = json.dumps([nb for zipcode, nb in families_per_zip_ordered])
 
@@ -208,13 +210,12 @@ class HomePageView(BackendMixin, TemplateView):
         if (end-start).days > 45:
             context['registrations_period'] = 'monthly'
             registrations = self._get_registrations_per_month()
-            context['monthly_registrations_labels'] = registrations.keys()
-            context['monthly_registrations_data'] = registrations.values()
+            context['monthly_registrations_labels'] = json.dumps(registrations.keys())
+            context['monthly_registrations_data'] = json.dumps(registrations.values())
         else:
             context['registrations_period'] = 'daily'
             context['registrations_per_day'] = self._get_registrations_per_day()
         return context
-
 
     def get_context_data(self, **kwargs):
         context = super(HomePageView, self).get_context_data(**kwargs)
