@@ -19919,6 +19919,14 @@ table.dataTable .sorting_desc:before {
   display: none;
 }
 
+table.dataTable i.success {
+  color: #5cb85c;
+}
+
+table.dataTable i.danger {
+  color: #d9534f;
+}
+
 /* Calendar */
 div.fc-event-course {
   margin-top: 1em;

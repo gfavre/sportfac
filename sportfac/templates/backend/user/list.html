@@ -56,7 +56,7 @@
             {
               "render": function (data, type, row) {
                 let actions = row['actions'].flatMap(
-                  action => '<li><a href="' + action.url + '"><i class="' + action.icon_class + '"></i>' + action.label + '</a></li>'
+                  action => '<li><a href="' + action.url + '" class="btn btn-sm"><i class="' + action.icon_class + '"></i> ' + action.label + '</a></li>'
                 ).join('');
                 return '<ul class="list-unstyled">' + actions + '</ul>';
               },

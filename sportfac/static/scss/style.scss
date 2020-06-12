@@ -424,7 +424,12 @@ table.dataTable .sorting_asc:before,
 table.dataTable .sorting_desc:before {
     display: none;
 }
-
+table.dataTable i.success {
+  color: #5cb85c;
+}
+table.dataTable i.danger {
+  color: #d9534f;
+}
 
 
 
