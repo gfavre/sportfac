@@ -51,7 +51,7 @@
                 }
                 return '<i class="icon-cancel-circled  danger"></i>';
               },
-              'targets': [4, 5]
+              'targets': {% if not NO_PAYMENT %}[4, 5]{% else %}[4]{% endif %}
             },
             {
               "render": function (data, type, row) {
