@@ -32,7 +32,7 @@
             },
             {
               "visible": false,
-              "targets": [0, 2, 6]
+              "targets":  {% if not NO_PAYMENT %}[0, 2, 7]{% else %}[0, 2, 6]{% endif %}
             },
             {
               "render": function (data, type, row) {
@@ -144,7 +144,7 @@
       {% endif %}
       <th data-data="last_registration_natural"
           data-name="profile.last_registration">{% trans "Last registration" %}</th>
-      <th data-data="last_registration">{% trans "Last registration" %} code</th>
+      <th data-data="last_registration" data-name="profile.last_registration">{% trans "Last registration" %} code</th>
       <th data-data="actions" class="hidden-print">{% trans "Actions" %}</th>
     </tr>
     </thead>
