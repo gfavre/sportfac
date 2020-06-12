@@ -1,5 +1,7 @@
 # -*- coding:utf-8 -*-
+from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.utils.translation import ugettext_lazy as _
+from django.urls import reverse
 
 from rest_framework import serializers
 
@@ -221,3 +223,47 @@ class CourseChangedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = ('id', 'name', 'absence_url')
+
+
+class InlineChildrenSerializer(serializers.ModelSerializer):
+    full_name = serializers.CharField(source='get_full_name', read_only=True)
+    url = serializers.URLField(source='get_backend_detail_url', read_only=True)
+
+    class Meta:
+        model = Child
+        fields = ('id', 'full_name', 'url')
+
+
+class FamilySerializer(serializers.ModelSerializer):
+    full_name = serializers.CharField(source='get_full_name', read_only=True)
+    children = InlineChildrenSerializer(many=True)
+    finished_registrations = serializers.BooleanField(source='profile.finished_registering')
+    paid = serializers.BooleanField(source='profile.has_paid_all')
+    last_registration = serializers.DateTimeField(source='profile.last_registration')
+    last_registration_natural = serializers.SerializerMethodField()
+
+    actions = serializers.SerializerMethodField()
+
+    class Meta:
+        model = FamilyUser
+        fields = ('id', 'full_name', 'first_name', 'last_name', 'children',
+                  'finished_registrations', 'paid', 'last_registration', 'last_registration_natural',
+                  'actions')
+
+    @staticmethod
+    def get_last_registration_natural(obj):
+        return naturaltime(obj.last_registration)
+
+    def get_actions(self, obj):
+        return [
+            {
+                'url': obj.get_backend_url(),
+                'label': _("User details"),
+                'icon_class': 'icon-user'
+            },
+            {
+                'url': obj.get_update_url(),
+                'label': _("Update user"),
+                'icon_class': 'icon-edit'
+            },
+        ]

@@ -1,5 +1,5 @@
 django>1.11.0,<1.11.100
-djangorestframework == 3.7.3
+djangorestframework == 3.9.4
 django-filter == 0.15.3
 psycopg2 == 2.7.3.2
 celery == 3.1.23
@@ -7,6 +7,8 @@ tenant-schemas-celery == 0.1.7
 # -e git+https://github.com/gfavre/django-tenants.git@96ced6c4fbfd29e6490d00178798168101ef75eb#egg=django_tenants
 django-tenants==1.3.4
 pylibmc == 1.5.2
+
+djangorestframework-datatables==0.5.1
 
 # Forms
 django-braces == 1.8.1

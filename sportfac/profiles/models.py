@@ -118,9 +118,20 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         verbose_name = _("User")
         verbose_name_plural = _("Users")
 
+    def save(self, *args, **kwargs):
+        from registrations.models import RegistrationsProfile
+        from django.db import ProgrammingError
+        super(FamilyUser, self).save(*args, **kwargs)
+        if not hasattr(self, 'profile'):
+            try:
+                RegistrationsProfile.objects.get_or_create(user=self)
+            except ProgrammingError:
+                # we are running from shell where no tenant has been selected.
+                pass
+
     def get_full_name(self):
-        full_name = '%s %s' % (self.first_name, self.last_name)
-        return full_name.strip()
+        full_name = u'{} {}'.format(self.first_name, self.last_name)
+        return full_name.strip().title()
 
     @property
     def best_phone(self):
@@ -164,29 +175,36 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     def has_open_bills(self):
         if hasattr(self, 'opened_bills'):
             return self.opened_bills > 0
-        return self.bills.filter(status=Bill.STATUS.waiting).count() > 0
+        return self.bills.filter(status=Bill.STATUS.waiting).exists()
 
     @property
     def paid(self):
         if hasattr(self, 'opened_bills'):
             return self.opened_bills == 0
-        return not self.has_open_bills()
+        return not self.has_open_bills
 
     @property
     def has_open_registrations(self):
         if hasattr(self, 'waiting_registrations'):
             return self.waiting_registrations > 0
-        return self.get_registrations(validated=False).count() > 0
+        return self.get_registrations(validated=False).exists()
 
     @property
     def finished_registrations(self):
         if hasattr(self, 'waiting_registrations'):
             return self.waiting_registrations == 0
-        return not self.has_open_registrations()
+        return not self.has_open_registrations
 
     @property
     def has_registrations(self):
-        return Registration.valid.filter(child__in=self.children.all()).count() > 0
+        return Registration.objects.validated().filter(child__family=self).exists()
+
+    @property
+    def last_registration(self):
+        registrations = Registration.objects.validated().filter(child__family=self).order_by('-created')
+        if not registrations.exists():
+            return None
+        return registrations.first().created
 
     def get_registrations(self, validated=True):
         if validated:

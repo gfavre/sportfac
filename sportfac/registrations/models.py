@@ -136,11 +136,15 @@ class Registration(TimeStampedModel, StatusModel):
             super(Registration, self).save(*args, **kwargs)
             if self.bill:
                 self.bill.save()
+            else:
+                self.child.family.profile.save()
 
     def delete(self, *args, **kwargs):
         super(Registration, self).delete(*args, **kwargs)
         if self.bill:
             self.bill.save()
+        else:
+            self.child.family.profile.save()
 
 
 class Transport(TimeStampedModel):
@@ -241,6 +245,7 @@ class Bill(TimeStampedModel, StatusModel):
         if not self.billing_identifier:
             self.update_billing_identifier()
         super(Bill, self).save(*args, **kwargs)
+        self.family.profile.save()
 
     class Meta:
         verbose_name = _("Bill")
@@ -422,3 +427,20 @@ class ChildActivityLevel(TimeStampedModel):
     @property
     def api_url(self):
         return self.get_api_url()
+
+
+class RegistrationsProfile(TimeStampedModel):
+    """
+    This model acts as a cache to avoid useless comparisons
+    """
+    user = models.OneToOneField('profiles.FamilyUser', related_name='profile')
+
+    has_paid_all = models.BooleanField(default=False, blank=True, editable=False)
+    finished_registering = models.BooleanField(default=False, blank=True, editable=False)
+    last_registration = models.DateTimeField(null=True, blank=True, editable=False)
+
+    def save(self, *args, **kwargs):
+        self.has_paid_all = self.user.paid
+        self.finished_registering = self.user.finished_registrations
+        self.last_registration = self.user.last_registration
+        super(RegistrationsProfile, self).save(*args, **kwargs)

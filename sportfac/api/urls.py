@@ -28,4 +28,5 @@ urlpatterns = [
     url(r'^family/', views.FamilyView.as_view(), name='family-list'),
     url(r'^change-course/$', views.ChangeCourse.as_view(), name='change-course'),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^dashboard/users/', views.DashboardFamilyView.as_view(), name='all_users'),
 ]

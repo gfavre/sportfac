@@ -67,8 +67,11 @@ class UserListView(BackendMixin, ListView):
                          .prefetch_related('children')
 
     def post(self, request, *args, **kwargs):
-        userids = list(set(json.loads(request.POST.get('data', '[]'))))
-        self.request.session['mail-userids'] = userids
+        data = json.loads(request.POST.get('data', '[]'))
+        if data == -1:
+            self.request.session['mail-userids'] = list(FamilyUser.objects.values_list('id', flat=True))
+        else:
+            self.request.session['mail-userids'] = list(set(data))
         return HttpResponseRedirect(reverse('backend:custom-mail-custom-users'))
 
 

@@ -10,10 +10,10 @@ from rest_framework import viewsets
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
-
+from rest_framework_datatables.pagination import DatatablesPageNumberPagination
 from absences.models import Absence, Session
 from activities.models import Activity, Course
-from profiles.models import SchoolYear
+from profiles.models import SchoolYear, FamilyUser
 from registrations.models import Child, ChildActivityLevel, ExtraInfo, Registration
 from schools.models import Building, Teacher
 
@@ -24,7 +24,7 @@ from .serializers import (AbsenceSerializer, SetAbsenceSerializer, SessionSerial
                           ChildrenSerializer, CourseSerializer, TeacherSerializer, BuildingSerializer,
                           RegistrationSerializer, ExtraSerializer, ChildActivityLevelSerializer,
                           ChangeCourseSerializer, CourseChangedSerializer,
-                          SimpleChildrenSerializer, YearSerializer)
+                          SimpleChildrenSerializer, YearSerializer, FamilySerializer)
 
 
 class AbsenceViewSet(viewsets.ModelViewSet):
@@ -334,3 +334,9 @@ class ChangeCourse(views.APIView):
         registration.course = new_course
         registration.save()
         return Response(CourseChangedSerializer(new_course).data, status=status.HTTP_200_OK)
+
+
+class DashboardFamilyView(generics.ListAPIView):
+    queryset = FamilyUser.objects.prefetch_related('children').select_related('profile')
+    serializer_class = FamilySerializer
+    pagination_class = DatatablesPageNumberPagination

@@ -12,9 +12,7 @@ class ManagerPermission(IsAuthenticated):
         """
         Return `True` if permission is granted, `False` otherwise.
         """
-        if request.user.is_manager:
-            return True
-        return False
+        return request.user.is_manager
 
 
 class FamilyOrAdminPermission(IsAuthenticated):
