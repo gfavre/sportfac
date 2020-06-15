@@ -3,6 +3,7 @@
 Administration
 - Possibilité de supprimer des utilisateurs
 - Edition des textes des pages statiques (accueil, règlement, protection des données)
+- Ajout d'un champ "Remarques" pour les cours
 
 1.0.0 - 12.6.2020
 Administration:
