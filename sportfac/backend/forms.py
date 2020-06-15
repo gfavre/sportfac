@@ -292,6 +292,7 @@ class PayslipMontreuxForm(forms.Form):
 
 class FlatPageForm(forms.ModelForm):
     content = forms.CharField(
+        label=_("Content"),
         widget=CKEditorUploadingWidget(config_name='default', extra_plugins=None, external_plugin_resources=None)
     )
 

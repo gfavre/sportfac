@@ -190,4 +190,3 @@ class ActivityDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
                                 'identifier': identifier
                              })
         return super(ActivityDeleteView, self).delete(request, *args, **kwargs)
-    
