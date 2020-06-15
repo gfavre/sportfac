@@ -32,7 +32,8 @@
   {% formrow form.visible %}
   {% formrow form.announced_js %}
 
+  {% if not NO_EXTRAS %}
   {% formrow form.extra %}
-
+  {% endif %}
 
 {% endform %}
