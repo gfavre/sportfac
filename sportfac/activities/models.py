@@ -121,6 +121,8 @@ class Course(TimeStampedModel):
                               verbose_name=_("Identifier"))
     name = models.CharField(null=True, blank=True, max_length=50,
                             verbose_name=_("Displayed name"))
+    comments = RichTextUploadingField(verbose_name=_("Comments"), blank=True)
+
     uptodate = models.BooleanField(verbose_name=_("Course up to date"), default=True)
     visible = models.BooleanField(verbose_name=_("Course visible"), default=True)
 
@@ -143,6 +145,7 @@ class Course(TimeStampedModel):
     schoolyear_max = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="12", verbose_name=_("Maximal school year"))
 
     announced_js = models.BooleanField(_("Course announced to J+S"), default=False)
+
 
     objects = CourseManager()
 

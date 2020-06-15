@@ -25,12 +25,12 @@ class CourseInline(admin.StackedInline):
     model = Course
     extra = 1
     fieldsets = (
-       (None, {'fields': ('number', 'instructors', 'price', 'number_of_sessions', 'place', 'uptodate')}),
-       (_("Dates"), {'fields': ('start_date', 'end_date', 'day', 'start_time', 'end_time')}),
-       (_("Limitations"), {'fields': ('min_participants', 'max_participants', 'schoolyear_min', 'schoolyear_max')}),
-       (None, {'fields': ('extra',)}),
+        (None, {'fields': ('number', 'instructors', 'price', 'number_of_sessions', 'place', 'uptodate')}),
+        (_("Dates"), {'fields': ('start_date', 'end_date', 'day', 'start_time', 'end_time')}),
+        (_("Limitations"), {'fields': ('min_participants', 'max_participants', 'schoolyear_min', 'schoolyear_max')}),
+        (None, {'fields': ('extra',)}),
     )
-    ordering=['start_date', 'start_time']
+    ordering = ['start_date', 'start_time']
     verbose_name = _("course")
     verbose_name_plural = _("courses")
 
@@ -49,6 +49,7 @@ admin.site.register(Activity, ActivityAdmin)
 
 class ExtraNeedAdmin(admin.ModelAdmin):
     pass
+
 
 admin.site.register(ExtraNeed, ExtraNeedAdmin)
 
@@ -93,15 +94,16 @@ class ParticipantsListFilter(admin.SimpleListFilter):
 
 
 class CoursesAdmin(ImportExportModelAdmin):
-    list_display =('activity', 'number', 'day', 'start_date', 'start_time', 'duration', 'number_of_participants', 'uptodate',)
+    list_display = (
+    'activity', 'number', 'day', 'start_date', 'start_time', 'duration', 'number_of_participants', 'uptodate',)
     verbose_name = _("course")
     verbose_name_plural = _("courses")
 
     ordering = ('number', 'activity__number', 'activity__name', 'start_date', 'start_time')
-    list_filter=(ParticipantsListFilter, 'uptodate',)
+    list_filter = (ParticipantsListFilter, 'uptodate',)
     change_list_filter_template = "admin/filter_listing.html"
     save_as = True
-    inlines = [ExtraInline,]
+    inlines = (ExtraInline,)
 
     resource_class = CourseResource
 
@@ -112,11 +114,13 @@ class CoursesAdmin(ImportExportModelAdmin):
 
     def number_of_participants(self, obj):
         return Registration.objects.filter(course=obj).count()
+
     number_of_participants.admin_order_field = 'participants__count'
     number_of_participants.short_description = _('number of participants')
 
     def duration(self, obj):
         return obj.duration
+
     duration.short_description = _("Duration")
 
 
