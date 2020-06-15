@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-15 17:01+0200\n"
-"PO-Revision-Date: 2020-06-15 17:02+0200\n"
+"POT-Creation-Date: 2020-06-15 17:30+0200\n"
+"PO-Revision-Date: 2020-06-15 17:31+0200\n"
 "Last-Translator: Gregory Favre <greg@beyondthewall.ch>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -699,7 +699,8 @@ msgstr "Mettre à jour l'utilisateur"
 
 #: sportfac/api/serializers.py:271
 #: sportfac/templates/backend/user/confirm_delete.html:4
-#: sportfac/templates/backend/user/confirm_delete.html:29
+#: sportfac/templates/backend/user/confirm_delete.html:66
+#: sportfac/templates/backend/user/instructor-list.html:94
 msgid "Delete user"
 msgstr "Supprimer l'utilisateur"
 
@@ -1415,7 +1416,7 @@ msgstr "Envoyer l'email à tous les destinataires"
 #: sportfac/templates/backend/teacher/update.html:21
 #: sportfac/templates/backend/user/child-import.html:19
 #: sportfac/templates/backend/user/child-update.html:22
-#: sportfac/templates/backend/user/confirm_delete.html:30
+#: sportfac/templates/backend/user/confirm_delete.html:68
 #: sportfac/templates/backend/user/password-change.html:20
 #: sportfac/templates/backend/user/update.html:119
 #: sportfac/templates/backend/year/update.html:21
@@ -2367,7 +2368,7 @@ msgstr "Gestion des absences"
 #: sportfac/templates/backend/course/detail.html:174
 #: sportfac/templates/backend/registration/transport-detail.html:293
 #: sportfac/templates/backend/user/instructor-list.html:71
-#: sportfac/templates/backend/user/instructor-list.html:101
+#: sportfac/templates/backend/user/instructor-list.html:102
 #: sportfac/templates/backend/user/list.html:116
 #: sportfac/templates/backend/user/manager-list.html:71
 #: sportfac/templates/backend/user/manager-list.html:101
@@ -2379,7 +2380,7 @@ msgstr "Tout sélectionner"
 #: sportfac/templates/backend/course/detail.html:175
 #: sportfac/templates/backend/registration/transport-detail.html:297
 #: sportfac/templates/backend/user/instructor-list.html:72
-#: sportfac/templates/backend/user/instructor-list.html:102
+#: sportfac/templates/backend/user/instructor-list.html:103
 #: sportfac/templates/backend/user/list.html:117
 #: sportfac/templates/backend/user/manager-list.html:72
 #: sportfac/templates/backend/user/manager-list.html:102
@@ -3500,21 +3501,55 @@ msgstr "Supprimer l'élève"
 msgid "There are errors in this form."
 msgstr "Il y a des erreurs dans ce formulaire."
 
-#: sportfac/templates/backend/user/confirm_delete.html:9
+#: sportfac/templates/backend/user/confirm_delete.html:11
+msgid "Warning - instructor"
+msgstr "Avertissement - moniteur"
+
+#: sportfac/templates/backend/user/confirm_delete.html:14
+msgid ""
+"\n"
+"          This user is an instructor for the following courses. Maybe you "
+"simply want to remove his\n"
+"          rights?"
+msgstr ""
+"\n"
+"          Cet utilisateur est un moniteur pour les cours suivants. Peut-être "
+"souhaitez-vous simplement supprimer ses\n"
+"          droits ?"
+
+#: sportfac/templates/backend/user/confirm_delete.html:29
+msgid "Warning - manager"
+msgstr "Avertissement - administrateur"
+
+#: sportfac/templates/backend/user/confirm_delete.html:32
+msgid ""
+"\n"
+"          This user is a manager. Maybe you simply want to remove his rights?"
+msgstr ""
+"\n"
+"          Cet utilisateur est un administrateur. Peut-être voulez-vous "
+"simplement lui retirer ses droits ?"
+
+#: sportfac/templates/backend/user/confirm_delete.html:35
+msgid "Edit user"
+msgstr "Modifier l’utilisateur"
+
+#: sportfac/templates/backend/user/confirm_delete.html:41
 #, python-format
 msgid ""
 "\n"
-"      Are you sure you want to delete %(full_name)s (%(email)s)?"
+"    Are you sure you want to delete %(full_name)s (%(email)s)?"
 msgstr ""
 "\n"
-"      Êtes-vous sûr de vouloir supprimer %(full_name)s (%(email)s) ?"
+"    Êtes-vous sûr de vouloir supprimer %(full_name)s (%(email)s) ?"
 
-#: sportfac/templates/backend/user/confirm_delete.html:12
+#: sportfac/templates/backend/user/confirm_delete.html:45
 msgid ""
-"The following children along with their registrations will also be removed:"
+"The following children along with their registrations will also be\n"
+"      removed:"
 msgstr ""
-"Les enfants suivants, ainsi que leurs inscriptions, seront également "
-"supprimés :"
+"Les enfants suivants, ainsi que leurs inscriptions, seront également\n"
+"      supprimés :"
 
 #: sportfac/templates/backend/user/create.html:4
 #: sportfac/templates/backend/user/create.html:5
@@ -3584,7 +3619,7 @@ msgid "Export instructors"
 msgstr "Exporter les moniteurs"
 
 #: sportfac/templates/backend/user/instructor-list.html:77
-#: sportfac/templates/backend/user/instructor-list.html:107
+#: sportfac/templates/backend/user/instructor-list.html:108
 #: sportfac/templates/backend/user/list.html:123
 #: sportfac/templates/backend/user/manager-list.html:77
 #: sportfac/templates/backend/user/manager-list.html:107

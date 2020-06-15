@@ -29,10 +29,9 @@ class ChildForm(forms.ModelForm):
     language = forms.ChoiceField(label=_("Language"), choices=Child.LANGUAGE)
     school_year = forms.ModelChoiceField(label=_("School year"),
                                          queryset=SchoolYear.visible_objects.all(), required=False)
-    family = forms.ModelChoiceField(label=_("Parent"),
-                                    queryset=FamilyUser.objects.all(),
-                                     widget=Select2Widget(),
-                                     required=False)
+    family = forms.ModelChoiceField(
+        label=_("Parent"), queryset=FamilyUser.active_objects.all(), widget=Select2Widget(), required=False
+    )
     id_lagapeo = forms.IntegerField(label=_("SSF number"), required=False)
 
     school = forms.ModelChoiceField(label=_("School"),
