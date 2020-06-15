@@ -20,10 +20,10 @@
   {% if EXPLICIT_SESSION_DATES %}
     {% formrow form.session_dates %}
     {% formrow form.start_time form.end_time %}
-
   {% else %}
     {% formrow form.number_of_sessions form.day form.start_date form.end_date form.start_time form.end_time %}
   {% endif %}
+
   {% formrow form.place using "floppyforms/rows/bootstrap-basic-row.html" %}
   {% formrow form.comments %}
 
@@ -33,7 +33,7 @@
   {% formrow form.announced_js %}
 
   {% if not NO_EXTRAS %}
-  {% formrow form.extra %}
+    {% formrow form.extra %}
   {% endif %}
 
 {% endform %}
