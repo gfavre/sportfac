@@ -5,6 +5,7 @@ from .mail_views import *
 from .registration_views import *
 from .teacher_views import *
 from .user_views import *
+from site_views import FlatPageListView
 from .year_views import *
 
 

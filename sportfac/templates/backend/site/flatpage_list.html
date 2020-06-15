@@ -1,0 +1,37 @@
+{% extends "backend/base.html" %}
+{% load i18n sekizai_tags duration %}
+
+{% block title %}{% trans "View pages" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "List pages" %}{% endblock %}
+
+{% get_current_language as LANGUAGE_CODE %}
+
+
+
+{% block content %}
+<table class="table">
+  <thead>
+    <tr>
+      <th class="text-nowrap">{% trans "Name" %}</th>
+      <th class="text-nowrap">{% trans "Address" %}</th>
+      <th class="text-nowrap">{% trans "Actions" %}</th>
+    </tr>
+  </thead>
+  {% for page in object_list %}
+    <tr>
+      <td>
+        {{ page.title }}
+      </td>
+      <td>
+        <a href="{{ page.url }}" target="_blank">{{ page.url }}</a>
+      </td>
+      <td>
+        <ul class="list-unstyled">
+          <li class="text-nowrap"><a href="" class="btn btn-sm"><i class="icon-check"></i>&nbsp;{% trans "Edit page" %}</a></li>
+
+        </ul>
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock content %}

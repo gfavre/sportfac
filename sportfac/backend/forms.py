@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import datetime
+
 from django.conf import settings
+from django.contrib.flatpages.models import FlatPage
 from django.db.models import Case, When, F, IntegerField, Q, Sum
 from django.forms import inlineformset_factory
 from django.forms.widgets import TextInput
@@ -82,20 +84,20 @@ class CourseSelectMixin(object):
     def __init__(self, *args, **kwargs):
         super(CourseSelectMixin, self).__init__(*args, **kwargs)
         course_qs = Course.objects.select_related('activity').annotate(
-                        nb_participants=Sum(
-                            Case(
-                                When(participants__status__in=(Registration.STATUS.valid,
-                                                               Registration.STATUS.waiting,
-                                                               Registration.STATUS.confirmed),
-                                     then=1),
-                                default=0,
-                                output_field=IntegerField()
-                            )
-                        )
+            nb_participants=Sum(
+                Case(
+                    When(participants__status__in=(Registration.STATUS.valid,
+                                                   Registration.STATUS.waiting,
+                                                   Registration.STATUS.confirmed),
+                         then=1),
+                    default=0,
+                    output_field=IntegerField()
+                )
+            )
         )
         if self.instance.pk:
             course_qs = course_qs.filter(
-                 Q(pk=self.instance.course.pk) | Q(nb_participants__lt=F('max_participants'))
+                Q(pk=self.instance.course.pk) | Q(nb_participants__lt=F('max_participants'))
             )
         else:
             course_qs = course_qs.filter(nb_participants__lt=F('max_participants'))
@@ -160,14 +162,14 @@ class ExtraInfoForm(forms.ModelForm):
     class Meta:
         model = ExtraInfo
         fields = ('key', 'value')
-        read_only = ('key', )
+        read_only = ('key',)
 
     def __init__(self, *args, **kwargs):
         super(ExtraInfoForm, self).__init__(*args, **kwargs)
         if self.instance:
             if self.instance.key.choices:
                 self.fields['value'] = forms.ChoiceField(choices=[('', '----')] + zip(self.instance.key.choices,
-                                                                     self.instance.key.choices),
+                                                                                      self.instance.key.choices),
 
                                                          label=_("Answer"))
             elif self.instance.type == 'B':
@@ -204,7 +206,7 @@ class CourseSelectForm(CourseSelectMixin, forms.ModelForm):
         try:
             if self.instance.child.registrations.count():
                 course_qs = course_qs.exclude(pk__in=[registration.course.pk for registration in
-                                              self.instance.child.registrations.all()])
+                                                      self.instance.child.registrations.all()])
         except Child.DoesNotExist:
             pass
         self.fields['course'].queryset = course_qs
@@ -286,3 +288,9 @@ class PayslipMontreuxForm(forms.Form):
         self.helper.form_group_wrapper_class = 'row'
         self.helper.label_class = 'col-sm-2'
         self.helper.field_class = 'col-sm-10'
+
+
+class FlatpageForm(forms.ModelForm):
+    class Meta:
+        model = FlatPage
+        fields = ('title', 'content')

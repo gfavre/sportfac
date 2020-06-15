@@ -189,6 +189,10 @@ children_patterns = [
 
 ]
 
+site_patterns = [
+    url(r'^$', view=views.FlatPageListView.as_view(), name='flatpages-list'),
+]
+
 
 years_patterns = [
     url(r'^$', view=views.YearListView.as_view(), name='year-list'),
@@ -213,5 +217,6 @@ urlpatterns = [
     url(r'^registrations/', include(registrations_patterns)),
     url(r'^teacher/', include(teachers_patterns)),
     url(r'^user/', include(users_patterns)),
+    url(r'^site/', include(site_patterns)),
     url(r'^year/', include(years_patterns)),
 ]
