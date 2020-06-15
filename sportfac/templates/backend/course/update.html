@@ -15,6 +15,7 @@
   </form>
 
   {% addtoblock "js" %}
+    {{ form.media }}
     <script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
     {% if EXPLICIT_SESSION_DATES %}
       <script src="{% static 'js/vendor/bootstrap-datepicker.js' %}"></script>

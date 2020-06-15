@@ -36,14 +36,63 @@ __all__ = ('CourseCreateView', 'CourseDeleteView', 'CourseDetailView',
            'PaySlipMontreux')
 
 
+class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
+    template_name = 'backend/course/create.html'
+    success_url = reverse_lazy('backend:course-list')
+    success_message = _('<a href="%(url)s" class="alert-link">Course (%(number)s)</a> has been created.')
+
+    def get_form_class(self):
+        if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
+            return ExplicitDatesCourseForm
+        return CourseForm
+
+    def get_success_message(self, cleaned_data):
+        url = self.object.get_backend_url()
+        return mark_safe(self.success_message % {'url': url,
+                                                 'number': self.object.number})
+
+    def get_initial(self):
+        initial = super(CourseCreateView, self).get_initial()
+        activity = self.request.GET.get('activity', None)
+        if activity:
+            activity_obj = get_object_or_404(Activity, pk=activity)
+            initial['activity'] = activity_obj
+        return initial
+
+    def form_valid(self, form):
+        for user in form.cleaned_data['instructors']:
+            user.is_instructor = True
+            user.save()
+        self.object = form.save()
+        for extra in form.cleaned_data['extra']:
+            self.object.extra.add(extra)
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class CourseDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
+    model = Course
+    template_name = 'backend/course/confirm_delete.html'
+    success_url = reverse_lazy('backend:course-list')
+    success_message = _("Course has been deleted.")
+    pk_url_kwarg = 'course'
+
+    def delete(self, request, *args, **kwargs):
+        identifier = self.get_object().short_name
+        messages.add_message(self.request, messages.SUCCESS,
+                             _("Course %(identifier)s has been deleted.") % {
+                                 'identifier': identifier
+                             })
+        return super(CourseDeleteView, self).delete(request, *args, **kwargs)
+
+
 class CourseDetailView(BackendMixin, DetailView):
     model = Course
     template_name = 'backend/course/detail.html'
     pk_url_kwarg = 'course'
-    queryset = Course.objects.select_related('activity')\
-                             .prefetch_related('participants__child__school_year',
-                                               'participants__child__family',
-                                               'instructors')
+    queryset = Course.objects.select_related('activity') \
+        .prefetch_related('participants__child__school_year',
+                          'participants__child__family',
+                          'instructors')
 
     def get_template_names(self):
         if self.request.PHASE == 2:
@@ -57,13 +106,55 @@ class CourseDetailView(BackendMixin, DetailView):
         return context
 
 
+class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
+    model = Course
+    template_name = 'backend/course/update.html'
+    pk_url_kwarg = 'course'
+    success_url = reverse_lazy('backend:course-list')
+    success_message = _('<a href="%(url)s" class="alert-link">Course (%(number)s)</a> has been updated.')
+
+    def get_form_class(self):
+        if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
+            return ExplicitDatesCourseForm
+        return CourseForm
+
+    def get_success_message(self, cleaned_data):
+        url = self.object.get_backend_url()
+        return mark_safe(self.success_message % {'url': url,
+                                                 'number': self.object.number})
+
+    def get_initial(self):
+        initial = super(CourseUpdateView, self).get_initial()
+        initial['extra'] = self.get_object().extra.all()
+        return initial
+
+    def form_valid(self, form):
+        course = self.get_object()
+        removed_instructors = set(course.instructors.all()) - set(form.cleaned_data['instructors'])
+        response = super(CourseUpdateView, self).form_valid(form)
+
+        for instructor in removed_instructors:
+            if instructor.course.exclude(pk=course.pk).count() == 0:
+                instructor.is_instructor = False
+
+        for user in form.cleaned_data['instructors']:
+            user.is_instructor = True
+
+        removed_extras = set(course.extra.all()) - set(form.cleaned_data['extra'])
+        for removed_extra in removed_extras:
+            course.extra.remove(removed_extra)
+        for extra in form.cleaned_data['extra']:
+            course.extra.add(extra)
+        return response
+
+
 class CourseAbsenceView(BackendMixin, DetailView):
     model = Course
     template_name = 'backend/course/absences.html'
     pk_url_kwarg = 'course'
     queryset = Course.objects.prefetch_related('sessions', 'sessions__absences', 'participants__child',
-                                               'instructors')\
-                             .select_related('activity',)
+                                               'instructors') \
+        .select_related('activity', )
 
     def post(self, *args, **kwargs):
         course = self.get_object()
@@ -124,14 +215,14 @@ class CourseAbsenceView(BackendMixin, DetailView):
             kwargs['levels'] = ChildActivityLevel.LEVELS
             kwargs['child_levels'] = dict(
                 [(lvl.child, lvl) for lvl in ChildActivityLevel.objects.filter(activity=self.object.activity)
-                                                                       .select_related('child')]
+                    .select_related('child')]
             )
             try:
                 questions = ExtraNeed.objects.filter(question_label__startswith=u'Niveau')
                 all_extras = dict(
                     [(extra.registration.child, extra.value) for extra in
                      ExtraInfo.objects.filter(registration__course=self.object, key__in=questions)
-                                      .select_related('registration__child')]
+                         .select_related('registration__child')]
                 )
             except ExtraNeed.DoesNotExist:
                 all_extras = {}
@@ -162,8 +253,8 @@ class CoursesAbsenceView(BackendMixin, ListView):
         return Course.objects.filter(pk__in=courses_pk)
 
     def get_context_data(self, **kwargs):
-        qs = Absence.objects.filter(session__course__in=self.get_queryset())\
-                            .select_related('session', 'child', 'session__course', 'session__course__activity')
+        qs = Absence.objects.filter(session__course__in=self.get_queryset()) \
+            .select_related('session', 'child', 'session__course', 'session__course__activity')
         if settings.KEPCHUP_BIB_NUMBERS:
             qs = qs.order_by('child__bib_number', 'child__last_name', 'child__first_name')
         else:
@@ -173,16 +264,17 @@ class CoursesAbsenceView(BackendMixin, ListView):
         kwargs['closest_session'] = closest_session(sessions)
         kwargs['all_dates'].sort(reverse=True)
         if settings.KEPCHUP_REGISTRATION_LEVELS:
-            extras = ExtraInfo.objects.select_related('registration', 'key')\
-                                      .filter(registration__course__in=self.get_queryset(),
-                                              key__question_label='Niveau de ski/snowboard')
+            extras = ExtraInfo.objects.select_related('registration', 'key') \
+                .filter(registration__course__in=self.get_queryset(),
+                        key__question_label='Niveau de ski/snowboard')
             child_announced_levels = {extra.registration.child: extra.value for extra in extras}
-            levels = ChildActivityLevel.objects.select_related('child')\
-                                               .filter(activity__in=set([absence.session.course.activity for
-                                                                         absence in qs]))
+            levels = ChildActivityLevel.objects.select_related('child') \
+                .filter(activity__in=set([absence.session.course.activity for
+                                          absence in qs]))
             child_levels = {level.child: level for level in levels}
 
-        course_children = dict([(course, [reg.child for reg in course.participants.all()]) for course in self.get_queryset()])
+        course_children = dict(
+            [(course, [reg.child for reg in course.participants.all()]) for course in self.get_queryset()])
         course_absences = collections.OrderedDict()
 
         for absence in qs:
@@ -281,97 +373,6 @@ class CourseParticipantsExportView(BackendMixin, SingleObjectMixin, ExcelRespons
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         return self.render_to_response()
-
-
-class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
-    template_name = 'backend/course/create.html'
-    success_url = reverse_lazy('backend:course-list')
-    success_message = _('<a href="%(url)s" class="alert-link">Course (%(number)s)</a> has been created.')
-
-    def get_form_class(self):
-        if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
-            return ExplicitDatesCourseForm
-        return CourseForm
-
-    def get_success_message(self, cleaned_data):
-        url = self.object.get_backend_url()
-        return mark_safe(self.success_message % {'url': url,
-                                                 'number': self.object.number})
-
-    def get_initial(self):
-        initial = super(CourseCreateView, self).get_initial()
-        activity = self.request.GET.get('activity', None)
-        if activity:
-            activity_obj = get_object_or_404(Activity, pk=activity)
-            initial['activity'] = activity_obj
-        return initial
-
-    def form_valid(self, form):
-        for user in form.cleaned_data['instructors']:
-            user.is_instructor = True
-            user.save()
-        self.object = form.save()
-        for extra in form.cleaned_data['extra']:
-            self.object.extra.add(extra)
-        return HttpResponseRedirect(self.get_success_url())
-
-
-class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
-    model = Course
-    template_name = 'backend/course/update.html'
-    pk_url_kwarg = 'course'
-    success_url = reverse_lazy('backend:course-list')
-    success_message = _('<a href="%(url)s" class="alert-link">Course (%(number)s)</a> has been updated.')
-
-    def get_form_class(self):
-        if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
-            return ExplicitDatesCourseForm
-        return CourseForm
-
-    def get_success_message(self, cleaned_data):
-        url = self.object.get_backend_url()
-        return mark_safe(self.success_message % {'url': url,
-                                                 'number': self.object.number})
-
-    def get_initial(self):
-        initial = super(CourseUpdateView, self).get_initial()
-        initial['extra'] = self.get_object().extra.all()
-        return initial
-
-    def form_valid(self, form):
-        course = self.get_object()
-        removed_instructors = set(course.instructors.all()) - set(form.cleaned_data['instructors'])
-        response = super(CourseUpdateView, self).form_valid(form)
-
-        for instructor in removed_instructors:
-            if instructor.course.exclude(pk=course.pk).count() == 0:
-                instructor.is_instructor = False
-
-        for user in form.cleaned_data['instructors']:
-            user.is_instructor = True
-
-        removed_extras = set(course.extra.all()) - set(form.cleaned_data['extra'])
-        for removed_extra in removed_extras:
-            course.extra.remove(removed_extra)
-        for extra in form.cleaned_data['extra']:
-            course.extra.add(extra)
-        return response
-
-
-class CourseDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
-    model = Course
-    template_name = 'backend/course/confirm_delete.html'
-    success_url = reverse_lazy('backend:course-list')
-    success_message = _("Course has been deleted.")
-    pk_url_kwarg = 'course'
-
-    def delete(self, request, *args, **kwargs):
-        identifier = self.get_object().short_name
-        messages.add_message(self.request, messages.SUCCESS,
-                             _("Course %(identifier)s has been deleted.") % {
-                                'identifier': identifier
-                             })
-        return super(CourseDeleteView, self).delete(request, *args, **kwargs)
 
 
 class PaySlipMontreux(BackendMixin, FormView):

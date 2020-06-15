@@ -95,7 +95,8 @@ class ParticipantsListFilter(admin.SimpleListFilter):
 
 class CoursesAdmin(ImportExportModelAdmin):
     list_display = (
-    'activity', 'number', 'day', 'start_date', 'start_time', 'duration', 'number_of_participants', 'uptodate',)
+        'activity', 'number', 'day', 'start_date', 'start_time', 'duration', 'number_of_participants', 'uptodate',
+    )
     verbose_name = _("course")
     verbose_name_plural = _("courses")
 

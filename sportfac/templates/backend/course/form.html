@@ -1,38 +1,38 @@
 {% load i18n floppyforms %}
 
 {% form form using %}
-{% formconfig row using "floppyforms/rows/bootstrap-basic-row.html" %}
+  {% formconfig row using "floppyforms/rows/bootstrap-basic-row.html" %}
+  {% formconfig row using "floppyforms/rows/bootstrap-basic-sm-6.html" %}
 
-{% formconfig row using "floppyforms/rows/bootstrap-basic-sm-6.html" %}
-
-{% if CALENDAR_DISPLAY_COURSE_NAMES %}
+  {% if CALENDAR_DISPLAY_COURSE_NAMES %}
     {% formrow form.activity form.instructors form.number form.name %}
-{% else %}
+  {% else %}
     {% formrow form.activity form.instructors form.number %}
-{% endif %}
+  {% endif %}
 
-{% if NO_PAYMENT %}
-  {{ form.price }}
-  {% formrow form.number_of_sessions form.day  %}
-{% else %}
-  {% formrow form.price form.price_description %}
-{% endif %}
+  {% if NO_PAYMENT %}
+    {{ form.price }}
+    {% formrow form.number_of_sessions form.day %}
+  {% else %}
+    {% formrow form.price form.price_description %}
+  {% endif %}
 
   {% if EXPLICIT_SESSION_DATES %}
     {% formrow form.session_dates %}
-  {% formrow form.start_time form.end_time %}
+    {% formrow form.start_time form.end_time %}
 
   {% else %}
-{% formrow  form.number_of_sessions form.day form.start_date form.end_date form.start_time form.end_time %}
-{% endif %}
-{%  formrow form.place using "floppyforms/rows/bootstrap-basic-row.html" %}
+    {% formrow form.number_of_sessions form.day form.start_date form.end_date form.start_time form.end_time %}
+  {% endif %}
+  {% formrow form.place using "floppyforms/rows/bootstrap-basic-row.html" %}
+  {% formrow form.comments %}
 
-{% formrow form.min_participants form.max_participants form.schoolyear_min form.schoolyear_max  %}
-{% formrow form.uptodate %}
-{% formrow form.visible %}
-{% formrow form.announced_js %}
+  {% formrow form.min_participants form.max_participants form.schoolyear_min form.schoolyear_max %}
+  {% formrow form.uptodate %}
+  {% formrow form.visible %}
+  {% formrow form.announced_js %}
 
-    {% formrow form.extra %}
+  {% formrow form.extra %}
 
 
 {% endform %}

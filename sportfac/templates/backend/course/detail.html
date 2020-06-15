@@ -35,6 +35,11 @@
         </ul>
       </dd>
       <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
+      {% if course.comments %}
+        <dt>{% trans "Comments" %}</dt>
+        <dd>{{ course.comments|safe }}</dd>
+      {% endif %}
+
       <dt>{% trans "Number of sessions" %}</dt><dd>{{ course.number_of_sessions }} cours</dd>
       {% if not NO_PAYMENT %}
         <dt>{% trans "Price" %}</dt>
