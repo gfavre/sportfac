@@ -52,7 +52,7 @@ class UserListView(BackendMixin, ListView):
     template_name = 'backend/user/list.html'
 
     def get_queryset(self):
-        return FamilyUser.objects.annotate(num_children=Count('children'))\
+        return FamilyUser.active_objects.annotate(num_children=Count('children'))\
                          .annotate(
                             valid_registrations=Count(
                                 Case(When(children__registrations__in=Registration.objects.validated(), then=1))
@@ -209,15 +209,19 @@ class UserUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
 
 class UserDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
     model = FamilyUser
-    template_name = 'backend/user/confirm_delete.html'
     success_url = reverse_lazy('backend:user-list')
-    success_message = _("User has been deleted.")
+    success_message = _("User %(user)s has been deleted.")
+    template_name = 'backend/user/confirm_delete.html'
 
     def delete(self, request, *args, **kwargs):
+        # noinspection PyAttributeOutsideInit
         self.object = self.get_object()
         success_url = self.get_success_url()
         self.object.is_active = False
         self.object.save()
+        for child in self.object.children.all():
+            child.delete()
+        messages.success(self.request, self.get_success_message({'user': self.object.full_name}))
         return HttpResponseRedirect(success_url)
 
 

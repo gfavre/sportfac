@@ -266,4 +266,9 @@ class FamilySerializer(serializers.ModelSerializer):
                 'label': _("Update user"),
                 'icon_class': 'icon-edit'
             },
+            {
+                'url': obj.get_delete_url(),
+                'label': _("Delete user"),
+                'icon_class': 'icon-trash'
+            },
         ]

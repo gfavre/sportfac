@@ -31,6 +31,7 @@ class RegistrationResource(resources.ModelResource):
         return registration.child.full_name
 
 
+@admin.register(ExtraInfo)
 class ExtraInfoAdmin(admin.ModelAdmin):
     list_display = ('registration', 'key', 'value')
     search_fields = ('registration__child__first_name',
@@ -42,14 +43,12 @@ class ExtraInfoAdmin(admin.ModelAdmin):
     raw_id_fields = ('registration', )
 
 
-admin.site.register(ExtraInfo, ExtraInfoAdmin)
-
-
 class ExtraInfoInline(admin.StackedInline):
     model = ExtraInfo
     extra = 0
 
 
+@admin.register(Registration)
 class RegistrationAdmin(ImportExportModelAdmin):
     list_display = ('__unicode__', 'transport', 'status', 'created', 'modified')
     list_filter = ('status', 'transport', 'course__activity__name')
@@ -72,23 +71,18 @@ class RegistrationAdmin(ImportExportModelAdmin):
         return actions
 
 
-admin.site.register(Registration, RegistrationAdmin)
-
-
+@admin.register(Child)
 class ChildAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'family', 'school_year', 'id_lagapeo', 'created', 'modified')
     search_fields = ('first_name', 'last_name', 'id_lagapeo', 'family__first_name', 'family__last_name')
     list_filter = ('school_year', 'status')
+    raw_id_fields = ('family', 'teacher', )
 
 
-admin.site.register(Child, ChildAdmin)
-
-
+@admin.register(Bill)
 class BillAdmin(admin.ModelAdmin):
     list_display = ('billing_identifier', 'total', 'family', 'status', 'created', 'modified', 'reminder_sent')
     list_filter = ('status',)
 
-
-admin.site.register(Bill, BillAdmin)
 
 admin.site.register(Transport)

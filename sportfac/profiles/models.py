@@ -110,8 +110,8 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
 
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
-    objects = ActiveFamilyManager()
-    all_objects = FamilyManager()
+    objects = FamilyManager()
+    active_objects = ActiveFamilyManager()
     instructors_objects = InstructorFamilyUserManager()
     managers_objects = ManagerFamilyUserManager()
 

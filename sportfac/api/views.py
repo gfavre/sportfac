@@ -337,6 +337,6 @@ class ChangeCourse(views.APIView):
 
 
 class DashboardFamilyView(generics.ListAPIView):
-    queryset = FamilyUser.objects.prefetch_related('children').select_related('profile')
+    queryset = FamilyUser.active_objects.prefetch_related('children').select_related('profile')
     serializer_class = FamilySerializer
     pagination_class = DatatablesPageNumberPagination

@@ -99,13 +99,6 @@ class FamilyAdmin(UserAdmin):
     ordering = ('last_name', 'first_name')
     inlines = [ChildInline]
 
-    def get_queryset(self, request):
-        qs = self.model.all_objects.get_queryset()
-        ordering = self.get_ordering(request)
-        if ordering:
-            qs = qs.order_by(*ordering)
-        return qs
-
 
 @admin.register(City)
 class CityAdmin(admin.ModelAdmin):
