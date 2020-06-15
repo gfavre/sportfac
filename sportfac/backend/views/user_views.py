@@ -213,6 +213,13 @@ class UserDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
     success_url = reverse_lazy('backend:user-list')
     success_message = _("User has been deleted.")
 
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        self.object.is_active = False
+        self.object.save()
+        return HttpResponseRedirect(success_url)
+
 
 class UserDetailView(BackendMixin, DetailView):
     model = FamilyUser
