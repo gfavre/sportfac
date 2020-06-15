@@ -29,10 +29,13 @@
   <div class="row">
     {% if NO_PAYMENT %}
       <div class="col-xs-12">
-        {% include 'backend/portlets/registrations_phase3.html' %}
+        {% if registrations_period == 'daily' %}
+          {% include 'backend/portlets/registrations_phase3.html' %}
+        {% else %}
+          {% include 'backend/portlets/monthly_registrations.html' %}
+        {% endif %}
       </div>
     {% else %}
-
       <div class="col-sm-6 col-md-8">
         {% if registrations_period == 'daily' %}
           {% include 'backend/portlets/registrations_phase3.html' %}
