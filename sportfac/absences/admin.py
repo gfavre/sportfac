@@ -4,6 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from .models import Session, Absence
 
 
+@admin.register(Session)
 class SessionAdmin(admin.ModelAdmin):
     list_display = ('course_short', 'date', 'instructor_short', 'presentees', 'absentees_nb')
     list_filter = ('date', )
@@ -35,5 +36,27 @@ class SessionAdmin(admin.ModelAdmin):
                               .order_by('-date')
 
 
-admin.site.register(Session, SessionAdmin)
-admin.site.register(Absence)
+@admin.register(Absence)
+class AbsenceAdmin(admin.ModelAdmin):
+    date_hierarchy = 'session__date'
+    list_display = ('child', 'get_date', 'get_activity', 'get_course', 'status')
+    list_filter = ('status',)
+    search_fields = ('child__first_name', 'child__last_name', 'session__course__number', 'session__activity__name')
+
+    def get_queryset(self, request):
+        return Absence.objects.select_related('child', 'session', 'session__course', 'session__activity')
+
+    def get_date(self, obj):
+        return obj.session.date
+    get_date.admin_order_field = 'session__date'
+    get_date.short_description = _("Date")
+
+    def get_activity(self, obj):
+        return obj.session.activity
+    get_activity.admin_order_field = 'session__activity'
+    get_activity.short_description = _("Activity")
+
+    def get_course(self, obj):
+        return obj.session.course.short_name
+    get_course.admin_order_field = 'session__course'
+    get_course.short_description = _("Course")
