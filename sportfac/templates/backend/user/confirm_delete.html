@@ -5,7 +5,7 @@
 {% block page_title %}{% trans "Please confirm deletion" %}{% endblock %}
 
 {% block content %}
-  {% if user.is_instructor %}
+  {% if object.is_instructor %}
     <article class="panel panel-warning">
       <div class="panel-heading">
         <h3 class="panel-title">{% trans "Warning - instructor" %}</h3>
@@ -15,7 +15,7 @@
           This user is an instructor for the following courses. Maybe you simply want to remove his
           rights?{% endblocktrans %}</p>
         <ul>
-          {% for course in user.course.all %}
+          {% for course in object.course.all %}
             <li><a href="{{ course.get_backend_url }}">{{ course }}</a></li>
           {% endfor %}
         </ul>
@@ -23,7 +23,7 @@
     </article>
   {% endif %}
 
-  {% if user.is_manager %}
+  {% if object.is_manager %}
     <article class="panel panel-warning">
       <div class="panel-heading">
         <h3 class="panel-title">{% trans "Warning - manager" %}</h3>
@@ -31,7 +31,7 @@
       <div class="panel-body">
         <p>{% blocktrans %}
           This user is a manager. Maybe you simply want to remove his rights?{% endblocktrans %}</p>
-        <a href="{{ user.get_backend_url }}" class="btn btn-sm btn-default"><i
+        <a href="{{ object.get_backend_url }}" class="btn btn-sm btn-default"><i
             class="icon-edit"></i> {% trans "Edit user" %}</a></li>
 
       </div>
