@@ -1,0 +1,14 @@
+
+1.0.1 - 15.6.2020
+Administration
+- Possibilité de supprimer des utilisateurs
+- Edition des textes des pages statiques (accueil, règlement, protection des données)
+
+1.0.0 - 12.6.2020
+Administration:
+- Statistiques de provenance des familles / enfants
+- Amélioration de la page d'accueil de l'administrateur si la période d'inscription est relativement longue (> 45 jours)
+
+Inscription:
+- Après la création d'une nouvelle période d'inscription, et si les enfants ont été recopiés depuis la précédente,
+le système invite les parents lorsqu'ils se connectent à vérifier les données des enfants (via une notification).
