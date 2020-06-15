@@ -65,12 +65,17 @@ class FamilyManager(BaseUserManager):
         return user
 
 
-class InstructorFamilyUserManager(BaseUserManager):
+class ActiveFamilyManager(FamilyManager):
+    def get_queryset(self):
+        return super(ActiveFamilyManager, self).get_queryset().filter(is_active=True)
+
+
+class InstructorFamilyUserManager(ActiveFamilyManager):
     def get_queryset(self):
         return super(InstructorFamilyUserManager, self).get_queryset().filter(groups__name=INSTRUCTORS_GROUP)
 
 
-class ManagerFamilyUserManager(BaseUserManager):
+class ManagerFamilyUserManager(ActiveFamilyManager):
     def get_queryset(self):
         return super(ManagerFamilyUserManager, self).get_queryset().filter(groups__name=MANAGERS_GROUP)
 
@@ -105,7 +110,8 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
 
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
-    objects = FamilyManager()
+    objects = ActiveFamilyManager()
+    all_objects = FamilyManager()
     instructors_objects = InstructorFamilyUserManager()
     managers_objects = ManagerFamilyUserManager()
 

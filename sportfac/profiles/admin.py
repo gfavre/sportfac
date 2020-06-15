@@ -79,7 +79,7 @@ class FamilyAdmin(UserAdmin):
     change_list_filter_template = "admin/filter_listing.html"
 
     fieldsets = (
-        (None, {'fields': ('email', 'password', 'is_staff', 'is_superuser', 'groups')}),
+        (None, {'fields': ('email', 'password', 'is_staff', 'is_superuser', 'is_active', 'groups')}),
         ('Personal info', {'fields': ('first_name', 'last_name',
                                       'address', 'zipcode', 'city', 'country',
                                       'private_phone', 'private_phone2', 'private_phone3',
@@ -100,8 +100,11 @@ class FamilyAdmin(UserAdmin):
     inlines = [ChildInline]
 
     def get_queryset(self, request):
-        qs = super(FamilyAdmin, self).get_queryset(request)
-        return qs.prefetch_related('children')
+        qs = self.model.all_objects.get_queryset()
+        ordering = self.get_ordering(request)
+        if ordering:
+            qs = qs.order_by(*ordering)
+        return qs
 
 
 @admin.register(City)
