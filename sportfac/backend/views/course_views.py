@@ -92,7 +92,10 @@ class CourseDetailView(BackendMixin, DetailView):
     queryset = Course.objects.select_related('activity') \
         .prefetch_related('participants__child__school_year',
                           'participants__child__family',
-                          'instructors')
+                          'participants__child__school',
+                          'participants__extra_infos',
+                          'instructors',
+                          'extra')
 
     def get_template_names(self):
         if self.request.PHASE == 2:
