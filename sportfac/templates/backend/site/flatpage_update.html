@@ -1,0 +1,24 @@
+{% extends "backend/base.html" %}
+{% load i18n floppyforms staticfiles sekizai_tags %}
+{% block title %}{% trans "Update page" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "Update page" %}{% endblock %}
+
+{% block content %}
+  <form action="" method="post" class="form-horizontal">{% csrf_token %}
+    {{ form.errors }}
+    {% form form using "floppyforms/layouts/bootstrap.html" %}
+
+    <div class=" form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="submit" class="btn btn-success ">{% trans 'Update page' %}</button>
+        &nbsp;
+        <a href="{% url 'backend:flatpages-list' %}" class="btn  btn-default">{% trans 'Cancel' %}</a>
+      </div>
+    </div>
+  </form>
+
+  {% addtoblock "js" %}
+    {{ form.media }}
+  {% endaddtoblock %}
+
+{% endblock content %}

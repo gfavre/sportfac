@@ -191,6 +191,8 @@ children_patterns = [
 
 site_patterns = [
     url(r'^$', view=views.FlatPageListView.as_view(), name='flatpages-list'),
+    url(r'^(?P<pk>\d+)/update$', view=views.FlatPageUpdateView.as_view(), name='flatpages-update'),
+
 ]
 
 

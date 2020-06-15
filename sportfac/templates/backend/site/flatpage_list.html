@@ -27,7 +27,10 @@
       </td>
       <td>
         <ul class="list-unstyled">
-          <li class="text-nowrap"><a href="" class="btn btn-sm"><i class="icon-check"></i>&nbsp;{% trans "Edit page" %}</a></li>
+          <li class="text-nowrap">
+            <a href="{% url 'backend:flatpages-update' pk=page.pk %}" class="btn btn-sm">
+              <i class="icon-check"></i>&nbsp;{% trans "Edit page" %}</a>
+          </li>
 
         </ul>
       </td>

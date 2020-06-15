@@ -9,8 +9,8 @@ from django.forms.widgets import TextInput
 from django.utils.translation import ugettext as _
 from django.utils.text import mark_safe
 
+from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Div, Field, HTML
 import floppyforms.__future__ as forms
 
 from activities.models import Course, ExtraNeed
@@ -290,7 +290,18 @@ class PayslipMontreuxForm(forms.Form):
         self.helper.field_class = 'col-sm-10'
 
 
-class FlatpageForm(forms.ModelForm):
+class FlatPageForm(forms.ModelForm):
+    content = forms.CharField(
+        widget=CKEditorUploadingWidget(config_name='default', extra_plugins=None, external_plugin_resources=None)
+    )
+
     class Meta:
         model = FlatPage
         fields = ('title', 'content')
+
+    def __init__(self, *args, **kwargs):
+        super(FlatPageForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_group_wrapper_class = 'row'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-10'
