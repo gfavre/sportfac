@@ -39,7 +39,7 @@ for child in Child.objects.prefetch_related('registrations'):
     if not child.registrations.exists():
         continue
     latest_registration = child.registrations.first()
-    if not latest_registration.course.number[:3] in ('262', ):
+    if not latest_registration.course.number[:3] in ('200', ):
         continue
     date_dict = {}
     for absence in child.absence_set.all():
