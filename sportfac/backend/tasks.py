@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from datetime import datetime
 import os
 from tempfile import NamedTemporaryFile
 
@@ -32,22 +33,42 @@ logger = get_task_logger(__name__)
 
 @shared_task
 @respects_language
-def create_tenant(new_tenant_id, copy_activities_from_id=None, copy_children_from_id=None, user_id=None):
+def create_tenant(start, end, copy_activities_from_id=None, copy_children_from_id=None, user_id=None):
+    start = datetime.strptime(start, '%Y-%m-%d').date()
+    end = datetime.strptime(end, '%Y-%m-%d').date()
+
+    with transaction.atomic():
+        connection.set_schema_to_public()
+        destination_tenant, created = YearTenant.objects.get_or_create(
+            schema_name='period_{}_{}'.format(
+                start.strftime('%Y%m%d'),
+                end.strftime('%Y%m%d')
+            ),
+            defaults={
+                'start_date': start,
+                'end_date': end,
+                'status': YearTenant.STATUS.creating
+            }
+        )
+        destination_tenant.create_schema(check_if_exists=True)
+        logger.info('Created schema for period %s-%s' % (destination_tenant.start_date.isoformat(),
+                                                         destination_tenant.end_date.isoformat()))
+        Domain.objects.get_or_create(
+            tenant=destination_tenant,
+            domain='%s-%s' % (start.strftime('%Y%m%d'),
+                              end.strftime('%Y%m%d')),
+        )
     try:
         user = FamilyUser.objects.get(pk=user_id)
         logger.info('New tenant {}, copy activities from {}, copy children from {}, user={}'.format(
-            new_tenant_id, copy_activities_from_id, copy_children_from_id, user
+            destination_tenant.schema_name, copy_activities_from_id, copy_children_from_id, user
         ))
     except user.DoesNotExist:
+        user = None
         logger.info('New tenant {}, copy activities from {}, copy children from {}'.format(
-            new_tenant_id, copy_activities_from_id, copy_children_from_id
+            destination_tenant.schema_name, copy_activities_from_id, copy_children_from_id
         ))
 
-    connection.set_schema_to_public()
-    destination_tenant = YearTenant.objects.get(pk=new_tenant_id)
-    destination_tenant.create_schema(check_if_exists=True)
-    logger.info('Created schema for period %s-%s' % (destination_tenant.start_date.isoformat(),
-                                                     destination_tenant.end_date.isoformat()))
     if copy_activities_from_id:
         logger.info('Beginning copy of activities')
         try:

@@ -100,7 +100,7 @@ EMAIL_SUBJECT_PREFIX = '[%s] ' % SITE_NAME
 # See http://celery.readthedocs.org/en/latest/configuration.html
 BROKER_URL = 'django://'
 CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
-CELERY_ALWAYS_EAGER = True
+CELERY_ALWAYS_EAGER = False
 
 TEMPLATES[0]['DIRS'] = [
     normpath(join(SITE_ROOT, 'themes', 'montreux_ski', 'templates')),
@@ -152,4 +152,3 @@ CELERYBEAT_SCHEDULE['notify-absences'] = {
         'task': 'absences.tasks.notify_absences',
         'schedule': crontab(hour=19, minute=0),
 }
-CELERY_ALWAYS_EAGER = True

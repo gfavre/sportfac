@@ -141,34 +141,19 @@ class YearCreateView(SuccessMessageMixin, BackendMixin, FormView):
 
     def form_valid(self, form):
         response = super(YearCreateView, self).form_valid(form)
-        start = form.cleaned_data['start_date']
-        end = form.cleaned_data['end_date']
-        with transaction.atomic():
-            connection.set_schema_to_public()
-            tenant, created = YearTenant.objects.get_or_create(
-                schema_name='period_{}_{}'.format(
-                    start.strftime('%Y%m%d'),
-                    end.strftime('%Y%m%d')
-                ),
-                defaults={
-                    'start_date': start,
-                    'end_date': end,
-                    'status': YearTenant.STATUS.creating
-                }
-            )
-            Domain.objects.get_or_create(
-                tenant=tenant,
-                domain='%s-%s' % (start.strftime('%Y%m%d'),
-                                  end.strftime('%Y%m%d')),
-            )
+
         copy_activities_from_id = None
         if form.cleaned_data.get('copy_activities', None):
             copy_activities_from_id = form.cleaned_data.get('copy_activities').pk
+
         copy_children_from_id = None
         if form.cleaned_data.get('copy_children', None):
             copy_children_from_id = form.cleaned_data.get('copy_children').pk
-        create_tenant.delay(new_tenant_id=tenant.pk,
-                            copy_activities_from_id=copy_activities_from_id,
-                            copy_children_from_id=copy_children_from_id,
-                            user_id=self.request.user.pk)
+
+        create_tenant.delay(
+            start=form.cleaned_data['start_date'].isoformat(),
+            end=form.cleaned_data['end_date'].isoformat(),
+            copy_activities_from_id=copy_activities_from_id,
+            copy_children_from_id=copy_children_from_id,
+            user_id=self.request.user.pk)
         return response
