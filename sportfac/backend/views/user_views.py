@@ -93,7 +93,7 @@ class UserExportView(BackendMixin, ExcelResponseMixin, View):
 class ManagerMixin(object):
     @staticmethod
     def get_queryset():
-        return Group.objects.get(name=MANAGERS_GROUP).user_set.all()
+        return Group.objects.get(name=MANAGERS_GROUP).user_set.filter(is_active=True)
 
 
 class ManagerListView(ManagerMixin, UserListView):
@@ -108,7 +108,7 @@ class ManagerExportView(BackendMixin, ExcelResponseMixin, ManagerMixin, View):
 class InstructorMixin(object):
     @staticmethod
     def get_queryset():
-        return Group.objects.get(name=INSTRUCTORS_GROUP).user_set.all()
+        return Group.objects.get(name=INSTRUCTORS_GROUP).user_set.filter(is_active=True)
 
 
 class InstructorListView(InstructorMixin, UserListView):
