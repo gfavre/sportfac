@@ -132,6 +132,7 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
         # (_('Questions'), CourseSelectForm),
         (_('Billing'), BillingForm)
     )
+    condition_dict = {_('Billing'): not settings.KEPCHUP_NO_PAYMENT}
     # condition_dict = {_('Extra questions'): show_extra_questions}
     template_name = 'backend/registration/wizard.html'
     instance = None
@@ -146,7 +147,9 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
             'course': self.instance.course.short_name
         }
         messages.add_message(self.request, messages.SUCCESS, message)
-
+        response = HttpResponseRedirect(self.instance.course.get_backend_url())
+        if settings.KEPCHUP_NO_PAYMENT:
+            return response
         try:
             if not self.instance.paid:
                 status = Bill.STATUS.waiting
@@ -170,7 +173,7 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
             message %= {'child': self.instance.child,
                         'course': self.instance.course.short_name}
             messages.add_message(self.request, messages.WARNING, message)
-        return HttpResponseRedirect(self.instance.course.get_backend_url())
+        return response
 
     def get_form_instance(self, step):
         if self.instance is None:
