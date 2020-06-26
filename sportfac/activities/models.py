@@ -146,7 +146,6 @@ class Course(TimeStampedModel):
 
     announced_js = models.BooleanField(_("Course announced to J+S"), default=False)
 
-
     objects = CourseManager()
 
     class Meta:
