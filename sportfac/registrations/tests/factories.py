@@ -11,6 +11,7 @@ from schools.tests.factories import TeacherFactory
 
 fake = faker.Factory.create('fr_CH')
 
+
 class ChildFactory(factory.DjangoModelFactory):
     class Meta:
         model = Child

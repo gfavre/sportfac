@@ -86,21 +86,12 @@ class RegistrationsMoveView(BackendMixin, FormView):
         else:
             redirect = form.cleaned_data['registrations'].first().course.backend_url
 
-        now = timezone.now()
         with transaction.atomic():
             for registration in form.cleaned_data['registrations']:
-                source = registration.course
+                registration.cancel()
                 registration.course = course
-                registration.status = Registration.STATUS.confirmed
+                registration.set_confirmed()
                 registration.save()
-                for future_session_source in source.sessions.filter(date__gte=now):
-                    future_session_source.absences.filter(child=registration.child).delete()
-                for future_session_destination in course.sessions.filter(date__gte=now):
-                    Absence.objects.get_or_create(
-                        session=future_session_destination,
-                        child=registration.child,
-                        defaults={'status': Absence.STATUS.present}
-                    )
         message = _("Registrations of %(nb)s children have been moved.")
         message %= {'nb': form.cleaned_data['registrations'].count()}
         messages.add_message(self.request, messages.SUCCESS, message)
@@ -147,7 +138,7 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
 
     @transaction.atomic
     def done(self, form_list, form_dict, **kwargs):
-        self.instance.status = Registration.STATUS.confirmed
+        self.instance.set_confirmed()
         user = self.instance.child.family
         message = _("Registration for %(child)s to %(course)s has been validated.")
         message %= {
@@ -174,13 +165,6 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
                 messages.add_message(self.request, messages.INFO, message)
 
             self.instance.save()
-            # FIXME!! PRobablement jeter ce code??
-            if settings.KEPCHUP_USE_ABSENCES:
-                now = timezone.now()
-                for future_session in self.instance.course.sessions.filter(date__gte=now):
-                    Absence.objects.get_or_create(
-                        child=self.instance.child, session=future_session,
-                        defaults={'status': Absence.STATUS.present})
         except IntegrityError:
             message = _("A registration for %(child)s to %(course)s already exists.")
             message %= {'child': self.instance.child,
@@ -413,8 +397,10 @@ class TransportMoveView(BackendMixin, FormView):
 
     def form_valid(self, form):
         transport = form.cleaned_data['destination']
-        form.cleaned_data['registrations'].update(transport=transport,
-                                                  status=Registration.STATUS.confirmed)
+        for registration in form.cleaned_data['registrations']:
+            registration.transport = transport
+            registration.set_confirmed()
+            registration.save()
         message = _("Registrations of %(nb)s children have been moved.")
         message %= {'nb': form.cleaned_data['registrations'].count()}
         messages.add_message(self.request, messages.SUCCESS, message)

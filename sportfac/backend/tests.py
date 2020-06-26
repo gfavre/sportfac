@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.contrib.messages.middleware import MessageMiddleware
 from django.http import Http404
-
+from django.test.utils import override_settings
 from django.test.client import RequestFactory
 
 import faker
@@ -33,7 +33,6 @@ class BackendTestBase(TenantTestCase):
         self.user = FamilyUserFactory()
         self.manager = FamilyUserFactory()
         self.manager.is_manager = True
-
 
     def generic_test_rights(self, url):
         # anonymous access
@@ -108,6 +107,10 @@ class UsersViewsTests(BackendTestBase):
 
 
 class RegistrationsViewsTests(BackendTestBase):
+    def setUp(self):
+        self.child = ChildFactory()
+        self.course = CourseFactory()
+        self.registration = RegistrationFactory(child=self.child, course=self.course)
 
     def test_list(self):
         url = reverse('backend:registration-list')

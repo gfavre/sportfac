@@ -3,9 +3,11 @@ from __future__ import unicode_literals
 from datetime import datetime, date
 
 from django.core.urlresolvers import reverse
+from django.conf import settings
 from django.db import models, transaction
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
+from django.utils.timezone import now
 
 from model_utils import Choices
 from model_utils.models import StatusModel
@@ -73,12 +75,35 @@ class Registration(TimeStampedModel, StatusModel):
 
     def set_valid(self):
         self.status = self.STATUS.valid
+        if settings.KEPCHUP_USE_ABSENCES:
+            self.create_future_absences()
 
     def set_confirmed(self):
         self.status = self.STATUS.confirmed
+        if settings.KEPCHUP_USE_ABSENCES:
+            self.create_future_absences()
 
     def cancel(self):
         self.status = self.STATUS.canceled
+        if settings.KEPCHUP_USE_ABSENCES:
+            self.delete_future_absences()
+
+    def create_future_absences(self):
+        # move between courses:
+        from absences.models import Absence
+        for future_session in self.course.sessions.filter(date__gte=now()):
+            Absence.objects.get_or_create(
+                child=self.child, session=future_session,
+                defaults={'status': Absence.STATUS.present}
+            )
+
+    def delete_future_absences(self):
+        # move between courses:
+        from absences.models import Absence
+        for future_session in self.course.sessions.filter(date__gte=now()):
+            Absence.objects.filter(
+                child=self.child, session=future_session,
+            ).delete()
 
     def overlap(self, r2):
         """Test if another registration object overlaps with this one."""
