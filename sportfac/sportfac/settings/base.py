@@ -129,6 +129,7 @@ STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'django.contrib.staticfiles.finders.FileSystemFinder',
+    'compressor.finders.CompressorFinder',
 )
 
 
@@ -236,6 +237,7 @@ SHARED_APPS = (
 
     'ckeditor',  # wysiwyg editor
     'ckeditor_uploader',
+    'compressor',  # css compression / anticache
     'crispy_forms',  # better forms => DRY
     'dbtemplates',  # store templates in db (used by mailer module)
     'django_select2',  # select2 form input
@@ -422,6 +424,22 @@ GRAPPELLI_ADMIN_TITLE = "Administration du sport scolaire facultatif"
 ########### CKEDITOR
 CKEDITOR_CONFIGS = {
     'default': {
+        'contentCss': '/static/css/style.css',
+        'extraPlugins': ','.join(['emojione']),
+        'stylesSet': [
+            {"name": "Cadre orange", "element": "p", "attributes": {"class": "alert alert-warning alert-block"}},
+            {"name": "Cadre bleu clair", "element": "p", "attributes": {"class": "alert alert-info alert-block"}},
+            {"name": "Cadre vert", "element": "p", "attributes": {"class": "alert alert-success alert-block"}},
+            {"name": "Cadre rouge", "element": "p", "attributes": {"class": "alert alert-danger alert-block"}},
+            {"name": "Cadre gris", "element": "p", "attributes": {"class": "well"}},
+
+            {"name": "Bouton", "element": "a", "attributes": {"class": "btn btn-primary"}},
+            {"name": "Bouton vert", "element": "a", "attributes": {"class": "btn btn-success"}},
+            {"name": "Bouton bleu clair", "element": "a", "attributes": {"class": "btn btn-info"}},
+            {"name": "Bouton orange", "element": "a", "attributes": {"class": "btn btn-warning"}},
+            {"name": "Bouton rouge", "element": "a", "attributes": {"class": "btn btn-danger"}},
+
+        ],
         'toolbar': 'Custom',
         'toolbar_Custom': [
             ['Source', '-', 'Print'],  ['Undo', 'Redo'], ['Bold', 'Italic', 'Subscript', 'Superscript'],
@@ -430,10 +448,9 @@ CKEDITOR_CONFIGS = {
             '/',
             ['Image', 'Table', 'HorizontalRule'],
             [#'Emojione',
+             'Styles',
              'SpecialChar']
-
         ],
-        'extraPlugins': ','.join(['emojione']),
     }
 }
 

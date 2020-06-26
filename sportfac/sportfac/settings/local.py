@@ -111,7 +111,7 @@ STATICFILES_DIRS = (
     normpath(join(SITE_ROOT, 'themes', 'montreux_ski', 'static')),
     normpath(join(SITE_ROOT, 'static')),
 )
-
+COMPRESS_ENABLED = True
 KEPCHUP_USE_ABSENCES = True
 KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES = True
 

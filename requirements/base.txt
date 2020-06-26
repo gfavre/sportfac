@@ -19,7 +19,7 @@ django-autoslug == 1.9.3
 django-model-utils == 2.5
 django-localflavor == 1.5.3
 # WYSIWYG editor
-django-ckeditor == 5.6.1
+django-ckeditor == 5.9.0
 django-formtools == 2.1
 django-picklefield == 1.0.0
 django-multiupload == 0.5.2
@@ -41,6 +41,7 @@ xlrd == 1.1.0
 -e git+git://github.com/gfavre/pypdftk@84215dedae1fc5b8629e13043a1b5183e7960a37#egg=pypdftk
 # settings stored in db
 django-appconf==1.0.2 # requirement for django-db-templates. Py2.x version
+django-appconf==1.0.2 # requirement for django-db-templates. Py2.x version
 django-dynamic-preferences == 1.4.1
 django-mathfilters==0.4.0
 django-async-messages == 0.3.1
@@ -53,3 +54,6 @@ django_environ == 0.4.4
 django-anymail==1.2
 requests==2.18.4
 python-memcached==1.59
+
+django-appconf==1.0.2  # django-compressor includes latest which is incompatible with python2
+django-compressor==2.4
