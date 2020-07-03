@@ -30,7 +30,7 @@
               <li>
                 <a href="{{ instructor.get_backend_url }}">{{ instructor.full_name }}</a>
                 {% if FICHE_SALAIRE_MONTREUX %}
-                  &mdash;<a href="{% url 'backend:pay-slip-montreux' course=course.pk instructor=instructor.pk %}"><i
+                  &mdash;<a href="{% url 'backend:pay-slip-montreux' course=course.pk instructor=instructor.pk %}"  target="_blank"><i
                     class="icon-doc-text"></i> {% trans "Create pay slip" %}</a>
                 {% endif %}
               </li>
