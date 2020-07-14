@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import re
+import uuid
 
 from django.db import models
-from django.contrib.auth.models import Group
+from django.db.models.aggregates import Count
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
@@ -14,7 +15,6 @@ from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 from phonenumber_field.modelfields import PhoneNumberField
 
 from activities.models import SCHOOL_YEARS
-from backend import MANAGERS_GROUP, INSTRUCTORS_GROUP
 from registrations.models import Registration, Bill
 from .ahv import AHVField
 
@@ -72,21 +72,26 @@ class ActiveFamilyManager(FamilyManager):
 
 class InstructorFamilyUserManager(ActiveFamilyManager):
     def get_queryset(self):
-        return super(InstructorFamilyUserManager, self).get_queryset().filter(groups__name=INSTRUCTORS_GROUP)
+        return super(InstructorFamilyUserManager, self).get_queryset()\
+                                                       .annotate(num_courses=Count('course'))\
+                                                       .filter(num_courses__gt=0)
 
 
 class ManagerFamilyUserManager(ActiveFamilyManager):
     def get_queryset(self):
-        return super(ManagerFamilyUserManager, self).get_queryset().filter(groups__name=MANAGERS_GROUP)
+        return super(ManagerFamilyUserManager, self).get_queryset().filter(is_manager=True)
 
 
 class FamilyUser(PermissionsMixin, AbstractBaseUser):
-    COUNTRY = Choices(('CH', _("Switzerland")),
-                       ('FL', _("Liechtenstein")),
-                       ('D', _("Germany")),
-                       ('F', _("France")),
-                       ('I', _("Italy")),
-                       ('A', _("Austria")))
+    COUNTRY = Choices(
+        ('CH', _("Switzerland")),
+        ('FL', _("Liechtenstein")),
+        ('D', _("Germany")),
+        ('F', _("France")),
+        ('I', _("Italy")),
+        ('A', _("Austria"))
+    )
+    id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
     email = models.EmailField(verbose_name=_('Email address'), max_length=255, unique=True, db_index=True)
     first_name = models.CharField(_('First name'), max_length=30, blank=True)
     last_name = models.CharField(_('Last name'), max_length=30, blank=True)
@@ -107,7 +112,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField('staff status', default=False,
                                    help_text=_('Designates whether the user can log into this admin site.'))
-
+    is_manager = models.BooleanField(_("Is manager"), default=False)
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
     objects = FamilyManager()
@@ -123,6 +128,13 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         ordering = ('last_name', 'first_name')
         verbose_name = _("User")
         verbose_name_plural = _("Users")
+
+    @property
+    def is_instructor(self):
+        return self.coursesinstructors_set.exists()
+
+    def is_instructor_of(self, course):
+        return course in self.courses.all()
 
     def save(self, *args, **kwargs):
         from registrations.models import RegistrationsProfile
@@ -221,41 +233,6 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
 
     def get_absolute_url(self):
         return reverse('profiles_account')
-
-    def get_manager(self):
-        from backend import MANAGERS_GROUP
-        if self.is_superuser or self.is_admin:
-            return True
-        return MANAGERS_GROUP in self.groups.values_list("name", flat=True)
-
-    def set_manager(self, value):
-        from backend import MANAGERS_GROUP
-        managers = Group.objects.get(name=MANAGERS_GROUP)
-        if value:
-            managers.user_set.add(self)
-        else:
-            managers.user_set.remove(self)
-
-    is_manager = property(get_manager, set_manager)
-
-    def get_instructor_status(self):
-        from backend import INSTRUCTORS_GROUP
-        if self.is_superuser or self.is_admin:
-            return True
-        return INSTRUCTORS_GROUP in self.groups.values_list("name", flat=True)
-
-    def set_instructor_status(self, value):
-        from backend import INSTRUCTORS_GROUP
-        instructors = Group.objects.get(name=INSTRUCTORS_GROUP)
-        if value:
-            instructors.user_set.add(self)
-        else:
-            instructors.user_set.remove(self)
-
-    is_instructor = property(get_instructor_status, set_instructor_status)
-
-    def is_instructor_of(self, course):
-        return course in self.courses.all()
 
     def has_module_perms(self, app_label):
         staff_apps = ['activities', 'backend', 'extended_flatpages' 'profiles', 'registrations', 'schools']

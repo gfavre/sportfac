@@ -9,6 +9,7 @@ from ckeditor.widgets import CKEditorWidget
 from import_export.admin import ImportExportModelAdmin
 
 from registrations.models import Registration
+from sportfac.admin_utils import SportfacModelAdmin, SportfacAdminMixin
 from .models import Activity, Course, ExtraNeed
 from .resources import CourseResource
 
@@ -25,7 +26,7 @@ class CourseInline(admin.StackedInline):
     model = Course
     extra = 1
     fieldsets = (
-        (None, {'fields': ('number', 'instructors', 'price', 'number_of_sessions', 'place', 'uptodate')}),
+        (None, {'fields': ('number', 'price', 'number_of_sessions', 'place', 'uptodate')}),
         (_("Dates"), {'fields': ('start_date', 'end_date', 'day', 'start_time', 'end_time')}),
         (_("Limitations"), {'fields': ('min_participants', 'max_participants', 'schoolyear_min', 'schoolyear_max')}),
         (None, {'fields': ('extra',)}),
@@ -35,7 +36,7 @@ class CourseInline(admin.StackedInline):
     verbose_name_plural = _("courses")
 
 
-class ActivityAdmin(admin.ModelAdmin):
+class ActivityAdmin(SportfacModelAdmin):
     list_display = ('number', 'name')
     inlines = [CourseInline]
 
@@ -47,11 +48,9 @@ class ActivityAdmin(admin.ModelAdmin):
 admin.site.register(Activity, ActivityAdmin)
 
 
-class ExtraNeedAdmin(admin.ModelAdmin):
+@admin.register(ExtraNeed)
+class ExtraNeedAdmin(SportfacModelAdmin):
     pass
-
-
-admin.site.register(ExtraNeed, ExtraNeedAdmin)
 
 
 class ParticipantsListFilter(admin.SimpleListFilter):
@@ -93,7 +92,8 @@ class ParticipantsListFilter(admin.SimpleListFilter):
                                    participants__count__gte=models.F('min_participants'))
 
 
-class CoursesAdmin(ImportExportModelAdmin):
+@admin.register(Course)
+class CoursesAdmin(SportfacAdminMixin, ImportExportModelAdmin):
     list_display = (
         'activity', 'number', 'day', 'start_date', 'start_time', 'duration', 'number_of_participants', 'uptodate',
     )
@@ -125,10 +125,7 @@ class CoursesAdmin(ImportExportModelAdmin):
     duration.short_description = _("Duration")
 
 
-admin.site.register(Course, CoursesAdmin)
-
-
-class FlatPageCustom(FlatPageAdmin):
+class FlatPageCustom(SportfacAdminMixin, FlatPageAdmin):
     fieldsets = (
         (None, {'fields': ('url', 'title', 'content', 'sites')}),
         (_('Advanced options'), {

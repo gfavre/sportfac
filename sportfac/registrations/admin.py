@@ -4,6 +4,7 @@ from django.contrib import admin
 from import_export import fields, resources
 from import_export.admin import ImportExportModelAdmin
 
+from sportfac.admin_utils import SportfacModelAdmin, SportfacAdminMixin
 from .models import Registration, Child, Bill, ExtraInfo, Transport
 
 
@@ -32,7 +33,7 @@ class RegistrationResource(resources.ModelResource):
 
 
 @admin.register(ExtraInfo)
-class ExtraInfoAdmin(admin.ModelAdmin):
+class ExtraInfoAdmin(SportfacModelAdmin):
     list_display = ('registration', 'key', 'value')
     search_fields = ('registration__child__first_name',
                      'registration__child__last_name',
@@ -49,7 +50,7 @@ class ExtraInfoInline(admin.StackedInline):
 
 
 @admin.register(Registration)
-class RegistrationAdmin(ImportExportModelAdmin):
+class RegistrationAdmin(SportfacAdminMixin, ImportExportModelAdmin):
     list_display = ('__unicode__', 'transport', 'status', 'created', 'modified')
     list_filter = ('status', 'transport', 'course__activity__name')
     search_fields = (
@@ -72,7 +73,7 @@ class RegistrationAdmin(ImportExportModelAdmin):
 
 
 @admin.register(Child)
-class ChildAdmin(admin.ModelAdmin):
+class ChildAdmin(SportfacModelAdmin):
     list_display = ('first_name', 'last_name', 'family', 'school_year', 'id_lagapeo', 'created', 'modified')
     search_fields = ('first_name', 'last_name', 'id_lagapeo', 'family__first_name', 'family__last_name')
     list_filter = ('school_year', 'status')
@@ -80,9 +81,12 @@ class ChildAdmin(admin.ModelAdmin):
 
 
 @admin.register(Bill)
-class BillAdmin(admin.ModelAdmin):
+class BillAdmin(SportfacModelAdmin):
     list_display = ('billing_identifier', 'total', 'family', 'status', 'created', 'modified', 'reminder_sent')
     list_filter = ('status',)
+    raw_id_fields = ('family',)
 
 
-admin.site.register(Transport)
+@admin.register(Transport)
+class TransportAdmin(SportfacModelAdmin):
+    pass

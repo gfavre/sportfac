@@ -1,0 +1,9 @@
+python sportfac/manage.py migrate_schemas profiles 0013
+python sportfac/manage.py migrate_schemas absences 0013
+python sportfac/manage.py migrate_schemas activities 0022
+python sportfac/manage.py migrate_schemas registrations 0035
+python sportfac/manage.py migrate_schemas profiles 0014
+python sportfac/manage.py migrate_schemas absences 0014
+python sportfac/manage.py migrate_schemas activities 0023
+python sportfac/manage.py migrate_schemas registrations 0036
+python sportfac/manage.py migrate_schemas

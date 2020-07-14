@@ -17,7 +17,7 @@ __all__ = ('MailArchive', 'Attachment')
 
 class SentMailManager(models.Manager):
     def get_queryset(self):
-        return super(SentMailManager,self).get_queryset().filter(status=MailArchive.STATUS.sent)
+        return super(SentMailManager, self).get_queryset().filter(status=MailArchive.STATUS.sent)
 
 
 class DraftMailManager(models.Manager):

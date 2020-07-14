@@ -13,7 +13,7 @@ from django.utils.safestring import mark_safe
 from django.utils.timezone import now
 from django.utils.translation import ugettext as _
 
-from activities.models import Activity, Course
+from activities.models import Activity, Course, CoursesInstructors
 from profiles.models import City, FamilyUser, SchoolYear
 from registrations.models import Bill, Child, Registration
 from schools.models import Teacher
@@ -226,7 +226,7 @@ class HomePageView(BackendMixin, TemplateView):
         activities = Activity.objects.all()
         context['nb_activities'] = activities.count()
         context['total_sessions'] = courses.aggregate(Sum('number_of_sessions')).values()[0] or 0
-        context['total_instructors'] = Group.objects.get(name=INSTRUCTORS_GROUP).user_set.count()
+        context['total_instructors'] = CoursesInstructors.objects.distinct('instructor').count()
         timedeltas = []
         for course in courses:
             timedeltas.append(course.number_of_sessions * course.duration)

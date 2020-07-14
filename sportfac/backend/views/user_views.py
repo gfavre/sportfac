@@ -38,14 +38,6 @@ __all__ = ('UserListView', 'UserCreateView', 'PasswordSetView',
            'InstructorExportView',
            )
 
-valid_registrations = Registration.objects.validated()
-
-FamilyUser.objects.annotate(
-    valid_registrations=Count(Case(When(children__registrations__in=Registration.objects.validated(), then=1))),
-    waiting_registrations=Count(Case(When(children__registrations__in=Registration.objects.waiting(), then=1))),
-    opened_bills=Count(Case(When(bills__status=Bill.STATUS.waiting, then=1))),
-)
-
 
 class UserListView(BackendMixin, ListView):
     model = FamilyUser
@@ -93,7 +85,7 @@ class UserExportView(BackendMixin, ExcelResponseMixin, View):
 class ManagerMixin(object):
     @staticmethod
     def get_queryset():
-        return Group.objects.get(name=MANAGERS_GROUP).user_set.filter(is_active=True)
+        return FamilyUser.objects.filter(is_manager=True, is_active=True)
 
 
 class ManagerListView(ManagerMixin, UserListView):
@@ -108,7 +100,9 @@ class ManagerExportView(BackendMixin, ExcelResponseMixin, ManagerMixin, View):
 class InstructorMixin(object):
     @staticmethod
     def get_queryset():
-        return Group.objects.get(name=INSTRUCTORS_GROUP).user_set.filter(is_active=True)
+        return FamilyUser.objects.filter(is_active=True)\
+                                 .annotate(num_courses=Count('course'))\
+                                 .filter(num_courses__gt=0)
 
 
 class InstructorListView(InstructorMixin, UserListView):
@@ -166,7 +160,6 @@ class InstructorCreateView(UserCreateView):
     def form_valid(self, form):
         self.object = form.save()
         self.object.is_manager = form.cleaned_data['is_manager']
-        self.object.is_instructor = True
         return super(InstructorCreateView, self).form_valid(form)
 
     def get_success_message(self, cleaned_data):
@@ -220,7 +213,6 @@ class UserDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
         self.object.is_active = False
         if self.object.course.exists():
             self.object.course = []
-        self.object.is_instructor = False
         self.object.is_manager = False
         self.object.save()
         for child in self.object.children.all():

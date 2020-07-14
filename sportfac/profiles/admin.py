@@ -6,6 +6,7 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.utils.translation import ugettext_lazy as _
 
 from registrations.models import Child
+from sportfac.admin_utils import SportfacModelAdmin, SportfacAdminMixin
 from .models import City, FamilyUser, School, SchoolYear
 
 
@@ -70,7 +71,8 @@ class ChildInline(admin.StackedInline):
     verbose_name_plural = _("children")
 
 
-class FamilyAdmin(UserAdmin):
+@admin.register(FamilyUser)
+class FamilyAdmin(SportfacAdminMixin, UserAdmin):
     # The forms to add and change user instances
     form = FamilyChangeForm
     add_form = FamilyCreationForm
@@ -79,7 +81,7 @@ class FamilyAdmin(UserAdmin):
     change_list_filter_template = "admin/filter_listing.html"
 
     fieldsets = (
-        (None, {'fields': ('email', 'password', 'is_staff', 'is_superuser', 'is_active', 'groups')}),
+        (None, {'fields': ('email', 'password', 'is_staff', 'is_superuser', 'is_active', 'is_manager',)}),
         ('Personal info', {'fields': ('first_name', 'last_name',
                                       'address', 'zipcode', 'city', 'country',
                                       'private_phone', 'private_phone2', 'private_phone3',
@@ -97,16 +99,21 @@ class FamilyAdmin(UserAdmin):
     )
     search_fields = ('email', 'last_name', 'first_name',)
     ordering = ('last_name', 'first_name')
-    inlines = [ChildInline]
+    # inlines = [ChildInline]
 
 
 @admin.register(City)
-class CityAdmin(admin.ModelAdmin):
+class CityAdmin(SportfacModelAdmin):
     list_display = ('zipcode', 'name', 'country')
     search_fields = ('zipcode', 'name')
     list_filter = ('country', )
 
 
-admin.site.register(FamilyUser, FamilyAdmin)
-admin.site.register(SchoolYear)
-admin.site.register(School)
+@admin.register(SchoolYear)
+class SchoolYearAdmin(SportfacModelAdmin):
+    pass
+
+
+@admin.register(School)
+class SchoolAdmin(SportfacModelAdmin):
+    pass

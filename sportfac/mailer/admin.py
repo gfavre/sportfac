@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
+
+from sportfac.admin_utils import SportfacModelAdmin
 from .models import MailArchive
 
 
-class MailArchiveAdmin(admin.ModelAdmin):
+@admin.register(MailArchive)
+class MailArchiveAdmin(SportfacModelAdmin):
     list_display = (
         'id',
         'subject',
@@ -14,5 +17,3 @@ class MailArchiveAdmin(admin.ModelAdmin):
         'template',
     )
     list_filter = ('created', 'template', 'status')
-
-admin.site.register(MailArchive, MailArchiveAdmin)

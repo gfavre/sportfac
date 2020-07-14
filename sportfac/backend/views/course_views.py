@@ -19,7 +19,7 @@ from django.views.generic.detail import SingleObjectMixin
 
 from absences.models import Absence, Session
 from absences.utils import closest_session
-from activities.models import Course, Activity, ExtraNeed
+from activities.models import Course, Activity, ExtraNeed, CoursesInstructors
 from activities.forms import CourseForm, ExplicitDatesCourseForm
 from profiles.models import FamilyUser
 from registrations.models import ChildActivityLevel, ExtraInfo
@@ -133,15 +133,13 @@ class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
 
     def form_valid(self, form):
         course = self.get_object()
-        removed_instructors = set(course.instructors.all()) - set(form.cleaned_data['instructors'])
+        instructors = form.cleaned_data.pop('instructors', None)
+        if set(course.instructors.all()) != set(instructors):
+            CoursesInstructors.objects.filter(course=course).delete()
+            for instructor in instructors:
+                CoursesInstructors.objects.create(course=course, instructor=instructor)
+
         response = super(CourseUpdateView, self).form_valid(form)
-
-        for instructor in removed_instructors:
-            if instructor.course.exclude(pk=course.pk).count() == 0:
-                instructor.is_instructor = False
-
-        for user in form.cleaned_data['instructors']:
-            user.is_instructor = True
 
         removed_extras = set(course.extra.all()) - set(form.cleaned_data['extra'])
         for removed_extra in removed_extras:

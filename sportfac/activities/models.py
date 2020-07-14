@@ -126,7 +126,8 @@ class Course(TimeStampedModel):
     uptodate = models.BooleanField(verbose_name=_("Course up to date"), default=True)
     visible = models.BooleanField(verbose_name=_("Course visible"), default=True)
 
-    instructors = models.ManyToManyField('profiles.FamilyUser', verbose_name=_("Instructors"), related_name='course')
+    instructors = models.ManyToManyField('profiles.FamilyUser', verbose_name=_("Instructors"),
+                                         related_name='course', through='CoursesInstructors')
 
     price = models.DecimalField(max_digits=5, decimal_places=2,
                                 verbose_name=_("Price"),
@@ -335,10 +336,13 @@ class Course(TimeStampedModel):
         if commit:
             self.save()
 
-    def save(self, *args, **kwargs):
-        super(Course, self).save(*args, **kwargs)
-        for instructor in self.instructors.all():
-            instructor.is_instructor = True
+
+class CoursesInstructors(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    instructor = models.ForeignKey('profiles.FamilyUser', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('course', 'instructor')
 
 
 EXTRA_TYPES = (('B', _("Boolean")),
@@ -381,6 +385,7 @@ class ExtraNeed(TimeStampedModel):
         if not self.price_reduction:
             return {}
         return dict(zip(self.choices, self.price_reduction))
+
 
 
 """

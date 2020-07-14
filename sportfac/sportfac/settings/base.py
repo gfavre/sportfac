@@ -583,5 +583,7 @@ KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS = []
 # If true: do not send E_SSF_decompte_heures_%s_%s.pdf to instructors
 KEPCHUP_NO_SSF = False
 
-
+import warnings
+warnings.filterwarnings('ignore', module='floppyforms',
+                        message='Unable to import floppyforms.gis.*')
 

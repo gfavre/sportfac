@@ -54,13 +54,13 @@ class MailCreateView(FormView):
     def get_bcc_from_form(self, form):
         bcc_recipients = set()
         if form.cleaned_data.get('send_copy', False):
-            bcc_recipients.add(self.request.user.pk)
+            bcc_recipients.add(str(self.request.user.pk))
         if form.cleaned_data.get('copy_all_admins', False):
             for admin in FamilyUser.managers_objects.all():
-                bcc_recipients.add(admin.pk)
+                bcc_recipients.add(str(admin.pk))
         if form.cleaned_data.get('copy_all_instructors', False) and self.course:
             for instructor in self.course.instructors.all():
-                bcc_recipients.add(instructor.pk)
+                bcc_recipients.add(str(instructor.pk))
         return list(bcc_recipients)
 
     def get_archive_from_session(self):
@@ -97,7 +97,7 @@ class MailCreateView(FormView):
         if archive:
             template = self.get_template_from_archive(archive)
             archive.subject = form.cleaned_data['subject']
-            archive.recipients = [recipient.pk for recipient in self.get_recipients()]
+            archive.recipients = [str(recipient.pk) for recipient in self.get_recipients()]
             archive.bcc_recipients = self.get_bcc_from_form(form)
             archive.save()
         else:
@@ -112,7 +112,7 @@ class MailCreateView(FormView):
             archive = MailArchive.objects.create(
                 status=MailArchive.STATUS.draft,
                 subject=form.cleaned_data['subject'],
-                recipients=[recipient.pk for recipient in self.get_recipients()],
+                recipients=[str(recipient.pk) for recipient in self.get_recipients()],
                 bcc_recipients=self.get_bcc_from_form(form),
                 messages=[],
                 template=template.name,
@@ -177,7 +177,7 @@ class MailPreviewView(CancelableMixin, EditableMixin, TemplateView):
             bcc=[user.get_email_string() for user in bcc_recipients],
             attachments=[attachment.pk for attachment in self.get_attachments(mail_context)],
             update_bills=True,
-            recipient_pk =recipient.pk
+            recipient_pk=str(recipient.pk)
         )
         return message
 

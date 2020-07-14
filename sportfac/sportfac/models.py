@@ -27,7 +27,6 @@ class ListField(models.TextField):
     def get_prep_value(self, value):
         if value is None:
             return value
-
         return unicode(value)
 
     def value_to_string(self, obj):

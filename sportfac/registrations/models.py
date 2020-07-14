@@ -217,8 +217,9 @@ class Bill(TimeStampedModel, StatusModel):
         ('canceled', _("Canceled by administrator")),
     )
     billing_identifier = models.CharField(_('Billing identifier'), max_length=45, blank=True)
-    family = models.ForeignKey('profiles.FamilyUser', verbose_name=_('User'), related_name='bills',
-                               on_delete=models.CASCADE)
+
+    family = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='bills',
+                               null=True, on_delete=models.CASCADE)
     total = models.PositiveIntegerField(default=0, verbose_name=_("Total to be paid"))
     reminder_sent = models.BooleanField(_("Reminder sent"), default=False)
     reminder_sent_date = models.DateTimeField(_("Reminder sent date"), null=True, blank=True)
@@ -319,7 +320,8 @@ class Child(TimeStampedModel, StatusModel):
     building = models.ForeignKey('schools.Building', related_name="students", null=True, blank=True, on_delete=models.SET_NULL)
     teacher = models.ForeignKey('schools.Teacher', related_name="students", null=True, blank=True, on_delete=models.SET_NULL)
 
-    family = models.ForeignKey('profiles.FamilyUser', related_name='children', null=True, blank=True, on_delete=models.CASCADE)
+    family = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='children',
+                               null=True, blank=True, on_delete=models.CASCADE)
     courses = models.ManyToManyField('activities.Course', through="registrations.Registration")
 
     id_lagapeo = models.IntegerField(db_index=True, unique=True, null=True, blank=True,
@@ -458,7 +460,8 @@ class RegistrationsProfile(TimeStampedModel):
     """
     This model acts as a cache to avoid useless comparisons
     """
-    user = models.OneToOneField('profiles.FamilyUser', related_name='profile')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile',
+                                null=True, on_delete=models.CASCADE)
 
     has_paid_all = models.BooleanField(default=False, blank=True, editable=False)
     finished_registering = models.BooleanField(default=False, blank=True, editable=False)

@@ -155,21 +155,21 @@ users_patterns = [
     url(r'^manager/new$', view=views.ManagerCreateView.as_view(),
         name='manager-create'),
 
-    url(r'^(?P<pk>\d+)/$', view=views.UserDetailView.as_view(),
+    url(r'^(?P<pk>[0-9a-f\-]{32,})/$', view=views.UserDetailView.as_view(),
         name='user-detail'),
-    url(r'^(?P<pk>\d+)/instructor$', view=views.InstructorDetailView.as_view(),
+    url(r'^(?P<pk>[0-9a-f\-]{32,})/instructor$', view=views.InstructorDetailView.as_view(),
         name='instructor-detail'),
 
-    url(r'^(?P<pk>\d+)/update$', view=views.UserUpdateView.as_view(),
+    url(r'^(?P<pk>[0-9a-f\-]{32,})/update$', view=views.UserUpdateView.as_view(),
         name='user-update'),
-    url(r'^(?P<pk>\d+)/delete$', view=views.UserDeleteView.as_view(),
+    url(r'^(?P<pk>[0-9a-f\-]{32,})/delete$', view=views.UserDeleteView.as_view(),
         name='user-delete'),
     # url(r'^(?P<pk>\d+)/pay$', view=views.UserPayUpdateView.as_view(),
     #     name='user-pay'),
-    url(r'^(?P<user>\d+)/password$', view=views.PasswordSetView.as_view(),
+    url(r'^(?P<user>[0-9a-f\-]{32,})/password$', view=views.PasswordSetView.as_view(),
         name='password-change'),
 
-    url(r'^(?P<user>\d+)/child/new$', view=views.ChildCreateView.as_view(),
+    url(r'^(?P<user>[0-9a-f\-]{32,})/child/new$', view=views.ChildCreateView.as_view(),
         name='child-create'),
 
     url(r'^import$', view=views.ChildImportView.as_view(),

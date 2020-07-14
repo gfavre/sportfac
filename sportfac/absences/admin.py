@@ -1,11 +1,12 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
+from sportfac.admin_utils import SportfacModelAdmin
 from .models import Session, Absence
 
 
 @admin.register(Session)
-class SessionAdmin(admin.ModelAdmin):
+class SessionAdmin(SportfacModelAdmin):
     list_display = ('course_short', 'date', 'instructor_short', 'presentees', 'absentees_nb')
     list_filter = ('date', )
     date_hierarchy = 'date'
@@ -37,7 +38,7 @@ class SessionAdmin(admin.ModelAdmin):
 
 
 @admin.register(Absence)
-class AbsenceAdmin(admin.ModelAdmin):
+class AbsenceAdmin(SportfacModelAdmin):
     date_hierarchy = 'session__date'
     list_display = ('child', 'get_date', 'get_activity', 'get_course', 'status')
     list_filter = ('status',)
