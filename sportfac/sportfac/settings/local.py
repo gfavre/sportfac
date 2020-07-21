@@ -53,12 +53,16 @@ EMAIL_FILE_PATH = env('EMAIL_FILE_PATH', default='/tmp/app-messages')
 ########## DATABASE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
-    'default': env.db('DATABASE_URL', default='postgres:///sportfac'),
+    'other': env.db('DATABASE_URL', default='postgres:///sportfac'),
+    'master_users': env.db('MASTER_DATABASE_URL', default='postgres:///kepchup_users'),
+    'default': env.db('OTHER_DB', 'postgres:///sportfac_montreux'),
 }
 DATABASES['default']['ENGINE'] = 'django_tenants.postgresql_backend'
 
-
-
+DATABASE_ROUTERS = ['django_tenants.routers.TenantSyncRouter', 'sportfac.database_router.MasterRouter',]
+AUTHENTICATION_BACKENDS = ('sportfac.authentication_backends.MasterUserBackend',
+                           'django.contrib.auth.backends.ModelBackend')
+SESSION_COOKIE_NAME = 'sportfac_local_id'
 ########## END DATABASE CONFIGURATION
 
 

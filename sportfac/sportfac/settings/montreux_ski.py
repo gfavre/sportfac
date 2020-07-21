@@ -17,6 +17,15 @@ EMAIL_HOST = env('EMAIL_HOST', default='')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
 EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
 
+MASTER_DB = 'master_users'
+DATABASES[MASTER_DB] = env.db('MASTER_DATABASE_URL', default='postgres:///kepchup_users')
+DATABASES['default']['ENGINE'] = 'django_tenants.postgresql_backend'
+DATABASE_ROUTERS = ['django_tenants.routers.TenantSyncRouter', 'sportfac.database_router.MasterRouter',]
+AUTHENTICATION_BACKENDS = ('sportfac.authentication_backends.MasterUserBackend',
+                           'django.contrib.auth.backends.ModelBackend')
+SESSION_COOKIE_NAME = 'ssfmontreux-ski'
+
+
 LOGIN_URL = '/hiver/account/login/'
 LOGOUT_URL = '/hiver/account/logout/'
 

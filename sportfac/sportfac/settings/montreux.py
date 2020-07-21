@@ -13,6 +13,13 @@ STATICFILES_DIRS = (
     normpath(join(SITE_ROOT, 'static')),
 )
 
+MASTER_DB = 'master_users'
+DATABASES[MASTER_DB] = env.db('MASTER_DATABASE_URL', default='postgres:///kepchup_users')
+DATABASES['default']['ENGINE'] = 'django_tenants.postgresql_backend'
+DATABASE_ROUTERS = ['django_tenants.routers.TenantSyncRouter', 'sportfac.database_router.MasterRouter',]
+AUTHENTICATION_BACKENDS = ('sportfac.authentication_backends.MasterUserBackend',
+                           'django.contrib.auth.backends.ModelBackend')
+SESSION_COOKIE_NAME = 'ssfmontreux'
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = env('EMAIL_HOST', default='')

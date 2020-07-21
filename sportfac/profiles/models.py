@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+import os
 import re
 import uuid
 
-from django.db import models
+from django.conf import settings
+from django.db import models, transaction
 from django.db.models.aggregates import Count
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.core.urlresolvers import reverse
@@ -10,6 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 
 from model_utils import Choices
+from model_utils.fields import AutoLastModifiedField, AutoCreatedField
 from localflavor.generic.models import IBANField
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 from phonenumber_field.modelfields import PhoneNumberField
@@ -82,6 +85,9 @@ class ManagerFamilyUserManager(ActiveFamilyManager):
         return super(ManagerFamilyUserManager, self).get_queryset().filter(is_manager=True)
 
 
+SETTINGS_NAME = os.environ.get('DJANGO_SETTINGS_MODULE', '').split('.')[-1]
+
+
 class FamilyUser(PermissionsMixin, AbstractBaseUser):
     COUNTRY = Choices(
         ('CH', _("Switzerland")),
@@ -115,6 +121,11 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     is_manager = models.BooleanField(_("Is manager"), default=False)
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
+    created = AutoCreatedField(_('created'))
+    modified = AutoLastModifiedField(_('modified'))
+    created_on = models.CharField(_("Instance name"), max_length=255, blank=True, default=SETTINGS_NAME,
+                                  editable=False)
+
     objects = FamilyManager()
     active_objects = ActiveFamilyManager()
     instructors_objects = InstructorFamilyUserManager()
@@ -136,16 +147,19 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     def is_instructor_of(self, course):
         return course in self.courses.all()
 
-    def save(self, *args, **kwargs):
+    def save(self, create_profile=True, sync=True, *args, **kwargs):
         from registrations.models import RegistrationsProfile
         from django.db import ProgrammingError
         super(FamilyUser, self).save(*args, **kwargs)
-        if not hasattr(self, 'profile'):
+        if create_profile and not hasattr(self, 'profile'):
             try:
                 RegistrationsProfile.objects.get_or_create(user=self)
             except ProgrammingError:
                 # we are running from shell where no tenant has been selected.
                 pass
+        if len(settings.DATABASES) > 1 and sync:
+            from .tasks import save_to_master, LOCAL_DB
+            transaction.on_commit(lambda: save_to_master(self.pk, kwargs.get('using', LOCAL_DB)))
 
     def get_full_name(self):
         full_name = u'{} {}'.format(self.first_name, self.last_name)
