@@ -68,3 +68,7 @@ CELERYBEAT_SCHEDULE['notify-absences'] = {
         'task': 'absences.tasks.notify_absences',
         'schedule': crontab(hour=19, minute=0),
 }
+CELERYBEAT_SCHEDULE['sync_from_master'] = {
+        'task': 'profiles.tasks.sync_from_master',
+        'schedule': crontab(minute='*/1'),
+}

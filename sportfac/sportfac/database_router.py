@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
+
 MASTER_DB = 'master_users'
 LOCAL_DB = 'default'
 
