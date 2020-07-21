@@ -16,7 +16,7 @@ STATICFILES_DIRS = (
 MASTER_DB = 'master_users'
 DATABASES[MASTER_DB] = env.db('MASTER_DATABASE_URL', default='postgres:///kepchup_users')
 OTHER_DB = 'other'
-DATABASES[OTHER_DB] = env.db('OTHER_DATABASE_URL', default='postgres:///sportfac_montreux_ski'),
+DATABASES[OTHER_DB] = env.db('OTHER_DATABASE_URL', default='postgres:///sportfac_montreux_ski')
 
 DATABASES['default']['ENGINE'] = 'django_tenants.postgresql_backend'
 DATABASE_ROUTERS = ['django_tenants.routers.TenantSyncRouter', 'sportfac.database_router.MasterRouter']
