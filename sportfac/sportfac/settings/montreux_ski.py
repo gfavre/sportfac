@@ -20,7 +20,7 @@ EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
 MASTER_DB = 'master_users'
 DATABASES[MASTER_DB] = env.db('MASTER_DATABASE_URL', default='postgres:///kepchup_users')
 DATABASES['default']['ENGINE'] = 'django_tenants.postgresql_backend'
-DATABASE_ROUTERS = ['django_tenants.routers.TenantSyncRouter', 'sportfac.database_router.MasterRouter',]
+DATABASE_ROUTERS = ['django_tenants.routers.TenantSyncRouter', 'sportfac.database_router.MasterRouter']
 AUTHENTICATION_BACKENDS = ('sportfac.authentication_backends.MasterUserBackend',
                            'django.contrib.auth.backends.ModelBackend')
 SESSION_COOKIE_NAME = 'ssfmontreux-ski'
@@ -45,7 +45,7 @@ KEPCHUP_CALENDAR_DISPLAY_COURSE_NAMES = True
 KEPCHUP_BIB_NUMBERS = True
 KEPCHUP_FICHE_SALAIRE_MONTREUX = True
 KEPCHUP_REGISTRATION_LEVELS = True
-KEPCHUP_LEVELS_PREFIXER = {'200': 'A',}
+KEPCHUP_LEVELS_PREFIXER = {'200': 'A'}
 
 KEPCHUP_DISPLAY_CAR_NUMBER = True
 KEPCHUP_DISPLAY_REGISTRATION_NOTE = True
@@ -62,7 +62,6 @@ KEPCHUP_ALTERNATIVE_BILLING_LABEL = u'Confirmation'
 
 STATIC_URL = '/hiver/static/'
 FORCE_SCRIPT_NAME = '/hiver'
-SESSION_COOKIE_NAME = 'ssf_hiver_sessionid'
 SESSION_COOKIE_PATH = FORCE_SCRIPT_NAME
 
 CELERYBEAT_SCHEDULE['notify-absences'] = {
