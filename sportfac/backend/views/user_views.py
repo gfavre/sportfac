@@ -4,7 +4,6 @@ import json
 import tempfile
 
 from django.contrib.auth.forms import SetPasswordForm
-from django.contrib.auth.models import Group
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy, reverse
@@ -22,7 +21,6 @@ from profiles.resources import UserResource, InstructorResource
 from registrations.models import Bill, Child, ChildActivityLevel, Registration
 from registrations.forms import ChildForm
 from .mixins import BackendMixin, ExcelResponseMixin
-from .. import MANAGERS_GROUP, INSTRUCTORS_GROUP
 from ..forms import ChildImportForm
 from ..tasks import import_children
 

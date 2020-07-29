@@ -17,6 +17,7 @@ from registrations.models import ChildActivityLevel, ExtraInfo
 from .models import Absence, Session
 from .utils import closest_session
 
+
 class AbsenceCourseView(InstructorMixin, DetailView):
     template_name = 'absences/absences.html'
     pk_url_kwarg = 'course'

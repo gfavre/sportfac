@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.db import connection
 
 from .models import YearTenant, Domain
-from sportfac.admin_utils import SportfacModelAdmin
+from sportfac.admin_utils import SportfacModelAdmin, SportfacAdminMixin
 
 
 @admin.register(YearTenant)
@@ -16,4 +16,13 @@ class TenantAdmin(SportfacModelAdmin):
 
 @admin.register(Domain)
 class DomainAdmin(SportfacModelAdmin):
+    pass
+
+
+from dbtemplates.models import Template
+from dbtemplates.admin import TemplateAdmin
+admin.site.unregister(Template)
+
+@admin.register(Template)
+class SportfacTemplateAdmin(SportfacAdminMixin, TemplateAdmin):
     pass

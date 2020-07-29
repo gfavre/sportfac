@@ -14,7 +14,6 @@ from django.views.generic import DeleteView, FormView, ListView, UpdateView
 from ..forms import YearSelectForm, YearCreateForm, YearForm
 from ..models import YearTenant, Domain
 from ..tasks import create_tenant
-from ..utils import clean_instructors
 from .mixins import BackendMixin
 
 
@@ -74,7 +73,6 @@ class ChangeProductionYearFormView(SuccessMessageMixin, BackendMixin, FormView):
         self.request.session[settings.VERSION_SESSION_NAME] = new_domain.domain
 
         connection.set_tenant(tenant)
-        clean_instructors()
         return response
 
     def get_success_message(self, cleaned_data):

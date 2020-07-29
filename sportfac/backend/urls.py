@@ -46,7 +46,7 @@ courses_patterns = [
 ]
 if settings.KEPCHUP_FICHE_SALAIRE_MONTREUX:
     courses_patterns += [
-        url(r'^(?P<course>[\w-]+)/pay/(?P<instructor>\d+)$', view=views.PaySlipMontreux.as_view(),
+        url(r'^(?P<course>[\w-]+)/pay/(?P<instructor>[0-9a-f\-]{32,})$', view=views.PaySlipMontreux.as_view(),
             name='pay-slip-montreux')]
 
 

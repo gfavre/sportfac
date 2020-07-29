@@ -145,7 +145,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         return self.coursesinstructors_set.exists()
 
     def is_instructor_of(self, course):
-        return course in self.courses.all()
+        return course in self.course.all()
 
     def save(self, create_profile=True, sync=True, *args, **kwargs):
         from registrations.models import RegistrationsProfile

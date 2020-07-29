@@ -24,8 +24,6 @@ from registrations.models import Child
 from registrations.utils import load_children
 from sportfac.decorators import respects_language
 from .models import YearTenant, Domain
-from .utils import clean_instructors
-from . import MANAGERS_GROUP
 
 
 logger = get_task_logger(__name__)
@@ -178,14 +176,13 @@ def update_current_tenant():
         # log out everyone
         Session.objects.all().delete()
 
-        for user in Group.objects.get(name=MANAGERS_GROUP).user_set.all():
+        for user in FamilyUser.objects.filter(is_active=True, is_manager=True):
             msg = _("The active period has been automatically changed to %(start)s - %(end)s")
             params = {'start': new_domain.tenant.start_date.isoformat(),
                       'end': new_domain.tenant.end_date.isoformat()}
             messages.info(user, msg % params)
 
         connection.set_tenant(new_domain.tenant)
-        clean_instructors()
 
 
 @shared_task

@@ -160,10 +160,10 @@ class Course(TimeStampedModel):
     def add_session(self, date, instructor=None):
         from absences.models import Session
         if settings.KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES:
-            session, created = Session.objects.get_or_create(activity=self.activity,
-                                                             course=self,
+            session, created = Session.objects.get_or_create(course=self,
                                                              date=date,
-                                                             defaults={'instructor': instructor})
+                                                             defaults={'instructor': instructor,
+                                                                       'activity': self.activity})
         else:
             session, created = Session.objects.get_or_create(course=self,
                                                              date=date,

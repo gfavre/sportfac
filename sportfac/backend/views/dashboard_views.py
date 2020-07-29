@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 import json
 import time
 
-from django.contrib.auth.models import Group
 from django.contrib import messages
 from django.core.urlresolvers import reverse_lazy
 from django.db import models
@@ -18,8 +17,8 @@ from profiles.models import City, FamilyUser, SchoolYear
 from registrations.models import Bill, Child, Registration
 from schools.models import Teacher
 from backend.forms import RegistrationDatesForm
-from backend import INSTRUCTORS_GROUP
 from .mixins import BackendMixin
+
 
 __all__ = ('HomePageView', 'RegistrationDatesView',)
 
@@ -62,7 +61,7 @@ class HomePageView(BackendMixin, TemplateView):
         context['ready_courses'] = courses.filter(uptodate=True).count()
         context['notready_courses'] = context['nb_courses'] - context['ready_courses']
         context['total_sessions'] = courses.aggregate(Sum('number_of_sessions')).values()[0] or 0
-        context['total_instructors'] = Group.objects.get(name=INSTRUCTORS_GROUP).user_set.count()
+        context['total_instructors'] = FamilyUser.instructors_objects.count()
         
         context['last_course_update'] = courses.aggregate(latest=Max('modified'))['latest'] or 'n/a'
         
@@ -110,8 +109,10 @@ class HomePageView(BackendMixin, TemplateView):
                                       .values_list('child__family'))
         context['waiting'] = len(waiting)
         context['valid'] = len(valid)
-        
+
+        # noinspection PyUnresolvedReferences
         context['payement_due'] = Bill.waiting.filter(total__gt=0).count()
+        # noinspection PyUnresolvedReferences
         context['paid'] = Bill.paid.filter(total__gt=0).count()
         
         participants = Course.objects.annotate(count_participants=Count('participants'))\

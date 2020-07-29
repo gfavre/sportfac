@@ -71,7 +71,7 @@ class Session(TimeStampedModel):
             )
 
     def update_courses_dates(self):
-        if settings.KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES:
+        if settings.KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES and self.activity:
             for course in self.activity.courses.all():
                 course.update_dates_from_sessions()
         else:

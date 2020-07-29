@@ -1,12 +1,9 @@
 import csv, codecs, cStringIO
 from datetime import date
 
-from django.core.management import call_command
 from django_tenants.test.cases import FastTenantTestCase as BaseTenantTestCase
 from django_tenants.test.client import TenantClient
 from django.contrib.auth.models import Group
-
-from backend import INSTRUCTORS_GROUP, MANAGERS_GROUP
 
 
 class ExcelSemicolon(csv.excel):
@@ -92,8 +89,6 @@ class TenantTestCase(BaseTenantTestCase):
 
     def setUp(self):
         super(TenantTestCase, self).setUp()
-        Group.objects.get_or_create(name=INSTRUCTORS_GROUP)
-        Group.objects.get_or_create(name=MANAGERS_GROUP)
         self.tenant_client = TenantClient(self.tenant)
 
 

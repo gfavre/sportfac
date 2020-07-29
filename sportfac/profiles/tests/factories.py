@@ -15,6 +15,7 @@ DEFAULT_PASS = 'test'
 
 fake = faker.Factory.create('fr_CH')
 
+
 class SchoolYearFactory(factory.DjangoModelFactory):
     class Meta:
         model = SchoolYear

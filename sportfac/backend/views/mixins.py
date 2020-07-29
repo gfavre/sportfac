@@ -1,16 +1,13 @@
 from django.http import HttpResponse
 from django.utils.text import slugify
 
-from braces.views import GroupRequiredMixin, LoginRequiredMixin
-
-from backend import MANAGERS_GROUP
+from braces.views import LoginRequiredMixin, UserPassesTestMixin
 
 
-
-class BackendMixin(LoginRequiredMixin, GroupRequiredMixin):
-    """Mixin for backend. Ensure that the user is logged in and is a member 
-       of sports managers group."""
-    group_required = MANAGERS_GROUP
+class BackendMixin(LoginRequiredMixin, UserPassesTestMixin):
+    """Mixin for backend. Ensure that the user is logged in and is a sports manager"""
+    def test_func(self, user):
+        return user.is_active and (user.is_staff or user.is_superuser or user.is_manager)
 
 
 class ExcelResponseMixin(object):
@@ -37,6 +34,7 @@ class ExcelResponseMixin(object):
         response['Content-Disposition'] = 'attachment; filename="%s.xlsx"' % slugify(self.get_filename())
         resource = self.get_resource()
         try:
+            # noinspection PyUnresolvedReferences
             export = resource.export(queryset=self.get_queryset())
         except AttributeError:
             export = resource.export()

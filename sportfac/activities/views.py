@@ -8,12 +8,11 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView, ListView, View
 
-from braces.views import GroupRequiredMixin, LoginRequiredMixin
+from braces.views import LoginRequiredMixin, UserPassesTestMixin
 
-from backend import INSTRUCTORS_GROUP
-import mailer.views as mailer_views
 from mailer.forms import CourseMailForm, InstructorCopiesForm
 from mailer.mixins import ArchivedMailMixin
+import mailer.views as mailer_views
 from sportfac.views import WizardMixin
 from .models import Activity, Course
 
@@ -24,23 +23,34 @@ __all__ = ('InstructorMixin', 'ActivityDetailView', 'ActivityListView',
            'MailUsersView', 'CustomMailPreview', 'MailCourseInstructorsView')
 
 
-class InstructorMixin(GroupRequiredMixin, LoginRequiredMixin):
-    """Mixin for backend. Ensure that the user is logged in and is a member
-       of sports responisbles group."""
-    group_required = INSTRUCTORS_GROUP
-
-
-class CourseAccessMixin(InstructorMixin):
+class InstructorMixin(UserPassesTestMixin, LoginRequiredMixin):
+    """Mixin for backend. Ensure that the user is logged in and is a sports responsible"""
     pk_url_kwarg = 'course'
 
+    # noinspection PyUnresolvedReferences
     def get_object(self):
         pk = self.kwargs.get(self.pk_url_kwarg)
         return get_object_or_404(Course, pk=pk)
 
-    def check_membership(self, group):
-        if not super(CourseAccessMixin, self).check_membership(group):
-            return self.request.user in [p.child.family for p in self.get_object().participants.all()]
-        return True
+    def test_func(self, user):
+        # noinspection PyUnresolvedReferences
+        if self.pk_url_kwarg in self.kwargs:
+            course = self.get_object()
+            return user.is_active and user.is_instructor_of(course)
+        return user.is_active and user.is_instructor
+
+
+class CourseAccessMixin(UserPassesTestMixin, LoginRequiredMixin):
+    pk_url_kwarg = 'course'
+
+    # noinspection PyUnresolvedReferences
+    def get_object(self):
+        pk = self.kwargs.get(self.pk_url_kwarg)
+        return get_object_or_404(Course, pk=pk)
+
+    def test_func(self, user):
+        course = self.get_object()
+        return user.is_instructor_of(course) or user in [p.child.family for p in course.participants.all()]
 
 
 class ActivityDetailView(DetailView):
