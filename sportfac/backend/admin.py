@@ -30,7 +30,7 @@ class SportfacTemplateAdmin(SportfacAdminMixin, TemplateAdmin):
 
 
 from dynamic_preferences.models import GlobalPreferenceModel
-from dbtemplates.admin import GlobalPreferenceAdmin
+from dynamic_preferences.admin import GlobalPreferenceAdmin
 admin.site.unregister(GlobalPreferenceModel)
 
 
