@@ -23,6 +23,17 @@ from dbtemplates.models import Template
 from dbtemplates.admin import TemplateAdmin
 admin.site.unregister(Template)
 
+
 @admin.register(Template)
 class SportfacTemplateAdmin(SportfacAdminMixin, TemplateAdmin):
+    pass
+
+
+from dynamic_preferences.models import GlobalPreferenceModel
+from dbtemplates.admin import GlobalPreferenceAdmin
+admin.site.unregister(GlobalPreferenceModel)
+
+
+@admin.register(GlobalPreferenceModel)
+class SportfacGlobalPreferenceAdmin(SportfacAdminMixin, GlobalPreferenceAdmin):
     pass
