@@ -37,3 +37,14 @@ admin.site.unregister(GlobalPreferenceModel)
 @admin.register(GlobalPreferenceModel)
 class SportfacGlobalPreferenceAdmin(SportfacAdminMixin, GlobalPreferenceAdmin):
     pass
+
+
+from django.contrib.sites.models import Site
+from django.contrib.sites.admin import SiteAdmin
+
+admin.site.unregister(Site)
+
+
+@admin.register(Site)
+class SportfacSiteAdmin(SportfacAdminMixin, SiteAdmin):
+    pass
