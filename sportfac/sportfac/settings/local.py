@@ -62,7 +62,7 @@ DATABASES['default']['ENGINE'] = 'django_tenants.postgresql_backend'
 DATABASE_ROUTERS = ['django_tenants.routers.TenantSyncRouter', 'sportfac.database_router.MasterRouter',]
 AUTHENTICATION_BACKENDS = ('sportfac.authentication_backends.MasterUserBackend',
                            'django.contrib.auth.backends.ModelBackend')
-SESSION_COOKIE_NAME = 'sportfac_local_id'
+SESSION_COOKIE_NAME = 'sportfac'
 ########## END DATABASE CONFIGURATION
 
 

@@ -7,17 +7,17 @@ LOCAL_DB = 'default'
 
 # noinspection PyMethodMayBeStatic,PyUnusedLocal
 class MasterRouter(object):
+    route_app_labels = {'sessions',}
+
     def db_for_read(self, model, **hints):
-        """
-        Reads go to a randomly-chosen replica.
-        """
-        return 'default'
+        if model._meta.app_label in self.route_app_labels:
+            return MASTER_DB
+        return LOCAL_DB
 
     def db_for_write(self, model, **hints):
-        """
-        Writes always go to primary.
-        """
-        return 'default'
+        if model._meta.app_label in self.route_app_labels:
+            return MASTER_DB
+        return LOCAL_DB
 
     def allow_relation(self, obj1, obj2, **hints):
         return True
