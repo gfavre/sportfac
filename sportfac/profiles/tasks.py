@@ -31,7 +31,7 @@ def sync_from_master():
             # The user exists on master (created on other instance) but not locally
             user.is_admin = False
             user.is_manager = False
-        user.save(using=LOCAL_DB)
+        user.save(using=LOCAL_DB, sync=False)
 
 
 # TODO: script d'import initial intelligent
