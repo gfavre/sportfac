@@ -161,6 +161,7 @@ def kepchup_context(request):
         'REGISTER_ACCOUNTS_AT_ANY_TIME': settings.KEPCHUP_REGISTER_ACCOUNTS_AT_ANY_TIME,
         'EXPLICIT_SESSION_DATES': settings.KEPCHUP_EXPLICIT_SESSION_DATES,
         'NO_EXTRAS': settings.KEPCHUP_NO_EXTRAS,
+        'USE_SSO': settings.KEPCHUP_USE_SSO,
     }
 
 
