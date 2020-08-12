@@ -32,10 +32,10 @@ class TextPlainView(TemplateView):
 
 
 if settings.KEPCHUP_USE_SSO:
-    from simple_sso.sso_client.client import Client
+    from profiles.client import KepchupClient
 
     from simple_sso.sso_client.client import AuthenticateView
-    sso_client = Client(settings.SSO_SERVER, settings.SSO_PUBLIC_KEY, settings.SSO_PRIVATE_KEY)
+    sso_client = KepchupClient(settings.SSO_SERVER, settings.SSO_PUBLIC_KEY, settings.SSO_PRIVATE_KEY)
     if settings.KEPCHUP_SPLASH_PAGE:
         urlpatterns = [
             url(r'^/$', flatviews.flatpage, {'url': '/splash/'}, name='splash'),

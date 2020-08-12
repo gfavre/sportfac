@@ -203,7 +203,7 @@ MIDDLEWARE_CLASSES = [
     'sportfac.middleware.VersionMiddleware',
     'sportfac.middleware.RegistrationOpenedMiddleware',
     # asynchronous messages
-    'async_messages.middleware.AsyncMiddleware',
+    #'async_messages.middleware.AsyncMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 ]
 ########## END MIDDLEWARE CONFIGURATION

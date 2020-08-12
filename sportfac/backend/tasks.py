@@ -14,7 +14,7 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
-from async_messages import messages, message_user
+from celery import shared_task
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
@@ -205,6 +205,6 @@ def import_children(filepath, tenant_id, user_id=None):
 
     try:
         user = FamilyUser.objects.get(pk=user_id)
-        message_user(user, message, status)
+        #message_user(user, message, status)
     except FamilyUser.DoesNotExist:
         pass
