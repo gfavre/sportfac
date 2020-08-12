@@ -31,15 +31,34 @@ class TextPlainView(TemplateView):
         return super(TextPlainView, self).render_to_response(context, content_type='text/plain', **kwargs)
 
 
-if settings.KEPCHUP_SPLASH_PAGE:
-    urlpatterns = [
-        url(r'^$', flatviews.flatpage, {'url': '/splash/'}, name='splash'),
-        url(r'^accueil/$', flatviews.flatpage, {'url': '/'}, name='home'),
-    ]
+if settings.KEPCHUP_USE_SSO:
+    from simple_sso.sso_client.client import Client
+
+    from simple_sso.sso_client.client import AuthenticateView
+    sso_client = Client(settings.SSO_SERVER, settings.SSO_PUBLIC_KEY, settings.SSO_PRIVATE_KEY)
+    if settings.KEPCHUP_SPLASH_PAGE:
+        urlpatterns = [
+            url(r'^/$', flatviews.flatpage, {'url': '/splash/'}, name='splash'),
+            url(r'^client/$', include(sso_client.get_urls())),
+            url(r'^saison/$', flatviews.flatpage, {'url': '/splash/'}, name='splash'),
+            url(r'^accueil/$', flatviews.flatpage, {'url': '/'}, name='home'),
+        ]
+    else:
+        urlpatterns = [
+            url(r'^client/', include(sso_client.get_urls())),
+            url(r'^/$', flatviews.flatpage, {'url': '/home'}, name='home')
+        ]
+
 else:
-    urlpatterns = [
-        url(r'^$', flatviews.flatpage, {'url': '/'}, name='home')
-    ]
+    if settings.KEPCHUP_SPLASH_PAGE:
+        urlpatterns = [
+            url(r'^$', flatviews.flatpage, {'url': '/splash/'}, name='splash'),
+            url(r'^accueil/$', flatviews.flatpage, {'url': '/'}, name='home'),
+        ]
+    else:
+        urlpatterns = [
+            url(r'^$', flatviews.flatpage, {'url': '/'}, name='home')
+        ]
 
 urlpatterns += [
     url(r'^reglement/$', flatviews.flatpage, {'url': '/reglement/'}, name='terms'),
@@ -68,6 +87,8 @@ urlpatterns += [
 
     url(r'^admin/', include(admin.site.urls)),
 ]
+
+
 
 handler404 = 'sportfac.views.not_found'
 handler500 = 'sportfac.views.server_error'

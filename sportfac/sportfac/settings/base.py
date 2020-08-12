@@ -587,3 +587,10 @@ import warnings
 warnings.filterwarnings('ignore', module='floppyforms',
                         message='Unable to import floppyforms.gis.*')
 
+# Single Sign On
+#######################git ##################
+KEPCHUP_USE_SSO = False
+SSO_PRIVATE_KEY = env.str('SSO_PRIVATE_KEY', default='')
+SSO_PUBLIC_KEY = env.str('SSO_PUBLIC_KEY', default='')
+SSO_SERVER = env.str('SSO_SERVER', default='')
+SSO_DASHBOARD_REDIRECT = env.str('SSO_DASHBOARD_REDIRECT', default='/')

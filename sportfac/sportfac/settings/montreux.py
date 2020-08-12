@@ -22,7 +22,7 @@ DATABASES['default']['ENGINE'] = 'django_tenants.postgresql_backend'
 DATABASE_ROUTERS = ['django_tenants.routers.TenantSyncRouter', 'sportfac.database_router.MasterRouter']
 AUTHENTICATION_BACKENDS = ('sportfac.authentication_backends.MasterUserBackend',
                            'django.contrib.auth.backends.ModelBackend')
-SESSION_COOKIE_NAME = 'ssfmontreux'
+SESSION_COOKIE_NAME = 'ssfmontreux_automne'
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = env('EMAIL_HOST', default='')
@@ -50,6 +50,13 @@ KEPCHUP_EXPLICIT_SESSION_DATES = True
 KEPCHUP_ALTERNATIVE_ACTIVITIES_LABEL = u'Inscription'
 KEPCHUP_ALTERNATIVE_CONFIRM_LABEL = u'Résumé'
 KEPCHUP_ALTERNATIVE_BILLING_LABEL = u'Confirmation'
+
+
+# Single Sign On
+#########################################
+KEPCHUP_USE_SSO = True
+LOGIN_URL = '/client/'
+
 
 
 CELERYBEAT_SCHEDULE['notify-absences'] = {

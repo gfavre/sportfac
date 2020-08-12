@@ -23,11 +23,9 @@ DATABASES['default']['ENGINE'] = 'django_tenants.postgresql_backend'
 DATABASE_ROUTERS = ['django_tenants.routers.TenantSyncRouter', 'sportfac.database_router.MasterRouter']
 AUTHENTICATION_BACKENDS = ('sportfac.authentication_backends.MasterUserBackend',
                            'django.contrib.auth.backends.ModelBackend')
-SESSION_COOKIE_NAME = 'ssfmontreux'
+SESSION_COOKIE_NAME = 'ssfmontreux_hiver'
 
 
-LOGIN_URL = '/hiver/account/login/'
-LOGOUT_URL = '/hiver/account/logout/'
 
 KEPCHUP_USE_ABSENCES = True
 KEPCHUP_IMPORT_CHILDREN = True
@@ -72,3 +70,10 @@ CELERYBEAT_SCHEDULE['sync_from_master'] = {
         'task': 'profiles.tasks.sync_from_master',
         'schedule': crontab(minute='*/1'),
 }
+
+# Single Sign On
+#########################################
+KEPCHUP_USE_SSO = True
+
+LOGIN_URL = '/hiver/client/'
+LOGOUT_URL = '/hiver/account/logout/'

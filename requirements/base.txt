@@ -57,3 +57,4 @@ python-memcached==1.59
 
 django-appconf==1.0.2  # django-compressor includes latest which is incompatible with python2
 django-compressor==2.4
+-e git+https://github.com/gfavre/django-simple-sso.git@0.15.3#egg=simple_sso

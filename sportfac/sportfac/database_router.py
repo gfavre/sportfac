@@ -7,7 +7,7 @@ LOCAL_DB = 'default'
 
 # noinspection PyMethodMayBeStatic,PyUnusedLocal
 class MasterRouter(object):
-    route_app_labels = {'sessions',}
+    route_app_labels = {}
 
     def db_for_read(self, model, **hints):
         if model._meta.app_label in self.route_app_labels:

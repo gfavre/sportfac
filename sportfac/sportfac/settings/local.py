@@ -151,6 +151,11 @@ KEPCHUP_ALTERNATIVE_ACTIVITIES_LABEL = u'Inscription'
 KEPCHUP_ALTERNATIVE_CONFIRM_LABEL = u'Résumé'
 KEPCHUP_ALTERNATIVE_BILLING_LABEL = u'Confirmation'
 
+# Single Sign On
+#########################################
+KEPCHUP_USE_SSO = True
+LOGIN_URL = '/client/'
+LOGOUT_URL = 'https://users.ssfmontreux.ch/logout/'
 
 CELERYBEAT_SCHEDULE['notify-absences'] = {
         'task': 'absences.tasks.notify_absences',
