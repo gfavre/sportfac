@@ -11,7 +11,7 @@ urlpatterns = [
     url(r'^login/$', auth_views.login,
         {'template_name': 'registration/login.html', 'authentication_form': AuthenticationForm}, 
         name='auth_login'),
-    url(r'^logout/$', LogoutView.as_view({'template_name': 'registration/logout.html'}),
+    url(r'^logout/$', LogoutView.as_view(template_name="registration/logout.html"),
         name='auth_logout'),
 
     url(r'^password/change/$', password_change, name='password_change'),
