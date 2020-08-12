@@ -68,7 +68,7 @@ CELERYBEAT_SCHEDULE['notify-absences'] = {
 }
 CELERYBEAT_SCHEDULE['sync_from_master'] = {
         'task': 'profiles.tasks.sync_from_master',
-        'schedule': crontab(minute='*/1'),
+        'schedule': crontab(minute='*/10'),
 }
 
 # Single Sign On

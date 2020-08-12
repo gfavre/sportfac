@@ -121,3 +121,10 @@ class WizardRegistrationView(WizardMixin, RegistrationBaseView):
 
     def get_success_url(self):
         return reverse('wizard_children')
+
+
+class LogoutView(auth_views.LogoutView):
+    def get_next_page(self):
+        if settings.KEPCHUP_USE_SSO:
+            return 'https://users.ssfmontreux.ch/logout'
+        return super(LogoutView, self).get_next_page()
