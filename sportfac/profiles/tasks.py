@@ -18,8 +18,8 @@ def save_to_master(user_id, source=LOCAL_DB):
 def sync_from_master():
     local_last_updated_family = FamilyUser.objects.order_by('modified').last()
     to_update = FamilyUser.objects.using(MASTER_DB).all()
-    if not local_last_updated_family:
-        to_update = to_update.filter(modified__gt=local_last_updated_family)
+    if local_last_updated_family:
+        to_update = to_update.filter(modified__gt=local_last_updated_family.modified)
     for user in to_update:
         try:
             local_user = FamilyUser.objects.using(LOCAL_DB).get(pk=user.pk)
