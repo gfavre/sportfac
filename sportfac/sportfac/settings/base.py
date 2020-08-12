@@ -246,7 +246,7 @@ SHARED_APPS = (
     'import_export',
     'mathfilters',
     'phonenumber_field',
-    'registration',  # user registration
+    #'registration',  # user registration
     'rest_framework',  # REST API
     'sekizai',  # add_to_block template tag
 

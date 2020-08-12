@@ -461,7 +461,7 @@ class RegistrationsProfile(TimeStampedModel):
     This model acts as a cache to avoid useless comparisons
     """
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile',
-                                null=True, on_delete=models.CASCADE)
+                                null=True, on_delete=models.SET_NULL)
 
     has_paid_all = models.BooleanField(default=False, blank=True, editable=False)
     finished_registering = models.BooleanField(default=False, blank=True, editable=False)

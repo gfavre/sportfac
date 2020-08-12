@@ -30,5 +30,5 @@ urlpatterns = [
     url(r'^new/$', RegistrationView.as_view(), name="anytime_registeraccount"),
     url(r'^register/$',  WizardRegistrationView.as_view(), name="registeraccount"),
     url(r'^reset/$', password_reset, name="registration_reset"),
-    url(r'', include('registration.backends.default.urls')),
+    #url(r'', include('registration.backends.default.urls')),
 ]
