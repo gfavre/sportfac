@@ -6,32 +6,80 @@
 {% block page_title %}{% trans "List registrations" %}{% endblock %}
 
 {% block content %}
-{% addtoblock  "js" %}    
-<script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
-<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
-<script>
-$(function () {
-  $(".table").dataTable({
-{% if LANGUAGE_CODE == 'fr' %}
-      "language": {
-            "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
-      },
-{% endif %}
-      "aoColumnDefs": [
-          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ -1 ] }
-      ],
-      "lengthMenu": [[50, 100, -1], [50, 100, "{% trans 'All registrations' %}"] ],
-      "pageLength": 50
-  });
-});
-</script>
-{% endaddtoblock %}
+  {% addtoblock "js" %}
+    <!--<script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>-->
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/searchpanes/1.1.1/js/dataTables.searchPanes.min.js"></script>
+    <script src="https://cdn.datatables.net/searchpanes/1.1.1/js/searchPanes.bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js"></script>
+    <script>
+      $(function () {
+        $(".table").dataTable({
+          {% if LANGUAGE_CODE == 'fr' %}
+            "language": {
+              "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+            },
+          {% endif %}
 
+          columnDefs: [
+            {
+              searchPanes: {
+                orderable: false,
+                searchable: false,
+              },
+              targets: [-2]
+            },
+            {
+              orderable: false,
+              searchable: false,
+              targets: [-1]
+            }
+          ],
+          lengthMenu: [ 10, 25, 50, 100 ],
+          pageLength: 25,
+          searchPanes: {
+            viewTotal: true,
+            columns: [-2],
+            clear: false,
 
-<a href="{% url 'backend:registration-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New registration" %}</a>
-<hr />
-<table class="table">
-  <thead>
+          },
+          language: {
+            searchPanes: {
+              title: {
+                _: '',
+                0: '',
+                1: '',
+              }
+            }
+          },
+          "select": {
+            style: 'multi'
+          },
+          dom: 'Pfrtip',
+        });
+
+      });
+    </script>
+  {% endaddtoblock %}
+  {% addtoblock "css" %}
+    <link href="https://cdn.datatables.net/searchpanes/1.1.1/css/searchPanes.bootstrap.min.css" rel="stylesheet"
+          media="all"/>
+    <link href="https://cdn.datatables.net/select/1.3.1/css/select.bootstrap.min.css" rel="stylesheet" media="all"/>
+
+  {% endaddtoblock %}
+
+  <a href="{% url 'backend:registration-create' %}" class="btn btn-success"><i
+      class="icon-plus"></i> {% trans "New registration" %}</a>
+   {% if registration_list.count %}
+     &nbsp;&nbsp;
+  <a href="{% url 'backend:registrations-validate-all' %}" class="btn btn-success"><i
+      class="icon-check"></i> {% trans "Validate all registrations" %}</a>
+  {% endif %}
+  <hr/>
+  <table class="table">
+    <thead>
     <tr>
       <th class="text-nowrap course">{% trans "Course Identifier" %}</th>
       <th class="text-nowrap activity">{% trans "Activity" %}</th>
@@ -39,34 +87,36 @@ $(function () {
       <th class="text-nowrap start">{% trans "Start date" %}</th>
       <th class="text-nowrap time">{% trans "Time" %}</th>
       {% if BIB_NUMBERS %}
-      <th class="text-nowrap bibnumber">{% trans "Bib number" %}</th>
+        <th class="text-nowrap bibnumber">{% trans "Bib number" %}</th>
       {% endif %}
       <th class="text-nowrap child">{% trans "Child" %}</th>
       <th class="text-nowrap status">{% trans "Status" %}</th>
       <th class="text-nowrap">{% trans "Action" %}</th>
     </tr>
-  </thead>
-  {% for registration in registration_list %}
-  {% with course=registration.course child=registration.child %}
-   <tr>
-      <td><a href="{{ course.get_backend_url }}">{{ course.number }}</a></td>
-      <td><a href="{{ course.activity.get_backend_url }}">{{ course.activity.name }}</a></td>
-      <td>{{ course.day_name }}</td>
-      <td data-order="{{ course.start_date|date:'c'}}">{{ course.start_date|date:"SHORT_DATE_FORMAT" }}</td>
-      <td>{{ course.start_time|time:"H:i" }}</td>
-      {% if BIB_NUMBERS %}
-      <td>{{ child.bib_number }}</th>
-      {% endif %}
-      <td><a href="{{ child.get_backend_url }}">{{ child }}</a></td>
-      <td>{{ registration.get_status_display }}</td>
-      <td>
-        <ul class="list-unstyled">
-          <li class="text-nowrap"><a href="{{ registration.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update registration" %}</a></li>
-          <li class="text-nowrap"><a href="{{ registration.get_delete_url }}" class="btn btn-sm"><i class="icon-cancel"></i>&nbsp;{% trans "Cancel registration" %}</a></li>
-        </ul>
-      </td>
-    </tr>
-  {% endwith %}  
-  {% endfor %}
-</table>
+    </thead>
+    {% for registration in registration_list %}
+      {% with course=registration.course child=registration.child %}
+        <tr>
+          <td><a href="{{ course.get_backend_url }}">{{ course.number }}</a></td>
+          <td><a href="{{ course.activity.get_backend_url }}">{{ course.activity.name }}</a></td>
+          <td>{{ course.day_name }}</td>
+          <td data-order="{{ course.start_date|date:'c' }}">{{ course.start_date|date:"SHORT_DATE_FORMAT" }}</td>
+          <td>{{ course.start_time|time:"H:i" }}</td>
+          {% if BIB_NUMBERS %}
+            <td>{{ child.bib_number }}</th>
+          {% endif %}
+          <td><a href="{{ child.get_backend_url }}">{{ child }}</a></td>
+          <td>{{ registration.get_status_display }}</td>
+          <td>
+            <ul class="list-unstyled">
+              <li class="text-nowrap"><a href="{{ registration.get_update_url }}" class="btn btn-sm"><i
+                  class="icon-edit"></i>&nbsp;{% trans "Update registration" %}</a></li>
+              <li class="text-nowrap"><a href="{{ registration.get_delete_url }}" class="btn btn-sm"><i
+                  class="icon-cancel"></i>&nbsp;{% trans "Cancel registration" %}</a></li>
+            </ul>
+          </td>
+        </tr>
+      {% endwith %}
+    {% endfor %}
+  </table>
 {% endblock content %}

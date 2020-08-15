@@ -9,7 +9,7 @@ from django.db import IntegrityError, transaction
 from django.db.models import Count
 from django.http import HttpResponseRedirect
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView, UpdateView,
-                                  View, FormView)
+                                  View, FormView, TemplateView)
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import get_object_or_404
@@ -29,7 +29,7 @@ from .mixins import BackendMixin, ExcelResponseMixin
 
 __all__ = ('RegistrationCreateView', 'RegistrationDeleteView', 'RegistrationDetailView',
            'RegistrationListView', 'RegistrationExportView', 'RegistrationUpdateView',
-           'RegistrationsMoveView',
+           'RegistrationsMoveView', 'RegistrationValidateView',
            'BillListView', 'BillDetailView', 'BillUpdateView',
            'TransportListView', 'TransportCreateView', 'TransportUpdateView',
            'TransportDetailView', 'TransportDeleteView', 'TransportMoveView',)
@@ -282,6 +282,22 @@ class RegistrationDeleteView(BackendMixin, DeleteView):
         messages.add_message(self.request, messages.SUCCESS,
                              _("Registration has been canceled."))
         return HttpResponseRedirect(success_url)
+
+
+class RegistrationValidateView(BackendMixin, TemplateView):
+    template_name = 'backend/registration/confirm_validate.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(RegistrationValidateView, self).get_context_data(**kwargs)
+        context['registrations'] = Registration.objects.filter(status=Registration.STATUS.waiting)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        to_update = Registration.objects.filter(status=Registration.STATUS.waiting)
+        count = to_update.count()
+        to_update.update(status=Registration.STATUS.confirmed)
+        messages.success(request, _("%d registrations have been confirmed") % count)
+        return HttpResponseRedirect(reverse_lazy('backend:registration-list'))
 
 
 class BillListView(BackendMixin, ListView):
