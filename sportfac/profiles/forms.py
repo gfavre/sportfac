@@ -1,14 +1,14 @@
-from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
 from django.contrib.auth import get_user_model
 import django.contrib.auth.forms as auth_forms
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import mark_safe
+from django.utils.translation import ugettext_lazy as _
 
 import floppyforms.__future__ as forms
 from localflavor.generic.forms import IBANFormField
 from phonenumber_field.formfields import PhoneNumberField
 from phonenumber_field.widgets import PhoneNumberInternationalFallbackWidget
-
 
 from .models import FamilyUser
 from backend.forms import DatePickerInput
@@ -51,6 +51,12 @@ class AcceptTermsForm(forms.Form):
             _("""I've read and agree to <a href="%s"> terms and conditions</a>""") % reverse('terms')
         )
 
+if settings.KEPCHUP_ZIPCODE_RESTRICTION:
+    from profiles.models import City
+    cities = City.objects.filter(zipcode__in=settings.KEPCHUP_ZIPCODE_RESTRICTION)
+else:
+    cities = []
+cities = [('1196', 'Gland'), ('1272', 'Genolier')]
 
 class PhoneRequiredMixin(object):
     def clean(self):
@@ -67,7 +73,6 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
                               required=True)
     email = forms.EmailField(label=_("E-mail"),
                              widget=forms.EmailInput(attrs={'placeholder': 'john@example.com'}))
-    zipcode = forms.CharField(label=_("NPA"), widget=forms.TextInput(attrs={'placeholder': _("NPA")}))
     city = forms.CharField(label=_("City"), widget=forms.TextInput(attrs={'placeholder': _("City")}))
     private_phone = PhoneNumberField(label=_("Home phone"), max_length=30,
                                      widget=PhoneNumberInternationalFallbackWidget(attrs={'class': 'form-control'}),
@@ -85,13 +90,18 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
                   'zipcode', 'city', 'country',
                   'private_phone', 'private_phone2', 'private_phone3')
 
+    def __init__(self, *args, **kwargs):
+        super(UserForm, self).__init__(*args, **kwargs)
+        if settings.KEPCHUP_ZIPCODE_RESTRICTION:
+            self.fields['zipcode'].widget = forms.Select(choices=settings.KEPCHUP_ZIPCODE_RESTRICTION)
+
 
 class ManagerForm(UserForm):
     is_manager = forms.BooleanField(required=False, label=_("Is a manager"),
                                     help_text=_("Grant access for this user to this backend interface"))
 
     def __init__(self, *args, **kwargs):
-        super(UserForm, self).__init__(*args, **kwargs)
+        super(ManagerForm, self).__init__(*args, **kwargs)
         instance = kwargs['instance']
         if instance:
             self.fields['is_manager'].initial = instance.is_manager
@@ -191,6 +201,11 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
                                 label=_("Password"))
     password2 = forms.CharField(widget=forms.PasswordInput,
                                 label=_("Password (again)"))
+
+    def __init__(self, *args, **kwargs):
+        super(RegistrationForm, self).__init__(*args, **kwargs)
+        if settings.KEPCHUP_ZIPCODE_RESTRICTION:
+            self.fields['zipcode'].widget = forms.Select(choices=settings.KEPCHUP_ZIPCODE_RESTRICTION)
 
     def clean_email(self):
         """

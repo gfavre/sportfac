@@ -523,6 +523,7 @@ KEPCHUP_LEVELS_PREFIXER = {}
 # User accounts
 #########################################
 KEPCHUP_REGISTER_ACCOUNTS_AT_ANY_TIME = False
+KEPCHUP_ZIPCODE_RESTRICTION = list()
 
 # Payment
 #########################################
