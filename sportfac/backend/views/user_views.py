@@ -373,5 +373,5 @@ class ChildImportView(BackendMixin, SuccessMessageMixin, FormView):
         temp_file.close()
         import_children.delay(temp_file.name,
                               tenant_id=self.request.tenant.pk,
-                              user_id=self.request.user.pk)
+                              user_id=str(self.request.user.pk))
         return super(ChildImportView, self).form_valid(form)

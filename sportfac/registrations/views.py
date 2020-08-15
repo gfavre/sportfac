@@ -121,7 +121,7 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
         except AttributeError:
             tenant_pk = None
         transaction.on_commit(lambda: send_confirmation.delay(
-            user_pk=self.request.user.pk,
+            user_pk=str(self.request.user.pk),
             bill_pk=self.bill.pk,
             tenant_pk=tenant_pk,
             language=get_language(),
