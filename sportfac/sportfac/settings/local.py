@@ -107,12 +107,12 @@ CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 CELERY_ALWAYS_EAGER = True
 
 TEMPLATES[0]['DIRS'] = [
-    normpath(join(SITE_ROOT, 'themes', 'montreux_ski', 'templates')),
+    normpath(join(SITE_ROOT, 'themes', 'nyon_prangins', 'templates')),
     normpath(join(SITE_ROOT, 'templates')),
 ]
 
 STATICFILES_DIRS = (
-    normpath(join(SITE_ROOT, 'themes', 'montreux_ski', 'static')),
+    normpath(join(SITE_ROOT, 'themes', 'nyon_prangins', 'static')),
     normpath(join(SITE_ROOT, 'static')),
 )
 COMPRESS_ENABLED = True
@@ -153,9 +153,9 @@ KEPCHUP_ALTERNATIVE_BILLING_LABEL = u'Confirmation'
 
 # Single Sign On
 #########################################
-KEPCHUP_USE_SSO = True
-LOGIN_URL = '/client/'
-LOGOUT_URL = 'https://users.ssfmontreux.ch/logout/'
+KEPCHUP_USE_SSO = False
+#LOGIN_URL = '/client/'
+#LOGOUT_URL = 'https://users.ssfmontreux.ch/logout/'
 
 CELERYBEAT_SCHEDULE['notify-absences'] = {
         'task': 'absences.tasks.notify_absences',
