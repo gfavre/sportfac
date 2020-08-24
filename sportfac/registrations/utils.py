@@ -41,6 +41,7 @@ class ChildParser:
             u'Nationalité': ('nationality', self.parse_nationality),
             u'Langue maternelle': ('language', self.parse_language),
             u'Année': ('school_year', self.parse_school_year),
+            u'ANNEE': ('school_year', self.parse_school_year),
             u'Etablissement': ('school', self.parse_school),
         }
 
