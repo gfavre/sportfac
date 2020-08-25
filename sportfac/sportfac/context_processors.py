@@ -37,8 +37,13 @@ def can_pay(request):
 
 
 def wizard_context(request):
-    children_qs = request.user.children.all()
-    can_register_activities = is_authenticated(request) and children_qs.exists()
+    authenticated = is_authenticated(request)
+    can_register_activities = False
+    if authenticated:
+        children_qs = request.user.children.all()
+        can_register_activities = children_qs.exists()
+        can_confirm = can_register_activities and Registration.waiting.filter(child__in=children_qs).exists()
+
     about = Step(
         request, 'about-step', settings.KEPCHUP_ALTERNATIVE_ABOUT_LABEL or _("About you"),
         'wizard_account', can_register(request)
@@ -53,7 +58,7 @@ def wizard_context(request):
     confirmation = Step(
         request, 'confirm-step', settings.KEPCHUP_ALTERNATIVE_CONFIRM_LABEL or _("Confirmation"),
         'wizard_confirm',
-        can_register_activities and Registration.waiting.filter(child__in=children_qs).exists()
+        can_confirm
     )
 
     if settings.KEPCHUP_NO_PAYMENT:
