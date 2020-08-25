@@ -8,14 +8,14 @@ from profiles.models import FamilyUser
 
 
 def forward(apps, schema_editor):
-    RegistrationsProfile = apps.get_model('registrations', 'Registration')
+    RegistrationsProfile = apps.get_model('registrations', 'RegistrationsProfile')
     FamilyUser = apps.get_model('profiles', 'FamilyUser')
     for user in FamilyUser.objects.all():
         RegistrationsProfile.objects.get_or_create(user=user)
 
 
 def backward(apps, schema_editor):
-    RegistrationsProfile = apps.get_model('registrations', 'Registration')
+    RegistrationsProfile = apps.get_model('registrations', 'RegistrationsProfile')
     RegistrationsProfile.objects.all().delete()
 
 
