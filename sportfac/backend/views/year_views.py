@@ -153,5 +153,5 @@ class YearCreateView(SuccessMessageMixin, BackendMixin, FormView):
             end=form.cleaned_data['end_date'].isoformat(),
             copy_activities_from_id=copy_activities_from_id,
             copy_children_from_id=copy_children_from_id,
-            user_id=self.request.user.pk)
+            user_id=str(self.request.user.pk))
         return response
