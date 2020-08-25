@@ -39,6 +39,7 @@ def can_pay(request):
 def wizard_context(request):
     authenticated = is_authenticated(request)
     can_register_activities = False
+    can_confirm = False
     if authenticated:
         children_qs = request.user.children.all()
         can_register_activities = children_qs.exists()
