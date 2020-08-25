@@ -185,7 +185,7 @@ class HomePageView(BackendMixin, TemplateView):
                 .select_related('child', 'child__family'):
             try:
                 zipcode = registration.child.family.zipcode
-            except AttributeError
+            except AttributeError:
                 continue
             if zipcode not in cities:
                 zipcode = UNKNOWN
