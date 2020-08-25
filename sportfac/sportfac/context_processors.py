@@ -29,22 +29,16 @@ def can_register(request):
 
 
 def can_register_activities(request):
-    return is_authenticated(request) and request.user.children.count() > 0
-
-
-def can_confirm(request):
-    return can_register_activities(request) and \
-           Registration.objects.waiting().filter(
-                child__in=request.user.children.all()
-           ).count() > 0
+    return is_authenticated(request) and request.user.children.exists()
 
 
 def can_pay(request):
-    return can_register_activities(request) and Bill.objects.filter(status=Bill.STATUS.just_created,
-                                                                    family=request.user).exists()
+    return Bill.objects.filter(status=Bill.STATUS.just_created, family=request.user).exists()
 
 
 def wizard_context(request):
+    children_qs = request.user.children.all()
+    can_register_activities = is_authenticated(request) and children_qs.exists()
     about = Step(
         request, 'about-step', settings.KEPCHUP_ALTERNATIVE_ABOUT_LABEL or _("About you"),
         'wizard_account', can_register(request)
@@ -54,19 +48,20 @@ def wizard_context(request):
         'wizard_children', is_authenticated(request))
     activities = Step(
         request, 'activities-step', settings.KEPCHUP_ALTERNATIVE_ACTIVITIES_LABEL or _("Register activities"),
-        'wizard_activities', can_register_activities(request)
+        'wizard_activities', can_register_activities
     )
     confirmation = Step(
         request, 'confirm-step', settings.KEPCHUP_ALTERNATIVE_CONFIRM_LABEL or _("Confirmation"),
-        'wizard_confirm', can_confirm(request)
+        'wizard_confirm',
+        can_register_activities and Registration.waiting.filter(child__in=children_qs).exists()
     )
-    billing = Step(
-        request, 'billing-step', settings.KEPCHUP_ALTERNATIVE_BILLING_LABEL or _("Billing"),
-        'wizard_billing', can_pay(request))
 
     if settings.KEPCHUP_NO_PAYMENT:
         steps = [about, children, activities, confirmation]
     else:
+        billing = Step(
+            request, 'billing-step', settings.KEPCHUP_ALTERNATIVE_BILLING_LABEL or _("Billing"),
+            'wizard_billing', can_register_activities and can_pay(request))
         steps = [about, children, activities, confirmation, billing]
 
     current = 0

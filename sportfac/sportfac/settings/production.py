@@ -63,6 +63,10 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
         'LOCATION': 'unix:' + env('MEMCACHED_SOCKET'),
+    },
+    'dbtemplates': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': 'unix:' + env('MEMCACHED_SOCKET'),
     }
 }
 
