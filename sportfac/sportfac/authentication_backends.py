@@ -28,6 +28,6 @@ class MasterUserBackend(ModelBackend):
         except UserModel.DoesNotExist:
             master_user.is_manager = False
             master_user.is_admin = False
-        master_user.save(using=LOCAL_DB)
+        local_user = master_user.save(using=LOCAL_DB)
         if master_user.check_password(password) and self.user_can_authenticate(master_user):
             return local_user

@@ -183,7 +183,10 @@ class HomePageView(BackendMixin, TemplateView):
         for registration in Registration.objects.exclude(status__in=(Registration.STATUS.canceled,
                                                                      Registration.STATUS.waiting)) \
                 .select_related('child', 'child__family'):
-            zipcode = registration.child.family.zipcode
+            try:
+                zipcode = registration.child.family.zipcode
+            except AttributeError
+                continue
             if zipcode not in cities:
                 zipcode = UNKNOWN
             children_per_zip[zipcode].add(registration.child)
