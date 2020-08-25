@@ -48,7 +48,7 @@ def send_mail(self, subject, message, from_email, recipients, reply_to, bcc=None
                     bill.reminder_sent_date = timezone.now()
                     bill.save()
                     logger.debug(u'Updated bill sent status for {}'.format(bill.id))
-            except FamilyUser.objects.DoesNotExist:
+            except FamilyUser.DoesNotExist:
                 logger.warning(u'No user found for pk={} email={}'.format(recipient_pk, recipients[0]))
     except SMTPException as smtp_exc:
         logger.error(u"Message {} to {} could not be sent: {}".format(subject, recipients, smtp_exc.message))

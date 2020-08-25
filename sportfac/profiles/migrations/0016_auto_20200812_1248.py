@@ -30,20 +30,20 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL(DROP_HISTORY),
-        migrations.RunSQL(ALTER_HISTORY1),
-        migrations.RunSQL(ALTER_HISTORY2),
-        migrations.RunSQL(ALTER_HISTORY3),
+        migrations.RunSQL(DROP_HISTORY, reverse_sql=migrations.RunSQL.noop),
+        migrations.RunSQL(ALTER_HISTORY1, reverse_sql=migrations.RunSQL.noop),
+        migrations.RunSQL(ALTER_HISTORY2, reverse_sql=migrations.RunSQL.noop),
+        migrations.RunSQL(ALTER_HISTORY3, reverse_sql=migrations.RunSQL.noop),
 
-        migrations.RunSQL(DROP_GROUP),
-        migrations.RunSQL(ALTER_GROUP1),
-        migrations.RunSQL(ALTER_GROUP2),
-        migrations.RunSQL(ALTER_GROUP3),
-        migrations.RunSQL(ALTER_GROUP4),
+        migrations.RunSQL(DROP_GROUP, reverse_sql=migrations.RunSQL.noop),
+        migrations.RunSQL(ALTER_GROUP1, reverse_sql=migrations.RunSQL.noop),
+        migrations.RunSQL(ALTER_GROUP2, reverse_sql=migrations.RunSQL.noop),
+        migrations.RunSQL(ALTER_GROUP3, reverse_sql=migrations.RunSQL.noop),
+        migrations.RunSQL(ALTER_GROUP4, reverse_sql=migrations.RunSQL.noop),
 
-        migrations.RunSQL(DROP_USER_PERMISSIONS),
-        migrations.RunSQL(ALTER_USER_PERMISSIONS1),
-        migrations.RunSQL(ALTER_USER_PERMISSIONS2),
-        migrations.RunSQL(ALTER_USER_PERMISSIONS3),
-        migrations.RunSQL(ALTER_USER_PERMISSIONS4),
+        migrations.RunSQL(DROP_USER_PERMISSIONS, reverse_sql=migrations.RunSQL.noop),
+        migrations.RunSQL(ALTER_USER_PERMISSIONS1, reverse_sql=migrations.RunSQL.noop),
+        migrations.RunSQL(ALTER_USER_PERMISSIONS2, reverse_sql=migrations.RunSQL.noop),
+        migrations.RunSQL(ALTER_USER_PERMISSIONS3, reverse_sql=migrations.RunSQL.noop),
+        migrations.RunSQL(ALTER_USER_PERMISSIONS4, reverse_sql=migrations.RunSQL.noop),
     ]

@@ -74,7 +74,7 @@ class MultipleDatesField(forms.CharField):
         try:
             output = [datetime.datetime.strptime(val, self.date_format).date() for val in value.split(self.separator)]
         except (ValueError, TypeError):
-            raise ValidationError(self.error_messages['invalid'], code='invalid')
+            raise ValidationError(_("One of the dates is invalid"), code='invalid')
         return output
 
 
