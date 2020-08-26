@@ -114,7 +114,7 @@
           <div class="pricing-header">
             <h3 class="pricing-plan-title">Printemps / Automne</h3>
           </div>
-          <a href="{% if registration_opened %}{% url 'auth_login' %}?next=/wizard/{% else %}{% url 'registrations_registered_activities' %}{% endif %}">
+          <a href="{% if registration_opened %}/wizard/{% else %}{% url 'registrations_registered_activities' %}{% endif %}">
             <img src="https://ssfmontreux.ch/static/img/vignette_2020-2021.jpg" class="img-responsive"
                  style="margin-bottom:15px">
           </a>
@@ -125,7 +125,7 @@
   {% countdown registration_start %}
 
   {% endif %}
-            <a href="{% if registration_opened %}{% url 'auth_login' %}?next=/wizard/{% else %}{% url 'registrations_registered_activities' %}{% endif %}"
+            <a href="{% if registration_opened %}/wizard/{% else %}{% url 'registrations_registered_activities' %}{% endif %}"
                class="btn btn-primary">
               Entrer
             </a>
@@ -151,12 +151,12 @@
           <div class="pricing-header">
             <h3 class="pricing-plan-title">Hiver</h3>
           </div>
-          <a href="{% if preferences_period_name == "hiver" %}/hiver/account/login/?next=/wizard/{% else %}/hiver/registrations/summary/{% endif %}" >
+          <a href="{% if preferences_period_name == "hiver" %}/hiver/wizard/{% else %}/hiver/registrations/summary/{% endif %}" >
             <img src="https://ssfmontreux.ch/hiver/static/img/snow-kid.jpg" class="img-responsive"
                  style="margin-bottom:15px">
           </a>
           <p class="text-center">
-            <a href="{% if preferences_period_name == "hiver" %}/hiver/account/login/?next=/wizard/{% else %}/hiver/registrations/summary/{% endif %}"
+            <a href="{% if preferences_period_name == "hiver" %}/hiver/wizard/{% else %}/hiver/registrations/summary/{% endif %}"
                class="btn btn-primary">
               Entrer
             </a>
