@@ -85,7 +85,6 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(auto_now_add=True, db_index=True)),
                 ('modified', models.DateTimeField(auto_now=True, db_index=True)),
                 ('question_label', models.CharField(help_text='e.g. Shoes size?', max_length=255, verbose_name='Question')),
-                ('activity', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='extra', to='activities.Activity')),
             ],
             options={
                 'abstract': False,
