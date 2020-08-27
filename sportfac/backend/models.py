@@ -19,7 +19,7 @@ class YearTenant(TenantMixin):
     end_date = models.DateField(null=False)
     created_on = models.DateTimeField(auto_now_add=True)
 
-    auto_create_schema = True
+    auto_create_schema = False
 
     class Meta:
         ordering = ('start_date',)

@@ -10,10 +10,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('profiles', '0013_add_uuid'),
-        ('absences', '0013_session_instructor_uuid'),
-        ('activities', '0022_instructors_uuid'),
-        ('registrations', '0035_add_uuid_to_family'),
-
     ]
 
     operations = [

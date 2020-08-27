@@ -5,7 +5,6 @@ from tempfile import NamedTemporaryFile
 
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import Group
 from django.contrib.messages import constants
 from django.contrib.sessions.models import Session
 from django.db import connection, transaction
@@ -14,7 +13,6 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
-from celery import shared_task
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
@@ -28,15 +26,37 @@ from .models import YearTenant, Domain
 
 logger = get_task_logger(__name__)
 
+"""
+from django.db import connection, transaction
+from django.utils.timezone import now
 
+from backend.models import YearTenant, Domain
+
+start=end=now()
+
+
+destination_tenant, created = YearTenant.objects.get_or_create(
+        schema_name='period_{}_{}'.format(
+            start.strftime('%Y%m%d'),
+            end.strftime('%Y%m%d')
+        ),
+        defaults={
+            'start_date': start,
+            'end_date': end,
+            'status': YearTenant.STATUS.creating
+        }
+    )
+destination_tenant.create_schema(check_if_exists=True)
+
+
+"""
 @shared_task
 @respects_language
 def create_tenant(start, end, copy_activities_from_id=None, copy_children_from_id=None, user_id=None):
     start = datetime.strptime(start, '%Y-%m-%d').date()
     end = datetime.strptime(end, '%Y-%m-%d').date()
-
+    connection.set_schema_to_public()
     with transaction.atomic():
-        connection.set_schema_to_public()
         destination_tenant, created = YearTenant.objects.get_or_create(
             schema_name='period_{}_{}'.format(
                 start.strftime('%Y%m%d'),
@@ -48,6 +68,7 @@ def create_tenant(start, end, copy_activities_from_id=None, copy_children_from_i
                 'status': YearTenant.STATUS.creating
             }
         )
+
         destination_tenant.create_schema(check_if_exists=True)
         logger.info('Created schema for period %s-%s' % (destination_tenant.start_date.isoformat(),
                                                          destination_tenant.end_date.isoformat()))

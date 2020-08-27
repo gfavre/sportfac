@@ -69,8 +69,11 @@ DATABASE_ROUTERS = (
 DEFAULT_TENANT_NAME = 'current'
 
 VERSION_SESSION_NAME = 'period'
-TENANT_MODEL = "backend.YearTenant" # app.Model
-TENANT_DOMAIN_MODEL = "backend.Domain" # app.Model
+TENANT_MODEL = "backend.YearTenant"  # app.Model
+TENANT_DOMAIN_MODEL = "backend.Domain"  # app.Model
+TENANT_CREATION_FAKES_MIGRATIONS = True
+
+
 
 ########## END DATABASE CONFIGURATION
 
