@@ -201,7 +201,7 @@ def update_current_tenant():
             msg = _("The active period has been automatically changed to %(start)s - %(end)s")
             params = {'start': new_domain.tenant.start_date.isoformat(),
                       'end': new_domain.tenant.end_date.isoformat()}
-            messages.info(user, msg % params)
+            # messages.info(user, msg % params)
 
         connection.set_tenant(new_domain.tenant)
 
