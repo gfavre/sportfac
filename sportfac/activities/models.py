@@ -343,6 +343,7 @@ class CoursesInstructors(models.Model):
 
     class Meta:
         unique_together = ('course', 'instructor')
+        auto_created = True
 
 
 EXTRA_TYPES = (('B', _("Boolean")),

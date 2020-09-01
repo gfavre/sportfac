@@ -19,7 +19,7 @@ class CourseForm(forms.ModelForm):
                                       widget=Select2Widget())
     instructors = forms.ModelMultipleChoiceField(
         label=_("Instructors"),
-        queryset=FamilyUser.objects,
+        queryset=FamilyUser.active_objects,
         widget=Select2MultipleWidget()
     )
     name = forms.CharField(label=_("Displayed name (optional)"), required=False,

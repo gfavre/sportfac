@@ -60,9 +60,6 @@ class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
         return initial
 
     def form_valid(self, form):
-        for user in form.cleaned_data['instructors']:
-            user.is_instructor = True
-            user.save()
         self.object = form.save()
         for extra in form.cleaned_data['extra']:
             self.object.extra.add(extra)
