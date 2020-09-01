@@ -33,11 +33,11 @@
     </div>
   </div>
   <div class="form-group"  ng-class="{'has-error': !detailedChild.sex}">
-    <label class="col-sm-4 control-label" for="inputBirthDate">Sexe<span class="required"> *</span></label>
+    <label class="col-sm-4 control-label" for="sex">Sexe<span class="required"> *</span></label>
     <div class="col-sm-8">
       {% if SEX_EDITABLE %}
       <label class="radio-inline">
-        <input type="radio" name="sex" ng-model="detailedChild.sex"  value="F" required>Fille
+        <input type="radio" id="sex" name="sex" ng-model="detailedChild.sex"  value="F" required>Fille
       </label>
       <label class="radio-inline">
         <input type="radio" name="sex" ng-model="detailedChild.sex"  value="M">Garçon
@@ -50,11 +50,13 @@
   </div>
   <div class="form-group"  ng-class="{'has-error': !detailedChild.birth_date}">
     <label class="col-sm-4 control-label" for="inputBirthDate">Date de naissance<span class="required"> *</span></label>
-    <div class="col-sm-5 strapdatepicker">
+    <div class="col-sm-5 datepicker">
         <input type="text" ng-model="detailedChild.birth_date" id="inputBirthDate" required
                class="form-control"
                {% if BIRTH_DATE_EDITABLE %}
-               placeholder="31.7.2008" data-language="fr" data-trigger="focus" bs-datepicker
+               placeholder="31.7.2008" data-language="fr" data-trigger="focus"
+               data-start-week="1"
+               bs-datepicker
                {% else %}
                readonly bs-datepicker disabled
                {% endif %}

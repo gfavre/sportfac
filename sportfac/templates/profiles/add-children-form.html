@@ -7,7 +7,6 @@
 <p ng-repeat="(name, errs) in errors" class="alert alert-danger" ng-show="errors.length > 0">
     {[{ errs.join(', ') }]}
   </p>
-    {% comment %}
 
   <div class="form-group " ng-class="{'has-warning': errors.notfound }"
        ng-show="{[{ useExternalIdentifiers }]}">
@@ -27,7 +26,6 @@
     </div>
     <hr/>
   </div>
-    {% endcomment %}
 
   <div class="form-group">
     <label class="col-sm-4 control-label" for="first_name">Prénom<span class="required"> *</span></label>
@@ -69,11 +67,12 @@
 
   <div class="form-group">
     <label class="col-sm-4 control-label" for="inputBirthDate">Date de naissance<span class="required"> *</span></label>
-    <div class="col-sm-5 ">
+    <div class="col-sm-5 datepicker">
       <input type="text" ng-model="detailedChild.birth_date" id="inputBirthDate" required
              class="form-control"
           {% if BIRTH_DATE_EDITABLE %}
-             placeholder="31.7.2008" data-language="fr" data-trigger="focus" bs-datepicker
+             placeholder="31.7.2008" data-language="fr" data-trigger="focus"
+             data-start-week="1" bs-datepicker
           {% else %}
              readonly bs-datepicker disabled
           {% endif %}

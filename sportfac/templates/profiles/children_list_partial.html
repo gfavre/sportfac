@@ -1,4 +1,22 @@
 {% load i18n sekizai_tags %}
+{% addtoblock "css" %}
+<style>
+.datepicker.dropdown-menu {
+  height: auto;
+}
+.datepicker table tr td, .datepicker table tr th {
+  width: auto!important;
+  height: auto!important;
+}
+.datepicker table tr td span {
+  height: auto!important;
+  line-height:13px!important;
+}
+
+</style>
+
+{% endaddtoblock %}
+
 {% addtoblock "extra_html" %}
 ng-app="sportfacChildren"
 ng-controller="ListCtrl"
