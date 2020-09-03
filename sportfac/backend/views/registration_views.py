@@ -149,6 +149,7 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
         messages.add_message(self.request, messages.SUCCESS, message)
         response = HttpResponseRedirect(self.instance.course.get_backend_url())
         if settings.KEPCHUP_NO_PAYMENT:
+            self.instance.save()
             return response
         try:
             if not self.instance.paid:
