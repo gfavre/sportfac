@@ -89,7 +89,7 @@ def send_instructors_email(self, course_pk, instructor_pk, subject, message, fro
     email.attach(filename, open(filepath).read(), 'application/pdf')
     logger.debug(u"Courses.pdf attached")
 
-    if not settings.KEPCHUP_NO_SSF:
+    if not (settings.KEPCHUP_NO_SSF or settings.KEPCHUP_FICHE_SALAIRE_MONTREUX):
         filepath = get_ssf_decompte_heures(course, instructor)
         filename = 'E_SSF_decompte_heures_%s_%s.pdf' % (
             instructor.first_name, instructor.last_name)
