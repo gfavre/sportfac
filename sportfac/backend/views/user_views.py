@@ -59,7 +59,7 @@ class UserListView(BackendMixin, ListView):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.POST.get('data', '[]'))
         if data == -1:
-            self.request.session['mail-userids'] = list(FamilyUser.objects.values_list('id', flat=True))
+            self.request.session['mail-userids'] = [str(id) for id in FamilyUser.objects.values_list('id', flat=True)]
         else:
             self.request.session['mail-userids'] = list(set(data))
         return HttpResponseRedirect(reverse('backend:custom-mail-custom-users'))
