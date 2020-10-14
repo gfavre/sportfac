@@ -225,7 +225,17 @@ class ChildrenViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
+        ext_id = self.request.query_params.get('ext', None)
+        if ext_id is not None:
+            try:
+                ext_id = int(ext_id)
+                queryset = queryset.filter(id_lagapeo=ext_id)
+            except ValueError:
+                queryset = queryset.none()
+        else:
+            queryset = queryset.filter(family=request.user)
         queryset = self.filter_queryset(queryset)
+        
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
