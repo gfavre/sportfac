@@ -116,9 +116,10 @@ STATICFILES_DIRS = (
     normpath(join(SITE_ROOT, 'static')),
 )
 COMPRESS_ENABLED = True
+
 KEPCHUP_USE_ABSENCES = True
 KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES = True
-
+KEPCHUP_USE_APPOINTMENTS = True
 KEPCHUP_USE_BUILDINGS = False
 KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = True
 KEPCHUP_SEND_PRESENCE_LIST = True
@@ -157,6 +158,8 @@ KEPCHUP_ZIPCODE_RESTRICTION = [
     ['1180', 'Rolle'], ['1264', 'Saint-Cergue'], ['1265', 'Saint-George'], ['1188', 'Signy-Avenex'],
     ['1274', 'Tannay'], ['1180', 'Tartegnin'], ['1270', u'Trélex'], ['1267', 'Vich'], ['1184', 'Vinzel']
 ]
+KEPCHUP_DISPLAY_LAGAPEO = True
+
 
 # Registration steps
 #########################################

@@ -4,7 +4,7 @@ from django.conf.urls import include, url
 from rest_framework.routers import DefaultRouter
 
 from . import views
-
+from appointments.views import api as appointment_views
 
 router = DefaultRouter()
 router.register(r'sessions', views.SessionViewSet, base_name='session')
@@ -29,4 +29,8 @@ urlpatterns = [
     url(r'^change-course/$', views.ChangeCourse.as_view(), name='change-course'),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^dashboard/users/', views.DashboardFamilyView.as_view(), name='all_users'),
+    url(r'^appointments/slots/$', appointment_views.SlotsList.as_view(), name='all_slots'),
+    url(r'^appointments/slots/(?P<slot_id>\d+)/', appointment_views.RegisterSlot.as_view(),
+        name='register_slots')
+
 ]

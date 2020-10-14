@@ -266,6 +266,7 @@ SHARED_APPS = (
 TENANT_APPS = (
     'absences',
     'activities',
+    'appointments',
     'registrations',
     'schools',
 )
@@ -565,6 +566,8 @@ KEPCHUP_IMPORT_CHILDREN = False
 KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = False
 # Ask for school building. Manage imports by building
 KEPCHUP_USE_BUILDINGS = False
+# Display ID Lagapeo
+KEPCHUP_DISPLAY_LAGAPEO = False
 
 
 # Activities
@@ -598,3 +601,7 @@ SSO_PRIVATE_KEY = env.str('SSO_PRIVATE_KEY', default='')
 SSO_PUBLIC_KEY = env.str('SSO_PUBLIC_KEY', default='')
 SSO_SERVER = env.str('SSO_SERVER', default='')
 SSO_DASHBOARD_REDIRECT = env.str('SSO_DASHBOARD_REDIRECT', default='/')
+
+# Appointments
+############################################
+KEPCHUP_USE_APPOINTMENTS = False

@@ -59,6 +59,11 @@ else:
             url(r'^$', flatviews.flatpage, {'url': '/'}, name='home')
         ]
 
+if settings.KEPCHUP_USE_APPOINTMENTS:
+    urlpatterns += [
+        url(r'^rendez-vous/$', include('appointments.urls', namespace='appointments'))
+    ]
+
 urlpatterns += [
     url(r'^reglement/$', flatviews.flatpage, {'url': '/reglement/'}, name='terms'),
     url(r'^protection-des-donnees/$', flatviews.flatpage, {'url': '/protection-des-donnees/'}, name='privacy'),
@@ -86,6 +91,7 @@ urlpatterns += [
 
     url(r'^admin/', include(admin.site.urls)),
 ]
+
 
 
 

@@ -8,8 +8,9 @@ from django.shortcuts import get_object_or_404
 from rest_framework import mixins, generics, status, filters, views
 from rest_framework import viewsets
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.decorators import list_route
+from rest_framework.decorators import list_route, action, permission_classes
 from rest_framework.response import Response
+from rest_framework.permissions import BasePermission
 from rest_framework_datatables.pagination import DatatablesPageNumberPagination
 from absences.models import Absence, Session
 from activities.models import Activity, Course
@@ -189,9 +190,17 @@ class FamilyView(mixins.ListModelMixin, generics.GenericAPIView):
         return self.list(request, *args, **kwargs)
 
 
+class FetchPermission(FamilyPermission):
+    def has_permission(self, request, view):
+        if view.action == 'fetch_ext_id':
+            return True
+        else:
+            return super(FetchPermission, self).has_permission(request, view)
+
+
 class ChildrenViewSet(viewsets.ModelViewSet):
     authentication_classes = (SessionAuthentication,)
-    permission_classes = (FamilyPermission, )
+    permission_classes = (FetchPermission, )
     serializer_class = ChildrenSerializer
     model = Child
 
@@ -200,19 +209,23 @@ class ChildrenViewSet(viewsets.ModelViewSet):
                             .prefetch_related('school_year')\
                             .select_related('teacher')
 
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
+    @action(detail=False, methods=['get'])
+    def fetch_ext_id(self, request, *args, **kwargs):
+        queryset = Child.objects.none()
         ext_id = self.request.query_params.get('ext', None)
         if ext_id is not None:
             try:
                 ext_id = int(ext_id)
-                queryset = queryset.filter(id_lagapeo=ext_id)
+                queryset = Child.objects.filter(id_lagapeo=ext_id)
             except ValueError:
                 queryset = queryset.none()
-        else:
-            queryset = queryset.filter(family=request.user)
-        queryset = self.filter_queryset(queryset)
 
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        queryset = self.filter_queryset(queryset)
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)

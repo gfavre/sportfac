@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+{% load i18n sekizai_tags static humanize %}
+
+
+{% block title %}{% trans "Register an appointment" %}{% endblock %}
+{% block page_title %}{% trans "Register an appointment" %}{% endblock %}
+
+{% block content %}
+  {% if appointments %}
+    <section class="portlet">
+      <h3 class="content-title"><u>{% trans "Your appointments" %}</u></h3>
+      <ul>
+        {% for appointment in appointments %}
+          <li>
+            {{ appointment.child }}: {{ appointment.slot.start | date:"l d F Y, H:i" }}
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+
+  {% endif %}
+
+  <section class="portlet">
+
+    <h3 class="content-title">
+      <u>{% trans "Available dates" %}</u>
+    </h3>
+    <div id='calendar'></div>
+  </section>
+  {% addtoblock "css" %}
+    <link href="{% static 'js/vendor/fullcalendar-5/lib/main.css' %}" rel="stylesheet"/>
+
+  {% endaddtoblock %}
+
+
+  {% addtoblock "js" %}
+    <script src="{% static 'js/vendor/js.cookie.js' %}"></script>
+    <script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
+    <script src="{% static 'js/vendor/handlebars.min.js' %}"></script>
+
+    <script src="{% static 'js/vendor/fullcalendar-5/lib/main.js' %}"></script>
+    <script src="{% static 'js/vendor/fullcalendar-5/lib/locales/fr-ch.js' %}"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        moment.locale('fr-ch');
+        $.ajaxSetup({
+          headers: {"X-CSRFToken": Cookies.get("csrftoken")}
+        });
+        let $modal = $('#calendar-modal');
+        let calendarEl = document.getElementById('calendar');
+        let calendar = new FullCalendar.Calendar(calendarEl, {
+          allDaySlot: false,
+          events: '{% url "api:all_slots" %}',
+          eventClick: function (info) {
+            info.jsEvent.preventDefault();
+            $('.modal-title', $modal).text(moment(info.event.start).format('dddd Do MMM YYYY, h:mm') + '-' + moment(info.event.end).format('h:mm'));
+            $('.modal-body', $modal).html(info.event.description);
+            $('form', $modal).attr('action', info.event.url);
+            $modal.modal();
+          },
+          initialView: 'timeGridWeek',
+          locale: 'fr-ch',
+          slotDuration: '00:30:00',
+          slotMinTime: '07:00',
+          slotMaxTime: '20:00'
+        });
+        calendar.gotoDate("{{ start }}");
+        calendar.render();
+
+        let childTemplate = Handlebars.compile($('#child-template').html());
+
+        let getChild = function () {
+          let lagapeo_id = $('#id_lagapeo').val();
+          $.ajax({
+            url: "{% url 'api:child-fetch-ext-id' %}" + '?ext=' + lagapeo_id,
+            type: 'GET',
+            success: function (response) {
+              if (response.length == 1) {
+                let html = childTemplate(response[0]);
+                $('#calendar-modal .children').append(html);
+
+              }
+            }
+          });
+        };
+        $('#lagapeo-search').on('click', getChild);
+        $('#id_lagapeo').keypress(function (event) {
+          if (event.which == 13) {
+            getChild();
+            return false;
+          }
+        });
+
+        let register = function (event) {
+          event.preventDefault();
+          $('form #id_email', $modal).parent().parent().removeClass('has-error');
+          $('form #id_phone', $modal).parent().parent().removeClass('has-error');
+          $('form #help-email', $modal).text('');
+          $('form #help-phone', $modal).text('');
+
+          let children = $("input:checkbox[name=children]:checked").map(
+            function () {
+              return parseInt($(this).val())
+            }).get();
+          let data = {
+            'children': children,
+            'email': $('#id_email').val(),
+            'phone': $('#id_phone').val()
+          };
+          $.ajax({
+            url: $('form', $modal).attr('action'),
+            type: 'POST',
+            data: JSON.stringify(data),
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+              console.log('success');
+              location.reload(true);
+            },
+            error: function (response) {
+              if (response.responseJSON.phone) {
+                $('form #id_phone', $modal).parent().parent().addClass('has-error');
+                $('form #help-phone', $modal).text(response.responseJSON.phone[0])
+              }
+              if (response.responseJSON.email) {
+                $('form #id_email', $modal).parent().parent().addClass('has-error');
+                $('form #help-email', $modal).text(response.responseJSON.email[0])
+              }
+            }
+          });
+        }
+        $('form', $modal).on('submit', register);
+
+
+      });
+    </script>
+
+    <div class="modal fade" id="calendar-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Modal title</h4>
+          </div>
+          <div class="modal-body">
+            <p class="lead">{% trans "Register an appointment for" %}</p>
+            <form method="post" class="form-horizontal" action="">{% csrf_token %}
+              <div class="children">
+                {% if request.user and request.user.children %}
+                  {% for child in request.user.children.all %}
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" value="{{ child.id }}" name="children" checked="checked">
+                        <strong>
+                          {{ child.full_name }}{% if DISPLAY_LAGAPEO %} ({{ child.id_lagapeo }}){% endif %}</strong>
+                      </label>
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              </div>
+              <hr>
+              <div class="form-group">
+                <label class="control-label col-sm-4" for="id_email">{% trans "Add child" %}</span></label>
+                <div class="col-sm-8">
+                  <div class="input-group">
+                    <input type="text" name="id_lagapeo" placeholder="Identifiant (n° SSF)"
+                           id="id_lagapeo" class="form-control">
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-success" type="button" id="lagapeo-search"><i
+                            class="icon-plus-circled"></i></button>
+                      </span>
+                  </div>
+                </div>
+              </div>
+              <hr>
+              <div class="form-group">
+                <label class="control-label col-sm-2" for="id_email">{% trans "E-mail" %}<span
+                    class="required">&nbsp;*</span></label>
+                <div class="field-email col-sm-10">
+                  <input type="email" name="email" value="{% if request.user %}{{ request.user.email }}{% endif %}"
+                         required="" id="id_email" class="form-control">
+                  <span id="help-email" class="help-block"></span>
+
+                </div><!--- .controls -->
+              </div>
+              <div class="form-group">
+                <label class="control-label col-sm-2" for="id_email">{% trans "Phone" %}<span
+                    class="required">&nbsp;*</span></label>
+                <div class="field-phone col-sm-10">
+                  <input type="tel" name="phone" value="{% if request.user %}{{ request.user.best_phone }}{% endif %}"
+                         required="" id="id_phone" class="form-control">
+                  <span id="help-phone" class="help-block"></span>
+                </div><!--- .controls -->
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+                <button type="submit" class="btn btn-primary">{% trans "Register" %}</button>
+              </div>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <script id="child-template" type="text/x-handlebars-template">
+      {% verbatim %}
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" value="{{ id }}" name="children" checked="checked">
+          <strong>{{ first_name }} {{ last_name }} ({{ ext_id }})</strong>
+        </label>
+      </div>
+      {% endverbatim %}
+    </script>
+
+  {% endaddtoblock %}
+{% endblock %}

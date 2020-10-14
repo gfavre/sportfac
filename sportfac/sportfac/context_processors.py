@@ -163,6 +163,9 @@ def kepchup_context(request):
         'EXPLICIT_SESSION_DATES': settings.KEPCHUP_EXPLICIT_SESSION_DATES,
         'NO_EXTRAS': settings.KEPCHUP_NO_EXTRAS,
         'USE_SSO': settings.KEPCHUP_USE_SSO,
+        'USE_APPOINTMENTS': settings.KEPCHUP_USE_APPOINTMENTS,
+        'DISPLAY_LAGAPEO': settings.KEPCHUP_DISPLAY_LAGAPEO,
+
     }
 
 
