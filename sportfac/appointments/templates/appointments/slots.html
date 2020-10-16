@@ -53,10 +53,12 @@
           events: '{% url "api:all_slots" %}',
           eventClick: function (info) {
             info.jsEvent.preventDefault();
-            $('.modal-title', $modal).text(moment(info.event.start).format('dddd Do MMM YYYY, h:mm') + '-' + moment(info.event.end).format('h:mm'));
-            $('.modal-body', $modal).html(info.event.description);
-            $('form', $modal).attr('action', info.event.url);
-            $modal.modal();
+            if (info.event.extendedProps.available_places > 0) {
+              $('.modal-title', $modal).text(moment(info.event.start).format('dddd Do MMM YYYY, h:mm') + '-' + moment(info.event.end).format('h:mm'));
+              $('.modal-body', $modal).html(info.event.description);
+              $('form', $modal).attr('action', info.event.url);
+              $modal.modal();
+            }
           },
           initialView: 'timeGridWeek',
           locale: 'fr-ch',
