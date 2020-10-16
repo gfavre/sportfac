@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-16 07:07+0200\n"
-"PO-Revision-Date: 2020-10-16 07:08+0200\n"
+"POT-Creation-Date: 2020-10-16 18:28+0200\n"
+"PO-Revision-Date: 2020-10-16 18:30+0200\n"
 "Last-Translator: Gregory Favre <greg@beyondthewall.ch>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -724,19 +724,74 @@ msgstr "Créneau de rendez-vous"
 msgid "Appointment slots"
 msgstr "Les créneaux de rendez-vous"
 
-#: sportfac/appointments/models.py:42 sportfac/profiles/forms.py:41
+#: sportfac/appointments/models.py:46 sportfac/profiles/forms.py:41
 #: sportfac/registrations/resources.py:40
 msgid "Email"
 msgstr "E-mail"
 
-#: sportfac/appointments/models.py:43
+#: sportfac/appointments/models.py:47
 msgid "Phone number"
 msgstr "Numéro de téléphone"
 
-#: sportfac/appointments/serializers.py:27
+#: sportfac/appointments/serializers.py:28
 #, python-format
 msgid "%(available)s out of %(total)s available"
 msgstr "%(available)s sur %(total)s places disponibles"
+
+#: sportfac/appointments/templates/appointments/backend/create.html:4
+#: sportfac/appointments/templates/appointments/backend/create.html:5
+msgid "Manage agenda"
+msgstr "Gérer l'agenda"
+
+#: sportfac/appointments/templates/appointments/backend/create.html:63
+#: sportfac/appointments/templates/appointments/backend/create.html:131
+msgid "Number of places"
+msgstr "Nombre de places"
+
+#: sportfac/appointments/templates/appointments/backend/create.html:115
+#: sportfac/appointments/templates/appointments/slots.html:26
+msgid "Available dates"
+msgstr "Dates disponibles"
+
+#: sportfac/appointments/templates/appointments/backend/create.html:126
+msgid "Edit slot"
+msgstr "Modifier le créneau"
+
+#: sportfac/appointments/templates/appointments/backend/create.html:141
+msgid "Remove slot"
+msgstr "Supprimer le créneau"
+
+#: sportfac/appointments/templates/appointments/backend/create.html:144
+#: sportfac/appointments/templates/appointments/slots.html:198
+#: sportfac/templates/profiles/registration_list.html:11
+#: sportfac/templates/registrations/registration_list.html:11
+#: sportfac/themes/montreux/templates/registrations/registration_list.html:11
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:11
+msgid "Close"
+msgstr "Fermer"
+
+#: sportfac/appointments/templates/appointments/backend/create.html:145
+#: sportfac/templates/absences/absences-table-child.html:140
+#: sportfac/templates/absences/absences-table-courses.html:255
+#: sportfac/templates/absences/absences-table.html:359
+#: sportfac/templates/absences/absences-table.html:416
+#: sportfac/templates/absences/absences-table.html:423
+#: sportfac/templates/backend/portlets/registration_dates.html:19
+#: sportfac/templates/backend/registration/wizard.html:35
+#: sportfac/templates/backend/registration_dates.html:18
+#: sportfac/templates/profiles/account.html:36
+#: sportfac/templates/profiles/registration_form.html:63
+#: sportfac/templates/profiles/registration_list.html:71
+#: sportfac/templates/registrations/registration_list.html:144
+#: sportfac/themes/montreux/templates/registrations/registration_list.html:144
+#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:147
+msgid "Save"
+msgstr "Enregistrer"
+
+#: sportfac/appointments/templates/appointments/backend/list.html:4
+#: sportfac/appointments/templates/appointments/backend/list.html:5
+msgid "All appointments"
+msgstr "Tous les rendez-vous"
 
 #: sportfac/appointments/templates/appointments/slots.html:5
 #: sportfac/appointments/templates/appointments/slots.html:6
@@ -747,42 +802,30 @@ msgstr "Enregistrer un rendez-vous"
 msgid "Your appointments"
 msgstr "Vos rendez-vous"
 
-#: sportfac/appointments/templates/appointments/slots.html:26
-msgid "Available dates"
-msgstr "Dates disponibles"
-
-#: sportfac/appointments/templates/appointments/slots.html:146
+#: sportfac/appointments/templates/appointments/slots.html:147
 msgid "Register an appointment for"
 msgstr "Enregistrer un rendez-vous pour"
 
-#: sportfac/appointments/templates/appointments/slots.html:163
+#: sportfac/appointments/templates/appointments/slots.html:164
 #: sportfac/templates/backend/user/detail.html:138
 #: sportfac/templates/profiles/children_list_partial.html:45
 msgid "Add child"
 msgstr "Ajouter un enfant"
 
-#: sportfac/appointments/templates/appointments/slots.html:177
+#: sportfac/appointments/templates/appointments/slots.html:178
 #: sportfac/contact/forms.py:13 sportfac/profiles/forms.py:74
 #: sportfac/profiles/forms.py:169
 msgid "E-mail"
 msgstr "E-mail"
 
-#: sportfac/appointments/templates/appointments/slots.html:187
+#: sportfac/appointments/templates/appointments/slots.html:188
 #: sportfac/templates/backend/registration/transport-detail.html:165
 #: sportfac/templates/backend/user/create.html:79
 #: sportfac/templates/backend/user/update.html:82
 msgid "Phone"
 msgstr "Téléphone"
 
-#: sportfac/appointments/templates/appointments/slots.html:197
-#: sportfac/templates/profiles/registration_list.html:11
-#: sportfac/templates/registrations/registration_list.html:11
-#: sportfac/themes/montreux/templates/registrations/registration_list.html:11
-#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:11
-msgid "Close"
-msgstr "Fermer"
-
-#: sportfac/appointments/templates/appointments/slots.html:198
+#: sportfac/appointments/templates/appointments/slots.html:199
 msgid "Register"
 msgstr "Inscription"
 
@@ -802,7 +845,7 @@ msgstr ""
 msgid "Register another appointment"
 msgstr "Enregistrer un autre rendez-vous"
 
-#: sportfac/appointments/views/api.py:48
+#: sportfac/appointments/views/api_views.py:50
 msgid ""
 " Your appointment is registered. You should receive a reminder email shortly."
 msgstr ""
@@ -1179,7 +1222,7 @@ msgstr "Le transport a été mis à jour."
 msgid "Transport has been deleted."
 msgstr "Le transport a été supprimé."
 
-#: sportfac/backend/views/site_views.py:23
+#: sportfac/backend/views/site_views.py:25
 #, python-format
 msgid ""
 "<a href=\"%(url)s\" class=\"alert-link\">Page \"%(title)s\"</a> has been "
@@ -2277,23 +2320,6 @@ msgstr "niv. 0"
 msgid "Edit note"
 msgstr "Editer la note"
 
-#: sportfac/templates/absences/absences-table-child.html:140
-#: sportfac/templates/absences/absences-table-courses.html:255
-#: sportfac/templates/absences/absences-table.html:359
-#: sportfac/templates/absences/absences-table.html:416
-#: sportfac/templates/absences/absences-table.html:423
-#: sportfac/templates/backend/portlets/registration_dates.html:19
-#: sportfac/templates/backend/registration/wizard.html:35
-#: sportfac/templates/backend/registration_dates.html:18
-#: sportfac/templates/profiles/account.html:36
-#: sportfac/templates/profiles/registration_form.html:63
-#: sportfac/templates/profiles/registration_list.html:71
-#: sportfac/templates/registrations/registration_list.html:144
-#: sportfac/themes/montreux/templates/registrations/registration_list.html:144
-#: sportfac/themes/montreux_ski/templates/registrations/registration_list.html:147
-msgid "Save"
-msgstr "Enregistrer"
-
 #: sportfac/templates/absences/absences-table-child.html:167
 #: sportfac/templates/absences/absences-table-courses.html:282
 #: sportfac/templates/absences/absences-table.html:397
@@ -3139,6 +3165,14 @@ msgstr "Site"
 #: sportfac/templates/backend/navbar.html:203
 msgid "Pages"
 msgstr "Pages"
+
+#: sportfac/templates/backend/navbar.html:211
+msgid "Manage appointment slots"
+msgstr "Gérer les créneaux de rendez-vous"
+
+#: sportfac/templates/backend/navbar.html:218
+msgid "Review appointments"
+msgstr "Révision des rendez-vous"
 
 #: sportfac/templates/backend/portlets/children.html:10
 msgid "All children"

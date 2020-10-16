@@ -4,7 +4,7 @@ from django.conf.urls import include, url
 from rest_framework.routers import DefaultRouter
 
 from . import views
-from appointments.views import api as appointment_views
+from appointments.views import api_views as appointment_views
 
 router = DefaultRouter()
 router.register(r'sessions', views.SessionViewSet, base_name='session')
@@ -21,7 +21,7 @@ router.register(r'extra', views.ExtraInfoViewSet, base_name="api-extra")
 router.register(r'years', views.YearViewSet, base_name="year")
 
 router.register(r'all-children', views.SimpleChildrenViewSet, base_name='allchildren')
-
+router.register('all-slots', appointment_views.SlotsViewset, base_name='slots')
 
 urlpatterns = [
     url(r'^', include(router.urls)),
@@ -31,6 +31,6 @@ urlpatterns = [
     url(r'^dashboard/users/', views.DashboardFamilyView.as_view(), name='all_users'),
     url(r'^appointments/slots/$', appointment_views.SlotsList.as_view(), name='all_slots'),
     url(r'^appointments/slots/(?P<slot_id>\d+)/', appointment_views.RegisterSlot.as_view(),
-        name='register_slots')
+        name='register_slots'),
 
 ]

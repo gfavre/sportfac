@@ -1,0 +1,27 @@
+{% extends "backend/base.html" %}
+{% load i18n sekizai_tags duration switzerland %}
+
+{% block title %}{% trans "All appointments" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "All appointments" %}{% endblock %}
+
+{% get_current_language as LANGUAGE_CODE %}
+
+
+
+{% block content %}
+  {% regroup object_list by start|date:"l d F Y" as slots_per_day %}
+  {% for slot in slots_per_day %}
+    <section class="portlet">
+      <h3 class="content-title"><u>{{ slot.grouper }}</u></h3>
+      {% for slot in slot.list %}
+        <h4>{{ slot.start | date:"H:i" }} - {{ slot.end | date:"H:i" }}</h4>
+          <ul>
+            {% for appointment in slot.appointments.all %}
+              <li>{{ appointment.child }} -  <a href="{{ appointment.phone_number|phone:'RFC3966' }}">{{ appointment.phone_number|phone }}</a> - {{ appointment.email | urlize}}</li>
+            {% endfor %}
+          </ul>
+      {% endfor %}
+    </ul>
+    </section>
+  {% endfor %}
+{% endblock content %}

@@ -1,0 +1,156 @@
+{% extends "backend/base.html" %}
+{% load i18n sekizai_tags duration switzerland static %}
+
+{% block title %}{% trans "Manage agenda" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "Manage agenda" %}{% endblock %}
+
+{% get_current_language as LANGUAGE_CODE %}
+
+
+
+{% block content %}
+  {% addtoblock "css" %}
+    <link href="{% static 'js/vendor/fullcalendar-5/lib/main.css' %}" rel="stylesheet"/>
+
+  {% endaddtoblock %}
+  {% addtoblock "js" %}
+    <script src="{% static 'js/vendor/js.cookie.js' %}"></script>
+    <script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
+    <script src="{% static 'js/vendor/handlebars.min.js' %}"></script>
+
+    <script src="{% static 'js/vendor/fullcalendar-5/lib/main.js' %}"></script>
+    <script src="{% static 'js/vendor/fullcalendar-5/lib/locales/fr-ch.js' %}"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        moment.locale('fr-ch');
+        $.ajaxSetup({
+          headers: {"X-CSRFToken": Cookies.get("csrftoken")}
+        });
+        let $modal = $('#calendar-modal');
+        let calendarEl = document.getElementById('calendar');
+        let calendar = new FullCalendar.Calendar(calendarEl, {
+          allDaySlot: false,
+          events: '{% url "api:slots-list" %}',
+          editable: true,
+          eventStartEditable: true,
+          eventResizableFromStart: true,
+          eventDurationEditable: true,
+          eventResize: function (eventResizeInfo) {
+            $.ajax({
+              type: "PATCH",
+              url: eventResizeInfo.event.url,
+              data: {'start': eventResizeInfo.event.startStr, 'end': eventResizeInfo.event.endStr},
+              dataType: "json",
+              success: function (data) {
+                calendar.refetchEvents();
+              }
+            });
+          },
+          eventClick: function (info) {
+            info.jsEvent.preventDefault();
+            $('.modal-title', $modal).text(moment(info.event.start).format('dddd Do MMM YYYY, h:mm') + '-' + moment(info.event.end).format('h:mm'));
+            $('#id_places', $modal).val(info.event.extendedProps.places);
+            $('form', $modal).attr('action', info.event.url);
+            $modal.modal();
+          },
+
+
+          initialView: 'timeGridWeek',
+          locale: 'fr-ch',
+          selectable: true,
+          select: function (info) {
+            info.jsEvent.preventDefault();
+            let places = prompt("{% trans "Number of places" %}");
+            if (places) {
+              $.ajax({
+                type: "POST",
+                url: '{% url "api:slots-list" %}',
+                data: {'places': places, 'start': info.startStr, 'end': info.endStr},
+                dataType: "json",
+                success: function (data) {
+                  calendar.refetchEvents();
+                }
+              });
+            }
+          },
+          slotDuration: '00:30:00',
+          slotMinTime: '07:00',
+          slotMaxTime: '20:00'
+        });
+        calendar.gotoDate("{{ start }}");
+        calendar.render();
+
+        $('#remove-event').on('click', function (event) {
+          let url = $('form', $modal).attr('action');
+          $.ajax({
+            url: url,
+            type: 'DELETE',
+            success: function (response) {
+              calendar.refetchEvents();
+            }
+          });
+        });
+
+        $('form', $modal).on('submit', function (event) {
+          event.preventDefault()
+          let url = $('form', $modal).attr('action');
+          $.ajax({
+            url: url,
+            type: 'PATCH',
+            data: {'places': $('#id_places', $modal).val()},
+            success: function (response) {
+              $modal.modal('hide');
+              calendar.refetchEvents();
+            }
+          });
+        });
+      });
+
+
+    </script>
+  {% endaddtoblock %}
+
+  <section class="portlet">
+
+    <h3 class="content-title"><u> {% trans "Available dates" %} </u>
+    </h3>
+    <div id="calendar"></div>
+
+
+    <div class="modal fade" id="calendar-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">{% trans "Edit slot" %}</h4>
+          </div>
+          <div class="modal-body">
+            <form method="post" class="form-horizontal" action="">{% csrf_token %}
+              <div class="form-group">
+                <label class="control-label col-sm-4" for="id_places">{% trans "Number of places" %}</label>
+                <div class="col-sm-8">
+                  <input type="number" name="places" value="" min="0"
+                         required="" id="id_places" class="form-control">
+                  <span id="help-places" class="help-block"></span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <button type="button" class="btn btn-danger" id="remove-event" data-dismiss="modal"><i
+                      class="icon-trash"></i> {% trans "Remove slot" %}</button>
+                </div>
+                <div class="col-md-6 text-right">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+                  <button type="submit" class="btn btn-success" id="save-event">{% trans "Save" %}</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </section>
+{% endblock content %}

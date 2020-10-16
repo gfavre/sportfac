@@ -30,6 +30,10 @@ class AppointmentSlot(TimeStampedModel):
     def api_register_url(self):
         return reverse('api:register_slots', kwargs={'slot_id': self.id})
 
+    @property
+    def api_management_url(self):
+        return reverse('api:slots-detail', kwargs={'pk': self.id})
+
     def __unicode__(self):
         return self.start.isoformat() + ' - ' + self.end.isoformat()
 

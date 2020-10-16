@@ -34,7 +34,19 @@ class SlotSerializer(serializers.ModelSerializer):
     def get_color(self, obj):
         return obj.available_places > 0 and 'green' or 'gray'
 
+
 class AppointmentSerializer(serializers.Serializer):
     children = serializers.PrimaryKeyRelatedField(many=True, queryset=Child.objects.all())
     email = serializers.EmailField()
     phone = serializers.CharField(validators=PhoneNumberField().validators)
+
+
+class AdminAppointmentSlotSerializer(SlotSerializer):
+    url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = AppointmentSlot
+        fields = ('id', 'title', 'available_places', 'places', 'start', 'end', 'url', 'color')
+
+    def get_url(self, obj):
+        return obj.api_management_url

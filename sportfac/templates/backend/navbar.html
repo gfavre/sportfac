@@ -203,6 +203,23 @@
                 &nbsp;&nbsp;{% trans "Pages" %}
               </a>
             </li>
+            {% if USE_APPOINTMENTS %}
+             <li class="divider"></li>
+              <li>
+              <a href="{% url 'backend:appointments-manage' %}">
+                <i class="icon-rebel"></i>
+                &nbsp;&nbsp;{% trans "Manage appointment slots" %}
+              </a>
+            </li>
+
+              <li>
+              <a href="{% url 'backend:appointments-list' %}">
+                <i class="icon-calendar"></i>
+                &nbsp;&nbsp;{% trans "Review appointments" %}
+              </a>
+            </li>
+
+            {% endif %}
           </ul>
         </li>
       </ul>

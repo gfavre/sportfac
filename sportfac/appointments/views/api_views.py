@@ -8,10 +8,12 @@ from django.urls import reverse
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 
+from api.permissions import ManagerPermission
 from registrations.models import Child
 from ..models import AppointmentSlot, Appointment
-from ..serializers import SlotSerializer, AppointmentSerializer
+from ..serializers import SlotSerializer, AppointmentSerializer, AdminAppointmentSlotSerializer
 
 
 class SlotsList(generics.ListAPIView):
@@ -50,3 +52,9 @@ class RegisterSlot(generics.GenericAPIView):
         else:
             data['url'] = reverse('appointments:success')
         return Response(data, status=status.HTTP_201_CREATED)
+
+
+class SlotsViewset(ModelViewSet):
+    permission_classes = (ManagerPermission,)
+    queryset = AppointmentSlot.objects.all()
+    serializer_class = AdminAppointmentSlotSerializer
