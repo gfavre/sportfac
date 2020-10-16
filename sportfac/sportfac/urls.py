@@ -61,7 +61,7 @@ else:
 
 if settings.KEPCHUP_USE_APPOINTMENTS:
     urlpatterns += [
-        url(r'^rendez-vous/$', include('appointments.urls', namespace='appointments'))
+        url(r'^rendez-vous/', include('appointments.urls', namespace='appointments'))
     ]
 
 urlpatterns += [

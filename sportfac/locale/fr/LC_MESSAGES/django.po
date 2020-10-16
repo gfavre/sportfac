@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-14 17:32+0200\n"
-"PO-Revision-Date: 2020-10-14 17:32+0200\n"
+"POT-Creation-Date: 2020-10-16 07:07+0200\n"
+"PO-Revision-Date: 2020-10-16 07:08+0200\n"
 "Last-Translator: Gregory Favre <greg@beyondthewall.ch>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -751,30 +751,30 @@ msgstr "Vos rendez-vous"
 msgid "Available dates"
 msgstr "Dates disponibles"
 
-#: sportfac/appointments/templates/appointments/slots.html:147
+#: sportfac/appointments/templates/appointments/slots.html:146
 msgid "Register an appointment for"
 msgstr "Enregistrer un rendez-vous pour"
 
-#: sportfac/appointments/templates/appointments/slots.html:164
+#: sportfac/appointments/templates/appointments/slots.html:163
 #: sportfac/templates/backend/user/detail.html:138
 #: sportfac/templates/profiles/children_list_partial.html:45
 msgid "Add child"
 msgstr "Ajouter un enfant"
 
-#: sportfac/appointments/templates/appointments/slots.html:178
+#: sportfac/appointments/templates/appointments/slots.html:177
 #: sportfac/contact/forms.py:13 sportfac/profiles/forms.py:74
 #: sportfac/profiles/forms.py:169
 msgid "E-mail"
 msgstr "E-mail"
 
-#: sportfac/appointments/templates/appointments/slots.html:188
+#: sportfac/appointments/templates/appointments/slots.html:187
 #: sportfac/templates/backend/registration/transport-detail.html:165
 #: sportfac/templates/backend/user/create.html:79
 #: sportfac/templates/backend/user/update.html:82
 msgid "Phone"
 msgstr "Téléphone"
 
-#: sportfac/appointments/templates/appointments/slots.html:198
+#: sportfac/appointments/templates/appointments/slots.html:197
 #: sportfac/templates/profiles/registration_list.html:11
 #: sportfac/templates/registrations/registration_list.html:11
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:11
@@ -782,9 +782,32 @@ msgstr "Téléphone"
 msgid "Close"
 msgstr "Fermer"
 
-#: sportfac/appointments/templates/appointments/slots.html:199
+#: sportfac/appointments/templates/appointments/slots.html:198
 msgid "Register"
 msgstr "Inscription"
+
+#: sportfac/appointments/templates/appointments/success.html:5
+#: sportfac/appointments/templates/appointments/success.html:6
+msgid "Success"
+msgstr "Succès"
+
+#: sportfac/appointments/templates/appointments/success.html:9
+msgid ""
+"Your appointment is registered. You should receive a reminder email shortly."
+msgstr ""
+"Votre rendez-vous est enregistré. Vous devriez recevoir un email de "
+"confirmation sous peu."
+
+#: sportfac/appointments/templates/appointments/success.html:12
+msgid "Register another appointment"
+msgstr "Enregistrer un autre rendez-vous"
+
+#: sportfac/appointments/views/api.py:48
+msgid ""
+" Your appointment is registered. You should receive a reminder email shortly."
+msgstr ""
+"Votre rendez-vous est enregistré. Vous devriez recevoir un email de "
+"confirmation sous peu."
 
 #: sportfac/backend/dynamic_preferences_registry.py:77
 msgid "School name"

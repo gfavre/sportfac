@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
+from django.contrib import messages
 from django.shortcuts import get_object_or_404
+from django.utils.translation import ugettext as _
+from django.urls import reverse
+
 
 from rest_framework import generics
 from rest_framework import status
@@ -37,5 +41,12 @@ class RegisterSlot(generics.GenericAPIView):
             appointment, created = Appointment.objects.get_or_create(child=child, slot=slot, defaults=defaults)
             if created:
                 total += 1
+        data = {'total': total}
+        if self.request.user.is_authenticated:
+            data['url'] = reverse('appointments:register')
+            messages.add_message(request, messages.SUCCESS,
+                                 _(" Your appointment is registered. You should receive a reminder email shortly."))
 
-        return Response(data={'total': total}, status=status.HTTP_201_CREATED)
+        else:
+            data['url'] = reverse('appointments:success')
+        return Response(data, status=status.HTTP_201_CREATED)

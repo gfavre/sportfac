@@ -235,7 +235,7 @@ class ChildrenViewSet(viewsets.ModelViewSet):
         else:
             queryset = queryset.filter(family=request.user)
         queryset = self.filter_queryset(queryset)
-        
+
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
