@@ -21,6 +21,7 @@ registrationserviceurl="{% url 'api:registration-list' %}"
 displaydates="{{ CALENDAR_DISPLAY_DATES|yesno:'true,false' }}"
 displaycoursenames="{{ CALENDAR_DISPLAY_COURSE_NAMES|yesno:'true,false' }}"
 canregistersameactivity="{{ ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE|yesno:'true,false' }}"
+hiddendays="{{ CALENDAR_HIDDEN_DAYS }}"
 
 {% endaddtoblock %}
     <div class="portlet">
@@ -69,6 +70,9 @@ canregistersameactivity="{{ ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE|yesno:'t
   <script src="{{ STATIC_URL }}js/activities/controllers.js"></script>
   <script src="{{ STATIC_URL }}js/activities/app.js"></script>
 {% else %}
+  {% comment %}
+  uglifyjs ../vendor/fullcalendar.min.js ../vendor/angular.min.js ../vendor/angular-locale_fr-ch.js ../vendor/angular-route.min.js ../vendor/angular-cookies.min.js ../vendor/angular-sanitize.min.js ../vendor/angular-ui-calendar.js ../vendor/angularstrap/angular-strap.min.js ../vendor/angularstrap/angular-strap.tpl.min.js filters.js services.js controllers.js app.js -o app.min.js
+  {% endcomment %}
   <script src="{{ STATIC_URL }}js/activities/app.min.js"></script>
 {% endif %}
 {% endaddtoblock %}

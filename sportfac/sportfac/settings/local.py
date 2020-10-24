@@ -107,12 +107,12 @@ CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 CELERY_ALWAYS_EAGER = True
 
 TEMPLATES[0]['DIRS'] = [
-    normpath(join(SITE_ROOT, 'themes', 'nyon_prangins', 'templates')),
+    normpath(join(SITE_ROOT, 'themes', 'montreux_ski', 'templates')),
     normpath(join(SITE_ROOT, 'templates')),
 ]
 
 STATICFILES_DIRS = (
-    normpath(join(SITE_ROOT, 'themes', 'nyon_prangins', 'static')),
+    normpath(join(SITE_ROOT, 'themes', 'montreux_ski', 'static')),
     normpath(join(SITE_ROOT, 'static')),
 )
 COMPRESS_ENABLED = True
@@ -130,6 +130,7 @@ KEPCHUP_CHILD_SCHOOL = True
 KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS = ['pdf/Lettre-Moniteurs-cours-automne-2017.pdf', 'pdf/GMS_2017-2018.pdf']
 KEPCHUP_CALENDAR_DISPLAY_DATES = True
 KEPCHUP_CALENDAR_DISPLAY_COURSE_NAMES = True
+KEPCHUP_CALENDAR_HIDDEN_DAYS = [0, 1, 2, 3, 4, 5]
 KEPCHUP_BIB_NUMBERS = True
 KEPCHUP_FICHE_SALAIRE_MONTREUX = True
 KEPCHUP_REGISTRATION_LEVELS = True
