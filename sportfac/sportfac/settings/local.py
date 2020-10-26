@@ -44,8 +44,8 @@ ALLOWED_HOSTS = ('127.0.0.1', 'localhost', 'test.com', 'tenant.test.com', 'tests
 ########## EMAIL CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = env('EMAIL_FILE_PATH', default='/tmp/app-messages')
+#EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+#EMAIL_FILE_PATH = env('EMAIL_FILE_PATH', default='/tmp/app-messages')
 
 ########## END EMAIL CONFIGURATION
 
@@ -124,7 +124,7 @@ KEPCHUP_USE_BUILDINGS = False
 KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = True
 KEPCHUP_SEND_PRESENCE_LIST = True
 KEPCHUP_SEND_COPY_CONTACT_MAIL_TO_ADMIN = True
-KEPCHUP_NO_PAYMENT = True
+KEPCHUP_NO_PAYMENT = False
 KEPCHUP_NO_TERMS = False
 KEPCHUP_CHILD_SCHOOL = True
 KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS = ['pdf/Lettre-Moniteurs-cours-automne-2017.pdf', 'pdf/GMS_2017-2018.pdf']
@@ -173,6 +173,8 @@ KEPCHUP_ALTERNATIVE_BILLING_LABEL = u'Confirmation'
 KEPCHUP_USE_SSO = False
 #LOGIN_URL = '/client/'
 #LOGOUT_URL = 'https://users.ssfmontreux.ch/logout/'
+
+CELERY_ALWAYS_EAGER = True
 
 CELERYBEAT_SCHEDULE['notify-absences'] = {
         'task': 'absences.tasks.notify_absences',

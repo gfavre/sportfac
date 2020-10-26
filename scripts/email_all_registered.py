@@ -7,19 +7,13 @@ parents = set([reg.child.family for reg in Registration.objects.all()])
 for parent in parents:
     body = u"""Chers parents, 
 
-Il reste encore passablement de places libres pour les Sports Scolaires Facultatifs !
+Suite aux nouvelles mesures sanitaires édictées par le conseil d'état du canton de Vaud du vendredi 23 octobre, les élèves en âge du secondaire I (9s à 12s) doivent porter un masque constamment. Ils pourront ôter ce dernier uniquement lors de la pratique sportive. (cf. nouvelle règle scolaire). 
 
-Si les cours ci-dessous n’ont pas plus d’inscriptions d’ici au 21 octobre 2020, nous nous verrons dans l’obligation de les fermer.
+Les sports de contact étant toujours autorisés, nous avons néanmoins encouragé nos moniteurs à diminuer les contacts entre les élèves. 
 
-- FUTSAL MARENS
-- RUGBY MARENS
-- TENNIS DE TABLE MARDI et VENDREDI
-- TENNIS DÉBUTANT ET INTERMÉDIAIRE
-- ULTIMATE FRISBEE
+Merci de votre compréhension
 
-J’attire également votre attention sur le fait que vous pouvez déjà inscrire vos enfants pour le 2e semestre. 
-
-En vous espérant en bonne santé, je vous adresse mes meilleures salutations, 
+Cordialement, 
 
 Guillaume Strobino
 Responsable régional
@@ -28,7 +22,7 @@ Toutes les informations sur : www.nyon.ch/ssf"""
     
     to = u'%s %s <%s>' % (parent.first_name, parent.last_name, parent.email)
     print to
-    send_mail(u'Inscriptions au sport scolaire facultatif - Nyon-Prangins',
+    send_mail(u'Sport scolaire facultatif de Nyon-Prangins - nouvelles mesures sanitaires',
               body,
               u'Guillaume Strobino <ssf@nyon.ch>',
               [to,])
