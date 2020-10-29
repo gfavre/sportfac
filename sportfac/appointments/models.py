@@ -39,7 +39,7 @@ class AppointmentSlot(TimeStampedModel):
 
 
 class Appointment(TimeStampedModel):
-    slot = models.ForeignKey('AppointmentSlot', on_delete=models.PROTECT, related_name='appointments')
+    slot = models.ForeignKey('AppointmentSlot', on_delete=models.CASCADE, related_name='appointments')
     child = models.OneToOneField('registrations.Child', on_delete=models.CASCADE,
                                  related_name='appointment')
     family = models.ForeignKey('profiles.FamilyUser', null=True, on_delete=models.SET_NULL, related_name='appointments')
