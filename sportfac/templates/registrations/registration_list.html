@@ -2,296 +2,349 @@
 {% load i18n l10n humanize switzerland json_tags %}
 
 
-{% block page_title %}{% trans "Confirmation" %}{% endblock page_title%}
+{% block page_title %}{% trans "Confirmation" %}{% endblock page_title %}
+
+{% block extra_css %}
+  <style>
+    .dl-horizontal.extras {
+      margin-top: 20px;
+    }
+    .dl-horizontal.extras dt {
+      width: 60%;
+      margin-right: 30px;
+    }
+
+  </style>
+
+{% endblock %}
 
 {% block content %}
-{% if overlaps %}
-<div class="alert alert-warning alert-dismissible" role="alert">
-  <button type="button" class="close" data-dismiss="alert">
-    <span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span>
-  </button>
-  <strong><i class="icon-warning"></i>&nbsp;{% trans "Warning!" %}</strong>
-  <p>
-    {% if user.children.count > 1 %}
-    {% trans "The following courses occur at the same or close times. It may be difficult to bring your children." %}
-    {% else %}
-    {% trans "The following courses occur at the same or close times. It may be difficult to bring your child." %}
-    {% endif %}
-    <ul>
-    {% for overlap in overlaps %}
-      <li>
-        <span class="highlight" rel="{{ overlap.0.id}}">{{ overlap.0.child.first_name }} - {{ overlap.0.course.activity.name }}</span> /
-        <span class="highlight" rel="{{ overlap.1.id}}">{{ overlap.1.child.first_name }} - {{ overlap.1.course.activity.name }}</span>
-      </li>
-    {% endfor %}
-    </ul>
-  </p>
-</div>
-{% endif %}
 
-<table class=" table table-hover">
-  <thead>
+  {% if overlaps %}
+    <div class="alert alert-warning alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert">
+        <span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span>
+      </button>
+      <strong><i class="icon-warning"></i>&nbsp;{% trans "Warning!" %}</strong>
+      <p>
+        {% if user.children.count > 1 %}
+          {% trans "The following courses occur at the same or close times. It may be difficult to bring your children." %}
+        {% else %}
+          {% trans "The following courses occur at the same or close times. It may be difficult to bring your child." %}
+        {% endif %}
+      <ul>
+        {% for overlap in overlaps %}
+          <li>
+            <span class="highlight"
+                  rel="{{ overlap.0.id }}">{{ overlap.0.child.first_name }} - {{ overlap.0.course.activity.name }}</span>
+            /
+            <span class="highlight"
+                  rel="{{ overlap.1.id }}">{{ overlap.1.child.first_name }} - {{ overlap.1.course.activity.name }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+      </p>
+    </div>
+  {% endif %}
+
+  <table class=" table table-hover ">
+    <thead>
     <tr>
       <th class="text-center">{% trans "Name" %}</th>
       <th class="text-center">{% trans "Activity" %}</th>
       <th class="text-center">{% trans "Period" %}</th>
       <th class="text-center">{% trans "Time" %}</th>
       <th class="text-center">{% trans "Place" %}</th>
-{% if not NO_PAYMENT  %}
-      <th class="text-center">{% trans "Price" %}</th>
-{% endif %}
-    </tr>
-  </thead>
-
-{% if not NO_PAYMENT  %}
-  <tfoot>
-    <tr id="subtotal" {% if not has_reductions %} style="display:none"{% endif %}>
-      <th colspan="5" class="text-right">{% trans "Subtotal" %}</th>
-      <th class="nowrap">{{ subtotal|money_html }}</th>
-    </tr>
-    <tr id="reductions"{% if not has_reductions %} style="display:none"{% endif %}>
-      <th colspan="5" class="text-right">{% trans "Reductions" %}</th>
-      <th class="nowrap">
-        <ul class="list-unstyled">
-          {% for key, reduction in applied_reductions.items %}
-          <li id="reduction-{{ key }}" data.value="{{ reduction }}">- {{ reduction }}</li>
-          {% endfor %}
-        </ul>
-      </th>
-    </tr>
-    <tr>
-      <th colspan="5" class="text-right">{% trans "Total" %}</th>
-      <th class="nowrap" id="total-price">{{ total_price|money_html }}</th>
-    </tr>
-  </tfoot>
-{% endif %}
-
-  <tbody>
-  {% for registered in registered_list %}
-    <tr id="{{ registered.id }}" {% if registered.id in overlapped %}class="warning"{% endif %}>
-      <td rowspan="2">
-        <span class="nowrap">{{ registered.child.full_name }}</span>
-      </td>
-      <td>
-          <p>{{ registered.course.activity.name }}</p>
-      </td>
-      <td class="text-center">
-        <span class="nowrap">{{ registered.course.start_date }}</span><br><span class="icon-down-1" aria-hidden="true"></span><br><span class="nowrap">{{ registered.course.end_date }}</span>
-      </td>
-      <td class="text-center">
-        {{ registered.course.day_name }} <br /> <span class="nowrap">{{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</span>
-      </td>
-      <td>{{ registered.course.place }}</td>
-
-{% if not NO_PAYMENT  %}
-      <td class="nowrap" rowspan="2">{{ registered.course.price|money }}</td>
-{% endif %}
-    </tr>
-    <tr>
-      <td colspan="{{ NO_PAYMENT|yesno:"3,4" }}">
-      {% if registered.extra_needs %}
-        <form class="extra-info form-horizontal" method="post"
-              data-toggle="validator" role="form">{% csrf_token %}
-          <div class="alert alert-danger form-error" style="display: none">
-            <i class="icon-warning icon-large"></i> {% trans "Please submit this form." %}</span>
-          </div>
-          <input type="hidden" name="registration" value="{{ registered.id }}" />
-          {% for extra in registered.extra_needs %}
-            <div class="form-group">
-              <label for="{{ registered.id }}-extra-{{ extra.id }}"
-                     class="col-sm-3 control-label">{{ extra.question_label }} {% if extra.mandatory %}*{% endif %}</label>
-              <div class="col-sm-9">
-                {% if extra.choices %}
-                <select name="extra-{{ extra.id }}" id="{{ registered.id }}-extra-{{ extra.id }}"
-                        class="form-control" {% if extra.mandatory %}required{% endif %}>
-                  {% if not extra.mandatory %}
-                      <option></option>
-                  {% endif %}
-                  {% for choice in extra.choices  %}
-                  <option value="{{ choice }}"
-                          {% if choice == extra.default %}checked{% endif %}>{{ choice }}</option>
-                  {% endfor %}
-                </select>
-                {% else %}
-                  {% if extra.type == 'C' %}
-                  <input type="text" name="extra-{{ extra.id }}" class="form-control"
-                         value="{{ extra.default|default:""}}"
-                         id="{{ registered.id }}-extra-{{ extra.id }}"
-                         {% if extra.mandatory %}required{% endif %} />
-                  {% elif extra.type == 'I' %}
-                  <input type="number" name="extra-{{ extra.id }}" class="form-control"
-                         value="{{ extra.default|default:""}}"
-                         id="{{ registered.id }}-extra-{{ extra.id }}"
-                         {% if extra.mandatory %}required{% endif %} />
-                  {% else %}
-                  <label class="radio-inline">
-                    <input type="radio" name="extra-{{ extra.id }}" value="1"
-                           {% if extra.default == "1" %}checked{% endif %}
-                           {% if extra.mandatory %}required{% endif %} /> {% trans "yes" %}
-                  </label>
-                  <label class="radio-inline">
-                    <input type="radio" name="extra-{{ extra.id }}" value="0"
-                           {% if extra.default == "0" %}checked{% endif %}> {% trans "no" %}
-                  </label>
-                  {% endif %}
-                {% endif %}
-                <div class="help-block with-errors">{{ extra.extra_info }}</div>
-              </div>
-            </div>
-          {% endfor %}
-          <div class="form-group">
-            <div class="col-sm-offset-3 col-sm-9">
-              <button type="submit" class="btn btn-success" >{% trans "Save" %}</button>
-            </div>
-          </div>
-        </form>
-
-      {% else %}
-        <dl class="dl-horizontal">
-          {% for extra in registered.extra_infos.all %}
-            <dt>{{ extra.key.question_label }}</dt><dd>{{ extra.value }}</dd>
-          {% endfor %}
-        </dl>
+      {% if not NO_PAYMENT %}
+        <th class="text-center">{% trans "Price" %}</th>
       {% endif %}
-
-
-        <p class="alert alert-info hide" role="alert">
-          <i class="icon-refresh icon-spin"></i> {% trans "Sending info..." %}
-        </p>
-        <div class="alert alert-success hide" role="alert">
-          <i class="icon-ok"></i> {% trans "Extra infos saved" %}
-          <dl  class="dl-horizontal">
-          {% for extra in registered.extra_needs %}
-             <dt>{{ extra.question_label }}</dt><dd class="value-{{ extra.id }}"></dd>
-          {% endfor %}
-          </dl>
-        </div>
-        <p class="alert alert-cancel hide" role="alert">
-          <i class="icon-cross"></i> {% trans "An error has occurred. Please contact us." %}</span>
-        </p>
-      </td>
     </tr>
+    </thead>
 
-  {% endfor %}
-  </tbody>
+    {% if not NO_PAYMENT %}
+      <tfoot>
+      <tr>
+        <th colspan="5" class="text-right">{% trans "Total" %}</th>
+        <th class="nowrap text-right" id="total-price">{{ total_price|money_html }}</th>
+      </tr>
+      </tfoot>
+    {% endif %}
 
-</table>
+    <tbody>
+    {% for registered in registered_list %}
+      <tr id="{{ registered.id }}" {% if registered.id in overlapped %}class="warning"{% endif %}>
+        <td rowspan="2">
+          <span class="nowrap">{{ registered.child.full_name }}</span>
+        </td>
+        <td>
+          <p>{{ registered.course.activity.name }}</p>
+        </td>
+        <td class="text-center">
+          <span class="nowrap">{{ registered.course.start_date }}</span><br><span class="icon-down-1"
+                                                                                  aria-hidden="true"></span><br><span
+            class="nowrap">{{ registered.course.end_date }}</span>
+        </td>
+        <td class="text-center">
+          {{ registered.course.day_name }} <br/> <span
+            class="nowrap">{{ registered.course.start_time|time:"H:i" }} - {{ registered.course.end_time|time:"H:i" }}</span>
+        </td>
+        <td>{{ registered.course.place }}</td>
+
+        {% if not NO_PAYMENT %}
+          <td class="nowrap text-right invoice-item" data-value="{{ registered.course.price }}" rowspan="2">
+            {{ registered.course.price|money }}
+          </td>
+        {% endif %}
+      </tr>
+      <tr>
+        <td colspan="{{ NO_PAYMENT|yesno:"4,5" }}">
+          {% if registered.extra_needs %}
+            <form class="extra-info form-horizontal" method="post"
+                  data-toggle="validator" role="form">{% csrf_token %}
+              <div class="alert alert-danger form-error" style="display: none">
+                <i class="icon-warning icon-large"></i> {% trans "Please submit this form." %}
+              </div>
+              <input type="hidden" name="registration" value="{{ registered.id }}"/>
+              {% for extra in registered.extra_needs %}
+                <div class="form-group">
+                  <label for="{{ registered.id }}-extra-{{ extra.id }}"
+                         class="col-sm-3 control-label">{{ extra.question_label }} {% if extra.mandatory %}
+                    *{% endif %}</label>
+                  <div class="col-sm-6">
+                    {% if extra.choices %}
+                      <select name="extra-{{ extra.id }}" id="{{ registered.id }}-extra-{{ extra.id }}"
+                              class="form-control" {% if extra.mandatory %}required{% endif %}>
+                        {% if not extra.mandatory %}
+                          <option></option>
+                        {% endif %}
+                        {% for choice in extra.choices %}
+                          <option value="{{ choice }}"
+                                  {% if choice == extra.default %}checked{% endif %}>{{ choice }}</option>
+                        {% endfor %}
+                      </select>
+                    {% else %}
+                      {% if extra.type == 'C' %}
+                        <input type="text" name="extra-{{ extra.id }}" class="form-control"
+                               value="{{ extra.default|default:"" }}"
+                               id="{{ registered.id }}-extra-{{ extra.id }}"
+                               {% if extra.mandatory %}required{% endif %}/>
+                      {% elif extra.type == 'I' %}
+                        <input type="number" name="extra-{{ extra.id }}" class="form-control"
+                               value="{{ extra.default|default:"" }}"
+                               id="{{ registered.id }}-extra-{{ extra.id }}"
+                               {% if extra.mandatory %}required{% endif %}/>
+                      {% else %}
+                        <label class="radio-inline">
+                          <input type="radio" name="extra-{{ extra.id }}" value="1"
+                                 {% if extra.default == "1" %}checked{% endif %}
+                                 {% if extra.mandatory %}required{% endif %}/> {% trans "yes" %}
+                        </label>
+                        <label class="radio-inline">
+                          <input type="radio" name="extra-{{ extra.id }}" value="0"
+                                 {% if extra.default == "0" %}checked{% endif %}> {% trans "no" %}
+                        </label>
+                      {% endif %}
+                    {% endif %}
+                    <div class="help-block with-errors">{{ extra.extra_info }}</div>
+                  </div>
+                  <div class="col-sm-3 text-right invoice-item" id="reduction-label-{{ extra.id }}" data-value="0">
+
+                  </div>
+                </div>
+              {% endfor %}
+              <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-9">
+                  <button type="submit" class="btn btn-success">{% trans "Save" %}</button>
+                </div>
+              </div>
+            </form>
+          {% else %}
+            <dl class="dl-horizontal extras">
+              {% for extra in registered.extra_infos.all %}
+                <dt>{{ extra.key.question_label }}</dt>
+                <dd>{{ extra.value }}
+                  {% if extra.key.price_modifier %}
+                    <span class="pull-right invoice-item"
+                          data-value="{{ extra.price_modifier }}">{{ extra.price_modifier|money_sign }}</span>
+                  {% endif %}
+                </dd>
+              {% endfor %}
+            </dl>
+          {% endif %}
+
+
+          <p class="alert alert-info hide" role="alert">
+            <i class="icon-refresh icon-spin"></i> {% trans "Sending info..." %}
+          </p>
+          <div class="alert alert-success hide" role="alert">
+            <i class="icon-ok"></i> {% trans "Extra infos saved" %}
+            <dl class="dl-horizontal extras">
+              {% for extra in registered.extra_needs %}
+                <dt>{{ extra.question_label }}</dt>
+                <dd class="value-{{ extra.id }}">
+                  <span class="extra-value"></span>
+                {% if extra.price_modifier %}
+                  <span class="pull-right invoice-item" data-value="0"></span>
+                {% endif %}
+                </dd>
+
+              {% endfor %}
+            </dl>
+          </div>
+          <p class="alert alert-cancel hide" role="alert">
+            <i class="icon-cross"></i> {% trans "An error has occurred. Please contact us." %}
+          </p>
+        </td>
+      </tr>
+
+    {% endfor %}
+    </tbody>
+
+  </table>
 {% endblock content %}
 
 
 
 {% block page_footer %}
-<hr />
-<form class="form form-inline" id="accept" method="post">{% csrf_token %}
-  {{ form.non_field_errors }}
-  {{ form.accept.errors }}
-  <div class="text-right has-error">
-  {% if not NO_TERMS %}
-  <div class="hidden">
-    <input type="checkbox" name="{{ form.accept.name }}"  checked="checked" />
-  </div>
-  {% else %}
-  <div class="checkbox text-right error" style="display: block;">
-    <label>
-      <input type="checkbox" name="{{ form.accept.name }}" /> {{ form.accept.label }}
-    </label>
-  </div>
-  {% endif %}
-  <small ><i class="icon-warning"></i>{% trans "Confirmation is definitive. You will not be able to change your registrations again." %}</small>
-  </div>
+  <hr/>
+  <form class="form form-inline" id="accept" method="post">{% csrf_token %}
+    {{ form.non_field_errors }}
+    {{ form.accept.errors }}
+    <div class="text-right has-error">
+      {% if not NO_TERMS %}
+        <div class="hidden">
+          <input type="checkbox" name="{{ form.accept.name }}" checked="checked"/>
+        </div>
+      {% else %}
+        <div class="checkbox text-right error" style="display: block;">
+          <label>
+            <input type="checkbox" name="{{ form.accept.name }}"/> {{ form.accept.label }}
+          </label>
+        </div>
+      {% endif %}
+      <small><i
+          class="icon-warning"></i>{% trans "Confirmation is definitive. You will not be able to change your registrations again." %}
+      </small>
+    </div>
 
-<nav >
-  <ul class="pager">
-    <li class="previous">
-      <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span> {% trans "Previous"%}</a>
-    </li>
-    <li class="next">
-      <button type="submit" class="btn btn-primary btn-large btn-next pull-right">
-      {% if NO_PAYMENT %}{% trans "Confirm" %}{% else %}{% trans "Confirm and proceed to checkout" %}{% endif %}
-      </button>
-    </li>
-  </ul>
+    <nav>
+      <ul class="pager">
+        <li class="previous">
+          <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span> {% trans "Previous" %}</a>
+        </li>
+        <li class="next">
+          <button type="submit" class="btn btn-primary btn-large btn-next pull-right">
+            {% if NO_PAYMENT %}{% trans "Confirm" %}{% else %}{% trans "Next" %}{% endif %}
+          </button>
+        </li>
+      </ul>
 
-</nav>
+    </nav>
 
-</form>
+  </form>
 {% endblock page_footer %}
 
 {% block extra_js %}
-<script src="{{ STATIC_URL }}js/vendor/jquery.form.min.js"></script>
-<script src="{{ STATIC_URL }}js/vendor/validator.js"></script>
+  <script src="{{ STATIC_URL }}js/vendor/jquery.form.min.js"></script>
+  <script src="{{ STATIC_URL }}js/vendor/validator.js"></script>
 
-<script>
-  $(document).ready(function(){
-      var reductions = {{ reductions|to_json }};
+  <script>
+    $(document).ready(function () {
+      let prices = {{ price_modifiers | to_json }};
 
-      var computePrice = function(){
-        var getSum = function(total, num) {
+      let computePrice = function () {
+        let getSum = function (total, num) {
           return total + num;
         };
-        var arr = $('#reductions li').map(function(n, el){return parseInt($(el).data('value'))});
-        var new_total = {{ subtotal|to_json }} - $.makeArray(arr).reduce(getSum);
-        $('#total-price .value').text(new_total);
+        let arr = $('.invoice-item:visible').map(function (n, el) {
+          return parseInt($(el).data('value'))
+        });
+        let new_total = $.makeArray(arr).reduce(getSum);
+        $('#total-price .value').text(intPart(new_total));
       };
 
-      $('.btn-next').click(function(event){
-         if ($('form.extra-info').is(':visible')){
-            $('.form-error').show();
-            $('form.extra-info:visible .form-control').first().focus()
-            event.preventDefault();
-         }
+      let intPart = function (value) {
+        if (value % 1 != 0) {
+          return value;
+        } else {
+          return value + '.-';
+        }
+      };
+      let intToChf = function (value) {
+        let text = '';
+        if (value < 0) {
+          text = '– CHF ' + intPart(Math.abs(value));
+        } else if (value == 0) {
+          text = '';
+        } else {
+          text = '+ CHF ' + intPart(value);
+        }
+        return text;
+      };
+
+      $('.btn-next').click(function (event) {
+        if ($('form.extra-info').is(':visible')) {
+          $('.form-error').show();
+          $('form.extra-info:visible .form-control').first().focus()
+          event.preventDefault();
+        }
       });
 
-      $('form.extra-info select').change(function(){
-        var extra_id = $(this).attr('name').split('-')[1];
+      $('form.extra-info select').change(function () {
+        let extra_id = $(this).attr('name').split('-')[1];
         if (extra_id === undefined) return;
-        if (extra_id in reductions){
-          var value = $(this).val();
-          $('#reduction-' + extra_id).remove();
-          if ($('#reductions li').length == 0) $('#reductions').hide();
-          if ((value in reductions[extra_id]) && (reductions[extra_id][value] > 0)){
-              var intval = reductions[extra_id][value];
-              var $reduc = $('<li id="reduction-' + extra_id +'" data-value="' + intval + '">-' + intval + '</li>');
-              $reduc.appendTo($('#reductions ul'))
-              $('#subtotal').show();
-              $('#reductions').show();
-              computePrice();
+        if (extra_id in prices) {
+          let value = $(this).val();
+          if (value in prices[extra_id]) {
+            let intval = prices[extra_id][value];
+            let $reduc = $('.invoice-item', $(this).parent().parent());
+            $reduc.data('value', intval)
+            $reduc.text(intToChf(intval));
+            computePrice();
           }
         }
 
       });
 
-      $('.highlight').hover(function(){
-         $('#' + $(this).attr('rel')).toggleClass('warning');
+      $('.highlight').hover(function () {
+        $('#' + $(this).attr('rel')).toggleClass('warning');
       });
       $('#accept button').prop('disabled', !$('#accept input[type=checkbox]').prop('checked'));
-      $('#accept input:checkbox').click(function(){
+      $('#accept input:checkbox').click(function () {
         $(this).parents('.has-error').removeClass('has-error');
         $('#accept button').prop('disabled', !$('#accept button').prop('disabled'));
       });
 
       $('.extra-info').ajaxForm({
-          url: '{% url "api:api-extra-list" %}',
-          success: function(res, status, xhr, form){
-            var $parent = form.parent('td');
-            $('.alert-info', $parent).addClass('hide');
-            $.each(res, function(){
-                $('.alert-success .value-' + this.key, $parent).html(this.value);
-            });
-            $('.alert-success', $parent).removeClass('hide');
-            $('.alert-danger', $parent).addClass('hide');
-          },
-          error: function(xhr, status, error, form){
-            var $parent = form.parent('td');
-            $('.alert-info', $parent).addClass('hide');
-            $('.alert-danger', $parent).removeClass('hide');
-          },
-          beforeSubmit: function(formData, form, options){
-            form.addClass('hide');
-            var $parent = form.parent('td');
-            $('.alert-info', $parent).removeClass('hide');
-          }
+        url: '{% url "api:api-extra-list" %}',
+        success: function (res, status, xhr, form) {
+          var $parent = form.parent('td');
+          $('.alert-info', $parent).addClass('hide');
+          $.each(res, function () {
+            let $value = $('.alert-success .value-' + this.key, $parent);
+            $('.extra-value', $value).html(this.value);
+            if (this.value in prices[this.key]) {
+              let price = prices[this.key][this.value];
+              $('.invoice-item', $value).text(intToChf(price));
+              $('.invoice-item', $value).data('value', price);
+
+            }
+          });
+          $('.alert-success', $parent).removeClass('hide');
+          $('.alert-danger', $parent).addClass('hide');
+          computePrice();
+        },
+        error: function (xhr, status, error, form) {
+          var $parent = form.parent('td');
+          $('.alert-info', $parent).addClass('hide');
+          $('.alert-danger', $parent).removeClass('hide');
+        },
+        beforeSubmit: function (formData, form, options) {
+          form.addClass('hide');
+          var $parent = form.parent('td');
+          $('.alert-info', $parent).removeClass('hide');
+        }
       });
-  });
-</script>
+    });
+  </script>
 {% endblock extra_js %}

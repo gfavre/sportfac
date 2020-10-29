@@ -61,14 +61,13 @@ def wizard_context(request):
         'wizard_confirm',
         can_confirm
     )
+    steps = [about, children, activities, confirmation]
 
-    if settings.KEPCHUP_NO_PAYMENT:
-        steps = [about, children, activities, confirmation]
-    else:
+    if not settings.KEPCHUP_NO_PAYMENT:
         billing = Step(
             request, 'billing-step', settings.KEPCHUP_ALTERNATIVE_BILLING_LABEL or _("Billing"),
-            'wizard_billing', can_register_activities and can_pay(request))
-        steps = [about, children, activities, confirmation, billing]
+            'wizard_billing', can_register_activities and True)#can_pay(request))
+        steps += [billing]
 
     current = 0
     for idx, step in enumerate(steps):

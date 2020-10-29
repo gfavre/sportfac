@@ -151,9 +151,10 @@ class Registration(TimeStampedModel, StatusModel):
     @property
     def price(self):
         subtotal = self.course.price
-        reductions = sum([extra.reduction for extra in self.extra_infos.all()])
-        if subtotal > reductions:
-            return subtotal - reductions
+        modifier = sum([extra.price_modifier for extra in self.extra_infos.all()])
+        if subtotal + modifier > 0:
+            # we don't want to give money to users :)
+            return subtotal + modifier
         return 0
 
     def save(self, *args, **kwargs):
@@ -288,8 +289,12 @@ class ExtraInfo(models.Model):
         ordering = ('key', 'registration')
 
     @property
-    def reduction(self):
-        return self.key.reduction_dict.get(self.value, 0)
+    def price_modifier(self):
+        return self.key.price_dict.get(self.value, 0)
+
+    def save(self, *args, **kwargs):
+        super(ExtraInfo, self).save(*args, **kwargs)
+        self.registration.save()
 
 
 class Child(TimeStampedModel, StatusModel):

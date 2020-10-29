@@ -7,11 +7,13 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse_lazy
 from django.db import transaction, connection
 from django.db.models import Sum
+from django.utils.timezone import now
 from django.utils.translation import ugettext as _, get_language
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 
 from braces.views import LoginRequiredMixin
 
+from appointments.models import AppointmentSlot
 from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.forms import AcceptTermsForm
 from profiles.models import School
@@ -72,22 +74,23 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
         registrations = self.get_queryset()
         context['registered_list'] = registrations
         registrations = registrations.order_by('course__start_date', 'course__end_date')
-        reductions = {}
+        price_modifiers = {}
         for registration in registrations:
             for extra in registration.course.extra.all():
-                reductions[extra.id] = extra.reduction_dict
-        context['reductions'] = reductions
+                price_modifiers[extra.id] = extra.price_dict
+        context['price_modifiers'] = price_modifiers
 
-        context['applied_reductions'] = {}
+        context['applied_price_modifications'] = {}
         for registration in registrations:
             for extra in registration.extra_infos.all():
-                if extra.key.id in reductions:
-                    reduction = reductions[extra.key.id].get(extra.value, 0)
-                    if reduction:
-                        context['applied_reductions'][extra.key.id] = reduction
-        context['has_reductions'] = len(context['applied_reductions']) > 0
+                if extra.key.id in price_modifiers:
+                    price_modif = price_modifiers[extra.key.id].get(extra.value, 0)
+                    if price_modif:
+                        context['applied_price_modifications'][extra.key.id] = price_modif
+        context['has_price_modification'] = len(context['applied_price_modifications']) != 0
+
         context['subtotal'] = registrations.aggregate(Sum('course__price'))['course__price__sum']
-        context['total_price'] = context['subtotal'] - sum(context['applied_reductions'].values())
+        context['total_price'] = context['subtotal'] + sum(context['applied_price_modifications'].values())
 
         context['overlaps'] = []
         context['overlapped'] = set()
@@ -165,6 +168,17 @@ class WizardBillingView(LoginRequiredMixin, WizardMixin, BillMixin, TemplateView
     def get_context_data(self, **kwargs):
         context = super(WizardBillingView, self).get_context_data(**kwargs)
         context['bill'] = Bill.objects.filter(family=self.request.user).order_by('created').last()
+
+        context['include_calendar'] = False
+
+        if settings.KEPCHUP_USE_APPOINTMENTS:
+            context['include_calendar'] = True
+
+            if AppointmentSlot.objects.exists():
+                context['start'] = AppointmentSlot.objects.first().start.date().isoformat()
+            else:
+                context['start'] = now().date().isoformat()
+
         return context
 
     def get(self, request, *args, **kwargs):

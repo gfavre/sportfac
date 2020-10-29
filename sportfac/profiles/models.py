@@ -238,6 +238,14 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
             return None
         return registrations.first().created
 
+    @property
+    def montreux_needs_appointment(self):
+        registrations = Registration.objects.filter(child__family=self)
+        for registration in registrations:
+            if registration.extra_infos.filter(key__question_label__contains=u"matériel", value='OUI').exists():
+                return True
+        return False
+
     def get_registrations(self, validated=True):
         if validated:
             queryset = Registration.objects.validated()

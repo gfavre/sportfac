@@ -31,9 +31,29 @@ def money(value):
         number = float(value)
         frac, integer = math.modf(number)
         if frac:
-            return mark_safe('CHF {:1,.2f}'.format(number).replace(',', "'"))
+            return mark_safe('CHF {:1,.2f}'.format(number).replace(',', "'").replace('CHF -', '<strong>-</strong> CHF '))
         else:
-            return mark_safe('CHF {:1,.0f}.-'.format(number).replace(',', "'"))
+            return mark_safe('CHF {:1,.0f}.-'.format(number).replace(',', "'").replace('CHF -', '<strong>-</strong> CHF '))
+    except ValueError:
+        return value
+    except TypeError:
+        return value
+
+@register.filter(is_safe=True)
+def money_sign(value):
+    try:
+        number = float(value)
+        frac, integer = math.modf(number)
+        if frac:
+            return mark_safe(
+                'CHF {:+1,.2f}'.format(number).replace(',', "'").replace('CHF -', '– CHF ')
+                                                                .replace('CHF +', '+ CHF ')
+            )
+        else:
+            return mark_safe(
+                'CHF {:+1,.0f}.-'.format(number).replace(',', "'").replace('CHF -', '– CHF ')
+                                                                  .replace('CHF +', '+ CHF ')
+            )
     except ValueError:
         return value
     except TypeError:

@@ -3,14 +3,14 @@ from datetime import datetime, date
 
 from django.contrib.postgres.fields import ArrayField
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.aggregates import Count
-from django.core.urlresolvers import reverse
 from django.template.defaultfilters import date as _date
 from django.utils.translation import ugettext_lazy as _, ugettext
 
-from ckeditor_uploader.fields import RichTextUploadingField
 from autoslug import AutoSlugField
+from ckeditor_uploader.fields import RichTextUploadingField
 
 from sportfac.models import TimeStampedModel
 from .utils import course_to_js_csv
@@ -142,8 +142,10 @@ class Course(TimeStampedModel):
     place = models.TextField(verbose_name=_("Place"))
     min_participants = models.PositiveSmallIntegerField(verbose_name=_("Minimal number of participants"))
     max_participants = models.PositiveSmallIntegerField(verbose_name=_("Maximal number of participants"))
-    schoolyear_min = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="1", verbose_name=_("Minimal school year"))
-    schoolyear_max = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="12", verbose_name=_("Maximal school year"))
+    schoolyear_min = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="1",
+                                                 verbose_name=_("Minimal school year"))
+    schoolyear_max = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="12",
+                                                 verbose_name=_("Maximal school year"))
 
     announced_js = models.BooleanField(_("Course announced to J+S"), default=False)
 
@@ -366,10 +368,11 @@ class ExtraNeed(TimeStampedModel):
                          base_field=models.CharField(max_length=255),
                          blank=True,
                          null=True)
-    price_reduction = ArrayField(verbose_name=_("reduce price by xx francs if this value is selected"),
-                                 base_field=models.IntegerField(),
-                                 blank=True,
-                                 null=True)
+    price_modifier = ArrayField(verbose_name=_("Modify price by xx francs if this value is selected"),
+                                help_text=_("List of positive/negative values"),
+                                base_field=models.IntegerField(),
+                                blank=True,
+                                null=True)
     default = models.CharField(verbose_name=_("Default value"), default="", blank=True, max_length=255)
 
     def __unicode__(self):
@@ -382,10 +385,10 @@ class ExtraNeed(TimeStampedModel):
         verbose_name_plural = _("extra questions")
 
     @property
-    def reduction_dict(self):
-        if not self.price_reduction:
+    def price_dict(self):
+        if not self.price_modifier:
             return {}
-        return dict(zip(self.choices, self.price_reduction))
+        return dict(zip(self.choices, self.price_modifier))
 
 
 
