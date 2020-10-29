@@ -11,6 +11,8 @@
 {% url 'registrations_children' as children_url %}
 {% url 'registrations_registered_activities' as activities_url %}
 {% url 'registrations_billing' as billing_url %}
+{% url 'appointments:register' as appointments_url %}
+
 <div class="container">
   <div class="layout layout-main-right layout-stack-sm">
     <div class="col-md-3 col-sm-4 layout-sidebar hidden-print">
@@ -57,6 +59,16 @@
           </a>
         </li>
         {% endif %}
+
+      {% if USE_APPOINTMENTS %}
+        <li {% if request.get_full_path == appointments_url %}class="active"{% endif %}>
+          <a href="{{ appointments_url }}">
+            <i class="icon-calendar-1"></i>
+            &nbsp;&nbsp;{% trans "My appointments" %}
+          </a>
+        </li>
+        {% endif %}
+
 
       </ul>
     </div>

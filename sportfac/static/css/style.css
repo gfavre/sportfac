@@ -19,6 +19,7 @@
  * limitations under the License.
  * ========================================================================
  */
+@import "fontello/_animation.css";
 .bootstrap-switch {
   display: inline-block;
   direction: ltr;
@@ -6879,91 +6880,10 @@ button.close {
     display: none !important;
   }
 }
-/*
-   Animation example, for spinners
-*/
-.animate-spin {
-  -moz-animation: spin 2s infinite linear;
-  -o-animation: spin 2s infinite linear;
-  -webkit-animation: spin 2s infinite linear;
-  animation: spin 2s infinite linear;
-  display: inline-block;
-}
-
-@-moz-keyframes spin {
-  0% {
-    -moz-transform: rotate(0deg);
-    -o-transform: rotate(0deg);
-    -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  100% {
-    -moz-transform: rotate(359deg);
-    -o-transform: rotate(359deg);
-    -webkit-transform: rotate(359deg);
-    transform: rotate(359deg);
-  }
-}
-@-webkit-keyframes spin {
-  0% {
-    -moz-transform: rotate(0deg);
-    -o-transform: rotate(0deg);
-    -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  100% {
-    -moz-transform: rotate(359deg);
-    -o-transform: rotate(359deg);
-    -webkit-transform: rotate(359deg);
-    transform: rotate(359deg);
-  }
-}
-@-o-keyframes spin {
-  0% {
-    -moz-transform: rotate(0deg);
-    -o-transform: rotate(0deg);
-    -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  100% {
-    -moz-transform: rotate(359deg);
-    -o-transform: rotate(359deg);
-    -webkit-transform: rotate(359deg);
-    transform: rotate(359deg);
-  }
-}
-@-ms-keyframes spin {
-  0% {
-    -moz-transform: rotate(0deg);
-    -o-transform: rotate(0deg);
-    -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  100% {
-    -moz-transform: rotate(359deg);
-    -o-transform: rotate(359deg);
-    -webkit-transform: rotate(359deg);
-    transform: rotate(359deg);
-  }
-}
-@keyframes spin {
-  0% {
-    -moz-transform: rotate(0deg);
-    -o-transform: rotate(0deg);
-    -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  100% {
-    -moz-transform: rotate(359deg);
-    -o-transform: rotate(359deg);
-    -webkit-transform: rotate(359deg);
-    transform: rotate(359deg);
-  }
-}
 @font-face {
   font-family: "icons-sportfac";
-  src: url("../font/icons-sportfac.eot?21900825");
-  src: url("../font/icons-sportfac.eot?21900825#iefix") format("embedded-opentype"), url("../font/icons-sportfac.woff2?21900825") format("woff2"), url("../font/icons-sportfac.woff?21900825") format("woff"), url("../font/icons-sportfac.ttf?21900825") format("truetype"), url("../font/icons-sportfac.svg?21900825#icons-sportfac") format("svg");
+  src: url("../font/icons-sportfac.eot?52902702");
+  src: url("../font/icons-sportfac.eot?52902702#iefix") format("embedded-opentype"), url("../font/icons-sportfac.woff2?52902702") format("woff2"), url("../font/icons-sportfac.woff?52902702") format("woff"), url("../font/icons-sportfac.ttf?52902702") format("truetype"), url("../font/icons-sportfac.svg?52902702#icons-sportfac") format("svg");
   font-weight: normal;
   font-style: normal;
 }
@@ -6973,7 +6893,7 @@ button.close {
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   @font-face {
     font-family: 'icons-sportfac';
-    src: url('../font/icons-sportfac.svg?21900825#icons-sportfac') format('svg');
+    src: url('../font/icons-sportfac.svg?52902702#icons-sportfac') format('svg');
   }
 }
 */
@@ -6981,7 +6901,7 @@ button.close {
   font-family: "icons-sportfac";
   font-style: normal;
   font-weight: normal;
-  speak: none;
+  speak: never;
   display: inline-block;
   text-decoration: inherit;
   width: 1em;
@@ -7005,6 +6925,96 @@ button.close {
   /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
 }
 
+.icon-cog:before {
+  content: "⚙";
+}
+
+/* '⚙' */
+.icon-cog-alt:before {
+  content: "⛯";
+}
+
+/* '⛯' */
+.icon-wrench-1:before {
+  content: "";
+}
+
+/* '' */
+.icon-step-forward:before {
+  content: "";
+}
+
+/* '' */
+.icon-step-backward:before {
+  content: "";
+}
+
+/* '' */
+.icon-signal:before {
+  content: "";
+}
+
+/* '' */
+.icon-forward:before {
+  content: "";
+}
+
+/* '' */
+.icon-fast-forward:before {
+  content: "";
+}
+
+/* '' */
+.icon-fast-backward:before {
+  content: "";
+}
+
+/* '' */
+.icon-flag:before {
+  content: "";
+}
+
+/* '' */
+.icon-cog-1:before {
+  content: "";
+}
+
+/* '' */
+.icon-calendar-1:before {
+  content: "";
+}
+
+/* '' */
+.icon-align-left:before {
+  content: "";
+}
+
+/* '' */
+.icon-align-center:before {
+  content: "";
+}
+
+/* '' */
+.icon-align-right:before {
+  content: "";
+}
+
+/* '' */
+.icon-align-justify:before {
+  content: "";
+}
+
+/* '' */
+.icon-list:before {
+  content: "";
+}
+
+/* '' */
+.icon-indent-left:before {
+  content: "";
+}
+
+/* '' */
 .icon-menu:before {
   content: "";
 }
@@ -7790,16 +7800,46 @@ button.close {
 }
 
 /* '' */
+.icon-filter:before {
+  content: "";
+}
+
+/* '' */
 .icon-docs:before {
   content: "";
 }
 
 /* '' */
+.icon-list-bullet:before {
+  content: "";
+}
+
+/* '' */
+.icon-list-numbered:before {
+  content: "";
+}
+
+/* '' */
+.icon-money:before {
+  content: "";
+}
+
+/* '' */
+.icon-gauge-1:before {
+  content: "";
+}
+
+/* '' */
 .icon-doc-text:before {
   content: "";
 }
 
 /* '' */
+.icon-calendar-empty:before {
+  content: "";
+}
+
+/* '' */
 .icon-doc-inv:before {
   content: "";
 }
@@ -7810,6 +7850,11 @@ button.close {
 }
 
 /* '' */
+.icon-bank:before {
+  content: "";
+}
+
+/* '' */
 .icon-file-pdf:before {
   content: "";
 }
@@ -7855,6 +7900,51 @@ button.close {
 }
 
 /* '' */
+.icon-sliders:before {
+  content: "";
+}
+
+/* '' */
+.icon-server:before {
+  content: "";
+}
+
+/* '' */
+.icon-calendar-plus-o:before {
+  content: "";
+}
+
+/* '' */
+.icon-calendar-minus-o:before {
+  content: "";
+}
+
+/* '' */
+.icon-calendar-times-o:before {
+  content: "";
+}
+
+/* '' */
+.icon-calendar-check-o:before {
+  content: "";
+}
+
+/* '' */
+.icon-calendar-2:before {
+  content: "";
+}
+
+/* '' */
+.icon-arrows-ccw:before {
+  content: "🔄";
+}
+
+/* '\1f504' */
+.icon-wrench:before {
+  content: "🔧";
+}
+
+/* '\1f527' */
 /* ========================================================
 *
 * MVP Ready - Lightweight & Responsive Admin Template

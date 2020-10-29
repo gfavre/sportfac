@@ -92,6 +92,13 @@
                 </li>
               {% endif %}
 
+            {% if USE_APPOINTMENTS %}
+              <li>
+                  <a href="{% url 'appointments:register' %}"> <i class="icon-calendar-1"></i> {% trans "My appointments" %}
+                  </a>
+                </li>
+            {% endif %}
+
               {% if user.is_instructor %}
                 <li class="divider"></li>
                 <li>
@@ -99,6 +106,8 @@
                       class="icon-graduation-cap"></i> {% trans "My courses" %}</a>
                 </li>
               {% endif %}
+
+
               {% if user.is_manager or user.is_staff or user.is_superuser %}
                 <li class="divider"></li>
                 <li>
