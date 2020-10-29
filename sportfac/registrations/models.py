@@ -149,6 +149,10 @@ class Registration(TimeStampedModel, StatusModel):
         return self.get_delete_url()
 
     @property
+    def has_modifier(self):
+        return sum([extra.price_modifier for extra in self.extra_infos.all()]) != 0
+
+    @property
     def price(self):
         subtotal = self.course.price
         modifier = sum([extra.price_modifier for extra in self.extra_infos.all()])

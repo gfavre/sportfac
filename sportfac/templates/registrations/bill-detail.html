@@ -20,13 +20,13 @@
         <th>{% trans "Activity" %}</th>
         <th>{% trans "Period" %}</th>
         <th>{% trans "Time" %}</th>
-        <th>{% trans "Price" %}</th>
+        <th class="nowrap text-right">{% trans "Price" %}</th>
       </tr>
     </thead>
     <tfoot>
       <tr>
         <th colspan="4" class="nowrap" style="text-align: right">{% trans "Total" %}</th>
-        <th class="nowrap">{{ bill.total|money }}</th>
+        <th class="nowrap text-right">{{ bill.total|money }}</th>
         <th class="hidden-print"></th>
       </tr>
     </tfoot>
@@ -45,8 +45,23 @@
         <td>
           {{ registration.course.day_name }} / <span class="nowrap">{{ registration.course.start_time|time:"H:i"}} - {{ registration.course.end_time|time:"H:i" }}</span>
         </td>
-        <td class="nowrap">{{ registration.price|money }}</td>
+        <td class="nowrap text-right">{{ registration.course.price|money }}</td>
       </tr>
+      {% if registration.has_modifier %}
+      {% for extra in registration.extra_infos.all %}
+        {% if extra.price_modifier %}
+        <tr>
+        <td></td>
+        <td colspan="3">
+          <em>{{ extra.key.question_label }} &nbsp;&nbsp;&nbsp;&mdash;&nbsp;&nbsp;&nbsp; {{ extra.value }}</em>
+        </td>
+        <td class="nowrap text-right">
+          {{ extra.price_modifier|money_sign }}
+        </td>
+      </tr>
+        {% endif %}
+        {% endfor %}
+      {% endif %}
     {% endfor %}
     </tbody>
   </table>
