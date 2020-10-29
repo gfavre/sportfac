@@ -45,3 +45,10 @@ class Appointment(TimeStampedModel):
     family = models.ForeignKey('profiles.FamilyUser', null=True, on_delete=models.SET_NULL, related_name='appointments')
     email = models.CharField(_("Email"), blank=True, null=True, max_length=255)
     phone_number = PhoneNumberField(_("Phone number"), max_length=30, blank=True)
+
+    @property
+    def get_backend_delete_url(self):
+        return reverse('backend:appointment-delete', kwargs={'appointment': self.pk})
+
+    def __unicode__(self):
+        return '{} - {}'.format(self.child, self.slot.start.strftime('%d.%m.%Y - %Hh%M'))

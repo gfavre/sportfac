@@ -195,6 +195,8 @@ site_patterns = [
     url(r'^appointments$', view=views.AppointmentsManagementView.as_view(), name='appointments-manage'),
 
     url(r'^appointments/list$', view=views.AppointmentsListView.as_view(), name='appointments-list'),
+    url(r'^appointments/(?P<appointment>[\w-]+)/delete$', view=views.AppointmentDeleteView.as_view(),
+        name='appointment-delete'),
     url(r'^$', view=views.FlatPageListView.as_view(), name='flatpages-list'),
     url(r'^(?P<pk>\d+)/update$', view=views.FlatPageUpdateView.as_view(), name='flatpages-update'),
 

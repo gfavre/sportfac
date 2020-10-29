@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 from django.contrib.flatpages.models import FlatPage
+from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.utils.timezone import now
 from django.utils.translation import ugettext as _
-from django.views.generic import ListView, TemplateView, UpdateView
+from django.views.generic import DeleteView, ListView, TemplateView, UpdateView
 
-from appointments.models import AppointmentSlot
+from appointments.models import AppointmentSlot, Appointment
 from ..forms import FlatPageForm
 from .mixins import BackendMixin
 
@@ -51,3 +52,10 @@ class AppointmentsListView(BackendMixin, ListView):
     def get_queryset(self):
         return AppointmentSlot.objects.prefetch_related('appointments', 'appointments__child')
 
+
+class AppointmentDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
+    model = Appointment
+    template_name = 'appointments/backend/confirm_delete.html'
+    success_url = reverse_lazy('backend:appointments-list')
+    success_message = _("Appointment has been canceled.")
+    pk_url_kwarg = 'appointment'
