@@ -20,7 +20,7 @@ logger = logging.getLogger()
 
 
 @shared_task
-def send_confirmation_mail(appointment_pks, tenant_pk=None, language=settings.LANGUAGE_CODE):
+def send_confirmation_mail(appointment_pks, tenant_pk=None, user=None, language=settings.LANGUAGE_CODE):
     cur_lang = translation.get_language()
     try:
         translation.activate(language)
@@ -36,6 +36,7 @@ def send_confirmation_mail(appointment_pks, tenant_pk=None, language=settings.LA
         context = {
             'appointments': appointments,
             'signature': global_preferences['email__SIGNATURE'],
+            'user': user,
         }
         subject = render_to_string('appointments/confirmation_mail_subject.txt', context=context)
         body = render_to_string('appointments/confirmation_mail.txt', context=context)

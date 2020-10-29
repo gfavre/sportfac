@@ -49,20 +49,22 @@ class RegisterSlot(generics.GenericAPIView):
                 total += 1
         data = {'total': total}
         if self.request.user.is_authenticated:
+            user = self.request.user
             data['url'] = reverse('appointments:register')
             messages.add_message(request, messages.SUCCESS,
                                  _(" Your appointment is registered. You should receive a reminder email shortly."))
 
         else:
-            try:
-                tenant_pk = connection.tenant.pk
-            except AttributeError:
-                tenant_pk = None
-            transaction.on_commit(
-                lambda: send_confirmation_mail.delay([appointment.pk for appointment in appointments], tenant_pk,
-                                                     language=get_language())
-            )
+            user = None
             data['url'] = reverse('appointments:success')
+        try:
+            tenant_pk = connection.tenant.pk
+        except AttributeError:
+            tenant_pk = None
+        transaction.on_commit(
+            lambda: send_confirmation_mail.delay([appointment.pk for appointment in appointments], tenant_pk,
+                                                 user=user, language=get_language())
+        )
         return Response(data, status=status.HTTP_201_CREATED)
 
 

@@ -8,6 +8,8 @@ Nous avons bien reçu l’inscription pour la prise du matériel d’hiver:
 
 Le matériel est à retirer au local de Ski du Collège de Montreux-Est (Rue de la Gare 33, 1820 Montreux)
 
+{% if not user %}
 Une facture de CHF 100.- vous parviendra début décembre.
+{% endif %}
 
 {{ signature }}
