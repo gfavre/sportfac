@@ -66,7 +66,7 @@ def wizard_context(request):
     if not settings.KEPCHUP_NO_PAYMENT:
         billing = Step(
             request, 'billing-step', settings.KEPCHUP_ALTERNATIVE_BILLING_LABEL or _("Billing"),
-            'wizard_billing', can_register_activities and True)#can_pay(request))
+            'wizard_billing', can_register_activities and can_pay(request))
         steps += [billing]
 
     current = 0
