@@ -47,7 +47,7 @@ def send_confirmation_mail(appointment_pks, tenant_pk=None, user=None, language=
             subject=subject, message=body,
             from_email=global_preferences['email__FROM_MAIL'],
             recipients=recipients,
-            reply_to=[global_preferences['email__REPLY_TO_MAIL']]
+            reply_to=(global_preferences['email__REPLY_TO_MAIL'],)
         )
     finally:
         translation.activate(cur_lang)
