@@ -40,14 +40,14 @@ def send_confirmation_mail(appointment_pks, tenant_pk=None, user=None, language=
         }
         subject = render_to_string('appointments/confirmation_mail_subject.txt', context=context)
         body = render_to_string('appointments/confirmation_mail.txt', context=context)
-        recipients = set(appointment.email for appointment in appointments)
+        recipients = list(set(appointment.email for appointment in appointments))
 
         logger.info('Send appointment confirmation to: {}'.format(recipients))
         send_mail.delay(
             subject=subject, message=body,
             from_email=global_preferences['email__FROM_MAIL'],
             recipients=recipients,
-            reply_to=(global_preferences['email__REPLY_TO_MAIL'],)
+            reply_to=[global_preferences['email__REPLY_TO_MAIL']]
         )
     finally:
         translation.activate(cur_lang)
