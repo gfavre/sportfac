@@ -57,14 +57,16 @@ class RegisterSlot(generics.GenericAPIView):
         else:
             user = None
             data['url'] = reverse('appointments:success')
-        try:
-            tenant_pk = connection.tenant.pk
-        except AttributeError:
-            tenant_pk = None
-        transaction.on_commit(
-            lambda: send_confirmation_mail.delay([appointment.pk for appointment in appointments], tenant_pk,
-                                                 user=user, language=get_language())
-        )
+        if serializer.validated_data['url'] != reverse('wizard_confirm'):
+            # appointment info is included in wizard's end email
+            try:
+                tenant_pk = connection.tenant.pk
+            except AttributeError:
+                tenant_pk = None
+            transaction.on_commit(
+                lambda: send_confirmation_mail.delay([appointment.pk for appointment in appointments], tenant_pk,
+                                                     user=user, language=get_language())
+            )
         return Response(data, status=status.HTTP_201_CREATED)
 
 

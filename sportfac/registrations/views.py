@@ -122,16 +122,17 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
         if self.bill.total == 0:
             self.bill.status = Bill.STATUS.paid
             self.bill.save()
-        try:
-            tenant_pk = connection.tenant.pk
-        except AttributeError:
-            tenant_pk = None
-        transaction.on_commit(lambda: send_confirmation.delay(
-            user_pk=str(self.request.user.pk),
-            bill_pk=self.bill.pk,
-            tenant_pk=tenant_pk,
-            language=get_language(),
-        ))
+        if not settings.KEPCHUP_USE_APPOINTMENTS:
+            try:
+                tenant_pk = connection.tenant.pk
+            except AttributeError:
+                tenant_pk = None
+            transaction.on_commit(lambda: send_confirmation.delay(
+                user_pk=str(self.request.user.pk),
+                bill_pk=self.bill.pk,
+                tenant_pk=tenant_pk,
+                language=get_language(),
+            ))
         return super(RegisteredActivitiesListView, self).form_valid(form)
 
 
@@ -185,6 +186,19 @@ class WizardBillingView(LoginRequiredMixin, WizardMixin, BillMixin, TemplateView
         for bill in Bill.objects.filter(status=Bill.STATUS.just_created, family=self.request.user):
             bill.status = Bill.STATUS.waiting
             bill.save()
+
+            if settings.KEPCHUP_USE_APPOINTMENTS:
+                try:
+                    tenant_pk = connection.tenant.pk
+                except AttributeError:
+                    tenant_pk = None
+                transaction.on_commit(lambda: send_confirmation.delay(
+                    user_pk=str(self.request.user.pk),
+                    bill_pk=bill.pk or None,
+                    tenant_pk=tenant_pk,
+                    language=get_language(),
+                ))
+
         return response
 
 

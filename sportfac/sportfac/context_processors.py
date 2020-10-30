@@ -55,7 +55,7 @@ def wizard_context(request):
         can_confirm = can_register_activities and Registration.waiting.filter(child__in=children_qs).exists()
         can_pay = can_register_activities and Bill.objects.filter(status=Bill.STATUS.just_created,
                                                                   family=request.user).exists()
-        can_make_appointment = request.user.montreux_needs_appointment
+        can_make_appointment = can_pay and request.user.montreux_needs_appointment
 
 
     about = Step(

@@ -6,6 +6,7 @@ from django.utils import translation
 
 from celery import shared_task
 
+from appointments.models import Appointment
 from backend.dynamic_preferences_registry import global_preferences_registry
 from backend.models import Domain, YearTenant
 from mailer.tasks import send_mail
@@ -32,8 +33,8 @@ def send_confirmation(user_pk, bill_pk, tenant_pk=None, language=settings.LANGUA
         bill = Bill.objects.get(pk=bill_pk)
         registrations = bill.registrations.all()
         current_site = Site.objects.get_current()
-
         context = {
+            'appointments': None,
             'user': user,
             'registrations': registrations,
             'bill': bill,
@@ -43,6 +44,9 @@ def send_confirmation(user_pk, bill_pk, tenant_pk=None, language=settings.LANGUA
             'site_name': current_site.name,
             'site_url': settings.DEBUG and 'http://' + current_site.domain or 'https://' + current_site.domain
         }
+        if settings.KEPCHUP_USE_APPOINTMENTS:
+            context['appointments'] = Appointment.objects.filter(family=user)
+
         subject = render_to_string('registrations/confirmation_mail_subject.txt', context=context)
 
         body = render_to_string('registrations/confirmation_mail.txt', context=context)
