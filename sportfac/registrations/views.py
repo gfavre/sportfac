@@ -13,7 +13,7 @@ from django.views.generic import DetailView, FormView, ListView, TemplateView
 
 from braces.views import LoginRequiredMixin
 
-from appointments.models import AppointmentSlot
+from appointments.models import Appointment
 from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.forms import AcceptTermsForm
 from profiles.models import School
@@ -58,6 +58,9 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
                 _("You'll receive a confirmation email from address: %s") % global_preferences['email__FROM_MAIL']
             )
             return reverse_lazy('registrations_registered_activities')
+        if settings.KEPCHUP_USE_APPOINTMENTS:
+            if self.request.user.montreux_needs_appointment:
+                return reverse_lazy('wizard_appointments')
         return self.success_url
 
     def get_queryset(self):
@@ -173,11 +176,7 @@ class WizardBillingView(LoginRequiredMixin, WizardMixin, BillMixin, TemplateView
 
         if settings.KEPCHUP_USE_APPOINTMENTS:
             context['include_calendar'] = True
-
-            if AppointmentSlot.objects.exists():
-                context['start'] = AppointmentSlot.objects.first().start.date().isoformat()
-            else:
-                context['start'] = now().date().isoformat()
+            context['appointments'] = Appointment.objects.filter(family=self.request.user)
 
         return context
 

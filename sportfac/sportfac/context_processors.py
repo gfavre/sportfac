@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from dynamic_preferences.registries import global_preferences_registry
 
 from activities.models import Activity
+from appointments.models import Appointment
 from backend.models import YearTenant
 from registrations.models import Bill, Registration
 
@@ -18,6 +19,12 @@ class Step:
         self.url = reverse(urlname)
         self.activable = activable
         self.current = request.path == self.url
+
+    def __unicode__(self):
+        return self.id
+
+    def __str__(self):
+        return self.id
 
 
 def is_authenticated(request):
@@ -40,10 +47,16 @@ def wizard_context(request):
     authenticated = is_authenticated(request)
     can_register_activities = False
     can_confirm = False
+    can_pay = False
+    can_make_appointment = False
     if authenticated:
         children_qs = request.user.children.all()
         can_register_activities = children_qs.exists()
         can_confirm = can_register_activities and Registration.waiting.filter(child__in=children_qs).exists()
+        can_pay = can_register_activities and Bill.objects.filter(status=Bill.STATUS.just_created,
+                                                                  family=request.user).exists()
+        can_make_appointment = request.user.montreux_needs_appointment
+
 
     about = Step(
         request, 'about-step', settings.KEPCHUP_ALTERNATIVE_ABOUT_LABEL or _("About you"),
@@ -63,25 +76,35 @@ def wizard_context(request):
     )
     steps = [about, children, activities, confirmation]
 
-    if not settings.KEPCHUP_NO_PAYMENT:
-        billing = Step(
-            request, 'billing-step', settings.KEPCHUP_ALTERNATIVE_BILLING_LABEL or _("Billing"),
-            'wizard_billing', can_register_activities and can_pay(request))
-        steps += [billing]
+    if settings.KEPCHUP_USE_APPOINTMENTS:
+        appointment_step = Step(request, 'appointment-step', _("Appointments"), 'wizard_appointments',
+                                can_make_appointment)
+        steps += [appointment_step]
+        if not settings.KEPCHUP_NO_PAYMENT:
+            can_pay = can_pay and Appointment.objects.filter(child__in=request.user.children.all()).exists()
+            billing = Step(
+                request, 'billing-step', settings.KEPCHUP_ALTERNATIVE_BILLING_LABEL or _("Billing"),
+                'wizard_billing', can_pay
+            )
+            steps += [billing]
+    else:
+        if not settings.KEPCHUP_NO_PAYMENT:
+            billing = Step(
+                request, 'billing-step', settings.KEPCHUP_ALTERNATIVE_BILLING_LABEL or _("Billing"),
+                'wizard_billing', can_pay)
+            steps += [billing]
 
     current = 0
     for idx, step in enumerate(steps):
         if step.current:
             current = idx
             break
-
     previous_step = next_step = None
     if current != 0:
         previous_step = steps[current - 1]
 
     if current != len(steps) - 1:
         next_step = steps[current + 1]
-
     return {'previous_step': previous_step,
             'next_step': next_step,
             'steps': steps,

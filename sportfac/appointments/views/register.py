@@ -4,6 +4,9 @@ from __future__ import unicode_literals
 from django.utils.timezone import now
 from django.views.generic import TemplateView
 
+from braces.views import LoginRequiredMixin
+
+from sportfac.views import WizardMixin
 from ..models import AppointmentSlot, Appointment
 
 
@@ -23,3 +26,7 @@ class SlotsView(TemplateView):
 class SuccessfulRegister(TemplateView):
     """User is not logged in we can't link the appointments juste created. Let's just tell him it worked."""
     template_name = 'appointments/success.html'
+
+
+class WizardSlotsView(LoginRequiredMixin, WizardMixin, SlotsView):
+    template_name = "appointments/wizard_register.html"

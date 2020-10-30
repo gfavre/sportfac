@@ -1,6 +1,7 @@
 from django.conf.urls import url
 
 from activities.views import ActivityListView
+from appointments.views.register import WizardSlotsView
 from profiles.views import WizardAccountView, WizardRegistrationView
 from registrations.views import (RegisteredActivitiesListView, WizardChildrenListView, 
                                  WizardBillingView)
@@ -13,5 +14,7 @@ urlpatterns = [
     url(r'^children/$', WizardChildrenListView.as_view(), name="wizard_children"),
     url(r'^activities/$', ActivityListView.as_view(), name='wizard_activities'),
     url(r'^confirm/$', RegisteredActivitiesListView.as_view(), name="wizard_confirm"),
+    url(r'^appointments/$', WizardSlotsView.as_view(), name="wizard_appointments"),
+
     url(r'^billing/$', WizardBillingView.as_view(), name="wizard_billing"),
 ]

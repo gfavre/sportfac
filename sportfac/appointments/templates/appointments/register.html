@@ -81,7 +81,8 @@
         let data = {
           'children': children,
           'email': $('#id_email').val(),
-          'phone': $('#id_phone').val()
+          'phone': $('#id_phone').val(),
+          'url': window.location.href
         };
         $.ajax({
           url: $('form', $modal).attr('action'),
@@ -125,7 +126,7 @@
                 {% for child in request.user.children.all %}
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" value="{{ child.id }}" name="children" checked="checked">
+                      <input type="checkbox" value="{{ child.id }}" name="children" {% if child.montreux_needs_appointment %}checked="checked"{% endif %}>
                       <strong>
                         {{ child.full_name }}{% if DISPLAY_LAGAPEO %} ({{ child.id_lagapeo }}){% endif %}</strong>
                     </label>

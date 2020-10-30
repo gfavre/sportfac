@@ -19331,7 +19331,11 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.active {
   float: left;
 }
 
-.pager .disabled > button, .pager .disabled > button:hover, .pager .disabled > button:focus {
+.pager .disabled > button,
+.pager .disabled > button:hover,
+.pager .disabled > button:focus,
+.pager a.disabled,
+.pager a.disabled:hover {
   color: #999999;
   background-color: #fff;
   cursor: default;

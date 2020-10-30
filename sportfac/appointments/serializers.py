@@ -39,6 +39,7 @@ class AppointmentSerializer(serializers.Serializer):
     children = serializers.PrimaryKeyRelatedField(many=True, queryset=Child.objects.all())
     email = serializers.EmailField()
     phone = serializers.CharField(validators=PhoneNumberField().validators)
+    url = serializers.URLField(required=False)
 
 
 class AdminAppointmentSlotSerializer(SlotSerializer):

@@ -231,6 +231,9 @@ class Bill(TimeStampedModel, StatusModel):
 
     objects = BillManager()
 
+    def __unicode__(self):
+        return self.billing_identifier
+
     def update_total(self):
         self.total = sum([registration.price for registration in self.registrations.all()])
 
@@ -406,6 +409,13 @@ class Child(TimeStampedModel, StatusModel):
     @property
     def js_birth_date(self):
         return self.birth_date.strftime('%d.%m.%Y')
+
+    @property
+    def montreux_needs_appointment(self):
+        for registration in self.registrations.all():
+            if registration.extra_infos.filter(key__question_label__contains=u"matériel", value='OUI').exists():
+                return True
+        return False
 
     def __unicode__(self):
         return self.get_full_name()
