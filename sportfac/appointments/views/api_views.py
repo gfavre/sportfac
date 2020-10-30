@@ -49,7 +49,7 @@ class RegisterSlot(generics.GenericAPIView):
                 total += 1
         data = {'total': total}
         if self.request.user.is_authenticated:
-            user = self.request.user.pk
+            user = str(self.request.user.pk)
             data['url'] = reverse('appointments:register')
             messages.add_message(request, messages.SUCCESS,
                                  _(" Your appointment is registered. You should receive a reminder email shortly."))
