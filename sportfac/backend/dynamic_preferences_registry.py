@@ -109,6 +109,13 @@ class CurrentPhase(IntegerPreference):
 
 
 @global_preferences_registry.register
+class OtherInstanceStartRegistration(DateTimePreference):
+    section = phase
+    name = 'OTHER_START_REGISTRATION'
+    default = timezone.now() + timedelta(days=60)
+
+
+@global_preferences_registry.register
 class MaintenanceMode(BooleanPreference):
     name = 'maintenance_mode'
     default = False

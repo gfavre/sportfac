@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext as _
-from django.core.urlresolvers import reverse
+from django.utils.timezone import now
 
 from dynamic_preferences.registries import global_preferences_registry
 
@@ -195,5 +196,7 @@ def kepchup_context(request):
 def dynamic_preferences_context(request):
     global_preferences = global_preferences_registry.manager()
     return {
-        'preferences_period_name': global_preferences['PERIOD_NAME']
+        'preferences_period_name': global_preferences['PERIOD_NAME'],
+        'preference_other_instance_start_registration': global_preferences['phase__OTHER_START_REGISTRATION'],
+        'other_instance_started_registrations': global_preferences['phase__OTHER_START_REGISTRATION'] > now()
     }

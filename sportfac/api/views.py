@@ -140,11 +140,14 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         queryset = Activity.objects.prefetch_related('courses', 'courses__instructors')
-        school_year = self.request.query_params.get('year', None)
+        school_year = int(self.request.query_params.get('year', None))
         if school_year is not None:
-            queryset = queryset.filter(courses__schoolyear_min__lte=school_year,
-                                       courses__schoolyear_max__gte=school_year,
-                                       courses__visible=True).distinct()
+            try:
+                queryset = queryset.filter(courses__schoolyear_min__lte=int(school_year),
+                                           courses__schoolyear_max__gte=int(school_year),
+                                           courses__visible=True).distinct()
+            except ValueError:
+                pass
         return queryset
 
 
