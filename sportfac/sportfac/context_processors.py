@@ -198,5 +198,5 @@ def dynamic_preferences_context(request):
     return {
         'preferences_period_name': global_preferences['PERIOD_NAME'],
         'preference_other_instance_start_registration': global_preferences['phase__OTHER_START_REGISTRATION'],
-        'other_instance_started_registrations': global_preferences['phase__OTHER_START_REGISTRATION'] > now()
+        'other_instance_started_registrations': global_preferences['phase__OTHER_START_REGISTRATION'] < now()
     }
