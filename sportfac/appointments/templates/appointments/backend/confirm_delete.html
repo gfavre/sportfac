@@ -5,7 +5,7 @@
 {% block page_title %}{% trans "Please confirm cancelation" %}{% endblock %}
 
 {% block content %}
-<form action="." method="post">{% csrf_token %}
+<form action="{{ object.get_backend_delete_url }}" method="post">{% csrf_token %}
   <p>{% blocktrans %}Are you sure you want to cancel "{{ object }}"?{% endblocktrans %}</p>
   <div class="form-group">
     <button type="submit" class="btn btn-danger"><i class="icon icon-trash"></i>&nbsp;{% trans 'Cancel appointment' %}</button>
