@@ -60,7 +60,7 @@
         </li>
         {% endif %}
 
-      {% if USE_APPOINTMENTS %}
+      {% if USE_APPOINTMENTS and request.PHASE > 1 %}
         <li {% if request.get_full_path == appointments_url %}class="active"{% endif %}>
           <a href="{{ appointments_url }}">
             <i class="icon-calendar-1"></i>

@@ -92,7 +92,7 @@
                 </li>
               {% endif %}
 
-            {% if USE_APPOINTMENTS %}
+            {% if USE_APPOINTMENTS and request.PHASE > 1 %}
               <li>
                   <a href="{% url 'appointments:register' %}"> <i class="icon-calendar-1"></i> {% trans "My appointments" %}
                   </a>

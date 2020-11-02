@@ -163,12 +163,12 @@
             <div class="pricing-header">
               <h3 class="pricing-plan-title">Hiver</h3>
             </div>
-            <a href="{% if preferences_period_name == "hiver" %}/hiver/wizard/{% else %}/hiver/registrations/summary/{% endif %}">
+            <a href="{% if other_instance_started_registrations %}/hiver/wizard/{% else %}/hiver/registrations/summary/{% endif %}">
               <img src="https://ssfmontreux.ch/static/img/vignette_hiver_2020-2021.jpg" class="img-responsive"
                    style="margin-bottom:15px">
             </a>
             <p class="text-center">
-              <a href="{% if preferences_period_name == "hiver" %}/hiver/wizard/{% else %}/hiver/registrations/summary/{% endif %}"
+              <a href="{% if other_instance_started_registrations %}/hiver/wizard/{% else %}/hiver/registrations/summary/{% endif %}"
                  class="btn btn-primary">
                 Entrer
               </a>
