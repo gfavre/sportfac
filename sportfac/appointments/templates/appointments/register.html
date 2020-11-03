@@ -74,10 +74,14 @@
         $('form #help-email', $modal).text('');
         $('form #help-phone', $modal).text('');
 
-        let children = $("input:checkbox[name=children]:checked").map(
+        let children = $("input:checkbox[name=children]:checked", $modal).map(
           function () {
             return parseInt($(this).val())
           }).get();
+        if (children.length === 0) {
+          $('#warning-children', $modal).removeClass('hidden');
+          return
+        }
         let data = {
           'children': children,
           'email': $('#id_email').val(),
@@ -122,6 +126,7 @@
           <p class="lead">{% trans "Register an appointment for" %}</p>
           <form method="post" class="form-horizontal" action="">{% csrf_token %}
             <div class="children">
+              <p class="alert alert-warning hidden" id="warning-children"><i class="icon-warning"></i> {% trans "Please select at least one child" %}</p>
               {% if request.user and request.user.children %}
                 {% for child in request.user.children.all %}
                   <div class="checkbox">
