@@ -94,16 +94,15 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
 
         context['subtotal'] = registrations.aggregate(Sum('course__price'))['course__price__sum']
         context['total_price'] = context['subtotal'] + sum(context['applied_price_modifications'].values())
-
         context['overlaps'] = []
         context['overlapped'] = set()
-        for (idx, registration) in list(enumerate(registrations))[:-1]:
-            for registration2 in registrations[idx+1:]:
-                if registration.overlap(registration2):
-                    context['overlaps'].append((registration, registration2))
-                    context['overlapped'].add(registration.id)
-                    context['overlapped'].add(registration2.id)
-
+        if settings.KEPCHUP_DISPLAY_OVERLAP_HELP:
+            for (idx, registration) in list(enumerate(registrations))[:-1]:
+                for registration2 in registrations[idx+1:]:
+                    if registration.overlap(registration2):
+                        context['overlaps'].append((registration, registration2))
+                        context['overlapped'].add(registration.id)
+                        context['overlapped'].add(registration2.id)
         return context
 
     def form_valid(self, form):

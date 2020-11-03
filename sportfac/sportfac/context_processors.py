@@ -189,7 +189,7 @@ def kepchup_context(request):
         'USE_SSO': settings.KEPCHUP_USE_SSO,
         'USE_APPOINTMENTS': settings.KEPCHUP_USE_APPOINTMENTS,
         'DISPLAY_LAGAPEO': settings.KEPCHUP_DISPLAY_LAGAPEO,
-
+        'DISPLAY_OVERLAP_HELP': settings.KEPCHUP_DISPLAY_OVERLAP_HELP,
     }
 
 
