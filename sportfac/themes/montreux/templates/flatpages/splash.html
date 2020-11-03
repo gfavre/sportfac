@@ -179,21 +179,21 @@
                   <i class="icon-file-pdf"></i> Flyer
                 </a>
               </div>
-              <div class="col-xs-6  text-right">
+              <!--<div class="col-xs-6  text-right">
                 <a href="https://ssfmontreux.ch/hiver/static/pdf/Lettre_eleves_ssf_materiel_finale.pdf"
                    class="btn btn-secondary" target="_blank">
                   <i class="icon-file-pdf"></i> Location saison
                 </a>
+              </div>-->
+              {% if other_instance_started_registrations %}
+              <div class="col-xs-6  text-right">
+                <a href="https://ssfmontreux.ch/hiver/rendez-vous"
+                   class="btn btn-secondary" target="_blank">
+                  <i class="icon-calendar"></i> Location matériel hors SSF
+                </a>
               </div>
+             {% endif %}
             </div>
-            <br>
-
-
-            {% if other_instance_started_registrations %}
-              <br>
-              <a href="https://ssfmontreux.ch/hiver/rendez-vous"><i class="icon  icon-calendar"></i> Location matériel hors SSF</a>
-            {% endif %}
-            </p>
           </div>
         </div>
       </div>
