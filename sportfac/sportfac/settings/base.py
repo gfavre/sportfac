@@ -568,7 +568,8 @@ KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = False
 KEPCHUP_USE_BUILDINGS = False
 # Display ID Lagapeo
 KEPCHUP_DISPLAY_LAGAPEO = False
-
+# Ability to remove child
+KEPCHUP_CAN_DELETE_CHILD = True
 
 # Activities
 #########################################

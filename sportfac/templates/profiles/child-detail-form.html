@@ -206,7 +206,7 @@
     </div>
     <div class="col-xs-8 col-sm-8 text-right">
       <button ng-click="reloadChild()" ng-disabled="hasNotChanged()" class="btn btn-small"><i class="icon-remove-sign"></i> Annuler</button>
-      <button ng-click="delChild(child.id)" class="btn btn-danger btn-small"><i class="icon-trash icon-white"></i> Supprimer</button>
+      {% if CAN_DELETE_CHILD %}<button ng-click="delChild(child.id)" class="btn btn-danger btn-small"><i class="icon-trash icon-white"></i> Supprimer</button>{% endif %}
     </div>
   </div>
 

@@ -45,6 +45,7 @@ KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = ['first_name', 'last_name', 'birth_date', '
 KEPCHUP_EXPLICIT_SESSION_DATES = True
 SCHOOL_YEAR_EDITABLE = False
 KEPCHUP_DISPLAY_LAGAPEO = True
+KEPCHUP_CAN_DELETE_CHILD = False
 
 
 # Registration steps

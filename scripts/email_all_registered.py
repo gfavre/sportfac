@@ -7,13 +7,38 @@ parents = set([reg.child.family for reg in Registration.objects.all()])
 for parent in parents:
     body = u"""Chers parents, 
 
-Suite aux nouvelles mesures sanitaires édictées par le conseil d'état du canton de Vaud du vendredi 23 octobre, les élèves en âge du secondaire I (9s à 12s) doivent porter un masque constamment. Ils pourront ôter ce dernier uniquement lors de la pratique sportive. (cf. nouvelle règle scolaire). 
+Suite à la décision 180, 181 et du plan de protection pour la pratique du chant du DFJC voici les précautions sanitaires qui seront scrupuleusement mises en place dès le jeudi 5 novembre. Pour les cours qui sont suspendus, nous décalerons simplement les semaines une fois que la pratique sera à nouveau possible. 
 
-Les sports de contact étant toujours autorisés, nous avons néanmoins encouragé nos moniteurs à diminuer les contacts entre les élèves. 
+- Activité nautique : Pas concerné
 
-Merci de votre compréhension
+- Badminton : AUTORISE , si la distance de 1.5m entre les élèves est respectée les élèves dès la 9e peuvent enlever le masque. Sinon masque obligatoire.
 
-Cordialement, 
+- Capoeira : AUTORISE SANS CONTACT, uniquement de la gestuelle. si la distance de 1.5m entre les élèves est respectée les élèves dès la 9e peuvent enlever le masque. Sinon masque obligatoire.
+
+- Comédie musicale : AUTORISE SANS CONTACT, uniquement de la gestuelle. si la distance de 1.5m entre les élèves est respectée les élèves dès la 9e peuvent enlever le masque. Sinon masque obligatoire. Le chant est possible avec masque (9e à 12e année) si 2m de distance dans des locaux aérés et vastes. 
+
+- Echec : AUTORISE, si la distance de 1.5m entre les élèves est respectée les élèves dès la 9e peuvent enlever le masque. Sinon masque obligatoire.
+
+- Handball : SUSPENDU pour les élèves dès la 9e année jusqu'au 30 novembre compris
+
+- Hockey sur glace : SUSPENDU pour les élèves dès la 9e année jusqu'au 30 novembre compris
+
+- Judo : SUSPENDU pour tous jusqu'au 30 novembre compris
+
+- Multisport : AUTORISE , si la distance de 1.5m entre les élèves est respectée les élèves dès la 9e peuvent enlever le masque. Sinon masque obligatoire.
+
+- Natation : SUSPENDU pour tous jusqu'au 30 novembre compris
+
+- Tennis de table : AUTORISE , si la distance de 1.5m entre les élèves est respectée les élèves dès la 9e peuvent enlever le masque. Sinon masque obligatoire.
+
+- Tir au pistolet : AUTORISE , si la distance de 1.5m entre les élèves est respectée les élèves dès la 9e peuvent enlever le masque. Sinon masque obligatoire.
+
+- Unihockey : SUSPENDU pour les élèves dès la 9e année jusqu'au 30 novembre compris
+
+- Voile : Pas concerné 
+
+- Yoga : AUTORISE ,si la distance de 1.5m entre les élèves est respectée les élèves dès la 9e peuvent enlever le masque. Sinon masque obligatoire.
+
 
 Guillaume Strobino
 Responsable régional
