@@ -411,6 +411,10 @@ class Child(TimeStampedModel, StatusModel):
         return self.birth_date.strftime('%d.%m.%Y')
 
     @property
+    def has_registrations(self):
+        return self.registrations.exclude(status=Registration.STATUS.canceled).exists()
+
+    @property
     def montreux_needs_appointment(self):
         for registration in self.registrations.all():
             if registration.extra_infos.filter(key__question_label__contains=u"matériel", value='OUI').exists():

@@ -46,6 +46,17 @@ class RegistrationResource(resources.ModelResource):
     before_level = fields.Field(attribute='child', column_name=_("Level -1"))
     after_level = fields.Field(attribute='child', column_name=_("Level 0"))
 
+    class Meta:
+        model = Registration
+        fields = ('id', 'activity', 'course', 'price', 'bib_number', 'transport',
+                  'first_name', 'last_name', 'child_id', 'birth_date', 'school_year', 'school_name',
+                  'emergency_number',
+                  'parent_first_name', 'parent_last_name', 'parent_email', 'parent_address',
+                  'parent_zipcode', 'parent_city', 'parent_country',
+                  'before_level', 'after_level',
+                  )
+        export_order = fields
+
     def __init__(self, *args, **kwargs):
         self.course = kwargs.pop('course', None)
         super(RegistrationResource, self).__init__(*args, **kwargs)
@@ -161,13 +172,4 @@ class RegistrationResource(resources.ModelResource):
         order = tuple([field for field in order if field not in removable_fields])
         return order + tuple(k for k in self.fields.keys() if k not in order)
 
-    class Meta:
-        model = Registration
-        fields = ('id', 'activity', 'course', 'price', 'bib_number', 'transport',
-                  'first_name', 'last_name', 'child_id', 'birth_date', 'school_year', 'school_name',
-                  'emergency_number',
-                  'parent_first_name', 'parent_last_name', 'parent_email', 'parent_address',
-                  'parent_zipcode', 'parent_city', 'parent_country',
-                  'before_level', 'after_level',
-                  )
-        export_order = fields
+

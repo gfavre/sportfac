@@ -9,6 +9,9 @@
 
 
 {% block content %}
+  <p>
+    <a href="{% url 'backend:appointments-export' %}" class="btn btn-primary"><i class="icon-file-excel"></i> {% trans "Export appointments" %}</a>
+  </p>
   {% regroup object_list by start|date:"l d F Y" as slots_per_day %}
   {% for slot in slots_per_day %}
     <section class="portlet">

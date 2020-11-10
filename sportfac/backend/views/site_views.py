@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 from django.contrib.flatpages.models import FlatPage
-from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.utils.timezone import now
 from django.utils.translation import ugettext as _
-from django.views.generic import DeleteView, ListView, TemplateView, UpdateView
+from django.views.generic import DeleteView, ListView, TemplateView, UpdateView, View
 
 from appointments.models import AppointmentSlot, Appointment
+from appointments.resources import AppointmentResource
 from ..forms import FlatPageForm
-from .mixins import BackendMixin
+from .mixins import BackendMixin, ExcelResponseMixin
 
 
 class FlatPageListView(BackendMixin, ListView):
@@ -59,3 +59,13 @@ class AppointmentDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
     success_url = reverse_lazy('backend:appointments-list')
     success_message = _("Appointment has been canceled.")
     pk_url_kwarg = 'appointment'
+
+
+class AppointmentsExportView(BackendMixin, ExcelResponseMixin, View):
+    filename = _("appointments")
+
+    def get_resource(self):
+        return AppointmentResource()
+
+    def get(self, request, *args, **kwargs):
+        return self.render_to_response()
