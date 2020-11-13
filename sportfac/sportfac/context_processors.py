@@ -82,7 +82,9 @@ def wizard_context(request):
                                 can_make_appointment)
         steps += [appointment_step]
         if not settings.KEPCHUP_NO_PAYMENT:
-            can_pay = can_pay and Appointment.objects.filter(child__in=request.user.children.all()).exists()
+
+            can_pay = can_pay and (not request.user.montreux_needs_appointment or
+                                   Appointment.objects.filter(child__in=request.user.children.all()).exists())
             billing = Step(
                 request, 'billing-step', settings.KEPCHUP_ALTERNATIVE_BILLING_LABEL or _("Billing"),
                 'wizard_billing', can_pay
