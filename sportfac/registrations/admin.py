@@ -85,6 +85,8 @@ class BillAdmin(SportfacModelAdmin):
     list_display = ('billing_identifier', 'total', 'family', 'status', 'created', 'modified', 'reminder_sent')
     list_filter = ('status',)
     raw_id_fields = ('family',)
+    date_hierarchy = 'created'
+    search_fields = ('billing_identifier', 'family__first_name', 'family__last_name')
 
 
 @admin.register(Transport)
