@@ -254,8 +254,10 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
             # move between courses:
             now = timezone.now()
             for future_session_new in self.object.course.sessions.filter(date__gte=now):
-                Absence.objects.create(child=self.object.child, session=future_session_new,
-                                       status=Absence.STATUS.present)
+                Absence.objects.update_or_create(
+                    child=self.object.child, session=future_session_new,
+                    defaults={'status': Absence.STATUS.present}
+                )
             for future_session_initial in initial_course.sessions.filter(date__gte=now):
                 Absence.objects.filter(child=self.object.child, session=future_session_initial).delete()
         success_message = self.get_success_message(form.cleaned_data)
