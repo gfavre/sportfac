@@ -377,7 +377,10 @@ class ExtraNeed(TimeStampedModel):
 
     def __unicode__(self):
         if self.choices:
-            return '%s (%s)' % (self.question_label, ', '.join(self.choices))
+            out = '%s (%s)' % (self.question_label, ', '.join(self.choices))
+            if self.price_modifier:
+                out += ' - (' + ', '.join([str(price) for price in self.price_modifier]) + ')'
+            return out
         return self.question_label
 
     class Meta:
