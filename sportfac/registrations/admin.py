@@ -88,6 +88,9 @@ class BillAdmin(SportfacModelAdmin):
     date_hierarchy = 'created'
     search_fields = ('billing_identifier', 'family__first_name', 'family__last_name')
 
+    def get_queryset(self, request):
+        return super(BillAdmin, self).get_queryset(request).select_related('family')
+
 
 @admin.register(Transport)
 class TransportAdmin(SportfacModelAdmin):
