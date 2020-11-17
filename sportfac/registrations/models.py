@@ -279,7 +279,8 @@ class Bill(TimeStampedModel, StatusModel):
         if not self.billing_identifier:
             self.update_billing_identifier()
         super(Bill, self).save(*args, **kwargs)
-        self.family.profile.save()
+        if self.family:
+            self.family.save()
 
     class Meta:
         verbose_name = _("Bill")
