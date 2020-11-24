@@ -40,8 +40,6 @@ xlrd == 1.1.0
 -e git+git://github.com/jazzband/django-dbtemplates.git@a04933e5ced6cc7401ad425edd147040527e91a7#egg=dbtemplates
 -e git+git://github.com/gfavre/pypdftk@84215dedae1fc5b8629e13043a1b5183e7960a37#egg=pypdftk
 # settings stored in db
-django-appconf==1.0.2 # requirement for django-db-templates. Py2.x version
-django-appconf==1.0.2 # requirement for django-db-templates. Py2.x version
 django-dynamic-preferences == 1.4.1
 django-mathfilters==0.4.0
 django-async-messages == 0.3.1
