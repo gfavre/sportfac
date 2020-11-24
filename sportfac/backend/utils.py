@@ -8,12 +8,10 @@ from mailer.pdfutils import PDFRenderer
 
 class AbsencePDFRenderer(PDFRenderer):
     message_template = 'backend/course/absences.html'
-    rasterizer = settings.PHANTOMJS_RASTERIZE_PORTRAIT
 
 
 class AbsencesPDFRenderer(PDFRenderer):
     message_template = 'backend/course/multiple-absences.html'
-    rasterizer = settings.PHANTOMJS_RASTERIZE_PORTRAIT
 
 
 def manager_required(fct=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):

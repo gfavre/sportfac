@@ -7,14 +7,14 @@ INSTALLED_APPS += ('gunicorn', # web server
                    )
 
 ########## EMAIL CONFIGURATION
-INSTALLED_APPS += [
-    'anymail',  # integrates several transactional email service providers into Django
-]
-ANYMAIL = {
-    "MAILGUN_API_KEY": env.str('MAILGUN_API_KEY'),
-    "MAILGUN_SENDER_DOMAIN": env.str('MAILGUN_SENDER_DOMAIN')
-}
-EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
+#INSTALLED_APPS += [
+#    'anymail',  # integrates several transactional email service providers into Django
+#]
+#ANYMAIL = {
+#    "MAILGUN_API_KEY": env.str('MAILGUN_API_KEY'),
+#    "MAILGUN_SENDER_DOMAIN": env.str('MAILGUN_SENDER_DOMAIN')
+#}
+#EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-subject-prefix
 EMAIL_SUBJECT_PREFIX = '[%s] ' % SITE_NAME
@@ -27,7 +27,7 @@ DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 
 
 MANAGERS = (
-    ('Gregory Favre', 'gregory.favre@gmail.com'),
+    ('Gregory Favre', 'greg@beyondthewall.ch'),
     ('Remo Aeschbach', 'remo.aeschbach@vd.educanet2.ch'),
 )
 
@@ -62,11 +62,8 @@ DATABASES['default']['PASSWORD'] = env('DB_PASSWORD')
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': 'unix:' + env('MEMCACHED_SOCKET'),
-    },
-    'dbtemplates': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': 'unix:' + env('MEMCACHED_SOCKET'),
+        'LOCATION': ['127.0.0.1:11211'],
+        'KEY_PREFIX': env('CACHE_KEY_PREFIX'),
     }
 }
 

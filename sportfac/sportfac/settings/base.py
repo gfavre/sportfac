@@ -481,9 +481,7 @@ CELERYBEAT_SCHEDULE = {
     },
 }
 
-PHANTOMJS = env('PHANTOMJS', default='/usr/local/bin/phantomjs')
-PHANTOMJS_RASTERIZE_PORTRAIT = join(dirname(SITE_ROOT), 'bin', 'rasterize-portrait.js')
-PHANTOMJS_RASTERIZE_LANDSCAPE = join(dirname(SITE_ROOT), 'bin', 'rasterize-landscape.js')
+PHANTOMJSCLOUD_APIKEY = env('PHANTOMJSCLOUD_APIKEY')
 
 DBTEMPLATES_USE_CODEMIRROR = True
 

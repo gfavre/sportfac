@@ -1,4 +1,4 @@
-{% load i18n sekizai_tags static compress %}<!DOCTYPE html>
+{% load i18n sekizai_tags static %}<!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE }}" >
   <head>
     <meta charset="utf-8">
@@ -34,11 +34,9 @@
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald:400,300,700">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400italic,400,600,700,800&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
-    {% compress css  %}
     <link href="{% static 'css/style.css' %}" rel="stylesheet" media="all" />
     <link href="{{ STATIC_URL }}css/mvpready-admin-royal.css" rel="stylesheet" media="all" />
     <link href="{{ STATIC_URL }}css/montreux.css" rel="stylesheet" media="all" />
-    {% endcompress %}
 
 
     {% if not request.tenant.is_production %}

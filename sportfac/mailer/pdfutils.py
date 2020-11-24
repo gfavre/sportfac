@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 import os
-import subprocess
+import json
 import six
-from tempfile import NamedTemporaryFile
 
 from django.conf import settings
 from django.contrib.sites.models import Site
@@ -13,9 +12,11 @@ from django.utils.encoding import smart_text
 from django.template import loader
 
 import pypdftk
+import requests
 
 from backend.dynamic_preferences_registry import global_preferences_registry
 from sportfac.context_processors import kepchup_context
+
 
 global_preferences = global_preferences_registry.manager()
 
@@ -38,6 +39,7 @@ def get_ssf_decompte_heures(course, instructor):
         u'iban': instructor.iban,
         u'No avs': instructor.ahv,
     }
+    # noinspection PyBroadException
     try:
         return pypdftk.fill_form(pdf_path=pdf_file, datas=fields)
     except:  # noqa
@@ -48,9 +50,9 @@ class FakeRequest(object):
     pass
 
 
-class PDFRenderer(object):
+class PDFRenderer:
     message_template = None
-    rasterizer = settings.PHANTOMJS_RASTERIZE_LANDSCAPE
+    is_landscape = False
 
     def __init__(self, context_data, request=None):
         site = Site.objects.all()[0]
@@ -81,10 +83,7 @@ class PDFRenderer(object):
         else:
             return self.resolve_template(self.message_template)
 
-    def render_to_temporary_file(self, template_name, mode='w+b', bufsize=-1,
-                                 suffix='.html', prefix='tmp', dir=None,
-                                 delete=True):
-
+    def get_content(self, template_name):
         initial_static_url = settings.STATIC_URL
         if settings.STATIC_URL.startswith('/'):
             settings.STATIC_URL = u'{}{}{}'.format(self.context.get('PROTOCOL'),
@@ -98,51 +97,44 @@ class PDFRenderer(object):
             content = loader.render_to_string(template_name=self.message_template,
                                               context=self.context,
                                               request=self.request)
-
         settings.STATIC_URL = initial_static_url
-        try:
-            # Python3 has 'buffering' arg instead of 'bufsize'
-            tempfile = NamedTemporaryFile(mode=mode, buffering=bufsize,
-                                          suffix=suffix, prefix=prefix,
-                                          dir=dir, delete=delete)
-        except TypeError:
-            tempfile = NamedTemporaryFile(mode=mode, bufsize=bufsize,
-                                          suffix=suffix, prefix=prefix,
-                                          dir=dir, delete=delete)
-        try:
-            tempfile.write(content.encode('utf-8'))
-            tempfile.flush()
-            return tempfile
-        except:
-            # Clean-up tempfile if an Exception is raised.
-            tempfile.close()
-            raise
+        return content
 
     def render_to_pdf(self, output):
         """output: filelike object"""
-        filelike = self.render_to_temporary_file(self.get_message_template())
-        try:
-            phandle = subprocess.Popen([
-                settings.PHANTOMJS,
-                '--ssl-protocol=any',
-                '--ignore-ssl-errors=true',
-                self.rasterizer,
-                filelike.name.encode(), output,
-                'A4'
-            ], close_fds=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            phandle.communicate()
+        content = self.get_content(self.get_message_template())
+        payload = json.dumps({
+            'content': content,
+            'renderType': 'pdf',
+            'omitBackground': True,
+            "renderSettings": {
+                'emulateMedia': 'print',
+                'pdfOptions': {
+                    'format': 'A4',
+                    'landscape': self.is_landscape,
+                    'preferCSSPageSize': True,
 
-        finally:
-            filelike.close()
+                }
+            }
+
+        })
+
+        pdf = requests.post(
+            'https://PhantomJsCloud.com/api/browser/v2/{}/'.format(
+                settings.PHANTOMJSCLOUD_APIKEY
+            ),
+            payload
+        )
+        f = open(output, 'wb')
+        f.write(pdf.content)
 
 
 class CourseParticipants(PDFRenderer):
-    rasterizer = settings.PHANTOMJS_RASTERIZE_LANDSCAPE
     message_template = 'mailer/pdf_participants_list.html'
+    is_landscape = True
 
 
 class CourseParticipantsPresence(PDFRenderer):
-    rasterizer = settings.PHANTOMJS_RASTERIZE_PORTRAIT
     message_template = 'mailer/pdf_participants_presence.html'
 
     def __init__(self, context_data):
@@ -152,5 +144,5 @@ class CourseParticipantsPresence(PDFRenderer):
 
 
 class MyCourses(PDFRenderer):
-    rasterizer = settings.PHANTOMJS_RASTERIZE_LANDSCAPE
     message_template = 'mailer/pdf_my_courses.html'
+    is_landscape = True
