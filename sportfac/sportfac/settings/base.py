@@ -187,6 +187,7 @@ TEMPLATES = [
     },
 ]
 
+
 ########## END TEMPLATE CONFIGURATION
 
 

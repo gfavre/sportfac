@@ -48,10 +48,8 @@ STATIC_ROOT = env('STATIC_ROOT')
 
 ########## DATABASE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
+DATABASES['default'] = env.db_url('DATABASE')
 
-DATABASES['default']['NAME'] = env('DB_NAME')
-DATABASES['default']['USER'] = env('DB_USER')
-DATABASES['default']['PASSWORD'] = env('DB_PASSWORD')
 
 ########## END DATABASE CONFIGURATION
 
