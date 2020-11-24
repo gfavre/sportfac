@@ -33,7 +33,8 @@ django-registration-redux == 1.4
 django-grappelli == 2.8.1
 pytz == 2017.3
 # addtoblock template tag (js embedding)
-django-sekizai == 0.10.0
+django-sekizai == 1.0.0
+django-classy-tags==1.0.0  # >= 2.0.0 requires python3 (needed by sekizai)
 phonenumbers == 8.8.6
 xlrd == 1.1.0
 -e git+git://github.com/jazzband/django-dbtemplates.git@a04933e5ced6cc7401ad425edd147040527e91a7#egg=dbtemplates
@@ -54,6 +55,6 @@ django-anymail==1.2
 requests==2.18.4
 python-memcached==1.59
 
-django-appconf==1.0.2  # django-compressor includes latest which is incompatible with python2
+django-appconf==1.0.3  # django-compressor includes latest which is incompatible with python2
 django-compressor==2.4
 -e git+https://github.com/gfavre/django-simple-sso.git@0.15.3#egg=simple_sso
