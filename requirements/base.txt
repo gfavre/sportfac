@@ -57,3 +57,4 @@ django-appconf==1.0.3  # django-compressor includes latest which is incompatible
 django-compressor==2.4
 -e git+https://github.com/gfavre/django-simple-sso.git@0.15.3#egg=simple_sso
 django-debug-toolbar == 1.8
+django_recaptcha==2.0.6

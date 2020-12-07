@@ -238,6 +238,7 @@ SHARED_APPS = (
 
     # third party apps
 
+    'captcha', # recaptcha
     'ckeditor',  # wysiwyg editor
     'ckeditor_uploader',
     'compressor',  # css compression / anticache

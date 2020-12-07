@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-from django.utils.translation import ugettext_lazy as _
-from django.core.mail import EmailMessage
 from django.conf import settings
+from django.core.mail import EmailMessage
+from django.utils.translation import ugettext_lazy as _
 
-import floppyforms as forms
 from dynamic_preferences.registries import global_preferences_registry
+from captcha.fields import ReCaptchaField
+from captcha.widgets import ReCaptchaV3
+import floppyforms as forms
 
 
 class ContactForm(forms.Form):
@@ -17,6 +19,7 @@ class ContactForm(forms.Form):
 
     message = forms.CharField(label=_("Message"),
                               widget=forms.Textarea(attrs={'rows': 5}))
+    captcha = ReCaptchaField(widget=ReCaptchaV3)
 
     def send_mail(self, fail_silently=False):
         global_preferences = global_preferences_registry.manager()

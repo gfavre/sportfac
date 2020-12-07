@@ -1,30 +1,6 @@
-{% extends "base.html" %}
-{% load i18n floppyforms %}
+{% extends "contact/contact.html" %}
 
-{% block title %}{% trans "Contact" %}{% endblock title %}
-{% block page_title %}{% trans "Contact" %}{% endblock page_title %}
-
-{% block content %}
-<div class="row">
-  <div class="col-md-6">
-    <form action="." method="post" class="form-horizontal">{% csrf_token %}  
-      {% form form using %}
-        {% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
-        {% formrow form.name %}
-        {% formrow form.email %}
-        {% formrow form.subject %}
-        {% formrow form.message %}
-      {% endform %}
-      <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
-          <button type="submit" class="btn btn-primary btn-large"><i class="icon icon-envelope-alt"></i>  {% trans "Send message" %}</button>
-        </div>
-      </div>
-    </form>
-  </div>
-  <div class="col-md-6" itemscope itemtype="http://schema.org/Organization">
-
-    <section style="padding-top: 0">          
+{% block addresses %}    <section style="padding-top: 0">
       <h4 itemprop="name">Sport scolaire facultatif de Montreux</h4>
       <address itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
         <span itemprop="streetAddress">Rue du Temple 11</span><br />
@@ -50,7 +26,5 @@
       </dl>
     </section>
 
-  </div>
-</div>
 {% endblock %}
 

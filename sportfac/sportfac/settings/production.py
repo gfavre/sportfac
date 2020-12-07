@@ -45,7 +45,6 @@ STATIC_ROOT = env('STATIC_ROOT')
 ########## END STATIC FILE CONFIGURATION
 
 
-
 ########## DATABASE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES['default']['NAME'] = env('DB_NAME')
@@ -108,3 +107,8 @@ RAVEN_CONFIG = {
     # release based on the git info.
     'release': raven.fetch_git_sha(dirname(SITE_ROOT)),
 }
+
+
+RECAPTCHA_PUBLIC_KEY = env('RECAPTCHA_PUBLIC_KEY')
+RECAPTCHA_PRIVATE_KEY = env('RECAPTCHA_PRIVATE_KEY')
+RECAPTCHA_REQUIRED_SCORE = env('RECAPTCHA_REQUIRED_SCORE', default=0.85)

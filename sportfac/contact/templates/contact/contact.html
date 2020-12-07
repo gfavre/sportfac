@@ -7,6 +7,7 @@
 {% block content %}
 <div class="row">
   <div class="col-md-6">
+    {% block form %}
     <form action="." method="post" class="form-horizontal">{% csrf_token %}  
       {% form form using %}
         {% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
@@ -14,15 +15,17 @@
         {% formrow form.email %}
         {% formrow form.subject %}
         {% formrow form.message %}
+        {{ form.captcha }}
       {% endform %}
       <div class="pull-right">
         <button type="submit" class="btn btn-primary btn-large"><i class="icon icon-envelope-alt"></i>  {% trans "Send message" %}</button>
       </div>
     </form>
+    {% endblock form %}
   </div>
   <div class="col-md-6" itemscope itemtype="http://schema.org/Organization">
-
-    <section style="padding-top: 0">          
+    {% block addresses %}
+    <section style="padding-top: 0">
       <h4 itemprop="name">Établissement Primaire de Coppet et Environs</h4>
       <address itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
         <span itemprop="streetAddress">Chemin du Chaucey 7</span><br />
@@ -48,6 +51,7 @@
         <dt>Email</dt><dd><a itemprop="email" href="mailto:remo.aeschbach@vd.educanet2.ch">remo.aeschbach@vd.educanet2.ch</a></dd>
       </dl>
     </section>
+    {% endblock addresses %}
   </div>
 </div>
 {% endblock %}
