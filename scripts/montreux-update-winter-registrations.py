@@ -1,4 +1,63 @@
 """
+hiver 2021: Ils ont corrigé le num ssf à la main. Le niveau est à modifier sur le site (pas de matching entre ce que
+les parents ont entré et les valeurs possibles du fichier xls.
+
+Colonnes:
+Id Favre	niveau -1	NoCar	dossard	niveau
+258		    A NP        3	    301	    Non-pratiquant
+
+"""
+from activities.models import ExtraNeed
+from registrations.models import Transport, Registration, ChildActivityLevel, ExtraInfo
+
+from import_export.formats.base_formats import XLSX
+
+
+fmt = XLSX()
+f = open('/home/greg/temp/montreux-hiver-2021.xlsx', fmt.get_read_mode())
+dataset = fmt.create_dataset(f.read())
+
+level_extra_key = 'Niveau de ski/snowboard'
+question = ExtraNeed.objects.get(question_label=level_extra_key)
+
+for (registration_id,  old_level, transport_name, bib_number, announced_level) in dataset:
+    try:
+        registration = Registration.objects.get(pk=registration_id)
+    except Registration.DoesNotExist:
+        print('Missing registration: {}'.format(registration_id))
+        continue
+    if transport_name:
+        transport, created = Transport.objects.get_or_create(name=transport_name)
+        if created:
+            print('Created transport {}'.format(transport_name))
+        registration.transport = transport
+        registration.save()
+    if bib_number:
+        registration.child.bib_number = bib_number
+        registration.child.save()
+    if announced_level:
+        try:
+            answer = registration.extra_infos.get(key=question)
+        except:
+            answer = ExtraInfo.objects.create(key=question, registration=registration)
+        if answer.value != announced_level:
+            answer.value = announced_level
+            answer.save()
+
+    level, created = ChildActivityLevel.objects.get_or_create(activity=registration.course.activity,
+                                                              child=registration.child)
+    if created:
+        print('Created level for child {}'.format(registration.child))
+        if old_level:
+            converted_level = old_level.split(' ')[-1].upper()
+            if level.before_level != converted_level:
+                print('update level')
+                level.before_level = converted_level
+                level.save()
+
+
+
+"""
 Afin que je puisse confirmer l'inscription aux parents, peux tu stp importer les informations qui se trouvent sur le
 fichier excel en annexe dès que possible?
 
@@ -12,17 +71,15 @@ from registrations.models import Transport, Registration, ChildActivityLevel, Ex
 
 from import_export.formats.base_formats import XLSX
 
-
 fmt = XLSX()
 f = open('/home/grfavre/montreux-hiver-2020.xlsx', fmt.get_read_mode())
 dataset = fmt.create_dataset(f.read())
 
-
 level_extra_key = 'Niveau de ski/snowboard'
 question = ExtraNeed.objects.get(question_label=level_extra_key)
 
-
-for (registration_id, id_lagapeo, last_name, first_name, announced_level, old_level, transport_name, bib_number) in dataset:
+for (
+registration_id, id_lagapeo, last_name, first_name, announced_level, old_level, transport_name, bib_number) in dataset:
     try:
         registration = Registration.objects.get(pk=registration_id)
     except Registration.DoesNotExist:
@@ -60,7 +117,6 @@ for (registration_id, id_lagapeo, last_name, first_name, announced_level, old_le
                 level.before_level = converted_level
                 level.save()
 
-
 for (registration_id, id_lagapeo, transport_name, bib_number, announced_level, old_level) in dataset:
     try:
         registration = Registration.objects.get(pk=registration_id)
@@ -86,9 +142,9 @@ for (registration_id, id_lagapeo, transport_name, bib_number, announced_level, o
             level.before_level = converted_level
             level.save()
 
-
 ## reload_levels
-for (registration_id, id_lagapeo, last_name, first_name, announced_level, old_level, transport_name, bib_number) in dataset:
+for (
+registration_id, id_lagapeo, last_name, first_name, announced_level, old_level, transport_name, bib_number) in dataset:
     try:
         registration = Registration.objects.get(pk=registration_id)
     except Registration.DoesNotExist:
@@ -104,3 +160,4 @@ for (registration_id, id_lagapeo, last_name, first_name, announced_level, old_le
             print('update level')
             level.before_level = old_level
             level.save()
+
