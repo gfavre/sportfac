@@ -50,7 +50,7 @@ class FakeRequest(object):
     pass
 
 
-class PDFRenderer:
+class PDFRenderer(object):
     message_template = None
     is_landscape = False
 

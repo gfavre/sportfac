@@ -31,6 +31,7 @@ fabsettings.py
 
 /media
 /sportfac/assets
+staticfiles/
 /backup
 sportfac/media
 
