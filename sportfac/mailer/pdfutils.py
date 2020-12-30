@@ -86,7 +86,7 @@ class PDFRenderer(object):
     def get_content(self, template_name):
         initial_static_url = settings.STATIC_URL
         if settings.STATIC_URL.startswith('/'):
-            settings.STATIC_URL = u'{}{}{}'.format(self.context.get('PROTOCOL'),
+            settings.STATIC_URL = u'{}{}{}'.format('https://',#self.context.get('PROTOCOL'),
                                                    self.request.site.domain,
                                                    settings.STATIC_URL)
         if self.fake_request:
