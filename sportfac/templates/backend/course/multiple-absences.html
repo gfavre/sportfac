@@ -91,9 +91,9 @@
 {% addtoblock "js" %}
 {% comment %}Ne pas utiliser static... sekizai a de la peine si static_url est absolu en prod {% endcomment %}
 
-<script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
-<script src="{% static 'js/vendor/bootstrap-datetimepicker.min.js' %}"></script>
-<script src="{% static 'js/vendor/jquery.formset.js' %}"></script>
+<script src="{{ STATIC_URL }}js/vendor/moment-with-locales.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/bootstrap-datetimepicker.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/jquery.formset.js"></script>
 
 <script type="text/javascript">
   $(function () {
