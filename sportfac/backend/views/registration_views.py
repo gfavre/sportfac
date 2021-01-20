@@ -13,7 +13,6 @@ from django.views.generic import (CreateView, DeleteView, DetailView, ListView, 
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import get_object_or_404
-from django.utils import timezone
 
 from formtools.wizard.views import SessionWizardView
 
@@ -232,8 +231,12 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
     def form_valid(self, form, extrainfo_form):
         initial_course = self.get_object().course
         self.object = form.save()
+        if settings.KEPCHUP_USE_ABSENCES and self.object.course != initial_course:
+            self.object.delete_future_absences()
+
         extrainfo_form.instance = self.object
         extrainfo_form.save()
+
         if self.object.status in (Registration.STATUS.confirmed, Registration.STATUS.valid):
             self.object.set_confirmed()
         elif self.object.status == Registration.STATUS.canceled:
@@ -251,15 +254,7 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
             bill.save()
 
         if settings.KEPCHUP_USE_ABSENCES and self.object.course != initial_course:
-            # move between courses:
-            now = timezone.now()
-            for future_session_new in self.object.course.sessions.filter(date__gte=now):
-                Absence.objects.update_or_create(
-                    child=self.object.child, session=future_session_new,
-                    defaults={'status': Absence.STATUS.present}
-                )
-            for future_session_initial in initial_course.sessions.filter(date__gte=now):
-                Absence.objects.filter(child=self.object.child, session=future_session_initial).delete()
+            self.object.create_future_absences()
         success_message = self.get_success_message(form.cleaned_data)
         if success_message:
             messages.success(self.request, success_message)
@@ -351,19 +346,14 @@ class TransportDetailView(BackendMixin, DetailView):
     def get_context_data(self, **kwargs):
         children = set([registration.child for registration in self.object.participants.all()])
         if settings.KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES:
-            courses = set([absence.session.course for child in children for absence in child.absence_set.all()])
+            courses = set(
+                [absence.session.course for child in children
+                                        for absence in child.absence_set.select_related('session__course',
+                                                                                        'session__course__activity')]
+            )
         else:
             courses = set([registration.course for registration in self.object.participants.all()])
 
-        registrations = dict(
-            [((registration.child, registration.course), registration) for registration in
-             self.object.participants.all()]
-        )
-        qs = Absence.objects.filter(child__in=children, session__course__in=courses) \
-                            .select_related('session', 'child', 'session__course', 'session__course__activity') \
-                            .order_by('child__last_name', 'child__first_name')
-        kwargs['all_dates'] = list(set(qs.values_list('session__date', flat=True)))
-        kwargs['all_dates'].sort(reverse=True)
         try:
             questions = ExtraNeed.objects.filter(question_label__startswith=u'Arr')
             all_extras = dict([(extra.registration.child, extra.value) for extra in ExtraInfo.objects.filter(
@@ -372,25 +362,30 @@ class TransportDetailView(BackendMixin, DetailView):
                 key__in=questions)])
         except ExtraNeed.DoesNotExist:
             all_extras = {}
+        Participant = collections.namedtuple('Participant',
+                                             ['registration', 'child', 'latest_course', 'child_stop', 'all_absences'])
+        participants_list = []
 
-        child_absences = collections.OrderedDict()
-        child_stop = {}
-        for registration in self.object.participants.order_by('child__last_name', 'child__first_name'):
-            child_absences[(registration.child, registration.course, registration)] = {}
-            child_stop[registration.child] = all_extras.get(registration.child, '')
-        kwargs['child_stop'] = child_stop
-        for absence in qs:
-            child = absence.child
-            course = absence.session.course
-            if (child, course) not in registrations:
-                # another child in same course
-                continue
-            the_tuple = (child, course, registrations[(child, course)])
-            if the_tuple in child_absences:
-                child_absences[the_tuple][absence.session.date] = absence
-            else:
-                child_absences[the_tuple] = {absence.session.date: absence}
-        kwargs['child_absences'] = child_absences
+        qs = Absence.objects.filter(child__in=children, session__course__in=courses) \
+            .select_related('session', 'child', 'session__course', 'session__course__activity') \
+            .order_by('session__date', 'child__last_name', 'child__first_name')
+
+        all_dates = set(qs.values_list('session__date', flat=True))
+        kwargs['all_dates'] = list(all_dates)
+        kwargs['all_dates'].sort(reverse=True)
+
+        for registration in self.object.participants.all():
+            child_absences = {absence.session.date: absence for absence in qs if absence.child == registration.child}
+            absences = [child_absences.get(session_date, None) for session_date in kwargs['all_dates']]
+            participant = Participant(
+                registration=registration,
+                child=registration.child, latest_course=registration.course,
+                child_stop=all_extras.get(registration.child, ''),
+                all_absences=absences
+            )
+            participants_list.append(participant)
+        kwargs['participants_list'] = list(participants_list)
+
         return super(TransportDetailView, self).get_context_data(**kwargs)
 
 

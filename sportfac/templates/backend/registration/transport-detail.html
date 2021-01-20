@@ -92,23 +92,29 @@
         table .rotated-heading {
           height: 55px;
         }
+
         .rotated-heading div span {
           padding-left: 23px;
         }
+
         table.table-condensed > thead > tr > th, table.table-condensed > tbody > tr > th, table.table-condensed > tfoot > tr > th,
         table.table-condensed > thead > tr > td, table.table-condensed > tbody > tr > td, table.table-condensed > tfoot > tr > td {
           padding: 3px;
           line-height: 10px;
         }
+
         table.table-condensed > tbody > tr > td.session-col {
           padding: 2px;
         }
+
         .session-col .btn-sm {
           line-height: 11px;
         }
+
         .absences {
           width: 100% !important;
         }
+
         .child-col {
           width: 4cm ! important;
         }
@@ -176,48 +182,51 @@
     </tr>
     </thead>
     <tbody>
-    {% for child_course, absences in child_absences.items %}
-      {% with child=child_course.0 course=child_course.1 registration=child_course.2 %}
-        <tr data-registration-id="{{ registration.id }}">
-          {% if BIB_NUMBERS %}
-            <td data-order="{{ child.bib_number }}">
-              <a href="{{ child.get_backend_absences_url }}">{{ child.bib_number }}</a>
+    {% for participant in participants_list %}
+      <tr data-registration-id="{{ participant.registration.id }}">
+        {% if BIB_NUMBERS %}
+          <td data-order="{{ participant.child.bib_number }}">
+            <a href="{{ participant.child.get_backend_absences_url }}">{{ participant.child.bib_number }}</a>
+          </td>
+        {% endif %}
+        <td data-order="{{ participant.child.ordering_name }}">
+          <span class="nowrap"><a
+              href="{{ participant.child.get_backend_absences_url }}">{{ participant.child.full_name }}</a></span>
+        </td>
+        <td data-order="{{ participant.child.emergency_number|phone:'RFC3966' }}">
+          {{ participant.child.emergency_number|phone }}
+        </td>
+        <td class="course-col"
+            data-order="{{ participant.latest_course.number }}">
+          <span class="nowrap hidden-print"><a
+              href="{{ course.backend_url }}">{{ participant.latest_course.short_name }}</a></span>
+          <span class="visible-print-inline-block">{{ participant.latest_course.number }}</span>
+        </td>
+        <td class="transport-col"
+            data-order="{{ participant.child_stop|cut:" " }}">
+          <span>{{ participant.child_stop }}</span>
+        </td>
+
+        {% for absence in participant.all_absences %}
+          {% if absence %}
+            <td class="session-col absence {{ absence.status }} {% if absence.status == 'present' %}success{% elif absence.status == 'late' %}info{% elif absence.status == 'excused' %}warning{% else %}danger{% endif %}">
+              <span class="set-absence"
+                    data-pk="{{ absence.pk }}"
+                    data-session="{{ absence.session.id }}"
+                    data-child="{{ participant.child.id }}"
+                    data-status="{{ absence.status }}">
+                <a role="button" class="btn btn-sm absence has-popover" data-toggle="popover"
+                   data-trigger="click focus">{{ absence|absence_to_status:1 }}</a>
+              </span>
             </td>
-          {% endif %}
-          <td data-order="{{ child.ordering_name }}">
-            <span class="nowrap"><a href="{{ child.get_backend_absences_url }}">{{ child.full_name }}</a></span>
-          </td>
-          <td data-order="{{ child.emergency_number|phone:'RFC3966' }}">
-            {{ child.emergency_number|phone }}
-          </td>
-          <td class="course-col"
-              data-order="{{ course.number }}">
-            <span class="nowrap hidden-print"><a href="{{ course.backend_url }}">{{ course.short_name }}</a></span>
-            <span class="visible-print-inline-block">{{ course.number }}</span>
-          </td>
-          <td class="transport-col"
-              data-order="{{ child_stop|get_item:child|cut:" " }}">
-            <span>{{ child_stop|get_item:child }}</span>
-          </td>
-          {% for session_date in all_dates %}{% if session_date in absences %}
-            {% with absence=absences|get_item:session_date %}
-              <td class="session-col absence {{ absence.status }} {% if absence.status == 'present' %}success{% elif absence.status == 'late' %}info{% elif absence.status == 'excused' %}warning{% else %}danger{% endif %}">
-        <span class="set-absence"
-              data-pk="{{ absence.pk }}"
-              data-session="{{ absence.session.id }}"
-              data-child="{{ child.id }}"
-              data-status="{{ absence.status }}">
-          <a role="button" class="btn btn-sm absence has-popover" data-toggle="popover"
-             data-trigger="click focus">{{ absence|absence_to_status:1 }}</a>
-        </span>
-              </td>
-            {% endwith %}
           {% else %}
             <td class="text-muted active"></td>
-          {% endif %}{% endfor %}
-        </tr>
-      {% endwith %}
+          {% endif %}
+        {% endfor %}
+      </tr>
+
     {% endfor %}
+
     </tbody>
   </table>
   <p class="hidden-print text-center">

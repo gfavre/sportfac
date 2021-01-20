@@ -23,3 +23,21 @@ for course in Course.objects.all():
             except:
                 import pdb;pdb.set_trace()
                 continue
+
+from datetime import date
+dates = [date(2021,1,9), date(2021,1,16)]
+for registration in Registration.objects.all():
+    for session in registration.course.sessions.filter(date__gte=now()):
+        Absence.objects.get_or_create(
+            child=self.child, session=future_session,
+            defaults={'status': Absence.STATUS.present}
+        )
+    registration.create_future_absences()
+
+for registration in
+dates = [date(2021,1,9), date(2021,1,16)]
+
+
+#for absence in Absence.objects.all():
+#    if absence.session.course not in absence.child.courses.all():
+#        absence.delete()
