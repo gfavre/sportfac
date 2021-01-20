@@ -41,13 +41,6 @@ ALLOWED_HOSTS = ('127.0.0.1', 'localhost', 'test.com', 'tenant.test.com', 'tests
 ########## END DEBUG CONFIGURATION
 
 
-########## EMAIL CONFIGURATION
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-#EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-#EMAIL_FILE_PATH = env('EMAIL_FILE_PATH', default='/tmp/app-messages')
-
-########## END EMAIL CONFIGURATION
 
 
 ########## DATABASE CONFIGURATION
@@ -97,6 +90,18 @@ DEBUG_TOOLBAR_PANELS = [
 ########### EMAIL:
 DEFAULT_FROM_EMAIL = 'sportfac@localhost'
 EMAIL_SUBJECT_PREFIX = '[%s] ' % SITE_NAME
+
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+#EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+#EMAIL_FILE_PATH = env('EMAIL_FILE_PATH', default='/tmp/app-messages')
+
+
+
+
+
+########## END EMAIL CONFIGURATION
+
 
 
 ############ Celery

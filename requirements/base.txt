@@ -49,7 +49,7 @@ django-import-export == 0.5.1
 openpyxl == 2.4.1
 python-dateutil == 2.5.3
 django_environ == 0.4.4
-django-anymail==1.2
+django-anymail==7.2.1
 requests==2.18.4
 python-memcached==1.59
 

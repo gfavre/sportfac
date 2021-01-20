@@ -237,7 +237,7 @@ SHARED_APPS = (
     'django.contrib.sitemaps',
 
     # third party apps
-
+    "anymail",  # send mail
     'captcha',  # recaptcha
     'ckeditor',  # wysiwyg editor
     'ckeditor_uploader',

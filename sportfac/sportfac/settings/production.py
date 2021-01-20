@@ -25,6 +25,11 @@ SERVER_EMAIL = env('SERVER_EMAIL')
 
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 
+EMAIL_BACKEND = "anymail.backends.postmark.EmailBackend"
+ANYMAIL = {
+    # (exact settings here depend on your ESP...)
+    "POSTMARK_SERVER_TOKEN": env('POSTMARK_TOKEN'),
+}
 
 MANAGERS = (
     ('Gregory Favre', 'greg@beyondthewall.ch'),
