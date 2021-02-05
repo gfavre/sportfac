@@ -40,9 +40,12 @@ class ChildParser:
             u'Date de naissance': ('birth_date', self.parse_birth_date),
             u'Nationalité': ('nationality', self.parse_nationality),
             u'Langue maternelle': ('language', self.parse_language),
+            u'LANGUE MATERNELLE': ('language', self.parse_language),
             u'Année': ('school_year', self.parse_school_year),
             u'ANNEE': ('school_year', self.parse_school_year),
             u'Etablissement': ('school', self.parse_school),
+            u'ETABLISSEMENT': ('school', self.parse_school),
+
         }
 
     def parse_sex(self, value):
@@ -62,15 +65,15 @@ class ChildParser:
             return None
 
     def parse_nationality(self, value):
-        if value == 'Suisse':
+        if value in (u'Suisse', u'CH'):
             return Child.NATIONALITY.CH
-        elif value == 'Liechtenstein':
+        elif value == u'Liechtenstein':
             return Child.NATIONALITY.FL
         else:
             return Child.NATIONALITY.DIV
 
     def parse_language(self, value):
-        if value == u'Français':
+        if value in (u'Français', u'F'):
             return Child.LANGUAGE.F
         elif value == u'Italien':
             return Child.LANGUAGE.I
@@ -111,6 +114,7 @@ class ChildParser:
     def parse(self, row):
         out = {}
         for key, val in row.items():
+
             try:
                 translated, fct = self.fields_dict.get(key, (None, None))
                 if translated:
@@ -141,6 +145,10 @@ def load_children(filelike):
             logger.warning(u'{}: Could not parse row={}, values={}'.format(exc, i, values))
             continue
         id_lagapeo = parsed.pop('id_lagapeo')
+        if not parsed.get('birth_date'):
+            logger.warning(u'{}: Could not add, missing birth date'.format(id_lagapeo))
+            continue
+
         child, created = Child.objects.update_or_create(id_lagapeo=id_lagapeo, defaults=parsed)
         if created:
             nb_created += 1
