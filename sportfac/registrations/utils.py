@@ -88,28 +88,29 @@ class ChildParser:
         return self.schools.get(value, None)
 
     def parse_school_year(self, value):
-        try:
-            match = re.match(r'\s*(\d+)\s?\w*.*', value)
-            if not match:
-                logger.debug('Year not parsed: {}'.format(value))
+        if isinstance(value, basestring):
+            try:
+                match = re.match(r'\s*(\d+)\s?\w*.*', value)
+                if not match:
+                    logger.debug('Year not parsed: {}'.format(value))
+                    return None
+                value = int(match.group(1))
+            except TypeError:
+                print('typeerror')
+                return self.schoolyears.get(value, None)
+            except ValueError:
+                print('valueerror')
                 return None
-            value = int(match.group(1))
-            year = self.schoolyears.get(value, None)
-            if not year:
-                logger.debug('no corresponding year found: {}'.format(value))
-            return year
-        except TypeError:
+            except IndexError:
+                print('indexerror')
+                return None
+        elif isinstance(value, float):
             value = int(value)
-            print('typeerror')
-            return self.schoolyears.get(value, None)
-        except ValueError:
-            print('valueerror')
 
-            return None
-        except IndexError:
-            print('indexerror')
-
-            return None
+        year = self.schoolyears.get(value, None)
+        if not year:
+            logger.debug('no corresponding year found: {}'.format(value))
+        return year
 
     def parse(self, row):
         out = {}
