@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, date
+from decimal import Decimal
+import uuid
 
 from django.contrib.postgres.fields import ArrayField
 from django.conf import settings
@@ -11,6 +13,7 @@ from django.utils.translation import ugettext_lazy as _, ugettext
 
 from autoslug import AutoSlugField
 from ckeditor_uploader.fields import RichTextUploadingField
+from model_utils import Choices
 
 from sportfac.models import TimeStampedModel
 from .utils import course_to_js_csv
@@ -394,19 +397,48 @@ class ExtraNeed(TimeStampedModel):
         return dict(zip(self.choices, self.price_modifier))
 
 
+RATE_MODES = Choices(
+    ('day', _("Daily")),
+    ('hour', _("Hourly"))
+)
 
-"""
-from StringIO import StringIO
-from activities.models import Course
 
-c=Course.objects.all()[0]
-s=StringIO()
+class PaySlip(TimeStampedModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    instructor = models.ForeignKey('profiles.FamilyUser', verbose_name=_("Instructor"), on_delete=models.CASCADE)
+    course = models.ForeignKey('Course', verbose_name=_("Course"), on_delete=models.CASCADE)
+    rate = models.DecimalField(_("Rate"), max_digits=6, decimal_places=2)
+    rate_mode = models.CharField(_("Rate mode"), max_length=10, choices=RATE_MODES, default=RATE_MODES.hour)
+    start_date = models.DateField(_("Start date"))
+    end_date = models.DateField(_("End date"))
+    function = models.CharField(_("Function"), max_length=255)
 
-c.get_js_csv(s)
-s.getvalue()
+    class Meta:
+        # Let's see this another time and save too often...
+        # unique_together = ('instructor', 'course')
+        ordering = ('-created',)
 
-f = open('/Users/grfavre/Desktop/excel-sucks.csv', 'w')
-c.get_js_csv(f)
-f.close()
+    @property
+    def amount(self):
+        if self.rate_mode == RATE_MODES.hour:
+            duration = self.course.duration
+            hours = Decimal(duration.seconds / 3600.0 + duration.days * 24)
+            return Decimal(self.rate) * Decimal(self.sessions.count()) * hours
+        else:
+            return Decimal(self.sessions.count()) * self.rate
 
-"""
+    @property
+    def average_presentees(self):
+        return round(float(self.total_presentees) / max(len(self.sessions), 1), 1)
+
+    @property
+    def sessions(self):
+        return self.course.sessions.filter(instructor=self.instructor,
+                                           date__gte=self.start_date, date__lte=self.end_date)
+
+    @property
+    def total_presentees(self):
+        return sum([session.presentees_nb() for session in self.sessions])
+
+    def get_absolute_url(self):
+        return reverse('activities:payslip-detail', kwargs={'pk': self.pk})

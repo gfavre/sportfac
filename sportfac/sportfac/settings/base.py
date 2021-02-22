@@ -298,7 +298,7 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
-        }
+        },
     },
     'loggers': {
         'django.request': {
@@ -306,6 +306,8 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
+
+
     }
 }
 ########## END LOGGING CONFIGURATION

@@ -3,24 +3,28 @@ import json
 import urllib
 
 from django.core.urlresolvers import reverse, reverse_lazy
+from django.conf import settings
 from django.db.models import Min, Max
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from django.views.generic import DetailView, ListView, View
 
 from braces.views import LoginRequiredMixin, UserPassesTestMixin
+import requests
 
 from mailer.forms import CourseMailForm, InstructorCopiesForm
 from mailer.mixins import ArchivedMailMixin
 import mailer.views as mailer_views
 from sportfac.views import WizardMixin
-from .models import Activity, Course
+from .models import Activity, Course, PaySlip
 
 
 __all__ = ('InstructorMixin', 'ActivityDetailView', 'ActivityListView',
            'CustomParticipantsCustomMailView',
            'MyCoursesListView', 'MyCourseDetailView',
-           'MailUsersView', 'CustomMailPreview', 'MailCourseInstructorsView')
+           'MailUsersView', 'CustomMailPreview', 'MailCourseInstructorsView',
+           'PaySlipDetailView')
 
 
 class InstructorMixin(UserPassesTestMixin, LoginRequiredMixin):
@@ -180,3 +184,47 @@ class MailCourseInstructorsView(InstructorMixin, mailer_views.MailCourseInstruct
 
     def get_recipients(self):
         return [self.request.user]
+
+
+class PaySlipDetailView(DetailView):
+    template_name = 'activities/pay-slip-detail.html'
+    model = PaySlip
+
+    def get(self, request, *args, **kwargs):
+        if self.request.GET.get('pdf', False):
+            return self.pdf()
+        return super(PaySlipDetailView, self).get(request, *args, **kwargs)
+
+    def pdf(self):
+        """output: filelike object"""
+        self.object = self.get_object()
+        url = self.request.build_absolute_uri(self.object.get_absolute_url())
+        phantomjs_conf = {
+            'renderType': 'pdf',
+            'omitBackground': True,
+            "renderSettings": {
+                'emulateMedia': 'print',
+                'pdfOptions': {
+                    'format': 'A4',
+                    'landscape': False,
+                    'preferCSSPageSize': True,
+                }
+            }
+        }
+        if '127.0.0.1' in url:
+            context = self.get_context_data(object=self.object)
+            page = render_to_string(self.template_name, context=context, request=self.request)
+            phantomjs_conf['content'] = page
+        else:
+            phantomjs_conf['url'] = url
+        pdf = requests.post(
+            'https://PhantomJsCloud.com/api/browser/v2/{}/'.format(
+                settings.PHANTOMJSCLOUD_APIKEY
+            ),
+            json.dumps(phantomjs_conf)
+        )
+        if not pdf.status_code == 200:
+            raise IOError(pdf.text)
+        response = HttpResponse(pdf.content, content_type="application/pdf")
+        response['Content-Disposition'] = 'attachment; filename=%s.pdf' % self.object.pk
+        return response

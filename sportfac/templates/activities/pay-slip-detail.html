@@ -1,0 +1,236 @@
+{% load i18n staticfiles duration switzerland %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fiche de Salaire</title>
+  <!--<link href="{% static 'css/style.css' %}" rel="stylesheet" media="all"/>-->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link href='//fonts.googleapis.com/css?family=Open+Sans:400italic,400,600,700,800&subset=latin,latin-ext'
+        rel='stylesheet' type='text/css'>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -moz-box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      height: 29.7cm;
+    }
+
+    @media print {
+      body {
+        overflow: hidden !important;
+      }
+
+      html, body {
+        height: 99%;
+      }
+
+      section {
+        page-break-after: always;
+        page-break-inside: avoid;
+      }
+    }
+
+    th {
+      font-weight: 600;
+    }
+
+    .container {
+      display: table;
+      border-collapse: collapse;
+      width: 21cm;
+      min-height: 29cm;
+      max-height: 29cm;
+      padding: 2cm;
+      margin: 0cm auto;
+      overflow: visible
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Open Sans', 'Trebuchet MS', arial, sans-serif;
+    }
+
+    h1 {
+      margin: 1cm 0;
+    }
+
+    h3 {
+      font-size: 18px;
+      line-height: 20px;
+      margin-bottom: 1.5em;
+    }
+
+    h3 small {
+      color: black;
+      font-size: 75%;
+    }
+
+    section {
+      display: table-row;
+      border: 1px solid black;
+    }
+
+    section [class*="col-"] {
+      display: table-cell;
+      padding: 10px 30px;
+    }
+
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="row">
+    <div class="col-xs-3 text-center">
+      Commune de Montreux<br/>
+      Service des Finances
+    </div>
+    <div class="col-xs-3 col-xs-offset-6 text-center">
+      Sport scolaire facultatif
+    </div>
+  </div>
+  <h1 class="text-center">Fiche de salaire moniteur SSF</h1>
+  <p class="hidden-print text-center">
+    <a class="btn btn-success btn-large" href="{{ payslip.get_absolute_url }}?pdf=1"><i class="icon icon-file-pdf"></i> PDF</a>
+  </p>
+
+  <section>
+    <div class="row">
+      <div class="col-xs-6">
+        <dl class="dl-horizontal">
+          <dt>Période:</dt>
+          <dd>{{ payslip.start_date|date:"j.m.Y" }} - {{ payslip.end_date|date:"j.m.Y" }}</dd>
+        </dl>
+      </div>
+      <div class="col-xs-6 ">
+        <dl class="dl-horizontal">
+          <dt>CF:</dt>
+          <dd>174.3012</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="row">
+      <div class="col-xs-12">
+        <dl class="dl-horizontal">
+          <dt>École:</dt>
+          <dd>Etablissements Primaires et Secondaires de Montreux</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="row">
+      <div class="col-xs-6">
+
+        <h3>
+          {{ payslip.course.number }} {{ payslip.course.activity.name }} {% if payslip.course.name %}&mdash; {{ payslip.course.name }}{% endif %}<br>
+          <small>{{ payslip.course.day_name }} {{ payslip.course.start_time }} - {{ payslip.course.end_time }}</small>
+        </h3>
+
+        <dl class="dl-horizontal">
+          <dt>Effectif moyen:</dt>
+          <dd>{{ payslip.average_presentees | floatformat:"0" }}</dd>
+          <dt>Nombre de cours:</dt>
+          <dd>{{ payslip.sessions.count }}</dd>
+          <dt>Durée:</dt>
+          <dd>{{ payslip.course.duration|duration }}</dd>
+        </dl>
+      </div>
+      <div class="col-xs-6">
+        <table class="table">
+          <thead>
+          <tr>
+            <th>Date</th>
+            <th>Effectif</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for session in payslip.sessions %}
+            <tr>
+              <td>{{ session.date | date:"d.m.Y" }}</td>
+              <td>{{ session.presentees_nb }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="row">
+      <div class="col-xs-6">
+        <strong>{{ payslip.instructor.full_name }}</strong>
+        <p>{{ payslip.instructor.address }}<br>
+          {{ payslip.instructor.zipcode }} {{ payslip.instructor.city }}<br>
+          {{ payslip.instructor.get_country_display }}</p>
+        <p>N° AVS: {{ payslip.instructor.ahv|ahv }}</p>
+      </div>
+      <div class="col-xs-6">
+        <h3>Paiement</h3>
+        IBAN: {{ payslip.instructor.iban|iban }}
+      </div>
+    </div>
+  </section>
+  <section>
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Fonction</th>
+        <th>Nb cours</th>
+        {% if payslip.rate_mode == 'hour' %}
+          <th></th>
+          <th>Durée (heures)</th>
+        {% endif %}
+        <th></th>
+        <th>Tarif</th>
+        <th></th>
+        <th>Montant brut</th>
+      </tr>
+      </thead>
+      <tr>
+        <td style="border-right: 1px solid #ddd;">
+          {{ payslip.function }}
+        </td>
+        <td>{{ payslip.sessions.count }}</td>
+        {% if payslip.rate_mode == 'hour' %}
+          <td>&times;</td>
+          <td>{{ payslip.course.duration|hours|floatformat:2 }}</td>
+        {% endif %}
+        <td>&times;</td>
+        <td>{{ payslip.rate|money }}</td>
+        <td>=</td>
+        <td>{{ payslip.amount | money }}</td>
+      </tr>
+    </table>
+  </section>
+  <section>
+    <div class="row">
+      <div class="col-xs-6 col-xs-offset-3  text-center">Visa du responsable SSF</div>
+    </div>
+  </section>
+  <section>
+    <div class="row">
+      <div class="col-xs-6 col-xs-offset-3 text-center"> Visa du délégué au sport</div>
+    </div>
+  </section>
+  <section>
+    <div class="row">
+      <div class="col-xs-3"> Date: {% now "d.m.Y" %}</div>
+      <div class="col-xs-6  text-center">Visa du boursier communal</div>
+    </div>
+  </section>
+</div>
+<script src="{% static 'js/vendor/jquery-2.1.1.min.js' %}"></script>
+<script>
+
+  $('.print-button').click(function () {
+    window.print()
+  });
+</script>
+</body>
+</html>

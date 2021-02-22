@@ -3,13 +3,15 @@ import datetime
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.forms.widgets import TextInput
 from django.utils.translation import ugettext as _
 
+from crispy_forms.helper import FormHelper
 import floppyforms.__future__ as forms
 
 from backend.forms import Select2Widget, Select2MultipleWidget, DatePickerInput, TimePickerInput, MultiDateInput
 from profiles.models import FamilyUser
-from .models import Activity, Course, ExtraNeed
+from .models import Activity, Course, ExtraNeed, PaySlip
 
 
 class CourseForm(forms.ModelForm):
@@ -119,3 +121,18 @@ class ActivityForm(forms.ModelForm):
     class Meta:
         model = Activity
         fields = ('name', 'number', 'description', 'informations')
+
+
+class PaySlipForm(forms.ModelForm):
+
+    class Meta:
+        model = PaySlip
+        fields = ('function', 'rate_mode', 'rate',  'start_date', 'end_date')
+        widgets = {'rate': TextInput}
+
+    def __init__(self, *args, **kwargs):
+        super(PaySlipForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_group_wrapper_class = 'row'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-10'

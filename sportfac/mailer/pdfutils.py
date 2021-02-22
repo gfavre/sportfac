@@ -113,10 +113,8 @@ class PDFRenderer(object):
                     'format': 'A4',
                     'landscape': self.is_landscape,
                     'preferCSSPageSize': True,
-
                 }
             }
-
         })
 
         pdf = requests.post(

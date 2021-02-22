@@ -20,7 +20,7 @@ from django.views.generic.detail import SingleObjectMixin
 from absences.models import Absence, Session
 from absences.utils import closest_session
 from activities.models import Course, Activity, ExtraNeed, CoursesInstructors
-from activities.forms import CourseForm, ExplicitDatesCourseForm
+from activities.forms import CourseForm, ExplicitDatesCourseForm, PaySlipForm
 from profiles.models import FamilyUser
 from registrations.models import ChildActivityLevel, ExtraInfo
 from registrations.resources import RegistrationResource
@@ -373,9 +373,9 @@ class CourseParticipantsExportView(BackendMixin, SingleObjectMixin, ExcelRespons
         return self.render_to_response()
 
 
-class PaySlipMontreux(BackendMixin, FormView):
+class PaySlipMontreux(BackendMixin, CreateView):
     template_name = 'backend/course/pay-slip-montreux-form.html'
-    form_class = PayslipMontreuxForm
+    form_class = PaySlipForm
 
     def get_initial(self):
         course = get_object_or_404(Course, pk=self.kwargs['course'])
@@ -383,62 +383,19 @@ class PaySlipMontreux(BackendMixin, FormView):
         if session_dates:
             return {'start_date': min(session_dates),
                     'end_date': max(session_dates)}
-
         else:
             return {}
 
     def form_valid(self, form, **kwargs):
+        self.object = form.save(commit=False)
         context = self.get_context_data(**kwargs)
-        context['rate'] = Decimal(form.cleaned_data['rate'])
-        context['rate_mode'] = form.cleaned_data['rate_mode']
-        context['function'] = form.cleaned_data['function']
-        context['start_date'] = form.cleaned_data['start_date']
-        context['end_date'] = form.cleaned_data['end_date']
-        context['sessions'] = context['course'].sessions.filter(instructor=context['instructor'],
-                                                                date__gte=context['start_date'],
-                                                                date__lte=context['end_date'])
-
-        total_presentees = sum([session.presentees_nb() for session in context['sessions']])
-        context['avg'] = round(float(total_presentees) / max(len(context['sessions']), 1), 1)
-
-        if form.cleaned_data['rate_mode'] == 'hour':
-            duration = context['course'].duration
-            hours = Decimal(duration.seconds / 3600.0 + duration.days * 24)
-            context['amount'] = Decimal(context['rate']) * Decimal(context['sessions'].count()) * hours
-        else:
-            context['amount'] = Decimal(context['sessions'].count()) * context['rate']
-
-        return TemplateResponse(
-            request=self.request,
-            template=['backend/course/pay-slip-montreux.html'],
-            context=context
-        )
-
-    def form_invalid(self, form, **kwargs):
-        """
-        If the form is invalid, re-render the context data with the
-        data-filled form and errors.
-        """
-        return self.render_to_response(self.get_context_data(form=form, **kwargs))
+        self.object.course = context['course']
+        self.object.instructor = context['instructor']
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
 
     def get_context_data(self, **kwargs):
-        kwargs['instructor'] = get_object_or_404(FamilyUser, pk=kwargs['instructor'])
-        kwargs['course'] = get_object_or_404(Course, pk=kwargs['course'])
+        kwargs = super(PaySlipMontreux, self).get_context_data(**kwargs)
+        kwargs['instructor'] = get_object_or_404(FamilyUser, pk=self.kwargs['instructor'])
+        kwargs['course'] = get_object_or_404(Course, pk=self.kwargs['course'])
         return super(PaySlipMontreux, self).get_context_data(**kwargs)
-
-    def get(self, request, *args, **kwargs):
-        """
-        Handles GET requests and instantiates a blank version of the form.
-        """
-        return self.render_to_response(self.get_context_data(**kwargs))
-
-    def post(self, request, *args, **kwargs):
-        """
-        Handles POST requests, instantiating a form instance with the passed
-        POST variables and then checked for validity.
-        """
-        form = self.get_form()
-        if form.is_valid():
-            return self.form_valid(form, **kwargs)
-        else:
-            return self.form_invalid(form, **kwargs)
