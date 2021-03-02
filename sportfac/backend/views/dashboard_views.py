@@ -165,9 +165,9 @@ class HomePageView(BackendMixin, TemplateView):
 
         context['nb_registrations'] = qs.count()
         families = FamilyUser.objects.filter(bills__in=Bill.objects.all())
-        context['nb_families'] = families.count()
+        context['nb_families'] = families.distinct().count()
 
-        context['nb_children'] = Child.objects.filter(family__in=families).count()
+        context['nb_children'] = Child.objects.filter(family__in=families).distinct().count()
 
         UNKNOWN = _("Unknown")
         children_per_zip = {UNKNOWN: set()}
