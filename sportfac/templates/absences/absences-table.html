@@ -318,15 +318,16 @@
 </table>
 {% if user.is_manager %}
   <form class="move" method="post"
-        action="{% url 'backend:registrations-move' %}{% if move_redirect_a %}?activity={{ move_redirect_a }}{% elif move_redirect_c %}?course={{ move_redirect_c }}{% endif %}">
+        action="{% url 'backend:registrations-move' %}{% if move_redirect_a %}?activity=
+          {{ move_redirect_a }}{% elif move_redirect_c %}?course={{ move_redirect_c }}{% endif %}">
     {% csrf_token %}
   </form>
-  <p class="hidden-print text-center">
-
-    <a class="btn btn-success btn-large" href="{{ request.get_full_path|add_pdf_param }}"><i
-        class="icon icon-file-pdf"></i> {% trans "Export to PDF" %}</a>
-  </p>
 {% endif %}
+<p class="hidden-print text-center">
+
+  <a class="btn btn-success btn-large" href="{{ request.get_full_path|add_pdf_param }}"><i
+      class="icon icon-file-pdf"></i> {% trans "Export to PDF" %}</a>
+</p>
 
 <script type="text/html" id="session-window">
   <form class="session-form hidden-print">
