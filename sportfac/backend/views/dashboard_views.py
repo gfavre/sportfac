@@ -162,12 +162,11 @@ class HomePageView(BackendMixin, TemplateView):
         qs = Registration.objects.exclude(status__in=(Registration.STATUS.canceled,
                                                       Registration.STATUS.waiting)) \
             .select_related('child', 'child__family')
-
         context['nb_registrations'] = qs.count()
-        families = FamilyUser.objects.filter(bills__in=Bill.objects.all())
-        context['nb_families'] = families.distinct().count()
-
-        context['nb_children'] = Child.objects.filter(family__in=families).distinct().count()
+        families = set([child.family for child in children])
+        context['nb_families'] = len(families)
+        children = set([reg.child for reg in qs])
+        context['nb_children'] = len(children)
 
         UNKNOWN = _("Unknown")
         children_per_zip = {UNKNOWN: set()}
@@ -180,9 +179,7 @@ class HomePageView(BackendMixin, TemplateView):
             children_per_zip[zipcode] = set()
             families_per_zip[zipcode] = set()
 
-        for registration in Registration.objects.exclude(status__in=(Registration.STATUS.canceled,
-                                                                     Registration.STATUS.waiting)) \
-                .select_related('child', 'child__family'):
+        for registration in qs:
             try:
                 zipcode = registration.child.family.zipcode
             except AttributeError:
