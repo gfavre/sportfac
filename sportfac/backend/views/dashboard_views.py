@@ -163,9 +163,9 @@ class HomePageView(BackendMixin, TemplateView):
                                                       Registration.STATUS.waiting)) \
             .select_related('child', 'child__family')
         context['nb_registrations'] = qs.count()
+        children = set([reg.child for reg in qs])
         families = set([child.family for child in children])
         context['nb_families'] = len(families)
-        children = set([reg.child for reg in qs])
         context['nb_children'] = len(children)
 
         UNKNOWN = _("Unknown")
