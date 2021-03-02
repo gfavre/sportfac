@@ -132,7 +132,6 @@ STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'django.contrib.staticfiles.finders.FileSystemFinder',
-    'compressor.finders.CompressorFinder',
 )
 
 
@@ -241,7 +240,6 @@ SHARED_APPS = (
     'captcha',  # recaptcha
     'ckeditor',  # wysiwyg editor
     'ckeditor_uploader',
-    'compressor',  # css compression / anticache
     'crispy_forms',  # better forms => DRY
     'dbtemplates',  # store templates in db (used by mailer module)
     'django_select2',  # select2 form input
