@@ -5,19 +5,27 @@
    \let\sphinxpxdimen\pdfpxdimen\else\newdimen\sphinxpxdimen
 \fi \sphinxpxdimen=.75bp\relax
 
+\PassOptionsToPackage{warn}{textcomp}
 \usepackage[utf8]{inputenc}
 \ifdefined\DeclareUnicodeCharacter
- \ifdefined\DeclareUnicodeCharacterAsOptional\else
-  \DeclareUnicodeCharacter{00A0}{\nobreakspace}
-\fi\fi
+% support both utf8 and utf8x syntaxes
+\edef\sphinxdqmaybe{\ifdefined\DeclareUnicodeCharacterAsOptional\string"\fi}
+  \DeclareUnicodeCharacter{\sphinxdqmaybe00A0}{\nobreakspace}
+  \DeclareUnicodeCharacter{\sphinxdqmaybe2500}{\sphinxunichar{2500}}
+  \DeclareUnicodeCharacter{\sphinxdqmaybe2502}{\sphinxunichar{2502}}
+  \DeclareUnicodeCharacter{\sphinxdqmaybe2514}{\sphinxunichar{2514}}
+  \DeclareUnicodeCharacter{\sphinxdqmaybe251C}{\sphinxunichar{251C}}
+  \DeclareUnicodeCharacter{\sphinxdqmaybe2572}{\textbackslash}
+\fi
 \usepackage{cmap}
 \usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb,amstext}
 \usepackage{babel}
 \usepackage{times}
 \usepackage[Bjarne]{fncychap}
-\usepackage[dontkeepoldnames]{sphinx}
+\usepackage{sphinx}
 
+\fvset{fontsize=\small}
 \usepackage{geometry}
 
 % Include hyperref last.
@@ -27,9 +35,21 @@
 % Set up styles of URL: it should be placed after hyperref.
 \urlstyle{same}
 
-\addto\captionsenglish{\renewcommand{\figurename}{Fig.}}
-\addto\captionsenglish{\renewcommand{\tablename}{Table}}
+\addto\captionsenglish{\renewcommand{\figurename}{Fig.\@ }}
+\makeatletter
+\def\fnum@figure{\figurename\thefigure{}}
+\makeatother
+\addto\captionsenglish{\renewcommand{\tablename}{Table }}
+\makeatletter
+\def\fnum@table{\tablename\thetable{}}
+\makeatother
 \addto\captionsenglish{\renewcommand{\literalblockname}{Listing}}
+
+\addto\captionsenglish{\renewcommand{\literalblockcontinuedname}{continued from previous page}}
+\addto\captionsenglish{\renewcommand{\literalblockcontinuesname}{continues on next page}}
+\addto\captionsenglish{\renewcommand{\sphinxnonalphabeticalgroupname}{Non-alphabetical}}
+\addto\captionsenglish{\renewcommand{\sphinxsymbolsname}{Symbols}}
+\addto\captionsenglish{\renewcommand{\sphinxnumbersname}{Numbers}}
 
 \addto\extrasenglish{\def\pageautorefname{page}}
 
@@ -38,17 +58,19 @@
 
 
 \title{sportfac_project Documentation}
-\date{Jun 23, 2017}
+\date{Mar 03, 2021}
 \release{0.1}
 \author{ChangeToMyName}
 \newcommand{\sphinxlogo}{\vbox{}}
 \renewcommand{\releasename}{Release}
 \makeindex
-
 \begin{document}
 
-\maketitle
+\pagestyle{empty}
+\sphinxmaketitle
+\pagestyle{plain}
 \sphinxtableofcontents
+\pagestyle{normal}
 \phantomsection\label{\detokenize{index::doc}}
 
 
@@ -56,7 +78,7 @@ Contents:
 
 
 \chapter{Configuration}
-\label{\detokenize{configurer:welcome-to-sportfac-project-s-documentation}}\label{\detokenize{configurer:configuration}}\label{\detokenize{configurer::doc}}
+\label{\detokenize{configurer:configuration}}\label{\detokenize{configurer::doc}}
 \noindent\sphinxincludegraphics{{configure}.png}
 
 
@@ -83,12 +105,58 @@ sous domaine de kepchup: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_.kepchup.ch
 \section{Options}
 \label{\detokenize{configurer:options}}
 Certaines fonctionnalités peuvent être activées ou désactivées:
+
+
+\subsection{Absences}
+\label{\detokenize{configurer:absences}}
+ Activer la gestion des absences
+
+
+\subsubsection{Si oui}
+\label{\detokenize{configurer:si-oui}}
+Heure d’envoi des rappels: \_\_\_\_\_\_\_:\_\_\_\_\_\_\_\_
+
+
+\subsection{Facturation}
+\label{\detokenize{configurer:facturation}}
+ Activer la gestion de la facturation (inutile si toutes les activités sont gratuites)
+
+
+\subsubsection{Si oui}
+\label{\detokenize{configurer:id1}}
+ Paiement en ligne via datatrans):
 \begin{itemize}
 \item {} 
-Gestion de la facturation (inutile si toutes les activités sont gratuites) oui / non
+Clé d’API Datatrans: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 \item {} 
-Gestion des absences oui / non
+Méthodes de paiement acceptées
+
+\end{itemize}
+\begin{itemize}
+\item {} 
+ Mastercard / Visa / AmEx
+
+\item {} 
+ Maestro
+
+\item {} 
+ Twint
+
+\item {} 
+ Paypal
+
+\item {} 
+ Postfinance card
+
+\item {} 
+ Apple pay
+
+\item {} 
+ Google pay
+
+\item {} 
+ Cryptomonnaies
 
 \end{itemize}
 
@@ -111,6 +179,20 @@ Titre du site: Il apparait dans la barre de titre du navigateur sur chaque page.
 Pied de page: il est identique sur toutes les pages. On y place généralement le nom et l’adresse de contact, ainsi qu’un logo.
 
 \end{itemize}
+
+\begin{sphinxadmonition}{note}{And, by the way…}
+
+dsfsd
+fdsd
+\end{sphinxadmonition}
+
+
+\sphinxstrong{See also:}
+
+
+\sphinxhref{http://docutils.sourceforge.net/0.7/docs/ref/rst/directives.html\#admonitions}{Admonitions}
+
+
 \begin{quote}\begin{description}
 \item[{Exemple}] \leavevmode
 \begin{DUlineblock}{0em}
@@ -412,7 +494,7 @@ email
 
 
 \chapter{Install}
-\label{\detokenize{install::doc}}\label{\detokenize{install:install}}
+\label{\detokenize{install:install}}\label{\detokenize{install::doc}}
 This is where you write how to get a new laptop to run this project.
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]

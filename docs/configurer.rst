@@ -3,6 +3,21 @@ Configuration
 #############
 
 .. image:: _static/configure.png
+.. |check| raw:: html
+
+    <input checked=""  type="checkbox">
+
+.. |check_| raw:: html
+
+    <input checked=""  disabled="" type="checkbox">
+
+.. |uncheck| raw:: html
+
+    <input type="checkbox">
+
+.. |uncheck_| raw:: html
+
+    <input disabled="" type="checkbox">
 
 
 Adresse
@@ -23,8 +38,53 @@ Options
 =======
 Certaines fonctionnalités peuvent être activées ou désactivées:
 
-* Gestion de la facturation (inutile si toutes les activités sont gratuites) oui / non
-* Gestion des absences oui / non
+Absences
+--------
+|uncheck| Activer la gestion des absences
+
+Si oui
+~~~~~~
+Heure d'envoi des rappels: _______:________
+
+
+Facturation
+-----------
+
+|uncheck| Activer la gestion de la facturation (inutile si toutes les activités sont gratuites)
+
+
+Paiement en ligne
+~~~~~~~~~~~~~~~~~~
+  
+|uncheck| Activer le paiement en ligne via datatrans):
+
+-  Clé d'API Datatrans: ______________________
+-  Méthodes de paiement acceptées
+
+  -  |uncheck| Mastercard / Visa / AmEx
+  -  |uncheck| Maestro 
+  -  |uncheck| Twint 
+  -  |uncheck| Paypal
+  -  |uncheck| Postfinance card 
+  -  |uncheck| Apple pay
+  -  |uncheck| Google pay 
+  -  |uncheck| Cryptomonnaies 
+
+
+Paiement par facture
+~~~~~~~~~~~~~~~~~~~~
+
+|uncheck| Activer le paiement par facture + IBAN:
+Les utilisateurs paient par virement bancaire, ou en apportant l'argent directement. Il n'y a pas de système de recoupement automatique avec un compte en banque.
+
+* Texte d'explication.
+
+:Exemple:
+  | Nous vous remercions de verser cette somme d’ici au 31.10.2019 en privilégiant le virement bancaire sur le compte :
+  | IBAN: CH77 0076 7000 C507 0682 4
+  | Adresse: AIC, 1201 Genève
+
+* Délai de paiement en jours depuis la fin des inscriptions (ex: 30): ___________
 
 
 Personnalisation du site
@@ -65,12 +125,14 @@ Texte de bienvenue, visible sur la page d'accueil.
   | 
   | *Nous souhaitons à toutes et tous beaucoup de plaisir dans la pratique des activités de ce programme que nous espérons varié et attrayant.*
 
+
 Page de contact
 ---------------
 
 À droite du formulaire de contact se trouvent les coordonnées complètes. https://coppet.kepchup.ch/contact/
 
 :Exemple:
+
   | **Établissement Primaire de Coppet et Environs**
   | 
   | Chemin du Chaucey 7
@@ -94,23 +156,34 @@ Page du règlement de participation
 ----------------------------------
 Un règlement de participation est à prévoir. À titre d'exemple, celui de Coppet: https://coppet.kepchup.ch/reglement/
 
-Page des paiements
-------------------
-Les utilisateurs paient par virement bancaire, ou en apportant l'argent directement. Il n'y a pas de système de paiement en ligne pour le moment.
 
-* Texte d'explication.
+Page protection des données
+---------------------------
+Des règles sur la protection des données sont requises. Celles-ci n'ont pas besoin d'être écrites dans un jargon juridique.
+Jusqu'ici, nous utilisons les mêmes sur chaque site. Texte par défaut: https://ssfmontreux.ch/protection-des-donnees/
 
-:Exemple:
-  | Nous vous remercions de verser cette somme d’ici au 31.10.2019 en privilégiant le virement bancaire sur le compte :
-  | IBAN: CH77 0076 7000 C507 0682 4
-  | Adresse: AIC, 1201 Genève
+Activités et cours
+==================
+* |uncheck| Les dates de toutes les sessions de chaque cours doivent être entrées par l'administrateur
+* Jours où aucun cours n'aura lieu (permet d'alléger le semainier si les cours n'ont pas lieu le weekend): _________________________________________________________
 
-* Délai de paiement en jours depuis la fin des inscriptions (ex: 30)
+
 
 Inscriptions
 ============
 
-* Nombre maximum d'inscriptions par élève (ex: 4)
+* Nombre maximum d'inscriptions par élève (ex: 4): ___________
+* |uncheck| La création des comptes peut avoir lieu en dehors de la période d'inscriptions
+* Limiter les inscriptions aux NPA suivants (ex: 1260, 1197): ______________________________________________
+* |uncheck| Permettre l'inscription à deux cours de la même activité
+* |check| Afficher l'aide sur le recouvrement des heures d'inscriptions.
+* Nom des étapes d'inscriptions (par défaut: À propos de vous, Vos enfants, Inscription aux activités, Confirmation, Paiement): ______________________________________________________________________________
+
+Enfants
+-------
+* |uncheck| Les enfants seront importés dans le système via LAGAPEO. ⚠︎ Ceci empêche les parents d'ajouter un enfant qui ne serait pas déjà dans le système. L'identifiant LAGAPEO est utilisé comme clé de recherche.
+* |check| Rendre le numéro d'urgence obligatoire.
+* |uncheck| L'année scolaire des enfants est déterminé grâce au nom de leur maître de classe. Ceci limite la triche sur l'âge. ⚠︎ Ceci suppose de pouvoir importer la liste des maîtres de classe depuis LAGAPEO. S'applique mal au secondaire. Si non coché, les parents choisissent l'année scolaire dans un menu.
 
 
 Emails
@@ -118,10 +191,10 @@ Emails
 
 Beaucoup d'emails peuvent être envoyés par le système: rappel d'inscription, de paiement, liste des participants d'un cours, etc. 
 
-* Adresse utilisée pour l'envoi des emails automatiques
 * Signature au bas de chaque email automatique, par exemple:
 
 :Exemple:
+
   | Remo Aeschbach
   | Doyen - responsable du sport scolaire facultatif
   | EPCoppet
@@ -255,7 +328,7 @@ Admininistrateur
 ================
 Une personne au moins devra être administrateur du site. 
 
-* Prénom
-* Nom
-* email
+* Prénom: ______________________________
+* Nom: ______________________________
+* email: ______________________________
 
