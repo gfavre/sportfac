@@ -14,14 +14,14 @@ from django.views.generic import DeleteView, FormView, ListView, UpdateView
 from ..forms import YearSelectForm, YearCreateForm, YearForm
 from ..models import YearTenant, Domain
 from ..tasks import create_tenant
-from .mixins import BackendMixin
+from .mixins import BackendMixin, KepchupStaffMixin
 
 
 __all__ = ['ChangeYearFormView', 'ChangeProductionYearFormView',
            'YearCreateView', 'YearDeleteView', 'YearListView', 'YearUpdateView']
 
 
-class ChangeYearFormView(SuccessMessageMixin, BackendMixin, FormView):
+class ChangeYearFormView(SuccessMessageMixin, KepchupStaffMixin, FormView):
     form_class = YearSelectForm
     template_name = 'backend/year/change.html'
 

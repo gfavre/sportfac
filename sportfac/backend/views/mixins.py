@@ -10,6 +10,13 @@ class BackendMixin(LoginRequiredMixin, UserPassesTestMixin):
         return user.is_active and (user.is_staff or user.is_superuser or user.is_manager)
 
 
+class KepchupStaffMixin(LoginRequiredMixin, UserPassesTestMixin):
+    """Mixin for backend. Ensure that the user is logged in and is a sports manager"""
+    def test_func(self, user):
+        return user.is_active and user.is_kepchup_staff
+
+
+
 class ExcelResponseMixin(object):
     filename = 'download'
     resource_class = None

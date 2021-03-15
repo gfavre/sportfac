@@ -77,8 +77,9 @@ class FamilyAdmin(SportfacAdminMixin, UserAdmin):
     form = FamilyChangeForm
     add_form = FamilyCreationForm
 
-    list_display = ('email', 'first_name', 'last_name', 'children_names', 'last_login', 'date_joined')
-    change_list_filter_template = "admin/filter_listing.html"
+    list_display = ('email', 'first_name', 'last_name', 'children_names', 'last_login', 'date_joined', 'course_names', 'is_instructor')
+    #change_list_filter_template = "admin/filter_listing.html"
+    list_filter = ('is_staff', 'is_superuser', 'is_active', 'is_manager')
 
     fieldsets = (
         (None, {'fields': ('email', 'password', 'is_staff', 'is_superuser', 'is_active', 'is_manager',)}),

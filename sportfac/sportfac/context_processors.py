@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.db import connection
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 from django.utils.timezone import now
 
 from dynamic_preferences.registries import global_preferences_registry
 
-from activities.models import Activity
+from activities.models import Activity, CoursesInstructors
 from appointments.models import Appointment
 from backend.models import YearTenant
 from registrations.models import Bill, Registration
@@ -139,9 +140,22 @@ def activities_context(request):
 
 def tenants_context(request):
     user = request.user
-    if user.is_authenticated() and (user.is_manager or user.is_staff or user.is_superuser):
+
+    if user.is_authenticated() and user.is_manager or user.is_superuser or user.is_staff:
         return {'tenants': YearTenant.objects.all()}
-    return {}
+    elif user.is_authenticated() and user.is_kepchup_staff:
+        tenants = list()
+        with connection.cursor() as cursor:
+            for tenant in YearTenant.objects.all():
+                cursor.execute('SELECT id FROM {}.activities_coursesinstructors WHERE instructor_id=%s'.format(
+                    tenant.schema_name), [user.id]
+                )
+                row = cursor.fetchone()
+                if row:
+                    tenants.append(tenant)
+        return {'tenants': tenants}
+    else:
+        return {}
 
 
 def kepchup_context(request):

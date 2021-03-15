@@ -141,31 +141,6 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         verbose_name_plural = _("Users")
 
     @property
-    def is_instructor(self):
-        return self.coursesinstructors_set.exists()
-
-    def is_instructor_of(self, course):
-        return course in self.course.all()
-
-    def save(self, create_profile=True, sync=True, *args, **kwargs):
-        from registrations.models import RegistrationsProfile
-        from django.db import ProgrammingError
-        super(FamilyUser, self).save(*args, **kwargs)
-        if create_profile and not hasattr(self, 'profile'):
-            try:
-                RegistrationsProfile.objects.get_or_create(user=self)
-            except ProgrammingError:
-                # we are running from shell where no tenant has been selected.
-                pass
-        if len(settings.DATABASES) > 1 and sync:
-            from .tasks import save_to_master, LOCAL_DB
-            transaction.on_commit(lambda: save_to_master(self.pk, kwargs.get('using', LOCAL_DB)))
-
-    def get_full_name(self):
-        full_name = u'{} {}'.format(self.first_name, self.last_name)
-        return full_name.strip().title()
-
-    @property
     def best_phone(self):
         return self.private_phone2 or self.private_phone or self.private_phone3
 
@@ -173,35 +148,31 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     def full_name(self):
         return self.get_full_name()
 
+
+    @property
+    def nb_notifications(self):
+        return self.updatable_children
+
+    @property
+    def is_instructor(self):
+        return self.coursesinstructors_set.exists()
+
+    @property
+    def is_kepchup_staff(self):
+        return self.is_manager or self.is_superuser or self.is_instructor
+
     @property
     def updatable_children(self):
         from registrations.models import Child
         return self.children.filter(status=Child.STATUS.imported).count()
 
     @property
-    def nb_notifications(self):
-        return self.updatable_children
-
-    def get_short_name(self):
-        return self.first_name
-
-    def get_initials(self):
-        if self.first_name and self.last_name:
-            initial = self.first_name[:1].upper()
-            match = re.search(r'[A-Z]', self.last_name)
-            if match:
-                # Use first capital letter
-                initial += match.group()
-            else:
-                # No capitals found; just use first letter
-                initial += self.last_name[:1].upper()
-        else:
-            initial = self.email[:1].upper()
-        return initial
-
-    @property
     def children_names(self):
         return ', '.join([unicode(child) for child in self.children.all()])
+
+    @property
+    def course_names(self):
+        return ', '.join([unicode(ci.course.short_name) for ci in self.coursesinstructors_set.all()])
 
     @property
     def has_open_bills(self):
@@ -245,6 +216,45 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
             if registration.extra_infos.filter(key__question_label__contains=u"matériel", value='OUI').exists():
                 return True
         return False
+
+
+    def is_instructor_of(self, course):
+        return course in self.course.all()
+
+    def save(self, create_profile=True, sync=True, *args, **kwargs):
+        from registrations.models import RegistrationsProfile
+        from django.db import ProgrammingError
+        super(FamilyUser, self).save(*args, **kwargs)
+        if create_profile and not hasattr(self, 'profile'):
+            try:
+                RegistrationsProfile.objects.get_or_create(user=self)
+            except ProgrammingError:
+                # we are running from shell where no tenant has been selected.
+                pass
+        if len(settings.DATABASES) > 1 and sync:
+            from .tasks import save_to_master, LOCAL_DB
+            transaction.on_commit(lambda: save_to_master(self.pk, kwargs.get('using', LOCAL_DB)))
+
+    def get_full_name(self):
+        full_name = u'{} {}'.format(self.first_name, self.last_name)
+        return full_name.strip().title()
+
+    def get_short_name(self):
+        return self.first_name
+
+    def get_initials(self):
+        if self.first_name and self.last_name:
+            initial = self.first_name[:1].upper()
+            match = re.search(r'[A-Z]', self.last_name)
+            if match:
+                # Use first capital letter
+                initial += match.group()
+            else:
+                # No capitals found; just use first letter
+                initial += self.last_name[:1].upper()
+        else:
+            initial = self.email[:1].upper()
+        return initial
 
     def get_registrations(self, validated=True):
         if validated:
