@@ -430,15 +430,18 @@ GRAPPELLI_ADMIN_TITLE = "Administration du sport scolaire facultatif"
 ########### CKEDITOR
 CKEDITOR_CONFIGS = {
     'default': {
+        'alignment': {
+            'options': ['left', 'right']
+        },
         'contentCss': '/static/css/style.css',
         'extraPlugins': ','.join(['emojione']),
         'stylesSet': [
-            {"name": "Cadre orange", "element": "p", "attributes": {"class": "alert alert-warning alert-block"}},
-            {"name": "Cadre bleu clair", "element": "p", "attributes": {"class": "alert alert-info alert-block"}},
-            {"name": "Cadre vert", "element": "p", "attributes": {"class": "alert alert-success alert-block"}},
-            {"name": "Cadre rouge", "element": "p", "attributes": {"class": "alert alert-danger alert-block"}},
+            {"name": "sans", "element": "p", "attributes": {"class": "empty-kepchup"}},
+            {"name": "Cadre orange", "element": "p", "attributes": {"class": "alert-warning alert"}},
+            {"name": "Cadre bleu clair", "element": "p", "attributes": {"class": "alert-info alert"}},
+            {"name": "Cadre vert", "element": "p", "attributes": {"class": "alert alert-success"}},
+            {"name": "Cadre rouge", "element": "p", "attributes": {"class": "alert alert-danger"}},
             {"name": "Cadre gris", "element": "p", "attributes": {"class": "well"}},
-
             {"name": "Bouton", "element": "a", "attributes": {"class": "btn btn-primary"}},
             {"name": "Bouton vert", "element": "a", "attributes": {"class": "btn btn-success"}},
             {"name": "Bouton bleu clair", "element": "a", "attributes": {"class": "btn btn-info"}},
@@ -449,7 +452,8 @@ CKEDITOR_CONFIGS = {
         'toolbar': 'Custom',
         'toolbar_Custom': [
             ['Source', '-', 'Print'],  ['Undo', 'Redo'], ['Bold', 'Italic', 'Subscript', 'Superscript'],
-            ['Format', 'TextColor'], ['NumberedList', 'BulletedList'],
+
+            ['Format', 'TextColor'],  ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'], ['NumberedList', 'BulletedList'],
             ['Link', 'Unlink', 'Anchor'],
             '/',
             ['Image', 'Table', 'HorizontalRule'],
