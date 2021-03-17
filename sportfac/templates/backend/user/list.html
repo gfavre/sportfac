@@ -6,102 +6,192 @@
 {% block page_title %}{% trans "List users" %}{% endblock %}
 
 {% block content %}
+  {% addtoblock "css" %}
+    <link rel="stylesheet" type="text/css"
+          href="https://cdn.datatables.net/v/dt/dt-1.10.24/b-1.7.0/r-2.2.7/sc-2.0.3/sp-1.2.1/sl-1.3.2/datatables.min.css"/>
+    <style>
+      .dataTables_wrapper label {
+        font-weight: normal;
+      }
+      .dataTables_wrapper input, .dataTables_wrapper select {
+        font-size: 14px;
+        line-height: 1.42857143;
+        padding: 6px 12px;
+        height: 34px;
+        color: #555555;
+      }
+
+
+      .dataTables_wrapper .dataTables_length {
+        float: none;
+        clear: both;
+      }
+
+      .dataTables_wrapper .dataTables_length label {
+        margin: 15px 0;
+      }
+      .dataTables_wrapper input.dtsp-search {
+        padding-left: 1px!important;
+      }
+
+    </style>
+  {% endaddtoblock %}
 
   {% addtoblock "js" %}
-    <script src="{% static 'js/vendor/DataTables-2020/datatables.min.js' %}"></script>
+    <!--<script src="{% static 'js/vendor/DataTables-2020/datatables.js' %}"></script>-->
+    <!--<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.24/b-1.7.0/r-2.2.7/sc-2.0.3/sp-1.1.1/sl-1.3.2/datatables.js"></script>-->
+    <script type="text/javascript"
+            src="https://cdn.datatables.net/v/dt/dt-1.10.24/b-1.7.0/r-2.2.7/sc-2.0.3/sp-1.2.1/sl-1.3.2/datatables.js"></script>
 
     <script>
-      $(function () {
-        let allSelected = false;
-        let table = $("#users").DataTable({
-          "ajax": {
-            "url": "{% url 'api:all_users' %}?format=datatables",
+      jQuery(document).ready(function ($) {
+        let table = $('#users').DataTable({
+          ajax: {
+            "url": "{% url 'api:all_users' %}",
             "headers": {"Accept-language": "{{ request.LANGUAGE_CODE }}"},
             "rowId": 'id'
+
           },
-          {% if LANGUAGE_CODE == 'fr' %}
-          "language": {
-            "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
-          },
-          {% endif %}
-          "columnDefs": [
+          buttons: [
             {
-              "orderable": false,
-              "searchable": false,
-              "targets": [-1]
+              className: 'btn btn-default',
+              extend: 'selectAll',
+              init: function (api, node, config) {
+                $(node).removeClass('dt-button')
+              },
+              tag: 'a',
+              text: "{% trans 'Select all' %}",
             },
             {
-              "visible": false,
-              "targets":  {% if not NO_PAYMENT %}[0, 2, 7]{% else %}[0, 2, 6]{% endif %}
+              className: 'btn btn-default',
+              enabled: false,
+              extend: 'selectNone',
+              init: function (api, node, config) {
+                $(node).removeClass('dt-button')
+              },
+              tag: 'a',
+              text: "{% trans 'Deselect all' %}",
             },
             {
-              "render": function (data, type, row) {
+              action: function (e, dt, node, config) {
+                let ids = dt.rows({selected: true}).data().pluck('id').toArray();
+                $('input[name="data"]').val(JSON.stringify(ids));
+                $('form.mail').submit();
+              },
+              className: 'btn btn-secondary',
+              enabled: false,
+              init: function (api, node, config) {
+                $(node).removeClass('dt-button')
+              },
+              tag: 'a',
+              text: '<i class="icon-mail"></i>&nbsp; {% trans "Send email to selected users" %}',
+            },
+
+
+          ],
+          dom: 'PBfrltipl',
+          columns: [
+            {data: "id"},
+            {data: 'first_name', name: 'last_name'},
+            {data: 'last_name', name: 'last_name'},
+            {data: 'children', name: 'children.first_name,children.last_name'},
+            {data: 'finished_registrations', name: 'profile.finished_registering'},
+              {% if not NO_PAYMENT %}{data: 'has_paid', name: 'profile.has_paid_all'},{% endif %}
+            {data: 'last_registration', name: 'profile.last_registration'},
+            {data: 'last_registration_natural', name: 'profile.last_registration'},
+            {data: 'actions'},
+          ],
+          columnDefs: [
+            {
+              visible: false,
+              targets: ['user-id', 'last_registration', {% if NO_PAYMENT %}, 'has-paid'{% endif %}],
+            },
+            {
+              searchable: false,
+              targets: ['user-id', 'has-paid', 'finished_registrations', 'last_registration_natural']
+            },
+            {
+              searchPanes: {
+                "show": true,
+                "controls": false
+              },
+              targets: ['finished_registrations', 'last_registration', 'has-paid']
+            },
+            {
+              render: function (data, type, row) {
                 let children = row['children'].flatMap(
                   child => '<li><a href="' + child.url + '">' + child.full_name + '</a></li>'
                 ).join('');
                 return '<ul class="list-unstyled">' + children + '</ul>';
               },
-              'targets': [3]
+              targets: ['user-children']
+            },
+            {
+              render: function (data, type, row) {
+                return data
+              },
+              targets: ['last_registration']
             },
 
             {
-              "render": function (data, type, row) {
+              render: function (data, type, row) {
                 if (data) {
                   return '<i class="icon-ok-circled success"></i>';
                 }
-                return '<i class="icon-cancel-circled  danger"></i>';
+                return '<i class="icon-cancel-circled danger"></i>';
               },
-              'targets': {% if not NO_PAYMENT %}[4, 5]{% else %}[4]{% endif %}
+              targets: ['finished_registrations', 'has-paid']
             },
             {
-              "render": function (data, type, row) {
+              orderable: false,
+              searchable: false,
+              render: function (data, type, row) {
                 let actions = row['actions'].flatMap(
                   action => '<li><a href="' + action.url + '" class="btn btn-sm"><i class="' + action.icon_class + '"></i> ' + action.label + '</a></li>'
                 ).join('');
                 return '<ul class="list-unstyled">' + actions + '</ul>';
               },
-              "className": "nobr",
-              "targets": -1
-            },
+              className: "nobr",
+              targets: ['actions']
+            }
           ],
-          "select": {
+
+          language: {
+            info: "{% trans 'Showing _START_ to _END_ of _TOTAL_ entries' %}",
+            infoEmpty: "{% trans "Showing 0 to 0 of 0 entries" %}",
+            infoFiltered: "{% trans "(filtered from _MAX_ total entries)" %}",
+            lengthMenu: "{% trans "Show _MENU_ entries" %}",
+            paginate: {
+              first: "{% trans 'First' %}",
+              last: "{% trans 'Last' %}",
+              previous: "{% trans 'Previous' %}",
+              next: "{% trans 'Next' %}"
+            },
+            search: "",
+            searchPlaceholder: "{% trans 'Search' %}",
+            searchPanes: {
+              title: {
+                _: '{% trans 'Filters selected' %} - %d',
+                0: '{% trans "No filter selected" %}'
+              },
+              clearMessage: '{% trans "Clear All" %}'
+            }
+          },
+          lengthMenu: [50, 100, 1000],
+          pageLength: 50,
+          processing: true,
+
+          select: {
             style: 'multi'
           },
-          "lengthMenu": [ 10, 25, 50, 100 ]
+          serverSide: true,
         });
 
-        table.on('select', function (e, dt, type, indexes) {
-          let selected = table.rows({'selected': true});
-          if (selected.count() > 0) {
-            $('.needs-select').removeClass('disabled');
-          }
-        });
-        table.on('deselect', function (e, dt, type, indexes) {
-          allSelected = false;
-          let selected = table.rows({'selected': true});
-          if (selected.count() == 0) {
-            $('.needs-select').addClass('disabled');
-          }
-        });
+        table.on('select deselect', function () {
+          let selectedRows = table.rows({selected: true}).count();
+          table.button(1).enable(selectedRows > 0);
+          table.button(2).enable(selectedRows > 0);
 
-        $('.selectall').click(function () {
-          allSelected = true;
-          table.rows({search:'applied'}).select();
-        });
-        $('.deselectall').click(function () {
-          allSelected = false;
-          table.rows({search:'applied'}).deselect();
-        });
-
-        $('form.mail').submit(function () {
-          let ids;
-          if (allSelected){
-              ids = -1;
-          } else {
-            ids = table.rows({selected: true}).data().pluck('id').toArray();
-
-          }
-          $('input[name="data"]').val(JSON.stringify(ids));
         });
 
       });
@@ -111,44 +201,35 @@
   <a href="{% url 'backend:user-create' %}" class="btn btn-success hidden-print">
     <i class="icon-plus"></i> {% trans "New user" %}
   </a>
+  <a href="{% url 'backend:user-export' %}" class="btn btn-default hidden-print">
+    <i class="icon-file-excel"></i> {% trans "Export all users" %}
+  </a>
   <hr class="hidden-print"/>
-  <div class="btn-group hidden-print">
-    <a class="btn btn-default selectall">{% trans "Select all" %}</span></a>
-    <a class="btn btn-default deselectall needs-select disabled">{% trans "Deselect all" %}</a>
-  </div>
-  <div class="btn-group hidden-print">
+
+  <div class="hidden-print">
     <form class="mail" method="post">{% csrf_token %}
       <input type="hidden" name="data" value=''/>
-      <button type="submit" class="btn btn-secondary needs-select disabled"><i
-          class="icon-mail"></i>&nbsp;&nbsp;{% trans "Send email to selected users" %}</button>
     </form>
   </div>
-  <div class="btn-group hidden-print">
-    <a href="{% url 'backend:user-export' %}">
-      <i class="icon-file-excel"></i>
-      &nbsp;&nbsp;{% trans "Export users" %}
-    </a>
-  </div>
 
-  <table class="table" id="users" data-server-side="true">
+  <table class="table" id="users">
     <thead>
     <tr>
-      <th data-data="id">ID</th>
-      <th data-data="full_name" data-name="last_name">{% trans "Name" %}</th>
-      <th data-data="full_name" data-name="first_name">first name</th>
-      <th data-data="children" data-name="children.first_name,children.last_name">{% trans "Children" %}</th>
-      <th data-data="finished_registrations"
-          data-name="profile.finished_registering">{% trans "Finished registration" %}</th>
+      <th class="user-id">ID</th>
+      <th class="first-name">{% trans "First name" %}</th>
+      <th class="last-name">{% trans "Last name" %}</th>
+      <th class="user-children">{% trans "Children" %}</th>
+      <th class="finished_registrations">{% trans "Finished registration" %}</th>
       {% if not NO_PAYMENT %}
-        <th data-data="paid" data-name="profile.has_paid_all">{% trans "Paid" %}</th>
+        <th class="has-paid">{% trans "Paid" %}</th>
       {% endif %}
-      <th data-data="last_registration_natural"
-          data-name="profile.last_registration">{% trans "Last registration" %}</th>
-      <th data-data="last_registration" data-name="profile.last_registration">{% trans "Last registration" %} code</th>
-      <th data-data="actions" class="hidden-print">{% trans "Actions" %}</th>
+      <th class="last_registration">{% trans "Last registration" %}</th>
+      <th class="last_registration_natural">{% trans "Last registration" %}</th>
+
+      <th class="hidden-print actions">{% trans "Actions" %}</th>
     </tr>
     </thead>
-    <tbody>
-    </tbody>
   </table>
+
+
 {% endblock content %}

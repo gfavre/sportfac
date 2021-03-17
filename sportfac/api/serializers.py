@@ -238,21 +238,26 @@ class FamilySerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(source='get_full_name', read_only=True)
     children = InlineChildrenSerializer(many=True)
     finished_registrations = serializers.BooleanField(source='profile.finished_registering')
-    paid = serializers.BooleanField(source='profile.has_paid_all')
+    has_paid = serializers.BooleanField(source='profile.has_paid_all')
     last_registration = serializers.DateTimeField(source='profile.last_registration')
     last_registration_natural = serializers.SerializerMethodField()
-
+    registered_this_period = serializers.SerializerMethodField()
     actions = serializers.SerializerMethodField()
 
     class Meta:
         model = FamilyUser
         fields = ('id', 'full_name', 'first_name', 'last_name', 'children',
-                  'finished_registrations', 'paid', 'last_registration', 'last_registration_natural',
+                  'finished_registrations', 'has_paid', 'last_registration', 'last_registration_natural',
+                  'registered_this_period',
                   'actions')
 
     @staticmethod
     def get_last_registration_natural(obj):
         return naturaltime(obj.last_registration)
+
+    @staticmethod
+    def get_registered_this_period(obj):
+        return obj.last_registration is not None
 
     def get_actions(self, obj):
         return [

@@ -148,7 +148,6 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     def full_name(self):
         return self.get_full_name()
 
-
     @property
     def nb_notifications(self):
         return self.updatable_children

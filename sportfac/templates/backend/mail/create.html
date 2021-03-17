@@ -13,7 +13,8 @@
         <p class="form-control-static">
         {% for recipient in recipients %}
           <span class="label label-primary">{{ recipient }}</span>
-        {% endfor %}
+        {% endfor %}<br>
+          <small>({{ recipients|length }} {% trans "recipients" %})</small>
         </p>
       </div>
     </div>
