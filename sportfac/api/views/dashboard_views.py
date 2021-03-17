@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta
-from django.db.models import Count
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 
@@ -10,7 +9,7 @@ from rest_framework_datatables.pagination import DatatablesPageNumberPagination
 from rest_framework_datatables.renderers import DatatablesRenderer
 
 from profiles.models import FamilyUser
-from ..serializers import FamilySerializer
+from ..serializers import FamilySerializer, InstructorSerializer
 from ..filters import DatatablesFilterandPanesBackend
 
 
@@ -75,3 +74,19 @@ class DashboardFamilyView(generics.ListAPIView):
 
             }
         }
+
+
+class DashboardInstructorsView(DashboardFamilyView):
+    queryset = FamilyUser.instructors_objects.prefetch_related('course', 'course__activity')
+    serializer_class = InstructorSerializer
+
+    class Meta:
+        datatables_extra_json = ()
+
+
+class DashboardManagersView(DashboardFamilyView):
+    queryset = FamilyUser.managers_objects.all()
+
+    class Meta:
+        datatables_extra_json = ()
+

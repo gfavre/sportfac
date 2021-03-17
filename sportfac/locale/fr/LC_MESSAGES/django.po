@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 07:10+0100\n"
-"PO-Revision-Date: 2021-03-17 07:11+0100\n"
+"POT-Creation-Date: 2021-03-17 10:42+0100\n"
+"PO-Revision-Date: 2021-03-17 10:43+0100\n"
 "Last-Translator: Gregory Favre <greg@beyondthewall.ch>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -440,7 +440,6 @@ msgstr "12S"
 #: sportfac/templates/backend/site/flatpage_list.html:15
 #: sportfac/templates/backend/teacher/list.html:37
 #: sportfac/templates/backend/user/child-list.html:83
-#: sportfac/templates/backend/user/instructor-list.html:83
 #: sportfac/templates/backend/user/manager-list.html:83
 #: sportfac/templates/profiles/registration_list.html:35
 #: sportfac/templates/registrations/bill-detail.html:19
@@ -718,13 +717,11 @@ msgid "Max number of registrations reached."
 msgstr "Nombre maximum de participants atteint."
 
 #: sportfac/api/serializers.py:266
-#: sportfac/templates/backend/user/instructor-list.html:92
 #: sportfac/templates/backend/user/manager-list.html:92
 msgid "User details"
 msgstr "Détails"
 
 #: sportfac/api/serializers.py:271
-#: sportfac/templates/backend/user/instructor-list.html:93
 #: sportfac/templates/backend/user/manager-list.html:93
 #: sportfac/templates/backend/user/update.html:4
 #: sportfac/templates/backend/user/update.html:5
@@ -735,7 +732,6 @@ msgstr "Mettre à jour l'utilisateur"
 #: sportfac/api/serializers.py:276
 #: sportfac/templates/backend/user/confirm_delete.html:4
 #: sportfac/templates/backend/user/confirm_delete.html:66
-#: sportfac/templates/backend/user/instructor-list.html:94
 #: sportfac/templates/backend/user/manager-list.html:94
 msgid "Delete user"
 msgstr "Supprimer l'utilisateur"
@@ -787,7 +783,9 @@ msgstr "Numéro de téléphone"
 #: sportfac/registrations/models.py:325 sportfac/registrations/resources.py:30
 #: sportfac/schools/models.py:16
 #: sportfac/templates/backend/registration/detail.html:47
-#: sportfac/templates/backend/user/list.html:203
+#: sportfac/templates/backend/user/instructor-list.html:141
+#: sportfac/templates/backend/user/instructor-list.html:142
+#: sportfac/templates/backend/user/list.html:193
 msgid "First name"
 msgstr "Prénom"
 
@@ -796,7 +794,8 @@ msgstr "Prénom"
 #: sportfac/registrations/models.py:326 sportfac/registrations/resources.py:31
 #: sportfac/schools/models.py:17
 #: sportfac/templates/backend/registration/detail.html:48
-#: sportfac/templates/backend/user/list.html:204
+#: sportfac/templates/backend/user/instructor-list.html:143
+#: sportfac/templates/backend/user/list.html:194
 msgid "Last name"
 msgstr "Nom"
 
@@ -978,7 +977,8 @@ msgstr "Enregistrer un autre rendez-vous"
 #: sportfac/appointments/templates/appointments/wizard_register.html:35
 #: sportfac/templates/activities/activity_list.html:88
 #: sportfac/templates/backend/registration/wizard.html:46
-#: sportfac/templates/backend/user/list.html:151
+#: sportfac/templates/backend/user/instructor-list.html:93
+#: sportfac/templates/backend/user/list.html:137
 #: sportfac/templates/profiles/registration_list.html:120
 #: sportfac/templates/registrations/registration_list.html:233
 #: sportfac/templates/registrations/wizard_children.html:17
@@ -991,7 +991,8 @@ msgstr "Précédent"
 #: sportfac/appointments/templates/appointments/wizard_register.html:40
 #: sportfac/templates/activities/activity_list.html:91
 #: sportfac/templates/backend/registration/wizard.html:53
-#: sportfac/templates/backend/user/list.html:152
+#: sportfac/templates/backend/user/instructor-list.html:94
+#: sportfac/templates/backend/user/list.html:138
 #: sportfac/templates/registrations/registration_list.html:237
 #: sportfac/templates/wizard.html:40
 msgid "Next"
@@ -2306,7 +2307,7 @@ msgstr "Autre école"
 #: sportfac/registrations/models.py:430
 #: sportfac/templates/backend/portlets/children.html:5
 #: sportfac/templates/backend/user/detail.html:80
-#: sportfac/templates/backend/user/list.html:205
+#: sportfac/templates/backend/user/list.html:195
 msgid "Children"
 msgstr "Enfants"
 
@@ -2672,9 +2673,8 @@ msgstr "Gestion des absences"
 #: sportfac/templates/backend/course/detail-phase2.html:182
 #: sportfac/templates/backend/course/detail.html:182
 #: sportfac/templates/backend/registration/transport-detail.html:302
-#: sportfac/templates/backend/user/instructor-list.html:71
-#: sportfac/templates/backend/user/instructor-list.html:102
-#: sportfac/templates/backend/user/list.html:47
+#: sportfac/templates/backend/user/instructor-list.html:32
+#: sportfac/templates/backend/user/list.html:36
 #: sportfac/templates/backend/user/manager-list.html:71
 #: sportfac/templates/backend/user/manager-list.html:102
 msgid "Select all"
@@ -2684,9 +2684,8 @@ msgstr "Tout sélectionner"
 #: sportfac/templates/backend/course/detail-phase2.html:183
 #: sportfac/templates/backend/course/detail.html:183
 #: sportfac/templates/backend/registration/transport-detail.html:306
-#: sportfac/templates/backend/user/instructor-list.html:72
-#: sportfac/templates/backend/user/instructor-list.html:103
-#: sportfac/templates/backend/user/list.html:57
+#: sportfac/templates/backend/user/instructor-list.html:42
+#: sportfac/templates/backend/user/list.html:46
 #: sportfac/templates/backend/user/manager-list.html:72
 #: sportfac/templates/backend/user/manager-list.html:103
 msgid "Deselect all"
@@ -2737,8 +2736,8 @@ msgstr "Mes cours"
 #: sportfac/templates/backend/user/child-detail.html:45
 #: sportfac/templates/backend/user/child-list.html:89
 #: sportfac/templates/backend/user/detail.html:114
-#: sportfac/templates/backend/user/instructor-list.html:84
-#: sportfac/templates/backend/user/list.html:213
+#: sportfac/templates/backend/user/instructor-list.html:144
+#: sportfac/templates/backend/user/list.html:203
 #: sportfac/templates/backend/user/manager-list.html:84
 #: sportfac/templates/backend/year/list.html:42
 msgid "Actions"
@@ -3255,7 +3254,6 @@ msgid "Create transport"
 msgstr "Créer un transport"
 
 #: sportfac/templates/backend/navbar.html:111
-#: sportfac/templates/backend/user/instructor-list.html:25
 #: sportfac/templates/backend/user/manager-list.html:25
 msgid "All users"
 msgstr "Tous les utilisateurs"
@@ -3269,7 +3267,7 @@ msgid "All managers"
 msgstr "Tous les administrateurs"
 
 #: sportfac/templates/backend/navbar.html:130
-#: sportfac/templates/backend/user/list.html:186
+#: sportfac/templates/backend/user/list.html:176
 msgid "New user"
 msgstr "Nouvel utilisateur"
 
@@ -3510,7 +3508,7 @@ msgid "List bills"
 msgstr "Liste des factures"
 
 #: sportfac/templates/backend/registration/bill-list.html:38
-#: sportfac/templates/backend/user/list.html:208
+#: sportfac/templates/backend/user/list.html:198
 #: sportfac/templates/registrations/billing.html:12
 msgid "Paid"
 msgstr "Payé"
@@ -3922,72 +3920,91 @@ msgstr "Mettre à jour les informations"
 msgid "List instructors"
 msgstr "Liste des moniteurs"
 
-#: sportfac/templates/backend/user/instructor-list.html:64
-msgid "New instructor"
-msgstr "Nouveau moniteur"
-
-#: sportfac/templates/backend/user/instructor-list.html:67
-msgid "Export instructors"
-msgstr "Exporter les moniteurs"
-
-#: sportfac/templates/backend/user/instructor-list.html:77
-#: sportfac/templates/backend/user/instructor-list.html:108
-#: sportfac/templates/backend/user/list.html:71
+#: sportfac/templates/backend/user/instructor-list.html:56
+#: sportfac/templates/backend/user/list.html:60
 #: sportfac/templates/backend/user/manager-list.html:77
 #: sportfac/templates/backend/user/manager-list.html:108
 msgid "Send email to selected users"
 msgstr "Envoyer un email aux utilisateurs sélectionnés"
 
-#: sportfac/templates/backend/user/list.html:144
+#: sportfac/templates/backend/user/instructor-list.html:86
+#: sportfac/templates/backend/user/list.html:130
 msgid "Showing _START_ to _END_ of _TOTAL_ entries"
 msgstr "Affichage de _START_ à _END_ sur _TOTAL_ éléments"
 
-#: sportfac/templates/backend/user/list.html:145
+#: sportfac/templates/backend/user/instructor-list.html:87
+#: sportfac/templates/backend/user/list.html:131
 msgid "Showing 0 to 0 of 0 entries"
 msgstr "Affiche 0 à 0 de 0 entrées"
 
-#: sportfac/templates/backend/user/list.html:146
+#: sportfac/templates/backend/user/instructor-list.html:88
+#: sportfac/templates/backend/user/list.html:132
 msgid "(filtered from _MAX_ total entries)"
 msgstr "(filtré de _MAX_ éléments au total)"
 
-#: sportfac/templates/backend/user/list.html:147
+#: sportfac/templates/backend/user/instructor-list.html:89
+#: sportfac/templates/backend/user/list.html:133
 msgid "Show _MENU_ entries"
 msgstr "Afficher _MENU_ éléments"
 
-#: sportfac/templates/backend/user/list.html:149
+#: sportfac/templates/backend/user/instructor-list.html:91
+#: sportfac/templates/backend/user/list.html:135
 msgid "First"
 msgstr "Premier"
 
-#: sportfac/templates/backend/user/list.html:150
+#: sportfac/templates/backend/user/instructor-list.html:92
+#: sportfac/templates/backend/user/list.html:136
 msgid "Last"
 msgstr "Dernier"
 
-#: sportfac/templates/backend/user/list.html:154
+#: sportfac/templates/backend/user/instructor-list.html:97
+#: sportfac/templates/backend/user/list.html:141
 msgid "Search"
 msgstr "Rechercher"
 
-#: sportfac/templates/backend/user/list.html:158
+#: sportfac/templates/backend/user/instructor-list.html:100
+#: sportfac/templates/backend/user/list.html:144
 msgid "Filters selected"
 msgstr "Filtres sélectionnés"
 
-#: sportfac/templates/backend/user/list.html:159
+#: sportfac/templates/backend/user/instructor-list.html:101
+#: sportfac/templates/backend/user/list.html:145
 msgid "No filter selected"
 msgstr "Aucun filtre sélectionné"
 
-#: sportfac/templates/backend/user/list.html:161
+#: sportfac/templates/backend/user/instructor-list.html:103
+#: sportfac/templates/backend/user/list.html:147
 msgid "Clear All"
 msgstr "Tout effacer"
 
-#: sportfac/templates/backend/user/list.html:189
+#: sportfac/templates/backend/user/instructor-list.html:126
+msgid "New instructor"
+msgstr "Nouveau moniteur"
+
+#: sportfac/templates/backend/user/instructor-list.html:129
+msgid "Export instructors"
+msgstr "Exporter les moniteurs"
+
+#: sportfac/templates/backend/user/list.html:150
+#, python-format
+msgid "%%d row selected"
+msgstr "%%d ligne sélectionnée"
+
+#: sportfac/templates/backend/user/list.html:151
+#, python-format
+msgid "%%d rows selected"
+msgstr "%%d lignes sélectionnées"
+
+#: sportfac/templates/backend/user/list.html:179
 msgid "Export all users"
 msgstr "Exporter tous les utilisateurs"
 
-#: sportfac/templates/backend/user/list.html:206
+#: sportfac/templates/backend/user/list.html:196
 msgid "Finished registration"
 msgstr "Inscription terminée"
 
-#: sportfac/templates/backend/user/list.html:210
-#: sportfac/templates/backend/user/list.html:211
+#: sportfac/templates/backend/user/list.html:200
+#: sportfac/templates/backend/user/list.html:201
 msgid "Last registration"
 msgstr "Dernière inscription"
 

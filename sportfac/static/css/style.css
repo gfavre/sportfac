@@ -18495,6 +18495,27 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.active {
   }
 }
 
+.dataTables_wrapper input, .dataTables_wrapper select {
+  font-size: 14px;
+  line-height: 1.42857143;
+  padding: 6px 12px;
+  height: 34px;
+  color: #555555;
+}
+.dataTables_wrapper label {
+  font-weight: normal;
+}
+.dataTables_wrapper .dataTables_length {
+  float: none !important;
+  clear: both;
+}
+.dataTables_wrapper .dataTables_length label {
+  margin: 15px 0;
+}
+.dataTables_wrapper input.dtsp-search {
+  padding-left: 1px !important;
+}
+
 .pager li > button {
   display: inline-block;
   padding: 5px 14px;

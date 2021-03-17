@@ -277,3 +277,20 @@ class FamilySerializer(serializers.ModelSerializer):
                 'icon_class': 'icon-trash'
             },
         ]
+
+
+class InlineCourseSerializer(serializers.ModelSerializer):
+    activity = serializers.StringRelatedField(read_only=True)
+    url = serializers.URLField(source='get_backend_url', read_only=True)
+
+    class Meta:
+        model = Course
+        fields = ('id', 'activity', 'number', 'url')
+
+
+class InstructorSerializer(FamilySerializer):
+    course = InlineCourseSerializer(many=True)
+
+    class Meta:
+        model = FamilyUser
+        fields = ('id', 'full_name', 'first_name', 'last_name', 'course', 'actions')
