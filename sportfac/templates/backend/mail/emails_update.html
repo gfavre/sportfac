@@ -1,0 +1,24 @@
+{% extends "backend/base.html" %}
+{% load i18n floppyforms staticfiles crispy_forms_tags sekizai_tags  %}
+{% block title %}{% trans "Update page" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "Update page" %}{% endblock %}
+
+{% block content %}
+  <div class="row">
+  <div class="col-md-8">
+  <form action="{{ object.get_absolute_url }}" method="post" class="form-horizontal">{% csrf_token %}
+    {% crispy form %}
+  </form>
+</div>
+  <div class="col-md-4">
+    {{ object.help_text|safe }}
+  </div>
+  </div>
+  {% addtoblock "js" %}
+    {{ form.media }}
+    <script>
+     CKEDITOR.config.contentsCss = '/static/css/style.css' ;
+    </script>
+  {% endaddtoblock %}
+
+{% endblock content %}

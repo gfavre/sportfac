@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.messages.views import SuccessMessageMixin
+from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.utils.timezone import now
@@ -9,28 +10,10 @@ from django.views.generic import DeleteView, ListView, TemplateView, UpdateView,
 
 from appointments.models import AppointmentSlot, Appointment
 from appointments.resources import AppointmentResource
+from mailer.forms import GenericEmailForm
+from mailer.models import GenericEmail
 from ..forms import FlatPageForm
 from .mixins import BackendMixin, ExcelResponseMixin
-
-
-class FlatPageListView(BackendMixin, ListView):
-    model = FlatPage
-    template_name = 'backend/site/flatpage_list.html'
-
-
-class FlatPageUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
-    model = FlatPage
-    form_class = FlatPageForm
-    template_name = 'backend/site/flatpage_update.html'
-    success_url = reverse_lazy('backend:flatpages-list')
-    success_message = _('<a href="%(url)s" class="alert-link">Page "%(title)s"</a> has been updated.')
-
-    def get_success_message(self, cleaned_data):
-        url = self.success_url
-        return mark_safe(
-            self.success_message % {'url': self.object.url,
-                                    'title': cleaned_data.get('title')}
-        )
 
 
 class AppointmentsManagementView(BackendMixin, TemplateView):
@@ -69,3 +52,51 @@ class AppointmentsExportView(BackendMixin, ExcelResponseMixin, View):
 
     def get(self, request, *args, **kwargs):
         return self.render_to_response()
+
+
+class FlatPageListView(BackendMixin, ListView):
+    model = FlatPage
+    template_name = 'backend/site/flatpage_list.html'
+
+
+class FlatPageUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
+    model = FlatPage
+    form_class = FlatPageForm
+    template_name = 'backend/site/flatpage_update.html'
+    success_url = reverse_lazy('backend:flatpages-list')
+    success_message = _('<a href="%(url)s" class="alert-link">Page "%(title)s"</a> has been updated.')
+
+    def get_success_message(self, cleaned_data):
+        url = self.success_url
+        return mark_safe(
+            self.success_message % {'url': self.object.url,
+                                    'title': cleaned_data.get('title')}
+        )
+
+
+class GenericEmailListView(BackendMixin, ListView):
+    model = GenericEmail
+    template_name = 'backend/mail/emails_list.html'
+
+
+class GenericEmailUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
+    model = GenericEmail
+    form_class = GenericEmailForm
+    template_name = 'backend/mail/emails_update.html'
+    success_url = reverse_lazy('backend:emails-list')
+    success_message = 'saveds!!'
+
+    def form_valid(self, form):
+        subject_heading = form.get_tmpl_heading(self.object.subject_template.content)
+        subject_body = form.cleanup_tmpl(form.cleaned_data['subject_text'])
+        self.object.subject_template.content = subject_heading + subject_body
+        self.object.subject_template.save()
+
+        message_heading = form.get_tmpl_heading(self.object.body_template.content)
+        message_body = form.cleanup_tmpl(form.cleaned_data['body_text'])
+        if message_heading:
+            self.object.body_template.content = message_heading + '\n' + message_body
+        else:
+            self.object.body_template.content = message_body
+        self.object.body_template.save()
+        return super(GenericEmailUpdateView, self).form_valid(form)

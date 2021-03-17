@@ -5,14 +5,16 @@ import os
 from django.db import models
 from django.utils.html import linebreaks
 from django.utils.translation import ugettext as _
+from django.urls import reverse
 
+from ckeditor.fields import RichTextField
 from model_utils.models import TimeStampedModel, StatusModel
 from model_utils import Choices
 
 from sportfac.models import ListField
 
 
-__all__ = ('MailArchive', 'Attachment')
+__all__ = ('MailArchive', 'Attachment', 'GenericEmail')
 
 
 class SentMailManager(models.Manager):
@@ -65,3 +67,19 @@ def attachment_path(instance, filename):
 class Attachment(TimeStampedModel):
     mail = models.ForeignKey('MailArchive', on_delete=models.CASCADE, related_name='attachments')
     file = models.FileField(upload_to=attachment_path)
+
+
+class GenericEmail(TimeStampedModel):
+    subject = models.CharField(blank=True, max_length=100)
+    subject_template = models.ForeignKey('dbtemplates.Template', related_name='email_subject',
+                                         on_delete=models.CASCADE)
+    body_template = models.ForeignKey('dbtemplates.Template',  related_name='email_body',
+                                      on_delete=models.CASCADE)
+    help_text = RichTextField(blank=True)
+
+    @property
+    def best_subject(self):
+        return self.subject or self.subject_template.content
+
+    def get_absolute_url(self):
+        return reverse('backend:emails-update', kwargs={'pk': self.pk})

@@ -200,7 +200,13 @@
             <li>
               <a href="{% url 'backend:flatpages-list' %}">
                 <i class="icon-file-code"></i>
-                &nbsp;&nbsp;{% trans "Pages" %}
+                &nbsp;&nbsp;{% trans "Pages texts" %}
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'backend:emails-list' %}">
+                <i class="icon-mail"></i>
+                &nbsp;&nbsp;{% trans "Generic emails" %}
               </a>
             </li>
             {% if USE_APPOINTMENTS %}

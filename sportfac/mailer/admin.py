@@ -2,7 +2,7 @@
 from django.contrib import admin
 
 from sportfac.admin_utils import SportfacModelAdmin
-from .models import MailArchive
+from .models import MailArchive, GenericEmail
 
 
 @admin.register(MailArchive)
@@ -17,3 +17,8 @@ class MailArchiveAdmin(SportfacModelAdmin):
         'template',
     )
     list_filter = ('created', 'template', 'status')
+
+
+@admin.register(GenericEmail)
+class GenericEmailAdmin(SportfacModelAdmin):
+    list_display = ('subject_template', 'body_template')

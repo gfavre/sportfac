@@ -198,6 +198,9 @@ site_patterns = [
     url(r'^appointments/export$', view=views.AppointmentsExportView.as_view(), name='appointments-export'),
     url(r'^appointments/(?P<appointment>[\d-]+)/delete$', view=views.AppointmentDeleteView.as_view(),
         name='appointment-delete'),
+    url(r'emails$', view=views.GenericEmailListView.as_view(), name='emails-list'),
+    url(r'emails/(?P<pk>\d+)/update$', view=views.GenericEmailUpdateView.as_view(), name='emails-update'),
+
     url(r'^$', view=views.FlatPageListView.as_view(), name='flatpages-list'),
     url(r'^(?P<pk>\d+)/update$', view=views.FlatPageUpdateView.as_view(), name='flatpages-update'),
 

@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 from django.utils.translation import ugettext as _
+from django import forms as django_forms
+
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Submit, Div
 from multiupload.fields import MultiFileField
 
 import floppyforms.__future__ as forms
+from mailer.models import GenericEmail
 
 
 class MailForm(forms.Form):
@@ -34,3 +39,60 @@ class AdminMailForm(MailForm):
 
 class PreviewForm(forms.Form):
     pass
+
+
+class GenericEmailForm(django_forms.ModelForm):
+    subject_text = forms.CharField(label=_("Subject"), max_length=255)
+    body_text = forms.CharField(label=_("Message"),
+                                widget=django_forms.Textarea(attrs={'rows': 10}))
+
+    class Meta:
+        model = GenericEmail
+        fields = ('subject_text',  'body_text')
+
+    def cleanup_tmpl(self, body):
+        skip = False
+        cleaned = []
+        for line in body.splitlines():
+            if skip:
+                cleaned.append(line)
+            else:
+                if not line.strip() or line.startswith('{% load '):
+                    continue
+                skip = True
+                cleaned.append(line)
+        return '\n'.join(cleaned)
+
+    def get_tmpl_heading(self, body):
+        heading = []
+        for line in body.splitlines():
+            if not line or line.startswith('{% load '):
+                heading.append(line)
+                continue
+            break
+        return '\n'.join(heading)
+
+    def get_initial_for_field(self, field, field_name):
+        if field_name == 'subject_text':
+            return self.instance and self.cleanup_tmpl(self.instance.subject_template.content) or ''
+        elif field_name == 'body_text':
+            return self.instance and self.cleanup_tmpl(self.instance.body_template.content) or ''
+
+    def __init__(self, *args, **kwargs):
+        super(GenericEmailForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_group_wrapper_class = 'row'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-10'
+        self.helper.layout = Layout(
+            'subject_text',
+            'body_text',
+            Div(
+                Div(
+                    Submit('save', _("Update email")),
+                    css_class="col-sm-10 col-sm-offset-2"
+                ),
+                css_class='form-group'
+
+            ),
+        )
