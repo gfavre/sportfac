@@ -7,106 +7,152 @@
 
 {% block content %}
 
-{% addtoblock  "js" %}    
-<script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
-<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.tableTools.min.js"></script>
-<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
-<script>
-$(function () {
-  var t = $(".table").dataTable({
-{% if LANGUAGE_CODE == 'fr' %}
-      "language": {
-            "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
-      },
-{% endif %}
-      aoColumnDefs: [
-          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ -1] }
-      ],
-      'lengthMenu': [[10, 25, 50, -1], [10, 25, 50, "{% trans 'All users' %}"] ],
-      dom: 'T<"clear">lfrtip',
-      tableTools: {
-            "sRowSelect": "multi",
-            "aButtons": [ ],
-            'fnRowSelected': function(){ 
-                $('.needs-select').removeClass('disabled'); 
+  {% addtoblock "css" %}
+    <link rel="stylesheet" type="text/css"
+          href="https://cdn.datatables.net/v/dt/dt-1.10.24/b-1.7.0/r-2.2.7/sc-2.0.3/sp-1.2.1/sl-1.3.2/datatables.min.css"/>
+  {% endaddtoblock %}
+  {% addtoblock "js" %}
+    <script type="text/javascript"
+            src="https://cdn.datatables.net/v/dt/dt-1.10.24/b-1.7.0/r-2.2.7/sc-2.0.3/sp-1.2.1/sl-1.3.2/datatables.js"></script>
+    <script>
+      $(function () {
+        jQuery(document).ready(function ($) {
+          let table = $("#users").DataTable({
+            ajax: {
+              "url": "{% url 'api:all_managers' %}",
+              "headers": {"Accept-language": "{{ request.LANGUAGE_CODE }}"},
+              "rowId": 'id'
             },
-            'fnRowDeselected': function(){ 
-                if ($('tr.active').length == 0){ 
-                    $('.needs-select').addClass('disabled');
-                } 
-            }
-      }
+            buttons: [
+              {
+                className: 'btn btn-default',
+                extend: 'selectAll',
+                init: function (api, node, config) {
+                  $(node).removeClass('dt-button')
+                },
+                tag: 'a',
+                text: "{% trans 'Select all' %}",
+              },
+              {
+                className: 'btn btn-default',
+                enabled: false,
+                extend: 'selectNone',
+                init: function (api, node, config) {
+                  $(node).removeClass('dt-button')
+                },
+                tag: 'a',
+                text: "{% trans 'Deselect all' %}",
+              },
+              {
+                action: function (e, dt, node, config) {
+                  let ids = dt.rows({selected: true}).data().pluck('id').toArray();
+                  $('input[name="data"]').val(JSON.stringify(ids));
+                  $('form.mail').submit();
+                },
+                className: 'btn btn-secondary',
+                enabled: false,
+                init: function (api, node, config) {
+                  $(node).removeClass('dt-button')
+                },
+                tag: 'a',
+                text: '<i class="icon-mail"></i>&nbsp; {% trans "Send email to selected users" %}',
+              },
+            ],
+            dom: 'Bfrlitipl',
+            columns: [
+              {data: "id"},
+              {data: 'first_name', name: 'last_name'},
+              {data: 'last_name', name: 'last_name'},
+              {data: 'actions'},
+            ],
+            columnDefs: [
+              {
+                visible: false,
+                searchable: false,
+                targets: ['user-id'],
+              },
+              {
+                orderable: false,
+                render: function (data, type, row) {
+                  let actions = row['actions'].flatMap(
+                    action => '<li><a href="' + action.url + '" class="btn btn-sm"><i class="' + action.icon_class + '"></i> ' + action.label + '</a></li>'
+                  ).join('');
+                  return '<ul class="list-unstyled">' + actions + '</ul>';
+                },
+                className: "nobr",
+                searchable: false,
+                targets: ['actions']
+              }
+            ],
+            language: {
+              info: "{% trans 'Showing _START_ to _END_ of _TOTAL_ entries' %}",
+              infoEmpty: "{% trans "Showing 0 to 0 of 0 entries" %}",
+              infoFiltered: "{% trans "(filtered from _MAX_ total entries)" %}",
+              lengthMenu: "{% trans "Show _MENU_ entries" %}",
+              paginate: {
+                first: "{% trans 'First' %}",
+                last: "{% trans 'Last' %}",
+                previous: "{% trans 'Previous' %}",
+                next: "{% trans 'Next' %}"
+              },
+              search: "",
+              searchPlaceholder: "{% trans 'Search' %}",
+              searchPanes: {
+                title: {
+                  _: '{% trans 'Filters selected' %} - %d',
+                  0: '{% trans "No filter selected" %}'
+                },
+                clearMessage: '{% trans "Clear All" %}'
+              },
+              select: {
+                'rows': {
+                  1: "{% trans "%d row selected" %}",
+                  _: "{% trans "%d rows selected" %}"
+                }
+              }
+            },
+            lengthMenu: [50, 100, 1000],
+            order: [[2, 'asc']],
+            pageLength: 50,
+            processing: true,
+            select: {
+              style: 'multi'
+            },
+            serverSide: true,
+          });
 
-  });
-  
-  
-  $('.selectall').click(function(){
-      var tabletools = TableTools.fnGetInstance(t[0]);
-      tabletools.fnSelectAll(true);
-  });
-  $('.deselectall').click(function(){
-      var tabletools = TableTools.fnGetInstance(t[0]);
-      tabletools.fnSelectNone();
-  });
-  
-  $('form.mail').submit(function(){
-    var tabletools = TableTools.fnGetInstance(t[0]);
-    var ids = tabletools.fnGetSelected().map(function(elem){  
-        return elem.getAttribute('data-userid'); 
-    });
-    $('input[name="data"]').val(JSON.stringify(ids));
-  });
-  
-});
-</script>
-{% endaddtoblock %}
+          table.on('select deselect', function () {
+            let selectedRows = table.rows({selected: true}).count();
+            table.button(1).enable(selectedRows > 0);
+            table.button(2).enable(selectedRows > 0);
+          });
+        });
+      });
+    </script>
+  {% endaddtoblock %}
 
-<a href="{% url 'backend:manager-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New manager" %}</a>
-<a href="{% url 'backend:manager-export' %}" class="btn btn-default">
+  <a href="{% url 'backend:manager-create' %}" class="btn btn-success"><i
+      class="icon-plus"></i> {% trans "New manager" %}</a>
+  <a href="{% url 'backend:manager-export' %}" class="btn btn-default">
     <i class="icon-file-excel"></i>
-   &nbsp;&nbsp;{% trans "Export managers" %}
-</a>
-<hr />
-<div class="btn-group">
-  <a class="btn btn-default selectall">{% trans "Select all" %}</span></a>
-  <a class="btn btn-default deselectall needs-select disabled">{% trans "Deselect all" %}</a>
-</div>
-<div class="btn-group">
-  <form class="mail" method="post">{% csrf_token %}
-    <input type="hidden" name="data" value='' />
-    <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-mail"></i>&nbsp;&nbsp;{% trans "Send email to selected users" %}</button>
-  </form>
-</div>
-<table class="table" id="users">
-  <thead>
-    <tr>
-      <th>{% trans "Name" %}</th>
-      <th>{% trans "Actions" %}</th>
-    </tr>
-  </thead>
-  {% for user in object_list %}
-    <tr data-userid="{{ user.id }}">
-      <td data-order="{{ user.last_name}} {{ user.first_name}}"><a href="{{ user.get_backend_url }}">{{ user.full_name }}</a></td>
-      <td>
-        <ul class="list-unstyled">
-          <li class="text-nowrap"><a href="{{ user.get_backend_url }}" class="btn btn-sm"><i class="icon-user"></i>&nbsp;&nbsp;{% trans "User details" %}</a></li>
-          <li class="text-nowrap"><a href="{{ user.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Update user" %}</a></li>
-          <li class="text-nowrap"><a href="{{ user.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;&nbsp;{% trans "Delete user" %}</a></li>
-        </ul>
-      </td>
-    </tr>
-  {% endfor %}
-</table>
-<div class="form-group">
-  <div class="btn-group">
-    <a class="btn btn-default selectall"><span>{% trans "Select all" %}</span></a>
-    <a class="btn btn-default deselectall needs-select disabled"><span>{% trans "Deselect all" %}</span></a>
-  </div>
+    &nbsp;&nbsp;{% trans "Export managers" %}
+  </a>
+  <hr/>
+
   <div class="btn-group">
     <form class="mail" method="post">{% csrf_token %}
-      <input type="hidden" name="data" value='' />
-      <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-mail"></i>&nbsp;&nbsp;{% trans "Send email to selected users" %}</button>
+      <input type="hidden" name="data" value=''/>
     </form>
   </div>
-</div>
+  <table class="table" id="users">
+    <thead>
+    <tr>
+      <th class="user-id">{% trans "First name" %}</th>
+      <th class="first_name">{% trans "First name" %}</th>
+      <th class="last_name">{% trans "Last name" %}</th>
+      <th class="actions">{% trans "Actions" %}</th>
+    </tr>
+    </thead>
+  </table>
+
 {% endblock content %}

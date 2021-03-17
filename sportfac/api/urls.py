@@ -30,7 +30,7 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^dashboard/users/', views.DashboardFamilyView.as_view(), name='all_users'),
     url(r'^dashboard/instructors/', views.DashboardInstructorsView.as_view(), name='all_instructors'),
-    url(r'^dashboard/instructors/', views.DashboardManagersView.as_view(), name='all_instructors'),
+    url(r'^dashboard/managers/', views.DashboardManagersView.as_view(), name='all_managers'),
     url(r'^appointments/slots/$', appointment_views.SlotsList.as_view(), name='all_slots'),
     url(r'^appointments/slots/(?P<slot_id>\d+)/', appointment_views.RegisterSlot.as_view(),
         name='register_slots'),

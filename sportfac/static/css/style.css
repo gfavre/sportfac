@@ -18501,6 +18501,7 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.active {
   padding: 6px 12px;
   height: 34px;
   color: #555555;
+  background-color: #ffffff !important;
 }
 .dataTables_wrapper label {
   font-weight: normal;
