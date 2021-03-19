@@ -5,13 +5,14 @@ import json
 from django.conf import settings
 from django.contrib import messages
 from django.core.urlresolvers import reverse_lazy
-from django.db import transaction, connection
+from django.db import transaction, connection, IntegrityError
 from django.db.models import Sum
-from django.utils.timezone import now
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _, get_language
-from django.views.generic import DetailView, FormView, ListView, TemplateView
+from django.views.generic import DetailView, DeleteView, FormView, ListView, TemplateView
 
-from braces.views import LoginRequiredMixin
+from braces.views import LoginRequiredMixin, UserPassesTestMixin
 
 from appointments.models import Appointment
 from backend.dynamic_preferences_registry import global_preferences_registry
@@ -20,6 +21,38 @@ from profiles.models import School
 from sportfac.views import WizardMixin
 from .models import Bill, Child, Registration
 from .tasks import send_confirmation
+
+
+class BillMixin(object):
+    def get_context_data(self, **kwargs):
+        # noinspection PyUnresolvedReferences
+        context = super(BillMixin, self).get_context_data(**kwargs)
+        preferences = global_preferences_registry.manager()
+        offset_days = preferences['payment__DELAY_DAYS']
+        # noinspection PyUnresolvedReferences
+        base_date = self.request.REGISTRATION_END
+        context['delay'] = base_date + datetime.timedelta(days=offset_days)
+        context['iban'] = preferences['payment__IBAN']
+        context['address'] = preferences['payment__ADDRESS']
+        context['place'] = preferences['payment__PLACE']
+
+        return context
+
+
+class BillingView(LoginRequiredMixin, BillMixin, ListView):
+    template_name = "registrations/billing.html"
+
+    def get_queryset(self):
+        return Bill.objects.filter(family=self.request.user).order_by('created')
+
+
+class BillDetailView(LoginRequiredMixin, BillMixin, DetailView):
+    template_name = 'registrations/bill-detail.html'
+
+    def get_queryset(self):
+        if self.request.user.is_manager:
+            return Bill.objects.all()
+        return Bill.objects.filter(family=self.request.user)
 
 
 class ChildrenListView(LoginRequiredMixin, ListView):
@@ -38,8 +71,21 @@ class ChildrenListView(LoginRequiredMixin, ListView):
         return Child.objects.filter(family=self.request.user).order_by('first_name')
 
 
-class WizardChildrenListView(WizardMixin, ChildrenListView):
-    template_name = 'registrations/wizard_children.html'
+class InstructorMixin(UserPassesTestMixin, LoginRequiredMixin):
+    """Mixin for backend. Ensure that the user is logged in and is a sports responsible"""
+    pk_url_kwarg = 'pk'
+
+    # noinspection PyUnresolvedReferences
+    def get_object(self):
+        pk = self.kwargs.get(self.pk_url_kwarg)
+        return get_object_or_404(Registration, pk=pk)
+
+    def test_func(self, user):
+        # noinspection PyUnresolvedReferences
+        if self.pk_url_kwarg in self.kwargs:
+            course = self.get_object().course
+            return user.is_active and user.is_instructor_of(course)
+        return user.is_active and user.is_instructor
 
 
 class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
@@ -64,6 +110,7 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
         return self.success_url
 
     def get_queryset(self):
+        # noinspection PyUnresolvedReferences
         return Registration.waiting\
                            .select_related('child',
                                            'course',
@@ -135,34 +182,36 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
         return super(RegisteredActivitiesListView, self).form_valid(form)
 
 
-class BillMixin(object):
+class RegistrationDeleteView(InstructorMixin, DeleteView):
+    model = Registration
+    template_name = 'registrations/confirm_cancel.html'
+
+    def get_success_url(self):
+        return self.object.course.get_absolute_url()
+
+    def delete(self, request, *args, **kwargs):
+        # noinspection PyAttributeOutsideInit
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        try:
+            self.object.cancel()
+            self.object.save()
+        except IntegrityError:
+            # The registration for child and course existed previously and
+            # was already canceled. We do not need to cancel it again
+            self.object.delete()
+        messages.add_message(self.request, messages.SUCCESS,
+                             _("Registration has been canceled."))
+        return HttpResponseRedirect(success_url)
+
+
+class SummaryView(LoginRequiredMixin, TemplateView):
+    template_name = "registrations/summary.html"
+
     def get_context_data(self, **kwargs):
-        context = super(BillMixin, self).get_context_data(**kwargs)
-        preferences = global_preferences_registry.manager()
-        offset_days = preferences['payment__DELAY_DAYS']
-        base_date = self.request.REGISTRATION_END
-        context['delay'] = base_date + datetime.timedelta(days=offset_days)
-        context['iban'] = preferences['payment__IBAN']
-        context['address'] = preferences['payment__ADDRESS']
-        context['place'] = preferences['payment__PLACE']
-
+        context = super(SummaryView, self).get_context_data(**kwargs)
+        context['registered_list'] = self.request.user.get_registrations()
         return context
-
-
-class BillingView(LoginRequiredMixin, BillMixin, ListView):
-    template_name = "registrations/billing.html"
-
-    def get_queryset(self):
-        return Bill.objects.filter(family=self.request.user).order_by('created')
-
-
-class BillDetailView(LoginRequiredMixin, BillMixin, DetailView):
-    template_name = 'registrations/bill-detail.html'
-
-    def get_queryset(self):
-        if self.request.user.is_manager:
-            return Bill.objects.all()
-        return Bill.objects.filter(family=self.request.user)
 
 
 class WizardBillingView(LoginRequiredMixin, WizardMixin, BillMixin, TemplateView):
@@ -201,10 +250,6 @@ class WizardBillingView(LoginRequiredMixin, WizardMixin, BillMixin, TemplateView
         return response
 
 
-class SummaryView(LoginRequiredMixin, TemplateView):
-    template_name = "registrations/summary.html"
+class WizardChildrenListView(WizardMixin, ChildrenListView):
+    template_name = 'registrations/wizard_children.html'
 
-    def get_context_data(self, **kwargs):
-        context = super(SummaryView, self).get_context_data(**kwargs)
-        context['registered_list'] = self.request.user.get_registrations()
-        return context

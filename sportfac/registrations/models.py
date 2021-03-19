@@ -60,8 +60,30 @@ class Registration(TimeStampedModel, StatusModel):
     def extra_needs(self):
         return self.course.extra.all().exclude(id__in=self.extra_infos.values_list('key'))
 
-    def is_valid(self):
-        return self.extra_needs.count() == 0
+    @property
+    def update_url(self):
+        return self.get_update_url()
+
+    @property
+    def cancel_url(self):
+        return reverse('cancel-registration', kwargs={'pk': self.pk})
+
+    @property
+    def delete_url(self):
+        return self.get_delete_url()
+
+    @property
+    def has_modifier(self):
+        return sum([extra.price_modifier for extra in self.extra_infos.all()]) != 0
+
+    @property
+    def price(self):
+        subtotal = self.course.price
+        modifier = sum([extra.price_modifier for extra in self.extra_infos.all()])
+        if subtotal + modifier > 0:
+            # we don't want to give money to users :)
+            return subtotal + modifier
+        return 0
 
     def __unicode__(self):
         return _(u'%(child)s ⇒ course %(number)s (%(activity)s)') % {
@@ -69,19 +91,6 @@ class Registration(TimeStampedModel, StatusModel):
             'number': self.course.number,
             'activity': self.course.activity.name
         }
-
-    def set_waiting(self):
-        self.status = self.STATUS.waiting
-
-    def set_valid(self):
-        self.status = self.STATUS.valid
-        if settings.KEPCHUP_USE_ABSENCES:
-            self.create_future_absences()
-
-    def set_confirmed(self):
-        self.status = self.STATUS.confirmed
-        if settings.KEPCHUP_USE_ABSENCES:
-            self.create_future_absences()
 
     def cancel(self):
         self.status = self.STATUS.canceled
@@ -96,6 +105,13 @@ class Registration(TimeStampedModel, StatusModel):
                 child=self.child, session=future_session,
                 defaults={'status': Absence.STATUS.present}
             )
+
+    def delete(self, *args, **kwargs):
+        super(Registration, self).delete(*args, **kwargs)
+        if self.bill:
+            self.bill.save()
+        else:
+            self.child.family.profile.save()
 
     def delete_future_absences(self):
         # move between courses:
@@ -140,26 +156,8 @@ class Registration(TimeStampedModel, StatusModel):
     def get_update_url(self):
         return reverse('backend:registration-update', kwargs={'pk': self.pk})
 
-    @property
-    def update_url(self):
-        return self.get_update_url()
-
-    @property
-    def delete_url(self):
-        return self.get_delete_url()
-
-    @property
-    def has_modifier(self):
-        return sum([extra.price_modifier for extra in self.extra_infos.all()]) != 0
-
-    @property
-    def price(self):
-        subtotal = self.course.price
-        modifier = sum([extra.price_modifier for extra in self.extra_infos.all()])
-        if subtotal + modifier > 0:
-            # we don't want to give money to users :)
-            return subtotal + modifier
-        return 0
+    def is_valid(self):
+        return self.extra_needs.count() == 0
 
     def save(self, *args, **kwargs):
         with transaction.atomic():
@@ -169,12 +167,18 @@ class Registration(TimeStampedModel, StatusModel):
             else:
                 self.child.family.profile.save()
 
-    def delete(self, *args, **kwargs):
-        super(Registration, self).delete(*args, **kwargs)
-        if self.bill:
-            self.bill.save()
-        else:
-            self.child.family.profile.save()
+    def set_waiting(self):
+        self.status = self.STATUS.waiting
+
+    def set_valid(self):
+        self.status = self.STATUS.valid
+        if settings.KEPCHUP_USE_ABSENCES:
+            self.create_future_absences()
+
+    def set_confirmed(self):
+        self.status = self.STATUS.confirmed
+        if settings.KEPCHUP_USE_ABSENCES:
+            self.create_future_absences()
 
 
 class Transport(TimeStampedModel):

@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from django.contrib.sitemaps import  GenericSitemap
+from django.contrib.sitemaps import GenericSitemap
 
 import views
 

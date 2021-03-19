@@ -165,6 +165,7 @@ KEPCHUP_ZIPCODE_RESTRICTION = [
     ['1274', 'Tannay'], ['1180', 'Tartegnin'], ['1270', u'Trélex'], ['1267', 'Vich'], ['1184', 'Vinzel']
 ]
 KEPCHUP_DISPLAY_LAGAPEO = True
+KEPCHUP_INSTRUCTORS_CAN_REMOVE_REGISTRATIONS = True
 
 
 # Registration steps

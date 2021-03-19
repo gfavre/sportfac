@@ -45,3 +45,5 @@ KEPCHUP_ZIPCODE_RESTRICTION = [
     ['1180', 'Rolle'], ['1264', 'Saint-Cergue'], ['1265', 'Saint-George'], ['1188', 'Signy-Avenex'],
     ['1274', 'Tannay'], ['1180', 'Tartegnin'], ['1270', u'Trélex'], ['1267', 'Vich'], ['1184', 'Vinzel']
 ]
+KEPCHUP_INSTRUCTORS_CAN_REMOVE_REGISTRATIONS = True
+

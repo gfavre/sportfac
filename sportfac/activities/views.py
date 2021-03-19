@@ -54,8 +54,8 @@ class CourseAccessMixin(UserPassesTestMixin, LoginRequiredMixin):
 
     def test_func(self, user):
         course = self.get_object()
-        return user.is_authenticated() and \
-               (user.is_instructor_of(course) or user in [p.child.family for p in course.participants.all()])
+        return user.is_authenticated() and (user.is_instructor_of(course) or
+                                            user in [p.child.family for p in course.participants.all()])
 
 
 class ActivityDetailView(DetailView):
@@ -164,10 +164,12 @@ class CustomParticipantsCustomMailView(InstructorMixin, mailer_views.MailCreateV
     form_class = CourseMailForm
 
     def get(self, *args, **kwargs):
+        # noinspection PyAttributeOutsideInit
         self.course = get_object_or_404(Course, pk=self.kwargs['course'])
         return super(CustomParticipantsCustomMailView, self).get(*args, **kwargs)
 
     def post(self, *args, **kwargs):
+        # noinspection PyAttributeOutsideInit
         self.course = get_object_or_404(Course, pk=self.kwargs['course'])
         return super(CustomParticipantsCustomMailView, self).post(*args, **kwargs)
 
