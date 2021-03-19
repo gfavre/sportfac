@@ -17,7 +17,7 @@ $(document).ready(function(){
     if (parts.length > 1){
         var title = highlight(parts[0]);
         parts.shift();
-        return title + ':<small>' + highlight(parts.join(':')) + '</small>'
+        return title + ': <small>' + highlight(parts.join(':')) + '</small>'
     } else {
         return highlight(result.text);
     }
@@ -27,7 +27,7 @@ $(document).ready(function(){
     if (parts.length > 1){
         var title = parts[0];
         parts.shift();
-        return title + ':<small>' + parts.join(':') + '</small>'
+        return title + ': <small>' + parts.join(':') + '</small>'
     } else {
         return result.text;
     }

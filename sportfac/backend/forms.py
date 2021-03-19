@@ -96,11 +96,12 @@ class CourseSelectMixin(object):
             )
         )
         if self.instance.pk:
-            course_qs = course_qs.filter(
-                Q(pk=self.instance.course.pk) | Q(nb_participants__lt=F('max_participants'))
-            )
-        else:
-            course_qs = course_qs.filter(nb_participants__lt=F('max_participants'))
+            #course_qs = course_qs.filter(
+            #    Q(pk=self.instance.course.pk) | Q(nb_participants__lt=F('max_participants'))
+            #)
+            course_qs = course_qs.filter(pk=self.instance.course.pk)
+        #else:
+        #    course_qs = course_qs.filter(nb_participants__lt=F('max_participants'))
         try:
             if self.instance.child.school_year:
                 min_year = max_year = self.instance.child.school_year.year
@@ -214,6 +215,8 @@ class CourseSelectForm(CourseSelectMixin, forms.ModelForm):
     class Meta:
         model = Registration
         fields = ('course',)
+        widgets = {'course': Select2Widget}
+
 
 
 class BillingForm(forms.ModelForm):

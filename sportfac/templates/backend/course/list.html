@@ -112,7 +112,7 @@ $(function () {
     </tr>
   </thead>
   {% for course in object_list %}
-    <tr {% if not course.visible %}class="info"{% endif %} data-courseid="{{ course.id }}">
+    <tr {% if not course.visible %}class="info"{% elif course.has_issue %}class="danger"{% endif %} data-courseid="{{ course.id }}">
       <td data-order="{{ course.number }}">
           <a href="{{ course.get_backend_url }}">{{ course.number }}</a>
           {% if not course.visible %}<br>
@@ -138,7 +138,12 @@ $(function () {
       </td>
       <td data-order="{{ course.available_places }}"
           class="{% if course.full %}bg-danger{% elif course.minimal_participants_reached %}bg-success{% else %}bg-warning{% endif %}">
-        {{ course.count_participants  }}&nbsp;/&nbsp;{{ course.max_participants }}
+        {% if course.count_participants > course.max_participants %}
+          <strong><i class="icon icon-exclamation"></i> {{ course.count_participants  }}&nbsp;/&nbsp;{{ course.max_participants }}</strong>
+          {% else %}
+                  {{ course.count_participants  }}&nbsp;/&nbsp;{{ course.max_participants }}
+
+      {% endif %}
       </td>
       <td data-order="{{ course.announced_js }}"
           data-search="{{ course.announced_js|yesno:"true,false" }}">

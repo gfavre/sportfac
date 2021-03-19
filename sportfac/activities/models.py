@@ -212,6 +212,10 @@ class Course(TimeStampedModel):
         return self.count_participants >= self.max_participants
 
     @property
+    def has_issue(self):
+        return self.count_participants > self.max_participants
+
+    @property
     def school_years(self):
         return range(self.schoolyear_min, self.schoolyear_max + 1)
 
@@ -230,25 +234,31 @@ class Course(TimeStampedModel):
         return self.short_name
 
     def __unicode__(self):
-        base = _(u'%(invisible)s%(activity)s (%(number)s): from %(start)s to %(end)s, every %(day)s at %(hour)s.')
-        base %= {'invisible': not self.visible and _("Invisible") + ' - ' or '',
-                 'activity': self.activity.name,
-                 'number': self.number,
-                 'start': self.start_date and self.start_date.strftime("%d/%m/%Y"),
-                 'end': self.end_date and self.end_date.strftime("%d/%m/%Y"),
-                 'day': self.day_name.lower(),
-                 'hour': self.start_time.strftime("%H:%M"),
-                 }
-        return base
+        base = u'%(invisible)s%(activity)s (%(number)s): %(fullness)s'
+        if self.full:
+            fullness = _('Course full')
+        else:
+            fullness = _('%(available)s out of %(total)s places remaining') % {
+                'available': self.available_places,
+                'total': self.max_participants
+            }
+        return base % {
+            'invisible': not self.visible and _("Invisible") + ' - ' or '',
+            'activity': self.activity.name,
+            'number': self.number,
+            'fullness': fullness
+        }
 
     def detailed_label(self):
         base = unicode(self)
-        if self.full:
-            fullness = ugettext('Course full')
-        else:
-            fullness = ugettext('%(available)s out of %(total)s places remaining')
-            fullness %= {'available': self.available_places, 'total': self.max_participants}
-        return base + ' ' + fullness
+        dates = _(u'from %(start)s to %(end)s, every %(day)s at %(hour)s.')
+
+        return base + ', ' + dates % {
+            'start': self.start_date and self.start_date.strftime("%d/%m/%Y"),
+            'end': self.end_date and self.end_date.strftime("%d/%m/%Y"),
+            'day': self.day_name.lower(),
+            'hour': self.start_time.strftime("%H:%M"),
+        }
 
     def get_update_url(self):
         return reverse('backend:course-update', kwargs={'course': self.pk})
