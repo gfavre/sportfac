@@ -21,7 +21,9 @@ $(function () {
           { 'bSortable': false, 'bSearchable': false, 'aTargets': [ 5 ] }
       ],
       "order": [[4, "asc"], [0, 'asc']],
-      "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "{% trans 'All bills' %}"] ]
+      "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "{% trans 'All bills' %}"] ],
+      pageLength: 50,
+
   });
 });
 </script>

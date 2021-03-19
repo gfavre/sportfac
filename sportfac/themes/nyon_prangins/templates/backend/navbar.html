@@ -1,0 +1,189 @@
+{% load i18n %}
+
+{% url 'backend:home' as home_url %}
+{% url 'backend:activity-list' as activities_url %}
+{% url 'registrations_children' as children_url %}
+
+
+<div class="mainnav hidden-print">
+  <div class="container">
+
+    <a class="mainnav-toggle" data-toggle="collapse" data-target="#mainnav-collapse">
+      <span class="sr-only">Toggle navigation</span>
+      <i class="icon-menu"></i>
+    </a>
+
+    <nav class=" mainnav-collapse" id="mainnav-collapse" role="navigation">
+      <ul class="mainnav-menu">
+        <li {% if request.get_full_path == home_url %}class="active"{% endif %}>
+          <a href="{{ home_url }}">{% trans "Dashboard" %}</a>
+        </li>
+        <li class="dropdown{% if request.get_full_path == activities_url %} active{% endif %}">
+          <a href="{{ activities_url }}" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
+            {% trans "Activities" %}
+            <i class="icon-down-open"></i>
+          </a>
+
+          <ul class="dropdown-menu" role="menu">
+            <li>
+              <a href="{% url 'backend:activity-list' %}">
+                <i class="icon-soccer-ball"></i>&nbsp;&nbsp;{% trans "All activities" %}
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'backend:activity-create' %}">
+                <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New activity" %}
+              </a>
+            </li>
+            <li class="divider"></li>
+            <li>
+              <a href="{% url 'backend:course-list' %}">
+                <i class="icon-graduation-cap"></i>&nbsp;&nbsp;{% trans "All courses" %}
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'backend:course-create' %}">
+                <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New course" %}
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="dropdown">
+          <a href="{% url 'backend:registration-list' %}" class="dropdown-toggle"
+             data-toggle="dropdown" data-hover="dropdown">
+            {% trans "Registrations" %}
+            <i class="icon-down-open"></i>
+          </a>
+
+          <ul class="dropdown-menu" role="menu">
+            <li>
+              <a href="{% url 'backend:registration-list' %}">
+                <i class="icon-group"></i>
+                &nbsp;&nbsp;{% trans "All registrations" %}
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'backend:registration-export' %}">
+                <i class="icon-file-excel"></i>
+                &nbsp;&nbsp;{% trans "Export registrations" %}
+              </a>
+            <li>
+              <a href="{% url 'backend:registration-create' %}">
+                <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New registration" %}
+              </a>
+            </li>
+            {% if not NO_PAYMENT %}
+            <li class="divider"></li>
+            <li>
+              <a href="{% url 'backend:bill-list' %}">
+                <i class="icon-credit-card-1"></i>&nbsp;&nbsp;{% trans "All bills" %}
+              </a>
+            </li>
+            {% endif %}
+            {% if DISPLAY_CAR_NUMBER %}
+              <li class="divider"></li>
+              <li>
+                <a href="{% url 'backend:transport-list' %}">
+                  <i class="icon-bus"></i>&nbsp;&nbsp;{% trans "All transports" %}
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'backend:transport-create' %}">
+                  <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "Create transport" %}
+                </a>
+              </li>
+            {% endif %}
+
+          </ul>
+        </li>
+
+        <li class="dropdown">
+          <a href="" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
+            {% trans "Users" %}
+
+            <i class="icon-down-open"></i>
+          </a>
+          <ul class="dropdown-menu" role="menu">
+            <li>
+              <a href="{% url 'backend:user-list' %}">
+                <i class="icon-group"></i>
+                  {% trans "All users" %}
+              </a>
+            </li>
+
+            <li>
+              <a href="{% url 'backend:instructor-list' %}">
+                <i class="icon-star"></i>
+                &nbsp;&nbsp;{% trans "All instructors" %}
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'backend:manager-list' %}">
+                <i class="icon-hammer"></i>
+                &nbsp;&nbsp;{% trans "All managers" %}
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'backend:user-create' %}">
+                <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New user" %}
+              </a>
+            </li>
+            <li class="divider"></li>
+            <li>
+              <a href="{% url 'backend:child-list' %}">
+                <i class="icon-child"></i>
+                &nbsp;&nbsp;{% trans "All students" %}
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'backend:child-new' %}">
+                <i class="icon-plus"></i>
+                &nbsp;&nbsp;{% trans "New student" %}
+              </a>
+            </li>
+
+          </ul>
+        </li>
+
+        <li class="dropdown">
+          <a href="" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
+            {% trans "Site administration" %}
+            <i class="icon-down-open"></i>
+          </a>
+          <ul class="dropdown-menu" role="menu">
+            <li>
+              <a href="{% url 'backend:flatpages-list' %}">
+                <i class="icon-file-code"></i>
+                &nbsp;&nbsp;{% trans "Pages texts" %}
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'backend:emails-list' %}">
+                <i class="icon-mail"></i>
+                &nbsp;&nbsp;{% trans "Generic emails" %}
+              </a>
+            </li>
+            {% if USE_APPOINTMENTS %}
+             <li class="divider"></li>
+              <li>
+              <a href="{% url 'backend:appointments-manage' %}">
+                <i class="icon-calendar-plus-o"></i>
+                &nbsp;&nbsp;{% trans "Manage appointment slots" %}
+              </a>
+            </li>
+
+              <li>
+              <a href="{% url 'backend:appointments-list' %}">
+                <i class="icon-calendar-check-o"></i>
+                &nbsp;&nbsp;{% trans "Review appointments" %}
+              </a>
+            </li>
+
+            {% endif %}
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </div> <!-- /.container -->
+</div>

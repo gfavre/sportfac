@@ -4,6 +4,7 @@ import django.contrib.auth.forms as auth_forms
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import mark_safe
 from django.utils.translation import ugettext_lazy as _
+import django.forms as django_forms
 
 import floppyforms.__future__ as forms
 from localflavor.generic.forms import IBANFormField
@@ -92,8 +93,6 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(UserForm, self).__init__(*args, **kwargs)
-        if settings.KEPCHUP_ZIPCODE_RESTRICTION:
-            self.fields['zipcode'].widget = forms.Select(choices=settings.KEPCHUP_ZIPCODE_RESTRICTION)
 
 
 class ManagerForm(UserForm):

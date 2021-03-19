@@ -24,6 +24,8 @@ $(function () {
           { 'bSortable': false, 'bSearchable': false, 'aTargets': [ 'actions' ] }
       ],
       'lengthMenu': [[10, 25, 50, -1], [10, 25, 50, "{% trans 'All students' %}"] ],
+      pageLength: 50,
+
       dom: 'T<"clear">lfrtip',
       tableTools: {
             "sRowSelect": "multi",
