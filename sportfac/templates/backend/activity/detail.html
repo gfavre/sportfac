@@ -57,8 +57,11 @@
         <dt>{% trans "Number of sessions" %}</dt>
         <dd>{% blocktrans with number=course.number_of_sessions %}{{ number }} courses{% endblocktrans %}</dd>
         {% endif %}
+        {% if not NO_PAYMENT %}
         <dt>{% trans "Price" %}</dt><dd>{{ course.price|money }}</dd>
+        {% endif %}
         <dt>{% trans "School years" %}</dt><dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
+        {% if course.extra.exists %}
         <dt>{% trans "Extra questions" %}</dt>
         <dd>
           <ul class="list-unstyled">
@@ -69,6 +72,7 @@
           {% endfor %}
           </ul>
         </dd>
+        {% endif %}
       </dl>
       <p class="text-center"><a href="{{ course.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a> </p>
       <h4 class="content-title">
