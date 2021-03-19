@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-19 17:17+0100\n"
-"PO-Revision-Date: 2021-03-19 17:17+0100\n"
+"POT-Creation-Date: 2021-03-19 17:59+0100\n"
+"PO-Revision-Date: 2021-03-19 17:59+0100\n"
 "Last-Translator: Gregory Favre <greg@beyondthewall.ch>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -1659,6 +1659,7 @@ msgid "Send a copy to all other instructors"
 msgstr "Envoyer une copie aux autres moniteurs"
 
 #: sportfac/mailer/forms.py:92
+#: sportfac/templates/backend/mail/emails_update.html:3
 msgid "Update email"
 msgstr "Mettre à jour de l'e-mail"
 
@@ -3223,13 +3224,9 @@ msgstr "Dernière modification"
 msgid "Edit email"
 msgstr "Modifier l’e-mail"
 
-#: sportfac/templates/backend/mail/emails_update.html:3
 #: sportfac/templates/backend/mail/emails_update.html:4
-#: sportfac/templates/backend/site/flatpage_update.html:3
-#: sportfac/templates/backend/site/flatpage_update.html:4
-#: sportfac/templates/backend/site/flatpage_update.html:13
-msgid "Update page"
-msgstr "Mettre à jour la page"
+msgid "Update generic email"
+msgstr "Mise à jour de l'e-mail générique"
 
 #: sportfac/templates/backend/mail/list.html:5
 #: sportfac/templates/backend/mail/list.html:6
@@ -3739,6 +3736,12 @@ msgstr "Liste des pages"
 #: sportfac/templates/backend/site/flatpage_list.html:32
 msgid "Edit page"
 msgstr "Modifier la page"
+
+#: sportfac/templates/backend/site/flatpage_update.html:3
+#: sportfac/templates/backend/site/flatpage_update.html:4
+#: sportfac/templates/backend/site/flatpage_update.html:13
+msgid "Update page"
+msgstr "Mettre à jour la page"
 
 #: sportfac/templates/backend/teacher/confirm_delete.html:4
 #: sportfac/templates/backend/teacher/confirm_delete.html:11
