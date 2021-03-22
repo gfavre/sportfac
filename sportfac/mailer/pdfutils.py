@@ -24,26 +24,39 @@ global_preferences = global_preferences_registry.manager()
 def get_ssf_decompte_heures(course, instructor):
     pdf_file = os.path.join(settings.STATIC_ROOT, 'pdf',
                             "E_SSF_decompte_heures_moniteur.pdf")
+    pdf_file = os.path.join(settings.STATIC_ROOT, 'pdf',
+                            "SSF_decompte_moniteur.pdf")
 
     fields = {
-        u'Etablissement': global_preferences['email__SCHOOL_NAME'].decode('utf-8'),
+        u'Établissement': global_preferences['email__SCHOOL_NAME'].decode('utf-8'),
         u'Discipline': course.activity.name,
-        u"Groupe d'éléve": course.number,
-        u"Période du": course.start_date.strftime('%d/%m/%Y'),
-        u"période au": course.end_date.strftime('%d/%m/%Y'),
-        u'Nom': instructor.last_name,
-        u'Prénom': instructor.first_name,
+        u"Groupe délèves no": course.number,
+        u"du": course.start_date.strftime('%d/%m/%Y'),
+        u"au": course.end_date.strftime('%d/%m/%Y'),
+        u'nom': instructor.last_name,
+        u'prénom': instructor.first_name,
         u'Adresse': instructor.address,
-        u'localité': '%s %s' % (instructor.zipcode, instructor.city),
-        u'date de naissance': instructor.birth_date and instructor.birth_date.strftime('%d/%m/%Y') or '',
-        u'iban': instructor.iban,
-        u'No avs': instructor.ahv,
+        u'NPALocalité': '%s %s' % (instructor.zipcode, instructor.city),
+        u'Date de naissance': instructor.birth_date and instructor.birth_date.strftime('%d/%m/%Y') or '',
+        u'Télnatel': instructor.best_phone.as_national,
+        u'IBAN complet': instructor.iban,
+        u'No AVS': instructor.ahv,
     }
     # noinspection PyBroadException
     try:
-        return pypdftk.fill_form(pdf_path=pdf_file, datas=fields)
+        return pypdftk.fill_form(pdf_path=pdf_file, datas=fields, flatten=False)
     except:  # noqa
         return pdf_file
+
+"""
+from mailer.pdfutils import get_ssf_decompte_heures
+from activities.models import  Course
+course = Course.objects.first()
+instructor=course.instructors.first()
+pdf = get_ssf_decompte_heures(course, instructor)
+import shutil
+shutil.move(pdf, '/Users/grfavre/Desktop/filled.pdf')
+"""
 
 
 class FakeRequest(object):
