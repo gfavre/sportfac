@@ -23,8 +23,6 @@ global_preferences = global_preferences_registry.manager()
 
 def get_ssf_decompte_heures(course, instructor):
     pdf_file = os.path.join(settings.STATIC_ROOT, 'pdf',
-                            "E_SSF_decompte_heures_moniteur.pdf")
-    pdf_file = os.path.join(settings.STATIC_ROOT, 'pdf',
                             "SSF_decompte_moniteur.pdf")
 
     fields = {
