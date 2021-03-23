@@ -22,8 +22,7 @@ global_preferences = global_preferences_registry.manager()
 
 
 def get_ssf_decompte_heures(course, instructor):
-    pdf_file = os.path.join(settings.STATIC_ROOT, 'pdf',
-                            "SSF_decompte_moniteur.pdf")
+    pdf_file = os.path.join(settings.STATIC_ROOT, 'pdf', "SSF_decompte_moniteur.pdf")
 
     fields = {
         u'Établissement': global_preferences['email__SCHOOL_NAME'].decode('utf-8'),
@@ -49,7 +48,7 @@ def get_ssf_decompte_heures(course, instructor):
 """
 from mailer.pdfutils import get_ssf_decompte_heures
 from activities.models import  Course
-course = Course.objects.first()
+course= Course.objects.filter(instructors__isnull=False).first()
 instructor=course.instructors.first()
 pdf = get_ssf_decompte_heures(course, instructor)
 import shutil
