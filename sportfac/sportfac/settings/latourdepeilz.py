@@ -1,5 +1,5 @@
+# -*- coding:utf-8 -*-
 """Production settings and globals."""
-
 from production import *
 
 TEMPLATES[0]['DIRS'] = [
