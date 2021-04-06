@@ -2,22 +2,13 @@
 from base import *
 
 
-INSTALLED_APPS += ('gunicorn', # web server
-                   'raven.contrib.django.raven_compat', # sentry
-                   )
-
-########## EMAIL CONFIGURATION
-#INSTALLED_APPS += [
-#    'anymail',  # integrates several transactional email service providers into Django
-#]
-#ANYMAIL = {
-#    "MAILGUN_API_KEY": env.str('MAILGUN_API_KEY'),
-#    "MAILGUN_SENDER_DOMAIN": env.str('MAILGUN_SENDER_DOMAIN')
-#}
-#EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
+INSTALLED_APPS += (
+    'gunicorn',  # web server
+    'raven.contrib.django.raven_compat',  # sentry
+)
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-subject-prefix
-EMAIL_SUBJECT_PREFIX = '[%s] ' % SITE_NAME
+# EMAIL_SUBJECT_PREFIX = '[%s] ' % SITE_NAME
 
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#server-email

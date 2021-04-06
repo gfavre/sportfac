@@ -11,6 +11,17 @@ STATICFILES_DIRS = (
     normpath(join(SITE_ROOT, 'themes', 'latourdepeilz', 'static')),
     normpath(join(SITE_ROOT, 'static')),
 )
+INSTALLED_APPS += [
+    'anymail',  # integrates several transactional email service providers into Django
+]
+
+ANYMAIL = {
+    "MAILGUN_API_KEY": env.str('MAILGUN_API_KEY'),
+    "MAILGUN_SENDER_DOMAIN": env.str('MAILGUN_SENDER_DOMAIN')
+}
+#EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
+
+
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = env('EMAIL_HOST', default='')
@@ -38,8 +49,8 @@ KEPCHUP_INSTRUCTORS_CAN_REMOVE_REGISTRATIONS = True
 KEPCHUP_ALTERNATIVE_STEPS_NAMING = True
 KEPCHUP_ALTERNATIVE_ABOUT_LABEL = None
 KEPCHUP_ALTERNATIVE_CHILDREN_LABEL = None
-KEPCHUP_ALTERNATIVE_ACTIVITIES_LABEL = 'Prestations'
-KEPCHUP_ALTERNATIVE_CONFIRM_LABEL = 'Récapitulation'
+KEPCHUP_ALTERNATIVE_ACTIVITIES_LABEL = u'Prestations'
+KEPCHUP_ALTERNATIVE_CONFIRM_LABEL = u'Récapitulation'
 KEPCHUP_ALTERNATIVE_BILLING_LABEL = None
 
 
