@@ -13,11 +13,6 @@ STATICFILES_DIRS = (
 )
 
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = env('EMAIL_HOST', default='')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
-EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
-
 # Absences
 KEPCHUP_USE_ABSENCES = True
 
