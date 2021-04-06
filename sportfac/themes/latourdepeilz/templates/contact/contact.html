@@ -1,0 +1,18 @@
+{% extends "contact/contact.html" %}
+
+{% block addresses %}
+    <section style="padding-top: 0">
+      <h4 itemprop="name">Ville de La Tour-de-Peilz</h4>
+      <h5>Sport &amp; Jeunesse</h5>
+      <address itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+        <span itemprop="streetAddress">Grand-Rue 46</span><br />
+        <abbr itemprop="addressCountry" title="Switzerland">CH</abbr>-<span itemprop="postalCode">1817</span> <span itemprop="addressLocality">La Tour-de-Peilz</span>
+      </address>
+      <dl class="dl-horizontal">
+        <dt>Téléphone</dt><dd itemprop="telephone"><a href="tel:+4121 977 02 31">021 977 02 31</a></dd>
+        <dt>Email</dt><dd><a itemprop="email" href="mailto:sj@la-tour-de-peilz.ch">sj@la-tour-de-peilz.ch</a></dd>
+      </dl>
+    </section>
+
+{% endblock %}
+

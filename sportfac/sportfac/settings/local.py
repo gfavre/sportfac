@@ -112,12 +112,12 @@ CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 CELERY_ALWAYS_EAGER = True
 
 TEMPLATES[0]['DIRS'] = [
-    normpath(join(SITE_ROOT, 'themes', 'nyon_prangins', 'templates')),
+    normpath(join(SITE_ROOT, 'themes', 'latourdepeilz', 'templates')),
     normpath(join(SITE_ROOT, 'templates')),
 ]
 
 STATICFILES_DIRS = (
-    normpath(join(SITE_ROOT, 'themes', 'nyon_prangins', 'static')),
+    normpath(join(SITE_ROOT, 'themes', 'latourdepeilz', 'static')),
     normpath(join(SITE_ROOT, 'static')),
 )
 COMPRESS_ENABLED = True
