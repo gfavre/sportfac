@@ -40,7 +40,10 @@ KEPCHUP_ALTERNATIVE_BILLING_LABEL = None
 
 
 # Payment
+#########################################
 KEPCHUP_NO_PAYMENT = False
+KEPCHUP_PAYMENT_METHOD = 'datatrans'
+
 
 # Misc
 KEPCHUP_IMPORT_CHILDREN = False

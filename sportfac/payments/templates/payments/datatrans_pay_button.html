@@ -1,0 +1,16 @@
+{% load i18n l10n humanize sekizai_tags switzerland %}
+  {% addtoblock "js" %}
+<script src="https://pay.sandbox.datatrans.com/upp/payment/js/datatrans-2.0.0.js"></script>
+<script>
+  $(function() {
+    $('#pay-button').click(function(){
+      Datatrans.startPayment({
+        transactionId:  "{{ transaction.transaction_id }}"
+      });
+    })
+  });
+</script>
+{% endaddtoblock %}
+<button id="pay-button" class="btn btn-large btn-success">
+  <i class="icon-credit-card-1"></i> &nbsp;{% trans "Pay" %}
+</button>

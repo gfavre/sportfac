@@ -268,6 +268,7 @@ TENANT_APPS = (
     'activities',
     'appointments',
     'registrations',
+    'payments',
     'schools',
 )
 
@@ -539,7 +540,8 @@ KEPCHUP_ZIPCODE_RESTRICTION = list()
 # if true, disable invoicing system
 KEPCHUP_NO_PAYMENT = False
 KEPCHUP_DISPLAY_FREE_WHEN_PRICE_IS_0 = False
-
+# wire_transfer, datatrans or none
+KEPCHUP_PAYMENT_METHOD = 'wire_transfer'
 
 # Registration steps
 #########################################
@@ -613,3 +615,13 @@ SSO_DASHBOARD_REDIRECT = env.str('SSO_DASHBOARD_REDIRECT', default='/')
 # Appointments
 ############################################
 KEPCHUP_USE_APPOINTMENTS = False
+
+
+# Payments
+############################################
+DATATRANS_API_URL = env.url('DATATRANS_API_URL', default='https://api.sandbox.datatrans.com/')
+DATATRANS_PAY_URL = env.url('DATATRANS_PAY_URL', default='https://pay.sandbox.datatrans.com/')
+# See: https://api-reference.datatrans.ch/#operation/init
+DATATRANS_PAYMENT_METHODS = env.list('DATATRANS_PAYMENT_METHODS', default=['TWI'])
+DATATRANS_USER = env.str('DATATRANS_USER', default='')
+DATATRANS_PASSWORD = env.str('DATATRANS_PASSWORD', default='')

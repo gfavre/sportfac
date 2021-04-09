@@ -45,17 +45,23 @@ class PhaseForbiddenMixin(LoginRequiredMixin):
         return super(PhaseForbiddenMixin, self).dispatch(request, *args, **kwargs)
 
 
+class NotReachableException(Exception):
+    pass
+
+
 class WizardMixin(OpenedPeriodMixin):
+    @staticmethod
+    def check_initial_condition(request):
+        raise NotImplementedError
 
     def get(self, request, *args, **kwargs):
         """If wizard is finished, go straight to last page."""
-        context = wizard_context(request)
-        if not context['current_step'].activable:
+        try:
+            self.check_initial_condition(request)
+        except NotReachableException:
+            context = wizard_context(request)
             return redirect(context['max_step'])
-        # if request.user.finished_registration:
-        #     end_url = reverse('wizard_billing')
-        #     if not request.path == end_url:
-        #         return redirect(end_url)
+        # noinspection PyUnresolvedReferences
         return super(WizardMixin, self).get(request, *args, **kwargs)
 
 

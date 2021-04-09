@@ -286,6 +286,14 @@ class Bill(TimeStampedModel, StatusModel):
         if self.family:
             self.family.save()
 
+    def set_paid(self):
+        self.status = self.STATUS.paid
+        self.save()
+
+    def set_waiting(self):
+        self.status = self.STATUS.waiting
+        self.save()
+
     class Meta:
         verbose_name = _("Bill")
         verbose_name_plural = _("Bills")

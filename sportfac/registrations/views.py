@@ -18,7 +18,7 @@ from appointments.models import Appointment
 from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.forms import AcceptTermsForm
 from profiles.models import School
-from sportfac.views import WizardMixin
+from sportfac.views import WizardMixin, NotReachableException
 from .models import Bill, Child, Registration
 from .tasks import send_confirmation
 
@@ -93,6 +93,11 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
     form_class = AcceptTermsForm
     success_url = reverse_lazy('wizard_billing')
     template_name = 'registrations/registration_list.html'
+
+    @staticmethod
+    def check_initial_condition(request):
+        if not Registration.waiting.filter(child__family=request.user).exists():
+            raise NotReachableException('No waiting Registration available')
 
     def get_success_url(self):
         if self.bill and self.bill.is_paid:
@@ -217,6 +222,16 @@ class SummaryView(LoginRequiredMixin, TemplateView):
 class WizardBillingView(LoginRequiredMixin, WizardMixin, BillMixin, TemplateView):
     template_name = "registrations/wizard_billing.html"
 
+    @staticmethod
+    def check_initial_condition(request):
+        if Bill.objects.filter(status__in=(Bill.STATUS.just_created, Bill.STATUS.waiting),
+                               family=request.user).exists():
+            if request.user.montreux_needs_appointment and not Appointment.objects.filter(
+                    child__in=request.user.children.all()).exists():
+                raise NotReachableException('No Appointment taken')
+        else:
+            raise NotReachableException('No Bill available')
+
     def get_context_data(self, **kwargs):
         context = super(WizardBillingView, self).get_context_data(**kwargs)
         context['bill'] = Bill.objects.filter(family=self.request.user).order_by('created').last()
@@ -226,6 +241,11 @@ class WizardBillingView(LoginRequiredMixin, WizardMixin, BillMixin, TemplateView
         if settings.KEPCHUP_USE_APPOINTMENTS:
             context['include_calendar'] = True
             context['appointments'] = Appointment.objects.filter(family=self.request.user)
+
+        if settings.KEPCHUP_PAYMENT_METHOD == 'datatrans':
+            from payments.datatrans import get_transaction
+            transaction = get_transaction(context['bill'])
+            context['transaction'] = transaction
 
         return context
 
@@ -252,4 +272,9 @@ class WizardBillingView(LoginRequiredMixin, WizardMixin, BillMixin, TemplateView
 
 class WizardChildrenListView(WizardMixin, ChildrenListView):
     template_name = 'registrations/wizard_children.html'
+
+    @staticmethod
+    def check_initial_condition(request):
+        # Condition is that user is logged in. ChildrenListView ensures that
+        return
 

@@ -51,6 +51,11 @@ class WizardAccountView(WizardMixin, _BaseAccount):
     template_name = 'profiles/wizard_account.html'
     success_url = reverse_lazy('wizard_children')
 
+    @staticmethod
+    def check_initial_condition(request):
+        # Condition is to be logged in => _BaseAccount requires login.
+        return
+
 
 class RegistrationBaseView(FormView):
     form_class = RegistrationForm
@@ -118,6 +123,10 @@ class WizardRegistrationView(WizardMixin, RegistrationBaseView):
     """
     form_class = RegistrationForm
     template_name = 'profiles/wizard_registration_form.html'
+
+    @staticmethod
+    def check_initial_condition(self, request):
+        return
 
     def get_success_url(self):
         return reverse('wizard_children')

@@ -25,7 +25,12 @@ INSTALLED_APPS += (
     'debug_toolbar', # debugging
     'djcelery',
     'kombu.transport.django',
+    'corsheaders'
 )
+MIDDLEWARE_CLASSES = ['corsheaders.middleware.CorsMiddleware'] + MIDDLEWARE_CLASSES
+CORS_ALLOW_ALL_ORIGINS = DEBUG
+
+
 
 # See: https://github.com/django-debug-toolbar/django-debug-toolbar#installation
 INTERNAL_IPS = ('127.0.0.1',)
@@ -124,7 +129,7 @@ COMPRESS_ENABLED = True
 
 KEPCHUP_USE_ABSENCES = True
 KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES = True
-KEPCHUP_USE_APPOINTMENTS = True
+KEPCHUP_USE_APPOINTMENTS = False
 KEPCHUP_USE_BUILDINGS = False
 KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = True
 KEPCHUP_SEND_PRESENCE_LIST = True
@@ -168,17 +173,28 @@ KEPCHUP_DISPLAY_LAGAPEO = True
 KEPCHUP_INSTRUCTORS_CAN_REMOVE_REGISTRATIONS = True
 
 
+
+
 # Registration steps
 #########################################
-KEPCHUP_ALTERNATIVE_ACTIVITIES_LABEL = u'Inscription'
-KEPCHUP_ALTERNATIVE_CONFIRM_LABEL = u'Résumé'
-KEPCHUP_ALTERNATIVE_BILLING_LABEL = u'Confirmation'
+#KEPCHUP_ALTERNATIVE_ACTIVITIES_LABEL = u'Inscription'
+#KEPCHUP_ALTERNATIVE_CONFIRM_LABEL = u'Résumé'
+#KEPCHUP_ALTERNATIVE_BILLING_LABEL = u'Confirmation'
 
 # Single Sign On
 #########################################
 KEPCHUP_USE_SSO = False
 #LOGIN_URL = '/client/'
 #LOGOUT_URL = 'https://users.ssfmontreux.ch/logout/'
+
+# Payment
+#########################################
+# if true, disable invoicing system
+KEPCHUP_NO_PAYMENT = False
+KEPCHUP_DISPLAY_FREE_WHEN_PRICE_IS_0 = False
+# wire_transfer, datatrans or none
+KEPCHUP_PAYMENT_METHOD = 'datatrans'
+
 
 CELERY_ALWAYS_EAGER = True
 
@@ -201,3 +217,5 @@ SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 
 RECAPTCHA_PUBLIC_KEY = env('RECAPTCHA_PUBLIC_KEY', default='')
 RECAPTCHA_PRIVATE_KEY = env('RECAPTCHA_PRIVATE_KEY', default='')
+
+

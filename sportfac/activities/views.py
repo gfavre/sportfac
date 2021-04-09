@@ -16,7 +16,7 @@ import requests
 from mailer.forms import CourseMailForm, InstructorCopiesForm
 from mailer.mixins import ArchivedMailMixin
 import mailer.views as mailer_views
-from sportfac.views import WizardMixin
+from sportfac.views import WizardMixin, NotReachableException
 from .models import Activity, Course, PaySlip
 
 
@@ -87,6 +87,11 @@ class ActivityDetailView(DetailView):
 
 class ActivityListView(LoginRequiredMixin, WizardMixin, ListView):
     model = Activity
+
+    @staticmethod
+    def check_initial_condition(request):
+        if not request.user.children.exists():
+            raise NotReachableException('No children available')
 
     def get_context_data(self, **kwargs):
         context = super(ActivityListView, self).get_context_data(**kwargs)

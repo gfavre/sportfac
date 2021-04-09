@@ -6,7 +6,7 @@ from django.views.generic import TemplateView
 
 from braces.views import LoginRequiredMixin
 
-from sportfac.views import WizardMixin
+from sportfac.views import WizardMixin, NotReachableException
 from ..models import AppointmentSlot, Appointment
 
 
@@ -30,3 +30,11 @@ class SuccessfulRegister(TemplateView):
 
 class WizardSlotsView(LoginRequiredMixin, WizardMixin, SlotsView):
     template_name = "appointments/wizard_register.html"
+
+    @staticmethod
+    def check_initial_condition(request):
+        from registrations.models import Bill
+        if not request.user.montreux_needs_appointment:
+            raise NotReachableException('No appointment expected')
+        if not Bill.objects.filter(status=Bill.STATUS.just_created, family=request.user).exists():
+            raise NotReachableException('No Bill available')
