@@ -2,7 +2,8 @@
 from __future__ import unicode_literals
 
 from django.views.generic import TemplateView
-
+from django.utils.translation import ugettext as _
+from async_messages import message_user
 from braces.views import LoginRequiredMixin
 from rest_framework.views import APIView
 
@@ -18,6 +19,13 @@ class DatatransWebhookView(APIView):
         transaction.webhook = data
         transaction.status = data.get('status')
         transaction.update_invoice()
+
+        if transaction.is_success:
+            transaction.invoice.send_confirmation()
+        else:
+            message_user(transaction.invoice.family,
+                         _("Payment was rejected either by you or the bank"),
+                         'warning')
 
 
 class PaymentSuccessView(LoginRequiredMixin, WizardMixin, TemplateView):

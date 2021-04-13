@@ -30,8 +30,9 @@
       <dt>{% trans "Payable until" %}</dt><dd>{{ delay|date:"j F Y" }}</dd>
       <dt>{% trans "Total" %}</dt><dd>{{ bill.total|money }}</dd>
 
+      {% if bill.is_wire_transfer %}
       <dt>{% trans "IBAN" %}</dt><dd>{{ iban }}</dd>
       <dt>{% trans "Address" %}</dt><dd>{{ address|linebreaksbr }}</dd>
-
+      {% endif %}
   </dl>
 </section>

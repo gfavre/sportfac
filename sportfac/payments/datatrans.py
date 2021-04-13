@@ -15,40 +15,23 @@ DEFAULT_CURRENCY = 'CHF'
 DATATRANS_TIMEOUT_SECONDS = 5
 
 
-def invoice_to_meta_data(invoice):
+def invoice_to_meta_data(request, invoice):
     return {
-        'amount': invoice.total,
+        'amount': invoice.total * 100,
         'autoSettle': True,
         'currency': DEFAULT_CURRENCY,
         'language': get_language(),
         'paymentMethods': settings.DATATRANS_PAYMENT_METHODS,
         'redirect': {
-            'successUrl': 'https://127.0.0.1:8000' + reverse('wizard_payment_success'),
-            'cancelUrl': 'https://127.0.0.1:8000' + reverse('wizard_payment_failure'),
-            'errorUrl':  'https://127.0.0.1:8000' + reverse('wizard_payment_failure'),
+            'successUrl': 'https://{}{}'.format(request.get_host(), reverse('wizard_payment_success')),
+            'cancelUrl': 'https://{}{}'.format(request.get_host(), reverse('wizard_billing')),
+            'errorUrl': 'https://{}{}'.format(request.get_host(), reverse('wizard_billing')),
         },
         'refno': invoice.billing_identifier,
     }
 
 
-def enrich_meta_data(data):
-    """
-    {
-"currency": "CHF",
-"refno": "9attghQd1",
-"amount": 1337,
-"redirect": {
-"successUrl": "https://pay.sandbox.datatrans.com/upp/merchant/successPage.jsp",
-"cancelUrl": "https://pay.sandbox.datatrans.com/upp/merchant/cancelPage.jsp",
-"errorUrl": "https://pay.sandbox.datatrans.com/upp/merchant/errorPage.jsp"
-}
-}
-    :param data:
-    :return:
-    """
-
-
-def get_transaction(invoice):
+def get_transaction(request, invoice):
     # check if a non-expired transaction exists and return it
     if invoice.datatrans_transactions.exclude(expiration__lte=now(),
                                               status=DatatransTransaction.STATUS.initialized).exists():
@@ -59,7 +42,7 @@ def get_transaction(invoice):
         password = settings.DATATRANS_PASSWORD
         response = requests.post(
             INITIALIZE_TRANSACTION_ENDPOINT,
-            json=invoice_to_meta_data(invoice),
+            json=invoice_to_meta_data(request, invoice),
             auth=requests.auth.HTTPBasicAuth(username, password),
             timeout=DATATRANS_TIMEOUT_SECONDS
         )

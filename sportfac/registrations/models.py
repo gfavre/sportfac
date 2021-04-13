@@ -4,9 +4,9 @@ from datetime import datetime, date
 
 from django.core.urlresolvers import reverse
 from django.conf import settings
-from django.db import models, transaction
+from django.db import models, transaction, connection
 from django.template.defaultfilters import slugify
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, get_language
 from django.utils.timezone import now
 
 from model_utils import Choices
@@ -219,6 +219,10 @@ class BillManager(models.Manager):
 
 
 class Bill(TimeStampedModel, StatusModel):
+    METHODS = Choices(
+        ('datatrans', _("immediate with credit card (datatrans)")),
+        ('iban', _("Later with wire transfer")),
+    )
     STATUS = Choices(
         ('just_created', _("Just created")),
         ('waiting', _("Waiting parent's payment")),
@@ -226,7 +230,7 @@ class Bill(TimeStampedModel, StatusModel):
         ('canceled', _("Canceled by administrator")),
     )
     billing_identifier = models.CharField(_('Billing identifier'), max_length=45, blank=True)
-
+    payment_method = models.CharField(_("Payment method"), choices=METHODS, max_length=20, blank=True)
     family = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='bills',
                                null=True, on_delete=models.CASCADE)
     total = models.PositiveIntegerField(default=0, verbose_name=_("Total to be paid"))
@@ -263,6 +267,10 @@ class Bill(TimeStampedModel, StatusModel):
         return self.status in (self.STATUS.paid, self.STATUS.canceled)
 
     @property
+    def is_wire_transfer(self):
+        return self.payment_method == self.METHODS.iban
+
+    @property
     def backend_url(self):
         return self.get_backend_url()
 
@@ -293,6 +301,19 @@ class Bill(TimeStampedModel, StatusModel):
     def set_waiting(self):
         self.status = self.STATUS.waiting
         self.save()
+
+    def send_confirmation(self):
+        from .tasks import send_confirmation as send_confirmation_task
+        try:
+            tenant_pk = connection.tenant.pk
+        except AttributeError:
+            tenant_pk = None
+        transaction.on_commit(lambda: send_confirmation_task.delay(
+            user_pk=str(self.family.pk),
+            bill_pk=self.pk,
+            tenant_pk=tenant_pk,
+            language=get_language(),
+        ))
 
     class Meta:
         verbose_name = _("Bill")

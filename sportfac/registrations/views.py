@@ -160,7 +160,8 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
     def form_valid(self, form):
         self.bill = Bill.objects.create(
             status=Bill.STATUS.just_created,
-            family=self.request.user
+            family=self.request.user,
+            payment_method=settings.KEPCHUP_PAYMENT_METHOD,
         )
         for registration in self.get_queryset().all():
             registration.set_valid()
@@ -173,17 +174,9 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
         if self.bill.total == 0:
             self.bill.status = Bill.STATUS.paid
             self.bill.save()
-        if not settings.KEPCHUP_USE_APPOINTMENTS:
-            try:
-                tenant_pk = connection.tenant.pk
-            except AttributeError:
-                tenant_pk = None
-            transaction.on_commit(lambda: send_confirmation.delay(
-                user_pk=str(self.request.user.pk),
-                bill_pk=self.bill.pk,
-                tenant_pk=tenant_pk,
-                language=get_language(),
-            ))
+        if not (settings.KEPCHUP_USE_APPOINTMENTS or settings.KEPCHUP_PAYMENT_METHOD == 'datatrans'):
+            # FIXME: si la facture est à 0: aucun paiement
+            self.bill.send_confirmation()
         return super(RegisteredActivitiesListView, self).form_valid(form)
 
 
@@ -224,12 +217,12 @@ class WizardBillingView(LoginRequiredMixin, WizardMixin, BillMixin, TemplateView
 
     @staticmethod
     def check_initial_condition(request):
-        if Bill.objects.filter(status__in=(Bill.STATUS.just_created, Bill.STATUS.waiting),
-                               family=request.user).exists():
-            if request.user.montreux_needs_appointment and not Appointment.objects.filter(
-                    child__in=request.user.children.all()).exists():
-                raise NotReachableException('No Appointment taken')
-        else:
+        if request.user.montreux_needs_appointment and not Appointment.objects.filter(
+                child__in=request.user.children.all()).exists():
+            raise NotReachableException('No Appointment taken')
+
+        if not Bill.objects.filter(status__in=(Bill.STATUS.just_created, Bill.STATUS.waiting),
+                                   family=request.user).exists():
             raise NotReachableException('No Bill available')
 
     def get_context_data(self, **kwargs):
@@ -244,7 +237,7 @@ class WizardBillingView(LoginRequiredMixin, WizardMixin, BillMixin, TemplateView
 
         if settings.KEPCHUP_PAYMENT_METHOD == 'datatrans':
             from payments.datatrans import get_transaction
-            transaction = get_transaction(context['bill'])
+            transaction = get_transaction(self.request, context['bill'])
             context['transaction'] = transaction
 
         return context
@@ -254,18 +247,8 @@ class WizardBillingView(LoginRequiredMixin, WizardMixin, BillMixin, TemplateView
         for bill in Bill.objects.filter(status=Bill.STATUS.just_created, family=self.request.user):
             bill.status = Bill.STATUS.waiting
             bill.save()
-
-            if settings.KEPCHUP_USE_APPOINTMENTS:
-                try:
-                    tenant_pk = connection.tenant.pk
-                except AttributeError:
-                    tenant_pk = None
-                transaction.on_commit(lambda: send_confirmation.delay(
-                    user_pk=str(self.request.user.pk),
-                    bill_pk=bill.pk or None,
-                    tenant_pk=tenant_pk,
-                    language=get_language(),
-                ))
+            if settings.KEPCHUP_USE_APPOINTMENTS and bill.is_wire_transfer:
+                bill.send_confirmation()
 
         return response
 

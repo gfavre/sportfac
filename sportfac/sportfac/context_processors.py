@@ -73,10 +73,13 @@ def wizard_context(request):
         all_steps += [billing_step]
 
     for step in all_steps:
-        if not step.ensure_activable():
-            # If a step is not activable, there is no need to check activability of the next ones.
-            # (activable is False unless ensured...)
-            break
+        step.ensure_activable()
+        #if not step.ensure_activable():
+        #    # If a step is not activable, there is no need to check activability of the next ones.
+        #    # (activable is False unless ensured...)
+        #    break
+
+        #    # TODO ERREUR: le paiement est accessible ssi bill ouverte, même si confirmation
 
     current = 0
     for idx, step in enumerate(all_steps):

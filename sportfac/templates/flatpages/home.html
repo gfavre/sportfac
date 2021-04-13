@@ -11,7 +11,7 @@
     {% if user.finished_registration %}
     <a href="{% url 'registrations_registered_activities' %}" class="btn btn-large btn-primary"><i class="icon-fixed-width icon-calendar"></i> {% trans "My registered activities" %}</a>
     {% else  %}
-    <a href="{{ max_step }}" class="btn btn-large btn-primary"><i class="icon-fixed-width icon-calendar"></i>{% trans "Register activities" %}</a>
+    <a href="{% url 'wizard' %}" class="btn btn-large btn-primary"><i class="icon-fixed-width icon-calendar"></i>{% trans "Register activities" %}</a>
     {% endif %}
   {% else %}
   <a href="{% url 'auth_login' %}?next={% url 'wizard' %}" class="btn btn-large btn-primary">{% trans "Registration" %}</a>

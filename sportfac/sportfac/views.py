@@ -66,6 +66,10 @@ class WizardMixin(OpenedPeriodMixin):
 
 
 class WizardView(WizardMixin, RedirectView):
+    @staticmethod
+    def check_initial_condition(request):
+        return
+
     def get_redirect_url(self, *args, **kwargs):
         context = wizard_context(self.request)
         return context.get('max_step')

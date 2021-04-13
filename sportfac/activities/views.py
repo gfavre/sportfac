@@ -92,6 +92,11 @@ class ActivityListView(LoginRequiredMixin, WizardMixin, ListView):
     def check_initial_condition(request):
         if not request.user.children.exists():
             raise NotReachableException('No children available')
+        from registrations.models import Bill
+        if Bill.objects.filter(family=request.user,
+                               status=Bill.STATUS.waiting,
+                               payment_method=Bill.METHODS.datatrans).exists():
+            raise NotReachableException('Payment expected first')
 
     def get_context_data(self, **kwargs):
         context = super(ActivityListView, self).get_context_data(**kwargs)

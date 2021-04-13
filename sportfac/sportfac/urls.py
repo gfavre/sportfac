@@ -16,6 +16,7 @@ from backend.utils import manager_required
 
 from activities.urls import sitemap as activity_sitemap
 from contact.urls import Sitemap as ContactSitemap
+from payments.views import DatatransWebhookView
 
 admin.autodiscover()
 
@@ -88,6 +89,8 @@ urlpatterns += [
 
     url(r'^ckeditor/upload/', manager_required(ckeditor_views.upload), name='ckeditor_upload'),
     url(r'^ckeditor/browse/', manager_required(ckeditor_views.browse), name='ckeditor_browse'),
+
+    url(r'^datatrans/', DatatransWebhookView.as_view(), name='datatrans_webhook'),
 
     url(r'^admin/', include(admin.site.urls)),
 ]

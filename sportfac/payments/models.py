@@ -31,15 +31,23 @@ class DatatransTransaction(TimeStampedModel, StatusModel):
     expiration = models.DateTimeField(null=True)
 
     @property
+    def is_success(self):
+        return self.status == self.STATUS.authorized
+
+    @property
     def refno(self):
         return self.invoice.billing_identifier
 
     @property
     def script_url(self):
-        return '{}upp/payment/js/datatrans-2.0.0.js'.format(settings.DATATRANS_PAY_URL)
+        return '{}upp/payment/js/datatrans-2.0.0.js'.format(settings.DATATRANS_PAY_URL.geturl())
 
     def update_invoice(self):
         if self.status == self.STATUS.authorized:
             self.invoice.set_paid()
-        elif self.status in (self.STATUS.canceled, self.STATUS.failed):
+        elif self.status in (self.STATUS.canceled, self.STATUS.failed) and not self.invoice.is_paid:
             self.invoice.set_waiting()
+
+
+
+
