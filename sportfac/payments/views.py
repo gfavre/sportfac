@@ -1,24 +1,36 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 from django.utils.translation import ugettext as _
+
 from async_messages import message_user
 from braces.views import LoginRequiredMixin
+from rest_framework.exceptions import ValidationError
 from rest_framework.views import APIView
-
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 from sportfac.views import WizardMixin
+from registrations.models import Bill
 from .models import DatatransTransaction
 
 
 class DatatransWebhookView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request, *args, **kwargs):
         data = request.data
-        transaction, created = DatatransTransaction.objects.get_or_create(
-            transaction_id=data.get('transactionId'), invoice__code=data.get('refno'))
+        if 'transactionId' and 'refno' not in data:
+            raise ValidationError('missing parameters')
+        invoice = get_object_or_404(Bill, billing_identifier=data.get('refno'))
+        transaction = get_object_or_404(DatatransTransaction,
+                                        transaction_id=data.get('transactionId'), invoice=invoice)
+        if 'status' in data:
+            transaction.status = data.get('status')
         transaction.webhook = data
-        transaction.status = data.get('status')
         transaction.update_invoice()
+        transaction.save()
 
         if transaction.is_success:
             transaction.invoice.send_confirmation()
@@ -26,6 +38,7 @@ class DatatransWebhookView(APIView):
             message_user(transaction.invoice.family,
                          _("Payment was rejected either by you or the bank"),
                          'warning')
+        return Response('Webhook accepted')
 
 
 class PaymentSuccessView(LoginRequiredMixin, WizardMixin, TemplateView):
