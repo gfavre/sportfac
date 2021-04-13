@@ -41,6 +41,11 @@ class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
     success_url = reverse_lazy('backend:course-list')
     success_message = _('<a href="%(url)s" class="alert-link">Course (%(number)s)</a> has been created.')
 
+    def get_context_data(self, **kwargs):
+        context = super(CourseCreateView, self).get_context_data(**kwargs)
+        context['extra_needs'] = ExtraNeed.objects.all()
+        return context
+
     def get_form_class(self):
         if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
             return ExplicitDatesCourseForm
@@ -112,6 +117,11 @@ class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
     pk_url_kwarg = 'course'
     success_url = reverse_lazy('backend:course-list')
     success_message = _('<a href="%(url)s" class="alert-link">Course (%(number)s)</a> has been updated.')
+
+    def get_context_data(self, **kwargs):
+        context = super(CourseUpdateView, self).get_context_data(**kwargs)
+        context['extra_needs'] = ExtraNeed.objects.all()
+        return context
 
     def get_form_class(self):
         if settings.KEPCHUP_EXPLICIT_SESSION_DATES:

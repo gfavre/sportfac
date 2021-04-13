@@ -7,6 +7,7 @@
 {% block content %}
   <form action="" method="post">{% csrf_token %}
     {% include "backend/course/form.html" %}
+    {% if extra_needs %}
     <fieldset>
       <legend>{% trans "Extra questions" %}</legend>
       {{ extraneed_form.management_form }}
@@ -22,6 +23,7 @@
         </div>
       {% endfor %}
     </fieldset>
+  {% endif %}
     <div class="form-group">
       <button type="submit" class="btn btn-success btn-large"><i class="icon-plus"></i>&nbsp;{% trans 'Create course' %}
       </button>
@@ -29,6 +31,7 @@
   </form>
 
   {% addtoblock "js" %}
+    {{ form.media }}
     <script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
     {% if EXPLICIT_SESSION_DATES %}
     <script src="{% static 'js/vendor/bootstrap-datepicker.js' %}"></script>

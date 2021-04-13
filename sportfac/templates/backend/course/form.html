@@ -31,8 +31,7 @@
   {% formrow form.uptodate %}
   {% formrow form.visible %}
   {% formrow form.announced_js %}
-
-  {% if not NO_EXTRAS %}
+  {% if not NO_EXTRAS and extra_needs.exists %}
     {% formrow form.extra %}
   {% endif %}
 
