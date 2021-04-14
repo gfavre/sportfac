@@ -30,6 +30,9 @@ class DatatransTransaction(TimeStampedModel, StatusModel):
     webhook = JSONField(null=True, blank=True)
     expiration = models.DateTimeField(null=True)
 
+    class Meta:
+        ordering = ('-expiration',)
+
     @property
     def is_success(self):
         return self.status == self.STATUS.authorized

@@ -33,10 +33,10 @@ def invoice_to_meta_data(request, invoice):
 
 def get_transaction(request, invoice):
     # check if a non-expired transaction exists and return it
-    if invoice.datatrans_transactions.exclude(expiration__lte=now(),
-                                              status=DatatransTransaction.STATUS.initialized).exists():
-        return invoice.datatrans_transactions.exclude(expiration__lte=now(),
-                                                      status=DatatransTransaction.STATUS.initialized).get()
+    non_expired_transactions = invoice.datatrans_transactions.filter(expiration__gte=now(),
+                                                                     status=DatatransTransaction.STATUS.initialized)
+    if non_expired_transactions.exists():
+        return non_expired_transactions.first()
     try:
         username = int(settings.DATATRANS_USER)
         password = settings.DATATRANS_PASSWORD
