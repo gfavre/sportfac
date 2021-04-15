@@ -1,5 +1,7 @@
 from import_export import resources, fields
+
 from .models import Course
+
 
 class CourseResource(resources.ModelResource):
 

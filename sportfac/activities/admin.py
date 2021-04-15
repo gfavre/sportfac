@@ -10,7 +10,7 @@ from import_export.admin import ImportExportModelAdmin
 
 from registrations.models import Registration
 from sportfac.admin_utils import SportfacModelAdmin, SportfacAdminMixin
-from .models import Activity, Course, ExtraNeed
+from .models import Activity, AllocationAccount, Course, ExtraNeed
 from .resources import CourseResource
 
 
@@ -36,6 +36,7 @@ class CourseInline(admin.StackedInline):
     verbose_name_plural = _("courses")
 
 
+@admin.register(Activity)
 class ActivityAdmin(SportfacModelAdmin):
     list_display = ('number', 'name')
     inlines = [CourseInline]
@@ -45,7 +46,7 @@ class ActivityAdmin(SportfacModelAdmin):
     ordering = ('number', 'name',)
 
 
-admin.site.register(Activity, ActivityAdmin)
+admin.site.register(AllocationAccount)
 
 
 @admin.register(ExtraNeed)

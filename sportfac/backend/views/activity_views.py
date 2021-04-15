@@ -16,15 +16,17 @@ from django.views.generic import CreateView, DeleteView, DetailView, \
 
 from absences.models import Absence, Session
 from absences.utils import closest_session
-from activities.models import Activity, Course, ExtraNeed
+from activities.models import Activity, AllocationAccount, Course, ExtraNeed
 from activities.forms import ActivityForm
 from registrations.models import ChildActivityLevel, ExtraInfo
 from .mixins import BackendMixin
 from ..forms import SessionForm
 from ..utils import AbsencePDFRenderer
 
-__all__ = ['ActivityDetailView', 'ActivityListView', 'ActivityCreateView',  'ActivityUpdateView', 'ActivityDeleteView',
-           'ActivityAbsenceView']
+__all__ = [
+    'ActivityDetailView', 'ActivityListView', 'ActivityCreateView',  'ActivityUpdateView', 'ActivityDeleteView',
+    'ActivityAbsenceView',
+]
 
 
 class ActivityDetailView(BackendMixin, DetailView):

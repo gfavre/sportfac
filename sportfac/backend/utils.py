@@ -14,6 +14,10 @@ class AbsencesPDFRenderer(PDFRenderer):
     message_template = 'backend/course/multiple-absences.html'
 
 
+class AllocationReportPDFRenderer(PDFRenderer):
+    message_template = 'backend/allocations/report.html'
+
+
 def manager_required(fct=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):
     actual_decorator = user_passes_test(
         lambda u: u.is_authenticated and u.is_manager or u.is_superuser,

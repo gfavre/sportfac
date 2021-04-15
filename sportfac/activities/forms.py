@@ -7,11 +7,12 @@ from django.forms.widgets import TextInput
 from django.utils.translation import ugettext as _
 
 from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit
 import floppyforms.__future__ as forms
 
 from backend.forms import Select2Widget, Select2MultipleWidget, DatePickerInput, TimePickerInput, MultiDateInput
 from profiles.models import FamilyUser
-from .models import Activity, Course, ExtraNeed, PaySlip
+from .models import Activity, AllocationAccount, Course, ExtraNeed, PaySlip
 
 
 class CourseForm(forms.ModelForm):
@@ -120,7 +121,41 @@ class ActivityForm(forms.ModelForm):
 
     class Meta:
         model = Activity
-        fields = ('name', 'number', 'description', 'informations')
+        fields = ('name', 'number', 'description', 'informations', 'allocation_account')
+
+    def __init__(self, *args, **kwargs):
+        super(ActivityForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_group_wrapper_class = 'row'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-10'
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            'name',
+            'number',
+            settings.KEPCHUP_ENABLE_ALLOCATION_ACCOUNTS and 'allocation_account' or '',
+            'description',
+            'informations',
+        )
+
+
+class AllocationAccountForm(forms.ModelForm):
+
+    class Meta:
+        model = AllocationAccount
+        fields = ('account', 'name')
+
+    def __init__(self, *args, **kwargs):
+        super(AllocationAccountForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_group_wrapper_class = 'row'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-10'
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            'account',
+            'name',
+        )
 
 
 class PaySlipForm(forms.ModelForm):

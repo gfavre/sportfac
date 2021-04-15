@@ -80,6 +80,15 @@
                 <i class="icon-credit-card-1"></i>&nbsp;&nbsp;{% trans "All bills" %}
               </a>
             </li>
+                        {% endif %}
+
+            {% if ENABLE_ALLOCATION_ACCOUNTS %}
+<li>
+              <a href="{% url 'backend:allocation-report' %}">
+                <i class="icon-list-bullet"></i>&nbsp;&nbsp;{% trans "Allocations report" %}
+              </a>
+            </li>
+
             {% endif %}
             {% if DISPLAY_CAR_NUMBER %}
               <li class="divider"></li>

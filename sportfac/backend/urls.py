@@ -1,5 +1,5 @@
-from django.conf.urls import include, url
 from django.conf import settings
+from django.conf.urls import include, url
 
 from . import views
 
@@ -16,6 +16,18 @@ activities_patterns = [
         name='activity-delete'),
     url(r'^(?P<activity>[\w-]+)/absences', view=views.ActivityAbsenceView.as_view(),
         name='activity-absences'),
+]
+
+allocations_patterns = [
+    url(r'^$', view=views.AllocationAccountListView.as_view(),
+        name='allocation-list'),
+    url(r'^report/$', view=views.AllocationAccountReportView.as_view(), name='allocation-report'),
+    url(r'^new$', view=views.AllocationAccountCreateView.as_view(),
+        name='allocation-create'),
+    url(r'^(?P<pk>\d+)/update$', view=views.AllocationAccountUpdateView.as_view(),
+        name='allocation-update'),
+    url(r'^(?P<pk>\d+)/delete$', view=views.AllocationAccountDeleteView.as_view(),
+        name='allocation-delete'),
 ]
 
 courses_patterns = [
@@ -48,7 +60,6 @@ if settings.KEPCHUP_FICHE_SALAIRE_MONTREUX:
     courses_patterns += [
         url(r'^(?P<course>[\w-]+)/pay/(?P<instructor>[0-9a-f\-]{32,})$', view=views.PaySlipMontreux.as_view(),
             name='pay-slip-montreux')]
-
 
 mail_patterns = [
     url(r'^archive', view=views.MailArchiveListView.as_view(),
@@ -206,7 +217,6 @@ site_patterns = [
 
 ]
 
-
 years_patterns = [
     url(r'^$', view=views.YearListView.as_view(), name='year-list'),
     url(r'^(?P<pk>\d+)/update', view=views.YearUpdateView.as_view(), name='year-update'),
@@ -216,12 +226,12 @@ years_patterns = [
     url(r'^change', view=views.ChangeYearFormView.as_view(), name='year-change'),
     url(r'^update', view=views.ChangeProductionYearFormView.as_view(), name='year-update'),
 
-
 ]
 
 urlpatterns = [
     url(r'^$', views.HomePageView.as_view(), name="home"),
     url(r'^activity/', include(activities_patterns)),
+    url(r'^allocations/', include(allocations_patterns)),
     url(r'^buildings/', include(buildings_patterns)),
     url(r'^child/', include(children_patterns)),
     url(r'^course/', include(courses_patterns)),

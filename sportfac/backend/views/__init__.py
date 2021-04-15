@@ -1,4 +1,7 @@
 from .activity_views import *
+from .allocation_views import (
+    AllocationAccountListView, AllocationAccountCreateView, AllocationAccountDeleteView, AllocationAccountUpdateView,
+    AllocationAccountReportView)
 from .course_views import *
 from .dashboard_views import *
 from .mail_views import *

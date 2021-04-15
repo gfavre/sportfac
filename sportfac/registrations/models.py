@@ -44,6 +44,9 @@ class Registration(TimeStampedModel, StatusModel):
     bill = models.ForeignKey('Bill', related_name="registrations", null=True, blank=True,
                              on_delete=models.SET_NULL)
     paid = models.BooleanField(default=False, verbose_name=_("Has paid"))
+    price = models.PositiveIntegerField(default=0, null=True, blank=True)
+    allocation_account = models.ForeignKey('activities.AllocationAccount', null=True, related_name='registrations',
+                                           verbose_name=_("Allocation account"))
     transport = models.ForeignKey('Transport', related_name='participants', null=True, blank=True,
                                   verbose_name=_("Transport information"),
                                   on_delete=models.SET_NULL)
@@ -76,8 +79,7 @@ class Registration(TimeStampedModel, StatusModel):
     def has_modifier(self):
         return sum([extra.price_modifier for extra in self.extra_infos.all()]) != 0
 
-    @property
-    def price(self):
+    def get_price(self):
         subtotal = self.course.price
         modifier = sum([extra.price_modifier for extra in self.extra_infos.all()])
         if subtotal + modifier > 0:
@@ -161,6 +163,10 @@ class Registration(TimeStampedModel, StatusModel):
 
     def save(self, *args, **kwargs):
         with transaction.atomic():
+            if settings.KEPCHUP_ENABLE_ALLOCATION_ACCOUNTS and self.allocation_account is None:
+                self.allocation_account = self.course.activity.allocation_account
+            if not settings.KEPCHUP_NO_PAYMENT and self.price is None:
+                self.price = self.get_price()
             super(Registration, self).save(*args, **kwargs)
             if self.bill:
                 self.bill.save()
@@ -273,6 +279,14 @@ class Bill(TimeStampedModel, StatusModel):
     @property
     def backend_url(self):
         return self.get_backend_url()
+
+    @property
+    def datatrans_successful_transaction(self):
+        from payments.models import DatatransTransaction
+        try:
+            return self.datatrans_transactions.filter(status=DatatransTransaction.STATUS.authorized).last()
+        except DatatransTransaction.DoesNotExist:
+            return None
 
     @property
     def pay_url(self):

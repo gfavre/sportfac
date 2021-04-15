@@ -1,0 +1,22 @@
+{% extends "backend/base.html" %}
+{% load i18n floppyforms  %}
+
+{% block title %}{% trans "Update allocation account" %} - {{ block.super }}{% endblock %}
+{% block page_title %}<i class="icon-money"></i>&nbsp;&nbsp;{% trans "Update allocation account" %}{% endblock %}
+
+{% block content %}
+
+<form action="" method="post" class="form-horizontal">{% csrf_token %}
+
+  {% include "backend/allocations/form.html" %}
+  <div class=" form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+
+      <button type="submit" class="btn btn-success ">{% trans 'Update account' %}</button>
+      &nbsp;
+      <a href="{% url 'backend:allocation-list' %}" class="btn  btn-default">{% trans 'Cancel' %}</a>
+    </div>
+  </div>
+
+</form>
+{% endblock content %}

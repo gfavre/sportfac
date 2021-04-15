@@ -1,0 +1,164 @@
+{% extends "backend/base.html" %}
+{% load i18n %}
+{% load duration switzerland sekizai_tags %}
+
+{% block title %}{% trans "Allocations report" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "Allocations report" %}{% endblock %}
+
+{% block content %}
+  {% addtoblock "js" %}
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
+    <script>
+      $(function () {
+        moment.locale('fr', {
+          months: 'janvier_février_mars_avril_mai_juin_juillet_août_septembre_octobre_novembre_décembre'.split('_'),
+        });
+        moment.locale('fr');
+        let start = moment("{{ start | date:'c' }}");
+        let end = moment("{{ end | date:'c' }}");
+
+        function cb(start, end) {
+          $('#reportrange span').html(start.format('D MMMM YYYY') + ' - ' + end.format('D MMMM YYYY'));
+        }
+
+        $('#reportrange').daterangepicker({
+          startDate: start,
+          endDate: end,
+          "applyButtonClasses": "btn-secondary",
+          "locale": {
+            "format": "DD.MM.YYYY",
+            "firstDay": 1,
+            "daysOfWeek": [
+              "{% trans "Sun" %}",
+              "{% trans "Mon" %}",
+              "{% trans "Tue" %}",
+              "{% trans "Wed" %}",
+              "{% trans "Thu" %}",
+              "{% trans "Fri" %}",
+              "{% trans "Sat" %}"],
+            "monthNames": [
+              "{% trans "January" %}",
+              "{% trans "February" %}",
+              "{% trans "March" %}",
+              "{% trans "April" %}",
+              "{% trans "May" %}",
+              "{% trans "June" %}",
+              "{% trans "July" %}",
+              "{% trans "August" %}",
+              "{% trans "September" %}",
+              "{% trans "October" %}",
+              "{% trans "November" %}",
+              "{% trans "December" %}"
+            ],
+            "applyLabel": "{% trans "Apply" %}",
+            "cancelLabel": "{% trans "Cancel" %}",
+            "customRangeLabel": "{% trans "Custom range" %}",
+          },
+          ranges: {
+            '{% trans "Today" %}': [moment(), moment()],
+            '{% trans "Yesterday" %}': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            '{% trans "Last 7 days" %}': [moment().subtract(6, 'days'), moment()],
+            '{% trans "Last 30 days" %}': [moment().subtract(29, 'days'), moment()],
+            '{% trans "This month" %}': [moment().startOf('month'), moment().endOf('month')],
+            '{% trans "Last month" %}': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+          }
+        }, cb);
+
+        $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
+          //do something, like clearing an input
+          window.location.href = window.location.href.replace(
+            /[\?#].*|$/,
+            "?start=" + picker.startDate.format('YYYY-MM-DD') + "&end=" + picker.endDate.format('YYYY-MM-DD')
+          );
+
+        });
+
+        cb(start, end);
+
+      });
+    </script>
+  {% endaddtoblock %}
+
+  <section class="portlet">
+  <div id="reportrange"
+       class="hidden-print "
+       style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+    <i class="icon-calendar"></i>&nbsp;
+    <span></span> <i class="fa fa-caret-down"></i>
+  </div>
+  <div class="visible-print">
+    <p>
+      {% blocktrans with start=start|date end=end|date %}Period from {{ start }} to {{ end }}{% endblocktrans %}
+  </div>
+  </section>
+
+  {% for allocation_account in object_list %}
+    <section class="portlet">
+      <h4 class="portlet-title"><u>{{ allocation_account }}</u></h4>
+      <table class="table">
+        <thead>
+        <tr>
+          <th>{% trans "Date" %}</th>
+          <th>{% trans "Course" %}</th>
+          <th>{% trans "Invoice" %}</th>
+          <th>{% trans "Transaction" %}</th>
+          <th>{% trans "Amount" %}</th>
+        </tr>
+        </thead>
+      <tfoot>
+      <tr>
+        <th colspan="3"></th>
+        <th class="text-right">{% trans "Total" %}</th>
+        <th>{{ allocation_account.period_total | money }}</th>
+      </tr>
+      </tfoot>
+        <tbody>
+        {% for registration in allocation_account.period_registrations %}
+          <tr>
+            <td>
+              {{ registration.created | date }}
+            </td>
+            <td>
+              {{ registration.course.short_name }}
+            </td>
+            <td>
+              <a href="{{ registration.bill.get_backend_url }}">{{ registration.bill.billing_identifier }}</a>
+            </td>
+            <td>
+              {{ registration.bill.datatrans_successful_transaction.transaction_id }}
+            </td>
+            <td>
+              {{ registration.price | money }}
+            </td>
+          </tr>
+           {% empty %}
+          <tr>
+          <td colspan="5" class="text-center">
+            {% trans "No transaction for the given period" %}
+          </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  {% endfor %}
+
+  <h4>{% trans "Summary" %}, {{ start |date }} - {{ end |date }}</h4>
+  <table class="table">
+  {% for allocation_account in object_list %}
+  <tr>
+  <td>{{ allocation_account }}</td>
+  <td>{{ allocation_account.period_total | money }}</td>
+  </tr>
+  {% endfor %}
+  </table>
+
+
+  <p class="hidden-print text-center">
+    <a href="{{ pdf_url }}" class="btn btn-large btn-success" download><i class="icon-file-pdf"></i>&nbsp; {% trans "Export to PDF" %}</a>
+
+  </p>
+{% endblock content %}

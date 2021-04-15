@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime, date
+from datetime import datetime, date, time
 from decimal import Decimal
 import uuid
 
@@ -7,7 +7,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.db.models.aggregates import Count
+from django.db.models.aggregates import Count, Sum
 from django.template.defaultfilters import date as _date
 from django.utils.translation import ugettext_lazy as _, ugettext
 
@@ -64,7 +64,8 @@ class Activity(TimeStampedModel):
     informations = RichTextUploadingField(verbose_name=_("Informations"), blank=True,
                                           help_text=_("Specific informations like outfit."))
     description = RichTextUploadingField(verbose_name=_("Description"), blank=True)
-
+    allocation_account = models.ForeignKey('AllocationAccount', null=True, related_name='activities',
+                                           verbose_name=_("Allocation account"))
     objects = ActivityManager()
 
     def get_absolute_url(self):
@@ -107,6 +108,45 @@ class Activity(TimeStampedModel):
         ordering = ['name']
         verbose_name = _("activity")
         verbose_name_plural = _("activities")
+
+
+class AllocationAccount(TimeStampedModel):
+    account = models.CharField(max_length=50, verbose_name=_("Account"),
+                               help_text=_("e.g. 154.4652.00"),
+                               unique=True,)
+    name = models.CharField(max_length=50, verbose_name=_("Name"), blank=True,
+                            help_text=_("Some text to help humans filter account numbers"))
+
+    class Meta:
+        ordering = ['account']
+        verbose_name = _("Allocation account")
+        verbose_name_plural = _("Allocation accounts")
+
+    def __unicode__(self):
+        if self.name:
+            return u'{} ({})'.format(self.name, self.account)
+        return self.account
+
+    def get_backend_url(self):
+        return reverse('backend:allocation-update', kwargs={'pk': self.pk})
+
+    def get_update_url(self):
+        return reverse('backend:allocation-update', kwargs={'pk': self.pk})
+
+    def get_delete_url(self):
+        return reverse('backend:allocation-delete', kwargs={'pk': self.pk})
+
+    def get_registrations(self, start=None, end=None):
+        kwargs = {}
+        if start:
+            kwargs['created__gte'] = start
+        if end:
+            kwargs['created__lte'] = datetime.combine(end, time.max)
+        return (self.registrations.filter(**kwargs).prefetch_related('bill__datatrans_transactions'))\
+                                                   .select_related('course', 'course__activity', 'bill')
+
+    def get_total_transactions(self, period_start=None, period_end=None):
+        return self.registrations.all().aggregate(Sum('price'))['price__sum']
 
 
 class CourseManager(models.Manager):
