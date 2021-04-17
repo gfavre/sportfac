@@ -40,9 +40,10 @@ yearServiceUrl="{% url 'api:year-list' %}"
             <span class="badge badge-warning" ng-show="child.status == 'imported'"><i class="icon-warning"></i></span>
           </a>
         </li>
+        <li style="margin-top: 1.5em"><a href="#/new" class="btn" style="font-size: inherit" ng-show="selectedChild"><i class="icon-plus"></i> {% trans "Add child" %}</a></li>
       </ul>
       <br />
-      <a href="#/new" class="btn" ng-show="selectedChild"><i class="icon-plus"></i> {% trans "Add child" %}</a>
+
     </div>
   </div>
   <div class="col-sm-8 col-sm-pull-4" ng-view></div>

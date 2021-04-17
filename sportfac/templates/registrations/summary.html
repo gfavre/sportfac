@@ -9,7 +9,7 @@
 
 {% if registration_opened %}
 <p class="text-center hidden-print" style="margin-bottom: 2em;">
-  <a href="{{ max_step }}" class="btn btn-large btn-primary"><i class="icon-calendar"></i> {% trans "Register new activities" %}</a>
+  <a href="{% url 'wizard' %}" class="btn btn-large btn-primary"><i class="icon-calendar"></i> {% trans "Register new activities" %}</a>
 </p>
 {% endif %}
 

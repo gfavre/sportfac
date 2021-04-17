@@ -7,7 +7,34 @@
 
 {% block content %}
   <div class="row">
-    <div class="col-sm-6" style="border-right: 1px solid #ccc">
+    <div class="col-sm-6 "  style="border-right: 1px solid #ccc">
+      {% if registration_opened %}
+        <p class="lead text-center">{% trans "You don't have an account?" %}<br>
+          <a href="{% url 'wizard_register' %}" class="btn btn-large btn-primary" style="margin-top: 30px;">
+            {% trans "Registration" %}
+          </a>
+        </p>
+      {% elif REGISTER_ACCOUNTS_AT_ANY_TIME %}
+        <p class="lead text-center">{% trans "You don't have an account?" %}<br>
+          <a href="{% url 'anytime_registeraccount' %}" class="btn btn-large btn-primary" style="margin-top: 30px;">
+            {% trans "Registration" %}
+          </a>
+        </p>
+      {% else %}
+        <h4>{% trans "Registrations are currently closed" %}</h4>
+        {% if request.PHASE == 1 %}
+          <p>
+            {% blocktrans with registration_start=registration_start|date:"j F Y" registration_end=registration_end|date:"j F Y" %}
+              They will open from {{ registration_start }} until {{ registration_end }}.{% endblocktrans %}</p>
+          {% countdown registration_start %}
+
+        {% endif %}
+      {% endif %}
+    </div>
+
+    <div class="col-sm-6">
+      <hr class="hidden-sm hidden-md hidden-lg">
+
       {% if registration_opened or REGISTER_ACCOUNTS_AT_ANY_TIME %}
         <p class="lead text-center">{% trans "You already have an account" %}</p>
       {% endif %}
@@ -41,30 +68,6 @@
           </div>
         </div>
       </form>
-    </div>
-    <div class="col-sm-6">
-      {% if registration_opened %}
-        <p class="lead text-center">{% trans "You don't have an account?" %}<br>
-          <a href="{% url 'wizard_register' %}" class="btn btn-large btn-secondary" style="margin-top: 30px;">
-            {% trans "Registration" %}
-          </a>
-        </p>
-      {% elif REGISTER_ACCOUNTS_AT_ANY_TIME %}
-        <p class="lead text-center">{% trans "You don't have an account?" %}<br>
-          <a href="{% url 'anytime_registeraccount' %}" class="btn btn-large btn-secondary" style="margin-top: 30px;">
-            {% trans "Registration" %}
-          </a>
-        </p>
-      {% else %}
-        <h4>{% trans "Registrations are currently closed" %}</h4>
-        {% if request.PHASE == 1 %}
-          <p>
-            {% blocktrans with registration_start=registration_start|date:"j F Y" registration_end=registration_end|date:"j F Y" %}
-              They will open from {{ registration_start }} until {{ registration_end }}.{% endblocktrans %}</p>
-          {% countdown registration_start %}
-
-        {% endif %}
-      {% endif %}
     </div>
   </div>
 
