@@ -125,7 +125,7 @@ class WizardRegistrationView(WizardMixin, RegistrationBaseView):
     template_name = 'profiles/wizard_registration_form.html'
 
     @staticmethod
-    def check_initial_condition(self, request):
+    def check_initial_condition(request):
         return
 
     def get_success_url(self):

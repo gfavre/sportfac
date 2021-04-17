@@ -83,9 +83,15 @@
                         {% endif %}
 
             {% if ENABLE_ALLOCATION_ACCOUNTS %}
-<li>
+            <li class="divider"></li>
+              <li>
+              <a href="{% url 'backend:allocation-list' %}">
+                <i class="icon-list-bullet"></i>&nbsp;&nbsp;{% trans "All allocation accounts" %}
+              </a>
+            </li>
+              <li>
               <a href="{% url 'backend:allocation-report' %}">
-                <i class="icon-list-bullet"></i>&nbsp;&nbsp;{% trans "Allocations report" %}
+                <i class="icon-money"></i>&nbsp;&nbsp;{% trans "Allocations report" %}
               </a>
             </li>
 
