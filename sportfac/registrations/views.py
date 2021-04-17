@@ -96,6 +96,8 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
 
     @staticmethod
     def check_initial_condition(request):
+        if not request.user.is_authenticated():
+            raise NotReachableException('No account created')
         if not Registration.waiting.filter(child__family=request.user).exists():
             raise NotReachableException('No waiting Registration available')
 
@@ -217,6 +219,8 @@ class WizardBillingView(LoginRequiredMixin, WizardMixin, BillMixin, TemplateView
 
     @staticmethod
     def check_initial_condition(request):
+        if not request.user.is_authenticated():
+            raise NotReachableException('No account created')
         if request.user.montreux_needs_appointment and not Appointment.objects.filter(
                 child__in=request.user.children.all()).exists():
             raise NotReachableException('No Appointment taken')
@@ -258,6 +262,6 @@ class WizardChildrenListView(WizardMixin, ChildrenListView):
 
     @staticmethod
     def check_initial_condition(request):
-        # Condition is that user is logged in. ChildrenListView ensures that
-        return
+        if not request.user.is_authenticated():
+            raise NotReachableException('No account created')
 

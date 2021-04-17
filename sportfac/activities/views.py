@@ -90,6 +90,8 @@ class ActivityListView(LoginRequiredMixin, WizardMixin, ListView):
 
     @staticmethod
     def check_initial_condition(request):
+        if not request.user.is_authenticated():
+            raise NotReachableException('No account created')
         if not (hasattr(request.user, 'children') and request.user.children.exists()):
             raise NotReachableException('No children available')
         from registrations.models import Bill
