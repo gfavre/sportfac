@@ -13,6 +13,7 @@
 @media print {
     .pdf-heading .logo {
         margin-bottom: 1em;
+        max-width:3.5cm;
     }
 
     .pdf-heading .page-logo {

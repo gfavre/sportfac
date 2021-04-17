@@ -114,16 +114,23 @@ class PDFRenderer(object):
         """output: filelike object"""
         content = self.get_content(self.get_message_template())
         payload = json.dumps({
+            'backend': 'chrome',
             'content': content,
             'renderType': 'pdf',
-            'omitBackground': True,
+            'omitBackground': False,
             "renderSettings": {
                 'emulateMedia': 'print',
                 'pdfOptions': {
                     'format': 'A4',
                     'landscape': self.is_landscape,
                     'preferCSSPageSize': True,
+                    'omitBackground': False,
                 }
+            },
+            'requestSettings': {
+                'waitInterval': 0,
+                'resourceTimeout': 1000,
+                'doneWhen': [{'event': "domReady"}]
             }
         })
 
