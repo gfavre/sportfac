@@ -26,6 +26,7 @@ preference_models.register(TenantPreferenceModel, tenant_preferences_registry)
 email = Section('email')
 payment = Section('payment')
 phase = Section('phase')
+site = Section('site')
 
 
 class DateTimeSerializer(BaseSerializer):
@@ -46,6 +47,13 @@ class DateTimeSerializer(BaseSerializer):
 class DateTimePreference(BasePreferenceType):
     field_class = forms.DateTimeField
     serializer = DateTimeSerializer
+
+
+@global_preferences_registry.register
+class FromMail(StringPreference):
+    section = site
+    name = 'SITE_NAME'
+    default = 'Sport scolaire facultatif'
 
 
 @global_preferences_registry.register

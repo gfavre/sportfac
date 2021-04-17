@@ -9,3 +9,17 @@
 #footer img {
     width: 300px;
 }
+
+@media print {
+    .pdf-heading .logo {
+        margin-bottom: 1em;
+    }
+
+    .pdf-heading .page-logo {
+        border-right: 1px solid black;
+    }
+
+    .pdf #footer {
+        display: none;
+    }
+}

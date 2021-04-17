@@ -1,0 +1,31 @@
+{% extends "backend/base.html" %}
+{% load i18n static %}
+
+{% block extra_body %}{{ block.super }} class="pdf"{% endblock %}
+
+
+{% block page_header %}
+
+<div class="container pdf-heading">
+  <div class="row">
+    <div class="col-md-3 visible-print page-logo">
+      <img src="{% static 'img/logo.png' %}" class="img-responsive logo">
+      <p>Ville de La Tour-de-Peilz, Sport & Jeunesse</p>
+      <p>Grand-Rue 46  <br />
+        1814 La Tour-de-Peilz</p>
+    </div>
+  <div class="col-md-9 page-header">
+    {% block site_title %}<h5 class="visible-print">{{ site_name }}</h5>{% endblock site_title %}
+
+    <h1>{% block page_title %}Example Base Template{% endblock page_title %}</h1>
+    {% block subtitle %}
+
+
+    {% endblock %}
+  </div>
+
+  </div>
+
+</div>
+
+{% endblock %}
