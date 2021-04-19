@@ -80,7 +80,6 @@ def send_instructors_email(self, course_pk, instructor_pk, subject, message, fro
     cp_generator.render_to_pdf(filepath)
     email.attach(filename, open(filepath).read(), 'application/pdf')
     logger.debug("Participants.pdf attached")
-
     filename = 'mes_cours.pdf'
     filepath = os.path.join(tempdir, filename)
     cp_generator = MyCourses({'instructor': instructor,

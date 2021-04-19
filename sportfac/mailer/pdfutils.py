@@ -113,6 +113,7 @@ class PDFRenderer(object):
     def render_to_pdf(self, output):
         """output: filelike object"""
         content = self.get_content(self.get_message_template())
+        import pdb;pdb.set_trace()
         payload = json.dumps({
             'backend': 'chrome',
             'content': content,
@@ -129,7 +130,7 @@ class PDFRenderer(object):
             },
             'requestSettings': {
                 'waitInterval': 0,
-                'resourceTimeout': 1000,
+                'resourceTimeout': 2000,
                 'doneWhen': [{'event': "domReady"}]
             }
         })

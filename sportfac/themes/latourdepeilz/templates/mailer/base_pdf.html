@@ -1,0 +1,97 @@
+{% load static from staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <title>{{ title|default:"" }}</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald:400,300,700">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400italic,400,600,700,800&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+
+    <link href="https://ltdp.kepchup.ch/static/css/style.css" rel="stylesheet" media="all" />
+
+
+      <link href="https://ltdp.kepchup.ch/static/css/latourdepeilz.css" rel="stylesheet" media="all" />
+
+  <style>
+
+.table td {
+    border-top: 1px solid #ccc !important;
+}
+.table-header-rotated {
+  border-collapse: collapse;
+}
+/*.table-header-rotated td {
+  width: 30px;
+}*/
+.table-header-rotated th, .table-header-rotated td{
+  border-right: 1px solid #ccc;
+}
+.table-header-rotated td {
+}
+.table-header-rotated th.rotate {
+  height: 7rem;
+  white-space: nowrap;
+}
+.table-header-rotated th.rotate > div {
+  -webkit-transform: translate(4px, 10px) rotate(-90deg);
+      -ms-transform: translate(4px, 0px) rotate(-90deg);
+          transform: translate(4px, 0px) rotate(-90deg);
+  width: 1em;
+}
+.table-header-rotated th.rotate > div > span {
+  padding: 5px 10px;
+}
+.table-header-rotated th.fixed, .table-header-rotated td.fixed {
+    width:2.5rem;
+    border-left: 1px solid #ccc;
+    border-right:   border: 1px solid #ccc;
+}
+.table>tbody>tr>td,
+.table>tbody>tr>th,
+.table>tfoot>tr>td,
+.table>tfoot>tr>th,
+.table>thead>tr>td,
+.table>thead>tr>th {
+  padding: 0.3rem;
+}
+
+@media print {
+  a[href]:after {
+    content: "";
+  }
+}
+</style>
+</head>
+<body>
+
+
+<header class="container pdf-heading">
+  <div class="row">
+    <div class="col-xs-3 visible-print page-logo">
+      <img src="https://ltdp.kepchup.ch/static/img/logo.png" class="img-responsive logo">
+      <p>Grand-Rue 46  <br />
+        1814 La Tour-de-Peilz</p>
+    </div>
+  <div class="col-xs-9 page-header">
+    {% block site_title %}<h5 class="visible-print">{{ site_name }}</h5>{% endblock site_title %}
+
+    <h1>{% block page_header %}Example Base Template{% endblock page_header%}</h1>
+    {% block subtitle %}{% endblock %}
+  </div>
+
+  </div>
+
+</header>
+
+
+<div class="container">
+  {% block content %}{% endblock %}
+</div>
+
+<footer id="page-footer">
+    {% block page_foot %}{% endblock %}
+  </footer>
+</body>
+</html>
