@@ -84,7 +84,7 @@ class GenericEmailUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
     form_class = GenericEmailForm
     template_name = 'backend/mail/emails_update.html'
     success_url = reverse_lazy('backend:emails-list')
-    success_message = 'saveds!!'
+    success_message = _("Generic email has been saved")
 
     def form_valid(self, form):
         subject_heading = form.get_tmpl_heading(self.object.subject_template.content)
