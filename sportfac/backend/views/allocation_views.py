@@ -103,7 +103,7 @@ class AllocationAccountCreateView(SuccessMessageMixin, BackendMixin, CreateView)
     def get_success_message(self, cleaned_data):
         url = self.object.get_backend_url()
         return mark_safe(self.success_message % {'url': url,
-                                                 'number': self.object.number})
+                                                 'number': self.object.account})
 
 
 class AllocationAccountUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
