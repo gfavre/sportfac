@@ -559,6 +559,8 @@ KEPCHUP_ALTERNATIVE_BILLING_LABEL = None
 KEPCHUP_BIB_NUMBERS = False
 # Ask for school of the child
 KEPCHUP_CHILD_SCHOOL = False
+# Teachers submenu in backend
+KEPCHUP_ENABLE_TEACHER_MANAGEMENT = True
 # Is other a valid choice?
 KEPCHUP_CHILD_SCHOOL_DISPLAY_OTHER = False
 # these fields are not editable by parent. Makes sense with KEPCHUP_IMPORT_CHILDREN

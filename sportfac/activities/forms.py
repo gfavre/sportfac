@@ -125,6 +125,7 @@ class ActivityForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ActivityForm, self).__init__(*args, **kwargs)
+
         self.helper = FormHelper()
         self.helper.form_group_wrapper_class = 'row'
         self.helper.label_class = 'col-sm-2'

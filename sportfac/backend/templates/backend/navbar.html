@@ -154,6 +154,7 @@
             <i class="icon-down-open"></i>
           </a>
           <ul class="dropdown-menu" role="menu">
+            {% if ENABLE_TEACHER_MANAGEMENT %}
             <li>
               <a href="{% url 'backend:teacher-list' %}">
                 <i class="icon-adult"></i>
@@ -171,6 +172,7 @@
               </a>
             </li>
             <li class="divider"></li>
+            {% endif %}
             <li>
               <a href="{% url 'backend:child-list' %}">
                 <i class="icon-child"></i>

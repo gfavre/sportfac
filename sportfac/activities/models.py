@@ -64,7 +64,7 @@ class Activity(TimeStampedModel):
     informations = RichTextUploadingField(verbose_name=_("Informations"), blank=True,
                                           help_text=_("Specific informations like outfit."))
     description = RichTextUploadingField(verbose_name=_("Description"), blank=True)
-    allocation_account = models.ForeignKey('AllocationAccount', null=True, related_name='activities',
+    allocation_account = models.ForeignKey('AllocationAccount', null=True, blank=True, related_name='activities',
                                            verbose_name=_("Allocation account"))
     objects = ActivityManager()
 

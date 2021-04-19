@@ -51,7 +51,7 @@ KEPCHUP_PAYMENT_METHOD = 'datatrans'
 
 # Misc
 KEPCHUP_IMPORT_CHILDREN = False
-
+KEPCHUP_ENABLE_TEACHER_MANAGEMENT = False
 
 CELERYBEAT_SCHEDULE['notify-absences'] = {
         'task': 'absences.tasks.notify_absences',
