@@ -1,8 +1,34 @@
-{% load i18n floppyforms %}
+{% load i18n floppyforms sekizai_tags %}
+{% addtoblock "js" %}
+<script>
+$(function () {
+  let $type = $('#id_course_type')
 
+  let updateFields = function (){
+    switch ($type.val()) {
+      case 'course':
+        $('#times').show();
+        break;
+      case  'multicourse':
+        $('#times').show();
+        break;
+      case 'camp':
+        $('#times').hide();
+        break;
+    }
+  }
+
+  $type.on('change', function (){
+    updateFields();
+  })
+  updateFields();
+
+});
+</script>
+{% endaddtoblock %}
 {% form form using %}
-  {% formconfig row using "floppyforms/rows/bootstrap-basic-row.html" %}
   {% formconfig row using "floppyforms/rows/bootstrap-basic-sm-6.html" %}
+  {% formrow form.course_type %}
 
   {% if CALENDAR_DISPLAY_COURSE_NAMES %}
     {% formrow form.activity form.instructors form.number form.name %}
@@ -19,9 +45,10 @@
 
   {% if EXPLICIT_SESSION_DATES %}
     {% formrow form.session_dates %}
-    {% formrow form.start_time form.end_time %}
+    <div id="times">{% formrow form.start_time form.end_time %}</div>
   {% else %}
-    {% formrow form.number_of_sessions form.day form.start_date form.end_date form.start_time form.end_time %}
+    {% formrow form.number_of_sessions form.day form.start_date form.end_date %}
+    <div id="times">{% formrow form.start_time form.end_time %}</div>
   {% endif %}
 
   {% formrow form.place using "floppyforms/rows/bootstrap-basic-row.html" %}

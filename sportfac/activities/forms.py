@@ -55,7 +55,7 @@ class CourseForm(forms.ModelForm):
 
     class Meta:
         model = Course
-        fields = ('activity', 'name', 'number', 'instructors', 'price', 'price_description',
+        fields = ('course_type', 'activity', 'name', 'number', 'instructors', 'price', 'price_description',
                   'number_of_sessions', 'day', 'start_date', 'end_date',
                   'start_time', 'end_time', 'place', 'min_participants',
                   'max_participants', 'schoolyear_min', 'schoolyear_max',
@@ -89,7 +89,7 @@ class ExplicitDatesCourseForm(CourseForm):
 
     class Meta:
         model = Course
-        fields = ('activity', 'name', 'number', 'instructors', 'price', 'price_description',
+        fields = ('course_type', 'activity', 'name', 'number', 'instructors', 'price', 'price_description',
                   'start_time', 'end_time', 'place', 'comments', 'min_participants',
                   'max_participants', 'schoolyear_min', 'schoolyear_max',
                   'uptodate', 'announced_js', 'visible', 'extra',)

@@ -153,11 +153,21 @@ class CourseManager(models.Manager):
     def visible(self):
         return self.get_queryset().filter(visible=True)
 
+    def camps(self):
+        return self.get_queryset().filter(type=Course.TYPE.camp)
+
 
 class Course(TimeStampedModel):
     """A course, i.e. an instance of an activity"""
+    TYPE = Choices(
+        ('course', _("Course (single day per week)")),
+        ('multicourse', _("Course (multiple days per week)")),
+        ('camp', _("Camp")),
+
+    )
     activity = models.ForeignKey('Activity', related_name='courses',
                                  verbose_name=_("Activity"))
+    course_type = models.CharField(_("Course type"), max_length=16, choices=TYPE, default=TYPE.course)
     number = models.CharField(max_length=30,
                               db_index=True, unique=True,
                               null=True, blank=True,
@@ -180,8 +190,8 @@ class Course(TimeStampedModel):
     day = models.PositiveSmallIntegerField(choices=DAYS_OF_WEEK, verbose_name=_("Day"), default=1, blank=True)
     start_date = models.DateField(verbose_name=_("Start date"), null=True)
     end_date = models.DateField(verbose_name=_("End date"), null=True)
-    start_time = models.TimeField(verbose_name=_("Start time"))
-    end_time = models.TimeField(verbose_name=_("End time"))
+    start_time = models.TimeField(verbose_name=_("Start time"), null=True)
+    end_time = models.TimeField(verbose_name=_("End time"), null=True)
     place = models.TextField(verbose_name=_("Place"))
     min_participants = models.PositiveSmallIntegerField(verbose_name=_("Minimal number of participants"))
     max_participants = models.PositiveSmallIntegerField(verbose_name=_("Maximal number of participants"))
