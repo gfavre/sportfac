@@ -62,6 +62,20 @@ class CourseForm(forms.ModelForm):
                   'comments',
                   'uptodate', 'announced_js', 'visible', 'extra',)
 
+    def save(self, commit=True):
+        instance = super(CourseForm, self).save(commit=commit)
+        if instance.is_camp:
+            delta = instance.end_date - instance.start_date
+            dates = []
+            for i in range(delta.days +1):
+                dates.append(instance.start_date + datetime.timedelta(days=i))
+            for session in instance.get_sessions():
+                if session.date not in dates:
+                    session.delete()
+            for date in dates:
+                instance.add_session(date=date)
+        return instance
+
 
 class MultipleDatesField(forms.CharField):
     date_format = '%d.%m.%Y'

@@ -209,6 +209,18 @@ class Course(TimeStampedModel):
         verbose_name = _("course")
         verbose_name_plural = _("courses")
 
+    @property
+    def is_course(self):
+        return self.course_type == self.TYPE.course
+
+    @property
+    def is_multi_course(self):
+        return self.course_type == self.TYPE.multicourse
+
+    @property
+    def is_camp(self):
+        return self.course_type == self.TYPE.camp
+
     def get_sessions(self):
         return self.sessions.all()
 

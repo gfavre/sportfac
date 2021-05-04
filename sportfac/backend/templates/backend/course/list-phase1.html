@@ -98,7 +98,7 @@ $(function () {
       </td>
       <td>{{ course.day_name }}</td>
       <td data-order="{{ course.start_date|date:'c'}}">{{ course.start_date|date:"SHORT_DATE_FORMAT" }}</td>
-      <td>{{ course.start_time|time:"H:i" }}</td>
+      <td>{% if course.is_course %}{{ course.start_time|time:"H:i" }}{% else %}n/a{% endif %}</td>
       <td data-order="{{ course.duration|seconds }}">{{ course.duration|duration }}</td>
       <td>
         <ul class="list-unstyled">

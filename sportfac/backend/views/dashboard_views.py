@@ -230,7 +230,8 @@ class HomePageView(BackendMixin, TemplateView):
         context['total_instructors'] = CoursesInstructors.objects.distinct('instructor').count()
         timedeltas = []
         for course in courses:
-            timedeltas.append(course.number_of_sessions * course.duration)
+            if not course.is_camp:
+                timedeltas.append(course.number_of_sessions * course.duration)
         td = sum(timedeltas, timedelta())
         context['total_hours'] = td.days * 24 + td.seconds / 3600
         context['total_remaining_minutes'] = (td.seconds % 3600) / 60

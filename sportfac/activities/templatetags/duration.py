@@ -13,6 +13,7 @@ from django.utils.translation import ugettext as _
  
 register = template.Library()
 
+
 @register.filter(is_safe=True)
 def duration(value, arg=False):
     "takes a time delta and renders it as duration"

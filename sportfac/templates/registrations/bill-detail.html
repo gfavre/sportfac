@@ -43,7 +43,9 @@
           <span class="nowrap"><a href="{{ registration.course.backend_url }}">{{ registration.course.start_date }}</span> – <span class="nowrap">{{ registration.course.end_date }}</span></a>
         </td>
         <td>
+          {% if registration.course.is_course %}
           {{ registration.course.day_name }} / <span class="nowrap">{{ registration.course.start_time|time:"H:i"}} - {{ registration.course.end_time|time:"H:i" }}</span>
+          {% endif %}
         </td>
         <td class="nowrap text-right">{{ registration.course.price|money }}</td>
       </tr>

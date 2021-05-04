@@ -18,8 +18,11 @@
     <div class="pricing-plan">
       <header class="pricing-header">
         <p class="pricing-plan-label">{{ course.start_date | date:"j F Y" }} – {{ course.end_date | date:'j F Y' }}</p>
-        <p class="lead">Chaque {{ course.day_name|lower }} de {{ course.start_time|time:"H:i" }}
-          à {{ course.end_time|time:"H:i" }} ({{ course.duration|duration }})</p>
+        {% if course.is_course %}
+        <p class="lead">
+          {% blocktrans with day_name=course.day_name|lower start_time=course.start_time|time:"H:i" end_time=course.end_time|time:"H:i" duration=course.duration|duration %}Every {{ day_name }}, from {{ start_time }} to {{ end_time }} ({{ duration }}{% endblocktrans %}
+        </p>
+        {% endif %}
       </header>
       <dl class="dl-horizontal">
         <dt>{% trans "Instructors" %}</dt>
@@ -36,7 +39,7 @@
         </dd>
         <dt>{% trans "Place" %}</dt>
         <dd>{{ course.place }}</dd>
-        {% if DISPLAY_NUMBER_OF_SESSIONS %}
+        {% if DISPLAY_NUMBER_OF_SESSIONS and course.is_course %}
           <dt>{% trans "Number of sessions" %}</dt>
           <dd>{% blocktrans with number=course.number_of_sessions %}{{ number }} courses{% endblocktrans %}</dd>
         {% endif %}

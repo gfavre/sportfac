@@ -55,10 +55,11 @@
       <a href="{{ course.get_mail_instructors_url }}" class="btn btn-sm">
           <i class="icon-tasks"></i>&nbsp;{% trans "Send infos to instructors" %}
       </a> &nbsp;
-
+      {% if not course.is_camp %}
       <a href="{{ course.get_js_export_url }}" class="btn btn-sm">
           <i class="icon-doc"></i>&nbsp;{% trans "Get BDNS: J+S export file" %}
       </a> &nbsp;
+      {% endif %}
 
       <a href="{{ course.get_mail_confirmation_url }}" class="btn btn-sm">
           <i class="icon-mail"></i>&nbsp;{% trans "Send confirmation email" %}
