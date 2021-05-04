@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from datetime import datetime, date
 
-from django.core.urlresolvers import reverse
+from datetime import date, datetime
+
 from django.conf import settings
-from django.db import models, transaction, connection
+from django.core.urlresolvers import reverse
+from django.db import connection, models, transaction
 from django.template.defaultfilters import slugify
-from django.utils.translation import ugettext_lazy as _, get_language
 from django.utils.timezone import now
-
+from django.utils.translation import get_language, ugettext_lazy as _
 from model_utils import Choices
 from model_utils.models import StatusModel
 from phonenumber_field.modelfields import PhoneNumberField
@@ -31,11 +31,12 @@ class RegistrationManager(models.Manager):
 
 
 class Registration(TimeStampedModel, StatusModel):
-    STATUS = Choices(('waiting', _("Waiting parent's confirmation")),
-                     ('valid', _("Validated by parent")),
-                     ('canceled', _("Canceled by administrator")),
-                     ('confirmed', _("Confirmed by administrator")),
-                     )
+    STATUS = Choices(
+        ('waiting', _("Waiting parent's confirmation")),
+        ('valid', _("Validated by parent")),
+        ('canceled', _("Canceled by administrator")),
+        ('confirmed', _("Confirmed by administrator")),
+    )
 
     course = models.ForeignKey('activities.Course', related_name="participants", verbose_name=_("Course"),
                                on_delete=models.CASCADE)

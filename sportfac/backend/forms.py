@@ -1,20 +1,19 @@
 # -*- coding: utf-8 -*-
 import datetime
 
-from django.conf import settings
-from django.contrib.flatpages.models import FlatPage
-from django.db.models import Case, When, F, IntegerField, Q, Sum
-from django.forms import inlineformset_factory
-from django.forms.widgets import TextInput
-from django.utils.translation import ugettext as _
-from django.utils.text import mark_safe
-
+import floppyforms.__future__ as forms
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from crispy_forms.helper import FormHelper
-import floppyforms.__future__ as forms
+from django.conf import settings
+from django.contrib.flatpages.models import FlatPage
+from django.db.models import Case, IntegerField, Sum, When
+from django.forms import inlineformset_factory
+from django.forms.widgets import TextInput
+from django.utils.text import mark_safe
+from django.utils.translation import ugettext as _
 
 from activities.models import Course, ExtraNeed
-from registrations.models import Child, Registration, ExtraInfo
+from registrations.models import Child, ExtraInfo, Registration
 from .models import YearTenant
 
 
@@ -96,11 +95,12 @@ class CourseSelectMixin(object):
             )
         )
         if self.instance.pk:
-            #course_qs = course_qs.filter(
+            # course_qs = course_qs.filter(
             #    Q(pk=self.instance.course.pk) | Q(nb_participants__lt=F('max_participants'))
-            #)
-            course_qs = course_qs.filter(pk=self.instance.course.pk)
-        #else:
+            # )
+            #course_qs = course_qs.filter(pk=self.instance.course.pk)
+            course_qs = course_qs.all()
+        # else:
         #    course_qs = course_qs.filter(nb_participants__lt=F('max_participants'))
         try:
             if self.instance.child.school_year:
@@ -128,6 +128,7 @@ class RegistrationForm(CourseSelectMixin, forms.ModelForm):
     class Meta:
         model = Registration
         fields = ('child', 'course', 'status', 'transport')
+        widgets = {'course': Select2Widget()}
 
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
@@ -216,7 +217,6 @@ class CourseSelectForm(CourseSelectMixin, forms.ModelForm):
         model = Registration
         fields = ('course',)
         widgets = {'course': Select2Widget}
-
 
 
 class BillingForm(forms.ModelForm):
