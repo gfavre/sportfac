@@ -7,13 +7,16 @@ $(function () {
   let updateFields = function (){
     switch ($type.val()) {
       case 'course':
-        $('#times').show();
+        $('.course-visible').show();
+        $('.course-hidden').hide();
         break;
-      case  'multicourse':
-        $('#times').show();
+      case 'multicourse':
+        $('.multicourse-visible').show();
+        $('.multicourse-hidden').hide();
         break;
       case 'camp':
-        $('#times').hide();
+        $('.camp-visible').show();
+        $('.camp-hidden').hide();
         break;
     }
   }
@@ -45,11 +48,10 @@ $(function () {
 
   {% if EXPLICIT_SESSION_DATES %}
     {% formrow form.session_dates %}
-    <div id="times">{% formrow form.start_time form.end_time %}</div>
   {% else %}
     {% formrow form.number_of_sessions form.day form.start_date form.end_date %}
-    <div id="times">{% formrow form.start_time form.end_time %}</div>
   {% endif %}
+  <div class="camp-hidden course-show">{% formrow form.start_time form.end_time %}</div>
 
   {% formrow form.place using "floppyforms/rows/bootstrap-basic-row.html" %}
   {% formrow form.comments %}
@@ -57,7 +59,7 @@ $(function () {
   {% formrow form.min_participants form.max_participants form.schoolyear_min form.schoolyear_max %}
   {% formrow form.uptodate %}
   {% formrow form.visible %}
-  {% formrow form.announced_js %}
+<div class="camp-hidden course-show">{% formrow form.announced_js %}</div>
   {% if not NO_EXTRAS and extra_needs.exists %}
     {% formrow form.extra %}
   {% endif %}

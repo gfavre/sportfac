@@ -18,7 +18,7 @@ register = template.Library()
 def duration(value, arg=False):
     "takes a time delta and renders it as duration"
     if value in (None, ''):
-        return ''
+        return 'n/a'
     out = []
     try:
         if value.days > 1:

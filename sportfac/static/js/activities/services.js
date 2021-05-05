@@ -112,23 +112,35 @@ factory('Registration', function(){
   }])
   
 .factory('Course', function(){
-    var date = new Date();
-    var d = date.getDate();
-    var m = date.getMonth();
-    var y = date.getFullYear();
+    let date = new Date();
+    const d = date.getDate();
+    const m = date.getMonth();
+    const y = date.getFullYear();
 
-    var Course = function(data){
-      angular.extend(this,{
+    let Course = function(data){
+      angular.extend(this, {
         getStartDate: function(){
-          return new Date(y, m, d + (this.day - date.getDay()),
+          if (this.all_day) {
+            let startDate = new Date(this.start_date);
+            return new Date(y, m, d + startDate.getDay() - date.getDay());
+          } else {
+            return new Date(y, m, d + (this.day - date.getDay()),
                           this.start_time.split(':')[0],
-                          this.start_time.split(':')[1]);},
-      
+                          this.start_time.split(':')[1]);
+          }
+        },
         getEndDate: function(){
-          return new Date(y, m, d + (this.day - date.getDay()),
-                          this.end_time.split(':')[0],
-                          this.end_time.split(':')[1]);},
+          if (this.all_day) {
+              let endDate = new Date(this.end_date);
+              return new Date(y, m, d + endDate.getDay() - date.getDay());
+          } else {
+            return new Date(y, m, d + (this.day - date.getDay()),
+              this.end_time.split(':')[0],
+              this.end_time.split(':')[1]);
+          }
+        },
         toEvent: function(className){
+
           return {title: this.activity.name,
                   start: this.getStartDate(), end: this.getEndDate(),
                   allDay: false,

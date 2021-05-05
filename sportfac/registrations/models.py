@@ -88,13 +88,6 @@ class Registration(TimeStampedModel, StatusModel):
             return subtotal + modifier
         return 0
 
-    def __unicode__(self):
-        return _(u'%(child)s ⇒ course %(number)s (%(activity)s)') % {
-            'child': self.child.full_name,
-            'number': self.course.number,
-            'activity': self.course.activity.name
-        }
-
     def cancel(self):
         self.status = self.STATUS.canceled
         if settings.KEPCHUP_USE_ABSENCES:
@@ -124,8 +117,24 @@ class Registration(TimeStampedModel, StatusModel):
                 child=self.child, session=future_session,
             ).delete()
 
+    def get_delete_url(self):
+        return reverse('backend:registration-delete', kwargs={'pk': self.pk})
+
+    def get_update_url(self):
+        return reverse('backend:registration-update', kwargs={'pk': self.pk})
+
+    def is_valid(self):
+        return self.extra_needs.count() == 0
+
     def overlap(self, r2):
         """Test if another registration object overlaps with this one."""
+        if self.course.is_camp or r2.course.is_camp:
+            # overlap if other dates are between this.start_date and this.end_date
+            latest_start = max(self.course.start_date, r2.course.start_date)
+            earliest_end = min(self.course.end_date, r2.course.end_date)
+            delta = (earliest_end - latest_start).days + 1
+            return delta > 0
+
         # no overlap if course are not the same day
         if self.course.day != r2.course.day:
             return False
@@ -153,15 +162,6 @@ class Registration(TimeStampedModel, StatusModel):
             return True
         return False
 
-    def get_delete_url(self):
-        return reverse('backend:registration-delete', kwargs={'pk': self.pk})
-
-    def get_update_url(self):
-        return reverse('backend:registration-update', kwargs={'pk': self.pk})
-
-    def is_valid(self):
-        return self.extra_needs.count() == 0
-
     def save(self, *args, **kwargs):
         with transaction.atomic():
             if settings.KEPCHUP_ENABLE_ALLOCATION_ACCOUNTS and self.allocation_account is None:
@@ -174,18 +174,25 @@ class Registration(TimeStampedModel, StatusModel):
             else:
                 self.child.family.profile.save()
 
-    def set_waiting(self):
-        self.status = self.STATUS.waiting
+    def set_confirmed(self):
+        self.status = self.STATUS.confirmed
+        if settings.KEPCHUP_USE_ABSENCES:
+            self.create_future_absences()
 
     def set_valid(self):
         self.status = self.STATUS.valid
         if settings.KEPCHUP_USE_ABSENCES:
             self.create_future_absences()
 
-    def set_confirmed(self):
-        self.status = self.STATUS.confirmed
-        if settings.KEPCHUP_USE_ABSENCES:
-            self.create_future_absences()
+    def set_waiting(self):
+        self.status = self.STATUS.waiting
+
+    def __unicode__(self):
+        return _(u'%(child)s ⇒ course %(number)s (%(activity)s)') % {
+            'child': self.child.full_name,
+            'number': self.course.number,
+            'activity': self.course.activity.name
+        }
 
 
 class Transport(TimeStampedModel):

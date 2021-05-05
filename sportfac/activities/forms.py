@@ -41,10 +41,10 @@ class CourseForm(forms.ModelForm):
                                    input_formats=['%d.%m.%Y', '%Y-%m-%d'],
                                    widget=DatePickerInput(format='%d.%m.%Y'),
                                    help_text=_("format: dd.mm.yyyy, e.g. 31.07.2016"))
-    start_time = forms.TimeField(label=_("Start time"), required=True,
+    start_time = forms.TimeField(label=_("Start time"), required=False,
                                  widget=TimePickerInput(format='%H:%M'),
                                  help_text=_("format: hh:mm, e.g. 17:45"))
-    end_time = forms.TimeField(label=_("End time"), required=True,
+    end_time = forms.TimeField(label=_("End time"), required=False,
                                widget=TimePickerInput(format='%H:%M'),
                                help_text=_("format: hh:mm, e.g. 17:45"))
 
@@ -120,7 +120,7 @@ class ExplicitDatesCourseForm(CourseForm):
         self.fields.pop('end_date')
 
     def save(self, commit=True):
-        instance = super(ExplicitDatesCourseForm, self).save(commit=commit)
+        instance = super(CourseForm, self).save(commit=commit)
         dates = self.cleaned_data['session_dates']
         for session in instance.get_sessions():
             if session.date not in dates:

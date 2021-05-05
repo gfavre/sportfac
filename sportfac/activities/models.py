@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime, date, time
-from decimal import Decimal
 import uuid
+from datetime import date, datetime, time, timedelta
+from decimal import Decimal
 
-from django.contrib.postgres.fields import ArrayField
 from django.conf import settings
+from django.contrib.postgres.fields import ArrayField
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.aggregates import Count, Sum
 from django.template.defaultfilters import date as _date
-from django.utils.translation import ugettext_lazy as _, ugettext
+from django.utils.translation import ugettext_lazy as _
 
 from autoslug import AutoSlugField
 from ckeditor_uploader.fields import RichTextUploadingField
@@ -17,7 +17,6 @@ from model_utils import Choices
 
 from sportfac.models import TimeStampedModel
 from .utils import course_to_js_csv
-
 
 DAYS_OF_WEEK = (
     (1, _('Monday')),
@@ -68,52 +67,52 @@ class Activity(TimeStampedModel):
                                            verbose_name=_("Allocation account"))
     objects = ActivityManager()
 
-    def get_absolute_url(self):
-        return reverse('activities:activity-detail', kwargs={"slug": self.slug})
-
-    def get_update_url(self):
-        return reverse('backend:activity-update', kwargs={'activity': self.slug})
-
-    def get_delete_url(self):
-        return reverse('backend:activity-delete', kwargs={'activity': self.slug})
-
-    def get_backend_url(self):
-        return reverse('backend:activity-detail', kwargs={'activity': self.slug})
-
-    @property
-    def backend_url(self):
-        return self.get_backend_url()
-
-    @property
-    def update_url(self):
-        return self.get_update_url()
-
-    @property
-    def delete_url(self):
-        return self.get_delete_url()
+    class Meta:
+        ordering = ['name']
+        verbose_name = _("activity")
+        verbose_name_plural = _("activities")
 
     @property
     def backend_absences_url(self):
         return reverse('backend:activity-absences', kwargs={'activity': self.slug})
 
     @property
+    def backend_url(self):
+        return self.get_backend_url()
+
+    @property
+    def delete_url(self):
+        return self.get_delete_url()
+
+    @property
     def participants(self):
         from registrations.models import Registration
         return Registration.objects.filter(course__in=self.courses.all())
 
+    @property
+    def update_url(self):
+        return self.get_update_url()
+
+    def get_absolute_url(self):
+        return reverse('activities:activity-detail', kwargs={"slug": self.slug})
+
+    def get_backend_url(self):
+        return reverse('backend:activity-detail', kwargs={'activity': self.slug})
+
+    def get_delete_url(self):
+        return reverse('backend:activity-delete', kwargs={'activity': self.slug})
+
+    def get_update_url(self):
+        return reverse('backend:activity-update', kwargs={'activity': self.slug})
+
     def __unicode__(self):
         return self.name
-
-    class Meta:
-        ordering = ['name']
-        verbose_name = _("activity")
-        verbose_name_plural = _("activities")
 
 
 class AllocationAccount(TimeStampedModel):
     account = models.CharField(max_length=50, verbose_name=_("Account"),
                                help_text=_("e.g. 154.4652.00"),
-                               unique=True,)
+                               unique=True, )
     name = models.CharField(max_length=50, verbose_name=_("Name"), blank=True,
                             help_text=_("Some text to help humans filter account numbers"))
 
@@ -142,8 +141,8 @@ class AllocationAccount(TimeStampedModel):
             kwargs['created__gte'] = start
         if end:
             kwargs['created__lte'] = datetime.combine(end, time.max)
-        return (self.registrations.filter(**kwargs).prefetch_related('bill__datatrans_transactions'))\
-                                                   .select_related('course', 'course__activity', 'bill')
+        return (self.registrations.filter(**kwargs).prefetch_related('bill__datatrans_transactions')) \
+            .select_related('course', 'course__activity', 'bill')
 
     def get_total_transactions(self, period_start=None, period_end=None):
         return self.registrations.all().aggregate(Sum('price'))['price__sum']
@@ -205,24 +204,104 @@ class Course(TimeStampedModel):
     objects = CourseManager()
 
     class Meta:
-        ordering = ('activity__name', 'number', )
+        ordering = ('activity__name', 'number',)
         verbose_name = _("course")
         verbose_name_plural = _("courses")
+
+    @property
+    def available_places(self):
+        return self.max_participants - self.count_participants
+
+    @property
+    def backend_absences_url(self):
+        return self.get_backend_absences_url()
+
+    @property
+    def backend_url(self):
+        return self.get_backend_url()
+
+    @property
+    def count_participants(self):
+        try:
+            return self.nb_participants
+        except AttributeError:
+            return self.participants.count()
+
+    @property
+    def day_name(self):
+        return unicode(dict(DAYS_OF_WEEK).get(self.day, str(self.day)))
+
+    @property
+    def delete_url(self):
+        return self.get_delete_url()
+
+    @property
+    def duration(self):
+        if self.is_camp:
+            if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
+                if self.sessions.exists():
+                    return self.sessions.last().date + timedelta(days=1) - self.sessions.first().date
+                return None
+            else:
+                return self.end_date - self.start_date
+        return datetime.combine(date.today(), self.end_time or time(23, 59)) - datetime.combine(date.today(), self.start_time or time(0, 0))
+
+    @property
+    def full(self):
+        return self.count_participants >= self.max_participants
+
+    @property
+    def get_js_name(self):
+        return '%s - %s' % (self.number, self.activity.name)
+
+    @property
+    def has_issue(self):
+        return self.count_participants > self.max_participants
 
     @property
     def is_course(self):
         return self.course_type == self.TYPE.course
 
     @property
+    def is_camp(self):
+        return self.course_type == self.TYPE.camp
+
+    @property
     def is_multi_course(self):
         return self.course_type == self.TYPE.multicourse
 
     @property
-    def is_camp(self):
-        return self.course_type == self.TYPE.camp
+    def long_name(self):
+        if self.name:
+            return u'{} - {}'.format(self.short_name, self.name)
+        return self.short_name
 
-    def get_sessions(self):
-        return self.sessions.all()
+    @property
+    def minimal_participants_reached(self):
+        return self.count_participants >= self.min_participants
+
+    @property
+    def percentage_full(self):
+        try:
+            return int(100 * float(self.count_participants) / float(self.max_participants))
+        except ZeroDivisionError:
+            return 100
+
+    @property
+    def school_years(self):
+        return range(self.schoolyear_min, self.schoolyear_max + 1)
+
+    @property
+    def school_years_label(self):
+        return [dict(SCHOOL_YEARS)[year] for year in self.school_years]
+
+    @property
+    def short_name(self):
+        return '%s (%s)' % (self.activity.name, self.number)
+
+    @property
+    def update_url(self):
+        return self.get_update_url()
 
     def add_session(self, date, instructor=None):
         from absences.models import Session
@@ -239,61 +318,90 @@ class Course(TimeStampedModel):
         session.update_courses_dates()
         return session
 
-    @property
-    def day_name(self):
-        return unicode(dict(DAYS_OF_WEEK).get(self.day, str(self.day)))
+    def detailed_label(self):
+        base = unicode(self)
+        dates = _(u'from %(start)s to %(end)s, every %(day)s at %(hour)s.')
 
-    @property
-    def duration(self):
-        return datetime.combine(date.today(), self.end_time) - datetime.combine(date.today(), self.start_time)
+        return base + ', ' + dates % {
+            'start': self.start_date and self.start_date.strftime("%d/%m/%Y"),
+            'end': self.end_date and self.end_date.strftime("%d/%m/%Y"),
+            'day': self.day_name.lower(),
+            'hour': self.start_time.strftime("%H:%M"),
+        }
 
-    @property
-    def available_places(self):
-        return self.max_participants - self.count_participants
+    def get_absences_url(self):
+        return reverse('activities:course-absence', kwargs={'course': self.pk})
 
-    @property
-    def count_participants(self):
-        try:
-            return self.nb_participants
-        except AttributeError:
-            return self.participants.count()
+    def get_absolute_url(self):
+        return reverse('activities:course-detail', kwargs={"course": self.pk})
 
-    @property
-    def percentage_full(self):
-        try:
-            return int(100 * float(self.count_participants) / float(self.max_participants))
-        except ZeroDivisionError:
-            return 100
+    def get_backend_absences_url(self):
+        if settings.KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES:
+            return reverse('backend:activity-absences',
+                           kwargs={'activity': self.activity.slug}) + '?c={}'.format(self.pk)
+        return reverse('backend:course-absence', kwargs={'course': self.pk})
 
-    @property
-    def minimal_participants_reached(self):
-        return self.count_participants >= self.min_participants
+    def get_custom_mail_custom_users_instructors_url(self):
+        return reverse('activities:mail-custom-participants-custom', kwargs={'course': self.pk})
 
-    @property
-    def full(self):
-        return self.count_participants >= self.max_participants
+    def get_backend_url(self):
+        return reverse('backend:course-detail', kwargs={'course': self.pk})
 
-    @property
-    def has_issue(self):
-        return self.count_participants > self.max_participants
+    def get_custom_mail_url(self):
+        return reverse('backend:mail-participants-custom', kwargs={'course': self.pk})
 
-    @property
-    def school_years(self):
-        return range(self.schoolyear_min, self.schoolyear_max + 1)
+    def get_custom_mail_instructors_url(self):
+        return reverse('activities:mail-participants-custom', kwargs={'course': self.pk})
 
-    @property
-    def school_years_label(self):
-        return [dict(SCHOOL_YEARS)[year] for year in self.school_years]
+    def get_delete_url(self):
+        return reverse('backend:course-delete', kwargs={'course': self.pk})
 
-    @property
-    def short_name(self):
-        return '%s (%s)' % (self.activity.name, self.number)
+    def get_js_export_url(self):
+        return reverse('backend:course-js-export', kwargs={'course': self.pk})
 
-    @property
-    def long_name(self):
-        if self.name:
-            return u'{} - {}'.format(self.short_name, self.name)
-        return self.short_name
+    def get_js_csv(self, filelike):
+        course_to_js_csv(self, filelike)
+
+    def get_mail_instructors_url(self):
+        return reverse('backend:course-mail-instructors', kwargs={'course': self.pk})
+
+    def get_mail_infos_url(self):
+        return reverse('activities:mail-instructors', kwargs={'course': self.pk})
+
+    def get_mail_confirmation_url(self):
+        return reverse('backend:course-mail-confirmation', kwargs={'course': self.pk})
+
+    def get_period_text(self):
+        if self.start_date.year == self.end_date.year:
+            if self.start_date.month == self.end_date.month:
+                return _date(self.start_date, 'F Y')
+            else:
+                return _date(self.start_date, 'F') + ' - ' + _date(self.end_date, 'F Y')
+        else:
+            return _date(self.start_date, 'F Y') + ' - ' + _date(self.end_date, 'F Y')
+
+    def get_sessions(self):
+        return self.sessions.all()
+
+    def get_update_url(self):
+        return reverse('backend:course-update', kwargs={'course': self.pk})
+
+    def get_xls_export_url(self):
+        return reverse('backend:course-xls-export', kwargs={'course': self.pk})
+
+    def update_dates_from_sessions(self, commit=True):
+        dates = self.sessions.values_list('date', flat=True)
+        if len(dates):
+            self.start_date = min(dates)
+            self.end_date = max(dates)
+            self.day = self.start_date.isoweekday()
+            self.number_of_sessions = len(dates)
+        else:
+            self.start_date = None
+            self.end_date = None
+            self.number_of_sessions = 0
+        if commit:
+            self.save()
 
     def __unicode__(self):
         base = u'%(invisible)s%(activity)s (%(number)s): %(fullness)s'
@@ -310,108 +418,6 @@ class Course(TimeStampedModel):
             'number': self.number,
             'fullness': fullness
         }
-
-    def detailed_label(self):
-        base = unicode(self)
-        dates = _(u'from %(start)s to %(end)s, every %(day)s at %(hour)s.')
-
-        return base + ', ' + dates % {
-            'start': self.start_date and self.start_date.strftime("%d/%m/%Y"),
-            'end': self.end_date and self.end_date.strftime("%d/%m/%Y"),
-            'day': self.day_name.lower(),
-            'hour': self.start_time.strftime("%H:%M"),
-        }
-
-    def get_update_url(self):
-        return reverse('backend:course-update', kwargs={'course': self.pk})
-
-    def get_delete_url(self):
-        return reverse('backend:course-delete', kwargs={'course': self.pk})
-
-    def get_backend_url(self):
-        return reverse('backend:course-detail', kwargs={'course': self.pk})
-
-    def get_custom_mail_url(self):
-        return reverse('backend:mail-participants-custom', kwargs={'course': self.pk})
-
-    def get_custom_mail_instructors_url(self):
-        return reverse('activities:mail-participants-custom', kwargs={'course': self.pk})
-
-    def get_custom_mail_custom_users_instructors_url(self):
-        return reverse('activities:mail-custom-participants-custom', kwargs={'course': self.pk})
-
-    def get_mail_instructors_url(self):
-        return reverse('backend:course-mail-instructors', kwargs={'course': self.pk})
-
-    def get_mail_infos_url(self):
-        return reverse('activities:mail-instructors', kwargs={'course': self.pk})
-
-    def get_mail_confirmation_url(self):
-        return reverse('backend:course-mail-confirmation', kwargs={'course': self.pk})
-
-    def get_absences_url(self):
-        return reverse('activities:course-absence', kwargs={'course': self.pk})
-
-    def get_backend_absences_url(self):
-        if settings.KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES:
-            return reverse('backend:activity-absences',
-                           kwargs={'activity': self.activity.slug}) + '?c={}'.format(self.pk)
-        return reverse('backend:course-absence', kwargs={'course': self.pk})
-
-    def get_js_export_url(self):
-        return reverse('backend:course-js-export', kwargs={'course': self.pk})
-
-    def get_xls_export_url(self):
-        return reverse('backend:course-xls-export', kwargs={'course': self.pk})
-
-    def get_js_csv(self, filelike):
-        course_to_js_csv(self, filelike)
-
-    @property
-    def get_js_name(self):
-        return '%s - %s' % (self.number, self.activity.name)
-
-    def get_absolute_url(self):
-        return reverse('activities:course-detail', kwargs={"course": self.pk})
-
-    @property
-    def backend_url(self):
-        return self.get_backend_url()
-
-    @property
-    def update_url(self):
-        return self.get_update_url()
-
-    @property
-    def delete_url(self):
-        return self.get_delete_url()
-
-    @property
-    def backend_absences_url(self):
-        return self.get_backend_absences_url()
-
-    def get_period_text(self):
-        if self.start_date.year == self.end_date.year:
-            if self.start_date.month == self.end_date.month:
-                return _date(self.start_date, 'F Y')
-            else:
-                return _date(self.start_date, 'F') + ' - ' + _date(self.end_date, 'F Y')
-        else:
-            return _date(self.start_date, 'F Y') + ' - ' + _date(self.end_date, 'F Y')
-
-    def update_dates_from_sessions(self, commit=True):
-        dates = self.sessions.values_list('date', flat=True)
-        if len(dates):
-            self.start_date = min(dates)
-            self.end_date = max(dates)
-            self.day = self.start_date.isoweekday()
-            self.number_of_sessions = len(dates)
-        else:
-            self.start_date = None
-            self.end_date = None
-            self.number_of_sessions = 0
-        if commit:
-            self.save()
 
 
 class CoursesInstructors(models.Model):
@@ -439,24 +445,17 @@ class ExtraNeed(TimeStampedModel):
                             choices=EXTRA_TYPES,
                             default='C',
                             max_length=2)
-    choices = ArrayField(verbose_name=_("Limit to values (internal name, display name),(internal name 2, display name 2)"),
-                         base_field=models.CharField(max_length=255),
-                         blank=True,
-                         null=True)
+    choices = ArrayField(
+        verbose_name=_("Limit to values (internal name, display name),(internal name 2, display name 2)"),
+        base_field=models.CharField(max_length=255),
+        blank=True,
+        null=True)
     price_modifier = ArrayField(verbose_name=_("Modify price by xx francs if this value is selected"),
                                 help_text=_("List of positive/negative values"),
                                 base_field=models.IntegerField(),
                                 blank=True,
                                 null=True)
     default = models.CharField(verbose_name=_("Default value"), default="", blank=True, max_length=255)
-
-    def __unicode__(self):
-        if self.choices:
-            out = '%s (%s)' % (self.question_label, ', '.join(self.choices))
-            if self.price_modifier:
-                out += ' - (' + ', '.join([str(price) for price in self.price_modifier]) + ')'
-            return out
-        return self.question_label
 
     class Meta:
         verbose_name = _("extra question")
@@ -467,6 +466,14 @@ class ExtraNeed(TimeStampedModel):
         if not self.price_modifier:
             return {}
         return dict(zip(self.choices, self.price_modifier))
+
+    def __unicode__(self):
+        if self.choices:
+            out = '%s (%s)' % (self.question_label, ', '.join(self.choices))
+            if self.price_modifier:
+                out += ' - (' + ', '.join([str(price) for price in self.price_modifier]) + ')'
+            return out
+        return self.question_label
 
 
 RATE_MODES = Choices(
