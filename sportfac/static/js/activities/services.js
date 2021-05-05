@@ -112,16 +112,16 @@ factory('Registration', function(){
   }])
   
 .factory('Course', function(){
-    let date = new Date();
-    const d = date.getDate();
-    const m = date.getMonth();
-    const y = date.getFullYear();
+    var date = new Date();
+    var d = date.getDate();
+    var m = date.getMonth();
+    var y = date.getFullYear();
 
-    let Course = function(data){
+    var Course = function(data){
       angular.extend(this, {
         getStartDate: function(){
           if (this.all_day) {
-            let startDate = new Date(this.start_date);
+            var startDate = new Date(this.start_date);
             return new Date(y, m, d + startDate.getDay() - date.getDay());
           } else {
             return new Date(y, m, d + (this.day - date.getDay()),
@@ -131,7 +131,7 @@ factory('Registration', function(){
         },
         getEndDate: function(){
           if (this.all_day) {
-              let endDate = new Date(this.end_date);
+              var endDate = new Date(this.end_date);
               return new Date(y, m, d + endDate.getDay() - date.getDay());
           } else {
             return new Date(y, m, d + (this.day - date.getDay()),
