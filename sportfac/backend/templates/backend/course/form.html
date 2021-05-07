@@ -51,8 +51,19 @@ $(function () {
   {% else %}
     {% formrow form.number_of_sessions form.day form.start_date form.end_date %}
   {% endif %}
-  <div class="camp-hidden course-show">{% formrow form.start_time form.end_time %}</div>
-
+  <div class="course-visible camp-hidden multicourse-hidden">{% formrow form.start_time form.end_time %}</div>
+  <div class="multicourse-visible camp-hidden course-hidden">
+    <fieldset>
+      <legend>{% trans "Daily start and end times" %}</legend>
+      {% formrow form.start_time_mon form.end_time_mon %}
+      {% formrow form.start_time_tue form.end_time_tue %}
+      {% formrow form.start_time_wed form.end_time_wed %}
+      {% formrow form.start_time_thu form.end_time_thu %}
+      {% formrow form.start_time_fri form.end_time_fri %}
+      {% formrow form.start_time_sat form.end_time_sat %}
+      {% formrow form.start_time_sun form.end_time_sun %}
+    </fieldset>
+  </div>
   {% formrow form.place using "floppyforms/rows/bootstrap-basic-row.html" %}
   {% formrow form.comments %}
 

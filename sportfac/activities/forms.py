@@ -104,9 +104,23 @@ class ExplicitDatesCourseForm(CourseForm):
     class Meta:
         model = Course
         fields = ('course_type', 'activity', 'name', 'number', 'instructors', 'price', 'price_description',
-                  'start_time', 'end_time', 'place', 'comments', 'min_participants',
+                  'start_time', 'end_time',
+                  'start_time_mon', 'end_time_mon', 'start_time_tue', 'end_time_tue',
+                  'start_time_wed', 'end_time_wed', 'start_time_thu', 'end_time_thu',
+                  'start_time_fri', 'end_time_fri', 'start_time_sat', 'end_time_sat',
+                  'start_time_sun', 'end_time_sun',
+                  'place', 'comments', 'min_participants',
                   'max_participants', 'schoolyear_min', 'schoolyear_max',
                   'uptodate', 'announced_js', 'visible', 'extra',)
+        widgets = {
+            'start_time_mon': TimePickerInput(format='%H:%M'), 'end_time_mon': TimePickerInput(format='%H:%M'),
+            'start_time_tue': TimePickerInput(format='%H:%M'), 'end_time_tue': TimePickerInput(format='%H:%M'),
+            'start_time_wed': TimePickerInput(format='%H:%M'), 'end_time_wed': TimePickerInput(format='%H:%M'),
+            'start_time_thu': TimePickerInput(format='%H:%M'), 'end_time_thu': TimePickerInput(format='%H:%M'),
+            'start_time_fri': TimePickerInput(format='%H:%M'), 'end_time_fri': TimePickerInput(format='%H:%M'),
+            'start_time_sat': TimePickerInput(format='%H:%M'), 'end_time_sat': TimePickerInput(format='%H:%M'),
+            'start_time_sun': TimePickerInput(format='%H:%M'), 'end_time_sun': TimePickerInput(format='%H:%M'),
+        }
 
     def __init__(self, *args, **kwargs):
         if 'instance' in kwargs and kwargs['instance']:
@@ -119,6 +133,26 @@ class ExplicitDatesCourseForm(CourseForm):
         self.fields.pop('start_date')
         self.fields.pop('end_date')
 
+    def clean_session_dates(self):
+        dates = self.cleaned_data['session_dates']
+        for session_date in dates:
+            day = session_date.isoweekday()
+            if day == 1 and not (self.cleaned_data.get('start_time_mon') and self.cleaned_data.get('end_time_mon')):
+                raise ValidationError(_("%s is invalid as start and end times are not set for mondays") % session_date)
+            if day == 2 and not (self.cleaned_data.get('start_time_tue') and self.cleaned_data.get('end_time_tue')):
+                raise ValidationError(_("%s is invalid as start and end times are not set for tuesdays") % session_date)
+            if day == 3 and not (self.cleaned_data.get('start_time_wed') and self.cleaned_data.get('end_time_wed')):
+                raise ValidationError(_("%s is invalid as start and end times are not set for wednesdays") % session_date)
+            if day == 4 and not (self.cleaned_data.get('start_time_thu') and self.cleaned_data.get('end_time_thu')):
+                raise ValidationError(_("%s is invalid as start and end times are not set for thursdays") % session_date)
+            if day == 5 and not (self.cleaned_data.get('start_time_fri') and self.cleaned_data.get('end_time_fri')):
+                raise ValidationError(_("%s is invalid as start and end times are not set for fridays") % session_date)
+            if day == 6 and not (self.cleaned_data.get('start_time_sat') and self.cleaned_data.get('end_time_sat')):
+                raise ValidationError(_("%s is invalid as start and end times are not set for saturdays") % session_date)
+            if day == 7 and not (self.cleaned_data.get('start_time_sun') and self.cleaned_data.get('end_time_sun')):
+                raise ValidationError(_("%s is invalid as start and end times are not set for sundays") % session_date)
+        return dates
+    
     def save(self, commit=True):
         instance = super(CourseForm, self).save(commit=commit)
         dates = self.cleaned_data['session_dates']
