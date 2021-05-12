@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-12 17:46+0200\n"
+"POT-Creation-Date: 2021-05-12 18:03+0200\n"
 "PO-Revision-Date: 2021-05-12 17:48+0200\n"
 "Last-Translator: Gregory Favre <greg@beyondthewall.ch>\n"
 "Language-Team: \n"
@@ -822,6 +822,8 @@ msgstr "Chaque %(day_name)s, de %(start_time)s à %(end_time)s (%(duration)s)"
 #: sportfac/activities/templates/activities/course_detail.html:26
 #: sportfac/backend/templates/backend/course/detail-phase2.html:23
 #: sportfac/backend/templates/backend/course/detail.html:25
+#: sportfac/backend/templates/backend/registration/bill-detail.html:50
+#: sportfac/templates/registrations/bill-detail.html:50
 #, python-format
 msgid "Mondays, from %(start_time)s to %(end_time)s"
 msgstr "Les lundis, de %(start_time)s à %(end_time)s"
@@ -830,6 +832,8 @@ msgstr "Les lundis, de %(start_time)s à %(end_time)s"
 #: sportfac/activities/templates/activities/course_detail.html:29
 #: sportfac/backend/templates/backend/course/detail-phase2.html:26
 #: sportfac/backend/templates/backend/course/detail.html:28
+#: sportfac/backend/templates/backend/registration/bill-detail.html:53
+#: sportfac/templates/registrations/bill-detail.html:53
 #, python-format
 msgid "Tuesdays, from %(start_time)s to %(end_time)s"
 msgstr "Les mardis, de %(start_time)s à %(end_time)s"
@@ -838,6 +842,8 @@ msgstr "Les mardis, de %(start_time)s à %(end_time)s"
 #: sportfac/activities/templates/activities/course_detail.html:32
 #: sportfac/backend/templates/backend/course/detail-phase2.html:29
 #: sportfac/backend/templates/backend/course/detail.html:31
+#: sportfac/backend/templates/backend/registration/bill-detail.html:56
+#: sportfac/templates/registrations/bill-detail.html:56
 #, python-format
 msgid "Wednesdays, from %(start_time)s to %(end_time)s"
 msgstr "Les mercredis, de %(start_time)s à %(end_time)s"
@@ -846,6 +852,8 @@ msgstr "Les mercredis, de %(start_time)s à %(end_time)s"
 #: sportfac/activities/templates/activities/course_detail.html:35
 #: sportfac/backend/templates/backend/course/detail-phase2.html:32
 #: sportfac/backend/templates/backend/course/detail.html:34
+#: sportfac/backend/templates/backend/registration/bill-detail.html:59
+#: sportfac/templates/registrations/bill-detail.html:59
 #, python-format
 msgid "Thursdays, from %(start_time)s to %(end_time)s"
 msgstr "Les jeudis, de %(start_time)s à %(end_time)s"
@@ -854,6 +862,8 @@ msgstr "Les jeudis, de %(start_time)s à %(end_time)s"
 #: sportfac/activities/templates/activities/course_detail.html:38
 #: sportfac/backend/templates/backend/course/detail-phase2.html:35
 #: sportfac/backend/templates/backend/course/detail.html:37
+#: sportfac/backend/templates/backend/registration/bill-detail.html:62
+#: sportfac/templates/registrations/bill-detail.html:62
 #, python-format
 msgid "Fridays, from %(start_time)s to %(end_time)s"
 msgstr "Les vendredis, de %(start_time)s à %(end_time)s"
@@ -862,6 +872,8 @@ msgstr "Les vendredis, de %(start_time)s à %(end_time)s"
 #: sportfac/activities/templates/activities/course_detail.html:41
 #: sportfac/backend/templates/backend/course/detail-phase2.html:38
 #: sportfac/backend/templates/backend/course/detail.html:40
+#: sportfac/backend/templates/backend/registration/bill-detail.html:65
+#: sportfac/templates/registrations/bill-detail.html:65
 #, python-format
 msgid "Saturdays, from %(start_time)s to %(end_time)s"
 msgstr "Les samedis, de %(start_time)s à %(end_time)s"
@@ -870,6 +882,8 @@ msgstr "Les samedis, de %(start_time)s à %(end_time)s"
 #: sportfac/activities/templates/activities/course_detail.html:44
 #: sportfac/backend/templates/backend/course/detail-phase2.html:41
 #: sportfac/backend/templates/backend/course/detail.html:43
+#: sportfac/backend/templates/backend/registration/bill-detail.html:68
+#: sportfac/templates/registrations/bill-detail.html:68
 #, python-format
 msgid "Sundays, from %(start_time)s to %(end_time)s"
 msgstr "Les dimanches, de %(start_time)s à %(end_time)s"
@@ -1186,7 +1200,7 @@ msgstr "Actions"
 #: sportfac/activities/templates/activities/course_detail.html:279
 #: sportfac/backend/templates/backend/course/detail-phase2.html:331
 #: sportfac/backend/templates/backend/course/detail.html:320
-#: sportfac/backend/templates/backend/registration/bill-detail.html:52
+#: sportfac/backend/templates/backend/registration/bill-detail.html:76
 #: sportfac/backend/templates/backend/registration/confirm_delete.html:4
 #: sportfac/backend/templates/backend/registration/confirm_delete.html:5
 #: sportfac/backend/templates/backend/registration/detail.html:76
@@ -2287,7 +2301,7 @@ msgstr "Email des parents"
 
 #: sportfac/backend/templates/backend/course/detail-phase2.html:328
 #: sportfac/backend/templates/backend/course/detail.html:319
-#: sportfac/backend/templates/backend/registration/bill-detail.html:51
+#: sportfac/backend/templates/backend/registration/bill-detail.html:75
 #: sportfac/backend/templates/backend/registration/list.html:113
 #: sportfac/backend/templates/backend/registration/update.html:4
 #: sportfac/backend/templates/backend/registration/update.html:5
@@ -2992,7 +3006,7 @@ msgid "Info"
 msgstr "Info"
 
 #: sportfac/backend/templates/backend/registration/transport-detail.html:233
-#: sportfac/templates/registrations/bill-detail.html:70
+#: sportfac/templates/registrations/bill-detail.html:92
 #: sportfac/templates/registrations/billing.html:40
 #: sportfac/templates/registrations/summary.html:72
 #: sportfac/templates/registrations/wizard_billing.html:65
