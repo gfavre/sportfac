@@ -18518,8 +18518,8 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.active {
   padding-left: 1px !important;
 }
 
-.fc-event.available:hover, .fc-event.selected {
-  background-color: #0000cc;
+.fc-event.available:hover, .fc-event.available.selected {
+  background-color: #000099;
 }
 
 .fc-event.registered:hover, .fc-event.registered.selected {
