@@ -63,13 +63,25 @@
 
             {% if EXPLICIT_SESSION_DATES %}
               <dt>{% trans "Dates" %}</dt>
+              {% if course.is_multicourse %}
               <dd>
+                {% if course.
                 <ul class="list-unstyled">
                   {% for session in course.get_sessions %}
                     <li>{{ session.date|date:"j F Y" }}</li>
                   {% endfor %}
                 </ul>
               </dd>
+            {% elif course.is_camp %}
+            {% else %}
+            <dd>
+                <ul class="list-unstyled">
+                  {% for session in course.get_sessions %}
+                    <li>{{ session.date|date:"j F Y" }}</li>
+                  {% endfor %}
+                </ul>
+              </dd>
+            {% endif %}
             {% endif %}
             {% if not NO_PAYMENT %}
               {% if course.price %}

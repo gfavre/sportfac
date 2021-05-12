@@ -245,7 +245,30 @@ class Course(TimeStampedModel):
 
     @property
     def day_name(self):
+        days = dict(DAYS_OF_WEEK)
+        if self.is_camp:
+            return unicode(days[self.start_date.isoweekday()]) + u' - ' + unicode(days[self.end_date.isoweekday()])
         return unicode(dict(DAYS_OF_WEEK).get(self.day, str(self.day)))
+
+    @property
+    def days_names(self):
+        days = dict(DAYS_OF_WEEK)
+        out = []
+        if self.start_time_mon:
+            out.append(unicode(days[1]))
+        if self.start_time_tue:
+            out.append(unicode(days[2]))
+        if self.start_time_wed:
+            out.append(unicode(days[3]))
+        if self.start_time_thu:
+            out.append(unicode(days[4]))
+        if self.start_time_fri:
+            out.append(unicode(days[5]))
+        if self.start_time_sat:
+            out.append(unicode(days[6]))
+        if self.start_time_sun:
+            out.append(unicode(days[7]))
+        return out
 
     @property
     def delete_url(self):
@@ -273,6 +296,25 @@ class Course(TimeStampedModel):
     @property
     def has_issue(self):
         return self.count_participants > self.max_participants
+
+    @property
+    def start_hours(self):
+        out = []
+        if self.start_time_mon:
+            out.append(self.start_time_mon)
+        if self.start_time_tue:
+            out.append(self.start_time_tue)
+        if self.start_time_wed:
+            out.append(self.start_time_wed)
+        if self.start_time_thu:
+            out.append(self.start_time_thu)
+        if self.start_time_fri:
+            out.append(self.start_time_fri)
+        if self.start_time_sat:
+            out.append(self.start_time_sat)
+        if self.start_time_sun:
+            out.append(self.start_time_sun)
+        return out
 
     @property
     def is_course(self):
