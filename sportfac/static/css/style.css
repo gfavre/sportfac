@@ -1,4 +1,5 @@
 @charset "UTF-8";
+/* Calendar */
 /* ========================================================================
  * bootstrap-switch - v3.3.2
  * http://www.bootstrap-switch.org
@@ -18517,6 +18518,14 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.active {
   padding-left: 1px !important;
 }
 
+.fc-event.available:hover, .fc-event.selected {
+  background-color: #0000cc;
+}
+
+.fc-event.registered:hover, .fc-event.registered.selected {
+  background-color: #004d00;
+}
+
 .pager li > button {
   display: inline-block;
   padding: 5px 14px;
@@ -19179,7 +19188,6 @@ select.ng-invalid:focus {
   opacity: 1;
 }
 
-/* Calendar */
 .fc-event-child {
   position: absolute;
   /*right: -1.2em;

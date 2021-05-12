@@ -1,0 +1,7 @@
+.fc-event.available:hover, .fc-event.selected {
+  background-color: darken($available, 10%);
+}
+
+.fc-event.registered:hover, .fc-event.registered.selected {
+  background-color: darken($registered, 10%);
+}
