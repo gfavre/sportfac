@@ -130,8 +130,8 @@ function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, Regi
 /*******************************************************************************
                     Timeline
 *******************************************************************************/
-.controller('ActivityTimelineCtrl', ["$scope","$filter", "$modal", "CoursesService",
-function($scope, $filter, $modal, CoursesService){
+.controller('ActivityTimelineCtrl', ["$scope","$filter", "$modal", "CoursesService", 'uiCalendarConfig',
+function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
   'use strict';
   var today = new Date();
   var year = today.getFullYear();
@@ -184,14 +184,19 @@ function($scope, $filter, $modal, CoursesService){
     if (!$scope.registrations){ return; }
     $scope.registeredEvents.length = 0;
     var addToRegistered = function(course){
-      var event = course.toEvent('registered');
-      event.registeredChild = $scope.selectedChild;
-      $scope.registeredEvents.push(event);
+      var events = course.toEvents('registered');
+      angular.forEach(events, function (event) {
+        event.registeredChild = $scope.selectedChild;
+        $scope.registeredEvents.push(event);
+      });
+      //$scope.registeredEvents.push.apply($scope.registeredEvents, event);
     };
     var addToValidated = function(course){
-      var event = course.toEvent('validated');
-      event.registeredChild = $scope.selectedChild;
-      $scope.registeredEvents.push(event);
+      var events = course.toEvents('validated');
+      angular.forEach(events, function (event) {
+        event.registeredChild = $scope.selectedChild;
+        $scope.registeredEvents.push(event);
+      });
     };
     angular.forEach($scope.getRegistrations($scope.selectedChild), function(registration){
       if (registration.status === 'valid'){
@@ -211,25 +216,26 @@ function($scope, $filter, $modal, CoursesService){
 
     $scope.othersRegisteredEvents.length = 0;
     angular.forEach($scope.userChildren, function(child){
-      if (child !== $scope.selectedChild) {
+      if (child !== $scope.selectedChild){
         angular.forEach($scope.getRegistrations(child), function(registration){
           CoursesService.get($scope.urls.course, registration.course).then(function(course){
-            var event = course.toEvent("unavailable");
-            event.registeredChild = child;
-            $scope.othersRegisteredEvents.push(event);
+            var events = course.toEvents("unavailable");
+            angular.forEach(events, function(event){
+              event.registeredChild = child;
+            })
+            $scope.othersRegisteredEvents.push.apply($scope.othersRegisteredEvents, events);
           });
         });
       }
      });
-
   };
 
   $scope.updateAvailableEvents = function(){
     var addAvailableCourse = function(course){
-      $scope.availableEvents.push(course.toEvent("available"));
+      $scope.availableEvents.push.apply($scope.availableEvents, course.toEvents("available"));
     };
     var addUnavailableCourse = function(course){
-      $scope.availableEvents.push(course.toEvent("unavailable"));
+      $scope.availableEvents.push.apply($scope.availableEvents, course.toEvents("unavailable"));
     };
     var registeredCourses = $scope.getRegistrations($scope.selectedChild);
     if (registeredCourses){
@@ -250,7 +256,6 @@ function($scope, $filter, $modal, CoursesService){
       var available = course.schoolyear_min <= $scope.selectedChild.school_year &&
                       course.schoolyear_max >= $scope.selectedChild.school_year;
       var registered = registeredCourses.indexOf(course.id) !== -1;
-
       var overlapping = $scope.registeredEvents.map(
         function(evt){
           return $scope.overlap(evt.course, course);
@@ -269,13 +274,34 @@ function($scope, $filter, $modal, CoursesService){
     });
   };
 
-  $scope.eventClick = function(event){
+  $scope.eventClick = function(event, element, evt, view){
       $scope.$apply(function(){
         if (!event.clickable){ return; }
         $scope.selectedEvent = event;
         $scope.selectedCourse = event.course;
         modalwindow.show();
       });
+  };
+
+  $scope.eventMouseEnter = function(event, evt, element, view){
+    if (event.course.course_type != 'multicourse') return;
+    evt.preventDefault();
+    var $event = $(this);
+    if (!$event.hasClass('selected')){
+      var groupId = event.groupId;
+      $('[groupId=' + groupId + ']', $($scope.weekagenda)).addClass('selected')
+    }
+
+  };
+
+  $scope.eventMouseLeave = function(event, element, evt){
+    if (event.course.course_type != 'multicourse') return;
+    var $event = $(this);
+
+    if ($event.hasClass('selected')){
+      var groupId = event.groupId;
+      $('[groupId=' + groupId + ']', $($scope.weekagenda)).removeClass('selected')
+    }
   };
 
   $scope.register = function(event){
@@ -319,12 +345,17 @@ function($scope, $filter, $modal, CoursesService){
       dayNames: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
       dayNamesShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
       timeFormat: {agenda: 'd'}, lazyFetching: true,
-      eventClick: $scope.eventClick, slotEventOverlap: false,
+      eventClick: $scope.eventClick,
+      eventMouseover: $scope.eventMouseEnter,
+      eventMouseout: $scope.eventMouseLeave,
+      slotEventOverlap: false,
       eventAfterRender: function(event, element) {
         var dateText = '';
         if ($scope.displaydates) {
           dateText = $filter('date')(event.course.start_date, 'shortDate') + ' - ' + $filter('date')(event.course.end_date, 'shortDate');
         }
+        $(element).attr('id', event.id);
+        $(element).attr('groupId', event.groupId);
         $('.fc-event-time', element).text(dateText);
         if ($scope.displaycoursenames && event.course.name !== null) {
           /* commented out: perhaps an overkill.

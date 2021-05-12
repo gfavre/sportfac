@@ -45,6 +45,15 @@ hiddendays="{{ CALENDAR_HIDDEN_DAYS }}"
     </li>
   </ul>
   <div class="tab-content">
+    <style>
+      .fc-event.available:hover, .fc-event.selected {
+        background-color: #000099;
+      }
+      .fc-event.registered:hover, .fc-event.registered.selected {
+        background-color: #006600;
+      }
+
+    </style>
     <div class="tab-pane active" canregistersameactivity="{{ ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE|yesno:'true,false' }}"
  ng-view></div>
   </div>
@@ -53,8 +62,7 @@ hiddendays="{{ CALENDAR_HIDDEN_DAYS }}"
 
 {% addtoblock "js" %}
 {% if debug %}
-  <script src="{{ STATIC_URL }}js/vendor/fullcalendar.min.js"></script>
-
+ <script src="{{ STATIC_URL }}js/vendor/fullcalendar.min.js"></script>
   <script src="{{ STATIC_URL }}js/vendor/angular.min.js"></script>
   <script src="{{ STATIC_URL }}js/vendor/angular-locale_fr-ch.js"></script>
   <script src="{{ STATIC_URL }}js/vendor/angular-route.min.js"></script>

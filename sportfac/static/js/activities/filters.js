@@ -6,7 +6,6 @@ angular.module('sportfacCalendar.filters', []).
   }]).
   filter('newlines', function() {
     return function(text) {
-      console.log('here');
       if (text)
         return text.replace(/\n/g, '<br/>');
       return '';

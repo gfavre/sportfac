@@ -152,7 +152,7 @@ class ExplicitDatesCourseForm(CourseForm):
             if day == 7 and not (self.cleaned_data.get('start_time_sun') and self.cleaned_data.get('end_time_sun')):
                 raise ValidationError(_("%s is invalid as start and end times are not set for sundays") % session_date)
         return dates
-    
+
     def save(self, commit=True):
         instance = super(CourseForm, self).save(commit=commit)
         dates = self.cleaned_data['session_dates']

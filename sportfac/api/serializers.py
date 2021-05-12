@@ -32,20 +32,52 @@ class InstructorSerializer(serializers.ModelSerializer):
         read_only_fields = ('email', 'initials')
 
 
+class MultiCourseInlineSerializer(serializers.ModelSerializer):
+    start_time_mon = serializers.TimeField(format='%H:%M')
+    end_time_mon = serializers.TimeField(format='%H:%M')
+    start_time_tue = serializers.TimeField(format='%H:%M')
+    end_time_tue = serializers.TimeField(format='%H:%M')
+    start_time_wed = serializers.TimeField(format='%H:%M')
+    end_time_wed = serializers.TimeField(format='%H:%M')
+    start_time_thu = serializers.TimeField(format='%H:%M')
+    end_time_thu = serializers.TimeField(format='%H:%M')
+    start_time_fri = serializers.TimeField(format='%H:%M')
+    end_time_fri = serializers.TimeField(format='%H:%M')
+    start_time_sat = serializers.TimeField(format='%H:%M')
+    end_time_sat = serializers.TimeField(format='%H:%M')
+    start_time_sun = serializers.TimeField(format='%H:%M')
+    end_time_sun = serializers.TimeField(format='%H:%M')
+
+    class Meta:
+        model = Course
+        fields = (
+            'start_time_mon', 'end_time_mon', 'start_time_tue', 'end_time_tue', 'start_time_wed', 'end_time_wed',
+            'start_time_thu', 'end_time_thu', 'start_time_fri', 'end_time_fri', 'start_time_sat', 'end_time_sat',
+            'start_time_sun', 'end_time_sun',
+        )
+
+
 class CourseInlineSerializer(serializers.ModelSerializer):
     instructors = InstructorSerializer(read_only=True, many=True)
     all_day = serializers.SerializerMethodField()
     start_time = serializers.TimeField(format='%H:%M')
     end_time = serializers.TimeField(format='%H:%M')
+    multi_course = serializers.SerializerMethodField()
 
     class Meta:
         model = Course
-        fields = ('id', 'number', 'day', 'start_date', 'end_date', 'all_day', 'start_time', 'end_time',
-                  'schoolyear_min', 'schoolyear_max', 'instructors')
+        fields = ('id', 'course_type', 'number', 'day', 'start_date', 'end_date', 'all_day', 'start_time', 'end_time',
+                  'schoolyear_min', 'schoolyear_max', 'instructors', 'multi_course')
 
     @staticmethod
     def get_all_day(obj):
         return obj.is_camp
+
+    @staticmethod
+    def get_multi_course(obj):
+        if not obj.is_multi_course:
+            return None
+        return MultiCourseInlineSerializer(obj).data
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -55,17 +87,24 @@ class CourseSerializer(serializers.ModelSerializer):
     all_day = serializers.SerializerMethodField()
     start_time = serializers.TimeField(format='%H:%M')
     end_time = serializers.TimeField(format='%H:%M')
+    multi_course = serializers.SerializerMethodField()
 
     class Meta:
         model = Course
-        fields = ('id', 'number', 'name', 'instructors', 'activity', 'price', 'price_description',
+        fields = ('id', 'course_type', 'number', 'name', 'instructors', 'activity', 'price', 'price_description',
                   'number_of_sessions', 'day', 'start_date', 'end_date', 'all_day', 'start_time', 'end_time', 'place',
                   'min_participants', 'max_participants', 'count_participants',
-                  'schoolyear_min', 'schoolyear_max')
+                  'schoolyear_min', 'schoolyear_max', 'multi_course')
 
     @staticmethod
     def get_all_day(obj):
         return obj.is_camp
+
+    @staticmethod
+    def get_multi_course(obj):
+        if not obj.is_multi_course:
+            return None
+        return MultiCourseInlineSerializer(obj).data
 
 
 class ActivityDetailedSerializer(serializers.ModelSerializer):
