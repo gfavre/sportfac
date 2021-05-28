@@ -135,22 +135,24 @@ class ExplicitDatesCourseForm(CourseForm):
 
     def clean_session_dates(self):
         dates = self.cleaned_data['session_dates']
+        if not self.cleaned_data['course_type'] == 'multicourse':
+            return dates
         for session_date in dates:
             day = session_date.isoweekday()
             if day == 1 and not (self.cleaned_data.get('start_time_mon') and self.cleaned_data.get('end_time_mon')):
-                raise ValidationError(_("%s is invalid as start and end times are not set for mondays") % session_date)
+                raise ValidationError(_("%s is invalid as start and end times are not set for mondays") % session_date.strftime('%d.%m.%Y'))
             if day == 2 and not (self.cleaned_data.get('start_time_tue') and self.cleaned_data.get('end_time_tue')):
-                raise ValidationError(_("%s is invalid as start and end times are not set for tuesdays") % session_date)
+                raise ValidationError(_("%s is invalid as start and end times are not set for tuesdays") % session_date.strftime('%d.%m.%Y'))
             if day == 3 and not (self.cleaned_data.get('start_time_wed') and self.cleaned_data.get('end_time_wed')):
-                raise ValidationError(_("%s is invalid as start and end times are not set for wednesdays") % session_date)
+                raise ValidationError(_("%s is invalid as start and end times are not set for wednesdays") % session_date.strftime('%d.%m.%Y'))
             if day == 4 and not (self.cleaned_data.get('start_time_thu') and self.cleaned_data.get('end_time_thu')):
-                raise ValidationError(_("%s is invalid as start and end times are not set for thursdays") % session_date)
+                raise ValidationError(_("%s is invalid as start and end times are not set for thursdays") % session_date.strftime('%d.%m.%Y'))
             if day == 5 and not (self.cleaned_data.get('start_time_fri') and self.cleaned_data.get('end_time_fri')):
-                raise ValidationError(_("%s is invalid as start and end times are not set for fridays") % session_date)
+                raise ValidationError(_("%s is invalid as start and end times are not set for fridays") % session_date.strftime('%d.%m.%Y'))
             if day == 6 and not (self.cleaned_data.get('start_time_sat') and self.cleaned_data.get('end_time_sat')):
-                raise ValidationError(_("%s is invalid as start and end times are not set for saturdays") % session_date)
+                raise ValidationError(_("%s is invalid as start and end times are not set for saturdays") % session_date.strftime('%d.%m.%Y'))
             if day == 7 and not (self.cleaned_data.get('start_time_sun') and self.cleaned_data.get('end_time_sun')):
-                raise ValidationError(_("%s is invalid as start and end times are not set for sundays") % session_date)
+                raise ValidationError(_("%s is invalid as start and end times are not set for sundays") % session_date.strftime('%d.%m.%Y'))
         return dates
 
     def save(self, commit=True):
