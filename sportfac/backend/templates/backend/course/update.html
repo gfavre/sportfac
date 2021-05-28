@@ -5,7 +5,6 @@
 
 {% block content %}
   <form action="" method="post">{% csrf_token %}
-    {{ form.errors }}
     {% include "backend/course/form.html" %}
     <div class=" form-group">
       <button type="submit" class="btn btn-success ">{% trans 'Update course' %}</button>
