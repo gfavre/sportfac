@@ -116,7 +116,7 @@ class AllocationAccountUpdateView(SuccessMessageMixin, BackendMixin, UpdateView)
     def get_success_message(self, cleaned_data):
         url = self.object.get_backend_url()
         return mark_safe(self.success_message % {'url': url,
-                                                 'number': self.object.number})
+                                                 'number': self.object.account})
 
 
 class AllocationAccountDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
@@ -127,7 +127,7 @@ class AllocationAccountDeleteView(SuccessMessageMixin, BackendMixin, DeleteView)
     
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
-        identifier = self.get_object().number
+        identifier = self.get_object().account
         messages.add_message(self.request, messages.SUCCESS,
                              _("Allocation account %(identifier)s has been deleted.") % {
                                 'identifier': identifier
