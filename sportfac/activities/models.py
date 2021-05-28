@@ -283,6 +283,15 @@ class Course(TimeStampedModel):
                 return None
             else:
                 return self.end_date - self.start_date
+        elif self.is_multi_course:
+            return max([
+                datetime.combine(date.today(), self.end_time_mon or time(0, 0)) - datetime.combine(date.today(), self.start_time_mon or time(0, 0)),
+                datetime.combine(date.today(), self.end_time_tue or time(0, 0)) - datetime.combine(date.today(), self.start_time_tue or time(0, 0)),
+                datetime.combine(date.today(), self.end_time_wed or time(0, 0)) - datetime.combine(date.today(), self.start_time_wed or time(0, 0)),
+                datetime.combine(date.today(), self.end_time_thu or time(0, 0)) - datetime.combine(date.today(), self.start_time_thu or time(0, 0)),
+                datetime.combine(date.today(), self.end_time_fri or time(0, 0)) - datetime.combine(date.today(), self.start_time_fri or time(0, 0)),
+                datetime.combine(date.today(), self.end_time_sat or time(0, 0)) - datetime.combine(date.today(), self.start_time_sat or time(0, 0)),
+                datetime.combine(date.today(), self.end_time_sun or time(0, 0)) - datetime.combine(date.today(), self.start_time_sun or time(0, 0)),])
         return datetime.combine(date.today(), self.end_time or time(23, 59)) - datetime.combine(date.today(), self.start_time or time(0, 0))
 
     @property
