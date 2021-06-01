@@ -69,7 +69,12 @@
             {% endif %}
           {% endif %}
         </td>
-        <td class="nowrap text-right">{{ registration.course.price|money }}</td>
+        <td class="nowrap text-right">{% with price_category=registration.get_price_category %}
+            {{ price_category.0|money }}
+            {% if price_category.1 %}<br>
+            <small>{{ price_category.1 }}</small>
+            {% endif %}
+            {% endwith %}</td>
       </tr>
       {% if registration.has_modifier %}
       {% for extra in registration.extra_infos.all %}
