@@ -43,10 +43,15 @@
   {% formrow form.number_of_sessions form.day %}
 {% else %}
   {% if USE_DIFFERENTIATED_PRICES %}
-    {% formconfig row using "floppyforms/rows/bootstrap-basic-sm-3.html" %}
+    <fieldset>
+      <legend>{% trans "Pricing" %}</legend>
+      {% formconfig row using "floppyforms/rows/bootstrap-basic-sm-3.html" %}
+
     {% formrow form.price form.price_local form.price_family  form.price_local_family %}
     {% formconfig row using "floppyforms/rows/bootstrap-basic-sm-6.html" %}
     {% formrow form.price_description %}
+    </fieldset>
+    <hr>
   {% else %}
     {% formrow form.price form.price_description %}
   {% endif %}

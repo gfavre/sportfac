@@ -72,6 +72,8 @@ class CourseForm(forms.ModelForm):
             self.fields.pop('price_family')
             self.fields.pop('price_local_family')
             self.fields.pop('price_local')
+        else:
+            self.fields['price'].label = _("Price for external people")
         if settings.KEPCHUP_NO_PAYMENT:
             self.fields.pop('price')
 
