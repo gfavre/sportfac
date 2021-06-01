@@ -28,8 +28,7 @@ class CourseForm(forms.ModelForm):
     name = forms.CharField(label=_("Displayed name (optional)"), required=False,
                            help_text=_("Displayed on calendar under activity name"))
     number = forms.CharField(label=_("Identifier"), required=True)
-    price = forms.DecimalField(label=_("Price"), initial=0, required=True,
-                               widget=settings.KEPCHUP_NO_PAYMENT and forms.HiddenInput or forms.NumberInput)
+
     price_description = forms.CharField(label=_("Informations about pricing"),
                                         widget=forms.Textarea(attrs={'rows': 3}),
                                         required=False)
@@ -68,14 +67,21 @@ class CourseForm(forms.ModelForm):
         self._filter_price_field()
 
     def _filter_price_field(self):
+        if settings.KEPCHUP_NO_PAYMENT:
+            self.fields.pop('price')
+        else:
+            self.fields['price'].required = True
         if not settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
             self.fields.pop('price_family')
             self.fields.pop('price_local_family')
             self.fields.pop('price_local')
         else:
             self.fields['price'].label = _("Price for external people")
-        if settings.KEPCHUP_NO_PAYMENT:
-            self.fields.pop('price')
+            self.fields['price_family'].required = True
+            self.fields['price_local_family'].required = True
+            self.fields['price_local'].required = True
+
+
 
     def save(self, commit=True):
         instance = super(CourseForm, self).save(commit=commit)

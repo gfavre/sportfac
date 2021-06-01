@@ -69,7 +69,14 @@
           Du {[{ selectedCourse.start_date | date:'longDate'}]} au {[{ selectedCourse.end_date | date:'longDate'}]}
           </dd>
           <dt>Prix</dt>
-          <dd>CHF {[{ selectedCourse.price }]}
+          <dd>
+            <ul ng-show="{[{ selectedCourse.price_local }]}">
+              <li>CHF {[{ selectedCourse.price }]} (externe)</li>
+              <li>CHF {[{ selectedCourse.price_local }]} (indigène)</li>
+              <li>CHF {[{ selectedCourse.price_family }]} (externe, rabais fratrie)</li>
+              <li>CHF {[{ selectedCourse.price_local_family }]} (indigène, rabais fratrie)</li>
+            </ul>
+            <span ng-hide="{[{ selectedCourse.price_local }]}">CHF {[{ selectedCourse.price }]}</span>
             <p ng-show="selectedCourse.price_description"
                ng-bind-html="selectedCourse.price_description | newlines">
             </p>
