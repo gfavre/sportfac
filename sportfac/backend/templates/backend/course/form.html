@@ -1,78 +1,84 @@
 {% load i18n floppyforms sekizai_tags %}
 {% addtoblock "js" %}
 <script>
-$(function () {
-  let $type = $('#id_course_type')
+  $(function () {
+    let $type = $('#id_course_type')
 
-  let updateFields = function (){
-    switch ($type.val()) {
-      case 'course':
-        $('.course-visible').show();
-        $('.course-hidden').hide();
-        break;
-      case 'multicourse':
-        $('.multicourse-visible').show();
-        $('.multicourse-hidden').hide();
-        break;
-      case 'camp':
-        $('.camp-visible').show();
-        $('.camp-hidden').hide();
-        break;
+    let updateFields = function () {
+      switch ($type.val()) {
+        case 'course':
+          $('.course-visible').show();
+          $('.course-hidden').hide();
+          break;
+        case 'multicourse':
+          $('.multicourse-visible').show();
+          $('.multicourse-hidden').hide();
+          break;
+        case 'camp':
+          $('.camp-visible').show();
+          $('.camp-hidden').hide();
+          break;
+      }
     }
-  }
 
-  $type.on('change', function (){
+    $type.on('change', function () {
+      updateFields();
+    })
     updateFields();
-  })
-  updateFields();
 
-});
+  });
 </script>
 {% endaddtoblock %}
 {% form form using %}
-  {% formconfig row using "floppyforms/rows/bootstrap-basic-sm-6.html" %}
-  {% formrow form.course_type %}
+{% formconfig row using "floppyforms/rows/bootstrap-basic-sm-6.html" %}
+{% formrow form.course_type %}
 
-  {% if CALENDAR_DISPLAY_COURSE_NAMES %}
-    {% formrow form.activity form.instructors form.number form.name %}
-  {% else %}
-    {% formrow form.activity form.instructors form.number %}
-  {% endif %}
+{% if CALENDAR_DISPLAY_COURSE_NAMES %}
+  {% formrow form.activity form.instructors form.number form.name %}
+{% else %}
+  {% formrow form.activity form.instructors form.number %}
+{% endif %}
 
-  {% if NO_PAYMENT %}
-    {{ form.price }}
-    {% formrow form.number_of_sessions form.day %}
+{% if NO_PAYMENT %}
+  {% formrow form.number_of_sessions form.day %}
+{% else %}
+  {% if USE_DIFFERENTIATED_PRICES %}
+    {% formconfig row using "floppyforms/rows/bootstrap-basic-sm-3.html" %}
+    {% formrow form.price form.price_local form.price_family  form.price_local_family %}
+    {% formconfig row using "floppyforms/rows/bootstrap-basic-sm-6.html" %}
+    {% formrow form.price_description %}
   {% else %}
     {% formrow form.price form.price_description %}
   {% endif %}
+{% endif %}
 
-  {% if EXPLICIT_SESSION_DATES %}
-    {% formrow form.session_dates %}
-  {% else %}
-    {% formrow form.number_of_sessions form.day form.start_date form.end_date %}
-  {% endif %}
-  <div class="course-visible camp-hidden multicourse-hidden">{% formrow form.start_time form.end_time %}</div>
-  <div class="multicourse-visible camp-hidden course-hidden">
-    <fieldset>
-      <legend>{% trans "Daily start and end times" %}</legend>
-      {% formrow form.start_time_mon form.end_time_mon %}
-      {% formrow form.start_time_tue form.end_time_tue %}
-      {% formrow form.start_time_wed form.end_time_wed %}
-      {% formrow form.start_time_thu form.end_time_thu %}
-      {% formrow form.start_time_fri form.end_time_fri %}
-      {% formrow form.start_time_sat form.end_time_sat %}
-      {% formrow form.start_time_sun form.end_time_sun %}
-    </fieldset>
-  </div>
-  {% formrow form.place using "floppyforms/rows/bootstrap-basic-row.html" %}
-  {% formrow form.comments %}
+{% if EXPLICIT_SESSION_DATES %}
+  {% formrow form.session_dates %}
+{% else %}
+  {% formrow form.number_of_sessions form.day form.start_date form.end_date %}
+{% endif %}
+<div class="course-visible camp-hidden multicourse-hidden">{% formrow form.start_time form.end_time %}</div>
+<div class="multicourse-visible camp-hidden course-hidden">
+  <fieldset>
+    <legend>{% trans "Daily start and end times" %}</legend>
+    {% formrow form.start_time_mon form.end_time_mon %}
+    {% formrow form.start_time_tue form.end_time_tue %}
+    {% formrow form.start_time_wed form.end_time_wed %}
+    {% formrow form.start_time_thu form.end_time_thu %}
+    {% formrow form.start_time_fri form.end_time_fri %}
+    {% formrow form.start_time_sat form.end_time_sat %}
+    {% formrow form.start_time_sun form.end_time_sun %}
+  </fieldset>
+</div>
+{% formrow form.place using "floppyforms/rows/bootstrap-basic-row.html" %}
+{% formrow form.comments %}
 
-  {% formrow form.min_participants form.max_participants form.schoolyear_min form.schoolyear_max %}
-  {% formrow form.uptodate %}
-  {% formrow form.visible %}
+{% formrow form.min_participants form.max_participants form.schoolyear_min form.schoolyear_max %}
+{% formrow form.uptodate %}
+{% formrow form.visible %}
 <div class="camp-hidden course-show">{% formrow form.announced_js %}</div>
-  {% if not NO_EXTRAS and extra_needs.exists %}
-    {% formrow form.extra %}
-  {% endif %}
+{% if not NO_EXTRAS and extra_needs.exists %}
+  {% formrow form.extra %}
+{% endif %}
 
 {% endform %}

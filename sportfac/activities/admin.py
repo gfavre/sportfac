@@ -26,7 +26,10 @@ class CourseInline(admin.StackedInline):
     model = Course
     extra = 1
     fieldsets = (
-        (None, {'fields': ('course_type', 'number', 'price', 'number_of_sessions', 'place', 'uptodate')}),
+        (None, {'fields': ('course_type', 'number',
+
+                           'number_of_sessions', 'place', 'uptodate')}),
+        (_("Pricing"), {'fields': ('price', 'price_local', 'price_family', 'price_local_family')}),
         (_("Dates"), {'fields': ('start_date', 'end_date', 'day', 'start_time', 'end_time',
                                  'start_time_mon', 'end_time_mon', 'start_time_tue', 'end_time_tue',
                                  'start_time_wed', 'end_time_wed', 'start_time_thu', 'end_time_thu',

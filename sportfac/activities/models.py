@@ -181,10 +181,22 @@ class Course(TimeStampedModel):
     instructors = models.ManyToManyField('profiles.FamilyUser', verbose_name=_("Instructors"),
                                          related_name='course', through='CoursesInstructors')
 
-    price = models.DecimalField(max_digits=5, decimal_places=2,
-                                verbose_name=_("Price"),
-                                null=True, blank=True)
+    price = models.DecimalField(max_digits=5, decimal_places=2, verbose_name=_("Price"), null=True, blank=True)
+    price_local = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True,
+                                      verbose_name=_("Price for local people"))
+    price_family = models.DecimalField(
+        max_digits=5, decimal_places=2, null=True, blank=True,
+        verbose_name=_("Price for family members"),
+        help_text=_("Applied for the second and following members registered to the same course"),
+    )
+    price_local_family = models.DecimalField(
+        max_digits=5, decimal_places=2, null=True, blank=True,
+        verbose_name=_("Price for local family members"),
+        help_text=_("Applied for the second and following members registered to the same course if the "
+                            "family is local"),
+    )
     price_description = models.TextField(_("Informations about pricing"), blank=True)
+
     number_of_sessions = models.PositiveSmallIntegerField(verbose_name=_("Number of sessions"), default=0)
     day = models.PositiveSmallIntegerField(choices=DAYS_OF_WEEK, verbose_name=_("Day"), default=1, blank=True)
     start_date = models.DateField(verbose_name=_("Start date"), null=True)

@@ -55,12 +55,25 @@ class CourseForm(forms.ModelForm):
 
     class Meta:
         model = Course
-        fields = ('course_type', 'activity', 'name', 'number', 'instructors', 'price', 'price_description',
+        fields = ('course_type', 'activity', 'name', 'number', 'instructors',
+                  'price', 'price_family', 'price_local_family', 'price_local', 'price_description',
                   'number_of_sessions', 'day', 'start_date', 'end_date',
                   'start_time', 'end_time', 'place', 'min_participants',
                   'max_participants', 'schoolyear_min', 'schoolyear_max',
                   'comments',
                   'uptodate', 'announced_js', 'visible', 'extra',)
+
+    def __init__(self, *args, **kwargs):
+        super(CourseForm, self).__init__(*args, **kwargs)
+        self._filter_price_field()
+
+    def _filter_price_field(self):
+        if not settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
+            self.fields.pop('price_family')
+            self.fields.pop('price_local_family')
+            self.fields.pop('price_local')
+        if settings.KEPCHUP_NO_PAYMENT:
+            self.fields.pop('price')
 
     def save(self, commit=True):
         instance = super(CourseForm, self).save(commit=commit)
@@ -103,7 +116,8 @@ class ExplicitDatesCourseForm(CourseForm):
 
     class Meta:
         model = Course
-        fields = ('course_type', 'activity', 'name', 'number', 'instructors', 'price', 'price_description',
+        fields = ('course_type', 'activity', 'name', 'number', 'instructors',
+                  'price', 'price_family', 'price_local_family', 'price_local', 'price_description',
                   'start_time', 'end_time',
                   'start_time_mon', 'end_time_mon', 'start_time_tue', 'end_time_tue',
                   'start_time_wed', 'end_time_wed', 'start_time_thu', 'end_time_thu',
@@ -132,6 +146,8 @@ class ExplicitDatesCourseForm(CourseForm):
         super(ExplicitDatesCourseForm, self).__init__(*args, **kwargs)
         self.fields.pop('start_date')
         self.fields.pop('end_date')
+
+
 
     def clean_session_dates(self):
         dates = self.cleaned_data['session_dates']
