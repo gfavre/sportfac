@@ -57,6 +57,7 @@ class RegistrationAdmin(SportfacAdminMixin, ImportExportModelAdmin):
         'child__first_name', 'child__last_name', 'course__activity__number',
         'course__activity__name', 'course__number',
     )
+    raw_id_fields = ('child', 'course', 'bill')
     date_hierarchy = 'created'
     change_list_filter_template = "admin/filter_listing.html"
     inlines = [ExtraInfoInline]

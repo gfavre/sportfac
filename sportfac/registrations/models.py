@@ -9,6 +9,7 @@ from django.db import connection, models, transaction
 from django.template.defaultfilters import slugify
 from django.utils.timezone import now
 from django.utils.translation import get_language, ugettext_lazy as _
+
 from model_utils import Choices
 from model_utils.models import StatusModel
 from phonenumber_field.modelfields import PhoneNumberField
@@ -46,7 +47,7 @@ class Registration(TimeStampedModel, StatusModel):
                              on_delete=models.SET_NULL)
     paid = models.BooleanField(default=False, verbose_name=_("Has paid"))
     price = models.PositiveIntegerField(default=0, null=True, blank=True)
-    allocation_account = models.ForeignKey('activities.AllocationAccount', null=True, related_name='registrations',
+    allocation_account = models.ForeignKey('activities.AllocationAccount', null=True, blank=True, related_name='registrations',
                                            verbose_name=_("Allocation account"))
     transport = models.ForeignKey('Transport', related_name='participants', null=True, blank=True,
                                   verbose_name=_("Transport information"),
@@ -80,8 +81,28 @@ class Registration(TimeStampedModel, StatusModel):
     def has_modifier(self):
         return sum([extra.price_modifier for extra in self.extra_infos.all()]) != 0
 
+    # noinspection PyUnresolvedReferences
+    def get_price_category(self):
+        if settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
+            from activities.models import Course
+            if Registration.objects.filter(child__family=self.child.family,
+                                           course=self.course).order_by('created').last() != self:
+                # This child has a sibling, registered to the same course => special rate
+                if self.child.family.zipcode in settings.KEPCHUP_LOCAL_ZIPCODES:
+                    # tarif indigène
+                    return self.course.price_local_family, Course._meta.get_field('price_local_family').verbose_name
+                else:
+                    return self.course.price_family, Course._meta.get_field('price_family').verbose_name
+            else:
+                if self.child.family.zipcode in settings.KEPCHUP_LOCAL_ZIPCODES:
+                    # tarif indigène
+                    return self.course.price_local, Course._meta.get_field('price_local').verbose_name
+                else:
+                    return self.course.price, _("Price for external people")
+        return self.course.price, ''
+
     def get_price(self):
-        subtotal = self.course.price
+        subtotal, __ = self.get_price_category()
         modifier = sum([extra.price_modifier for extra in self.extra_infos.all()])
         if subtotal + modifier > 0:
             # we don't want to give money to users :)

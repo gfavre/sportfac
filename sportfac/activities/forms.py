@@ -81,8 +81,6 @@ class CourseForm(forms.ModelForm):
             self.fields['price_local_family'].required = True
             self.fields['price_local'].required = True
 
-
-
     def save(self, commit=True):
         instance = super(CourseForm, self).save(commit=commit)
         if instance.is_camp:

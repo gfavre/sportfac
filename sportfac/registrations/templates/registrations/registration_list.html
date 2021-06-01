@@ -92,7 +92,12 @@
 
         {% if not NO_PAYMENT %}
           <td class="nowrap text-right invoice-item" data-value="{{ registered.course.price }}" rowspan="2">
-            {{ registered.course.price|money }}
+            {% with price_category=registered.get_price_category %}
+            {{ price_category.0|money }}
+            {% if price_category.1 %}<br>
+            <small>{{ price_category.1 }}</small>
+            {% endif %}
+            {% endwith %}
           </td>
         {% endif %}
       </tr>
