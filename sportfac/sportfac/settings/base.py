@@ -542,6 +542,8 @@ KEPCHUP_NO_PAYMENT = False
 KEPCHUP_DISPLAY_FREE_WHEN_PRICE_IS_0 = False
 # wire_transfer, datatrans or none
 KEPCHUP_PAYMENT_METHOD = 'wire_transfer'
+KEPCHUP_USE_DIFFERENTIATED_PRICES = False
+KEPCHUP_LOCAL_ZIPCODES = []
 
 # Registration steps
 #########################################
