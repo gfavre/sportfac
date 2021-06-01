@@ -96,6 +96,7 @@
                 </ul>
               </dd>
             {% elif course.is_camp %}
+            {{ course.start_date|date:"j F Y" }} - {{ course.end_date|date:"j F Y" }}
             {% else %}
             <dd>
                 <ul class="list-unstyled">

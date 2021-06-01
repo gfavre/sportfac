@@ -63,8 +63,26 @@
         </dd>
         <dt>{% trans "Place" %}</dt>
         <dd>{{ course.place }}</dd>
+        {% if EXPLICIT_SESSION_DATES %}
         <dt>{% trans "Dates" %}</dt>
-
+        <dd>
+          {% if course.is_multi_course %}
+            <ul class="list-unstyled">
+              {% for session in course.get_sessions %}
+                <li>{{ session.date|date:"j F Y" }}</li>
+              {% endfor %}
+            </ul>
+          {% elif course.is_camp %}
+            {{ course.start_date|date:"j F Y" }} - {{ course.end_date|date:"j F Y" }}
+          {% else %}
+              <ul class="list-unstyled">
+                {% for session in course.get_sessions %}
+                  <li>{{ session.date|date:"j F Y" }}</li>
+                {% endfor %}
+              </ul>
+          {% endif %}
+        </dd>
+        {% endif %}
 
 
         {% if DISPLAY_NUMBER_OF_SESSIONS and course.is_course %}
@@ -74,7 +92,16 @@
         {% if not NO_PAYMENT %}
           <dt>{% trans "Price" %}</dt>
           <dd>
-            {{ course.price|money }}
+            {% if USE_DIFFERENTIATED_PRICES %}
+              <ul class="list-unstyled">
+                <li>{{ course.price|money }} (externe)</li>
+                <li>{{ course.price_local|money }} (indigène)</li>
+                <li>{{ course.price_family|money }} (externe, rabais fratrie)</li>
+                <li>{{ course.price_local_family|money }} (indigène, rabais fratrie)</li>
+              </ul>
+            {% else %}
+              {{ course.price|money }}
+            {% endif %}
             {% if course.price_description %}
               <p>{{ course.price_description|linebreaksbr }}</p>
             {% endif %}
