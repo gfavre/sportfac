@@ -6,311 +6,353 @@
 
 
 {% block page_title %}
-  {{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }}{% endblocktrans %}
-  {% if CALENDAR_DISPLAY_COURSE_NAMES and course.name %}
-    - {{ course.name }}
-  {% endif %}
+{{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }}{% endblocktrans %}
+{% if CALENDAR_DISPLAY_COURSE_NAMES and course.name %}
+- {{ course.name }}
+{% endif %}
 {% endblock %}
 
 
 {% block content %}
-  <section class="portlet">
-    <div class="pricing-plan">
-      <header class="pricing-header">
-        <p class="pricing-plan-label">{{ course.start_date | date:"j F Y" }} – {{ course.end_date | date:'j F Y' }}</p>
-        <p>
-          {% if course.is_course %}
-            {% blocktrans with day_name=course.day_name|lower start_time=course.start_time|time:"H:i" end_time=course.end_time|time:"H:i" duration=course.duration|duration %}Every {{ day_name }}, from {{ start_time }} to {{ end_time }} ({{ duration }}{% endblocktrans %}
-          {% elif course.is_multi_course %}
-            {% if course.start_time_mon %}
-              {% blocktrans with start_time=course.start_time_mon|time:"H:i" end_time=course.end_time_mon|time:"H:i" %}Mondays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
-            {% endif %}
-            {% if course.start_time_tue %}
-              {% blocktrans with start_time=course.start_time_tue|time:"H:i" end_time=course.end_time_tue|time:"H:i" %}Tuesdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
-            {% endif %}
-            {% if course.start_time_wed %}
-              {% blocktrans with start_time=course.start_time_wed|time:"H:i" end_time=course.end_time_wed|time:"H:i" %}Wednesdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
-            {% endif %}
-            {% if course.start_time_thu %}
-              {% blocktrans with start_time=course.start_time_thu|time:"H:i" end_time=course.end_time_thu|time:"H:i" %}Thursdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
-            {% endif %}
-            {% if course.start_time_fri %}
-              {% blocktrans with start_time=course.start_time_fri|time:"H:i" end_time=course.end_time_fri|time:"H:i" %}Fridays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
-            {% endif %}
-            {% if course.start_time_sat %}
-              {% blocktrans with start_time=course.start_time_sat|time:"H:i" end_time=course.end_time_sat|time:"H:i" %}Saturdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
-            {% endif %}
-            {% if course.start_time_sun %}
-              {% blocktrans with start_time=course.start_time_sun|time:"H:i" end_time=course.end_time_sun|time:"H:i" %}Sundays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
-            {% endif %}
-          {% else %}
+<section class="portlet">
+  <div class="pricing-plan">
+    <header class="pricing-header">
+      <p class="pricing-plan-label">{{ course.start_date | date:"j F Y" }} – {{ course.end_date | date:'j F Y' }}</p>
+      <p>
+        {% if course.is_course %}
+        {% blocktrans with day_name=course.day_name|lower start_time=course.start_time|time:"H:i"
+        end_time=course.end_time|time:"H:i" duration=course.duration|duration %}Every {{ day_name }}, from {{ start_time
+        }} to {{ end_time }} ({{ duration }}{% endblocktrans %}
+        {% elif course.is_multi_course %}
+        {% if course.start_time_mon %}
+        {% blocktrans with start_time=course.start_time_mon|time:"H:i" end_time=course.end_time_mon|time:"H:i"
+        %}Mondays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+        {% endif %}
+        {% if course.start_time_tue %}
+        {% blocktrans with start_time=course.start_time_tue|time:"H:i" end_time=course.end_time_tue|time:"H:i"
+        %}Tuesdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+        {% endif %}
+        {% if course.start_time_wed %}
+        {% blocktrans with start_time=course.start_time_wed|time:"H:i" end_time=course.end_time_wed|time:"H:i"
+        %}Wednesdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+        {% endif %}
+        {% if course.start_time_thu %}
+        {% blocktrans with start_time=course.start_time_thu|time:"H:i" end_time=course.end_time_thu|time:"H:i"
+        %}Thursdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+        {% endif %}
+        {% if course.start_time_fri %}
+        {% blocktrans with start_time=course.start_time_fri|time:"H:i" end_time=course.end_time_fri|time:"H:i"
+        %}Fridays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+        {% endif %}
+        {% if course.start_time_sat %}
+        {% blocktrans with start_time=course.start_time_sat|time:"H:i" end_time=course.end_time_sat|time:"H:i"
+        %}Saturdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+        {% endif %}
+        {% if course.start_time_sun %}
+        {% blocktrans with start_time=course.start_time_sun|time:"H:i" end_time=course.end_time_sun|time:"H:i"
+        %}Sundays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+        {% endif %}
+        {% else %}
         {% endif %}
 
-        </p>
-      </header>
-      <dl class="dl-horizontal">
-        <dt>{% trans "Instructors" %}</dt>
-        <dd>
-          <ul class="list-unstyled">
-            {% for instructor in course.instructors.all %}
-              <li>
-                {{ instructor.full_name }}<br/>
-                <a href="{{ instructor.best_phone|phone:'RFC3966' }}">{{ instructor.best_phone|phone }}</a><br/>
-                {{ instructor.email|urlize }}
-              </li>
-            {% endfor %}
-          </ul>
-        </dd>
-        <dt>{% trans "Place" %}</dt>
-        <dd>{{ course.place }}</dd>
-        {% if EXPLICIT_SESSION_DATES %}
-        <dt>{% trans "Dates" %}</dt>
-        <dd>
-          {% if course.is_multi_course %}
-            <ul class="list-unstyled">
-              {% for session in course.get_sessions %}
-                <li>{{ session.date|date:"j F Y" }}</li>
-              {% endfor %}
-            </ul>
-          {% elif course.is_camp %}
-            {{ course.start_date|date:"j F Y" }} - {{ course.end_date|date:"j F Y" }}
-          {% else %}
-              <ul class="list-unstyled">
-                {% for session in course.get_sessions %}
-                  <li>{{ session.date|date:"j F Y" }}</li>
-                {% endfor %}
-              </ul>
-          {% endif %}
-        </dd>
-        {% endif %}
-
-
-        {% if DISPLAY_NUMBER_OF_SESSIONS and course.is_course %}
-          <dt>{% trans "Number of sessions" %}</dt>
-          <dd>{% blocktrans with number=course.number_of_sessions %}{{ number }} courses{% endblocktrans %}</dd>
-        {% endif %}
-        {% if not NO_PAYMENT %}
-          <dt>{% trans "Price" %}</dt>
-          <dd>
-            {% if USE_DIFFERENTIATED_PRICES %}
-              <ul class="list-unstyled">
-                <li>{{ course.price|money }} (externe)</li>
-                <li>{{ course.price_local|money }} (indigène)</li>
-                <li>{{ course.price_family|money }} (externe, rabais fratrie)</li>
-                <li>{{ course.price_local_family|money }} (indigène, rabais fratrie)</li>
-              </ul>
-            {% else %}
-              {{ course.price|money }}
-            {% endif %}
-            {% if course.price_description %}
-              <p>{{ course.price_description|linebreaksbr }}</p>
-            {% endif %}
-          </dd>
-        {% endif %}
-        <dt>{% trans "School years" %}</dt>
-        <dd>{% for year in course.school_years %}{{ year }}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
-      </dl>
-
-      <h4 class="content-title"><u>{% trans "Availability" %}</u></h4>
-      <p>{{ course.count_participants }} participants <span class="pull-right strong"> {{ course.max_participants }} places</span>
       </p>
-      <div class="progress" style="margin-bottom: 0;">
-        <div
-            class="progress-bar {% if course.full %}progress-bar-danger{% elif course.minimal_participants_reached %}progress-bar-success{% else %}progress-bar-warning{% endif %}"
-            style="width: {{ course.percentage_full }}%">
-          {% if course.full %}{% trans "Course full" %}{% elif course.minimal_participants_reached %}
-            {% trans "Minimal number of participants reached" %}{% else %}
-            {% trans "Not enough participants" %}{% endif %}</div>
+    </header>
+    <dl class="dl-horizontal">
+      <dt>{% trans "Instructors" %}</dt>
+      <dd>
+        <ul class="list-unstyled">
+          {% for instructor in course.instructors.all %}
+          <li>
+            {{ instructor.full_name }}<br/>
+            <a href="{{ instructor.best_phone|phone:'RFC3966' }}">{{ instructor.best_phone|phone }}</a><br/>
+            {{ instructor.email|urlize }}
+          </li>
+          {% endfor %}
+        </ul>
+      </dd>
+      <dt>{% trans "Place" %}</dt>
+      <dd>{{ course.place }}</dd>
+      {% if EXPLICIT_SESSION_DATES %}
+      <dt>{% trans "Dates" %}</dt>
+      <dd>
+        {% if course.is_multi_course %}
+        <ul class="list-unstyled">
+          {% for session in course.get_sessions %}
+          <li>{{ session.date|date:"j F Y" }}</li>
+          {% endfor %}
+        </ul>
+        {% elif course.is_camp %}
+        {{ course.start_date|date:"j F Y" }} - {{ course.end_date|date:"j F Y" }}
+        {% else %}
+        <ul class="list-unstyled">
+          {% for session in course.get_sessions %}
+          <li>{{ session.date|date:"j F Y" }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </dd>
+      {% endif %}
+
+      {% if DISPLAY_NUMBER_OF_SESSIONS and course.is_course %}
+      <dt>{% trans "Number of sessions" %}</dt>
+      <dd>{% blocktrans with number=course.number_of_sessions %}{{ number }} courses{% endblocktrans %}</dd>
+      {% endif %}
+      {% if not NO_PAYMENT %}
+      <dt>{% trans "Price" %}</dt>
+      <dd>
+        {% if USE_DIFFERENTIATED_PRICES %}
+        <ul class="list-unstyled">
+          <li>{{ course.price|money }} (externe)</li>
+          <li>{{ course.price_local|money }} (indigène)</li>
+          <li>{{ course.price_family|money }} (externe, rabais fratrie)</li>
+          <li>{{ course.price_local_family|money }} (indigène, rabais fratrie)</li>
+        </ul>
+        {% else %}
+        {{ course.price|money }}
+        {% endif %}
+        {% if course.price_description %}
+        <p>{{ course.price_description|linebreaksbr }}</p>
+        {% endif %}
+      </dd>
+      {% endif %}
+      <dt>{% trans "School years" %}</dt>
+      <dd>{% for year in course.school_years %}{{ year }}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
+    </dl>
+
+    <h4 class="content-title"><u>{% trans "Availability" %}</u></h4>
+    <p>{{ course.count_participants }} participants <span class="pull-right strong"> {{ course.max_participants }} places</span>
+    </p>
+    <div class="progress" style="margin-bottom: 0;">
+      <div
+          class="progress-bar {% if course.full %}progress-bar-danger{% elif course.minimal_participants_reached %}progress-bar-success{% else %}progress-bar-warning{% endif %}"
+          style="width: {{ course.percentage_full }}%">
+        {% if course.full %}{% trans "Course full" %}{% elif course.minimal_participants_reached %}
+        {% trans "Minimal number of participants reached" %}{% else %}
+        {% trans "Not enough participants" %}{% endif %}
       </div>
-      <p class="text-right"><small>{{ course.min_participants }} participants requis pour que l'activité ait
-        lieu</small></p>
+    </div>
+    <p class="text-right"><small>{{ course.min_participants }} participants requis pour que l'activité ait
+      lieu</small></p>
+
+    {% if user in course.instructors.all %}
+    <h4 class="content-title"><u>{% trans "Management" %}</u></h4>
+    {% if USE_ABSENCES %}
+    <a href="{{ course.get_absences_url }}" class="btn btn-default hidden-print"><i class="icon-calendar"></i>&nbsp;{%
+      trans "Manage absences" %}
+    </a>
+    {% endif %}
+    {% endif %}
+  </div>
+</section>
+
+{% if user in course.instructors.all %}
+{% addtoblock "js" %}
+<script src="{% static 'js/vendor/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'js/vendor/datatables/dataTables.tableTools.min.js' %}"></script>
+<script src="{% static 'js/vendor/datatables/dataTables.bootstrap.js' %}"></script>
+<script>
+  $(function () {
+    var t = $(".table").dataTable({
+    {%
+      if LANGUAGE_CODE == 'fr' %}
+    "language"
+  :
+    {
+      "url"
+    :
+      "{{ STATIC_URL }}js/vendor/datatables/French.json"
+    }
+  ,
+    {%
+      endif %
+    }
+    aoColumnDefs: [
+      {'bSortable': true, 'aTargets': ['bibnumber', 'child-name', 'school', 'birth-date', 'teacher']},
+      {'bSortable': false, 'aTargets': ['_all']},
+      {'bSearchable': true, 'aTargets': ['bibnumber', 'child-name',]},
+      {'bSearchable': false, 'aTargets': ['_all']}
+
+    ],
+      dom
+  :
+    'T<"clear">lfrtip',
+      paging
+  :
+    false,
+      tableTools
+  :
+    {
+      "sRowSelect"
+    :
+      "multi",
+        "aButtons"
+    :
+      [],
+        'fnRowSelected'
+    :
+
+      function () {
+        $('.needs-select').removeClass('disabled');
+      }
+
+    ,
+      'fnRowDeselected'
+    :
+
+      function () {
+        if ($('tr.active').length == 0) {
+          $('.needs-select').addClass('disabled');
+        }
+      }
+    }
+  })
+    ;
+
+    $('.selectall').click(function () {
+      var tabletools = TableTools.fnGetInstance(t[0]);
+      tabletools.fnSelectAll(true);
+    });
+    $('.deselectall').click(function () {
+      var tabletools = TableTools.fnGetInstance(t[0]);
+      tabletools.fnSelectNone();
+    });
+    $('form.mail').submit(function () {
+      var tabletools = TableTools.fnGetInstance(t[0]);
+      var ids = tabletools.fnGetSelected().map(function (elem) {
+        return elem.getAttribute('data-user-id');
+      });
+      $('input[name="data"]').val(JSON.stringify(ids));
+    });
+
+  });
+
+
+</script>
+{% endaddtoblock %}
+{% endif %}
+<section>
+  <h2>{% trans "Registrations" %}</h2>
+  {% if user in course.instructors.all %}
+  <div class="btn-group">
+    <a class="btn btn-default selectall">{% trans "Select all" %}</span></a>
+    <a class="btn btn-default deselectall needs-select disabled">{% trans "Deselect all" %}</a>
+  </div>
+  <div class="btn-group">
+    <form class="mail" method="post"
+          action="{% url 'activities:select-participants' course=course.pk %}">{% csrf_token %}
+      <input type="hidden" name="data" value=''/>
+      <button type="submit" class="btn btn-secondary needs-select disabled"><i
+          class="icon-mail"></i>&nbsp;&nbsp;{% trans "Send email..." %}
+      </button>
+    </form>
+  </div>
+
+  {% endif %}
+  <table class="table">
+
+    <thead>
+    <tr>
+      {% if BIB_NUMBERS and user in course.instructors.all %}
+      <th class="bibnumber">{% trans "Bib number" %}</th>
+      {% endif %}
+      <th class="child-name">{% trans "Name" %}</th>
+
+      {% if DISPLAY_PARENT_CITY %}
+      <th>{% trans "City" %}</th>
+      {% endif %}
+
+      <th class="school">
+        {% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}
+      </th>
+      {% if user in course.instructors.all %}
+      <th class="birth-date">{% trans "Birth date" %}</th>
+      {% if EMERGENCY_NUMBER_MANDATORY %}
+      <th>{% trans "Emergency number" %}</th>
+      {% endif %}
+      <th>{% trans "Parents phones" %}</th>
+      {% else %}
+      <th class="teacher">{% trans "Teacher" %}</th>
+      {% endif %}
+      {% if INSTRUCTORS_CAN_REMOVE_REGISTRATIONS %}
+      <th class="actions text-nowrap">{% trans "Actions" %}</th>
+      {% endif %}
+    </tr>
+    </thead>
+
+
+    {% for registration in course.participants.all %}
+    <tr data-user-id="{{ registration.child.family.id }}">
+      {% if BIB_NUMBERS and user in course.instructors.all %}
+      <td data-order="{{ registration.child.bib_number|default:" 0
+      " }}">{{ registration.child.bib_number|default:"n/a" }}</td>
+      {% endif %}
+      <td>{{ registration.child.full_name }}</td>
+
+      {% if DISPLAY_PARENT_CITY %}
+      <td>{{ registration.child.family.city|title }}</td>
+      {% endif %}
+
+      <td>
+        {{ registration.child.school_year|default:"n/a" }}
+        {% if CHILD_SCHOOL %}<br>
+        {{ registration.child.school_name }}
+        {% endif %}
+      </td>
 
       {% if user in course.instructors.all %}
-        <h4 class="content-title"><u>{% trans "Management" %}</u></h4>
-        {% if USE_ABSENCES %}
-          <a href="{{ course.get_absences_url }}" class="btn btn-default hidden-print"><i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}
-          </a>
-        {% endif %}
+      <td data-order="{{ registration.child.birth_date|date:" c
+      " }}">{{ registration.child.birth_date }}</td>
+
+      {% if EMERGENCY_NUMBER_MANDATORY %}
+      <td>
+        <a href="{{ registration.child.emergency_number|phone:'RFC3966' }}">
+          {{ registration.child.emergency_number|phone }}
+        </a>
+      </td>
       {% endif %}
-    </div>
-  </section>
 
-  {% if user in course.instructors.all %}
-    {% addtoblock "js" %}
-      <script src="{% static 'js/vendor/datatables/jquery.dataTables.min.js' %}"></script>
-      <script src="{% static 'js/vendor/datatables/dataTables.tableTools.min.js' %}"></script>
-      <script src="{% static 'js/vendor/datatables/dataTables.bootstrap.js' %}"></script>
-      <script>
-        $(function () {
-          var t = $(".table").dataTable({
-            {% if LANGUAGE_CODE == 'fr' %}
-              "language": {
-                "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
-              },
-            {% endif %}
-            aoColumnDefs: [
-              {'bSortable': true, 'aTargets': ['bibnumber', 'child-name', 'school', 'birth-date', 'teacher']},
-              {'bSortable': false, 'aTargets': ['_all']},
-              {'bSearchable': true, 'aTargets': ['bibnumber', 'child-name',]},
-              {'bSearchable': false, 'aTargets': ['_all']}
-
-            ],
-            dom: 'T<"clear">lfrtip',
-            paging: false,
-            tableTools: {
-              "sRowSelect": "multi",
-              "aButtons": [],
-              'fnRowSelected': function () {
-                $('.needs-select').removeClass('disabled');
-              },
-              'fnRowDeselected': function () {
-                if ($('tr.active').length == 0) {
-                  $('.needs-select').addClass('disabled');
-                }
-              }
-            }
-          });
-
-          $('.selectall').click(function () {
-            var tabletools = TableTools.fnGetInstance(t[0]);
-            tabletools.fnSelectAll(true);
-          });
-          $('.deselectall').click(function () {
-            var tabletools = TableTools.fnGetInstance(t[0]);
-            tabletools.fnSelectNone();
-          });
-          $('form.mail').submit(function () {
-            var tabletools = TableTools.fnGetInstance(t[0]);
-            var ids = tabletools.fnGetSelected().map(function (elem) {
-              return elem.getAttribute('data-user-id');
-            });
-            $('input[name="data"]').val(JSON.stringify(ids));
-          });
-
-        });
-
-
-      </script>
-    {% endaddtoblock %}
-  {% endif %}
-  <section>
-    <h2>{% trans "Registrations" %}</h2>
-    {% if user in course.instructors.all %}
-      <div class="btn-group">
-        <a class="btn btn-default selectall">{% trans "Select all" %}</span></a>
-        <a class="btn btn-default deselectall needs-select disabled">{% trans "Deselect all" %}</a>
-      </div>
-      <div class="btn-group">
-        <form class="mail" method="post"
-              action="{% url 'activities:select-participants' course=course.pk %}">{% csrf_token %}
-          <input type="hidden" name="data" value=''/>
-          <button type="submit" class="btn btn-secondary needs-select disabled"><i
-              class="icon-mail"></i>&nbsp;&nbsp;{% trans "Send email..." %}</button>
-        </form>
-      </div>
-
-    {% endif %}
-    <table class="table">
-
-      <thead>
-      <tr>
-        {% if BIB_NUMBERS and user in course.instructors.all %}
-          <th class="bibnumber">{% trans "Bib number" %}</th>
-        {% endif %}
-        <th class="child-name">{% trans "Name" %}</th>
-
-        {% if DISPLAY_PARENT_CITY %}
-          <th>{% trans "City" %}</th>
-        {% endif %}
-
-        <th class="school">
-          {% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
-        {% if user in course.instructors.all %}
-          <th class="birth-date">{% trans "Birth date" %}</th>
-          {% if EMERGENCY_NUMBER_MANDATORY %}
-            <th>{% trans "Emergency number" %}</th>
+      <td>
+        <ul class="list-unstyled">
+          {% if registration.child.family.private_phone %}
+          <li>
+            <a href="{{ registration.child.family.private_phone|phone:'RFC3966' }}">
+              {{ registration.child.family.private_phone|phone }}
+            </a>
+          </li>
           {% endif %}
-          <th>{% trans "Parents phones" %}</th>
-        {% else %}
-          <th class="teacher">{% trans "Teacher" %}</th>
-        {% endif %}
-        {% if INSTRUCTORS_CAN_REMOVE_REGISTRATIONS %}
-          <th class="actions text-nowrap">{% trans "Actions" %}</th>
-        {% endif %}
-      </tr>
-      </thead>
-
-
-      {% for registration in course.participants.all %}
-        <tr data-user-id="{{ registration.child.family.id }}">
-          {% if BIB_NUMBERS and user in course.instructors.all %}
-            <td data-order="{{ registration.child.bib_number|default:"0" }}">{{ registration.child.bib_number|default:"n/a" }}</td>
+          {% if registration.child.family.private_phone2 %}
+          <li>
+            <a href="{{ registration.child.family.private_phone2|phone:'RFC3966' }}">
+              {{ registration.child.family.private_phone2|phone }}
+            </a>
+          </li>
           {% endif %}
-          <td>{{ registration.child.full_name }}</td>
-
-          {% if DISPLAY_PARENT_CITY %}
-            <td>{{ registration.child.family.city|title }}</td>
+          {% if registration.child.family.private_phone3 %}
+          <li>
+            <a href="{{ registration.child.family.private_phone3|phone:'RFC3966' }}">
+              {{ registration.child.family.private_phone3|phone }}
+            </a>
+          </li>
           {% endif %}
+      </td>
+      {% else %}
+      <td>
+        {% if registration.child.teacher %}{{ registration.child.teacher.full_name }}{% else %}n/a{% endif %}
+      </td>
+      {% endif %}
 
-          <td>
-            {{ registration.child.school_year|default:"n/a" }}
-            {% if CHILD_SCHOOL %}<br>
-              {{ registration.child.school_name }}
-            {% endif %}
-          </td>
+      {% if INSTRUCTORS_CAN_REMOVE_REGISTRATIONS %}
+      <td>
+        <ul class="list-unstyled">
+          <li class="text-nowrap"><a href="{{ registration.cancel_url }}" class="btn btn-sm"><i
+              class="icon-cancel-circled2"></i>&nbsp;{% trans "Cancel registration" %}</a></li>
+        </ul>
+      </td>
+      {% endif %}
+    </tr>
+    {% empty %}
 
-          {% if user in course.instructors.all %}
-            <td data-order="{{ registration.child.birth_date|date:"c" }}">{{ registration.child.birth_date }}</td>
-
-            {% if EMERGENCY_NUMBER_MANDATORY %}
-              <td>
-                <a href="{{ registration.child.emergency_number|phone:'RFC3966' }}">
-                  {{ registration.child.emergency_number|phone }}
-                </a>
-              </td>
-            {% endif %}
-
-            <td>
-              <ul class="list-unstyled">
-                {% if registration.child.family.private_phone %}
-                  <li>
-                    <a href="{{ registration.child.family.private_phone|phone:'RFC3966' }}">
-                      {{ registration.child.family.private_phone|phone }}
-                    </a>
-                  </li>
-                {% endif %}
-                {% if registration.child.family.private_phone2 %}
-                  <li>
-                    <a href="{{ registration.child.family.private_phone2|phone:'RFC3966' }}">
-                      {{ registration.child.family.private_phone2|phone }}
-                    </a>
-                  </li>
-                {% endif %}
-                {% if registration.child.family.private_phone3 %}
-                  <li>
-                    <a href="{{ registration.child.family.private_phone3|phone:'RFC3966' }}">
-                      {{ registration.child.family.private_phone3|phone }}
-                    </a>
-                  </li>
-                {% endif %}
-            </td>
-          {% else %}
-            <td>
-              {% if registration.child.teacher %}{{ registration.child.teacher.full_name }}{% else %}n/a{% endif %}</td>
-          {% endif %}
-
-          {% if INSTRUCTORS_CAN_REMOVE_REGISTRATIONS %}
-            <td>
-              <ul class="list-unstyled">
-                <li class="text-nowrap"><a href="{{ registration.cancel_url }}" class="btn btn-sm"><i
-                  class="icon-cancel-circled2"></i>&nbsp;{% trans "Cancel registration" %}</a></li>
-              </ul>
-            </td>
-          {% endif %}
-        </tr>
-      {% empty %}
-
-      {% endfor %}
-    </table>
-  </section>
+    {% endfor %}
+  </table>
+</section>
 {% endblock content %}
