@@ -25,7 +25,8 @@ INSTALLED_APPS += (
     'debug_toolbar', # debugging
     'djcelery',
     'kombu.transport.django',
-    'corsheaders'
+    'corsheaders',
+    'django_template_check'
 )
 MIDDLEWARE_CLASSES = ['corsheaders.middleware.CorsMiddleware'] + MIDDLEWARE_CLASSES
 CORS_ALLOW_ALL_ORIGINS = DEBUG
