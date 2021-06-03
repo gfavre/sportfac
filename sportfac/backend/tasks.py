@@ -5,7 +5,7 @@ from tempfile import NamedTemporaryFile
 
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
-from django.contrib.messages import constants
+from django.contrib import messages
 from django.contrib.sessions.models import Session
 from django.db import connection, transaction
 from django.utils import timezone
@@ -113,7 +113,7 @@ def create_tenant(start, end, copy_activities_from_id=None, copy_children_from_i
             logger.debug('Set all courses to not up-to-date in destination')
 
         except YearTenant.DoesNotExist:
-            logger.warning('Year tenant {} (source) does not exist'.format(copy_from))
+            logger.warning('Year tenant {} (source) does not exist'.format(copy_activities_from_id))
 
     if copy_children_from_id:
         logger.info('Beginning copy of children')
@@ -214,14 +214,14 @@ def import_children(filepath, tenant_id, user_id=None):
     with open(filepath) as filelike:
         try:
             (nb_created, nb_updated) = load_children(filelike)
-            status = constants.SUCCESS
+            status = messages.constants.SUCCESS
             message = _("Children import successful. "
                         "%(added)s children have been added, %(updated)s have been updated") % {
                           'added': nb_created,
                           'updated': nb_updated
                       }
         except ValueError as err:
-            status = constants.ERROR
+            status = messages.constants.ERROR
             message = err.message
 
     try:
