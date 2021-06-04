@@ -167,6 +167,7 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
         )
         for registration in self.get_queryset().all():
             registration.set_valid()
+            registration.price = registration.get_price()
             if registration.price == 0:
                 registration.paid = True
             registration.bill = self.bill

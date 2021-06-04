@@ -46,7 +46,7 @@ class Registration(TimeStampedModel, StatusModel):
     bill = models.ForeignKey('Bill', related_name="registrations", null=True, blank=True,
                              on_delete=models.SET_NULL)
     paid = models.BooleanField(default=False, verbose_name=_("Has paid"))
-    price = models.PositiveIntegerField(default=0, null=True, blank=True)
+    price = models.PositiveIntegerField(null=True, blank=True)
     allocation_account = models.ForeignKey('activities.AllocationAccount', null=True, blank=True, related_name='registrations',
                                            verbose_name=_("Allocation account"))
     transport = models.ForeignKey('Transport', related_name='participants', null=True, blank=True,
@@ -62,14 +62,6 @@ class Registration(TimeStampedModel, StatusModel):
         ordering = ('child__last_name', 'child__first_name', 'course__start_date')
 
     @property
-    def extra_needs(self):
-        return self.course.extra.all().exclude(id__in=self.extra_infos.values_list('key'))
-
-    @property
-    def update_url(self):
-        return self.get_update_url()
-
-    @property
     def cancel_url(self):
         return reverse('cancel-registration', kwargs={'pk': self.pk})
 
@@ -78,36 +70,16 @@ class Registration(TimeStampedModel, StatusModel):
         return self.get_delete_url()
 
     @property
+    def extra_needs(self):
+        return self.course.extra.all().exclude(id__in=self.extra_infos.values_list('key'))
+
+    @property
     def has_modifier(self):
         return sum([extra.price_modifier for extra in self.extra_infos.all()]) != 0
 
-    # noinspection PyUnresolvedReferences
-    def get_price_category(self):
-        if settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
-            from activities.models import Course
-            if Registration.objects.filter(child__family=self.child.family,
-                                           course=self.course).order_by('created').last() != self:
-                # This child has a sibling, registered to the same course => special rate
-                if self.child.family.zipcode in settings.KEPCHUP_LOCAL_ZIPCODES:
-                    # tarif indigène
-                    return self.course.price_local_family, Course._meta.get_field('price_local_family').verbose_name
-                else:
-                    return self.course.price_family, Course._meta.get_field('price_family').verbose_name
-            else:
-                if self.child.family.zipcode in settings.KEPCHUP_LOCAL_ZIPCODES:
-                    # tarif indigène
-                    return self.course.price_local, Course._meta.get_field('price_local').verbose_name
-                else:
-                    return self.course.price, _("Price for external people")
-        return self.course.price, ''
-
-    def get_price(self):
-        subtotal, __ = self.get_price_category()
-        modifier = sum([extra.price_modifier for extra in self.extra_infos.all()])
-        if subtotal + modifier > 0:
-            # we don't want to give money to users :)
-            return subtotal + modifier
-        return 0
+    @property
+    def update_url(self):
+        return self.get_update_url()
 
     def cancel(self):
         self.status = self.STATUS.canceled
@@ -140,6 +112,33 @@ class Registration(TimeStampedModel, StatusModel):
 
     def get_delete_url(self):
         return reverse('backend:registration-delete', kwargs={'pk': self.pk})
+
+    def get_price(self):
+        subtotal, __ = self.get_price_category()
+        modifier = sum([extra.price_modifier for extra in self.extra_infos.all()])
+        if subtotal + modifier > 0:
+            # we don't want to give money to users :)
+            return subtotal + modifier
+        return 0
+
+    def get_price_category(self):
+        if settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
+            from activities.models import Course
+            if Registration.objects.filter(child__family=self.child.family,
+                                           course=self.course).order_by('created').last() != self:
+                # This child has a sibling, registered to the same course => special rate
+                if self.child.family.zipcode in settings.KEPCHUP_LOCAL_ZIPCODES:
+                    # tarif indigène
+                    return self.course.price_local_family, Course._meta.get_field('price_local_family').verbose_name
+                else:
+                    return self.course.price_family, Course._meta.get_field('price_family').verbose_name
+            else:
+                if self.child.family.zipcode in settings.KEPCHUP_LOCAL_ZIPCODES:
+                    # tarif indigène
+                    return self.course.price_local, Course._meta.get_field('price_local').verbose_name
+                else:
+                    return self.course.price, _("Price for external people")
+        return self.course.price, ''
 
     def get_update_url(self):
         return reverse('backend:registration-update', kwargs={'pk': self.pk})
@@ -274,36 +273,9 @@ class Bill(TimeStampedModel, StatusModel):
 
     objects = BillManager()
 
-    def __unicode__(self):
-        return self.billing_identifier
-
-    def update_total(self):
-        self.total = sum([registration.price for registration in self.registrations.all()])
-
-    def update_billing_identifier(self):
-        if self.pk:
-            self.billing_identifier = slugify('%s-%i' % (self.family.last_name, self.pk))
-
-    def get_absolute_url(self):
-        return reverse('registrations_bill_detail', kwargs={'pk': self.pk})
-
-    def get_backend_url(self):
-        return reverse('backend:bill-detail', kwargs={'pk': self.pk})
-
-    def get_pay_url(self):
-        return reverse('backend:bill-update', kwargs={'pk': self.pk})
-
-    @property
-    def is_ok(self):
-        return self.status != self.STATUS.waiting
-
-    @property
-    def is_paid(self):
-        return self.status in (self.STATUS.paid, self.STATUS.canceled)
-
-    @property
-    def is_wire_transfer(self):
-        return self.payment_method == self.METHODS.iban
+    class Meta:
+        verbose_name = _("Bill")
+        verbose_name_plural = _("Bills")
 
     @property
     def backend_url(self):
@@ -318,6 +290,18 @@ class Bill(TimeStampedModel, StatusModel):
             return None
 
     @property
+    def is_ok(self):
+        return self.status != self.STATUS.waiting
+
+    @property
+    def is_paid(self):
+        return self.status in (self.STATUS.paid, self.STATUS.canceled)
+
+    @property
+    def is_wire_transfer(self):
+        return self.payment_method == self.METHODS.iban
+
+    @property
     def pay_url(self):
         return self.get_pay_url()
 
@@ -327,6 +311,15 @@ class Bill(TimeStampedModel, StatusModel):
         for registration in self.registrations.filter(status=Registration.STATUS.valid):
             registration.paid = True
             registration.save()
+
+    def get_absolute_url(self):
+        return reverse('registrations_bill_detail', kwargs={'pk': self.pk})
+
+    def get_backend_url(self):
+        return reverse('backend:bill-detail', kwargs={'pk': self.pk})
+
+    def get_pay_url(self):
+        return reverse('backend:bill-update', kwargs={'pk': self.pk})
 
     @transaction.atomic
     def save(self, *args, **kwargs):
@@ -358,9 +351,15 @@ class Bill(TimeStampedModel, StatusModel):
             language=get_language(),
         ))
 
-    class Meta:
-        verbose_name = _("Bill")
-        verbose_name_plural = _("Bills")
+    def update_billing_identifier(self):
+        if self.pk:
+            self.billing_identifier = slugify('%s-%i' % (self.family.last_name, self.pk))
+
+    def update_total(self):
+        self.total = sum([registration.price for registration in self.registrations.all()])
+
+    def __unicode__(self):
+        return self.billing_identifier
 
 
 class ExtraInfo(models.Model):
@@ -424,43 +423,12 @@ class Child(TimeStampedModel, StatusModel):
     class Meta:
         ordering = ('last_name', 'first_name',)
         abstract = False
-
-    def get_update_url(self):
-        return reverse('backend:child-update', kwargs={'child': self.pk})
-
-    def get_delete_url(self):
-        return reverse('backend:child-delete', kwargs={'child': self.pk})
-
-    def get_backend_url(self):
-        if self.family:
-            return reverse('backend:user-detail', kwargs={'pk': self.family.pk})
-        return self.get_update_url()
-
-    def get_backend_detail_url(self):
-        return reverse('backend:child-detail', kwargs={'child': self.pk})
-
-    def get_backend_absences_url(self):
-        return reverse('backend:child-absences', kwargs={'child': self.pk})
-
-    def get_full_name(self):
-        full_name = u'%s %s' % (self.first_name.title(), self.last_name.title())
-        return full_name.strip()
-
-    @property
-    def full_name(self):
-        return self.get_full_name()
-
-    @property
-    def ordering_name(self):
-        return u'{} {}'.format(self.last_name.lower().strip(), self.first_name.lower().strip())
+        verbose_name = _("Child")
+        verbose_name_plural = _("Children")
 
     @property
     def backend_url(self):
         return self.get_backend_url()
-
-    @property
-    def update_url(self):
-        return self.get_update_url()
 
     @property
     def delete_url(self):
@@ -471,11 +439,12 @@ class Child(TimeStampedModel, StatusModel):
         return self.get_full_name()
 
     @property
-    def school_name(self):
-        if self.school:
-            return self.school.name
-        else:
-            return self.other_school
+    def has_registrations(self):
+        return self.registrations.exclude(status=Registration.STATUS.canceled).exists()
+
+    @property
+    def js_birth_date(self):
+        return self.birth_date.strftime('%d.%m.%Y')
 
     @property
     def js_sex(self):
@@ -484,26 +453,50 @@ class Child(TimeStampedModel, StatusModel):
         return '2'
 
     @property
-    def js_birth_date(self):
-        return self.birth_date.strftime('%d.%m.%Y')
-
-    @property
-    def has_registrations(self):
-        return self.registrations.exclude(status=Registration.STATUS.canceled).exists()
-
-    @property
     def montreux_needs_appointment(self):
         for registration in self.registrations.all():
             if registration.extra_infos.filter(key__question_label__contains=u"matériel", value='OUI').exists():
                 return True
         return False
 
+    @property
+    def ordering_name(self):
+        return u'{} {}'.format(self.last_name.lower().strip(), self.first_name.lower().strip())
+
+    @property
+    def school_name(self):
+        if self.school:
+            return self.school.name
+        else:
+            return self.other_school
+
+    @property
+    def update_url(self):
+        return self.get_update_url()
+
+    def get_backend_absences_url(self):
+        return reverse('backend:child-absences', kwargs={'child': self.pk})
+
+    def get_backend_detail_url(self):
+        return reverse('backend:child-detail', kwargs={'child': self.pk})
+
+    def get_backend_url(self):
+        if self.family:
+            return reverse('backend:user-detail', kwargs={'pk': self.family.pk})
+        return self.get_update_url()
+
+    def get_delete_url(self):
+        return reverse('backend:child-delete', kwargs={'child': self.pk})
+
+    def get_full_name(self):
+        full_name = u'%s %s' % (self.first_name.title(), self.last_name.title())
+        return full_name.strip()
+
+    def get_update_url(self):
+        return reverse('backend:child-update', kwargs={'child': self.pk})
+
     def __unicode__(self):
         return self.get_full_name()
-
-    class Meta:
-        verbose_name = _("Child")
-        verbose_name_plural = _("Children")
 
 
 class ChildActivityLevel(TimeStampedModel):
@@ -571,12 +564,12 @@ class ChildActivityLevel(TimeStampedModel):
     class Meta:
         unique_together = ('activity', 'child')
 
-    def get_api_url(self):
-        return reverse('api:level-detail', kwargs={'pk': self.pk})
-
     @property
     def api_url(self):
         return self.get_api_url()
+
+    def get_api_url(self):
+        return reverse('api:level-detail', kwargs={'pk': self.pk})
 
 
 class RegistrationsProfile(TimeStampedModel):
