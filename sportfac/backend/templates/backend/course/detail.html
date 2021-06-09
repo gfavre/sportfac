@@ -106,28 +106,47 @@
     </div>
     <p class="text-right"><small>{{ course.min_participants }} participants requis pour que l'activité ait lieu</small></p>
 
-    {% if course.count_participants %}
-      <h4 class="content-title"><u>{% trans "Management"%}</u></h4>
-
+    {% if course.has_participants %}
+    <h4 class="content-title"><u>{% trans "Management"%}</u></h4>
+    <div>
       {% if USE_ABSENCES %}
-      <a href="{{ course.get_backend_absences_url }}" class="btn btn-sm">
-        <i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}
-      </a>
+      <div style="display: inline-block; min-height: 50px">
+        <a href="{{ course.get_backend_absences_url }}" class="btn btn-sm">
+          <i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}
+        </a>
+        <br><small>&nbsp;</small>
+      </div>
       {% endif %}
 
-      <a href="{{ course.get_mail_instructors_url }}" class="btn btn-sm">
-        <i class="icon-tasks"></i>&nbsp;{% trans "Send infos to instructors" %}
-      </a>
+      <div style="display: inline-block; min-height: 50px">
+        <a href="{{ course.get_mail_instructors_url }}" class="btn btn-sm">
+          <i class="icon-tasks"></i>&nbsp;{% trans "Send infos to instructors" %}
+        </a>
+        <br>
+        <small style="padding-left: 13px">
+          {% trans "Last email sent on:" %} {{ course.last_instructor_email | date | default:"n/a" }}
+        </small>
+      </div>
 
-      <a href="{{ course.get_mail_confirmation_url }}" class="btn btn-sm">
-        <i class="icon-mail"></i>&nbsp;{% trans "Send confirmation email" %}
-      </a>
+      <div style="display: inline-block; min-height: 50px">
+        <a href="{{ course.get_mail_confirmation_url }}" class="btn btn-sm">
+          <i class="icon-mail"></i>&nbsp;{% trans "Send convocation email" %}
+        </a>
+        <br>
+         <small style="padding-left: 13px">
+          {% trans "Last email sent on:" %} {{ course.last_convocation_email | date | default:"n/a" }}
+        </small>
+      </div>
 
       {% if not course.is_camp %}
+      <div style="display: inline-block; min-height: 50px">
         <a href="{{ course.get_js_export_url }}" class="btn btn-sm">
-        <i class="icon-doc"></i>&nbsp;{% trans "Get BDNS: J+S export file" %}
-      </a>
-        {% endif %}
+          <i class="icon-doc"></i>&nbsp;{% trans "Get BDNS: J+S export file" %}
+        </a>
+        <br><small>&nbsp;</small>
+      </div>
+      {% endif %}
+  <div>
 
     {% endif %}
   </div>

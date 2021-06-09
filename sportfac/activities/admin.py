@@ -10,7 +10,7 @@ from import_export.admin import ImportExportModelAdmin
 
 from registrations.models import Registration
 from sportfac.admin_utils import SportfacModelAdmin, SportfacAdminMixin
-from .models import Activity, AllocationAccount, Course, ExtraNeed
+from .models import Activity, AllocationAccount, Course, ExtraNeed, TemplatedEmailReceipt
 from .resources import CourseResource
 
 
@@ -134,6 +134,11 @@ class CoursesAdmin(SportfacAdminMixin, ImportExportModelAdmin):
 
     duration.short_description = _("Duration")
 
+
+@admin.register(TemplatedEmailReceipt)
+class TemplatedEmailReceipt(admin.ModelAdmin):
+    list_display = ('type', 'course')
+    raw_id_fields = ('course',)
 
 class FlatPageCustom(SportfacAdminMixin, FlatPageAdmin):
     fieldsets = (

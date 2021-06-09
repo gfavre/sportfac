@@ -13,7 +13,6 @@ from model_utils import Choices
 
 from sportfac.models import ListField
 
-
 __all__ = ('MailArchive', 'Attachment', 'GenericEmail')
 
 
@@ -29,7 +28,7 @@ class DraftMailManager(models.Manager):
 
 class MailArchive(TimeStampedModel, StatusModel):
     STATUS = Choices(('sent', _("sent")),
-                     ('draft', _("draft")),)
+                     ('draft', _("draft")), )
 
     subject = models.CharField(max_length=255, verbose_name=_("Subject"))
     recipients = ListField(verbose_name=_("Recipients"))
@@ -51,12 +50,14 @@ class MailArchive(TimeStampedModel, StatusModel):
             return name
 
         return u'<br />'.join([clean_email(rec) for rec in self.recipients])
+
     admin_recipients.allow_tags = True
 
     def admin_message(self):
         if self.messages:
             return linebreaks(self.messages[0])
         return ''
+
     admin_message.allow_tags = True
 
 
@@ -73,7 +74,7 @@ class GenericEmail(TimeStampedModel):
     subject = models.CharField(blank=True, max_length=100)
     subject_template = models.ForeignKey('dbtemplates.Template', related_name='email_subject',
                                          on_delete=models.CASCADE)
-    body_template = models.ForeignKey('dbtemplates.Template',  related_name='email_body',
+    body_template = models.ForeignKey('dbtemplates.Template', related_name='email_body',
                                       on_delete=models.CASCADE)
     help_text = RichTextField(blank=True)
 

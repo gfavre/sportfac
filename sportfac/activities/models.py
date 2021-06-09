@@ -319,6 +319,10 @@ class Course(TimeStampedModel):
         return self.count_participants > self.max_participants
 
     @property
+    def has_participants(self):
+        return self.participants.exists()
+
+    @property
     def start_hours(self):
         out = []
         if self.start_time_mon:
@@ -348,6 +352,20 @@ class Course(TimeStampedModel):
     @property
     def is_multi_course(self):
         return self.course_type == self.TYPE.multicourse
+
+    @property
+    def last_convocation_email(self):
+        receipt = self.email_receipts.filter(type=TemplatedEmailReceipt.TYPE.convocation).order_by('created').last()
+        if receipt:
+            return receipt.created
+        return None
+
+    @property
+    def last_instructor_email(self):
+        receipt = self.email_receipts.filter(type=TemplatedEmailReceipt.TYPE.instructors).order_by('created').last()
+        if receipt:
+            return receipt.created
+        return None
 
     @property
     def long_name(self):
@@ -600,3 +618,19 @@ class PaySlip(TimeStampedModel):
 
     def get_absolute_url(self):
         return reverse('activities:payslip-detail', kwargs={'pk': self.pk})
+
+
+class TemplatedEmailReceipt(TimeStampedModel):
+    TYPE = Choices(
+        ('convocation', _("Convocation to the course")),
+        ('need_confirmation', _("Need parent confirmation")),
+        ('not_paid', _("Payment reminder")),
+        ('instructors', _("Documents for course instructor")),
+    )
+    type = models.CharField(_("Email type"),
+
+                            choices=TYPE, max_length=30)
+    course = models.ForeignKey('Course', related_name='email_receipts', null=True, blank=True)
+
+    class Meta:
+        ordering = ('-created',)

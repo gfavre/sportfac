@@ -84,6 +84,7 @@ class MailConfirmationParticipantsView(BackendMixin, ParticipantsMixin, Template
     template_name = 'backend/mail/preview-browse.html'
     edit_url = None
     group_mails = False
+    mail_type = 'convocation'
 
     def get_success_url(self):
         return self.course.backend_url
@@ -100,6 +101,7 @@ class NotPaidYetView(BackendMixin, BillMixin, TemplatedEmailMixin,
     message_template = 'mailer/notpaid.txt'
     template_name = 'backend/mail/preview-browse.html'
     success_url = reverse_lazy('backend:home')
+    mail_type = 'not_paid'
 
     def get_context_data(self, **kwargs):
         kwargs['delay'] = self.global_preferences['payment__DELAY_DAYS']
@@ -120,6 +122,7 @@ class NeedConfirmationView(BackendMixin, TemplatedEmailMixin,
     subject_template = 'mailer/need_confirmation_subject.txt'
     message_template = 'mailer/need_confirmation.txt'
     template_name = 'backend/mail/preview-browse.html'
+    mail_type = 'need_confirmation'
 
     def get_recipients(self):
         parents = list(set([reg.child.family for reg in Registration.objects.waiting()]))

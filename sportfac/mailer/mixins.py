@@ -8,7 +8,7 @@ from django.template import loader
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext as _
 
-from activities.models import Course
+from activities.models import Course, TemplatedEmailReceipt
 from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser
 from .models import MailArchive
@@ -152,6 +152,19 @@ class ArchivedMailMixin(BaseEmailMixin):
 class TemplatedEmailMixin(BaseEmailMixin):
     message_template = None
     subject_template = None
+    mail_type = None
+    course = None
+
+    def create_receipt(self):
+        kwargs = {'type': self.get_mail_type()}
+        if self.course is not None:
+            kwargs['course'] = self.course
+        TemplatedEmailReceipt.objects.update_or_create(**kwargs)
+
+    def get_mail_type(self):
+        if not self.mail_type:
+            raise NotImplementedError('Add a mail_type')
+        return self.mail_type
 
     def get_mail_body(self, context):
         if not self.message_template:
@@ -217,6 +230,8 @@ class ParticipantsMixin(ParticipantsBaseMixin, BaseEmailMixin):
             bcc=[user.get_email_string() for user in bcc_recipients],
             attachments=[attachment.pk for attachment in self.get_attachments(mail_context)]
         )
+        if hasattr(self, 'create_receipt'):
+            self.create_receipt()
         return message
 
     def get(self, request, *args, **kwargs):

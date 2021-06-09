@@ -179,6 +179,8 @@ class MailPreviewView(CancelableMixin, EditableMixin, TemplateView):
             update_bills=True,
             recipient_pk=str(recipient.pk)
         )
+        if hasattr(self, 'create_receipt'):
+            self.create_receipt()
         return message
 
     def post(self, *args, **kwargs):
@@ -243,6 +245,7 @@ class MailCourseInstructorsView(ParticipantsBaseMixin, TemplatedEmailMixin, Canc
 
     message_template = 'mailer/instructor.txt'
     subject_template = 'mailer/instructor_subject.txt'
+    mail_type = 'instructors'
 
     def get_recipients(self):
         return self.course.instructors.all()
@@ -285,6 +288,7 @@ class MailCourseInstructorsView(ParticipantsBaseMixin, TemplatedEmailMixin, Canc
                 reply_to=[self.get_reply_to_address()],
                 bcc=[bcc_user.get_email_string() for bcc_user in bcc_list]
             )
+        self.create_receipt()
         messages.success(self.request,
                          _('Your email is being sent to %(number)s recipients.') % {
                              'number': len(self.get_recipients())
