@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-09 06:43+0200\n"
-"PO-Revision-Date: 2021-06-09 07:45+0200\n"
+"PO-Revision-Date: 2021-06-11 16:39+0200\n"
 "Last-Translator: Gregory Favre <greg@beyondthewall.ch>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -5022,12 +5022,12 @@ msgstr "Ma famille"
 #: sportfac/templates/navbar.html:126
 #: sportfac/themes/latourdepeilz/templates/navbar.html:126
 msgid "logout"
-msgstr "déconnexion"
+msgstr "Déconnexion"
 
 #: sportfac/templates/navbar.html:134
 #: sportfac/themes/latourdepeilz/templates/navbar.html:134
 msgid "login"
-msgstr "connexion"
+msgstr "Connexion"
 
 #: sportfac/templates/registration/login.html:12
 #: sportfac/templates/registration/login.html:18
