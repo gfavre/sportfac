@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.db.models import Count
+from django.db.models import Count, Case, When, IntegerField
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
@@ -10,6 +10,14 @@ from activities.models import Activity, Course
 from backend.forms import Select2Widget, DatePickerInput
 from profiles.models import FamilyUser, School, SchoolYear
 from schools.models import Building, Teacher
+
+
+class BillForm(forms.ModelForm):
+    status = forms.ChoiceField(choices=list(Bill.STATUS)[1:])
+
+    class Meta:
+        model = Bill
+        fields = ('status',)
 
 
 class ChildForm(forms.ModelForm):
@@ -68,23 +76,9 @@ class ChildForm(forms.ModelForm):
         return id_lagapeo
 
 
-class BillForm(forms.ModelForm):
-    status = forms.ChoiceField(choices=list(Bill.STATUS)[1:])
-
-    class Meta:
-        model = Bill
-        fields = ('status',)
-
-
 class RegistrationModelChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return obj.detailed_label()
-
-
-class TransportForm(forms.ModelForm):
-    class Meta:
-        model = Transport
-        fields = ('name',)
 
 
 class MoveRegistrationsForm(forms.Form):
@@ -92,7 +86,12 @@ class MoveRegistrationsForm(forms.Form):
                                                    widget=forms.MultipleHiddenInput)
     destination = RegistrationModelChoiceField(
             queryset=Course.objects.select_related('activity')\
-                                   .annotate(nb_participants=Count('participants')),
+                                   .annotate(
+                nb_participants=Count(Case(
+                    When(participants__status__in=['waiting', 'valid', 'confirmed'], then=1),
+                    output_field=IntegerField()
+                )),
+            ),
             widget=Select2Widget()
     )
 
@@ -103,3 +102,9 @@ class MoveTransportForm(forms.Form):
     destination = forms.ModelChoiceField(
             queryset=Transport.objects.all(),
             widget=Select2Widget())
+
+
+class TransportForm(forms.ModelForm):
+    class Meta:
+        model = Transport
+        fields = ('name',)

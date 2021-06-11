@@ -39,15 +39,6 @@ class RegistrationDetailView(BackendMixin, DetailView):
     template_name = 'backend/registration/detail.html'
 
 
-class RegistrationListView(BackendMixin, ListView):
-    model = Registration
-    template_name = 'backend/registration/list.html'
-
-    def get_queryset(self):
-        return Registration.objects.select_related('course', 'child', 'child__family')\
-                                   .prefetch_related('course__activity')
-
-
 class RegistrationExportView(BackendMixin, ExcelResponseMixin, View):
     filename = _("registrations")
 
@@ -56,6 +47,15 @@ class RegistrationExportView(BackendMixin, ExcelResponseMixin, View):
 
     def get(self, request, *args, **kwargs):
         return self.render_to_response()
+
+
+class RegistrationListView(BackendMixin, ListView):
+    model = Registration
+    template_name = 'backend/registration/list.html'
+
+    def get_queryset(self):
+        return Registration.objects.select_related('course', 'child', 'child__family')\
+                                   .prefetch_related('course__activity')
 
 
 class RegistrationsMoveView(BackendMixin, FormView):
@@ -99,7 +99,6 @@ class RegistrationsMoveView(BackendMixin, FormView):
     def get_context_data(self, **kwargs):
         form = self.get_form()
         form.is_valid()
-        kwargs['children'] = [reg.child for reg in form.cleaned_data.get('registrations', [])]
 
         if 'activity' in self.request.GET:
             try:
@@ -113,6 +112,9 @@ class RegistrationsMoveView(BackendMixin, FormView):
                 kwargs['success_url'] = Course.objects.get(pk=prev_course_id).backend_absences_url
             except (IndexError, TypeError, Course.DoesNotExist):
                 pass
+        if hasattr(form, 'cleaned_data'):
+            kwargs['children'] = [reg.child for reg in form.cleaned_data.get('registrations', [])]
+
         return super(RegistrationsMoveView, self).get_context_data(**kwargs)
 
 
