@@ -98,17 +98,21 @@
         </div>
       </div>
     </div>
+
     {% if is_instructor %}
     <fieldset>
     <legend>{% trans "Instructor informations" %}</legend>
     {% formconfig row using "floppyforms/rows/bootstrap-sm-3.html" %}
-    {% formrow form.birth_date %}
+    {% formrow form.gender form.birth_date form.nationality form.permit_type %}
     {% formconfig row using "floppyforms/rows/bootstrap.html" %}
-    {% formrow form.ahv form.iban %}
+    {% formrow form.ahv form.iban form.bank_name %}
     {% formrow form.js_identifier %}
+      {% formrow form.is_mep form.is_teacher %}
+
 
     </fieldset>
     {% endif %}
+    <hr>
   {%  formrow form.is_manager  %}
   {% endform %}
   <div class=" form-group">

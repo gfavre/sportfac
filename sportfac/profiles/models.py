@@ -11,10 +11,11 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 
-from model_utils import Choices
-from model_utils.fields import AutoLastModifiedField, AutoCreatedField
+from django_countries.fields import CountryField
 from localflavor.generic.models import IBANField
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
+from model_utils import Choices
+from model_utils.fields import AutoLastModifiedField, AutoCreatedField
 from phonenumber_field.modelfields import PhoneNumberField
 
 from activities.models import SCHOOL_YEARS
@@ -97,6 +98,21 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         ('I', _("Italy")),
         ('A', _("Austria"))
     )
+    GENDERS = Choices(
+        ('f', _("Female")),
+        ('m', _("Male"))
+    )
+    PERMIT_TYPES = Choices(
+        ('L', _("L - Short-term residence permit")),
+        ('B', _("B - Residence permit")),
+        ('C', _("C - Settlement permit")),
+        ('Ci', _("Ci - Residence permit with gainful employment")),
+        ('G', _("G - Cross-border commuter permit")),
+        ('F', _("F - Provisionally admitted foreigners")),
+        ('N', _("N - Permit for asylum-seekers")),
+        ('S', _("S - People in need of protection")),
+    )
+
     id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
     email = models.EmailField(verbose_name=_('Email address'), max_length=255, unique=True, db_index=True)
     first_name = models.CharField(_('First name'), max_length=30, blank=True)
@@ -108,12 +124,21 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     private_phone = PhoneNumberField(_("Home phone"), max_length=30, blank=True)
     private_phone2 = PhoneNumberField(_("Mobile phone"), max_length=30, blank=True)
     private_phone3 = PhoneNumberField(_("Other phone"), max_length=30, blank=True)
+
+    # TODO: move me to a separate SupervisorInfo model...
     iban = IBANField(include_countries=IBAN_SEPA_COUNTRIES, blank=True)
     birth_date = models.DateField(_("Birth date"), null=True, blank=True)
     ahv = AHVField(_('AHV number'),
                    help_text=_("New AHV number, e.g. 756.1234.5678.90"),
                    blank=True)
     js_identifier = models.CharField(_("J+S identifier"), max_length=30, blank=True)
+    is_mep = models.BooleanField(default=False, verbose_name=_("Is sports teacher"))
+    is_teacher = models.BooleanField(default=False, verbose_name=_("Is teacher"))
+    gender = models.CharField(choices=GENDERS, blank=True, max_length=1)
+    nationality = CountryField(_("Nationality"), blank=True)
+    permit_type = models.CharField(_("Permit type"), max_length=2, choices=PERMIT_TYPES, blank=True, null=True)
+    bank_name = models.CharField(_("Bank name"), max_length=50, blank=True)
+
     is_active = models.BooleanField(default=True, help_text='Designates whether this user should be treated as active.')
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField('staff status', default=False,
@@ -215,7 +240,6 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
             if registration.extra_infos.filter(key__question_label__contains=u"matériel", value='OUI').exists():
                 return True
         return False
-
 
     def is_instructor_of(self, course):
         return course in self.course.all()

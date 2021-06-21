@@ -242,6 +242,7 @@ SHARED_APPS = (
     'ckeditor_uploader',
     'crispy_forms',  # better forms => DRY
     'dbtemplates',  # store templates in db (used by mailer module)
+    'django_countries',  # country field selector
     'django_select2',  # select2 form input
     'dynamic_preferences',
     'floppyforms',  # better forms => bootstrap components

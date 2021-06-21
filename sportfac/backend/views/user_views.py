@@ -222,7 +222,13 @@ class UserDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
 
 class UserDetailView(BackendMixin, DetailView):
     model = FamilyUser
-    template_name = 'backend/user/detail.html'
+
+    def get_template_names(self):
+        user = self.get_object()
+        template_names = ['backend/user/detail.html']
+        if user.is_instructor:
+            template_names = ['backend/user/detail-instructor.html'] + template_names
+        return template_names
 
 
 class InstructorDetailView(BackendMixin, DetailView):

@@ -48,7 +48,9 @@
   <fieldset>
     <legend>{% trans "Instructor informations" %}</legend>
     {% formconfig row using "floppyforms/rows/bootstrap-sm-3.html" %}
+    {% formrow form.birth_date form.nationality %}
     {% formrow form.birth_date %}
+
     {% formconfig row using "floppyforms/rows/bootstrap.html" %}
     {% formrow form.ahv form.iban %}
   </fieldset>

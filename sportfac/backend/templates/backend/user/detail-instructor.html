@@ -36,10 +36,23 @@
     {% endif %}
     <dt>{% trans "Birth date" %}</dt>
     <dd>{{ object.birth_date | date:"j F Y"}}</dd>
+  <dt>{% trans "Gender" %}</dt>
+    <dd>{{ object.get_gender_display }}</dd>
+
+      <dt>{% trans "Nationality" %}</dt>
+    <dd>{{ object.get_nationality_display }}</dd>
+  {% if object.nationality != 'CH' %}
+ <dt>{% trans "permit_type" %}</dt>
+    <dd>{{ object.get_permit_type_display }}</dd>
+  {% endif %}
     <dt>{% trans "IBAN" %}</dt>
-    <dd>{{ object.iban|iban }}</dd>
+    <dd>{{ object.iban|iban }} {% if object.bank_name %} &mdash; {{ object.bank_name }}{% endif %}</dd>
     <dt>{% trans "AHV number" %}</dt>
     <dd>{{ object.ahv|ahv }}</dd>
+    <dt>{% trans "Is sports teacher" %}</dt>
+    <dd>{{ object.is_mep }}</dd>
+  <dt>{% trans "Is teacher" %}</dt>
+    <dd>{{ object.is_teacher }}</dd>
     <dt>{% trans "J+S identifier" %}</dt>
     <dd>{{ object.js_identifier }}</dd>
   </dl>
@@ -50,7 +63,7 @@
 <section class="portlet">
   <h4 class="portlet-title"><u>{% trans "Courses" %}</u></h4>
 <div class="row">
-  {% for course in object.courses.all %}
+  {% for course in object.course.all %}
   <section class="col-sm-6 topped">
     <div class="pricing-plan">
       <header class="pricing-header">

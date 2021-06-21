@@ -52,12 +52,6 @@ class AcceptTermsForm(forms.Form):
             _("""I've read and agree to <a href="%s"> terms and conditions</a>""") % reverse('terms')
         )
 
-if settings.KEPCHUP_ZIPCODE_RESTRICTION:
-    from profiles.models import City
-    cities = City.objects.filter(zipcode__in=settings.KEPCHUP_ZIPCODE_RESTRICTION)
-else:
-    cities = []
-cities = [('1196', 'Gland'), ('1272', 'Genolier')]
 
 class PhoneRequiredMixin(object):
     def clean(self):
@@ -135,7 +129,13 @@ class InstructorForm(ManagerForm):
         fields = ('email', 'first_name', 'last_name', 'address',
                   'zipcode', 'city', 'country',
                   'private_phone', 'private_phone2', 'private_phone3',
-                  'birth_date', 'iban', 'ahv', 'js_identifier')
+
+                  'birth_date', 'iban', 'bank_name',
+                  'ahv', 'js_identifier', 'is_mep', 'is_teacher',
+                  'gender', 'nationality', 'permit_type',
+
+
+                  )
 
 
 class InstructorWithPasswordForm(InstructorForm):

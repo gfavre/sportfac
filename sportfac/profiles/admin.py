@@ -21,7 +21,9 @@ class FamilyCreationForm(forms.ModelForm):
         fields = ('email', 'first_name', 'last_name',
                   'address', 'zipcode', 'city', 'country',
                   'private_phone', 'private_phone2',
-                  'birth_date', 'iban', 'ahv')
+                  'birth_date',
+                  'iban', 'ahv', 'js_identifier', 'is_mep', 'is_teacher', 'gender', 'nationality',
+                  'permit_type', 'bank_name')
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -55,7 +57,9 @@ class FamilyChangeForm(forms.ModelForm):
                   'first_name', 'last_name',
                   'address', 'zipcode', 'city', 'country',
                   'private_phone', 'private_phone2', 'private_phone3',
-                  'birth_date', 'iban', 'ahv')
+                  'birth_date',
+                  'iban', 'ahv', 'js_identifier', 'is_mep', 'is_teacher', 'gender', 'nationality',
+                  'permit_type', 'bank_name')
 
     def clean_password(self):
         # Regardless of what the user provides, return the initial value.
@@ -86,7 +90,14 @@ class FamilyAdmin(SportfacAdminMixin, UserAdmin):
         ('Personal info', {'fields': ('first_name', 'last_name',
                                       'address', 'zipcode', 'city', 'country',
                                       'private_phone', 'private_phone2', 'private_phone3',
-                                      'birth_date', 'iban', 'ahv')}),
+                                      )}),
+        (_("Instructor infos"), {
+            'fields': ['birth_date', 'gender', 'ahv',
+                       ('nationality', 'permit_type'),
+                       ('is_mep', 'is_teacher'),
+                       ('iban', 'bank_name'),
+                       ]}
+         ),
     )
     add_fieldsets = (
         (None, {

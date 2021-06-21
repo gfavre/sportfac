@@ -22,6 +22,9 @@ global_preferences = global_preferences_registry.manager()
 
 
 def get_ssf_decompte_heures(course, instructor):
+    """
+    pdftk sportfac/static/pdf/SSF_decompte_moniteur.pdf dump_data_fields
+    """
     pdf_file = os.path.join(settings.STATIC_ROOT, 'pdf', "SSF_decompte_moniteur.pdf")
 
     fields = {
@@ -37,18 +40,27 @@ def get_ssf_decompte_heures(course, instructor):
         u'Date de naissance': instructor.birth_date and instructor.birth_date.strftime('%d/%m/%Y') or '',
         u'Télnatel': instructor.best_phone.as_national,
         u'IBAN complet': instructor.iban,
+        u'Nom de la banque  CCP': instructor.bank_name,
+        u'MEP diplômé': instructor.is_mep and 'On',
+        u'Instituteur  Maître généraliste': instructor.is_teacher and 'On',
+        u'Moniteur': (not instructor.is_teacher and not instructor.is_mep) and 'On',
+        u'Sexe  F': instructor.gender == 'f' and 'On',
+        u'H': instructor.gender == 'm' and 'On',
+        u'Nationalité': instructor.get_nationality_display(),
+        u'Pour les étrangers type de permis': instructor.permit_type,
         u'No AVS': instructor.ahv,
     }
     # noinspection PyBroadException
     try:
         return pypdftk.fill_form(pdf_path=pdf_file, datas=fields, flatten=False)
-    except:  # noqa
+    except :  # noqa
         return pdf_file
 
 """
 from mailer.pdfutils import get_ssf_decompte_heures
 from activities.models import  Course
 course= Course.objects.filter(instructors__isnull=False).first()
+course = Course.objects.get(pk=38)
 instructor=course.instructors.first()
 pdf = get_ssf_decompte_heures(course, instructor)
 import shutil
