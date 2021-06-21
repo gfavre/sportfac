@@ -276,6 +276,7 @@ class Bill(TimeStampedModel, StatusModel):
     class Meta:
         verbose_name = _("Bill")
         verbose_name_plural = _("Bills")
+        ordering = ('-created', )
 
     @property
     def backend_url(self):
