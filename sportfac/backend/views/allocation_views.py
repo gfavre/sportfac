@@ -122,7 +122,7 @@ class AllocationAccountUpdateView(SuccessMessageMixin, BackendMixin, UpdateView)
 class AllocationAccountDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
     model = AllocationAccount
     success_message = _("Allocation has been deleted.")
-    success_url = reverse_lazy('backend:Allocation-list')
+    success_url = reverse_lazy('backend:allocation-list')
     template_name = 'backend/allocations/confirm_delete.html'
     
     def delete(self, request, *args, **kwargs):
