@@ -9,8 +9,9 @@ Jour : {{ course.day_name }} de {{ course.start_time|time:"H:i" }} à {{ course.
 Date 1ère séance : {{ course.start_date | date:"j F Y" }}
 Nombre de séances : {{ course.number_of_sessions }}
 Rendez-vous/lieu du cours : {{ course.place }}
+
 {% if course.activity.informations %}
-Informations: {{ course.activity.informations|striptags|unescape }}
+Informations: {{ course.activity.informations|striptags|unescape|safe }}
 Vous pouvez retrouver ces informations sur: {{ site_url }}{% url "registrations_registered_activities" %}
 {% endif %}
 

@@ -1,6 +1,8 @@
-import os, re, htmlentitydefs
+import htmlentitydefs
+import os
+import re
+
 from django import template
-from django.conf import settings
 
 register = template.Library()
 
@@ -24,6 +26,7 @@ def unescape(value):
             except KeyError:
                 pass
         return text # leave as is
+
     return re.sub("&#?\w+;", fixup, value)
 
 
