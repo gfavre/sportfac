@@ -142,7 +142,7 @@ class AllocationAccount(TimeStampedModel):
         if end:
             kwargs['created__lte'] = datetime.combine(end, time.max)
         return (self.registrations.filter(**kwargs).prefetch_related('bill__datatrans_transactions')) \
-            .select_related('course', 'course__activity', 'bill')
+            .select_related('course', 'course__activity', 'bill').order_by('created')
 
     def get_total_transactions(self, period_start=None, period_end=None):
         return self.registrations.all().aggregate(Sum('price'))['price__sum']
