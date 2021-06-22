@@ -14,14 +14,14 @@ from model_utils.models import StatusModel, TimeStampedModel
 
 class DatatransTransaction(TimeStampedModel, StatusModel):
     STATUS = Choices(
-        ('initialized', _("Initialized")),
+        ('initialized', _("Initialized")),  # request just opened
         ("challenge_required", _("Challenge required")),
         ("challenge_ongoing", _("Challenge ongoing")),
         ("authenticated", _("Authenticated")),
-        ("authorized", _("Authorized")),
-        ("settled", _("Settled")),
+        ("authorized", _("Authorized")),  # Guess it is a successful status
+        ("settled", _("Settled")),  # seems to be a success?
         ("canceled", _("Canceled")),
-        ("transmitted", _("Transmitted")),
+        ("transmitted", _("Transmitted")),  # The final successful status for twint
         ("failed", _("Failed")),
     )
     id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
@@ -35,7 +35,7 @@ class DatatransTransaction(TimeStampedModel, StatusModel):
 
     @property
     def is_success(self):
-        return self.status == self.STATUS.authorized
+        return self.status in (self.STATUS.authorized, self.STATUS.transmitted)
 
     @property
     def refno(self):
