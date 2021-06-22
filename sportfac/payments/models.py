@@ -46,7 +46,7 @@ class DatatransTransaction(TimeStampedModel, StatusModel):
         return '{}upp/payment/js/datatrans-2.0.0.js'.format(settings.DATATRANS_PAY_URL.geturl())
 
     def update_invoice(self):
-        if self.status.is_success:
+        if self.is_success:
             self.invoice.set_paid()
         elif self.status in (self.STATUS.canceled, self.STATUS.failed) and not self.invoice.is_paid:
             self.invoice.set_waiting()
