@@ -74,7 +74,16 @@
         {% if not NO_PAYMENT %}
           <dt>{% trans "Price" %}</dt>
           <dd>
-            {{ course.price|money }}
+            {% if USE_DIFFERENTIATED_PRICES %}
+              <ul>
+                <li>{{ course.price|money }} (externe)</li>
+                <li>{{ course.price_local|money }} (indigène)</li>
+                <li>{{ course.price_family|money }} (externe, rabais fratrie)</li>
+                <li>{{ course.price_local_family|money }} (indigène, rabais fratrie)</li>
+              </ul>
+            {% else %}
+              {{ course.price|money }}
+            {% endif %}
             {% if course.price_description %}
               <p>{{ course.price_description|linebreaksbr }}</p>
             {% endif %}

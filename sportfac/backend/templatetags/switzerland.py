@@ -35,9 +35,9 @@ def money(value):
         else:
             return mark_safe('CHF {:1,.0f}.-'.format(number).replace(',', "'").replace('CHF -', '<strong>-</strong> CHF '))
     except ValueError:
-        return value
+        return 'n/a'
     except TypeError:
-        return value
+        return 'n/a'
 
 @register.filter(is_safe=True)
 def money_sign(value):
