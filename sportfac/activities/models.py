@@ -123,7 +123,7 @@ class AllocationAccount(TimeStampedModel):
 
     def __unicode__(self):
         if self.name:
-            return u'{} ({})'.format(self.name, self.account)
+            return u'{} {}'.format(self.account, self.name)
         return self.account
 
     def get_backend_url(self):
