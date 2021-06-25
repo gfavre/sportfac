@@ -10,7 +10,6 @@ from dynamic_preferences.registries import global_preferences_registry
 
 from activities.models import Activity
 from backend.models import YearTenant
-from registrations.models import Bill
 
 
 class Step:
@@ -31,7 +30,10 @@ class Step:
     def ensure_activable(self):
         # Resolve returns a resolver_match that can be used to get view class and then call static method
         from sportfac.views import NotReachableException
-
+        url = self.url
+        if settings.FORCE_SCRIPT_NAME:
+            # URL = /hiver/wizard => ça ne résout pas. à cause du /hiver
+            url = url.replace(settings.FORCE_SCRIPT_NAME, '')
         try:
             resolve(self.url).func.view_class.check_initial_condition(self.request)
             self.activable = True
