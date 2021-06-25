@@ -35,7 +35,7 @@ class Step:
             # URL = /hiver/wizard => ça ne résout pas. à cause du /hiver
             url = url.replace(settings.FORCE_SCRIPT_NAME, '')
         try:
-            resolve(self.url).func.view_class.check_initial_condition(self.request)
+            resolve(url).func.view_class.check_initial_condition(self.request)
             self.activable = True
         except NotReachableException:
             self.activable = False
