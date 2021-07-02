@@ -250,7 +250,9 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         super(FamilyUser, self).save(*args, **kwargs)
         if create_profile and not hasattr(self, 'profile'):
             try:
-                RegistrationsProfile.objects.get_or_create(user=self)
+                profile, created = RegistrationsProfile.objects.get_or_create(user=self)
+                if not created:
+                    profile.save()
             except ProgrammingError:
                 # we are running from shell where no tenant has been selected.
                 pass

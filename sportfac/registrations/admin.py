@@ -5,7 +5,7 @@ from import_export import fields, resources
 from import_export.admin import ImportExportModelAdmin
 
 from sportfac.admin_utils import SportfacModelAdmin, SportfacAdminMixin
-from .models import Registration, Child, Bill, ExtraInfo, Transport
+from .models import Registration, Child, Bill, ExtraInfo, Transport, RegistrationsProfile
 
 
 class RegistrationResource(resources.ModelResource):
@@ -74,12 +74,26 @@ class RegistrationAdmin(SportfacAdminMixin, ImportExportModelAdmin):
         return actions
 
 
+@admin.register(RegistrationsProfile)
+class RegistrationsProfileAdmin(SportfacModelAdmin):
+    list_display = ('user', 'has_paid_all', 'finished_registering', 'last_registration')
+    raw_id_fields = ('user', )
+    list_filter = ('has_paid_all', 'finished_registering')
+
+
+
 @admin.register(Child)
 class ChildAdmin(SportfacModelAdmin):
     list_display = ('first_name', 'last_name', 'family', 'school_year', 'id_lagapeo', 'created', 'modified')
     search_fields = ('first_name', 'last_name', 'id_lagapeo', 'family__first_name', 'family__last_name')
     list_filter = ('school_year', 'status')
     raw_id_fields = ('family', 'teacher', )
+
+
+class RegistrationInline(admin.StackedInline):
+    model = Registration
+    raw_id_fields = ('child', 'course')
+    extra = 0
 
 
 @admin.register(Bill)
@@ -89,6 +103,8 @@ class BillAdmin(SportfacModelAdmin):
     raw_id_fields = ('family',)
     date_hierarchy = 'created'
     search_fields = ('billing_identifier', 'family__first_name', 'family__last_name')
+
+    inlines = [RegistrationInline]
 
     def get_queryset(self, request):
         return super(BillAdmin, self).get_queryset(request).select_related('family')

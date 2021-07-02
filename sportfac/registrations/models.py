@@ -83,6 +83,8 @@ class Registration(TimeStampedModel, StatusModel):
 
     def cancel(self):
         self.status = self.STATUS.canceled
+        if self.bill:
+            self.bill.save()
         if settings.KEPCHUP_USE_ABSENCES:
             self.delete_future_absences()
 
@@ -325,6 +327,7 @@ class Bill(TimeStampedModel, StatusModel):
     @transaction.atomic
     def save(self, *args, **kwargs):
         self.update_total()
+        self.update_status()
         if not self.billing_identifier:
             self.update_billing_identifier()
         super(Bill, self).save(*args, **kwargs)
@@ -358,6 +361,11 @@ class Bill(TimeStampedModel, StatusModel):
 
     def update_total(self):
         self.total = sum([registration.price for registration in self.registrations.all()])
+
+    def update_status(self):
+        if self.status == 'waiting' and not self.registrations.exclude(status=Registration.STATUS.canceled)\
+                                                              .filter(paid=False).exists():
+            self.status = self.STATUS.paid
 
     def __unicode__(self):
         return self.billing_identifier
