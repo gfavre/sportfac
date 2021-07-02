@@ -56,6 +56,6 @@ def notify_absences():
         logger.debug('Forging email')
         logger.debug('Subject: ' + subject)
         logger.debug('Body: ' + body)
-        send_mail.s(subject, body, from_email, recipients, reply_to)
+        send_mail.delay(subject, body, from_email, recipients, reply_to)
         absence.notification_sent = True
         absence.save()
