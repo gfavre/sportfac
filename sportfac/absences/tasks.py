@@ -43,7 +43,7 @@ def notify_absences():
     subject_tmpl = loader.get_template('mailer/absence_notification_subject.txt')
     body_tmpl = loader.get_template('mailer/absence_notification.txt')
     from_email = preferences['email__FROM_MAIL']
-    reply_to = preferences['email__REPLY_TO_MAIL']
+    reply_to = [preferences['email__REPLY_TO_MAIL']]
 
     for absence in absences:
         context = base_context.copy()
