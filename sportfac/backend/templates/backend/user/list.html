@@ -63,6 +63,7 @@
           dom: 'PBfrlitiplB',
           columns: [
             {data: "id"},
+            {data: 'email'},
             {data: 'first_name', name: 'last_name'},
             {data: 'last_name', name: 'last_name'},
             {data: 'children', name: 'children.first_name,children.last_name'},
@@ -75,7 +76,7 @@
           columnDefs: [
             {
               visible: false,
-              targets: ['user-id', 'last_registration', {% if NO_PAYMENT %}, 'has-paid'{% endif %}],
+              targets: ['user-id', 'email', 'last_registration', {% if NO_PAYMENT %}, 'has-paid'{% endif %}],
             },
             {
               searchable: false,
@@ -194,6 +195,8 @@
     <thead>
     <tr>
       <th class="user-id">ID</th>
+      <th class="email">Email</th>
+
       <th class="first-name">{% trans "First name" %}</th>
       <th class="last-name">{% trans "Last name" %}</th>
       <th class="user-children">{% trans "Children" %}</th>
