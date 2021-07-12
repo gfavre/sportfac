@@ -5,11 +5,10 @@ import json
 from django.conf import settings
 from django.contrib import messages
 from django.core.urlresolvers import reverse_lazy
-from django.db import transaction, connection, IntegrityError
-from django.db.models import Sum
+from django.db import IntegrityError
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.utils.translation import ugettext as _, get_language
+from django.utils.translation import ugettext as _
 from django.views.generic import DetailView, DeleteView, FormView, ListView, TemplateView
 
 from braces.views import LoginRequiredMixin, UserPassesTestMixin
@@ -20,7 +19,6 @@ from profiles.forms import AcceptTermsForm
 from profiles.models import School
 from sportfac.views import WizardMixin, NotReachableException
 from .models import Bill, Child, Registration
-from .tasks import send_confirmation
 
 
 class BillMixin(object):
@@ -98,6 +96,7 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
     def check_initial_condition(request):
         if not request.user.is_authenticated():
             raise NotReachableException('No account created')
+        # noinspection PyUnresolvedReferences
         if not Registration.waiting.filter(child__family=request.user).exists():
             raise NotReachableException('No waiting Registration available')
 

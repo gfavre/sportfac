@@ -117,7 +117,11 @@ class Registration(TimeStampedModel, StatusModel):
 
     def get_price(self):
         subtotal, __ = self.get_price_category()
+        if subtotal is None:
+            subtotal = 0
         modifier = sum([extra.price_modifier for extra in self.extra_infos.all()])
+        if modifier is None:
+            modifier = 0
         if subtotal + modifier > 0:
             # we don't want to give money to users :)
             return subtotal + modifier

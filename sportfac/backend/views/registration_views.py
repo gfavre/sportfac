@@ -153,21 +153,23 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
             self.instance.save()
             return response
         try:
+            status = Bill.STATUS.paid
             if not self.instance.paid:
                 status = Bill.STATUS.waiting
                 if self.instance.course.price == 0:
                     status = Bill.STATUS.paid
-                bill = Bill.objects.create(
-                    status=status,
-                    family=user
-                )
-                bill.update_billing_identifier()
-                bill.save()
-                self.instance.bill = bill
-                message = _('The bill %(identifier)s has been created. <a href="%(url)s">Please review it.</a>')
-                message = mark_safe(message % {'identifier': bill.billing_identifier,
-                                               'url': bill.backend_url})
-                messages.add_message(self.request, messages.INFO, message)
+            bill = Bill.objects.create(
+                status=status,
+                family=user
+            )
+            bill.update_billing_identifier()
+            bill.save()
+            bill.send_confirmation()
+            self.instance.bill = bill
+            message = _('The bill %(identifier)s has been created. <a href="%(url)s">Please review it.</a>')
+            message = mark_safe(message % {'identifier': bill.billing_identifier,
+                                           'url': bill.backend_url})
+            messages.add_message(self.request, messages.INFO, message)
 
             self.instance.save()
         except IntegrityError:
