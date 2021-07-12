@@ -71,3 +71,8 @@ CELERYBEAT_SCHEDULE['sync_from_master'] = {
         'task': 'profiles.tasks.sync_from_master',
         'schedule': crontab(minute='*/10'),
 }
+
+# Dashboard
+############################################
+KEPCHUP_DASHBOARD_SHOW_CHILDREN_STATS = True
+KEPCHUP_DASHBOARD_SHOW_FAMILY_STATS = False

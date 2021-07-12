@@ -24,7 +24,7 @@
     </div>
     <div class="col-sm-6 col-md-8">
 
-     {% if registrations_period == 'daily' %}
+      {% if registrations_period == 'daily' %}
         {% include 'backend/portlets/registrations_phase3.html' %}
       {% else %}
         {% include 'backend/portlets/monthly_registrations.html' %}
@@ -35,12 +35,17 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-md-6">
-      {% include 'backend/portlets/families.html' %}
+    {% if DASHBOARD_SHOW_FAMILY_STATS %}
+      <div class="col-md-6">
+        {% include 'backend/portlets/families.html' %}
+      </div>
+    {% endif %}
 
-    </div>
-    <div class="col-md-6">
-      {% include 'backend/portlets/children.html' %}
-    </div>
+    {% if DASHBOARD_SHOW_CHILDREN_STATS %}
+      <div class="col-md-6">
+        {% include 'backend/portlets/children.html' %}
+      </div>
+    {% endif %}
   </div>
+
 {% endblock content %}

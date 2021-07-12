@@ -50,13 +50,17 @@
   </div>
 
   <div class="row">
-    <div class="col-md-6">
-      {% include 'backend/portlets/families.html' %}
+    {% if DASHBOARD_SHOW_FAMILY_STATS %}
+      <div class="col-md-6">
+        {% include 'backend/portlets/families.html' %}
+      </div>
+    {% endif %}
 
-    </div>
-    <div class="col-md-6">
-      {% include 'backend/portlets/children.html' %}
-    </div>
+    {% if DASHBOARD_SHOW_CHILDREN_STATS %}
+      <div class="col-md-6">
+        {% include 'backend/portlets/children.html' %}
+      </div>
+    {% endif %}
   </div>
 
 {% endblock content %}

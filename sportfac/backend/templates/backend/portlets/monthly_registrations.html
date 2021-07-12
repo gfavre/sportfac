@@ -9,15 +9,21 @@
       <div class="row-stat">
         <p class="row-stat-label">{% trans "Total registrations" %}</p>
         <h3 class="row-stat-value">{{ nb_registrations }}</h3>
-      </div>    
+      </div>
+      {% if DASHBOARD_SHOW_CHILDREN_STATS %}
       <div class="row-stat">
         <p class="row-stat-label">{% trans "Total children" %}</p>
         <h3 class="row-stat-value">{{ nb_children }}</h3>
-      </div>    
+      </div>
+      {% endif %}
+
+      {% if DASHBOARD_SHOW_FAMILY_STATS %}
       <div class="row-stat">
         <p class="row-stat-label">{% trans "Total families" %}</p>
         <h3 class="row-stat-value">{{ nb_families }}</h3>
-      </div>    
+      </div>
+      {% endif %}
+
     </div>
     <div class="col-md-8 col-md-pull-4">
       <canvas id="line-chart-registrations" ></canvas>
