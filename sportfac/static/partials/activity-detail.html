@@ -87,7 +87,10 @@
           <dt>Places disponibles</dt>
           <dd>
             <div>
-              {[{ selectedCourse.count_participants }]} participants
+              <span ng-show="selectedCourse.count_participants >= selectedCourse.max_participants">Cours complet</span>
+              <span ng-show="selectedCourse.count_participants < selectedCourse.max_participants">
+                {[{ selectedCourse.count_participants }]} participants
+              </span>
               <span class="pull-right strong"> {[{ selectedCourse.max_participants }]} places</span>
             </div>
             <div class="progress" style="margin-bottom: 0">

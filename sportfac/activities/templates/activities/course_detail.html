@@ -113,7 +113,15 @@
       </dl>
 
       <h4 class="content-title"><u>{% trans "Availability" %}</u></h4>
-      <p>{{ course.count_participants }} participants <span class="pull-right strong"> {{ course.max_participants }} places</span>
+      <p>
+        {% if course.full %}
+          {% trans "Course full" %}
+        {% else %}
+          {% blocktrans with nb=course.count_participants %}{{ nb }} participants{% endblocktrans %}
+        {% endif %}
+        <span class="pull-right strong">
+          {% blocktrans with nb=course.max_participants %}{{ nb }} places{% endblocktrans %}
+        </span>
       </p>
       <div class="progress" style="margin-bottom: 0;">
         <div

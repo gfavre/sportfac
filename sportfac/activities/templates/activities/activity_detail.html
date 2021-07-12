@@ -6,165 +6,183 @@
 {% block page_title %}{{ activity.name }} {% endblock %}
 
 {% block content %}
-<div class="portlet activity">
-  {{ activity.description|safe }}
+  <div class="portlet activity">
+    {{ activity.description|safe }}
 
-  {% if activity.informations %}
-  <h4>Informations spécifiques</h4>
-  {{ activity.informations | safe }}
-  {% endif %}
+    {% if activity.informations %}
+      <h4>Informations spécifiques</h4>
+      {{ activity.informations | safe }}
+    {% endif %}
 
-</div>
+  </div>
 
-<h3 class="content-title">
-  <u>Cours</u>
-</h3>
-<div class="row">
-  {% for course in activity.courses.visible %}
-  <section class="col-sm-6 topped">
-    <div class="pricing-plan">
-      <header class="pricing-header">
-        <p class="pricing-plan-label">
-          {% blocktrans with number=course.number %}Course #{{ number }}{% endblocktrans %}
-          {% if CALENDAR_DISPLAY_COURSE_NAMES and course.name %}- {{ course.name }}{% endif %}
-        </p>
-        <h4 class="pricing-plan-title">
-          {{ course.start_date | date:"j F Y" }} – {{ course.end_date | date:'j F Y' }}
-        </h4>
-        <p class="pricing-plan-label">
-          {% if course.is_course %}
-            {% blocktrans with day_name=course.day_name|lower start_time=course.start_time|time:"H:i" end_time=course.end_time|time:"H:i" duration=course.duration|duration %}Every {{ day_name }}, from {{ start_time }} to {{ end_time }} ({{ duration }}){% endblocktrans %}
-          {% elif course.is_multi_course %}
-            {% if course.start_time_mon %}
-              {% blocktrans with start_time=course.start_time_mon|time:"H:i" end_time=course.end_time_mon|time:"H:i" %}Mondays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}
-              <br>
+  <h3 class="content-title">
+    <u>Cours</u>
+  </h3>
+  <div class="row">
+    {% for course in activity.courses.visible %}
+      <section class="col-sm-6 topped">
+        <div class="pricing-plan">
+          <header class="pricing-header">
+            <p class="pricing-plan-label">
+              {% blocktrans with number=course.number %}Course #{{ number }}{% endblocktrans %}
+              {% if CALENDAR_DISPLAY_COURSE_NAMES and course.name %}- {{ course.name }}{% endif %}
+            </p>
+            <h4 class="pricing-plan-title">
+              {{ course.start_date | date:"j F Y" }} – {{ course.end_date | date:'j F Y' }}
+            </h4>
+            <p class="pricing-plan-label">
+              {% if course.is_course %}
+                {% blocktrans with day_name=course.day_name|lower start_time=course.start_time|time:"H:i" end_time=course.end_time|time:"H:i" duration=course.duration|duration %}
+                  Every {{ day_name }}, from {{ start_time }} to {{ end_time }} ({{ duration }}){% endblocktrans %}
+              {% elif course.is_multi_course %}
+                {% if course.start_time_mon %}
+                  {% blocktrans with start_time=course.start_time_mon|time:"H:i" end_time=course.end_time_mon|time:"H:i" %}
+                    Mondays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}
+                  <br>
+                {% endif %}
+
+                {% if course.start_time_tue %}
+                  {% blocktrans with start_time=course.start_time_tue|time:"H:i" end_time=course.end_time_tue|time:"H:i" %}
+                    Tuesdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}
+                  <br>
+                {% endif %}
+
+                {% if course.start_time_wed %}
+                  {% blocktrans with start_time=course.start_time_wed|time:"H:i" end_time=course.end_time_wed|time:"H:i" %}
+                    Wednesdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}
+                  <br>
+                {% endif %}
+
+                {% if course.start_time_thu %}
+                  {% blocktrans with start_time=course.start_time_thu|time:"H:i" end_time=course.end_time_thu|time:"H:i" %}
+                    Thursdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}
+                  <br>
+                {% endif %}
+
+                {% if course.start_time_fri %}
+                  {% blocktrans with start_time=course.start_time_fri|time:"H:i" end_time=course.end_time_fri|time:"H:i" %}
+                    Fridays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}
+                  <br>
+                {% endif %}
+
+                {% if course.start_time_sat %}
+                  {% blocktrans with start_time=course.start_time_sat|time:"H:i" end_time=course.end_time_sat|time:"H:i" %}
+                    Saturdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}
+                  <br>
+                {% endif %}
+
+                {% if course.start_time_sun %}
+                  {% blocktrans with start_time=course.start_time_sun|time:"H:i" end_time=course.end_time_sun|time:"H:i" %}
+                    Sundays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+                {% endif %}
+
+              {% endif %}
+            </p>
+
+          </header>
+
+          <dl class="dl-horizontal">
+            <dt>{% trans "Instructors" %}</dt>
+            <dd>
+              <ul class="list-unstyled">
+                {% for instructor in course.instructors.all %}
+                  <li>{{ instructor.full_name }}</li>
+                {% endfor %}
+              </ul>
+            </dd>
+            <dt>{% trans "Place" %}</dt>
+            <dd>{{ course.place }}</dd>
+
+            {% if course.comments %}
+              <dt>{% trans "Comments" %}</dt>
+              <dd>{{ course.comments|safe }}</dd>
             {% endif %}
 
-            {% if course.start_time_tue %}
-              {% blocktrans with start_time=course.start_time_tue|time:"H:i" end_time=course.end_time_tue|time:"H:i" %}Tuesdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}
-              <br>
+            {% if DISPLAY_NUMBER_OF_SESSIONS %}
+              <dt>{% trans "Number of sessions" %}</dt>
+              <dd>{% blocktrans with number=course.number_of_sessions %}{{ number }} courses{% endblocktrans %}</dd>
             {% endif %}
 
-            {% if course.start_time_wed %}
-              {% blocktrans with start_time=course.start_time_wed|time:"H:i" end_time=course.end_time_wed|time:"H:i" %}Wednesdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}
-              <br>
+            {% if EXPLICIT_SESSION_DATES %}
+              <dt>{% trans "Dates" %}</dt>
+              <dd>
+                {% if course.is_multi_course %}
+                  <ul class="list-unstyled">
+                    {% for session in course.get_sessions %}
+                      <li>{{ session.date|date:"j F Y" }}</li>
+                    {% endfor %}
+                  </ul>
+                {% elif course.is_camp %}
+                  {{ course.start_date|date:"j F Y" }} - {{ course.end_date|date:"j F Y" }}
+                {% else %}
+                  <ul class="list-unstyled">
+                    {% for session in course.get_sessions %}
+                      <li>{{ session.date|date:"j F Y" }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </dd>
             {% endif %}
+            {% if not NO_PAYMENT %}
+              {% if course.price %}
+                <dt>{% trans "Price" %}</dt>
+                <dd>
+                  {% if USE_DIFFERENTIATED_PRICES %}
+                    <ul>
+                      <li>{{ course.price|money }} (externe)</li>
+                      <li>{{ course.price_local|money }} (indigène)</li>
+                      <li>{{ course.price_family|money }} (externe, rabais fratrie)</li>
+                      <li>{{ course.price_local_family|money }} (indigène, rabais fratrie)</li>
+                    </ul>
+                  {% else %}
+                    {{ course.price|money }}
+                  {% endif %}
 
-          {% if course.start_time_thu %}
-            {% blocktrans with start_time=course.start_time_thu|time:"H:i" end_time=course.end_time_thu|time:"H:i" %}Thursdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}
-            <br>
-          {% endif %}
+                  {% if course.price_description %}
+                    <p>{{ course.price_description|linebreaksbr }}</p>
+                  {% endif %}
+                </dd>
+              {% elif DISPLAY_FREE_WHEN_PRICE_IS_0 %}
+                <dt>{% trans "Price" %}</dt>
+                <dd>
+                  {% trans "Free" %}
+                  {% if course.price_description %}
+                    <p>{{ course.price_description|linebreaksbr }}</p>
+                  {% endif %}
+                </dd>
+              {% endif %}
+            {% endif %}
+            <dt>{% trans "School years" %}</dt>
+            <dd>{% for year in course.school_years_label %}{{ year }}{% if not forloop.last %} -
+            {% endif %} {% endfor %}
+            </dd>
+          </dl>
+          <h4 class="content-title">
+            <u>{% trans "Availability" %}</u>
+          </h4>
 
-          {% if course.start_time_fri %}
-            {% blocktrans with start_time=course.start_time_fri|time:"H:i" end_time=course.end_time_fri|time:"H:i" %}Fridays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}
-            <br>
-          {% endif %}
+          <p>
+            {% if course.full %}
+              {% trans "Course full" %}
+            {% else %}
+              {% blocktrans with nb=course.count_participants %}{{ nb }} participants{% endblocktrans %}
+            {% endif %}
+            <span class="pull-right strong">
+              {% blocktrans with nb=course.max_participants %}{{ nb }} places{% endblocktrans %}
+            </span>
+          </p>
 
-          {% if course.start_time_sat %}
-            {% blocktrans with start_time=course.start_time_sat|time:"H:i" end_time=course.end_time_sat|time:"H:i" %}Saturdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}
-            <br>
-          {% endif %}
-
-          {% if course.start_time_sun %}
-            {% blocktrans with start_time=course.start_time_sun|time:"H:i" end_time=course.end_time_sun|time:"H:i" %}Sundays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
-          {% endif %}
-
-        {% endif %}
-        </p>
-
-      </header>
-
-      <dl class="dl-horizontal">
-        <dt>{% trans "Instructors" %}</dt>
-        <dd>
-          <ul class="list-unstyled">
-            {% for instructor in course.instructors.all %}
-            <li>{{ instructor.full_name }}</li>
-            {% endfor %}
-          </ul>
-        </dd>
-        <dt>{% trans "Place" %}</dt>
-        <dd>{{ course.place }}</dd>
-
-        {% if course.comments %}
-        <dt>{% trans "Comments" %}</dt>
-        <dd>{{ course.comments|safe }}</dd>
-        {% endif %}
-
-        {% if DISPLAY_NUMBER_OF_SESSIONS %}
-        <dt>{% trans "Number of sessions" %}</dt>
-        <dd>{% blocktrans with number=course.number_of_sessions %}{{ number }} courses{% endblocktrans %}</dd>
-        {% endif %}
-
-        {% if EXPLICIT_SESSION_DATES %}
-        <dt>{% trans "Dates" %}</dt>
-        <dd>
-          {% if course.is_multi_course %}
-          <ul class="list-unstyled">
-            {% for session in course.get_sessions %}
-            <li>{{ session.date|date:"j F Y" }}</li>
-            {% endfor %}
-          </ul>
-          {% elif course.is_camp %}
-          {{ course.start_date|date:"j F Y" }} - {{ course.end_date|date:"j F Y" }}
-          {% else %}
-          <ul class="list-unstyled">
-            {% for session in course.get_sessions %}
-            <li>{{ session.date|date:"j F Y" }}</li>
-            {% endfor %}
-          </ul>
-          {% endif %}
-        </dd>
-        {% endif %}
-        {% if not NO_PAYMENT %}
-        {% if course.price %}
-        <dt>{% trans "Price" %}</dt>
-        <dd>
-          {% if USE_DIFFERENTIATED_PRICES %}
-          <ul>
-            <li>{{ course.price|money }} (externe)</li>
-            <li>{{ course.price_local|money }} (indigène)</li>
-            <li>{{ course.price_family|money }} (externe, rabais fratrie)</li>
-            <li>{{ course.price_local_family|money }} (indigène, rabais fratrie)</li>
-          </ul>
-          {% else %}
-          {{ course.price|money }}
-          {% endif %}
-
-          {% if course.price_description %}
-          <p>{{ course.price_description|linebreaksbr }}</p>
-          {% endif %}
-        </dd>
-        {% elif DISPLAY_FREE_WHEN_PRICE_IS_0 %}
-        <dt>{% trans "Price" %}</dt>
-        <dd>
-          {% trans "Free" %}
-          {% if course.price_description %}
-          <p>{{ course.price_description|linebreaksbr }}</p>
-          {% endif %}
-        </dd>
-        {% endif %}
-        {% endif %}
-        <dt>{% trans "School years" %}</dt>
-        <dd>{% for year in course.school_years_label %}{{ year }}{% if not forloop.last %} -
-          {% endif %} {% endfor %}
-        </dd>
-      </dl>
-      <h4 class="content-title">
-        <u>{% trans "Availability" %}</u>
-      </h4>
-      <p>{{ course.count_participants }} participants <span class="pull-right strong"> {{ course.max_participants }} places</span>
-      </p>
-      <div class="progress" style="margin-bottom: 0;">
-        <div
-            class="progress-bar {% if course.full %}progress-bar-danger{% elif course.minimal_participants_reached %}progress-bar-success{% else %}progress-bar-warning{% endif %}"
-            style="width: {{ course.percentage_full }}%"></div>
-      </div>
-      <p class="text-right">
-        <small>{{ course.min_participants }} participants requis pour que l'activité ait lieu</small>
-      </p>
-    </div>
-  </section>
-  {% endfor %}
-</div>
+          <div class="progress" style="margin-bottom: 0;">
+            <div
+                class="progress-bar {% if course.full %}progress-bar-danger{% elif course.minimal_participants_reached %}progress-bar-success{% else %}progress-bar-warning{% endif %}"
+                style="width: {{ course.percentage_full }}%"></div>
+          </div>
+          <p class="text-right">
+            <small>{{ course.min_participants }} participants requis pour que l'activité ait lieu</small>
+          </p>
+        </div>
+      </section>
+    {% endfor %}
+  </div>
 {% endblock content %}
