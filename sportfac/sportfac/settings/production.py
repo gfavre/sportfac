@@ -24,7 +24,6 @@ ANYMAIL = {
 
 MANAGERS = (
     ('Gregory Favre', 'greg@beyondthewall.ch'),
-    ('Remo Aeschbach', 'remo.aeschbach@vd.educanet2.ch'),
 )
 
 ########## END EMAIL CONFIGURATION
