@@ -1,0 +1,173 @@
+{% extends "backend/base.html" %}
+{% load i18n sekizai_tags duration %}
+
+{% block title %}{% trans "View courses" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "List courses" %}{% endblock %}
+
+{% get_current_language as LANGUAGE_CODE %}
+
+
+
+{% block content %}
+  {% addtoblock "css" %}
+    <link rel="stylesheet" type="text/css"
+          href="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.css"/>
+  {% endaddtoblock %}
+  {% addtoblock "js" %}
+
+    <script type="text/javascript"
+            src="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.js"></script>
+
+    <script>
+      $(function () {
+        var table = $('.table').DataTable({
+          {% if LANGUAGE_CODE == 'fr' %}
+            "language": {
+              "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+            },
+          {% endif %}
+          {% if USE_ABSENCES %}
+            /*dom: 'T<"clear">Blfrtip',*/
+            select: {
+              style: 'multi'
+            },
+          {% endif %}
+          "aoColumnDefs": [
+            {'bSortable': false, 'bSearchable': false, 'aTargets': [-1]}
+          ],
+          "paging": false
+        });
+        table.on('select', function () {
+          $('.needs-select').removeClass('disabled');
+        });
+        table.on('deselect', function () {
+          if (table.rows({selected: true}).count() == 0) {
+            $('.needs-select').addClass('disabled');
+          }
+        });
+
+        {% if USE_ABSENCES %}
+          $('form.absences').submit(function (event) {
+            var ids = table.rows({selected: true}).nodes().map(function (elem) {
+              return $(elem).data('courseid');
+            });
+            for (var i = 0; i < ids.length; i++) {
+              $(this).append($('<input name="c" value="' + ids[i] + '" type="hidden">'))
+            }
+          });
+        {% endif %}
+      });
+
+
+    </script>
+  {% endaddtoblock %}
+
+  <a href="{% url 'backend:course-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New course" %}
+  </a>
+  <hr>
+
+  {% if USE_ABSENCES %}
+    <div class="btn-group">
+      <form class="absences" method="GET" action="{% url 'backend:courses-absence' %}">
+        <button type="submit" class="btn btn-secondary needs-select disabled"><i
+            class="icon-calendar"></i>&nbsp;&nbsp;{% trans "Manage multiple courses absences" %}</button>
+      </form>
+    </div>
+  {% endif %}
+
+
+  <table class="table">
+    <thead>
+    <tr>
+      <th class="text-nowrap">{% trans "Identifier" %}</th>
+      <th class="text-nowrap">{% trans "Activity" %}</th>
+      <th class="text-nowrap">{% trans "Place" %}</th>
+      <th class="text-nowrap">{% trans "Day(s)" %}</th>
+      <th class="text-nowrap">{% trans "Start date" %}</th>
+      <th class="text-nowrap">{% trans "Hour(s)" %}</th>
+      <th class="text-nowrap">{% trans "Duration" %}</th>
+      <th class="text-nowrap">{% trans "Instructors" %}</th>
+      <th class="text-nowrap">{% trans "Registrations" %}</th>
+      <th class="text-nowrap">{% trans "Actions" %}</th>
+    </tr>
+    </thead>
+    {% for course in object_list %}
+      <tr {% if not course.visible %}class="info"{% elif course.has_issue %}class="danger"{% endif %}
+          data-courseid="{{ course.id }}">
+        <td data-order="{{ course.number }}">
+          <a href="{{ course.get_backend_url }}">{{ course.number }}</a>
+          {% if not course.visible %}<br>
+            <span class="text-muted"><small>{% trans "Invisible" %}</small></span>
+          {% endif %}
+        </td>
+        <td>
+          <a href="{{ course.activity.get_backend_url }}">{{ course.activity.name }}</a>
+          {% if CALENDAR_DISPLAY_COURSE_NAMES and course.name %}
+            <br/>{{ course.name }}
+          {% endif %}
+        </td>
+        <td>{{ course.place }}</td>
+        <td data-order="{{ course.start_date|date:'w' }}">
+          {% if course.is_multi_course %}
+          <ul class="list-unstyled">
+            {% for day in course.days_names %}<li>{{ day }}</li>{% endfor %}
+          </ul>
+          {% else %}
+            {{ course.day_name }}
+          {% endif %}
+        </td>
+        <td data-order="{{ course.start_date|date:'c' }}">{{ course.start_date|date:"SHORT_DATE_FORMAT" }}</td>
+        <td>
+          {% if course.is_course %}
+          {{ course.start_time|time:"H:i" }}
+          {% elif course.is_multi_course %}
+          <ul class="list-unstyled">
+            {% for hour in course.start_hours %}<li>{{ hour|time:"H:i" }}</li>{% endfor %}
+          </ul>
+          {% else %}
+          n/a
+          {% endif %}
+        </td>
+        <td data-order="{{ course.duration|seconds }}">{{ course.duration|duration }}</td>
+        <td>
+          <ul class="list-unstyled">
+            {% for instructor in course.instructors.all %}
+              <li><a href="{{ instructor.get_backend_url }}">{{ instructor.full_name }}</a></li>
+            {% endfor %}
+          </ul>
+        </td>
+        <td data-order="{{ course.available_places }}"
+            class="{% if course.full %}bg-danger{% elif course.minimal_participants_reached %}bg-success{% else %}bg-warning{% endif %}">
+          {% if course.count_participants > course.max_participants %}
+            <strong><i
+                class="icon icon-exclamation"></i> {{ course.count_participants }}&nbsp;/&nbsp;{{ course.max_participants }}
+            </strong>
+          {% else %}
+            {{ course.count_participants }}&nbsp;/&nbsp;{{ course.max_participants }}
+
+          {% endif %}
+        </td>
+        <td>
+          <ul class="list-unstyled">
+            <li class="text-nowrap"><a href="{{ course.get_backend_url }}" class="btn btn-sm"><i class="icon-check"></i>&nbsp;{% trans "Check registrations" %}
+            </a></li>
+            {% if USE_ABSENCES %}
+              <li class="text-nowrap"><a href="{{ course.get_backend_absences_url }}" class="btn btn-sm"><i
+                  class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}</a></li>
+            {% endif %}
+            <li class="text-nowrap"><a href="{{ course.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update course" %}
+            </a></li>
+            {% if not course.is_camp %}
+              <li class="text-nowrap"><a href="{{ course.get_js_export_url }}" class="btn btn-sm"><i
+                  class="icon-doc"></i>&nbsp;{% trans "Get BDNS: J+S export file" %}</a></li>
+            {% endif %}
+            <li class="text-nowrap"><a href="{{ course.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete course" %}
+            </a></li>
+
+
+          </ul>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock content %}
