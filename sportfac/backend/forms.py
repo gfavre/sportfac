@@ -269,6 +269,18 @@ class YearForm(forms.ModelForm):
         model = YearTenant
         fields = ('start_date', 'end_date')
 
+    def __init__(self, *args, **kwargs):
+        super(YearForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_class = 'form-horizontal'
+        self.helper.form_group_wrapper_class = 'row'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-10'
+        #self.helper.form_group_wrapper_class = 'row'
+        #self.helper.label_class = 'col-sm-2'
+        #self.helper.field_class = 'col-sm-10'
+
 
 class PayslipMontreuxForm(forms.Form):
     function = forms.CharField(label=_("Function"), required=True)
@@ -306,6 +318,7 @@ class FlatPageForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(FlatPageForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.form_tag = False
         self.helper.form_group_wrapper_class = 'row'
         self.helper.label_class = 'col-sm-2'
         self.helper.field_class = 'col-sm-10'
