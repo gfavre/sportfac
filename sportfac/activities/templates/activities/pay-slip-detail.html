@@ -100,26 +100,17 @@
   <section>
     <div class="row">
       <div class="col-xs-6">
-        <dl class="dl-horizontal">
-          <dt>Période:</dt>
-          <dd>{{ payslip.start_date|date:"j.m.Y" }} - {{ payslip.end_date|date:"j.m.Y" }}</dd>
-        </dl>
+        <strong>Période:</strong> {{ payslip.start_date|date:"j.m.Y" }} - {{ payslip.end_date|date:"j.m.Y" }}
       </div>
       <div class="col-xs-6 ">
-        <dl class="dl-horizontal">
-          <dt>CF:</dt>
-          <dd>174.3012</dd>
-        </dl>
+        <strong>CF:</strong> 174.3012
       </div>
     </div>
   </section>
   <section>
     <div class="row">
       <div class="col-xs-12">
-        <dl class="dl-horizontal">
-          <dt>École:</dt>
-          <dd>Etablissements Primaires et Secondaires de Montreux</dd>
-        </dl>
+        <strong>École:</strong> Établissements Primaires et Secondaires de Montreux
       </div>
     </div>
   </section>
@@ -132,14 +123,20 @@
           <small>{{ payslip.course.day_name }} {{ payslip.course.start_time }} - {{ payslip.course.end_time }}</small>
         </h3>
 
-        <dl class="dl-horizontal">
-          <dt>Effectif moyen:</dt>
-          <dd>{{ payslip.average_presentees | floatformat:"0" }}</dd>
-          <dt>Nombre de cours:</dt>
-          <dd>{{ payslip.sessions.count }}</dd>
-          <dt>Durée:</dt>
-          <dd>{{ payslip.course.duration|duration }}</dd>
-        </dl>
+
+        <div class="row">
+          <div class="col-xs-6 text-right">
+            <strong>Effectif moyen:</strong><br>
+            <strong>Nombre de cours:</strong><br>
+            <strong>Durée:</strong>
+          </div>
+          <div class="col-xs-6">
+            {{ payslip.average_presentees | floatformat:"0" }}<br>
+            {{ payslip.sessions.count }}<br>
+            {{ payslip.course.duration|duration }}
+          </div>
+
+        </div>
       </div>
       <div class="col-xs-6">
         <table class="table">

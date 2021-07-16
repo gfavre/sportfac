@@ -206,14 +206,18 @@ class PaySlipDetailView(DetailView):
 
     def get(self, request, *args, **kwargs):
         if self.request.GET.get('pdf', False):
-            return self.pdf()
+            return self.pdf(request, *args, **kwargs)
         return super(PaySlipDetailView, self).get(request, *args, **kwargs)
 
-    def pdf(self):
+    def pdf(self, request, *args, **kwargs):
         """output: filelike object"""
         self.object = self.get_object()
-        url = self.request.build_absolute_uri(self.object.get_absolute_url())
+        context = self.get_context_data(object=self.object)
+        content = render_to_string(self.template_name, context=context, request=request)
+
         phantomjs_conf = {
+            'backend': 'chrome',
+            'content': content,
             'renderType': 'pdf',
             'omitBackground': True,
             "renderSettings": {
@@ -223,14 +227,14 @@ class PaySlipDetailView(DetailView):
                     'landscape': False,
                     'preferCSSPageSize': True,
                 }
+            },
+            'requestSettings': {
+                'waitInterval': 0,
+                'resourceTimeout': 2000,
+                'doneWhen': [{'event': "domReady"}]
             }
         }
-        if '127.0.0.1' in url:
-            context = self.get_context_data(object=self.object)
-            page = render_to_string(self.template_name, context=context, request=self.request)
-            phantomjs_conf['content'] = page
-        else:
-            phantomjs_conf['url'] = url
+
         pdf = requests.post(
             'https://PhantomJsCloud.com/api/browser/v2/{}/'.format(
                 settings.PHANTOMJSCLOUD_APIKEY
