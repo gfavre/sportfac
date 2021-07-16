@@ -10,7 +10,7 @@ from import_export.admin import ImportExportModelAdmin
 
 from registrations.models import Registration
 from sportfac.admin_utils import SportfacModelAdmin, SportfacAdminMixin
-from .models import Activity, AllocationAccount, Course, ExtraNeed, TemplatedEmailReceipt
+from .models import Activity, AllocationAccount, Course, ExtraNeed, TemplatedEmailReceipt, PaySlip
 from .resources import CourseResource
 
 
@@ -140,6 +140,7 @@ class TemplatedEmailReceipt(admin.ModelAdmin):
     list_display = ('type', 'course')
     raw_id_fields = ('course',)
 
+
 class FlatPageCustom(SportfacAdminMixin, FlatPageAdmin):
     fieldsets = (
         (None, {'fields': ('url', 'title', 'content', 'sites')}),
@@ -156,6 +157,23 @@ class FlatPageCustom(SportfacAdminMixin, FlatPageAdmin):
     formfield_overrides = {
         models.TextField: {'widget': CKEditorWidget}
     }
+
+
+@admin.register(PaySlip)
+class PaySlipAdmin(admin.ModelAdmin):
+    date_hierarchy = 'created'
+    list_display = ('instructor', 'get_course', 'start_date', 'end_date')
+    list_filter = ('function',)
+    search_fields = ('id', 'course__activity__name', 'course__number', 'instructor__first_name', 'instructor__last_name')
+
+    def get_queryset(self, request):
+        queryset = super(PaySlipAdmin, self).get_queryset(request)
+        return queryset.select_related('instructor', 'course', 'course__activity')
+
+    def get_course(self, obj):
+        return obj.course.short_name
+    get_course.short_description = _('Course')
+    get_course.admin_order_field = 'course'
 
 
 admin.site.unregister(FlatPage)
