@@ -6,9 +6,105 @@
 {% block page_title %}{% trans "List students" %}{% endblock %}
 
 {% block content %}
+  {% addtoblock "css" %}
+    <link rel="stylesheet" type="text/css"
+          href="https://cdn.datatables.net/v/dt/dt-1.10.24/b-1.7.0/r-2.2.7/sc-2.0.3/sp-1.2.1/sl-1.3.2/datatables.min.css"/>
+   <style>
+  table.dataTable {
+    border-collapse: collapse;
+  }
+  .blacklisted {
+    border-left: 4px solid black;
+  }
+  </style>
+  {% endaddtoblock %}
+  {% addtoblock "js" %}
+    <script type="text/javascript"
+            src="https://cdn.datatables.net/v/dt/dt-1.10.24/b-1.7.0/r-2.2.7/sc-2.0.3/sp-1.2.1/sl-1.3.2/datatables.js"></script>
 
-{% addtoblock  "js" %}
-<script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script>
+      jQuery(document).ready(function ($) {
+        let name_column = 0;
+        {% if IMPORT_CHILDREN %}
+        name_column += 1;
+        {% endif %}
+        {% if BIB_NUMBERS %}
+        name_column += 1;
+        {% endif %}
+        let table = $('#children').DataTable({
+          columnDefs: [
+            {
+              orderable: false,
+              searchable: false,
+              className: "nobr",
+              targets: ['actions']
+            },
+            {
+              visible: false,
+              targets: 'blacklisted'
+            },
+            {
+              searchPanes: {
+                "show": true,
+                "controls": false
+              },
+              targets: ['is_blacklisted']
+            },
+            {
+              searchPanes: {
+                "show": false,
+                "controls": false
+              },
+              targets: ['school', 'phone']
+            },
+
+
+          ],
+        {% if USE_BLACKLISTS %}
+          dom: 'Pfrlitipl',
+        {% endif %}
+          language: {
+            info: "{% trans 'Showing _START_ to _END_ of _TOTAL_ entries' %}",
+            infoEmpty: "{% trans "Showing 0 to 0 of 0 entries" %}",
+            infoFiltered: "{% trans "(filtered from _MAX_ total entries)" %}",
+            lengthMenu: "{% trans "Show _MENU_ entries" %}",
+            paginate: {
+              first: "{% trans 'First' %}",
+              last: "{% trans 'Last' %}",
+              previous: "{% trans 'Previous' %}",
+              next: "{% trans 'Next' %}"
+            },
+            search: "",
+            searchPlaceholder: "{% trans 'Search' %}",
+            searchPanes: {
+              title: {
+                _: '{% trans 'Filters selected' %} - %d',
+                0: '{% trans "No filter selected" %}'
+              },
+              clearMessage: '{% trans "Clear All" %}'
+            },
+            select: {
+              'rows': {
+                1: "{% trans "%d row selected" %}",
+                _: "{% trans "%d rows selected" %}"
+              }
+            }
+          },
+          'lengthMenu': [[10, 25, 50, -1], [10, 25, 50, "{% trans 'All students' %}"] ],
+          order: [[name_column, 'asc']],
+          pageLength: 50,
+          {% if USE_BLACKLISTS %}
+          searchPanes:{
+
+          }
+          {% endif %}
+        });
+      });
+    </script>
+
+    <!--
+
+  <script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
 <script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.tableTools.min.js"></script>
 <script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
 <script>
@@ -61,80 +157,91 @@ $(function () {
   });
 
 });
-</script>
-{% endaddtoblock %}
+</script>-->
+  {% endaddtoblock %}
 
-<a href="{% url 'backend:child-import' %}" class="btn btn-success">
-   <i class="icon-doc-new"></i>&nbsp;&nbsp;{% trans "Import students" %}
-</a>&nbsp;
-<a href="{% url 'backend:child-new' %}" class="btn btn-success">
-   <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New student" %}
-</a>
+  <a href="{% url 'backend:child-import' %}" class="btn btn-success">
+    <i class="icon-doc-new"></i>&nbsp;&nbsp;{% trans "Import students" %}
+  </a>&nbsp;
+  <a href="{% url 'backend:child-new' %}" class="btn btn-success">
+    <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New student" %}
+  </a>
 
-<hr />
+  <hr/>
 
-<table class="table" id="users">
-  <thead>
+  <table class="table" id="children">
+    <thead>
     <tr>
       {% if IMPORT_CHILDREN %}
-      <th class="lagapeo">{% trans "Identifier" %}</th>
+        <th class="lagapeo">{% trans "Identifier" %}</th>
       {% endif %}
       {% if BIB_NUMBERS %}
-      <th>{% trans "Bib number" %}</th>
+        <th class="name">{% trans "Bib number" %}</th>
       {% endif %}
       <th>{% trans "Name" %}</th>
-      <th>{% trans "Family" %}</th>
-      <th>{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
+      <th class="family">{% trans "Family" %}</th>
+      <th class="school">{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
       {% if EMERGENCY_NUMBER_MANDATORY %}
-      <th>{% trans "Emergency number" %}</th>
+        <th class="phone">{% trans "Emergency number" %}</th>
+      {% endif %}
+      {% if USE_BLACKLISTS %}
+        <th class="is_blacklisted">{% trans "Blacklisted" %}</th>
       {% endif %}
       <th class="actions">{% trans "Actions" %}</th>
     </tr>
-  </thead>
-  {% for child in object_list %}
-    <tr data-userid="{{ child.id }}">
-      {% if IMPORT_CHILDREN %}
-      <td data-order="{{ child.id_lagapeo|default:"0" }}">{{ child.id_lagapeo|default:"n/a" }}</td>
-      {% endif %}
-      {% if BIB_NUMBERS %}
-      <td data-order="{{ child.bib_number|default:"0" }}">{{ child.bib_number|default:"n/a" }}</td>
-      {% endif %}
-      <td data-order="{{ child.last_name}} {{ child.first_name}}"><a href="{{ child.get_backend_detail_url }}">{{ child.full_name }}</a></td>
-      <td data-order="{{ child.family.last_name }} {{ child.family.first_name }}">
-        {% if child.family %}
-        <a href="{{ child.family.get_backend_url }}">{{ child.family.full_name }}</a>
-        {% else %}
-            n/a
+    </thead>
+    {% for child in object_list %}
+      <tr data-userid="{{ child.id }}" class="{% if child.is_blacklisted %}blacklisted{% endif %}">
+        {% if IMPORT_CHILDREN %}
+          <td data-order="{{ child.id_lagapeo|default:"0" }}">{{ child.id_lagapeo|default:"n/a" }}</td>
         {% endif %}
-      </td>
-      <td>
+        {% if BIB_NUMBERS %}
+          <td data-order="{{ child.bib_number|default:"0" }}">{{ child.bib_number|default:"n/a" }}</td>
+        {% endif %}
+        <td data-order="{{ child.last_name }} {{ child.first_name }}"><a
+            href="{{ child.get_backend_detail_url }}">{{ child.full_name }}</a></td>
+        <td data-order="{{ child.family.last_name }} {{ child.family.first_name }}"  data-search="{{ child.family.full_name }}">
+          {% if child.family %}
+            <a href="{{ child.family.get_backend_url }}">{{ child.family.full_name }}</a>
+          {% else %}
+            n/a
+          {% endif %}
+        </td>
+        <td>
           {{ child.school_year|default:"n/a" }}
           {% if CHILD_SCHOOL %}<br>
             {{ child.school_name }}
           {% endif %}
-      </td>
-      {% if EMERGENCY_NUMBER_MANDATORY %}
-      <td>
-          <a href="{{ registration.child.emergency_number|phone:'RFC3966' }}">
-                {{ child.emergency_number|phone }}
+        </td>
+        {% if EMERGENCY_NUMBER_MANDATORY %}
+          <td>
+            <a href="{{ registration.child.emergency_number|phone:'RFC3966' }}">
+              {{ child.emergency_number|phone }}
             </a>
-      </td>
-      {% endif %}
+          </td>
+        {% endif %}
 
-      <td>
+ {% if USE_BLACKLISTS %}
+        <td>{% if child.is_blacklisted %}{% trans "yes" %}{% else %}{% trans "no" %}{% endif %}</td>
+      {% endif %}
+        <td>
           <ul class="list-unstyled">
-            <li class="text-nowrap"><a href="{{ child.get_backend_detail_url }}" class="btn btn-sm"><i class="icon-child"></i>&nbsp;&nbsp;{% trans "Child details" %}</a></a></li>
-            <li class="text-nowrap"><a href="{{ child.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Edit student" %}</a></li>
+            <li class="text-nowrap"><a href="{{ child.get_backend_detail_url }}" class="btn btn-sm"><i
+                class="icon-child"></i>&nbsp;&nbsp;{% trans "Child details" %}</a></li>
+            <li class="text-nowrap"><a href="{{ child.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Edit student" %}
+            </a></li>
             {% if USE_ABSENCES %}
-            <li class="text-nowrap"><a href="{{ child.get_backend_absences_url }}" class="btn btn-sm"><i class="icon-calendar"></i>&nbsp;{% trans "Review absences" %}</a></li>
+              <li class="text-nowrap"><a href="{{ child.get_backend_absences_url }}" class="btn btn-sm"><i
+                  class="icon-calendar"></i>&nbsp;{% trans "Review absences" %}</a></li>
             {% endif %}
-            <li class="text-nowrap"><a href="{{ child.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;&nbsp;{% trans "Delete student"  %}</a></li>
+            <li class="text-nowrap"><a href="{{ child.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;&nbsp;{% trans "Delete student" %}
+            </a></li>
 
           </ul>
-      </td>
-     </tr>
+        </td>
+      </tr>
 
-  {% endfor %}
-</table>
+    {% endfor %}
+  </table>
 
 {% endblock content %}

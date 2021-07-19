@@ -47,7 +47,7 @@ KEPCHUP_EXPLICIT_SESSION_DATES = True
 SCHOOL_YEAR_EDITABLE = False
 KEPCHUP_DISPLAY_LAGAPEO = True
 KEPCHUP_CAN_DELETE_CHILD = False
-
+KEPCHUP_USE_BLACKLISTS = True
 
 # Registration steps
 #########################################

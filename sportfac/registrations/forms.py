@@ -52,7 +52,7 @@ class ChildForm(forms.ModelForm):
         model = Child
         fields = ('id_lagapeo', 'family', 'first_name', 'last_name', 'sex', 'birth_date', 'nationality',
                   'language', 'school', 'other_school', 'school_year', 'teacher', 'building', 'emergency_number',
-                  'bib_number')
+                  'bib_number', 'is_blacklisted')
 
     def __init__(self, *args, **kwargs):
         super(ChildForm, self).__init__(*args, **kwargs)

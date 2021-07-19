@@ -34,6 +34,12 @@
   {% formrow form.bib_number %}
 {% endif %}
 
+
+{% if USE_BLACKLISTS %}
+  {% formrow form.is_blacklisted %}
+{% endif %}
+
+
 <fieldset>
     <legend>{% trans "School informations" %}</legend>
 {% if IMPORT_CHILDREN %}

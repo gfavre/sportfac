@@ -582,6 +582,8 @@ KEPCHUP_USE_BUILDINGS = False
 KEPCHUP_DISPLAY_LAGAPEO = False
 # Ability to remove child
 KEPCHUP_CAN_DELETE_CHILD = True
+# Blacklist to block children from registering
+KEPCHUP_USE_BLACKLISTS = False
 
 # Activities
 #########################################
