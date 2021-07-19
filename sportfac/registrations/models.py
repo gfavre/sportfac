@@ -432,7 +432,7 @@ class Child(TimeStampedModel, StatusModel):
     school = models.ForeignKey('profiles.School', related_name="students", null=True, blank=True, on_delete=models.SET_NULL)
     other_school = models.CharField(_("Other school"), blank=True, max_length=50)
     bib_number = models.CharField(_("Bib number"), blank=True, max_length=20)
-    is_blacklisted = models.BooleanField(_("Is blacklisted"), default=False)
+    is_blacklisted = models.BooleanField(_("Is blacklisted"), default=False, db_index=True)
 
     class Meta:
         ordering = ('last_name', 'first_name',)

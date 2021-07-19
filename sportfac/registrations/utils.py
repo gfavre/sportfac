@@ -45,8 +45,15 @@ class ChildParser:
             u'ANNEE': ('school_year', self.parse_school_year),
             u'Etablissement': ('school', self.parse_school),
             u'ETABLISSEMENT': ('school', self.parse_school),
+            u'Blacklist': ('is_blacklisted', self.parse_blacklist),
+            u'BLACKLIST': ('is_blacklisted', self.parse_blacklist),
 
         }
+
+    def parse_blacklist(self, value):
+        if value in (0, '0', 'FALSE'):
+            return False
+        return True
 
     def parse_sex(self, value):
         if value == 'G':

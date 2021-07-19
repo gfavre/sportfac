@@ -19,6 +19,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='child',
             name='is_blacklisted',
-            field=models.BooleanField(default=False, verbose_name='Is blacklisted'),
+            field=models.BooleanField(default=False, verbose_name='Is blacklisted', db_index=True),
         ),
     ]
