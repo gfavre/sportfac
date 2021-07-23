@@ -5,7 +5,7 @@
     <u>{% trans "Validated registrations" %}</u>
   </h4>
   <div class="portlet-body">
-    <div id="pie-chart-paid" class="chart-holder-250"></div>
+    <div id="pie-chart-validated" class="chart-holder-250"></div>
     <ul class="list-unstyled">
       <li><a href="{% url 'backend:user-list' %}"><i class="icon-group"></i>&nbsp;{% trans "List users" %}</a></li>
       <li><a href="{% url 'backend:mail-needconfirmation' %}"><i class="icon-mail"></i>&nbsp;{% trans "Send reminder email" %}</a></li>
@@ -23,7 +23,7 @@ $(function () {
       { label: "{% trans 'Not validated yet' %}", data: {{ waiting }}  },
       { label: "{% trans 'Validated' %}", data:  {{ valid }} }
   ];
-  placeholder = $("#pie-chart-paid");
+  placeholder = $("#pie-chart-validated");
   $.plot(placeholder, data, {
 				series: {
 					pie: { 

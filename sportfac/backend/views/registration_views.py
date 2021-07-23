@@ -5,24 +5,24 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
-from django.db import IntegrityError, transaction
+from django.db import connection, IntegrityError, transaction
 from django.db.models import Count
 from django.http import HttpResponseRedirect
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView, UpdateView,
                                   View, FormView, TemplateView)
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, get_language
 from django.shortcuts import get_object_or_404
 
 from formtools.wizard.views import SessionWizardView
 
 from absences.models import Absence
 from activities.models import Activity, Course, ExtraNeed
-from backend.forms import (BillingForm, ChildSelectForm, CourseSelectForm,
-                           RegistrationForm, ExtraInfoFormSet)
+from backend.forms import (BillingForm, ChildSelectForm, CourseSelectForm, ExtraInfoFormSet,
+                           RegistrationForm, SendConfirmationForm)
 from registrations.resources import RegistrationResource
 from registrations.models import Bill, Registration, ExtraInfo, Transport
-from registrations.forms import BillForm, MoveRegistrationsForm, MoveTransportForm, TransportForm
+from registrations.forms import BillForm, MoveRegistrationsForm, MoveTransportForm,  TransportForm
 from registrations.views import BillMixin
 from .mixins import BackendMixin, ExcelResponseMixin
 
@@ -131,25 +131,27 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
         (_('Child'), ChildSelectForm),
         (_('Course'), CourseSelectForm),
         # (_('Questions'), CourseSelectForm),
+        (_('Email'), SendConfirmationForm),
         (_('Billing'), BillingForm)
     )
-    condition_dict = {_('Billing'): not settings.KEPCHUP_NO_PAYMENT}
-    # condition_dict = {_('Extra questions'): show_extra_questions}
+    condition_dict = {_('Billing'): not settings.KEPCHUP_NO_PAYMENT,
+                      _('Email'): settings.KEPCHUP_NO_PAYMENT}
     template_name = 'backend/registration/wizard.html'
     instance = None
 
     @transaction.atomic
     def done(self, form_list, form_dict, **kwargs):
-        self.instance.set_confirmed()
         user = self.instance.child.family
         message = _("Registration for %(child)s to %(course)s has been validated.")
         message %= {
             'child': self.instance.child,
             'course': self.instance.course.short_name
         }
+        send_confirmation = form_list[-1].cleaned_data.get('send_confirmation', False)
         messages.add_message(self.request, messages.SUCCESS, message)
         response = HttpResponseRedirect(self.instance.course.get_backend_url())
         if settings.KEPCHUP_NO_PAYMENT:
+            self.instance.set_confirmed(send_confirmation=send_confirmation)
             self.instance.save()
             return response
         try:
@@ -164,7 +166,8 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
             )
             bill.update_billing_identifier()
             bill.save()
-            bill.send_confirmation()
+            if send_confirmation:
+                bill.send_confirmation()
             self.instance.bill = bill
             message = _('The bill %(identifier)s has been created. <a href="%(url)s">Please review it.</a>')
             message = mark_safe(message % {'identifier': bill.billing_identifier,
@@ -299,10 +302,22 @@ class RegistrationValidateView(BackendMixin, TemplateView):
         return context
 
     def post(self, request, *args, **kwargs):
-        to_update = Registration.objects.filter(status=Registration.STATUS.waiting)
+        to_update = Registration.objects.filter(status=Registration.STATUS.waiting).select_related('child__family')
+        families = {registration.child.family for registration in to_update}
         count = to_update.count()
         to_update.update(status=Registration.STATUS.confirmed)
         messages.success(request, _("%d registrations have been confirmed") % count)
+        from registrations.tasks import send_confirmation as send_confirmation_task
+        for family in families:
+            try:
+                tenant_pk = connection.tenant.pk
+            except AttributeError:
+                tenant_pk = None
+            transaction.on_commit(lambda: send_confirmation_task.delay(
+                user_pk=str(family.pk),
+                tenant_pk=tenant_pk,
+                language=get_language(),
+            ))
         return HttpResponseRedirect(reverse_lazy('backend:registration-list'))
 
 

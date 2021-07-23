@@ -52,6 +52,7 @@ class Registration(TimeStampedModel, StatusModel):
     transport = models.ForeignKey('Transport', related_name='participants', null=True, blank=True,
                                   verbose_name=_("Transport information"),
                                   on_delete=models.SET_NULL)
+    confirmation_sent_on = models.DateField(_("Confirmation mail sent on"), null=True)
 
     objects = RegistrationManager()
 
@@ -200,8 +201,19 @@ class Registration(TimeStampedModel, StatusModel):
             else:
                 self.child.family.profile.save()
 
-    def set_confirmed(self):
+    def set_confirmed(self, send_confirmation=False):
         self.status = self.STATUS.confirmed
+        if send_confirmation:
+            from .tasks import send_confirmation as send_confirmation_task
+            try:
+                tenant_pk = connection.tenant.pk
+            except AttributeError:
+                tenant_pk = None
+            transaction.on_commit(lambda: send_confirmation_task.delay(
+                user_pk=str(self.child.family.pk),
+                tenant_pk=tenant_pk,
+                language=get_language(),
+            ))
         if settings.KEPCHUP_USE_ABSENCES:
             self.create_future_absences()
 
@@ -347,7 +359,7 @@ class Bill(TimeStampedModel, StatusModel):
         self.save()
 
     def send_confirmation(self):
-        from .tasks import send_confirmation as send_confirmation_task
+        from .tasks import send_bill_confirmation as send_confirmation_task
         try:
             tenant_pk = connection.tenant.pk
         except AttributeError:

@@ -142,7 +142,16 @@ class HomePageView(BackendMixin, TemplateView):
         context['nb_courses'] = len(participants)
         context['nb_full_courses'] = 0
         context['nb_minimal_courses'] = 0
-        
+        waiting = set(Registration.objects \
+                      .filter(status=Registration.STATUS.waiting) \
+                      .select_related('child__family') \
+                      .values_list('child__family'))
+        valid = set(Registration.objects \
+                    .filter(status=Registration.STATUS.valid) \
+                    .select_related('child__family') \
+                    .values_list('child__family'))
+        context['waiting'] = len(waiting)
+        context['valid'] = len(valid)
         for (min_participants, max_participants, count_participants) in participants:
             if min_participants <= count_participants:
                 context['nb_minimal_courses'] += 1

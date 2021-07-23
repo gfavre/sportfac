@@ -219,13 +219,18 @@ class CourseSelectForm(CourseSelectMixin, forms.ModelForm):
         widgets = {'course': Select2Widget}
 
 
+class SendConfirmationForm(forms.Form):
+    send_confirmation = forms.BooleanField(required=False, label=_("Send confirmation email?"), initial=True)
+
+
 class BillingForm(forms.ModelForm):
     paid = forms.BooleanField(required=False, label=_("Mark as paid?"),
                               help_text=_("If not checked, a bill will be created"))
+    send_confirmation = forms.BooleanField(required=False, initial=True, label=_("Send confirmation email?"))
 
     class Meta:
         model = Registration
-        fields = ('paid',)
+        fields = ('paid', 'send_confirmation')
 
 
 class SessionForm(forms.Form):
