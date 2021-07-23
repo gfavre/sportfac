@@ -179,6 +179,7 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
         if not (settings.KEPCHUP_USE_APPOINTMENTS or settings.KEPCHUP_PAYMENT_METHOD == 'datatrans'):
             # FIXME: si la facture est à 0: aucun paiement
             self.bill.send_confirmation()
+
         return super(RegisteredActivitiesListView, self).form_valid(form)
 
 

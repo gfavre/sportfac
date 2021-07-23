@@ -29,7 +29,7 @@
                 orderable: false,
                 searchable: false,
               },
-              targets: [-2]
+              targets: ['status']
             },
             {
               orderable: false,
@@ -106,7 +106,9 @@
             <td>{{ child.bib_number }}</th>
           {% endif %}
           <td><a href="{{ child.get_backend_url }}">{{ child }}</a></td>
-          <td>{{ registration.get_status_display }}</td>
+          <td data-search="{{ registration.get_status_display }}">{{ registration.get_status_display }}<br><small>
+            {{ registration.confirmation_sent_on|date }}
+          </small></td>
           <td>
             <ul class="list-unstyled">
               <li class="text-nowrap"><a href="{{ registration.get_update_url }}" class="btn btn-sm"><i
