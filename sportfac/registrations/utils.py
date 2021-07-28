@@ -51,7 +51,7 @@ class ChildParser:
         }
 
     def parse_blacklist(self, value):
-        if value in (0, '0', 'FALSE'):
+        if not value or value in (0, '0', 'FALSE'):
             return False
         return True
 
