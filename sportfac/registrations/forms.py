@@ -45,7 +45,7 @@ class ChildForm(forms.ModelForm):
     school = forms.ModelChoiceField(label=_("School"),
                                     queryset=School.objects.filter(selectable=True),
                                     required=False)
-    emergency_number = forms.CharField(label=_("Emergency number"), required=settings.KEPCHUP_EMERGENCY_NUMBER_MANDATORY)
+    emergency_number = forms.CharField(label=_("Emergency number"), required=False)
     bib_number = forms.CharField(label=_("Bib number"), required=False)
 
     class Meta:
