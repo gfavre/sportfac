@@ -112,20 +112,6 @@
     </div>
   </div>
 
-  {% if EMERGENCY_NUMBER_MANDATORY %}
-    <div class="form-group" ng-class="{ 'has-error': errors.hasOwnProperty('emergency_number') }">
-      <label class="col-sm-4 control-label" for="emergency_number">Numéro d'urgence<span
-          class="required"> *</span></label>
-      <div class="col-sm-8">
-        <input id="emergency_number" ng-model="detailedChild.emergency_number"
-               type="text" class="form-control"
-               {% if EMERGENCY_NUMBER_EDITABLE %}required{% else %}readonly{% endif %}
-        />
-        <span ng-show="childform.emergency_number.$error.required">Ce champ est obligatoire</span>
-        <span ng-show="errors.emergency_number" class="help-block">{[{ errors.emergency_number[0] }]}</span>
-      </div>
-    </div>
-  {% endif %}
   {% if USE_BUILDINGS %}
     <div ng-show="useBuildings">
       <div class="form-group">
@@ -211,6 +197,21 @@
             {% else %}
                readonly
             {% endif %}>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if EMERGENCY_NUMBER_MANDATORY %}
+    <div class="form-group" ng-class="{ 'has-error': errors.hasOwnProperty('emergency_number') }">
+      <label class="col-sm-4 control-label" for="emergency_number">Numéro d'urgence<span
+          class="required"> *</span></label>
+      <div class="col-sm-8">
+        <input id="emergency_number" ng-model="detailedChild.emergency_number"
+               type="text" class="form-control"
+               {% if EMERGENCY_NUMBER_EDITABLE %}required{% else %}readonly{% endif %}
+        />
+        <span ng-show="childform.emergency_number.$error.required">Ce champ est obligatoire</span>
+        <span ng-show="errors.emergency_number" class="help-block">{[{ errors.emergency_number[0] }]}</span>
       </div>
     </div>
   {% endif %}
