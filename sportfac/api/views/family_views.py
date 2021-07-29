@@ -107,7 +107,7 @@ class ChildrenViewSet(viewsets.ModelViewSet):
         if ext_id is not None:
             try:
                 ext_id = int(ext_id)
-                queryset = queryset.filter(id_lagapeo=ext_id)
+                queryset = queryset.filter(id_lagapeo=ext_id, is_blacklisted=False)
             except ValueError:
                 queryset = queryset.none()
         else:
