@@ -15,7 +15,7 @@ from profiles.models import School, SchoolYear
 logger = logging.getLogger(__name__)
 
 
-CHILD_MANDATORY_FIELDS = (u'ID LAGAPEO', u'Nom', u'Prénom', u'Genre', u'Date de naissance', u'Nationalité')
+CHILD_MANDATORY_FIELDS = (u'ID LAGAPEO', u'Nom', u'Prénom', u'Genre', u'Date de naissance',)
 CHILD_IMPORT_TO_FIELD = {
     u'ID LAGAPEO': 'id_lagapeo',
     u'Nom': 'last_name',

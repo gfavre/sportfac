@@ -6,13 +6,16 @@ Nous avons bien reçu vos inscriptions pour les cours suivants:
 • {{ registration.child.full_name|safe }} - {{ registration.course.short_name|safe }}{% if payment %} - {{ registration.price|money }}{% endif %}
 {% endfor %}
 
-{% if payment %}
+{% if payment and PAYMENT_METHOD == 'wire_transfer' %}
 Paiement:
 Identifiant de paiement: {{ bill.billing_identifier }}
 Total: {{ bill.total|money }}
 IBAN: {{ iban }}
 
 Vous pouvez retrouver votre facture en tous temps sur {{ site_url }}{{ bill.get_absolute_url }}
+
+{% elif payment and PAYMENT_METHOD == 'external' %}
+La facture de {{ bill.total|money }} vous sera envoyée par courrier.
 {% endif %}
 
 {% if appointments %}
