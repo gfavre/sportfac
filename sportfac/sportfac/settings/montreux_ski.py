@@ -12,10 +12,11 @@ STATICFILES_DIRS = (
     normpath(join(SITE_ROOT, 'static')),
 )
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = env('EMAIL_HOST', default='')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
-EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
+# We switch to postmark. Here are the old settings which ended up in mailgun
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# EMAIL_HOST = env('EMAIL_HOST', default='')
+# EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
+# EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
 
 MASTER_DB = 'master_users'
 DATABASES[MASTER_DB] = env.db('MASTER_DATABASE_URL', default='postgres:///kepchup_users')
