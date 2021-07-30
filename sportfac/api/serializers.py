@@ -19,19 +19,6 @@ class ActivitySerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'number')
 
 
-class InstructorSerializer(serializers.ModelSerializer):
-    first = serializers.CharField(source='first_name')
-    last = serializers.CharField(source='last_name')
-    phone = serializers.CharField(source='best_phone')
-    initials = serializers.CharField(source='get_initials', read_only=True)
-    full_name = serializers.CharField(source='get_full_name', read_only=True)
-
-    class Meta:
-        model = FamilyUser
-        fields = ('id', 'first', 'last', 'phone', 'email', 'initials', 'full_name')
-        read_only_fields = ('email', 'initials')
-
-
 class MultiCourseInlineSerializer(serializers.ModelSerializer):
     start_time_mon = serializers.TimeField(format='%H:%M')
     end_time_mon = serializers.TimeField(format='%H:%M')
@@ -55,6 +42,19 @@ class MultiCourseInlineSerializer(serializers.ModelSerializer):
             'start_time_thu', 'end_time_thu', 'start_time_fri', 'end_time_fri', 'start_time_sat', 'end_time_sat',
             'start_time_sun', 'end_time_sun',
         )
+
+
+class InstructorSerializer(serializers.ModelSerializer):
+    first = serializers.CharField(source='first_name')
+    last = serializers.CharField(source='last_name')
+    phone = serializers.CharField(source='best_phone')
+    initials = serializers.CharField(source='get_initials', read_only=True)
+    full_name = serializers.CharField(source='get_full_name', read_only=True)
+
+    class Meta:
+        model = FamilyUser
+        fields = ('id', 'first', 'last', 'phone', 'email', 'initials', 'full_name')
+        read_only_fields = ('email', 'initials')
 
 
 class CourseInlineSerializer(serializers.ModelSerializer):
@@ -120,18 +120,18 @@ class ActivityDetailedSerializer(serializers.ModelSerializer):
         return CourseInlineSerializer(courses, many=True, read_only=True).data
 
 
+class BuildingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Building
+        fields = ('id', 'name', 'address', 'zipcode', 'city', 'country')
+
+
 class SchoolYearField(serializers.RelatedField):
     def to_representation(self, value):
         return value.year
 
     def to_internal_value(self, data):
         return SchoolYear.objects.get(year=data)
-
-
-class BuildingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Building
-        fields = ('id', 'name', 'address', 'zipcode', 'city', 'country')
 
 
 class TeacherSerializer(serializers.ModelSerializer):
