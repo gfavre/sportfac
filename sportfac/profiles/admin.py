@@ -123,9 +123,12 @@ class CityAdmin(SportfacModelAdmin):
 
 @admin.register(SchoolYear)
 class SchoolYearAdmin(SportfacModelAdmin):
-    pass
+    list_display = ('year', 'visible')
+    list_filter = ('visible',)
 
 
 @admin.register(School)
 class SchoolAdmin(SportfacModelAdmin):
-    pass
+    list_display = ('name', 'selectable')
+    list_filter = ('selectable',)
+
