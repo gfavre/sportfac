@@ -24,10 +24,11 @@ AUTHENTICATION_BACKENDS = ('sportfac.authentication_backends.MasterUserBackend',
                            'django.contrib.auth.backends.ModelBackend')
 SESSION_COOKIE_NAME = 'ssfmontreux_automne'
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = env('EMAIL_HOST', default='')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
-EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
+# We switch to postmark. Here are the old settings which ended up in mailgun
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# EMAIL_HOST = env('EMAIL_HOST', default='')
+# EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
+# EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
 
 KEPCHUP_USE_ABSENCES = True
 KEPCHUP_IMPORT_CHILDREN = True
