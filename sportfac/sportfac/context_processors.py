@@ -156,6 +156,8 @@ def kepchup_context(request):
         'ID_LAGAPEO_EDITABLE': 'id_lagapeo' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
         'LANGUAGE_EDITABLE': 'language' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
         'LAST_NAME_EDITABLE': 'last_name' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
+        'LIMIT_BY_AGE': settings.KEPCHUP_LIMIT_BY_AGE,
+        'LIMIT_BY_SCHOOL_YEAR': settings.KEPCHUP_LIMIT_BY_SCHOOL_YEAR,
         'NATIONALITY_EDITABLE': 'nationality' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
         'OTHER_SCHOOL_EDITABLE': 'other_school' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
         'SCHOOL_YEAR_EDITABLE': 'school_year' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
