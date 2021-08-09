@@ -158,6 +158,7 @@ def kepchup_context(request):
         'LAST_NAME_EDITABLE': 'last_name' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
         'LIMIT_BY_AGE': settings.KEPCHUP_LIMIT_BY_AGE,
         'LIMIT_BY_SCHOOL_YEAR': settings.KEPCHUP_LIMIT_BY_SCHOOL_YEAR,
+        'SCHOOL_YEAR_MANDATORY': settings.KEPCHUP_SCHOOL_YEAR_MANDATORY,
         'NATIONALITY_EDITABLE': 'nationality' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
         'OTHER_SCHOOL_EDITABLE': 'other_school' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
         'SCHOOL_YEAR_EDITABLE': 'school_year' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
