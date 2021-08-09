@@ -90,7 +90,15 @@
 {% formrow form.place using "floppyforms/rows/bootstrap-basic-row.html" %}
 {% formrow form.comments %}
 
-{% formrow form.min_participants form.max_participants form.schoolyear_min form.schoolyear_max %}
+{% formrow form.min_participants form.max_participants %}
+
+  {% if LIMIT_BY_SCHOOL_YEAR %}
+  {% formrow form.schoolyear_min form.schoolyear_max %}
+{% endif %}
+{% if LIMIT_BY_AGE %}
+  {% formrow form.age_min form.age_max %}
+{% endif %}
+
 {% formrow form.uptodate %}
 {% formrow form.visible %}
 <div class="camp-hidden course-show">{% formrow form.announced_js %}</div>

@@ -37,7 +37,9 @@ class CourseInline(admin.StackedInline):
                                  'start_time_sun', 'end_time_sun',
 
                                  )}),
-        (_("Limitations"), {'fields': ('min_participants', 'max_participants', 'schoolyear_min', 'schoolyear_max')}),
+        (_("Limitations"), {'fields': ('min_participants', 'max_participants',
+                                       'schoolyear_min', 'schoolyear_max',
+                                       'age_min', 'age_max')}),
         (None, {'fields': ('extra',)}),
     )
     ordering = ['start_date', 'start_time']

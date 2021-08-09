@@ -43,6 +43,10 @@ SCHOOL_YEARS = (
     (12, _("12S")),
 )
 
+AGES = Choices(
+    *[(age, 'a{}'.format(age), _('%i years old') % age) for age in settings.KEPCHUP_AGES]
+)
+
 
 class ActivityManager(models.Manager):
     def visible(self):
@@ -222,10 +226,18 @@ class Course(TimeStampedModel):
     place = models.TextField(verbose_name=_("Place"))
     min_participants = models.PositiveSmallIntegerField(verbose_name=_("Minimal number of participants"))
     max_participants = models.PositiveSmallIntegerField(verbose_name=_("Maximal number of participants"))
-    schoolyear_min = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="1",
-                                                 verbose_name=_("Minimal school year"))
-    schoolyear_max = models.PositiveIntegerField(choices=SCHOOL_YEARS, default="12",
-                                                 verbose_name=_("Maximal school year"))
+
+    schoolyear_min = models.PositiveIntegerField(choices=SCHOOL_YEARS,
+                                                 verbose_name=_("Minimal school year"), blank=True, null=True)
+    schoolyear_max = models.PositiveIntegerField(choices=SCHOOL_YEARS,
+                                                 verbose_name=_("Maximal school year"), blank=True, null=True)
+
+    age_min = models.PositiveIntegerField(choices=AGES,
+                                          verbose_name=_("Minimal age"), help_text=_("At the beginning of course"),
+                                          blank=True, null=True)
+    age_max = models.PositiveIntegerField(choices=AGES,
+                                          verbose_name=_("Maximal age"), help_text=_("At the beginning of course"),
+                                          blank=True, null=True)
 
     announced_js = models.BooleanField(_("Course announced to J+S"), default=False)
 
@@ -235,6 +247,14 @@ class Course(TimeStampedModel):
         ordering = ('activity__name', 'number',)
         verbose_name = _("course")
         verbose_name_plural = _("courses")
+
+    @property
+    def ages(self):
+        return range(self.age_min or settings.KEPCHUP_AGES[0], (self.age_max or settings.KEPCHUP_AGES[-1]) + 1)
+
+    @property
+    def ages_label(self):
+        return [dict(AGES)[age] for age in self.ages]
 
     @property
     def available_places(self):

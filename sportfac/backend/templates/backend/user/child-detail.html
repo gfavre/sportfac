@@ -24,7 +24,7 @@
     <dt>{% trans "Nationality" %}</dt><dd> {{ child.get_nationality_display }}</dd>
     <dt>{% trans "Language" %}</dt><dd> {{ child.get_language_display }}</dd>
   <hr>
-    <dt>{% trans "School year" %}</dt><dd> {{ child.school_year }}</dd>
+    <dt>{% trans "School year" %}</dt><dd> {{ child.school_year|default:'n/a' }}</dd>
 {% if PREFILL_YEARS_WITH_TEACHERS %}
     <dt>{% trans "Teacher" %}</dt><dd> {{ child.teacher.get_full_name }}</dd>
 {% endif %}

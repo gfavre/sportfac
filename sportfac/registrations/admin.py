@@ -79,6 +79,9 @@ class RegistrationsProfileAdmin(SportfacModelAdmin):
     list_display = ('user', 'has_paid_all', 'finished_registering', 'last_registration')
     raw_id_fields = ('user', )
     list_filter = ('has_paid_all', 'finished_registering')
+    search_fields = (
+        'user__first_name', 'user__last_name', 'user__email',
+    )
 
 
 @admin.register(Child)

@@ -153,10 +153,16 @@
                 </dd>
               {% endif %}
             {% endif %}
+
+            {% if LIMIT_BY_SCHOOL_YEAR %}
             <dt>{% trans "School years" %}</dt>
             <dd>{% for year in course.school_years_label %}{{ year }}{% if not forloop.last %} -
             {% endif %} {% endfor %}
             </dd>
+            {% else %}
+            <dt>{% trans "Ages" %}</dt>
+            <dd>{{ course.get_age_min_display }} - {{ course.get_age_max_display }}</dd>
+            {% endif %}
           </dl>
           <h4 class="content-title">
             <u>{% trans "Availability" %}</u>

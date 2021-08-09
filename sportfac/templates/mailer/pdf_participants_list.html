@@ -14,9 +14,11 @@ Liste des participants<br> Cours {{ course.number }} | {{ course.activity.name }
     {% for registration in course.participants.all %}
       <tr>
         <td>{{ registration.child.full_name|title }}</td>
+        {% if LIMIT_BY_SCHOOL_YEAR %}
         <td>{{ registration.child.school_year | default:"" }}</td>
+        {% endif %}
         <td>{{ registration.child.birth_date|date:"j.n.Y"}}</td>
-        <td>{% if registration.child.family.address %}{{ registration.child.family.address }}</br>{% endif %}
+        <td>{% if registration.child.family.address %}{{ registration.child.family.address }}<br />{% endif %}
             {{ registration.child.family.zipcode }} {{ registration.child.family.city|title }}
         </td>
         
@@ -40,7 +42,7 @@ Liste des participants<br> Cours {{ course.number }} | {{ course.activity.name }
     {% endfor %}
     <tfoot>
         <tr>
-            <th colspan="6">Total: {{ course.participants.count }} participants</th>
+            <th colspan="{% if LIMIT_BY_SCHOOL_YEAR %}6{% else %}5{% endif %}">Total: {{ course.participants.count }} participants</th>
         </tr>
     </tfoot>
   </table>

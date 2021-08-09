@@ -58,13 +58,26 @@ class CourseForm(forms.ModelForm):
                   'price', 'price_family', 'price_local_family', 'price_local', 'price_description',
                   'number_of_sessions', 'day', 'start_date', 'end_date',
                   'start_time', 'end_time', 'place', 'min_participants',
-                  'max_participants', 'schoolyear_min', 'schoolyear_max',
+                  'max_participants', 'schoolyear_min', 'schoolyear_max', 'age_min', 'age_max',
                   'comments',
                   'uptodate', 'announced_js', 'visible', 'extra',)
 
     def __init__(self, *args, **kwargs):
         super(CourseForm, self).__init__(*args, **kwargs)
+        self._filter_limitations()
         self._filter_price_field()
+
+    def _filter_limitations(self):
+        if settings.KEPCHUP_LIMIT_BY_SCHOOL_YEAR:
+            self.fields.pop('age_min')
+            self.fields.pop('age_max')
+            self.fields['schoolyear_min'].required = True
+            self.fields['schoolyear_max'].required = True
+        else:
+            self.fields.pop('schoolyear_min')
+            self.fields.pop('schoolyear_max')
+            self.fields['age_min'].required = True
+            self.fields['age_max'].required = True
 
     def _filter_price_field(self):
         if settings.KEPCHUP_NO_PAYMENT:
@@ -130,7 +143,7 @@ class ExplicitDatesCourseForm(CourseForm):
                   'start_time_fri', 'end_time_fri', 'start_time_sat', 'end_time_sat',
                   'start_time_sun', 'end_time_sun',
                   'place', 'comments', 'min_participants',
-                  'max_participants', 'schoolyear_min', 'schoolyear_max',
+                  'max_participants', 'schoolyear_min', 'schoolyear_max', 'age_min', 'age_max',
                   'uptodate', 'announced_js', 'visible', 'extra',)
         widgets = {
             'start_time_mon': TimePickerInput(format='%H:%M'), 'end_time_mon': TimePickerInput(format='%H:%M'),
@@ -152,8 +165,6 @@ class ExplicitDatesCourseForm(CourseForm):
         super(ExplicitDatesCourseForm, self).__init__(*args, **kwargs)
         self.fields.pop('start_date')
         self.fields.pop('end_date')
-
-
 
     def clean_session_dates(self):
         dates = self.cleaned_data['session_dates']
