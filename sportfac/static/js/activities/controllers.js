@@ -18,6 +18,8 @@ function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, Regi
   } else {
     $scope.canregistersameactivity = false;
   }
+  if (!$attrs.limitbyschoolyear) throw new Error("No limitbyschoolyear option set");
+    $scope.limitbyschoolyear = $attrs.limitbyschoolyear === 'true';
   if ($attrs.hiddendays) {
      $scope.hiddenDays = JSON.parse($attrs.hiddendays);
   } else {
@@ -110,7 +112,7 @@ function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, Regi
   };
 
   $scope.loadActivities = function(){
-    var url = $scope.urls.activity + '?year=' + $scope.selectedChild.school_year;
+    let url = $scope.urls.activity + '?year=' + $scope.selectedChild.school_year + '&birth_date=' + $scope.selectedChild.birth_date;
     $http({method: 'GET', url: url, cache: true})
        .success(function(response){
            $scope.activities = response;
@@ -252,9 +254,14 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
         activityRegistered = true;
       }
     });
+
     angular.forEach($scope.selectedActivity.courses, function(course){
-      var available = course.schoolyear_min <= $scope.selectedChild.school_year &&
-                      course.schoolyear_max >= $scope.selectedChild.school_year;
+      if ($scope.limitbyschoolyear) {
+        var available = course.schoolyear_min <= $scope.selectedChild.school_year &&
+          course.schoolyear_max >= $scope.selectedChild.school_year;
+      } else {
+         var available = course.min_birth_date >= $scope.selectedChild.birth_date;
+      }
       var registered = registeredCourses.indexOf(course.id) !== -1;
       var overlapping = $scope.registeredEvents.map(
         function(evt){
@@ -305,7 +312,7 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
   };
 
   $scope.register = function(event){
-    if (!$scope.selectedChild.canRegister(event.course)){
+    if (!$scope.selectedChild.canRegister(event.course, $scope.limitbyschoolyear)){
       return;
     }
     $scope.registerCourse($scope.selectedChild, event.course);

@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from django.http import Http404
 
 from rest_framework import status, views, viewsets
 from rest_framework.response import Response
 
 from activities.models import Activity, Course
-from registrations.models import Registration
+from registrations.models import Child, Registration
 from ..permissions import ManagerPermission
 from ..serializers import (ActivityDetailedSerializer, CourseSerializer, ChangeCourseSerializer,
                            CourseChangedSerializer)
@@ -17,14 +18,21 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         queryset = Activity.objects.prefetch_related('courses', 'courses__instructors')
-        school_year = int(self.request.query_params.get('year', None))
-        if school_year is not None:
-            try:
-                queryset = queryset.filter(courses__schoolyear_min__lte=int(school_year),
-                                           courses__schoolyear_max__gte=int(school_year),
-                                           courses__visible=True).distinct()
-            except ValueError:
-                pass
+        if settings.KEPCHUP_LIMIT_BY_SCHOOL_YEAR:
+            school_year = self.request.query_params.get('year')
+            if school_year is not None:
+                try:
+                    queryset = queryset.filter(courses__schoolyear_min__lte=int(school_year),
+                                               courses__schoolyear_max__gte=int(school_year),
+                                               courses__visible=True).distinct()
+                except ValueError:
+                    pass
+        else:
+            birth_date = self.request.query_params.get('birth_date')
+            if birth_date is not None:
+                return queryset.filter(courses__min_birth_date__gte=birth_date,
+                                       courses__visible=True).distinct()
+
         return queryset
 
 

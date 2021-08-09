@@ -76,11 +76,16 @@ factory('Registration', function(){
 .factory('Child', function(){
     var Child = function(data){
       angular.extend(this, {
+
         hasRegistered: function(course){
           return this.registered.indexOf(course.id) !== -1;
         },
-        canRegister: function(course){
-          return !(this.school_year < course.schoolyear_min || this.school_year > course.schoolyear_max);
+        canRegister: function(course, limitbyschoolyear){
+          if (limitbyschoolyear) {
+            return !(this.school_year < course.schoolyear_min || this.school_year > course.schoolyear_max);
+          } else {
+            return course.min_birth_date >= this.birth_date;
+          }
         }
       });
       angular.extend(this, data);

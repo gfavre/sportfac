@@ -28,10 +28,10 @@
   </head>
 
   <body {% block extra_body %}{% endblock %}>
-    <div id="wrapper" {% render_block "extra_html" %}>
+    <div id="wrapper">
       {% include "navbar.html" %}
       {% block localnav %}{% endblock %}
-      <div id="pagecontent">
+      <div id="pagecontent"  {% render_block "extra_html" %}>
         {% block page_header %}
         <div class="container">
           <div class="page-header">
@@ -41,7 +41,7 @@
         {% endblock page_header %}
 
         {% block main-content %}
-        <div class="container">
+        <div class="container" >
           {% include "messages.html" %}
           {% block content %}Use this document as a way to quick start any new project.{% endblock content %}
         </div>

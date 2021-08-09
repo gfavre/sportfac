@@ -1,4 +1,17 @@
-{% load i18n %}
+{% load i18n sekizai_tags %}
+
+{% addtoblock "js" %}
+<script>
+jQuery(function($){
+  $('#topnav .change-tenant').on('click', function (evt){
+    evt.stopPropagation();
+    $('#tenant-change input[name=tenant]').val($(this).data('tenant-id')); $('#tenant-change').submit();
+  })
+});
+</script>
+
+{% endaddtoblock %}
+
 <header class="navbar navbar-inverse" role="banner">
   <div class="container">
     <div class="navbar-header">
@@ -45,8 +58,7 @@
                   </li>
                 {% elif tenant.is_ready %}
                   <li>
-                    <a href="#"
-                       onclick="$('#tenant-change input[name=tenant]').val({{ tenant.pk }}); $('#tenant-change').submit();">
+                    <a href="#" class="change-tenant" data-tenant-id="{{ tenant.pk }}">
                       {% if tenant.is_past %}{% trans "Review" %}{% elif tenant.is_future %}
                         {% trans "Preview" %}{% endif %} {{ tenant }}
                     </a>

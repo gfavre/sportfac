@@ -13,6 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from autoslug import AutoSlugField
 from ckeditor_uploader.fields import RichTextUploadingField
+from dateutil.relativedelta import relativedelta
 from model_utils import Choices
 
 from sportfac.models import TimeStampedModel
@@ -238,7 +239,7 @@ class Course(TimeStampedModel):
     age_max = models.PositiveIntegerField(choices=AGES,
                                           verbose_name=_("Maximal age"), help_text=_("At the beginning of course"),
                                           blank=True, null=True)
-
+    min_birth_date = models.DateField(verbose_name=_("Minimal birth date to register"), null=True, editable=False)
     announced_js = models.BooleanField(_("Course announced to J+S"), default=False)
 
     objects = CourseManager()
@@ -505,6 +506,11 @@ class Course(TimeStampedModel):
 
     def get_xls_export_url(self):
         return reverse('backend:course-xls-export', kwargs={'course': self.pk})
+
+    def save(self, *args, **kwargs):
+        if self.age_min:
+            self.min_birth_date = self.start_date - relativedelta(years=self.age_min)
+        super(Course, self).save(*args, **kwargs)
 
     def update_dates_from_sessions(self, commit=True):
         dates = self.sessions.values_list('date', flat=True)
