@@ -67,6 +67,9 @@
             {data: 'email'},
             {data: 'first_name', name: 'last_name'},
             {data: 'last_name', name: 'last_name'},
+            {data: 'zipcode', name: 'zipcode'},
+            {data: 'city', name: 'city'},
+
             {data: 'children', name: 'children.first_name,children.last_name'},
             {data: 'finished_registrations', name: 'profile.finished_registering'},
               {% if not NO_PAYMENT %}{data: 'has_paid', name: 'profile.has_paid_all'},{% endif %}
@@ -77,7 +80,7 @@
           columnDefs: [
             {
               visible: false,
-              targets: ['user-id', 'email', 'last_registration', {% if NO_PAYMENT %}, 'has-paid'{% endif %}],
+              targets: ['user-id', 'email', 'zipcode', 'last_registration', {% if NO_PAYMENT %}, 'has-paid'{% endif %}],
             },
             {
               searchable: false,
@@ -90,6 +93,8 @@
               },
               targets: ['finished_registrations', 'last_registration', 'has-paid']
             },
+
+
             {
               render: function (data, type, row) {
                 let children = row['children'].flatMap(
@@ -105,7 +110,12 @@
               },
               targets: ['last_registration']
             },
-
+            {
+              render: function (data, type, row) {
+                return row['zipcode'] + ' ' + row['city'];
+              },
+              targets: ['city']
+            },
             {
               render: function (data, type, row) {
                 if (data) {
@@ -200,6 +210,8 @@
 
       <th class="first-name">{% trans "First name" %}</th>
       <th class="last-name">{% trans "Last name" %}</th>
+      <th class="zipcode">Zipcode</th>
+      <th class="city">{% trans "City" %}</th>
       <th class="user-children">{% trans "Children" %}</th>
       <th class="finished_registrations">{% trans "Finished registration" %}</th>
       {% if not NO_PAYMENT %}

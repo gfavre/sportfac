@@ -296,7 +296,7 @@ class FamilySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FamilyUser
-        fields = ('id', 'full_name', 'first_name', 'last_name', 'email', 'children',
+        fields = ('id', 'full_name', 'first_name', 'last_name', 'email', 'zipcode', 'city', 'children',
                   'finished_registrations', 'has_paid', 'last_registration', 'last_registration_natural',
                   'registered_this_period',
                   'actions')

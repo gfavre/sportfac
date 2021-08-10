@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta
+
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 
@@ -27,6 +28,7 @@ class DashboardFamilyView(generics.ListAPIView):
     def get_search_panes(self):
         return 'searchPanes', {
             "options": {
+
                 "finished_registrations": [
                     {
                         'label': _("Has finished registering"),
@@ -70,7 +72,7 @@ class DashboardFamilyView(generics.ListAPIView):
                         'count': 0,
                         'total': FamilyUser.objects.filter(profile__has_paid_all=False).count()
                     },
-                ]
+                ],
 
             }
         }
