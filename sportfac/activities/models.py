@@ -513,7 +513,8 @@ class Course(TimeStampedModel):
         if self.age_min:
             self.min_birth_date = self.start_date - relativedelta(years=self.age_min)
         if self.age_max:
-            self.max_birth_date = self.start_date - relativedelta(years=self.age_max)
+            # if we say up to 6 years old, we want to include children of 6 1/2 years old, hence the +1
+            self.max_birth_date = self.start_date - relativedelta(years=self.age_max + 1)
 
         super(Course, self).save(*args, **kwargs)
 

@@ -117,7 +117,7 @@ class CoursesAdmin(SportfacAdminMixin, ImportExportModelAdmin):
     change_list_filter_template = "admin/filter_listing.html"
     save_as = True
     inlines = (ExtraInline,)
-    readonly_fields = ('id', 'min_birth_date')
+    readonly_fields = ('id', 'min_birth_date', 'max_birth_date')
     resource_class = CourseResource
 
     def get_queryset(self, request):
