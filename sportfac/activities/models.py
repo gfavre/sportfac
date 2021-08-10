@@ -240,6 +240,8 @@ class Course(TimeStampedModel):
                                           verbose_name=_("Maximal age"), help_text=_("At the beginning of course"),
                                           blank=True, null=True)
     min_birth_date = models.DateField(verbose_name=_("Minimal birth date to register"), null=True, editable=False)
+    max_birth_date = models.DateField(verbose_name=_("Maximal birth date to register"), null=True, editable=False)
+
     announced_js = models.BooleanField(_("Course announced to J+S"), default=False)
 
     objects = CourseManager()
@@ -510,6 +512,9 @@ class Course(TimeStampedModel):
     def save(self, *args, **kwargs):
         if self.age_min:
             self.min_birth_date = self.start_date - relativedelta(years=self.age_min)
+        if self.age_max:
+            self.max_birth_date = self.start_date - relativedelta(years=self.age_max)
+
         super(Course, self).save(*args, **kwargs)
 
     def update_dates_from_sessions(self, commit=True):

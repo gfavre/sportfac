@@ -31,6 +31,7 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
             birth_date = self.request.query_params.get('birth_date')
             if birth_date is not None:
                 return queryset.filter(courses__min_birth_date__gte=birth_date,
+                                       courses__max_birth_date__lte=birth_date,
                                        courses__visible=True).distinct()
 
         return queryset

@@ -52,7 +52,7 @@ ALLOWED_HOSTS = ('127.0.0.1', 'localhost', 'test.com', 'tenant.test.com', 'tests
 ########## DATABASE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
-    'other': env.db('DATABASE_URL', default='postgres:///sportfac'),
+    #'other': env.db('DATABASE_URL', default='postgres:///sportfac'),
     'master_users': env.db('MASTER_DATABASE_URL', default='postgres:///kepchup_users'),
     'default': env.db('OTHER_DB', 'postgres:///sportfac_montreux'),
 }
@@ -177,7 +177,7 @@ KEPCHUP_ENABLE_TEACHER_MANAGEMENT = True
 KEPCHUP_DASHBOARD_SHOW_CHILDREN_STATS = True
 KEPCHUP_DASHBOARD_SHOW_FAMILY_STATS = True
 KEPCHUP_USE_BLACKLISTS = True
-KEPCHUP_LIMIT_BY_AGE = False
+KEPCHUP_LIMIT_BY_AGE = True
 KEPCHUP_LIMIT_BY_SCHOOL_YEAR = not KEPCHUP_LIMIT_BY_AGE
 KEPCHUP_SCHOOL_YEAR_MANDATORY = False
 

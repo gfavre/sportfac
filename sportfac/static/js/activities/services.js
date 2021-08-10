@@ -84,7 +84,7 @@ factory('Registration', function(){
           if (limitbyschoolyear) {
             return !(this.school_year < course.schoolyear_min || this.school_year > course.schoolyear_max);
           } else {
-            return course.min_birth_date >= this.birth_date;
+            return course.min_birth_date >= this.birth_date && course.max_birth_date <= this.birth_date;
           }
         }
       });

@@ -260,7 +260,7 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
         var available = course.schoolyear_min <= $scope.selectedChild.school_year &&
           course.schoolyear_max >= $scope.selectedChild.school_year;
       } else {
-         var available = course.min_birth_date >= $scope.selectedChild.birth_date;
+         var available = course.min_birth_date >= $scope.selectedChild.birth_date && course.max_birth_date <= $scope.selectedChild.birth_date;
       }
       var registered = registeredCourses.indexOf(course.id) !== -1;
       var overlapping = $scope.registeredEvents.map(

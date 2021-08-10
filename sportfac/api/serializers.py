@@ -67,7 +67,7 @@ class CourseInlineSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = ('id', 'course_type', 'number', 'day', 'start_date', 'end_date', 'all_day', 'start_time', 'end_time',
-                  'schoolyear_min', 'schoolyear_max', 'min_birth_date', 'instructors', 'multi_course')
+                  'schoolyear_min', 'schoolyear_max', 'min_birth_date', 'max_birth_date', 'instructors', 'multi_course')
 
     @staticmethod
     def get_all_day(obj):
@@ -95,7 +95,7 @@ class CourseSerializer(serializers.ModelSerializer):
                   'price_local', 'price_family', 'price_local_family',
                   'number_of_sessions', 'day', 'start_date', 'end_date', 'all_day', 'start_time', 'end_time', 'place',
                   'min_participants', 'max_participants', 'count_participants',
-                  'schoolyear_min', 'schoolyear_max', 'multi_course', 'min_birth_date')
+                  'schoolyear_min', 'schoolyear_max', 'multi_course', 'min_birth_date', 'max_birth_date',)
 
     @staticmethod
     def get_all_day(obj):
