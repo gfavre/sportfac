@@ -170,27 +170,6 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         return self.private_phone2 or self.private_phone or self.private_phone3
 
     @property
-    def full_name(self):
-        return self.get_full_name()
-
-    @property
-    def nb_notifications(self):
-        return self.updatable_children
-
-    @property
-    def is_instructor(self):
-        return self.coursesinstructors_set.exists()
-
-    @property
-    def is_kepchup_staff(self):
-        return self.is_manager or self.is_superuser or self.is_instructor
-
-    @property
-    def updatable_children(self):
-        from registrations.models import Child
-        return self.children.filter(status=Child.STATUS.imported).count()
-
-    @property
     def children_names(self):
         return ', '.join([unicode(child) for child in self.children.all()])
 
@@ -199,22 +178,8 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         return ', '.join([unicode(ci.course.short_name) for ci in self.coursesinstructors_set.all()])
 
     @property
-    def has_open_bills(self):
-        if hasattr(self, 'opened_bills'):
-            return self.opened_bills > 0
-        return self.bills.filter(status=Bill.STATUS.waiting).exists()
-
-    @property
-    def paid(self):
-        if hasattr(self, 'opened_bills'):
-            return self.opened_bills == 0
-        return not self.has_open_bills
-
-    @property
-    def has_open_registrations(self):
-        if hasattr(self, 'waiting_registrations'):
-            return self.waiting_registrations > 0
-        return self.get_registrations(validated=False).exists()
+    def full_name(self):
+        return self.get_full_name()
 
     @property
     def finished_registrations(self):
@@ -223,8 +188,28 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         return not self.has_open_registrations
 
     @property
+    def has_open_bills(self):
+        if hasattr(self, 'opened_bills'):
+            return self.opened_bills > 0
+        return self.bills.filter(status=Bill.STATUS.waiting).exists()
+
+    @property
+    def has_open_registrations(self):
+        if hasattr(self, 'waiting_registrations'):
+            return self.waiting_registrations > 0
+        return self.get_registrations(validated=False).exists()
+
+    @property
     def has_registrations(self):
         return Registration.objects.validated().filter(child__family=self).exists()
+
+    @property
+    def is_kepchup_staff(self):
+        return self.is_manager or self.is_superuser or self.is_instructor
+
+    @property
+    def is_instructor(self):
+        return self.coursesinstructors_set.exists()
 
     @property
     def last_registration(self):
@@ -241,31 +226,36 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
                 return True
         return False
 
-    def is_instructor_of(self, course):
-        return course in self.course.all()
+    @property
+    def nb_notifications(self):
+        return self.updatable_children
 
-    def save(self, create_profile=True, sync=True, *args, **kwargs):
-        from registrations.models import RegistrationsProfile
-        from django.db import ProgrammingError
-        super(FamilyUser, self).save(*args, **kwargs)
-        if create_profile and not hasattr(self, 'profile'):
-            try:
-                profile, created = RegistrationsProfile.objects.get_or_create(user=self)
-                if not created:
-                    profile.save()
-            except ProgrammingError:
-                # we are running from shell where no tenant has been selected.
-                pass
-        if len(settings.DATABASES) > 1 and sync:
-            from .tasks import save_to_master, LOCAL_DB
-            transaction.on_commit(lambda: save_to_master(self.pk, kwargs.get('using', LOCAL_DB)))
+    @property
+    def paid(self):
+        if hasattr(self, 'opened_bills'):
+            return self.opened_bills == 0
+        return not self.has_open_bills
+
+    @property
+    def updatable_children(self):
+        from registrations.models import Child
+        return self.children.filter(status=Child.STATUS.imported).count()
+
+    def get_absolute_url(self):
+        return reverse('profiles_account')
+
+    def get_backend_url(self):
+        return reverse('backend:user-detail', kwargs={'pk': self.pk})
+
+    def get_delete_url(self):
+        return reverse('backend:user-delete', kwargs={'pk': self.pk})
+
+    def get_email_string(self):
+        return "%s %s <%s>" % (self.first_name, self.last_name, self.email)
 
     def get_full_name(self):
         full_name = u'{} {}'.format(self.first_name, self.last_name)
         return full_name.strip().title()
-
-    def get_short_name(self):
-        return self.first_name
 
     def get_initials(self):
         if self.first_name and self.last_name:
@@ -281,6 +271,9 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
             initial = self.email[:1].upper()
         return initial
 
+    def get_payment_url(self):
+        return reverse('backend:user-pay', kwargs={'pk': self.pk})
+
     def get_registrations(self, validated=True):
         if validated:
             queryset = Registration.objects.validated()
@@ -288,8 +281,11 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
             queryset = Registration.objects.waiting()
         return queryset.filter(child__in=self.children.all())
 
-    def get_absolute_url(self):
-        return reverse('profiles_account')
+    def get_short_name(self):
+        return self.first_name
+
+    def get_update_url(self):
+        return reverse('backend:user-update', kwargs={'pk': self.pk})
 
     def has_module_perms(self, app_label):
         staff_apps = ['activities', 'backend', 'extended_flatpages' 'profiles', 'registrations', 'schools']
@@ -300,20 +296,24 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
             return True
         return False
 
-    def get_update_url(self):
-        return reverse('backend:user-update', kwargs={'pk': self.pk})
+    def is_instructor_of(self, course):
+        return course in self.course.all()
 
-    def get_delete_url(self):
-        return reverse('backend:user-delete', kwargs={'pk': self.pk})
-
-    def get_payment_url(self):
-        return reverse('backend:user-pay', kwargs={'pk': self.pk})
-
-    def get_backend_url(self):
-        return reverse('backend:user-detail', kwargs={'pk': self.pk})
-
-    def get_email_string(self):
-        return "%s %s <%s>" % (self.first_name, self.last_name, self.email)
+    def save(self, create_profile=True, sync=True, *args, **kwargs):
+        from registrations.models import RegistrationsProfile
+        from django.db import ProgrammingError
+        super(FamilyUser, self).save(*args, **kwargs)
+        if create_profile:
+            try:
+                profile, created = RegistrationsProfile.objects.get_or_create(user=self)
+                if not created:
+                    profile.save()
+            except ProgrammingError:
+                # we are running from shell where no tenant has been selected.
+                pass
+        if len(settings.DATABASES) > 1 and sync:
+            from .tasks import save_to_master, LOCAL_DB
+            transaction.on_commit(lambda: save_to_master(self.pk, kwargs.get('using', LOCAL_DB)))
 
     def __unicode__(self):
         return self.get_email_string()

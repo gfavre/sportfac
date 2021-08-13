@@ -341,22 +341,15 @@ class Bill(TimeStampedModel, StatusModel):
         return reverse('backend:bill-update', kwargs={'pk': self.pk})
 
     @transaction.atomic
-    def save(self, *args, **kwargs):
+    def save(self, force_status=False, *args, **kwargs):
         self.update_total()
-        self.update_status()
+        if not force_status:
+            self.update_status()
         if not self.billing_identifier:
             self.update_billing_identifier()
         super(Bill, self).save(*args, **kwargs)
         if self.family:
             self.family.save()
-
-    def set_paid(self):
-        self.status = self.STATUS.paid
-        self.save()
-
-    def set_waiting(self):
-        self.status = self.STATUS.waiting
-        self.save()
 
     def send_confirmation(self):
         from .tasks import send_bill_confirmation as send_confirmation_task
@@ -370,6 +363,14 @@ class Bill(TimeStampedModel, StatusModel):
             tenant_pk=tenant_pk,
             language=get_language(),
         ))
+
+    def set_paid(self):
+        self.status = self.STATUS.paid
+        self.save()
+
+    def set_waiting(self):
+        self.status = self.STATUS.waiting
+        self.save()
 
     def update_billing_identifier(self):
         if self.pk:
