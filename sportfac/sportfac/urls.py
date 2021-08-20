@@ -40,13 +40,13 @@ if settings.KEPCHUP_USE_SSO:
     if settings.KEPCHUP_SPLASH_PAGE:
         urlpatterns = [
             url(r'^client/', include(sso_client.get_urls())),
-            url(r'^/$', flatviews.flatpage, {'url': '/splash/'}, name='splash'),
+            url(r'^$', flatviews.flatpage, {'url': '/splash/'}, name='splash'),
             url(r'^accueil/$', flatviews.flatpage, {'url': '/'}, name='home'),
         ]
     else:
         urlpatterns = [
             url(r'^client/', include(sso_client.get_urls())),
-            url(r'^/$', flatviews.flatpage, {'url': '/home'}, name='home')
+            url(r'^$', flatviews.flatpage, {'url': '/home'}, name='home')
         ]
 
 else:
@@ -94,8 +94,6 @@ urlpatterns += [
 
     url(r'^admin/', include(admin.site.urls)),
 ]
-
-
 
 
 handler404 = 'sportfac.views.not_found'
