@@ -239,8 +239,8 @@
             <th class="bibnumber">{% trans "Bib number" %}</th>
           {% endif %}
           <th class="child-name">{% trans "Name" %}</th>
-          <th class="school">
-            {% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
+          {% if LIMIT_BY_SCHOOL_YEAR %}<th class="school">
+            {% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>{% endif %}
           {% if EMERGENCY_NUMBER_MANDATORY %}
             <th>{% trans "Emergency number" %}</th>
           {% else %}
@@ -267,12 +267,14 @@
               <a href="{{ registration.child.get_backend_url }}">{{ registration.child.full_name }}</a>
             </td>
 
+          {% if LIMIT_BY_SCHOOL_YEAR %}
             <td>
               {{ registration.child.school_year|default:"n/a" }}
               {% if CHILD_SCHOOL %}<br>
                 {{ registration.child.school_name }}
               {% endif %}
             </td>
+            {% endif %}
             {% if EMERGENCY_NUMBER_MANDATORY %}
               <td>
                 <a href="{{ registration.child.emergency_number|phone:'RFC3966' }}">

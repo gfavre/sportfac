@@ -240,9 +240,11 @@
           <th>{% trans "City" %}</th>
         {% endif %}
 
+      {% if LIMIT_BY_SCHOOL_YEAR %}
         <th class="school">
           {% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}
         </th>
+      {% endif %}
         {% if user in course.instructors.all %}
           <th class="birth-date">{% trans "Birth date" %}</th>
           {% if EMERGENCY_NUMBER_MANDATORY %}
@@ -270,6 +272,7 @@
       <td>{{ registration.child.family.city|title }}</td>
       {% endif %}
 
+      {% if LIMIT_BY_SCHOOL_YEAR %}
       <td>
         {{ registration.child.school_year|default:"n/a" }}
         {% if CHILD_SCHOOL %}
@@ -277,6 +280,7 @@
           {{ registration.child.school_name }}
         {% endif %}
       </td>
+      {% endif %}
 
       {% if user in course.instructors.all %}
       <td data-order="{{ registration.child.birth_date|date:"c" }}">{{ registration.child.birth_date }}</td>
