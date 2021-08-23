@@ -252,7 +252,7 @@
         {% else %}
           <th class="teacher">{% trans "Teacher" %}</th>
         {% endif %}
-        {% if INSTRUCTORS_CAN_REMOVE_REGISTRATIONS %}
+        {% if INSTRUCTORS_CAN_REMOVE_REGISTRATIONS and user in course.instructors.all %}
           <th class="actions text-nowrap">{% trans "Actions" %}</th>
         {% endif %}
       </tr>
@@ -320,7 +320,7 @@
           </td>
         {% endif %}
 
-          {% if INSTRUCTORS_CAN_REMOVE_REGISTRATIONS %}
+          {% if INSTRUCTORS_CAN_REMOVE_REGISTRATIONS and user in course.instructors.all %}
             <td>
               <ul class="list-unstyled">
                 <li class="text-nowrap"><a href="{{ registration.cancel_url }}" class="btn btn-sm"><i
