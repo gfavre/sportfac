@@ -189,9 +189,9 @@ KEPCHUP_SCHOOL_YEAR_MANDATORY = False
 
 # Single Sign On
 #########################################
-KEPCHUP_USE_SSO = True
-LOGIN_URL = '/client/'
-LOGOUT_URL = 'https://users.ssfmontreux.ch/logout/'
+KEPCHUP_USE_SSO = False
+#LOGIN_URL = '/client/'
+#LOGOUT_URL = 'https://users.ssfmontreux.ch/logout/'
 
 # Payment
 #########################################

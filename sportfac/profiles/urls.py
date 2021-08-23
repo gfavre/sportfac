@@ -39,8 +39,6 @@ else:
         url(r'^login/$', auth_views.login,
             {'template_name': 'registration/login.html', 'authentication_form': AuthenticationForm},
             name='auth_login'),
-
-
         url(r'^password/change/$', password_change, name='password_change'),
         url(r'^password/change/done/$', auth_views.password_change_done, name='password_change_done'),
         url(r'^password/reset/$', password_reset, name='password_reset'),

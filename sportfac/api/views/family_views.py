@@ -21,7 +21,7 @@ class FamilyView(mixins.ListModelMixin, generics.GenericAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return Child.objects.filter(family=user)
+        return Child.objects.filter(family=user).select_related('teacher', 'school', 'school_year')
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
