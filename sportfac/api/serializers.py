@@ -96,6 +96,7 @@ class CourseSerializer(serializers.ModelSerializer):
                   'number_of_sessions', 'day', 'start_date', 'end_date', 'all_day', 'start_time', 'end_time', 'place',
                   'min_participants', 'max_participants', 'count_participants',
                   'schoolyear_min', 'schoolyear_max', 'multi_course', 'min_birth_date', 'max_birth_date',)
+        read_only_fields = fields
 
     @staticmethod
     def get_all_day(obj):
