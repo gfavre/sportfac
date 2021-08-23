@@ -35,7 +35,6 @@ class TextPlainView(TemplateView):
 if settings.KEPCHUP_USE_SSO:
     from profiles.client import KepchupClient
 
-    from simple_sso.sso_client.client import AuthenticateView
     sso_client = KepchupClient(settings.SSO_SERVER, settings.SSO_PUBLIC_KEY, settings.SSO_PRIVATE_KEY)
     if settings.KEPCHUP_SPLASH_PAGE:
         urlpatterns = [
@@ -54,10 +53,12 @@ else:
         urlpatterns = [
             url(r'^$', flatviews.flatpage, {'url': '/splash/'}, name='splash'),
             url(r'^accueil/$', flatviews.flatpage, {'url': '/'}, name='home'),
+            url(r'^account/login$', auth_views.login, name='login'),
         ]
     else:
         urlpatterns = [
-            url(r'^$', flatviews.flatpage, {'url': '/'}, name='home')
+            url(r'^$', flatviews.flatpage, {'url': '/'}, name='home'),
+            url(r'^account/login$', auth_views.login, name='login'),
         ]
 
 if settings.KEPCHUP_USE_APPOINTMENTS:
@@ -71,7 +72,6 @@ urlpatterns += [
 
     url(r'^api/', include('api.urls', namespace="api")),
     url(r'^activities/', include('activities.urls', namespace="activities")),
-    url(r'^account/login$', auth_views.login, name='login'),
     url(r'^account/', include('profiles.urls')),
     url(r'^backend/', include('backend.urls', namespace="backend", app_name="backend")),
     url(r'^contact/', include('contact.urls')),

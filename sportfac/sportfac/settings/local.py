@@ -153,7 +153,7 @@ KEPCHUP_NO_SSF = True
 KEPCHUP_IMPORT_CHILDREN = True
 KEPCHUP_DISPLAY_NUMBER_OF_SESSIONS = False
 KEPCHUP_ALTERNATIVE_STEPS_NAMING = True
-KEPCHUP_SPLASH_PAGE = False
+KEPCHUP_SPLASH_PAGE = True
 KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = ['first_name', 'last_name', 'school_year', 'school']
 KEPCHUP_REGISTER_ACCOUNTS_AT_ANY_TIME = True
 KEPCHUP_EXPLICIT_SESSION_DATES = True
@@ -189,9 +189,9 @@ KEPCHUP_SCHOOL_YEAR_MANDATORY = False
 
 # Single Sign On
 #########################################
-KEPCHUP_USE_SSO = False
-#LOGIN_URL = '/client/'
-#LOGOUT_URL = 'https://users.ssfmontreux.ch/logout/'
+KEPCHUP_USE_SSO = True
+LOGIN_URL = '/client/'
+LOGOUT_URL = 'https://users.ssfmontreux.ch/logout/'
 
 # Payment
 #########################################
