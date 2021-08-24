@@ -409,7 +409,9 @@ class Course(TimeStampedModel):
 
     @property
     def school_years(self):
-        return range(self.schoolyear_min, self.schoolyear_max + 1)
+        if self.schoolyear_min and self.schoolyear_max:
+            return range(self.schoolyear_min, self.schoolyear_max + 1)
+        return []
 
     @property
     def school_years_label(self):
