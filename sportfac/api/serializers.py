@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
+from django.conf import settings
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.utils.translation import ugettext_lazy as _
-from django.urls import reverse
 
 from rest_framework import serializers
 
@@ -187,11 +187,16 @@ class RegistrationSerializer(serializers.ModelSerializer):
         if data['course'].full:
             raise serializers.ValidationError(_("Course is full"))
 
-        if data['child'].school_year and \
-           data['child'].school_year.year not in data['course'].school_years:
-            raise serializers.ValidationError(
-                _("This course is not opened to children of school year %(year)s") % {'year': data['child'].school_year}
-            )
+        if settings.KEPCHUP_LIMIT_BY_SCHOOL_YEAR:
+            if data['child'].school_year and data['child'].school_year.year not in data['course'].school_years:
+                raise serializers.ValidationError(
+                    _("This course is not opened to children of school year %(year)s") % {'year': data['child'].school_year}
+                )
+        else:
+            if not (data['course'].min_birth_date <= data['child'].birth_date <=data['course'].max_birth_date):
+                raise serializers.ValidationError(
+                    _("This course is not opened to children of this age")
+                )
         if data["child"].registrations.count() >= global_preferences_registry.manager()['MAX_REGISTRATIONS']:
             raise serializers.ValidationError(
                 _("Max number of registrations reached.")
