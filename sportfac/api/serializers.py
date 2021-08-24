@@ -193,7 +193,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
                     _("This course is not opened to children of school year %(year)s") % {'year': data['child'].school_year}
                 )
         else:
-            if not (data['course'].min_birth_date <= data['child'].birth_date <=data['course'].max_birth_date):
+            if not (data['course'].max_birth_date <= data['child'].birth_date <= data['course'].min_birth_date ):
                 raise serializers.ValidationError(
                     _("This course is not opened to children of this age")
                 )
