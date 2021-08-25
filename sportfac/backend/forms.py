@@ -116,7 +116,7 @@ class CourseSelectMixin(object):
             else:
                 course_qs = course_qs.filter(
                     max_birth_date__lte=self.instance.child.birth_date,
-                    max_birth_date__gte=self.instance.child.birth_date,
+                    min_birth_date__gte=self.instance.child.birth_date,
                 )
         except Child.DoesNotExist:
             pass
