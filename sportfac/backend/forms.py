@@ -103,15 +103,21 @@ class CourseSelectMixin(object):
         # else:
         #    course_qs = course_qs.filter(nb_participants__lt=F('max_participants'))
         try:
-            if self.instance.child.school_year:
-                min_year = max_year = self.instance.child.school_year.year
+            if settings.KEPCHUP_LIMIT_BY_SCHOOL_YEAR:
+                if self.instance.child.school_year:
+                    min_year = max_year = self.instance.child.school_year.year
+                else:
+                    min_year = 99
+                    max_year = 0
+                course_qs = course_qs.filter(
+                    schoolyear_min__lte=min_year,
+                    schoolyear_max__gte=max_year,
+                )
             else:
-                min_year = 99
-                max_year = 0
-            course_qs = course_qs.filter(
-                schoolyear_min__lte=min_year,
-                schoolyear_max__gte=max_year,
-            )
+                course_qs = course_qs.filter(
+                    max_birth_date__lte=self.instance.child.birth_date,
+                    max_birth_date__gte=self.instance.child.birth_date,
+                )
         except Child.DoesNotExist:
             pass
         self.fields['course'].queryset = course_qs.prefetch_related('participants')
