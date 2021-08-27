@@ -11,6 +11,7 @@ fake = faker.Factory.create()
 
 YEARS = [year for (year, name) in SCHOOL_YEARS]
 
+
 class ActivityFactory(factory.DjangoModelFactory):
     class Meta:
         model = Activity
@@ -43,6 +44,9 @@ class CourseFactory(factory.DjangoModelFactory):
     schoolyear_max = factory.fuzzy.FuzzyChoice(YEARS[1:])
 
     price = factory.fuzzy.FuzzyInteger(1, 100)
+    price_local = factory.fuzzy.FuzzyInteger(1, 100)
+    price_family = factory.fuzzy.FuzzyInteger(1, 100)
+    price_local_family = factory.fuzzy.FuzzyInteger(1, 100)
 
     @factory.post_generation
     def instructors(self, create, extracted, **kwargs):

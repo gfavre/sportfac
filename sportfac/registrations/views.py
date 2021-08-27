@@ -144,7 +144,6 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
                     if price_modif:
                         context['applied_price_modifications'][extra.key.id] = price_modif
         context['has_price_modification'] = len(context['applied_price_modifications']) != 0
-
         context['subtotal'] = sum([registration.get_price_category()[0] for registration in registrations])
         context['total_price'] = context['subtotal'] + sum(context['applied_price_modifications'].values())
         context['overlaps'] = []

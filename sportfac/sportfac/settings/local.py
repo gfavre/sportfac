@@ -118,12 +118,12 @@ CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 CELERY_ALWAYS_EAGER = True
 
 TEMPLATES[0]['DIRS'] = [
-    normpath(join(SITE_ROOT, 'themes', 'montreux', 'templates')),
+    normpath(join(SITE_ROOT, 'themes', 'nyon_prangins', 'templates')),
     normpath(join(SITE_ROOT, 'templates')),
 ]
 
 STATICFILES_DIRS = (
-    normpath(join(SITE_ROOT, 'themes', 'montreux', 'static')),
+    normpath(join(SITE_ROOT, 'themes', 'nyon_prangins', 'static')),
     normpath(join(SITE_ROOT, 'static')),
 )
 COMPRESS_ENABLED = True
@@ -200,7 +200,7 @@ KEPCHUP_NO_PAYMENT = False
 KEPCHUP_DISPLAY_FREE_WHEN_PRICE_IS_0 = False
 # wire_transfer, datatrans or none
 KEPCHUP_PAYMENT_METHOD = 'wire_transfer'
-KEPCHUP_USE_DIFFERENTIATED_PRICES = False
+KEPCHUP_USE_DIFFERENTIATED_PRICES = True
 KEPCHUP_LOCAL_ZIPCODES = ['1814', '1272']
 
 

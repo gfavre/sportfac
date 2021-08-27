@@ -1,11 +1,10 @@
 from datetime import time
-from django.test import TestCase
-from sportfac.utils import TenantTestCase as TestCase
+
+from django.test import override_settings
 
 from .factories import ChildFactory, RegistrationFactory
 from activities.tests.factories import CourseFactory
-from profiles.tests.factories import FamilyUserFactory, SchoolYearFactory
-from schools.tests.factories import TeacherFactory
+from profiles.tests.factories import FamilyUserFactory
 from sportfac.utils import TenantTestCase
 
 
@@ -13,11 +12,8 @@ class RegistrationTestCase(TenantTestCase):
     def setUp(self):
         super(RegistrationTestCase, self).setUp()
         self.user = FamilyUserFactory()
-        self.year = SchoolYearFactory()
-        self.teacher = TeacherFactory()
-        self.teacher.years.add(self.year)
-        self.child1 = ChildFactory(school_year=self.year, teacher=self.teacher, family=self.user)
-        self.child2 = ChildFactory(school_year=self.year, teacher=self.teacher, family=self.user)
+        self.child1 = ChildFactory(family=self.user)
+        self.child2 = ChildFactory(family=self.user)
     
     def test_overlap(self):
         """
@@ -42,3 +38,13 @@ class RegistrationTestCase(TenantTestCase):
 
         # same child, same course: overlap
         self.assertTrue(registration1.overlap(registration1))
+
+    @override_settings(KEPCHUP_USE_DIFFERENTIATED_PRICES=True, KEPCHUP_LOCAL_ZIPCODES=['1272'])
+    def test_price_category_for_local_siblings(self):
+        self.user.zipcode = '1272'
+        course1 = CourseFactory()
+        course2 = CourseFactory(activity=course1.activity)
+        registration1 = RegistrationFactory(course=course1, child=self.child1)
+        registration2 = RegistrationFactory(course=course1, child=self.child2)
+        price, label = registration2.get_price_category()
+        self.assertEqual(price, course2.price_local_family)

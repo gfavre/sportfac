@@ -131,9 +131,10 @@ class Registration(TimeStampedModel, StatusModel):
     def get_price_category(self):
         if settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
             from activities.models import Course
-            if Registration.objects.filter(child__family=self.child.family,
-                                           course=self.course).order_by('created').last() != self:
-                # This child has a sibling, registered to the same course => special rate
+            same_family_regs = Registration.objects.filter(child__family=self.child.family,
+                                                           course__activity=self.course.activity).order_by('created')
+            if same_family_regs.count() > 1 and same_family_regs.first != self:
+                # This child has a sibling, registered to the same activity => special rate
                 if self.child.family.zipcode in settings.KEPCHUP_LOCAL_ZIPCODES:
                     # tarif indigène
                     return self.course.price_local_family, Course._meta.get_field('price_local_family').verbose_name
@@ -161,6 +162,9 @@ class Registration(TimeStampedModel, StatusModel):
             earliest_end = min(self.course.end_date, r2.course.end_date)
             delta = (earliest_end - latest_start).days + 1
             return delta > 0
+        if self.course.is_multi_course or r2.course.is_multi_course:
+            # frankly, it's a mess. We simply do not make recommendations
+            return False
 
         # no overlap if course are not the same day
         if self.course.day != r2.course.day:
@@ -176,18 +180,19 @@ class Registration(TimeStampedModel, StatusModel):
         if self.course == r2.course and self.child != r2.child:
             return False
 
-        interval = min(datetime.combine(date.today(), self.course.start_time) -
-                       datetime.combine(date.today(), r2.course.end_time),
-                       datetime.combine(date.today(), r2.course.start_time) -
-                       datetime.combine(date.today(), self.course.end_time))
+        latest_start = max(self.course.start_time, r2.course.start_time)
+        earliest_end = min(self.course.end_time, r2.course.end_time)
+        delta = (datetime.combine(date.today(), earliest_end) - datetime.combine(date.today(), latest_start))
 
-        if interval.days < 0:
-            # overlap
+        if delta.days < 0:
+            # they don't overlap
+            if 24 * 3600 - delta.seconds <= 1800:
+                # less than half an hour between courses
+                return True
+            return False
+        else:
+            # they overlap
             return True
-        elif interval.seconds < (60 * 30):
-            # less than half an hour between courses
-            return True
-        return False
 
     def save(self, *args, **kwargs):
         with transaction.atomic():

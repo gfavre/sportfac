@@ -20,8 +20,8 @@ class ChildFactory(factory.DjangoModelFactory):
     last_name = factory.lazy_attribute(lambda o: fake.last_name())
     sex = factory.fuzzy.FuzzyChoice(('M', 'F'))
     birth_date = factory.fuzzy.FuzzyDate(start_date=datetime.date(2008, 1, 1))
-    school_year = factory.SubFactory(SchoolYearFactory)
-    teacher = factory.SubFactory(TeacherFactory)
+    #school_year = factory.SubFactory(SchoolYearFactory)
+    #teacher = factory.SubFactory(TeacherFactory)
     family = factory.SubFactory(FamilyUserFactory)
 
 

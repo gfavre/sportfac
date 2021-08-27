@@ -56,3 +56,6 @@ TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.MD5PasswordHasher',
 ]
+
+RECAPTCHA_PRIVATE_KEY = '1234'
+RECAPTCHA_PUBLIC_KEY = '5678'
