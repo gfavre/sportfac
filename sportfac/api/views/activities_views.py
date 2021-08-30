@@ -47,7 +47,8 @@ class CourseViewSet(viewsets.ReadOnlyModelViewSet):
         return Course.objects.visible().select_related('activity').prefetch_related('instructors')
 
     def retrieve(self, request, pk=None):
-        cache_key = 'course_{}'.format(pk)
+        tenant_pk = request.tenant.pk
+        cache_key = "tenant_{}_course_{}".format(tenant_pk, pk)
         data = cache.get(cache_key)
         if data:
             return Response(data)

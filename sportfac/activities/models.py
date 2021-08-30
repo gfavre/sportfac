@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
-from django.db import models
+from django.db import models, connection
 from django.db.models.aggregates import Count, Sum
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
@@ -675,7 +675,8 @@ class TemplatedEmailReceipt(TimeStampedModel):
 
 
 def _invalidate_course_data(pk):
-    cache_key = "course_{}".format(pk)
+    tenant_pk = connection.get_tenant().pk
+    cache_key = "tenant_{}_course_{}".format(tenant_pk, pk)
     cache.delete(cache_key)
 
 
