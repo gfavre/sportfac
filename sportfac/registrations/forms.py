@@ -85,13 +85,13 @@ class MoveRegistrationsForm(forms.Form):
     registrations = forms.ModelMultipleChoiceField(queryset=Registration.objects.all(),
                                                    widget=forms.MultipleHiddenInput)
     destination = RegistrationModelChoiceField(
-            queryset=Course.objects.select_related('activity')\
-                                   .annotate(
-                nb_participants=Count(Case(
-                    When(participants__status__in=['waiting', 'valid', 'confirmed'], then=1),
-                    output_field=IntegerField()
-                )),
-            ),
+            queryset=Course.objects.select_related('activity'),#\
+            #                       .annotate(
+            #    nb_participants=Count(Case(
+            #        When(participants__status__in=['waiting', 'valid', 'confirmed'], then=1),
+            #        output_field=IntegerField()
+            #    )),
+            #),
             widget=Select2Widget()
     )
 

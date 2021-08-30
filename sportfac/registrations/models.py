@@ -52,7 +52,7 @@ class Registration(TimeStampedModel, StatusModel):
     transport = models.ForeignKey('Transport', related_name='participants', null=True, blank=True,
                                   verbose_name=_("Transport information"),
                                   on_delete=models.SET_NULL)
-    confirmation_sent_on = models.DateField(_("Confirmation mail sent on"), null=True)
+    confirmation_sent_on = models.DateField(_("Confirmation mail sent on"), null=True, blank=True)
 
     objects = RegistrationManager()
 
@@ -84,8 +84,6 @@ class Registration(TimeStampedModel, StatusModel):
 
     def cancel(self):
         self.status = self.STATUS.canceled
-        if self.bill:
-            self.bill.save()
         if settings.KEPCHUP_USE_ABSENCES:
             self.delete_future_absences()
 
@@ -99,11 +97,13 @@ class Registration(TimeStampedModel, StatusModel):
             )
 
     def delete(self, *args, **kwargs):
-        super(Registration, self).delete(*args, **kwargs)
-        if self.bill:
-            self.bill.save()
-        else:
-            self.child.family.profile.save()
+        with transaction.atomic():
+            super(Registration, self).delete(*args, **kwargs)
+            self.course.save()
+            if self.bill:
+                self.bill.save()
+            else:
+                self.child.family.profile.save()
 
     def delete_future_absences(self):
         # move between courses:
@@ -200,11 +200,13 @@ class Registration(TimeStampedModel, StatusModel):
                 self.allocation_account = self.course.activity.allocation_account
             if not settings.KEPCHUP_NO_PAYMENT and self.price is None:
                 self.price = self.get_price()
-            super(Registration, self).save(*args, **kwargs)
-            if self.bill:
-                self.bill.save()
-            else:
-                self.child.family.profile.save()
+            with transaction.atomic():
+                super(Registration, self).save(*args, **kwargs)
+                if self.bill:
+                    self.bill.save()
+                else:
+                    self.child.family.profile.save()
+                self.course.save()
 
     def set_confirmed(self, send_confirmation=False):
         self.status = self.STATUS.confirmed
@@ -231,11 +233,14 @@ class Registration(TimeStampedModel, StatusModel):
         self.status = self.STATUS.waiting
 
     def __unicode__(self):
-        return _(u'%(child)s ⇒ course %(number)s (%(activity)s)') % {
+        out = _(u'%(child)s ⇒ course %(number)s (%(activity)s)') % {
             'child': self.child.full_name,
             'number': self.course.number,
             'activity': self.course.activity.name
         }
+        if self.status == self.STATUS.canceled:
+            out = 'CANCELED - ' + out
+        return out
 
 
 class Transport(TimeStampedModel):

@@ -237,7 +237,7 @@
     </a>
     <hr/>
     <div class="btn-group">
-      <a class="btn btn-default selectall">{% trans "Select all" %}</span></a>
+      <a class="btn btn-default selectall">{% trans "Select all" %}</a>
       <a class="btn btn-default deselectall needs-select disabled">{% trans "Deselect all" %}</a>
     </div>
     <div class="btn-group">
@@ -320,6 +320,7 @@
                     </a>
                   </li>
                 {% endif %}
+              </ul>
             </td>
           {% endif %}
           <td>{{ registration.child.family.email | urlize }}</td>

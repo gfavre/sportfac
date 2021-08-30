@@ -225,6 +225,7 @@ class Course(TimeStampedModel):
     end_time_sun = models.TimeField(verbose_name=_("End time, sundays"), null=True, blank=True)
 
     place = models.TextField(verbose_name=_("Place"))
+    nb_participants = models.SmallIntegerField(verbose_name=_("Current nb of participants"), default=0)
     min_participants = models.PositiveSmallIntegerField(verbose_name=_("Minimal number of participants"))
     max_participants = models.PositiveSmallIntegerField(verbose_name=_("Maximal number of participants"))
 
@@ -273,10 +274,7 @@ class Course(TimeStampedModel):
 
     @property
     def count_participants(self):
-        try:
-            return self.nb_participants
-        except AttributeError:
-            return self.participants.count()
+        return self.nb_participants
 
     @property
     def day_name(self):
@@ -517,7 +515,7 @@ class Course(TimeStampedModel):
         if self.age_max:
             # if we say up to 6 years old, we want to include children of 6 1/2 years old, hence the +1
             self.max_birth_date = self.start_date - relativedelta(years=self.age_max + 1)
-
+        self.update_nb_participants()
         super(Course, self).save(*args, **kwargs)
 
     def update_dates_from_sessions(self, commit=True):
@@ -533,6 +531,9 @@ class Course(TimeStampedModel):
             self.number_of_sessions = 0
         if commit:
             self.save()
+
+    def update_nb_participants(self):
+        self.nb_participants = self.participants.count()
 
     def __unicode__(self):
         base = u'%(invisible)s%(activity)s (%(number)s): %(fullness)s'

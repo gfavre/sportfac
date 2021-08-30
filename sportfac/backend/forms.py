@@ -82,18 +82,7 @@ class CourseSelectMixin(object):
 
     def __init__(self, *args, **kwargs):
         super(CourseSelectMixin, self).__init__(*args, **kwargs)
-        course_qs = Course.objects.select_related('activity').annotate(
-            nb_participants=Sum(
-                Case(
-                    When(participants__status__in=(Registration.STATUS.valid,
-                                                   Registration.STATUS.waiting,
-                                                   Registration.STATUS.confirmed),
-                         then=1),
-                    default=0,
-                    output_field=IntegerField()
-                )
-            )
-        )
+        course_qs = Course.objects.select_related('activity')
         if self.instance.pk:
             # course_qs = course_qs.filter(
             #    Q(pk=self.instance.course.pk) | Q(nb_participants__lt=F('max_participants'))
@@ -120,7 +109,7 @@ class CourseSelectMixin(object):
                 )
         except Child.DoesNotExist:
             pass
-        self.fields['course'].queryset = course_qs.prefetch_related('participants')
+        self.fields['course'].queryset = course_qs
 
 
 class RegistrationForm(CourseSelectMixin, forms.ModelForm):

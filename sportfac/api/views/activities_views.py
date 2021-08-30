@@ -42,7 +42,7 @@ class CourseViewSet(viewsets.ReadOnlyModelViewSet):
     model = Course
 
     def get_queryset(self):
-        return Course.objects.visible().select_related('activity').prefetch_related('participants', 'instructors')
+        return Course.objects.visible().select_related('activity').prefetch_related('instructors')
 
 
 class ChangeCourse(views.APIView):

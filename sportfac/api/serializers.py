@@ -83,18 +83,21 @@ class CourseInlineSerializer(serializers.ModelSerializer):
 class CourseSerializer(serializers.ModelSerializer):
     activity = ActivitySerializer(many=False)
     instructors = InstructorSerializer(read_only=True, many=True)
-    count_participants = serializers.IntegerField()
     all_day = serializers.SerializerMethodField()
     start_time = serializers.TimeField(format='%H:%M')
     end_time = serializers.TimeField(format='%H:%M')
     multi_course = serializers.SerializerMethodField()
+    count_participants = serializers.IntegerField(source='nb_participants')
 
     class Meta:
         model = Course
-        fields = ('id', 'course_type', 'number', 'name', 'instructors', 'activity', 'price', 'price_description',
+        fields = ('id', 'course_type', 'number', 'name')
+        fields = ('id', 'course_type', 'number', 'name', 'instructors',
+                  'activity', 'price', 'price_description',
                   'price_local', 'price_family', 'price_local_family',
                   'number_of_sessions', 'day', 'start_date', 'end_date', 'all_day', 'start_time', 'end_time', 'place',
                   'min_participants', 'max_participants', 'count_participants',
+                  'count_participants',
                   'schoolyear_min', 'schoolyear_max', 'multi_course', 'min_birth_date', 'max_birth_date',)
         read_only_fields = fields
 
