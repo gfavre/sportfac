@@ -5,9 +5,12 @@ from decimal import Decimal
 
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.aggregates import Count, Sum
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 from django.template.defaultfilters import date as _date
 from django.utils.translation import ugettext_lazy as _
 
@@ -669,3 +672,19 @@ class TemplatedEmailReceipt(TimeStampedModel):
 
     class Meta:
         ordering = ('-created',)
+
+
+def _invalidate_course_data(pk):
+    cache_key = "course_{}".format(pk)
+    cache.delete(cache_key)
+
+
+@receiver(post_save, sender=Course, dispatch_uid='invalidate_course_data')
+def course_post_save_handler(sender, instance, created, **kwargs):
+    if not created:
+        _invalidate_course_data(instance.id)
+
+
+@receiver(post_delete, sender=Course, dispatch_uid='invalidate_course_data')
+def course_post_delete_handler(sender, instance, **kwargs):
+    _invalidate_course_data(instance.id)

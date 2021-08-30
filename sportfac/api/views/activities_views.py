@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
+from django.core.cache import cache
 from django.http import Http404
+from django.utils.decorators import method_decorator
 
 from rest_framework import status, views, viewsets
 from rest_framework.response import Response
@@ -43,6 +45,15 @@ class CourseViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         return Course.objects.visible().select_related('activity').prefetch_related('instructors')
+
+    def retrieve(self, request, pk=None):
+        cache_key = 'course_{}'.format(pk)
+        data = cache.get(cache_key)
+        if data:
+            return Response(data)
+        response = super(CourseViewSet, self).retrieve(request, pk=pk)
+        cache.set(cache_key, response.data)
+        return response
 
 
 class ChangeCourse(views.APIView):
