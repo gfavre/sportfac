@@ -282,8 +282,8 @@ class BillManager(models.Manager):
 
 class Bill(TimeStampedModel, StatusModel):
     METHODS = Choices(
-        ('datatrans', _("immediate with credit card (datatrans)")),
         ('iban', _("Later with wire transfer")),
+        ('datatrans', _("immediate with credit card (datatrans)")),
     )
     STATUS = Choices(
         ('just_created', _("Just created")),
@@ -292,7 +292,9 @@ class Bill(TimeStampedModel, StatusModel):
         ('canceled', _("Canceled by administrator")),
     )
     billing_identifier = models.CharField(_('Billing identifier'), max_length=45, blank=True)
-    payment_method = models.CharField(_("Payment method"), choices=METHODS, max_length=20, blank=True)
+    payment_method = models.CharField(
+        _("Payment method"), choices=METHODS,
+        max_length=20, blank=True)
     family = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='bills',
                                null=True, on_delete=models.CASCADE)
     total = models.PositiveIntegerField(default=0, verbose_name=_("Total to be paid"))
@@ -352,6 +354,11 @@ class Bill(TimeStampedModel, StatusModel):
 
     @transaction.atomic
     def save(self, force_status=False, *args, **kwargs):
+        if not self.payment_method:
+            if settings.KEPCHUP_PAYMENT_METHOD == 'wire_transfer':
+                self.payment_method = self.METHODS.IBAN
+            elif settings.KEPCHUP_PAYMENT_METHOD == 'datatrans':
+                self.payment_method = self.METHODS.datatrans
         self.update_total()
         if not force_status:
             self.update_status()
