@@ -106,8 +106,7 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
 
             messages.success(
                 self.request,
-                _(u"Your registrations have been recorded, thank you!") + u' ' +
-                _(u"You'll receive a confirmation email from address: %s") % global_preferences['email__FROM_MAIL']
+                _(u"Your registrations have been recorded, thank you!")
             )
             return reverse_lazy('registrations_registered_activities')
         if settings.KEPCHUP_USE_APPOINTMENTS:
