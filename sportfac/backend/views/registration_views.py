@@ -84,13 +84,17 @@ class RegistrationsMoveView(BackendMixin, FormView):
             redirect = form.data['success_url']
         else:
             redirect = form.cleaned_data['registrations'].first().course.backend_url
-
+        previous_courses = set()
         with transaction.atomic():
             for registration in form.cleaned_data['registrations']:
+                if registration.course != course:
+                    previous_courses.add(registration.course)
                 registration.cancel()
                 registration.course = course
                 registration.set_confirmed()
                 registration.save()
+        for course in previous_courses:
+            course.save()
         message = _("Registrations of %(nb)s children have been moved.")
         message %= {'nb': form.cleaned_data['registrations'].count()}
         messages.add_message(self.request, messages.SUCCESS, message)
@@ -231,15 +235,23 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
         form = self.get_form(form_class)
         extrainfo_form = ExtraInfoFormSet(self.request.POST, instance=self.object)
         if form.is_valid() and extrainfo_form.is_valid():
+            old_course = self.object.course
             return self.form_valid(form, extrainfo_form)
+            if 'course' in form.cleaned_data and form.cleaned_data['course'] != old_course:
+                # this will trigger the calculation of #participants
+                old_course.save()
+            return response
         return self.form_invalid(form, extrainfo_form)
 
     @transaction.atomic
     def form_valid(self, form, extrainfo_form):
         initial_course = self.get_object().course
         self.object = form.save()
-        if settings.KEPCHUP_USE_ABSENCES and self.object.course != initial_course:
-            self.object.delete_future_absences()
+        if self.object.course != initial_course:
+            # this will trigger the calculation of #participants
+            initial_course.save()
+            if settings.KEPCHUP_USE_ABSENCES:
+                self.object.delete_future_absences()
 
         extrainfo_form.instance = self.object
         extrainfo_form.save()
