@@ -443,14 +443,19 @@ class Course(TimeStampedModel):
 
     def detailed_label(self):
         base = unicode(self)
-        dates = _(u'from %(start)s to %(end)s, every %(day)s at %(hour)s.')
+        if self.is_course:
+            dates = _(u'from %(start)s to %(end)s, every %(day)s at %(hour)s.')
+            return base + ', ' + dates % {
+                'start': self.start_date and self.start_date.strftime("%d/%m/%Y"),
+                'end': self.end_date and self.end_date.strftime("%d/%m/%Y"),
+                'day': self.day_name.lower(),
+                'hour': self.start_time.strftime("%H:%M"),
+            }
+        elif self.is_camp:
+            return base + ', {}-{}'.format(self.start_date.strftime("%d/%m/%Y"), self.end_date.strftime("%d/%m/%Y"))
+        return base
 
-        return base + ', ' + dates % {
-            'start': self.start_date and self.start_date.strftime("%d/%m/%Y"),
-            'end': self.end_date and self.end_date.strftime("%d/%m/%Y"),
-            'day': self.day_name.lower(),
-            'hour': self.start_time.strftime("%H:%M"),
-        }
+
 
     def get_absences_url(self):
         return reverse('activities:course-absence', kwargs={'course': self.pk})
