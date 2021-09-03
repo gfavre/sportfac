@@ -23,7 +23,8 @@ class CourseForm(forms.ModelForm):
     instructors = forms.ModelMultipleChoiceField(
         label=_("Instructors"),
         queryset=FamilyUser.active_objects,
-        widget=Select2MultipleWidget()
+        widget=Select2MultipleWidget(),
+        #required=True,
     )
     name = forms.CharField(label=_("Displayed name (optional)"), required=False,
                            help_text=_("Displayed on calendar under activity name"))

@@ -23,7 +23,7 @@
     </div>
     <div class="col-md-9 col-sm-7">
         {{ wizard.management_form }}
-        {% if wizard.form.forms %}
+      {% if wizard.form.forms %}
           {{ wizard.form.management_form }}
           {% for form in wizard.form.forms %}
             {% form form using "floppyforms/layouts/bootstrap.html" %}
@@ -31,10 +31,15 @@
         {% else %}
           {% form wizard.form using "floppyforms/layouts/bootstrap.html" %}
         {% endif %}
+    <div class="col-md-9 col-sm-7">
+
         <div class="form-group">
-          <button type="submit" class="btn btn-success btn-large">{% trans "Save" %}</button>
+          <button type="submit" class="btn btn-success btn-large" style="margin-top: 2em;">{% trans "Save" %}</button>
         </div>
     </div>
+
+    </div>
+
   </div>
   
   <footer>
