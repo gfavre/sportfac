@@ -162,7 +162,7 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
             status = Bill.STATUS.paid
             if not self.instance.paid:
                 status = Bill.STATUS.waiting
-                if self.instance.course.price == 0:
+                if self.instance.get_price() == 0:
                     status = Bill.STATUS.paid
             bill = Bill.objects.create(
                 status=status,

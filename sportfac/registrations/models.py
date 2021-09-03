@@ -397,8 +397,9 @@ class Bill(TimeStampedModel, StatusModel):
         self.total = sum([registration.price for registration in self.registrations.all()])
 
     def update_status(self):
-        if self.status == 'waiting' and not self.registrations.exclude(status=Registration.STATUS.canceled)\
-                                                              .filter(paid=False).exists():
+        if self.status == 'waiting' and self.registrations.exists() and \
+                                    not self.registrations.exclude(status=Registration.STATUS.canceled)\
+                                                          .filter(paid=False).exists():
             self.status = self.STATUS.paid
 
     def __unicode__(self):
