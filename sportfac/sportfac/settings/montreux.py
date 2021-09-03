@@ -41,7 +41,7 @@ KEPCHUP_NO_TERMS = False
 KEPCHUP_CHILD_SCHOOL = True
 KEPCHUP_FICHE_SALAIRE_MONTREUX = True
 KEPCHUP_NO_SSF = True
-KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS = ['pdf/infos-moniteurs-2020.pdf', 'pdf/GMS_2020-2021.pdf', 'pdf/COVID_19.pdf']
+KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS = ['pdf/infos-moniteurs-2021.pdf', 'pdf/GMS_21_22.pdf']
 KEPCHUP_SPLASH_PAGE = True
 KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = ['first_name', 'last_name', 'birth_date', 'school_year', 'school',
                                       'other_school', 'nationality', 'language']
