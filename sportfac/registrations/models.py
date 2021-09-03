@@ -356,7 +356,7 @@ class Bill(TimeStampedModel, StatusModel):
     def save(self, force_status=False, *args, **kwargs):
         if not self.payment_method:
             if settings.KEPCHUP_PAYMENT_METHOD == 'wire_transfer':
-                self.payment_method = self.METHODS.IBAN
+                self.payment_method = self.METHODS.iban
             elif settings.KEPCHUP_PAYMENT_METHOD == 'datatrans':
                 self.payment_method = self.METHODS.datatrans
         self.update_total()
