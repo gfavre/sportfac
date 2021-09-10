@@ -177,7 +177,7 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
             message = mark_safe(message % {'identifier': bill.billing_identifier,
                                            'url': bill.backend_url})
             messages.add_message(self.request, messages.INFO, message)
-
+            self.instance.set_confirmed()
             self.instance.save()
         except IntegrityError:
             message = _("A registration for %(child)s to %(course)s already exists.")
