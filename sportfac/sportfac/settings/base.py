@@ -293,7 +293,10 @@ LOGGING = {
         }
     },
     'handlers': {
-
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+        },
     },
     'loggers': {
         'django': {
