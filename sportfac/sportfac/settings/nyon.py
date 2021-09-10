@@ -12,11 +12,6 @@ STATICFILES_DIRS = (
     normpath(join(SITE_ROOT, 'static')),
 )
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = env('EMAIL_HOST', default='')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
-EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
-
 KEPCHUP_USE_ABSENCES = True
 KEPCHUP_IMPORT_CHILDREN = False
 KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = False
