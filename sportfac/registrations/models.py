@@ -394,7 +394,7 @@ class Bill(TimeStampedModel, StatusModel):
             self.billing_identifier = slugify('%s-%i' % (self.family.last_name, self.pk))
 
     def update_total(self):
-        self.total = sum([registration.price for registration in self.registrations.all()])
+        self.total = sum([registration.price for registration in self.registrations.all() if registration.price])
 
     def update_status(self):
         if self.status == 'waiting' and self.registrations.exists() and \
