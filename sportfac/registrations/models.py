@@ -133,7 +133,7 @@ class Registration(TimeStampedModel, StatusModel):
             from activities.models import Course
             same_family_regs = Registration.objects.filter(child__family=self.child.family,
                                                            course__activity=self.course.activity).order_by('created')
-            if same_family_regs.count() > 1 and same_family_regs.first != self:
+            if same_family_regs.count() > 1 and same_family_regs.first() != self:
                 # This child has a sibling, registered to the same activity => special rate
                 if self.child.family.zipcode in settings.KEPCHUP_LOCAL_ZIPCODES:
                     # tarif indigène
