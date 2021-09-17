@@ -159,7 +159,7 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
             self.instance.save()
             return response
         try:
-            self.instance.save()
+            self.instance.price = self.instance.get_price()
             status = Bill.STATUS.paid
             if not self.instance.paid:
                 status = Bill.STATUS.waiting
