@@ -159,6 +159,7 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
             self.instance.save()
             return response
         try:
+            self.instance.save()
             status = Bill.STATUS.paid
             if not self.instance.paid:
                 status = Bill.STATUS.waiting
@@ -262,7 +263,7 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
             self.object.cancel()
         if self.object.status == Registration.STATUS.confirmed and not self.object.paid and not self.object.bill:
             status = Bill.STATUS.waiting
-            if self.object.course.price == 0:
+            if self.object.get_price() == 0:
                 status = Bill.STATUS.paid
             bill = Bill.objects.create(
                 status=status,
