@@ -138,9 +138,10 @@ class CoursesAdmin(SportfacAdminMixin, ImportExportModelAdmin):
 
 
 @admin.register(TemplatedEmailReceipt)
-class TemplatedEmailReceipt(admin.ModelAdmin):
+class TemplatedEmailReceiptAdmin(admin.ModelAdmin):
     list_display = ('type', 'course')
     raw_id_fields = ('course',)
+    readonly_fields = ('created', 'modified')
 
 
 class FlatPageCustom(SportfacAdminMixin, FlatPageAdmin):

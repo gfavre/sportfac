@@ -379,16 +379,16 @@ class Course(TimeStampedModel):
 
     @property
     def last_convocation_email(self):
-        receipt = self.email_receipts.filter(type=TemplatedEmailReceipt.TYPE.convocation).order_by('created').last()
+        receipt = self.email_receipts.filter(type=TemplatedEmailReceipt.TYPE.convocation).order_by('modified').last()
         if receipt:
-            return receipt.created
+            return receipt.modified
         return None
 
     @property
     def last_instructor_email(self):
-        receipt = self.email_receipts.filter(type=TemplatedEmailReceipt.TYPE.instructors).order_by('created').last()
+        receipt = self.email_receipts.filter(type=TemplatedEmailReceipt.TYPE.instructors).order_by('modified').last()
         if receipt:
-            return receipt.created
+            return receipt.modified
         return None
 
     @property
@@ -454,8 +454,6 @@ class Course(TimeStampedModel):
         elif self.is_camp:
             return base + ', {}-{}'.format(self.start_date.strftime("%d/%m/%Y"), self.end_date.strftime("%d/%m/%Y"))
         return base
-
-
 
     def get_absences_url(self):
         return reverse('activities:course-absence', kwargs={'course': self.pk})
