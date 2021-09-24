@@ -129,7 +129,7 @@ def tenants_context(request):
 
     if user.is_authenticated() and user.is_manager or user.is_superuser or user.is_staff:
         return {'tenants': YearTenant.objects.all()}
-    elif user.is_authenticated() and user.is_kepchup_staff:
+    elif user.is_authenticated():
         tenants = list()
         with connection.cursor() as cursor:
             for tenant in YearTenant.objects.all():
