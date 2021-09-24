@@ -411,7 +411,7 @@ AUTH_USER_MODEL = 'profiles.FamilyUser'
 REGISTRATION_OPEN = True
 LOGIN_URL = '/account/login/'
 LOGOUT_URL = '/account/logout/'
-
+LOGIN_REDIRECT_URL = '/account/redirect/'
 ########## END USER and REGISTRAION
 
 

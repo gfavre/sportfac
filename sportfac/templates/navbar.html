@@ -142,7 +142,7 @@ jQuery(function($){
         {% else %}
           {% if not USE_SSO %}
             <li>
-              <a href="{% url 'auth_login' %}?next={% url 'registrations_children' %}"><i
+              <a href="{% url 'auth_login' %}?next={% url 'authenticated-home' %}"><i
                   class="icon-user icon-white"></i> {% trans "login" %}</a>
             </li>
           {% endif %}

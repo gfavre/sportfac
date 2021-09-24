@@ -6,7 +6,7 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import redirect
 from django.utils.translation import ugettext as _
-from django.views.generic import UpdateView, FormView
+from django.views.generic import UpdateView, FormView, RedirectView
 
 from braces.views import LoginRequiredMixin
 # from registration.backends.simple.views import RegistrationView as BaseRegistrationView
@@ -19,7 +19,7 @@ from .forms import RegistrationForm, InstructorForm, PasswordChangeForm, Passwor
 
 __all__ = ('password_change', 'password_reset',
            'AccountView',
-           'WizardAccountView', 'WizardRegistrationView')
+           'WizardAccountView', 'WizardRegistrationView', 'AccountRedirectView')
 
 
 def password_change(request):
@@ -137,3 +137,13 @@ class LogoutView(auth_views.LogoutView):
         if settings.KEPCHUP_USE_SSO:
             return 'https://users.ssfmontreux.ch/logout'
         return super(LogoutView, self).get_next_page()
+
+
+class AccountRedirectView(LoginRequiredMixin, RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        user = self.request.user
+        if user.is_manager or user.is_superuser or user.is_staff:
+            return reverse('backend:home')
+        elif user.is_kepchup_staff:
+            return reverse('activities:my-courses')
+        return reverse('registrations_registered_activities')

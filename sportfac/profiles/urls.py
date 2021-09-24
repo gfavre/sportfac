@@ -6,7 +6,7 @@ from django.views.generic.base import RedirectView
 
 from .forms import AuthenticationForm
 from .views import (password_change, password_reset, 
-                    RegistrationView, WizardRegistrationView, AccountView, LogoutView)
+                    RegistrationView, WizardRegistrationView, AccountView, LogoutView, AccountRedirectView)
 
 
 urlpatterns = [
@@ -14,6 +14,8 @@ urlpatterns = [
     url(r'^new/$', RegistrationView.as_view(), name="anytime_registeraccount"),
     url(r'^register/$',  WizardRegistrationView.as_view(), name="registeraccount"),
     url(r'^logout/$', LogoutView.as_view(), name='auth_logout'),
+    url(r'^redirect/$', AccountRedirectView.as_view(), name='authenticated-home'),
+
 ]
 if settings.KEPCHUP_USE_SSO:
     urlpatterns += [
