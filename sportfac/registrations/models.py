@@ -205,7 +205,8 @@ class Registration(TimeStampedModel, StatusModel):
                 if self.bill:
                     self.bill.save()
                 else:
-                    self.child.family.profile.save()
+                    profile, created = RegistrationsProfile.objects.get_or_create(user=self.child.family)
+                    profile.save()
                 self.course.save()
 
     def set_confirmed(self, send_confirmation=False):
