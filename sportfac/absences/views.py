@@ -6,10 +6,11 @@ from tempfile import mkdtemp
 from django.conf import settings
 from django.db import transaction
 from django.http import HttpResponseRedirect, HttpResponse
+from django.utils.text import slugify
 from django.views.generic import DetailView
 
 from activities.views import InstructorMixin
-from activities.models import Activity, Course, ExtraNeed
+from activities.models import Course, ExtraNeed
 from backend.forms import SessionForm  # TODO move sessionform to a more appropriate place
 from backend.utils import AbsencePDFRenderer  # TODO move pdfrenderer to a more appropriate place
 
@@ -98,7 +99,7 @@ class AbsenceCourseView(InstructorMixin, DetailView):
             context = self.get_context_data(object=self.object)
             renderer = AbsencePDFRenderer(context, self.request)
             tempdir = mkdtemp()
-            filename = u'absences-{}.pdf'.format(self.object.number)
+            filename = u'absences-{}.pdf'.format(slugify(self.object.number))
             filepath = os.path.join(tempdir, filename)
             renderer.render_to_pdf(filepath)
             response = HttpResponse(open(filepath).read(), content_type='application/pdf')

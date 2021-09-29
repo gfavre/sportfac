@@ -16,8 +16,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponse
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
-from django.views.generic import CreateView, DeleteView, DetailView, \
-                                ListView, UpdateView
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 from django.utils.timezone import now
 
 from dateutil.relativedelta import relativedelta

@@ -10,13 +10,14 @@ from django.core.urlresolvers import reverse_lazy
 from django.db import transaction
 from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.safestring import mark_safe
+from django.utils.text import slugify
 from django.utils.translation import ugettext as _
 from django.views.generic import CreateView, DeleteView, DetailView, \
                                 ListView, UpdateView
 
 from absences.models import Absence, Session
 from absences.utils import closest_session
-from activities.models import Activity, AllocationAccount, Course, ExtraNeed
+from activities.models import Activity, Course, ExtraNeed
 from activities.forms import ActivityForm
 from registrations.models import ChildActivityLevel, ExtraInfo
 from .mixins import BackendMixin
@@ -152,7 +153,7 @@ class ActivityAbsenceView(BackendMixin, DetailView):
             context = self.get_context_data(object=self.object)
             renderer = AbsencePDFRenderer(context, self.request)
             tempdir = mkdtemp()
-            filename = u'absences-{}.pdf'.format(self.object.number)
+            filename = u'absences-{}.pdf'.format(slugify(self.object.number))
             filepath = os.path.join(tempdir, filename)
             renderer.render_to_pdf(filepath)
             response = HttpResponse(open(filepath).read(), content_type='application/pdf')

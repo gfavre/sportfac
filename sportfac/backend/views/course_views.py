@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import collections
-from decimal import Decimal
 import os
 from tempfile import mkdtemp
 
@@ -11,10 +10,10 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.db import transaction
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404
-from django.template.response import TemplateResponse
+from django.utils.text import slugify
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
-from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, UpdateView, View
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView, View
 from django.views.generic.detail import SingleObjectMixin
 
 from absences.models import Absence, Session
@@ -26,7 +25,7 @@ from registrations.models import ChildActivityLevel, ExtraInfo
 from registrations.resources import RegistrationResource
 from sportfac.views import CSVMixin
 from .mixins import BackendMixin, ExcelResponseMixin
-from ..forms import PayslipMontreuxForm, SessionForm
+from ..forms import SessionForm
 from ..utils import AbsencePDFRenderer, AbsencesPDFRenderer
 
 __all__ = ('CourseCreateView', 'CourseDeleteView', 'CourseDetailView',
@@ -238,7 +237,7 @@ class CourseAbsenceView(BackendMixin, DetailView):
             context = self.get_context_data(object=self.object)
             renderer = AbsencePDFRenderer(context, self.request)
             tempdir = mkdtemp()
-            filename = u'absences-{}.pdf'.format(self.object.number)
+            filename = u'absences-{}.pdf'.format(slugify(self.object.number))
             filepath = os.path.join(tempdir, filename)
             renderer.render_to_pdf(filepath)
             response = HttpResponse(open(filepath).read(), content_type='application/pdf')
@@ -322,7 +321,8 @@ class CoursesAbsenceView(BackendMixin, ListView):
             context = self.get_context_data()
             renderer = AbsencesPDFRenderer(context, self.request)
             tempdir = mkdtemp()
-            filename = u'absences-{}.pdf'.format('-'.join(self.object_list.values_list('number', flat=True)))
+            filename = u'absences-{}.pdf'.format('-'.join([slugify(nb) for nb in
+                                                           self.object_list.values_list('number', flat=True)]))
             if len(filename) > 100:
                 filename = u'absences.pdf'
             filepath = os.path.join(tempdir, filename)
