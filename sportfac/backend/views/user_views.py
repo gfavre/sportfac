@@ -208,14 +208,7 @@ class UserDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
         # noinspection PyAttributeOutsideInit
         self.object = self.get_object()
         success_url = self.get_success_url()
-        self.object.is_active = False
-        if self.object.course.exists():
-            self.object.course = []
-        self.object.is_manager = False
-        self.object.save()
-        for child in self.object.children.all():
-            child.delete()
-
+        self.object.soft_delete()
         messages.success(self.request, self.get_success_message({'user': self.object.full_name}))
         return HttpResponseRedirect(success_url)
 

@@ -315,6 +315,16 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
             from .tasks import save_to_master, LOCAL_DB
             transaction.on_commit(lambda: save_to_master(self.pk, kwargs.get('using', LOCAL_DB)))
 
+    def soft_delete(self):
+        self.is_active = False
+        self.email = 'deleted_{}_{}'.format(self.pk, self.email)
+        if self.course.exists():
+            self.course = []
+        self.is_manager = False
+        for child in self.children.all():
+            child.delete()
+        self.save()
+
     def __unicode__(self):
         return self.get_email_string()
 
