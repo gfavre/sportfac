@@ -516,7 +516,8 @@ class Course(TimeStampedModel):
         return reverse('backend:course-xls-export', kwargs={'course': self.pk})
 
     def save(self, *args, **kwargs):
-        self.update_dates_from_sessions(commit=False)
+        if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
+            self.update_dates_from_sessions(commit=False)
         if self.age_min and self.start_date:
             self.min_birth_date = self.start_date - relativedelta(years=self.age_min)
         if self.age_max and self.start_date:

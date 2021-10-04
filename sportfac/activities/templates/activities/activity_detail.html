@@ -76,8 +76,7 @@
                   {% blocktrans with start_time=course.start_time_sun|time:"H:i" end_time=course.end_time_sun|time:"H:i" %}
                     Sundays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
                 {% endif %}
-
-              {% endif %}
+            {% endif %}
             </p>
 
           </header>
@@ -123,6 +122,8 @@
                   </ul>
                 {% endif %}
               </dd>
+            {% else %}
+              <dt>{% trans "Dates" %}</dt>
             {% endif %}
             {% if not NO_PAYMENT %}
               {% if course.price %}
