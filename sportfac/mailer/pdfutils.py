@@ -86,6 +86,9 @@ class PDFRenderer(object):
         self.request = request
 
         context_data['request'] = request
+        context_data['STATIC_URL'] = u'{}{}{}'.format('https://',#self.context.get('PROTOCOL'),
+                                                       self.request.site.domain,
+                                                       settings.STATIC_URL)
         context_data.update(kepchup_context(request))
         context_data.update(SekizaiContext().dicts[1])
         self.context = context_data

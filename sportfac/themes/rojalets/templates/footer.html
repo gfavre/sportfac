@@ -6,7 +6,7 @@
     <div>
       {% include "address.html" %}
       <a href="https://www.escoppet.ch">
-        <img src="{% static 'img/Les_Rojalets_logo_2017.png' %}" class="hidden-xs hidden-sm hidden-print"/>
+        <img src="{{ STATIC_URL }}img/Les_Rojalets_logo_2017.png" class="hidden-xs hidden-sm hidden-print"/>
       </a>
       <ul class="footer-links hidden-print">
         <li><a href="{% url 'contact' %}">{% trans "Contact" %}</a></li>

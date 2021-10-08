@@ -117,7 +117,7 @@ address span:first-child {
 <body>
   <header>
     <div class="header">
-      <img src="{% static 'img/logo-vevey.svg' %}" class="logo" />
+      <img src="{{ STATIC_URL }}img/logo-vevey.svg" class="logo" />
       {% include "address.html" %}
     </div>
     <div class="title">

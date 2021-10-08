@@ -5,8 +5,8 @@
   <div class="container">
     <div>
       {% include "address.html" %}
-      <img src="{% static 'img/nyon.svg' %}" class="hidden-xs hidden-sm hidden-print" style="height: 50px; margin-right: 2em;"/>
-      <img src="{% static 'img/prangins.png' %}" class="hidden-xs hidden-sm hidden-print" style="height: 50px"/>
+      <img src="{{ STATIC_URL }}img/nyon.svg" class="hidden-xs hidden-sm hidden-print" style="height: 50px; margin-right: 2em;"/>
+      <img src="{{ STATIC_URL }}img/prangins.png" class="hidden-xs hidden-sm hidden-print" style="height: 50px"/>
 
       <ul class="footer-links hidden-print">
         <li><a href="{% url 'contact' %}">{% trans "Contact" %}</a></li>
