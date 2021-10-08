@@ -88,8 +88,8 @@ class RegistrationsMoveView(BackendMixin, FormView):
         with transaction.atomic():
             for registration in form.cleaned_data['registrations']:
                 if registration.course != course:
+                    registration.delete_future_absences()
                     previous_courses.add(registration.course)
-                registration.cancel()
                 registration.course = course
                 registration.set_confirmed()
                 registration.save()
@@ -236,12 +236,7 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
         form = self.get_form(form_class)
         extrainfo_form = ExtraInfoFormSet(self.request.POST, instance=self.object)
         if form.is_valid() and extrainfo_form.is_valid():
-            old_course = self.object.course
             return self.form_valid(form, extrainfo_form)
-            if 'course' in form.cleaned_data and form.cleaned_data['course'] != old_course:
-                # this will trigger the calculation of #participants
-                old_course.save()
-            return response
         return self.form_invalid(form, extrainfo_form)
 
     @transaction.atomic
@@ -273,8 +268,6 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
             self.object.save()
             bill.save()
 
-        if settings.KEPCHUP_USE_ABSENCES and self.object.course != initial_course:
-            self.object.create_future_absences()
         success_message = self.get_success_message(form.cleaned_data)
         if success_message:
             messages.success(self.request, success_message)

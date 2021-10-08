@@ -200,14 +200,15 @@ class Registration(TimeStampedModel, StatusModel):
                 self.allocation_account = self.course.activity.allocation_account
             if not settings.KEPCHUP_NO_PAYMENT and self.price is None:
                 self.price = self.get_price()
-            with transaction.atomic():
-                super(Registration, self).save(*args, **kwargs)
-                if self.bill:
-                    self.bill.save()
-                else:
-                    profile, created = RegistrationsProfile.objects.get_or_create(user=self.child.family)
-                    profile.save()
-                self.course.save()
+            super(Registration, self).save(*args, **kwargs)
+            if self.bill:
+                self.bill.save()
+            else:
+                profile, created = RegistrationsProfile.objects.get_or_create(user=self.child.family)
+                profile.save()
+            if settings.KEPCHUP_USE_ABSENCES:
+                self.create_future_absences()
+            self.course.save()
 
     def set_confirmed(self, send_confirmation=False):
         self.status = self.STATUS.confirmed
@@ -222,13 +223,9 @@ class Registration(TimeStampedModel, StatusModel):
                 tenant_pk=tenant_pk,
                 language=get_language(),
             ))
-        if settings.KEPCHUP_USE_ABSENCES:
-            self.create_future_absences()
 
     def set_valid(self):
         self.status = self.STATUS.valid
-        if settings.KEPCHUP_USE_ABSENCES:
-            self.create_future_absences()
 
     def set_waiting(self):
         self.status = self.STATUS.waiting
