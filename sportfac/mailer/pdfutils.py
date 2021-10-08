@@ -13,6 +13,7 @@ from django.template import loader
 
 import pypdftk
 import requests
+from sekizai.context import SekizaiContext
 
 from backend.dynamic_preferences_registry import global_preferences_registry
 from sportfac.context_processors import kepchup_context
@@ -83,8 +84,10 @@ class PDFRenderer(object):
             request = FakeRequest()
         request.site = site
         self.request = request
+
         context_data['request'] = request
         context_data.update(kepchup_context(request))
+        context_data.update(SekizaiContext().dicts[1])
         self.context = context_data
 
     @staticmethod
@@ -173,3 +176,8 @@ class CourseParticipantsPresence(PDFRenderer):
 class MyCourses(PDFRenderer):
     message_template = 'mailer/pdf_my_courses.html'
     is_landscape = True
+
+
+class InvoiceRenderer(PDFRenderer):
+    message_template = 'registrations/bill-detail.html'
+    is_landscape = False

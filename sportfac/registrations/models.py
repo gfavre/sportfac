@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
 from datetime import date, datetime
+import os
+from tempfile import mkdtemp
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.core.files import File
 from django.db import connection, models, transaction
 from django.template.defaultfilters import slugify
 from django.utils.timezone import now
@@ -298,6 +300,7 @@ class Bill(TimeStampedModel, StatusModel):
     total = models.PositiveIntegerField(default=0, verbose_name=_("Total to be paid"))
     reminder_sent = models.BooleanField(_("Reminder sent"), default=False)
     reminder_sent_date = models.DateTimeField(_("Reminder sent date"), null=True, blank=True)
+    pdf = models.FileField(_("PDF"), null=True, blank=True)
 
     objects = BillManager()
 
@@ -340,6 +343,16 @@ class Bill(TimeStampedModel, StatusModel):
         for registration in self.registrations.filter(status=Registration.STATUS.valid):
             registration.paid = True
             registration.save()
+
+    def get_pdf(self):
+        from mailer.pdfutils import InvoiceRenderer
+        renderer = InvoiceRenderer({'bill': self})
+        filename = 'facture-{}.pdf'.format(self.pk)
+        tempdir = mkdtemp()
+        filepath = os.path.join(tempdir, filename)
+        renderer.render_to_pdf(filepath)
+        with open(filepath, 'rb') as pdf_file:
+            self.pdf.save(filename, File(pdf_file), save=True)
 
     def get_absolute_url(self):
         return reverse('registrations_bill_detail', kwargs={'pk': self.pk})

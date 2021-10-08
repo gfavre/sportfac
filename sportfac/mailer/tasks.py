@@ -1,20 +1,22 @@
 # -*- coding:utf-8 -*-
 from __future__ import absolute_import
-from tempfile import mkdtemp
 import os
 import shutil
 from smtplib import SMTPException
+from tempfile import mkdtemp
 
 from django.core.mail import EmailMessage
 from django.conf import settings
 from django.utils import timezone
+
 from celery.utils.log import get_task_logger
 
-from sportfac.celery import app
 from activities.models import Course
 from profiles.models import FamilyUser
+from sportfac.celery import app
 from .pdfutils import get_ssf_decompte_heures, CourseParticipants, CourseParticipantsPresence, MyCourses
 from .models import Attachment
+
 
 logger = get_task_logger(__name__)
 

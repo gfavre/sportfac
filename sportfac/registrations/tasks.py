@@ -49,8 +49,11 @@ def send_bill_confirmation(user_pk, bill_pk, tenant_pk=None, language=settings.L
             context['appointments'] = Appointment.objects.filter(family=user)
 
         subject = render_to_string('registrations/confirmation_bill_mail_subject.txt', context=context)
-
         body = render_to_string('registrations/confirmation_bill_mail.txt', context=context)
+
+        attachments = []
+        if bill.is_wire_transfer:
+            tempdir = mkdtemp()
         send_mail.delay(
             subject=subject, message=body,
             from_email=global_preferences['email__FROM_MAIL'],
