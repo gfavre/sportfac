@@ -171,7 +171,8 @@ class HomePageView(BackendMixin, TemplateView):
         qs = Registration.objects.exclude(status__in=(Registration.STATUS.canceled,
                                                       Registration.STATUS.waiting)) \
             .select_related('child', 'child__family')
-        context['nb_registrations'] = qs.count()
+
+        context['nb_registrations'] = Registration.objects.count()
         children = set([reg.child for reg in qs])
         families = set([child.family for child in children])
         context['nb_families'] = len(families)
