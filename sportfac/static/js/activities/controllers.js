@@ -298,7 +298,6 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
       var groupId = event.groupId;
       $('[groupId=' + groupId + ']', $($scope.weekagenda)).addClass('selected')
     }
-
   };
 
   $scope.eventMouseLeave = function(event, element, evt){
@@ -343,6 +342,7 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
 
   $scope.uiConfig = {
     calendar:{
+      eventLimit: true,
       height: 650, aspectRatio: 3, editable: false,
       year: year, month: month, date: day,
       defaultView: 'agendaWeek', weekends: true, firstDay:1, allDaySlot: false,
@@ -355,6 +355,9 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
       eventClick: $scope.eventClick,
       eventMouseover: $scope.eventMouseEnter,
       eventMouseout: $scope.eventMouseLeave,
+      eventRender : function(event, element) {
+         $(element).tooltip({html: true, title: event.title + '<br>' + $filter('date')(event.course.start_date, 'dd.MM.yyyy') + '&nbsp;-&nbsp;' + $filter('date')(event.course.end_date, 'dd.MM.yyyy'), });
+      },
       slotEventOverlap: false,
       eventAfterRender: function(event, element) {
         var dateText = '';
