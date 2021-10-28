@@ -215,9 +215,17 @@ def kepchup_context(request):
 
 def dynamic_preferences_context(request):
     global_preferences = global_preferences_registry.manager()
+    if global_preferences['phase__OTHER_START_REGISTRATION'] > now():
+        other_phase = 1
+    elif global_preferences['phase__OTHER_END_REGISTRATION'] > now():
+        other_phase = 2
+    else:
+        other_phase = 3
     return {
         'site_name': global_preferences['site__SITE_NAME'],
         'preferences_period_name': global_preferences['PERIOD_NAME'],
         'preference_other_instance_start_registration': global_preferences['phase__OTHER_START_REGISTRATION'],
-        'other_instance_started_registrations': global_preferences['phase__OTHER_START_REGISTRATION'] < now()
+        'preference_other_instance_end_registration': global_preferences['phase__OTHER_END_REGISTRATION'],
+        'other_instance_phase': other_phase,
+        'other_instance_started_registrations': other_phase == 1
     }

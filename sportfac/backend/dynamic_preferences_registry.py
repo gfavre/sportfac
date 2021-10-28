@@ -124,6 +124,13 @@ class OtherInstanceStartRegistration(DateTimePreference):
 
 
 @global_preferences_registry.register
+class OtherInstanceEndRegistration(DateTimePreference):
+    section = phase
+    name = 'OTHER_END_REGISTRATION'
+    default = timezone.now() + timedelta(days=60)
+
+
+@global_preferences_registry.register
 class MaintenanceMode(BooleanPreference):
     name = 'maintenance_mode'
     default = False
