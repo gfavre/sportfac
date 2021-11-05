@@ -53,6 +53,7 @@
         <tr>
           <td>
             <span class="nowrap">{{ registered.child.first_name }} {{ registered.child.last_name }}</span>
+            {% if registered.child.id_lagapeo %}<br><small>{{ registered.child.id_lagapeo }}</small>{% endif %}
           </td>
           <td>{{ registered.course.activity.name }}
           </td>
@@ -93,7 +94,7 @@
 
     </table>
     {% if bill.total > 0 %}
-      <p>Si nécessaire, une aide financière peut être obtenue auprès du Rotary Léman-Riviera (infos et demande:
+      <p>Si nécessaire, une aide financière peut être accordée (infos et demande:
         <a href="tel:+41219627893">021 962 78 93</a>).<br>
         Une facture vous parviendra début décembre.<br>
         <strong>La facture sera à régler avant le premier cours.</strong></p>
@@ -115,7 +116,7 @@
       <ul>
         {% for appointment in appointments %}
           <li>
-            {{ appointment.child }}: {{ appointment.slot.start | date:"l d F Y, H:i" }}
+            {{ appointment.child }}{% if appointment.child.id_lagapeo %} ({{ appointment.child.id_lagapeo }}){% endif %}: {{ appointment.slot.start | date:"l d F Y, H:i" }}
           </li>
         {% endfor %}
       </ul>
