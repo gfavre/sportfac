@@ -1,5 +1,10 @@
 {% load i18n sekizai_tags static humanize %}
+<ul style="margin-bottom: 2em">
+{% for date in available_dates %}
+  <li><a class="calendar-change" data-date="{{ date|date:'c'}}" href="#">{{ date | date }}</a></li>
 
+{% endfor %}
+</ul>
 <div id='calendar'></div>
 
 {% addtoblock "css" %}
@@ -42,6 +47,11 @@
       });
       calendar.gotoDate("{{ start }}");
       calendar.render();
+
+      $('.calendar-change').on('click', function(e) {
+        e.preventDefault();
+        calendar.gotoDate($(this).data('date'));
+      });
 
       let childTemplate = Handlebars.compile($('#child-template').html());
 
