@@ -227,5 +227,5 @@ def dynamic_preferences_context(request):
         'preference_other_instance_start_registration': global_preferences['phase__OTHER_START_REGISTRATION'],
         'preference_other_instance_end_registration': global_preferences['phase__OTHER_END_REGISTRATION'],
         'other_instance_phase': other_phase,
-        'other_instance_started_registrations': other_phase == 1
+        'other_instance_started_registrations': other_phase == 2
     }
