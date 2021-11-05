@@ -342,13 +342,18 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
 
   $scope.uiConfig = {
     calendar:{
-      eventLimit: true,
       height: 650, aspectRatio: 3, editable: false,
       year: year, month: month, date: day,
+
+
       defaultView: 'agendaWeek', weekends: true, firstDay:1, allDaySlot: false,
       hiddenDays: $scope.hiddenDays,
       slotMinutes: $scope.slotMinutes, maxTime: $scope.endHour, minTime: $scope.startHour,
-      axisFormat: 'H:mm', columnFormat: 'dddd', header:{left: '', center: '', right: ''},
+      axisFormat: 'H:mm', columnFormat: 'dddd',
+      header:{left: 'prev,next', center: '', right: 'agendaWeek,agendaDay'},
+      buttonText: {
+        prev: '<', next: '>', today: "Aujourd'hui", month: 'Mois', week: 'Semaine', day: 'Jour'
+      },
       dayNames: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
       dayNamesShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
       timeFormat: {agenda: 'd'}, lazyFetching: true,
