@@ -107,7 +107,7 @@ class ActivityListView(LoginRequiredMixin, WizardMixin, ListView):
         times = Course.objects.visible().aggregate(Max('end_time'), Min('start_time'))
         start_time = times['start_time__min']
         end_time = times['end_time__max']
-        context['START_HOUR'] = start_time and start_time.hour or 8
+        context['START_HOUR'] = start_time and start_time.hour - 1 or 8
 
         if end_time:
             if end_time.minute == 0:
