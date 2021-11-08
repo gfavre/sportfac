@@ -215,8 +215,14 @@ def kepchup_context(request):
 
 def dynamic_preferences_context(request):
     global_preferences = global_preferences_registry.manager()
-    start = make_aware(global_preferences['phase__OTHER_START_REGISTRATION'], get_default_timezone())
-    end = make_aware(global_preferences['phase__OTHER_END_REGISTRATION'], get_default_timezone())
+    try:
+        start = make_aware(global_preferences['phase__OTHER_START_REGISTRATION'], get_default_timezone())
+    except:
+        start = global_preferences['phase__OTHER_START_REGISTRATION']
+    try:
+        end = make_aware(global_preferences['phase__OTHER_END_REGISTRATION'], get_default_timezone())
+    except:
+        end = global_preferences['phase__OTHER_END_REGISTRATION']
 
     if start > now():
         other_phase = 1
