@@ -4,7 +4,7 @@ from django.db import connection
 from django.urls import reverse, resolve
 from django.utils import timezone
 from django.utils.translation import ugettext as _
-from django.utils.timezone import now
+from django.utils.timezone import now, make_aware, get_default_timezone
 
 from dynamic_preferences.registries import global_preferences_registry
 
@@ -215,9 +215,12 @@ def kepchup_context(request):
 
 def dynamic_preferences_context(request):
     global_preferences = global_preferences_registry.manager()
-    if global_preferences['phase__OTHER_START_REGISTRATION'] > now():
+    start = make_aware(global_preferences['phase__OTHER_START_REGISTRATION'], get_default_timezone())
+    end = make_aware(global_preferences['phase__OTHER_END_REGISTRATION'], get_default_timezone())
+
+    if start > now():
         other_phase = 1
-    elif global_preferences['phase__OTHER_END_REGISTRATION'] > now():
+    elif end > now():
         other_phase = 2
     else:
         other_phase = 3
