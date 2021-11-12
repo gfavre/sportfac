@@ -37,6 +37,30 @@ __all__ = ('UserListView', 'UserCreateView', 'PasswordSetView',
            )
 
 
+class MailUsersView(BackendMixin, View):
+    def post(self, request, *args, **kwargs):
+        userids = list(set(json.loads(request.POST.get('data', '[]'))))
+        self.request.session['mail-userids'] = userids
+        params = ''
+        if 'prev' in request.GET:
+            params = '?prev=' + urlencode(request.GET.get('prev'))
+        return HttpResponseRedirect(reverse('backend:custom-mail-custom-users') + params)
+
+
+class InstructorMixin(object):
+    @staticmethod
+    def get_queryset():
+        return FamilyUser.objects.filter(is_active=True)\
+                                 .annotate(num_courses=Count('course'))\
+                                 .filter(num_courses__gt=0)
+
+
+class ManagerMixin(object):
+    @staticmethod
+    def get_queryset():
+        return FamilyUser.objects.filter(is_manager=True, is_active=True)
+
+
 class UserListView(BackendMixin, ListView):
     model = FamilyUser
     template_name = 'backend/user/list.html'
@@ -65,14 +89,8 @@ class UserListView(BackendMixin, ListView):
         return HttpResponseRedirect(reverse('backend:custom-mail-custom-users'))
 
 
-class MailUsersView(BackendMixin, View):
-    def post(self, request, *args, **kwargs):
-        userids = list(set(json.loads(request.POST.get('data', '[]'))))
-        self.request.session['mail-userids'] = userids
-        params = ''
-        if 'prev' in request.GET:
-            params = '?prev=' + urlencode(request.GET.get('prev'))
-        return HttpResponseRedirect(reverse('backend:custom-mail-custom-users') + params)
+class InstructorListView(InstructorMixin, UserListView):
+    template_name = 'backend/user/instructor-list.html'
 
 
 class UserExportView(BackendMixin, ExcelResponseMixin, View):
@@ -80,31 +98,13 @@ class UserExportView(BackendMixin, ExcelResponseMixin, View):
     resource_class = UserResource
 
 
-class ManagerMixin(object):
-    @staticmethod
-    def get_queryset():
-        return FamilyUser.objects.filter(is_manager=True, is_active=True)
-
-
-class ManagerListView(ManagerMixin, UserListView):
-    template_name = 'backend/user/manager-list.html'
-
-
 class ManagerExportView(BackendMixin, ExcelResponseMixin, ManagerMixin, View):
     filename = _("managers")
     resource_class = InstructorResource
 
 
-class InstructorMixin(object):
-    @staticmethod
-    def get_queryset():
-        return FamilyUser.objects.filter(is_active=True)\
-                                 .annotate(num_courses=Count('course'))\
-                                 .filter(num_courses__gt=0)
-
-
-class InstructorListView(InstructorMixin, UserListView):
-    template_name = 'backend/user/instructor-list.html'
+class ManagerListView(ManagerMixin, UserListView):
+    template_name = 'backend/user/manager-list.html'
 
 
 class InstructorExportView(BackendMixin, ExcelResponseMixin, InstructorMixin, View):
