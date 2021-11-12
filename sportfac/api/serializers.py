@@ -120,7 +120,7 @@ class ActivityDetailedSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'number', 'courses')
 
     def get_courses(self, obj):
-        courses = [course for course in obj.courses.all() if course.visible]
+        courses = [course for course in obj.courses.order_by('start_date') if course.visible]
         return CourseInlineSerializer(courses, many=True, read_only=True).data
 
 
