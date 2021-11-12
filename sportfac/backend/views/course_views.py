@@ -192,7 +192,8 @@ class CourseAbsenceView(BackendMixin, DetailView):
         kwargs['closest_session'] = closest_session(sessions)
 
         # kwargs['sessions'] = dict([(absence.session.date, absence.session) for absence in qs])
-        kwargs['all_dates'] = sorted([session_date for session_date in kwargs['sessions'].keys()], reverse=True)
+        kwargs['all_dates'] = sorted([session_date for session_date in kwargs['sessions'].keys()],
+                                     reverse=not settings.KEPCHUP_ABSENCES_ORDER_ASC)
 
         registrations = dict([(registration.child, registration) for registration in self.object.participants.all()])
         child_absences = collections.OrderedDict()
@@ -263,8 +264,8 @@ class CoursesAbsenceView(BackendMixin, ListView):
             qs = qs.order_by('child__last_name', 'child__first_name')
         sessions = Session.objects.filter(course__in=self.get_queryset())
         kwargs['all_dates'] = list(set(sessions.values_list('date', flat=True)))
+        kwargs['all_dates'].sort(reverse=not settings.KEPCHUP_ABSENCES_ORDER_ASC)
         kwargs['closest_session'] = closest_session(sessions)
-        kwargs['all_dates'].sort(reverse=True)
         if settings.KEPCHUP_REGISTRATION_LEVELS:
             extras = ExtraInfo.objects.select_related('registration', 'key') \
                 .filter(registration__course__in=self.get_queryset(),

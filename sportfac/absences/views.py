@@ -37,7 +37,7 @@ class AbsenceCourseView(InstructorMixin, DetailView):
         kwargs['sessions'] = dict([(session.date, session) for session in sessions])
         kwargs['closest_session'] = closest_session(sessions)
         # kwargs['sessions'] = dict([(absence.session.date, absence.session) for absence in qs])
-        kwargs['all_dates'] = sorted([session_date for session_date in kwargs['sessions'].keys()], reverse=True)
+        kwargs['all_dates'] = sorted([session_date for session_date in kwargs['sessions'].keys()], reverse=not settings.KEPCHUP_ABSENCES_ORDER_ASC)
 
         registrations = dict([(registration.child, registration) for registration in self.object.participants.all()])
         child_absences = collections.OrderedDict()

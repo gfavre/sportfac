@@ -519,6 +519,7 @@ KEPCHUP_ALTERNATIVE_STEPS_NAMING = False
 KEPCHUP_USE_ABSENCES = False
 # By default, absences are connected to courses.
 KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES = False
+KEPCHUP_ABSENCES_ORDER_ASC = False
 # Activate montreux specific feature to handle instructors pay slips
 KEPCHUP_FICHE_SALAIRE_MONTREUX = False
 
