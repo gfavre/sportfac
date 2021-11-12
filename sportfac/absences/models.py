@@ -36,30 +36,17 @@ class Absence(StatusModel, TimeStampedModel):
 class Session(TimeStampedModel):
     course = models.ForeignKey('activities.Course', related_name="sessions",)
     activity = models.ForeignKey('activities.Activity', related_name="sessions", null=True)
-
     date = models.DateField()
     instructor = models.ForeignKey('profiles.FamilyUser', null=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        ordering = ('date', 'course')
+        unique_together = (('date', 'course'),)
 
     def absentees(self):
         return [absence.child for absence in self.absences.exclude(status__in=(Absence.STATUS.present,
                                                                                Absence.STATUS.na,
                                                                                Absence.STATUS.late))]
-
-    def get_absence_for_child(self, child):
-        absences = [absence for absence in self.absences.all() if absence.child == child]
-        if absences:
-            return absences[0]
-        else:
-            return None
-
-    def __unicode__(self):
-        return '%s - %s' % (self.course.short_name, self.date)
-
-    def get_api_url(self):
-        return reverse('api:session-detail', kwargs={'pk': self.pk})
-
-    def presentees_nb(self):
-        return self.absences.filter(status__in=(Absence.STATUS.present, Absence.STATUS.late)).count()
 
     def fill_absences(self):
         for registration in self.course.participants.all():
@@ -70,13 +57,28 @@ class Session(TimeStampedModel):
                 }
             )
 
-    def update_courses_dates(self):
-        if settings.KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES and self.activity:
-            for course in self.activity.courses.all():
-                course.update_dates_from_sessions()
+    def get_absence_for_child(self, child):
+        absences = [absence for absence in self.absences.all() if absence.child == child]
+        if absences:
+            return absences[0]
         else:
-            self.course.update_dates_from_sessions()
+            return None
 
-    class Meta:
-        ordering = ('date', 'course')
-        unique_together = (('date', 'course'),)
+    def get_api_url(self):
+        return reverse('api:session-detail', kwargs={'pk': self.pk})
+
+    def presentees_nb(self):
+        return self.absences.filter(status__in=(Absence.STATUS.present, Absence.STATUS.late)).count()
+
+    def update_courses_dates(self):
+        if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
+            if settings.KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES and self.activity:
+                for course in self.activity.courses.all():
+                    course.update_dates_from_sessions()
+            else:
+                self.course.update_dates_from_sessions()
+
+    def __unicode__(self):
+        return '%s - %s' % (self.course.short_name, self.date)
+
+

@@ -74,4 +74,5 @@ class SessionViewSet(viewsets.ModelViewSet):
         else:
             course = instance.course
             instance.delete()
-            course.update_dates_from_sessions()
+            if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
+                course.update_dates_from_sessions()
