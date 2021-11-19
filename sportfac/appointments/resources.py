@@ -2,7 +2,7 @@
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 
-from import_export import resources, fields
+from import_export import resources, fields, widgets
 
 from .models import Appointment
 
@@ -10,11 +10,12 @@ from .models import Appointment
 class AppointmentResource(resources.ModelResource):
     child_first = fields.Field(column_name=_("First name"), attribute='child__first_name')
     child_last = fields.Field(column_name=_("Last name"), attribute='child__last_name')
-
+    child_school_year = fields.Field(column_name=_("School year"), attribute='child__school_year__year')
     date = fields.Field(column_name=_("Date"))
     time = fields.Field(column_name=_("Time"))
-    ssf = fields.Field(column_name=_("SSF number"), attribute='child__id_lagapeo')
-    has_registrations = fields.Field(column_name=_("Has registrations"))
+    ssf = fields.Field(column_name=_("SSF number"), attribute='child__id_lagapeo', widget=widgets.IntegerWidget())
+
+    has_registrations = fields.Field(column_name=_("Has registrations"), widget=widgets.BooleanWidget())
     family = fields.Field(column_name=_("Family"))
     email = fields.Field(column_name=_("Email"), attribute='email')
     phone_number = fields.Field(column_name=_("Phone number"), attribute='phone_number')
