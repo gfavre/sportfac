@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.db import connection
@@ -104,3 +106,14 @@ def send_confirmation(user_pk, tenant_pk=None, language=settings.LANGUAGE_CODE):
     finally:
         translation.activate(cur_lang)
 
+
+@shared_task
+def cancel_expired_registrations():
+    if not settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES:
+        return
+    registrations = Registration.objects.filter(
+        status='waiting',
+        created__lte=(now() - timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES))
+    )
+    for registration in registrations:
+        registration.cancel(reason=Registration.REASON.expired)

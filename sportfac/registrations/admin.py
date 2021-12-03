@@ -51,18 +51,18 @@ class ExtraInfoInline(admin.StackedInline):
 
 @admin.register(Registration)
 class RegistrationAdmin(SportfacAdminMixin, ImportExportModelAdmin):
+    actions = ['delete_model', ]
+    change_list_filter_template = "admin/filter_listing.html"
+    date_hierarchy = 'created'
+    inlines = [ExtraInfoInline]
     list_display = ('__unicode__', 'transport', 'status', 'created', 'modified')
-    list_filter = ('status', 'transport', 'course__activity__name')
+    list_filter = ('status', 'transport', 'course__activity__name', 'cancelation_reason')
+    raw_id_fields = ('child', 'course', 'bill')
+    resource_class = RegistrationResource
     search_fields = (
         'child__first_name', 'child__last_name', 'course__activity__number',
         'course__activity__name', 'course__number',
     )
-    raw_id_fields = ('child', 'course', 'bill')
-    date_hierarchy = 'created'
-    change_list_filter_template = "admin/filter_listing.html"
-    inlines = [ExtraInfoInline]
-    actions = ['delete_model', ]
-    resource_class = RegistrationResource
 
     def get_queryset(self, request):
         qs = self.model._default_manager.all_with_deleted()

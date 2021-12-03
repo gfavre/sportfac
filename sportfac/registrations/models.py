@@ -40,6 +40,10 @@ class Registration(TimeStampedModel, StatusModel):
         ('canceled', _("Canceled by administrator")),
         ('confirmed', _("Confirmed by administrator")),
     )
+    REASON = Choices(
+        ('expired', _("Expired")),
+        ('admin', _("Admin")),
+    )
 
     course = models.ForeignKey('activities.Course', related_name="participants", verbose_name=_("Course"),
                                on_delete=models.CASCADE)
@@ -55,7 +59,8 @@ class Registration(TimeStampedModel, StatusModel):
                                   verbose_name=_("Transport information"),
                                   on_delete=models.SET_NULL)
     confirmation_sent_on = models.DateField(_("Confirmation mail sent on"), null=True, blank=True)
-
+    cancelation_reason = models.CharField(_("Cancelation reason"), max_length=20,
+                                          null=True, blank=True, choices=REASON)
     objects = RegistrationManager()
 
     class Meta:
@@ -84,8 +89,11 @@ class Registration(TimeStampedModel, StatusModel):
     def update_url(self):
         return self.get_update_url()
 
-    def cancel(self):
+    def cancel(self, reason=None):
+        if not reason:
+            reason = self.REASON.admin
         self.status = self.STATUS.canceled
+        self.cancelation_reason = reason
         if settings.KEPCHUP_USE_ABSENCES:
             self.delete_future_absences()
 

@@ -68,6 +68,7 @@ def seconds(value):
     except AttributeError:
         return 0
 
+
 @register.filter(is_safe=True)
 def hours(value):
     if value in (None, ''):
@@ -80,3 +81,24 @@ def hours(value):
         return out
     except AttributeError:
         return 0.0
+
+
+@register.filter(is_safe=True)
+def minutes_duration(value):
+    minutes_per_day = 24 * 60
+    output = []
+    days = value / minutes_per_day
+    hours = value % minutes_per_day / 60
+    minutes = value % 60
+
+    if days == 1:
+        if not hours and not minutes:
+            return _('24 hours')
+        output.append(_('1 day'))
+    elif days > 1:
+        output.append(_('%i days') % days)
+    if hours:
+        output.append(_('%i hours') % hours)
+    if minutes:
+        output.append(_('%i minutes') % minutes)
+    return ', '.join(output)

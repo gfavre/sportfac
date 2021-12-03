@@ -1,5 +1,5 @@
 {% extends "wizard.html" %}
-{% load i18n l10n humanize switzerland json_tags %}
+{% load i18n l10n humanize switzerland json_tags duration %}
 
 
 {% block page_title %}{% trans "Confirmation" %}{% endblock page_title %}
@@ -19,7 +19,17 @@
 {% endblock %}
 
 {% block content %}
-
+  {% if REGISTRATION_EXPIRE_MINUTES %}
+  <div class="alert alert-info alert-dismissible" role="alert">
+    <button type="button" class="close" data-dismiss="alert">
+        <span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span>
+      </button>
+    <p><strong><i class="icon-exclamation"></i></strong>
+      {% blocktrans with REGISTRATION_EXPIRE_MINUTES|minutes_duration as duration %}
+      The following registrations are reserved for the next {{ duration}}.
+      {% endblocktrans %}</p>
+  </div>
+  {% endif %}
   {% if overlaps %}
     <div class="alert alert-warning alert-dismissible" role="alert">
       <button type="button" class="close" data-dismiss="alert">

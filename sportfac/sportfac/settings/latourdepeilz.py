@@ -46,6 +46,7 @@ KEPCHUP_ALTERNATIVE_BILLING_LABEL = None
 KEPCHUP_LIMIT_BY_AGE = True
 KEPCHUP_LIMIT_BY_SCHOOL_YEAR = not KEPCHUP_LIMIT_BY_AGE
 KEPCHUP_SCHOOL_YEAR_MANDATORY = True
+KEPCHUP_REGISTRATION_EXPIRE_MINUTES = 60 * 24
 
 # Payment
 #########################################
@@ -61,4 +62,8 @@ KEPCHUP_ENABLE_TEACHER_MANAGEMENT = False
 CELERYBEAT_SCHEDULE['notify-absences'] = {
         'task': 'absences.tasks.notify_absences',
         'schedule': crontab(hour=04, minute=0),
+}
+CELERYBEAT_SCHEDULE['cancel-expired-registrations'] = {
+        'task': 'registrations.tasks.cancel_expired_registrations',
+        'schedule': crontab(minute="*/15"),
 }
