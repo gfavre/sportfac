@@ -133,9 +133,12 @@ class Registration(TimeStampedModel, StatusModel):
     def get_price_category(self):
         if settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
             from activities.models import Course
+            # what are the registrations to the same activities already made in same family?
             same_family_regs = Registration.objects.filter(child__family=self.child.family,
-                                                           course__activity=self.course.activity).order_by('created')
-            if (same_family_regs.count() > 1 and same_family_regs.first() != self) or (same_family_regs.count() == 1 and not self.pk):
+                                                           course__activity=self.course.activity)\
+                                                   .exclude(pk=self.pk)
+
+            if same_family_regs.exists():
                 # This child has a sibling, registered to the same activity => special rate
                 if self.child.family.zipcode in settings.KEPCHUP_LOCAL_ZIPCODES:
                     # tarif indigène
