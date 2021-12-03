@@ -69,7 +69,7 @@
             {% endif %}
           {% endif %}
         </td>
-        <td class="nowrap">{{ registration.course.price|money }}</td>
+        <td class="nowrap">{{ registration.price|money }}</td>
         <td class="hidden-print">
           <ul class="list-unstyled">
             <li class="text-nowrap"><a href="{{ registration.update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update registration" %}</a></li>

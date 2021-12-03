@@ -91,7 +91,7 @@
         <td>{{ registered.course.place }}</td>
 
         {% if not NO_PAYMENT %}
-          <td class="nowrap text-right invoice-item" data-value="{{ registered.course.price }}" rowspan="2">
+          <td class="nowrap text-right invoice-item" data-value="{{ registered.price }}" rowspan="2">
             {% with price_category=registered.get_price_category %}
             {{ price_category.0|money }}
             {% if price_category.1 %}<br>

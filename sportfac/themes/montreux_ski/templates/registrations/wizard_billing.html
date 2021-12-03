@@ -67,7 +67,7 @@
           </td>
           <td>{{ registered.course.place }}</td>
           {% if not NO_PAYMENT %}
-            <td class="nowrap text-right">{{ registered.course.price|money_html }}</td>
+            <td class="nowrap text-right">{{ registered.price|money_html }}</td>
           {% endif %}
         </tr>
         <tr>

@@ -93,7 +93,7 @@
         {{ registered.course.day_name }} <br /> <span class="nowrap">{{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</span>
       </td>
       <td>{{ registered.course.place }}</td>
-      <td class="nowrap">{{ registered.course.price|money }}</td>
+      <td class="nowrap">{{ registered.price|money }}</td>
     </tr>
   {% endfor %}
   </tbody>
