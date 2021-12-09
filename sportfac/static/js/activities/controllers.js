@@ -271,11 +271,19 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
           return overlap1 || overlap2;
       }, false);
 
+      /* TODO: ensure ordering is the same. Here the promise alter the order.
+      * J'ai peut-être même pas besoin de le getter
+      *
+      * */
+
       if (!registered && available){
         if (activityRegistered || overlapping){
-          CoursesService.get($scope.urls.course, course.id).then(addUnavailableCourse);
+          //CoursesService.get($scope.urls.course, course.id).then(addUnavailableCourse);
+          addUnavailableCourse(course);
         } else {
-          CoursesService.get($scope.urls.course, course.id).then(addAvailableCourse);
+          //CoursesService.get($scope.urls.course, course.id).then(addAvailableCourse);
+          addAvailableCourse(course);
+
         }
       }
     });

@@ -111,6 +111,8 @@ def send_confirmation(user_pk, tenant_pk=None, language=settings.LANGUAGE_CODE):
 def cancel_expired_registrations():
     if not settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES:
         return
+    current_domain = Domain.objects.filter(is_current=True).first()
+    connection.set_tenant(current_domain.tenant)
     registrations = Registration.objects.filter(
         status='waiting',
         created__lte=(now() - timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES))
