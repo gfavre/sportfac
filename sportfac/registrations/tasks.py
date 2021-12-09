@@ -119,3 +119,4 @@ def cancel_expired_registrations():
     )
     for registration in registrations:
         registration.cancel(reason=Registration.REASON.expired)
+        registration.save()
