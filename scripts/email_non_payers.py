@@ -5,41 +5,52 @@ from profiles.models import FamilyUser
 from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
 
-parents = FamilyUser.objects.filter(finished_registration=True, 
-                                    paid=False, total__gt=0)
+parents = FamilyUser.objects.filter(profile__finished_registering=True,
+                                    profile__has_paid_all=False)
 
 body = u"""Madame, Monsieur,
 
-À ce jour jour et sauf erreur de notre part, nous n’avons pas reçu votre paiement pour les activités de sport scolaire facultatif de votre enfant.
-Nous vous saurions gré d’effectuer votre versement:
+Il y a quelques semaines, vous avez reçu un rappel relatif au paiement encore ouvert des cours des activités scolaire 
+facultatives. Nous n'avons malheureusement à ce jour pas reçu votre versement, et vous sommes reconnaissants de 
+régulariser cette situation d'ici au 21 décembre prochain.
+
 
 total dû: CHF %s.-
 
 sur le compte :
-IBAN: CH77 0076 7000 C507 0682 4
-Adresse: AIIP, 1201 Genève
+IBAN: CH11 0076 7000 H542 4063 8
+Adresse: 
+PRIM TERRE-SAINTE 
+Chemin du Chaucey 7
+1296 Coppet
 
 en précisant votre identifiant dans les communications: %s
 
-Vous pouvez également passer à notre secrétariat (avec une copie imprimée du présent mail) qui pourra encaisser directement votre finance d’inscription.
-En vous remerciant d’ores et déjà de votre prompte réaction, nous vous adressons nos cordiaux messages
+
+Si votre versement s'était croisé avec ce courriel nous vous remercions de ne pas en tenir compte!
+
+En vous remerciant d’ores et déjà de votre prompte réaction, nous vous adressons nos cordiaux messages,
+
 
 Remo Aeschbach
-Doyen
-responsable du sport scolaire facultatif
-EPCoppet
+Doyen - responsable des activités scolaires facultatives EP Coppet 
+EPCoppet - Terre Sainte
 Chemin du Chaucey 7
 1296 Coppet
-remo.aeschbach@vd.educanet2.ch
+remo.aeschbach@edu-vd.ch
 +4122 | 557 58 58
 +4179 | 417 69 93"""
 
 
-
+written_to = []
 for parent in parents:
-    text_content = body % (parent.total, parent.billing_identifier)
+    if not parent.bills.filter(status='waiting', total__gt=0).exists():
+        continue
+    written_to.append(parent)
+    total = sum([bill.total for bill in parent.bills.filter(status='waiting')])
+    text_content = body % (total, parent.bills.filter(status='waiting').first().billing_identifier)
     to = '%s %s <%s>' % (parent.first_name, parent.last_name, parent.email)
     subject = 'Sport scolaire facultatif - EP Coppet - rappel'
-    from_email = 'Remo Aeschbach <remo.aeschbach@vd.educanet2.ch>'
-    send_mail(subject, text_content, from_email, [to,])
+    from_email = 'Activites scolaires facultatives - EP Coppet - Terre Sainte <coppet@kepchup.ch>'
+    send_mail(subject, text_content, from_email, [to, 'Remo Aeschbach <remo.aeschbach@edu-vd.ch>'])
     print 'sent to: %s' % to

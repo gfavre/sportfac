@@ -1,4 +1,5 @@
 from datetime import timedelta
+import tempfile
 
 from django.conf import settings
 from django.contrib.sites.models import Site
@@ -55,7 +56,7 @@ def send_bill_confirmation(user_pk, bill_pk, tenant_pk=None, language=settings.L
 
         attachments = []
         if bill.is_wire_transfer:
-            tempdir = mkdtemp()
+            tempdir = tempfile.mkdtemp()
         send_mail.delay(
             subject=subject, message=body,
             from_email=global_preferences['email__FROM_MAIL'],
