@@ -49,7 +49,7 @@ ALLOWED_HOSTS = ('127.0.0.1', 'localhost', 'test.com', 'tenant.test.com', 'tests
 
 
 
-########## DATABASE CONFIGURATION
+########## DATABA:qSE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
     #'other': env.db('DATABASE_URL', default='postgres:///sportfac'),

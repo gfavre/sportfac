@@ -22,7 +22,7 @@ class TemplateTagDurationTests(TestCase):
         template filter expects timedelta object
         """
         self.assertEqual(self.render(False), '')
-        self.assertEqual(self.render(''), '')
+        self.assertEqual(self.render(''), 'n/a')
         self.assertEqual(self.render('somestring'), '')
         self.assertEqual(self.render(datetime.now()), '')
         self.assertNotEqual(len(self.render(timedelta(0))), 0)

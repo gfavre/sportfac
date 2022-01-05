@@ -76,6 +76,8 @@ class TenantTestCase(BaseTenantTestCase):
         tenant.start_date = date(2015, 1, 1)
         tenant.end_date = date(2015, 12, 31)
         tenant.status = 'ready'
+        tenant.create_schema()
+        return tenant
 
     @classmethod
     def setup_domain(cls, domain):
@@ -86,6 +88,7 @@ class TenantTestCase(BaseTenantTestCase):
         :return:
         """
         domain.is_current = True
+        return domain
 
     def setUp(self):
         super(TenantTestCase, self).setUp()

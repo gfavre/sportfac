@@ -5,9 +5,9 @@ from base import *  # noqa
 ########## DATABASE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES['default']['NAME'] = env('DB_NAME')
-DATABASES['default']['USER'] = env('DB_USER')
-DATABASES['default']['PASSWORD'] = env('DB_PASSWORD')
-DATABASES['default']['PORT'] = env('DB_PORT', default='5432')
+#DATABASES['default']['USER'] = env('DB_USER')
+#DATABASES['default']['PASSWORD'] = env('DB_PASSWORD')
+#DATABASES['default']['PORT'] = env('DB_PORT', default='5432')
 
 
 ALLOWED_HOSTS = ['test.com', 'tenant.test.com']

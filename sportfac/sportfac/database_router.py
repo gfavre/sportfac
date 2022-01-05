@@ -10,6 +10,7 @@ class MasterRouter(object):
     route_app_labels = {}
 
     def db_for_read(self, model, **hints):
+        1/0
         if model._meta.app_label in self.route_app_labels:
             return MASTER_DB
         return LOCAL_DB
