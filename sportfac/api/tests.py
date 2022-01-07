@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 import json
+import logging
 
 from django.core.urlresolvers import reverse
 
@@ -15,6 +16,9 @@ from sportfac.utils import TenantTestCase
 
 
 fake = faker.Factory.create('fr_CH')
+
+logger = logging.getLogger('django.request')
+logger.disabled = True
 
 
 class UserMixin(object):
@@ -55,6 +59,7 @@ class ChildrenAPITests(UserMixin, TenantTestCase):
         self.children2 = ChildFactory.create_batch(size=2, school_year=self.year, family=self.user2)
         self.admin = FamilyUserFactory()
         self.admin.is_manager = True
+        self.teacher = TeacherFactory()
 
     def test_rights(self):
         url = reverse("api:child-list")
@@ -101,7 +106,7 @@ class ChildrenAPITests(UserMixin, TenantTestCase):
             'language': Child.LANGUAGE.F,
             'birth_date': fake.date(),
             'school_year': self.children2[0].school_year.year,
-            'teacher': self.children2[0].teacher.pk
+            'teacher': self.teacher.pk
 
         }
         response = self.tenant_client.post(url, new_child, format='json')

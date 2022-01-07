@@ -215,7 +215,7 @@ class CustomParticipantsCustomMailViewTest(TestCase):
         request = self.factory.get(self.url)
         request.user = self.instructor
         request = add_middleware_to_request(request, SessionMiddleware)
-        request.session['mail-userids'] = [user.pk for user in self.other_users]
+        request.session['mail-userids'] = [str(user.pk) for user in self.other_users]
         request.session.save()
         response = CustomParticipantsCustomMailView.as_view()(request, course=self.course.pk)
         self.assertEqual(response.status_code, 200)
@@ -228,7 +228,7 @@ class CustomParticipantsCustomMailViewTest(TestCase):
         request = self.factory.post(self.url, data=data)
         request.user = self.instructor
         request = add_middleware_to_request(request, SessionMiddleware)
-        request.session['mail-userids'] = [user.pk for user in self.other_users]
+        request.session['mail-userids'] = [str(user.pk) for user in self.other_users]
         request.session.save()
         response = CustomParticipantsCustomMailView.as_view()(request, course=self.course.pk)
         self.assertEqual(response.status_code, 302)
@@ -240,7 +240,7 @@ class CustomParticipantsCustomMailViewTest(TestCase):
         request = self.factory.post(self.url, data=data)
         request.user = self.instructor
         request = add_middleware_to_request(request, SessionMiddleware)
-        request.session['mail-userids'] = [user.pk for user in self.other_users]
+        request.session['mail-userids'] = [str(user.pk) for user in self.other_users]
         request.session.save()
         CustomParticipantsCustomMailView.as_view()(request, course=self.course.pk)
         self.assertEqual(MailArchive.objects.count(), 1)
@@ -255,7 +255,7 @@ class CustomParticipantsCustomMailViewTest(TestCase):
         request = self.factory.post(self.url, data=data)
         request.user = self.instructor
         request = add_middleware_to_request(request, SessionMiddleware)
-        request.session['mail-userids'] = [user.pk for user in self.other_users]
+        request.session['mail-userids'] = [str(user.pk) for user in self.other_users]
         request.session.save()
         CustomParticipantsCustomMailView.as_view()(request, course=self.course.pk)
         archive = MailArchive.objects.first()
@@ -269,7 +269,7 @@ class CustomParticipantsCustomMailViewTest(TestCase):
         request = self.factory.post(self.url, data=data)
         request.user = self.instructor
         request = add_middleware_to_request(request, SessionMiddleware)
-        request.session['mail-userids'] = [user.pk for user in self.other_users]
+        request.session['mail-userids'] = [str(user.pk) for user in self.other_users]
         request.session.save()
         CustomParticipantsCustomMailView.as_view()(request, course=self.course.pk)
         archive = MailArchive.objects.first()
@@ -285,7 +285,7 @@ class CustomParticipantsCustomMailViewTest(TestCase):
         request = self.factory.post(self.url, data=data)
         request.user = self.instructor
         request = add_middleware_to_request(request, SessionMiddleware)
-        request.session['mail-userids'] = [user.pk for user in self.other_users]
+        request.session['mail-userids'] = [str(user.pk) for user in self.other_users]
         request.session.save()
         CustomParticipantsCustomMailView.as_view()(request, course=self.course.pk)
         archive = MailArchive.objects.first()
@@ -301,8 +301,8 @@ class CustomMailPreviewTest(TestCase):
         self.instructor = self.instructors[0]
         self.other_users = FamilyUserFactory.create_batch(4)
         self.course = CourseFactory(instructors=self.instructors)
-        self.archive = MailArchiveFactory(recipients=[user.pk for user in self.other_users],
-                                          bcc_recipients=[user.pk for user in self.instructors],)
+        self.archive = MailArchiveFactory(recipients=[str(user.pk) for user in self.other_users],
+                                          bcc_recipients=[str(user.pk) for user in self.instructors],)
         self.url = reverse('activities:mail-preview', kwargs={'course': self.course.pk})
 
     def test_not_instructor_user(self):
@@ -324,7 +324,7 @@ class CustomMailPreviewTest(TestCase):
         request = self.factory.get(self.url)
         request.user = self.instructor
         request = add_middleware_to_request(request, SessionMiddleware)
-        request.session['mail'] = self.archive.pk
+        request.session['mail'] = str(self.archive.pk)
         request.session.save()
         response = CustomMailPreview.as_view()(request, course=self.course.pk)
         self.assertEqual(response.status_code, 200)
@@ -337,7 +337,7 @@ class CustomMailPreviewTest(TestCase):
         request.user = self.instructor
         request = add_middleware_to_request(request, SessionMiddleware)
         request = add_middleware_to_request(request, MessageMiddleware)
-        request.session['mail'] = self.archive.pk
+        request.session['mail'] = str(self.archive.pk)
         request.session.save()
         response = CustomMailPreview.as_view()(request, course=self.course.pk)
         self.assertEqual(response.status_code, 302)

@@ -12,7 +12,6 @@ class ListField(models.TextField):
     def from_db_value(self, value, expression, connection, context):
         if value is None:
             return value
-        
         return ast.literal_eval(value)
 
     def to_python(self, value):
