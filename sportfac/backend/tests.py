@@ -33,6 +33,7 @@ class BackendTestBase(TenantTestCase):
         self.user = FamilyUserFactory()
         self.manager = FamilyUserFactory()
         self.manager.is_manager = True
+        self.manager.save()
 
     def generic_test_rights(self, url):
         # anonymous access
