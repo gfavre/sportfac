@@ -28,7 +28,7 @@ class BillMixin(object):
         preferences = global_preferences_registry.manager()
         offset_days = preferences['payment__DELAY_DAYS']
         # noinspection PyUnresolvedReferences
-        base_date = self.request.REGISTRATION_END
+        base_date = self.object.created #self.request.REGISTRATION_END
         context['delay'] = base_date + datetime.timedelta(days=offset_days)
         context['iban'] = preferences['payment__IBAN']
         context['address'] = preferences['payment__ADDRESS']
