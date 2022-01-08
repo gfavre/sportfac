@@ -20,7 +20,7 @@ from registrations.tests.factories import (RegistrationFactory, WaitingRegistrat
                                            BillFactory, WaitingBillFactory)
 from sportfac.middleware import RegistrationOpenedMiddleware, VersionMiddleware
 from sportfac.utils import TenantTestCase, add_middleware_to_request
-from .views import mail_views
+from ...views import mail_views
 
 
 fake = faker.Factory.create()
@@ -51,37 +51,10 @@ class BackendTestBase(TenantTestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class CourseViewsTests(BackendTestBase):
-
-    def test_list(self):
-        url = reverse('backend:course-list')
-        self.generic_test_rights(url)
-
-    def test_create(self):
-        url = reverse('backend:course-create')
-        self.generic_test_rights(url)
 
 
-class ActivitiesViewsTests(BackendTestBase):
-
-    def test_list(self):
-        url = reverse('backend:activity-list')
-        self.generic_test_rights(url)
-
-    def test_create(self):
-        url = reverse('backend:activity-create')
-        self.generic_test_rights(url)
 
 
-class TeachersViewsTests(BackendTestBase):
-
-    def test_list(self):
-        url = reverse('backend:teacher-list')
-        self.generic_test_rights(url)
-
-    def test_create(self):
-        url = reverse('backend:teacher-create')
-        self.generic_test_rights(url)
 
 
 class UsersViewsTests(BackendTestBase):
