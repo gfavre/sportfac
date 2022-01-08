@@ -10,7 +10,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 from django.views.generic import DetailView, DeleteView, FormView, ListView, TemplateView
-
+from django.utils.timezone import now
 from braces.views import LoginRequiredMixin, UserPassesTestMixin
 
 from appointments.models import Appointment
@@ -28,7 +28,10 @@ class BillMixin(object):
         preferences = global_preferences_registry.manager()
         offset_days = preferences['payment__DELAY_DAYS']
         # noinspection PyUnresolvedReferences
-        base_date = self.object.created #self.request.REGISTRATION_END
+        if hasattr(self, 'object'):
+            base_date = self.object.created #self.request.REGISTRATION_END
+        else:
+            base_date = now()
         context['delay'] = base_date + datetime.timedelta(days=offset_days)
         context['iban'] = preferences['payment__IBAN']
         context['address'] = preferences['payment__ADDRESS']
@@ -216,7 +219,7 @@ class SummaryView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class WizardBillingView(LoginRequiredMixin, WizardMixin, BillMixin, TemplateView):
+class WizardBillingView(LoginRequiredMixin, BillMixin, WizardMixin, TemplateView):
     template_name = "registrations/wizard_billing.html"
 
     @staticmethod
