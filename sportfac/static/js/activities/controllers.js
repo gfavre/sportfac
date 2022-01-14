@@ -166,8 +166,6 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
     return false;
   };
 
-
-
   $scope.$watch('registrations.length', function(){
     if (!angular.isDefined($scope.registrations)){ return; }
 
@@ -191,7 +189,7 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
         event.registeredChild = $scope.selectedChild;
         $scope.registeredEvents.push(event);
       });
-      //$scope.registeredEvents.push.apply($scope.registeredEvents, event);
+      // $scope.registeredEvents.push.apply($scope.registeredEvents, event);
     };
     var addToValidated = function(course){
       var events = course.toEvents('validated');
@@ -270,11 +268,6 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
       ).reduce(function(overlap1, overlap2) {
           return overlap1 || overlap2;
       }, false);
-
-      /* TODO: ensure ordering is the same. Here the promise alter the order.
-      * J'ai peut-être même pas besoin de le getter
-      *
-      * */
 
       if (!registered && available){
         if (activityRegistered || overlapping){
