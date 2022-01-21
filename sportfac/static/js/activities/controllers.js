@@ -407,6 +407,7 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
       $scope.othersRegisteredEvents.sort(function (event1, event2) {
         return event1.course.start_date.localeCompare(event2.course.start_date);
       });
+      $scope.weekagenda.fullCalendar('refetchEvents');
     }
   });
 
@@ -416,6 +417,7 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
       $scope.registeredEvents.sort(function (event1, event2) {
         return event1.course.start_date.localeCompare(event2.course.start_date);
       });
+      $scope.weekagenda.fullCalendar('refetchEvents');
     }
   });
 
@@ -423,8 +425,11 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
     if ($scope.availableEventsToFetch > 0 && newLength === $scope.availableEventsToFetch) {
       $scope.availableEventsToFetch = 0;
       $scope.availableEvents.sort(function (event1, event2) {
+        console.log(event1.course.start_date);
+        console.log(event2.course.start_date);
         return event1.course.start_date.localeCompare(event2.course.start_date);
       });
+      $scope.weekagenda.fullCalendar('refetchEvents');
     }
   });
 
