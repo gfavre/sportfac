@@ -245,6 +245,7 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
       });
     }
 
+    $scope.availableEvents.length = 0;
     var activityRegistered = false;
     angular.forEach($scope.selectedActivity.courses, function(course){
       if ((registeredCourses.indexOf(course.id) !== -1) && !$scope.canregistersameactivity) {
@@ -398,34 +399,32 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
   $scope.availableEventsToFetch = 0;
   $scope.eventSources = [$scope.registeredEvents, $scope.othersRegisteredEvents, $scope.availableEvents];
 
+
+  /* This section ensures ordering of events in the calendar. */
    $scope.$watch('othersRegisteredEvents.length', function(newLength, old_length){
-    if (newLength === $scope.othersRegisteredEventsToFetch) {
-      alert('completed others');
+    if ($scope.othersRegisteredEventsToFetch > 0 && newLength === $scope.othersRegisteredEventsToFetch) {
       $scope.othersRegisteredEventsToFetch = 0;
+      $scope.othersRegisteredEvents.sort(function (event1, event2) {
+        return event1.course.start_date.localeCompare(event2.course.start_date);
+      });
     }
   });
 
   $scope.$watch('registeredEvents.length', function(newLength, old_length){
-    if (newLength === $scope.registeredEventsToFetch) {
-      alert('completed registered');
+    if ($scope.registeredEventsToFetch > 0 && newLength === $scope.registeredEventsToFetch) {
       $scope.registeredEventsToFetch = 0;
+      $scope.registeredEvents.sort(function (event1, event2) {
+        return event1.course.start_date.localeCompare(event2.course.start_date);
+      });
     }
   });
 
   $scope.$watch('availableEvents.length', function(newLength, old_length){
-    console.log('availableEvents.length: ' + newLength);
-    console.log('availableEventsToFetch: ' + $scope.availableEventsToFetch);
-    if (newLength === $scope.availableEventsToFetch) {
-      alert('completed available');
-      /*$scope.availableEventsToFetch = 0;
+    if ($scope.availableEventsToFetch > 0 && newLength === $scope.availableEventsToFetch) {
+      $scope.availableEventsToFetch = 0;
       $scope.availableEvents.sort(function (event1, event2) {
-        return event1.course.start - event2.course.start;
+        return event1.course.start_date.localeCompare(event2.course.start_date);
       });
-      alert('reordered');
-
-      $scope.weekagenda.fullCalendar('refetchEvents');
-      alert('refetched');*/
-
     }
   });
 
