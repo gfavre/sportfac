@@ -25,8 +25,7 @@ function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, Regi
   } else {
     $scope.hiddenDays = [];
   }
-
-
+  
   $scope.urls = {
     activity: $attrs.activityserviceurl,
     child: $attrs.childserviceurl,

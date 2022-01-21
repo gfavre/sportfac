@@ -16,7 +16,6 @@ class KepchupStaffMixin(LoginRequiredMixin, UserPassesTestMixin):
         return user.is_active and user.is_kepchup_staff
 
 
-
 class ExcelResponseMixin(object):
     filename = 'download'
     resource_class = None
