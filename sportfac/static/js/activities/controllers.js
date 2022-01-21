@@ -134,10 +134,10 @@ function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, Regi
 .controller('ActivityTimelineCtrl', ["$scope","$filter", "$modal", "CoursesService", 'uiCalendarConfig',
 function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
   'use strict';
-  var today = new Date();
-  var year = today.getFullYear();
-  var month = today.getMonth();
-  var day = today.getDate();
+  let today = new Date();
+  let year = today.getFullYear();
+  let month = today.getMonth();
+  let day = today.getDate();
 
   var modalwindow = $modal(
             {template: '/static/partials/activity-detail.html',
@@ -173,6 +173,7 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
     $scope.updateOthersEvents();
   });
 
+
   $scope.$watch('selectedActivity', function(){
     if (angular.isDefined($scope.selectedActivity)){
       $scope.updateAvailableEvents();
@@ -198,6 +199,7 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
       });
     };
     angular.forEach($scope.getRegistrations($scope.selectedChild), function(registration){
+      $scope.registeredEventsToFetch += 1;
       if (registration.status === 'valid'){
           CoursesService.get($scope.urls.course, registration.course).then(addToValidated);
       } else {
@@ -206,7 +208,6 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
 
     });
   };
-
 
   $scope.updateOthersEvents = function(){
     if (!$scope.registrations){
@@ -217,6 +218,7 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
     angular.forEach($scope.userChildren, function(child){
       if (child !== $scope.selectedChild){
         angular.forEach($scope.getRegistrations(child), function(registration){
+          $scope.othersRegisteredEventsToFetch += 1;
           CoursesService.get($scope.urls.course, registration.course).then(function(course){
             var events = course.toEvents("unavailable");
             angular.forEach(events, function(event){
@@ -243,8 +245,6 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
       });
     }
 
-    $scope.availableEvents.length = 0;
-
     var activityRegistered = false;
     angular.forEach($scope.selectedActivity.courses, function(course){
       if ((registeredCourses.indexOf(course.id) !== -1) && !$scope.canregistersameactivity) {
@@ -269,6 +269,7 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
       }, false);
 
       if (!registered && available){
+        $scope.availableEventsToFetch += 1;
         if (activityRegistered || overlapping){
           CoursesService.get($scope.urls.course, course.id).then(addUnavailableCourse);
           //addUnavailableCourse(course);
@@ -390,9 +391,44 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
   };
 
   $scope.othersRegisteredEvents = [];
+  $scope.othersRegisteredEventsToFetch = 0;
   $scope.registeredEvents = [];
+  $scope.registeredEventsToFetch = 0;
   $scope.availableEvents = [];
+  $scope.availableEventsToFetch = 0;
   $scope.eventSources = [$scope.registeredEvents, $scope.othersRegisteredEvents, $scope.availableEvents];
+
+   $scope.$watch('othersRegisteredEvents.length', function(newLength, old_length){
+    if (newLength === $scope.othersRegisteredEventsToFetch) {
+      alert('completed others');
+      $scope.othersRegisteredEventsToFetch = 0;
+    }
+  });
+
+  $scope.$watch('registeredEvents.length', function(newLength, old_length){
+    if (newLength === $scope.registeredEventsToFetch) {
+      alert('completed registered');
+      $scope.registeredEventsToFetch = 0;
+    }
+  });
+
+  $scope.$watch('availableEvents.length', function(newLength, old_length){
+    console.log('availableEvents.length: ' + newLength);
+    console.log('availableEventsToFetch: ' + $scope.availableEventsToFetch);
+    if (newLength === $scope.availableEventsToFetch) {
+      alert('completed available');
+      /*$scope.availableEventsToFetch = 0;
+      $scope.availableEvents.sort(function (event1, event2) {
+        return event1.course.start - event2.course.start;
+      });
+      alert('reordered');
+
+      $scope.weekagenda.fullCalendar('refetchEvents');
+      alert('refetched');*/
+
+    }
+  });
+
 }])
 
 
