@@ -270,11 +270,11 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
 
       if (!registered && available){
         if (activityRegistered || overlapping){
-          //CoursesService.get($scope.urls.course, course.id).then(addUnavailableCourse);
-          addUnavailableCourse(course);
+          CoursesService.get($scope.urls.course, course.id).then(addUnavailableCourse);
+          //addUnavailableCourse(course);
         } else {
-          //CoursesService.get($scope.urls.course, course.id).then(addAvailableCourse);
-          addAvailableCourse(course);
+          CoursesService.get($scope.urls.course, course.id).then(addAvailableCourse);
+          //addAvailableCourse(course);
 
         }
       }
