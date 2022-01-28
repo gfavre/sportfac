@@ -9,6 +9,7 @@ from .base import BackendTestBase
 
 class RegistrationsViewsTests(BackendTestBase):
     def setUp(self):
+        super(RegistrationsViewsTests, self).setUp()
         self.child = ChildFactory()
         self.course = CourseFactory()
         self.registration = RegistrationFactory(child=self.child, course=self.course)

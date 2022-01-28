@@ -86,7 +86,7 @@ class MailCreateViewTests(BackendTestBase):
         request = self.factory.post(self.url, data=data)
         request.user = self.manager
         request = add_middleware_to_request(request, SessionMiddleware)
-        request.session['mail-userids'] = [user.pk for user in self.other_users]
+        request.session['mail-userids'] = [str(user.pk) for user in self.other_users]
         request.session.save()
         mail_views.MailCreateView.as_view()(request)
         archive = MailArchive.objects.first()
@@ -100,7 +100,7 @@ class MailCreateViewTests(BackendTestBase):
         request = self.factory.post(self.url, data=data)
         request.user = self.manager
         request = add_middleware_to_request(request, SessionMiddleware)
-        request.session['mail-userids'] = [user.pk for user in self.other_users]
+        request.session['mail-userids'] = [str(user.pk) for user in self.other_users]
         request.session.save()
         mail_views.MailCreateView.as_view()(request)
         archive = MailArchive.objects.first()
@@ -116,7 +116,7 @@ class MailCreateViewTests(BackendTestBase):
         request = self.factory.post(self.url, data=data)
         request.user = self.manager
         request = add_middleware_to_request(request, SessionMiddleware)
-        request.session['mail-userids'] = [user.pk for user in self.other_users]
+        request.session['mail-userids'] = [str(user.pk) for user in self.other_users]
         request.session.save()
         mail_views.MailCreateView.as_view()(request)
         archive = MailArchive.objects.first()
@@ -132,8 +132,8 @@ class MailPreviewTest(BackendTestBase):
         self.instructors = FamilyUserFactory.create_batch(2)
         self.other_users = FamilyUserFactory.create_batch(4)
         self.course = CourseFactory(instructors=self.instructors)
-        self.archive = MailArchiveFactory(recipients=[user.pk for user in self.other_users],
-                                          bcc_recipients=[user.pk for user in FamilyUser.managers_objects.all()],)
+        self.archive = MailArchiveFactory(recipients=[str(user.pk) for user in self.other_users],
+                                          bcc_recipients=[str(user.pk) for user in FamilyUser.managers_objects.all()],)
         self.url = reverse('backend:custom-mail-custom-users-preview',)
 
     def test_no_archive(self):
@@ -237,8 +237,8 @@ class ParticipantsMailPreviewTest(BackendTestBase):
         self.year = SchoolYearFactory()
         self.children = ChildFactory.create_batch(10, school_year=self.year)
         self.registrations = [RegistrationFactory(course=self.course, child=child) for child in self.children]
-        self.archive = MailArchiveFactory(recipients=[child.family.pk for child in self.children],
-                                          bcc_recipients=[user.pk for user in self.instructors],)
+        self.archive = MailArchiveFactory(recipients=[str(child.family.pk) for child in self.children],
+                                          bcc_recipients=[str(user.pk) for user in self.instructors],)
         self.url = reverse('backend:mail-participants-custom-preview', kwargs={'course': self.course.pk})
 
     def test_no_archive(self):

@@ -4,3 +4,4 @@ coverage == 4.1b2
 mock == 2.0.0
 factory_boy >= 2.9.2
 psycopg2 == 2.7.3.2
+isort==4.3.21
