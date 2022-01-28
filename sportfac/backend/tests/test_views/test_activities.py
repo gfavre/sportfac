@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.urls import reverse
 
-from .base import BackendTestBase
 from activities.tests.factories import CourseFactory
+
+from .base import BackendTestBase
 
 
 class CourseViewsTests(BackendTestBase):
