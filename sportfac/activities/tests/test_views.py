@@ -1,8 +1,10 @@
 # -*- coding:utf-8 -*-
 import json
 
+from django.contrib.auth.models import AnonymousUser
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.contrib.messages.middleware import MessageMiddleware
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.test import RequestFactory
@@ -10,13 +12,14 @@ from django.test import RequestFactory
 import mock
 import faker
 
-from profiles.tests.factories import FamilyUserFactory, SchoolYearFactory, DEFAULT_PASS
 from mailer.models import MailArchive
 from mailer.tests.factories import MailArchiveFactory
-from registrations.tests.factories import ChildFactory, RegistrationFactory
+from profiles.tests.factories import FamilyUserFactory, SchoolYearFactory, DEFAULT_PASS
+from registrations.tests.factories import BillFactory, ChildFactory, RegistrationFactory
 from sportfac.utils import TenantTestCase as TestCase, add_middleware_to_request
 from .factories import ActivityFactory, CourseFactory
-from ..views import MailUsersView, CustomParticipantsCustomMailView, CustomMailPreview, MailCourseInstructorsView
+from ..views import (
+    MailUsersView, CustomParticipantsCustomMailView, CustomMailPreview, MailCourseInstructorsView, ActivityListView)
 
 
 fake = faker.Factory.create()
@@ -411,3 +414,44 @@ class MailCourseInstructorsViewTest(TestCase):
         request = add_middleware_to_request(request, MessageMiddleware)
         MailCourseInstructorsView.as_view()(request, course=self.course.pk)
         self.assertEqual(sendmail_method.call_count, self.course.instructors.count())
+
+
+class ActivityListViewTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.view = ActivityListView.as_view()
+        self.url = reverse('wizard_activities')
+        self.user = FamilyUserFactory()
+
+    def test_access_forbidden_if_registration_closed(self):
+        request = self.factory.get(self.url)
+        request.user = self.user
+        request.REGISTRATION_OPENED = False
+        with self.assertRaises(PermissionDenied):
+            self.view(request)
+
+    def test_access_forbidden_if_not_logged_in(self):
+        request = self.factory.get(self.url)
+        request.user = AnonymousUser()
+        request.REGISTRATION_OPENED = True
+        response = self.view(request)
+        response.client = self.client
+        self.assertRedirects(response, reverse('login') + '/?next=' + self.url)
+
+    def test_redirects_to_wizard_children_if_no_children_defined(self):
+        request = self.factory.get(self.url)
+        request.user = self.user
+        request.REGISTRATION_OPENED = True
+        response = self.view(request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('wizard_children'))
+
+    def test_redirects_to_billing_if_open_cc_payment(self):
+        ChildFactory(family=self.user)
+        BillFactory(family=self.user, status='waiting', payment_method='datatrans')
+        request = self.factory.get(self.url)
+        request.user = self.user
+        request.REGISTRATION_OPENED = True
+        response = self.view(request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('wizard_billing'))
