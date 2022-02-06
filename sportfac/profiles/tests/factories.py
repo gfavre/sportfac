@@ -30,6 +30,9 @@ class FamilyUserFactory(factory.DjangoModelFactory):
     password = make_password(DEFAULT_PASS)
     first_name = factory.lazy_attribute(lambda o: fake.first_name())
     last_name = factory.lazy_attribute(lambda o: fake.last_name())
+    address = factory.lazy_attribute(lambda o: fake.address())
     zipcode = factory.lazy_attribute(lambda o: fake.postcode())
     city = factory.lazy_attribute(lambda o: fake.city())
+
     country = 'CH'
+    private_phone = factory.lazy_attribute(lambda o: fake.phone_number())
