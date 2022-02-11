@@ -8,9 +8,9 @@ from django.urls import reverse
 
 from mock import patch
 
-from sportfac.utils import TenantTestCase as TestCase, add_middleware_to_request
+from sportfac.utils import TenantTestCase as TestCase
 from ..models import FamilyUser
-from ..views import WizardRegistrationView, RegistrationView
+from ..views import WizardRegistrationView, RegistrationView, AccountView
 from .factories import FamilyUserFactory
 
 
@@ -88,4 +88,20 @@ class RegistrationViewTests(BaseRegistrationTestMixin, UserDataTestCase):
 
 
 class AccountViewTests(TestCase):
-    pass
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = FamilyUserFactory()
+        self.url = reverse('profiles_account')
+        self.view = AccountView.as_view()
+        self.request = self.factory.get(self.url)
+        self.request.user = self.user
+
+    def test_access_forbidden_if_not_logged_in(self):
+        self.request.user = AnonymousUser()
+        response = self.view(self.request)
+        response.client = self.client
+        self.assertRedirects(response, reverse('login') + '/?next=' + self.url)
+
+    def test_get_returns_200(self):
+        response = self.view(self.request)
+        self.assertEqual(response.status_code, 200)

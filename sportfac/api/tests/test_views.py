@@ -1,8 +1,10 @@
 # -*- coding:utf-8 -*-
+import datetime
 import json
 import logging
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
+from django.test import override_settings
 
 import faker
 
@@ -29,12 +31,42 @@ class UserMixin(object):
 class ActivityAPITests(TenantTestCase):
     def setUp(self):
         super(ActivityAPITests, self).setUp()
-        self.activity = ActivityFactory()
+        self.school_year = 3
+        self.birth_date = fake.date_between(start_date='-10y', end_date='-5y')
+        self.course = CourseFactory(
+            schoolyear_min=self.school_year, schoolyear_max=self.school_year,
+            min_birth_date=self.birth_date, max_birth_date=self.birth_date
+        )
 
     def test_list(self):
         url = reverse("api:activity-list")
         response = self.tenant_client.get(url)
         self.assertEqual(response.status_code, 200)
+
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=True)
+    def test_filter_by_school_year(self):
+        overlap = CourseFactory(schoolyear_min=self.school_year - 1, schoolyear_max=self.school_year + 1)
+        out_of_range = CourseFactory(schoolyear_min=self.school_year + 1,
+                                     schoolyear_max=self.school_year + 2)
+        url = reverse("api:activity-list") + "?year={}".format(self.school_year)
+        response = self.tenant_client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
+
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False)
+    def test_filter_by_age(self):
+        too_young = CourseFactory(
+            min_birth_date=self.birth_date - datetime.timedelta(days=2),
+            max_birth_date=self.birth_date - datetime.timedelta(days=1)
+        )
+        too_old = CourseFactory(
+            min_birth_date=self.birth_date + datetime.timedelta(days=1),
+            max_birth_date=self.birth_date + datetime.timedelta(days=2)
+        )
+        url = reverse("api:activity-list") + "?birth_date={}".format(self.birth_date.isoformat())
+        response = self.tenant_client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
 
 
 class CoursesAPITests(TenantTestCase):
