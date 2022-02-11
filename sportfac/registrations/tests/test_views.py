@@ -9,7 +9,6 @@ from mock import patch
 
 from sportfac.utils import TenantTestCase as TestCase
 from appointments.tests.factories import AppointmentFactory
-from profiles.models import FamilyUser
 from profiles.tests.factories import FamilyUserFactory
 from ..models import Bill, Registration
 from ..views import WizardChildrenListView, RegisteredActivitiesListView, WizardBillingView
