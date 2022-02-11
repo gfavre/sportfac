@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-from datetime import timedelta
+import datetime
+
+from django.utils import timezone
+
 import factory.fuzzy
 
 from ..models import Appointment, AppointmentSlot
@@ -11,8 +14,8 @@ class AppointmentSlotFactory(factory.django.DjangoModelFactory):
 
     title = factory.Faker('bs')
     places = factory.fuzzy.FuzzyInteger(1, 5)
-    start = factory.Faker('future_datetime')
-    end = factory.lazy_attribute(lambda o: o.start + timedelta(hours=1))
+    start = factory.Faker('future_datetime', tzinfo=timezone.get_current_timezone())
+    end = factory.lazy_attribute(lambda o: o.start + datetime.timedelta(hours=1))
 
 
 class AppointmentFactory(factory.django.DjangoModelFactory):
