@@ -39,12 +39,48 @@ class RegistrationTestCase(TenantTestCase):
         # same child, same course: overlap
         self.assertTrue(registration1.overlap(registration1))
 
+    @override_settings(KEPCHUP_USE_DIFFERENTIATED_PRICES=False, KEPCHUP_LOCAL_ZIPCODES=['1272'])
+    def test_get_price_category_no_differentiated_prices(self):
+        self.user.zipcode = '1272'
+        course1 = CourseFactory()
+        course2 = CourseFactory(activity=course1.activity)
+        registration1 = RegistrationFactory(course=course1, child=self.child1)
+        registration2 = RegistrationFactory(course=course2, child=self.child2)
+        price, label = registration2.get_price_category()
+        self.assertEqual(price, course2.price)
+
+    @override_settings(KEPCHUP_USE_DIFFERENTIATED_PRICES=True, KEPCHUP_LOCAL_ZIPCODES=['1272'])
+    def test_price_category_for_normal_people(self):
+        self.user.zipcode = '1271'
+        course = CourseFactory()
+        registration = RegistrationFactory(course=course, child=self.child1)
+        price, label = registration.get_price_category()
+        self.assertEqual(price, course.price)
+
+    @override_settings(KEPCHUP_USE_DIFFERENTIATED_PRICES=True, KEPCHUP_LOCAL_ZIPCODES=['1272'])
+    def test_price_category_for_family(self):
+        self.user.zipcode = '1271'
+        course1 = CourseFactory()
+        course2 = CourseFactory(activity=course1.activity)
+        registration1 = RegistrationFactory(course=course1, child=self.child1)
+        registration2 = RegistrationFactory(course=course2, child=self.child2)
+        price, label = registration2.get_price_category()
+        self.assertEqual(price, course2.price_family)
+
+    @override_settings(KEPCHUP_USE_DIFFERENTIATED_PRICES=True, KEPCHUP_LOCAL_ZIPCODES=['1272'])
+    def test_price_category_for_local(self):
+        self.user.zipcode = '1272'
+        course = CourseFactory()
+        registration = RegistrationFactory(course=course, child=self.child1)
+        price, label = registration.get_price_category()
+        self.assertEqual(price, course.price_local)
+
     @override_settings(KEPCHUP_USE_DIFFERENTIATED_PRICES=True, KEPCHUP_LOCAL_ZIPCODES=['1272'])
     def test_price_category_for_local_siblings(self):
         self.user.zipcode = '1272'
         course1 = CourseFactory()
         course2 = CourseFactory(activity=course1.activity)
         registration1 = RegistrationFactory(course=course1, child=self.child1)
-        registration2 = RegistrationFactory(course=course1, child=self.child2)
+        registration2 = RegistrationFactory(course=course2, child=self.child2)
         price, label = registration2.get_price_category()
         self.assertEqual(price, course2.price_local_family)
