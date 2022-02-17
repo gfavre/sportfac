@@ -5,9 +5,16 @@ from sportfac.utils import TenantTestCase as TestCase
 from django.conf import settings
 from django.test import override_settings
 
+from mock import patch
+import faker
+
+from absences.models import Session
 from absences.tests.factories import SessionFactory
 from registrations.tests.factories import RegistrationFactory
+from ..models import Course
 from .factories import ActivityFactory, CourseFactory
+
+fake = faker.Faker()
 
 
 class ActivityTest(TestCase):
@@ -138,3 +145,98 @@ class CourseTest(TestCase):
         duration = self.course.duration
         self.assertEqual(duration.days, 3)
 
+    def test_full(self):
+        RegistrationFactory.create_batch(size=self.course.max_participants, course=self.course)
+        self.assertTrue(self.course.full)
+
+    def test_js_name(self):
+        self.assertTrue(len(self.course.get_js_name) > 0)
+
+    def test_has_issue(self):
+        RegistrationFactory.create_batch(size=self.course.max_participants + 1, course=self.course)
+        self.assertTrue(self.course.has_issue)
+
+    def test_has_participants(self):
+        self.assertFalse(self.course.has_participants)
+        RegistrationFactory(course=self.course)
+        self.assertTrue(self.course.has_participants)
+
+    def test_start_hours(self):
+        self.course.start_time_mon = '10:00'
+        self.course.start_time_tue = '10:00'
+        self.course.start_time_wed = '10:00'
+        self.course.start_time_thu = '10:00'
+        self.course.start_time_fri = '10:00'
+        self.course.start_time_sat = '10:00'
+        self.course.start_time_sun = '10:00'
+        self.assertEqual(len(self.course.start_hours), 7)
+
+    def test_is_course(self):
+        self.course.course_type = 'course'
+        self.assertTrue(self.course.is_course)
+        self.assertFalse(self.course.is_camp)
+        self.assertFalse(self.course.is_multi_course)
+
+    def test_is_camp(self):
+        self.course.course_type = 'camp'
+        self.assertFalse(self.course.is_course)
+        self.assertTrue(self.course.is_camp)
+        self.assertFalse(self.course.is_multi_course)
+
+    def test_is_multi_course(self):
+        self.course.course_type = 'multicourse'
+        self.assertFalse(self.course.is_course)
+        self.assertFalse(self.course.is_camp)
+        self.assertTrue(self.course.is_multi_course)
+
+    def test_add_session_fill_absences(self):
+        with patch.object(Session, 'fill_absences') as mock_fill_absences:
+            self.course.add_session(date(2022, 1, 1))
+            self.assertTrue(mock_fill_absences.called)
+
+    def test_add_session_creates_session(self):
+        self.course.add_session(date(2022, 1, 1))
+        self.assertEqual(Session.objects.count(), 1)
+        session = Session.objects.first()
+        self.assertEqual(session.course, self.course)
+
+    @override_settings(KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES=True)
+    def test_add_session_creates_session_related_to_activity(self):
+        self.course.add_session(date(2022, 1, 1))
+        self.assertEqual(Session.objects.count(), 1)
+        session = Session.objects.first()
+        self.assertEqual(session.activity, self.course.activity)
+        self.assertEqual(session.course, self.course)
+
+    @override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=True)
+    def test_add_session_update_course_dates(self):
+        adate = fake.future_date()
+        self.course.add_session(adate)
+        self.course.refresh_from_db()
+        self.assertEqual(self.course.end_date, adate)
+
+    def test_save_updates_participants(self):
+        with patch.object(Course, 'update_nb_participants') as mock_update_nb_participants:
+            self.course.save()
+            mock_update_nb_participants.assert_called_once()
+        self.course.refresh_from_db()
+
+    @override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=True)
+    def test_save_updates_dates_from_sessions(self):
+        with patch.object(Course, 'update_dates_from_sessions') as mock_update_dates_from_sessions:
+            self.course.save()
+            mock_update_dates_from_sessions.assert_called_once()
+
+    def test_save_updates_min_birth_date(self):
+        self.course.age_min = 5
+        self.course.start_date = date(2022, 1, 1)
+        self.course.min_birth_date = None
+        self.course.save()
+        self.assertEqual(self.course.min_birth_date, date(2017, 1, 1))
+
+    def test_save_updates_max_birth_date(self):
+        self.course.age_max = 10
+        self.course.start_date = date(2022, 1, 1)
+        self.course.max_birth_date = None
+        self.course.save()
+        self.assertEqual(self.course.max_birth_date, date(2011, 1, 1))
