@@ -240,3 +240,6 @@ class CourseTest(TestCase):
         self.course.max_birth_date = None
         self.course.save()
         self.assertEqual(self.course.max_birth_date, date(2011, 1, 1))
+
+    def test_str(self):
+        self.assertTrue(len(str(self.course)) > 0)

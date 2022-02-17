@@ -5,9 +5,9 @@ from django.contrib.auth.models import AnonymousUser
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.contrib.messages.middleware import MessageMiddleware
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.test import RequestFactory
+from django.urls import reverse
 
 import mock
 import faker
@@ -19,15 +19,17 @@ from registrations.tests.factories import BillFactory, ChildFactory, Registratio
 from sportfac.utils import TenantTestCase as TestCase, add_middleware_to_request
 from .factories import ActivityFactory, CourseFactory
 from ..views import (
-    MailUsersView, CustomParticipantsCustomMailView, CustomMailPreview, MailCourseInstructorsView, ActivityListView)
+    MailUsersView, CustomParticipantsCustomMailView, CustomMailPreview,
+    MailCourseInstructorsView, ActivityListView,
+    MyCoursesListView, MyCourseDetailView)
 
 
 fake = faker.Factory.create()
 
 
-class ActivityViewsTests(TestCase):
+class ActivityDetailViewsTests(TestCase):
     def setUp(self):
-        super(ActivityViewsTests, self).setUp()
+        super(ActivityDetailViewsTests, self).setUp()
         self.activity = ActivityFactory()
         self.user = FamilyUserFactory()
 
@@ -422,36 +424,91 @@ class ActivityListViewTest(TestCase):
         self.view = ActivityListView.as_view()
         self.url = reverse('wizard_activities')
         self.user = FamilyUserFactory()
+        self.child = ChildFactory(family=self.user)
+        self.request = self.factory.get(self.url)
+        self.request.user = self.user
+        self.request.REGISTRATION_OPENED = True
 
     def test_access_forbidden_if_registration_closed(self):
-        request = self.factory.get(self.url)
-        request.user = self.user
-        request.REGISTRATION_OPENED = False
+        self.request.REGISTRATION_OPENED = False
         with self.assertRaises(PermissionDenied):
-            self.view(request)
+            self.view(self.request)
 
     def test_access_forbidden_if_not_logged_in(self):
-        request = self.factory.get(self.url)
-        request.user = AnonymousUser()
-        request.REGISTRATION_OPENED = True
-        response = self.view(request)
+        self.request.user = AnonymousUser()
+        response = self.view(self.request)
         response.client = self.client
         self.assertRedirects(response, reverse('login') + '/?next=' + self.url)
 
     def test_redirects_to_wizard_children_if_no_children_defined(self):
-        request = self.factory.get(self.url)
-        request.user = self.user
-        request.REGISTRATION_OPENED = True
-        response = self.view(request)
+        self.child.delete()
+        response = self.view(self.request)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('wizard_children'))
 
     def test_redirects_to_billing_if_open_cc_payment(self):
-        ChildFactory(family=self.user)
         BillFactory(family=self.user, status='waiting', payment_method='datatrans')
-        request = self.factory.get(self.url)
-        request.user = self.user
-        request.REGISTRATION_OPENED = True
-        response = self.view(request)
+        response = self.view(self.request)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('wizard_billing'))
+
+    def test_get(self):
+        response = self.view(self.request)
+        self.assertEqual(response.status_code, 200)
+
+
+class MyCoursesListViewTest(TestCase):
+    def setUp(self):
+        super(MyCoursesListViewTest, self).setUp()
+        self.factory = RequestFactory()
+        self.instructor = FamilyUserFactory()
+        self.course = CourseFactory(instructors=[self.instructor])
+        self.url = reverse('activities:my-courses')
+        self.view = MyCoursesListView.as_view()
+
+    def test_access_forbidden_for_non_instructors(self):
+        user = FamilyUserFactory()
+        request = self.factory.get(self.url)
+        request.user = user
+        response = self.view(request)
+        self.assertEqual(response.status_code, 302)
+
+    def test_access_allowed_for_instructors(self):
+        other_course = CourseFactory()
+        request = self.factory.get(self.url)
+        request.user = self.instructor
+        response = self.view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(self.course, response.context_data['object_list'])
+        self.assertNotIn(other_course, response.context_data['object_list'])
+
+
+class MyCourseDetailViewTest(TestCase):
+    def setUp(self):
+        super(MyCourseDetailViewTest, self).setUp()
+        self.factory = RequestFactory()
+        self.instructor = FamilyUserFactory()
+        self.course = CourseFactory(instructors=[self.instructor])
+        self.url = reverse('activities:course-detail', kwargs={'course': self.course.pk})
+        self.view = MyCourseDetailView.as_view()
+
+    def test_access_forbidden_for_non_instructors(self):
+        user = FamilyUserFactory()
+        request = self.factory.get(self.url)
+        request.user = user
+        response = self.view(request, course=self.course.pk)
+        self.assertEqual(response.status_code, 302)
+
+    def test_access_forbidden_for_non_instructors_of_this_course(self):
+        instructor = FamilyUserFactory()
+        CourseFactory(instructors=[instructor])
+        request = self.factory.get(self.url)
+        request.user = instructor
+        response = self.view(request, course=self.course.pk)
+        self.assertEqual(response.status_code, 302)
+
+    def test_get(self):
+        request = self.factory.get(self.url)
+        request.user = self.instructor
+        response = self.view(request, course=self.course.pk)
+        self.assertEqual(response.status_code, 200)
