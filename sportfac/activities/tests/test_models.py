@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from datetime import date, time
-from sportfac.utils import TenantTestCase as TestCase
 
 from django.conf import settings
 from django.test import override_settings
@@ -11,6 +10,7 @@ import faker
 from absences.models import Session
 from absences.tests.factories import SessionFactory
 from registrations.tests.factories import RegistrationFactory
+from sportfac.utils import TenantTestCase as TestCase
 from ..models import Course
 from .factories import ActivityFactory, CourseFactory
 

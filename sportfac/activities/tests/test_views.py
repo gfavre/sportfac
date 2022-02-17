@@ -512,3 +512,8 @@ class MyCourseDetailViewTest(TestCase):
         request.user = self.instructor
         response = self.view(request, course=self.course.pk)
         self.assertEqual(response.status_code, 200)
+
+    def test_template(self):
+        self.client.force_login(user=self.instructor)
+        response = self.client.get(self.url)
+        self.assertTemplateUsed(response, 'activities/course_detail.html')

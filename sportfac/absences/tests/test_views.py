@@ -10,9 +10,10 @@ from mock import patch
 from activities.tests.factories import CourseFactory
 from backend.utils import AbsencePDFRenderer
 from profiles.tests.factories import FamilyUserFactory
+from registrations.tests.factories import RegistrationFactory
 from ..models import Session
 from ..views import AbsenceCourseView
-from .factories import AbsenceFactory
+from .factories import AbsenceFactory, SessionFactory
 
 
 class AbsenceCourseViewTest(TestCase):
@@ -74,3 +75,19 @@ class AbsenceCourseViewTest(TestCase):
         self.view(request, course=self.course.pk)
         self.course.refresh_from_db()
         self.assertEqual(self.course.end_date, date(2031, 1, 1))
+
+    @override_settings(
+        KEPCHUP_BIB_NUMBERS=True,
+        KEPCHUP_REGISTRATION_LEVELS=True,
+        KEPCHUP_DISPLAY_CAR_NUMBER=True,
+        KEPCHUP_DISPLAY_REGISTRATION_NOTE=True,
+    )
+    def test_template(self):
+        registrations = RegistrationFactory.create_batch(5, course=self.course)
+        sessions = SessionFactory.create_batch(3, course=self.course)
+        for reg in registrations:
+            for session in sessions:
+                AbsenceFactory(session=session, child=reg.child)
+        self.client.force_login(user=self.instructor)
+        response = self.client.get(self.url)
+        self.assertTemplateUsed(response, 'absences/absences.html')
