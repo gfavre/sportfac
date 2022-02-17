@@ -2,10 +2,10 @@ from datetime import time
 
 from django.test import override_settings
 
-from .factories import ChildFactory, RegistrationFactory
-from activities.tests.factories import CourseFactory
+from activities.tests.factories import CourseFactory, AllocationAccountFactory
 from profiles.tests.factories import FamilyUserFactory
 from sportfac.utils import TenantTestCase
+from .factories import ChildFactory, RegistrationFactory
 
 
 class RegistrationTestCase(TenantTestCase):
@@ -84,3 +84,21 @@ class RegistrationTestCase(TenantTestCase):
         registration2 = RegistrationFactory(course=course2, child=self.child2)
         price, label = registration2.get_price_category()
         self.assertEqual(price, course2.price_local_family)
+
+    @override_settings(KEPCHUP_ENABLE_ALLOCATION_ACCOUNTS=True)
+    def test_save_sets_allocation_account(self):
+        account = AllocationAccountFactory()
+        course = CourseFactory(activity__allocation_account=account)
+        registration = RegistrationFactory(course=course)
+        registration.allocation_account = None
+        registration.save()
+        registration.refresh_from_db()
+        self.assertEqual(registration.allocation_account, account)
+
+    @override_settings(KEPCHUP_NO_PAYMENT=False)
+    def test_save_sets_price(self):
+        registration = RegistrationFactory()
+        registration.price = None
+        registration.save()
+        registration.refresh_from_db()
+        self.assertEqual(registration.price, registration.course.price)

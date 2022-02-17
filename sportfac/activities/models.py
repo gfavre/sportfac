@@ -318,7 +318,7 @@ class Course(TimeStampedModel):
                     return self.sessions.last().date + timedelta(days=1) - self.sessions.first().date
                 return None
             else:
-                return self.end_date - self.start_date
+                return (self.end_date - self.start_date) + timedelta(days=1)
         elif self.is_multi_course:
             return max([
                 datetime.combine(date.today(), self.end_time_mon or time(0, 0)) - datetime.combine(date.today(), self.start_time_mon or time(0, 0)),
