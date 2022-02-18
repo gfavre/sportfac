@@ -13,6 +13,24 @@ from model_utils.models import StatusModel, TimeStampedModel
 
 
 class DatatransTransaction(TimeStampedModel, StatusModel):
+    # see: https://docs.datatrans.ch/docs/payment-methods
+    METHODS = Choices(
+        ('AZP', "Amazon Pay"),
+        ('AMX', "American Express"),
+        ('APL', "Apple Pay"),
+        ('PAY', "Google Pay"),
+        ('KLN', "Klarna"),
+        ('MAU', "Maestro"),
+        ('ECA', "Mastercard"),
+        ('PAP', "PayPal"),
+        ('PFC', "PostFinance Card"),
+        ('PEF', "PostFinance E-Finance"),
+        ('REK', "Reka"),
+        ('SAM', "Samsung Pay"),
+        ('ESY', "Swisscom Pay"),
+        ('TWI', "Twint"),
+        ('VIS', "Visa"),
+    )
     STATUS = Choices(
         ('initialized', _("Initialized")),  # request just opened
         ("challenge_required", _("Challenge required")),
@@ -24,11 +42,12 @@ class DatatransTransaction(TimeStampedModel, StatusModel):
         ("transmitted", _("Transmitted")),  # The final successful status for twint
         ("failed", _("Failed")),
     )
+    expiration = models.DateTimeField(null=True)
     id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
     invoice = models.ForeignKey('registrations.Bill', related_name='datatrans_transactions')
+    payment_method = models.CharField(max_length=3, choices=METHODS, default=METHODS.TWI)
     transaction_id = models.BigIntegerField(db_index=True)
     webhook = JSONField(null=True, blank=True)
-    expiration = models.DateTimeField(null=True)
 
     class Meta:
         ordering = ('-expiration',)

@@ -28,6 +28,8 @@ class DatatransWebhookView(APIView):
                                         transaction_id=data.get('transactionId'), invoice=invoice)
         if 'status' in data:
             transaction.status = data.get('status')
+        if 'paymentMethod' in data:
+            transaction.payment_method = data.get('paymentMethod')
         transaction.webhook = data
         transaction.update_invoice()
         transaction.save()
