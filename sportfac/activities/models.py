@@ -143,8 +143,7 @@ class AllocationAccount(TimeStampedModel):
     def get_delete_url(self):
         return reverse('backend:allocation-delete', kwargs={'pk': self.pk})
 
-    def get_registrations(self, start=None, end=None):
-        kwargs = {}
+    def get_registrations(self, start=None, end=None, **kwargs):
         if start:
             kwargs['created__gte'] = start
         if end:

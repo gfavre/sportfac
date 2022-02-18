@@ -12,6 +12,7 @@ except ImportError:  # For Python 3
 
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
+from django.conf import settings
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponse
 from django.utils.safestring import mark_safe
@@ -23,6 +24,7 @@ from dateutil.relativedelta import relativedelta
 
 from activities.models import AllocationAccount
 from activities.forms import AllocationAccountForm
+from payments.models import Payment
 from .mixins import BackendMixin
 
 
@@ -54,6 +56,19 @@ class AllocationAccountReportView(BackendMixin, ListView):
         context['object_list'] = AllocationAccount.objects.prefetch_related(
             'registrations', 'registrations__bill', 'registrations__course', 'registrations__course__activity',
             'registrations__bill__datatrans_transactions',)
+
+        # 1. split by payment method
+        #    we could create a list of dicts
+        for method in settings.DATATRANS_PAYMENT_METHODS:
+            method_name = getattr(Payment.METHODS, method)
+            method_list = []
+            for allocation in context['object_list']:
+                if allocation.registrations.filter(bill__payment_method=method_name).exists():
+                    method_list.append(allocation)
+            context[method_name] = method_list
+
+        # 2. split by allocation account
+
 
         for allocation_account in context['object_list']:
             registrations = allocation_account.get_registrations(context['start'], context['end'])

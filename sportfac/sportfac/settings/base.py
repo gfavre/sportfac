@@ -633,7 +633,7 @@ KEPCHUP_USE_APPOINTMENTS = False
 DATATRANS_API_URL = env.url('DATATRANS_API_URL', default='https://api.sandbox.datatrans.com/')
 DATATRANS_PAY_URL = env.url('DATATRANS_PAY_URL', default='https://pay.sandbox.datatrans.com/')
 # See: https://api-reference.datatrans.ch/#operation/init
-DATATRANS_PAYMENT_METHODS = env.list('DATATRANS_PAYMENT_METHODS', default=['TWI', 'VIS', 'ECA'])
+DATATRANS_PAYMENT_METHODS = env.list('DATATRANS_PAYMENT_METHODS', default=['ECA', 'TWI', 'VIS'])
 DATATRANS_USER = env.str('DATATRANS_USER', default='')
 DATATRANS_PASSWORD = env.str('DATATRANS_PASSWORD', default='')
 
