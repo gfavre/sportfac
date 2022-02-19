@@ -54,20 +54,16 @@
   {% formrow form.activity form.instructors form.number %}
 {% endif %}
 
-{% if NO_PAYMENT %}
-  {% formrow form.number_of_sessions form.day %}
-{% else %}
-  {% if USE_DIFFERENTIATED_PRICES %}
-    <fieldset>
-      <legend>{% trans "Pricing" %}</legend>
 
+{% if not NO_PAYMENT and USE_DIFFERENTIATED_PRICES %}
+  <fieldset>
+    <legend>{% trans "Pricing" %}</legend>
     {% formrow form.price form.price_local form.price_family  form.price_local_family %}
     {% formrow form.price_description %}
-    </fieldset>
-    <hr>
-  {% else %}
-    {% formrow form.price form.price_description %}
-  {% endif %}
+  </fieldset>
+  <hr>
+{% else %}
+  {% formrow form.price form.price_description %}
 {% endif %}
 
 {% if EXPLICIT_SESSION_DATES %}
