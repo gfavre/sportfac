@@ -58,7 +58,12 @@ class CourseForm(forms.ModelForm):
         fields = ('course_type', 'activity', 'name', 'number', 'instructors',
                   'price', 'price_family', 'price_local_family', 'price_local', 'price_description',
                   'number_of_sessions', 'day', 'start_date', 'end_date',
-                  'start_time', 'end_time', 'place', 'min_participants',
+                  'start_time', 'end_time',
+                  'start_time_mon', 'end_time_mon', 'start_time_tue', 'end_time_tue',
+                  'start_time_wed', 'end_time_wed', 'start_time_thu', 'end_time_thu',
+                  'start_time_fri', 'end_time_fri', 'start_time_sat', 'end_time_sat',
+                  'start_time_sun', 'end_time_sun',
+                  'place', 'min_participants',
                   'max_participants', 'schoolyear_min', 'schoolyear_max', 'age_min', 'age_max',
                   'comments',
                   'uptodate', 'announced_js', 'visible', 'extra',)

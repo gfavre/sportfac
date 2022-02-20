@@ -158,7 +158,8 @@ KEPCHUP_ALTERNATIVE_STEPS_NAMING = True
 KEPCHUP_SPLASH_PAGE = True
 KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = ['first_name', 'last_name', 'school_year', 'school']
 KEPCHUP_REGISTER_ACCOUNTS_AT_ANY_TIME = True
-KEPCHUP_EXPLICIT_SESSION_DATES = True
+KEPCHUP_EXPLICIT_SESSION_DATES = False
+
 KEPCHUP_ZIPCODE_RESTRICTION = [
     ['1277', 'Arnex-sur-Nyon'], ['1273', 'Arzier-Le Muids'], ['1269', 'Bassins'], ['1268', 'Begnins'],
     ['1279', 'Bogis-Bossey'], ['1277', 'Borex'], ['1195', 'Bursinel'], ['1183', 'Bursins'],
@@ -203,7 +204,7 @@ KEPCHUP_NO_PAYMENT = False
 KEPCHUP_DISPLAY_FREE_WHEN_PRICE_IS_0 = False
 # wire_transfer, datatrans or none
 KEPCHUP_PAYMENT_METHOD = 'wire_transfer'
-KEPCHUP_USE_DIFFERENTIATED_PRICES = True
+KEPCHUP_USE_DIFFERENTIATED_PRICES = False
 KEPCHUP_LOCAL_ZIPCODES = ['1814', '1272']
 
 

@@ -69,7 +69,10 @@
 {% if EXPLICIT_SESSION_DATES %}
   {% formrow form.session_dates %}
 {% else %}
-  {% formrow form.number_of_sessions form.day form.start_date form.end_date %}
+  <div class="course-visible camp-hidden multicourse-hidden">
+  {% formrow form.number_of_sessions form.day %}
+  </div>
+  {% formrow form.start_date form.end_date %}
 {% endif %}
 <div class="course-visible camp-hidden multicourse-hidden">{% formrow form.start_time form.end_time %}</div>
 <div class="multicourse-visible camp-hidden course-hidden">

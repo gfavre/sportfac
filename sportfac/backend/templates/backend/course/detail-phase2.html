@@ -69,8 +69,9 @@
           <dt>{% trans "Comments" %}</dt>
           <dd>{{ course.comments|safe }}</dd>
         {% endif %}
-        <dt>{% trans "Number of sessions" %}</dt>
-        <dd>{{ course.number_of_sessions }} cours</dd>
+
+        {% if course.is_course %}<dt>{% trans "Number of sessions" %}</dt><dd>{{ course.number_of_sessions }} cours</dd>{% endif %}
+
         {% if not NO_PAYMENT %}
           <dt>{% trans "Price" %}</dt>
           <dd>
