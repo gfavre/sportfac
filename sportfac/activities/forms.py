@@ -223,7 +223,7 @@ class ActivityForm(forms.ModelForm):
         self.helper.layout = Layout(
             'name',
             'number',
-            settings.KEPCHUP_ENABLE_ALLOCATION_ACCOUNTS and 'allocation_account' or '',
+            settings.KEPCHUP_ENABLE_ALLOCATION_ACCOUNTS and 'allocation_account' or None,
             'description',
             'informations',
         )
