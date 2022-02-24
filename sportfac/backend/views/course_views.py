@@ -79,10 +79,9 @@ class CourseDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
 
     def delete(self, request, *args, **kwargs):
         identifier = self.get_object().short_name
-        messages.add_message(self.request, messages.SUCCESS,
-                             _("Course %(identifier)s has been deleted.") % {
-                                 'identifier': identifier
-                             })
+        messages.success(self.request,
+                         _("Course %(identifier)s has been deleted.") % {
+                             'identifier': identifier })
         return super(CourseDeleteView, self).delete(request, *args, **kwargs)
 
 
@@ -176,8 +175,8 @@ class CourseAbsenceView(BackendMixin, DetailView):
                 if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
                     session.update_courses_dates()
                 if created:
-                    messages.add_message(self.request, messages.SUCCESS,
-                                         _("Session %s has been added.") % session.date.strftime('%d.%m.%Y'))
+                    messages.success(self.request,
+                                     _("Session %s has been added.") % session.date.strftime('%d.%m.%Y'))
 
         return HttpResponseRedirect(course.get_backend_absences_url())
 
@@ -310,9 +309,8 @@ class CoursesAbsenceView(BackendMixin, ListView):
                 session.fill_absences()
                 if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
                     session.update_courses_dates()
-            if created:
-                messages.add_message(self.request, messages.SUCCESS,
-                                     _("Session %s has been added.") % session.date.strftime('%d.%m.%Y'))
+                if created:
+                    messages.success(self.request, _("Session %s has been added.") % session.date.strftime('%d.%m.%Y'))
         params = '&'.join(['c={}'.format(course.id) for course in courses])
         return HttpResponseRedirect(reverse('backend:courses-absence') + '?' + params)
 

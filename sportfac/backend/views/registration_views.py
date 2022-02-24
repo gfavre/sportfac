@@ -152,7 +152,7 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
             'course': self.instance.course.short_name
         }
         send_confirmation = form_list[-1].cleaned_data.get('send_confirmation', False)
-        messages.add_message(self.request, messages.SUCCESS, message)
+        messages.success(self.request, message)
         response = HttpResponseRedirect(self.instance.course.get_backend_url())
         if settings.KEPCHUP_NO_PAYMENT:
             self.instance.set_confirmed(send_confirmation=send_confirmation)
@@ -294,8 +294,7 @@ class RegistrationDeleteView(BackendMixin, DeleteView):
             # The registration for child and course existed previously and
             # was already canceled. We do not need to cancel it again
             self.object.delete()
-        messages.add_message(self.request, messages.SUCCESS,
-                             _("Registration has been canceled."))
+        messages.success(self.request, _("Registration has been canceled."))
         return HttpResponseRedirect(success_url)
 
 

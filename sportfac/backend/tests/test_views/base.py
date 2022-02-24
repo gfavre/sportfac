@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
+from datetime import timedelta
+
 from django.test.client import RequestFactory
+from django.utils.timezone import now
 
 import faker
 
@@ -8,6 +11,13 @@ from sportfac.utils import TenantTestCase
 
 
 fake = faker.Factory.create()
+
+
+def fake_registrations_open_middleware(request):
+    request.REGISTRATION_START = now() - timedelta(days=1)
+    request.REGISTRATION_END = now() + timedelta(days=1)
+    request.REGISTRATION_OPENED = True
+    request.PHASE = 3
 
 
 class BackendTestBase(TenantTestCase):

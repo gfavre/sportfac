@@ -79,7 +79,7 @@ class ActivityAbsenceView(BackendMixin, DetailView):
                         msg.append(_("Session of %(date)s for %(course)s has been added.") % {
                                                  'date': session.date.strftime('%d.%m.%Y'),
                                                  'course': course.number})
-            messages.add_message(self.request, messages.SUCCESS, mark_safe('<br>'.join(msg)))
+            messages.success(self.request, mark_safe('<br>'.join(msg)))
 
         return HttpResponseRedirect(activity.backend_absences_url)
 
@@ -186,10 +186,11 @@ class ActivityDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
     template_name = 'backend/activity/confirm_delete.html'
     
     def delete(self, request, *args, **kwargs):
+        # noinspection PyAttributeOutsideInit
         self.object = self.get_object()
         identifier = self.get_object().number
-        messages.add_message(self.request, messages.SUCCESS,
-                             _("Activity %(identifier)s has been deleted.") % {
-                                'identifier': identifier
-                             })
+        messages.success(self.request,
+                         _("Activity %(identifier)s has been deleted.") % {
+                            'identifier': identifier
+                         })
         return super(ActivityDeleteView, self).delete(request, *args, **kwargs)

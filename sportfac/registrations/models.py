@@ -123,6 +123,9 @@ class Registration(TimeStampedModel, StatusModel):
                 child=self.child, session=future_session,
             ).delete()
 
+    def get_backend_url(self):
+        return reverse('backend:registration-detail', kwargs={'pk': self.pk})
+
     def get_delete_url(self):
         return reverse('backend:registration-delete', kwargs={'pk': self.pk})
 
@@ -372,6 +375,9 @@ class Bill(TimeStampedModel, StatusModel):
         return reverse('backend:bill-detail', kwargs={'pk': self.pk})
 
     def get_pay_url(self):
+        return reverse('backend:bill-update', kwargs={'pk': self.pk})
+
+    def get_update_url(self):
         return reverse('backend:bill-update', kwargs={'pk': self.pk})
 
     @transaction.atomic

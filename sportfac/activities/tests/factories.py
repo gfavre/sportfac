@@ -28,6 +28,8 @@ class ActivityFactory(factory.DjangoModelFactory):
 
     number = factory.Sequence(lambda x: "{0}".format(x))
     name = factory.lazy_attribute(lambda o: fake.word())
+    description = factory.lazy_attribute(lambda o: fake.text())
+    informations = factory.lazy_attribute(lambda o: fake.text())
 
 
 class CourseFactory(factory.DjangoModelFactory):
@@ -57,9 +59,12 @@ class CourseFactory(factory.DjangoModelFactory):
     price_local = factory.fuzzy.FuzzyInteger(1, 100)
     price_family = factory.fuzzy.FuzzyInteger(1, 100)
     price_local_family = factory.fuzzy.FuzzyInteger(1, 100)
-
+    price_description = factory.lazy_attribute(lambda o: fake.text())
     age_min = factory.fuzzy.FuzzyInteger(settings.KEPCHUP_AGES[0], settings.KEPCHUP_AGES[-1] - 1)
     age_max = factory.LazyAttribute(lambda o: o.age_min + 1)
+
+    comments = factory.lazy_attribute(lambda o: fake.text())
+
 
     @factory.post_generation
     def instructors(self, create, extracted, **kwargs):
