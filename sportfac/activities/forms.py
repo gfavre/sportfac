@@ -101,6 +101,7 @@ class CourseForm(forms.ModelForm):
         else:
             self.fields['price'].required = True
         if not settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
+            self.fields.pop('local_city_override')
             self.fields.pop('price_family')
             self.fields.pop('price_local_family')
             self.fields.pop('price_local')
@@ -109,8 +110,6 @@ class CourseForm(forms.ModelForm):
             self.fields['price_family'].required = True
             self.fields['price_local_family'].required = True
             self.fields['price_local'].required = True
-        if not settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
-            self.fields.pop('local_city_override')
 
     def save(self, commit=True):
         instance = super(CourseForm, self).save(commit=commit)
@@ -154,6 +153,7 @@ class ExplicitDatesCourseForm(CourseForm):
     class Meta:
         model = Course
         fields = ('course_type', 'activity', 'name', 'number', 'instructors',
+                  'local_city_override',
                   'price', 'price_family', 'price_local_family', 'price_local', 'price_description',
                   'start_time', 'end_time',
                   'start_time_mon', 'end_time_mon', 'start_time_tue', 'end_time_tue',
