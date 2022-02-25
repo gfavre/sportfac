@@ -7,11 +7,11 @@ from django.forms.widgets import TextInput
 from django.utils.translation import ugettext as _
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit
+from crispy_forms.layout import Layout
 import floppyforms.__future__ as forms
 
 from backend.forms import Select2Widget, Select2MultipleWidget, DatePickerInput, TimePickerInput, MultiDateInput
-from profiles.models import FamilyUser
+from profiles.models import FamilyUser, City
 from .models import Activity, AllocationAccount, Course, ExtraNeed, PaySlip
 
 
@@ -53,9 +53,17 @@ class CourseForm(forms.ModelForm):
                                            required=False,
                                            widget=Select2MultipleWidget())
 
+    local_city_override = forms.ModelMultipleChoiceField(
+        label=_("Local city override"),
+        queryset=City.objects.all(),
+        widget=Select2MultipleWidget(),
+        required=False,
+    )
+
     class Meta:
         model = Course
         fields = ('course_type', 'activity', 'name', 'number', 'instructors',
+                  'local_city_override',
                   'price', 'price_family', 'price_local_family', 'price_local', 'price_description',
                   'number_of_sessions', 'day', 'start_date', 'end_date',
                   'start_time', 'end_time',
@@ -99,6 +107,8 @@ class CourseForm(forms.ModelForm):
             self.fields['price_family'].required = True
             self.fields['price_local_family'].required = True
             self.fields['price_local'].required = True
+        if not settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
+            self.fields.pop('local_city_override')
 
     def save(self, commit=True):
         instance = super(CourseForm, self).save(commit=commit)

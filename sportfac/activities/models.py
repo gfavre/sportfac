@@ -189,6 +189,7 @@ class Course(TimeStampedModel):
     instructors = models.ManyToManyField('profiles.FamilyUser', verbose_name=_("Instructors"),
                                          related_name='course', through='CoursesInstructors')
 
+    local_city_override = models.ManyToManyField(to='profiles.City', verbose_name=_("Local city override"))
     price = models.DecimalField(max_digits=5, decimal_places=2, verbose_name=_("Price"), null=True, blank=True)
     price_local = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True,
                                       verbose_name=_("Price for local people"))

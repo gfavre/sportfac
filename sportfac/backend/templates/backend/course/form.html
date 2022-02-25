@@ -58,6 +58,7 @@
 {% if not NO_PAYMENT and USE_DIFFERENTIATED_PRICES %}
   <fieldset>
     <legend>{% trans "Pricing" %}</legend>
+    {% formrow form.local_city_override %}
     {% formrow form.price form.price_local form.price_family  form.price_local_family %}
     {% formrow form.price_description %}
   </fieldset>
