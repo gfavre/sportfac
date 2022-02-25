@@ -54,10 +54,10 @@ class CourseForm(forms.ModelForm):
                                            widget=Select2MultipleWidget())
 
     local_city_override = forms.ModelMultipleChoiceField(
-        label=_("Local city override"),
         queryset=City.objects.all(),
         widget=Select2MultipleWidget(),
         required=False,
+        label=_("Local city override")
     )
 
     class Meta:
@@ -78,9 +78,11 @@ class CourseForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(CourseForm, self).__init__(*args, **kwargs)
+        self.fields['local_city_override'].help_text = \
+            _("If empty will use: %s") % ', '.join(settings.KEPCHUP_LOCAL_ZIPCODES)
         self._filter_limitations()
         self._filter_price_field()
-
+        
     def _filter_limitations(self):
         if settings.KEPCHUP_LIMIT_BY_SCHOOL_YEAR:
             self.fields.pop('age_min')

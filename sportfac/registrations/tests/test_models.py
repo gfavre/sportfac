@@ -3,7 +3,7 @@ from datetime import time
 from django.test import override_settings
 
 from activities.tests.factories import CourseFactory, AllocationAccountFactory
-from profiles.tests.factories import FamilyUserFactory
+from profiles.tests.factories import CityFactory, FamilyUserFactory
 from sportfac.utils import TenantTestCase
 from .factories import ChildFactory, RegistrationFactory
 
@@ -71,6 +71,16 @@ class RegistrationTestCase(TenantTestCase):
     def test_price_category_for_local(self):
         self.user.zipcode = '1272'
         course = CourseFactory()
+        registration = RegistrationFactory(course=course, child=self.child1)
+        price, label = registration.get_price_category()
+        self.assertEqual(price, course.price_local)
+
+    @override_settings(KEPCHUP_USE_DIFFERENTIATED_PRICES=True)
+    def test_price_category_for_local_with_override(self):
+        city = CityFactory()
+        self.user.zipcode = city.zipcode
+        course = CourseFactory()
+        course.local_city_override.add(city)
         registration = RegistrationFactory(course=course, child=self.child1)
         price, label = registration.get_price_category()
         self.assertEqual(price, course.price_local)

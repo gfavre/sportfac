@@ -86,6 +86,14 @@ class Registration(TimeStampedModel, StatusModel):
         return sum([extra.price_modifier for extra in self.extra_infos.all()]) != 0
 
     @property
+    def is_local_pricing(self):
+        if self.course.local_city_override.exists():
+            local_zipcodes = self.course.local_city_override.values_list('zipcode', flat=True)
+        else:
+            local_zipcodes = settings.KEPCHUP_LOCAL_ZIPCODES
+        return self.child.family.zipcode in local_zipcodes
+
+    @property
     def update_url(self):
         return self.get_update_url()
 
@@ -151,13 +159,13 @@ class Registration(TimeStampedModel, StatusModel):
 
             if same_family_regs.exists():
                 # This child has a sibling, registered to the same activity => special rate
-                if self.child.family.zipcode in settings.KEPCHUP_LOCAL_ZIPCODES:
+                if self.is_local_pricing:
                     # tarif indigène
                     return self.course.price_local_family, Course._meta.get_field('price_local_family').verbose_name
                 else:
                     return self.course.price_family, Course._meta.get_field('price_family').verbose_name
             else:
-                if self.child.family.zipcode in settings.KEPCHUP_LOCAL_ZIPCODES:
+                if self.is_local_pricing:
                     # tarif indigène
                     return self.course.price_local, Course._meta.get_field('price_local').verbose_name
                 else:

@@ -6,7 +6,7 @@ import factory.fuzzy
 import faker
 
 from activities.models import SCHOOL_YEARS
-from profiles.models import FamilyUser, SchoolYear
+from profiles.models import City, FamilyUser, SchoolYear
 
 
 YEARS = [year for (year, name) in SCHOOL_YEARS]
@@ -36,3 +36,11 @@ class FamilyUserFactory(factory.DjangoModelFactory):
 
     country = 'CH'
     private_phone = factory.lazy_attribute(lambda o: fake.phone_number())
+
+
+class CityFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = City
+
+    zipcode = factory.lazy_attribute(lambda o: fake.postcode())
+    name = factory.lazy_attribute(lambda o: fake.city())
