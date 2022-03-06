@@ -49,7 +49,7 @@ class AcceptTermsForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(AcceptTermsForm, self).__init__(*args, **kwargs)
         self.fields['accept'].label = mark_safe(
-            _("""I've read and agree to <a href="%s"> terms and conditions</a>""") % reverse('terms')
+            _("""I've read and agree to the full <a href="%s">terms and conditions</a>""") % reverse('terms')
         )
 
 
