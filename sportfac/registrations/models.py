@@ -53,8 +53,9 @@ class Registration(TimeStampedModel, StatusModel):
                              on_delete=models.SET_NULL)
     paid = models.BooleanField(default=False, verbose_name=_("Has paid"))
     price = models.PositiveIntegerField(null=True, blank=True)
-    allocation_account = models.ForeignKey('activities.AllocationAccount', null=True, blank=True, related_name='registrations',
-                                           verbose_name=_("Allocation account"))
+    allocation_account = models.ForeignKey(
+        'activities.AllocationAccount', null=True, blank=True, related_name='registrations',
+        verbose_name=_("Allocation account"))
     transport = models.ForeignKey('Transport', related_name='participants', null=True, blank=True,
                                   verbose_name=_("Transport information"),
                                   on_delete=models.SET_NULL)

@@ -76,7 +76,7 @@
           }
         }, cb);
 
-        $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
+        $('#reportrange').on('apply.daterangepicker', function (ev, picker) {
           //do something, like clearing an input
           window.location.href = window.location.href.replace(
             /[\?#].*|$/,
@@ -92,79 +92,87 @@
   {% endaddtoblock %}
 
   <section class="portlet">
-  <div id="reportrange"
-       class="hidden-print "
-       style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
-    <i class="icon-calendar"></i>&nbsp;
-    <span></span> <i class="fa fa-caret-down"></i>
-  </div>
-
+    <div id="reportrange"
+         class="hidden-print "
+         style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+      <i class="icon-calendar"></i>&nbsp;
+      <span></span> <i class="fa fa-caret-down"></i>
+    </div>
   </section>
 
-  {% for allocation_account in object_list %}
-    <section class="portlet">
-      <h4 class="portlet-title"><u>{{ allocation_account }}</u></h4>
-      <table class="table">
-        <thead>
-        <tr>
-          <th>{% trans "Date" %}</th>
-          <th>{% trans "Course" %}</th>
-          <th>{% trans "Invoice" %}</th>
-          <th>{% trans "Transaction" %}</th>
-          <th>{% trans "Amount" %}</th>
-        </tr>
-        </thead>
-      <tfoot>
-      <tr>
-        <th colspan="3"></th>
-        <th class="text-right">{% trans "Total" %}</th>
-        <th>{{ allocation_account.period_total | money }}</th>
-      </tr>
-      </tfoot>
-        <tbody>
-        {% for registration in allocation_account.period_registrations %}
-          <tr>
-            <td>
-              {{ registration.created | date }}
-            </td>
-            <td>
-              {{ registration.course.short_name }}
-            </td>
-            <td>
-              <a href="{{ registration.bill.get_backend_url }}">{{ registration.bill.billing_identifier }}</a>
-            </td>
-            <td>
-              {{ registration.bill.datatrans_successful_transaction.transaction_id }}
-            </td>
-            <td>
-              {{ registration.price | money }}
-            </td>
-          </tr>
-           {% empty %}
-          <tr>
-          <td colspan="5" class="text-center">
-            {% trans "No transaction for the given period" %}
-          </td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-    </section>
+  {% for section_code, section in sections.items %}
+    <article>
+      <h2>{{ section.title }}</h2>
+      {% for subsection in section.subsections %}
+        <section class="portlet">
+          <h4 class="portlet-title"><u>{{ subsection.title }}</u></h4>
+          <table class="table">
+            <thead>
+            <tr>
+              <th>{% trans "Date" %}</th>
+              <th>{% trans "Course" %}</th>
+              <th>{% trans "Invoice" %}</th>
+              <th>{% trans "Transaction" %}</th>
+              <th>{% trans "Amount" %}</th>
+            </tr>
+            </thead>
+            <tfoot>
+            <tr>
+              <th colspan="3"></th>
+              <th class="text-right">{% trans "Total" %}</th>
+              <th>{{ subsection.total | money }}</th>
+            </tr>
+            </tfoot>
+            <tbody>
+            {% for registration in subsection.registrations %}
+              <tr>
+                <td>
+                  {{ registration.created | date }}
+                </td>
+                <td>
+                  {{ registration.course.short_name }}
+                </td>
+                <td>
+                  <a href="{{ registration.bill.get_backend_url }}">{{ registration.bill.billing_identifier }}</a>
+                </td>
+                <td>
+                  {{ registration.bill.datatrans_successful_transaction.transaction_id }}
+                </td>
+                <td>
+                  {{ registration.price | money }}
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="5" class="text-center">
+                  {% trans "No transaction for the given period" %}
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </section>
+      {% empty %}
+        {% trans "No payment with this method during the period" %}
+      {% endfor %}
+    </article>
   {% endfor %}
+
 
   <h4>{% trans "Summary" %}, {{ start |date }} - {{ end |date }}</h4>
   <table class="table">
-  {% for allocation_account in object_list %}
-  <tr>
-  <td>{{ allocation_account }}</td>
-  <td>{{ allocation_account.period_total | money }}</td>
-  </tr>
-  {% endfor %}
+    {% for allocation_account in object_list %}
+      <tr>
+        <td>{{ allocation_account }}</td>
+        <td>{{ allocation_account.period_total | money }}</td>
+      </tr>
+    {% endfor %}
   </table>
 
 
   <p class="hidden-print text-center">
-    <a href="{{ pdf_url }}" class="btn btn-large btn-secondary" download><i class="icon-file-pdf"></i>&nbsp; {% trans "Export to PDF" %}</a>
+    <a href="{{ pdf_url }}" class="btn btn-large btn-secondary" download><i
+        class="icon-file-pdf"></i>&nbsp; {% trans "Export to PDF" %}</a>
 
   </p>
 {% endblock content %}

@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
+from django.urls import reverse
 
 from import_export import fields, resources
 from import_export.admin import ImportExportModelAdmin
@@ -100,8 +103,8 @@ class RegistrationInline(admin.StackedInline):
 
 @admin.register(Bill)
 class BillAdmin(SportfacModelAdmin):
-    list_display = ('billing_identifier', 'total', 'family', 'status', 'created', 'modified', 'reminder_sent')
-    list_filter = ('status',)
+    list_display = ('billing_identifier', 'total', 'get_family', 'status', 'created', 'reminder_sent', 'payment_method')
+    list_filter = ('status', 'payment_method')
     raw_id_fields = ('family',)
     date_hierarchy = 'created'
     search_fields = ('billing_identifier', 'family__first_name', 'family__last_name')
@@ -110,6 +113,11 @@ class BillAdmin(SportfacModelAdmin):
 
     def get_queryset(self, request):
         return super(BillAdmin, self).get_queryset(request).select_related('family')
+
+    def get_family(self, obj):
+        return mark_safe('<a href="{}">{}</a>'.format(
+            reverse('admin:profiles_familyuser_change', args=(obj.family.id,)), obj.family.full_name))
+    get_family.short_description = _("Family")
 
 
 @admin.register(Transport)

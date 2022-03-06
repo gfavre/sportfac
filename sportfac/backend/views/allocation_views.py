@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from collections import OrderedDict
 import datetime
 import os
 from tempfile import mkdtemp
@@ -24,7 +25,7 @@ from dateutil.relativedelta import relativedelta
 
 from activities.models import AllocationAccount
 from activities.forms import AllocationAccountForm
-from payments.models import Payment
+from payments.models import DatatransTransaction
 from .mixins import BackendMixin
 
 
@@ -57,23 +58,37 @@ class AllocationAccountReportView(BackendMixin, ListView):
             'registrations', 'registrations__bill', 'registrations__course', 'registrations__course__activity',
             'registrations__bill__datatrans_transactions',)
 
-        # 1. split by payment method
-        #    we could create a list of dicts
-        for method in settings.DATATRANS_PAYMENT_METHODS:
-            method_name = getattr(Payment.METHODS, method)
-            method_list = []
-            for allocation in context['object_list']:
-                if allocation.registrations.filter(bill__payment_method=method_name).exists():
-                    method_list.append(allocation)
-            context[method_name] = method_list
-
-        # 2. split by allocation account
-
-
+        registrations_method_tmpl = '{}_period_registrations'
+        total_method_tmpl = '{}_period_total'
         for allocation_account in context['object_list']:
             registrations = allocation_account.get_registrations(context['start'], context['end'])
             allocation_account.period_registrations = registrations
-            allocation_account.period_total = sum([registration.price for registration in registrations])
+            allocation_account.period_total = sum([registration.price for registration in registrations if registration.paid])
+            for method in settings.DATATRANS_PAYMENT_METHODS:
+                method_list = [
+                    registration for registration in registrations
+                    if hasattr(registration, 'bill') and registration.bill and
+                       registration.bill.datatrans_transactions.filter(status='authorized').exists() and
+                       registration.bill.datatrans_transactions.
+                           filter(status='authorized').last().payment_method == method]
+                setattr(allocation_account, registrations_method_tmpl.format(method), method_list)
+                setattr(allocation_account, total_method_tmpl.format(method),
+                        sum([registration.price for registration in method_list]))
+
+        sections = OrderedDict()
+        for method in settings.DATATRANS_PAYMENT_METHODS:
+            section = {
+                'title':  DatatransTransaction.METHODS[method],
+                'subsections': [],
+            }
+            for account in context['object_list']:
+                section['subsections'].append({
+                    'title': str(account),
+                    'registrations': getattr(account, registrations_method_tmpl.format(method)),
+                    'total': getattr(account, total_method_tmpl.format(method)),
+                })
+            sections[method] = section
+        context['sections'] = sections
 
         url = self.request.get_full_path()
         url_parts = list(urlparse.urlparse(url))
