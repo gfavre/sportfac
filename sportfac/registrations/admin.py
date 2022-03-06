@@ -115,7 +115,7 @@ class BillAdmin(SportfacModelAdmin):
         return super(BillAdmin, self).get_queryset(request).select_related('family')
 
     def get_family(self, obj):
-        return mark_safe('<a href="{}">{}</a>'.format(
+        return mark_safe(u'<a href="{}">{}</a>'.format(
             reverse('admin:profiles_familyuser_change', args=(obj.family.id,)), obj.family.full_name))
     get_family.short_description = _("Family")
 
