@@ -17,7 +17,7 @@
 <p>en indiquant, sous communications ou motif, votre identifiant de transaction.</p>
 
 {% elif PAYMENT_METHOD == 'datatrans' %}
-  <p>Le paiement se fait via Twint.</p>
+  <p>Le paiement se fait via Mastercard, Twint ou Visa.</p>
   {% include 'payments/datatrans_pay_button.html' %}
 
 {% elif PAYMENT_METHOD == 'external' %}
