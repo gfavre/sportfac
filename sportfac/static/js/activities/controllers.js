@@ -425,9 +425,8 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
       $scope.availableEvents.sort(function (event1, event2) {
         return event1.course.start_date.localeCompare(event2.course.start_date);
       });
-    }
     $scope.weekagenda.fullCalendar('refetchEvents');
-
+    }
   });
 
 }])
