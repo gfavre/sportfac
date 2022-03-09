@@ -37,7 +37,7 @@ class DatatransTransaction(TimeStampedModel, StatusModel):
         ("challenge_ongoing", _("Challenge ongoing")),
         ("authenticated", _("Authenticated")),
         ("authorized", _("Authorized")),  # Guess it is a successful status
-        ("settled", _("Settled")),  # seems to be a success?
+        ("settled", _("Settled")),  # seems to be a success? => yes, success for credit cards
         ("canceled", _("Canceled")),
         ("transmitted", _("Transmitted")),  # The final successful status for twint
         ("failed", _("Failed")),
@@ -54,7 +54,7 @@ class DatatransTransaction(TimeStampedModel, StatusModel):
 
     @property
     def is_success(self):
-        return self.status in (self.STATUS.authorized, self.STATUS.transmitted)
+        return self.status in (self.STATUS.authorized, self.STATUS.settled, self.STATUS.transmitted)
 
     @property
     def refno(self):
