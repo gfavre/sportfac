@@ -243,14 +243,16 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
         return registration.course;
       });
     }
+    console.log(registeredCourses);
 
     $scope.availableEvents.length = 0;
     var activityRegistered = false;
 
     angular.forEach($scope.selectedActivity.courses, function(course){
+      /*
       if ((registeredCourses.indexOf(course.id) !== -1) && !$scope.canregistersameactivity) {
         activityRegistered = true;
-      }
+      }*/
 
       if ($scope.limitbyschoolyear) {
         var available = course.schoolyear_min <= $scope.selectedChild.school_year &&
