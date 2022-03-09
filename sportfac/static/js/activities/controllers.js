@@ -179,6 +179,13 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
     }
   });
 
+  var addAvailableCourse = function(course){
+      $scope.availableEvents.push.apply($scope.availableEvents, course.toEvents("available"));
+    };
+  var addUnavailableCourse = function(course){
+    $scope.availableEvents.push.apply($scope.availableEvents, course.toEvents("unavailable"));
+  };
+
   $scope.updateRegisteredEvents = function() {
     if (!$scope.registrations){ return; }
     $scope.registeredEvents.length = 0;
@@ -230,20 +237,15 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
      });
   };
 
+
+
   $scope.updateAvailableEvents = function(){
-    var addAvailableCourse = function(course){
-      $scope.availableEvents.push.apply($scope.availableEvents, course.toEvents("available"));
-    };
-    var addUnavailableCourse = function(course){
-      $scope.availableEvents.push.apply($scope.availableEvents, course.toEvents("unavailable"));
-    };
     var registeredCourses = $scope.getRegistrations($scope.selectedChild);
     if (registeredCourses){
       registeredCourses = registeredCourses.map(function(registration){
         return registration.course;
       });
     }
-    console.log(registeredCourses);
 
     $scope.availableEvents.length = 0;
     var activityRegistered = false;
@@ -258,7 +260,8 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
         var available = course.schoolyear_min <= $scope.selectedChild.school_year &&
           course.schoolyear_max >= $scope.selectedChild.school_year;
       } else {
-         var available = course.min_birth_date >= $scope.selectedChild.birth_date && course.max_birth_date <= $scope.selectedChild.birth_date;
+         var available = course.min_birth_date >= $scope.selectedChild.birth_date &&
+           course.max_birth_date <= $scope.selectedChild.birth_date;
       }
       var registered = registeredCourses.indexOf(course.id) !== -1;
       var overlapping = $scope.registeredEvents.map(
@@ -277,7 +280,6 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
         } else {
           CoursesService.get($scope.urls.course, course.id).then(addAvailableCourse);
           //addAvailableCourse(course);
-
         }
       }
     });
@@ -427,7 +429,7 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
       $scope.availableEvents.sort(function (event1, event2) {
         return event1.course.start_date.localeCompare(event2.course.start_date);
       });
-    $scope.weekagenda.fullCalendar('refetchEvents');
+      $scope.weekagenda.fullCalendar('refetchEvents');
     }
   });
 
