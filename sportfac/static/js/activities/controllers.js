@@ -167,7 +167,6 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
 
   $scope.$watch('registrations.length', function(){
     if (!angular.isDefined($scope.registrations)){ return; }
-
     $scope.updateAvailableEvents();
     $scope.updateRegisteredEvents();
     $scope.updateOthersEvents();
@@ -247,13 +246,12 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
 
     $scope.availableEvents.length = 0;
     var activityRegistered = false;
+
     angular.forEach($scope.selectedActivity.courses, function(course){
       if ((registeredCourses.indexOf(course.id) !== -1) && !$scope.canregistersameactivity) {
         activityRegistered = true;
       }
-    });
 
-    angular.forEach($scope.selectedActivity.courses, function(course){
       if ($scope.limitbyschoolyear) {
         var available = course.schoolyear_min <= $scope.selectedChild.school_year &&
           course.schoolyear_max >= $scope.selectedChild.school_year;
@@ -401,7 +399,7 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
 
 
   /* This section ensures ordering of events in the calendar. */
-   $scope.$watch('othersRegisteredEvents.length', function(newLength, old_length){
+  $scope.$watch('othersRegisteredEvents.length', function(newLength, old_length){
     if ($scope.othersRegisteredEventsToFetch > 0 && newLength === $scope.othersRegisteredEventsToFetch) {
       $scope.othersRegisteredEventsToFetch = 0;
       $scope.othersRegisteredEvents.sort(function (event1, event2) {
@@ -425,12 +423,11 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
     if ($scope.availableEventsToFetch > 0 && newLength === $scope.availableEventsToFetch) {
       $scope.availableEventsToFetch = 0;
       $scope.availableEvents.sort(function (event1, event2) {
-        console.log(event1.course.start_date);
-        console.log(event2.course.start_date);
         return event1.course.start_date.localeCompare(event2.course.start_date);
       });
-      $scope.weekagenda.fullCalendar('refetchEvents');
     }
+    $scope.weekagenda.fullCalendar('refetchEvents');
+
   });
 
 }])
