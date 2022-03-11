@@ -179,26 +179,27 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
     }
   });
 
-  var addAvailableCourse = function(course){
-      $scope.availableEvents.push.apply($scope.availableEvents, course.toEvents("available"));
-    };
-  var addUnavailableCourse = function(course){
+  let addAvailableCourse = function(course){
+    // je passe ici le bon nombre de fois, tous les cours sont ajoutés.
+    $scope.availableEvents.push.apply($scope.availableEvents, course.toEvents("available"));
+  };
+  let addUnavailableCourse = function(course){
     $scope.availableEvents.push.apply($scope.availableEvents, course.toEvents("unavailable"));
   };
 
   $scope.updateRegisteredEvents = function() {
     if (!$scope.registrations){ return; }
     $scope.registeredEvents.length = 0;
-    var addToRegistered = function(course){
-      var events = course.toEvents('registered');
+    let addToRegistered = function(course){
+      let events = course.toEvents('registered');
       angular.forEach(events, function (event) {
         event.registeredChild = $scope.selectedChild;
         $scope.registeredEvents.push(event);
       });
       // $scope.registeredEvents.push.apply($scope.registeredEvents, event);
     };
-    var addToValidated = function(course){
-      var events = course.toEvents('validated');
+    let addToValidated = function(course){
+      let events = course.toEvents('validated');
       angular.forEach(events, function (event) {
         event.registeredChild = $scope.selectedChild;
         $scope.registeredEvents.push(event);
@@ -237,24 +238,23 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
      });
   };
 
-
-
   $scope.updateAvailableEvents = function(){
-    var registeredCourses = $scope.getRegistrations($scope.selectedChild);
+    $scope.availableEvents.length = 0;
+
+    let registeredCourses = $scope.getRegistrations($scope.selectedChild);
     if (registeredCourses){
       registeredCourses = registeredCourses.map(function(registration){
         return registration.course;
       });
     }
 
-    $scope.availableEvents.length = 0;
-    var activityRegistered = false;
+    let activityRegistered = false;
 
     angular.forEach($scope.selectedActivity.courses, function(course){
-      /*
+
       if ((registeredCourses.indexOf(course.id) !== -1) && !$scope.canregistersameactivity) {
         activityRegistered = true;
-      }*/
+      }
 
       if ($scope.limitbyschoolyear) {
         var available = course.schoolyear_min <= $scope.selectedChild.school_year &&
@@ -409,7 +409,6 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
       $scope.othersRegisteredEvents.sort(function (event1, event2) {
         return event1.course.start_date.localeCompare(event2.course.start_date);
       });
-      $scope.weekagenda.fullCalendar('refetchEvents');
     }
   });
 
@@ -419,7 +418,6 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
       $scope.registeredEvents.sort(function (event1, event2) {
         return event1.course.start_date.localeCompare(event2.course.start_date);
       });
-      $scope.weekagenda.fullCalendar('refetchEvents');
     }
   });
 
@@ -429,7 +427,6 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
       $scope.availableEvents.sort(function (event1, event2) {
         return event1.course.start_date.localeCompare(event2.course.start_date);
       });
-      $scope.weekagenda.fullCalendar('refetchEvents');
     }
   });
 
