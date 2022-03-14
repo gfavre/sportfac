@@ -71,6 +71,11 @@ class DatatransTransaction(TimeStampedModel, StatusModel):
     def update_invoice(self):
         if self.is_success:
             self.invoice.set_paid()
+            for registration in self.invoice.registrations.all():
+                registration.set_paid()
+
+    def __str__(self):
+        return '{} {}'.format(self.invoice, self.status)
         elif self.status in (self.STATUS.canceled, self.STATUS.failed) and not self.invoice.is_paid:
             self.invoice.set_waiting()
 
