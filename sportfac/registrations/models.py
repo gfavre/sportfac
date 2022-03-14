@@ -249,6 +249,11 @@ class Registration(TimeStampedModel, StatusModel):
                 language=get_language(),
             ))
 
+    def set_paid(self):
+        self.paid = True
+        self.save(update_fields=['paid'])
+
+
     def set_valid(self):
         self.status = self.STATUS.valid
 
