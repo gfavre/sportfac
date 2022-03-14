@@ -253,7 +253,6 @@ class Registration(TimeStampedModel, StatusModel):
         self.paid = True
         self.save(update_fields=['paid'])
 
-
     def set_valid(self):
         self.status = self.STATUS.valid
 
@@ -431,6 +430,8 @@ class Bill(TimeStampedModel, StatusModel):
     def update_billing_identifier(self):
         if self.pk:
             self.billing_identifier = slugify('%s-%i' % (self.family.last_name, self.pk))
+            if len(self.billing_identifier) > 20:
+                self.billing_identifier = self.billing_identifier[-20:]
 
     def update_total(self):
         self.total = sum([registration.price for registration in self.registrations.all() if registration.price])
