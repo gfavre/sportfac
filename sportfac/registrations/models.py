@@ -339,10 +339,7 @@ class Bill(TimeStampedModel, StatusModel):
     @property
     def datatrans_successful_transaction(self):
         from payments.models import DatatransTransaction
-        try:
-            return self.datatrans_transactions.filter(status=DatatransTransaction.STATUS.authorized).last()
-        except DatatransTransaction.DoesNotExist:
-            return None
+        return DatatransTransaction.successful.filter(invoice=self).last()
 
     @property
     def is_ok(self):

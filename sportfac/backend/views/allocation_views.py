@@ -3,12 +3,8 @@ from collections import OrderedDict
 import datetime
 import os
 from tempfile import mkdtemp
-try:
-    import urlparse
-    from urllib import urlencode
-except ImportError:  # For Python 3
-    import urllib.parse as urlparse
-    from urllib.parse import urlencode
+import urlparse
+from urllib import urlencode
 
 
 from django.contrib import messages
@@ -68,9 +64,8 @@ class AllocationAccountReportView(BackendMixin, ListView):
                 method_list = [
                     registration for registration in registrations
                     if hasattr(registration, 'bill') and registration.bill and
-                       registration.bill.datatrans_transactions.filter(status='authorized').exists() and
-                       registration.bill.datatrans_transactions.
-                           filter(status='authorized').last().payment_method == method]
+                        registration.bill.datatrans_successful_transaction and
+                        registration.bill.datatrans_successful_transaction.payment_method == method]
                 setattr(allocation_account, registrations_method_tmpl.format(method), method_list)
                 setattr(allocation_account, total_method_tmpl.format(method),
                         sum([registration.price for registration in method_list]))

@@ -9,6 +9,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from model_utils import Choices
+from model_utils.managers import QueryManager
 from model_utils.models import StatusModel, TimeStampedModel
 
 
@@ -48,6 +49,9 @@ class DatatransTransaction(TimeStampedModel, StatusModel):
     payment_method = models.CharField(max_length=3, choices=METHODS, default=METHODS.TWI)
     transaction_id = models.BigIntegerField(db_index=True)
     webhook = JSONField(null=True, blank=True)
+
+    objects = models.Manager()
+    successful = QueryManager(status__in=('authorized', 'settled', 'transmitted'))
 
     class Meta:
         ordering = ('-expiration',)
