@@ -20,7 +20,7 @@ class SlotsView(TemplateView):
             context['start'] = qs.first().start.date().isoformat()
         else:
             context['start'] = now().date().isoformat()
-        context['appointments'] = self.request.user.is_authenticated and qs.filter(family=self.request.user) or Appointment.objects.none()
+        context['appointments'] = self.request.user.is_authenticated and qs.appointments.filter(family=self.request.user) or Appointment.objects.none()
         context['available_dates'] = sorted(
             set([d.date() for d in qs.values_list('start', flat=True)])
         )
