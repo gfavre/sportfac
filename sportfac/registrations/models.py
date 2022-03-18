@@ -429,9 +429,17 @@ class Bill(TimeStampedModel, StatusModel):
 
     def update_billing_identifier(self):
         if self.pk:
-            self.billing_identifier = slugify('%s-%i' % (self.family.last_name, self.pk))
-            if len(self.billing_identifier) > 20:
-                self.billing_identifier = self.billing_identifier[-20:]
+            name_part = slugify(self.family.last_name).split('-')
+            number_part = str(self.pk)
+            identifier = name_part + [number_part]
+            if len('-'.join(identifier)) <= 20:
+                self.billing_identifier = '-'.join(identifier)
+            else:
+                identifier = '{}-{}'.format(name_part[0], number_part)
+                if len(identifier) <= 20:
+                    self.billing_identifier = identifier
+                else:
+                    self.billing_identifier = name_part[0][:-len(number_part)] + '-' + number_part
 
     def update_total(self):
         self.total = sum([registration.price for registration in self.registrations.all() if registration.price])

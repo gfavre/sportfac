@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from datetime import time
 
 from django.test import override_settings
@@ -5,7 +6,7 @@ from django.test import override_settings
 from activities.tests.factories import CourseFactory, AllocationAccountFactory
 from profiles.tests.factories import CityFactory, FamilyUserFactory
 from sportfac.utils import TenantTestCase
-from .factories import ChildFactory, RegistrationFactory
+from .factories import BillFactory, ChildFactory, RegistrationFactory
 
 
 class RegistrationTestCase(TenantTestCase):
@@ -112,3 +113,26 @@ class RegistrationTestCase(TenantTestCase):
         registration.save()
         registration.refresh_from_db()
         self.assertEqual(registration.price, registration.course.price)
+
+
+class BillTestCase(TenantTestCase):
+    def setUp(self):
+        self.bill = BillFactory()
+
+    def test_code_for_reasonably_long_names(self):
+        self.bill.family.last_name = u'Bartholomey-Bolay'
+        self.bill.update_billing_identifier()
+        self.assertTrue(len(self.bill.billing_identifier) <= 20)
+        self.assertIn(self.bill.family.last_name.lower(), self.bill.billing_identifier)
+
+    def test_code_for_non_secable_long_names(self):
+        self.bill.family.last_name = u'Wolfeschlegelsteinhausenbergerdorff'
+        self.bill.update_billing_identifier()
+        self.assertTrue(len(self.bill.billing_identifier) <= 20)
+        self.assertIn(self.bill.family.last_name.lower()[10], self.bill.billing_identifier)
+
+    def test_code_for_secable_long_names(self):
+        self.bill.family.last_name = u'Diego José Francisco de Paula Juan Nepomuceno María de los Remedios Cipriano de la Santísima Trinidad Ruiz y Picasso'
+        self.bill.update_billing_identifier()
+        self.assertTrue(len(self.bill.billing_identifier) <= 20)
+        self.assertIn(self.bill.family.last_name.split(' ')[0].lower(), self.bill.billing_identifier)
