@@ -16,7 +16,7 @@ class SlotsView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(SlotsView, self).get_context_data(**kwargs)
         qs = AppointmentSlot.objects.filter(start__gte=now())
-        if qs.objects.exists():
+        if qs.exists():
             context['start'] = qs.first().start.date().isoformat()
         else:
             context['start'] = now().date().isoformat()
