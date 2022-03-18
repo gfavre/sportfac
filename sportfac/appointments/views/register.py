@@ -15,13 +15,14 @@ class SlotsView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(SlotsView, self).get_context_data(**kwargs)
-        if AppointmentSlot.objects.exists():
-            context['start'] = AppointmentSlot.objects.first().start.date().isoformat()
+        qs = AppointmentSlot.objects.filter(start__gte=now())
+        if qs.objects.exists():
+            context['start'] = qs.first().start.date().isoformat()
         else:
             context['start'] = now().date().isoformat()
-        context['appointments'] = self.request.user.is_authenticated and Appointment.objects.filter(family=self.request.user) or Appointment.objects.none()
+        context['appointments'] = self.request.user.is_authenticated and qs.filter(family=self.request.user) or Appointment.objects.none()
         context['available_dates'] = sorted(
-            set([d.date() for d in AppointmentSlot.objects.values_list('start', flat=True)])
+            set([d.date() for d in qs.values_list('start', flat=True)])
         )
         return context
 

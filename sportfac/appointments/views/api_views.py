@@ -4,6 +4,7 @@ from django.db import connection, transaction
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.translation import ugettext as _, get_language
+from django.utils.timezone import now
 
 from rest_framework import generics
 from rest_framework import status
@@ -18,14 +19,18 @@ from ..tasks import send_confirmation_mail as send_appointment_confirmation_emai
 
 
 class SlotsList(generics.ListAPIView):
-    queryset = AppointmentSlot.objects.all()
     serializer_class = SlotSerializer
+
+    def get_queryset(self):
+        return AppointmentSlot.objects.filter(start__gte=now())
 
 
 class RegisterSlot(generics.GenericAPIView):
-    queryset = AppointmentSlot.objects.all()
     serializer_class = AppointmentSerializer
     permission_classes = ()
+
+    def get_queryset(self):
+        return AppointmentSlot.objects.filter(start__gte=now())
 
     def post(self, request, *args, **kwargs):
         slot = get_object_or_404(self.get_queryset(), id=kwargs.get('slot_id'))
@@ -75,3 +80,6 @@ class SlotsViewset(ModelViewSet):
     permission_classes = (ManagerPermission,)
     queryset = AppointmentSlot.objects.all()
     serializer_class = AdminAppointmentSlotSerializer
+
+    def get_queryset(self):
+        return AppointmentSlot.objects.filter(start__gte=now())
