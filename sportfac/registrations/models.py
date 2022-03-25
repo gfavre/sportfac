@@ -95,6 +95,17 @@ class Registration(TimeStampedModel, StatusModel):
         return self.child.family.zipcode in local_zipcodes
 
     @property
+    def payment_method(self):
+        if not self.paid:
+            return None
+        if settings.KEPCHUP_PAYMENT_METHOD == 'datatrans':
+            if self.bill and self.bill.datatrans_successful_transaction:
+                return self.bill.datatrans_successful_transaction.payment_method
+            return 'cash'
+        else:
+            return settings.KEPCHUP_PAYMENT_METHOD
+
+    @property
     def update_url(self):
         return self.get_update_url()
 

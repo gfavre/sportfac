@@ -50,28 +50,27 @@ class AllocationAccountReportView(BackendMixin, ListView):
                 context['end'] = datetime.datetime.strptime(self.request.GET.get('end'), "%Y-%m-%d").date()
             except ValueError:
                 pass
+
         context['object_list'] = AllocationAccount.objects.prefetch_related(
             'registrations', 'registrations__bill', 'registrations__course', 'registrations__course__activity',
             'registrations__bill__datatrans_transactions',)
-
         registrations_method_tmpl = '{}_period_registrations'
         total_method_tmpl = '{}_period_total'
+
+        all_payment_methods = settings.DATATRANS_PAYMENT_METHODS + ['cash']
+
         for allocation_account in context['object_list']:
             registrations = allocation_account.get_registrations(context['start'], context['end'])
             allocation_account.period_registrations = registrations
             allocation_account.period_total = sum([registration.price for registration in registrations if registration.paid])
-            for method in settings.DATATRANS_PAYMENT_METHODS:
-                method_list = [
-                    registration for registration in registrations
-                    if hasattr(registration, 'bill') and registration.bill and
-                        registration.bill.datatrans_successful_transaction and
-                        registration.bill.datatrans_successful_transaction.payment_method == method]
+            for method in all_payment_methods:
+                method_list = [registration for registration in registrations if registration.payment_method == method]
                 setattr(allocation_account, registrations_method_tmpl.format(method), method_list)
                 setattr(allocation_account, total_method_tmpl.format(method),
                         sum([registration.price for registration in method_list]))
 
         sections = OrderedDict()
-        for method in settings.DATATRANS_PAYMENT_METHODS:
+        for method in all_payment_methods:
             section = {
                 'title':  DatatransTransaction.METHODS[method],
                 'subsections': [],
@@ -83,6 +82,7 @@ class AllocationAccountReportView(BackendMixin, ListView):
                     'total': getattr(account, total_method_tmpl.format(method)),
                 })
             sections[method] = section
+
         context['sections'] = sections
 
         url = self.request.get_full_path()

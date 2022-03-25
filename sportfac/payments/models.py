@@ -31,6 +31,7 @@ class DatatransTransaction(TimeStampedModel, StatusModel):
         ('ESY', "Swisscom Pay"),
         ('TWI', "Twint"),
         ('VIS', "Visa"),
+        ('cash', "Cash"),
     )
     STATUS = Choices(
         ('initialized', _("Initialized")),  # request just opened

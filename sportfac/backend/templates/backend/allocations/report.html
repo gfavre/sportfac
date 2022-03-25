@@ -136,7 +136,7 @@
                   <a href="{{ registration.bill.get_backend_url }}">{{ registration.bill.billing_identifier }}</a>
                 </td>
                 <td>
-                  {{ registration.bill.datatrans_successful_transaction.transaction_id }}
+                  {{ registration.bill.datatrans_successful_transaction.transaction_id | default:"n/a"}}
                 </td>
                 <td>
                   {{ registration.price | money }}
