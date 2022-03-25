@@ -57,7 +57,7 @@ class AllocationAccountReportView(BackendMixin, ListView):
         registrations_method_tmpl = '{}_period_registrations'
         total_method_tmpl = '{}_period_total'
 
-        all_payment_methods = settings.DATATRANS_PAYMENT_METHODS + ['cash']
+        all_payment_methods = ['cash'] + settings.DATATRANS_PAYMENT_METHODS
 
         for allocation_account in context['object_list']:
             registrations = allocation_account.get_registrations(context['start'], context['end'])
