@@ -123,11 +123,11 @@ class BillTestCase(TenantTestCase):
         self.bill.family.last_name = u'Bartholomey-Bolay'
         self.bill.update_billing_identifier()
         self.assertTrue(len(self.bill.billing_identifier) <= 20)
-        self.assertIn(self.bill.family.last_name.lower(), self.bill.billing_identifier)
 
     def test_code_for_non_secable_long_names(self):
         self.bill.family.last_name = u'Wolfeschlegelsteinhausenbergerdorff'
         self.bill.update_billing_identifier()
+
         self.assertTrue(len(self.bill.billing_identifier) <= 20)
         self.assertIn(self.bill.family.last_name.lower()[10], self.bill.billing_identifier)
 

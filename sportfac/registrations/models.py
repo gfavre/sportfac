@@ -450,7 +450,7 @@ class Bill(TimeStampedModel, StatusModel):
                 if len(identifier) <= 20:
                     self.billing_identifier = identifier
                 else:
-                    self.billing_identifier = name_part[0][:-len(number_part)] + '-' + number_part
+                    self.billing_identifier = name_part[0][:(20 - len(number_part) - 1)] + '-' + number_part
 
     def update_total(self):
         self.total = sum([registration.price for registration in self.registrations.all() if registration.price])
