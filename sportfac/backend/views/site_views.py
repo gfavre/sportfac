@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+from datetime import timedelta
+
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.utils.timezone import now
@@ -33,7 +34,8 @@ class AppointmentsListView(BackendMixin, ListView):
     template_name = 'appointments/backend/list.html'
 
     def get_queryset(self):
-        return AppointmentSlot.objects.prefetch_related('appointments', 'appointments__child')
+        min_date = now() - timedelta(hours=4)
+        return AppointmentSlot.objects.filter(start__gte=min_date).prefetch_related('appointments', 'appointments__child')
 
 
 class AppointmentDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
