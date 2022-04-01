@@ -55,6 +55,14 @@ class BillDetailView(LoginRequiredMixin, BillMixin, DetailView):
             return Bill.objects.all()
         return Bill.objects.filter(family=self.request.user)
 
+    def get_context_data(self, **kwargs):
+        context = super(BillDetailView, self).get_context_data(**kwargs)
+        if not self.get_object().is_paid and settings.KEPCHUP_PAYMENT_METHOD == 'datatrans':
+            from payments.datatrans import get_transaction
+            transaction = get_transaction(self.request, context['bill'])
+            context['transaction'] = transaction
+        return context
+
 
 class ChildrenListView(LoginRequiredMixin, ListView):
     template_name = 'registrations/children.html'
