@@ -64,7 +64,6 @@ KEPCHUP_USE_SSO = True
 LOGIN_URL = '/client/'
 
 
-
 CELERYBEAT_SCHEDULE['notify-absences'] = {
         'task': 'absences.tasks.notify_absences',
         'schedule': crontab(hour=19, minute=0),
