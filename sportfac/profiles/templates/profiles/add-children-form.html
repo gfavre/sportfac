@@ -27,7 +27,7 @@
     <hr/>
   </div>
 
-  <div class="form-group">
+  <div class="form-group{% if FIRST_NAME_HIDDEN %} hidden{% endif %}">
     <label class="col-sm-4 control-label" for="first_name">Prénom<span class="required"> *</span></label>
     <div class="col-sm-8">
       <input id="first_name" ng-model="detailedChild.first_name"
@@ -38,7 +38,7 @@
       <span ng-show="childform.first_name.$error.required">Ce champ est obligatoire</span>
     </div>
   </div>
-  <div class="form-group">
+  <div class="form-group{% if LAST_NAME_HIDDEN %} hidden{% endif %}">
     <label class="col-sm-4 control-label" for="last_name">Nom<span class="required"> *</span></label>
     <div class="col-sm-8">
       <input id="last_name" ng-model="detailedChild.last_name"
@@ -48,7 +48,7 @@
       <span ng-show="childform.last_name.$error.required">Ce champ est obligatoire</span>
     </div>
   </div>
-  <div class="form-group">
+  <div class="form-group{% if SEX_HIDDEN %} hidden{% endif %}">
     <label class="col-sm-4 control-label" for="inputBirthDate">Sexe<span class="required"> *</span></label>
     <div class="col-sm-8">
       {% if SEX_EDITABLE %}
@@ -65,7 +65,7 @@
     </div>
   </div>
 
-  <div class="form-group">
+  <div class="form-group{% if BIRTH_DATE_HIDDEN %} hidden{% endif %}">
     <label class="col-sm-4 control-label" for="inputBirthDate">Date de naissance<span class="required"> *</span></label>
     <div class="col-sm-5 datepicker">
       <input type="text" ng-model="detailedChild.birth_date" id="inputBirthDate" required
@@ -83,7 +83,7 @@
   </div>
 
 
-  <div class="form-group">
+  <div class="form-group{% if NATIONALITY_HIDDEN %} hidden{% endif %}">
     <label class="col-sm-4 control-label" for="nationality">Nationalité<span class="required"> *</span></label>
     <div class="col-sm-8">
       <select id="nationality" class="form-control" ng-model="detailedChild.nationality" required
@@ -96,7 +96,7 @@
     </div>
   </div>
 
-  <div class="form-group">
+  <div class="form-group {% if LANGUAGE_HIDDEN %} hidden{% endif %}">
     <label class="col-sm-4 control-label" for="language">Langue<span class="required"> *</span></label>
     <div class="col-sm-8">
       <select id="language" ng-model="detailedChild.language"
@@ -127,7 +127,7 @@
     </div>
   {% endif %}
   <div ng-show="prefillTeachers">
-    <div class="form-group">
+    <div class="form-group {% if TEACHER_HIDDEN %} hidden{% endif %}">
       <label class="col-sm-4 control-label" for="inputTeacher">Enseignant principal<span class="required"> *</span></label>
       <div class="col-sm-5">
         <select id="inputTeacher" class="form-control" ng-model="detailedChild.teacher"
@@ -138,7 +138,7 @@
       </div>
     </div>
 
-    <div class="form-group" ng-switch on="detailedChild.teacher.years.length">
+    <div class="form-group {% if SCHOOL_YEAR_HIDDEN %} hidden{% endif %}" ng-switch on="detailedChild.teacher.years.length">
       <label class="col-sm-4 control-label" for="inputYear" ng-show="detailedChild.teacher.years.length > 1">
         Année{% if SCHOOL_YEAR_MANDATORY %}<span class="required"> *</span>{% endif %}</label>
       {% if SCHOOL_YEAR_EDITABLE %}
@@ -165,7 +165,7 @@
   </div>
 
   <div ng-show="!prefillTeachers">
-    <div class="form-group">
+    <div class="form-group {% if SCHOOL_YEAR_HIDDEN %} hidden{% endif %}">
       <label class="col-sm-4 control-label" for="inputYear">
         Année{% if SCHOOL_YEAR_MANDATORY %}<span class="required"> *</span>{% endif %}
       </label>
@@ -180,7 +180,7 @@
   </div>
 
   {% if CHILD_SCHOOL %}
-    <div class="form-group">
+    <div class="form-group {% if SCHOOL_HIDDEN %} hidden{% endif %}">
       <label class="col-sm-4 control-label" for="school">École<span class="required"> *</span></label>
       <div class="col-sm-5">
         <select id="school" class="form-control" ng-model="detailedChild.school"
@@ -192,7 +192,7 @@
         <span ng-show="childform.school.$error.required">Ce champ est obligatoire</span>
       </div>
     </div>
-    <div class="form-group" ng-hide="detailedChild.school">
+    <div class="form-group {% if OTHER_SCHOOL_HIDDEN %} hidden{% endif %}" ng-hide="detailedChild.school">
       <label class="col-sm-4 control-label" for="school">Nom de l'école</label>
       <div class="col-sm-8">
         <input type="text" class="form-control" id="other_school"
@@ -207,7 +207,7 @@
   {% endif %}
 
   {% if EMERGENCY_NUMBER_MANDATORY %}
-    <div class="form-group" ng-class="{ 'has-error': errors.hasOwnProperty('emergency_number') }">
+    <div class="form-group {% if EMERGENCY_NUMBER_HIDDEN %} hidden{% endif %}" ng-class="{ 'has-error': errors.hasOwnProperty('emergency_number') }">
       <label class="col-sm-4 control-label" for="emergency_number">Numéro d'urgence<span
           class="required"> *</span></label>
       <div class="col-sm-8">

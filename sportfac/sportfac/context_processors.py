@@ -147,6 +147,20 @@ def tenants_context(request):
 def kepchup_context(request):
 
     return {
+        'BIB_NUMBER_HIDDEN': 'bib_number' in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
+        'BIRTH_DATE_HIDDEN': 'birth_date' in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
+        'BUILDING_HIDDEN': 'building' in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
+        'EMERGENCY_NUMBER_HIDDEN': 'emergency_number' in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
+        'FIRST_NAME_HIDDEN': 'first_name' in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
+        'ID_LAGAPEO_HIDDEN': 'id_lagapeo' in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
+        'LANGUAGE_HIDDEN': 'language' in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
+        'NATIONALITY_HIDDEN': 'nationality' in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
+        'OTHER_SCHOOL_HIDDEN': 'other_school' in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
+        'SCHOOL_YEAR_HIDDEN': 'school_year' in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
+        'SCHOOL_HIDDEN': 'school' in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
+        'SEX_HIDDEN': 'sex' in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
+        'TEACHER_HIDDEN': 'teacher' in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
+
         'BIB_NUMBER_EDITABLE': 'bib_number' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
         'BIRTH_DATE_EDITABLE': 'birth_date' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
         'BUILDING_EDITABLE': 'building' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,

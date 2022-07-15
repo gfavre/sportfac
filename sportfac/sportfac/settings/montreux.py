@@ -45,6 +45,7 @@ KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS = ['pdf/infos-moniteurs-2021.pdf',
 KEPCHUP_SPLASH_PAGE = True
 KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = ['first_name', 'last_name', 'birth_date', 'school_year', 'school',
                                       'other_school', 'nationality', 'language']
+KEPCHUP_CHILDREN_HIDDEN_FIELDS = ['sex', 'nationality']
 KEPCHUP_EXPLICIT_SESSION_DATES = True
 SCHOOL_YEAR_EDITABLE = False
 KEPCHUP_DISPLAY_LAGAPEO = True
