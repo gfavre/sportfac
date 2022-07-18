@@ -67,6 +67,22 @@
     <p class="col-sm-8 col-sm-offset-4" ng-show="childform.inputBirthDate.$error.required">Ce champ est obligatoire</p>
   </div>
 
+ <div class="form-group{% if AVS_HIDDEN %} hidden{% endif %}">
+    <label class="col-sm-4 control-label" for="inputBirthDate">N° AVS</label>
+    <div class="col-sm-5 datepicker">
+      <input type="text" ng-model="detailedChild.avs" id="inputAVS"
+             class="form-control"
+          {% if AVS_EDITABLE %}
+             placeholder="756.XXXX.XXXX.XX"
+          {% else %}
+             readonly
+          {% endif %}
+      />
+    </div>
+    {% if AVS_EDITABLE %}<p class="help-block col-sm-8 col-sm-offset-4">Format: 756.XXXX.XXXX.XX</p>{% endif %}
+    <p class="col-sm-8 col-sm-offset-4" ng-show="childform.inputAVS.$error.required">Ce champ est obligatoire</p>
+  </div>
+
   <div class="form-group{% if NATIONALITY_HIDDEN %} hidden{% endif %}"  ng-class="{'has-error': !detailedChild.nationality}">
     <label class="col-sm-4 control-label" for="nationality">Nationalité<span class="required"> *</span></label>
     <div class="col-sm-8">

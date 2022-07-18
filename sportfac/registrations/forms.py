@@ -47,10 +47,11 @@ class ChildForm(forms.ModelForm):
                                     required=False)
     emergency_number = forms.CharField(label=_("Emergency number"), required=False)
     bib_number = forms.CharField(label=_("Bib number"), required=False)
-
+    avs = forms.CharField(label=_("AVS"), required=False, help_text="756.XXXX.XXXX.XX")
+    
     class Meta:
         model = Child
-        fields = ('id_lagapeo', 'family', 'first_name', 'last_name', 'sex', 'birth_date', 'nationality',
+        fields = ('id_lagapeo', 'family', 'first_name', 'last_name', 'sex', 'birth_date', 'nationality', 'avs',
                   'language', 'school', 'other_school', 'school_year', 'teacher', 'building', 'emergency_number',
                   'bib_number', 'is_blacklisted')
 

@@ -571,7 +571,7 @@ KEPCHUP_ENABLE_TEACHER_MANAGEMENT = True
 KEPCHUP_CHILD_SCHOOL_DISPLAY_OTHER = False
 # these fields are not editable by parent. Makes sense with KEPCHUP_IMPORT_CHILDREN
 KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = []
-KEPCHUP_CHILDREN_HIDDEN_FIELDS = []
+KEPCHUP_CHILDREN_HIDDEN_FIELDS = ['avs']
 # display nb of sessions on public pages. Disabled for Nyon-Prangins
 KEPCHUP_DISPLAY_NUMBER_OF_SESSIONS = True
 # make emergency number mandatory on children

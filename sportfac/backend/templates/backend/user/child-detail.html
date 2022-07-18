@@ -16,6 +16,8 @@
     <dt>{% trans "SSF number" %}</dt>
     <dd>{{ child.id_lagapeo | default:'n/a' }}</dd>
     {% endif %}
+    <dt>{% trans "AVS number" %}</dt>
+    <dd>{{ child.avs | default:'n/a' }}</dd>
   <hr>
     <dt>{% trans "Parent" %}</dt>
     <dd><a href="{{ child.family.get_backend_url }}">{{ child.family.full_name }}</a></dd>

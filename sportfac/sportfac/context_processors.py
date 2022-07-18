@@ -147,6 +147,7 @@ def tenants_context(request):
 def kepchup_context(request):
 
     return {
+        'AVS_HIDDEN': 'avs' in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
         'BIB_NUMBER_HIDDEN': 'bib_number' in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
         'BIRTH_DATE_HIDDEN': 'birth_date' in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
         'BUILDING_HIDDEN': 'building' in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
@@ -161,6 +162,7 @@ def kepchup_context(request):
         'SEX_HIDDEN': 'sex' in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
         'TEACHER_HIDDEN': 'teacher' in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
 
+        'AVS_EDITABLE': 'avs' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
         'BIB_NUMBER_EDITABLE': 'bib_number' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
         'BIRTH_DATE_EDITABLE': 'birth_date' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
         'BUILDING_EDITABLE': 'building' not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,

@@ -1,9 +1,12 @@
 # -*- coding:utf-8 -*-
 from django.conf import settings
+from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
+from localflavor.ch.forms import ssn_re, validators
 
 from absences.models import Absence, Session
 from activities.models import Activity, Course, ExtraNeed
@@ -91,7 +94,6 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ('id', 'course_type', 'number', 'name')
         fields = ('id', 'course_type', 'number', 'name', 'instructors',
                   'activity', 'price', 'price_description',
                   'price_local', 'price_family', 'price_local_family',
@@ -168,14 +170,25 @@ class ChildrenSerializer(serializers.ModelSerializer):
                                                 required=False, allow_null=True)
     school_year = SchoolYearField(many=False, read_only=False, queryset=SchoolYear.visible_objects.all())
     ext_id = serializers.IntegerField(source='id_lagapeo', required=False, allow_null=True, max_value=100000000)
+    avs = serializers.CharField(required=False, allow_null=True)
 
     class Meta:
         model = Child
         fields = ('id', 'ext_id', 'status', 'first_name', 'last_name', 'sex',
                   'nationality', 'language', 'emergency_number',
-                  'birth_date', 'school_year', 'teacher', 'school', 'other_school')
+                  'birth_date', 'school_year', 'teacher', 'school', 'other_school', 'avs')
         depth = 1
         read_only_fields = ('id', 'ext_id', 'status')
+
+    # def validate_avs(self, value):
+    #     if value is None or value == '':
+    #         return None
+    #     try:
+    #         RegexValidator(regex=ssn_re)(value),  # enough numbers
+    #         validators.EANValidator(strip_nondigits=True)(value)  # valid checksum
+    #     except ValidationError:
+    #         raise serializers.ValidationError(_("Invalid AVS number"))
+    #     return value
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
