@@ -16,15 +16,27 @@ logger = logging.getLogger(__name__)
 
 
 CHILD_MANDATORY_FIELDS = (u'ID LAGAPEO', u'Nom', u'Prénom', u'Genre', u'Date de naissance',)
-CHILD_IMPORT_TO_FIELD = {
-    u'ID LAGAPEO': 'id_lagapeo',
-    u'Nom': 'last_name',
-    u'Prénom': 'first_name',
-    u'Courriel 1': 'email',}
+CHILD_MANDATORY_FIELDS = ('id_lagapeo', 'first_name', 'last_name', 'sex', 'birth_date',)
+CORRESPONDANCE_DICT = {
+    'id_lagapeo': [u'ID LAGAPEO', u'ELEVE_ID_PERS'],
+    'first_name': [u'Prénom', u'ELEVE_PRENOM'],
+    'last_name': [u'Nom', u'ELEVE_NOM'],
+    'birth_date': [u'Date de naissance', u'ELEVE_DATE_NAISS'],
+    'sex': [u'Genre', u'ELEVE_GENRE'],
+    'school_year': [u'Année', u'ANNEE', u'ELEVE_ANNEE_SCOL'],
+    'nationality': [u'Nationalité'],
+    'language': [u'Langue maternelle', u'LANGUE MATERNELLE'],
+    'school': [u'Etablissement', u'ETABLISSEMENT', u'ETABLISSEMENT_NOM'],
+    'is_blacklisted': [u'Blacklist', u'BLACKLIST'],
+}
+
+col_name_to_field = {}
+for k, v in CORRESPONDANCE_DICT.items():
+    for x in v:
+        col_name_to_field.setdefault(x, k)
 
 
 class ChildParser:
-
     def __init__(self, book=None):
         self.schoolyears = dict([(year.year, year) for year in SchoolYear.objects.all()])
         self.schools = dict([(school.code, school) for school in School.objects.all()])
@@ -32,23 +44,37 @@ class ChildParser:
             self.datemode = book.datemode
         else:
             self.datemode = 0
-        self.fields_dict = {
-            u'ID LAGAPEO': ('id_lagapeo', lambda x: int(x)),
-            u'Nom': ('last_name', lambda x: x),
-            u'Prénom': ('first_name', lambda x: x),
-            u'Genre': ('sex', self.parse_sex),
-            u'Date de naissance': ('birth_date', self.parse_birth_date),
-            u'Nationalité': ('nationality', self.parse_nationality),
-            u'Langue maternelle': ('language', self.parse_language),
-            u'LANGUE MATERNELLE': ('language', self.parse_language),
-            u'Année': ('school_year', self.parse_school_year),
-            u'ANNEE': ('school_year', self.parse_school_year),
-            u'Etablissement': ('school', self.parse_school),
-            u'ETABLISSEMENT': ('school', self.parse_school),
-            u'Blacklist': ('is_blacklisted', self.parse_blacklist),
-            u'BLACKLIST': ('is_blacklisted', self.parse_blacklist),
 
+        self.fields_dict = {
+            'id_lagapeo': lambda x: int(x),
+            'first_name': lambda x: x,
+            'last_name': lambda x: x,
+            'birth_date': self.parse_birth_date,
+            'sex': self.parse_sex,
+            'nationality': self.parse_nationality,
+            'language': self.parse_language,
+            'school_year': self.parse_school_year,
+            'school': self.parse_school,
+            'is_blacklisted': self.parse_blacklist,
         }
+        # self.fields_dict = {
+        #     u'ID LAGAPEO': ('id_lagapeo', lambda x: int(x)),
+        #     u'ELEVE_ID_PERS': ('id_lagapeo', lambda x: int(x)),
+        #     u'Nom': ('last_name', lambda x: x),
+        #     u'Prénom': ('first_name', lambda x: x),
+        #     u'Genre': ('sex', self.parse_sex),
+        #     u'Date de naissance': ('birth_date', self.parse_birth_date),
+        #     u'Nationalité': ('nationality', self.parse_nationality),
+        #     u'Langue maternelle': ('language', self.parse_language),
+        #     u'LANGUE MATERNELLE': ('language', self.parse_language),
+        #     u'Année': ('school_year', self.parse_school_year),
+        #     u'ANNEE': ('school_year', self.parse_school_year),
+        #     u'Etablissement': ('school', self.parse_school),
+        #     u'ETABLISSEMENT': ('school', self.parse_school),
+        #     u'Blacklist': ('is_blacklisted', self.parse_blacklist),
+        #     u'BLACKLIST': ('is_blacklisted', self.parse_blacklist),
+        #
+        # }
 
     def parse_blacklist(self, value):
         if not value or value in (0, '0', 'FALSE'):
@@ -122,11 +148,12 @@ class ChildParser:
     def parse(self, row):
         out = {}
         for key, val in row.items():
-
+            translitterated_key = col_name_to_field.get(key, None)
             try:
-                translated, fct = self.fields_dict.get(key, (None, None))
-                if translated:
-                    out[translated] = fct(val)
+                translitterated_value = self.fields_dict.get(
+                    translitterated_key, lambda notfound: None)(val)
+                if translitterated_value:
+                    out[translitterated_key] = translitterated_value
             except Exception as exc:
                 logger.warning(u'{}: Could not parse key={}, value={}'.format(exc, key, val))
                 continue
@@ -138,8 +165,10 @@ def load_children(filelike):
         xls_book = xlrd.open_workbook(file_contents=filelike.read())
         sheet = xls_book.sheets()[0]
         header_row = sheet.row_values(0)
-        if not all(key in header_row for key in CHILD_MANDATORY_FIELDS):
-            raise ValueError(_("All these fields are mandatory: %s") % unicode(CHILD_MANDATORY_FIELDS))
+        for field in CHILD_MANDATORY_FIELDS:
+            if not any(set(CORRESPONDANCE_DICT[field]).intersection(set(header_row))):
+                raise ValueError(u'Missing mandatory field: {}'.format(field))
+
     except xlrd.XLRDError:
         raise ValueError(_("File format is unreadable"))
     nb_created = 0
