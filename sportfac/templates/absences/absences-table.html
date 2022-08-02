@@ -329,6 +329,31 @@
       class="icon icon-file-pdf"></i> {% trans "Export to PDF" %}</a>
 </p>
 
+<div class="modal fade" id="remove-session-confirm-window" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">{% trans "Remove session" %}</h4>
+      </div>
+       <div class="modal-body">
+         <p><strong id="removed-session-date"></strong>: {% trans "Are you sure you want to remove this session?" %}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="confirm-remove-session" class="btn btn-success" data-dismiss="modal">
+          <i class="icon-ok"></i>
+          {% trans "Yes, remove it" %}
+        </button>
+        <button type="button" id="cancel-remove-session" class="btn btn-danger" data-dismiss="modal">
+          <i class="icon-cross"></i>
+          {% trans "No, keep the session" %}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <script type="text/html" id="session-window">
   <form class="session-form hidden-print">
     <div class="form-group">
@@ -358,14 +383,12 @@
     <div class="form-group">
       <button type="submit" class="form-control  btn-primary"><i class="icon-ok"></i> {% trans "Save" %}</button>
     </div>
-    {% if not EXPLICIT_SESSION_DATES %}
-      <div class="form-group text-right">
-        <a href="#" class="session-delete hidden-print btn btn-sm btn-danger"
-           data-session-url="{{ session.get_api_url }}">
-          <i class="icon-trash"></i> {% trans "Delete session" %}
-        </a>
-      </div>
-    {% endif %}
+    <div class="form-group text-right">
+      <a href="#" class="session-delete hidden-print btn btn-sm btn-danger"
+         data-session-url="{{ session.get_api_url }}">
+        <i class="icon-trash"></i> {% trans "Delete session" %}
+      </a>
+    </div>
 
   </form>
 </script>
@@ -786,16 +809,21 @@
       });
 
       $('.absences').on('click', '.edit-session .session-delete', function (evt) {
-        var $parent = $(this).parents(".edit-session");
-
-        $.ajax({
-          url: $parent.data('url'),
-          type: 'DELETE',
-          success: function () {
-            $parent.column().remove();
-          }
+        let $parent = $(this).parents(".edit-session");
+        let $date = $parent.data('date')
+        $('.has-popover', $parent).popover('hide');
+        $('#removed-session-date').text($date);
+        $('#confirm-remove-session').click(function (evt) {
+          evt.preventDefault();
+          $.ajax({
+            url: $parent.data('url'),
+            type: 'DELETE',
+            success: function (response) {
+              $parent.column().remove();
+            }
+          });
         });
-        evt.preventDefault();
+        $('#remove-session-confirm-window').modal()
       });
 
 
