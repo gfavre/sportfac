@@ -1,7 +1,5 @@
-
 from django import template
 from django.utils.translation import ugettext as _
-
 
 register = template.Library()
 
@@ -12,7 +10,9 @@ def absence_status(status):
             'excused': _("Excused"),
             'medical': _("Medical certificate"),
             'late': _("Late arrival"),
-            'present': _("Present")}
+            'present': _("Present"),
+            'canceled': _("Canceled course"),
+            }
     return vals.get(status, _("n/a"))
 
 
@@ -29,5 +29,7 @@ def absence_short(status):
             'excused': _("E"),
             'medical': _("MC"),
             'late': _("LA"),
-            'present': _("P")}
+            'present': _("P"),
+            'canceled': _("AA"),
+            }
     return vals.get(status, _("n/a"))

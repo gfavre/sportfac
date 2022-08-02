@@ -42,6 +42,7 @@ class AbsenceAdmin(SportfacModelAdmin):
     date_hierarchy = 'session__date'
     list_display = ('child', 'get_date', 'get_activity', 'get_course', 'status')
     list_filter = ('status',)
+    raw_id_fields = ('child', 'session')
     search_fields = ('child__first_name', 'child__last_name', 'session__course__number', 'session__activity__name')
 
     def get_queryset(self, request):

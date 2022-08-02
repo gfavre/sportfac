@@ -291,7 +291,7 @@
         {% endif %}
         {% for session_date in all_dates %}{% if session_date in absences %}
           {% with absence=absences|get_item:session_date %}
-            <td class="session-col absence {{ absence.status }} {% if absence.status == 'present' %}success{% elif absence.status == 'late' %}info{% elif absence.status == 'excused' %}warning{% else %}danger{% endif %}">
+            <td class="session-col absence {{ absence.status }} {% if absence.status == 'present' %}success{% elif absence.status == 'late' %}info{% elif absence.status == 'excused' %}warning{% elif absence.status == 'canceled' %}warning{% else %}danger{% endif %}">
           <span class="set-absence"
                 data-pk="{{ absence.pk }}"
                 data-session="{{ absence.session.id }}"
@@ -408,6 +408,11 @@
     <div class="radio">
       <label>
         <input type="radio" name="status" id="excused" value="excused">{% trans "Excused" %}
+      </label>
+    </div>
+    <div class="radio">
+      <label>
+        <input type="radio" name="status" id="canceled" value="canceled">{% trans "Canceled course" %}
       </label>
     </div>
     <div class="radio">
@@ -595,6 +600,10 @@
               case 'excused':
                 label = "{% trans 'E' %}";
                 classes = "danger excused";
+                break;
+              case 'canceled':
+                label = "{% trans 'AA' %}";
+                classes = "warning canceled";
                 break;
               case 'medical':
                 label = "{% trans 'MC' %}";
