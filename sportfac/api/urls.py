@@ -16,6 +16,7 @@ router.register(r'teachers', views.TeacherViewSet, base_name='teacher')
 router.register(r'buildings', views.BuildingViewSet, base_name='building')
 router.register(r'registrations', views.RegistrationViewSet, base_name='registration')
 router.register(r'levels', views.ChildActivityLevelViewSet, base_name='level')
+router.register(r'waiting_slots', views.WaitingSlotViewSet, base_name='waiting_slot')
 
 router.register(r'extra', views.ExtraInfoViewSet, base_name="api-extra")
 router.register(r'years', views.YearViewSet, base_name="year")

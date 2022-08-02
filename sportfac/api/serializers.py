@@ -1,12 +1,9 @@
 # -*- coding:utf-8 -*-
 from django.conf import settings
-from django.core.validators import RegexValidator
-from django.core.exceptions import ValidationError
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
-from localflavor.ch.forms import ssn_re, validators
 
 from absences.models import Absence, Session
 from activities.models import Activity, Course, ExtraNeed
@@ -14,6 +11,7 @@ from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser, School, SchoolYear
 from registrations.models import Child, ExtraInfo, Registration, ChildActivityLevel
 from schools.models import Building, Teacher
+from waiting_slots.models import WaitingSlot
 
 
 class ActivitySerializer(serializers.ModelSerializer):
@@ -218,6 +216,12 @@ class RegistrationSerializer(serializers.ModelSerializer):
                 _("Max number of registrations reached.")
             )
         return data
+
+
+class WaitingSlotSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WaitingSlot
+        fields = ('id', 'child', 'course')
 
 
 class ExtraSerializer(serializers.ModelSerializer):

@@ -270,6 +270,7 @@ TENANT_APPS = (
     'registrations',
     'payments',
     'schools',
+    'waiting_slots',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
