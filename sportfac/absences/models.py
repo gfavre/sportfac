@@ -18,6 +18,7 @@ class Absence(StatusModel, TimeStampedModel):
         ('excused', _("Excused")),
         ('medical', _("Medical certificate")),
         ('late', _("Late arrival")),
+        ('canceled', _("Canceled course")),
         ('na', _("n/a")),
     )
 

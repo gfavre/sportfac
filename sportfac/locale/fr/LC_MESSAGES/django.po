@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-02 12:11+0200\n"
-"PO-Revision-Date: 2022-08-02 12:12+0200\n"
+"POT-Creation-Date: 2022-08-02 12:16+0200\n"
+"PO-Revision-Date: 2022-08-02 12:16+0200\n"
 "Last-Translator: Gregory Favre <greg@beyondthewall.ch>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -125,7 +125,11 @@ msgstr "Certificat médical"
 msgid "Late arrival"
 msgstr "En retard"
 
-#: sportfac/absences/models.py:21 sportfac/absences/templatetags/status.py:16
+#: sportfac/absences/models.py:21
+msgid "Canceled course"
+msgstr "A arrêté le cours"
+
+#: sportfac/absences/models.py:22 sportfac/absences/templatetags/status.py:16
 #: sportfac/absences/templatetags/status.py:33
 msgid "n/a"
 msgstr "n/a"
