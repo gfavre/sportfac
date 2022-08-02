@@ -6963,8 +6963,8 @@ button.close {
 }
 @font-face {
   font-family: "icons-sportfac";
-  src: url("../font/icons-sportfac.eot?52902702");
-  src: url("../font/icons-sportfac.eot?52902702#iefix") format("embedded-opentype"), url("../font/icons-sportfac.woff2?52902702") format("woff2"), url("../font/icons-sportfac.woff?52902702") format("woff"), url("../font/icons-sportfac.ttf?52902702") format("truetype"), url("../font/icons-sportfac.svg?52902702#icons-sportfac") format("svg");
+  src: url("../font/icons-sportfac.eot?7222182");
+  src: url("../font/icons-sportfac.eot?7222182#iefix") format("embedded-opentype"), url("../font/icons-sportfac.woff2?7222182") format("woff2"), url("../font/icons-sportfac.woff?7222182") format("woff"), url("../font/icons-sportfac.ttf?7222182") format("truetype"), url("../font/icons-sportfac.svg?7222182#icons-sportfac") format("svg");
   font-weight: normal;
   font-style: normal;
 }
@@ -6974,7 +6974,7 @@ button.close {
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   @font-face {
     font-family: 'icons-sportfac';
-    src: url('../font/icons-sportfac.svg?52902702#icons-sportfac') format('svg');
+    src: url('../font/icons-sportfac.svg?7222182#icons-sportfac') format('svg');
   }
 }
 */

@@ -1,6 +1,5 @@
 @charset "UTF-8";
 
- 
 .icon-cog:before { content: '\2699'; } /* '⚙' */
 .icon-cog-alt:before { content: '\26ef'; } /* '⛯' */
 .icon-wrench-1:before { content: '\e004'; } /* '' */

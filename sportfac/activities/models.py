@@ -482,6 +482,10 @@ class Course(TimeStampedModel):
     def get_delete_url(self):
         return reverse('backend:course-delete', kwargs={'course': self.pk})
 
+    def get_duplicate_url(self):
+        return reverse('backend:course-create') + '?source={}'.format(self.pk)
+
+
     def get_js_export_url(self):
         return reverse('backend:course-js-export', kwargs={'course': self.pk})
 

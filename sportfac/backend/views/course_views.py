@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.db import transaction
+from django.forms.models import model_to_dict
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.text import slugify
@@ -61,6 +62,15 @@ class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
         if activity:
             activity_obj = get_object_or_404(Activity, pk=activity)
             initial['activity'] = activity_obj
+
+        if self.request.GET.get('source'):
+            try:
+                source = Course.objects.get(pk=self.request.GET.get('source'))
+                initial.update(model_to_dict(source))
+                del initial['number']
+                initial['uptodate'] = False
+            except Course.DoesNotExist:
+                pass
         return initial
 
     def form_valid(self, form):
