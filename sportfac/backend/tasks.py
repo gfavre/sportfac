@@ -3,7 +3,6 @@ from datetime import datetime
 import os
 from tempfile import NamedTemporaryFile
 
-from django.core.cache import cache
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.contrib import messages
@@ -110,7 +109,7 @@ def create_tenant(start, end, copy_activities_from_id=None, copy_children_from_i
                 destination_tenant.end_date.isoformat()
             ))
 
-            Course.objects.all().update(uptodate=False)
+            Course.objects.all().update(uptodate=False, nb_participants=0)
             logger.debug('Set all courses to not up-to-date in destination')
 
         except YearTenant.DoesNotExist:
@@ -197,7 +196,6 @@ def update_current_tenant():
         new_domain.save()
         # log out everyone
         Session.objects.all().delete()
-        cache.clear()
 
         for user in FamilyUser.objects.filter(is_active=True, is_manager=True):
             msg = _("The active period has been automatically changed to %(start)s - %(end)s")

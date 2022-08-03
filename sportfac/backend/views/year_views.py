@@ -3,7 +3,6 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.sessions.models import Session
-from django.core.cache import cache
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.db import connection, transaction
 from django.utils import timezone
@@ -71,7 +70,6 @@ class ChangeProductionYearFormView(SuccessMessageMixin, BackendMixin, FormView):
         new_domain.save()
         # log every one out
         Session.objects.exclude(session_key=self.request.session.session_key).delete()
-        cache.clear()
         self.request.session[settings.VERSION_SESSION_NAME] = new_domain.domain
 
         connection.set_tenant(tenant)
