@@ -1,7 +1,7 @@
 angular.module('sportfacCalendar.controllers', [])
 
-.controller('ChildrenCtrl', ["$scope", "$routeParams", "$attrs", "$location", "$filter", "ChildrenService", "RegistrationsService",
-function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, RegistrationsService) {
+.controller('ChildrenCtrl', ["$scope", "$routeParams", "$attrs", "$location", "$filter", "ChildrenService", "RegistrationsService", "WaitingSlotService",
+function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, RegistrationsService, WaitingSlotService) {
   'use strict';
   if (!$attrs.maxregistrations) throw new Error("No maxregistrations option set");
     $scope.maxregistrations = parseInt($attrs.maxregistrations);
@@ -31,12 +31,18 @@ function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, Regi
     child: $attrs.childserviceurl,
     course: $attrs.courseserviceurl,
     family: $attrs.familyserviceurl,
-    registration: $attrs.registrationserviceurl
+    registration: $attrs.registrationserviceurl,
+    waitingslots: $attrs.waitingslotsserviceurl,
   };
 
   $scope.loadRegistrations = function(){
     RegistrationsService.all($scope.urls.registration).then(function(registrations){
       $scope.registrations = registrations;
+    });
+  };
+  $scope.loadWaitingSlots = function(){
+    WaitingSlotService.all($scope.urls.waitingslots).then(function(slots){
+      $scope.waitingSlots = slots;
     });
   };
 
@@ -51,21 +57,47 @@ function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, Regi
   };
 
   $scope.unregisterCourse = function(child, course){
-    var compare = function(registration){
+    let compare = function(registration){
        return registration.child === child.id && registration.course === course.id;
     };
 
-    var registration = $filter('filter')($scope.registrations, compare)[0];
+    let registration = $filter('filter')($scope.registrations, compare)[0];
     RegistrationsService.del($scope.urls.registration, registration);
     $scope.registrations.remove(registration);
   };
 
   $scope.registerCourse = function(child, course){
-    var registration = {child: child.id, course: course.id};
+    let registration = {child: child.id, course: course.id};
     RegistrationsService.save($scope.urls.registration, registration).then(function(){
       $scope.registrations.push(registration);
     });
   };
+
+  $scope.addToWaitingList = function(course, child){
+    let slot = {child: child.id, course: course.id};
+    WaitingSlotService.create($scope.urls.waitingslots, slot).then(function(){
+      $scope.waitingSlots.push(slot);
+    });
+  };
+  $scope.isOnWaitingList = function(course, child){
+    let compare = function(slot){
+       console.log("comparing", slot, child, course);
+       return slot.child === child.id && slot.course === course.id;
+    };
+    console.log("slots:", $scope.waitingSlots);
+    console.log("filter res:", $filter('filter')($scope.waitingSlots, compare))
+    return $filter('filter')($scope.waitingSlots, compare).length === 1;
+  }
+  $scope.removeFromWaitingList = function(course, child){
+    let compare = function(slot){
+       return slot.child === child.id && slot.course === course.id;
+    };
+
+    let slot = $filter('filter')($scope.waitingSlots, compare)[0];
+    WaitingSlotService.del($scope.urls.waitingslots, slot);
+    $scope.waitingSlots.remove(slot);
+  };
+
 
   $scope.selectChild = function(childId){
     angular.forEach($scope.userChildren, function(child){
@@ -87,6 +119,7 @@ function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, Regi
     }
     $scope.selectChild(childId);
     $scope.loadRegistrations();
+    $scope.loadWaitingSlots();
   });
 
 }])
@@ -430,12 +463,16 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
     }
   });
 
+
+
+
 }])
 
 
 /*****************************************************************************
                     Detailed activity
 *****************************************************************************/
-.controller('ActivityDetailCtrl', [function(){
+.controller('ActivityDetailCtrl', ["$scope", function($scope){
   'use strict';
+
 }]);

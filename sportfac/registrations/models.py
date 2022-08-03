@@ -683,7 +683,7 @@ class RegistrationsProfile(TimeStampedModel):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile',
                                 null=True, on_delete=models.SET_NULL)
 
-    has_paid_all = models.BooleanField(default=False, blank=True, editable=False)
+    has_paid_all = models.BooleanField(default=False, blank=True)
     finished_registering = models.BooleanField(default=False, blank=True, editable=False)
     last_registration = models.DateTimeField(null=True, blank=True, editable=False)
 

@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('registrations', '0011_child_avs'),
-        ('activities', '0016_auto_20220802_1607'),
+        ('activities', '0015_add_local_city_override'),
     ]
 
     operations = [

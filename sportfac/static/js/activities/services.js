@@ -17,7 +17,11 @@ factory('Registration', function(){
     };
     return Registration;
   })
-
+  .factory('WaitingSlot', function(){
+    return function(data){
+      angular.extend(this, data);
+    };
+  })
 .factory('RegistrationsService', ["$http", "$cookies", "Registration", function($http, $cookies, Registration){
     $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
     var handleErrors = function(serverResponse, status, errorDestination){
@@ -70,6 +74,42 @@ factory('Registration', function(){
         }
     };
 
+    return ModelUtils;
+  }])
+
+.factory('WaitingSlotService', ["$http", "$cookies", "WaitingSlot", function($http, $cookies, WaitingSlot){
+    $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
+    let handleErrors = function(serverResponse, status, errorDestination){
+
+      if (angular.isDefined(errorDestination)){
+        angular.forEach(serverResponse, function(value, key){
+          errorDestination[key] = value;
+        });
+      }
+    };
+    let ModelUtils = {
+        all: function(url){
+          return $http.get(url).then(function(response){
+            let slots = [];
+            angular.forEach(response.data, function(slotData){
+              slots.push(new WaitingSlot(slotData));
+            });
+            return slots;
+          });
+        },
+        create: function(url, obj, errors){
+          return $http.post(url, obj).
+            success(function(response){
+                angular.extend(obj, response);
+            }).
+            error(function(response, status){
+                handleErrors(response, status, errors);
+            });
+        },
+        del: function(url, obj){
+          return $http.delete(url + obj.id + '/');
+        },
+    };
     return ModelUtils;
   }])
 
