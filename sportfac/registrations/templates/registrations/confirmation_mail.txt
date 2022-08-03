@@ -6,5 +6,12 @@ Nous avons bien reçu vos inscriptions pour les cours suivants:
 • {{ registration.child.full_name|safe }} - {{ registration.course.short_name|safe }}{% if payment %} - {{ registration.price|money }}{% endif %}
 {% endfor %}
 
+{% if waiting_slots %}
+Vous êtes inscrits sur la liste d'attente de ces cours actuellement complets:
+{% for waiting_slot in waiting_slots %}
+• {{ waiting_slot.child.full_name|safe }} - {{ waiting_slot.course.short_name|safe }}
+{% endfor %}
+Nous vous contacterons si une place venait à se libérer.
+{% endif %}
 
 {{ signature }}

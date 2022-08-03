@@ -18,6 +18,15 @@ Vous pouvez retrouver votre facture en tous temps sur {{ site_url }}{{ bill.get_
 La facture de {{ bill.total|money }} vous sera envoyée par courrier.
 {% endif %}
 
+{% if waiting_slots %}
+Vous êtes inscrits sur la liste d'attente de ces cours actuellement complets:
+{% for waiting_slot in waiting_slots %}
+• {{ waiting_slot.child.full_name|safe }} - {{ waiting_slot.course.short_name|safe }}
+{% endfor %}
+Nous vous contacterons si une place venait à se libérer.
+{% endif %}
+
+
 {% if appointments %}
 Prise de matériel:
 {% for appointment in appointments %}

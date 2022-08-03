@@ -16,7 +16,7 @@ from backend.models import Domain, YearTenant
 from mailer.tasks import send_mail
 from profiles.models import FamilyUser
 from registrations.models import Bill, Registration
-# from sportfac.decorators import respect_language
+from waiting_slots.models import WaitingSlot
 
 
 @shared_task
@@ -36,11 +36,13 @@ def send_bill_confirmation(user_pk, bill_pk, tenant_pk=None, language=settings.L
         user = FamilyUser.objects.get(pk=user_pk)
         bill = Bill.objects.get(pk=bill_pk)
         registrations = bill.registrations.all()
+        waiting_slots = WaitingSlot.objects.filter(child__family=user)
         current_site = Site.objects.get_current()
         context = {
             'appointments': None,
             'user': user,
             'registrations': registrations,
+            'waiting_slots': waiting_slots,
             'bill': bill,
             'iban': global_preferences['payment__IBAN'],
             'signature': global_preferences['email__SIGNATURE'],
@@ -84,11 +86,14 @@ def send_confirmation(user_pk, tenant_pk=None, language=settings.LANGUAGE_CODE):
 
         user = FamilyUser.objects.get(pk=user_pk)
         registrations = Registration.objects.filter(child__family=user, confirmation_sent_on__isnull=True)
+        waiting_slots = WaitingSlot.objects.filter(child__family=user)
+
         current_site = Site.objects.get_current()
         context = {
             'appointments': None,
             'user': user,
             'registrations': registrations,
+            'waiting_slots': waiting_slots,
             'signature': global_preferences['email__SIGNATURE'],
             'site_name': current_site.name,
             'site_url': settings.DEBUG and 'http://' + current_site.domain or 'https://' + current_site.domain
