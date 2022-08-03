@@ -155,9 +155,9 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
                         context['applied_price_modifications'][extra.key.id] = price_modif
         context['has_price_modification'] = len(context['applied_price_modifications']) != 0
         if settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
-            context['subtotal'] = sum([registration.get_price_category()[0] for registration in registrations])
+            context['subtotal'] = sum([registration.get_price_category()[0] or 0 for registration in registrations])
         else:
-            context['subtotal'] = sum([registration.get_price() for registration in registrations])
+            context['subtotal'] = sum([registration.get_price() or 0 for registration in registrations])
         context['total_price'] = context['subtotal'] + sum(context['applied_price_modifications'].values())
         context['overlaps'] = []
         context['overlapped'] = set()
