@@ -11,7 +11,7 @@ djangorestframework-datatables==0.5.1
 
 # Forms
 django-braces == 1.8.1
--e git+git://github.com/gfavre/django-floppyforms.git@e696d281e7f7e9f89901ed8173f0a8ac1b0bc5f4#egg=floppyforms
+-e git+https://github.com/gfavre/django-floppyforms.git@e696d281e7f7e9f89901ed8173f0a8ac1b0bc5f4#egg=floppyforms
 # Select2 widget (autocompletion on selects)
 Django-Select2 == 5.11.1
 django-autoslug == 1.9.3
