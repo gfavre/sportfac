@@ -3,6 +3,7 @@ from datetime import datetime
 import os
 from tempfile import NamedTemporaryFile
 
+from django.core.cache import cache
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.contrib import messages
@@ -196,6 +197,7 @@ def update_current_tenant():
         new_domain.save()
         # log out everyone
         Session.objects.all().delete()
+        cache.clear()
 
         for user in FamilyUser.objects.filter(is_active=True, is_manager=True):
             msg = _("The active period has been automatically changed to %(start)s - %(end)s")
