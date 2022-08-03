@@ -237,7 +237,7 @@
         <th class="child-name">{% trans "Name" %}</th>
 
         {% if DISPLAY_PARENT_CITY %}
-          <th>{% trans "City" %}</th>
+          <th>{% trans "Address" %}</th>
         {% endif %}
 
       {% if LIMIT_BY_SCHOOL_YEAR %}
@@ -269,7 +269,10 @@
       <td>{{ registration.child.full_name }}</td>
 
       {% if DISPLAY_PARENT_CITY %}
-      <td>{{ registration.child.family.city|title }}</td>
+      <td>
+        {{ registration.child.family.address }}<br>
+        {{ registration.child.family.country }}-{{ registration.child.family.zipcode }} {{ registration.child.family.city|title }}
+      </td>
       {% endif %}
 
       {% if LIMIT_BY_SCHOOL_YEAR %}
