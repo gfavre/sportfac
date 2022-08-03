@@ -12,6 +12,5 @@ from site_views import (FlatPageListView, FlatPageUpdateView, AppointmentDeleteV
                         AppointmentsManagementView, AppointmentsExportView,
                         GenericEmailListView, GenericEmailUpdateView)
 from .year_views import *
-
-
+from .waiting_slots_views import WaitingSlotTransformView
 

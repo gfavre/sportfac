@@ -228,6 +228,12 @@ years_patterns = [
 
 ]
 
+waiting_slots_patterns = [
+    url(r'^(?P<pk>\d+)/transform$', view=views.WaitingSlotTransformView.as_view(),
+        name='waiting_slot-transform'),
+]
+
+
 urlpatterns = [
     url(r'^$', views.HomePageView.as_view(), name="home"),
     url(r'^activity/', include(activities_patterns)),
@@ -242,4 +248,5 @@ urlpatterns = [
     url(r'^user/', include(users_patterns)),
     url(r'^site/', include(site_patterns)),
     url(r'^year/', include(years_patterns)),
+    url(r'^waiting-slots/', include(waiting_slots_patterns)),
 ]

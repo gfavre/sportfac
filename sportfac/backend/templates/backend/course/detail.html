@@ -161,14 +161,13 @@
   </div>
 </section>
 
-{% if course.count_participants %}
   {% addtoblock  "js" %}
     <script src="{% static 'js/vendor/datatables/jquery.dataTables.min.js' %}"></script>
     <script src="{% static 'js/vendor/datatables/dataTables.tableTools.min.js' %}"></script>
     <script src="{% static 'js/vendor/datatables/dataTables.bootstrap.js' %}"></script>
     <script>
       $(function () {
-        var t = $(".table").dataTable({
+        let participantsTable = $(".table.participants").dataTable({
           {% if LANGUAGE_CODE == 'fr' %}
             "language": {
               "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
@@ -198,24 +197,24 @@
         });
 
         $('.selectall').click(function(){
-          var tabletools = TableTools.fnGetInstance(t[0]);
+          let tabletools = TableTools.fnGetInstance(participantsTable[0]);
           tabletools.fnSelectAll(true);
         });
         $('.deselectall').click(function(){
-          var tabletools = TableTools.fnGetInstance(t[0]);
+          let tabletools = TableTools.fnGetInstance(participantsTable[0]);
           tabletools.fnSelectNone();
         });
         $('form.mail').submit(function(){
-          var tabletools = TableTools.fnGetInstance(t[0]);
-          var ids = tabletools.fnGetSelected().map(function(elem){
+          let tabletools = TableTools.fnGetInstance(participantsTable[0]);
+          let ids = tabletools.fnGetSelected().map(function(elem){
             return elem.getAttribute('data-user-id');
           });
           $('input[name="data"]').val(JSON.stringify(ids));
         });
         $('form.move').submit(function(evt){
-          var form = this;
-          var tabletools = TableTools.fnGetInstance(t[0]);
-          var ids = tabletools.fnGetSelected().map(function(elem){
+          let form = this;
+          let tabletools = TableTools.fnGetInstance(participantsTable[0]);
+          let ids = tabletools.fnGetSelected().map(function(elem){
             return elem.getAttribute('data-registration-id');
           });
           $('input[name=registrations]', form).remove();
@@ -252,7 +251,7 @@
       </form>
     </div>
 
-    <table class="table">
+    <table class="table participants">
       <thead>
         <tr>
           {% if BIB_NUMBERS %}
@@ -355,8 +354,91 @@
 
       {% endfor %}
     </table>
-
-
   </section>
-{% endif %}
+
+<hr>
+  <section>
+    <h2>{% trans "Waiting list" %}</h2>
+  <table class="table waiting-slots">
+      <thead>
+        <tr>
+          {% if BIB_NUMBERS %}
+            <th class="bibnumber">{% trans "Bib number" %}</th>
+          {% endif %}
+          <th class="child-name">{% trans "Name" %}</th>
+          {% if LIMIT_BY_SCHOOL_YEAR %}<th class="school">{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>{% endif %}
+          {% if EMERGENCY_NUMBER_MANDATORY %}
+            <th>{% trans "Emergency number" %}</th>
+          {% else %}
+            <th>{% trans "Parents phone" %}</th>
+          {% endif %}
+          <th>{% trans "Parents email" %}</th>
+          <th>{% trans "Actions" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for waiting_slot in course.waitingslot_set.all %}
+        <tr data-waiting-slot-id="{{ waiting_slot.id }}"
+            data-user-id="{{ waiting_slot.child.family.id }}">
+          {% if BIB_NUMBERS %}
+            <td data-order="{{ waiting_slot.child.bib_number|default:"0" }}">
+              {{ waiting_slot.child.bib_number|default:"n/a" }}
+            </td>
+          {% endif %}
+          <td data-order="{{ waiting_slot.child.last_name }} {{ waiting_slot.child.first_name }}">
+            <a href="{{ waiting_slot.child.get_backend_url }}">{{ waiting_slot.child.full_name }}</a>
+          </td>
+          {% if LIMIT_BY_SCHOOL_YEAR %}<td>
+            {{ waiting_slot.child.school_year|default:"n/a" }}
+            {% if CHILD_SCHOOL %}<br>
+              {{ waiting_slot.child.school_name }}
+            {% endif %}
+          </td>{% endif %}
+          {% if EMERGENCY_NUMBER_MANDATORY %}
+            <td>
+              <a href="{{ waiting_slot.child.emergency_number|phone:'RFC3966' }}">
+                {{ waiting_slot.child.emergency_number|phone }}
+              </a>
+            </td>
+          {% else %}
+            <td>
+              <ul>
+                {% if waiting_slot.child.family.private_phone %}
+                  <li>
+                    <a href="{{ waiting_slot.child.family.private_phone|phone:'RFC3966' }}">
+                      {{ waiting_slot.child.family.private_phone|phone }}
+                    </a>
+                  </li>
+                {% endif %}
+                {% if waiting_slot.child.family.private_phone2 %}
+                  <li>
+                    <a href="{{ waiting_slot.child.family.private_phone2|phone:'RFC3966' }}">
+                      {{ waiting_slot.child.family.private_phone2|phone }}
+                    </a>
+                  </li>
+                {% endif %}
+                {% if waiting_slot.child.family.private_phone3 %}
+                  <li>
+                    <a href="{{ waiting_slot.child.family.private_phone3|phone:'RFC3966' }}">
+                      {{ waiting_slot.child.family.private_phone3|phone }}
+                    </a>
+                  </li>
+                {% endif %}
+              </ul>
+            </td>
+          {% endif %}
+          <td>{{ waiting_slot.child.family.email | urlize }}</td>
+          <td>
+            <ul class="list-unstyled">
+              <li class="text-nowrap"><a href="{{ waiting_slot.get_transform_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Add to participants" %}</a></li>
+              <li class="text-nowrap"><a href="{{ waiting_slot.get_delete_url }}" class="btn btn-sm"><i class="icon-cancel"></i>&nbsp;{% trans "Remove from waiting list" %}</a></li>
+            </ul>
+          </td>
+
+        </tr>
+        {% empty %}
+
+      {% endfor %}
+    </table>
+  </section>
 {% endblock content %}
