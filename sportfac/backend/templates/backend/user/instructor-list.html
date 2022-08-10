@@ -59,6 +59,7 @@
           dom: 'BfrlitiplB',
           columns: [
             {data: "id"},
+            {data: "external_identifier"},
             {data: 'first_name', name: 'last_name'},
             {data: 'last_name', name: 'last_name'},
             {data: 'course', name: 'course.number,course.activity.name'},
@@ -69,6 +70,11 @@
               visible: false,
               searchable: false,
               targets: ['user-id'],
+            },
+            {
+              visible: {% if INSTRUCTORS_DISPLAY_EXTERNAL_ID %}true{% else %}false{% endif %},
+              searchable: true,
+              targets: ['external_identifier'],
             },
             {
               orderable: false,
@@ -82,6 +88,7 @@
               searchable: false,
               targets: ['actions']
             },
+
             {
               render: function (data, type, row) {
                 let courses = row['course'].flatMap(
@@ -157,6 +164,7 @@
     <thead>
     <tr>
       <th class="user-id">{% trans "First name" %}</th>
+      <th class="external_identifier">{% trans "Identifier" %}</th>
       <th class="first_name">{% trans "First name" %}</th>
       <th class="last_name">{% trans "Last name" %}</th>
       <th class="course">{% trans "Courses" %}</th>

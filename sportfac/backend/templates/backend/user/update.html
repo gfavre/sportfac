@@ -102,6 +102,8 @@
     {% if is_instructor %}
     <fieldset>
     <legend>{% trans "Instructor informations" %}</legend>
+        {% if INSTRUCTORS_DISPLAY_EXTERNAL_ID %}{% formrow form.external_identifier %}{% endif %}
+
     {% formconfig row using "floppyforms/rows/bootstrap-sm-3.html" %}
     {% formrow form.gender form.birth_date form.nationality form.permit_type %}
     {% formconfig row using "floppyforms/rows/bootstrap.html" %}

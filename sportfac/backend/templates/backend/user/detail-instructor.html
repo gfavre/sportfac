@@ -6,108 +6,129 @@
 {% block page_title %}{{ object.full_name }}{% endblock %}
 
 {% block content %}
-<section class="portlet">
-  <h4 class="portlet-title"><u>{% trans "Contact informations" %}</u></h4>
-  <dl class="dl-horizontal">
-    <dt>{% trans "Address" %}</dt>
-    <dd>
-      {% if object.address %}{{ object.address }}<br />{% endif %}
-      {{ object.zipcode }} {{ object.city }}<br />
-      {{ object.get_country_display }}
-    </dd>
-    <dt>Email</dt><dd><a href="mailto:{{ object.email }}">{{ object.email }} </a></dd>
-    {% if object.private_phone %}
-    <dt>{% trans "Home phone" %}</dt>
-    <dd>
-      <a href="{{ object.private_phone|phone:'RFC3966' }}">{{ object.private_phone|phone }}</a>
-    </dd>
-    {% endif %}
-    {% if object.private_phone2 %}
-    <dt>{% trans "Mobile phone" %}</dt>
-    <dd>
-      <a href="{{ object.private_phone2|phone:'RFC3966' }}">{{ object.private_phone2|phone }}</a>
-    </dd>
-    {% endif %}
-    {% if object.private_phone3 %}
-    <dt>{% trans "Other phone" %}</dt>
-    <dd>
-      <a href="{{ object.private_phone3|phone:'RFC3966' }}">{{ object.private_phone3|phone }}</a>
-    </dd>
-    {% endif %}
-    <dt>{% trans "Birth date" %}</dt>
-    <dd>{{ object.birth_date | date:"j F Y"}}</dd>
-  <dt>{% trans "Gender" %}</dt>
-    <dd>{{ object.get_gender_display }}</dd>
+  <section class="portlet">
+    <h4 class="portlet-title"><u>{% trans "Contact informations" %}</u></h4>
+    <dl class="dl-horizontal">
+      <dt>{% trans "Address" %}</dt>
+      <dd>
+        {% if object.address %}{{ object.address }}<br/>{% endif %}
+        {{ object.zipcode }} {{ object.city }}<br/>
+        {{ object.get_country_display }}
+      </dd>
+      <dt>Email</dt>
+      <dd><a href="mailto:{{ object.email }}">{{ object.email }} </a></dd>
+      {% if object.private_phone %}
+        <dt>{% trans "Home phone" %}</dt>
+        <dd>
+          <a href="{{ object.private_phone|phone:'RFC3966' }}">{{ object.private_phone|phone }}</a>
+        </dd>
+      {% endif %}
+      {% if object.private_phone2 %}
+        <dt>{% trans "Mobile phone" %}</dt>
+        <dd>
+          <a href="{{ object.private_phone2|phone:'RFC3966' }}">{{ object.private_phone2|phone }}</a>
+        </dd>
+      {% endif %}
+      {% if object.private_phone3 %}
+        <dt>{% trans "Other phone" %}</dt>
+        <dd>
+          <a href="{{ object.private_phone3|phone:'RFC3966' }}">{{ object.private_phone3|phone }}</a>
+        </dd>
+      {% endif %}
+      <dt>{% trans "Birth date" %}</dt>
+      <dd>{{ object.birth_date | date:"j F Y" }}</dd>
+      <dt>{% trans "Gender" %}</dt>
+      <dd>{{ object.get_gender_display }}</dd>
 
       <dt>{% trans "Nationality" %}</dt>
-    <dd>{{ object.get_nationality_display }}</dd>
-  {% if object.nationality != 'CH' %}
- <dt>{% trans "permit_type" %}</dt>
-    <dd>{{ object.get_permit_type_display }}</dd>
-  {% endif %}
-    <dt>{% trans "IBAN" %}</dt>
-    <dd>{{ object.iban|iban }} {% if object.bank_name %} &mdash; {{ object.bank_name }}{% endif %}</dd>
-    <dt>{% trans "AHV number" %}</dt>
-    <dd>{{ object.ahv|ahv }}</dd>
-    <dt>{% trans "Is sports teacher" %}</dt>
-    <dd>{{ object.is_mep }}</dd>
-  <dt>{% trans "Is teacher" %}</dt>
-    <dd>{{ object.is_teacher }}</dd>
-    <dt>{% trans "J+S identifier" %}</dt>
-    <dd>{{ object.js_identifier }}</dd>
-  </dl>
-  <p class="text-center">
-    <a href="{{ object.get_update_url }}" class="btn btn-default btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Update contact informations" %}</a>
-  </p>
-</section>
-<section class="portlet">
-  <h4 class="portlet-title"><u>{% trans "Courses" %}</u></h4>
-<div class="row">
-  {% for course in object.course.all %}
-  <section class="col-sm-6 topped">
-    <div class="pricing-plan">
-      <header class="pricing-header">
-        <p class="pricing-plan-label">{% blocktrans with number=course.number %}Course #{{ number }}{% endblocktrans %}</p>
-        <h4 class="pricing-plan-title">
-          {{ course.start_date | date:"j F Y" }} – {{ course.end_date | date:'j F Y'  }}
-        </h4>
-        <p class="pricing-plan-label">
-        {% blocktrans with day=course.day_name|lower  start_time=course.start_time|time:"H:i" end_time=course.end_time|time:"H:i" duration=course.duration|duration %}Every {{ day }} from {{ start_time }} to {{ end_time }} ({{ duration }}){% endblocktrans %}</p>
-      </header>
-
-      <dl class="dl-horizontal">
-        <dt>{% trans "Instructors" %}</dt>
-        <dd>
-          <ul class="list-unstyled">
-          {% for instructor in course.instructors.all %}
-            <li><a href="{{ instructor.get_backend_url }}">{{ instructor.full_name  }}</a></li>
-          {% endfor %}
-          </ul>
-        </dd>
-        <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
-        <dt>{% trans "Number of sessions" %}</dt>
-        <dd>{{ course.number_of_sessions }} cours
-        </dd>
-        <dt>{% trans "Price" %}</dt><dd>{{ course.price|money }}</dd>
-        <dt>{% trans "School years" %}</dt><dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
-      </dl>
-      <p class="text-center"><a href="{{ course.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a> </p>
-      <h4 class="content-title">
-        <u>{% trans "Availability"%}</u>
-      </h4>
-      <p>{% blocktrans with count=course.count_participants %}{{ count }} participants{% endblocktrans %} <span class="pull-right strong">{% blocktrans with max_number=course.max_participants %}{{ max_number }} places{% endblocktrans %}</span></p>
-      <div class="progress" style="margin-bottom: 0;">
-        <div class="progress-bar {% if course.full %}progress-bar-danger{% elif course.minimal_participants_reached %}progress-bar-success{% else %}progress-bar-warning{% endif %}" style="width: {{ course.percentage_full }}%">{% if course.full %}{% trans "Course full" %}{% elif course.minimal_participants_reached %}{% trans "Minimal number of participants reached" %}{% else %}{% trans "Not enough participants" %}{% endif %}</div>
-      </div>
-      <p class="text-right"><small>{% blocktrans with min_number=course.min_participants %}{{ min_number }} participants required for activity to take place{% endblocktrans %}</small></p>
-
-      <p class="text-center"><a href="{{ course.get_backend_url }}" class="btn btn-default"><i class="icon-check"></i>&nbsp;{% trans "Check registrations" %}</a> </p>
-
-
-    </div>
+      <dd>{{ object.get_nationality_display }}</dd>
+      {% if object.nationality != 'CH' %}
+        <dt>{% trans "permit_type" %}</dt>
+        <dd>{{ object.get_permit_type_display }}</dd>
+      {% endif %}
+      <dt>{% trans "IBAN" %}</dt>
+      <dd>{{ object.iban|iban }} {% if object.bank_name %} &mdash; {{ object.bank_name }}{% endif %}</dd>
+      <dt>{% trans "AHV number" %}</dt>
+      <dd>{{ object.ahv|ahv }}</dd>
+      <dt>{% trans "Is sports teacher" %}</dt>
+      <dd>{{ object.is_mep }}</dd>
+      <dt>{% trans "Is teacher" %}</dt>
+      <dd>{{ object.is_teacher }}</dd>
+      <dt>{% trans "J+S identifier" %}</dt>
+      <dd>{{ object.js_identifier }}</dd>
+      <dt>{% trans "External identifier" %}</dt>
+      <dd>{{ object.external_identifier }}</dd>
+    </dl>
+    <p class="text-center">
+      <a href="{{ object.get_update_url }}" class="btn btn-default btn-sm"><i
+          class="icon-edit"></i>&nbsp;&nbsp;{% trans "Update contact informations" %}</a>
+    </p>
   </section>
-  {% endfor %}
-</div>
+  <section class="portlet">
+    <h4 class="portlet-title"><u>{% trans "Courses" %}</u></h4>
+    <div class="row">
+      {% for course in object.course.all %}
+        <section class="col-sm-6 topped">
+          <div class="pricing-plan">
+            <header class="pricing-header">
+              <p class="pricing-plan-label">{% blocktrans with number=course.number %}Course #
+                {{ number }}{% endblocktrans %}</p>
+              <h4 class="pricing-plan-title">
+                {{ course.start_date | date:"j F Y" }} – {{ course.end_date | date:'j F Y' }}
+              </h4>
+              <p class="pricing-plan-label">
+                {% blocktrans with day=course.day_name|lower  start_time=course.start_time|time:"H:i" end_time=course.end_time|time:"H:i" duration=course.duration|duration %}
+                  Every {{ day }} from {{ start_time }} to {{ end_time }} ({{ duration }}){% endblocktrans %}</p>
+            </header>
 
-</section>
+            <dl class="dl-horizontal">
+              <dt>{% trans "Instructors" %}</dt>
+              <dd>
+                <ul class="list-unstyled">
+                  {% for instructor in course.instructors.all %}
+                    <li><a href="{{ instructor.get_backend_url }}">{{ instructor.full_name }}</a></li>
+                  {% endfor %}
+                </ul>
+              </dd>
+              <dt>{% trans "Place" %}</dt>
+              <dd>{{ course.place }}</dd>
+              <dt>{% trans "Number of sessions" %}</dt>
+              <dd>{{ course.number_of_sessions }} cours
+              </dd>
+              <dt>{% trans "Price" %}</dt>
+              <dd>{{ course.price|money }}</dd>
+              <dt>{% trans "School years" %}</dt>
+              <dd>{% for year in course.school_years %}{{ year }}P{% if not forloop.last %} -
+              {% endif %} {% endfor %}</dd>
+            </dl>
+            <p class="text-center"><a href="{{ course.get_update_url }}" class="btn btn-default"><i
+                class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a></p>
+            <h4 class="content-title">
+              <u>{% trans "Availability" %}</u>
+            </h4>
+            <p>{% blocktrans with count=course.count_participants %}{{ count }} participants{% endblocktrans %} <span
+                class="pull-right strong">{% blocktrans with max_number=course.max_participants %}{{ max_number }}
+              places{% endblocktrans %}</span></p>
+            <div class="progress" style="margin-bottom: 0;">
+              <div
+                  class="progress-bar {% if course.full %}progress-bar-danger{% elif course.minimal_participants_reached %}progress-bar-success{% else %}progress-bar-warning{% endif %}"
+                  style="width: {{ course.percentage_full }}%">
+                {% if course.full %}{% trans "Course full" %}{% elif course.minimal_participants_reached %}
+                  {% trans "Minimal number of participants reached" %}{% else %}
+                  {% trans "Not enough participants" %}{% endif %}</div>
+            </div>
+            <p class="text-right"><small>
+              {% blocktrans with min_number=course.min_participants %}{{ min_number }} participants required foractivity
+                to take place{% endblocktrans %}</small></p>
+
+            <p class="text-center"><a href="{{ course.get_backend_url }}" class="btn btn-default"><i
+                class="icon-check"></i>&nbsp;{% trans "Check registrations" %}</a></p>
+
+
+          </div>
+        </section>
+      {% endfor %}
+    </div>
+
+  </section>
 {% endblock content %}

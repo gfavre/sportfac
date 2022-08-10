@@ -119,6 +119,7 @@ class ActivityDetailedSerializer(serializers.ModelSerializer):
         model = Activity
         fields = ('id', 'name', 'number', 'courses')
 
+    # noinspection PyMethodMayBeStatic
     def get_courses(self, obj):
         courses = [course for course in obj.courses.order_by('start_date') if course.visible]
         return CourseInlineSerializer(courses, many=True, read_only=True).data
@@ -204,10 +205,12 @@ class RegistrationSerializer(serializers.ModelSerializer):
         if settings.KEPCHUP_LIMIT_BY_SCHOOL_YEAR:
             if data['child'].school_year and data['child'].school_year.year not in data['course'].school_years:
                 raise serializers.ValidationError(
-                    _("This course is not opened to children of school year %(year)s") % {'year': data['child'].school_year}
+                    _("This course is not opened to children of school year %(year)s") % {
+                        'year': data['child'].school_year
+                    }
                 )
         else:
-            if not (data['course'].max_birth_date <= data['child'].birth_date <= data['course'].min_birth_date ):
+            if not (data['course'].max_birth_date <= data['child'].birth_date <= data['course'].min_birth_date):
                 raise serializers.ValidationError(
                     _("This course is not opened to children of this age")
                 )
@@ -280,12 +283,14 @@ class AbsenceSerializer(serializers.ModelSerializer):
         fields = ('id', 'status', 'child', 'session',)
 
 
+# noinspection PyAbstractClass
 class SetAbsenceSerializer(serializers.Serializer):
     child = serializers.PrimaryKeyRelatedField(queryset=Child.objects.all())
     session = serializers.PrimaryKeyRelatedField(queryset=Session.objects.all())
     status = serializers.ChoiceField(choices=Absence.STATUS + ('present', _("Present")))
 
 
+# noinspection PyAbstractClass
 class ChangeCourseSerializer(serializers.Serializer):
     child = serializers.PrimaryKeyRelatedField(queryset=Child.objects.all())
     previous_course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all())
@@ -335,6 +340,7 @@ class FamilySerializer(serializers.ModelSerializer):
     def get_registered_this_period(obj):
         return obj.last_registration is not None
 
+    # noinspection PyMethodMayBeStatic
     def get_actions(self, obj):
         return [
             {
@@ -369,4 +375,4 @@ class InstructorSerializer(FamilySerializer):
 
     class Meta:
         model = FamilyUser
-        fields = ('id', 'full_name', 'first_name', 'last_name', 'course', 'actions')
+        fields = ('id', 'full_name', 'first_name', 'last_name', 'course', 'external_identifier', 'actions')
