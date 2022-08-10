@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 from django.db import connection
-from django.urls import reverse, resolve
+from django.urls import resolve, reverse
 from django.utils import timezone
+from django.utils.timezone import get_default_timezone, make_aware, now
 from django.utils.translation import ugettext as _
-from django.utils.timezone import now, make_aware, get_default_timezone
-
 from dynamic_preferences.registries import global_preferences_registry
 
 from activities.models import Activity
@@ -229,6 +228,8 @@ def kepchup_context(request):
         'DASHBOARD_SHOW_CHILDREN_STATS': settings.KEPCHUP_DASHBOARD_SHOW_CHILDREN_STATS,
         'DASHBOARD_SHOW_FAMILY_STATS': settings.KEPCHUP_DASHBOARD_SHOW_FAMILY_STATS,
         'USE_BLACKLISTS': settings.KEPCHUP_USE_BLACKLISTS,
+        "INSTRUCTORS_DISPLAY_EXTERNAL_ID": settings.KEPCHUP_INSTRUCTORS_DISPLAY_EXTERNAL_ID,
+        "INSTRUCTORS_CAN_EDIT_EXTERNAL_ID": settings.KEPCHUP_INSTRUCTORS_CAN_EDIT_EXTERNAL_ID,
     }
 
 

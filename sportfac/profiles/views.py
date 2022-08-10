@@ -32,6 +32,16 @@ def password_reset(request):
     return auth_views.password_reset(request, password_reset_form=PasswordResetForm)
 
 
+class AccountRedirectView(LoginRequiredMixin, RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        user = self.request.user
+        if user.is_manager or user.is_superuser or user.is_staff:
+            return reverse('backend:home')
+        elif user.is_kepchup_staff:
+            return reverse('activities:my-courses')
+        return reverse('registrations_registered_activities')
+
+
 class _BaseAccount(LoginRequiredMixin, UpdateView):
     model = FamilyUser
     form_class = InstructorForm
@@ -137,13 +147,3 @@ class LogoutView(auth_views.LogoutView):
         if settings.KEPCHUP_USE_SSO:
             return 'https://users.ssfmontreux.ch/logout'
         return super(LogoutView, self).get_next_page()
-
-
-class AccountRedirectView(LoginRequiredMixin, RedirectView):
-    def get_redirect_url(self, *args, **kwargs):
-        user = self.request.user
-        if user.is_manager or user.is_superuser or user.is_staff:
-            return reverse('backend:home')
-        elif user.is_kepchup_staff:
-            return reverse('activities:my-courses')
-        return reverse('registrations_registered_activities')

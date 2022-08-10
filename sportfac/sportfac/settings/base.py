@@ -539,6 +539,9 @@ KEPCHUP_AGES = range(4, 19)
 #########################################
 KEPCHUP_REGISTER_ACCOUNTS_AT_ANY_TIME = False
 KEPCHUP_ZIPCODE_RESTRICTION = list()
+KEPCHUP_INSTRUCTORS_DISPLAY_EXTERNAL_ID = False
+KEPCHUP_INSTRUCTORS_CAN_EDIT_EXTERNAL_ID = False
+
 
 # Payment
 #########################################

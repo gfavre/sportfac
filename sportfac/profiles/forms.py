@@ -23,7 +23,7 @@ __all__ = ('AuthenticationForm', 'PasswordChangeForm', 'PasswordResetForm',
 
 class AuthenticationForm(auth_forms.AuthenticationForm):
     def __init__(self, *args, **kwargs):
-        "Convert to floppyform"
+        """Convert to floppyform"""
         super(AuthenticationForm, self).__init__(*args, **kwargs)
         self.fields['username'].widget = forms.TextInput()
         self.fields['password'].widget = forms.PasswordInput()
@@ -131,10 +131,8 @@ class InstructorForm(ManagerForm):
                   'private_phone', 'private_phone2', 'private_phone3',
 
                   'birth_date', 'iban', 'bank_name',
-                  'ahv', 'js_identifier', 'is_mep', 'is_teacher',
+                  'ahv', 'js_identifier', 'is_mep', 'is_teacher', "external_identifier",
                   'gender', 'nationality', 'permit_type',
-
-
                   )
 
 

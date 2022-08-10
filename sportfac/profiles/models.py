@@ -114,6 +114,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     )
 
     id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
+    external_identifier = models.CharField(verbose_name=_('Identifier'), max_length=255, blank=True, null=True)
     email = models.EmailField(verbose_name=_('Email address'), max_length=255, unique=True, db_index=True)
     first_name = models.CharField(_('First name'), max_length=30, blank=True)
     last_name = models.CharField(_('Last name'), max_length=30, blank=True)

@@ -1,26 +1,29 @@
 {% load i18n floppyforms %}
 
 {% form form using %}
-{% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
+  {% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
 
-{% block errors %}
+  {% block errors %}
     {% for error in form.non_field_errors %}
-        <div class="alert alert-danger">
-            <a class="close" href="#" data-dismiss="alert">×</a>
-             <i class="icon-exclamation" aria-hidden="true"></i>&nbsp;&nbsp;{{ error }}
-        </div><!--- .alert.alert-error -->
+      <div class="alert alert-danger">
+        <a class="close" href="#" data-dismiss="alert">×</a>
+        <i class="icon-exclamation" aria-hidden="true"></i>&nbsp;&nbsp;{{ error }}
+      </div><!--- .alert.alert-error -->
     {% endfor %}
     {% for error in form|hidden_field_errors %}
-        <div class="alert alert-danger">
-            <a class="close" href="#" data-dismiss="alert">×</a>
-            <i class="icon-exclamation" aria-hidden="true"></i>{{ error }}
-        </div><!--- .alert.alert-error -->
+      <div class="alert alert-danger">
+        <a class="close" href="#" data-dismiss="alert">×</a>
+        <i class="icon-exclamation" aria-hidden="true"></i>{{ error }}
+      </div><!--- .alert.alert-error -->
     {% endfor %}
-{% endblock errors %}
+  {% endblock errors %}
   {% formconfig row using "floppyforms/rows/bootstrap-horizontal-3-9.html" %}
 
   <fieldset>
-    {% if object.is_instructor %}<legend>{% trans "Contact informations" %}</legend>{% endif %}
+    {% if object.is_instructor %}
+      <legend>{% trans "Contact informations" %}</legend>
+    {% endif %}
+
     {% formrow form.first_name %}
     {% formrow form.last_name %}
     {% formrow form.email %}
@@ -45,15 +48,18 @@
     {% formrow form.private_phone3 %}
   </fieldset>
   {% if object.is_instructor %}
-  <fieldset>
-    <legend>{% trans "Instructor informations" %}</legend>
-    {% formrow form.gender form.birth_date form.nationality form.permit_type %}
-    {% formrow form.ahv form.iban form.bank_name %}
-    {% formrow form.js_identifier %}
-    {% formrow form.is_mep form.is_teacher %}
-  </fieldset>
+    <fieldset>
+      <legend>{% trans "Instructor informations" %}</legend>
+      {% if INSTRUCTORS_DISPLAY_EXTERNAL_ID %}
+        {% formrow form.external_identifier %}
+      {% endif %}
+      {% formrow form.gender form.birth_date form.nationality form.permit_type %}
+      {% formrow form.ahv form.iban form.bank_name %}
+      {% formrow form.js_identifier %}
+      {% formrow form.is_mep form.is_teacher %}
+    </fieldset>
   {% endif %}
-  
+
 {% endform %}
 
 

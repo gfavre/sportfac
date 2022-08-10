@@ -23,7 +23,7 @@ class FamilyCreationForm(forms.ModelForm):
                   'private_phone', 'private_phone2',
                   'birth_date',
                   'iban', 'ahv', 'js_identifier', 'is_mep', 'is_teacher', 'gender', 'nationality',
-                  'permit_type', 'bank_name')
+                  'permit_type', 'bank_name', "external_identifier")
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -59,7 +59,7 @@ class FamilyChangeForm(forms.ModelForm):
                   'private_phone', 'private_phone2', 'private_phone3',
                   'birth_date',
                   'iban', 'ahv', 'js_identifier', 'is_mep', 'is_teacher', 'gender', 'nationality',
-                  'permit_type', 'bank_name')
+                  'permit_type', 'bank_name', "external_identifier")
 
     def clean_password(self):
         # Regardless of what the user provides, return the initial value.
@@ -92,7 +92,7 @@ class FamilyAdmin(SportfacAdminMixin, UserAdmin):
                                       'private_phone', 'private_phone2', 'private_phone3',
                                       )}),
         (_("Instructor infos"), {
-            'fields': ['birth_date', 'gender', 'ahv',
+            'fields': ["external_identifier", 'birth_date', 'gender', 'ahv',
                        ('nationality', 'permit_type'),
                        ('is_mep', 'is_teacher'),
                        ('iban', 'bank_name'),
