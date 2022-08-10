@@ -1,0 +1,67 @@
+{% extends "backend/base.html" %}
+{% load i18n sekizai_tags %}
+
+{% block title %}{% trans "Functions" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "List functions" %}{% endblock %}
+
+{% get_current_language as LANGUAGE_CODE %}
+
+
+
+{% block content %}
+
+{% addtoblock  "js" %}
+<script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
+<script>
+$(function () {
+  $(".table").dataTable({
+{% if LANGUAGE_CODE == 'fr' %}
+      "language": {
+            "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+      },
+{% endif %}
+      "aoColumnDefs": [
+          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ 2 ] }
+      ]
+  });
+});
+</script>
+{% endaddtoblock %}
+
+<a href="{% url 'backend:function-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New function" %}</a> &nbsp;
+<hr>
+<table class="table">
+  <thead>
+    <tr>
+      <th class="text-nowrap">{% trans "Code" %}</th>
+      <th class="text-nowrap">{% trans "Name" %}</th>
+      <th class="text-nowrap">{% trans "Rate" %}</th>
+      <th class="text-nowrap">{% trans "Rate mode" %}</th>
+      <th class="text-nowrap">{% trans "Actions" %}</th>
+    </tr>
+  </thead>
+  {% for function in object_list %}
+    <tr>
+      <td>
+       {{ function.code }}
+      </td>
+      <td >
+        {{ function.name }}
+      </td>
+      <td >
+        {{ function.rate }}
+      </td>
+      <td>
+        {{ function.rate_mode }}
+      </td>
+      <td>
+        <ul class="list-unstyled">
+          <li class="text-nowrap"><a href="{{ function.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update function" %}</a></li>
+          <li class="text-nowrap"><a href="{{ function.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete function" %}</a></li>
+        </ul>
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock content %}

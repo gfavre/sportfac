@@ -269,6 +269,7 @@ TENANT_APPS = (
     'appointments',
     'registrations',
     'payments',
+    'payroll',
     'schools',
     'waiting_slots',
 )
@@ -534,6 +535,9 @@ KEPCHUP_LIMIT_BY_AGE = False
 KEPCHUP_LIMIT_BY_SCHOOL_YEAR = not KEPCHUP_LIMIT_BY_AGE
 KEPCHUP_SCHOOL_YEAR_MANDATORY = True
 KEPCHUP_AGES = range(4, 19)
+
+KEPCHUP_ENABLE_PAYROLLS = False
+
 
 # User accounts
 #########################################

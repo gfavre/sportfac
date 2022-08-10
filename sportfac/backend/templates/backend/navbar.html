@@ -46,6 +46,21 @@
                 <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New course" %}
               </a>
             </li>
+
+             {% if ENABLE_PAYROLLS %}
+            <li class="divider"></li>
+              <li>
+              <a href="{% url 'backend:function-list' %}">
+                <i class="icon-list-bullet"></i>&nbsp;&nbsp;{% trans "All functions" %}
+              </a>
+            </li>
+              <li>
+              <a href="{% url 'backend:allocation-report' %}">
+                <i class="icon-money"></i>&nbsp;&nbsp;{% trans "Allocations report" %}
+              </a>
+            </li>
+            {% endif %}
+
           </ul>
         </li>
 

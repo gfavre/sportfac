@@ -217,6 +217,13 @@ site_patterns = [
 
 ]
 
+payroll_patterns = [
+    url(r'^functions/$', view=views.FunctionListView.as_view(), name='function-list'),
+    url(r'^functions/new$', view=views.FunctionCreateView.as_view(), name='function-create'),
+    url(r'^functions/(?P<pk>\d+)/delete$', view=views.FunctionDeleteView.as_view(), name='function-delete'),
+    url(r'^functions/(?P<pk>\d+)/update$', view=views.FunctionUpdateView.as_view(), name='function-update'),
+]
+
 years_patterns = [
     url(r'^$', view=views.YearListView.as_view(), name='year-list'),
     url(r'^(?P<pk>\d+)/update', view=views.YearUpdateView.as_view(), name='year-update'),
@@ -243,6 +250,7 @@ urlpatterns = [
     url(r'^course/', include(courses_patterns)),
     url(r'^dates$', views.RegistrationDatesView.as_view(), name='dates'),
     url(r'^mail/', include(mail_patterns)),
+    url(r'^payroll/', include(payroll_patterns)),
     url(r'^registrations/', include(registrations_patterns)),
     url(r'^teacher/', include(teachers_patterns)),
     url(r'^user/', include(users_patterns)),

@@ -1,0 +1,60 @@
+{% extends "backend/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ teacher.get_full_name }} - {{ block.super }}{% endblock %}
+{% block page_title %}{{ teacher.get_full_name }}{% endblock %}
+
+{% block content %}
+<section class="portlet">
+  <h4 class="portlet-title"><u>{% trans "School years" %}</u></h4>
+  <ul>
+    {% for year in teacher.years.all %}
+    <li>{{ year }}</li>
+    {% endfor %}
+  </ul>
+  {% if USE_BUILDINGS %}
+  <h4 class="portlet-title"><u>{% trans "Buildings" %}</u></h4>
+    <ul>
+      {% for building in teacher.buildings.all %}
+      <li><a href="{{ building.get_backend_url }}">{{ building.name }}</a></li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <p class="text-center"><a href="{{ teacher.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a> </p>
+
+</section>
+<section class="portlet">
+  <h4 class="portlet-title"><u>{% trans "Students registered to courses" %}</u></h4>
+
+  <table class="table table-condensed">
+    <thead>
+      <tr>
+        <th>{% trans "Student" %}</th>
+        <th>{% trans "Course" %}</th>
+      </tr>
+    </thead>
+  {% for child in students.all.distinct %}
+  {% if child.registrations.count  %}
+  <tr>
+    <td><a href="{{ child.family.get_backend_url }}">{{ child.full_name }}</a></td>
+    <td>
+      <ul>
+      {% for registration in child.registrations.all %}
+        <li>
+          <a href="{{ registration.course.get_backend_url }}">{{ registration.course.short_name }}</a>
+        </li>
+    {% endfor %}
+      </ul>
+    </td>
+  </tr>
+  {% endif %}
+  {% empty %}
+  <tr>
+    <td class="text-center" colspan="2">{% trans "No student has registered a course yet." %}
+  </tr>
+  {% endfor %}
+  </table>
+</section>
+
+{% endblock content %}
