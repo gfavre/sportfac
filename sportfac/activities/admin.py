@@ -22,7 +22,7 @@ class ExtraInline(admin.StackedInline):
     verbose_name_plural = _("Extra needs")
 
 
-class CourseInline(admin.StackedInline):
+class CourseInline(admin.TabularInline):
     model = Course
     extra = 1
     fieldsets = (
@@ -45,6 +45,13 @@ class CourseInline(admin.StackedInline):
     ordering = ['start_date', 'start_time']
     verbose_name = _("course")
     verbose_name_plural = _("courses")
+
+
+class InstructorInline(admin.StackedInline):
+    model = Course.instructors.through
+    extra = 0
+    verbose_name = _("instructor")
+    verbose_name_plural = _("instructors")
 
 
 @admin.register(Activity)
@@ -116,7 +123,7 @@ class CoursesAdmin(SportfacAdminMixin, ImportExportModelAdmin):
     list_filter = (ParticipantsListFilter, 'uptodate',)
     change_list_filter_template = "admin/filter_listing.html"
     save_as = True
-    inlines = (ExtraInline,)
+    inlines = (InstructorInline, ExtraInline,)
     readonly_fields = ('id', 'min_birth_date', 'max_birth_date')
     resource_class = CourseResource
 

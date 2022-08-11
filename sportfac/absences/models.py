@@ -39,6 +39,7 @@ class Session(TimeStampedModel):
     activity = models.ForeignKey('activities.Activity', related_name="sessions", null=True)
     date = models.DateField()
     instructor = models.ForeignKey('profiles.FamilyUser', null=True, on_delete=models.SET_NULL)
+    exported = models.BooleanField(verbose_name=_("Exported to payroll"), default=False)
 
     class Meta:
         ordering = ('date', 'course')

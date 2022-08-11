@@ -8,7 +8,7 @@ from .models import Session, Absence
 @admin.register(Session)
 class SessionAdmin(SportfacModelAdmin):
     list_display = ('course_short', 'date', 'instructor_short', 'presentees', 'absentees_nb')
-    list_filter = ('date', )
+    list_filter = ('date', "exported")
     date_hierarchy = 'date'
     search_fields = ('course__name', 'course__activity__name', 'course__number',
                      'instructor__first_name', 'instructor__last_name')
