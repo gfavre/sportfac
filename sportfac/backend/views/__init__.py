@@ -5,7 +5,8 @@ from .allocation_views import (
 from .course_views import *
 from .dashboard_views import *
 from .mail_views import *
-from .payroll_views import FunctionCreateView, FunctionDeleteView, FunctionListView, FunctionUpdateView
+from .payroll_views import (FunctionCreateView, FunctionDeleteView, FunctionListView, FunctionUpdateView,
+                            PayrollReportView)
 from .registration_views import *
 from .teacher_views import *
 from .user_views import *

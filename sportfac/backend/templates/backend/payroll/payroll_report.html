@@ -1,0 +1,169 @@
+{% extends "backend/base.html" %}
+{% load i18n %}
+{% load duration switzerland sekizai_tags crispy_forms_tags %}
+
+{% block title %}{% trans "Payroll" %} - {{ block.super }}{% endblock %}
+{% block page_title %}
+  {% trans "Payroll" %}
+{% endblock %}
+{% block subtitle %}
+  <div class="visible-print">
+    <p>
+      {% blocktrans with start=start|date end=end|date %}Period from {{ start }} to {{ end }}{% endblocktrans %}
+  </div>
+
+{% endblock %}
+
+{% block content %}
+  {% addtoblock "css" %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
+    <link rel="stylesheet" type="text/css"
+          href="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.css"/>
+
+  {% endaddtoblock %}
+  {% addtoblock "js" %}
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+    <script type="text/javascript"
+            src="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.js"></script>
+
+    <script>
+      $(function () {
+        moment.locale('fr', {
+          months: 'janvier_février_mars_avril_mai_juin_juillet_août_septembre_octobre_novembre_décembre'.split('_'),
+        });
+        moment.locale('fr');
+        let start = moment("{{ start | date:'c' }}");
+        let end = moment("{{ end | date:'c' }}");
+
+        function cb(start, end) {
+          $('#reportrange span').html(start.format('D MMMM YYYY') + ' - ' + end.format('D MMMM YYYY'));
+        }
+
+        $('#reportrange').daterangepicker({
+          startDate: start,
+          endDate: end,
+          "applyButtonClasses": "btn-secondary",
+          "locale": {
+            "format": "DD.MM.YYYY",
+            "firstDay": 1,
+            "daysOfWeek": [
+              "{% trans "Sun" %}",
+              "{% trans "Mon" %}",
+              "{% trans "Tue" %}",
+              "{% trans "Wed" %}",
+              "{% trans "Thu" %}",
+              "{% trans "Fri" %}",
+              "{% trans "Sat" %}"],
+            "monthNames": [
+              "{% trans "January" %}",
+              "{% trans "February" %}",
+              "{% trans "March" %}",
+              "{% trans "April" %}",
+              "{% trans "May" %}",
+              "{% trans "June" %}",
+              "{% trans "July" %}",
+              "{% trans "August" %}",
+              "{% trans "September" %}",
+              "{% trans "October" %}",
+              "{% trans "November" %}",
+              "{% trans "December" %}"
+            ],
+            "applyLabel": "{% trans "Apply" %}",
+            "cancelLabel": "{% trans "Cancel" %}",
+            "customRangeLabel": "{% trans "Custom range" %}",
+          },
+          ranges: {
+            '{% trans "Today" %}': [moment(), moment()],
+            '{% trans "Yesterday" %}': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            '{% trans "Last 7 days" %}': [moment().subtract(6, 'days'), moment()],
+            '{% trans "Last 30 days" %}': [moment().subtract(29, 'days'), moment()],
+            '{% trans "This month" %}': [moment().startOf('month'), moment().endOf('month')],
+            '{% trans "Last month" %}': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+          }
+        }, cb);
+
+        $('#reportrange').on('apply.daterangepicker', function (ev, picker) {
+          //do something, like clearing an input
+          window.location.href = window.location.href.replace(
+            /[\?#].*|$/,
+            "?start=" + picker.startDate.format('YYYY-MM-DD') + "&end=" + picker.endDate.format('YYYY-MM-DD')
+          );
+
+        });
+
+        cb(start, end);
+
+
+        let table = $('.table').DataTable({
+          {% if LANGUAGE_CODE == 'fr' %}
+            "language": {
+              "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+            },
+          {% endif %}
+
+        })
+
+
+      });
+    </script>
+  {% endaddtoblock %}
+
+  <section class="portlet">
+    <div id="reportrange"
+         class="hidden-print "
+         style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+      <i class="icon-calendar"></i>&nbsp;
+      <span></span> <i class="fa fa-caret-down"></i>
+    </div>
+  </section>
+
+  <h4>{% trans "Summary" %}, {{ start |date }} - {{ end |date }}</h4>
+  <table class="table">
+    <thead>
+    <tr>
+      <th>{% trans "Course (code)" %}</th>
+      <th>{% trans "Instructor (identifier)" %}</th>
+      <th>{% trans "Exported sessions" %}</th>
+      <th>{% trans "Not exported sessions" %}</th>
+    </tr>
+    </thead>
+  <tbody>
+    {% for course_instructor in object_list %}
+      {% if course_instructor.exported_count or course_instructor.not_exported_count %}
+      <tr class="{% if not course_instructor.instructor.external_identifier or not course_instructor.function %}warning {% endif %}">
+        <td data-order="{{ course_instructor.course.short_name }}"
+            data-search="{{ course_instructor.course.short_name }} {{ course_instructor.function.external_id }}">
+
+          <a href="{{ course_instructor.course.backend_absences_url }}">{{ course_instructor.course.short_name }} -
+            <code>({{ course_instructor.function.external_id|default:"n/a" }})</code></a>
+        </td>
+        <td data-order="{{ course_instructor.instructor.full_name }}"
+            data-search="{{ course_instructor.instructor.full_name }} {{ course_instructor.instructor.external_identifier }}">
+          <a href="{{ course_instructor.instructor.get_backend_url }}">
+            {{ course_instructor.instructor.full_name }}
+            <code>({{ course_instructor.instructor.external_identifier|default:"n/a" }})</code>
+          </a>
+        </td>
+        <td>
+          {{ course_instructor.exported_count }}
+        </td>
+        <td>
+          {{ course_instructor.not_exported_count }}
+        </td>
+      </tr>
+      {% endif %}
+    {% endfor %}
+  </tbody>
+  </table>
+  <hr>
+  <p class="alert alert-warning lead">
+  <i class="icon icon-warning"></i>
+    {% trans "Note that supervisors not having an identifier or a function defined will not be exported" %}
+  </p>
+  {% crispy form %}
+  <p></p>
+
+{% endblock content %}

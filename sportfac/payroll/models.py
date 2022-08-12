@@ -1,14 +1,19 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from io import BytesIO
 
+from django.core.files.base import ContentFile
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
+
+from model_utils import Choices
+
 from sportfac.models import TimeStampedModel
 
 
 class Function(TimeStampedModel):
-    RATE_MODES = (
+    RATE_MODES = Choices(
         ('hourly', _('Hourly')),
         ('daily', _('Daily')),
         ('monthly', _('Monthly')),
@@ -32,3 +37,23 @@ class Function(TimeStampedModel):
 
     def get_update_url(self):
         return reverse('backend:function-update', kwargs={"pk": self.pk})
+
+
+class Payroll(TimeStampedModel):
+    start = models.DateField(_("Start date"))
+    end = models.DateField(_("End date"))
+    set_as_exported = models.BooleanField(_("Set as exported"), default=True)
+    include_already_exported = models.BooleanField(_("Include already exported sessions"), default=False)
+    add_details = models.BooleanField(_("Add details"), default=False)
+    csv_file = models.FileField(upload_to='payroll', blank=True, null=True)
+    exported_by = models.ForeignKey('profiles.FamilyUser', verbose_name=_("Exported by"), blank=True, null=True)
+
+    def generate_csv(self):
+        from .utils import get_payroll_csv
+        filelike = BytesIO()
+        get_payroll_csv(self, filelike)
+        self.csv_file.save(
+            "{start}_{end}.csv".format(start=self.start, end=self.end),
+            ContentFile(filelike.getvalue()))
+
+

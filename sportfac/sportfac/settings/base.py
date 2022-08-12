@@ -397,9 +397,9 @@ DYNAMIC_PREFERENCES = {
 
 ########## END DYNAMIC PREFERENCES CONFIGURATION
 
-
+SWISS_DATE_SHORT = '%d.%m.%Y'
 DATE_INPUT_FORMATS = [
-    '%d.%m.%Y',
+    SWISS_DATE_SHORT,
     '%Y-%m-%d', '%m/%d/%Y', '%m/%d/%y', # '2006-10-25', '10/25/2006', '10/25/06'
     '%b %d %Y', '%b %d, %Y',            # 'Oct 25 2006', 'Oct 25, 2006'
     '%d %b %Y', '%d %b, %Y',            # '25 Oct 2006', '25 Oct, 2006'

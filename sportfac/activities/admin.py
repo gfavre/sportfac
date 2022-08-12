@@ -52,6 +52,7 @@ class InstructorInline(admin.StackedInline):
     extra = 0
     verbose_name = _("instructor")
     verbose_name_plural = _("instructors")
+    raw_id_fields = ('instructor',)
 
 
 @admin.register(Activity)
