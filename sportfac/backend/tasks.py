@@ -7,6 +7,7 @@ from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.sessions.models import Session
+from django.conf import settings
 from django.db import connection, transaction
 from django.utils import timezone
 from django.utils.html import format_html
@@ -47,9 +48,9 @@ destination_tenant, created = YearTenant.objects.get_or_create(
         }
     )
 destination_tenant.create_schema(check_if_exists=True)
-
-
 """
+
+
 @shared_task
 @respects_language
 def create_tenant(start, end, copy_activities_from_id=None, copy_children_from_id=None, user_id=None):
@@ -82,7 +83,7 @@ def create_tenant(start, end, copy_activities_from_id=None, copy_children_from_i
         logger.info('New tenant {}, copy activities from {}, copy children from {}, user={}'.format(
             destination_tenant.schema_name, copy_activities_from_id, copy_children_from_id, user
         ))
-    except user.DoesNotExist:
+    except FamilyUser.DoesNotExist:
         user = None
         logger.info('New tenant {}, copy activities from {}, copy children from {}'.format(
             destination_tenant.schema_name, copy_activities_from_id, copy_children_from_id
@@ -154,7 +155,27 @@ def create_tenant(start, end, copy_activities_from_id=None, copy_children_from_i
             logger.debug('Set all children to not up-to-date in destination')
 
         except YearTenant.DoesNotExist:
-            logger.warning('Year tenant {} (source) does not exist'.format(copy_from))
+            logger.warning('Year tenant {} (source) does not exist'.format(copy_children_from_id))
+
+    if settings.KEPCHUP_ENABLE_PAYROLLS:
+        try:
+            copy_from = YearTenant.objects.get(id=copy_activities_from_id)
+            destination_tenant.status = YearTenant.STATUS.copying
+            destination_tenant.save()
+
+            connection.set_tenant(copy_from)
+            f = NamedTemporaryFile(suffix='.json', delete=False)
+            call_command('dumpdata', 'payroll.Function', output=f.name)
+            f.close()
+            connection.set_tenant(destination_tenant)
+            call_command('loaddata', f.name)
+            os.remove(f.name)
+            logger.debug('Populated functions for period {}-{}'.format(
+                destination_tenant.start_date.isoformat(),
+                destination_tenant.end_date.isoformat()
+            ))
+        except YearTenant.DoesNotExist:
+            logger.warning('Year tenant {} (source) does not exist'.format(copy_activities_from_id))
 
     destination_tenant.status = YearTenant.STATUS.ready
     destination_tenant.save()

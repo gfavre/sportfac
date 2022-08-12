@@ -139,8 +139,8 @@
           <td data-order="{{ course_instructor.course.short_name }}"
               data-search="{{ course_instructor.course.short_name }} {{ course_instructor.function.external_id }}">
 
-            <a href="{{ course_instructor.course.backend_absences_url }}">{{ course_instructor.course.short_name }} -
-              <code>({{ course_instructor.function.external_id|default:"n/a" }})</code></a>
+            <a href="{{ course_instructor.course.backend_absences_url }}">{{ course_instructor.course.short_name }}</a> -
+              <a href="{% url 'backend:roles-list' %}"<code>({{ course_instructor.function.external_id|default:"n/a" }})</code></a>
           </td>
           <td data-order="{{ course_instructor.instructor.full_name }}"
               data-search="{{ course_instructor.instructor.full_name }} {{ course_instructor.instructor.external_identifier }}">
