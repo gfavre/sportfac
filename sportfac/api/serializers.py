@@ -6,8 +6,9 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 
 from absences.models import Absence, Session
-from activities.models import Activity, Course, ExtraNeed
+from activities.models import Activity, Course, ExtraNeed, CoursesInstructors
 from backend.dynamic_preferences_registry import global_preferences_registry
+from payroll.models import Function
 from profiles.models import FamilyUser, School, SchoolYear
 from registrations.models import Child, ExtraInfo, Registration, ChildActivityLevel
 from schools.models import Building, Teacher
@@ -376,3 +377,19 @@ class InstructorSerializer(FamilySerializer):
     class Meta:
         model = FamilyUser
         fields = ('id', 'full_name', 'first_name', 'last_name', 'course', 'external_identifier', 'actions')
+
+
+class CoursesInstructorsRoleSerializer(serializers.ModelSerializer):
+    course = serializers.SerializerMethodField()
+    instructor = serializers.SerializerMethodField()
+    function = serializers.SlugRelatedField(slug_field='name', queryset=Function.objects.all())
+
+    class Meta:
+        model = CoursesInstructors
+        fields = ('id', 'course', 'instructor', 'function')
+
+    def get_course(self, obj):
+        return obj.course.short_name
+
+    def get_instructor(self, obj):
+        return u"{} ({})".format(obj.instructor.full_name, obj.instructor.external_identifier or "n/a")

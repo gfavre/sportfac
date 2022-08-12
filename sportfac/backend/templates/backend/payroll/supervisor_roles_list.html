@@ -1,0 +1,85 @@
+{% extends "backend/base.html" %}
+{% load i18n sekizai_tags staticfiles %}
+
+{% block title %}{% trans "Roles" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "All supervisor roles" %}{% endblock %}
+
+{% get_current_language as LANGUAGE_CODE %}
+
+{% block content %}
+  {% addtoblock "js" %}
+    <script src="{% static 'js/vendor/js.cookie.js' %}"></script>
+    <script src="{% static 'js/vendor/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'js/vendor/datatables/dataTables.bootstrap.js' %}"></script>
+    <script>
+      $(function () {
+
+        $.ajaxSetup({
+          headers: {"X-CSRFToken": Cookies.get("csrftoken")}
+        });
+
+        $(".table").dataTable({
+          {% if LANGUAGE_CODE == 'fr' %}
+            "language": {
+              "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+            },
+          {% endif %}
+          lengthMenu: [25, 100, -1]
+        });
+      });
+
+      $('select.function').on('change', function () {
+        let id = $(this).parents('tr').data('id');
+        let $success = $(this).siblings('.success')
+        $.ajax({
+          url: '{% url "api:course-instructors-list"  %}' + id + '/',
+          type: 'PUT',
+          data: {
+            function: $(this).val()
+          },
+          success: function (data) {
+            $success.show().fadeOut(2500);
+          }
+        });
+      });
+    </script>
+  {% endaddtoblock %}
+
+  <table class="table">
+    <thead>
+    <tr>
+      <th class="text-nowrap">{% trans "Course" %}</th>
+      <th class="text-nowrap">{% trans "Supervisor" %}</th>
+      <th class="text-nowrap">{% trans "Role" %}</th>
+    </tr>
+    </thead>
+    {% for course_instructor in object_list %}
+      <tr data-id="{{ course_instructor.id }}">
+        <td data-order="{{ course_instructor.course.short_name }}">
+          <a href="{{ course_instructor.course.backend_absences_url }}">{{ course_instructor.course.short_name }}</a>
+        </td>
+        <td data-order="{{ course_instructor.instructor.full_name }}"
+            data-search="{{ course_instructor.instructor.full_name }} {{ course_instructor.instructor.external_identifier }}">
+          <a href="{{ course_instructor.instructor.get_backend_url }}">
+            {{ course_instructor.instructor.full_name }}
+            <code>({{ course_instructor.instructor.external_identifier|default:"n/a" }})</code>
+          </a>
+        </td>
+        <td>
+          <select class="function">
+            {% if not course_instructor.function %}
+              <option value="">---</option>
+            {% endif %}
+            {% for function in functions %}
+              <option value="{{ function.name }}" {% if function == course_instructor.function %}selected{% endif %}>
+                {{ function.name }} ({{ function.code }})
+              </option>
+            {% endfor %}
+          </select>
+          <i class="icon-ok success" style="display: none"></i>
+        </td>
+
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock content %}

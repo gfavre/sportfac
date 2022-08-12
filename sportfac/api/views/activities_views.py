@@ -3,14 +3,14 @@ from django.conf import settings
 from django.core.cache import cache
 from django.http import Http404
 
-from rest_framework import status, views, viewsets
+from rest_framework import mixins, status, views, viewsets
 from rest_framework.response import Response
 
-from activities.models import Activity, Course
+from activities.models import Activity, Course, CoursesInstructors
 from registrations.models import Registration
 from ..permissions import ManagerPermission
 from ..serializers import (ActivityDetailedSerializer, CourseSerializer, ChangeCourseSerializer,
-                           CourseChangedSerializer)
+                           CourseChangedSerializer, CoursesInstructorsRoleSerializer)
 
 
 class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
@@ -74,3 +74,11 @@ class ChangeCourse(views.APIView):
         registration.course = new_course
         registration.save()
         return Response(CourseChangedSerializer(new_course).data, status=status.HTTP_200_OK)
+
+
+class CourseInstructorsViewSet(mixins.ListModelMixin,
+                               mixins.RetrieveModelMixin,
+                               mixins.UpdateModelMixin,
+                               viewsets.GenericViewSet):
+    queryset = CoursesInstructors.objects.all()
+    serializer_class = CoursesInstructorsRoleSerializer

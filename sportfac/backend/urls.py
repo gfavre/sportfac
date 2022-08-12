@@ -219,6 +219,7 @@ site_patterns = [
 
 payroll_patterns = [
     url(r'^$', view=views.PayrollReportView.as_view(), name='payroll-report'),
+    url(r'^roles/$', view=views.SupervisorRolesList.as_view(), name='roles-list'),
     url(r'^functions/$', view=views.FunctionListView.as_view(), name='function-list'),
     url(r'^functions/new$', view=views.FunctionCreateView.as_view(), name='function-create'),
     url(r'^functions/(?P<pk>\d+)/delete$', view=views.FunctionDeleteView.as_view(), name='function-delete'),

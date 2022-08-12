@@ -50,6 +50,19 @@ class FunctionUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
     success_message = _("Function has been updated.")
 
 
+class SupervisorRolesList(BackendMixin, ListView):
+    model = CoursesInstructors
+    template_name = 'backend/payroll/supervisor_roles_list.html'
+
+    def get_queryset(self):
+        return CoursesInstructors.objects.select_related('course', 'course__activity', 'instructor', 'function').all()
+
+    def get_context_data(self, **kwargs):
+        context = super(SupervisorRolesList, self).get_context_data(**kwargs)
+        context['functions'] = Function.objects.all()
+        return context
+
+
 class PayrollReportView(BackendMixin, ListView):
     model = CoursesInstructors
     template_name = 'backend/payroll/payroll_report.html'

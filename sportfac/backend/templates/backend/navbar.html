@@ -47,18 +47,23 @@
               </a>
             </li>
 
-             {% if ENABLE_PAYROLLS %}
-            <li class="divider"></li>
+            {% if ENABLE_PAYROLLS %}
+              <li class="divider"></li>
               <li>
-              <a href="{% url 'backend:function-list' %}">
-                <i class="icon-list-bullet"></i>&nbsp;&nbsp;{% trans "All functions" %}
-              </a>
-            </li>
+                <a href="{% url 'backend:function-list' %}">
+                  <i class="icon-list-bullet"></i>&nbsp;&nbsp;{% trans "All functions" %}
+                </a>
+              </li>
               <li>
-              <a href="{% url 'backend:allocation-report' %}">
-                <i class="icon-money"></i>&nbsp;&nbsp;{% trans "Allocations report" %}
-              </a>
-            </li>
+                <a href="{% url 'backend:roles-list' %}">
+                  <i class="icon-adult"></i>&nbsp;&nbsp;{% trans "All instructors functions" %}
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'backend:payroll-report' %}">
+                  <i class="icon-money"></i>&nbsp;&nbsp;{% trans "Payroll report" %}
+                </a>
+              </li>
             {% endif %}
 
           </ul>
@@ -89,26 +94,26 @@
               </a>
             </li>
             {% if not NO_PAYMENT %}
-            <li class="divider"></li>
-            <li>
-              <a href="{% url 'backend:bill-list' %}">
-                <i class="icon-credit-card-1"></i>&nbsp;&nbsp;{% trans "All bills" %}
-              </a>
-            </li>
-                        {% endif %}
+              <li class="divider"></li>
+              <li>
+                <a href="{% url 'backend:bill-list' %}">
+                  <i class="icon-credit-card-1"></i>&nbsp;&nbsp;{% trans "All bills" %}
+                </a>
+              </li>
+            {% endif %}
 
             {% if ENABLE_ALLOCATION_ACCOUNTS %}
-            <li class="divider"></li>
+              <li class="divider"></li>
               <li>
-              <a href="{% url 'backend:allocation-list' %}">
-                <i class="icon-list-bullet"></i>&nbsp;&nbsp;{% trans "All allocation accounts" %}
-              </a>
-            </li>
+                <a href="{% url 'backend:allocation-list' %}">
+                  <i class="icon-list-bullet"></i>&nbsp;&nbsp;{% trans "All allocation accounts" %}
+                </a>
+              </li>
               <li>
-              <a href="{% url 'backend:allocation-report' %}">
-                <i class="icon-money"></i>&nbsp;&nbsp;{% trans "Allocations report" %}
-              </a>
-            </li>
+                <a href="{% url 'backend:allocation-report' %}">
+                  <i class="icon-money"></i>&nbsp;&nbsp;{% trans "Allocations report" %}
+                </a>
+              </li>
 
             {% endif %}
             {% if DISPLAY_CAR_NUMBER %}
@@ -138,7 +143,7 @@
             <li>
               <a href="{% url 'backend:user-list' %}">
                 <i class="icon-group"></i>
-                  {% trans "All users" %}
+                {% trans "All users" %}
               </a>
             </li>
 
@@ -170,23 +175,23 @@
           </a>
           <ul class="dropdown-menu" role="menu">
             {% if ENABLE_TEACHER_MANAGEMENT %}
-            <li>
-              <a href="{% url 'backend:teacher-list' %}">
-                <i class="icon-adult"></i>
-                &nbsp;&nbsp;{% trans "All teachers" %}
-              </a>
-            </li>
-            <li>
-              <a href="{% url 'backend:teacher-create' %}">
-                <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New teacher" %}
-              </a>
-            </li>
-            <li>
-              <a href="{% url 'backend:teacher-import' %}">
-                <i class="icon-doc-new"></i>&nbsp;&nbsp;{% trans "Import teachers" %}
-              </a>
-            </li>
-            <li class="divider"></li>
+              <li>
+                <a href="{% url 'backend:teacher-list' %}">
+                  <i class="icon-adult"></i>
+                  &nbsp;&nbsp;{% trans "All teachers" %}
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'backend:teacher-create' %}">
+                  <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New teacher" %}
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'backend:teacher-import' %}">
+                  <i class="icon-doc-new"></i>&nbsp;&nbsp;{% trans "Import teachers" %}
+                </a>
+              </li>
+              <li class="divider"></li>
             {% endif %}
             <li>
               <a href="{% url 'backend:child-list' %}">
@@ -201,25 +206,25 @@
               </a>
             </li>
             {% if IMPORT_CHILDREN %}
-            <li>
-              <a href="{% url 'backend:child-import' %}">
-                <i class="icon-doc-new"></i>&nbsp;&nbsp;{% trans "Import students" %}
-              </a>
-            </li>
+              <li>
+                <a href="{% url 'backend:child-import' %}">
+                  <i class="icon-doc-new"></i>&nbsp;&nbsp;{% trans "Import students" %}
+                </a>
+              </li>
             {% endif %}
             {% if USE_BUILDINGS %}
-            <li class="divider"></li>
-            <li>
-              <a href="{% url 'backend:building-list' %}">
-                <i class="icon-location"></i>
-                &nbsp;&nbsp;{% trans "All buildings" %}
-              </a>
-            </li>
-            <li>
-              <a href="{% url 'backend:building-create' %}">
-                <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New building" %}
-              </a>
-            </li>
+              <li class="divider"></li>
+              <li>
+                <a href="{% url 'backend:building-list' %}">
+                  <i class="icon-location"></i>
+                  &nbsp;&nbsp;{% trans "All buildings" %}
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'backend:building-create' %}">
+                  <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New building" %}
+                </a>
+              </li>
             {% endif %}
           </ul>
         </li>
@@ -242,20 +247,20 @@
               </a>
             </li>
             {% if USE_APPOINTMENTS %}
-             <li class="divider"></li>
+              <li class="divider"></li>
               <li>
-              <a href="{% url 'backend:appointments-manage' %}">
-                <i class="icon-calendar-plus-o"></i>
-                &nbsp;&nbsp;{% trans "Manage appointment slots" %}
-              </a>
-            </li>
+                <a href="{% url 'backend:appointments-manage' %}">
+                  <i class="icon-calendar-plus-o"></i>
+                  &nbsp;&nbsp;{% trans "Manage appointment slots" %}
+                </a>
+              </li>
 
               <li>
-              <a href="{% url 'backend:appointments-list' %}">
-                <i class="icon-calendar-check-o"></i>
-                &nbsp;&nbsp;{% trans "Review appointments" %}
-              </a>
-            </li>
+                <a href="{% url 'backend:appointments-list' %}">
+                  <i class="icon-calendar-check-o"></i>
+                  &nbsp;&nbsp;{% trans "Review appointments" %}
+                </a>
+              </li>
 
             {% endif %}
           </ul>
