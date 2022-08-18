@@ -15,16 +15,18 @@
           <li><a href="{% url 'terms' %}">{% trans "Terms and conditions" %}</a></li>
         {% endif %}
         {% for activity_type, activities in activities_types %}
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-             aria-expanded="false">{{ activity_type }} <span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-            {% for activity in activities %}
-              <li><a href="{{ activity.get_absolute_url }}">{{ activity.name }}</a></li>
-            {% endfor %}
-          </ul>
-        </li>
-      {% endfor %}
+          {% if activities %}
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                 aria-expanded="false">{{ activity_type }} <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                {% for activity in activities %}
+                  <li><a href="{{ activity.get_absolute_url }}">{{ activity.name }}</a></li>
+                {% endfor %}
+              </ul>
+            </li>
+          {% endif %}
+        {% endfor %}
 
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -56,10 +58,10 @@
                 {% endif %}
               {% endfor %}
               {% if user.is_manager or user.is_superuser %}
-              <li class="divider"></li>
-              <li>
-                <a href="{% url 'backend:year-list' %}"><i class="icon-exchange"></i> {% trans "Manage periods" %}</a>
-              </li>
+                <li class="divider"></li>
+                <li>
+                  <a href="{% url 'backend:year-list' %}"><i class="icon-exchange"></i> {% trans "Manage periods" %}</a>
+                </li>
               {% endif %}
             </ul>
           </li>
@@ -96,12 +98,13 @@
                 </li>
               {% endif %}
 
-            {% if USE_APPOINTMENTS and request.PHASE > 1 %}
-              <li>
-                  <a href="{% url 'appointments:register' %}"> <i class="icon-calendar-1"></i> {% trans "My appointments" %}
+              {% if USE_APPOINTMENTS and request.PHASE > 1 %}
+                <li>
+                  <a href="{% url 'appointments:register' %}"> <i
+                      class="icon-calendar-1"></i> {% trans "My appointments" %}
                   </a>
                 </li>
-            {% endif %}
+              {% endif %}
 
               {% if user.is_instructor %}
                 <li class="divider"></li>
