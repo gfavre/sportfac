@@ -51,6 +51,9 @@
       <th class="text-nowrap">{% trans "Course" %}</th>
       <th class="text-nowrap">{% trans "Supervisor" %}</th>
       <th class="text-nowrap">{% trans "Role" %}</th>
+      {% if FICHE_SALAIRE_MONTREUX %}
+        <th class="text-nowrap">{% trans "Actions" %}</th>
+      {% endif %}
     </tr>
     </thead>
     {% for course_instructor in object_list %}
@@ -78,6 +81,14 @@
           </select>
           <i class="icon-ok success" style="display: none"></i>
         </td>
+        {% if FICHE_SALAIRE_MONTREUX %}
+          <td>
+            <a href="{% url 'backend:pay-slip-montreux' course=course_instructor.course.pk instructor=course_instructor.instructor.pk %}"
+               class="btn btn-sm">
+              <i class="icon-doc-text"></i> {% trans "Create pay slip" %}
+            </a>
+          </td>
+        {% endif %}
 
       </tr>
     {% endfor %}
