@@ -20,7 +20,7 @@ class Function(TimeStampedModel):
     )
     code = models.CharField(_("Function code"), max_length=30, unique=True)
     name = models.CharField(_("Function name"), max_length=100)
-    rate = models.DecimalField(verbose_name=_("Rate"), max_digits=10, decimal_places=2)
+    rate = models.DecimalField(verbose_name=_("Rate"), max_digits=10, decimal_places=2, blank=True, null=True)
     rate_mode = models.CharField(verbose_name=_("Rate mode"), max_length=20, choices=RATE_MODES)
 
     class Meta:

@@ -19,7 +19,7 @@ from django.views.generic.detail import SingleObjectMixin
 
 from absences.models import Absence, Session
 from absences.utils import closest_session
-from activities.models import Course, Activity, ExtraNeed, CoursesInstructors
+from activities.models import Course, Activity, ExtraNeed, CoursesInstructors, PaySlip, RATE_MODES
 from activities.forms import CourseForm, ExplicitDatesCourseForm, PaySlipForm
 from profiles.models import FamilyUser
 from registrations.models import ChildActivityLevel, ExtraInfo
@@ -394,11 +394,24 @@ class PaySlipMontreux(BackendMixin, CreateView):
     def get_initial(self):
         course = get_object_or_404(Course, pk=self.kwargs['course'])
         session_dates = course.sessions.values_list('date', flat=True)
+        initial = {}
+        instructor = get_object_or_404(FamilyUser, pk=self.kwargs['instructor'])
+        course = get_object_or_404(Course, pk=self.kwargs['course'])
+        from activities.models import CoursesInstructors
+        try:
+            courses_instructor = CoursesInstructors.objects.get(course=course, instructor=instructor)
+            function = courses_instructor.function
+            initial['function'] = '%s (%s)' % (function.name, function.code)
+            initial['rate_mode'] = function.rate_mode == 'hourly' and RATE_MODES.hour or RATE_MODES.day
+            initial['rate'] = function.rate
+
+        except CoursesInstructors.DoesNotExist:
+            initial['function'] = ''
+
         if session_dates:
-            return {'start_date': min(session_dates),
-                    'end_date': max(session_dates)}
-        else:
-            return {}
+            initial['start_date'] = min(session_dates)
+            initial['end_date'] = max(session_dates)
+        return initial
 
     def form_valid(self, form, **kwargs):
         self.object = form.save(commit=False)
