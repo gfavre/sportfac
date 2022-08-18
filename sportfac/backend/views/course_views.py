@@ -402,7 +402,7 @@ class PaySlipMontreux(BackendMixin, CreateView):
             courses_instructor = CoursesInstructors.objects.get(course=course, instructor=instructor)
             function = courses_instructor.function
             initial['function'] = '%s (%s)' % (function.name, function.code)
-            initial['rate_mode'] = function.rate_mode == 'hourly' and RATE_MODES.hour or RATE_MODES.day
+            initial['rate_mode'] = function.rate_mode
             initial['rate'] = function.rate
 
         except CoursesInstructors.DoesNotExist:

@@ -7,17 +7,12 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
-from model_utils import Choices
-
+from activities.models import RATE_MODES
 from sportfac.models import TimeStampedModel
 
 
 class Function(TimeStampedModel):
-    RATE_MODES = Choices(
-        ('hourly', _('Hourly')),
-        ('daily', _('Daily')),
-        ('monthly', _('Monthly')),
-    )
+
     code = models.CharField(_("Function code"), max_length=30, unique=True)
     name = models.CharField(_("Function name"), max_length=100)
     rate = models.DecimalField(verbose_name=_("Rate"), max_digits=10, decimal_places=2, blank=True, null=True)
