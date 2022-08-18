@@ -62,6 +62,9 @@ class Activity(TimeStampedModel):
     An activity
     """
     name = models.CharField(max_length=50, db_index=True, unique=True, verbose_name=_("Name"))
+    type = models.CharField(max_length=50, db_index=True, verbose_name=_("Type"),
+                            choices=settings.KEPCHUP_ACTIVITY_TYPES,
+                            default=settings.KEPCHUP_ACTIVITY_TYPES[0][0])
     number = models.CharField(max_length=30,
                               db_index=True, unique=True,
                               null=True, blank=True,

@@ -222,7 +222,7 @@ class ActivityForm(forms.ModelForm):
 
     class Meta:
         model = Activity
-        fields = ('name', 'number', 'description', 'informations', 'allocation_account')
+        fields = ('type', 'name', 'number', 'description', 'informations', 'allocation_account')
 
     def __init__(self, *args, **kwargs):
         super(ActivityForm, self).__init__(*args, **kwargs)
@@ -233,6 +233,7 @@ class ActivityForm(forms.ModelForm):
         self.helper.field_class = 'col-sm-10'
         self.helper.form_tag = False
         self.helper.layout = Layout(
+            'type',
             'name',
             'number',
             settings.KEPCHUP_ENABLE_ALLOCATION_ACCOUNTS and 'allocation_account' or None,

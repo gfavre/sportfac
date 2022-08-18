@@ -9,6 +9,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 from celery.schedules import crontab
 import environ
+from django.utils.translation import ugettext_lazy as _
 
 env = environ.Env()
 
@@ -609,6 +610,8 @@ KEPCHUP_EXPLICIT_SESSION_DATES = False
 KEPCHUP_NO_EXTRAS = False
 KEPCHUP_DISPLAY_OVERLAP_HELP = True
 KEPCHUP_ENABLE_ALLOCATION_ACCOUNTS = False
+
+KEPCHUP_ACTIVITY_TYPES = [('activity', _("Activities"))]
 
 # Email
 #########################################

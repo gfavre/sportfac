@@ -1,5 +1,7 @@
 # -*- coding:utf-8 -*-
 """Production settings and globals."""
+from django.utils.translation import ugettext_lazy as _
+
 from production import *
 
 TEMPLATES[0]['DIRS'] = [
@@ -20,6 +22,7 @@ KEPCHUP_ABSENCES_ORDER_ASC = True
 # Activities
 KEPCHUP_ENABLE_ALLOCATION_ACCOUNTS = True
 KEPCHUP_ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE = True
+KEPCHUP_ACTIVITY_TYPES = [('activity', u"Prestations"), ('sportfac', u"Sports scolaires facultatifs")]
 
 
 # Accounts

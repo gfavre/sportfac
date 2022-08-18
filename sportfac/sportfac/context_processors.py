@@ -120,7 +120,10 @@ def registration_opened_context(request):
 
 
 def activities_context(request):
-    return {'activities': Activity.objects.visible()}
+    activities = []
+    for slug, label in settings.KEPCHUP_ACTIVITY_TYPES:
+        activities.append((label, Activity.objects.visible().filter(type=slug)))
+    return {'activities_types': activities}
 
 
 def tenants_context(request):

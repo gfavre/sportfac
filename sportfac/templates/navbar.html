@@ -27,15 +27,17 @@ jQuery(function($){
         {% if not NO_TERMS %}
           <li><a href="{% url 'terms' %}">{% trans "Terms and conditions" %}</a></li>
         {% endif %}
+        {% for activity_type, activities in activities_types %}
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-             aria-expanded="false">{% trans "Activities" %} <span class="caret"></span></a>
+             aria-expanded="false">{{ activity_type }} <span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
             {% for activity in activities %}
               <li><a href="{{ activity.get_absolute_url }}">{{ activity.name }}</a></li>
             {% endfor %}
           </ul>
         </li>
+      {% endfor %}
 
       </ul>
       <ul class="nav navbar-nav navbar-right">
