@@ -10,6 +10,7 @@
 
 {% block content %}
 
+{% include "registrations/bill-partial.html" %}
 
 <section>
   <h3>{% trans "Registrations" %}</h3>
@@ -94,7 +95,6 @@
     {% endfor %}
     </tbody>
   </table>
-{% include "registrations/bill-partial.html" %}
 
 {% if transaction %}
   <div class="hidden-print">

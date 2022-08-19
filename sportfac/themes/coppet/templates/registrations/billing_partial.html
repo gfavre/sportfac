@@ -1,0 +1,33 @@
+{% load i18n l10n humanize sekizai_tags switzerland %}
+
+<p>Les inscriptions seront définitivement validées à la suite du règlement de la finance de participation pour les cours choisis.</p>
+<p>Le montant total pour vos inscriptions s'élève à : <strong>{{ bill.total|money }}</strong></p>
+
+{% if PAYMENT_METHOD == 'wire_transfer' %}
+<p>L'identifiant pour votre transaction est le suivant : <strong>{{ bill.billing_identifier }}</strong></p>
+<p>Nous vous remercions de verser cette somme d’ici au  <strong>{{ delay|date:"j F Y" }}</strong> en privilégiant le virement bancaire sur le compte : </p>
+<div class="well">
+  <div class="row">
+  <dl class="dl-horizontal col-md-6">
+    <dt>Montant</dt><dd>{{ bill.total|money }}</dd>
+    <dt>Identifiant</dt><dd>{{ bill.billing_identifier }}</dd>
+    <dt>IBAN</dt><dd>{{ iban }}</dd>
+    <dt>Adresse</dt><dd>{{ address|linebreaksbr }}</dd>
+  </dl>
+    <div class="col-md-6">
+      <img src="{% static "img/qr-coppet.png" %}" alt="QR-bill" style="width: 46mm; margin: 0 5mm; ">
+    </div>
+  </div>
+</div>
+<p>en indiquant, sous communications ou motif, votre identifiant de transaction.</p>
+
+{% elif PAYMENT_METHOD == 'datatrans' %}
+  <p>Le paiement peut se faire via Twint (débit direct) ou Mastercard et Visa (cartes de crédit).</p>
+  {% include 'payments/datatrans_pay_button.html' %}
+
+{% elif PAYMENT_METHOD == 'external' %}
+  <p>La facture vous sera envoyée par courrier.</p>
+
+{% endif %}
+
+  <p><strong>Aucun remboursement ne pourra être demandé en cas de désistement.</strong></p>

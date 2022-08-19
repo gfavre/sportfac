@@ -1,0 +1,42 @@
+{% load i18n switzerland static  %}
+
+
+
+<section>  
+  <div class="row">
+     <div class="col-sm-6 visible-print-block">
+       <img src="{{ STATIC_URL }}img/logo.png' %}"/>
+     {% include "address.html" %}
+    </div>
+
+      
+    <div class="col-sm-6 col-sm-offset-6">
+      <address>
+        {{ bill.family.full_name }}<br/>
+        {{ bill.family.address }}<br/>
+        {{ bill.family.zipcode }} {{ bill.family.city }}<br />
+        {{ bill.family.get_country_display }}
+      </address>
+      <p style="margin-top: 4em;">
+          {% if place %}{{ place }}, {% endif %}{{ bill.created|date:"j F Y" }}
+      </p>
+    </div>
+  </div>
+  <h2>{% trans "Bill detail" %}</h2>
+ <div class="row">
+
+  <dl class="dl-horizontal col-md-6">
+      
+      <dt>{% trans "Billing identifier" %}</dt><dd>{{ bill.billing_identifier }}</dd>
+      <dt>{% trans "Total" %}</dt><dd>{{ bill.total|money }}</dd>
+      {% if bill.is_wire_transfer %}
+      <dt>{% trans "Payable until" %}</dt><dd>{{ delay|date:"j F Y" }}</dd>
+      <dt>{% trans "IBAN" %}</dt><dd>{{ iban }}</dd>
+      <dt>{% trans "Address" %}</dt><dd>{{ address|linebreaksbr }}</dd>
+      {% endif %}
+  </dl>
+ <div class="col-md-6">
+      <img src="{% static "img/qr-coppet.png" %}" alt="Logo de la banque" style="width: 46mm; margin: 0 5mm; ">
+    </div>
+ </div>
+</section>

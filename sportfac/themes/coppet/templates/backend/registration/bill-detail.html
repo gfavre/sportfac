@@ -1,0 +1,94 @@
+{% extends "backend/base.html" %}
+{% load i18n switzerland static sekizai_tags %}
+
+{% block title %}{% trans "Bill detail" %}{% endblock %}
+{% block page_title %}{% endblock %}
+
+{% block extra_body %}class="bill"{% endblock %}
+
+{% block content %}
+{% include "registrations/bill-partial.html" %}
+
+<section>
+  <h3>{% trans "Registrations" %}</h3>
+  <table class=" table table-striped">
+    <thead>
+      <tr>
+        <th>{% trans "Name" %}</th>
+        <th>{% trans "Activity" %}</th>
+        <th>{% trans "Period" %}</th>
+        <th>{% trans "Time" %}</th>
+        <th>{% trans "Price" %}</th>
+        <th class="hidden-print">{% trans "Actions" %}</th>
+      </tr>
+    </thead> 
+    <tfoot>
+      <tr>
+        <th colspan="4" class="nowrap" style="text-align: right">{% trans "Total" %}</th>
+        <th class="nowrap">{{ bill.total|money }}</th>
+        <th class="hidden-print"></th>
+      </tr>
+    </tfoot>
+    <tbody>
+    {% for registration in bill.registrations.all %}
+      <tr>
+        <td>
+          <span class="nowrap"><a href="{{ registration.child.backend_url }}">{{ registration.child.full_name }}</a></span>
+        </td>
+        <td>
+          <a href="{{ registration.course.activity.backend_url }}">{{ registration.course.activity.name }}</a>
+        </td>
+        <td>
+          <span class="nowrap"><a href="{{ registration.course.backend_url }}">{{ registration.course.start_date }}</span> – <span class="nowrap">{{ registration.course.end_date }}</span></a>
+        </td>
+        <td>
+          {% if course.is_course %}
+          {{ registration.course.day_name }} / <span class="nowrap">{{ registration.course.start_time|time:"H:i"}} - {{ registration.course.end_time|time:"H:i" }}</span>
+          {% elif course.is_multi_course %}
+          {% if course.start_time_mon %}
+              {% blocktrans with start_time=course.start_time_mon|time:"H:i" end_time=course.end_time_mon|time:"H:i" %}Mondays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+            {% endif %}
+            {% if course.start_time_tue %}
+              {% blocktrans with start_time=course.start_time_tue|time:"H:i" end_time=course.end_time_tue|time:"H:i" %}Tuesdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+            {% endif %}
+            {% if course.start_time_wed %}
+              {% blocktrans with start_time=course.start_time_wed|time:"H:i" end_time=course.end_time_wed|time:"H:i" %}Wednesdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+            {% endif %}
+            {% if course.start_time_thu %}
+              {% blocktrans with start_time=course.start_time_thu|time:"H:i" end_time=course.end_time_thu|time:"H:i" %}Thursdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+            {% endif %}
+            {% if course.start_time_fri %}
+              {% blocktrans with start_time=course.start_time_fri|time:"H:i" end_time=course.end_time_fri|time:"H:i" %}Fridays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+            {% endif %}
+            {% if course.start_time_sat %}
+              {% blocktrans with start_time=course.start_time_sat|time:"H:i" end_time=course.end_time_sat|time:"H:i" %}Saturdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+            {% endif %}
+            {% if course.start_time_sun %}
+              {% blocktrans with start_time=course.start_time_sun|time:"H:i" end_time=course.end_time_sun|time:"H:i" %}Sundays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+            {% endif %}
+          {% endif %}
+        </td>
+        <td class="nowrap">{{ registration.price|money }}</td>
+        <td class="hidden-print">
+          <ul class="list-unstyled">
+            <li class="text-nowrap"><a href="{{ registration.update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update registration" %}</a></li>
+            <li class="text-nowrap"><a href="{{ registration.delete_url }}" class="btn btn-sm"><i class="icon-cancel"></i>&nbsp;{% trans "Cancel registration" %}</a></li>
+          </ul>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+
+
+
+  <p class="hidden-print text-center"><button class="btn btn-secondary btn-large print-button"><i class="icon icon-print"></i> Imprimer</button></p>
+</section>
+
+{% addtoblock "js" %}
+<script>
+  $('.print-button').click(function(){window.print()});
+</script>
+{% endaddtoblock %}
+{% endblock content %}
