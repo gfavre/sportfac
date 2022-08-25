@@ -18,6 +18,11 @@ function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, Regi
   } else {
     $scope.canregistersameactivity = false;
   }
+  $scope.usewaitingslots = true;
+  if ($attrs.usewaitingslots && $attrs.usewaitingslots === 'false'){
+    $scope.usewaitingslots = false;
+  }
+
   if (!$attrs.limitbyschoolyear) throw new Error("No limitbyschoolyear option set");
     $scope.limitbyschoolyear = $attrs.limitbyschoolyear === 'true';
   if ($attrs.hiddendays) {

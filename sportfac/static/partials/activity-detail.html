@@ -144,18 +144,21 @@
 
           <!-- If the course is full -->
           <span ng-hide="{[{ selectedCourse.count_participants < selectedCourse.max_participants && getRegistrations(selectedChild).length < maxregistrations }]}">
-            <span ng-hide="{[{ isOnWaitingList(selectedCourse, selectedChild) }]}">
-              <button class="btn btn-primary waiting-slot"
-                      ng-click="addToWaitingList(selectedCourse, selectedChild);$hide()"
-              >Inscription sur la liste d'attente</button>
-              <br>
-              <small>Vous serez notifié si des places sont libérées.</small>
+            <span ng-show="{[{ usewaitingslots  }]}">
+              <span ng-hide="{[{ isOnWaitingList(selectedCourse, selectedChild) }]}">
+                <button class="btn btn-primary waiting-slot"
+                        ng-click="addToWaitingList(selectedCourse, selectedChild);$hide()"
+                >Inscription sur la liste d'attente</button>
+                <br>
+                <small>Vous serez notifié si des places sont libérées.</small>
+              </span>
+              <span ng-show="{[{ isOnWaitingList(selectedCourse, selectedChild) }]}">
+                <button class="btn btn-danger waiting-slot"
+                        ng-click="removeFromWaitingList(selectedCourse, selectedChild);$hide()"
+                >Retirer de la liste d'attente</button>
+              </span>
             </span>
-            <span ng-show="{[{ isOnWaitingList(selectedCourse, selectedChild) }]}">
-              <button class="btn btn-danger waiting-slot"
-                      ng-click="removeFromWaitingList(selectedCourse, selectedChild);$hide()"
-              >Retirer de la liste d'attente</button>
-            </span>
+
           </span>
 
           <!-- If the max number of registrations is reached -->

@@ -538,7 +538,7 @@ KEPCHUP_SCHOOL_YEAR_MANDATORY = True
 KEPCHUP_AGES = range(4, 19)
 
 KEPCHUP_ENABLE_PAYROLLS = False
-
+KEPCHUP_ENABLE_WAITING_LISTS = True
 
 # User accounts
 #########################################
