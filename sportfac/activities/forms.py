@@ -12,7 +12,7 @@ import floppyforms.__future__ as forms
 
 from backend.forms import Select2Widget, Select2MultipleWidget, DatePickerInput, TimePickerInput, MultiDateInput
 from profiles.models import FamilyUser, City
-from .models import Activity, AllocationAccount, Course, ExtraNeed, PaySlip
+from .models import Activity, AllocationAccount, Course, ExtraNeed, PaySlip, CoursesInstructors
 
 
 class CourseForm(forms.ModelForm):
@@ -112,11 +112,17 @@ class CourseForm(forms.ModelForm):
             self.fields['price_local'].required = True
 
     def save(self, commit=True):
-        instance = super(CourseForm, self).save(commit=commit)
+        instance = super(CourseForm, self).save(commit=False)
+        instance.save()
+        for instructor in self.cleaned_data['instructors']:
+            CoursesInstructors.objects.get_or_create(course=instance, instructor=instructor)
+        CoursesInstructors.objects.filter(course=instance)\
+                                  .exclude(instructor__in=self.cleaned_data['instructors'])\
+                                  .delete()
         if instance.is_camp:
             delta = instance.end_date - instance.start_date
             dates = []
-            for i in range(delta.days +1):
+            for i in range(delta.days + 1):
                 dates.append(instance.start_date + datetime.timedelta(days=i))
             for session in instance.get_sessions():
                 if session.date not in dates:
@@ -207,7 +213,8 @@ class ExplicitDatesCourseForm(CourseForm):
         return dates
 
     def save(self, commit=True):
-        instance = super(CourseForm, self).save(commit=commit)
+        instance = super(ExplicitDatesCourseForm, self).save(commit=False)
+
         dates = self.cleaned_data['session_dates']
         for session in instance.get_sessions():
             if session.date not in dates:

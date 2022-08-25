@@ -143,14 +143,7 @@ class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
 
     def form_valid(self, form):
         course = self.get_object()
-        instructors = form.cleaned_data.pop('instructors', None)
-        if set(course.instructors.all()) != set(instructors):
-            CoursesInstructors.objects.filter(course=course).delete()
-            for instructor in instructors:
-                CoursesInstructors.objects.create(course=course, instructor=instructor)
-
         response = super(CourseUpdateView, self).form_valid(form)
-
         removed_extras = set(course.extra.all()) - set(form.cleaned_data['extra'])
         for removed_extra in removed_extras:
             course.extra.remove(removed_extra)
