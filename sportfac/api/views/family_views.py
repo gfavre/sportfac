@@ -7,6 +7,7 @@ from rest_framework import filters, generics, mixins, status, viewsets
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.throttling import UserRateThrottle
 
 from registrations.models import Child, ChildActivityLevel
 from ..permissions import FamilyPermission, InstructorPermission, IsAuthenticated, ManagerPermission
@@ -75,6 +76,10 @@ class ChildActivityLevelViewSet(viewsets.ModelViewSet):
         return super(ChildActivityLevelViewSet, self).create(request, *args, **kwargs)
 
 
+class SearchChildThrottle(UserRateThrottle):
+    rate = "10/minute"
+
+
 class ChildrenViewSet(viewsets.ModelViewSet):
     authentication_classes = (SessionAuthentication,)
     permission_classes = (FetchPermission, )
@@ -87,7 +92,7 @@ class ChildrenViewSet(viewsets.ModelViewSet):
                             .select_related('teacher')
 
     # noinspection PyUnusedLocal
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get'], throttle_classes=[SearchChildThrottle])
     def fetch_ext_id(self, request, *args, **kwargs):
         queryset = Child.objects.none()
         ext_id = self.request.query_params.get('ext', None)

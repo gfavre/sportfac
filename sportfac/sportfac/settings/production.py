@@ -6,7 +6,10 @@ INSTALLED_APPS += (
     'gunicorn',  # web server
     'raven.contrib.django.raven_compat',  # sentry
 )
-
+REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = [
+    'rest_framework.renderers.JSONRenderer',
+    'rest_framework_datatables.renderers.DatatablesRenderer',
+]
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-subject-prefix
 # EMAIL_SUBJECT_PREFIX = '[%s] ' % SITE_NAME
 
