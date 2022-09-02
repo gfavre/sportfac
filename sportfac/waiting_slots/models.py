@@ -31,5 +31,5 @@ class WaitingSlot(TimeStampedModel):
         return self.__unicode__()
 
     def __unicode__(self):
-        return u"{} - {} - {}".format(self.child, self.course.short_name)
+        return u"{} - {}".format(self.child, self.course.short_name)
 
