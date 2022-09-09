@@ -1,6 +1,7 @@
 {% extends "contact/contact.html" %}
 
-{% block addresses %}    <section style="padding-top: 0">
+{% block addresses %}
+  <section style="padding-top: 0">
       <h4 itemprop="name">Sport scolaire facultatif de Montreux</h4>
       <address itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
         <span itemprop="streetAddress">Rue du Temple 11</span><br />
@@ -8,12 +9,8 @@
       </address>
       <dl class="dl-horizontal">
         <dt>Email</dt><dd><a itemprop="email" href="mailto:ssf@montreux.ch">ssf@montreux.ch</a></dd>
+        <dt>Téléphone</dt><dd itemprop="telephone"><a href="tel:+41219627737">021 962 77 37</a></dd>
       </dl>
-    </section>
-
-    <section itemprop="member" itemscope itemtype="http://www.schema.org/Person">          
-      <h4 itemprop="jobTitle">Responsable Sport Scolaire Facultatif (Questions administratives)</h4>
-      <span itemprop="telephone"><a href="tel:+41219627737">021 962 77 37</a></span>
     </section>
 
 

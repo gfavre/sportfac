@@ -12,7 +12,7 @@ source_schema = 'period_20210701_20220630'
 destination_schema = 'period_20220822_20230827'
 source_tenant = YearTenant.objects.get(schema_name=source_schema)
 destination_tenant = YearTenant.objects.get(schema_name=destination_schema)
-courses_to_copy = ['EN-01', 'EN-02']
+courses_to_copy = ['EN02-2']
 
 # on pourrait dumpdata de registrations et courses, et filtrer sur les cours à copier
 
