@@ -286,7 +286,9 @@ class Course(TimeStampedModel):
     def day_name(self):
         days = dict(DAYS_OF_WEEK)
         if self.is_camp:
-            return unicode(days[self.start_date.isoweekday()]) + u' - ' + unicode(days[self.end_date.isoweekday()])
+            if self.start_date and self.end_date:
+                return unicode(days[self.start_date.isoweekday()]) + u' - ' + unicode(days[self.end_date.isoweekday()])
+            return u''
         return unicode(dict(DAYS_OF_WEEK).get(self.day, str(self.day)))
 
     @property
