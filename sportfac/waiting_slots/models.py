@@ -19,6 +19,9 @@ class WaitingSlot(TimeStampedModel):
     def get_transform_url(self):
         return reverse('backend:waiting_slot-transform', kwargs={'pk': self.pk})
 
+    def get_delete_url(self):
+        return reverse('backend:waiting_slot-delete', kwargs={'pk': self.pk})
+
     def create_registration(self):
         return Registration.objects.create(
             course=self.course, child=self.child, status=Registration.STATUS.confirmed

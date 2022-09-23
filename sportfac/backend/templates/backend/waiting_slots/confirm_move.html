@@ -6,9 +6,9 @@
 
 {% block content %}
 <form action="" method="post">{% csrf_token %}
-  <p>{% blocktrans with child=object.child.full_name %}Are you sure you want to remove {{ child }} from the waiting list?{% endblocktrans %}</p>
+  <p>{% blocktrans with child=object.child.full_name %}Are you sure you want to add {{ child }} to the participants of the course?{% endblocktrans %}</p>
   <div class="form-group">
-    <button type="submit" class="btn btn-success">{% trans 'Remove' %}</button>
+    <button type="submit" class="btn btn-success">{% trans 'Add to participants' %}</button>
   </div>
 </form>
 

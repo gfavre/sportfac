@@ -20,8 +20,7 @@ class WaitingSlotTransformView(SuccessMessageMixin, BackendMixin, DeleteView):
     Transform a waitingslot to a proper registration.
     """
     model = WaitingSlot
-    success_url = reverse_lazy('backend:activity-list')
-    template_name = 'backend/waiting_slots/confirm_delete.html'
+    template_name = 'backend/waiting_slots/confirm_move.html'
     pk_url_kwarg = 'pk'
 
     def get_success_url(self):
@@ -52,3 +51,12 @@ class WaitingSlotTransformView(SuccessMessageMixin, BackendMixin, DeleteView):
                              'child': child.get_full_name()
                          })
         return super(WaitingSlotTransformView, self).delete(request, *args, **kwargs)
+
+
+class WaitingSlotDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
+    model = WaitingSlot
+    template_name = 'backend/waiting_slots/confirm_delete.html'
+    pk_url_kwarg = 'pk'
+
+    def get_success_url(self):
+        return self.object.course.get_backend_url()

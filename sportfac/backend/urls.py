@@ -240,6 +240,8 @@ years_patterns = [
 waiting_slots_patterns = [
     url(r'^(?P<pk>\d+)/transform$', view=views.WaitingSlotTransformView.as_view(),
         name='waiting_slot-transform'),
+    url(r'^(?P<pk>\d+)/delete$', view=views.WaitingSlotDeleteView.as_view(),
+        name='waiting_slot-delete'),
 ]
 
 
