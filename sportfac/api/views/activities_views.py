@@ -80,5 +80,6 @@ class CourseInstructorsViewSet(mixins.ListModelMixin,
                                mixins.RetrieveModelMixin,
                                mixins.UpdateModelMixin,
                                viewsets.GenericViewSet):
+    permission_classes = (ManagerPermission,)
     queryset = CoursesInstructors.objects.all()
     serializer_class = CoursesInstructorsRoleSerializer
