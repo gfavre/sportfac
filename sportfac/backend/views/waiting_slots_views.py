@@ -7,7 +7,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.db import IntegrityError
 from django.urls import reverse_lazy
 from django.utils.translation import ugettext as _
-from django.views.generic import DeleteView
+from django.views.generic import DeleteView, FormView
 
 from .mixins import BackendMixin
 
@@ -15,13 +15,14 @@ from registrations.models import Bill
 from waiting_slots.models import WaitingSlot
 
 
-class WaitingSlotTransformView(SuccessMessageMixin, BackendMixin, DeleteView):
+class WaitingSlotTransformView(SuccessMessageMixin, BackendMixin, FormView):
     """
     Transform a waitingslot to a proper registration.
     """
     model = WaitingSlot
     template_name = 'backend/waiting_slots/confirm_move.html'
     pk_url_kwarg = 'pk'
+    #form =
 
     def get_success_url(self):
         return self.object.course.get_backend_url()
