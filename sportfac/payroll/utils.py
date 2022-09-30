@@ -3,9 +3,9 @@ from django.conf import settings
 from django.utils.timezone import now
 
 from absences.models import Session
-from activities.models import CoursesInstructors
+from activities.models import CoursesInstructors, RATE_MODES
+
 from sportfac.utils import ExcelWriter
-from .models import Function
 
 
 def get_payroll_csv(payroll_obj, filelike):
@@ -27,10 +27,10 @@ def get_payroll_csv(payroll_obj, filelike):
             continue
         nb_rate = count[(course_instructor.course_id, course_instructor.instructor_id)]
         course_instructor.exported_count = nb_rate
-        if course_instructor.function.rate_mode == Function.RATE_MODES.hourly:
+        if course_instructor.function.rate_mode == RATE_MODES.hourly:
             duration = course_instructor.course.duration
             nb_hours = Decimal(duration.seconds / 3600.0 + duration.days * 24) * course_instructor.exported_count
-        elif course_instructor.function.rate_mode == Function.RATE_MODES.daily:
+        elif course_instructor.function.rate_mode == RATE_MODES.daily:
             nb_hours = course_instructor.exported_count
         else:
             nb_hours = course_instructor.exported_count
