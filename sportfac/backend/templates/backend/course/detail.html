@@ -373,6 +373,7 @@
             <th>{% trans "Parents phone" %}</th>
           {% endif %}
           <th>{% trans "Parents email" %}</th>
+          <th>{% trans "Other registrations" %}</th>
           <th>{% trans "Actions" %}</th>
         </tr>
       </thead>
@@ -428,6 +429,17 @@
             </td>
           {% endif %}
           <td>{{ waiting_slot.child.family.email | urlize }}</td>
+          <td>
+            {{ waiting_slot.child.registrations.count }} / {{ MAX_REGISTRATIONS_PER_CHILD }}
+            <ul class="list-unstyled">
+              {% for registration in waiting_slot.child.registrations.all %}
+                <li>
+                    {{ registration.course.short_name }}
+                </li>
+              {% endfor %}
+            </ul>
+
+          </td>
           <td>
             <ul class="list-unstyled">
               <li class="text-nowrap"><a href="{{ waiting_slot.get_transform_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Add to participants" %}</a></li>
