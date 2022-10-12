@@ -12,11 +12,10 @@ from activities.tests.factories import CourseFactory
 from mailer.models import MailArchive
 from mailer.tests.factories import MailArchiveFactory
 from profiles.models import FamilyUser
-from profiles.tests.factories import FamilyUserFactory
+from profiles.tests.factories import FamilyUserFactory, SchoolYearFactory
 from registrations.models import Bill
 from registrations.tests.factories import (BillFactory, ChildFactory,
                                            RegistrationFactory,
-                                           SchoolYearFactory,
                                            WaitingBillFactory,
                                            WaitingRegistrationFactory)
 from sportfac.middleware import RegistrationOpenedMiddleware, VersionMiddleware
