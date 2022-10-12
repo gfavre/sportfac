@@ -1,0 +1,21 @@
+{% load switzerland i18n %}
+Madame, Monsieur,
+
+Vous étiez inscrit sur la liste d'attente du cours suivant:
+• {{ registration.child.full_name|safe }} - {{ registration.course.short_name|safe }}{% if payment %} - {{ registration.price|money }}{% endif %}
+
+Une place s'étant libérée, nous avons le plaisir de vous informer que {{ registration.child.first_name|safe }} est désormais inscrit(e) à ce cours.
+
+{% if not bill.is_paid %}
+Paiement:
+
+Vous pouvez retrouver votre facture en tous temps sur {{ site_url }}{{ bill.get_absolute_url }}
+{% if PAYMENT_METHOD == 'wire_transfer' %}
+Identifiant de paiement: {{ bill.billing_identifier }}
+Total: {{ bill.total|money }}
+IBAN: {{ iban }}
+{% elif payment and PAYMENT_METHOD == 'external' %}
+La facture de {{ bill.total|money }} vous sera envoyée par courrier.
+{% endif %}
+{% endif %}
+{{ signature }}
