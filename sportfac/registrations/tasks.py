@@ -16,11 +16,11 @@ from backend.models import Domain, YearTenant
 from mailer.tasks import send_mail
 from profiles.models import FamilyUser
 from registrations.models import Bill, Registration
-from waiting_slots.models import WaitingSlot
 
 
 @shared_task
 def send_bill_confirmation(user_pk, bill_pk, tenant_pk=None, language=settings.LANGUAGE_CODE):
+    from waiting_slots.models import WaitingSlot
     cur_lang = translation.get_language()
     try:
         translation.activate(language)
@@ -72,6 +72,8 @@ def send_bill_confirmation(user_pk, bill_pk, tenant_pk=None, language=settings.L
 
 @shared_task
 def send_confirmation(user_pk, tenant_pk=None, language=settings.LANGUAGE_CODE):
+    from waiting_slots.models import WaitingSlot
+
     cur_lang = translation.get_language()
     try:
         translation.activate(language)
@@ -109,6 +111,46 @@ def send_confirmation(user_pk, tenant_pk=None, language=settings.LANGUAGE_CODE):
             reply_to=[global_preferences['email__REPLY_TO_MAIL']]
         )
         registrations.update(confirmation_sent_on=now())
+    finally:
+        translation.activate(cur_lang)
+
+
+@shared_task()
+def send_confirm_from_waiting_list(registration_pk, tenant_pk=None, language=settings.LANGUAGE_CODE):
+    cur_lang = translation.get_language()
+    try:
+        translation.activate(language)
+        if tenant_pk:
+            tenant = YearTenant.objects.get(pk=tenant_pk)
+            connection.set_tenant(tenant)
+        else:
+            current_domain = Domain.objects.filter(is_current=True).first()
+            connection.set_tenant(current_domain.tenant)
+
+        global_preferences = global_preferences_registry.manager()
+
+        registration = Registration.objects.get(pk=registration_pk)
+        user = registration.child.family
+
+        current_site = Site.objects.get_current()
+        context = {
+            'user': user,
+            'registration': registration,
+            'bill': registration.bill,
+            'signature': global_preferences['email__SIGNATURE'],
+            'site_name': current_site.name,
+            'site_url': settings.DEBUG and 'http://' + current_site.domain or 'https://' + current_site.domain
+        }
+
+        subject = render_to_string('waiting_slots/confirm_from_waiting_list_mail_subject.txt', context=context)
+
+        body = render_to_string('waiting_slots/confirm_from_waiting_list_mail_body.txt', context=context)
+        send_mail.delay(
+            subject=subject, message=body,
+            from_email=global_preferences['email__FROM_MAIL'],
+            recipients=[user.get_email_string()],
+            reply_to=[global_preferences['email__REPLY_TO_MAIL']]
+        )
     finally:
         translation.activate(cur_lang)
 
