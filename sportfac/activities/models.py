@@ -487,6 +487,10 @@ class Course(TimeStampedModel):
     def get_delete_url(self):
         return reverse('backend:course-delete', kwargs={'course': self.pk})
 
+    def get_delta(self):
+        if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
+
+
     def get_duplicate_url(self):
         return reverse('backend:course-create') + '?source={}'.format(self.pk)
 
