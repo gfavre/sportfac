@@ -12,7 +12,7 @@ source_schema = 'period_20210701_20220630'
 destination_schema = 'period_20220822_20230827'
 source_tenant = YearTenant.objects.get(schema_name=source_schema)
 destination_tenant = YearTenant.objects.get(schema_name=destination_schema)
-courses_to_copy = ['EN02-2']
+courses_to_copy = ['EN04']
 
 # on pourrait dumpdata de registrations et courses, et filtrer sur les cours à copier
 
@@ -24,6 +24,8 @@ for course_number in courses_to_copy:
     destination_course = Course.objects.get(number=course_number)
     for child in serializers.deserialize('json', children):
         print('create reg for {} on {}'.format(child.object, destination_course))
-        child.object.pk = None
-        c = child.object.save()
-        Registration.objects.create(child=child.object, course=destination_course, paid=True, status='confirmed')
+        if raw_input('Do for {}? [Y/n]'.format(child.object)) != 'n':
+            child.object.pk = None
+            child.object.save()
+            print('created {}'.format(child.object))
+            Registration.objects.create(child=child.object, course=destination_course, paid=True, status='confirmed')
