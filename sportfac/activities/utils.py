@@ -15,7 +15,7 @@ def course_to_js_csv(course, filelike):
         family = registration.child.family
         rows.append(
             ('',
-             child.js_sex, child.last_name, child.first_name.title(), child.js_birth_date, child.avs,
+             child.js_sex, child.last_name, child.first_name.title(), child.js_birth_date, child.avs or '',
              family.address, family.zipcode, family.city, family.country,
              child.nationality, child.language,
              course.get_js_name)
