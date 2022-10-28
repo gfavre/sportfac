@@ -22,7 +22,7 @@ $(function () {
       },
 {% endif %}
       "aoColumnDefs": [
-          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ 2 ] }
+          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ -1 ] }
       ]
   });
 });
@@ -49,7 +49,7 @@ $(function () {
       <td >
         {{ function.name }}
       </td>
-      <td >
+      <td data-order="{{ function.rate }}">
         {{ function.rate | money }}
       </td>
       <td>
