@@ -21,17 +21,26 @@ class Function(TimeStampedModel):
     class Meta:
         ordering = ['code']
 
-    def __str__(self):
-        return self.name
+    @property
+    def is_hourly(self):
+        return self.rate_mode == RATE_MODES.hour
 
-    def __unicode__(self):
-        return self.__str__()
+    @property
+    def is_daily(self):
+        return self.rate_mode == RATE_MODES.day
 
     def get_delete_url(self):
         return reverse('backend:function-delete', kwargs={"pk": self.pk})
 
     def get_update_url(self):
         return reverse('backend:function-update', kwargs={"pk": self.pk})
+
+    def __str__(self):
+        return self.name
+
+    def __unicode__(self):
+        return self.__str__()
+
 
 
 class Payroll(TimeStampedModel):

@@ -27,10 +27,10 @@ def get_payroll_csv(payroll_obj, filelike):
             continue
         nb_rate = count[(course_instructor.course_id, course_instructor.instructor_id)]
         course_instructor.exported_count = nb_rate
-        if course_instructor.function.rate_mode == RATE_MODES.hour:
+        if course_instructor.function.is_hourly:
             duration = course_instructor.course.duration
             nb_hours = Decimal(duration.seconds / 3600.0 + duration.days * 24) * course_instructor.exported_count
-        elif course_instructor.function.rate_mode == RATE_MODES.day:
+        elif course_instructor.is_daily:
             nb_hours = course_instructor.exported_count
         else:
             nb_hours = course_instructor.exported_count
