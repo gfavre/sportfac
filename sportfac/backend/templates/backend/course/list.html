@@ -112,6 +112,7 @@
       <th class="text-nowrap">{% trans "Instructors" %}</th>
       <th class="text-nowrap">{% trans "Registrations" %}</th>
       <th class="text-nowrap">{% trans "J+S" %}</th>
+      <th class="text-nowrap">{% trans "Up to date?" %}</th>
       <th class="text-nowrap">{% trans "Actions" %}</th>
     </tr>
     </thead>
@@ -177,6 +178,10 @@
           {% else %}
             <i class="icon-cancel-circled danger"></i>
           {% endif %}
+        </td>
+        <td data-order="{{ course.uptodate }}"
+            data-search="{% trans 'up to date' %}">
+           {% if course.uptodate %}<i class="icon-ok-circled success"></i>{% else %}<i class="icon-cancel-circled  danger"></i>{% endif %}
         </td>
         <td>
           <ul class="list-unstyled">

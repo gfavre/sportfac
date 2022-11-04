@@ -5,8 +5,6 @@ from django.utils.translation import ugettext_lazy as _
 import floppyforms.__future__ as forms
 
 
-
-
 class AHVValidator(object):
     """ A validator for AHV number """
     @staticmethod
