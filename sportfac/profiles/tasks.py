@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from django.db import IntegrityError
+
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
@@ -11,7 +13,10 @@ logger = get_task_logger(__name__)
 @shared_task
 def save_to_master(user_id, source=LOCAL_DB):
     user = FamilyUser.objects.using(source).get(pk=user_id)
-    user.save(create_profile=False, sync=False, using=MASTER_DB)
+    try:
+        user.save(create_profile=False, sync=False, using=MASTER_DB)
+    except IntegrityError:
+        logger.info("User already exists in master DB")
 
 
 @shared_task
