@@ -21,7 +21,6 @@ for course in Course.objects.all():
             try:
                 absence.save()
             except:
-                import pdb;pdb.set_trace()
                 continue
 
 from datetime import date
