@@ -355,7 +355,7 @@
       {% endfor %}
     </table>
   </section>
-
+{% if ENABLE_WAITING_LISTS %}
 <hr>
   <section>
     <h2>{% trans "Waiting list" %}</h2>
@@ -453,4 +453,5 @@
       {% endfor %}
     </table>
   </section>
+  {% endif %}
 {% endblock content %}
