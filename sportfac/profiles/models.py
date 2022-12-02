@@ -317,11 +317,11 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
             transaction.on_commit(lambda: save_to_master(self.pk, kwargs.get('using', LOCAL_DB)))
 
     def soft_delete(self):
+        from activities.models import CoursesInstructors
         self.is_active = False
         self.email = 'deleted_{}_{}'.format(self.pk, self.email)
-        if self.course.exists():
-            self.course = []
         self.is_manager = False
+        CoursesInstructors.objects.filter(instructor=self).delete()
         for child in self.children.all():
             child.delete()
         self.save()
