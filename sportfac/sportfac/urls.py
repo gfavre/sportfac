@@ -54,12 +54,12 @@ else:
         urlpatterns = [
             url(r'^$', flatviews.flatpage, {'url': '/splash/'}, name='splash'),
             url(r'^accueil/$', flatviews.flatpage, {'url': '/'}, name='home'),
-            url(r'^account/login$', auth_views.login, name='login'),
+            url(r'^account/login$', auth_views.LoginView.as_view(), name='login'),
         ]
     else:
         urlpatterns = [
             url(r'^$', flatviews.flatpage, {'url': '/'}, name='home'),
-            url(r'^account/login$', auth_views.login, name='login'),
+            url(r'^account/login$', auth_views.LoginView.as_view(), name='login'),
         ]
 
 if settings.KEPCHUP_USE_APPOINTMENTS:
