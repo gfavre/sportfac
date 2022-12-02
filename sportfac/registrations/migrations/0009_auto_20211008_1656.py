@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='bill',
             name='pdf',
-            field=models.FileField(blank=True, null=True, upload_to=b'', verbose_name='PDF'),
+            field=models.FileField(blank=True, null=True, upload_to='', verbose_name='PDF'),
         ),
         migrations.AlterField(
             model_name='bill',

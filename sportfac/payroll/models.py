@@ -51,7 +51,9 @@ class Payroll(TimeStampedModel):
     include_already_exported = models.BooleanField(_("Include already exported sessions"), default=False)
     add_details = models.BooleanField(_("Add details"), default=False)
     csv_file = models.FileField(upload_to='payroll', blank=True, null=True)
-    exported_by = models.ForeignKey('profiles.FamilyUser', verbose_name=_("Exported by"), blank=True, null=True)
+    exported_by = models.ForeignKey(
+        'profiles.FamilyUser', verbose_name=_("Exported by"), blank=True, null=True,
+        on_delete=models.SET_NULL)
 
     def generate_csv(self):
         from .utils import get_payroll_csv

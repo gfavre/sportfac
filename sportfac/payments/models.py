@@ -47,7 +47,7 @@ class DatatransTransaction(TimeStampedModel, StatusModel):
     )
     expiration = models.DateTimeField(null=True)
     id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
-    invoice = models.ForeignKey('registrations.Bill', related_name='datatrans_transactions')
+    invoice = models.ForeignKey('registrations.Bill', related_name='datatrans_transactions', on_delete=models.CASCADE)
     payment_method = models.CharField(max_length=3, choices=METHODS, default=METHODS.TWI)
     transaction_id = models.BigIntegerField(db_index=True)
     webhook = JSONField(null=True, blank=True)

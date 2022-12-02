@@ -16,6 +16,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='course',
             name='schoolyear_max',
-            field=models.PositiveIntegerField(choices=[(1, '1st HARMOS'), (2, '2nd HARMOS'), (3, '3rd HARMOS'), (4, '4th HARMOS'), (5, '5th HARMOS'), (6, '6th HARMOS'), (7, '7th HARMOS'), (8, '8th HARMOS'), (9, '9th HARMOS'), (10, '10th HARMOS'), (11, '11th HARMOS'), (12, '12th HARMOS')], default=b'12', verbose_name='Maximal school year'),
+            field=models.PositiveIntegerField(choices=[(1, '1st HARMOS'), (2, '2nd HARMOS'), (3, '3rd HARMOS'), (4, '4th HARMOS'), (5, '5th HARMOS'), (6, '6th HARMOS'), (7, '7th HARMOS'), (8, '8th HARMOS'), (9, '9th HARMOS'), (10, '10th HARMOS'), (11, '11th HARMOS'), (12, '12th HARMOS')], default='12', verbose_name='Maximal school year'),
         ),
     ]

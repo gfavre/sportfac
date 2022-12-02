@@ -13,7 +13,7 @@ djangorestframework-datatables==0.5.1
 django-braces == 1.8.1
 django-floppyforms==1.9.0
 Django-Select2 == 5.11.1  # Select2 widget (autocompletion on selects)
-django-autoslug == 1.9.3
+django-autoslug == 1.9.8
 django-model-utils == 2.5
 django-localflavor == 1.5.3
 # WYSIWYG editor
@@ -35,14 +35,14 @@ django-sekizai==1.1.0
 django-classy-tags==1.0.0  # >= 2.0.0 requires python3 (needed by sekizai)
 phonenumbers == 8.8.6
 # xlrd == 1.1.0
-django-dbtemplates==4.0
+django-dbtemplates==3.0
 pypdftk==0.5
 ## settings stored in db
-django-dynamic-preferences == 1.4.1
+django-dynamic-preferences == 1.12.0
 django-mathfilters==0.4.0
 django-async-messages == 0.3.1
 # Excel export
-django-import-export == 0.5.1
+django-import-export == 2.5.0
 # open xlsx documents
 openpyxl == 2.4.1
 python-dateutil == 2.5.3

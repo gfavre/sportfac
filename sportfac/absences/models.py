@@ -36,8 +36,8 @@ class Absence(StatusModel, TimeStampedModel):
 
 
 class Session(TimeStampedModel):
-    course = models.ForeignKey('activities.Course', related_name="sessions",)
-    activity = models.ForeignKey('activities.Activity', related_name="sessions", null=True)
+    course = models.ForeignKey('activities.Course', related_name="sessions", on_delete=models.CASCADE)
+    activity = models.ForeignKey('activities.Activity', related_name="sessions", null=True, on_delete=models.CASCADE)
     date = models.DateField()
     instructor = models.ForeignKey('profiles.FamilyUser', null=True, on_delete=models.SET_NULL)
     export_date = models.DateTimeField(verbose_name=_("Exported to payroll"),null=True, blank=True)

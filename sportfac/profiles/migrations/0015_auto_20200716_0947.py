@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='familyuser',
             name='created_on',
-            field=models.CharField(blank=True, default=b'local', editable=False, max_length=255, verbose_name='Instance name'),
+            field=models.CharField(blank=True, default='local', editable=False, max_length=255, verbose_name='Instance name'),
         ),
         migrations.AddField(
             model_name='familyuser',

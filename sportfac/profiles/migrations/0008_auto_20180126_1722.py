@@ -17,6 +17,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='familyuser',
             name='iban',
-            field=localflavor.generic.models.IBANField(blank=True, include_countries=(b'AT', b'BE', b'BG', b'CH', b'CY', b'CZ', b'DE', b'DK', b'EE', b'ES', b'FI', b'FR', b'GB', b'GI', b'GR', b'HR', b'HU', b'IE', b'IS', b'IT', b'LI', b'LT', b'LU', b'LV', b'MC', b'MT', b'NL', b'NO', b'PL', b'PT', b'RO', b'SE', b'SI', b'SK', b'SM'), max_length=34, use_nordea_extensions=False),
+            field=localflavor.generic.models.IBANField(blank=True, include_countries=('AT', 'BE', 'BG', 'CH', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GB', 'GI', 'GR', 'HR', 'HU', 'IE', 'IS', 'IT', 'LI', 'LT', 'LU', 'LV', 'MC', 'MT', 'NL', 'NO', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK', 'SM'), max_length=34, use_nordea_extensions=False),
         ),
     ]

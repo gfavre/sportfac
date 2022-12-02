@@ -1,6 +1,7 @@
 from __future__ import absolute_import
-import csv, codecs, cStringIO
+import csv, codecs
 from datetime import date
+from io import StringIO
 
 from django_tenants.test.cases import FastTenantTestCase as BaseTenantTestCase
 from django_tenants.test.client import TenantClient
@@ -18,7 +19,7 @@ class UnicodeWriter:
     """
     def __init__(self, f, dialect=ExcelSemicolon, encoding="utf-8", **kwds):
         # Redirect output to a queue
-        self.queue = cStringIO.StringIO()
+        self.queue = StringIO()
         self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
         self.stream = f
         self.encoder = codecs.getincrementalencoder(encoding)()
@@ -48,7 +49,7 @@ class ExcelWriter:
 
     def __init__(self, f, dialect=ExcelSemicolon, encoding="utf-8", **kwds):
         # Redirect output to a queue
-        self.queue = cStringIO.StringIO()
+        self.queue = StringIO()
         self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
         self.stream = f
         self.encoder = codecs.getincrementalencoder(encoding)()
@@ -92,7 +93,7 @@ class TenantTestCase(BaseTenantTestCase):
         return domain
 
     def setUp(self):
-        super(TenantTestCase, self).setUp()
+        super().setUp()
         self.tenant_client = TenantClient(self.tenant)
 
 

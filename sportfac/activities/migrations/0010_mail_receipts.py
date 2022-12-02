@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created', models.DateTimeField(auto_now_add=True, db_index=True)),
                 ('modified', models.DateTimeField(auto_now=True, db_index=True)),
-                ('type', models.CharField(choices=[(b'convocation', 'Convocation to the course'), (b'need_confirmation', 'Need parent confirmation'), (b'not_paid', 'Payment reminder'), (b'instructors', 'Documents for course instructor')], max_length=30, verbose_name='Email type')),
+                ('type', models.CharField(choices=[('convocation', 'Convocation to the course'), ('need_confirmation', 'Need parent confirmation'), ('not_paid', 'Payment reminder'), ('instructors', 'Documents for course instructor')], max_length=30, verbose_name='Email type')),
             ],
             options={
                 'ordering': ('-created',),

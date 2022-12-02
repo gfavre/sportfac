@@ -79,7 +79,7 @@ class Activity(TimeStampedModel):
                                           help_text=_("Specific informations like outfit."))
     description = RichTextUploadingField(verbose_name=_("Description"), blank=True)
     allocation_account = models.ForeignKey('AllocationAccount', null=True, blank=True, related_name='activities',
-                                           verbose_name=_("Allocation account"))
+                                           verbose_name=_("Allocation account"), on_delete=models.SET_NULL)
     objects = ActivityManager()
 
     class Meta:
@@ -179,7 +179,7 @@ class Course(TimeStampedModel):
 
     )
     activity = models.ForeignKey('Activity', related_name='courses',
-                                 verbose_name=_("Activity"))
+                                 verbose_name=_("Activity"), on_delete=models.CASCADE)
     course_type = models.CharField(_("Course type"), max_length=16, choices=TYPE, default=TYPE.course)
     number = models.CharField(max_length=30,
                               db_index=True, unique=True,
@@ -685,7 +685,7 @@ class TemplatedEmailReceipt(TimeStampedModel):
     type = models.CharField(_("Email type"),
 
                             choices=TYPE, max_length=30)
-    course = models.ForeignKey('Course', related_name='email_receipts', null=True, blank=True)
+    course = models.ForeignKey('Course', related_name='email_receipts', null=True, blank=True, on_delete=models.CASCADE)
 
     class Meta:
         ordering = ('-created',)

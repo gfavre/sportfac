@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('zipcode', models.CharField(max_length=5, verbose_name='NPA')),
                 ('name', models.CharField(max_length=100, verbose_name='City')),
-                ('country', models.CharField(choices=[(b'CH', 'Switzerland'), (b'FL', 'Liechtenstein'), (b'D', 'Germany'), (b'F', 'France'), (b'I', 'Italy'), (b'A', 'Austria')], default=b'CH', max_length=2, verbose_name='Country')),
+                ('country', models.CharField(choices=[('CH', 'Switzerland'), ('FL', 'Liechtenstein'), ('D', 'Germany'), ('F', 'France'), ('I', 'Italy'), ('A', 'Austria')], default='CH', max_length=2, verbose_name='Country')),
             ],
             options={
                 'ordering': ('zipcode', 'name'),

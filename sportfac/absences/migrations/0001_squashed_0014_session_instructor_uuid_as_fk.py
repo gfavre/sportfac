@@ -20,7 +20,7 @@ import model_utils.fields
 
 class Migration(migrations.Migration):
 
-    replaces = [(b'absences', '0001_initial'), (b'absences', '0002_auto_20160521_0705'), (b'absences', '0003_auto_20160601_1909'), (b'absences', '0004_session_instructor'), (b'absences', '0005_absence_notification_sent'), (b'absences', '0006_add_presence_status'), (b'absences', '0007_data_migration_present'), (b'absences', '0008_auto_20180217_0738'), (b'absences', '0009_session_activity'), (b'absences', '0010_dm_sessions_activities'), (b'absences', '0011_auto_20190102_0805'), (b'absences', '0012_auto_20190305_0533'), (b'absences', '0013_session_instructor_uuid'), (b'absences', '0014_session_instructor_uuid_as_fk')]
+    replaces = [('absences', '0001_initial'), ('absences', '0002_auto_20160521_0705'), ('absences', '0003_auto_20160601_1909'), ('absences', '0004_session_instructor'), ('absences', '0005_absence_notification_sent'), ('absences', '0006_add_presence_status'), ('absences', '0007_data_migration_present'), ('absences', '0008_auto_20180217_0738'), ('absences', '0009_session_activity'), ('absences', '0010_dm_sessions_activities'), ('absences', '0011_auto_20190102_0805'), ('absences', '0012_auto_20190305_0533'), ('absences', '0013_session_instructor_uuid'), ('absences', '0014_session_instructor_uuid_as_fk')]
 
     initial = True
 

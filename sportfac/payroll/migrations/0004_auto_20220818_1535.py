@@ -16,6 +16,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='function',
             name='rate_mode',
-            field=models.CharField(choices=[(b'day', 'Daily'), (b'hour', 'Hourly')], max_length=20, verbose_name='Rate mode'),
+            field=models.CharField(choices=[('day', 'Daily'), ('hour', 'Hourly')], max_length=20, verbose_name='Rate mode'),
         ),
     ]

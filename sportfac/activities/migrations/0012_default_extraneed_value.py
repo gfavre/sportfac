@@ -16,16 +16,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='course',
             name='schoolyear_max',
-            field=models.PositiveIntegerField(choices=[(1, '1P'), (2, '2P'), (3, '3P'), (4, '4P'), (5, '5P'), (6, '6P'), (7, '7P'), (8, '8P'), (9, '9S'), (10, '10S'), (11, '11S'), (12, '12S')], default=b'12', verbose_name='Maximal school year'),
+            field=models.PositiveIntegerField(choices=[(1, '1P'), (2, '2P'), (3, '3P'), (4, '4P'), (5, '5P'), (6, '6P'), (7, '7P'), (8, '8P'), (9, '9S'), (10, '10S'), (11, '11S'), (12, '12S')], default='12', verbose_name='Maximal school year'),
         ),
         migrations.AlterField(
             model_name='course',
             name='schoolyear_min',
-            field=models.PositiveIntegerField(choices=[(1, '1P'), (2, '2P'), (3, '3P'), (4, '4P'), (5, '5P'), (6, '6P'), (7, '7P'), (8, '8P'), (9, '9S'), (10, '10S'), (11, '11S'), (12, '12S')], default=b'1', verbose_name='Minimal school year'),
+            field=models.PositiveIntegerField(choices=[(1, '1P'), (2, '2P'), (3, '3P'), (4, '4P'), (5, '5P'), (6, '6P'), (7, '7P'), (8, '8P'), (9, '9S'), (10, '10S'), (11, '11S'), (12, '12S')], default='1', verbose_name='Minimal school year'),
         ),
         migrations.AlterField(
             model_name='extraneed',
             name='default',
-            field=models.CharField(blank=True, default=b'', max_length=255, verbose_name='Default value'),
+            field=models.CharField(blank=True, default='', max_length=255, verbose_name='Default value'),
         ),
     ]

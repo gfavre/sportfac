@@ -16,6 +16,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='activity',
             name='type',
-            field=models.CharField(choices=[(b'activity', 'Prestations'), (b'sportfac', 'Sports scolaires facultatifs')], db_index=True, default=b'activity', max_length=50, verbose_name='Type'),
+            field=models.CharField(choices=[('activity', 'Prestations'), ('sportfac', 'Sports scolaires facultatifs')], db_index=True, default='activity', max_length=50, verbose_name='Type'),
         ),
     ]

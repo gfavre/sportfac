@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='familyuser',
             name='is_active',
-            field=models.BooleanField(default=True, help_text=b'Designates whether this user should be treated as active.'),
+            field=models.BooleanField(default=True, help_text='Designates whether this user should be treated as active.'),
         ),
         migrations.AlterField(
             model_name='familyuser',

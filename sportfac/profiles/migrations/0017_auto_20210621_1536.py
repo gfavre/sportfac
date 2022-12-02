@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='familyuser',
             name='gender',
-            field=models.CharField(blank=True, choices=[(b'f', 'Female'), (b'm', 'Male')], max_length=1),
+            field=models.CharField(blank=True, choices=[('f', 'Female'), ('m', 'Male')], max_length=1),
         ),
         migrations.AddField(
             model_name='familyuser',
@@ -42,6 +42,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='familyuser',
             name='permit_type',
-            field=models.CharField(blank=True, choices=[(b'L', 'L - Short-term residence permit'), (b'B', 'B - Residence permit'), (b'C', 'C - Settlement permit'), (b'Ci', 'Ci - Residence permit with gainful employment'), (b'G', 'G - Cross-border commuter permit'), (b'F', 'F - Provisionally admitted foreigners'), (b'N', 'N - Permit for asylum-seekers'), (b'S', 'S - People in need of protection')], max_length=2, null=True, verbose_name='Permit type'),
+            field=models.CharField(blank=True, choices=[('L', 'L - Short-term residence permit'), ('', 'B - Residence permit'), ('C', 'C - Settlement permit'), ('Ci', 'Ci - Residence permit with gainful employment'), ('G', 'G - Cross-border commuter permit'), ('F', 'F - Provisionally admitted foreigners'), ('N', 'N - Permit for asylum-seekers'), ('S', 'S - People in need of protection')], max_length=2, null=True, verbose_name='Permit type'),
         ),
     ]

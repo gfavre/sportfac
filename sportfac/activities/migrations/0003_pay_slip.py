@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('modified', models.DateTimeField(auto_now=True, db_index=True)),
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('rate', models.DecimalField(decimal_places=2, max_digits=6, verbose_name='Rate')),
-                ('rate_mode', models.CharField(choices=[(b'day', 'Daily'), (b'hour', 'Hourly')], default=b'hour', max_length=10, verbose_name='Rate mode')),
+                ('rate_mode', models.CharField(choices=[('day', 'Daily'), ('hour', 'Hourly')], default='hour', max_length=10, verbose_name='Rate mode')),
                 ('start_date', models.DateField(verbose_name='Start date')),
                 ('end_date', models.DateField(verbose_name='End date')),
                 ('function', models.CharField(max_length=255, verbose_name='Function')),

@@ -22,7 +22,7 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    replaces = [(b'activities', '0001_initial'), (b'activities', '0002_course_responsible'), (b'activities', '0003_auto_20160708_1540'), (b'activities', '0004_course_visible'), (b'activities', '0005_course_instructors'), (b'activities', '0006_copy_instructors'), (b'activities', '0007_remove_course_responsible'), (b'activities', '0008_extraneed_types'), (b'activities', '0009_link_to_courses'), (b'activities', '0010_copy_extra'), (b'activities', '0011_remove_extraneed_activity'), (b'activities', '0012_default_extraneed_value'), (b'activities', '0013_course_name'), (b'activities', '0014_auto_20170112_1205'), (b'activities', '0015_auto_20170728_1716'), (b'activities', '0016_course_announced_js'), (b'activities', '0017_course_price_description'), (b'activities', '0018_extraneed_price_reduction'), (b'activities', '0019_auto_20190830_2118'), (b'activities', '0020_auto_20190830_2125'), (b'activities', '0021_course_comments'), (b'activities', '0022_instructors_uuid'), (b'activities', '0023_remove_course_instructors')]
+    replaces = [('activities', '0001_initial'), ('activities', '0002_course_responsible'), ('activities', '0003_auto_20160708_1540'), ('activities', '0004_course_visible'), ('activities', '0005_course_instructors'), ('activities', '0006_copy_instructors'), ('activities', '0007_remove_course_responsible'), ('activities', '0008_extraneed_types'), ('activities', '0009_link_to_courses'), ('activities', '0010_copy_extra'), ('activities', '0011_remove_extraneed_activity'), ('activities', '0012_default_extraneed_value'), ('activities', '0013_course_name'), ('activities', '0014_auto_20170112_1205'), ('activities', '0015_auto_20170728_1716'), ('activities', '0016_course_announced_js'), ('activities', '0017_course_price_description'), ('activities', '0018_extraneed_price_reduction'), ('activities', '0019_auto_20190830_2118'), ('activities', '0020_auto_20190830_2125'), ('activities', '0021_course_comments'), ('activities', '0022_instructors_uuid'), ('activities', '0023_remove_course_instructors')]
 
     initial = True
 
@@ -40,7 +40,7 @@ class Migration(migrations.Migration):
                 ('modified', models.DateTimeField(auto_now=True, db_index=True)),
                 ('name', models.CharField(db_index=True, max_length=50, unique=True, verbose_name='Name')),
                 ('number', models.CharField(blank=True, db_index=True, max_length=30, null=True, unique=True, verbose_name='Identifier')),
-                ('slug', autoslug.fields.AutoSlugField(editable=False, help_text='Part of the url. Cannot contain punctuation, spaces or accentuated letters', populate_from=b'name', unique=True)),
+                ('slug', autoslug.fields.AutoSlugField(editable=False, help_text='Part of the url. Cannot contain punctuation, spaces or accentuated letters', populate_from='name', unique=True)),
                 ('informations', ckeditor.fields.RichTextField(blank=True, help_text='Specific informations like outfit.', verbose_name='Informations')),
                 ('description', ckeditor.fields.RichTextField(blank=True, verbose_name='Description')),
             ],
@@ -68,8 +68,8 @@ class Migration(migrations.Migration):
                 ('place', models.TextField(verbose_name='Place')),
                 ('min_participants', models.PositiveSmallIntegerField(verbose_name='Minimal number of participants')),
                 ('max_participants', models.PositiveSmallIntegerField(verbose_name='Maximal number of participants')),
-                ('schoolyear_min', models.PositiveIntegerField(choices=[(1, '1st HARMOS'), (2, '2nd HARMOS'), (3, '3rd HARMOS'), (4, '4th HARMOS'), (5, '5th HARMOS'), (6, '6th HARMOS'), (7, '7th HARMOS'), (8, '8th HARMOS'), (9, '9th HARMOS'), (10, '10th HARMOS'), (11, '11th HARMOS'), (12, '12th HARMOS')], default=b'1', verbose_name='Minimal school year')),
-                ('schoolyear_max', models.PositiveIntegerField(choices=[(1, '1st HARMOS'), (2, '2nd HARMOS'), (3, '3rd HARMOS'), (4, '4th HARMOS'), (5, '5th HARMOS'), (6, '6th HARMOS'), (7, '7th HARMOS'), (8, '8th HARMOS'), (9, '9th HARMOS'), (10, '10th HARMOS'), (11, '11th HARMOS'), (12, '12th HARMOS')], default=b'12', verbose_name='Maximal school year')),
+                ('schoolyear_min', models.PositiveIntegerField(choices=[(1, '1st HARMOS'), (2, '2nd HARMOS'), (3, '3rd HARMOS'), (4, '4th HARMOS'), (5, '5th HARMOS'), (6, '6th HARMOS'), (7, '7th HARMOS'), (8, '8th HARMOS'), (9, '9th HARMOS'), (10, '10th HARMOS'), (11, '11th HARMOS'), (12, '12th HARMOS')], default='1', verbose_name='Minimal school year')),
+                ('schoolyear_max', models.PositiveIntegerField(choices=[(1, '1st HARMOS'), (2, '2nd HARMOS'), (3, '3rd HARMOS'), (4, '4th HARMOS'), (5, '5th HARMOS'), (6, '6th HARMOS'), (7, '7th HARMOS'), (8, '8th HARMOS'), (9, '9th HARMOS'), (10, '10th HARMOS'), (11, '11th HARMOS'), (12, '12th HARMOS')], default='12', verbose_name='Maximal school year')),
                 ('activity', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='courses', to='activities.Activity', verbose_name='Activity')),
                 ('visible', models.BooleanField(default=True, verbose_name='Course visible')),
             ],
@@ -109,7 +109,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='extraneed',
             name='type',
-            field=models.CharField(choices=[(b'B', 'Boolean'), (b'C', 'Characters'), (b'I', 'Integer')], default=b'C', max_length=2, verbose_name='Type of answer'),
+            field=models.CharField(choices=[('B', 'Boolean'), ('C', 'Characters'), ('I', 'Integer')], default='C', max_length=2, verbose_name='Type of answer'),
         ),
         migrations.AlterModelOptions(
             name='extraneed',
@@ -118,7 +118,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='extraneed',
             name='courses',
-            field=models.ManyToManyField(null=True, related_name='extra', to=b'activities.Course'),
+            field=models.ManyToManyField(null=True, related_name='extra', to='activities.Course'),
         ),
         migrations.AddField(
             model_name='extraneed',
@@ -139,17 +139,17 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='course',
             name='schoolyear_max',
-            field=models.PositiveIntegerField(choices=[(1, '1P'), (2, '2P'), (3, '3P'), (4, '4P'), (5, '5P'), (6, '6P'), (7, '7P'), (8, '8P'), (9, '9S'), (10, '10S'), (11, '11S'), (12, '12S')], default=b'12', verbose_name='Maximal school year'),
+            field=models.PositiveIntegerField(choices=[(1, '1P'), (2, '2P'), (3, '3P'), (4, '4P'), (5, '5P'), (6, '6P'), (7, '7P'), (8, '8P'), (9, '9S'), (10, '10S'), (11, '11S'), (12, '12S')], default='12', verbose_name='Maximal school year'),
         ),
         migrations.AlterField(
             model_name='course',
             name='schoolyear_min',
-            field=models.PositiveIntegerField(choices=[(1, '1P'), (2, '2P'), (3, '3P'), (4, '4P'), (5, '5P'), (6, '6P'), (7, '7P'), (8, '8P'), (9, '9S'), (10, '10S'), (11, '11S'), (12, '12S')], default=b'1', verbose_name='Minimal school year'),
+            field=models.PositiveIntegerField(choices=[(1, '1P'), (2, '2P'), (3, '3P'), (4, '4P'), (5, '5P'), (6, '6P'), (7, '7P'), (8, '8P'), (9, '9S'), (10, '10S'), (11, '11S'), (12, '12S')], default='1', verbose_name='Minimal school year'),
         ),
         migrations.AlterField(
             model_name='extraneed',
             name='default',
-            field=models.CharField(blank=True, default=b'', max_length=255, verbose_name='Default value'),
+            field=models.CharField(blank=True, default='', max_length=255, verbose_name='Default value'),
         ),
         migrations.AddField(
             model_name='course',
@@ -159,7 +159,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='extraneed',
             name='courses',
-            field=models.ManyToManyField(blank=True, related_name='extra', to=b'activities.Course'),
+            field=models.ManyToManyField(blank=True, related_name='extra', to='activities.Course'),
         ),
         migrations.AlterField(
             model_name='activity',

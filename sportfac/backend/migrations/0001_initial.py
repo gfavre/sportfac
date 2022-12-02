@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('schema_name', models.CharField(max_length=63, unique=True, validators=[django_tenants.postgresql_backend.base._check_schema_name])),
-                ('status', models.CharField(choices=[(b'creating', 'Creating period'), (b'copying', 'Copying data from previous year'), (b'ready', 'Ready to use')], default=b'creating', max_length=20)),
+                ('status', models.CharField(choices=[('creating', 'Creating period'), ('copying', 'Copying data from previous year'), ('ready', 'Ready to use')], default='creating', max_length=20)),
                 ('start_date', models.DateField()),
                 ('end_date', models.DateField()),
                 ('created_on', models.DateTimeField(auto_now_add=True)),

@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='course',
             name='course_type',
-            field=models.CharField(choices=[(b'course', 'Course (single day per week)'), (b'multicourse', 'Course (multiple days per week)'), (b'camp', 'Camp')], default=b'course', max_length=16, verbose_name='Course type'),
+            field=models.CharField(choices=[('course', 'Course (single day per week)'), ('multicourse', 'Course (multiple days per week)'), ('camp', 'Camp')], default='course', max_length=16, verbose_name='Course type'),
         ),
         migrations.AlterField(
             model_name='activity',
