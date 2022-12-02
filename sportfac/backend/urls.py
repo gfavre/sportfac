@@ -4,6 +4,9 @@ from django.conf.urls import include, url
 
 from . import views
 
+
+app_name = 'backend'
+
 activities_patterns = [
     url(r'^$', view=views.ActivityListView.as_view(),
         name='activity-list'),

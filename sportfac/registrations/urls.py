@@ -3,7 +3,7 @@ from django.conf.urls import url
 
 from .views import BillingView, BillDetailView, RegistrationDeleteView, ChildrenListView, SummaryView
 
-
+app_name = 'registrations'
 urlpatterns = [
     url(r'^children/$', ChildrenListView.as_view(), name="registrations_children"),
     url(r'^payment/$', BillingView.as_view(), name="registrations_billing"),

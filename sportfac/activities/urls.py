@@ -7,6 +7,8 @@ from . import views
 from absences.views import AbsenceCourseView
 from .models import Activity
 
+app_name = 'activities'
+
 urlpatterns = [
     url(r'^(?P<pk>\d+)/$', view=views.ActivityDetailView.as_view()),
     url(r'^(?P<slug>[-_\w]+)/$', view=views.ActivityDetailView.as_view(), 

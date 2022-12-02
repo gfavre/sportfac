@@ -14,6 +14,7 @@ class Sitemap(sitemaps.Sitemap):
         return reverse(item)
 
 
+app_name = 'contact'
 
 urlpatterns = [
     url(r'^$', ContactView.as_view(), name='contact'),

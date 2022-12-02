@@ -7,6 +7,9 @@ from rest_framework.routers import DefaultRouter
 from . import views
 from appointments.views import api_views as appointment_views
 
+
+app_name = 'api'
+
 router = DefaultRouter()
 router.register(r'sessions', views.SessionViewSet, base_name='session')
 router.register(r'absences', views.AbsenceViewSet, base_name='absence')
