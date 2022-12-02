@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import json
-import urllib
+import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
 
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.conf import settings
@@ -139,7 +140,7 @@ class MailUsersView(CourseAccessMixin, View):
         self.request.session['mail-userids'] = userids
         params = ''
         if 'prev' in request.GET:
-            params = '?prev=' + urllib.urlencode(request.GET.get('prev'))
+            params = '?prev=' + six.moves.urllib.parse.urlencode(request.GET.get('prev'))
         return HttpResponseRedirect(reverse('activities:mail-custom-participants-custom',
                                             kwargs={'course': kwargs['course']}) + params)
 

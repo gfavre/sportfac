@@ -1,5 +1,6 @@
 """Production settings and globals."""
-from base import *
+from __future__ import absolute_import
+from .base import *
 
 
 INSTALLED_APPS += (

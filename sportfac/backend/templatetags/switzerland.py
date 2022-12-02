@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import math
 
 from django import template
 from django.utils.safestring import mark_safe
 
 import phonenumbers
+from six.moves import range
 
 
 register = template.Library()

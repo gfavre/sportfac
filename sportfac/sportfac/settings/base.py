@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 """Common settings and globals."""
+from __future__ import absolute_import
 from os.path import abspath, basename, dirname, join, normpath
 from sys import path
 
@@ -10,6 +11,7 @@ from django.core.exceptions import ImproperlyConfigured
 from celery.schedules import crontab
 import environ
 from django.utils.translation import ugettext_lazy as _
+from six.moves import range
 
 env = environ.Env()
 
@@ -538,7 +540,7 @@ KEPCHUP_INSTRUCTORS_CAN_REMOVE_REGISTRATIONS = False
 KEPCHUP_LIMIT_BY_AGE = False
 KEPCHUP_LIMIT_BY_SCHOOL_YEAR = not KEPCHUP_LIMIT_BY_AGE
 KEPCHUP_SCHOOL_YEAR_MANDATORY = True
-KEPCHUP_AGES = range(4, 19)
+KEPCHUP_AGES = list(range(4, 19))
 
 KEPCHUP_ENABLE_PAYROLLS = False
 KEPCHUP_ENABLE_WAITING_LISTS = True

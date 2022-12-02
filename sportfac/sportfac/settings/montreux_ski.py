@@ -1,6 +1,7 @@
 """Production settings and globals."""
 
-from production import *
+from __future__ import absolute_import
+from .production import *
 
 TEMPLATES[0]['DIRS'] = [
     normpath(join(SITE_ROOT, 'themes', 'montreux_ski', 'templates')),

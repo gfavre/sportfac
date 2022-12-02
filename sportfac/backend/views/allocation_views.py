@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from collections import OrderedDict
 import datetime
 import os
 from tempfile import mkdtemp
-import urlparse
-from urllib import urlencode
+import six.moves.urllib.parse
+from six.moves.urllib.parse import urlencode
 
 
 from django.contrib import messages
@@ -86,11 +87,11 @@ class AllocationAccountReportView(BackendMixin, ListView):
         context['sections'] = sections
 
         url = self.request.get_full_path()
-        url_parts = list(urlparse.urlparse(url))
-        query = dict(urlparse.parse_qsl(url_parts[4]))
+        url_parts = list(six.moves.urllib.parse.urlparse(url))
+        query = dict(six.moves.urllib.parse.parse_qsl(url_parts[4]))
         query.update(pdf=1)
         url_parts[4] = urlencode(query)
-        context['pdf_url'] = urlparse.urlunparse(url_parts)
+        context['pdf_url'] = six.moves.urllib.parse.urlunparse(url_parts)
         return context
 
     def get(self, request, *args, **kwargs):

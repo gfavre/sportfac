@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import csv, codecs, cStringIO
 from datetime import date
 

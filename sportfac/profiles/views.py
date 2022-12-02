@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from django.contrib.auth import authenticate, login
 import django.contrib.auth.views as auth_views
 from django.conf import settings

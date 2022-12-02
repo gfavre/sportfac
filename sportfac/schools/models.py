@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+from __future__ import absolute_import
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -7,6 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from model_utils import Choices
 
 from sportfac.models import TimeStampedModel
+import six
 
 
 class Teacher(TimeStampedModel):
@@ -25,7 +27,7 @@ class Teacher(TimeStampedModel):
         ordering = ('last_name', 'first_name')
 
     def __unicode__(self):
-        years = ' - '.join([unicode(year) for year in self.years.all()])
+        years = ' - '.join([six.text_type(year) for year in self.years.all()])
         return '%s %s (%s)' % (self.first_name, self.last_name, years)
 
     def get_full_name(self):

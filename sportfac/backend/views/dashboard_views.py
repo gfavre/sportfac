@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from collections import OrderedDict
 from datetime import datetime, timedelta
 import json
@@ -60,7 +61,7 @@ class HomePageView(BackendMixin, TemplateView):
 
         context['ready_courses'] = courses.filter(uptodate=True).count()
         context['notready_courses'] = context['nb_courses'] - context['ready_courses']
-        context['total_sessions'] = courses.aggregate(Sum('number_of_sessions')).values()[0] or 0
+        context['total_sessions'] = list(courses.aggregate(Sum('number_of_sessions')).values())[0] or 0
         context['total_instructors'] = FamilyUser.instructors_objects.count()
         
         context['last_course_update'] = courses.aggregate(latest=Max('modified'))['latest'] or 'n/a'
@@ -161,8 +162,8 @@ class HomePageView(BackendMixin, TemplateView):
         context['payement_due'] = Bill.waiting.count()
         paid = Bill.paid.all()
         context['paid'] = paid.count()
-        context['total_due'] = Bill.objects.aggregate(Sum('total')).values()[0] or 0
-        context['total_paid'] = paid.aggregate(Sum('total')).values()[0] or 0
+        context['total_due'] = list(Bill.objects.aggregate(Sum('total')).values())[0] or 0
+        context['total_paid'] = list(paid.aggregate(Sum('total')).values())[0] or 0
         context = self._add_cities_context(context)
         context = self._add_registrations_context(context)
         return context
@@ -221,8 +222,8 @@ class HomePageView(BackendMixin, TemplateView):
         if (end-start).days > 45:
             context['registrations_period'] = 'monthly'
             registrations = self._get_registrations_per_month()
-            context['monthly_registrations_labels'] = json.dumps(registrations.keys())
-            context['monthly_registrations_data'] = json.dumps(registrations.values())
+            context['monthly_registrations_labels'] = json.dumps(list(registrations.keys()))
+            context['monthly_registrations_data'] = json.dumps(list(registrations.values()))
         else:
             context['registrations_period'] = 'daily'
             context['registrations_per_day'] = self._get_registrations_per_day()
@@ -236,7 +237,7 @@ class HomePageView(BackendMixin, TemplateView):
         context['nb_courses'] = courses.count()
         activities = Activity.objects.all()
         context['nb_activities'] = activities.count()
-        context['total_sessions'] = courses.aggregate(Sum('number_of_sessions')).values()[0] or 0
+        context['total_sessions'] = list(courses.aggregate(Sum('number_of_sessions')).values())[0] or 0
         context['total_instructors'] = CoursesInstructors.objects.distinct('instructor').count()
         timedeltas = []
         for course in courses:

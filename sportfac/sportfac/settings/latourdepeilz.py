@@ -1,8 +1,9 @@
 # -*- coding:utf-8 -*-
 """Production settings and globals."""
+from __future__ import absolute_import
 from django.utils.translation import ugettext_lazy as _
 
-from production import *
+from .production import *
 
 TEMPLATES[0]['DIRS'] = [
     normpath(join(SITE_ROOT, 'themes', 'latourdepeilz', 'templates')),
@@ -64,7 +65,7 @@ KEPCHUP_ENABLE_TEACHER_MANAGEMENT = False
 
 CELERYBEAT_SCHEDULE['notify-absences'] = {
         'task': 'absences.tasks.notify_absences',
-        'schedule': crontab(hour=04, minute=0),
+        'schedule': crontab(hour=0o4, minute=0),
 }
 CELERYBEAT_SCHEDULE['cancel-expired-registrations'] = {
         'task': 'registrations.tasks.cancel_expired_registrations',

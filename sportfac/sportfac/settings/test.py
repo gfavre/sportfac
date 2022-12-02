@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
-from base import *  # noqa
+from __future__ import absolute_import
+from .base import *  # noqa
 
 
 ########## DATABASE CONFIGURATION

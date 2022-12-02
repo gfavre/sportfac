@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import print_function
 from datetime import datetime
 import logging
 import re
@@ -10,6 +12,8 @@ import xlrd
 
 from registrations.models import Child
 from profiles.models import School, SchoolYear
+import six
+from six.moves import zip
 
 
 logger = logging.getLogger(__name__)
@@ -88,7 +92,7 @@ class ChildParser:
 
     def parse_birth_date(self, value):
         try:
-            if isinstance(value, basestring):
+            if isinstance(value, six.string_types):
                 return datetime.strptime(value, '%d.%m.%Y').date()
             else:
                 return xlrd.xldate_as_datetime(value, self.datemode)
@@ -121,7 +125,7 @@ class ChildParser:
         return self.schools.get(value, None)
 
     def parse_school_year(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             try:
                 match = re.match(r'\s*(\d+)\s?\w*.*', value)
                 if not match:

@@ -1,8 +1,5 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
-
-import os
 from datetime import date, datetime
+import os
 from tempfile import mkdtemp
 
 from django.conf import settings
@@ -172,7 +169,6 @@ class Registration(TimeStampedModel, StatusModel):
             same_family_regs = Registration.objects.filter(
                 child__family=self.child.family, course__activity=self.course.activity
             ).order_by("created")
-            # FIXME: we have to check that I'm not the first registration of the lot...
             if same_family_regs.exists() and same_family_regs.first() != self:
                 # This child has a sibling, registered to the same activity => special rate for the second child +
                 if self.is_local_pricing:

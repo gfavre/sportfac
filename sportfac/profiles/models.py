@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import os
 import re
 import uuid
@@ -21,6 +22,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 from activities.models import SCHOOL_YEARS
 from registrations.models import Registration, Bill
 from .ahv import AHVField
+import six
 
 
 class FamilyManager(BaseUserManager):
@@ -172,11 +174,11 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
 
     @property
     def children_names(self):
-        return ', '.join([unicode(child) for child in self.children.all()])
+        return ', '.join([six.text_type(child) for child in self.children.all()])
 
     @property
     def course_names(self):
-        return ', '.join([unicode(ci.course.short_name) for ci in self.coursesinstructors_set.all()])
+        return ', '.join([six.text_type(ci.course.short_name) for ci in self.coursesinstructors_set.all()])
 
     @property
     def full_name(self):
@@ -344,9 +346,9 @@ class SchoolYear(models.Model):
 
     def __unicode__(self):
         try:
-            return unicode(dict(SCHOOL_YEARS)[self.year])
+            return six.text_type(dict(SCHOOL_YEARS)[self.year])
         except KeyError:
-            return unicode(self.year)
+            return six.text_type(self.year)
 
     class Meta:
         verbose_name = _("School year")

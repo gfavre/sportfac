@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import uuid
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
@@ -21,6 +22,9 @@ from model_utils import Choices
 
 from sportfac.models import TimeStampedModel
 from .utils import course_to_js_csv
+import six
+from six.moves import range
+from six.moves import zip
 
 DAYS_OF_WEEK = (
     (1, _('Monday')),
@@ -260,7 +264,7 @@ class Course(TimeStampedModel):
 
     @property
     def ages(self):
-        return range(self.age_min or settings.KEPCHUP_AGES[0], (self.age_max or settings.KEPCHUP_AGES[-1]) + 1)
+        return list(range(self.age_min or settings.KEPCHUP_AGES[0], (self.age_max or settings.KEPCHUP_AGES[-1]) + 1))
 
     @property
     def ages_label(self):
@@ -287,28 +291,28 @@ class Course(TimeStampedModel):
         days = dict(DAYS_OF_WEEK)
         if self.is_camp:
             if self.start_date and self.end_date:
-                return unicode(days[self.start_date.isoweekday()]) + u' - ' + unicode(days[self.end_date.isoweekday()])
+                return six.text_type(days[self.start_date.isoweekday()]) + u' - ' + six.text_type(days[self.end_date.isoweekday()])
             return u''
-        return unicode(dict(DAYS_OF_WEEK).get(self.day, str(self.day)))
+        return six.text_type(dict(DAYS_OF_WEEK).get(self.day, str(self.day)))
 
     @property
     def days_names(self):
         days = dict(DAYS_OF_WEEK)
         out = []
         if self.start_time_mon:
-            out.append(unicode(days[1]))
+            out.append(six.text_type(days[1]))
         if self.start_time_tue:
-            out.append(unicode(days[2]))
+            out.append(six.text_type(days[2]))
         if self.start_time_wed:
-            out.append(unicode(days[3]))
+            out.append(six.text_type(days[3]))
         if self.start_time_thu:
-            out.append(unicode(days[4]))
+            out.append(six.text_type(days[4]))
         if self.start_time_fri:
-            out.append(unicode(days[5]))
+            out.append(six.text_type(days[5]))
         if self.start_time_sat:
-            out.append(unicode(days[6]))
+            out.append(six.text_type(days[6]))
         if self.start_time_sun:
-            out.append(unicode(days[7]))
+            out.append(six.text_type(days[7]))
         return out
 
     @property
@@ -416,7 +420,7 @@ class Course(TimeStampedModel):
     @property
     def school_years(self):
         if self.schoolyear_min and self.schoolyear_max:
-            return range(self.schoolyear_min, self.schoolyear_max + 1)
+            return list(range(self.schoolyear_min, self.schoolyear_max + 1))
         return []
 
     @property
@@ -447,7 +451,7 @@ class Course(TimeStampedModel):
         return session
 
     def detailed_label(self):
-        base = unicode(self)
+        base = six.text_type(self)
         if self.is_course:
             dates = _(u'from %(start)s to %(end)s, every %(day)s at %(hour)s.')
             return base + ', ' + dates % {

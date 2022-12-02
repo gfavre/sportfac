@@ -1,7 +1,8 @@
+from __future__ import absolute_import
 from django.conf.urls import url
 from django.contrib.sitemaps import GenericSitemap
 
-import views
+from . import views
 
 from absences.views import AbsenceCourseView
 from .models import Activity

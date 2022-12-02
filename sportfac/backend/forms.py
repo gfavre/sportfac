@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import datetime
 
 import floppyforms.__future__ as forms
@@ -15,6 +16,7 @@ from django.utils.translation import ugettext as _
 from activities.models import Course, ExtraNeed
 from registrations.models import Child, ExtraInfo, Registration
 from .models import YearTenant
+from six.moves import zip
 
 
 class ChildImportForm(forms.Form):
@@ -165,8 +167,8 @@ class ExtraInfoForm(forms.ModelForm):
         super(ExtraInfoForm, self).__init__(*args, **kwargs)
         if self.instance:
             if self.instance.key.choices:
-                self.fields['value'] = forms.ChoiceField(choices=[('', '----')] + zip(self.instance.key.choices,
-                                                                                      self.instance.key.choices),
+                self.fields['value'] = forms.ChoiceField(choices=[('', '----')] + list(zip(self.instance.key.choices,
+                                                                                      self.instance.key.choices)),
 
                                                          label=_("Answer"))
             elif self.instance.type == 'B':

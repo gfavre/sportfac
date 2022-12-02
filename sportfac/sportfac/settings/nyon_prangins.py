@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """Production settings and globals."""
 
-from production import *
+from __future__ import absolute_import
+from .production import *
 
 TEMPLATES[0]['DIRS'] = [
     normpath(join(SITE_ROOT, 'themes', 'nyon_prangins', 'templates')),

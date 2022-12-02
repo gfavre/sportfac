@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from django.utils.dateparse import parse_datetime
 from simple_sso.sso_client.client import Client
 

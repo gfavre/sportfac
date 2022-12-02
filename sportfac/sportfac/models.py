@@ -1,6 +1,8 @@
+from __future__ import absolute_import
 import ast
 
 from django.db import models
+import six
 
 
 class ListField(models.TextField):
@@ -26,7 +28,7 @@ class ListField(models.TextField):
     def get_prep_value(self, value):
         if value is None:
             return value
-        return unicode(value)
+        return six.text_type(value)
 
     def value_to_string(self, obj):
         value = self.value_from_object(obj)

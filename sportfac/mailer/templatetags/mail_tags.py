@@ -1,8 +1,10 @@
-import htmlentitydefs
+from __future__ import absolute_import
+import six.moves.html_entities
 import os
 import re
 
 from django import template
+from six import unichr
 
 register = template.Library()
 
@@ -22,7 +24,7 @@ def unescape(value):
         else:
             # named entity
             try:
-                text = unichr(htmlentitydefs.name2codepoint[text[1:-1]])
+                text = unichr(six.moves.html_entities.name2codepoint[text[1:-1]])
             except KeyError:
                 pass
         return text # leave as is

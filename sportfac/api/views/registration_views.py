@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+from __future__ import absolute_import
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.authentication import SessionAuthentication

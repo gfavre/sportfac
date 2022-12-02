@@ -1,6 +1,7 @@
 """
 Tests for profiles app.
 """
+from __future__ import absolute_import
 from .factories import FamilyUserFactory
 from sportfac.utils import TenantTestCase
 

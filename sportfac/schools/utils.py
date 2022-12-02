@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import re
 
 from django.db.models import Min, Max
@@ -10,6 +11,9 @@ import xlrd
 
 from .models import Teacher
 from profiles.models import SchoolYear
+import six
+from six.moves import range
+from six.moves import zip
 
 
 TEACHER_MANDATORY_FIELDS = (u'ID LAGAPEO', u'Nom', u'Prénom', u'Maîtrises')
@@ -20,7 +24,7 @@ TEACHER_IMPORT_TO_FIELD = {
     u'Courriel 1': 'email',
 }
 YEARS_MINMAX = SchoolYear.objects.all().aggregate(Min('year'), Max('year'))
-ALL_YEARS = range(YEARS_MINMAX['year__min'], YEARS_MINMAX['year__max'] + 1)
+ALL_YEARS = list(range(YEARS_MINMAX['year__min'], YEARS_MINMAX['year__max'] + 1))
 
 
 def load_teachers(filelike, building=None):
@@ -30,7 +34,7 @@ def load_teachers(filelike, building=None):
         header_row = sheet.row_values(0)
 
         if not all(key in header_row for key in TEACHER_MANDATORY_FIELDS):
-            raise ValueError(_("All these fields are mandatory: %s") % unicode(TEACHER_MANDATORY_FIELDS))
+            raise ValueError(_("All these fields are mandatory: %s") % six.text_type(TEACHER_MANDATORY_FIELDS))
     except xlrd.XLRDError:
         raise ValueError(_("File format is unreadable"))
 

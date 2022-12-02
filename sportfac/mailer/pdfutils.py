@@ -17,6 +17,7 @@ from sekizai.context import SekizaiContext
 
 from backend.dynamic_preferences_registry import global_preferences_registry
 from sportfac.context_processors import kepchup_context
+from six.moves import range
 
 
 global_preferences = global_preferences_registry.manager()
@@ -173,7 +174,7 @@ class CourseParticipantsPresence(PDFRenderer):
     def __init__(self, context_data):
         super(CourseParticipantsPresence, self).__init__(context_data)
         course = context_data['course']
-        self.context['sessions'] = range(0, course.number_of_sessions)
+        self.context['sessions'] = list(range(0, course.number_of_sessions))
 
 
 class MyCourses(PDFRenderer):

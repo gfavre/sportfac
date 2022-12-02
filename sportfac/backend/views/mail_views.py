@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.conf import settings

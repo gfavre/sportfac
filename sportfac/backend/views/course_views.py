@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import collections
 import os
 from tempfile import mkdtemp
@@ -28,6 +29,7 @@ from sportfac.views import CSVMixin
 from .mixins import BackendMixin, ExcelResponseMixin
 from ..forms import SessionForm
 from ..utils import AbsencePDFRenderer, AbsencesPDFRenderer
+from six.moves import range
 
 __all__ = ('CourseCreateView', 'CourseDeleteView', 'CourseDetailView',
            'CourseJSCSVView', 'CourseParticipantsExportView',
@@ -199,7 +201,7 @@ class CourseAbsenceView(BackendMixin, DetailView):
 
         registrations = dict([(registration.child, registration) for registration in self.object.participants.all()])
         child_absences = collections.OrderedDict()
-        for (child, registration) in sorted(registrations.items(), key=lambda x: x[0].ordering_name):
+        for (child, registration) in sorted(list(registrations.items()), key=lambda x: x[0].ordering_name):
             child_absences[(child, registration)] = {}
         for absence in qs:
             child = absence.child
@@ -348,7 +350,7 @@ class CourseParticipantsView(CourseDetailView):
 
     def get_context_data(self, **kwargs):
         context = super(CourseParticipantsView, self).get_context_data(**kwargs)
-        context['sessions'] = range(0, self.object.number_of_sessions)
+        context['sessions'] = list(range(0, self.object.number_of_sessions))
         return context
 
     def get_template_names(self):

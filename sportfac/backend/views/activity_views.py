@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import collections
 import os
 from tempfile import mkdtemp
@@ -112,7 +113,7 @@ class ActivityAbsenceView(BackendMixin, DetailView):
 
         registrations = dict([(registration.child, registration) for registration in all_registrations])
         child_absences = collections.OrderedDict()
-        for (child, registration) in sorted(registrations.items(), key=lambda x: x[0].ordering_name):
+        for (child, registration) in sorted(list(registrations.items()), key=lambda x: x[0].ordering_name):
             child_absences[(child, registration)] = {}
         for absence in qs:
             child = absence.child

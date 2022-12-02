@@ -8,6 +8,7 @@ rendered as:
 rendered as: 2700
 
 """
+from __future__ import absolute_import
 from django import template
 from django.utils.translation import ugettext as _
  

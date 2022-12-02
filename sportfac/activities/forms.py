@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import datetime
 
 from django.conf import settings
@@ -13,6 +14,7 @@ import floppyforms.__future__ as forms
 from backend.forms import Select2Widget, Select2MultipleWidget, DatePickerInput, TimePickerInput, MultiDateInput
 from profiles.models import FamilyUser, City
 from .models import Activity, AllocationAccount, Course, ExtraNeed, PaySlip, CoursesInstructors
+from six.moves import range
 
 
 class CourseForm(forms.ModelForm):

@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import csv
 
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from ...models import City
+import six
 
 
 def unicode_csv_reader(utf8_data, dialect=csv.excel, **kwargs):
     csv_reader = csv.reader(utf8_data, dialect=dialect, **kwargs)
     for row in csv_reader:
-        yield [unicode(cell, 'utf-8') for cell in row]
+        yield [six.text_type(cell, 'utf-8') for cell in row]
 
 
 class Command(BaseCommand):

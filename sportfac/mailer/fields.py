@@ -4,6 +4,7 @@
 This module contains form fields to work with.
 """
 
+from __future__ import absolute_import
 from django.core.exceptions import ValidationError, FieldError
 from django.utils.translation import ugettext_lazy as _
 

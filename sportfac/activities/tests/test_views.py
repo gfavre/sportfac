@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+from __future__ import absolute_import
 import json
 
 from django.contrib.auth.models import AnonymousUser
@@ -185,7 +186,7 @@ class MailUsersViewTest(TestCase):
         request = add_middleware_to_request(request, SessionMiddleware)
         request.session.save()
         response = MailUsersView.as_view()(request, course=self.course.pk)
-        self.assertIn('mail-userids', request.session.keys())
+        self.assertIn('mail-userids', list(request.session.keys()))
         self.assertEqual(set(request.session['mail-userids']), set(payload))
         self.assertEqual(response.status_code, 302)
         self.assertFalse(response.url.startswith(reverse('login')))
