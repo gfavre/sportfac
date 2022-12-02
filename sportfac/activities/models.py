@@ -7,7 +7,7 @@ from decimal import Decimal
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.core.cache import cache
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models, connection
 from django.db.models.aggregates import Count, Sum
 from django.db.models.signals import post_save, post_delete

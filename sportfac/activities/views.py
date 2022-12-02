@@ -3,7 +3,7 @@ from __future__ import absolute_import
 import json
 import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
 
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.conf import settings
 from django.db.models import Min, Max
 from django.http import HttpResponseRedirect, HttpResponse

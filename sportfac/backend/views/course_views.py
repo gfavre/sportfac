@@ -7,7 +7,7 @@ from tempfile import mkdtemp
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core.urlresolvers import reverse_lazy, reverse
+from django.urls import reverse_lazy, reverse
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpResponseRedirect, HttpResponse

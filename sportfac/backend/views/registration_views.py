@@ -5,7 +5,7 @@ import collections
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.db import connection, IntegrityError, transaction
 from django.db.models import Count
 from django.http import HttpResponseRedirect

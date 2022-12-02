@@ -4,7 +4,7 @@ import os
 from tempfile import NamedTemporaryFile
 
 from django.core.management import call_command
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib import messages
 from django.contrib.sessions.models import Session
 from django.conf import settings

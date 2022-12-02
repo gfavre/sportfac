@@ -11,7 +11,7 @@ from six.moves.urllib.parse import urlencode
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.conf import settings
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _

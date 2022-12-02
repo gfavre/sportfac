@@ -7,7 +7,7 @@ import tempfile
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core.urlresolvers import reverse_lazy, reverse
+from django.urls import reverse_lazy, reverse
 from django.db.models import Count, Case, When
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404

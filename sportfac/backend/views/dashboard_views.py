@@ -5,7 +5,7 @@ import json
 import time
 
 from django.contrib import messages
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.db import models
 from django.db.models import Count, Max, Sum, Func
 from django.views.generic import FormView, TemplateView

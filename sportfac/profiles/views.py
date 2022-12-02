@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from django.contrib.auth import authenticate, login
 import django.contrib.auth.views as auth_views
 from django.conf import settings
-from django.core.urlresolvers import reverse_lazy, reverse
+from django.urls import reverse_lazy, reverse
 from django.core.exceptions import PermissionDenied
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import redirect

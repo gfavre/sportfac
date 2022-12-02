@@ -2,7 +2,7 @@ from __future__ import absolute_import
 import datetime
 
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django.utils.safestring import mark_safe
 from django.utils.timezone import now

@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from django.conf import settings
 from django.contrib.auth import get_user_model
 import django.contrib.auth.forms as auth_forms
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template.defaultfilters import mark_safe
 from django.utils.translation import ugettext_lazy as _
 import django.forms as django_forms

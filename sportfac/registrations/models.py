@@ -3,6 +3,7 @@ import os
 from tempfile import mkdtemp
 
 from django.conf import settings
+from django.urls import reverse
 from django.core.files import File
 from django.db import connection, models, transaction
 from django.template.defaultfilters import slugify

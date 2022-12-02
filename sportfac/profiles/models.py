@@ -8,7 +8,7 @@ from django.conf import settings
 from django.db import models, transaction
 from django.db.models.aggregates import Count
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 

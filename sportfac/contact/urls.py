@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from django.conf.urls import url
 from django.views.generic import TemplateView
 from django.contrib import sitemaps
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from .views import ContactView
 

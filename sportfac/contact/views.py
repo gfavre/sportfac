@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 from django.views.generic.edit import FormView
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 
 from .forms import ContactForm
 

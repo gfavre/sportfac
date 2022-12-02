@@ -1,7 +1,7 @@
 from profiles.models import Registration, FamilyUser
 from django.core.mail import send_mail
 from sportfac.context_processors import *
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 parents = set([reg.child.family for reg in  Registration.objects.filter(validated=False)])
 for parent in parents:
