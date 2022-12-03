@@ -15,7 +15,7 @@ fake = faker.Factory.create()
 YEARS = [year for (year, name) in SCHOOL_YEARS]
 
 
-class AllocationAccountFactory(factory.DjangoModelFactory):
+class AllocationAccountFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = AllocationAccount
 
@@ -23,7 +23,7 @@ class AllocationAccountFactory(factory.DjangoModelFactory):
     name = factory.Faker("bs")
 
 
-class ActivityFactory(factory.DjangoModelFactory):
+class ActivityFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Activity
 
@@ -33,7 +33,7 @@ class ActivityFactory(factory.DjangoModelFactory):
     informations = factory.lazy_attribute(lambda o: fake.text())
 
 
-class CourseFactory(factory.DjangoModelFactory):
+class CourseFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Course
 

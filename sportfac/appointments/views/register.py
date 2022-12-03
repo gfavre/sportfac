@@ -43,7 +43,7 @@ class WizardSlotsView(LoginRequiredMixin, WizardMixin, SlotsView):
 
     @staticmethod
     def check_initial_condition(request):
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             raise NotReachableException("No account created")
         from registrations.models import Bill
 

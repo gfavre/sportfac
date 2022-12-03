@@ -14,7 +14,7 @@ from schools.models import Teacher
 fake = faker.Factory.create("fr_CH")
 
 
-class TeacherFactory(factory.DjangoModelFactory):
+class TeacherFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Teacher
 

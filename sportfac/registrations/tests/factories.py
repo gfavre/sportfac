@@ -12,7 +12,7 @@ from registrations.models import Bill, Child, Registration
 fake = faker.Factory.create("fr_CH")
 
 
-class ChildFactory(factory.DjangoModelFactory):
+class ChildFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Child
 
@@ -25,7 +25,7 @@ class ChildFactory(factory.DjangoModelFactory):
     family = factory.SubFactory(FamilyUserFactory)
 
 
-class RegistrationFactory(factory.DjangoModelFactory):
+class RegistrationFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Registration
 
@@ -40,7 +40,7 @@ class WaitingRegistrationFactory(RegistrationFactory):
     status = Registration.STATUS.waiting
 
 
-class BillFactory(factory.DjangoModelFactory):
+class BillFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Bill
 

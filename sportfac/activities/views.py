@@ -85,7 +85,7 @@ class ActivityDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(ActivityDetailView, self).get_context_data(**kwargs)
         activity = kwargs["object"]
-        if not self.request.user.is_authenticated():
+        if not self.request.user.is_authenticated:
             context["registrations"] = {}
             return context
 

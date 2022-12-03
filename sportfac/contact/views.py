@@ -14,7 +14,7 @@ class ContactView(FormView):
 
     def get_initial(self):
         initial = self.initial.copy()
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             initial["name"] = self.request.user.full_name
             initial["email"] = self.request.user.email
         return initial

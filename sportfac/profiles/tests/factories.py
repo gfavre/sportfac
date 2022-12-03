@@ -16,14 +16,14 @@ DEFAULT_PASS = "test"
 fake = faker.Factory.create("fr_CH")
 
 
-class SchoolYearFactory(factory.DjangoModelFactory):
+class SchoolYearFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = SchoolYear
 
     year = factory.fuzzy.FuzzyChoice(YEARS[:-1])
 
 
-class FamilyUserFactory(factory.DjangoModelFactory):
+class FamilyUserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = FamilyUser
 
@@ -39,7 +39,7 @@ class FamilyUserFactory(factory.DjangoModelFactory):
     private_phone = factory.lazy_attribute(lambda o: fake.phone_number())
 
 
-class CityFactory(factory.DjangoModelFactory):
+class CityFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = City
 

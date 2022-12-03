@@ -13,7 +13,7 @@ from ..models import Attachment, MailArchive
 fake = faker.Factory.create()
 
 
-class TemplateFactory(factory.DjangoModelFactory):
+class TemplateFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Template
 
@@ -21,7 +21,7 @@ class TemplateFactory(factory.DjangoModelFactory):
     content = factory.Faker("paragraphs")
 
 
-class MailArchiveFactory(factory.DjangoModelFactory):
+class MailArchiveFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = MailArchive
 
@@ -40,7 +40,7 @@ class MailArchiveFactory(factory.DjangoModelFactory):
     template = factory.SubFactory(TemplateFactory)
 
 
-class AttachmentFactory(factory.DjangoModelFactory):
+class AttachmentFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Attachment
 
