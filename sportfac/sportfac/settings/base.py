@@ -281,6 +281,7 @@ TENANT_APPS = (
 INSTALLED_APPS = list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]
 ########## END APP CONFIGURATION
 
+ADMIN_URL = env.str('ADMIN_URL', default='admin/')
 
 ########## LOGGING CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#logging

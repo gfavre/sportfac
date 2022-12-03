@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 from django.conf import settings
 from django.conf.urls import include, url
+from django.urls import path
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
@@ -93,7 +94,7 @@ urlpatterns += [
 
     url(r'^datatrans/', DatatransWebhookView.as_view(), name='datatrans_webhook'),
 
-    url(r'^admin/', include(admin.site.urls)),
+    path(settings.ADMIN_URL, admin.site.urls),
 ]
 
 
