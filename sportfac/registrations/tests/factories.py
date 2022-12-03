@@ -1,15 +1,15 @@
 from __future__ import absolute_import
+
 import datetime
 
 import factory.fuzzy
 import faker
-
 from activities.tests.factories import CourseFactory
 from profiles.tests.factories import FamilyUserFactory
-from registrations.models import Registration, Child, Bill
+from registrations.models import Bill, Child, Registration
 
 
-fake = faker.Factory.create('fr_CH')
+fake = faker.Factory.create("fr_CH")
 
 
 class ChildFactory(factory.DjangoModelFactory):
@@ -18,10 +18,10 @@ class ChildFactory(factory.DjangoModelFactory):
 
     first_name = factory.lazy_attribute(lambda o: fake.first_name())
     last_name = factory.lazy_attribute(lambda o: fake.last_name())
-    sex = factory.fuzzy.FuzzyChoice(('M', 'F'))
+    sex = factory.fuzzy.FuzzyChoice(("M", "F"))
     birth_date = factory.fuzzy.FuzzyDate(start_date=datetime.date(2008, 1, 1))
-    #school_year = factory.SubFactory(SchoolYearFactory)
-    #teacher = factory.SubFactory(TeacherFactory)
+    # school_year = factory.SubFactory(SchoolYearFactory)
+    # teacher = factory.SubFactory(TeacherFactory)
     family = factory.SubFactory(FamilyUserFactory)
 
 

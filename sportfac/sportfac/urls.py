@@ -1,105 +1,105 @@
 # -*- coding:utf-8 -*-
 from __future__ import absolute_import
+
 from django.conf import settings
 from django.conf.urls import include, url
-from django.urls import path
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from django.contrib.sitemaps import views as sitemapviews
 from django.contrib.flatpages import views as flatviews
 from django.contrib.flatpages.sitemaps import FlatPageSitemap
-from django.views.generic import TemplateView, RedirectView
+from django.contrib.sitemaps import views as sitemapviews
+from django.urls import path
+from django.views.generic import RedirectView, TemplateView
 from django.views.static import serve
 
-from ckeditor_uploader import views as ckeditor_views
-
-from backend.utils import manager_required
-
 from activities.urls import sitemap as activity_sitemap
+from backend.utils import manager_required
+from ckeditor_uploader import views as ckeditor_views
 from contact.urls import Sitemap as ContactSitemap
 from payments.views import DatatransWebhookView
+
 
 admin.autodiscover()
 
 sitemaps = {
-    'flatpages': FlatPageSitemap,
-    'activities': activity_sitemap,
-    'contact': ContactSitemap,
+    "flatpages": FlatPageSitemap,
+    "activities": activity_sitemap,
+    "contact": ContactSitemap,
 }
 
 
 class TextPlainView(TemplateView):
     def render_to_response(self, context, **kwargs):
-        return super(TextPlainView, self).render_to_response(context, content_type='text/plain', **kwargs)
+        return super(TextPlainView, self).render_to_response(
+            context, content_type="text/plain", **kwargs
+        )
 
 
 if settings.KEPCHUP_USE_SSO:
     from profiles.client import KepchupClient
 
-    sso_client = KepchupClient(settings.SSO_SERVER, settings.SSO_PUBLIC_KEY, settings.SSO_PRIVATE_KEY)
+    sso_client = KepchupClient(
+        settings.SSO_SERVER, settings.SSO_PUBLIC_KEY, settings.SSO_PRIVATE_KEY
+    )
     if settings.KEPCHUP_SPLASH_PAGE:
         urlpatterns = [
-            url(r'^client/', include(sso_client.get_urls())),
-            url(r'^$', flatviews.flatpage, {'url': '/splash/'}, name='splash'),
-            url(r'^accueil/$', flatviews.flatpage, {'url': '/'}, name='home'),
+            url(r"^client/", include(sso_client.get_urls())),
+            url(r"^$", flatviews.flatpage, {"url": "/splash/"}, name="splash"),
+            url(r"^accueil/$", flatviews.flatpage, {"url": "/"}, name="home"),
         ]
     else:
         urlpatterns = [
-            url(r'^client/', include(sso_client.get_urls())),
-            url(r'^$', flatviews.flatpage, {'url': '/home'}, name='home')
+            url(r"^client/", include(sso_client.get_urls())),
+            url(r"^$", flatviews.flatpage, {"url": "/home"}, name="home"),
         ]
 
 else:
     if settings.KEPCHUP_SPLASH_PAGE:
         urlpatterns = [
-            url(r'^$', flatviews.flatpage, {'url': '/splash/'}, name='splash'),
-            url(r'^accueil/$', flatviews.flatpage, {'url': '/'}, name='home'),
-            url(r'^account/login$', auth_views.LoginView.as_view(), name='login'),
+            url(r"^$", flatviews.flatpage, {"url": "/splash/"}, name="splash"),
+            url(r"^accueil/$", flatviews.flatpage, {"url": "/"}, name="home"),
+            url(r"^account/login$", auth_views.LoginView.as_view(), name="login"),
         ]
     else:
         urlpatterns = [
-            url(r'^$', flatviews.flatpage, {'url': '/'}, name='home'),
-            url(r'^account/login$', auth_views.LoginView.as_view(), name='login'),
+            url(r"^$", flatviews.flatpage, {"url": "/"}, name="home"),
+            url(r"^account/login$", auth_views.LoginView.as_view(), name="login"),
         ]
 
 if settings.KEPCHUP_USE_APPOINTMENTS:
-    urlpatterns += [
-        url(r'^rendez-vous/', include('appointments.urls', namespace='appointments'))
-    ]
+    urlpatterns += [url(r"^rendez-vous/", include("appointments.urls", namespace="appointments"))]
 
 urlpatterns += [
-    url(r'^reglement/$', flatviews.flatpage, {'url': '/reglement/'}, name='terms'),
-    url(r'^protection-des-donnees/$', flatviews.flatpage, {'url': '/protection-des-donnees/'}, name='privacy'),
-
-    url(r'^api/', include('api.urls', namespace="api")),
-    url(r'^activities/', include('activities.urls', namespace="activities")),
-    url(r'^account/', include('profiles.urls')),
-    url(r'^backend/', include('backend.urls', namespace="backend")),
-    url(r'^contact/', include('contact.urls')),
-    url(r'^registrations/', include('registrations.urls')),
-
-    url(r'^sitemap\.xml$', sitemapviews.sitemap, {'sitemaps': sitemaps}),
-    url(r'^robots\.txt$', TextPlainView.as_view(template_name='robots.txt')),
-    url(r'^humans\.txt$', TextPlainView.as_view(template_name='humans.txt')),
-    url(r'^favicon\.ico$', RedirectView.as_view(url=settings.STATIC_URL + 'img/favicon.ico')),
-
-    url(r'^wizard/', include('sportfac.wizardurls')),
-
-    url(r'404$', TemplateView.as_view(template_name='404.html')),
-    url(r'500$', TemplateView.as_view(template_name='500.html')),
-
-    url(r'^ckeditor/upload/', manager_required(ckeditor_views.upload), name='ckeditor_upload'),
-    url(r'^ckeditor/browse/', manager_required(ckeditor_views.browse), name='ckeditor_browse'),
-
-    url(r'^datatrans/', DatatransWebhookView.as_view(), name='datatrans_webhook'),
-
+    url(r"^reglement/$", flatviews.flatpage, {"url": "/reglement/"}, name="terms"),
+    url(
+        r"^protection-des-donnees/$",
+        flatviews.flatpage,
+        {"url": "/protection-des-donnees/"},
+        name="privacy",
+    ),
+    url(r"^api/", include("api.urls", namespace="api")),
+    url(r"^activities/", include("activities.urls", namespace="activities")),
+    url(r"^account/", include("profiles.urls")),
+    url(r"^backend/", include("backend.urls", namespace="backend")),
+    url(r"^contact/", include("contact.urls")),
+    url(r"^registrations/", include("registrations.urls")),
+    url(r"^sitemap\.xml$", sitemapviews.sitemap, {"sitemaps": sitemaps}),
+    url(r"^robots\.txt$", TextPlainView.as_view(template_name="robots.txt")),
+    url(r"^humans\.txt$", TextPlainView.as_view(template_name="humans.txt")),
+    url(r"^favicon\.ico$", RedirectView.as_view(url=settings.STATIC_URL + "img/favicon.ico")),
+    url(r"^wizard/", include("sportfac.wizardurls")),
+    url(r"404$", TemplateView.as_view(template_name="404.html")),
+    url(r"500$", TemplateView.as_view(template_name="500.html")),
+    url(r"^ckeditor/upload/", manager_required(ckeditor_views.upload), name="ckeditor_upload"),
+    url(r"^ckeditor/browse/", manager_required(ckeditor_views.browse), name="ckeditor_browse"),
+    url(r"^datatrans/", DatatransWebhookView.as_view(), name="datatrans_webhook"),
     path(settings.ADMIN_URL, admin.site.urls),
 ]
 
 
-handler404 = 'sportfac.views.not_found'
-handler500 = 'sportfac.views.server_error'
+handler404 = "sportfac.views.not_found"
+handler500 = "sportfac.views.server_error"
 
 
 if settings.DEBUG:
@@ -108,8 +108,6 @@ if settings.DEBUG:
     import debug_toolbar
 
     urlpatterns += [
-        url(r'^__debug__/', include(debug_toolbar.urls)),
-        url(r'^media/(?P<path>.*)$', serve, {
-            'document_root': settings.MEDIA_ROOT
-        }),
+        url(r"^__debug__/", include(debug_toolbar.urls)),
+        url(r"^media/(?P<path>.*)$", serve, {"document_root": settings.MEDIA_ROOT}),
     ]

@@ -1,12 +1,18 @@
-from profiles.models import Registration, FamilyUser
+from __future__ import absolute_import, print_function
+
 from django.core.mail import send_mail
-from sportfac.context_processors import *
 from django.urls import reverse
 
-parents = set([reg.child.family for reg in  Registration.objects.filter(validated=False)])
+from profiles.models import FamilyUser, Registration
+
+from sportfac.context_processors import *
+
+
+parents = set([reg.child.family for reg in Registration.objects.filter(validated=False)])
 for parent in parents:
-    url = 'http://www.kepchup.ch' + reverse('wizard_confirm')
-    body = """Madame, Monsieur,
+    url = "http://www.kepchup.ch" + reverse("wizard_confirm")
+    body = (
+        """Madame, Monsieur,
 En passant en revue les inscriptions aux sports scolaires facultatifs, nous constatons que les inscriptions pour votre/vos enfant/s ne sont 
 à ce jour pas encore confirmées (passage à l'étape du paiement).
 Nous vous serions reconnaissants de bien vouloir contrôler les inscriptions que vous avez saisies, de les modifier si nécessaire et de confi
@@ -23,13 +29,19 @@ Chemin du Chaucey 7
 remo.aeschbach@vd.educanet2.ch
 +4122 | 557 58 58
 +4179 | 417 69 93
-""" % url
-    
-    to = '%s %s <%s>' % (parent.first_name, parent.last_name, parent.email)
-    print to
-    send_mail('Inscription au sport scolaire facultatif - EP Coppet',
-              body,
-              'Remo Aeschbach <remo.aeschbach@vd.educanet2.ch>',
-              [to,])
+"""
+        % url
+    )
+
+    to = "%s %s <%s>" % (parent.first_name, parent.last_name, parent.email)
+    print(to)
+    send_mail(
+        "Inscription au sport scolaire facultatif - EP Coppet",
+        body,
+        "Remo Aeschbach <remo.aeschbach@vd.educanet2.ch>",
+        [
+            to,
+        ],
+    )
 len(users)
 len(parents)

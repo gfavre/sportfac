@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
-from registrations.models import Child
-from profiles.models import FamilyUser
+from __future__ import absolute_import, print_function
+
 import unicodedata
 
+from profiles.models import FamilyUser
+from registrations.models import Child
 
 
 def clean_name(name):
     name = name.strip()
-    return unicodedata.normalize('NFD', name).encode('ascii', 'ignore').decode("utf-8")
+    return unicodedata.normalize("NFD", name).encode("ascii", "ignore").decode("utf-8")
 
 
 for f in FamilyUser.objects.all():
@@ -22,7 +24,7 @@ for f in FamilyUser.objects.all():
             to_conserve_names.append(clean_name(child.get_full_name()))
 
     if f.children.count() != len(to_conserve):
-        print f.children_names
+        print(f.children_names)
     names = []
     for child in f.children.exclude(pk__in=to_conserve):
         name = clean_name(child.get_full_name())

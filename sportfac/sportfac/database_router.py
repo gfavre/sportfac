@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
+
 from django.conf import settings
 
-MASTER_DB = 'master_users'
-LOCAL_DB = 'default'
+
+MASTER_DB = "master_users"
+LOCAL_DB = "default"
 
 
 # noinspection PyMethodMayBeStatic,PyUnusedLocal

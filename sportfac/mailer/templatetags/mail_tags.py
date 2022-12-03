@@ -1,12 +1,16 @@
 from __future__ import absolute_import
-import six.moves.html_entities
+
 import os
 import re
 
 from django import template
+
+import six.moves.html_entities
 from six import unichr
 
+
 register = template.Library()
+
 
 @register.filter(is_safe=True)
 def unescape(value):
@@ -27,7 +31,7 @@ def unescape(value):
                 text = unichr(six.moves.html_entities.name2codepoint[text[1:-1]])
             except KeyError:
                 pass
-        return text # leave as is
+        return text  # leave as is
 
     return re.sub("&#?\w+;", fixup, value)
 
@@ -39,28 +43,28 @@ def filename(value):
 
 @register.filter
 def fileicon(value):
-    extension = value.file.name.split('.')[-1].lower()
-    if extension == 'pdf':
-        return 'icon-file-pdf'
-    elif extension in ('png', 'jpg', 'gif', 'tif', 'tiff'):
-        return 'icon-file-image'
-    elif extension in ('htm', 'html', 'xhtml'):
-        return 'icon-file-code'
-    elif extension in ('doc', 'docx'):
-        return 'icon-file-word'
-    elif extension in ('xls', 'xlsx'):
-        return 'icon-file-excel'
-    elif extension in ('ppt', 'pptx'):
-        return 'icon-file-powerpoint'
-    elif extension in ('zip', 'rar', 'gz', 'tar'):
-        return 'icon-file-archive'
-    elif extension in ('txt',):
-        return 'icon-doc-text'
-    elif extension in ('mp3', 'aac'):
-        return 'icon-file-audio'
-    elif extension in ('mpg', 'mp4', 'mkv'):
-        return 'icon-file-audio'
-    return 'icon-doc-1'
+    extension = value.file.name.split(".")[-1].lower()
+    if extension == "pdf":
+        return "icon-file-pdf"
+    elif extension in ("png", "jpg", "gif", "tif", "tiff"):
+        return "icon-file-image"
+    elif extension in ("htm", "html", "xhtml"):
+        return "icon-file-code"
+    elif extension in ("doc", "docx"):
+        return "icon-file-word"
+    elif extension in ("xls", "xlsx"):
+        return "icon-file-excel"
+    elif extension in ("ppt", "pptx"):
+        return "icon-file-powerpoint"
+    elif extension in ("zip", "rar", "gz", "tar"):
+        return "icon-file-archive"
+    elif extension in ("txt",):
+        return "icon-doc-text"
+    elif extension in ("mp3", "aac"):
+        return "icon-file-audio"
+    elif extension in ("mpg", "mp4", "mkv"):
+        return "icon-file-audio"
+    return "icon-doc-1"
 
 
 @register.filter

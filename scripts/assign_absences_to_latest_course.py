@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+"""
+
 import datetime
 from activities.models import Course
 
@@ -40,3 +42,4 @@ dates = [date(2021,1,9), date(2021,1,16)]
 #for absence in Absence.objects.all():
 #    if absence.session.course not in absence.child.courses.all():
 #        absence.delete()
+"""

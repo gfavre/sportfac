@@ -1,17 +1,19 @@
 # -*- coding:utf-8 -*-
 """Common settings and globals."""
 from __future__ import absolute_import
+
 from os.path import abspath, basename, dirname, join, normpath
 from sys import path
 
 # Normally you should not import ANYTHING from Django directly
 # into your settings, but ImproperlyConfigured is an exception.
 from django.core.exceptions import ImproperlyConfigured
-
-from celery.schedules import crontab
-import environ
 from django.utils.translation import ugettext_lazy as _
+
+import environ
+from celery.schedules import crontab
 from six.moves import range
+
 
 env = environ.Env()
 
@@ -35,16 +37,14 @@ path.append(DJANGO_ROOT)
 
 ########## DEBUG CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
-DEBUG = env.bool('DEBUG', default=False)
+DEBUG = env.bool("DEBUG", default=False)
 
 ########## END DEBUG CONFIGURATION
 
 
 ########## MANAGER CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#admins
-ADMINS = (
-    ('Gregory Favre', 'gregory.favre@gmail.com'),
-)
+ADMINS = (("Gregory Favre", "gregory.favre@gmail.com"),)
 
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#managers
@@ -55,27 +55,24 @@ MANAGERS = ADMINS
 ########## DATABASE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
-    'default': {
-        'ENGINE': 'django_tenants.postgresql_backend',
-        'NAME': '',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '',
+    "default": {
+        "ENGINE": "django_tenants.postgresql_backend",
+        "NAME": "",
+        "USER": "",
+        "PASSWORD": "",
+        "HOST": "",
+        "PORT": "",
     }
 }
 
 # Multitenancy configuration
-DATABASE_ROUTERS = (
-    'django_tenants.routers.TenantSyncRouter',
-)
-DEFAULT_TENANT_NAME = 'current'
+DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
+DEFAULT_TENANT_NAME = "current"
 
-VERSION_SESSION_NAME = 'period'
+VERSION_SESSION_NAME = "period"
 TENANT_MODEL = "backend.YearTenant"  # app.Model
 TENANT_DOMAIN_MODEL = "backend.Domain"  # app.Model
 TENANT_CREATION_FAKES_MIGRATIONS = True
-
 
 
 ########## END DATABASE CONFIGURATION
@@ -83,16 +80,14 @@ TENANT_CREATION_FAKES_MIGRATIONS = True
 
 ########## GENERAL CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#time-zone
-TIME_ZONE = 'Europe/Zurich'
+TIME_ZONE = "Europe/Zurich"
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#language-code
-LANGUAGE_CODE = 'fr-CH'
-LANGUAGES = (('fr', 'French'),)
+LANGUAGE_CODE = "fr-CH"
+LANGUAGES = (("fr", "French"),)
 
 # see https://docs.djangoproject.com/en/dev/ref/settings/#locale-paths
-LOCALE_PATHS = (
-    normpath(join(SITE_ROOT, 'locale')),
-)
+LOCALE_PATHS = (normpath(join(SITE_ROOT, "locale")),)
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#site-id
 SITE_ID = 1
@@ -110,31 +105,29 @@ USE_TZ = True
 
 ########## MEDIA CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-root
-MEDIA_ROOT = normpath(join(SITE_ROOT, 'media'))
+MEDIA_ROOT = normpath(join(SITE_ROOT, "media"))
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-url
-MEDIA_URL = '/media/'
+MEDIA_URL = "/media/"
 ########## END MEDIA CONFIGURATION
 
 
 ########## STATIC FILE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
-STATIC_ROOT = normpath(join(SITE_ROOT, 'assets'))
+STATIC_ROOT = normpath(join(SITE_ROOT, "assets"))
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-url
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
-STATICFILES_DIRS = (
-    normpath(join(SITE_ROOT, 'static')),
-)
+STATICFILES_DIRS = (normpath(join(SITE_ROOT, "static")),)
 
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
 STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'django.contrib.staticfiles.finders.FileSystemFinder',
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    "django.contrib.staticfiles.finders.FileSystemFinder",
 )
 
 
@@ -147,7 +140,7 @@ STATICFILES_FINDERS = (
 ########## FIXTURE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FIXTURE_DIRS
 FIXTURE_DIRS = (
-    #normpath(join(SITE_ROOT, 'fixtures')),
+    # normpath(join(SITE_ROOT, 'fixtures')),
 )
 ########## END FIXTURE CONFIGURATION
 
@@ -156,35 +149,33 @@ FIXTURE_DIRS = (
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-context-processors
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            normpath(join(SITE_ROOT, 'templates')),
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [
+            normpath(join(SITE_ROOT, "templates")),
         ],
-        'OPTIONS': {
-            'context_processors': [
-                'django.contrib.auth.context_processors.auth',
-                'django.template.context_processors.debug',
-                'django.template.context_processors.i18n',
-                'django.template.context_processors.media',
-                'django.template.context_processors.static',
-                'django.template.context_processors.tz',
-                'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.request',
-
-                'sportfac.context_processors.wizard_context',
-                'sportfac.context_processors.registration_opened_context',
-                'sportfac.context_processors.activities_context',
-                'sportfac.context_processors.tenants_context',
-                'sportfac.context_processors.kepchup_context',
-                'sportfac.context_processors.dynamic_preferences_context',
-
-                'sekizai.context_processors.sekizai',
+        "OPTIONS": {
+            "context_processors": [
+                "django.contrib.auth.context_processors.auth",
+                "django.template.context_processors.debug",
+                "django.template.context_processors.i18n",
+                "django.template.context_processors.media",
+                "django.template.context_processors.static",
+                "django.template.context_processors.tz",
+                "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.request",
+                "sportfac.context_processors.wizard_context",
+                "sportfac.context_processors.registration_opened_context",
+                "sportfac.context_processors.activities_context",
+                "sportfac.context_processors.tenants_context",
+                "sportfac.context_processors.kepchup_context",
+                "sportfac.context_processors.dynamic_preferences_context",
+                "sekizai.context_processors.sekizai",
             ],
-            'loaders': [
-                'dbtemplates.loader.Loader',
-                'django.template.loaders.filesystem.Loader',
-                'django.template.loaders.app_directories.Loader',
-            ]
+            "loaders": [
+                "dbtemplates.loader.Loader",
+                "django.template.loaders.filesystem.Loader",
+                "django.template.loaders.app_directories.Loader",
+            ],
         },
     },
 ]
@@ -197,91 +188,86 @@ TEMPLATES = [
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#middleware-classes
 MIDDLEWARE_CLASSES = [
     # Default Django middleware.
-    'django.middleware.common.CommonMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
-    'django.contrib.sites.middleware.CurrentSiteMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-
-    'sportfac.middleware.VersionMiddleware',
-    'sportfac.middleware.RegistrationOpenedMiddleware',
+    "django.middleware.common.CommonMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
+    "django.contrib.sites.middleware.CurrentSiteMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "sportfac.middleware.VersionMiddleware",
+    "sportfac.middleware.RegistrationOpenedMiddleware",
     # asynchronous messages
     #'async_messages.middleware.AsyncMiddleware',
-    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+    "django.contrib.flatpages.middleware.FlatpageFallbackMiddleware",
 ]
 ########## END MIDDLEWARE CONFIGURATION
 
 
 ########## URL CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#root-urlconf
-ROOT_URLCONF = '%s.urls' % SITE_NAME
+ROOT_URLCONF = "%s.urls" % SITE_NAME
 ########## END URL CONFIGURATION
 
 
 ########## APP CONFIGURATION
 
 SHARED_APPS = (
-    'django_tenants',
-    'backend',  # you must list the app where your tenant model resides in
-
+    "django_tenants",
+    "backend",  # you must list the app where your tenant model resides in
     # Default Django apps:
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django.contrib.humanize',
-    'django.contrib.sites',
-    'django.contrib.flatpages',
-    'django.contrib.sitemaps',
-
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django.contrib.humanize",
+    "django.contrib.sites",
+    "django.contrib.flatpages",
+    "django.contrib.sitemaps",
     # third party apps
     "anymail",  # send mail
-    'captcha',  # recaptcha
-    'ckeditor',  # wysiwyg editor
-    'ckeditor_uploader',
-    'crispy_forms',  # better forms => DRY
-    'dbtemplates',  # store templates in db (used by mailer module)
-    'django_countries',  # country field selector
-    'django_select2',  # select2 form input
-    'dynamic_preferences',
-    'floppyforms',  # better forms => bootstrap components
-    'import_export',
-    'mathfilters',
-    'phonenumber_field',
-    'rest_framework',  # REST API
-    'sekizai',  # add_to_block template tag
-
+    "captcha",  # recaptcha
+    "ckeditor",  # wysiwyg editor
+    "ckeditor_uploader",
+    "crispy_forms",  # better forms => DRY
+    "dbtemplates",  # store templates in db (used by mailer module)
+    "django_countries",  # country field selector
+    "django_select2",  # select2 form input
+    "dynamic_preferences",
+    "floppyforms",  # better forms => bootstrap components
+    "import_export",
+    "mathfilters",
+    "phonenumber_field",
+    "rest_framework",  # REST API
+    "sekizai",  # add_to_block template tag
     # local apps
-    'api',
-    'contact',
-    'mailer',
-    'profiles',
-
+    "api",
+    "contact",
+    "mailer",
+    "profiles",
     # last apps
-    'django.contrib.admin',
+    "django.contrib.admin",
 )
 
 
 TENANT_APPS = (
-    'absences',
-    'activities',
-    'appointments',
-    'registrations',
-    'payments',
-    'payroll',
-    'schools',
-    'waiting_slots',
+    "absences",
+    "activities",
+    "appointments",
+    "registrations",
+    "payments",
+    "payroll",
+    "schools",
+    "waiting_slots",
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]
 ########## END APP CONFIGURATION
 
-ADMIN_URL = env.str('ADMIN_URL', default='admin/')
+ADMIN_URL = env.str("ADMIN_URL", default="admin/")
 
 ########## LOGGING CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#logging
@@ -291,35 +277,29 @@ ADMIN_URL = env.str('ADMIN_URL', default='admin/')
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
-    },
-    'handlers': {
-        'console': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
+    "handlers": {
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
         },
     },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
         },
-
-
-    }
+    },
 }
 ########## END LOGGING CONFIGURATION
 
-TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+TEST_RUNNER = "django.test.runner.DiscoverRunner"
 
 ########## WSGI CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#wsgi-application
-WSGI_APPLICATION = 'wsgi.application'
+WSGI_APPLICATION = "wsgi.application"
 ########## END WSGI CONFIGURATION
 
 
@@ -327,17 +307,18 @@ WSGI_APPLICATION = 'wsgi.application'
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/messages/
 
 from django.contrib.messages import constants as messages
+
+
 MESSAGE_TAGS = {
-    messages.DEBUG: 'alert-info',
-    messages.INFO: 'alert-info',
-    messages.SUCCESS: 'alert-success',
-    messages.WARNING: 'alert-warning',
-    messages.ERROR: 'alert-danger'
+    messages.DEBUG: "alert-info",
+    messages.INFO: "alert-info",
+    messages.SUCCESS: "alert-success",
+    messages.WARNING: "alert-warning",
+    messages.ERROR: "alert-danger",
 }
 
 
 ########## END WSGI CONFIGURATION
-
 
 
 ########## REST FRAMEWORK CONFIGURATION
@@ -345,23 +326,19 @@ MESSAGE_TAGS = {
 REST_FRAMEWORK = {
     # Use hyperlinked styles by default.
     # Only used if the `serializer_class` attribute is not set on a view.
-    'DEFAULT_MODEL_SERIALIZER_CLASS':
-        'rest_framework.serializers.HyperlinkedModelSerializer',
-
+    "DEFAULT_MODEL_SERIALIZER_CLASS": "rest_framework.serializers.HyperlinkedModelSerializer",
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
     ],
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
-        'rest_framework_datatables.renderers.DatatablesRenderer',
+    "DEFAULT_RENDERER_CLASSES": (
+        "rest_framework.renderers.JSONRenderer",
+        "rest_framework.renderers.BrowsableAPIRenderer",
+        "rest_framework_datatables.renderers.DatatablesRenderer",
     ),
-    'DEFAULT_FILTER_BACKENDS': (
-        'rest_framework_datatables.filters.DatatablesFilterBackend',
-    ),
-    'PAGE_SIZE': 50,
+    "DEFAULT_FILTER_BACKENDS": ("rest_framework_datatables.filters.DatatablesFilterBackend",),
+    "PAGE_SIZE": 50,
 }
 
 ########## END REST FRAMEWORK CONFIGURATION
@@ -370,54 +347,53 @@ REST_FRAMEWORK = {
 # see http://django-dynamic-preferences.readthedocs.io
 
 DYNAMIC_PREFERENCES = {
-
     # a python attribute that will be added to model instances with preferences
     # override this if the default collide with one of your models attributes/fields
-    'MANAGER_ATTRIBUTE': 'preferences',
-    'MANAGER_ATTRIBUTE': 'preferences',
-
+    "MANAGER_ATTRIBUTE": "preferences",
+    "MANAGER_ATTRIBUTE": "preferences",
     # The python module in which registered preferences will be searched within each app
-    'REGISTRY_MODULE': 'dynamic_preferences_registry',
-
+    "REGISTRY_MODULE": "dynamic_preferences_registry",
     # Allow quick editing of preferences directly in admin list view
     # WARNING: enabling this feature can cause data corruption if multiple users
     # use the same list view at the same time, see https://code.djangoproject.com/ticket/11313
-    'ADMIN_ENABLE_CHANGELIST_FORM': False,
-
+    "ADMIN_ENABLE_CHANGELIST_FORM": False,
     # Should we enable the admin module for user preferences ?
-    'ENABLE_USER_PREFERENCES': False,
-
+    "ENABLE_USER_PREFERENCES": False,
     # Customize how you can access preferences from managers. The default is to
     # separate sections and keys with two underscores. This is probably not a settings you'll
     # want to change, but it's here just in case
-    'SECTION_KEY_SEPARATOR': '__',
-
+    "SECTION_KEY_SEPARATOR": "__",
     # Use this to disable caching of preference. This can be useful to debug things
-    'ENABLE_CACHE': True,
-
+    "ENABLE_CACHE": True,
     # Use this to disable checking preferences names. This can be useful to debug things
-    'VALIDATE_NAMES': True,
+    "VALIDATE_NAMES": True,
 }
 
 ########## END DYNAMIC PREFERENCES CONFIGURATION
 
-SWISS_DATE_SHORT = '%d.%m.%Y'
+SWISS_DATE_SHORT = "%d.%m.%Y"
 DATE_INPUT_FORMATS = [
     SWISS_DATE_SHORT,
-    '%Y-%m-%d', '%m/%d/%Y', '%m/%d/%y', # '2006-10-25', '10/25/2006', '10/25/06'
-    '%b %d %Y', '%b %d, %Y',            # 'Oct 25 2006', 'Oct 25, 2006'
-    '%d %b %Y', '%d %b, %Y',            # '25 Oct 2006', '25 Oct, 2006'
-    '%B %d %Y', '%B %d, %Y',            # 'October 25 2006', 'October 25, 2006'
-    '%d %B %Y', '%d %B, %Y',            # '25 October 2006', '25 October, 2006'
+    "%Y-%m-%d",
+    "%m/%d/%Y",
+    "%m/%d/%y",  # '2006-10-25', '10/25/2006', '10/25/06'
+    "%b %d %Y",
+    "%b %d, %Y",  # 'Oct 25 2006', 'Oct 25, 2006'
+    "%d %b %Y",
+    "%d %b, %Y",  # '25 Oct 2006', '25 Oct, 2006'
+    "%B %d %Y",
+    "%B %d, %Y",  # 'October 25 2006', 'October 25, 2006'
+    "%d %B %Y",
+    "%d %B, %Y",  # '25 October 2006', '25 October, 2006'
 ]
 
 
 ########## USER and REGISTRATION
-AUTH_USER_MODEL = 'profiles.FamilyUser'
+AUTH_USER_MODEL = "profiles.FamilyUser"
 REGISTRATION_OPEN = True
-LOGIN_URL = '/account/login/'
-LOGOUT_URL = '/account/logout/'
-LOGIN_REDIRECT_URL = '/account/redirect/'
+LOGIN_URL = "/account/login/"
+LOGOUT_URL = "/account/logout/"
+LOGIN_REDIRECT_URL = "/account/redirect/"
 ########## END USER and REGISTRAION
 
 
@@ -427,23 +403,29 @@ GRAPPELLI_ADMIN_TITLE = "Administration du sport scolaire facultatif"
 
 
 ########### PIPELINE CONFIG
-#STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+# STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 
 ########## END PIPELINE CONFIG
 
 
 ########### CKEDITOR
 CKEDITOR_CONFIGS = {
-    'default': {
-        'alignment': {
-            'options': ['left', 'right']
-        },
-        'contentCss': '/static/css/style.css',
-        'extraPlugins': ','.join(['emojione']),
-        'stylesSet': [
+    "default": {
+        "alignment": {"options": ["left", "right"]},
+        "contentCss": "/static/css/style.css",
+        "extraPlugins": ",".join(["emojione"]),
+        "stylesSet": [
             {"name": "sans", "element": "p", "attributes": {"class": "empty-kepchup"}},
-            {"name": "Cadre orange", "element": "p", "attributes": {"class": "alert-warning alert"}},
-            {"name": "Cadre bleu clair", "element": "p", "attributes": {"class": "alert-info alert"}},
+            {
+                "name": "Cadre orange",
+                "element": "p",
+                "attributes": {"class": "alert-warning alert"},
+            },
+            {
+                "name": "Cadre bleu clair",
+                "element": "p",
+                "attributes": {"class": "alert-info alert"},
+            },
             {"name": "Cadre vert", "element": "p", "attributes": {"class": "alert alert-success"}},
             {"name": "Cadre rouge", "element": "p", "attributes": {"class": "alert alert-danger"}},
             {"name": "Cadre gris", "element": "p", "attributes": {"class": "well"}},
@@ -452,27 +434,27 @@ CKEDITOR_CONFIGS = {
             {"name": "Bouton bleu clair", "element": "a", "attributes": {"class": "btn btn-info"}},
             {"name": "Bouton orange", "element": "a", "attributes": {"class": "btn btn-warning"}},
             {"name": "Bouton rouge", "element": "a", "attributes": {"class": "btn btn-danger"}},
-
         ],
-        'toolbar': 'Custom',
-        'toolbar_Custom': [
-            ['Source', '-', 'Print'],  ['Undo', 'Redo'], ['Bold', 'Italic', 'Subscript', 'Superscript'],
-
-            ['Format', 'TextColor'],  ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'], ['NumberedList', 'BulletedList'],
-            ['Link', 'Unlink', 'Anchor'],
-            '/',
-            ['Image', 'Table', 'HorizontalRule'],
-            [#'Emojione',
-             'Styles',
-             'SpecialChar']
+        "toolbar": "Custom",
+        "toolbar_Custom": [
+            ["Source", "-", "Print"],
+            ["Undo", "Redo"],
+            ["Bold", "Italic", "Subscript", "Superscript"],
+            ["Format", "TextColor"],
+            ["JustifyLeft", "JustifyCenter", "JustifyRight", "JustifyBlock"],
+            ["NumberedList", "BulletedList"],
+            ["Link", "Unlink", "Anchor"],
+            "/",
+            ["Image", "Table", "HorizontalRule"],
+            ["Styles", "SpecialChar"],  #'Emojione',
         ],
     }
 }
 
-CKEDITOR_UPLOAD_PATH = 'uploads/'
+CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_BROWSE_SHOW_DIRS = True
 CKEDITOR_IMAGE_BACKEND = "pillow"
-X_FRAME_OPTIONS = 'SAMEORIGIN'
+X_FRAME_OPTIONS = "SAMEORIGIN"
 
 ############# Select2
 AUTO_RENDER_SELECT2_STATICS = False
@@ -481,28 +463,28 @@ AUTO_RENDER_SELECT2_STATICS = False
 ############ Celery
 # Asynchrnous tasks.
 # See http://celery.readthedocs.org/en/latest/configuration.html
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
 
 CELERYBEAT_SCHEDULE = {
-    'update-periods': {
-        'task': 'backend.tasks.update_current_tenant',
-        'schedule': crontab(hour=0, minute=0),
+    "update-periods": {
+        "task": "backend.tasks.update_current_tenant",
+        "schedule": crontab(hour=0, minute=0),
     },
 }
 
-PHANTOMJSCLOUD_APIKEY = env('PHANTOMJSCLOUD_APIKEY')
+PHANTOMJSCLOUD_APIKEY = env("PHANTOMJSCLOUD_APIKEY")
 
 DBTEMPLATES_USE_CODEMIRROR = True
 
 
 ############# Phonenumbers
-PHONENUMBER_DEFAULT_REGION = 'CH'
+PHONENUMBER_DEFAULT_REGION = "CH"
 
 
 ############ Crispy
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
+CRISPY_TEMPLATE_PACK = "bootstrap3"
 
 
 ################################################################################
@@ -560,7 +542,7 @@ KEPCHUP_INSTRUCTORS_CAN_EDIT_EXTERNAL_ID = False
 KEPCHUP_NO_PAYMENT = False
 KEPCHUP_DISPLAY_FREE_WHEN_PRICE_IS_0 = False
 # external, wire_transfer, datatrans or none
-KEPCHUP_PAYMENT_METHOD = 'wire_transfer'
+KEPCHUP_PAYMENT_METHOD = "wire_transfer"
 KEPCHUP_USE_DIFFERENTIATED_PRICES = False
 KEPCHUP_LOCAL_ZIPCODES = []
 
@@ -586,7 +568,7 @@ KEPCHUP_ENABLE_TEACHER_MANAGEMENT = True
 KEPCHUP_CHILD_SCHOOL_DISPLAY_OTHER = False
 # these fields are not editable by parent. Makes sense with KEPCHUP_IMPORT_CHILDREN
 KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = []
-KEPCHUP_CHILDREN_HIDDEN_FIELDS = ['avs']
+KEPCHUP_CHILDREN_HIDDEN_FIELDS = ["avs"]
 # display nb of sessions on public pages. Disabled for Nyon-Prangins
 KEPCHUP_DISPLAY_NUMBER_OF_SESSIONS = True
 # make emergency number mandatory on children
@@ -617,7 +599,7 @@ KEPCHUP_NO_EXTRAS = False
 KEPCHUP_DISPLAY_OVERLAP_HELP = True
 KEPCHUP_ENABLE_ALLOCATION_ACCOUNTS = False
 
-KEPCHUP_ACTIVITY_TYPES = [('activity', _("Activities"))]
+KEPCHUP_ACTIVITY_TYPES = [("activity", _("Activities"))]
 
 # Email
 #########################################
@@ -630,16 +612,19 @@ KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS = []
 KEPCHUP_NO_SSF = False
 
 import warnings
-warnings.filterwarnings('ignore', module='floppyforms',
-                        message='Unable to import floppyforms.gis.*')
+
+
+warnings.filterwarnings(
+    "ignore", module="floppyforms", message="Unable to import floppyforms.gis.*"
+)
 
 # Single Sign On
 #######################git ##################
 KEPCHUP_USE_SSO = False
-SSO_PRIVATE_KEY = env.str('SSO_PRIVATE_KEY', default='')
-SSO_PUBLIC_KEY = env.str('SSO_PUBLIC_KEY', default='')
-SSO_SERVER = env.str('SSO_SERVER', default='')
-SSO_DASHBOARD_REDIRECT = env.str('SSO_DASHBOARD_REDIRECT', default='/')
+SSO_PRIVATE_KEY = env.str("SSO_PRIVATE_KEY", default="")
+SSO_PUBLIC_KEY = env.str("SSO_PUBLIC_KEY", default="")
+SSO_SERVER = env.str("SSO_SERVER", default="")
+SSO_DASHBOARD_REDIRECT = env.str("SSO_DASHBOARD_REDIRECT", default="/")
 
 # Appointments
 ############################################
@@ -648,12 +633,12 @@ KEPCHUP_USE_APPOINTMENTS = False
 
 # Payments
 ############################################
-DATATRANS_API_URL = env.url('DATATRANS_API_URL', default='https://api.sandbox.datatrans.com/')
-DATATRANS_PAY_URL = env.url('DATATRANS_PAY_URL', default='https://pay.sandbox.datatrans.com/')
+DATATRANS_API_URL = env.url("DATATRANS_API_URL", default="https://api.sandbox.datatrans.com/")
+DATATRANS_PAY_URL = env.url("DATATRANS_PAY_URL", default="https://pay.sandbox.datatrans.com/")
 # See: https://api-reference.datatrans.ch/#operation/init
-DATATRANS_PAYMENT_METHODS = env.list('DATATRANS_PAYMENT_METHODS', default=['TWI', 'ECA', 'VIS'])
-DATATRANS_USER = env.str('DATATRANS_USER', default='')
-DATATRANS_PASSWORD = env.str('DATATRANS_PASSWORD', default='')
+DATATRANS_PAYMENT_METHODS = env.list("DATATRANS_PAYMENT_METHODS", default=["TWI", "ECA", "VIS"])
+DATATRANS_USER = env.str("DATATRANS_USER", default="")
+DATATRANS_PASSWORD = env.str("DATATRANS_PASSWORD", default="")
 
 
 # Dashboard

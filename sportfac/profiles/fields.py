@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
+
 from django.core import exceptions
 from django.db.models.fields.related import ForeignKey
 from django.db.utils import ConnectionHandler, ConnectionRouter
@@ -28,11 +29,12 @@ class SpanningForeignKey(ForeignKey):
         if not qs.exists():
             # noinspection PyProtectedMember
             raise exceptions.ValidationError(
-                self.error_messages['invalid'],
-                code='invalid',
+                self.error_messages["invalid"],
+                code="invalid",
                 params={
-                    'model': self.remote_field.model._meta.verbose_name,
-                    'pk': value,
-                    'field': self.remote_field.field_name, 'value': value,
+                    "model": self.remote_field.model._meta.verbose_name,
+                    "pk": value,
+                    "field": self.remote_field.field_name,
+                    "value": value,
                 },  # 'pk' is included for backwards compatibility
             )

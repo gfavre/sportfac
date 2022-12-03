@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-import six
 
 from django.contrib import messages
 from django.http import HttpResponseRedirect
@@ -9,11 +8,13 @@ from django.template import loader
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext as _
 
+import six
 from activities.models import Course, TemplatedEmailReceipt
 from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser
-from .models import MailArchive
+
 from . import tasks
+from .models import MailArchive
 
 
 class GlobalPreferencesMixin(object):
@@ -30,7 +31,7 @@ class BaseEmailMixin(GlobalPreferencesMixin):
     subject = None
     mail_body = None
     attachments = None
-    success_message = _('Your email is being sent to %(number)s recipients.')
+    success_message = _("Your email is being sent to %(number)s recipients.")
 
     @staticmethod
     def resolve_template(template):
@@ -43,20 +44,20 @@ class BaseEmailMixin(GlobalPreferencesMixin):
             return template
 
     def get_success_message(self):
-        return self.success_message % {'number': len(self.get_recipients())}
+        return self.success_message % {"number": len(self.get_recipients())}
 
     def get_mail_context(self, base_context, recipient, bcc_list=None):
         context = base_context.copy()
         if not bcc_list:
             bcc_list = []
-        context['recipient'] = recipient
-        context['to_email'] = recipient.get_email_string()
-        context['bcc'] = bcc_list
+        context["recipient"] = recipient
+        context["to_email"] = recipient.get_email_string()
+        context["bcc"] = bcc_list
         return context
 
     def get_recipients(self):
         if not self.recipients:
-            raise NotImplementedError('Add a recipients attribute')
+            raise NotImplementedError("Add a recipients attribute")
 
     def get_bcc_recipients(self):
         if self.bcc_recipients:
@@ -66,12 +67,12 @@ class BaseEmailMixin(GlobalPreferencesMixin):
     def get_from_address(self):
         if self.from_address:
             return self.from_address
-        return self.global_preferences['email__FROM_MAIL']
+        return self.global_preferences["email__FROM_MAIL"]
 
     def get_reply_to_address(self):
         if self.reply_to_address:
             return self.reply_to_address
-        return self.global_preferences['email__REPLY_TO_MAIL']
+        return self.global_preferences["email__REPLY_TO_MAIL"]
 
     def get_recipient_addresses(self):
         return [recipient.get_email_string() for recipient in self.get_recipients()]
@@ -81,12 +82,12 @@ class BaseEmailMixin(GlobalPreferencesMixin):
 
     def get_subject(self, context):
         if not self.subject:
-            raise NotImplementedError('Add a subject attribute')
+            raise NotImplementedError("Add a subject attribute")
         return self.subject
 
     def get_mail_body(self, context):
         if not self.mail_body:
-            raise NotImplementedError('Add a mail_body attribute')
+            raise NotImplementedError("Add a mail_body attribute")
         return self.mail_body
 
     def get_attachments(self, context):
@@ -118,7 +119,7 @@ class ArchivedMailMixin(BaseEmailMixin):
     archive = None
 
     def get_mail_archive(self):
-        mail_pk = self.request.session.get('mail', None)
+        mail_pk = self.request.session.get("mail", None)
         return get_object_or_404(MailArchive, pk=mail_pk)
 
     def get(self, request, *args, **kwargs):
@@ -130,7 +131,7 @@ class ArchivedMailMixin(BaseEmailMixin):
         return super(ArchivedMailMixin, self).post(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        kwargs['mail_archive'] = self.archive
+        kwargs["mail_archive"] = self.archive
         return super(ArchivedMailMixin, self).get_context_data(**kwargs)
 
     def get_recipients(self):
@@ -157,25 +158,25 @@ class TemplatedEmailMixin(BaseEmailMixin):
     course = None
 
     def create_receipt(self):
-        kwargs = {'type': self.get_mail_type()}
+        kwargs = {"type": self.get_mail_type()}
         if self.course is not None:
-            kwargs['course'] = self.course
+            kwargs["course"] = self.course
         TemplatedEmailReceipt.objects.update_or_create(**kwargs)
 
     def get_mail_type(self):
         if not self.mail_type:
-            raise NotImplementedError('Add a mail_type')
+            raise NotImplementedError("Add a mail_type")
         return self.mail_type
 
     def get_mail_body(self, context):
         if not self.message_template:
-            raise NotImplementedError('Add a message_template')
+            raise NotImplementedError("Add a message_template")
         template = self.resolve_template(self.message_template)
         return template.render(context)
 
     def get_subject(self, context):
         if not self.subject_template:
-            raise NotImplementedError('Add a subject_template')
+            raise NotImplementedError("Add a subject_template")
         template = self.resolve_template(self.subject_template)
         return template.render(context)
 
@@ -184,39 +185,40 @@ class ParticipantsBaseMixin(object):
     group_mails = False
 
     def get_recipients(self):
-        qs = self.course.participants.select_related('child__family')
+        qs = self.course.participants.select_related("child__family")
         all_recipients = [registration.child.family for registration in qs.all()]
         if self.group_mails:
             return list(set(all_recipients))
         return all_recipients
 
     def get_context_data(self, **kwargs):
-        kwargs['course'] = self.course
+        kwargs["course"] = self.course
         return super(ParticipantsBaseMixin, self).get_context_data(**kwargs)
 
     def get(self, request, *args, **kwargs):
-        self.course = get_object_or_404(Course, pk=self.kwargs['course'])
+        self.course = get_object_or_404(Course, pk=self.kwargs["course"])
         return super(ParticipantsBaseMixin, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        self.course = get_object_or_404(Course, pk=self.kwargs['course'])
+        self.course = get_object_or_404(Course, pk=self.kwargs["course"])
         return super(ParticipantsBaseMixin, self).post(request, *args, **kwargs)
 
 
 class ParticipantsMixin(ParticipantsBaseMixin, BaseEmailMixin):
-
     def add_nth_mail_context(self, context, nth):
         try:
-            context['registration'] = self.course.participants.all()[nth]
-            context['child'] = context['registration'].child
+            context["registration"] = self.course.participants.all()[nth]
+            context["child"] = context["registration"].child
         except IndexError:
             pass
 
     def get_mail_context(self, base_context, recipient, bcc_list=None, child=None):
-        base_context = super(ParticipantsMixin, self).get_mail_context(base_context, recipient, bcc_list)
+        base_context = super(ParticipantsMixin, self).get_mail_context(
+            base_context, recipient, bcc_list
+        )
         if child:
-            base_context['registration'] = self.course.participants.get(child=child)
-            base_context['child'] = child
+            base_context["registration"] = self.course.participants.get(child=child)
+            base_context["child"] = child
         return base_context
 
     def send_mail(self, recipient, bcc_recipients, base_context, child=None):
@@ -229,18 +231,18 @@ class ParticipantsMixin(ParticipantsBaseMixin, BaseEmailMixin):
             recipients=[recipient.get_email_string()],
             reply_to=[self.get_reply_to_address()],
             bcc=[user.get_email_string() for user in bcc_recipients],
-            attachments=[attachment.pk for attachment in self.get_attachments(mail_context)]
+            attachments=[attachment.pk for attachment in self.get_attachments(mail_context)],
         )
-        if hasattr(self, 'create_receipt'):
+        if hasattr(self, "create_receipt"):
             self.create_receipt()
         return message
 
     def get(self, request, *args, **kwargs):
-        self.course = get_object_or_404(Course, pk=self.kwargs['course'])
+        self.course = get_object_or_404(Course, pk=self.kwargs["course"])
         return super(ParticipantsMixin, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        self.course = get_object_or_404(Course, pk=self.kwargs['course'])
+        self.course = get_object_or_404(Course, pk=self.kwargs["course"])
         context = self.get_context_data()
         if self.group_mails:
             all_recipients = self.get_recipients() + self.get_bcc_recipients()
@@ -248,14 +250,16 @@ class ParticipantsMixin(ParticipantsBaseMixin, BaseEmailMixin):
                 self.send_mail(recipient, [], context)
         else:
             for registration in self.course.participants.all():
-                self.send_mail(recipient=registration.child.family,
-                               bcc_recipients=self.get_bcc_recipients(),
-                               base_context=context,
-                               child=registration.child)
+                self.send_mail(
+                    recipient=registration.child.family,
+                    bcc_recipients=self.get_bcc_recipients(),
+                    base_context=context,
+                    child=registration.child,
+                )
 
-        if 'mail' in self.request.session:
-            del request.session['mail']
-        if 'mail-userids' in self.request.session:
-            del request.session['mail-userids']
+        if "mail" in self.request.session:
+            del request.session["mail"]
+        if "mail-userids" in self.request.session:
+            del request.session["mail-userids"]
         messages.success(request, self.get_success_message())
         return HttpResponseRedirect(self.get_success_url())

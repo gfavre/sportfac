@@ -1,11 +1,11 @@
 from __future__ import absolute_import
+
 from rest_framework import viewsets
 from rest_framework.authentication import SessionAuthentication
+from waiting_slots.models import WaitingSlot
 
 from ..permissions import ChildOrAdminPermission
 from ..serializers import WaitingSlotSerializer
-
-from waiting_slots.models import WaitingSlot
 
 
 class WaitingSlotViewSet(viewsets.ModelViewSet):

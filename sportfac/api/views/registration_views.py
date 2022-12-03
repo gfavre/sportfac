@@ -1,17 +1,16 @@
 # -*- coding:utf-8 -*-
 from __future__ import absolute_import
-from rest_framework import status
-from rest_framework import viewsets
-from rest_framework.authentication import SessionAuthentication
-from rest_framework.response import Response
 
 from profiles.models import SchoolYear
 from registrations.models import ExtraInfo, Registration
+from rest_framework import status, viewsets
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.response import Response
 from schools.models import Building, Teacher
 
-from ..permissions import RegistrationOwnerAdminPermission, ChildOrAdminPermission
-from ..serializers import (BuildingSerializer, ExtraSerializer, RegistrationSerializer, TeacherSerializer,
-                           YearSerializer)
+from ..permissions import ChildOrAdminPermission, RegistrationOwnerAdminPermission
+from ..serializers import (BuildingSerializer, ExtraSerializer, RegistrationSerializer,
+                           TeacherSerializer, YearSerializer)
 
 
 class BuildingViewSet(viewsets.ReadOnlyModelViewSet):
@@ -22,7 +21,7 @@ class BuildingViewSet(viewsets.ReadOnlyModelViewSet):
 
 class ExtraInfoViewSet(viewsets.ModelViewSet):
     authentication_classes = (SessionAuthentication,)
-    permission_classes = (RegistrationOwnerAdminPermission, )
+    permission_classes = (RegistrationOwnerAdminPermission,)
     serializer_class = ExtraSerializer
     model = ExtraInfo
 
@@ -31,13 +30,13 @@ class ExtraInfoViewSet(viewsets.ModelViewSet):
         return ExtraInfo.objects.filter(registration__child__in=user.children.all())
 
     def create(self, request, *args, **kwargs):
-        base_data = {'registration': request.data.get('registration', None)}
+        base_data = {"registration": request.data.get("registration", None)}
         output = []
         for (key, value) in request.data.items():
-            if key.startswith('extra-') and value:
+            if key.startswith("extra-") and value:
                 data = base_data.copy()
-                data['key'] = key.split('-')[1]
-                data['value'] = value
+                data["key"] = key.split("-")[1]
+                data["value"] = value
                 serializer = self.get_serializer(data=data)
                 serializer.is_valid(raise_exception=True)
                 self.perform_create(serializer)
@@ -48,7 +47,7 @@ class ExtraInfoViewSet(viewsets.ModelViewSet):
 
 class RegistrationViewSet(viewsets.ModelViewSet):
     authentication_classes = (SessionAuthentication,)
-    permission_classes = (ChildOrAdminPermission, )
+    permission_classes = (ChildOrAdminPermission,)
     serializer_class = RegistrationSerializer
     model = Registration
 
@@ -84,7 +83,7 @@ class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
     model = Teacher
 
     def get_queryset(self):
-        return Teacher.objects.prefetch_related('years')
+        return Teacher.objects.prefetch_related("years")
 
 
 class YearViewSet(viewsets.ReadOnlyModelViewSet):

@@ -1,19 +1,22 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
+
 from datetime import date, time
 
 from django.conf import settings
 from django.test import override_settings
 
-from mock import patch
 import faker
-
 from absences.models import Session
 from absences.tests.factories import SessionFactory
+from mock import patch
 from registrations.tests.factories import RegistrationFactory
+
 from sportfac.utils import TenantTestCase as TestCase
+
 from ..models import Course
 from .factories import ActivityFactory, CourseFactory
+
 
 fake = faker.Faker()
 
@@ -96,18 +99,18 @@ class CourseTest(TestCase):
         self.assertFalse(self.course.day_name.isdigit())
 
     def test_day_name_camp(self):
-        self.course.course_type = 'camp'
+        self.course.course_type = "camp"
         self.assertTrue(len(self.course.day_name) > 0)
-        self.assertIn('-', self.course.day_name)
+        self.assertIn("-", self.course.day_name)
 
     def test_days_names(self):
-        self.course.start_time_mon = '10:00'
-        self.course.start_time_tue = '10:00'
-        self.course.start_time_wed = '10:00'
-        self.course.start_time_thu = '10:00'
-        self.course.start_time_fri = '10:00'
-        self.course.start_time_sat = '10:00'
-        self.course.start_time_sun = '10:00'
+        self.course.start_time_mon = "10:00"
+        self.course.start_time_tue = "10:00"
+        self.course.start_time_wed = "10:00"
+        self.course.start_time_thu = "10:00"
+        self.course.start_time_fri = "10:00"
+        self.course.start_time_sat = "10:00"
+        self.course.start_time_sun = "10:00"
         self.assertEqual(len(self.course.days_names), 7)
         self.assertFalse(self.course.days_names[0].isdigit())
 
@@ -121,7 +124,7 @@ class CourseTest(TestCase):
         self.assertEqual(duration.seconds, 2 * 3600)
 
     def test_duration_multicourse(self):
-        self.course.course_type = 'multicourse'
+        self.course.course_type = "multicourse"
         self.course.start_time_mon = time(10, 0)
         self.course.end_time_mon = time(12, 0)
         self.course.start_time_sun = time(10, 0)
@@ -131,7 +134,7 @@ class CourseTest(TestCase):
 
     @override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False)
     def test_duration_camp(self):
-        self.course.course_type = 'camp'
+        self.course.course_type = "camp"
         self.course.start_date = date(2022, 1, 1)
         self.course.end_date = date(2022, 1, 5)
         duration = self.course.duration
@@ -139,7 +142,7 @@ class CourseTest(TestCase):
 
     @override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=True)
     def test_duration_camp_explicit_session_dates(self):
-        self.course.course_type = 'camp'
+        self.course.course_type = "camp"
         SessionFactory(course=self.course, date=date(2022, 1, 1))
         SessionFactory(course=self.course, date=date(2022, 1, 2))
         SessionFactory(course=self.course, date=date(2022, 1, 3))
@@ -163,35 +166,35 @@ class CourseTest(TestCase):
         self.assertTrue(self.course.has_participants)
 
     def test_start_hours(self):
-        self.course.start_time_mon = '10:00'
-        self.course.start_time_tue = '10:00'
-        self.course.start_time_wed = '10:00'
-        self.course.start_time_thu = '10:00'
-        self.course.start_time_fri = '10:00'
-        self.course.start_time_sat = '10:00'
-        self.course.start_time_sun = '10:00'
+        self.course.start_time_mon = "10:00"
+        self.course.start_time_tue = "10:00"
+        self.course.start_time_wed = "10:00"
+        self.course.start_time_thu = "10:00"
+        self.course.start_time_fri = "10:00"
+        self.course.start_time_sat = "10:00"
+        self.course.start_time_sun = "10:00"
         self.assertEqual(len(self.course.start_hours), 7)
 
     def test_is_course(self):
-        self.course.course_type = 'course'
+        self.course.course_type = "course"
         self.assertTrue(self.course.is_course)
         self.assertFalse(self.course.is_camp)
         self.assertFalse(self.course.is_multi_course)
 
     def test_is_camp(self):
-        self.course.course_type = 'camp'
+        self.course.course_type = "camp"
         self.assertFalse(self.course.is_course)
         self.assertTrue(self.course.is_camp)
         self.assertFalse(self.course.is_multi_course)
 
     def test_is_multi_course(self):
-        self.course.course_type = 'multicourse'
+        self.course.course_type = "multicourse"
         self.assertFalse(self.course.is_course)
         self.assertFalse(self.course.is_camp)
         self.assertTrue(self.course.is_multi_course)
 
     def test_add_session_fill_absences(self):
-        with patch.object(Session, 'fill_absences') as mock_fill_absences:
+        with patch.object(Session, "fill_absences") as mock_fill_absences:
             self.course.add_session(date(2022, 1, 1))
             self.assertTrue(mock_fill_absences.called)
 
@@ -217,14 +220,14 @@ class CourseTest(TestCase):
         self.assertEqual(self.course.end_date, adate)
 
     def test_save_updates_participants(self):
-        with patch.object(Course, 'update_nb_participants') as mock_update_nb_participants:
+        with patch.object(Course, "update_nb_participants") as mock_update_nb_participants:
             self.course.save()
             mock_update_nb_participants.assert_called_once()
         self.course.refresh_from_db()
 
     @override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=True)
     def test_save_updates_dates_from_sessions(self):
-        with patch.object(Course, 'update_dates_from_sessions') as mock_update_dates_from_sessions:
+        with patch.object(Course, "update_dates_from_sessions") as mock_update_dates_from_sessions:
             self.course.save()
             mock_update_dates_from_sessions.assert_called_once()
 

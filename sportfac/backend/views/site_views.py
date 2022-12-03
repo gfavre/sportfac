@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
+
 from datetime import timedelta
 
 from django.contrib.flatpages.models import FlatPage
@@ -10,41 +11,44 @@ from django.utils.timezone import now
 from django.utils.translation import ugettext as _
 from django.views.generic import DeleteView, ListView, TemplateView, UpdateView, View
 
-from appointments.models import AppointmentSlot, Appointment
+from appointments.models import Appointment, AppointmentSlot
 from appointments.resources import AppointmentResource
 from mailer.forms import GenericEmailForm
 from mailer.models import GenericEmail
+
 from ..forms import FlatPageForm
 from .mixins import BackendMixin, ExcelResponseMixin
 
 
 class AppointmentsManagementView(BackendMixin, TemplateView):
-    template_name = 'appointments/backend/create.html'
+    template_name = "appointments/backend/create.html"
 
     def get_context_data(self, **kwargs):
         context = super(AppointmentsManagementView, self).get_context_data(**kwargs)
         if AppointmentSlot.objects.exists():
-            context['start'] = AppointmentSlot.objects.first().start.date().isoformat()
+            context["start"] = AppointmentSlot.objects.first().start.date().isoformat()
         else:
-            context['start'] = now().date().isoformat()
+            context["start"] = now().date().isoformat()
         return context
 
 
 class AppointmentsListView(BackendMixin, ListView):
     model = AppointmentSlot
-    template_name = 'appointments/backend/list.html'
+    template_name = "appointments/backend/list.html"
 
     def get_queryset(self):
         min_date = now() - timedelta(hours=4)
-        return AppointmentSlot.objects.filter(start__gte=min_date).prefetch_related('appointments', 'appointments__child')
+        return AppointmentSlot.objects.filter(start__gte=min_date).prefetch_related(
+            "appointments", "appointments__child"
+        )
 
 
 class AppointmentDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
     model = Appointment
-    template_name = 'appointments/backend/confirm_delete.html'
-    success_url = reverse_lazy('backend:appointments-list')
+    template_name = "appointments/backend/confirm_delete.html"
+    success_url = reverse_lazy("backend:appointments-list")
     success_message = _("Appointment has been canceled.")
-    pk_url_kwarg = 'appointment'
+    pk_url_kwarg = "appointment"
 
 
 class AppointmentsExportView(BackendMixin, ExcelResponseMixin, View):
@@ -59,46 +63,47 @@ class AppointmentsExportView(BackendMixin, ExcelResponseMixin, View):
 
 class FlatPageListView(BackendMixin, ListView):
     model = FlatPage
-    template_name = 'backend/site/flatpage_list.html'
+    template_name = "backend/site/flatpage_list.html"
 
 
 class FlatPageUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
     model = FlatPage
     form_class = FlatPageForm
-    template_name = 'backend/site/flatpage_update.html'
-    success_url = reverse_lazy('backend:flatpages-list')
-    success_message = _('<a href="%(url)s" class="alert-link">Page "%(title)s"</a> has been updated.')
+    template_name = "backend/site/flatpage_update.html"
+    success_url = reverse_lazy("backend:flatpages-list")
+    success_message = _(
+        '<a href="%(url)s" class="alert-link">Page "%(title)s"</a> has been updated.'
+    )
 
     def get_success_message(self, cleaned_data):
         url = self.success_url
         return mark_safe(
-            self.success_message % {'url': self.object.url,
-                                    'title': cleaned_data.get('title')}
+            self.success_message % {"url": self.object.url, "title": cleaned_data.get("title")}
         )
 
 
 class GenericEmailListView(BackendMixin, ListView):
     model = GenericEmail
-    template_name = 'backend/mail/emails_list.html'
+    template_name = "backend/mail/emails_list.html"
 
 
 class GenericEmailUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
     model = GenericEmail
     form_class = GenericEmailForm
-    template_name = 'backend/mail/emails_update.html'
-    success_url = reverse_lazy('backend:emails-list')
+    template_name = "backend/mail/emails_update.html"
+    success_url = reverse_lazy("backend:emails-list")
     success_message = _("Generic email has been saved")
 
     def form_valid(self, form):
         subject_heading = form.get_tmpl_heading(self.object.subject_template.content)
-        subject_body = form.cleanup_tmpl(form.cleaned_data['subject_text'])
+        subject_body = form.cleanup_tmpl(form.cleaned_data["subject_text"])
         self.object.subject_template.content = subject_heading + subject_body
         self.object.subject_template.save()
 
         message_heading = form.get_tmpl_heading(self.object.body_template.content)
-        message_body = form.cleanup_tmpl(form.cleaned_data['body_text'])
+        message_body = form.cleanup_tmpl(form.cleaned_data["body_text"])
         if message_heading:
-            self.object.body_template.content = message_heading + '\n' + message_body
+            self.object.body_template.content = message_heading + "\n" + message_body
         else:
             self.object.body_template.content = message_body
         self.object.body_template.save()

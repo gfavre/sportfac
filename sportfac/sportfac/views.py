@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+
 from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.http import HttpResponse
@@ -27,7 +28,8 @@ class PhaseForbiddenMixin(LoginRequiredMixin):
         if self.forbidden_phases is None:
             raise ImproperlyConfigured(
                 '{0} requires the "forbidden_phases" attribute to be '
-                'set.'.format(self.__class__.__name__))
+                "set.".format(self.__class__.__name__)
+            )
         return self.forbidden_phases
 
     def check_phase(self, request):
@@ -42,7 +44,9 @@ class PhaseForbiddenMixin(LoginRequiredMixin):
         if not correct_phase:
             if self.raise_exception:
                 raise PermissionDenied  # Return a 403
-            return redirect_to_login(request.get_full_path(), self.get_login_url(), self.get_redirect_field_name())
+            return redirect_to_login(
+                request.get_full_path(), self.get_login_url(), self.get_redirect_field_name()
+            )
         return super(PhaseForbiddenMixin, self).dispatch(request, *args, **kwargs)
 
 
@@ -61,7 +65,7 @@ class WizardMixin(OpenedPeriodMixin):
             self.check_initial_condition(request)
         except NotReachableException:
             context = wizard_context(request)
-            return redirect(context['max_step'])
+            return redirect(context["max_step"])
         # noinspection PyUnresolvedReferences
         return super(WizardMixin, self).get(request, *args, **kwargs)
 
@@ -73,7 +77,7 @@ class WizardView(WizardMixin, RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         context = wizard_context(self.request)
-        return context.get('max_step')
+        return context.get("max_step")
 
 
 class CSVMixin(object):
@@ -86,22 +90,22 @@ class CSVMixin(object):
     # noinspection PyUnusedLocal
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        response = HttpResponse(content_type='text/csv')
-        cd = u'attachment; filename="{0}"'.format(self.get_csv_filename())
-        response['Content-Disposition'] = cd
+        response = HttpResponse(content_type="text/csv")
+        cd = 'attachment; filename="{0}"'.format(self.get_csv_filename())
+        response["Content-Disposition"] = cd
         self.write_csv(response)
         return response
 
 
 # noinspection PyUnusedLocal
 def not_found(request, exception=None):
-    response = render(request, '404.html', {})
+    response = render(request, "404.html", {})
     response.status_code = 404
     return response
 
 
 # noinspection PyUnusedLocal
 def server_error(request, exception=None):
-    response = render(request, '500.html', {})
+    response = render(request, "500.html", {})
     response.status_code = 500
     return response

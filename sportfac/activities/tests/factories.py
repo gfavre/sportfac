@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+
 import datetime
 
 from django.conf import settings
@@ -6,8 +7,7 @@ from django.conf import settings
 import factory
 import factory.fuzzy
 import faker
-
-from activities.models import Activity, AllocationAccount, Course, SCHOOL_YEARS
+from activities.models import SCHOOL_YEARS, Activity, AllocationAccount, Course
 
 
 fake = faker.Factory.create()
@@ -19,8 +19,8 @@ class AllocationAccountFactory(factory.DjangoModelFactory):
     class Meta:
         model = AllocationAccount
 
-    account = factory.Sequence(lambda n: 'account-{}'.format(n))
-    name = factory.Faker('bs')
+    account = factory.Sequence(lambda n: "account-{}".format(n))
+    name = factory.Faker("bs")
 
 
 class ActivityFactory(factory.DjangoModelFactory):
@@ -42,17 +42,13 @@ class CourseFactory(factory.DjangoModelFactory):
     number = factory.Sequence(lambda x: "{0}".format(x))
     number_of_sessions = factory.fuzzy.FuzzyInteger(0, 42)
     start_date = factory.fuzzy.FuzzyDate(start_date=datetime.date(2014, 1, 1))
-    end_date = factory.LazyAttribute(
-        lambda c: c.start_date + datetime.timedelta(days=90)
-    )
+    end_date = factory.LazyAttribute(lambda c: c.start_date + datetime.timedelta(days=90))
     start_time = datetime.time(hour=16)
     end_time = datetime.time(hour=17)
     place = factory.lazy_attribute(lambda o: fake.address())
     min_participants = factory.fuzzy.FuzzyInteger(1, 20)
 
-    max_participants = factory.LazyAttribute(
-        lambda c: c.min_participants + 5
-    )
+    max_participants = factory.LazyAttribute(lambda c: c.min_participants + 5)
     schoolyear_min = factory.fuzzy.FuzzyChoice(YEARS[:-1])
     schoolyear_max = factory.fuzzy.FuzzyChoice(YEARS[1:])
 
@@ -65,7 +61,6 @@ class CourseFactory(factory.DjangoModelFactory):
     age_max = factory.LazyAttribute(lambda o: o.age_min + 1)
 
     comments = factory.lazy_attribute(lambda o: fake.text())
-
 
     @factory.post_generation
     def instructors(self, create, extracted, **kwargs):

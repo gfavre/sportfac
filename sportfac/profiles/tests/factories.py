@@ -1,25 +1,25 @@
 from __future__ import absolute_import
+
 import datetime
 
 from django.contrib.auth.hashers import make_password
 
 import factory.fuzzy
 import faker
-
 from activities.models import SCHOOL_YEARS
 from profiles.models import City, FamilyUser, SchoolYear
 
 
 YEARS = [year for (year, name) in SCHOOL_YEARS]
-DEFAULT_PASS = 'test'
+DEFAULT_PASS = "test"
 
-fake = faker.Factory.create('fr_CH')
+fake = faker.Factory.create("fr_CH")
 
 
 class SchoolYearFactory(factory.DjangoModelFactory):
     class Meta:
         model = SchoolYear
-    
+
     year = factory.fuzzy.FuzzyChoice(YEARS[:-1])
 
 
@@ -35,7 +35,7 @@ class FamilyUserFactory(factory.DjangoModelFactory):
     zipcode = factory.lazy_attribute(lambda o: fake.postcode())
     city = factory.lazy_attribute(lambda o: fake.city())
 
-    country = 'CH'
+    country = "CH"
     private_phone = factory.lazy_attribute(lambda o: fake.phone_number())
 
 

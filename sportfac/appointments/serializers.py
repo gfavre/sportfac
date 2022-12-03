@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
+
 from django.utils.translation import ugettext as _
 
 from phonenumber_field.modelfields import PhoneNumberField
+from registrations.models import Child
 from rest_framework import serializers
 
 from .models import AppointmentSlot
-from registrations.models import Child
 
 
 class SlotSerializer(serializers.ModelSerializer):
@@ -17,7 +18,7 @@ class SlotSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AppointmentSlot
-        fields = ('id', 'title', 'available_places', 'places', 'start', 'end', 'url', 'color')
+        fields = ("id", "title", "available_places", "places", "start", "end", "url", "color")
 
     def get_available_places(self, obj):
         return obj.available_places
@@ -26,14 +27,16 @@ class SlotSerializer(serializers.ModelSerializer):
         if obj.title:
             return obj.title
         else:
-            return _('%(available)s out of %(total)s available') % {'available': obj.available_places,
-                                                                    'total': obj.places}
+            return _("%(available)s out of %(total)s available") % {
+                "available": obj.available_places,
+                "total": obj.places,
+            }
 
     def get_url(self, obj):
         return obj.api_register_url
 
     def get_color(self, obj):
-        return obj.available_places > 0 and 'green' or 'gray'
+        return obj.available_places > 0 and "green" or "gray"
 
 
 class AppointmentSerializer(serializers.Serializer):
@@ -48,7 +51,7 @@ class AdminAppointmentSlotSerializer(SlotSerializer):
 
     class Meta:
         model = AppointmentSlot
-        fields = ('id', 'title', 'available_places', 'places', 'start', 'end', 'url', 'color')
+        fields = ("id", "title", "available_places", "places", "start", "end", "url", "color")
 
     def get_url(self, obj):
         return obj.api_management_url

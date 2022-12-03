@@ -1,4 +1,7 @@
+from __future__ import absolute_import, print_function
+
 from activities.models import Course
+from six.moves import input
 
 
 for c in Course.objects.all():
@@ -7,9 +10,9 @@ for c in Course.objects.all():
         if c.instructors.count() == 1:
             i = c.instructors.first()
         else:
-            print('\n'.join([u'{} - {}'.format(m.pk, m.full_name) for m in c.instructors.all()]))
+            print(("\n".join(["{} - {}".format(m.pk, m.full_name) for m in c.instructors.all()])))
             try:
-                pk = int(raw_input('Default Instructor? '))
+                pk = int(input("Default Instructor? "))
                 i = c.intructors.get(pk=pk)
             except:
                 continue

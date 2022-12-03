@@ -11,56 +11,58 @@ DEBUG = True
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 # Note: This key only used for development and testing.
-SECRET_KEY = env('DJANGO_SECRET_KEY', default='CHANGEME!!!')
+SECRET_KEY = env("DJANGO_SECRET_KEY", default="CHANGEME!!!")
 
 
 SHARED_APPS += (
-    'djcelery',
-    'kombu.transport.django',
+    "djcelery",
+    "kombu.transport.django",
 )
 
 INSTALLED_APPS += (
-    'django_extensions', # more commands
-    'debug_toolbar', # debugging
-    'djcelery',
-    'kombu.transport.django',
-    'corsheaders',
-    'django_template_check'
+    "django_extensions",  # more commands
+    "debug_toolbar",  # debugging
+    "djcelery",
+    "kombu.transport.django",
+    "corsheaders",
+    "django_template_check",
 )
-MIDDLEWARE_CLASSES = ['corsheaders.middleware.CorsMiddleware'] + MIDDLEWARE_CLASSES
+MIDDLEWARE_CLASSES = ["corsheaders.middleware.CorsMiddleware"] + MIDDLEWARE_CLASSES
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 
 
-
 # See: https://github.com/django-debug-toolbar/django-debug-toolbar#installation
-INTERNAL_IPS = ('127.0.0.1',)
+INTERNAL_IPS = ("127.0.0.1",)
 
 # See: https://github.com/django-debug-toolbar/django-debug-toolbar#installation
 MIDDLEWARE_CLASSES = [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ] + MIDDLEWARE_CLASSES
 
 
-ALLOWED_HOSTS = ('127.0.0.1', 'localhost', 'test.com', 'tenant.test.com', 'testserver')
+ALLOWED_HOSTS = ("127.0.0.1", "localhost", "test.com", "tenant.test.com", "testserver")
 
 ########## END DEBUG CONFIGURATION
-
-
 
 
 ########## DATABA:qSE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
     #'other': env.db('DATABASE_URL', default='postgres:///sportfac'),
-    'master_users': env.db('MASTER_DATABASE_URL', default='postgres:///kepchup_users'),
-    'default': env.db('OTHER_DB', 'postgres:///sportfac_montreux'),
+    "master_users": env.db("MASTER_DATABASE_URL", default="postgres:///kepchup_users"),
+    "default": env.db("OTHER_DB", "postgres:///sportfac_montreux"),
 }
-DATABASES['default']['ENGINE'] = 'django_tenants.postgresql_backend'
+DATABASES["default"]["ENGINE"] = "django_tenants.postgresql_backend"
 
-DATABASE_ROUTERS = ['django_tenants.routers.TenantSyncRouter', 'sportfac.database_router.MasterRouter',]
-AUTHENTICATION_BACKENDS = ('sportfac.authentication_backends.MasterUserBackend',
-                           'django.contrib.auth.backends.ModelBackend')
-SESSION_COOKIE_NAME = 'sportfac'
+DATABASE_ROUTERS = [
+    "django_tenants.routers.TenantSyncRouter",
+    "sportfac.database_router.MasterRouter",
+]
+AUTHENTICATION_BACKENDS = (
+    "sportfac.authentication_backends.MasterUserBackend",
+    "django.contrib.auth.backends.ModelBackend",
+)
+SESSION_COOKIE_NAME = "sportfac"
 ########## END DATABASE CONFIGURATION
 
 
@@ -68,62 +70,56 @@ SESSION_COOKIE_NAME = 'sportfac'
 # See: https://github.com/django-debug-toolbar/django-debug-toolbar#installation
 
 
-DEBUG_TOOLBAR_CONFIG ={
-    'INTERCEPT_REDIRECTS': False,
-    'SHOW_TEMPLATE_CONTEXT': True,
-    'SKIP_TEMPLATE_PREFIXES': ('django/forms/widgets/', 'admin/widgets/', 'floppyforms/'),
+DEBUG_TOOLBAR_CONFIG = {
+    "INTERCEPT_REDIRECTS": False,
+    "SHOW_TEMPLATE_CONTEXT": True,
+    "SKIP_TEMPLATE_PREFIXES": ("django/forms/widgets/", "admin/widgets/", "floppyforms/"),
 }
 DEBUG_TOOLBAR_PANELS = [
-    'debug_toolbar.panels.versions.VersionsPanel',
-    'debug_toolbar.panels.timer.TimerPanel',
-    'debug_toolbar.panels.settings.SettingsPanel',
-    'debug_toolbar.panels.headers.HeadersPanel',
-    'debug_toolbar.panels.request.RequestPanel',
-    'debug_toolbar.panels.sql.SQLPanel',
-    'debug_toolbar.panels.staticfiles.StaticFilesPanel',
-    'debug_toolbar.panels.templates.TemplatesPanel',
-    'debug_toolbar.panels.cache.CachePanel',
-    'debug_toolbar.panels.signals.SignalsPanel',
-    'debug_toolbar.panels.logging.LoggingPanel',
-    'debug_toolbar.panels.redirects.RedirectsPanel',
+    "debug_toolbar.panels.versions.VersionsPanel",
+    "debug_toolbar.panels.timer.TimerPanel",
+    "debug_toolbar.panels.settings.SettingsPanel",
+    "debug_toolbar.panels.headers.HeadersPanel",
+    "debug_toolbar.panels.request.RequestPanel",
+    "debug_toolbar.panels.sql.SQLPanel",
+    "debug_toolbar.panels.staticfiles.StaticFilesPanel",
+    "debug_toolbar.panels.templates.TemplatesPanel",
+    "debug_toolbar.panels.cache.CachePanel",
+    "debug_toolbar.panels.signals.SignalsPanel",
+    "debug_toolbar.panels.logging.LoggingPanel",
+    "debug_toolbar.panels.redirects.RedirectsPanel",
 ]
 ########## END TOOLBAR CONFIGURATION
 
 
-
-
 ########### EMAIL:
-DEFAULT_FROM_EMAIL = 'sportfac@localhost'
-EMAIL_SUBJECT_PREFIX = '[%s] ' % SITE_NAME
+DEFAULT_FROM_EMAIL = "sportfac@localhost"
+EMAIL_SUBJECT_PREFIX = "[%s] " % SITE_NAME
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-#EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-#EMAIL_FILE_PATH = env('EMAIL_FILE_PATH', default='/tmp/app-messages')
-
-
-
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+# EMAIL_FILE_PATH = env('EMAIL_FILE_PATH', default='/tmp/app-messages')
 
 
 ########## END EMAIL CONFIGURATION
 
 
-
 ############ Celery
 # Asynchrnous tasks.
 # See http://celery.readthedocs.org/en/latest/configuration.html
-BROKER_URL = 'django://'
-CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
+BROKER_URL = "django://"
+CELERY_RESULT_BACKEND = "djcelery.backends.database:DatabaseBackend"
 CELERY_ALWAYS_EAGER = True
 
-TEMPLATES[0]['DIRS'] = [
-    normpath(join(SITE_ROOT, 'themes', 'coppet', 'templates')),
-    normpath(join(SITE_ROOT, 'templates')),
+TEMPLATES[0]["DIRS"] = [
+    normpath(join(SITE_ROOT, "themes", "coppet", "templates")),
+    normpath(join(SITE_ROOT, "templates")),
 ]
 
 STATICFILES_DIRS = (
-    normpath(join(SITE_ROOT, 'themes', 'coppet', 'static')),
-    normpath(join(SITE_ROOT, 'static')),
+    normpath(join(SITE_ROOT, "themes", "coppet", "static")),
+    normpath(join(SITE_ROOT, "static")),
 )
 COMPRESS_ENABLED = True
 
@@ -139,10 +135,15 @@ KEPCHUP_SEND_COPY_CONTACT_MAIL_TO_ADMIN = True
 KEPCHUP_NO_PAYMENT = False
 KEPCHUP_NO_TERMS = False
 KEPCHUP_CHILD_SCHOOL = True
-KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS = ['pdf/Lettre-Moniteurs-cours-automne-2017.pdf', 'pdf/GMS_2017-2018.pdf']
+KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS = [
+    "pdf/Lettre-Moniteurs-cours-automne-2017.pdf",
+    "pdf/GMS_2017-2018.pdf",
+]
 KEPCHUP_CALENDAR_DISPLAY_DATES = True
 KEPCHUP_CALENDAR_DISPLAY_COURSE_NAMES = True
-KEPCHUP_CALENDAR_HIDDEN_DAYS = [0,]
+KEPCHUP_CALENDAR_HIDDEN_DAYS = [
+    0,
+]
 KEPCHUP_BIB_NUMBERS = True
 KEPCHUP_CHILDREN_HIDDEN_FIELDS = []
 KEPCHUP_FICHE_SALAIRE_MONTREUX = True
@@ -157,22 +158,58 @@ KEPCHUP_IMPORT_CHILDREN = True
 KEPCHUP_DISPLAY_NUMBER_OF_SESSIONS = False
 KEPCHUP_ALTERNATIVE_STEPS_NAMING = True
 KEPCHUP_SPLASH_PAGE = True
-KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = ['first_name', 'last_name', 'school_year', 'school']
+KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = ["first_name", "last_name", "school_year", "school"]
 KEPCHUP_REGISTER_ACCOUNTS_AT_ANY_TIME = True
 KEPCHUP_EXPLICIT_SESSION_DATES = True
 
 KEPCHUP_ZIPCODE_RESTRICTION = [
-    ['1277', 'Arnex-sur-Nyon'], ['1273', 'Arzier-Le Muids'], ['1269', 'Bassins'], ['1268', 'Begnins'],
-    ['1279', 'Bogis-Bossey'], ['1277', 'Borex'], ['1195', 'Bursinel'], ['1183', 'Bursins'],
-    ['1268', 'Burtigny'], ['1279', 'Chavannes-de-Bogis'], ['1290', 'Chavannes-des-Bois'],
-    ['1275', u'Chéserex'], ['1267', 'Coinsins'], ['1291', 'Commugny'], ['1296', 'Coppet'],
-    ['1299', u'Crans-près-Céligny'], ['1263', 'Crassier'], ['1266', 'Duillier'], ['1195', 'Dully'],
-    ['1186', 'Essertines-sur-Rolle'], ['1260', 'Eysins'], ['1297', 'Founex'], ['1272', 'Genolier'],
-    ['1182', 'Gilly'], ['1276', 'Gingins'], ['1271', 'Givrins'], ['1196', 'Gland'], ['1276', 'Grens'],
-    ['1278', 'La Rippe'], ['1261', 'Le Vaud'], ['1261', 'Longirod'], ['1184', 'Luins'], ['1261', 'Marchissy'],
-    ['1295', 'Mies'], ['1185', 'Mont-sur-Rolle'], ['1260', 'Nyon'], ['116', 'Perroy'], ['1197', 'Prangins'],
-    ['1180', 'Rolle'], ['1264', 'Saint-Cergue'], ['1265', 'Saint-George'], ['1188', 'Signy-Avenex'],
-    ['1274', 'Tannay'], ['1180', 'Tartegnin'], ['1270', u'Trélex'], ['1267', 'Vich'], ['1184', 'Vinzel']
+    ["1277", "Arnex-sur-Nyon"],
+    ["1273", "Arzier-Le Muids"],
+    ["1269", "Bassins"],
+    ["1268", "Begnins"],
+    ["1279", "Bogis-Bossey"],
+    ["1277", "Borex"],
+    ["1195", "Bursinel"],
+    ["1183", "Bursins"],
+    ["1268", "Burtigny"],
+    ["1279", "Chavannes-de-Bogis"],
+    ["1290", "Chavannes-des-Bois"],
+    ["1275", "Chéserex"],
+    ["1267", "Coinsins"],
+    ["1291", "Commugny"],
+    ["1296", "Coppet"],
+    ["1299", "Crans-près-Céligny"],
+    ["1263", "Crassier"],
+    ["1266", "Duillier"],
+    ["1195", "Dully"],
+    ["1186", "Essertines-sur-Rolle"],
+    ["1260", "Eysins"],
+    ["1297", "Founex"],
+    ["1272", "Genolier"],
+    ["1182", "Gilly"],
+    ["1276", "Gingins"],
+    ["1271", "Givrins"],
+    ["1196", "Gland"],
+    ["1276", "Grens"],
+    ["1278", "La Rippe"],
+    ["1261", "Le Vaud"],
+    ["1261", "Longirod"],
+    ["1184", "Luins"],
+    ["1261", "Marchissy"],
+    ["1295", "Mies"],
+    ["1185", "Mont-sur-Rolle"],
+    ["1260", "Nyon"],
+    ["116", "Perroy"],
+    ["1197", "Prangins"],
+    ["1180", "Rolle"],
+    ["1264", "Saint-Cergue"],
+    ["1265", "Saint-George"],
+    ["1188", "Signy-Avenex"],
+    ["1274", "Tannay"],
+    ["1180", "Tartegnin"],
+    ["1270", "Trélex"],
+    ["1267", "Vich"],
+    ["1184", "Vinzel"],
 ]
 KEPCHUP_DISPLAY_LAGAPEO = True
 KEPCHUP_INSTRUCTORS_CAN_REMOVE_REGISTRATIONS = True
@@ -193,15 +230,15 @@ KEPCHUP_ENABLE_WAITING_LISTS = True
 
 # Registration steps
 #########################################
-#KEPCHUP_ALTERNATIVE_ACTIVITIES_LABEL = u'Inscription'
-#KEPCHUP_ALTERNATIVE_CONFIRM_LABEL = u'Résumé'
-#KEPCHUP_ALTERNATIVE_BILLING_LABEL = u'Confirmation'
+# KEPCHUP_ALTERNATIVE_ACTIVITIES_LABEL = u'Inscription'
+# KEPCHUP_ALTERNATIVE_CONFIRM_LABEL = u'Résumé'
+# KEPCHUP_ALTERNATIVE_BILLING_LABEL = u'Confirmation'
 
 # Single Sign On
 #########################################
 KEPCHUP_USE_SSO = False
-#LOGIN_URL = '/client/'
-#LOGOUT_URL = 'https://users.ssfmontreux.ch/logout/'
+# LOGIN_URL = '/client/'
+# LOGOUT_URL = 'https://users.ssfmontreux.ch/logout/'
 
 # Payment
 #########################################
@@ -209,29 +246,29 @@ KEPCHUP_USE_SSO = False
 KEPCHUP_NO_PAYMENT = False
 KEPCHUP_DISPLAY_FREE_WHEN_PRICE_IS_0 = False
 # wire_transfer, datatrans or none
-KEPCHUP_PAYMENT_METHOD = 'datatrans'
+KEPCHUP_PAYMENT_METHOD = "datatrans"
 KEPCHUP_USE_DIFFERENTIATED_PRICES = True
-KEPCHUP_LOCAL_ZIPCODES = ['1814', '1272']
+KEPCHUP_LOCAL_ZIPCODES = ["1814", "1272"]
 
 
 CELERY_ALWAYS_EAGER = True
 
-CELERYBEAT_SCHEDULE['notify-absences'] = {
-        'task': 'absences.tasks.notify_absences',
-        'schedule': crontab(hour=19, minute=0),
+CELERYBEAT_SCHEDULE["notify-absences"] = {
+    "task": "absences.tasks.notify_absences",
+    "schedule": crontab(hour=19, minute=0),
 }
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'unique-snowflake',
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-snowflake",
     },
-    'dbtemplates': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'unique-snowflake',
-    }
+    "dbtemplates": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-snowflake",
+    },
 }
 
-SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
+SILENCED_SYSTEM_CHECKS = ["captcha.recaptcha_test_key_error"]
 
-RECAPTCHA_PUBLIC_KEY = env('RECAPTCHA_PUBLIC_KEY', default='')
-RECAPTCHA_PRIVATE_KEY = env('RECAPTCHA_PRIVATE_KEY', default='')
+RECAPTCHA_PUBLIC_KEY = env("RECAPTCHA_PUBLIC_KEY", default="")
+RECAPTCHA_PRIVATE_KEY = env("RECAPTCHA_PRIVATE_KEY", default="")

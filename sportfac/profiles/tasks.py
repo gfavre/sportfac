@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
+
 from django.db import IntegrityError
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
-from sportfac.database_router import MASTER_DB, LOCAL_DB
+from sportfac.database_router import LOCAL_DB, MASTER_DB
+
 from .models import FamilyUser
+
 
 logger = get_task_logger(__name__)
 
@@ -22,7 +25,7 @@ def save_to_master(user_id, source=LOCAL_DB):
 
 @shared_task
 def sync_from_master():
-    local_last_updated_family = FamilyUser.objects.order_by('modified').last()
+    local_last_updated_family = FamilyUser.objects.order_by("modified").last()
     to_update = FamilyUser.objects.using(MASTER_DB).all()
     if local_last_updated_family:
         to_update = to_update.filter(modified__gt=local_last_updated_family.modified)

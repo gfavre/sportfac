@@ -74,38 +74,46 @@ ID LAGAPEO	Id Favre	RéférenceCours	SSF 21	niveau	NoCar	dossard
 142806	242	250 - SKI  Les Mosses 3-6	A 2B	Débutant	1	69
 
 """
-<<<<<<< Updated upstream
+from __future__ import absolute_import, print_function
+
+import six
 from activities.models import ExtraNeed
-from registrations.models import Transport, Registration, ChildActivityLevel, ExtraInfo
 
 from import_export.formats.base_formats import XLSX
-=======
->>>>>>> Stashed changes
+from registrations.models import ChildActivityLevel, ExtraInfo, Registration, Transport
 
 
 fmt = XLSX()
-f = open('/home/greg/temp/montreux-hiver-2022.xlsx', fmt.get_read_mode())
+f = open("/home/greg/temp/montreux-hiver-2022.xlsx", fmt.get_read_mode())
 dataset = fmt.create_dataset(f.read())
 
-level_extra_key = 'Niveau de ski/snowboard'
+level_extra_key = "Niveau de ski/snowboard"
 question = ExtraNeed.objects.get(question_label=level_extra_key)
 
-for (id_lagapeo, registration_id,  course_name, old_level,announced_level, transport_name, bib_number, ) in dataset:
+for (
+    id_lagapeo,
+    registration_id,
+    course_name,
+    old_level,
+    announced_level,
+    transport_name,
+    bib_number,
+) in dataset:
     try:
         registration = Registration.objects.get(pk=registration_id)
     except Registration.DoesNotExist:
-        print('Missing registration: {}'.format(registration_id))
+        print(("Missing registration: {}".format(registration_id)))
         continue
-    if unicode(registration.child.id_lagapeo) != id_lagapeo:
-        print('id_lagapeo coherence: {}/{}'.format(registration.child.id_lagapeo, id_lagapeo))
+    if six.text_type(registration.child.id_lagapeo) != id_lagapeo:
+        print(("id_lagapeo coherence: {}/{}".format(registration.child.id_lagapeo, id_lagapeo)))
         continue
-    if False  and transport_name:
+    if False and transport_name:
         transport, created = Transport.objects.get_or_create(name=transport_name)
         if created:
-            print('Created transport {}'.format(transport_name))
+            print(("Created transport {}".format(transport_name)))
         registration.transport = transport
         registration.save()
-    if False  and bib_number:
+    if False and bib_number:
         registration.child.bib_number = bib_number
         registration.child.save()
     if announced_level:
@@ -117,14 +125,15 @@ for (id_lagapeo, registration_id,  course_name, old_level,announced_level, trans
             answer.value = announced_level
             answer.save()
 
-    level, created = ChildActivityLevel.objects.get_or_create(activity=registration.course.activity,
-                                                              child=registration.child)
+    level, created = ChildActivityLevel.objects.get_or_create(
+        activity=registration.course.activity, child=registration.child
+    )
     if created:
-        print('Created level for child {}'.format(registration.child))
+        print(("Created level for child {}".format(registration.child)))
         if old_level:
-            converted_level = old_level.split(' ')[-1].upper()
+            converted_level = old_level.split(" ")[-1].upper()
             if level.before_level != converted_level:
-                print('update level')
+                print("update level")
                 level.before_level = converted_level
                 level.save()
 
@@ -139,28 +148,27 @@ Id Favre	niveau -1	NoCar	dossard	niveau
 
 """
 from activities.models import ExtraNeed
-from registrations.models import Transport, Registration, ChildActivityLevel, ExtraInfo
-
 from import_export.formats.base_formats import XLSX
+from registrations.models import ChildActivityLevel, ExtraInfo, Registration, Transport
 
 
 fmt = XLSX()
-f = open('/home/greg/temp/montreux-hiver-2021.xlsx', fmt.get_read_mode())
+f = open("/home/greg/temp/montreux-hiver-2021.xlsx", fmt.get_read_mode())
 dataset = fmt.create_dataset(f.read())
 
-level_extra_key = 'Niveau de ski/snowboard'
+level_extra_key = "Niveau de ski/snowboard"
 question = ExtraNeed.objects.get(question_label=level_extra_key)
 
-for (registration_id,  old_level, transport_name, bib_number, announced_level) in dataset:
+for (registration_id, old_level, transport_name, bib_number, announced_level) in dataset:
     try:
         registration = Registration.objects.get(pk=registration_id)
     except Registration.DoesNotExist:
-        print('Missing registration: {}'.format(registration_id))
+        print(("Missing registration: {}".format(registration_id)))
         continue
     if transport_name:
         transport, created = Transport.objects.get_or_create(name=transport_name)
         if created:
-            print('Created transport {}'.format(transport_name))
+            print(("Created transport {}".format(transport_name)))
         registration.transport = transport
         registration.save()
     if bib_number:
@@ -175,17 +183,17 @@ for (registration_id,  old_level, transport_name, bib_number, announced_level) i
             answer.value = announced_level
             answer.save()
 
-    level, created = ChildActivityLevel.objects.get_or_create(activity=registration.course.activity,
-                                                              child=registration.child)
+    level, created = ChildActivityLevel.objects.get_or_create(
+        activity=registration.course.activity, child=registration.child
+    )
     if created:
-        print('Created level for child {}'.format(registration.child))
+        print(("Created level for child {}".format(registration.child)))
         if old_level:
-            converted_level = old_level.split(' ')[-1].upper()
+            converted_level = old_level.split(" ")[-1].upper()
             if level.before_level != converted_level:
-                print('update level')
+                print("update level")
                 level.before_level = converted_level
                 level.save()
-
 
 
 """
@@ -198,31 +206,39 @@ Id Favre    num. ssf    NoCar    dossard    niveau                  SSF 18
 
 """
 from activities.models import ExtraNeed
-from registrations.models import Transport, Registration, ChildActivityLevel, ExtraInfo
-
 from import_export.formats.base_formats import XLSX
+from registrations.models import ChildActivityLevel, ExtraInfo, Registration, Transport
+
 
 fmt = XLSX()
-f = open('/home/grfavre/montreux-hiver-2020.xlsx', fmt.get_read_mode())
+f = open("/home/grfavre/montreux-hiver-2020.xlsx", fmt.get_read_mode())
 dataset = fmt.create_dataset(f.read())
 
-level_extra_key = 'Niveau de ski/snowboard'
+level_extra_key = "Niveau de ski/snowboard"
 question = ExtraNeed.objects.get(question_label=level_extra_key)
 
 for (
-registration_id, id_lagapeo, last_name, first_name, announced_level, old_level, transport_name, bib_number) in dataset:
+    registration_id,
+    id_lagapeo,
+    last_name,
+    first_name,
+    announced_level,
+    old_level,
+    transport_name,
+    bib_number,
+) in dataset:
     try:
         registration = Registration.objects.get(pk=registration_id)
     except Registration.DoesNotExist:
-        print('Missing registration: {}'.format(registration_id))
+        print(("Missing registration: {}".format(registration_id)))
         continue
-    if unicode(registration.child.id_lagapeo) != id_lagapeo:
-        print('id_lagapeo coherence: {}/{}'.format(registration.child.id_lagapeo, id_lagapeo))
+    if six.text_type(registration.child.id_lagapeo) != id_lagapeo:
+        print(("id_lagapeo coherence: {}/{}".format(registration.child.id_lagapeo, id_lagapeo)))
         continue
     if transport_name:
         transport, created = Transport.objects.get_or_create(name=transport_name)
         if created:
-            print('Created transport {}'.format(transport_name))
+            print(("Created transport {}".format(transport_name)))
         registration.transport = transport
         registration.save()
     if bib_number:
@@ -237,22 +253,30 @@ registration_id, id_lagapeo, last_name, first_name, announced_level, old_level, 
             answer.value = announced_level
             answer.save()
 
-    level, created = ChildActivityLevel.objects.get_or_create(activity=registration.course.activity,
-                                                              child=registration.child)
+    level, created = ChildActivityLevel.objects.get_or_create(
+        activity=registration.course.activity, child=registration.child
+    )
     if created:
-        print('Created level for child {}'.format(registration.child))
+        print(("Created level for child {}".format(registration.child)))
         if old_level:
-            converted_level = old_level.split(' ')[-1].upper()
+            converted_level = old_level.split(" ")[-1].upper()
             if level.before_level != converted_level:
-                print('update level')
+                print("update level")
                 level.before_level = converted_level
                 level.save()
 
-for (registration_id, id_lagapeo, transport_name, bib_number, announced_level, old_level) in dataset:
+for (
+    registration_id,
+    id_lagapeo,
+    transport_name,
+    bib_number,
+    announced_level,
+    old_level,
+) in dataset:
     try:
         registration = Registration.objects.get(pk=registration_id)
     except Registration.DoesNotExist:
-        print('Missing registration: {}'.format(registration_id))
+        print(("Missing registration: {}".format(registration_id)))
     if announced_level:
         try:
             answer = registration.extra_infos.get(key=question)
@@ -262,33 +286,42 @@ for (registration_id, id_lagapeo, transport_name, bib_number, announced_level, o
             answer.value = announced_level
             answer.save()
 
-    level, created = ChildActivityLevel.objects.get_or_create(activity=registration.course.activity,
-                                                              child=registration.child)
+    level, created = ChildActivityLevel.objects.get_or_create(
+        activity=registration.course.activity, child=registration.child
+    )
     if created:
-        print('Created level for child {}'.format(registration.child))
+        print(("Created level for child {}".format(registration.child)))
     if old_level:
-        converted_level = old_level.split(' ')[-1].upper()
+        converted_level = old_level.split(" ")[-1].upper()
         if level.before_level != converted_level:
-            print('update level')
+            print("update level")
             level.before_level = converted_level
             level.save()
 
 ## reload_levels
 for (
-registration_id, id_lagapeo, last_name, first_name, announced_level, old_level, transport_name, bib_number) in dataset:
+    registration_id,
+    id_lagapeo,
+    last_name,
+    first_name,
+    announced_level,
+    old_level,
+    transport_name,
+    bib_number,
+) in dataset:
     try:
         registration = Registration.objects.get(pk=registration_id)
     except Registration.DoesNotExist:
-        print('Missing registration: {}'.format(registration_id))
+        print(("Missing registration: {}".format(registration_id)))
         continue
-    if unicode(registration.child.id_lagapeo) != id_lagapeo:
-        print('id_lagapeo coherence: {}/{}'.format(registration.child.id_lagapeo, id_lagapeo))
+    if six.text_type(registration.child.id_lagapeo) != id_lagapeo:
+        print(("id_lagapeo coherence: {}/{}".format(registration.child.id_lagapeo, id_lagapeo)))
         continue
-    level, created = ChildActivityLevel.objects.get_or_create(activity=registration.course.activity,
-                                                              child=registration.child)
+    level, created = ChildActivityLevel.objects.get_or_create(
+        activity=registration.course.activity, child=registration.child
+    )
     if old_level:
         if level.before_level != old_level:
-            print('update level')
+            print("update level")
             level.before_level = old_level
             level.save()
-

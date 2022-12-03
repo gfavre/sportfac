@@ -1,15 +1,18 @@
 from __future__ import absolute_import
-import csv, codecs
+
+import codecs
+import csv
 from datetime import date
 from io import StringIO
 
+from django.contrib.auth.models import Group
+
 from django_tenants.test.cases import FastTenantTestCase as BaseTenantTestCase
 from django_tenants.test.client import TenantClient
-from django.contrib.auth.models import Group
 
 
 class ExcelSemicolon(csv.excel):
-    delimiter = ';'
+    delimiter = ";"
 
 
 class UnicodeWriter:
@@ -17,6 +20,7 @@ class UnicodeWriter:
     A CSV writer which will write rows to CSV file "f",
     which is encoded in the given encoding.
     """
+
     def __init__(self, f, dialect=ExcelSemicolon, encoding="utf-8", **kwds):
         # Redirect output to a queue
         self.queue = StringIO()
@@ -56,10 +60,10 @@ class ExcelWriter:
         self.encoding = encoding
 
     def writerow(self, row):
-        self.writer.writerow([s.encode(self.encoding, 'ignore') for s in row])
+        self.writer.writerow([s.encode(self.encoding, "ignore") for s in row])
         # Fetch UTF-8 output from the queue ...
         data = self.queue.getvalue()
-        data = data.decode(self.encoding, 'ignore')
+        data = data.decode(self.encoding, "ignore")
         # ... and reencode it into the target encoding
         data = self.encoder.encode(data)
         # write to the target stream
@@ -77,7 +81,7 @@ class TenantTestCase(BaseTenantTestCase):
     def setup_tenant(cls, tenant):
         tenant.start_date = date(2015, 1, 1)
         tenant.end_date = date(2015, 12, 31)
-        tenant.status = 'ready'
+        tenant.status = "ready"
         tenant.create_schema()
         return tenant
 

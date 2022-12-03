@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+from __future__ import absolute_import, unicode_literals
 
-from __future__ import absolute_import
 import uuid
 
-from django.contrib.postgres.fields import JSONField
 from django.conf import settings
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -17,25 +16,25 @@ from model_utils.models import StatusModel, TimeStampedModel
 class DatatransTransaction(TimeStampedModel, StatusModel):
     # see: https://docs.datatrans.ch/docs/payment-methods
     METHODS = Choices(
-        ('AZP', "Amazon Pay"),
-        ('AMX', "American Express"),
-        ('APL', "Apple Pay"),
-        ('PAY', "Google Pay"),
-        ('KLN', "Klarna"),
-        ('MAU', "Maestro"),
-        ('ECA', "Mastercard"),
-        ('PAP', "PayPal"),
-        ('PFC', "PostFinance Card"),
-        ('PEF', "PostFinance E-Finance"),
-        ('REK', "Reka"),
-        ('SAM', "Samsung Pay"),
-        ('ESY', "Swisscom Pay"),
-        ('TWI', "Twint"),
-        ('VIS', "Visa"),
-        ('cash', "Cash"),
+        ("AZP", "Amazon Pay"),
+        ("AMX", "American Express"),
+        ("APL", "Apple Pay"),
+        ("PAY", "Google Pay"),
+        ("KLN", "Klarna"),
+        ("MAU", "Maestro"),
+        ("ECA", "Mastercard"),
+        ("PAP", "PayPal"),
+        ("PFC", "PostFinance Card"),
+        ("PEF", "PostFinance E-Finance"),
+        ("REK", "Reka"),
+        ("SAM", "Samsung Pay"),
+        ("ESY", "Swisscom Pay"),
+        ("TWI", "Twint"),
+        ("VIS", "Visa"),
+        ("cash", "Cash"),
     )
     STATUS = Choices(
-        ('initialized', _("Initialized")),  # request just opened
+        ("initialized", _("Initialized")),  # request just opened
         ("challenge_required", _("Challenge required")),
         ("challenge_ongoing", _("Challenge ongoing")),
         ("authenticated", _("Authenticated")),
@@ -47,20 +46,26 @@ class DatatransTransaction(TimeStampedModel, StatusModel):
     )
     expiration = models.DateTimeField(null=True)
     id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
-    invoice = models.ForeignKey('registrations.Bill', related_name='datatrans_transactions', on_delete=models.CASCADE)
+    invoice = models.ForeignKey(
+        "registrations.Bill", related_name="datatrans_transactions", on_delete=models.CASCADE
+    )
     payment_method = models.CharField(max_length=3, choices=METHODS, default=METHODS.TWI)
     transaction_id = models.BigIntegerField(db_index=True)
     webhook = JSONField(null=True, blank=True)
 
     objects = models.Manager()
-    successful = QueryManager(status__in=('authorized', 'settled', 'transmitted'))
+    successful = QueryManager(status__in=("authorized", "settled", "transmitted"))
 
     class Meta:
-        ordering = ('-expiration',)
+        ordering = ("-expiration",)
 
     @property
     def is_success(self):
-        return self.status in (self.STATUS.authorized, self.STATUS.settled, self.STATUS.transmitted)
+        return self.status in (
+            self.STATUS.authorized,
+            self.STATUS.settled,
+            self.STATUS.transmitted,
+        )
 
     @property
     def refno(self):
@@ -68,20 +73,17 @@ class DatatransTransaction(TimeStampedModel, StatusModel):
 
     @property
     def script_url(self):
-        return '{}upp/payment/js/datatrans-2.0.0.js'.format(settings.DATATRANS_PAY_URL.geturl())
+        return "{}upp/payment/js/datatrans-2.0.0.js".format(settings.DATATRANS_PAY_URL.geturl())
 
     def update_invoice(self):
         if self.is_success:
             self.invoice.set_paid()
             for registration in self.invoice.registrations.all():
                 registration.set_paid()
-        elif self.status in (self.STATUS.canceled, self.STATUS.failed) and not self.invoice.is_paid:
+        elif (
+            self.status in (self.STATUS.canceled, self.STATUS.failed) and not self.invoice.is_paid
+        ):
             self.invoice.set_waiting()
 
     def __str__(self):
-        return '{} {}'.format(self.invoice, self.status)
-
-
-
-
-
+        return "{} {}".format(self.invoice, self.status)

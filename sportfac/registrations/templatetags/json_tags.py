@@ -10,29 +10,32 @@ Features:
 """
 
 from __future__ import absolute_import
+
 import datetime
 import json
 from decimal import Decimal
+
 from django import template
 from django.http import QueryDict
 from django.utils.encoding import force_str
 from django.utils.functional import Promise
 from django.utils.safestring import mark_safe
 
+
 register = template.Library()
 
-ISO_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+ISO_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 
 def json_handler(obj):
-    if callable(getattr(obj, 'to_json', None)):
+    if callable(getattr(obj, "to_json", None)):
         return obj.to_json()
     elif isinstance(obj, datetime.datetime):
         return obj.strftime(ISO_DATETIME_FORMAT)
     elif isinstance(obj, datetime.date):
         return obj.isoformat()
     elif isinstance(obj, datetime.time):
-        return obj.strftime('%H:%M:%S')
+        return obj.strftime("%H:%M:%S")
     elif isinstance(obj, Decimal):
         return float(obj)  # warning, potential loss of precision
     elif isinstance(obj, Promise):
@@ -45,7 +48,7 @@ def json_handler(obj):
 def to_json(obj):
     def escape_script_tags(unsafe_str):
         # seriously: http://stackoverflow.com/a/1068548/8207
-        return unsafe_str.replace('</script>', '<" + "/script>')
+        return unsafe_str.replace("</script>", '<" + "/script>')
 
     # json.dumps does not properly convert QueryDict array parameter to json
     if isinstance(obj, QueryDict):

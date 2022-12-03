@@ -55,6 +55,7 @@ def respects_language(fun):
 
     @wraps(fun)
     def _inner(*args, **kwargs):
-        with respect_language(kwargs.pop('language', None)):
+        with respect_language(kwargs.pop("language", None)):
             return fun(*args, **kwargs)
+
     return _inner
