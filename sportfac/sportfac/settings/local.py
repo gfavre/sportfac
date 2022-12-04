@@ -22,10 +22,7 @@ SHARED_APPS += (
 INSTALLED_APPS += (
     "django_extensions",  # more commands
     "debug_toolbar",  # debugging
-    "djcelery",
-    "kombu.transport.django",
     "corsheaders",
-    "django_template_check",
 )
 MIDDLEWARE_CLASSES = ["corsheaders.middleware.CorsMiddleware"] + MIDDLEWARE_CLASSES
 CORS_ALLOW_ALL_ORIGINS = DEBUG
@@ -108,8 +105,6 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 ############ Celery
 # Asynchrnous tasks.
 # See http://celery.readthedocs.org/en/latest/configuration.html
-BROKER_URL = "django://"
-CELERY_RESULT_BACKEND = "djcelery.backends.database:DatabaseBackend"
 CELERY_ALWAYS_EAGER = True
 
 TEMPLATES[0]["DIRS"] = [
