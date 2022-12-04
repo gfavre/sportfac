@@ -8,8 +8,11 @@ from backend.models import Domain
 from django_tenants.middleware import TenantMiddleware
 
 
-class RegistrationOpenedMiddleware(object):
-    def process_request(self, request):
+class RegistrationOpenedMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
         preferences = request.tenant.preferences.by_name()
         start = preferences["START_REGISTRATION"]
         end = preferences["END_REGISTRATION"]
@@ -35,9 +38,9 @@ class VersionMiddleware(TenantMiddleware):
             request.session[settings.VERSION_SESSION_NAME] = domain.domain
             return domain.domain
 
-    def process_request(self, request):
+    def __call__(self, request):
         try:
-            super(VersionMiddleware, self).process_request(request)
+            super().process_request(request)
         except Http404:
             del request.session[settings.VERSION_SESSION_NAME]
-            return super(VersionMiddleware, self).process_request(request)
+            return super().process_request(request)
