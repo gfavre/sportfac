@@ -24,7 +24,7 @@ INSTALLED_APPS += (
     "debug_toolbar",  # debugging
     "corsheaders",
 )
-MIDDLEWARE_CLASSES = ["corsheaders.middleware.CorsMiddleware"] + MIDDLEWARE_CLASSES
+MIDDLEWARE = ["corsheaders.middleware.CorsMiddleware"] + MIDDLEWARE
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 
 
@@ -32,9 +32,9 @@ CORS_ALLOW_ALL_ORIGINS = DEBUG
 INTERNAL_IPS = ("127.0.0.1",)
 
 # See: https://github.com/django-debug-toolbar/django-debug-toolbar#installation
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE += [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
-] + MIDDLEWARE_CLASSES
+]
 
 
 ALLOWED_HOSTS = ("127.0.0.1", "localhost", "test.com", "tenant.test.com", "testserver")
