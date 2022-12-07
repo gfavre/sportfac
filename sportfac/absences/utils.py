@@ -6,7 +6,7 @@ from django.utils.timezone import now
 def closest_session(sessions_iterable):
     dates = sorted(
         [(session, (session.date - now().date()).days) for session in sessions_iterable],
-        lambda x, y: cmp(x[1], y[1]),
+        key=lambda x: x[1],
     )
     if not len(dates):
         return None

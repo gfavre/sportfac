@@ -23,7 +23,7 @@ class AbsenceCourseViewTest(TestCase):
     def setUp(self):
         super(AbsenceCourseViewTest, self).setUp()
         self.instructor = FamilyUserFactory()
-        self.course = CourseFactory(instructors=(self.instructor,))
+        self.course = CourseFactory(instructors=[self.instructor])
         self.url = reverse("activities:course-absence", kwargs={"course": self.course.pk})
         self.view = AbsenceCourseView.as_view()
         self.request = RequestFactory().get(self.url)

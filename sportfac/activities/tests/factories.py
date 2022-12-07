@@ -7,8 +7,8 @@ from django.conf import settings
 import factory
 import factory.fuzzy
 import faker
-from activities.models import SCHOOL_YEARS, Activity, AllocationAccount, Course
-
+from activities.models import SCHOOL_YEARS, Activity, AllocationAccount, Course, CoursesInstructors
+from profiles.tests.factories import FamilyUserFactory
 
 fake = faker.Factory.create()
 
@@ -68,4 +68,12 @@ class CourseFactory(factory.django.DjangoModelFactory):
             return
         if extracted:
             for instructor in extracted:
-                self.instructors.add(instructor)
+                CoursesInstructorsFactory(course=self, instructor=instructor)
+
+
+class CoursesInstructorsFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = CoursesInstructors
+
+    course = factory.SubFactory(CourseFactory)
+    instructor = factory.SubFactory(FamilyUserFactory)
