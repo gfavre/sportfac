@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-
 import json
+import urllib.parse
 
 from django.conf import settings
 from django.db.models import Max, Min
@@ -13,9 +12,6 @@ from django.views.generic import DetailView, ListView, View
 
 import mailer.views as mailer_views
 import requests
-import six.moves.urllib.error
-import six.moves.urllib.parse
-import six.moves.urllib.request
 from braces.views import LoginRequiredMixin, UserPassesTestMixin
 from mailer.forms import CourseMailForm, InstructorCopiesForm
 from mailer.mixins import ArchivedMailMixin
@@ -158,7 +154,7 @@ class MailUsersView(CourseAccessMixin, View):
         self.request.session["mail-userids"] = userids
         params = ""
         if "prev" in request.GET:
-            params = "?prev=" + six.moves.urllib.parse.urlencode(request.GET.get("prev"))
+            params = "?prev=" + urllib.parse.urlencode(request.GET.get("prev"))
         return HttpResponseRedirect(
             reverse(
                 "activities:mail-custom-participants-custom", kwargs={"course": kwargs["course"]}

@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-
 import datetime
 import os
 from collections import OrderedDict
 from tempfile import mkdtemp
+import urllib.parse
 
 from django.conf import settings
 from django.contrib import messages
@@ -16,12 +15,10 @@ from django.utils.timezone import now
 from django.utils.translation import ugettext as _
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
-import six.moves.urllib.parse
 from activities.forms import AllocationAccountForm
 from activities.models import AllocationAccount
 from dateutil.relativedelta import relativedelta
 from payments.models import DatatransTransaction
-from six.moves.urllib.parse import urlencode
 
 from .mixins import BackendMixin
 
@@ -111,11 +108,11 @@ class AllocationAccountReportView(BackendMixin, ListView):
         context["sections"] = sections
 
         url = self.request.get_full_path()
-        url_parts = list(six.moves.urllib.parse.urlparse(url))
-        query = dict(six.moves.urllib.parse.parse_qsl(url_parts[4]))
+        url_parts = list(urllib.parse.urlparse(url))
+        query = dict(urllib.parse.parse_qsl(url_parts[4]))
         query.update(pdf=1)
-        url_parts[4] = urlencode(query)
-        context["pdf_url"] = six.moves.urllib.parse.urlunparse(url_parts)
+        url_parts[4] = urllib.parse.urlencode(query)
+        context["pdf_url"] = urllib.parse.urlunparse(url_parts)
         return context
 
     def get(self, request, *args, **kwargs):

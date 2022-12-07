@@ -37,7 +37,7 @@ class ContactForm(forms.Form):
             subject="%s [%s - formulaire de contact]"
             % (
                 self.cleaned_data["subject"],
-                global_preferences["email__SCHOOL_NAME"].decode("utf-8"),
+                global_preferences["email__SCHOOL_NAME"],
             ),
             body="%s <%s> a utilisé le formulaire de contact.\n\n %s"
             % (
@@ -45,8 +45,8 @@ class ContactForm(forms.Form):
                 self.cleaned_data["email"],
                 self.cleaned_data["message"],
             ),
-            from_email=global_preferences["email__FROM_MAIL"].decode("utf-8"),
-            to=[global_preferences["email__CONTACT_MAIL"].decode("utf-8")],
+            from_email=global_preferences["email__FROM_MAIL"],
+            to=[global_preferences["email__CONTACT_MAIL"]],
             bcc=bcc,
             reply_to=["%s <%s>" % (self.cleaned_data["name"], self.cleaned_data["email"])],
         )

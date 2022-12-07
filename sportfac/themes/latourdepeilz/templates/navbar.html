@@ -128,14 +128,14 @@
                 </li>
               {% endif %}
               <li class="divider"></li>
-              <li><a href="{% block logout_url %}{% url 'auth_logout' %}?next=/{% endblock %}">{% trans "logout" %}</a>
+              <li><a href="{% block logout_url %}{% url 'profiles:auth_logout' %}?next=/{% endblock %}">{% trans "logout" %}</a>
               </li>
             </ul>
           </li>
         {% else %}
           {% if not USE_SSO %}
             <li>
-              <a href="{% url 'auth_login' %}?next={% url 'registrations_children' %}"><i
+              <a href="{% url 'profiles:auth_login' %}?next={% url 'registrations_children' %}"><i
                   class="icon-user icon-white"></i> {% trans "login" %}</a>
             </li>
           {% endif %}

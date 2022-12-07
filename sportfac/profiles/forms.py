@@ -1,7 +1,4 @@
-from __future__ import absolute_import
-
 import django.contrib.auth.forms as auth_forms
-import django.forms as django_forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import mark_safe
@@ -287,7 +284,7 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
             message = _("A user with that username already exists.")
             message += (
                 ' <a href="%s" class="btn-link" style="margin-right:1em"><i class="icon-lock-open"></i>%s</a>'
-                % (reverse("auth_login"), _("Login"))
+                % (reverse("profiles:auth_login"), _("Login"))
             )
             message += (
                 ' <a href="#" class="new-mail btn-link"><i class="icon-cancel-circled"></i>%s</a>'
