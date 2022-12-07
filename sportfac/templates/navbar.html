@@ -93,7 +93,7 @@ jQuery(function($){
                 <a href="{% url 'profiles_account' %}"><i class="icon-pencil"></i> {% trans "My account" %}</a>
               </li>
               <li>
-                <a href="{% url 'registrations_children' %}">
+                <a href="{% url 'registrations:registrations_children' %}">
                   <i class="icon-group"></i> {% trans "My family" %}
                   {% if user.updatable_children %}
                     <span class="badge badge-danger">{{ user.updatable_children }}</span>{% endif %}</a>

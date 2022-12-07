@@ -24,7 +24,7 @@ class ChildrenListViewTests(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
         self.view = ChildrenListView.as_view()
-        self.url = reverse("registrations_children")
+        self.url = reverse("registrations:registrations_children")
         self.user = FamilyUserFactory()
         self.child = ChildFactory(family=self.user)
         self.request = self.factory.get(self.url)
