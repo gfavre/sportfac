@@ -12,7 +12,7 @@ Rendez-vous/lieu du cours : {{ course.place }}
 
 {% if course.activity.informations %}
 Informations: {{ course.activity.informations|striptags|unescape|safe }}
-Vous pouvez retrouver ces informations sur: {{ site_url }}{% url "registrations_registered_activities" %}
+Vous pouvez retrouver ces informations sur: {{ site_url }}{% url "registrations:registrations_registered_activities" %}
 {% endif %}
 
 La monitrice/le moniteur vous donnera toutes les informations en lien avec son cours lors de la 1ère séance.

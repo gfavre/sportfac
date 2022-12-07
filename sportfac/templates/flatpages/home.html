@@ -9,7 +9,7 @@
 <p style="text-align: center">
   {% if user.is_authenticated %}
     {% if user.finished_registration %}
-    <a href="{% url 'registrations_registered_activities' %}" class="btn btn-large btn-primary"><i class="icon-fixed-width icon-calendar"></i> {% trans "My registered activities" %}</a>
+    <a href="{% url 'registrations:registrations_registered_activities' %}" class="btn btn-large btn-primary"><i class="icon-fixed-width icon-calendar"></i> {% trans "My registered activities" %}</a>
     {% else  %}
     <a href="{% url 'wizard' %}" class="btn btn-large btn-success"><i class="icon-fixed-width icon-calendar"></i>{% trans "Register activities" %}</a>
     {% endif %}
@@ -30,7 +30,7 @@
   {% endif %}
 
   {%  if request.PHASE == 3 %}
-  <a href="{% url 'registrations_registered_activities' %}" class="btn  btn-info"><i class="icon-fixed-width icon-calendar"></i> {% trans "Review my registered activities" %}</a>
+  <a href="{% url 'registrations:registrations_registered_activities' %}" class="btn  btn-info"><i class="icon-fixed-width icon-calendar"></i> {% trans "Review my registered activities" %}</a>
   {% endif %}
   </p>
 </div>

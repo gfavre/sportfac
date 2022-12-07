@@ -123,7 +123,7 @@
             <div class="pricing-header">
               <h3 class="pricing-plan-title">Printemps / Automne</h3>
             </div>
-            <a href="{% if registration_opened %}/wizard/{% else %}{% url 'registrations_registered_activities' %}{% endif %}">
+            <a href="{% if registration_opened %}/wizard/{% else %}{% url 'registrations:registrations_registered_activities' %}{% endif %}">
               <img src="https://ssfmontreux.ch/static/img/vignette_printemps_2023.jpg" class="img-responsive"
                    style="margin-bottom:15px">
             </a>
@@ -136,7 +136,7 @@
                 {% countdown registration_start %}
 
               {% endif %}
-            <a href="{% if registration_opened %}/wizard/{% else %}{% url 'registrations_registered_activities' %}{% endif %}"
+            <a href="{% if registration_opened %}/wizard/{% else %}{% url 'registrations:registrations_registered_activities' %}{% endif %}"
                class="btn btn-primary">
               Entrer
             </a>
