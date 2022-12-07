@@ -187,14 +187,14 @@ TEMPLATES = [
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#middleware-classes
 MIDDLEWARE = [
     # Default Django middleware.
-    "django.middleware.common.CommonMiddleware",
+    "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
+    "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.locale.LocaleMiddleware",
     "django.contrib.sites.middleware.CurrentSiteMiddleware",
-    "django.middleware.security.SecurityMiddleware",
     "sportfac.middleware.VersionMiddleware",
     "sportfac.middleware.RegistrationOpenedMiddleware",
     # asynchronous messages

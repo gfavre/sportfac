@@ -27,10 +27,14 @@ class RegistrationOpenedMiddleware:
             request.PHASE = 3
         request.REGISTRATION_START = start
         request.REGISTRATION_END = end
+        response = self.get_response(request)
+
+        return response
 
 
 class VersionMiddleware(TenantMiddleware):
-    def hostname_from_request(self, request):
+    @staticmethod
+    def hostname_from_request(request):
         if settings.VERSION_SESSION_NAME in request.session:
             return request.session.get(settings.VERSION_SESSION_NAME)
         else:
@@ -39,8 +43,13 @@ class VersionMiddleware(TenantMiddleware):
             return domain.domain
 
     def __call__(self, request):
+        response = None
         try:
-            super().process_request(request)
+            if hasattr(self, 'process_request'):
+                response = self.process_request(request)
+            response = response or self.get_response(request)
+            if hasattr(self, 'process_response'):
+                response = self.process_response(request, response)
         except Http404:
             del request.session[settings.VERSION_SESSION_NAME]
-            return super().process_request(request)
+        return response
