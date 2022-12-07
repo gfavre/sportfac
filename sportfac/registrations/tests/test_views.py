@@ -48,7 +48,7 @@ class BillingViewTests(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
         self.view = BillingView.as_view()
-        self.url = reverse("registrations_billing")
+        self.url = reverse("registrations:registrations_billing")
         self.user = FamilyUserFactory()
         self.invoice = BillFactory(family=self.user)
         self.request = self.factory.get(self.url)

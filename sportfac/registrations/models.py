@@ -436,7 +436,7 @@ class Bill(TimeStampedModel, StatusModel):
             self.pdf.save(filename, File(pdf_file), save=True)
 
     def get_absolute_url(self):
-        return reverse("registrations_bill_detail", kwargs={"pk": self.pk})
+        return reverse("registrations:registrations_bill_detail", kwargs={"pk": self.pk})
 
     def get_backend_url(self):
         return reverse("backend:bill-detail", kwargs={"pk": self.pk})

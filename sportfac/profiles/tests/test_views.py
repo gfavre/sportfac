@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
 from django.forms.models import model_to_dict
@@ -20,7 +17,7 @@ class UserDataTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
         user = FamilyUserFactory()
-        self.user_data = model_to_dict(user)
+        self.user_data = model_to_dict(user, exclude=["id"])
         user.delete()
         self.user_data["email2"] = self.user_data["email"]
         self.user_data["private_phone"] = "0791234567"
