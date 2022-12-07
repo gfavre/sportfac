@@ -47,7 +47,7 @@ class AccountRedirectView(LoginRequiredMixin, RedirectView):
             return reverse("backend:home")
         elif user.is_kepchup_staff:
             return reverse("activities:my-courses")
-        return reverse("registrations_registered_activities")
+        return reverse("registrations:registrations_registered_activities")
 
 
 class _BaseAccount(LoginRequiredMixin, UpdateView):

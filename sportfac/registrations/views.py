@@ -128,7 +128,7 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
             global_preferences = global_preferences_registry.manager()
 
             messages.success(self.request, _("Your registrations have been recorded, thank you!"))
-            return reverse_lazy("registrations_registered_activities")
+            return reverse_lazy("registrations:registrations_registered_activities")
         if settings.KEPCHUP_USE_APPOINTMENTS:
             if self.request.user.montreux_needs_appointment:
                 return reverse_lazy("wizard_appointments")

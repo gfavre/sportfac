@@ -102,7 +102,7 @@ class SummaryViewTests(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
         self.view = SummaryView.as_view()
-        self.url = reverse("registrations_registered_activities")
+        self.url = reverse("registrations:registrations_registered_activities")
         self.user = FamilyUserFactory()
         self.child = ChildFactory(family=self.user)
         self.registration = RegistrationFactory(child=self.child, status="confirmed")
