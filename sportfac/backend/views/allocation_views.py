@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import datetime
 import os
+import urllib.parse
 from collections import OrderedDict
 from tempfile import mkdtemp
-import urllib.parse
 
 from django.conf import settings
 from django.contrib import messages

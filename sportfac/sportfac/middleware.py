@@ -45,10 +45,10 @@ class VersionMiddleware(TenantMiddleware):
     def __call__(self, request):
         response = None
         try:
-            if hasattr(self, 'process_request'):
+            if hasattr(self, "process_request"):
                 response = self.process_request(request)
             response = response or self.get_response(request)
-            if hasattr(self, 'process_response'):
+            if hasattr(self, "process_response"):
                 response = self.process_response(request, response)
         except Http404:
             del request.session[settings.VERSION_SESSION_NAME]

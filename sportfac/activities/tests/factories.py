@@ -10,6 +10,7 @@ import faker
 from activities.models import SCHOOL_YEARS, Activity, AllocationAccount, Course, CoursesInstructors
 from profiles.tests.factories import FamilyUserFactory
 
+
 fake = faker.Factory.create()
 
 YEARS = [year for (year, name) in SCHOOL_YEARS]
