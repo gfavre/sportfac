@@ -18975,7 +18975,6 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.active {
 @media print {
   /*@page {size: landscape;}*/
   @page {
-    size: A4;
     margin: 1cm;
   }
   html body {
