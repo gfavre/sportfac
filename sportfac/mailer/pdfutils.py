@@ -78,6 +78,7 @@ class PDFRenderer(object):
     is_landscape = False
 
     def __init__(self, context_data, request=None):
+
         site = Site.objects.all()[0]
         self.fake_request = request is None
         if not request:

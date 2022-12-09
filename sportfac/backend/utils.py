@@ -8,6 +8,7 @@ from mailer.pdfutils import PDFRenderer
 
 class AbsencePDFRenderer(PDFRenderer):
     message_template = 'backend/course/absences.html'
+    is_landscape = settings.KEPCHUP_ABSENCE_PDF_LANDSCAPE
 
 
 class AbsencesPDFRenderer(PDFRenderer):
