@@ -17,7 +17,7 @@ class UserDataTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
         user = FamilyUserFactory()
-        self.user_data = model_to_dict(user, exclude=["id"])
+        self.user_data = model_to_dict(user, exclude=["id", "groups", "user_permissions"])
         user.delete()
         self.user_data["email2"] = self.user_data["email"]
         self.user_data["private_phone"] = "0791234567"
