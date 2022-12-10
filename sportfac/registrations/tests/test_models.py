@@ -9,7 +9,6 @@ from faker import Faker
 
 from activities.tests.factories import AllocationAccountFactory, CourseFactory
 from profiles.tests.factories import CityFactory, FamilyUserFactory
-
 from sportfac.utils import TenantTestCase
 
 from .factories import BillFactory, ChildFactory, RegistrationFactory
