@@ -98,6 +98,10 @@ class InstructorMixin(UserPassesTestMixin, LoginRequiredMixin):
 
 
 class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
+    """
+    This view is used after the course selection in the wizard. The user has selected all his courses
+    and now has to confirm his registrations.
+    """
     model = Registration
     form_class = AcceptTermsForm
     success_url = reverse_lazy('wizard_billing')
@@ -178,6 +182,7 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
         )
         for registration in self.get_queryset().all():
             registration.set_valid()
+            # FIXME: here we are computing the prices a second time, this is dangerous.
             registration.price = registration.get_price()
             if registration.price == 0:
                 registration.paid = True

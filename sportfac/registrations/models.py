@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-from datetime import date, datetime
+from __future__ import absolute_import, unicode_literals
+
 import os
+from datetime import date, datetime
 from tempfile import mkdtemp
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.core.files import File
 from django.db import connection, models, transaction
 from django.template.defaultfilters import slugify
+from django.urls import reverse
 from django.utils.timezone import now
-from django.utils.translation import get_language, ugettext_lazy as _
+from django.utils.translation import get_language
+from django.utils.translation import ugettext_lazy as _
 
 from model_utils import Choices
 from model_utils.models import StatusModel
@@ -30,7 +32,9 @@ class RegistrationManager(models.Manager):
         return self.get_queryset().filter(status=Registration.STATUS.waiting)
 
     def validated(self):
-        return self.get_queryset().filter(status__in=(Registration.STATUS.valid, Registration.STATUS.confirmed))
+        return self.get_queryset().filter(
+            status__in=(Registration.STATUS.valid, Registration.STATUS.confirmed)
+        )
 
 
 class Registration(TimeStampedModel, StatusModel):
@@ -165,12 +169,12 @@ class Registration(TimeStampedModel, StatusModel):
         if settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
             from activities.models import Course
             # what are the registrations to the same activities already made in same family?
-            same_family_regs = Registration.objects.filter(child__family=self.child.family,
-                                                           course__activity=self.course.activity)\
-                                                   .exclude(pk=self.pk)
-
-            if same_family_regs.exists():
-                # This child has a sibling, registered to the same activity => special rate
+            same_family_regs = Registration.objects.filter(
+                child__family=self.child.family, course__activity=self.course.activity
+            ).order_by("created")
+            # FIXME: we have to check that I'm not the first registration of the lot...
+            if same_family_regs.exists() and same_family_regs.first() != self:
+                # This child has a sibling, registered to the same activity => special rate for the second child +
                 if self.is_local_pricing:
                     # tarif indigène
                     return self.course.price_local_family, Course._meta.get_field('price_local_family').verbose_name
