@@ -22,7 +22,7 @@ class Step:
         self.request = request
         self.activable = False
 
-    def __unicode__(self):
+    def __str__(self):
         return self.id
 
     def __str__(self):

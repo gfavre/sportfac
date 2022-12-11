@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
+from django.db import transaction
 from django.forms.models import model_to_dict
 from django.test import RequestFactory, override_settings
 from django.urls import reverse
@@ -16,9 +17,11 @@ from .factories import FamilyUserFactory
 class UserDataTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
+        sid = transaction.savepoint()
         user = FamilyUserFactory()
         self.user_data = model_to_dict(user, exclude=["id", "groups", "user_permissions"])
-        user.delete()
+        # We can't call delete() because of groups and user_permissions not using uuids.
+        transaction.savepoint_rollback(sid)
         self.user_data["email2"] = self.user_data["email"]
         self.user_data["private_phone"] = "0791234567"
         self.user_data["password1"] = "badbadzoot"
@@ -68,7 +71,7 @@ class RegistrationViewTests(BaseRegistrationTestMixin, UserDataTestCase):
         super(RegistrationViewTests, self).setUp()
         self.factory = RequestFactory()
         self.view = RegistrationView.as_view()
-        self.url = reverse("anytime_registeraccount")
+        self.url = reverse("profiles:anytime_registeraccount")
 
     def test_account_creation_forbidden_if_registration_closed(self):
         request = self.factory.get(self.url)
@@ -90,7 +93,7 @@ class AccountViewTests(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
         self.user = FamilyUserFactory()
-        self.url = reverse("profiles_account")
+        self.url = reverse("profiles:profiles_account")
         self.view = AccountView.as_view()
         self.request = self.factory.get(self.url)
         self.request.user = self.user

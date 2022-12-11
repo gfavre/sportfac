@@ -37,7 +37,7 @@ class AppointmentSlot(TimeStampedModel):
     def api_management_url(self):
         return reverse("api:slots-detail", kwargs={"pk": self.id})
 
-    def __unicode__(self):
+    def __str__(self):
         return self.start.isoformat() + " - " + self.end.isoformat()
 
 
@@ -58,5 +58,5 @@ class Appointment(TimeStampedModel):
     def get_backend_delete_url(self):
         return reverse("backend:appointment-delete", kwargs={"appointment": self.pk})
 
-    def __unicode__(self):
+    def __str__(self):
         return "{} - {}".format(self.child, self.slot.start.strftime("%d.%m.%Y - %Hh%M"))

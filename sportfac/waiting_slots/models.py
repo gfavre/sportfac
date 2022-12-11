@@ -49,10 +49,7 @@ class WaitingSlot(TimeStampedModel):
             )
 
     def __repr__(self):
-        return self.__unicode__()
+        return self.__str__()
 
     def __str__(self):
-        return self.__unicode__()
-
-    def __unicode__(self):
         return "{} - {}".format(self.child, self.course.short_name)

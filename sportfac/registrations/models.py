@@ -312,7 +312,7 @@ class Registration(TimeStampedModel, StatusModel):
     def set_waiting(self):
         self.status = self.STATUS.waiting
 
-    def __unicode__(self):
+    def __str__(self):
         out = _("%(child)s ⇒ course %(number)s (%(activity)s)") % {
             "child": self.child.full_name,
             "number": self.course.number,
@@ -330,7 +330,7 @@ class Transport(TimeStampedModel):
         verbose_name = _("Transport")
         verbose_name_plural = _("Transports")
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @property
@@ -519,7 +519,7 @@ class Bill(TimeStampedModel, StatusModel):
         ):
             self.status = self.STATUS.paid
 
-    def __unicode__(self):
+    def __str__(self):
         return self.billing_identifier
 
 
@@ -696,7 +696,7 @@ class Child(TimeStampedModel, StatusModel):
     def get_update_url(self):
         return reverse("backend:child-update", kwargs={"child": self.pk})
 
-    def __unicode__(self):
+    def __str__(self):
         return self.get_full_name()
 
 

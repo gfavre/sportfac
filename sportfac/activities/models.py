@@ -151,7 +151,7 @@ class Activity(TimeStampedModel):
     def get_update_url(self):
         return reverse("backend:activity-update", kwargs={"activity": self.slug})
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -174,7 +174,7 @@ class AllocationAccount(TimeStampedModel):
         verbose_name = _("Allocation account")
         verbose_name_plural = _("Allocation accounts")
 
-    def __unicode__(self):
+    def __str__(self):
         if self.name:
             return "{} {}".format(self.account, self.name)
         return self.account
@@ -699,7 +699,7 @@ class Course(TimeStampedModel):
     def update_nb_participants(self):
         self.nb_participants = self.participants.count()
 
-    def __unicode__(self):
+    def __str__(self):
         base = "%(invisible)s%(activity)s (%(number)s): %(fullness)s"
         if self.full:
             fullness = _("Course full")
@@ -768,7 +768,7 @@ class ExtraNeed(TimeStampedModel):
             return {}
         return dict(zip(self.choices, self.price_modifier))
 
-    def __unicode__(self):
+    def __str__(self):
         if self.choices:
             out = "%s (%s)" % (self.question_label, ", ".join(self.choices))
             if self.price_modifier:

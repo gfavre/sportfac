@@ -128,7 +128,7 @@ class RegistrationView(RegistrationBaseView):
     template_name = "profiles/registration_form.html"
 
     def get_success_url(self):
-        return reverse("profiles_account")
+        return reverse("profiles:profiles_account")
 
     def dispatch(self, request, *args, **kwargs):
         """Called before get or post methods"""
@@ -159,5 +159,6 @@ class WizardRegistrationView(WizardMixin, RegistrationBaseView):
 class LogoutView(auth_views.LogoutView):
     def get_next_page(self):
         if settings.KEPCHUP_USE_SSO:
+            # FIXME: wgat is this hardcoded crap?
             return "https://users.ssfmontreux.ch/logout"
         return super(LogoutView, self).get_next_page()

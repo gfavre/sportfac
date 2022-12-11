@@ -42,7 +42,7 @@ class Function(TimeStampedModel):
     def __str__(self):
         return self.name
 
-    def __unicode__(self):
+    def __str__(self):
         return self.__str__()
 
 

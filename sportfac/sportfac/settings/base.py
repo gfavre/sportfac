@@ -74,6 +74,7 @@ TENANT_MODEL = "backend.YearTenant"  # app.Model
 TENANT_DOMAIN_MODEL = "backend.Domain"  # app.Model
 TENANT_CREATION_FAKES_MIGRATIONS = False
 
+
 ########## END DATABASE CONFIGURATION
 
 

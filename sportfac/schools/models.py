@@ -28,7 +28,7 @@ class Teacher(TimeStampedModel):
     class Meta:
         ordering = ("last_name", "first_name")
 
-    def __unicode__(self):
+    def __str__(self):
         years = " - ".join([six.text_type(year) for year in self.years.all()])
         return "%s %s (%s)" % (self.first_name, self.last_name, years)
 
@@ -79,7 +79,7 @@ class Building(TimeStampedModel):
         verbose_name = _("building")
         verbose_name_plural = _("buildings")
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_update_url(self):

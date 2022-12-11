@@ -276,7 +276,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         return self.children.filter(status=Child.STATUS.imported).count()
 
     def get_absolute_url(self):
-        return reverse("profiles_account")
+        return reverse("profiles:profiles_account")
 
     def get_backend_url(self):
         return reverse("backend:user-detail", kwargs={"pk": self.pk})
@@ -369,7 +369,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
             child.delete()
         self.save()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.get_email_string()
 
 
@@ -385,7 +385,7 @@ class SchoolYear(models.Model):
     objects = models.Manager()
     visible_objects = VisibleYearManager()
 
-    def __unicode__(self):
+    def __str__(self):
         try:
             return six.text_type(dict(SCHOOL_YEARS)[self.year])
         except KeyError:
@@ -402,7 +402,7 @@ class School(models.Model):
     code = models.CharField(_("Code name"), max_length=50, blank=True)
     selectable = models.BooleanField(default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -429,5 +429,5 @@ class City(models.Model):
         verbose_name_plural = _("Cities")
         ordering = ("zipcode", "name")
 
-    def __unicode__(self):
+    def __str__(self):
         return "{} {}".format(self.zipcode, self.name)

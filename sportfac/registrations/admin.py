@@ -82,7 +82,7 @@ class RegistrationAdmin(SportfacAdminMixin, ImportExportModelAdmin):
     change_list_filter_template = "admin/filter_listing.html"
     date_hierarchy = "created"
     inlines = [ExtraInfoInline]
-    list_display = ("__unicode__", "transport", "status", "created", "modified")
+    list_display = ("__str__", "transport", "status", "created", "modified")
     list_filter = ("status", "transport", "course__activity__name", "cancelation_reason")
     raw_id_fields = ("child", "course", "bill")
     resource_class = RegistrationResource

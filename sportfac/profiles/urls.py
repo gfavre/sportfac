@@ -22,7 +22,7 @@ urlpatterns = [
 ]
 if settings.KEPCHUP_USE_SSO:
     urlpatterns += [
-        url(r"^login/$", RedirectView.as_view(url=reverse_lazy("profiles_account"))),
+        url(r"^login/$", RedirectView.as_view(url=reverse_lazy("profiles:profiles_account"))),
         url(r"^password/change/$", password_change, name="password_change"),
         url(
             r"^password/change/done/$",

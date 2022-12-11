@@ -29,7 +29,7 @@ class Absence(StatusModel, TimeStampedModel):
     class Meta:
         unique_together = ("child", "session")
 
-    def __unicode__(self):
+    def __str__(self):
         return "{} - {} - {} - {}".format(
             self.child, self.session.course.short_name, self.session.date.isoformat(), self.status
         )
@@ -89,5 +89,5 @@ class Session(TimeStampedModel):
             else:
                 self.course.update_dates_from_sessions()
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s - %s" % (self.course.short_name, self.date)

@@ -27,7 +27,7 @@ class YearTenant(TenantMixin):
     class Meta:
         ordering = ("start_date",)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.start_date.year != self.end_date.year:
             return "%i-%i" % (self.start_date.year, self.end_date.year)
         return "%i.%i-%i.%i %i" % (
@@ -64,7 +64,7 @@ class YearTenant(TenantMixin):
 class Domain(DomainMixin):
     is_current = models.BooleanField(default=False)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.is_current:
             return "[default domain] " + self.domain
         return self.domain
