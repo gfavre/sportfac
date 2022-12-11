@@ -5,7 +5,6 @@ celery == 5.2.7
 tenant-schemas-celery == 2.0.0
 # -e git+https://github.com/gfavre/django-tenants.git@96ced6c4fbfd29e6490d00178798168101ef75eb#egg=django_tenants
 django-tenants==3.4.7
-pylibmc == 1.6.3
 
 djangorestframework-datatables==0.5.1
 

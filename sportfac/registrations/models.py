@@ -151,6 +151,7 @@ class Registration(TimeStampedModel, StatusModel):
             if self.bill:
                 self.bill.save()
             else:
+                # noinspection PyUnresolvedReferences
                 self.child.family.profile.save()
 
     def delete_future_absences(self):
@@ -377,7 +378,7 @@ class Bill(TimeStampedModel, StatusModel):
         _("Payment method"), choices=METHODS, max_length=20, blank=True
     )
     family = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name="bills", null=True, on_delete=models.CASCADE
+        'profiles.FamilyUser', related_name="bills", null=True, on_delete=models.CASCADE
     )
     total = models.PositiveIntegerField(default=0, verbose_name=_("Total to be paid"))
     reminder_sent = models.BooleanField(_("Reminder sent"), default=False)
@@ -587,7 +588,7 @@ class Child(TimeStampedModel, StatusModel):
     )
 
     family = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        "profiles.FamilyUser",
         related_name="children",
         null=True,
         blank=True,
@@ -785,7 +786,7 @@ class RegistrationsProfile(TimeStampedModel):
     """
 
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, related_name="profile", null=True, on_delete=models.SET_NULL
+        "profiles.FamilyUser", related_name="profile", null=True, on_delete=models.SET_NULL
     )
 
     has_paid_all = models.BooleanField(default=False, blank=True)
