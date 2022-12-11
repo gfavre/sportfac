@@ -1,4 +1,4 @@
-django>2.1.0,<2.1.100
+django~=2.2
 djangorestframework == 3.9.4
 django-filter == 0.15.3
 celery == 5.2.7

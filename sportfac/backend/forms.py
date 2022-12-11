@@ -1,14 +1,10 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-
 import datetime
 
 from django.conf import settings
 from django.contrib.flatpages.models import FlatPage
-from django.db.models import Case, IntegerField, Sum, When
 from django.forms import inlineformset_factory
 from django.forms.widgets import TextInput
-from django.utils.text import mark_safe
+from django.utils.html import mark_safe
 from django.utils.translation import ugettext as _
 
 import floppyforms.__future__ as forms
@@ -82,7 +78,7 @@ class RegistrationDatesForm(forms.Form):
         super(RegistrationDatesForm, self).clean()
 
 
-class CourseSelectMixin(object):
+class CourseSelectMixin:
     course = forms.ModelChoiceField(
         label=_("Course"), queryset=Course.objects, empty_label=None, widget=Select2Widget()
     )

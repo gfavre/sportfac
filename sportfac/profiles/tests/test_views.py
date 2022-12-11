@@ -1,11 +1,14 @@
+from unittest.mock import patch
+
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.test import RequestFactory, override_settings
+from django.utils import timezone
 from django.urls import reverse
 
-from mock import patch
+from faker import Faker
 
 from sportfac.utils import TenantTestCase as TestCase
 
@@ -14,7 +17,11 @@ from ..views import AccountView, RegistrationView, WizardRegistrationView
 from .factories import FamilyUserFactory
 
 
-class UserDataTestCase(TestCase):
+fake = Faker(locale="fr_CH")
+
+# noinspection PyUnresolvedReferences
+class UserDataTestCaseMixin:
+
     def setUp(self):
         self.factory = RequestFactory()
         sid = transaction.savepoint()
@@ -26,12 +33,10 @@ class UserDataTestCase(TestCase):
         self.user_data["private_phone"] = "0791234567"
         self.user_data["password1"] = "badbadzoot"
         self.user_data["password2"] = "badbadzoot"
-
-
-# noinspection PyUnresolvedReferences,PyAttributeOutsideInit
-class BaseRegistrationTestMixin:
-    view = None
-    url = None
+        del self.user_data["external_identifier"]
+        del self.user_data["last_login"]
+        del self.user_data["birth_date"]
+        del self.user_data["permit_type"]
 
     @patch("profiles.views.login")
     def test_user_is_created(self, _):
@@ -52,9 +57,9 @@ class BaseRegistrationTestMixin:
         self.assertTrue(faked_login.called)
 
 
-class WizardRegistrationViewTests(BaseRegistrationTestMixin, UserDataTestCase):
+class WizardRegistrationViewTests(UserDataTestCaseMixin, TestCase):
     def setUp(self):
-        super(WizardRegistrationViewTests, self).setUp()
+        super().setUp()
         self.view = WizardRegistrationView.as_view()
         self.url = reverse("wizard_register")
 
@@ -66,9 +71,9 @@ class WizardRegistrationViewTests(BaseRegistrationTestMixin, UserDataTestCase):
             self.view(request)
 
 
-class RegistrationViewTests(BaseRegistrationTestMixin, UserDataTestCase):
+class RegistrationViewTests(UserDataTestCaseMixin, TestCase):
     def setUp(self):
-        super(RegistrationViewTests, self).setUp()
+        super().setUp()
         self.factory = RequestFactory()
         self.view = RegistrationView.as_view()
         self.url = reverse("profiles:anytime_registeraccount")

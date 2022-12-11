@@ -11,8 +11,7 @@ from django.core.management import call_command
 from django.db import connection, transaction
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.html import format_html
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html, mark_safe
 from django.utils.translation import ugettext as _
 
 from activities.models import Course

@@ -3,7 +3,7 @@ from __future__ import absolute_import, unicode_literals
 
 from django.contrib import admin
 from django.urls import reverse
-from django.utils.text import mark_safe
+from django.utils.html import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from sportfac.admin_utils import SportfacModelAdmin
