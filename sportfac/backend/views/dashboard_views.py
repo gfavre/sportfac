@@ -222,10 +222,10 @@ class HomePageView(BackendMixin, TemplateView):
             children_per_zip[zipcode].add(registration.child)
             families_per_zip[zipcode].add(registration.child.family)
 
-        children_per_zip_ordered = list(
+        children_per_zip_ordered = sorted(list(
             [(zipcode, len(children)) for (zipcode, children) in children_per_zip.items()]
-        )
-        children_per_zip_ordered.sort(lambda x, y: -cmp(x[1], y[1]))
+        ), key=lambda x: x[1])
+
         context["children_per_zip_labels"] = json.dumps(
             [
                 "{} {}".format(zipcode, cities.get(zipcode, "")).strip()
@@ -236,10 +236,9 @@ class HomePageView(BackendMixin, TemplateView):
             [nb for zipcode, nb in children_per_zip_ordered]
         )
 
-        families_per_zip_ordered = list(
+        families_per_zip_ordered = sorted(list(
             [(zipcode, len(families)) for (zipcode, families) in families_per_zip.items()]
-        )
-        families_per_zip_ordered.sort(lambda x, y: -cmp(x[1], y[1]))
+        ), key=lambda x: x[1])
         context["families_per_zip_labels"] = json.dumps(
             [
                 "{} {}".format(zipcode, cities.get(zipcode, "")).strip()
