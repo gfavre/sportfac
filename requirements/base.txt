@@ -10,7 +10,7 @@ djangorestframework-datatables==0.5.1
 
 # Forms
 django-braces == 1.14.0
-django-floppyforms==1.9.0
+django-floppyforms==1.8.0
 Django-Select2 == 5.11.1  # Select2 widget (autocompletion on selects)
 django-autoslug == 1.9.8
 django-model-utils == 2.5
@@ -19,7 +19,7 @@ django-localflavor == 1.5.3
 django-ckeditor == 6.0.0
 django-formtools == 2.1
 django-picklefield == 1.0.0
-django-multiupload == 0.5.2
+django-multiupload == 0.6.1
 django-phonenumber-field
 django-crispy-forms==1.14.0
 django-countries==5.5

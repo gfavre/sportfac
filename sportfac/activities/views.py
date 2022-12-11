@@ -62,7 +62,7 @@ class CourseAccessMixin(UserPassesTestMixin, LoginRequiredMixin):
 
     def test_func(self, user):
         course = self.get_object()
-        return user.is_authenticated() and (
+        return user.is_authenticated and (
             user.is_instructor_of(course)
             or user in [p.child.family for p in course.participants.all()]
         )

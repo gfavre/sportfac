@@ -398,7 +398,6 @@ class NotPaidYetViewTest(BackendTestBase):
         request.user = self.manager
         request = add_middleware_to_request(request, SessionMiddleware)
         request = add_middleware_to_request(request, VersionMiddleware)
-        request = add_middleware_to_request(request, RegistrationOpenedMiddleware)
         response = mail_views.NotPaidYetView.as_view()(request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context_data["total"], len(self.bills))
