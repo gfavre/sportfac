@@ -4,14 +4,13 @@ import datetime
 
 from django.conf import settings
 
-import factory
 import factory.fuzzy
-import faker
+from faker import Faker
 from activities.models import SCHOOL_YEARS, Activity, AllocationAccount, Course, CoursesInstructors
 from profiles.tests.factories import FamilyUserFactory
 
 
-fake = faker.Factory.create()
+fake = Faker()
 
 YEARS = [year for (year, name) in SCHOOL_YEARS]
 
@@ -28,10 +27,10 @@ class ActivityFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Activity
 
-    number = factory.Sequence(lambda x: "{0}".format(x))
-    name = factory.lazy_attribute(lambda o: fake.word())
-    description = factory.lazy_attribute(lambda o: fake.text())
-    informations = factory.lazy_attribute(lambda o: fake.text())
+    number = factory.Sequence(lambda a: "{0}".format(a))
+    name = factory.Sequence(lambda a: fake.bs() + f" -{a}")
+    description = factory.Faker("text")
+    informations = factory.Faker("text")
 
 
 class CourseFactory(factory.django.DjangoModelFactory):
@@ -46,22 +45,23 @@ class CourseFactory(factory.django.DjangoModelFactory):
     end_date = factory.LazyAttribute(lambda c: c.start_date + datetime.timedelta(days=90))
     start_time = datetime.time(hour=16)
     end_time = datetime.time(hour=17)
-    place = factory.lazy_attribute(lambda o: fake.address())
+    place = factory.Faker("address", locale='fr_CH')
     min_participants = factory.fuzzy.FuzzyInteger(1, 20)
 
     max_participants = factory.LazyAttribute(lambda c: c.min_participants + 5)
     schoolyear_min = factory.fuzzy.FuzzyChoice(YEARS[:-1])
     schoolyear_max = factory.fuzzy.FuzzyChoice(YEARS[1:])
 
-    price = factory.fuzzy.FuzzyInteger(1, 100)
-    price_local = factory.fuzzy.FuzzyInteger(1, 100)
-    price_family = factory.fuzzy.FuzzyInteger(1, 100)
-    price_local_family = factory.fuzzy.FuzzyInteger(1, 100)
-    price_description = factory.lazy_attribute(lambda o: fake.text())
+    price = factory.fuzzy.FuzzyInteger(50, 200)
+    price_local = factory.LazyAttribute(lambda c: c.price - 10)
+    price_family = factory.LazyAttribute(lambda c: c.price - 5)
+    price_local_family = factory.LazyAttribute(lambda c: c.price - 15)
+    price_description = factory.Faker("text")
     age_min = factory.fuzzy.FuzzyInteger(settings.KEPCHUP_AGES[0], settings.KEPCHUP_AGES[-1] - 1)
     age_max = factory.LazyAttribute(lambda o: o.age_min + 1)
+    visible = True
 
-    comments = factory.lazy_attribute(lambda o: fake.text())
+    comments = factory.Faker("text")
 
     @factory.post_generation
     def instructors(self, create, extracted, **kwargs):

@@ -35,11 +35,13 @@ class ActivityAPITests(TenantTestCase):
         super(ActivityAPITests, self).setUp()
         self.school_year = 3
         self.birth_date = fake.date_between(start_date="-10y", end_date="-5y")
+        self.age = datetime.date.today().year - self.birth_date.year
         self.course = CourseFactory(
             schoolyear_min=self.school_year,
             schoolyear_max=self.school_year,
-            min_birth_date=self.birth_date,
-            max_birth_date=self.birth_date,
+            age_min=self.age,
+            age_max=self.age,
+            start_date=datetime.date.today(),
         )
 
     def test_list(self):
@@ -63,12 +65,14 @@ class ActivityAPITests(TenantTestCase):
     @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False)
     def test_filter_by_age(self):
         too_young = CourseFactory(
-            min_birth_date=self.birth_date - datetime.timedelta(days=2),
-            max_birth_date=self.birth_date - datetime.timedelta(days=1),
+            age_min=self.age + 1,
+            age_max=self.age + 2,
+            start_date=datetime.date.today(),
         )
         too_old = CourseFactory(
-            min_birth_date=self.birth_date + datetime.timedelta(days=1),
-            max_birth_date=self.birth_date + datetime.timedelta(days=2),
+            age_min=self.age - 2,
+            age_max=self.age - 1,
+            start_date=datetime.date.today(),
         )
         url = reverse("api:activity-list") + "?birth_date={}".format(self.birth_date.isoformat())
         response = self.tenant_client.get(url)
