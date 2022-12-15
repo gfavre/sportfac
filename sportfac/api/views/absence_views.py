@@ -6,7 +6,7 @@ from django.conf import settings
 from absences.models import Absence, Session
 from registrations.models import Child
 from rest_framework import status, viewsets
-from rest_framework.decorators import list_route
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from ..permissions import InstructorPermission
@@ -20,7 +20,7 @@ class AbsenceViewSet(viewsets.ModelViewSet):
     permission_classes = (InstructorPermission,)
     serializer_class = AbsenceSerializer
 
-    @list_route(methods=["post"])
+    @action(detail=False, methods=["post"])
     def set(self, request):
         serializer = SetAbsenceSerializer(data=request.data)
         if serializer.is_valid():
@@ -53,15 +53,6 @@ class SessionViewSet(viewsets.ModelViewSet):
         if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
             session.update_courses_dates()
 
-    def update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer_class()(instance, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
-            instance.update_courses_dates()
-        return Response(SessionSerializer(instance).data)
-
     def perform_destroy(self, instance):
         if settings.KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES:
             activity = instance.activity
@@ -76,3 +67,12 @@ class SessionViewSet(viewsets.ModelViewSet):
             instance.delete()
             if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
                 course.update_dates_from_sessions()
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer_class()(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
+            instance.update_courses_dates()
+        return Response(SessionSerializer(instance).data)
