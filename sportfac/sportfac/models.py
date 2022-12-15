@@ -13,7 +13,7 @@ class ListField(models.TextField):
     def __init__(self, *args, **kwargs):
         super(ListField, self).__init__(*args, **kwargs)
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, expression, connection):
         if value is None:
             return value
         return ast.literal_eval(value)
