@@ -8,7 +8,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.template.defaultfilters import urlencode
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.translation import gettext as _
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
@@ -140,7 +140,7 @@ class MailPreviewView(CancelableMixin, EditableMixin, TemplateView):
     def get_success_url(self):
         if self.success_url:
             # Forcing possible reverse_lazy evaluation
-            url = force_text(self.success_url)
+            url = force_str(self.success_url)
         else:
             raise ImproperlyConfigured("No URL to redirect to. Provide a success_url.")
         return url

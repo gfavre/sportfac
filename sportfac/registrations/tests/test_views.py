@@ -204,7 +204,7 @@ class RegisteredActivitiesListViewTests(TestCase):
         registration = RegistrationFactory(child__family=self.user, course__price=100)
         self.view(request)
         self.assertTrue(Bill.objects.exists())
-        self.assertEquals(Bill.objects.first().status, Bill.STATUS.just_created)
+        self.assertEqual(Bill.objects.first().status, Bill.STATUS.just_created)
 
     def test_post_sets_registration_status_to_validated(self):
         data = {"accept": True}
@@ -214,7 +214,7 @@ class RegisteredActivitiesListViewTests(TestCase):
         registration = RegistrationFactory(child__family=self.user)
         self.view(request)
         registration.refresh_from_db()
-        self.assertEquals(registration.status, Registration.STATUS.valid)
+        self.assertEqual(registration.status, Registration.STATUS.valid)
 
     @patch("django.contrib.messages.success")
     def test_post_sets_bill_paid(self, messages_mock):
@@ -225,7 +225,7 @@ class RegisteredActivitiesListViewTests(TestCase):
         registration = RegistrationFactory(child__family=self.user, course__price=0)
         self.view(request)
         registration.refresh_from_db()
-        self.assertEquals(Bill.objects.first().status, Bill.STATUS.paid)
+        self.assertEqual(Bill.objects.first().status, Bill.STATUS.paid)
 
 
 class WizardBillingViewTests(TestCase):

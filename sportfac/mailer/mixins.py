@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template import loader
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.translation import gettext as _
 
 import six
@@ -101,7 +101,7 @@ class CancelableMixin(object):
     def get_cancel_url(self):
         if self.cancel_url:
             # Forcing possible reverse_lazy evaluation
-            return force_text(self.cancel_url)
+            return force_str(self.cancel_url)
         return None
 
 
@@ -111,7 +111,7 @@ class EditableMixin(object):
     def get_edit_url(self):
         if self.edit_url:
             # Forcing possible reverse_lazy evaluation
-            return force_text(self.edit_url)
+            return force_str(self.edit_url)
         return None
 
 

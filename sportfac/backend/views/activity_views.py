@@ -183,7 +183,8 @@ class ActivityAbsenceView(BackendMixin, DetailView):
             filename = "absences-{}.pdf".format(slugify(self.object.number))
             filepath = os.path.join(tempdir, filename)
             renderer.render_to_pdf(filepath)
-            response = HttpResponse(open(filepath).read(), content_type="application/pdf")
+            with open(filepath, "rb") as f:
+                response = HttpResponse(f.read(), content_type="application/pdf")
             response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
             return response
         return super(ActivityAbsenceView, self).get(request, *args, **kwargs)

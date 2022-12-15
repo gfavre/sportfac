@@ -247,7 +247,7 @@ class Course(TimeStampedModel):
     )
 
     local_city_override = models.ManyToManyField(
-        to="profiles.City", verbose_name=_("Local city override"), null=True, blank=True
+        to="profiles.City", verbose_name=_("Local city override"), blank=True
     )
     price = models.DecimalField(
         max_digits=5, decimal_places=2, verbose_name=_("Price"), null=True, blank=True

@@ -175,7 +175,7 @@ class MailUsersViewTest(TestCase):
         request.user = FamilyUserFactory()
         response = MailUsersView.as_view()(request, course=self.course.pk)
         # only instructors can use this function
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         self.assertTrue(response.url.startswith(reverse("login")))
 
     def test_session_creation(self):
@@ -208,7 +208,7 @@ class CustomParticipantsCustomMailViewTest(TestCase):
         request.user = FamilyUserFactory()
         response = CustomParticipantsCustomMailView.as_view()(request, course=self.course.pk)
         # only instructors can use this function
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         self.assertTrue(response.url.startswith(reverse("login")))
 
     def test_get(self):
@@ -317,7 +317,7 @@ class CustomMailPreviewTest(TestCase):
         request.user = FamilyUserFactory()
         response = CustomMailPreview.as_view()(request, course=self.course.pk)
         # only instructors can use this function
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         self.assertTrue(response.url.startswith(reverse("login")))
 
     def test_no_archive(self):
@@ -380,7 +380,7 @@ class MailCourseInstructorsViewTest(TestCase):
         request.user = FamilyUserFactory()
         response = MailCourseInstructorsView.as_view()(request, course=self.course.pk)
         # only instructors can use this function
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         self.assertTrue(response.url.startswith(reverse("login")))
 
     def test_get(self):
