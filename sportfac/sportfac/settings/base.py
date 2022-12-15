@@ -67,12 +67,13 @@ DATABASES = {
 
 # Multitenancy configuration
 DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
-DEFAULT_TENANT_NAME = "current"
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
-VERSION_SESSION_NAME = "period"
+DEFAULT_TENANT_NAME = "current"
 TENANT_MODEL = "backend.YearTenant"  # app.Model
 TENANT_DOMAIN_MODEL = "backend.Domain"  # app.Model
 TENANT_CREATION_FAKES_MIGRATIONS = False
+VERSION_SESSION_NAME = "period"
 
 
 ########## END DATABASE CONFIGURATION
@@ -327,6 +328,7 @@ REST_FRAMEWORK = {
     # Use hyperlinked styles by default.
     # Only used if the `serializer_class` attribute is not set on a view.
     "DEFAULT_MODEL_SERIALIZER_CLASS": "rest_framework.serializers.HyperlinkedModelSerializer",
+    "DEFAULT_PAGINATION_CLASS": None, #"rest_framework.pagination.PageNumberPagination",
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     "DEFAULT_PERMISSION_CLASSES": [

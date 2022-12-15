@@ -64,10 +64,10 @@ class TenantTestCase(BaseTenantTestCase):
         self.tenant_client = TenantClient(self.tenant)
 
 
-def add_middleware_to_request(request, middleware_class):
-    middleware = middleware_class()
+def process_request_for_middleware(request, middleware_class):
+    middleware = middleware_class("response")
     middleware.process_request(request)
-    return request
+    #return request
 
 
 def add_middleware_to_response(request, middleware_class):

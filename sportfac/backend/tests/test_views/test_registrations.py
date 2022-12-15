@@ -1,25 +1,20 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.forms.formsets import BaseFormSet, ManagementForm
+from django.forms.formsets import BaseFormSet
 from django.forms.models import BaseModelFormSet, model_to_dict
 from django.test import RequestFactory, override_settings
 from django.urls import reverse
 
-from activities.tests.factories import CourseFactory
 from mock import patch
 from profiles.tests.factories import FamilyUserFactory
 from registrations.models import Registration
 from registrations.tests.factories import RegistrationFactory
 
-from sportfac.utils import TenantTestCase, add_middleware_to_request
+from sportfac.utils import TenantTestCase, process_request_for_middleware
 
 from ...views.registration_views import (RegistrationCreateView, RegistrationDeleteView,
                                          RegistrationDetailView, RegistrationListView,
-                                         RegistrationsMoveView, RegistrationUpdateView,
-                                         RegistrationValidateView)
+                                         RegistrationsMoveView, RegistrationUpdateView)
 from .base import fake_registrations_open_middleware
 
 
@@ -33,7 +28,7 @@ class RegistrationCreateViewTests(TenantTestCase):
         self.request = RequestFactory().get(self.url)
         fake_registrations_open_middleware(self.request)
         self.request.user = self.user
-        self.request = add_middleware_to_request(self.request, SessionMiddleware)
+        process_request_for_middleware(self.request, SessionMiddleware)
 
     def test_access_forbidden_for_anonymous_users(self):
         self.request.user = AnonymousUser()

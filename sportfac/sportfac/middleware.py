@@ -5,7 +5,7 @@ from django.http import Http404
 from django.utils import timezone
 
 from backend.models import Domain
-from django_tenants.middleware import TenantMiddleware
+from django_tenants.middleware import TenantMainMiddleware
 
 
 class RegistrationOpenedMiddleware:
@@ -32,7 +32,7 @@ class RegistrationOpenedMiddleware:
         return response
 
 
-class VersionMiddleware(TenantMiddleware):
+class VersionMiddleware(TenantMainMiddleware):
     @staticmethod
     def hostname_from_request(request):
         if settings.VERSION_SESSION_NAME in request.session:
