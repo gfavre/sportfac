@@ -2,7 +2,7 @@
 from __future__ import absolute_import
 
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from import_export import fields, resources, widgets
 

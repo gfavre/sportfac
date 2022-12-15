@@ -8,7 +8,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.utils.timezone import now
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.views.generic import DeleteView, ListView, TemplateView, UpdateView, View
 
 from appointments.models import Appointment, AppointmentSlot

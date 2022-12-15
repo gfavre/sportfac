@@ -11,7 +11,7 @@ from django.db import models, transaction
 from django.db.models.aggregates import Count
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 import six
 from activities.models import SCHOOL_YEARS

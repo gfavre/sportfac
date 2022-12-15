@@ -1,12 +1,9 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-
 from django.conf import settings
 from django.db import connection
 from django.urls import resolve, reverse
 from django.utils import timezone
 from django.utils.timezone import get_default_timezone, make_aware, now
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from activities.models import Activity
 from backend.models import YearTenant

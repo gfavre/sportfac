@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 from django import forms
 from django.utils import timezone
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 import dateutil.parser
 from dynamic_preferences.preferences import Section

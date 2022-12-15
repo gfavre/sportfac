@@ -4,7 +4,7 @@ from __future__ import absolute_import
 from datetime import timedelta
 
 from django.utils.timezone import now
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from profiles.models import FamilyUser
 from rest_framework import generics

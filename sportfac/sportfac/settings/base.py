@@ -8,7 +8,7 @@ from sys import path
 # Normally you should not import ANYTHING from Django directly
 # into your settings, but ImproperlyConfigured is an exception.
 from django.core.exceptions import ImproperlyConfigured
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 import environ
 from celery.schedules import crontab
@@ -17,7 +17,7 @@ from six.moves import range
 
 env = environ.Env()
 
-ugettext = lambda s: s
+gettext = lambda s: s
 
 ########## PATH CONFIGURATION
 # Absolute filesystem path to the Django project directory:

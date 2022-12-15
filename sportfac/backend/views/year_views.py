@@ -10,7 +10,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.http import is_safe_url
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.views.generic import DeleteView, FormView, ListView, UpdateView
 
 from ..forms import YearCreateForm, YearForm, YearSelectForm

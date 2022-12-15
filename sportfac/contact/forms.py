@@ -3,7 +3,7 @@ from __future__ import absolute_import
 
 from django.conf import settings
 from django.core.mail import EmailMessage
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 import floppyforms as forms
 from captcha.fields import ReCaptchaField

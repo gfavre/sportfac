@@ -5,7 +5,7 @@ from django.contrib.flatpages.models import FlatPage
 from django.forms import inlineformset_factory
 from django.forms.widgets import TextInput
 from django.utils.html import mark_safe
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 import floppyforms.__future__ as forms
 from activities.models import Course, ExtraNeed

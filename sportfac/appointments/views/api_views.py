@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import get_language
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from api.permissions import ManagerPermission
 from registrations.models import Child

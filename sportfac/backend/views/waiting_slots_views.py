@@ -4,7 +4,7 @@ from __future__ import absolute_import, unicode_literals
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.views.generic import DeleteView, UpdateView
 
 from waiting_slots.forms import WaitingSlotTransformForm

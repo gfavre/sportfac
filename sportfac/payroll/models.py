@@ -6,7 +6,7 @@ from io import BytesIO
 from django.core.files.base import ContentFile
 from django.db import models
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from activities.models import RATE_MODES
 

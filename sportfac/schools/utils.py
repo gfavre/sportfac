@@ -5,7 +5,7 @@ import re
 
 from django.db.models import Max, Min
 from django.utils.six import moves
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 import six
 import xlrd

@@ -3,7 +3,7 @@ from __future__ import absolute_import
 
 from django.conf import settings
 from django.contrib.humanize.templatetags.humanize import naturaltime
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from absences.models import Absence, Session
 from activities.models import Activity, Course, CoursesInstructors, ExtraNeed
