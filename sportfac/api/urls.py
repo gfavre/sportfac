@@ -12,25 +12,25 @@ from . import views
 app_name = "api"
 
 router = DefaultRouter()
-router.register(r"sessions", views.SessionViewSet, base_name="session")
-router.register(r"absences", views.AbsenceViewSet, base_name="absence")
-router.register(r"activities", views.ActivityViewSet, base_name="activity")
-router.register(r"courses", views.CourseViewSet, base_name="course")
+router.register(r"sessions", views.SessionViewSet, basename="session")
+router.register(r"absences", views.AbsenceViewSet, basename="absence")
+router.register(r"activities", views.ActivityViewSet, basename="activity")
+router.register(r"courses", views.CourseViewSet, basename="course")
 router.register(
-    r"courses-instructors", views.CourseInstructorsViewSet, base_name="course-instructors"
+    r"courses-instructors", views.CourseInstructorsViewSet, basename="course-instructors"
 )
-router.register(r"children", views.ChildrenViewSet, base_name="child")
-router.register(r"teachers", views.TeacherViewSet, base_name="teacher")
-router.register(r"buildings", views.BuildingViewSet, base_name="building")
-router.register(r"registrations", views.RegistrationViewSet, base_name="registration")
-router.register(r"levels", views.ChildActivityLevelViewSet, base_name="level")
-router.register(r"waiting_slots", views.WaitingSlotViewSet, base_name="waiting_slot")
+router.register(r"children", views.ChildrenViewSet, basename="child")
+router.register(r"teachers", views.TeacherViewSet, basename="teacher")
+router.register(r"buildings", views.BuildingViewSet, basename="building")
+router.register(r"registrations", views.RegistrationViewSet, basename="registration")
+router.register(r"levels", views.ChildActivityLevelViewSet, basename="level")
+router.register(r"waiting_slots", views.WaitingSlotViewSet, basename="waiting_slot")
 
-router.register(r"extra", views.ExtraInfoViewSet, base_name="api-extra")
-router.register(r"years", views.YearViewSet, base_name="year")
+router.register(r"extra", views.ExtraInfoViewSet, basename="api-extra")
+router.register(r"years", views.YearViewSet, basename="year")
 
-router.register(r"all-children", views.SimpleChildrenViewSet, base_name="allchildren")
-router.register("all-slots", appointment_views.SlotsViewset, base_name="slots")
+router.register(r"all-children", views.SimpleChildrenViewSet, basename="allchildren")
+router.register("all-slots", appointment_views.SlotsViewset, basename="slots")
 
 urlpatterns = [
     url(r"^", include(router.urls)),
