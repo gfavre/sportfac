@@ -39,7 +39,7 @@ def json_handler(obj):
     elif isinstance(obj, Decimal):
         return float(obj)  # warning, potential loss of precision
     elif isinstance(obj, Promise):
-        return force_str(obj)  # to support ugettext_lazy
+        return force_str(obj)  # to support gettext_lazy
     else:
         return json.JSONEncoder().default(obj)
 

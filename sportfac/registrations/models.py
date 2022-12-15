@@ -9,7 +9,7 @@ from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import get_language
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from model_utils import Choices
 from model_utils.models import StatusModel

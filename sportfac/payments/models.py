@@ -49,7 +49,7 @@ class DatatransTransaction(TimeStampedModel, StatusModel):
     invoice = models.ForeignKey(
         "registrations.Bill", related_name="datatrans_transactions", on_delete=models.CASCADE
     )
-    payment_method = models.CharField(max_length=3, choices=METHODS, default=METHODS.TWI)
+    payment_method = models.CharField(max_length=4, choices=METHODS, default=METHODS.TWI)
     transaction_id = models.BigIntegerField(db_index=True)
     webhook = JSONField(null=True, blank=True)
 

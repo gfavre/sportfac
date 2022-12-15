@@ -1,18 +1,12 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function
-
 import logging
 import re
 from datetime import datetime
 
-from django.utils.six import moves
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
-import six
 import xlrd
 from profiles.models import School, SchoolYear
 from registrations.models import Child
-from six.moves import zip
 
 
 logger = logging.getLogger(__name__)
@@ -103,7 +97,7 @@ class ChildParser:
 
     def parse_birth_date(self, value):
         try:
-            if isinstance(value, six.string_types):
+            if isinstance(value, str):
                 return datetime.strptime(value, "%d.%m.%Y").date()
             else:
                 return xlrd.xldate_as_datetime(value, self.datemode)
@@ -136,7 +130,7 @@ class ChildParser:
         return self.schools.get(value, None)
 
     def parse_school_year(self, value):
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             try:
                 match = re.match(r"\s*(\d+)\s?\w*.*", value)
                 if not match:
@@ -190,7 +184,7 @@ def load_children(filelike):
     nb_created = 0
     nb_updated = 0
     parser = ChildParser(xls_book)
-    for i in moves.range(1, sheet.nrows):
+    for i in range(1, sheet.nrows):
         values = dict(zip(header_row, sheet.row_values(i)))
         try:
             parsed = parser.parse(values)
@@ -213,7 +207,7 @@ def load_children(filelike):
 """
 import re
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.utils.six import moves
 
 import xlrd

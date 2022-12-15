@@ -7,5 +7,5 @@ redis==2.10.6
 raven==6.7.0
 django-constance[redis] == 1.2.1
 pylibmc == 1.6.3
-psycopg2-binary==2.8.6
+psycopg2-binary==2.9.5
 ipython

@@ -3,7 +3,7 @@ from __future__ import absolute_import
 from django.conf import settings
 from django.db.models import Case, Count, IntegerField, When
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 import floppyforms.__future__ as forms
 from activities.models import Activity, Course
