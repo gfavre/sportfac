@@ -34,7 +34,7 @@ class ChildrenListViewTests(TestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request)
         response.client = self.client
-        self.assertRedirects(response, reverse("login") + "/?next=" + self.url)
+        self.assertRedirects(response, reverse("profiles:auth_login") + "?next=" + self.url)
 
     def test_only_own_children_in_queryset(self):
         ChildFactory.create_batch(5)
@@ -58,7 +58,7 @@ class BillingViewTests(TestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request)
         response.client = self.client
-        self.assertRedirects(response, reverse("login") + "/?next=" + self.url)
+        self.assertRedirects(response, reverse("profiles:auth_login") + "?next=" + self.url)
 
     def test_only_own_bills_in_queryset(self):
         BillFactory.create_batch(5)
@@ -83,7 +83,7 @@ class BillDetailViewTests(TestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request)
         response.client = self.client
-        self.assertRedirects(response, reverse("login") + "/?next=" + self.url)
+        self.assertRedirects(response, reverse("profiles:auth_login") + "?next=" + self.url)
 
     def test_user_cannot_access_other_bills(self):
         invoice_2 = BillFactory()
@@ -113,7 +113,7 @@ class SummaryViewTests(TestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request)
         response.client = self.client
-        self.assertRedirects(response, reverse("login") + "/?next=" + self.url)
+        self.assertRedirects(response, reverse("profiles:auth_login") + "?next=" + self.url)
 
     def test_own_registrations_in_context(self):
         RegistrationFactory.create_batch(5, status="confirmed")
@@ -145,7 +145,7 @@ class WizardChildrenListViewTests(TestCase):
         request.REGISTRATION_OPENED = True
         response = self.view(request)
         response.client = self.client
-        self.assertRedirects(response, reverse("login") + "/?next=" + self.url)
+        self.assertRedirects(response, reverse("profiles:auth_login") + "?next=" + self.url)
 
 
 class RegisteredActivitiesListViewTests(TestCase):
@@ -169,7 +169,7 @@ class RegisteredActivitiesListViewTests(TestCase):
         request.REGISTRATION_OPENED = True
         response = self.view(request)
         response.client = self.client
-        self.assertRedirects(response, reverse("login") + "/?next=" + self.url)
+        self.assertRedirects(response, reverse("profiles:auth_login") + "?next=" + self.url)
 
     def test_redirects_to_wizard_activities_if_no_registrations(self):
         request = self.factory.get(self.url)
@@ -251,7 +251,7 @@ class WizardBillingViewTests(TestCase):
         self.get_request.user = AnonymousUser()
         response = self.view(self.get_request)
         response.client = self.client
-        self.assertRedirects(response, reverse("login") + "/?next=" + self.url)
+        self.assertRedirects(response, reverse("profiles:auth_login") + "?next=" + self.url)
 
     def test_redirect_to_appointments_if_appointment_not_taken(self):
         with mock.patch(

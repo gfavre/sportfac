@@ -176,7 +176,7 @@ class MailUsersViewTest(TestCase):
         response = MailUsersView.as_view()(request, course=self.course.pk)
         # only instructors can use this function
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(response.url.startswith(reverse("login")))
+        self.assertTrue(response.url.startswith(reverse("profiles:auth_login")))
 
     def test_session_creation(self):
         payload = ["1", "2", "3"]
@@ -188,7 +188,7 @@ class MailUsersViewTest(TestCase):
         self.assertIn("mail-userids", list(request.session.keys()))
         self.assertEqual(set(request.session["mail-userids"]), set(payload))
         self.assertEqual(response.status_code, 302)
-        self.assertFalse(response.url.startswith(reverse("login")))
+        self.assertFalse(response.url.startswith(reverse("profiles:auth_login")))
 
 
 class CustomParticipantsCustomMailViewTest(TestCase):
@@ -209,7 +209,7 @@ class CustomParticipantsCustomMailViewTest(TestCase):
         response = CustomParticipantsCustomMailView.as_view()(request, course=self.course.pk)
         # only instructors can use this function
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(response.url.startswith(reverse("login")))
+        self.assertTrue(response.url.startswith(reverse("profiles:auth_login")))
 
     def test_get(self):
         request = self.factory.get(self.url)
@@ -318,7 +318,7 @@ class CustomMailPreviewTest(TestCase):
         response = CustomMailPreview.as_view()(request, course=self.course.pk)
         # only instructors can use this function
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(response.url.startswith(reverse("login")))
+        self.assertTrue(response.url.startswith(reverse("profiles:auth_login")))
 
     def test_no_archive(self):
         request = self.factory.get(self.url)
@@ -381,7 +381,7 @@ class MailCourseInstructorsViewTest(TestCase):
         response = MailCourseInstructorsView.as_view()(request, course=self.course.pk)
         # only instructors can use this function
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(response.url.startswith(reverse("login")))
+        self.assertTrue(response.url.startswith(reverse("profiles:auth_login")))
 
     def test_get(self):
         request = self.factory.get(self.url)
@@ -438,7 +438,7 @@ class ActivityListViewTest(TestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request)
         response.client = self.client
-        self.assertRedirects(response, reverse("login") + "/?next=" + self.url)
+        self.assertRedirects(response, reverse("profiles:auth_login") + "?next=" + self.url)
 
     def test_redirects_to_wizard_children_if_no_children_defined(self):
         self.child.delete()

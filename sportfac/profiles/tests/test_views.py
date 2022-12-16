@@ -107,7 +107,7 @@ class AccountViewTests(TestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request)
         response.client = self.client
-        self.assertRedirects(response, reverse("login") + "/?next=" + self.url)
+        self.assertRedirects(response, reverse("profiles:auth_login") + "?next=" + self.url)
 
     def test_get_returns_200(self):
         response = self.view(self.request)

@@ -23,7 +23,7 @@ class WaitingSlotTransformViewTests(TenantTestCase):
         super(WaitingSlotTransformViewTests, self).setUp()
         self.user = FamilyUserFactory(is_manager=True)
         self.waiting_slot = WaitingSlotFactory()
-        self.login_url = reverse("login")
+        self.login_url = reverse("profiles:auth_login")
         self.url = reverse("backend:waiting_slot-transform", kwargs={"pk": self.waiting_slot.pk})
         self.view = WaitingSlotTransformView.as_view()
         self.request = RequestFactory().get(self.url)
@@ -38,13 +38,13 @@ class WaitingSlotTransformViewTests(TenantTestCase):
         self.request.user = AnonymousUser()
         response = self.get_response(self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_access_forbidden_for_non_backend_users(self):
         self.request.user = FamilyUserFactory(is_manager=False)
         response = self.get_response(self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_get_is_200(self):
         response = self.get_response(self.request)

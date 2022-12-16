@@ -38,7 +38,7 @@ class WizardSlotsViewTests(TestCase):
         self.get_request.user = AnonymousUser()
         response = self.view(self.get_request)
         response.client = self.client
-        self.assertRedirects(response, reverse("login") + "/?next=" + self.url)
+        self.assertRedirects(response, reverse("profiles:auth_login") + "?next=" + self.url)
 
     def test_redirect_to_billing_if_user_does_not_require_appointment(self):
         with mock.patch(

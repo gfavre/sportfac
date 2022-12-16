@@ -21,7 +21,7 @@ from .base import fake_registrations_open_middleware
 class RegistrationCreateViewTests(TenantTestCase):
     def setUp(self):
         super(RegistrationCreateViewTests, self).setUp()
-        self.login_url = reverse("login")
+        self.login_url = reverse("profiles:auth_login")
         self.url = reverse("backend:registration-create")
         self.user = FamilyUserFactory(is_manager=True)
         self.view = RegistrationCreateView.as_view()
@@ -34,13 +34,13 @@ class RegistrationCreateViewTests(TenantTestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_access_forbidden_for_non_backend_users(self):
         self.request.user = FamilyUserFactory(is_manager=False)
         response = self.view(self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_get_is_200(self):
         response = self.view(self.request)
@@ -57,7 +57,7 @@ class RegistrationDeleteViewTests(TenantTestCase):
     def setUp(self):
         self.registration = RegistrationFactory()
         self.data = {"confirm": "True"}
-        self.login_url = reverse("login")
+        self.login_url = reverse("profiles:auth_login")
         self.url = self.registration.get_delete_url()
         self.user = FamilyUserFactory(is_manager=True)
         self.view = RegistrationDeleteView.as_view()
@@ -69,13 +69,13 @@ class RegistrationDeleteViewTests(TenantTestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request, pk=self.registration.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_access_forbidden_for_non_backend_users(self):
         self.request.user = FamilyUserFactory(is_manager=False)
         response = self.view(self.request, pk=self.registration.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_get_is_200(self):
         response = self.view(self.request, pk=self.registration.pk)
@@ -105,7 +105,7 @@ class RegistrationDetailViewTests(TenantTestCase):
         super(RegistrationDetailViewTests, self).setUp()
         self.user = FamilyUserFactory(is_manager=True)
         self.registration = RegistrationFactory()
-        self.login_url = reverse("login")
+        self.login_url = reverse("profiles:auth_login")
         self.url = self.registration.get_backend_url()
         self.view = RegistrationDetailView.as_view()
         self.request = RequestFactory().get(self.url)
@@ -116,13 +116,13 @@ class RegistrationDetailViewTests(TenantTestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request, pk=self.registration.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_access_forbidden_for_non_backend_users(self):
         self.request.user = FamilyUserFactory(is_manager=False)
         response = self.view(self.request, pk=self.registration.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_get_is_200(self):
         response = self.view(self.request, pk=self.registration.pk)
@@ -148,7 +148,7 @@ class RegistrationListViewTests(TenantTestCase):
     def setUp(self):
         super(RegistrationListViewTests, self).setUp()
         self.registration = RegistrationFactory()
-        self.login_url = reverse("login")
+        self.login_url = reverse("profiles:auth_login")
         self.url = reverse("backend:registration-list")
         self.user = FamilyUserFactory(is_manager=True)
         self.view = RegistrationListView.as_view()
@@ -160,13 +160,13 @@ class RegistrationListViewTests(TenantTestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_access_forbidden_for_non_backend_users(self):
         self.request.user = FamilyUserFactory(is_manager=False)
         response = self.view(self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_get_is_200(self):
         response = self.view(self.request)
@@ -183,7 +183,7 @@ class RegistrationUpdateViewTests(TenantTestCase):
     def setUp(self):
         super(RegistrationUpdateViewTests, self).setUp()
         self.registration = RegistrationFactory()
-        self.login_url = reverse("login")
+        self.login_url = reverse("profiles:auth_login")
         self.url = self.registration.get_update_url()
         self.user = FamilyUserFactory(is_manager=True)
         self.view = RegistrationUpdateView.as_view()
@@ -200,13 +200,13 @@ class RegistrationUpdateViewTests(TenantTestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request, pk=self.registration.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_access_forbidden_for_non_backend_users(self):
         self.request.user = FamilyUserFactory(is_manager=False)
         response = self.view(self.request, pk=self.registration.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_get_is_200(self):
         response = self.view(self.request, pk=self.registration.pk)
@@ -234,7 +234,7 @@ class RegistrationMoveViewTests(TenantTestCase):
         super(RegistrationMoveViewTests, self).setUp()
         self.user = FamilyUserFactory(is_manager=True)
         self.registration = RegistrationFactory()
-        self.login_url = reverse("login")
+        self.login_url = reverse("profiles:auth_login")
         self.url = reverse("backend:registrations-move")
         self.view = RegistrationsMoveView.as_view()
         self.request = RequestFactory().get(self.url)
@@ -245,13 +245,13 @@ class RegistrationMoveViewTests(TenantTestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_access_forbidden_for_non_backend_users(self):
         self.request.user = FamilyUserFactory(is_manager=False)
         response = self.view(self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_get_is_200(self):
         response = self.view(self.request)

@@ -27,7 +27,7 @@ class ActivityAbsenceViewTests(TenantTestCase):
         self.activity = ActivityFactory()
         self.course = CourseFactory(activity=self.activity)
         self.absence = AbsenceFactory(session__course=self.course, session__activity=self.activity)
-        self.login_url = reverse("login")
+        self.login_url = reverse("profiles:auth_login")
         self.url = self.activity.backend_absences_url
         self.user = FamilyUserFactory(is_manager=True)
         self.view = ActivityAbsenceView.as_view()
@@ -39,13 +39,13 @@ class ActivityAbsenceViewTests(TenantTestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request, pk=self.activity.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_access_forbidden_for_non_backend_users(self):
         self.request.user = FamilyUserFactory(is_manager=False)
         response = self.view(self.request, pk=self.activity.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_get_is_200(self):
         response = self.view(self.request, pk=self.activity.pk)
@@ -100,7 +100,7 @@ class ActivityAbsenceViewTests(TenantTestCase):
 class ActivityCreateViewTests(TenantTestCase):
     def setUp(self):
         super(ActivityCreateViewTests, self).setUp()
-        self.login_url = reverse("login")
+        self.login_url = reverse("profiles:auth_login")
         self.url = reverse("backend:activity-create")
         self.user = FamilyUserFactory(is_manager=True)
         self.view = ActivityCreateView.as_view()
@@ -112,13 +112,13 @@ class ActivityCreateViewTests(TenantTestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_access_forbidden_for_non_backend_users(self):
         self.request.user = FamilyUserFactory(is_manager=False)
         response = self.view(self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_get_is_200(self):
         response = self.view(self.request)
@@ -148,7 +148,7 @@ class ActivityDeleteViewTests(TenantTestCase):
     def setUp(self):
         self.activity = ActivityFactory()
         self.data = {"confirm": "True"}
-        self.login_url = reverse("login")
+        self.login_url = reverse("profiles:auth_login")
         self.url = self.activity.get_delete_url()
         self.user = FamilyUserFactory(is_manager=True)
         self.view = ActivityDeleteView.as_view()
@@ -160,13 +160,13 @@ class ActivityDeleteViewTests(TenantTestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_access_forbidden_for_non_backend_users(self):
         self.request.user = FamilyUserFactory(is_manager=False)
         response = self.view(self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_get_is_200(self):
         response = self.view(self.request, pk=self.activity.pk)
@@ -193,7 +193,7 @@ class ActivityDetailViewTests(TenantTestCase):
         super(ActivityDetailViewTests, self).setUp()
         self.activity = ActivityFactory()
         self.course = CourseFactory(activity=self.activity)
-        self.login_url = reverse("login")
+        self.login_url = reverse("profiles:auth_login")
         self.url = self.activity.get_backend_url()
         self.user = FamilyUserFactory(is_manager=True)
         self.view = ActivityDetailView.as_view()
@@ -205,13 +205,13 @@ class ActivityDetailViewTests(TenantTestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request, pk=self.activity.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_access_forbidden_for_non_backend_users(self):
         self.request.user = FamilyUserFactory(is_manager=False)
         response = self.view(self.request, pk=self.activity.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_get_is_200(self):
         response = self.view(self.request, pk=self.activity.pk)
@@ -228,7 +228,7 @@ class ActivityListViewTests(TenantTestCase):
     def setUp(self):
         super(ActivityListViewTests, self).setUp()
         self.activity = ActivityFactory()
-        self.login_url = reverse("login")
+        self.login_url = reverse("profiles:auth_login")
         self.url = reverse("backend:activity-list")
         self.user = FamilyUserFactory(is_manager=True)
         self.view = ActivityListView.as_view()
@@ -240,13 +240,13 @@ class ActivityListViewTests(TenantTestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_access_forbidden_for_non_backend_users(self):
         self.request.user = FamilyUserFactory(is_manager=False)
         response = self.view(self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_get_is_200(self):
         response = self.view(self.request)
@@ -264,7 +264,7 @@ class ActivityUpdateViewTests(TenantTestCase):
         super(ActivityUpdateViewTests, self).setUp()
         self.activity = ActivityFactory()
         self.data = model_to_dict(self.activity)
-        self.login_url = reverse("login")
+        self.login_url = reverse("profiles:auth_login")
         self.url = self.activity.get_update_url()
         self.user = FamilyUserFactory(is_manager=True)
         self.view = ActivityUpdateView.as_view()
@@ -276,13 +276,13 @@ class ActivityUpdateViewTests(TenantTestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request, pk=self.activity.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_access_forbidden_for_non_backend_users(self):
         self.request.user = FamilyUserFactory(is_manager=False)
         response = self.view(self.request, pk=self.activity.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_get_is_200(self):
         response = self.view(self.request, pk=self.activity.pk)

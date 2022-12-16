@@ -23,7 +23,7 @@ class BillDetailViewTests(TenantTestCase):
         super(BillDetailViewTests, self).setUp()
         self.bill = BillFactory()
         self.registration = RegistrationFactory(bill=self.bill)
-        self.login_url = reverse("login")
+        self.login_url = reverse("profiles:auth_login")
         self.url = self.bill.get_backend_url()
         self.user = FamilyUserFactory(is_manager=True)
         self.view = BillDetailView.as_view()
@@ -35,13 +35,13 @@ class BillDetailViewTests(TenantTestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request, pk=self.bill.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_access_forbidden_for_non_backend_users(self):
         self.request.user = FamilyUserFactory(is_manager=False)
         response = self.view(self.request, pk=self.bill.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_get_is_200(self):
         response = self.view(self.request, pk=self.bill.pk)
@@ -59,7 +59,7 @@ class BillListViewTests(TenantTestCase):
         super(BillListViewTests, self).setUp()
         self.bill = BillFactory()
         self.registration = RegistrationFactory(bill=self.bill)
-        self.login_url = reverse("login")
+        self.login_url = reverse("profiles:auth_login")
         self.url = reverse("backend:bill-list")
         self.user = FamilyUserFactory(is_manager=True)
         self.view = BillListView.as_view()
@@ -71,13 +71,13 @@ class BillListViewTests(TenantTestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_access_forbidden_for_non_backend_users(self):
         self.request.user = FamilyUserFactory(is_manager=False)
         response = self.view(self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_get_is_200(self):
         response = self.view(self.request)
@@ -95,7 +95,7 @@ class BillUpdateViewTests(TenantTestCase):
         super(BillUpdateViewTests, self).setUp()
         self.bill = BillFactory(status=Bill.STATUS.paid)
         self.data = model_to_dict(self.bill)
-        self.login_url = reverse("login")
+        self.login_url = reverse("profiles:auth_login")
         self.url = self.bill.get_update_url()
         self.user = FamilyUserFactory(is_manager=True)
         self.view = BillUpdateView.as_view()
@@ -107,13 +107,13 @@ class BillUpdateViewTests(TenantTestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request, pk=self.bill.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_access_forbidden_for_non_backend_users(self):
         self.request.user = FamilyUserFactory(is_manager=False)
         response = self.view(self.request, pk=self.bill.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "/?next=" + self.url))
+        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
 
     def test_get_is_200(self):
         response = self.view(self.request, pk=self.bill.pk)
