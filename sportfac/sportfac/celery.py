@@ -1,10 +1,5 @@
-from __future__ import absolute_import, print_function
-
-import os
-
 from django.conf import settings
 
-from celery import Celery
 from tenant_schemas_celery.app import CeleryApp
 
 

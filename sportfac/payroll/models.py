@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
-
 from io import BytesIO
 
 from django.core.files.base import ContentFile
