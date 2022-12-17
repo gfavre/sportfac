@@ -1,7 +1,4 @@
 """Production settings and globals."""
-
-from __future__ import absolute_import
-
 from .production import *
 
 
@@ -15,14 +12,6 @@ STATICFILES_DIRS = (
     normpath(join(SITE_ROOT, "static")),
 )
 
-# We switch to postmark. Here are the old settings which ended up in mailgun
-# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-# EMAIL_HOST = env('EMAIL_HOST', default='')
-# EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
-# EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
-
-LOGIN_URL = "/account/login/"
-LOGOUT_URL = "/account/logout/"
 
 KEPCHUP_USE_ABSENCES = True
 KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = False

@@ -393,9 +393,10 @@ DATE_INPUT_FORMATS = [
 ########## USER and REGISTRATION
 AUTH_USER_MODEL = "profiles.FamilyUser"
 REGISTRATION_OPEN = True
-LOGIN_URL = "/account/login/"
-LOGOUT_URL = "/account/logout/"
-LOGIN_REDIRECT_URL = "/account/redirect/"
+LOGIN_URL = "profiles:auth_login"
+LOGOUT_URL = "profiles:logout"
+LOGIN_REDIRECT_URL = "profiles:redirection"
+
 ########## END USER and REGISTRAION
 
 

@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-
 import datetime
 import json
 
@@ -25,7 +22,7 @@ from sportfac.views import NotReachableException, WizardMixin
 from .models import Bill, Child, Registration
 
 
-class BillMixin(object):
+class BillMixin:
     def get_context_data(self, **kwargs):
         # noinspection PyUnresolvedReferences
         context = super(BillMixin, self).get_context_data(**kwargs)
