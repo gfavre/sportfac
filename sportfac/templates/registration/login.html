@@ -16,7 +16,7 @@
         </p>
       {% elif REGISTER_ACCOUNTS_AT_ANY_TIME %}
         <p class="lead text-center">{% trans "You don't have an account?" %}<br>
-          <a href="{% url 'anytime_registeraccount' %}" class="btn btn-large btn-primary" style="margin-top: 30px;">
+          <a href="{% url 'profiles:anytime_registeraccount' %}" class="btn btn-large btn-primary" style="margin-top: 30px;">
             {% trans "Registration" %}
           </a>
         </p>

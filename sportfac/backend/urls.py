@@ -210,12 +210,12 @@ users_patterns = [
     # path('<int:pk>/pay', view=views.UserPayUpdateView.as_view(),
     #     name='user-pay'),
     path(
-        "<uuid:pk>/password",
+        "<uuid:user>/password",
         view=views.PasswordSetView.as_view(),
         name="password-change",
     ),
     path(
-        "<uuid:pk>/child/new",
+        "<uuid:user>/child/new",
         view=views.ChildCreateView.as_view(),
         name="child-create",
     ),
