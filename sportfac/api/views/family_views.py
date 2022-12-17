@@ -65,8 +65,8 @@ class ChildActivityLevelViewSet(viewsets.ModelViewSet):
         if lookup_url_kwarg in self.kwargs:
             filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
         else:
-            assert ("activity" in self.request.data, "expected activity id in payload")
-            assert ("child" in self.request.data, "expected child id in payload")
+            assert "activity" in self.request.data, "expected activity id in payload"
+            assert "child" in self.request.data, "expected child id in payload"
             filter_kwargs = {
                 "activity__id": self.request.data["activity"],
                 "child__id": self.request.data["child"],

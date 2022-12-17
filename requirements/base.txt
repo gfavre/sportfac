@@ -16,26 +16,24 @@ django-formtools == 2.4  # form wizard
 django-anymail == 8.6  # email backend
 django-dynamic-preferences == 1.14.0  # Settings that can be edited in admin
 python-dateutil == 2.8.2  # date parsing
-
-# Forms
+django-registration-redux == 2.11  # Registration view
+django-recaptcha==3.0.0
+django-crispy-forms==1.14.0
+django-ckeditor == 6.5.1
+Pillow == 9.3.0
+django-phonenumber-field == 7.0.1
+phonenumbers == 8.13.2
 django-floppyforms==1.9.0
 django-braces == 1.14.0
 Django-Select2 == 5.11.1  # Select2 widget (autocompletion on selects)
 django-autoslug == 1.9.8
 # WYSIWYG editor
-django-ckeditor == 6.0.0
 django-picklefield == 1.0.0
 django-multiupload == 0.6.1
-django-phonenumber-field
-django-crispy-forms==1.14.0
-django-recaptcha==2.0.6
 logutils==0.3.5
-Pillow == 3.2.0
-django-registration-redux == 1.4
 # skin for admin
 django-grappelli == 2.8.1
 # addtoblock template tag (js embedding)
-phonenumbers == 8.8.6
 # xlrd == 1.1.0
 pypdftk==0.5
 django-mathfilters==0.4.0
@@ -47,10 +45,3 @@ openpyxl == 2.4.1
 django_environ == 0.4.4
 requests==2.28.1
 python-memcached==1.59
-
-#django-appconf==1.0.3  # django-compressor includes latest which is incompatible with python2
-#django-compressor==2.4
-#git+https://github.com/gfavre/django-simple-sso.git@0.15.3
-#django-debug-toolbar==1.11.1
-#django_recaptcha==2.0.6
-#django-cors-headers==3.0.2

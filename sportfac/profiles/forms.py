@@ -7,9 +7,10 @@ from django.utils.translation import gettext_lazy as _
 
 import floppyforms.__future__ as forms
 from backend.forms import DatePickerInput
+# noinspection PyPackageRequirements
 from localflavor.generic.forms import IBANFormField
 from phonenumber_field.formfields import PhoneNumberField
-from phonenumber_field.widgets import PhoneNumberInternationalFallbackWidget
+from phonenumber_field.widgets import RegionalPhoneNumberWidget
 
 from .models import FamilyUser
 
@@ -65,8 +66,9 @@ class AcceptTermsForm(forms.Form):
         )
 
 
-class PhoneRequiredMixin(object):
+class PhoneRequiredMixin:
     def clean(self):
+        # noinspection PyUnresolvedReferences
         cleaned_data = super(PhoneRequiredMixin, self).clean()
         if not (
             cleaned_data.get("private_phone", False)
@@ -89,19 +91,19 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
     private_phone = PhoneNumberField(
         label=_("Home phone"),
         max_length=30,
-        widget=PhoneNumberInternationalFallbackWidget(attrs={"class": "form-control"}),
+        widget=RegionalPhoneNumberWidget(attrs={"class": "form-control"}),
         required=False,
     )
     private_phone2 = PhoneNumberField(
         label=_("Mobile phone #1"),
         max_length=30,
-        widget=PhoneNumberInternationalFallbackWidget(attrs={"class": "form-control"}),
+        widget=RegionalPhoneNumberWidget(attrs={"class": "form-control"}),
         required=False,
     )
     private_phone3 = PhoneNumberField(
         label=_("Mobile phone #2"),
         max_length=30,
-        widget=PhoneNumberInternationalFallbackWidget(attrs={"class": "form-control"}),
+        widget=RegionalPhoneNumberWidget(attrs={"class": "form-control"}),
         required=False,
     )
 
@@ -145,8 +147,7 @@ class ManagerWithPasswordForm(ManagerForm):
     )
 
     def clean(self):
-        super(ManagerWithPasswordForm, self).clean()
-        c = self.cleaned_data
+        super().clean()
         if self.cleaned_data.get("password1") != self.cleaned_data.get("password2"):
             raise forms.ValidationError(_("You must type the same password" " each time."))
 
@@ -196,8 +197,7 @@ class InstructorWithPasswordForm(InstructorForm):
     )
 
     def clean(self):
-        super(InstructorWithPasswordForm, self).clean()
-        c = self.cleaned_data
+        super().clean()
         if self.cleaned_data.get("password1") != self.cleaned_data.get("password2"):
             raise forms.ValidationError(_("You must type the same password each time."))
 
@@ -248,19 +248,19 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
     private_phone = PhoneNumberField(
         label=_("Home phone"),
         max_length=30,
-        widget=PhoneNumberInternationalFallbackWidget(attrs={"class": "form-control"}),
+        widget=RegionalPhoneNumberWidget(attrs={"class": "form-control"}),
         required=False,
     )
     private_phone2 = PhoneNumberField(
         label=_("Mobile phone #1"),
         max_length=30,
-        widget=PhoneNumberInternationalFallbackWidget(attrs={"class": "form-control"}),
+        widget=RegionalPhoneNumberWidget(attrs={"class": "form-control"}),
         required=False,
     )
     private_phone3 = PhoneNumberField(
         label=_("Mobile phone #2"),
         max_length=30,
-        widget=PhoneNumberInternationalFallbackWidget(attrs={"class": "form-control"}),
+        widget=RegionalPhoneNumberWidget(attrs={"class": "form-control"}),
         required=False,
     )
 
@@ -268,7 +268,7 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
     password2 = forms.CharField(widget=forms.PasswordInput, label=_("Password (again)"))
 
     def __init__(self, *args, **kwargs):
-        super(RegistrationForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if settings.KEPCHUP_ZIPCODE_RESTRICTION:
             self.fields["zipcode"].widget = forms.Select(
                 choices=settings.KEPCHUP_ZIPCODE_RESTRICTION
@@ -308,7 +308,7 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
         ``non_field_errors()`` because it doesn't apply to a single
         field.
         """
-        super(RegistrationForm, self).clean()
+        super().clean()
         if "password1" in self.cleaned_data and "password2" in self.cleaned_data:
             if self.cleaned_data["password1"] != self.cleaned_data["password2"]:
                 raise forms.ValidationError(_("The two password fields didn't match."))
