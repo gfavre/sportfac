@@ -107,6 +107,7 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
     This view is used after the course selection in the wizard. The user has selected all his courses
     and now has to confirm his registrations.
     """
+
     model = Registration
     form_class = AcceptTermsForm
     success_url = reverse_lazy("wizard_billing")

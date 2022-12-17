@@ -15,8 +15,12 @@ from profiles.models import FamilyUser
 from sportfac.celery import app
 
 from .models import Attachment
-from .pdfutils import (CourseParticipants, CourseParticipantsPresence, MyCourses,
-                       get_ssf_decompte_heures)
+from .pdfutils import (
+    CourseParticipants,
+    CourseParticipantsPresence,
+    MyCourses,
+    get_ssf_decompte_heures,
+)
 
 
 logger = get_task_logger(__name__)

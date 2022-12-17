@@ -13,8 +13,15 @@ from profiles.tests.factories import FamilyUserFactory
 from sportfac.utils import TenantTestCase as TestCase
 
 from ..models import Bill, Registration
-from ..views import (BillDetailView, BillingView, ChildrenListView, RegisteredActivitiesListView,
-                     SummaryView, WizardBillingView, WizardChildrenListView)
+from ..views import (
+    BillDetailView,
+    BillingView,
+    ChildrenListView,
+    RegisteredActivitiesListView,
+    SummaryView,
+    WizardBillingView,
+    WizardChildrenListView,
+)
 from .factories import BillFactory, ChildFactory, RegistrationFactory
 
 

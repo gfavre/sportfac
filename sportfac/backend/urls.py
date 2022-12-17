@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.conf.urls import url
-from django.urls import path, include
+from django.urls import include, path
 
 from . import views
 
@@ -10,9 +10,7 @@ app_name = "backend"
 activities_patterns = [
     path("", view=views.ActivityListView.as_view(), name="activity-list"),
     path("new", view=views.ActivityCreateView.as_view(), name="activity-create"),
-    path(
-        "<slug:activity>", view=views.ActivityDetailView.as_view(), name="activity-detail"
-    ),
+    path("<slug:activity>", view=views.ActivityDetailView.as_view(), name="activity-detail"),
     path(
         "<slug:activity>/update",
         view=views.ActivityUpdateView.as_view(),
@@ -56,23 +54,18 @@ courses_patterns = [
         view=views.CourseParticipantsExportView.as_view(),
         name="course-xls-export",
     ),
-    path(
-        "<slug:course>/update", view=views.CourseUpdateView.as_view(), name="course-update"
-    ),
+    path("<slug:course>/update", view=views.CourseUpdateView.as_view(), name="course-update"),
     path(
         "<slug:course>/absences",
         view=views.CourseAbsenceView.as_view(),
         name="course-absence",
     ),
+    path("<slug:course>/JS", view=views.CourseJSCSVView.as_view(), name="course-js-export"),
+    path("<slug:course>/delete", view=views.CourseDeleteView.as_view(), name="course-delete"),
     path(
-        "<slug:course>/JS", view=views.CourseJSCSVView.as_view(), name="course-js-export"
-    ),
-    path(
-        "<slug:course>/delete", view=views.CourseDeleteView.as_view(), name="course-delete"
-    ),
-    path(
-        "<slug:course>/mail-instructors", view=views.MailCourseInstructorsView.as_view(),
-        name="course-mail-instructors"
+        "<slug:course>/mail-instructors",
+        view=views.MailCourseInstructorsView.as_view(),
+        name="course-mail-instructors",
     ),
     path(
         "<slug:course>/mail-confirmation",
@@ -97,12 +90,26 @@ if settings.KEPCHUP_FICHE_SALAIRE_MONTREUX:
 
 mail_patterns = [
     path("archive", view=views.MailArchiveListView.as_view(), name="archive"),
-    path("need-confirmation", view=views.NeedConfirmationView.as_view(), name="mail-needconfirmation"),
+    path(
+        "need-confirmation",
+        view=views.NeedConfirmationView.as_view(),
+        name="mail-needconfirmation",
+    ),
     path("not-paid-yet", view=views.NotPaidYetView.as_view(), name="mail-notpaidyet"),
-    path("participants/<course>/custom", view=views.ParticipantsMailCreateView.as_view(), name="mail-participants-custom"),
-    path("participants/<course>/custom/preview", view=views.ParticipantsMailPreview.as_view(), name="mail-participants-custom-preview"),
+    path(
+        "participants/<course>/custom",
+        view=views.ParticipantsMailCreateView.as_view(),
+        name="mail-participants-custom",
+    ),
+    path(
+        "participants/<course>/custom/preview",
+        view=views.ParticipantsMailPreview.as_view(),
+        name="mail-participants-custom-preview",
+    ),
     path("custom", view=views.MailCreateView.as_view(), name="custom-mail-custom-users"),
-    path("custom/preview", view=views.MailPreview.as_view(), name="custom-mail-custom-users-preview"),
+    path(
+        "custom/preview", view=views.MailPreview.as_view(), name="custom-mail-custom-users-preview"
+    ),
 ]
 
 registrations_patterns = [
@@ -156,24 +163,16 @@ teachers_patterns = [
         name="teacher-import",
     ),
     path("<int:pk>/", view=views.TeacherDetailView.as_view(), name="teacher-detail"),
-    path(
-        "<int:pk>/update", view=views.TeacherUpdateView.as_view(), name="teacher-update"
-    ),
-    path(
-        "<int:pk>/delete", view=views.TeacherDeleteView.as_view(), name="teacher-delete"
-    ),
+    path("<int:pk>/update", view=views.TeacherUpdateView.as_view(), name="teacher-update"),
+    path("<int:pk>/delete", view=views.TeacherDeleteView.as_view(), name="teacher-delete"),
 ]
 
 buildings_patterns = [
     path("", view=views.BuildingListView.as_view(), name="building-list"),
     path("<int:pk>/", view=views.BuildingDetailView.as_view(), name="building-detail"),
     path("new", view=views.BuildingCreateView.as_view(), name="building-create"),
-    path(
-        "<int:pk>/update", view=views.BuildingUpdateView.as_view(), name="building-update"
-    ),
-    path(
-        "<int:pk>/delete", view=views.BuildingDeleteView.as_view(), name="building-delete"
-    ),
+    path("<int:pk>/update", view=views.BuildingUpdateView.as_view(), name="building-update"),
+    path("<int:pk>/delete", view=views.BuildingDeleteView.as_view(), name="building-delete"),
 ]
 
 
@@ -182,21 +181,15 @@ users_patterns = [
     path("mail", view=views.MailUsersView.as_view(), name="mail-users"),
     path("export", view=views.UserExportView.as_view(), name="user-export"),
     path("managers", view=views.ManagerListView.as_view(), name="manager-list"),
-    path(
-        "managers/export", view=views.ManagerExportView.as_view(), name="manager-export"
-    ),
-    path(
-        "instructors", view=views.InstructorListView.as_view(), name="instructor-list"
-    ),
+    path("managers/export", view=views.ManagerExportView.as_view(), name="manager-export"),
+    path("instructors", view=views.InstructorListView.as_view(), name="instructor-list"),
     path(
         "instructors/export",
         view=views.InstructorExportView.as_view(),
         name="instructor-export",
     ),
     path("new", view=views.UserCreateView.as_view(), name="user-create"),
-    path(
-        "instructor/new", view=views.InstructorCreateView.as_view(), name="instructor-create"
-    ),
+    path("instructor/new", view=views.InstructorCreateView.as_view(), name="instructor-create"),
     path("manager/new", view=views.ManagerCreateView.as_view(), name="manager-create"),
     path("<uuid:pk>/", view=views.UserDetailView.as_view(), name="user-detail"),
     path(
@@ -253,9 +246,7 @@ site_patterns = [
         view=views.AppointmentsManagementView.as_view(),
         name="appointments-manage",
     ),
-    path(
-        "appointments/list", view=views.AppointmentsListView.as_view(), name="appointments-list"
-    ),
+    path("appointments/list", view=views.AppointmentsListView.as_view(), name="appointments-list"),
     path(
         "appointments/export",
         view=views.AppointmentsExportView.as_view(),

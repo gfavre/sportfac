@@ -9,9 +9,13 @@ from rest_framework import mixins, status, views, viewsets
 from rest_framework.response import Response
 
 from ..permissions import ManagerPermission
-from ..serializers import (ActivityDetailedSerializer, ChangeCourseSerializer,
-                           CourseChangedSerializer, CourseSerializer,
-                           CoursesInstructorsRoleSerializer)
+from ..serializers import (
+    ActivityDetailedSerializer,
+    ChangeCourseSerializer,
+    CourseChangedSerializer,
+    CourseSerializer,
+    CoursesInstructorsRoleSerializer,
+)
 
 
 class ActivityViewSet(viewsets.ReadOnlyModelViewSet):

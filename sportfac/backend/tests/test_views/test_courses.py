@@ -15,9 +15,15 @@ from registrations.tests.factories import RegistrationFactory
 
 from sportfac.utils import TenantTestCase
 
-from ...views.course_views import (CourseAbsenceView, CourseCreateView, CourseDeleteView,
-                                   CourseDetailView, CourseListView, CoursesAbsenceView,
-                                   CourseUpdateView)
+from ...views.course_views import (
+    CourseAbsenceView,
+    CourseCreateView,
+    CourseDeleteView,
+    CourseDetailView,
+    CourseListView,
+    CoursesAbsenceView,
+    CourseUpdateView,
+)
 from .base import fake_registrations_open_middleware
 
 

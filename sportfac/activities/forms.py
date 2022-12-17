@@ -7,8 +7,13 @@ from django.forms.widgets import TextInput
 from django.utils.translation import gettext as _
 
 import floppyforms.__future__ as forms
-from backend.forms import (DatePickerInput, MultiDateInput, Select2MultipleWidget, Select2Widget,
-                           TimePickerInput)
+from backend.forms import (
+    DatePickerInput,
+    MultiDateInput,
+    Select2MultipleWidget,
+    Select2Widget,
+    TimePickerInput,
+)
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout
 from profiles.models import City, FamilyUser

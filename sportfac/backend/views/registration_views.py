@@ -12,13 +12,27 @@ from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import (CreateView, DeleteView, DetailView, FormView, ListView,
-                                  TemplateView, UpdateView, View)
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    DetailView,
+    FormView,
+    ListView,
+    TemplateView,
+    UpdateView,
+    View,
+)
 
 from absences.models import Absence
 from activities.models import Activity, Course, ExtraNeed
-from backend.forms import (BillingForm, ChildSelectForm, CourseSelectForm, ExtraInfoFormSet,
-                           RegistrationForm, SendConfirmationForm)
+from backend.forms import (
+    BillingForm,
+    ChildSelectForm,
+    CourseSelectForm,
+    ExtraInfoFormSet,
+    RegistrationForm,
+    SendConfirmationForm,
+)
 from formtools.wizard.views import SessionWizardView
 from registrations.forms import BillForm, MoveRegistrationsForm, MoveTransportForm, TransportForm
 from registrations.models import Bill, ExtraInfo, Registration, Transport

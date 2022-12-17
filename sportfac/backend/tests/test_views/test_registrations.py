@@ -12,9 +12,14 @@ from registrations.tests.factories import RegistrationFactory
 
 from sportfac.utils import TenantTestCase, process_request_for_middleware
 
-from ...views.registration_views import (RegistrationCreateView, RegistrationDeleteView,
-                                         RegistrationDetailView, RegistrationListView,
-                                         RegistrationsMoveView, RegistrationUpdateView)
+from ...views.registration_views import (
+    RegistrationCreateView,
+    RegistrationDeleteView,
+    RegistrationDetailView,
+    RegistrationListView,
+    RegistrationsMoveView,
+    RegistrationUpdateView,
+)
 from .base import fake_registrations_open_middleware
 
 

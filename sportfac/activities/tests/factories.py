@@ -3,8 +3,8 @@ import datetime
 from django.conf import settings
 
 import factory.fuzzy
-from faker import Faker
 from activities.models import SCHOOL_YEARS, Activity, AllocationAccount, Course, CoursesInstructors
+from faker import Faker
 from profiles.tests.factories import FamilyUserFactory
 
 
@@ -43,7 +43,7 @@ class CourseFactory(factory.django.DjangoModelFactory):
     end_date = factory.LazyAttribute(lambda c: c.start_date + datetime.timedelta(days=90))
     start_time = datetime.time(hour=16)
     end_time = datetime.time(hour=17)
-    place = factory.Faker("address", locale='fr_CH')
+    place = factory.Faker("address", locale="fr_CH")
     min_participants = factory.fuzzy.FuzzyInteger(1, 20)
 
     max_participants = factory.LazyAttribute(lambda c: c.min_participants + 5)

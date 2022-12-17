@@ -6,13 +6,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('profiles', '0019_familyuser_external_identifier'),
+        ("profiles", "0019_familyuser_external_identifier"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='familyuser',
-            name='permit_type',
-            field=models.CharField(blank=True, choices=[('L', 'L - Short-term residence permit'), ('B', 'B - Residence permit'), ('C', 'C - Settlement permit'), ('Ci', 'Ci - Residence permit with gainful employment'), ('G', 'G - Cross-border commuter permit'), ('F', 'F - Provisionally admitted foreigners'), ('N', 'N - Permit for asylum-seekers'), ('S', 'S - People in need of protection')], max_length=2, null=True, verbose_name='Permit type'),
+            model_name="familyuser",
+            name="permit_type",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("L", "L - Short-term residence permit"),
+                    ("B", "B - Residence permit"),
+                    ("C", "C - Settlement permit"),
+                    ("Ci", "Ci - Residence permit with gainful employment"),
+                    ("G", "G - Cross-border commuter permit"),
+                    ("F", "F - Provisionally admitted foreigners"),
+                    ("N", "N - Permit for asylum-seekers"),
+                    ("S", "S - People in need of protection"),
+                ],
+                max_length=2,
+                null=True,
+                verbose_name="Permit type",
+            ),
         ),
     ]

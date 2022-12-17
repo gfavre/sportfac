@@ -60,13 +60,16 @@ else:
         ]
 
 if settings.KEPCHUP_USE_APPOINTMENTS:
-    urlpatterns += [
-        path("rendez-vous/", include("appointments.urls", namespace="appointments"))
-    ]
+    urlpatterns += [path("rendez-vous/", include("appointments.urls", namespace="appointments"))]
 
 urlpatterns += [
     path("reglement/", flatviews.flatpage, {"url": "/reglement/"}, name="terms"),
-    path("protection-des-donnees/", flatviews.flatpage, {"url": "/protection-des-donnees/"}, name="privacy"),
+    path(
+        "protection-des-donnees/",
+        flatviews.flatpage,
+        {"url": "/protection-des-donnees/"},
+        name="privacy",
+    ),
     path("api/", include("api.urls", namespace="api")),
     path("activities/", include("activities.urls", namespace="activities")),
     path("account/", include("profiles.urls")),

@@ -6,13 +6,34 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('payments', '0005_auto_20220718_1605'),
+        ("payments", "0005_auto_20220718_1605"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='datatranstransaction',
-            name='payment_method',
-            field=models.CharField(choices=[('AZP', 'Amazon Pay'), ('AMX', 'American Express'), ('APL', 'Apple Pay'), ('PAY', 'Google Pay'), ('KLN', 'Klarna'), ('MAU', 'Maestro'), ('ECA', 'Mastercard'), ('PAP', 'PayPal'), ('PFC', 'PostFinance Card'), ('PEF', 'PostFinance E-Finance'), ('REK', 'Reka'), ('SAM', 'Samsung Pay'), ('ESY', 'Swisscom Pay'), ('TWI', 'Twint'), ('VIS', 'Visa'), ('cash', 'Cash')], default='TWI', max_length=4),
+            model_name="datatranstransaction",
+            name="payment_method",
+            field=models.CharField(
+                choices=[
+                    ("AZP", "Amazon Pay"),
+                    ("AMX", "American Express"),
+                    ("APL", "Apple Pay"),
+                    ("PAY", "Google Pay"),
+                    ("KLN", "Klarna"),
+                    ("MAU", "Maestro"),
+                    ("ECA", "Mastercard"),
+                    ("PAP", "PayPal"),
+                    ("PFC", "PostFinance Card"),
+                    ("PEF", "PostFinance E-Finance"),
+                    ("REK", "Reka"),
+                    ("SAM", "Samsung Pay"),
+                    ("ESY", "Swisscom Pay"),
+                    ("TWI", "Twint"),
+                    ("VIS", "Visa"),
+                    ("cash", "Cash"),
+                ],
+                default="TWI",
+                max_length=4,
+            ),
         ),
     ]

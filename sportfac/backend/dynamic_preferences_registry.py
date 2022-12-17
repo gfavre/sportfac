@@ -7,10 +7,19 @@ from django.utils.translation import gettext as _
 
 import dateutil.parser
 from dynamic_preferences.preferences import Section
-from dynamic_preferences.registries import (PerInstancePreferenceRegistry,
-                                            global_preferences_registry, preference_models)
-from dynamic_preferences.types import (BasePreferenceType, BaseSerializer, BooleanPreference,
-                                       IntegerPreference, LongStringPreference, StringPreference)
+from dynamic_preferences.registries import (
+    PerInstancePreferenceRegistry,
+    global_preferences_registry,
+    preference_models,
+)
+from dynamic_preferences.types import (
+    BasePreferenceType,
+    BaseSerializer,
+    BooleanPreference,
+    IntegerPreference,
+    LongStringPreference,
+    StringPreference,
+)
 
 from .models import TenantPreferenceModel
 

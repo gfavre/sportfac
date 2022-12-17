@@ -18,8 +18,13 @@ from profiles.models import FamilyUser
 
 from . import tasks
 from .forms import CopiesForm, CourseMailForm, MailForm
-from .mixins import (CancelableMixin, EditableMixin, ParticipantsBaseMixin, ParticipantsMixin,
-                     TemplatedEmailMixin)
+from .mixins import (
+    CancelableMixin,
+    EditableMixin,
+    ParticipantsBaseMixin,
+    ParticipantsMixin,
+    TemplatedEmailMixin,
+)
 from .models import Attachment, MailArchive
 
 

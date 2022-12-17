@@ -14,8 +14,14 @@ from profiles.tests.factories import FamilyUserFactory
 
 from sportfac.utils import TenantTestCase
 
-from ...views.activity_views import (ActivityAbsenceView, ActivityCreateView, ActivityDeleteView,
-                                     ActivityDetailView, ActivityListView, ActivityUpdateView)
+from ...views.activity_views import (
+    ActivityAbsenceView,
+    ActivityCreateView,
+    ActivityDeleteView,
+    ActivityDetailView,
+    ActivityListView,
+    ActivityUpdateView,
+)
 from .base import fake_registrations_open_middleware
 
 

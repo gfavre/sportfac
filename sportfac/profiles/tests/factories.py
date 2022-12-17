@@ -37,7 +37,6 @@ class FamilyUserFactory(factory.django.DjangoModelFactory):
     private_phone = factory.lazy_attribute(lambda o: fake.phone_number())
 
 
-
 class CityFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = City

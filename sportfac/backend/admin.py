@@ -1,7 +1,7 @@
 from django.contrib import admin
-from django.db import connection
 from django.contrib.sites.admin import SiteAdmin
 from django.contrib.sites.models import Site
+from django.db import connection
 
 from dbtemplates.admin import TemplateAdmin
 from dbtemplates.models import Template

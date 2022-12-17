@@ -5,8 +5,8 @@ from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.test import RequestFactory, override_settings
-from django.utils import timezone
 from django.urls import reverse
+from django.utils import timezone
 
 from faker import Faker
 
@@ -21,7 +21,6 @@ fake = Faker(locale="fr_CH")
 
 # noinspection PyUnresolvedReferences
 class UserDataTestCaseMixin:
-
     def setUp(self):
         self.factory = RequestFactory()
         sid = transaction.savepoint()

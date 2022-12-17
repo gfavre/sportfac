@@ -67,7 +67,7 @@ class TenantTestCase(BaseTenantTestCase):
 def process_request_for_middleware(request, middleware_class):
     middleware = middleware_class("response")
     middleware.process_request(request)
-    #return request
+    # return request
 
 
 def add_middleware_to_response(request, middleware_class):

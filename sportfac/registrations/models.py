@@ -1,5 +1,5 @@
-from datetime import date, datetime
 import os
+from datetime import date, datetime
 from tempfile import mkdtemp
 
 from django.conf import settings
@@ -20,7 +20,11 @@ from sportfac.models import TimeStampedModel
 
 class RegistrationManager(models.Manager):
     def get_queryset(self):
-        return super(RegistrationManager, self).get_queryset().exclude(status=Registration.STATUS.canceled)
+        return (
+            super(RegistrationManager, self)
+            .get_queryset()
+            .exclude(status=Registration.STATUS.canceled)
+        )
 
     def all_with_deleted(self):
         return super(RegistrationManager, self).get_queryset().all()
@@ -378,7 +382,7 @@ class Bill(TimeStampedModel, StatusModel):
         _("Payment method"), choices=METHODS, max_length=20, blank=True
     )
     family = models.ForeignKey(
-        'profiles.FamilyUser', related_name="bills", null=True, on_delete=models.CASCADE
+        "profiles.FamilyUser", related_name="bills", null=True, on_delete=models.CASCADE
     )
     total = models.PositiveIntegerField(default=0, verbose_name=_("Total to be paid"))
     reminder_sent = models.BooleanField(_("Reminder sent"), default=False)

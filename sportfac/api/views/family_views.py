@@ -10,10 +10,17 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.throttling import UserRateThrottle
 
-from ..permissions import (FamilyPermission, InstructorPermission, IsAuthenticated,
-                           ManagerPermission)
-from ..serializers import (ChildActivityLevelSerializer, ChildrenSerializer,
-                           SimpleChildrenSerializer)
+from ..permissions import (
+    FamilyPermission,
+    InstructorPermission,
+    IsAuthenticated,
+    ManagerPermission,
+)
+from ..serializers import (
+    ChildActivityLevelSerializer,
+    ChildrenSerializer,
+    SimpleChildrenSerializer,
+)
 
 
 class FamilyView(mixins.ListModelMixin, generics.GenericAPIView):

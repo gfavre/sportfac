@@ -11,12 +11,23 @@ from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import urlencode
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext as _
-from django.views.generic import (CreateView, DeleteView, DetailView, FormView, ListView,
-                                  UpdateView, View)
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    DetailView,
+    FormView,
+    ListView,
+    UpdateView,
+    View,
+)
 
 from absences.models import Absence
-from profiles.forms import (InstructorForm, InstructorWithPasswordForm, ManagerForm,
-                            ManagerWithPasswordForm)
+from profiles.forms import (
+    InstructorForm,
+    InstructorWithPasswordForm,
+    ManagerForm,
+    ManagerWithPasswordForm,
+)
 from profiles.models import FamilyUser
 from profiles.resources import InstructorResource, UserResource
 from registrations.forms import ChildForm

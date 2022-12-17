@@ -8,8 +8,12 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from ..permissions import InstructorPermission
-from ..serializers import (AbsenceSerializer, SessionSerializer, SessionUpdateSerializer,
-                           SetAbsenceSerializer)
+from ..serializers import (
+    AbsenceSerializer,
+    SessionSerializer,
+    SessionUpdateSerializer,
+    SetAbsenceSerializer,
+)
 
 
 class AbsenceViewSet(viewsets.ModelViewSet):

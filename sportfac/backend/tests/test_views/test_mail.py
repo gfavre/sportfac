@@ -12,8 +12,13 @@ from mailer.tests.factories import MailArchiveFactory
 from profiles.models import FamilyUser
 from profiles.tests.factories import FamilyUserFactory, SchoolYearFactory
 from registrations.models import Bill
-from registrations.tests.factories import (BillFactory, ChildFactory, RegistrationFactory,
-                                           WaitingBillFactory, WaitingRegistrationFactory)
+from registrations.tests.factories import (
+    BillFactory,
+    ChildFactory,
+    RegistrationFactory,
+    WaitingBillFactory,
+    WaitingRegistrationFactory,
+)
 
 from sportfac.middleware import VersionMiddleware
 from sportfac.utils import process_request_for_middleware

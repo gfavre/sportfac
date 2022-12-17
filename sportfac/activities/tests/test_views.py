@@ -18,9 +18,15 @@ from registrations.tests.factories import BillFactory, ChildFactory, Registratio
 from sportfac.utils import TenantTestCase as TestCase
 from sportfac.utils import process_request_for_middleware
 
-from ..views import (ActivityListView, CustomMailPreview, CustomParticipantsCustomMailView,
-                     MailCourseInstructorsView, MailUsersView, MyCourseDetailView,
-                     MyCoursesListView)
+from ..views import (
+    ActivityListView,
+    CustomMailPreview,
+    CustomParticipantsCustomMailView,
+    MailCourseInstructorsView,
+    MailUsersView,
+    MyCourseDetailView,
+    MyCoursesListView,
+)
 from .factories import ActivityFactory, CourseFactory
 
 

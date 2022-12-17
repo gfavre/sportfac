@@ -7,8 +7,13 @@ from rest_framework.response import Response
 from schools.models import Building, Teacher
 
 from ..permissions import ChildOrAdminPermission, RegistrationOwnerAdminPermission
-from ..serializers import (BuildingSerializer, ExtraSerializer, RegistrationSerializer,
-                           TeacherSerializer, YearSerializer)
+from ..serializers import (
+    BuildingSerializer,
+    ExtraSerializer,
+    RegistrationSerializer,
+    TeacherSerializer,
+    YearSerializer,
+)
 
 
 class BuildingViewSet(viewsets.ReadOnlyModelViewSet):

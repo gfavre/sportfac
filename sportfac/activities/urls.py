@@ -1,5 +1,5 @@
-from django.urls import path
 from django.contrib.sitemaps import GenericSitemap
+from django.urls import path
 
 from absences.views import AbsenceCourseView
 

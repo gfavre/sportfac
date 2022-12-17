@@ -1,12 +1,18 @@
 from django.conf import settings
-from django.urls import path, re_path
 from django.contrib.auth import views as auth_views
-from django.urls import reverse_lazy
+from django.urls import path, re_path, reverse_lazy
 from django.views.generic.base import RedirectView
 
 from .forms import AuthenticationForm
-from .views import (AccountRedirectView, AccountView, LogoutView, RegistrationView,
-                    WizardRegistrationView, password_change, password_reset)
+from .views import (
+    AccountRedirectView,
+    AccountView,
+    LogoutView,
+    RegistrationView,
+    WizardRegistrationView,
+    password_change,
+    password_reset,
+)
 
 
 app_name = "profiles"
@@ -22,17 +28,24 @@ if settings.KEPCHUP_USE_SSO:
     urlpatterns += [
         path("login", RedirectView.as_view(url=reverse_lazy("profiles:profiles_account"))),
         path("password/change/", password_change, name="password_change"),
-        path("password/change/done/", auth_views.PasswordChangeDoneView.as_view(), name="password_change_done"),
+        path(
+            "password/change/done/",
+            auth_views.PasswordChangeDoneView.as_view(),
+            name="password_change_done",
+        ),
         path("password/reset/", password_reset, name="password_reset"),
-        path("password/reset/done/",
+        path(
+            "password/reset/done/",
             auth_views.PasswordResetDoneView.as_view(),
             name="password_reset_done",
         ),
-        path("password/reset/complete/",
+        path(
+            "password/reset/complete/",
             auth_views.PasswordResetCompleteView.as_view(),
             name="password_reset_complete",
         ),
-        re_path("^password/reset/confirm/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$",
+        re_path(
+            "^password/reset/confirm/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$",
             auth_views.PasswordResetConfirmView.as_view(),
             name="password_reset_confirm",
         ),

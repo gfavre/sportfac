@@ -1,7 +1,12 @@
 from django.urls import path
 
-from .views import (BillDetailView, BillingView, ChildrenListView, RegistrationDeleteView,
-                    SummaryView)
+from .views import (
+    BillDetailView,
+    BillingView,
+    ChildrenListView,
+    RegistrationDeleteView,
+    SummaryView,
+)
 
 
 app_name = "registrations"

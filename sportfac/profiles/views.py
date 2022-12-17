@@ -9,6 +9,7 @@ from django.utils.translation import gettext as _
 from django.views.generic import FormView, RedirectView, UpdateView
 
 from braces.views import LoginRequiredMixin
+
 # from registration.backends.simple.views import RegistrationView as BaseRegistrationView
 from registration import signals
 

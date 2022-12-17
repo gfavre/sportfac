@@ -1,6 +1,5 @@
-from django.urls import path
 from django.contrib import sitemaps
-from django.urls import reverse
+from django.urls import path, reverse
 from django.views.generic import TemplateView
 
 from .views import ContactView

@@ -3,15 +3,16 @@ from datetime import time
 
 from django.test import override_settings
 
-from faker import Faker
-
 from activities.tests.factories import AllocationAccountFactory, CourseFactory
+from faker import Faker
 from profiles.tests.factories import CityFactory, FamilyUserFactory
+
 from sportfac.utils import TenantTestCase
 
 from .factories import BillFactory, ChildFactory, RegistrationFactory
 
-fake = Faker(locale='fr_CH')
+
+fake = Faker(locale="fr_CH")
 
 
 class RegistrationTestCase(TenantTestCase):
@@ -63,8 +64,10 @@ class RegistrationTestCase(TenantTestCase):
     def test_price_category_for_normal_people(self):
         self.user.zipcode = "1271"
         course = CourseFactory(
-            price=self.price, price_local=self.price_local,
-            price_family=self.price_family, price_local_family=self.price_local_family
+            price=self.price,
+            price_local=self.price_local,
+            price_family=self.price_family,
+            price_local_family=self.price_local_family,
         )
         registration = RegistrationFactory(course=course, child=self.child1)
         self.assertEqual(registration.price, self.price)
@@ -73,13 +76,17 @@ class RegistrationTestCase(TenantTestCase):
     def test_price_category_for_family(self):
         self.user.zipcode = "1271"
         course1 = CourseFactory(
-            price=self.price, price_local=self.price_local,
-            price_family=self.price_family, price_local_family=self.price_local_family
+            price=self.price,
+            price_local=self.price_local,
+            price_family=self.price_family,
+            price_local_family=self.price_local_family,
         )
         course2 = CourseFactory(
             activity=course1.activity,
-            price=self.price, price_local=self.price_local,
-            price_family=self.price_family, price_local_family=self.price_local_family
+            price=self.price,
+            price_local=self.price_local,
+            price_family=self.price_family,
+            price_local_family=self.price_local_family,
         )
         registration1 = RegistrationFactory(course=course1, child=self.child1)
         registration2 = RegistrationFactory(course=course2, child=self.child2)
@@ -90,8 +97,10 @@ class RegistrationTestCase(TenantTestCase):
     def test_price_category_for_local(self):
         self.user.zipcode = "1272"
         course = CourseFactory(
-            price=self.price, price_local=self.price_local,
-            price_family=self.price_family, price_local_family=self.price_local_family
+            price=self.price,
+            price_local=self.price_local,
+            price_family=self.price_family,
+            price_local_family=self.price_local_family,
         )
         registration = RegistrationFactory(course=course, child=self.child1)
         self.assertEqual(registration.price, self.price_local)
@@ -101,8 +110,10 @@ class RegistrationTestCase(TenantTestCase):
         city = CityFactory()
         self.user.zipcode = city.zipcode
         course = CourseFactory(
-            price=self.price, price_local=self.price_local,
-            price_family=self.price_family, price_local_family=self.price_local_family
+            price=self.price,
+            price_local=self.price_local,
+            price_family=self.price_family,
+            price_local_family=self.price_local_family,
         )
         course.local_city_override.add(city)
         registration = RegistrationFactory(course=course, child=self.child1)
@@ -112,13 +123,17 @@ class RegistrationTestCase(TenantTestCase):
     def test_price_category_for_local_siblings(self):
         self.user.zipcode = "1272"
         course1 = CourseFactory(
-            price=self.price, price_local=self.price_local,
-            price_family=self.price_family, price_local_family=self.price_local_family
+            price=self.price,
+            price_local=self.price_local,
+            price_family=self.price_family,
+            price_local_family=self.price_local_family,
         )
         course2 = CourseFactory(
             activity=course1.activity,
-            price=self.price, price_local=self.price_local,
-            price_family=self.price_family, price_local_family=self.price_local_family
+            price=self.price,
+            price_local=self.price_local,
+            price_family=self.price_family,
+            price_local_family=self.price_local_family,
         )
         registration1 = RegistrationFactory(course=course1, child=self.child1)
         registration2 = RegistrationFactory(course=course2, child=self.child2)
