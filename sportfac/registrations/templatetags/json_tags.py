@@ -9,8 +9,6 @@ Features:
 - Support for custom serialization methods on objects via defining a `to_json()` method.
 """
 
-from __future__ import absolute_import
-
 import datetime
 import json
 from decimal import Decimal

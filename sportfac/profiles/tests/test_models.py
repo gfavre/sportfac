@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-
 from activities.tests.factories import CourseFactory
 from mock import patch
 from registrations.models import Child, RegistrationsProfile

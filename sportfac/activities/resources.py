@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 from import_export import fields, resources
 
 from .models import Course

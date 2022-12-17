@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 import factory.fuzzy
 
 from ..models import WaitingSlot

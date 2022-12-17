@@ -1,7 +1,5 @@
 # -*- coding:utf-8 -*-
 """Production settings and globals."""
-from __future__ import absolute_import
-
 from django.utils.translation import gettext_lazy as _
 
 from .production import *

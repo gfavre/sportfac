@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage import default_storage
 from django.test import RequestFactory

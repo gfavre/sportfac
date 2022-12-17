@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 from django.utils.translation import gettext_lazy as _
 
 import floppyforms.__future__ as forms

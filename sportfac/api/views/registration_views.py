@@ -1,6 +1,4 @@
 # -*- coding:utf-8 -*-
-from __future__ import absolute_import
-
 from profiles.models import SchoolYear
 from registrations.models import ExtraInfo, Registration
 from rest_framework import status, viewsets

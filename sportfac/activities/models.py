@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-
 import uuid
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal

@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 from django.contrib import admin
 from django.db import connection
 from django.contrib.sites.admin import SiteAdmin

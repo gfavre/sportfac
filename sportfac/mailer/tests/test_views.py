@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 from django.test import RequestFactory
 
 from sportfac.utils import TenantTestCase

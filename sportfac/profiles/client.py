@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-
 from django.utils.dateparse import parse_datetime
 
 from profiles.models import FamilyUser

@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.http import HttpResponse
