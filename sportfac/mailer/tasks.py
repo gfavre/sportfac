@@ -105,7 +105,8 @@ def send_instructors_email(
     filepath = os.path.join(tempdir, filename)
     cp_generator = CourseParticipants({"course": course})
     cp_generator.render_to_pdf(filepath)
-    email.attach(filename, open(filepath).read(), "application/pdf")
+    with open(filepath, "rb") as course_participants_pdf:
+        email.attach(filename, course_participants_pdf.read(), "application/pdf")
     logger.debug("Participants.pdf attached")
     filename = "mes_cours.pdf"
     filepath = os.path.join(tempdir, filename)
@@ -113,7 +114,8 @@ def send_instructors_email(
         {"instructor": instructor, "courses": Course.objects.filter(instructors=instructor)}
     )
     cp_generator.render_to_pdf(filepath)
-    email.attach(filename, open(filepath).read(), "application/pdf")
+    with open(filepath, "rb") as my_courses_pdf:
+        email.attach(filename, my_courses_pdf.read(), "application/pdf")
     logger.debug("Courses.pdf attached")
 
     if not (settings.KEPCHUP_NO_SSF or settings.KEPCHUP_FICHE_SALAIRE_MONTREUX):
@@ -122,7 +124,8 @@ def send_instructors_email(
             instructor.first_name,
             instructor.last_name,
         )
-        email.attach(filename, open(filepath).read(), "application/pdf")
+        with open(filepath, "rb") as ssf_decompte_pdf:
+            email.attach(filename, ssf_decompte_pdf.read(), "application/pdf")
         logger.debug("Decompte.pdf attached")
 
     if settings.KEPCHUP_SEND_PRESENCE_LIST:
@@ -130,7 +133,8 @@ def send_instructors_email(
         filepath = os.path.join(tempdir, filename)
         cp_generator = CourseParticipantsPresence({"course": course})
         cp_generator.render_to_pdf(filepath)
-        email.attach(filename, open(filepath).read(), "application/pdf")
+        with open(filepath, "rb") as course_participants_presence_pdf:
+            email.attach(filename, course_participants_presence_pdf.read(), "application/pdf")
         logger.debug("Presences.pdf attached")
 
     for additional_doc in settings.KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS:

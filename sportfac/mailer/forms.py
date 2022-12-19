@@ -2,11 +2,13 @@ from django import forms as django_forms
 from django.utils.translation import gettext as _
 
 from django import forms
-#import floppyforms.__future__ as forms
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Div, Layout, Submit
-from mailer.models import GenericEmail
+
 from multiupload.fields import MultiFileField
+
+from mailer.models import GenericEmail
 
 
 class MailForm(forms.Form):
@@ -23,6 +25,16 @@ class CopiesForm(forms.Form):
     copy_all_admins = forms.BooleanField(
         label=_("Send a copy to all other administrators"), required=False
     )
+
+    def __init__(self, *args, **kwargs):
+        super(CopiesForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            "send_copy",
+            "copy_all_admins",
+            
+        )
 
 
 class InstructorCopiesForm(forms.Form):

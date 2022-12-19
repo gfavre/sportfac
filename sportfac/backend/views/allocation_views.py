@@ -115,6 +115,7 @@ class AllocationAccountReportView(BackendMixin, ListView):
         return context
 
     def get(self, request, *args, **kwargs):
+        # noinspection PyAttributeOutsideInit
         self.object_list = self.get_queryset()
         if "pdf" in self.request.GET:
             from backend.utils import AllocationReportPDFRenderer
@@ -127,7 +128,8 @@ class AllocationAccountReportView(BackendMixin, ListView):
             )
             filepath = os.path.join(tempdir, filename)
             renderer.render_to_pdf(filepath)
-            response = HttpResponse(open(filepath).read(), content_type="application/pdf")
+            with open(filepath, "rb") as f:
+                response = HttpResponse(f.read(), content_type="application/pdf")
             response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
             return response
         return super(AllocationAccountReportView, self).get(request, *args, **kwargs)
@@ -173,6 +175,7 @@ class AllocationAccountDeleteView(SuccessMessageMixin, BackendMixin, DeleteView)
     template_name = "backend/allocations/confirm_delete.html"
 
     def delete(self, request, *args, **kwargs):
+        # noinspection PyAttributeOutsideInit
         self.object = self.get_object()
         identifier = self.get_object().account
         messages.add_message(
@@ -180,4 +183,4 @@ class AllocationAccountDeleteView(SuccessMessageMixin, BackendMixin, DeleteView)
             messages.SUCCESS,
             _("Allocation account %(identifier)s has been deleted.") % {"identifier": identifier},
         )
-        return super(AllocationAccountDeleteView, self).delete(request, *args, **kwargs)
+        return super().delete(request, *args, **kwargs)
