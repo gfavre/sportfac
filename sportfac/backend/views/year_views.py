@@ -32,7 +32,7 @@ class ChangeYearFormView(SuccessMessageMixin, KepchupStaffMixin, FormView):
     template_name = "backend/year/change.html"
 
     def get_success_url(self):
-        if not is_safe_url(url=self.success_url, host=self.request.get_host()):
+        if not is_safe_url(url=self.success_url, allowed_hosts=[self.request.get_host()]):
             return reverse("backend:home")
         return self.success_url
 

@@ -1,4 +1,4 @@
-{% load i18n floppyforms sekizai_tags %}
+{% load i18n sekizai_tags floppyforms %}
 
 {% addtoblock "js" %}
 {{ form.media }}
@@ -29,7 +29,6 @@
 {% if EMERGENCY_NUMBER_MANDATORY %}
   {% formrow form.emergency_number %}
 {% endif %}
-
 
 {% if BIB_NUMBERS %}
   {% formrow form.bib_number %}

@@ -1,7 +1,8 @@
 from django import forms as django_forms
 from django.utils.translation import gettext as _
 
-import floppyforms.__future__ as forms
+from django import forms
+#import floppyforms.__future__ as forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Div, Layout, Submit
 from mailer.models import GenericEmail
@@ -87,7 +88,7 @@ class GenericEmailForm(django_forms.ModelForm):
             return self.instance and self.cleanup_tmpl(self.instance.body_template.content) or ""
 
     def __init__(self, *args, **kwargs):
-        super(GenericEmailForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_group_wrapper_class = "row"
         self.helper.label_class = "col-sm-2"

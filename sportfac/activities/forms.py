@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 import datetime
 
+from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.forms.widgets import TextInput
 from django.utils.translation import gettext as _
 
-import floppyforms.__future__ as forms
 from backend.forms import (
     DatePickerInput,
     MultiDateInput,

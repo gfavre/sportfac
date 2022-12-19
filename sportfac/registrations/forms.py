@@ -4,6 +4,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 import floppyforms.__future__ as forms
+
 from activities.models import Activity, Course
 from backend.forms import DatePickerInput, Select2Widget
 from profiles.models import FamilyUser, School, SchoolYear
