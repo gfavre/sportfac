@@ -1,3 +1,71 @@
+
+from __future__ import absolute_import, print_function
+
+import six
+from activities.models import ExtraNeed
+from import_export.formats.base_formats import XLSX
+from registrations.models import ChildActivityLevel, ExtraInfo, Registration, Transport
+
+"""
+hiver 2023:
+
+Colonnes:
+Id Favre	ID LAGAPEO	Nom	Prénom	dossard	NoCar	SSF 22	niveau
+3	323386	Grandvuinet	Ilyas	413	4	S 5B	Moyen
+"""
+
+fmt = XLSX()
+f = open("/home/greg/temp/montreux-hiver-2023.xlsx", fmt.get_read_mode())
+dataset = fmt.create_dataset(f.read())
+level_extra_key = "Niveau de ski/snowboard"
+question = ExtraNeed.objects.get(question_label=level_extra_key)
+
+for (
+    registration_id,
+    id_lagapeo,
+    first_name,
+    last_name,
+    bib_number,
+    transport_name,
+    old_level,
+    announced_level,
+) in dataset:
+    try:
+        registration = Registration.objects.get(pk=registration_id)
+    except Registration.DoesNotExist:
+        print(("Missing registration: {}".format(registration_id)))
+        continue
+    if six.text_type(registration.child.id_lagapeo) != id_lagapeo:
+        print(("id_lagapeo coherence: {}/{}".format(registration.child.id_lagapeo, id_lagapeo)))
+        continue
+    if transport_name:
+        transport, created = Transport.objects.get_or_create(name=transport_name)
+        if created:
+            print(("Created transport {}".format(transport_name)))
+        registration.transport = transport
+        registration.save()
+    if bib_number:
+        registration.child.bib_number = bib_number
+        registration.child.save()
+    if announced_level:
+        try:
+            answer = registration.extra_infos.get(key=question)
+        except:
+            answer = ExtraInfo.objects.create(key=question, registration=registration)
+        if answer.value != announced_level:
+            answer.value = announced_level
+            answer.save()
+        level, created = ChildActivityLevel.objects.get_or_create(
+            activity=registration.course.activity, child=registration.child
+        )
+        if created:
+            print(("Created level for child {}".format(registration.child)))
+            if old_level:
+                converted_level = old_level.split(" ")[-1].upper()
+                if level.before_level != converted_level:
+                    print("update level")
+                    level.before_level = converted_level
+                    level.save()
 """
 hiver 2022:
 
@@ -6,10 +74,13 @@ ID LAGAPEO	Id Favre	RéférenceCours	SSF 21	niveau	NoCar	dossard
 142806	242	250 - SKI  Les Mosses 3-6	A 2B	Débutant	1	69
 
 """
+<<<<<<< Updated upstream
 from activities.models import ExtraNeed
 from registrations.models import Transport, Registration, ChildActivityLevel, ExtraInfo
 
 from import_export.formats.base_formats import XLSX
+=======
+>>>>>>> Stashed changes
 
 
 fmt = XLSX()
