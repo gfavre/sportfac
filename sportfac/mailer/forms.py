@@ -33,7 +33,7 @@ class CopiesForm(forms.Form):
         self.helper.layout = Layout(
             "send_copy",
             "copy_all_admins",
-            
+
         )
 
 
