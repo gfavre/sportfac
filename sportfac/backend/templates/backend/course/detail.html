@@ -323,25 +323,24 @@
             </td>
           {% endif %}
           <td>{{ registration.child.family.email | urlize }}</td>
-          {% for extra in registration.extra_infos.all %}
-            {% if extra.key in course.extra.all %}
-              <td data-order="{{ extra.value }}">
-                {% if extra.key.type == 'B' %}
-                  {% if extra.value == '1' %}
+          {% for extra_question in course.extra.all %}
+            {% for extra_response in registration.extra_infos.all %}
+              {% if extra_response.key == extra_question %}
+                <td data-order="{{ extra_response.value }}">
+                {% if extra_question.type == 'B' %}
+                  {% if extra_response.value == '1' %}
                     <i class="icon-ok-circled text-success"></i>
                   {% else %}
                     <i class="icon-cancel-circled text-danger"></i>
                   {% endif %}
                 {% else %}
-                  {{ extra.value }}
+                  {{ extra_response.value }}
                 {% endif %}
               </td>
-            {% endif %}
-            {% empty %}
-            {% for extra in course.extra.all %}
-              <td data-order=""></td>
+              {% endif %}
             {% endfor %}
           {% endfor %}
+        
           <td>
             <ul class="list-unstyled">
               <li class="text-nowrap"><a href="{{ registration.get_update_url }}?course={{ course.pk }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update registration" %}</a></li>
