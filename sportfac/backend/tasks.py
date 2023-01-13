@@ -98,7 +98,7 @@ def create_tenant(start, end, copy_activities_from_id=None, copy_children_from_i
 
             connection.set_tenant(copy_from)
             f = NamedTemporaryFile(suffix='.json', delete=False)
-            call_command('dumpdata', 'activities', output=f.name)
+            call_command('dumpdata', 'activities payroll.Function', output=f.name)
             f.close()
             logger.debug('Dumped activities from source')
 
