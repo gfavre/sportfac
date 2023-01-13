@@ -514,8 +514,10 @@ KEPCHUP_SPLASH_PAGE = False
 
 # no terms and conditions
 KEPCHUP_NO_TERMS = False
-# not used for the moment. TODO: do something with that for Coppet-primaire
+# not used for the moment.
 KEPCHUP_DISPLAY_PARENT_CITY = False
+KEPCHUP_DISPLAY_PARENT_EMAIL = False
+KEPCHUP_DISPLAY_PARENT_PHONE = False
 # Use other step names during registration.  # TODO: have a dict of names here...
 KEPCHUP_ALTERNATIVE_STEPS_NAMING = False
 # Activate absence module
