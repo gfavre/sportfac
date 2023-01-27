@@ -324,7 +324,7 @@
           {% endif %}
           <td>{{ registration.child.family.email | urlize }}</td>
           {% for extra_question in course.extra.all %}
-            {% get_extra_infos registration, extra_question %}
+            {% get_extra_info_td registration extra_question %}
           {% endfor %}
           <td>
             <ul class="list-unstyled">
