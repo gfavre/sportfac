@@ -1,6 +1,6 @@
 {% extends "backend/base.html" %}
 {% load i18n sekizai_tags staticfiles %}
-{% load duration switzerland %}
+{% load duration registrations switzerland %}
 
 {% block title %}{{ course.activity.name }} - {{ block.super }}{% endblock %}
 {% block page_title %}
@@ -324,23 +324,8 @@
           {% endif %}
           <td>{{ registration.child.family.email | urlize }}</td>
           {% for extra_question in course.extra.all %}
-            {% for extra_response in registration.extra_infos.all %}
-              {% if extra_response.key == extra_question %}
-                <td data-order="{{ extra_response.value }}">
-                {% if extra_question.type == 'B' %}
-                  {% if extra_response.value == '1' %}
-                    <i class="icon-ok-circled text-success"></i>
-                  {% else %}
-                    <i class="icon-cancel-circled text-danger"></i>
-                  {% endif %}
-                {% else %}
-                  {{ extra_response.value }}
-                {% endif %}
-              </td>
-              {% endif %}
-            {% endfor %}
+            {% get_extra_infos registration, extra_question %}
           {% endfor %}
-        
           <td>
             <ul class="list-unstyled">
               <li class="text-nowrap"><a href="{{ registration.get_update_url }}?course={{ course.pk }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update registration" %}</a></li>
