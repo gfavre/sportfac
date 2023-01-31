@@ -105,13 +105,18 @@ class RegistrationAdmin(SportfacAdminMixin, ImportExportModelAdmin):
 @admin.register(RegistrationsProfile)
 class RegistrationsProfileAdmin(SportfacModelAdmin):
     list_display = ("user", "has_paid_all", "finished_registering", "last_registration")
-    raw_id_fields = ("user",)
     list_filter = ("has_paid_all", "finished_registering")
+    raw_id_fields = ("user",)
     search_fields = (
         "user__first_name",
         "user__last_name",
         "user__email",
     )
+    
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related("user")
+
 
 
 @admin.register(Child)
@@ -138,6 +143,10 @@ class ChildAdmin(SportfacModelAdmin):
         "family__first_name",
         "family__last_name",
     )
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related("family").prefetch_related("school_year")
 
 
 class RegistrationInline(admin.StackedInline):
