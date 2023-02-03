@@ -1,14 +1,11 @@
+from django import forms
 from django import forms as django_forms
 from django.utils.translation import gettext as _
 
-from django import forms
-
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Div, Layout, Submit
-
-from multiupload.fields import MultiFileField
-
 from mailer.models import GenericEmail
+from multiupload.fields import MultiFileField
 
 
 class MailForm(forms.Form):
@@ -33,7 +30,6 @@ class CopiesForm(forms.Form):
         self.helper.layout = Layout(
             "send_copy",
             "copy_all_admins",
-
         )
 
 

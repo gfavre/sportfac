@@ -1,24 +1,22 @@
 import datetime
 
+from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django import forms
 from django.forms.widgets import TextInput
 from django.utils.translation import gettext as _
 
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout
-import floppyforms.__future__ as forms
-
 from backend.forms import (
+    ActivityWidget,
+    CityMultipleWidget,
     DatePickerInput,
+    ExtraNeedMultipleWidget,
+    FamilyUserMultipleWidget,
     MultiDateInput,
-    Select2MultipleWidget,
-    Select2Widget,
     TimePickerInput,
 )
-
-
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import HTML, ButtonHolder, Div, Fieldset, Layout, Submit
 from profiles.models import City, FamilyUser
 
 from .models import Activity, AllocationAccount, Course, CoursesInstructors, ExtraNeed, PaySlip
@@ -26,12 +24,12 @@ from .models import Activity, AllocationAccount, Course, CoursesInstructors, Ext
 
 class CourseForm(forms.ModelForm):
     activity = forms.ModelChoiceField(
-        label=_("Activity"), queryset=Activity.objects, empty_label=None, widget=Select2Widget()
+        label=_("Activity"), queryset=Activity.objects, empty_label=None, widget=ActivityWidget()
     )
     instructors = forms.ModelMultipleChoiceField(
         label=_("Instructors"),
         queryset=FamilyUser.active_objects,
-        widget=Select2MultipleWidget(),
+        widget=FamilyUserMultipleWidget()
         # required=True,
     )
     name = forms.CharField(
@@ -77,12 +75,12 @@ class CourseForm(forms.ModelForm):
         queryset=ExtraNeed.objects.all(),
         label=_("Extra questions"),
         required=False,
-        widget=Select2MultipleWidget(),
+        widget=ExtraNeedMultipleWidget(),
     )
 
     local_city_override = forms.ModelMultipleChoiceField(
         queryset=City.objects.all(),
-        widget=Select2MultipleWidget(),
+        widget=CityMultipleWidget(),
         required=False,
         label=_("Local city override"),
     )
@@ -190,6 +188,46 @@ class CourseForm(forms.ModelForm):
         )
         self._filter_limitations()
         self._filter_price_field()
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        if settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
+            pricing_section = [
+                "local_city_override",
+                Div(
+                    Div("price", css_class="col-md-6"),
+                    Div("price_local", css_class="col-md-6"),
+                    Div("price_family", css_class="col-md-6"),
+                    Div("price_local_family", css_class="col-md-6"),
+                    css_class="row",
+                ),
+                "price_description",
+            ]
+        else:
+            pricing_section = [
+                "price",
+                "price_description",
+            ]
+        self.helper.layout = Layout(
+            Div(
+                Div("course_type", css_class="col-md-6"),
+                css_class="row",
+            ),
+            Div(
+                Div("activity", css_class="col-md-6"),
+                Div("instructors", css_class="col-md-6"),
+                Div("number", css_class="col-md-6"),
+                settings.KEPCHUP_CALENDAR_DISPLAY_COURSE_NAMES
+                and Div("name", css_class="col-md-6")
+                or HTML(""),
+                css_class="row",
+            ),
+            not settings.KEPCHUP_NO_PAYMENT
+            and Fieldset(
+                _("Pricing"),
+                *pricing_section,
+            )
+            or HTML(""),
+        )
 
 
 class MultipleDatesField(forms.CharField):

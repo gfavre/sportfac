@@ -100,7 +100,7 @@ def create_tenant(
 
             connection.set_tenant(copy_from)
             f = NamedTemporaryFile(suffix=".json", delete=False)
-            call_command('dumpdata', 'activities', 'payroll.Function', output=f.name)
+            call_command("dumpdata", "activities", "payroll.Function", output=f.name)
             f.close()
             logger.debug("Dumped activities from source")
 

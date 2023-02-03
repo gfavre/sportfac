@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 import floppyforms.__future__ as forms
 from backend.forms import DatePickerInput
+
 # noinspection PyPackageRequirements
 from localflavor.generic.forms import IBANFormField
 from phonenumber_field.formfields import PhoneNumberField

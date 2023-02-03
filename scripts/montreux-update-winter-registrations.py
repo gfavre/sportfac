@@ -1,10 +1,10 @@
-
 from __future__ import absolute_import, print_function
 
 import six
 from activities.models import ExtraNeed
 from import_export.formats.base_formats import XLSX
 from registrations.models import ChildActivityLevel, ExtraInfo, Registration, Transport
+
 
 """
 hiver 2023:
@@ -78,7 +78,6 @@ from __future__ import absolute_import, print_function
 
 import six
 from activities.models import ExtraNeed
-
 from import_export.formats.base_formats import XLSX
 from registrations.models import ChildActivityLevel, ExtraInfo, Registration, Transport
 

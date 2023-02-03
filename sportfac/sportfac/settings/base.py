@@ -1,8 +1,9 @@
 # -*- coding:utf-8 -*-
 """Common settings and globals."""
-import django
 from os.path import abspath, basename, dirname, join, normpath
 from sys import path
+
+import django
 
 # Normally you should not import ANYTHING from Django directly
 # into your settings, but ImproperlyConfigured is an exception.
@@ -249,7 +250,6 @@ SHARED_APPS = (
     # last apps
     "django.contrib.admin",
     "django_select2",  # select2 form input
-
 )
 
 
@@ -463,7 +463,7 @@ X_FRAME_OPTIONS = "SAMEORIGIN"
 CACHES = {
     # … default cache config and others
     "default": {
-        "BACKEND": 'django.core.cache.backends.locmem.LocMemCache',
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
         "LOCATION": "sportfac-local",
     }
 }

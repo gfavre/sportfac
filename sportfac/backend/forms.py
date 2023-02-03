@@ -11,9 +11,9 @@ import floppyforms.__future__ as forms
 from activities.models import Course, ExtraNeed
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from crispy_forms.helper import FormHelper
+from django_select2 import forms as s2forms
 from registrations.models import Child, ExtraInfo, Registration
 from six.moves import zip
-from django_select2 import forms as s2forms
 
 from .models import YearTenant
 
@@ -55,22 +55,56 @@ class Select2Widget(forms.Select):
     template_name = "floppyforms/select2.html"
 
 
+class ActivityWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "name__icontains",
+        "number__icontains",
+    ]
+
+
+class CityMultipleWidget(s2forms.ModelSelect2MultipleWidget):
+    search_fields = [
+        "name__icontains",
+        "zipcode__icontains",
+    ]
+
+
+class ExtraNeedMultipleWidget(s2forms.ModelSelect2MultipleWidget):
+    search_fields = [
+        "question_label__icontains",
+    ]
+
+
 class FamilyUserWidget(s2forms.ModelSelect2Widget):
     search_fields = [
-        "first_name__icontains", "last_name__icontains",
+        "first_name__icontains",
+        "last_name__icontains",
+        "email__icontains",
+    ]
+
+
+class FamilyUserMultipleWidget(s2forms.ModelSelect2MultipleWidget):
+    search_fields = [
+        "first_name__icontains",
+        "last_name__icontains",
         "email__icontains",
     ]
 
 
 class BuildingWidget(s2forms.ModelSelect2Widget):
     search_fields = [
-        "name__icontains", "address__icontains", "zip_code__icontains", "city__icontains",
+        "name__icontains",
+        "address__icontains",
+        "zip_code__icontains",
+        "city__icontains",
     ]
 
 
 class TeacherWidget(s2forms.ModelSelect2Widget):
     search_fields = [
-        "first_name__icontains", "last_name__icontains", "email__icontains",
+        "first_name__icontains",
+        "last_name__icontains",
+        "email__icontains",
     ]
 
 

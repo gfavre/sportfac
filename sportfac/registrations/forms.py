@@ -1,13 +1,18 @@
+from django import forms
 from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
-from django import forms
-
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import ButtonHolder, Layout, Fieldset, Div, HTML
 
 from activities.models import Course
-from backend.forms import DatePickerInput, Select2Widget, FamilyUserWidget, BuildingWidget, TeacherWidget
+from backend.forms import (
+    BuildingWidget,
+    DatePickerInput,
+    FamilyUserWidget,
+    Select2Widget,
+    TeacherWidget,
+)
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import HTML, ButtonHolder, Div, Fieldset, Layout
 from profiles.models import FamilyUser, School, SchoolYear
 from schools.models import Building, Teacher
 
@@ -106,12 +111,14 @@ class ChildForm(forms.ModelForm):
 
     def get_submit_button(self):
         return HTML(
-                    """
+            """
                     <button type="submit" class="btn btn-success btn-large" name="action" value="save">
                       <i class="icon-plus"></i> {0}
                     </button>
-                    """.format(_("Create child"))
-                )
+                    """.format(
+                _("Create child")
+            )
+        )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -142,29 +149,36 @@ class ChildForm(forms.ModelForm):
                 settings.KEPCHUP_IMPORT_CHILDREN and "id_lagapeo" or HTML(""),
                 Div(
                     Div("school_year", css_class="col-sm-6"),
-                    settings.KEPCHUP_USE_BUILDINGS and Div("building", css_class="col-sm-6") or HTML(""),
-                    settings.KEPCHUP_PREFILL_YEARS_WITH_TEACHERS and Div("teacher", css_class="col-sm-6") or HTML(""),
-                    settings.KEPCHUP_CHILD_SCHOOL and Div("school", css_class="col-sm-6") or HTML(""),
-                    settings.KEPCHUP_CHILD_SCHOOL and Div("other_school", css_class="col-sm-6") or HTML(""),
+                    settings.KEPCHUP_USE_BUILDINGS
+                    and Div("building", css_class="col-sm-6")
+                    or HTML(""),
+                    settings.KEPCHUP_PREFILL_YEARS_WITH_TEACHERS
+                    and Div("teacher", css_class="col-sm-6")
+                    or HTML(""),
+                    settings.KEPCHUP_CHILD_SCHOOL
+                    and Div("school", css_class="col-sm-6")
+                    or HTML(""),
+                    settings.KEPCHUP_CHILD_SCHOOL
+                    and Div("other_school", css_class="col-sm-6")
+                    or HTML(""),
                     css_class="row",
                 ),
             ),
-            ButtonHolder(
-                self.get_submit_button()
-            ),
-
+            ButtonHolder(self.get_submit_button()),
         )
 
 
 class ChildUpdateForm(ChildForm):
     def get_submit_button(self):
         return HTML(
-                    """
+            """
                     <button type="submit" class="btn btn-success btn-large" name="action" value="save">
                       {0}
                     </button>
-                    """.format(_("Update child"))
-                )
+                    """.format(
+                _("Update child")
+            )
+        )
 
 
 class RegistrationModelChoiceField(forms.ModelChoiceField):

@@ -118,7 +118,6 @@ class RegistrationsProfileAdmin(SportfacModelAdmin):
         return qs.select_related("user")
 
 
-
 @admin.register(Child)
 class ChildAdmin(SportfacModelAdmin):
     date_hierarchy = "created"

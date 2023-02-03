@@ -1,4 +1,3 @@
-
 recipients = (
     "viviane.aeby@inbox.com",
     "twixette75@hotmail.com",
