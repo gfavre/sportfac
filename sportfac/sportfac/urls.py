@@ -86,6 +86,7 @@ urlpatterns += [
     path("ckeditor/upload/", manager_required(ckeditor_views.upload), name="ckeditor_upload"),
     path("ckeditor/browse/", manager_required(ckeditor_views.browse), name="ckeditor_browse"),
     path("datatrans/", DatatransWebhookView.as_view(), name="datatrans_webhook"),
+    path("select2/", include("django_select2.urls")),
     path(settings.ADMIN_URL, admin.site.urls),
 ]
 

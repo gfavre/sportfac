@@ -1,27 +1,18 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags %}
+{% load i18n sekizai_tags crispy_forms_tags %}
 
 {% block title %}{% trans "Update child" %} - {{ block.super }}{% endblock %}
 {% block page_title %}<i class="icon-user"></i>&nbsp;&nbsp;{% trans "Update child" %}{% endblock %}
 
 {% block content %}
+  {% crispy form %}
 
-<form action="" method="post" class="form-horizontal">{% csrf_token %}
-  {% if form.errors %}
-  <div class="alert alert-danger">
-    <a class="close" href="#" data-dismiss="alert">×</a>
-    <i class="icon-exclamation" aria-hidden="true"></i>&nbsp;{% trans "There are errors in this form." %}
-  </div><!--- .alert.alert-error -->
-  {% endif %}
-  {% include "backend/user/child-form.html" %}
+  {% addtoblock "js" %}
+  {{ form.media.js }}
+  {% endaddtoblock %}
 
-  <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-success">{% trans 'Update child' %}</button>
-      &nbsp;
-      <a href="{% url 'backend:child-list' %}" class="btn  btn-default">{% trans 'Cancel' %}</a>
-    </div>
-  </div>
-</form>
+  {% addtoblock "css" %}
+  {{ form.media.css }}
+  {% endaddtoblock %}
 
 {% endblock content %}

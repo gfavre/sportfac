@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 """Common settings and globals."""
+import django
 from os.path import abspath, basename, dirname, join, normpath
 from sys import path
 
@@ -233,7 +234,6 @@ SHARED_APPS = (
     "crispy_forms",  # better forms => DRY
     "dbtemplates",  # store templates in db (used by mailer module)
     "django_countries",  # country field selector
-    "django_select2",  # select2 form input
     "dynamic_preferences",
     "floppyforms",  # better forms => bootstrap components
     "import_export",
@@ -248,6 +248,8 @@ SHARED_APPS = (
     "profiles",
     # last apps
     "django.contrib.admin",
+    "django_select2",  # select2 form input
+
 )
 
 
@@ -456,6 +458,18 @@ CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_BROWSE_SHOW_DIRS = True
 CKEDITOR_IMAGE_BACKEND = "pillow"
 X_FRAME_OPTIONS = "SAMEORIGIN"
+
+
+CACHES = {
+    # … default cache config and others
+    "default": {
+        "BACKEND": 'django.core.cache.backends.locmem.LocMemCache',
+        "LOCATION": "sportfac-local",
+    }
+}
+
+# Tell select2 which cache configuration to use:
+SELECT2_CACHE_BACKEND = "default"
 
 ############# Select2
 AUTO_RENDER_SELECT2_STATICS = False

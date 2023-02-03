@@ -30,7 +30,7 @@ from profiles.forms import (
 )
 from profiles.models import FamilyUser
 from profiles.resources import InstructorResource, UserResource
-from registrations.forms import ChildForm
+from registrations.forms import ChildForm, ChildUpdateForm
 from registrations.models import Bill, Child, ChildActivityLevel, Registration
 
 from ..forms import ChildImportForm
@@ -342,7 +342,7 @@ class ChildCreateView(BackendMixin, SuccessMessageMixin, CreateView):
 
 class ChildUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
     model = Child
-    form_class = ChildForm
+    form_class = ChildUpdateForm
     template_name = "backend/user/child-update.html"
     success_url = reverse_lazy("backend:child-list")
     pk_url_kwarg = "child"

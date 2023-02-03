@@ -1,11 +1,14 @@
-# -*- coding: utf-8 -*-
 import datetime
 
-from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django import forms
 from django.forms.widgets import TextInput
 from django.utils.translation import gettext as _
+
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout
+import floppyforms.__future__ as forms
 
 from backend.forms import (
     DatePickerInput,
@@ -14,10 +17,9 @@ from backend.forms import (
     Select2Widget,
     TimePickerInput,
 )
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout
+
+
 from profiles.models import City, FamilyUser
-from six.moves import range
 
 from .models import Activity, AllocationAccount, Course, CoursesInstructors, ExtraNeed, PaySlip
 
@@ -133,14 +135,6 @@ class CourseForm(forms.ModelForm):
             "extra",
         )
 
-    def __init__(self, *args, **kwargs):
-        super(CourseForm, self).__init__(*args, **kwargs)
-        self.fields["local_city_override"].help_text = _("If empty will use: %s") % ", ".join(
-            settings.KEPCHUP_LOCAL_ZIPCODES
-        )
-        self._filter_limitations()
-        self._filter_price_field()
-
     def _filter_limitations(self):
         if settings.KEPCHUP_LIMIT_BY_SCHOOL_YEAR:
             self.fields.pop("age_min")
@@ -170,7 +164,7 @@ class CourseForm(forms.ModelForm):
             self.fields["price_local"].required = True
 
     def save(self, commit=True):
-        instance = super(CourseForm, self).save(commit=False)
+        instance = super().save(commit=False)
         instance.save()
         for instructor in self.cleaned_data["instructors"]:
             CoursesInstructors.objects.get_or_create(course=instance, instructor=instructor)
@@ -188,6 +182,14 @@ class CourseForm(forms.ModelForm):
             for date in dates:
                 instance.add_session(date=date)
         return instance
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["local_city_override"].help_text = _("If empty will use: %s") % ", ".join(
+            settings.KEPCHUP_LOCAL_ZIPCODES
+        )
+        self._filter_limitations()
+        self._filter_price_field()
 
 
 class MultipleDatesField(forms.CharField):
@@ -287,7 +289,7 @@ class ExplicitDatesCourseForm(CourseForm):
                     for session in kwargs["instance"].get_sessions()
                 ]
             )
-        super(ExplicitDatesCourseForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields.pop("start_date")
         self.fields.pop("end_date")
 
@@ -368,8 +370,9 @@ class ActivityForm(forms.ModelForm):
         fields = ("type", "name", "number", "description", "informations", "allocation_account")
 
     def __init__(self, *args, **kwargs):
-        super(ActivityForm, self).__init__(*args, **kwargs)
-
+        super().__init__(*args, **kwargs)
+        if len(settings.KEPCHUP_ACTIVITY_TYPES) == 1:
+            self.fields["type"].widget = forms.HiddenInput()
         self.helper = FormHelper()
         self.helper.form_group_wrapper_class = "row"
         self.helper.label_class = "col-sm-2"

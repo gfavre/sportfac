@@ -1,5 +1,5 @@
 {% extends "backend/base.html" %}
-{% load i18n floppyforms static sekizai_tags %}
+{% load i18n crispy_forms_tags floppyforms static sekizai_tags %}
 
 {% block title %}{% trans "Create a new course" %} - {{ block.super }}{% endblock %}
 {% block page_title %}<i class="icon-graduation-cap"></i>&nbsp;&nbsp;{% trans "Create a new course" %}{% endblock %}

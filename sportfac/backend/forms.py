@@ -13,6 +13,7 @@ from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from crispy_forms.helper import FormHelper
 from registrations.models import Child, ExtraInfo, Registration
 from six.moves import zip
+from django_select2 import forms as s2forms
 
 from .models import YearTenant
 
@@ -52,6 +53,25 @@ class TimePickerInput(forms.TimeInput):
 
 class Select2Widget(forms.Select):
     template_name = "floppyforms/select2.html"
+
+
+class FamilyUserWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "first_name__icontains", "last_name__icontains",
+        "email__icontains",
+    ]
+
+
+class BuildingWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "name__icontains", "address__icontains", "zip_code__icontains", "city__icontains",
+    ]
+
+
+class TeacherWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "first_name__icontains", "last_name__icontains", "email__icontains",
+    ]
 
 
 class Select2MultipleWidget(forms.SelectMultiple):

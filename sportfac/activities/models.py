@@ -70,7 +70,6 @@ class Activity(TimeStampedModel):
     """
     An activity
     """
-
     name = models.CharField(max_length=50, db_index=True, unique=True, verbose_name=_("Name"))
     type = models.CharField(
         max_length=50,

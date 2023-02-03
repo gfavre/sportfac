@@ -244,7 +244,7 @@ KEPCHUP_DISPLAY_FREE_WHEN_PRICE_IS_0 = False
 KEPCHUP_PAYMENT_METHOD = "datatrans"
 KEPCHUP_USE_DIFFERENTIATED_PRICES = True
 KEPCHUP_LOCAL_ZIPCODES = ["1814", "1272"]
-
+KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = True
 
 CELERY_ALWAYS_EAGER = True
 
@@ -255,11 +255,11 @@ CELERYBEAT_SCHEDULE["notify-absences"] = {
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "unique-snowflake",
+        "LOCATION": "sportfac-local",
     },
     "dbtemplates": {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "unique-snowflake",
+        "LOCATION": "sportfac-local-templates",
     },
 }
 
