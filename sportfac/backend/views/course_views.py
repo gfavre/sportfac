@@ -20,7 +20,7 @@ from django.views.generic.detail import SingleObjectMixin
 from absences.models import Absence, Session
 from absences.utils import closest_session
 from activities.forms import CourseForm, ExplicitDatesCourseForm, PaySlipForm
-from activities.models import RATE_MODES, Activity, Course, CoursesInstructors, ExtraNeed, PaySlip
+from activities.models import Activity, Course, ExtraNeed
 from profiles.models import FamilyUser
 from registrations.models import ChildActivityLevel, ExtraInfo
 from registrations.resources import RegistrationResource
@@ -56,7 +56,7 @@ class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
     )
 
     def get_context_data(self, **kwargs):
-        context = super(CourseCreateView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["extra_needs"] = ExtraNeed.objects.all()
         return context
 
@@ -70,7 +70,7 @@ class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
         return mark_safe(self.success_message % {"url": url, "number": self.object.number})
 
     def get_initial(self):
-        initial = super(CourseCreateView, self).get_initial()
+        initial = super().get_initial()
         activity = self.request.GET.get("activity", None)
         if activity:
             activity_obj = get_object_or_404(Activity, pk=activity)
@@ -105,7 +105,7 @@ class CourseDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
         messages.success(
             self.request, _("Course %(identifier)s has been deleted.") % {"identifier": identifier}
         )
-        return super(CourseDeleteView, self).delete(request, *args, **kwargs)
+        return super().delete(request, *args, **kwargs)
 
 
 class CourseDetailView(BackendMixin, DetailView):
@@ -122,7 +122,7 @@ class CourseDetailView(BackendMixin, DetailView):
     )
 
     def get_context_data(self, **kwargs):
-        context = super(CourseDetailView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         registrations = self.get_object().participants.all()
         context["registrations"] = registrations
         return context
@@ -138,7 +138,7 @@ class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
     )
 
     def get_context_data(self, **kwargs):
-        context = super(CourseUpdateView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["extra_needs"] = ExtraNeed.objects.all()
         return context
 
@@ -152,13 +152,13 @@ class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
         return mark_safe(self.success_message % {"url": url, "number": self.object.number})
 
     def get_initial(self):
-        initial = super(CourseUpdateView, self).get_initial()
+        initial = super().get_initial()
         initial["extra"] = self.get_object().extra.all()
         return initial
 
     def form_valid(self, form):
         course = self.get_object()
-        response = super(CourseUpdateView, self).form_valid(form)
+        response = super().form_valid(form)
         removed_extras = set(course.extra.all()) - set(form.cleaned_data["extra"])
         for removed_extra in removed_extras:
             course.extra.remove(removed_extra)
@@ -181,7 +181,9 @@ class CourseAbsenceView(BackendMixin, DetailView):
         course = self.get_object()
         form = SessionForm(data=self.request.POST)
         if form.is_valid():
+            # noinspection PyUnresolvedReferences
             if self.request.user in course.instructors.all():
+                # noinspection PyUnresolvedReferences
                 instructor = self.request.user
             else:
                 instructor = None
@@ -264,7 +266,7 @@ class CourseAbsenceView(BackendMixin, DetailView):
             except ExtraNeed.DoesNotExist:
                 all_extras = {}
             kwargs["extras"] = all_extras
-        return super(CourseAbsenceView, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
     def get(self, request, *args, **kwargs):
         if "pdf" in self.request.GET:
@@ -279,7 +281,7 @@ class CourseAbsenceView(BackendMixin, DetailView):
                 response = HttpResponse(f.read(), content_type="application/pdf")
             response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
             return response
-        return super(CourseAbsenceView, self).get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
 
 class CoursesAbsenceView(BackendMixin, ListView):
@@ -336,7 +338,7 @@ class CoursesAbsenceView(BackendMixin, ListView):
         kwargs["levels"] = ChildActivityLevel.LEVELS
         kwargs["session_form"] = SessionForm()
 
-        return super(CoursesAbsenceView, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
     def post(self, *args, **kwargs):
         pks = self.request.GET.getlist("c")
@@ -377,7 +379,7 @@ class CoursesAbsenceView(BackendMixin, ListView):
                 response = HttpResponse(f.read(), content_type="application/pdf")
             response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
             return response
-        return super(CoursesAbsenceView, self).get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
 
 class CourseJSCSVView(CSVMixin, CourseDetailView):
@@ -392,7 +394,7 @@ class CourseParticipantsView(CourseDetailView):
     template_name = "mailer/pdf_participants_list.html"
 
     def get_context_data(self, **kwargs):
-        context = super(CourseParticipantsView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["sessions"] = list(range(0, self.object.number_of_sessions))
         return context
 
@@ -466,7 +468,7 @@ class PaySlipMontreux(BackendMixin, CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
     def get_context_data(self, **kwargs):
-        kwargs = super(PaySlipMontreux, self).get_context_data(**kwargs)
+        kwargs = super().get_context_data(**kwargs)
         kwargs["instructor"] = get_object_or_404(FamilyUser, pk=self.kwargs["instructor"])
         kwargs["course"] = get_object_or_404(Course, pk=self.kwargs["course"])
-        return super(PaySlipMontreux, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)

@@ -112,7 +112,7 @@ class RegistrationsProfileAdmin(SportfacModelAdmin):
         "user__last_name",
         "user__email",
     )
-    
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.select_related("user")
