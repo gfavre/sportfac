@@ -70,14 +70,12 @@ class CourseForm(forms.ModelForm):
         widget=TimePickerInput(format="%H:%M"),
         help_text=_("format: hh:mm, e.g. 17:45"),
     )
-
     extra = forms.ModelMultipleChoiceField(
         queryset=ExtraNeed.objects.all(),
         label=_("Extra questions"),
         required=False,
         widget=ExtraNeedMultipleWidget(),
     )
-
     local_city_override = forms.ModelMultipleChoiceField(
         queryset=City.objects.all(),
         widget=CityMultipleWidget(),
@@ -131,6 +129,15 @@ class CourseForm(forms.ModelForm):
             "announced_js",
             "visible",
             "extra",
+        )
+        widgets = {
+            "place": forms.Textarea(attrs={"rows": 3}),
+        }
+
+    class Media:
+        js = (
+            "js/vendor/moment-with-locales.min.js",
+            "js/backend/course-form.js",
         )
 
     def _filter_limitations(self):
@@ -207,6 +214,50 @@ class CourseForm(forms.ModelForm):
                 "price",
                 "price_description",
             ]
+        if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
+            dates_section = ["session_dates"]
+        else:
+            dates_section = [
+                Div(
+                    Div("number_of_sessions", css_class="col-md-6"),
+                    Div("day", css_class="col-md-6"),
+                    css_class="course-visible camp-hidden multicourse-hidden row",
+                ),
+            ]
+        dates_section += [
+            Div(
+                Div("start_date", css_class="col-md-6"),
+                Div("end_date", css_class="col-md-6"),
+                css_class="row",
+            ),
+            Div(
+                Div("start_time", css_class="col-md-6"),
+                Div("end_time", css_class="col-md-6"),
+                css_class="course-visible camp-hidden multicourse-hidden row",
+            ),
+            Div(
+                HTML("<h4>{}:</h4>".format(_("Daily start and end times"))),
+                Div(
+                    Div("start_time_mon", css_class="col-md-6"),
+                    Div("end_time_mon", css_class="col-md-6"),
+                    Div("start_time_tue", css_class="col-md-6"),
+                    Div("end_time_tue", css_class="col-md-6"),
+                    Div("start_time_wed", css_class="col-md-6"),
+                    Div("end_time_wed", css_class="col-md-6"),
+                    Div("start_time_thu", css_class="col-md-6"),
+                    Div("end_time_thu", css_class="col-md-6"),
+                    Div("start_time_fri", css_class="col-md-6"),
+                    Div("end_time_fri", css_class="col-md-6"),
+                    Div("start_time_sat", css_class="col-md-6"),
+                    Div("end_time_sat", css_class="col-md-6"),
+                    Div("start_time_sun", css_class="col-md-6"),
+                    Div("end_time_sun", css_class="col-md-6"),
+                    css_class="row",
+                ),
+                css_class="multicourse-visible camp-hidden course-hidden",
+            ),
+        ]
+
         self.helper.layout = Layout(
             Div(
                 Div("course_type", css_class="col-md-6"),
@@ -227,6 +278,41 @@ class CourseForm(forms.ModelForm):
                 *pricing_section,
             )
             or HTML(""),
+            Fieldset(
+                _("Dates"),
+                *dates_section,
+            ),
+            "place",
+            "comments",
+            Fieldset(
+                _("Participants and limitations"),
+                Div(
+                    Div("min_participants", css_class="col-md-6"),
+                    Div("max_participants", css_class="col-md-6"),
+                    css_class="row",
+                ),
+                settings.KEPCHUP_LIMIT_BY_SCHOOL_YEAR
+                and Div(
+                    Div("schoolyear_min", css_class="col-md-6"),
+                    Div("schoolyear_max", css_class="col-md-6"),
+                    css_class="row",
+                )
+                or HTML(""),
+                settings.KEPCHUP_LIMIT_BY_AGE
+                and Div(
+                    Div("age_min", css_class="col-md-6"),
+                    Div("age_max", css_class="col-md-6"),
+                    css_class="row",
+                )
+                or HTML(""),
+            ),
+            not settings.KEPCHUP_NO_EXTRAS and ExtraNeed.objects.exists() and "extra" or HTML(""),
+            Fieldset(
+                _("Management"),
+                "uptodate",
+                "visible",
+                Div("announced_js", css_class="camp-hidden course-show"),
+            ),
         )
 
 
