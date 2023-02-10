@@ -42,7 +42,7 @@ def get_ssf_decompte_heures(course, instructor):
         u'Tel portable': instructor.best_phone.as_national,
         u'IBAN': instructor.iban,
         u'Banque/CCP': instructor.bank_name,
-        u'Formation MEP diplômé': instructor.is_mep and 'On',
+        u'Formation  MEP diplômé': instructor.is_mep and 'On',
         u'Instituteur  Maître généraliste': instructor.is_teacher and 'On',
         u'Moniteur JS': (not instructor.is_teacher and not instructor.is_mep) and 'On',
         u'Sexe  F': instructor.gender == 'f' and 'On',
