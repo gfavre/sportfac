@@ -401,6 +401,7 @@ class ExplicitDatesCourseForm(CourseForm):
             "end_time_sat": TimePickerInput(format="%H:%M"),
             "start_time_sun": TimePickerInput(format="%H:%M"),
             "end_time_sun": TimePickerInput(format="%H:%M"),
+            "place": forms.Textarea(attrs={"rows": 3}),
         }
 
     def __init__(self, *args, **kwargs):

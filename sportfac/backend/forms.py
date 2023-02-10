@@ -2,12 +2,12 @@ import datetime
 
 from django.conf import settings
 from django.contrib.flatpages.models import FlatPage
+from django import forms
 from django.forms import inlineformset_factory
 from django.forms.widgets import TextInput
 from django.utils.html import mark_safe
 from django.utils.translation import gettext as _
 
-import floppyforms.__future__ as forms
 from activities.models import Course, ExtraNeed
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from crispy_forms.helper import FormHelper
@@ -61,6 +61,20 @@ class ActivityWidget(s2forms.ModelSelect2Widget):
         "number__icontains",
     ]
 
+
+class ChildWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "first_name__icontains",
+        "last_name__icontains",
+    ]
+
+
+class CourseWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "activity__name__icontains",
+        "name__icontains",
+        "number__icontains",
+    ]
 
 class CityMultipleWidget(s2forms.ModelSelect2MultipleWidget):
     search_fields = [
@@ -134,7 +148,7 @@ class RegistrationDatesForm(forms.Form):
 
 class CourseSelectMixin:
     course = forms.ModelChoiceField(
-        label=_("Course"), queryset=Course.objects, empty_label=None, widget=Select2Widget()
+        label=_("Course"), queryset=Course.objects, empty_label=None, widget=CourseWidget()
     )
 
     def __init__(self, *args, **kwargs):
@@ -174,7 +188,7 @@ class RegistrationForm(CourseSelectMixin, forms.ModelForm):
         label=_("Child"),
         queryset=Child.objects.exclude(family=None),
         empty_label=None,
-        widget=Select2Widget(),
+        widget=ChildWidget(),
     )
 
     status = forms.ChoiceField(label=_("Status"), choices=Registration.STATUS)
@@ -182,10 +196,16 @@ class RegistrationForm(CourseSelectMixin, forms.ModelForm):
     class Meta:
         model = Registration
         fields = ("child", "course", "status", "transport")
-        widgets = {"course": Select2Widget()}
+        widgets = {"course": CourseWidget()}
 
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_class = "form-horizontal"
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-10"
         if not settings.KEPCHUP_DISPLAY_CAR_NUMBER:
             del self.fields["transport"]
 
@@ -224,6 +244,12 @@ class ExtraInfoForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ExtraInfoForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_class = "form-horizontal"
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-10"
         if self.instance:
             if self.instance.key.choices:
                 self.fields["value"] = forms.ChoiceField(
@@ -231,10 +257,10 @@ class ExtraInfoForm(forms.ModelForm):
                     + list(zip(self.instance.key.choices, self.instance.key.choices)),
                     label=_("Answer"),
                 )
-            elif self.instance.type == "B":
+            elif self.instance.key.type == "B":
                 self.fields["value"] = forms.BooleanField(label=_("Answer"))
 
-            elif self.instance.type == "I":
+            elif self.instance.key.type == "I":
                 self.fields["value"] = forms.IntegerField(label=_("Answer"))
 
 
@@ -251,7 +277,7 @@ class ChildSelectForm(forms.ModelForm):
         label=_("Child"),
         queryset=Child.objects.exclude(family=None),
         empty_label=None,
-        widget=Select2Widget(),
+        widget=ChildWidget(),
     )
 
     class Meta:
@@ -281,7 +307,7 @@ class CourseSelectForm(CourseSelectMixin, forms.ModelForm):
     class Meta:
         model = Registration
         fields = ("course",)
-        widgets = {"course": Select2Widget}
+        # widgets = {"course": CourseWidget}
 
 
 class SendConfirmationForm(forms.Form):

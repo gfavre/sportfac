@@ -1,22 +1,23 @@
 {% extends "backend/base.html" %}
-{% load i18n floppyforms %}
+{% load i18n sekizai_tags crispy_forms_tags %}
 
 {% block title %}{% trans "Update registration" %} - {{ block.super }}{% endblock %}
 {% block page_title %}{% trans "Update registration" %}{% endblock %}
 
 {% block content %}
+{% addtoblock "js" %}
+  {{ form.media.js }}
+{% endaddtoblock %}
 
+<form action="" method="post" class="form-horizontal">
+  {% crispy form %}
 
-<form action="" method="post" class="form-horizontal">{% csrf_token %}
-  {% block errors %}{% endblock %}
-  {% form form using "floppyforms/layouts/bootstrap.html" %}
-
-{{ extrainfo_form.management_form }}
+{{ extrainfo_form.management_form | crispy}}
 {% if need_extra %}
     <fieldset>
       <legend>{% trans "Extra questions" %}</legend>
 
-      {% form extrainfo_form using "floppyforms/layouts/bootstrap.html" %}
+      {% crispy extrainfo_form %}
     </fieldset>
 
 {% endif %}
