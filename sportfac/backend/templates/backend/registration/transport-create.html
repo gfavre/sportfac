@@ -1,5 +1,5 @@
 {% extends "backend/base.html" %}
-{% load i18n floppyforms sekizai_tags %}
+{% load i18n crispy_forms_tags sekizai_tags %}
 
 {% block title %}{% trans "Create transport" %} - {{ block.super }}{% endblock %}
 {% block page_title %}<i class="icon-bus"></i>&nbsp;&nbsp;{% trans "Create transport" %}{% endblock %}
@@ -8,11 +8,8 @@
 
 
 
-<form action="" method="post" class="form-horizontal">{% csrf_token %}
-  
-  {{ form.errors }}
-  {{ form }}
-
+<form action="" method="post" class="form-horizontal">
+  {% crispy form %}
 
   <div class=" form-group">
     <div class="col-sm-offset-2 col-sm-10">
