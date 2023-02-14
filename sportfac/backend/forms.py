@@ -199,7 +199,7 @@ class RegistrationForm(CourseSelectMixin, forms.ModelForm):
         widgets = {"course": CourseWidget()}
 
     def __init__(self, *args, **kwargs):
-        super(RegistrationForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.form_class = "form-horizontal"

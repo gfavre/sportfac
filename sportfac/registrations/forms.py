@@ -36,8 +36,6 @@ class BillForm(forms.ModelForm):
         self.helper.field_class = "col-sm-10"
 
 
-
-
 class ChildForm(forms.ModelForm):
     birth_date = forms.DateTimeField(
         label=_("Birth date"),
