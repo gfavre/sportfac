@@ -26,6 +26,17 @@ class BillForm(forms.ModelForm):
         model = Bill
         fields = ("status",)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_class = "form-horizontal"
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-10"
+
+
+
 
 class ChildForm(forms.ModelForm):
     birth_date = forms.DateTimeField(
