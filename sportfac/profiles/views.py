@@ -1,6 +1,7 @@
 import django.contrib.auth.views as auth_views
 from django.conf import settings
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.views import PasswordChangeView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
@@ -20,23 +21,11 @@ from .models import FamilyUser
 
 
 __all__ = (
-    "password_change",
-    "password_reset",
     "AccountView",
     "WizardAccountView",
     "WizardRegistrationView",
     "AccountRedirectView",
 )
-
-
-def password_change(request):
-    """Wrap the built-in password reset view and pass it the arguments"""
-    return auth_views.password_change(request, password_change_form=PasswordChangeForm)
-
-
-def password_reset(request):
-    """Wrap the built-in password reset view and pass it the arguments"""
-    return auth_views.password_reset(request, password_reset_form=PasswordResetForm)
 
 
 class AccountRedirectView(LoginRequiredMixin, RedirectView):

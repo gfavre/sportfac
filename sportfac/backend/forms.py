@@ -1,8 +1,8 @@
 import datetime
 
+from django import forms
 from django.conf import settings
 from django.contrib.flatpages.models import FlatPage
-from django import forms
 from django.forms import inlineformset_factory
 from django.forms.widgets import TextInput
 from django.utils.html import mark_safe
@@ -75,6 +75,7 @@ class CourseWidget(s2forms.ModelSelect2Widget):
         "name__icontains",
         "number__icontains",
     ]
+
 
 class CityMultipleWidget(s2forms.ModelSelect2MultipleWidget):
     search_fields = [

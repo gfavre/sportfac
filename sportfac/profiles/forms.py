@@ -1,12 +1,14 @@
 import django.contrib.auth.forms as auth_forms
+from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.template.defaultfilters import mark_safe
 from django.urls import reverse
+from django.utils.html import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-import floppyforms.__future__ as forms
 from backend.forms import DatePickerInput
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Submit
 
 # noinspection PyPackageRequirements
 from localflavor.generic.forms import IBANFormField
@@ -20,6 +22,7 @@ __all__ = (
     "AuthenticationForm",
     "PasswordChangeForm",
     "PasswordResetForm",
+    "SetPasswordForm",
     "AcceptTermsForm",
     "RegistrationForm",
     "UserForm",
@@ -32,10 +35,16 @@ __all__ = (
 
 class AuthenticationForm(auth_forms.AuthenticationForm):
     def __init__(self, *args, **kwargs):
-        """Convert to floppyform"""
-        super(AuthenticationForm, self).__init__(*args, **kwargs)
-        self.fields["username"].widget = forms.TextInput()
-        self.fields["password"].widget = forms.PasswordInput()
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_class = "form-horizontal"
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-3"
+        self.helper.field_class = "col-sm-9"
+        reset_url = reverse("profiles:password_reset")
+        reset_text = _("Forgotten your password or username?")
+        self.fields["password"].help_text = mark_safe(f'<a href="{reset_url}">{reset_text}</a>')
 
 
 class PasswordChangeForm(auth_forms.PasswordChangeForm):
@@ -52,6 +61,27 @@ class PasswordResetForm(auth_forms.PasswordResetForm):
         max_length=254,
         widget=forms.EmailInput(attrs={"placeholder": "john@example.com"}),
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_class = "form-inline"
+        self.helper.form_show_labels = False
+        self.helper.layout = Layout(
+            "email",
+            Submit("submit", _("Reset my password"), css_class="btn-primary"),
+        )
+
+
+class SetPasswordForm(auth_forms.SetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_class = "form-horizontal"
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-10"
 
 
 class AcceptTermsForm(forms.Form):

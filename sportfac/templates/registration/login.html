@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n floppyforms humanize l10n countdowntimer %}
+{% load i18n crispy_forms_tags humanize l10n countdowntimer %}
 
 {% block title %}{% trans "Login" %}{% endblock %}
 {% block page_title %}{% trans "Login" %}{% endblock page_title %}
@@ -38,32 +38,13 @@
       {% if registration_opened or REGISTER_ACCOUNTS_AT_ANY_TIME %}
         <p class="lead text-center">{% trans "You already have an account" %}</p>
       {% endif %}
-      <form action="{{ app_path }}" method="post" id="login-form" class="form-horizontal">{% csrf_token %}
-        {% for error in form.non_field_errors %}
-          <div class="alert alert-danger" role="alert">
-            <a class="close" href="#" data-dismiss="alert">×</a>
-            <i class="icon-cancel"></i>&nbsp;&nbsp;{{ error }}
-          </div>
-        {% endfor %}
+      <form action="{{ app_path }}" method="post" id="login-form" class="form-horizontal">
+        {% crispy form %}
+
         <input type="hidden" name="next" value="{{ next }}"/>
 
-        {% form form using %}
-          {% formconfig row using "floppyforms/rows/bootstrap.html" %}
-          {% formrow form.username %}
-
-          <div class="form-group {% if form.password.errors %}has-error{% endif %}">
-            <label class="col-lg-2 col-md-3 col-sm-4 control-label" for="id_password">{% trans 'Password' %}</label>
-            <div class="col-lg-10 col-md-9 col-sm-8">
-              {% formfield form.password %}
-              <p class="help-block"><span class="help-inline">{{ form.password.errors }}</span></p>
-              <p class="help-block"><a
-                  href="{% url 'profiles:registration_reset' %}">{% trans 'Forgotten your password or username?' %}</a></p>
-            </div>
-          </div>
-
-        {% endform %}
         <div class="form-group">
-          <div class="col-sm-offset-2 col-sm-10">
+          <div class="col-sm-offset-3 col-sm-9">
             <button type="submit" class="btn btn-primary">{% trans 'Log in' %}</button>
           </div>
         </div>
