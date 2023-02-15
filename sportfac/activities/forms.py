@@ -15,8 +15,9 @@ from backend.forms import (
     MultiDateInput,
     TimePickerInput,
 )
+from crispy_forms.bootstrap import AppendedText
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import HTML, ButtonHolder, Div, Fieldset, Layout, Submit
+from crispy_forms.layout import HTML, Div, Fieldset, Layout
 from profiles.models import City, FamilyUser
 
 from .models import Activity, AllocationAccount, Course, CoursesInstructors, ExtraNeed, PaySlip
@@ -61,13 +62,11 @@ class CourseForm(forms.ModelForm):
     start_time = forms.TimeField(
         label=_("Start time"),
         required=False,
-        widget=TimePickerInput(format="%H:%M"),
         help_text=_("format: hh:mm, e.g. 17:45"),
     )
     end_time = forms.TimeField(
         label=_("End time"),
         required=False,
-        widget=TimePickerInput(format="%H:%M"),
         help_text=_("format: hh:mm, e.g. 17:45"),
     )
     extra = forms.ModelMultipleChoiceField(
@@ -188,8 +187,12 @@ class CourseForm(forms.ModelForm):
                 instance.add_session(date=date)
         return instance
 
+    def pop_initial(self):
+        pass
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.pop_initial()
         self.fields["local_city_override"].help_text = _("If empty will use: %s") % ", ".join(
             settings.KEPCHUP_LOCAL_ZIPCODES
         )
@@ -231,8 +234,14 @@ class CourseForm(forms.ModelForm):
                 css_class="row",
             ),
             Div(
-                Div("start_time", css_class="col-md-6"),
-                Div("end_time", css_class="col-md-6"),
+                Div(
+                    AppendedText("start_time", '<span class="icon-clock"></span>'),
+                    css_class="col-md-6",
+                ),
+                Div(
+                    AppendedText("end_time", '<span class="icon-clock"></span>'),
+                    css_class="col-md-6",
+                ),
                 css_class="course-visible camp-hidden multicourse-hidden row",
             ),
             Div(
@@ -404,6 +413,10 @@ class ExplicitDatesCourseForm(CourseForm):
             "place": forms.Textarea(attrs={"rows": 3}),
         }
 
+    def pop_initial(self):
+        self.fields.pop("start_date")
+        self.fields.pop("end_date")
+
     def __init__(self, *args, **kwargs):
         if "instance" in kwargs and kwargs["instance"]:
             if "initial" not in kwargs:
@@ -415,8 +428,6 @@ class ExplicitDatesCourseForm(CourseForm):
                 ]
             )
         super().__init__(*args, **kwargs)
-        self.fields.pop("start_date")
-        self.fields.pop("end_date")
 
     def clean_session_dates(self):
         dates = self.cleaned_data["session_dates"]

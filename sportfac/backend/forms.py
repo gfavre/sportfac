@@ -50,6 +50,10 @@ class MultiDateInput(DatePickerInput):
 class TimePickerInput(forms.TimeInput):
     template_name = "floppyforms/time.html"
 
+    def render(self, name, value, attrs=None, renderer=None):
+        attrs['class'] = 'form-control timepicker'
+        return super().render(name, value, attrs=attrs, renderer=renderer)
+
 
 class Select2Widget(forms.Select):
     template_name = "floppyforms/select2.html"
