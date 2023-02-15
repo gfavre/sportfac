@@ -5,20 +5,15 @@
 {% block page_title %}<i class="icon-bus"></i>&nbsp;&nbsp;{% trans "Create transport" %}{% endblock %}
 
 {% block content %}
+  <form action="" method="post" class="form-horizontal">
+    {% crispy form %}
 
-
-
-<form action="" method="post" class="form-horizontal">
-  {% crispy form %}
-
-  <div class=" form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-
-      <button type="submit" class="btn btn-success ">{% trans 'Create transport' %}</button>
-      &nbsp;
-      <a href="{% url 'backend:transport-list' %}" class="btn btn-default">{% trans 'Cancel' %}</a>
+    <div class=" form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="submit" class="btn btn-success ">{% trans 'Create transport' %}</button>
+        &nbsp;
+        <a href="{% url 'backend:transport-list' %}" class="btn btn-default">{% trans 'Cancel' %}</a>
+      </div>
     </div>
-  </div>
-
-</form>
+  </form>
 {% endblock content %}

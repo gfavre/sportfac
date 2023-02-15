@@ -54,6 +54,15 @@ class PasswordChangeForm(auth_forms.PasswordChangeForm):
         label=_("New password confirmation"), widget=forms.PasswordInput
     )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_class = "form-horizontal"
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-3"
+        self.helper.field_class = "col-sm-9"
+
 
 class PasswordResetForm(auth_forms.PasswordResetForm):
     email = forms.EmailField(
