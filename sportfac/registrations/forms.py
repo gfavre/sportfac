@@ -6,10 +6,11 @@ from django.utils.translation import gettext_lazy as _
 from activities.models import Course
 from backend.forms import (
     BuildingWidget,
+    CourseWidget,
     DatePickerInput,
     FamilyUserWidget,
-    Select2Widget,
     TeacherWidget,
+    TransportWidget,
 )
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, ButtonHolder, Div, Fieldset, Layout
@@ -207,15 +208,35 @@ class MoveRegistrationsForm(forms.Form):
         #        output_field=IntegerField()
         #    )),
         # ),
-        widget=Select2Widget(),
+        widget=CourseWidget(),
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_class = "form-horizontal"
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-10"
 
 
 class MoveTransportForm(forms.Form):
     registrations = forms.ModelMultipleChoiceField(
         queryset=Registration.objects.all(), widget=forms.MultipleHiddenInput
     )
-    destination = forms.ModelChoiceField(queryset=Transport.objects.all(), widget=Select2Widget())
+    destination = forms.ModelChoiceField(queryset=Transport.objects.all(), widget=TransportWidget)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_class = "form-horizontal"
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-10"
+
+
 
 
 class TransportForm(forms.ModelForm):

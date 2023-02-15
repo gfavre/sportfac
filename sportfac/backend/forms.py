@@ -61,6 +61,12 @@ class ActivityWidget(s2forms.ModelSelect2Widget):
         "number__icontains",
     ]
 
+    def build_attrs(self, base_attrs, extra_attrs=None):
+        default_attrs = {"data-minimum-input-length": 0}
+        default_attrs.update(base_attrs)
+        attrs = super().build_attrs(default_attrs, extra_attrs=extra_attrs)
+        return attrs
+
 
 class ChildWidget(s2forms.ModelSelect2Widget):
     search_fields = [
@@ -75,6 +81,12 @@ class CourseWidget(s2forms.ModelSelect2Widget):
         "name__icontains",
         "number__icontains",
     ]
+
+    def build_attrs(self, base_attrs, extra_attrs=None):
+        default_attrs = {"data-minimum-input-length": 0}
+        default_attrs.update(base_attrs)
+        attrs = super().build_attrs(default_attrs, extra_attrs=extra_attrs)
+        return attrs
 
 
 class CityMultipleWidget(s2forms.ModelSelect2MultipleWidget):
@@ -115,12 +127,35 @@ class BuildingWidget(s2forms.ModelSelect2Widget):
     ]
 
 
+class RegistrationWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "child__first_name__icontains",
+        "child__last_name__icontains",
+        "course__activity__name__icontains",
+        "course__name__icontains",
+        "course__number__icontains",
+    ]
+
+
 class TeacherWidget(s2forms.ModelSelect2Widget):
     search_fields = [
         "first_name__icontains",
         "last_name__icontains",
         "email__icontains",
     ]
+
+
+class TransportWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "name__icontains",
+    ]
+
+    def build_attrs(self, base_attrs, extra_attrs=None):
+        default_attrs = {"data-minimum-input-length": 0}
+        default_attrs.update(base_attrs)
+        attrs = super().build_attrs(default_attrs, extra_attrs=extra_attrs)
+        return attrs
+
 
 
 class Select2MultipleWidget(forms.SelectMultiple):
