@@ -27,7 +27,10 @@ if settings.KEPCHUP_USE_SSO:
         path("login", RedirectView.as_view(url=reverse_lazy("profiles:profiles_account"))),
         path(
             "password/change/",
-            auth_views.PasswordChangeView.as_view(form_class=PasswordChangeForm),
+            auth_views.PasswordChangeView.as_view(
+                form_class=PasswordChangeForm,
+                success_url=reverse_lazy("profiles:password_change_done"),
+            ),
             name="password_change",
         ),
         path(
@@ -83,7 +86,10 @@ else:
         ),
         path(
             "password/change/",
-            auth_views.PasswordChangeView.as_view(form_class=PasswordChangeForm),
+            auth_views.PasswordChangeView.as_view(
+                form_class=PasswordChangeForm,
+                success_url=reverse_lazy("profiles:password_change_done"),
+            ),
             name="password_change",
         ),
         path(
