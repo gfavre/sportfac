@@ -1,13 +1,3 @@
-"""Template tag to display duration: 
-{{ timedelta|duration }}
-
-rendered as:
-45mn
-
-{{timedelta|seconds }}
-rendered as: 2700
-
-"""
 from django import template
 from django.utils.translation import gettext as _
 
@@ -17,7 +7,7 @@ register = template.Library()
 
 @register.filter(is_safe=True)
 def duration(value, arg=False):
-    "takes a time delta and renders it as duration"
+    """takes a time delta and renders it as duration"""
     if value in (None, ""):
         return "n/a"
     out = []

@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.contrib.flatpages import views as flatviews
 from django.contrib.flatpages.sitemaps import FlatPageSitemap
 from django.contrib.sitemaps import views as sitemapviews
-from django.urls import include, path, re_path
+from django.urls import include, path
 from django.views.generic import RedirectView, TemplateView
 from django.views.static import serve
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from datetime import date, time
 
 from django.conf import settings
@@ -34,7 +33,7 @@ class ActivityTest(TestCase):
         self.assertTrue(len(self.activity.delete_url) > 0)
 
     def test_participants(self):
-        registration = RegistrationFactory(course__activity=self.activity)
+        RegistrationFactory(course__activity=self.activity)
         self.assertEqual(self.activity.participants.count(), 1)
 
     def test_update_url(self):

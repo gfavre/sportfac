@@ -29,7 +29,7 @@ class AbsenceCourseView(InstructorMixin, DetailView):
         )
 
     def get_context_data(self, **kwargs):
-        course = self.get_object()
+        self.get_object()
         qs = (
             Absence.objects.select_related("child", "session")
             .filter(session__course=self.object)
@@ -54,7 +54,7 @@ class AbsenceCourseView(InstructorMixin, DetailView):
         child_absences = collections.OrderedDict()
         for absence in qs:
             child = absence.child
-            if not child in registrations:
+            if child not in registrations:
                 # happens if child was previously attending this course but is no longer
                 continue
             registration = registrations[child]

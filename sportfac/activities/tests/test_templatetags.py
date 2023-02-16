@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from django.template import Context, Template, TemplateSyntaxError
+from django.template import Context, Template
 from django.test import TestCase, override_settings
 
 
