@@ -1,5 +1,5 @@
 {% extends "backend/base.html" %}
-{% load i18n floppyforms sekizai_tags %}
+{% load i18n sekizai_tags %}
 
 {% block title %}{% trans "Update activity" %} - {{ block.super }}{% endblock %}
 {% block page_title %}<i class="icon-soccer-ball"></i>&nbsp;&nbsp;{% trans "Update activity" %}{% endblock %}
@@ -10,7 +10,7 @@
 {{ form.media }}
 {% endaddtoblock %}
 
-<form action="" method="post" class="form-horizontal">{% csrf_token %}
+<form action="" method="post" class="form-horizontal">
 
   {% include "backend/activity/form.html" %}
   <div class=" form-group">
