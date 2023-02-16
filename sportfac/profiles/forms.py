@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 from backend.forms import DatePickerInput
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Fieldset, Div, HTML, ButtonHolder, Field
+from crispy_forms.layout import HTML, Fieldset, Layout, Submit
 
 # noinspection PyPackageRequirements
 from localflavor.generic.forms import IBANFormField
@@ -16,6 +16,7 @@ from phonenumber_field.formfields import PhoneNumberField
 from phonenumber_field.widgets import RegionalPhoneNumberWidget
 
 from .models import FamilyUser
+
 
 __all__ = (
     "AuthenticationForm",
@@ -26,9 +27,7 @@ __all__ = (
     "RegistrationForm",
     "UserForm",
     "ManagerForm",
-    "ManagerWithPasswordForm",
     "InstructorForm",
-    "InstructorWithPasswordForm",
 )
 
 
@@ -110,9 +109,9 @@ class PhoneRequiredMixin:
         # noinspection PyUnresolvedReferences
         cleaned_data = super(PhoneRequiredMixin, self).clean()
         if not (
-                cleaned_data.get("private_phone", False)
-                or cleaned_data.get("private_phone2", False)
-                or cleaned_data.get("private_phone3", False)
+            cleaned_data.get("private_phone", False)
+            or cleaned_data.get("private_phone2", False)
+            or cleaned_data.get("private_phone3", False)
         ):
             raise forms.ValidationError(_("At least one phone number is mandatory"))
 
@@ -186,14 +185,12 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
                 Fieldset(
                     _("Login informations"),
                     "email",
-                    HTML(
-                        f"""<p><a href="{password_change}">{password_label}</a></p>"""
-                    ),
+                    HTML(f"""<p><a href="{password_change}">{password_label}</a></p>"""),
                 ),
             )
         else:
-            self.fields['password1'].required = True
-            self.fields['password2'].required = True
+            self.fields["password1"].required = True
+            self.fields["password2"].required = True
             self.helper.layout.append(
                 Fieldset(
                     _("Login informations"),
@@ -216,7 +213,6 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
                 "private_phone3",
             )
         )
-
 
 
 class ManagerForm(UserForm):
@@ -279,7 +275,9 @@ class InstructorForm(ManagerForm):
         self.helper.layout.append(
             Fieldset(
                 _("Instructor informations"),
-                settings.KEPCHUP_INSTRUCTORS_DISPLAY_EXTERNAL_ID and "external_identifier" or HTML(""),
+                settings.KEPCHUP_INSTRUCTORS_DISPLAY_EXTERNAL_ID
+                and "external_identifier"
+                or HTML(""),
                 "ahv",
                 "gender",
                 "birth_date",
@@ -375,12 +373,12 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
         if existing.exists():
             message = _("A user with that username already exists.")
             message += (
-                    ' <a href="%s" class="btn-link" style="margin-right:1em"><i class="icon-lock-open"></i>%s</a>'
-                    % (reverse("profiles:auth_login"), _("Login"))
+                ' <a href="%s" class="btn-link" style="margin-right:1em"><i class="icon-lock-open"></i>%s</a>'
+                % (reverse("profiles:auth_login"), _("Login"))
             )
             message += (
-                    ' <a href="#" class="new-mail btn-link"><i class="icon-cancel-circled"></i>%s</a>'
-                    % _("Use another email address")
+                ' <a href="#" class="new-mail btn-link"><i class="icon-cancel-circled"></i>%s</a>'
+                % _("Use another email address")
             )
             raise forms.ValidationError(mark_safe(message))
         else:
@@ -432,6 +430,5 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
                 "email2",
                 "password1",
                 "password2",
-            )
-
+            ),
         )

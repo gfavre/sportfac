@@ -237,8 +237,6 @@ class MoveTransportForm(forms.Form):
         self.helper.field_class = "col-sm-10"
 
 
-
-
 class TransportForm(forms.ModelForm):
     class Meta:
         model = Transport

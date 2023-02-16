@@ -5,9 +5,9 @@ from django.utils.translation import gettext_lazy as _
 
 from captcha.fields import ReCaptchaField
 from captcha.widgets import ReCaptchaV3
-from dynamic_preferences.registries import global_preferences_registry
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Div
+from crispy_forms.layout import Div, Layout
+from dynamic_preferences.registries import global_preferences_registry
 
 
 class ContactForm(forms.Form):

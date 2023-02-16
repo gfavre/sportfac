@@ -224,9 +224,9 @@ KEPCHUP_ENABLE_WAITING_LISTS = True
 
 # Registration steps
 #########################################
-KEPCHUP_ALTERNATIVE_ACTIVITIES_LABEL = u'Inscription'
-KEPCHUP_ALTERNATIVE_CONFIRM_LABEL = u'Résumé'
-KEPCHUP_ALTERNATIVE_BILLING_LABEL = u'Confirmation'
+KEPCHUP_ALTERNATIVE_ACTIVITIES_LABEL = "Inscription"
+KEPCHUP_ALTERNATIVE_CONFIRM_LABEL = "Résumé"
+KEPCHUP_ALTERNATIVE_BILLING_LABEL = "Confirmation"
 
 # Single Sign On
 #########################################

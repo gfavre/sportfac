@@ -10,9 +10,9 @@ from django.utils.translation import gettext as _
 
 from activities.models import Course, ExtraNeed
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field
 from crispy_forms.bootstrap import AppendedText
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Field, Layout
 from django_select2 import forms as s2forms
 from registrations.models import Child, ExtraInfo, Registration
 from six.moves import zip
@@ -27,7 +27,7 @@ class ChildImportForm(forms.Form):
 
 
 class DateTimePickerInput(forms.DateTimeInput):
-    #template_name = "floppyforms/datetime.html"
+    # template_name = "floppyforms/datetime.html"
     pass
 
 
@@ -54,7 +54,7 @@ class TimePickerInput(forms.TimeInput):
     template_name = "floppyforms/time.html"
 
     def render(self, name, value, attrs=None, renderer=None):
-        attrs['class'] = 'form-control timepicker'
+        attrs["class"] = "form-control timepicker"
         return super().render(name, value, attrs=attrs, renderer=renderer)
 
 

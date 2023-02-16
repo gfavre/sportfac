@@ -3,7 +3,6 @@ import json
 import tempfile
 
 from django.contrib import messages
-from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Case, Count, When
 from django.http import HttpResponseRedirect
@@ -22,10 +21,7 @@ from django.views.generic import (
 )
 
 from absences.models import Absence
-from profiles.forms import (
-    InstructorForm,
-    ManagerForm,
-)
+from profiles.forms import InstructorForm, ManagerForm, SetPasswordForm
 from profiles.models import FamilyUser
 from profiles.resources import InstructorResource, UserResource
 from registrations.forms import ChildForm, ChildUpdateForm
@@ -275,7 +271,7 @@ class PasswordSetView(BackendMixin, SuccessMessageMixin, FormView):
         return get_object_or_404(FamilyUser, pk=user_id)
 
     def get_form_kwargs(self):
-        kwargs = super(PasswordSetView, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs["user"] = self.get_object()
         return kwargs
 
@@ -283,7 +279,7 @@ class PasswordSetView(BackendMixin, SuccessMessageMixin, FormView):
         user = self.get_object()
         user.set_password(form.cleaned_data["new_password1"])
         user.save()
-        return super(PasswordSetView, self).form_valid(form)
+        return super().form_valid(form)
 
 
 class ChildDetailView(BackendMixin, DetailView):
