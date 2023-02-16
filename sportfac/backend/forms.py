@@ -11,6 +11,8 @@ from django.utils.translation import gettext as _
 from activities.models import Course, ExtraNeed
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Field
+from crispy_forms.bootstrap import AppendedText
 from django_select2 import forms as s2forms
 from registrations.models import Child, ExtraInfo, Registration
 from six.moves import zip
@@ -25,7 +27,8 @@ class ChildImportForm(forms.Form):
 
 
 class DateTimePickerInput(forms.DateTimeInput):
-    template_name = "floppyforms/datetime.html"
+    #template_name = "floppyforms/datetime.html"
+    pass
 
 
 class DatePickerInput(forms.DateInput):
@@ -161,7 +164,6 @@ class TransportWidget(s2forms.ModelSelect2Widget):
         return attrs
 
 
-
 class Select2MultipleWidget(forms.SelectMultiple):
     template_name = "floppyforms/select2.html"
 
@@ -185,14 +187,26 @@ class RegistrationDatesForm(forms.Form):
             raise forms.ValidationError(_("Closing date should come after opening date"))
         super(RegistrationDatesForm, self).clean()
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-3"
+        self.helper.layout = Layout(
+            AppendedText("opening_date", '<span class="icon-calendar"></span>'),
+            AppendedText("closing_date", '<span class="icon-calendar"></span>'),
+        )
+
 
 class CourseSelectMixin:
     course = forms.ModelChoiceField(
-        label=_("Course"), queryset=Course.objects, empty_label=None, widget=CourseWidget()
+        label=_("Course"), queryset=Course.objects.all(), empty_label=None, widget=CourseWidget()
     )
 
     def __init__(self, *args, **kwargs):
-        super(CourseSelectMixin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         course_qs = Course.objects.select_related("activity")
         if self.instance.pk:
             # course_qs = course_qs.filter(
@@ -236,7 +250,6 @@ class RegistrationForm(CourseSelectMixin, forms.ModelForm):
     class Meta:
         model = Registration
         fields = ("child", "course", "status", "transport")
-        widgets = {"course": CourseWidget()}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -244,6 +257,7 @@ class RegistrationForm(CourseSelectMixin, forms.ModelForm):
         self.helper.form_tag = False
         self.helper.form_class = "form-horizontal"
         self.helper.form_group_wrapper_class = "row"
+        self.helper.include_media = False
         self.helper.label_class = "col-sm-2"
         self.helper.field_class = "col-sm-10"
         if not settings.KEPCHUP_DISPLAY_CAR_NUMBER:

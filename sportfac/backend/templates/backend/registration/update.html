@@ -9,6 +9,10 @@
   {{ form.media.js }}
 {% endaddtoblock %}
 
+  {% addtoblock "css" %}
+  {{ form.media.css }}
+{% endaddtoblock %}
+
 <form action="" method="post" class="form-horizontal">
   {% crispy form %}
 
@@ -25,7 +29,7 @@
     <div class="col-sm-offset-2 col-sm-10">
       <button type="submit" class="btn btn-success btn-large">{% trans "Update" %}</button>
       &nbsp;
-      <a href="{% url 'backend:registration-list' %}" class="btn  btn-default">{% trans 'Cancel' %}</a>
+      <a href="{% url 'backend:registration-list' %}" class="btn btn-default">{% trans 'Cancel' %}</a>
 
     </div>
   </div>

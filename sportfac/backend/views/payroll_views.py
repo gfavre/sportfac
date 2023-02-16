@@ -26,7 +26,6 @@ class FunctionListView(BackendMixin, ListView):
 
 
 class FunctionCreateView(BackendMixin, SuccessMessageMixin, CreateView):
-    model = Function
     form_class = FunctionForm
     template_name = "backend/payroll/function_create.html"
     success_url = reverse_lazy("backend:function-list")

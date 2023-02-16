@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 from backend.forms import DatePickerInput
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit
+from crispy_forms.layout import Layout, Submit, Fieldset, Div, HTML, ButtonHolder, Field
 
 # noinspection PyPackageRequirements
 from localflavor.generic.forms import IBANFormField
@@ -16,7 +16,6 @@ from phonenumber_field.formfields import PhoneNumberField
 from phonenumber_field.widgets import RegionalPhoneNumberWidget
 
 from .models import FamilyUser
-
 
 __all__ = (
     "AuthenticationForm",
@@ -111,9 +110,9 @@ class PhoneRequiredMixin:
         # noinspection PyUnresolvedReferences
         cleaned_data = super(PhoneRequiredMixin, self).clean()
         if not (
-            cleaned_data.get("private_phone", False)
-            or cleaned_data.get("private_phone2", False)
-            or cleaned_data.get("private_phone3", False)
+                cleaned_data.get("private_phone", False)
+                or cleaned_data.get("private_phone2", False)
+                or cleaned_data.get("private_phone3", False)
         ):
             raise forms.ValidationError(_("At least one phone number is mandatory"))
 
@@ -146,6 +145,10 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
         widget=RegionalPhoneNumberWidget(attrs={"class": "form-control"}),
         required=False,
     )
+    password1 = forms.CharField(widget=forms.PasswordInput, label=_("Password"), required=False)
+    password2 = forms.CharField(
+        widget=forms.PasswordInput, label=_("Password (again)"), required=False
+    )
 
     class Meta:
         model = get_user_model()
@@ -162,8 +165,58 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
             "private_phone3",
         )
 
+    def clean(self):
+        super().clean()
+        if self.cleaned_data.get("password1") != self.cleaned_data.get("password2"):
+            raise forms.ValidationError(_("You must type the same password" " each time."))
+
     def __init__(self, *args, **kwargs):
         super(UserForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_class = "form-horizontal"
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-10"
+        self.helper.form_tag = False
+        self.helper.layout = Layout()
+        if self.initial:
+            password_change = reverse("backend:password-change", args=[self.instance.pk])
+            password_label = _("Change password")
+            self.helper.layout.append(
+                Fieldset(
+                    _("Login informations"),
+                    "email",
+                    HTML(
+                        f"""<p><a href="{password_change}">{password_label}</a></p>"""
+                    ),
+                ),
+            )
+        else:
+            self.fields['password1'].required = True
+            self.fields['password2'].required = True
+            self.helper.layout.append(
+                Fieldset(
+                    _("Login informations"),
+                    "email",
+                    "password1",
+                    "password2",
+                )
+            )
+        self.helper.layout.append(
+            Fieldset(
+                _("Contact informations"),
+                "first_name",
+                "last_name",
+                "address",
+                "zipcode",
+                "city",
+                "country",
+                "private_phone",
+                "private_phone2",
+                "private_phone3",
+            )
+        )
+
 
 
 class ManagerForm(UserForm):
@@ -178,18 +231,7 @@ class ManagerForm(UserForm):
         instance = kwargs["instance"]
         if instance:
             self.fields["is_manager"].initial = instance.is_manager
-
-
-class ManagerWithPasswordForm(ManagerForm):
-    password1 = forms.CharField(widget=forms.PasswordInput, label=_("Password"), required=True)
-    password2 = forms.CharField(
-        widget=forms.PasswordInput, label=_("Password (again)"), required=True
-    )
-
-    def clean(self):
-        super().clean()
-        if self.cleaned_data.get("password1") != self.cleaned_data.get("password2"):
-            raise forms.ValidationError(_("You must type the same password" " each time."))
+        self.helper.layout.append("is_manager")
 
 
 class InstructorForm(ManagerForm):
@@ -228,18 +270,28 @@ class InstructorForm(ManagerForm):
             "nationality",
             "permit_type",
         )
+        widgets = {
+            "ahv": forms.TextInput(attrs={"placeholder": "756.1234.5678.95"}),
+        }
 
-
-class InstructorWithPasswordForm(InstructorForm):
-    password1 = forms.CharField(widget=forms.PasswordInput, label=_("Password"), required=True)
-    password2 = forms.CharField(
-        widget=forms.PasswordInput, label=_("Password (again)"), required=True
-    )
-
-    def clean(self):
-        super().clean()
-        if self.cleaned_data.get("password1") != self.cleaned_data.get("password2"):
-            raise forms.ValidationError(_("You must type the same password each time."))
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper.layout.append(
+            Fieldset(
+                _("Instructor informations"),
+                settings.KEPCHUP_INSTRUCTORS_DISPLAY_EXTERNAL_ID and "external_identifier" or HTML(""),
+                "ahv",
+                "gender",
+                "birth_date",
+                "nationality",
+                "permit_type",
+                "iban",
+                "bank_name",
+                "js_identifier",
+                "is_mep",
+                "is_teacher",
+            )
+        )
 
 
 class RegistrationForm(PhoneRequiredMixin, forms.Form):
@@ -323,12 +375,12 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
         if existing.exists():
             message = _("A user with that username already exists.")
             message += (
-                ' <a href="%s" class="btn-link" style="margin-right:1em"><i class="icon-lock-open"></i>%s</a>'
-                % (reverse("profiles:auth_login"), _("Login"))
+                    ' <a href="%s" class="btn-link" style="margin-right:1em"><i class="icon-lock-open"></i>%s</a>'
+                    % (reverse("profiles:auth_login"), _("Login"))
             )
             message += (
-                ' <a href="#" class="new-mail btn-link"><i class="icon-cancel-circled"></i>%s</a>'
-                % _("Use another email address")
+                    ' <a href="#" class="new-mail btn-link"><i class="icon-cancel-circled"></i>%s</a>'
+                    % _("Use another email address")
             )
             raise forms.ValidationError(mark_safe(message))
         else:
@@ -352,3 +404,34 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
         if "password1" in self.cleaned_data and "password2" in self.cleaned_data:
             if self.cleaned_data["password1"] != self.cleaned_data["password2"]:
                 raise forms.ValidationError(_("The two password fields didn't match."))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_class = "form-horizontal"
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-10"
+        self.helper.layout = Layout(
+            Fieldset(
+                _("Contact informations"),
+                "first_name",
+                "last_name",
+                "address",
+                "zipcode",
+                "city",
+                "country",
+                "private_phone",
+                "private_phone2",
+                "private_phone3",
+            ),
+            Fieldset(
+                _("Login informations"),
+                "email",
+                "email2",
+                "password1",
+                "password2",
+            )
+
+        )

@@ -24,9 +24,7 @@ from django.views.generic import (
 from absences.models import Absence
 from profiles.forms import (
     InstructorForm,
-    InstructorWithPasswordForm,
     ManagerForm,
-    ManagerWithPasswordForm,
 )
 from profiles.models import FamilyUser
 from profiles.resources import InstructorResource, UserResource
@@ -147,7 +145,7 @@ class InstructorExportView(BackendMixin, ExcelResponseMixin, InstructorMixin, Vi
 
 class UserCreateView(BackendMixin, SuccessMessageMixin, CreateView):
     model = FamilyUser
-    form_class = ManagerWithPasswordForm
+    form_class = ManagerForm
     template_name = "backend/user/create.html"
     success_url = reverse_lazy("backend:user-list")
 
@@ -181,7 +179,7 @@ class ManagerCreateView(UserCreateView):
 
 class InstructorCreateView(UserCreateView):
     success_url = reverse_lazy("backend:instructor-list")
-    form_class = InstructorWithPasswordForm
+    form_class = InstructorForm
 
     def get_context_data(self, **kwargs):
         ctx = super(InstructorCreateView, self).get_context_data(**kwargs)

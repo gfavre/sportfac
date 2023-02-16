@@ -1,12 +1,13 @@
-# -*- coding: utf-8 -*-
+from django import forms
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.utils.translation import gettext_lazy as _
 
-import floppyforms as forms
 from captcha.fields import ReCaptchaField
 from captcha.widgets import ReCaptchaV3
 from dynamic_preferences.registries import global_preferences_registry
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Div
 
 
 class ContactForm(forms.Form):
@@ -22,7 +23,7 @@ class ContactForm(forms.Form):
     subject = forms.CharField(label=_("Subject"), widget=forms.TextInput())
 
     message = forms.CharField(label=_("Message"), widget=forms.Textarea(attrs={"rows": 5}))
-    captcha = ReCaptchaField(widget=ReCaptchaV3)
+    captcha = ReCaptchaField(widget=ReCaptchaV3, label="")
 
     def send_mail(self, fail_silently=False):
         global_preferences = global_preferences_registry.manager()
@@ -49,3 +50,20 @@ class ContactForm(forms.Form):
             reply_to=["%s <%s>" % (self.cleaned_data["name"], self.cleaned_data["email"])],
         )
         email.send(fail_silently=fail_silently)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_class = "form-horizontal"
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-10"
+        self.helper.include_media = False
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            "name",
+            "email",
+            "subject",
+            "message",
+            "captcha",
+        )

@@ -1,22 +1,18 @@
 {% extends "base.html" %}
-{% load i18n floppyforms %}
+{% load i18n crispy_forms_tags sekizai_tags %}
 
 {% block title %}{% trans "Contact" %}{% endblock title %}
 {% block page_title %}{% trans "Contact" %}{% endblock page_title %}
 
 {% block content %}
+  {% addtoblock "js" %}
+  {{ form.media.js }}
+  {% endaddtoblock %}
 <div class="row">
   <div class="col-md-6">
     {% block form %}
-    <form action="." method="post" class="form-horizontal">{% csrf_token %}  
-      {% form form using %}
-        {% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
-        {% formrow form.name %}
-        {% formrow form.email %}
-        {% formrow form.subject %}
-        {% formrow form.message %}
-        {{ form.captcha }}
-      {% endform %}
+    <form action="" method="post" class="form-horizontal">
+      {% crispy form %}
       <div class="pull-right">
         <button type="submit" class="btn btn-primary btn-large"><i class="icon icon-envelope-alt"></i>  {% trans "Send message" %}</button>
       </div>

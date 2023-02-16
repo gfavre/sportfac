@@ -298,7 +298,7 @@ class RegistrationDatesView(BackendMixin, FormView):
     success_url = reverse_lazy("backend:home")
 
     def get_initial(self):
-        initial = super(RegistrationDatesView, self).get_initial()
+        initial = super().get_initial()
         initial["opening_date"] = self.request.tenant.preferences["phase__START_REGISTRATION"]
         initial["closing_date"] = self.request.tenant.preferences["phase__END_REGISTRATION"]
         return initial

@@ -239,7 +239,7 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
             return course_obj.get_backend_url()
 
     def get_context_data(self, **kwargs):
-        context = super(RegistrationUpdateView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         extras = {}
         courses = Course.objects.prefetch_related("extra").annotate(nb_extra=Count("extra"))
         for course in courses.exclude(nb_extra=0):

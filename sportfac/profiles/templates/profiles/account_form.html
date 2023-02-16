@@ -1,5 +1,7 @@
-{% load i18n floppyforms %}
+{% load i18n crispy_forms_tags %}
 
+{% crispy form %}
+{% comment %}
 {% form form using %}
   {% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
 
@@ -62,6 +64,7 @@
 
 {% endform %}
 
+{% endcomment %}
 
 
 
