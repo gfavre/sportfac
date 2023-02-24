@@ -82,7 +82,7 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_SECONDS = 3600
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-ALLOWED_HOSTS = env("ALLOWED_HOSTS").split(";")
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
 ############ Celery
 # Asynchrnous tasks.
