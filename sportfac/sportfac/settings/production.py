@@ -4,7 +4,6 @@ from .base import *
 
 INSTALLED_APPS += (
     "gunicorn",  # web server
-    "raven.contrib.django.raven_compat",  # sentry
 )
 REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = [
     "rest_framework.renderers.JSONRenderer",
