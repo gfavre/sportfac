@@ -7,3 +7,4 @@ redis == 4.4.0
 python-memcached == 1.59
 psycopg2-binary == 2.9.5
 ipython == 8.7.0
+sentry-sdk[django] ==1.15.0
