@@ -94,7 +94,7 @@ BROKER_URL = env("BROKER_URL")
 
 import sentry_sdk
 sentry_sdk.init(
-    dsn="https://23b84dc23e6747238f613aead827c17e@o1152353.ingest.sentry.io/6230417",
+    dsn="https://3f862f015a1044e1962fd7a4e77ec5a2:5404be0237894b8fbfbf0122fd280280@sentry.io/1194911",
 
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for performance monitoring.
