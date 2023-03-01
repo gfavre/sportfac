@@ -1,72 +1,20 @@
 {% extends "base.html" %}
-{% load i18n floppyforms %}
+{% load i18n crispy_forms_tags %}
 
 {% block title %}{% trans "Inscription" %}{% endblock title %}
 {% block page_title %}{% trans "Inscription" %}
   <small>- responsable légal</small>{% endblock page_title %}
 
 {% block content %}
-  {% form form using %}
-    {% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
-    <form action="." method="post" class="form-horizontal" ole="form">{% csrf_token %}
-      {% block errors %}
-        {% for error in form.non_field_errors %}
-          <div class="alert alert-danger">
-            <a class="close" href="#" data-dismiss="alert">×</a>
-            <i class="icon-exclamation" aria-hidden="true"></i>&nbsp;&nbsp;{{ error }}
-          </div><!--- .alert.alert-error -->
-        {% endfor %}
-        {% for error in form|hidden_field_errors %}
-          <div class="alert alert-danger">
-            <a class="close" href="#" data-dismiss="alert">×</a>
-            <i class="icon-exclamation" aria-hidden="true"></i>{{ error }}
-          </div><!--- .alert.alert-error -->
-        {% endfor %}
-      {% endblock errors %}
-
-      <fieldset>
-        <legend>{% trans "Contact informations" %}</legend>
-        {% formrow form.first_name %}
-        {% formrow form.last_name %}
-        {% formrow form.address %}
-        <div class="form-group">
-          <label class="control-label col-sm-2">{% trans "City" %} <span class="required">*</span></label>
-          <div class="col-sm-10">
-            <div class="row">
-              <div class="col-sm-2">
-                {% formfield form.zipcode using "floppyforms/100percentinput.html" %}
-              </div>
-              <div class="col-sm-10">
-                {% formfield form.city using "floppyforms/100percentinput.html" %}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {% formrow form.country %}
-        {% formrow form.private_phone %}
-        {% formrow form.private_phone2 %}
-        {% formrow form.private_phone3 %}
-
-      </fieldset>
-
-      <fieldset>
-        <legend>{% trans "Login informations" %}</legend>
-        {% formrow form.email %}
-        {% formrow form.email2 %}
-        {% formrow form.password1 %}
-        {% formrow form.password2 %}
-      </fieldset>
-
-      <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
-          <button type="submit" class="btn btn-primary btn-large">{% trans "Save" %}</button>
-        </div>
-
+  <form action="" method="post" class="form-horizontal">
+    {% crispy form %}
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="submit" class="btn btn-primary btn-large">{% trans "Save" %}</button>
       </div>
-    </form>
+    </div>
+  </form>
 
-  {% endform %}
 {% endblock %}
 
 {% block page_footer %}{% endblock page_footer %}

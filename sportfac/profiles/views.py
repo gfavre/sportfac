@@ -1,7 +1,6 @@
-import django.contrib.auth.views as auth_views
 from django.conf import settings
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.views import PasswordChangeView
+import django.contrib.auth.views as auth_views
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
@@ -11,12 +10,11 @@ from django.views.generic import FormView, RedirectView, UpdateView
 
 from braces.views import LoginRequiredMixin
 
-# from registration.backends.simple.views import RegistrationView as BaseRegistrationView
 from registration import signals
 
 from sportfac.views import WizardMixin
 
-from .forms import InstructorForm, PasswordChangeForm, PasswordResetForm, RegistrationForm
+from .forms import InstructorForm, RegistrationForm, UserForm
 from .models import FamilyUser
 
 
@@ -41,6 +39,11 @@ class AccountRedirectView(LoginRequiredMixin, RedirectView):
 class _BaseAccount(LoginRequiredMixin, UpdateView):
     model = FamilyUser
     form_class = InstructorForm
+
+    def get_form_class(self):
+        if self.request.user.is_instructor:
+            return InstructorForm
+        return UserForm
 
     def get_object(self, queryset=None):
         return self.request.user
