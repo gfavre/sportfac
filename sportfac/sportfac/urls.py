@@ -62,6 +62,12 @@ else:
 if settings.KEPCHUP_USE_APPOINTMENTS:
     urlpatterns += [path("rendez-vous/", include("appointments.urls", namespace="appointments"))]
 
+
+if settings.KEPCHUP_ACTIVATE_NYON_MARENS:
+    urlpatterns += [
+        path("nyon-marens/", include("nyonmarens.urls", namespace="nyonmarens"))
+    ]
+
 urlpatterns += [
     path("reglement/", flatviews.flatpage, {"url": "/reglement/"}, name="terms"),
     path(
