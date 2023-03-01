@@ -75,12 +75,12 @@ class WhistleForm(forms.Form):
                 ),
             ),
             Fieldset(
-                "3.	Informations facultatives",
+                "3. Informations facultatives",
                 "school_year",
                 "age",
             ),
             Fieldset(
-                "4.	À remplir uniquement si tu souhaites être contacté pour un échange",
+                "4. À remplir uniquement si tu souhaites être contacté pour un échange",
                 "email",
                 "phone",
             ),
