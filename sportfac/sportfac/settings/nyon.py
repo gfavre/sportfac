@@ -13,6 +13,10 @@ STATICFILES_DIRS = (
     normpath(join(SITE_ROOT, "static")),
 )
 
+INSTALLED_APPS += ['nyonmarens']
+
+KEPCHUP_ACTIVATE_NYON_MARENS = True
+KEPCHUP_NYON_MARENS_EMAIL_RECIPIENTS = ['Guillaume Strobino <guillaume.strobino@vd.ch>']
 KEPCHUP_USE_ABSENCES = True
 KEPCHUP_ABSENCE_PDF_LANDSCAPE = True
 KEPCHUP_IMPORT_CHILDREN = False
