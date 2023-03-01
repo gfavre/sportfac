@@ -1,3 +1,6 @@
+3.0.1 - 2023-03-01
+- Ajout de l'app Nyon-Marens qui contient un formulaire d'annonce de cas.
+
 3.0.0 - 2023-03-01
 - Passage à python3
 - Passage à django 3.2
