@@ -1,15 +1,16 @@
 """Production settings and globals."""
 
-from production import *
+from .production import *
 
-TEMPLATES[0]['DIRS'] = [
-    normpath(join(SITE_ROOT, 'themes', 'coppet', 'templates')),
-    normpath(join(SITE_ROOT, 'templates')),
+
+TEMPLATES[0]["DIRS"] = [
+    normpath(join(SITE_ROOT, "themes", "coppet", "templates")),
+    normpath(join(SITE_ROOT, "templates")),
 ]
 
 STATICFILES_DIRS = (
-    normpath(join(SITE_ROOT, 'themes', 'coppet', 'static')),
-    normpath(join(SITE_ROOT, 'static')),
+    normpath(join(SITE_ROOT, "themes", "coppet", "static")),
+    normpath(join(SITE_ROOT, "static")),
 )
 
 KEPCHUP_USE_ABSENCES = False

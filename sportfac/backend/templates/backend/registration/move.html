@@ -1,11 +1,11 @@
 {% extends "backend/base.html" %}
-{% load i18n floppyforms %}
+{% load i18n crispy_forms_tags sekizai_tags %}
 
 {% block title %}{% trans "Move registrations" %} - {{ block.super }}{% endblock %}
 {% block page_title %}{% trans "Move registrations" %}{% endblock %}
 
 {% block content %}
-<form action="" method="post" class="form-horizontal">{% csrf_token %}
+<form action="" method="post" class="form-horizontal">
   <div class="form-group">
     <label class="col-sm-2 control-label" for="children-list">{% trans "Move" %}</label>
     <div class="col-sm-10 " >
@@ -26,7 +26,9 @@
   </div>
   {% endif %}
   {% block errors %}{% endblock %}
-  {% form form using "floppyforms/layouts/bootstrap.html" %}
+
+  {% crispy form %}
+
 
 
   <div class="form-group">
@@ -39,4 +41,13 @@
     </div>
   </div>
 </form>
+
+  {% addtoblock "css" %}
+  {{ form.media.css }}
+{% endaddtoblock %}
+{% addtoblock "js" %}
+  {{ form.media.js }}
+{% endaddtoblock %}
+
 {% endblock content %}
+

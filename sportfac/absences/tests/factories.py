@@ -6,7 +6,7 @@ from ..models import Absence, Session
 
 
 class SessionFactory(factory.django.DjangoModelFactory):
-    course = factory.SubFactory('activities.tests.factories.CourseFactory')
+    course = factory.SubFactory("activities.tests.factories.CourseFactory")
     date = factory.fuzzy.FuzzyDate(start_date=datetime.date(2022, 1, 1))
 
     class Meta:
@@ -14,9 +14,8 @@ class SessionFactory(factory.django.DjangoModelFactory):
 
 
 class AbsenceFactory(factory.django.DjangoModelFactory):
-    child = factory.SubFactory('registrations.tests.factories.ChildFactory')
+    child = factory.SubFactory("registrations.tests.factories.ChildFactory")
     session = factory.SubFactory(SessionFactory)
 
     class Meta:
         model = Absence
-

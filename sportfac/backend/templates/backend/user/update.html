@@ -1,5 +1,5 @@
 {% extends "backend/base.html" %}
-{% load i18n floppyforms sekizai_tags %}
+{% load i18n crispy_forms_tags sekizai_tags %}
 
 {% block title %}{% trans "Update user" %} - {{ block.super }}{% endblock %}
 {% block page_title %}<i class="icon-user"></i>&nbsp;&nbsp;{% trans "Update user" %}{% endblock %}
@@ -26,101 +26,12 @@
 {% endif %}
 {% endaddtoblock %}
 
-<form action="" method="post" class="form-horizontal">{% csrf_token %}
-  {% form form using %}
-{% block errors %}
-{% if form.errors %}
- <div class="alert alert-danger">
-            <a class="close" href="#" data-dismiss="alert">×</a>
-             <i class="icon-exclamation" aria-hidden="true"></i>&nbsp;&nbsp;{% trans "There are errors in this form." %}
-        </div><!--- .alert.alert-error -->
+<form action="" method="post" class="form-horizontal">
+{% crispy form %}
 
-{% endif %}
-
-    {% for error in form.non_field_errors %}
-        <div class="alert alert-danger">
-            <a class="close" href="#" data-dismiss="alert">×</a>
-             <i class="icon-exclamation" aria-hidden="true"></i>&nbsp;&nbsp;{{ error }}
-        </div><!--- .alert.alert-error -->
-    {% endfor %}
-    {% for error in form|hidden_field_errors %}
-        <div class="alert alert-danger">
-            <a class="close" href="#" data-dismiss="alert">×</a>
-            <i class="icon-exclamation" aria-hidden="true"></i>{{ error }}
-        </div><!--- .alert.alert-error -->
-    {% endfor %}
-{% endblock errors %}
-  {% formconfig row using "floppyforms/rows/bootstrap.html" %}
-
-  <fieldset>
-    <legend>{% trans "Login informations" %}</legend>
-    {% formrow form.email %}
-    <p><a href="{% url 'backend:password-change' user=object.pk %}">{% trans "Change password" %}</a></p>
-  </fieldset>
-  <fieldset>
-    <legend>{% trans "Contact informations" %}</legend>
-    {% formrow form.first_name %}
-    {% formrow form.last_name %}
-    {% formrow form.address %}
-    <div class="form-group {% if form.city.errors or form.zipcode.errors %}has-error{% endif %} ">
-      <label class="control-label col-sm-2">{% trans "City" %} <span class="required">*</span></label>
-      <div class="col-sm-10">
-        <div class="row">
-          <div class="col-sm-2 col-xs-4">
-            {% formfield form.zipcode using "floppyforms/100percentinput.html" %}
-          </div>
-          <div class="col-sm-10 col-xs-8">
-            {% formfield form.city using "floppyforms/100percentinput.html" %}
-          </div>
-          <span class="help-block">{{ form.zipcode.errors }}</span>
-        </div>
-      </div>
-    </div>
-    {% formrow form.country %}
-
-    <div class="form-group">
-      <label class="control-label col-sm-2">{% trans "Phone" %}</label>
-      <div class="col-sm-10">
-        <div class="row">
-          <div class="col-sm-4">
-            {% formfield form.private_phone %}
-            <p class="help-block">{% trans "Home phone" %}</p>
-          </div>
-          <div class="col-sm-4">
-            {% formfield form.private_phone2 %}
-            <p class="help-block">{% trans "Mobile" %}</p>
-          </div>
-          <div class="col-sm-4">
-            {% formfield form.private_phone3 %}
-            <p class="help-block">{% trans "Other phone" %}</p>
-
-          </div>
-        </div>
-      </div>
-    </div>
-
-    {% if is_instructor %}
-    <fieldset>
-    <legend>{% trans "Instructor informations" %}</legend>
-        {% if INSTRUCTORS_DISPLAY_EXTERNAL_ID %}{% formrow form.external_identifier %}{% endif %}
-
-    {% formconfig row using "floppyforms/rows/bootstrap-sm-3.html" %}
-    {% formrow form.gender form.birth_date form.nationality form.permit_type %}
-    {% formconfig row using "floppyforms/rows/bootstrap.html" %}
-    {% formrow form.ahv form.iban form.bank_name %}
-    {% formrow form.js_identifier %}
-      {% formrow form.is_mep form.is_teacher %}
-
-
-    </fieldset>
-    {% endif %}
-    <hr>
-  {%  formrow form.is_manager  %}
-  {% endform %}
   <div class=" form-group">
     <div class="col-sm-offset-2 col-sm-10">
-
-      <button type="submit" class="btn btn-success ">{% trans 'Update user' %}</button>
+      <button type="submit" class="btn btn-primary ">{% trans 'Update user' %}</button>
       &nbsp;
       <a href="{% url 'backend:user-list' %}" class="btn  btn-default">{% trans 'Cancel' %}</a>
     </div>

@@ -1,4 +1,8 @@
-12.10.2022
+3.0.0 - 2023-03-01
+- Passage à python3
+- Passage à django 3.2
+
+1.0.2 - 12.10.2022
 Envoi d'emails lors de la bascule d'un élève de la liste d'attente.
 
 1.0.1 - 15.6.2020

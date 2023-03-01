@@ -1,13 +1,11 @@
 {% load static i18n %}
-
-
 <footer id="footer">
   <div class="container">
     <div>
       {% include "address.html" %}
       <img src="{{ STATIC_URL }}img/logo.png" class="hidden-xs hidden-sm hidden-print"/>
       <ul class="footer-links hidden-print">
-        <li><a href="{% url 'contact' %}">{% trans "Contact" %}</a></li>
+        <li><a href="{% url 'contact:contact' %}">{% trans "Contact" %}</a></li>
         <li class="muted">·</li>
         <li><a href="{% url 'terms' %}">{% trans "Terms and conditions" %}</a></li>
         <li class="muted">·</li>

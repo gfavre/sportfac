@@ -1,8 +1,7 @@
 # Test dependencies go here.
 -r base.txt
-coverage == 5.5
-mock == 2.0.0
-factory_boy >= 2.9.2
-psycopg2 == 2.7.3.2
-isort==4.3.21
-django-coverage==1.8.0
+coverage == 6.5.0
+factory_boy == 3.2.1
+psycopg2-binary == 2.8.6
+isort==5.10.1
+django-coverage==1.2.4

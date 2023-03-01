@@ -1,5 +1,5 @@
-from datetime import timedelta
 import tempfile
+from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.sites.models import Site
@@ -8,11 +8,10 @@ from django.template.loader import render_to_string
 from django.utils import translation
 from django.utils.timezone import now
 
-from celery import shared_task
-
 from appointments.models import Appointment
 from backend.dynamic_preferences_registry import global_preferences_registry
 from backend.models import Domain, YearTenant
+from celery import shared_task
 from mailer.tasks import send_mail
 from profiles.models import FamilyUser
 from registrations.models import Bill, Registration
@@ -21,6 +20,7 @@ from registrations.models import Bill, Registration
 @shared_task
 def send_bill_confirmation(user_pk, bill_pk, tenant_pk=None, language=settings.LANGUAGE_CODE):
     from waiting_slots.models import WaitingSlot
+
     cur_lang = translation.get_language()
     try:
         translation.activate(language)
@@ -39,31 +39,36 @@ def send_bill_confirmation(user_pk, bill_pk, tenant_pk=None, language=settings.L
         waiting_slots = WaitingSlot.objects.filter(child__family=user)
         current_site = Site.objects.get_current()
         context = {
-            'appointments': None,
-            'user': user,
-            'registrations': registrations,
-            'waiting_slots': waiting_slots,
-            'bill': bill,
-            'iban': global_preferences['payment__IBAN'],
-            'signature': global_preferences['email__SIGNATURE'],
-            'payment': not settings.KEPCHUP_NO_PAYMENT,
-            'site_name': current_site.name,
-            'site_url': settings.DEBUG and 'http://' + current_site.domain or 'https://' + current_site.domain
+            "appointments": None,
+            "user": user,
+            "registrations": registrations,
+            "waiting_slots": waiting_slots,
+            "bill": bill,
+            "iban": global_preferences["payment__IBAN"],
+            "signature": global_preferences["email__SIGNATURE"],
+            "payment": not settings.KEPCHUP_NO_PAYMENT,
+            "site_name": current_site.name,
+            "site_url": settings.DEBUG
+            and "http://" + current_site.domain
+            or "https://" + current_site.domain,
         }
         if settings.KEPCHUP_USE_APPOINTMENTS:
-            context['appointments'] = Appointment.objects.filter(family=user)
+            context["appointments"] = Appointment.objects.filter(family=user)
 
-        subject = render_to_string('registrations/confirmation_bill_mail_subject.txt', context=context)
-        body = render_to_string('registrations/confirmation_bill_mail.txt', context=context)
+        subject = render_to_string(
+            "registrations/confirmation_bill_mail_subject.txt", context=context
+        )
+        body = render_to_string("registrations/confirmation_bill_mail.txt", context=context)
 
         attachments = []
         if bill.is_wire_transfer:
             tempdir = tempfile.mkdtemp()
         send_mail.delay(
-            subject=subject, message=body,
-            from_email=global_preferences['email__FROM_MAIL'],
+            subject=subject,
+            message=body,
+            from_email=global_preferences["email__FROM_MAIL"],
             recipients=[user.get_email_string()],
-            reply_to=[global_preferences['email__REPLY_TO_MAIL']]
+            reply_to=[global_preferences["email__REPLY_TO_MAIL"]],
         )
         registrations.update(confirmation_sent_on=now())
     finally:
@@ -87,28 +92,33 @@ def send_confirmation(user_pk, tenant_pk=None, language=settings.LANGUAGE_CODE):
         global_preferences = global_preferences_registry.manager()
 
         user = FamilyUser.objects.get(pk=user_pk)
-        registrations = Registration.objects.filter(child__family=user, confirmation_sent_on__isnull=True)
+        registrations = Registration.objects.filter(
+            child__family=user, confirmation_sent_on__isnull=True
+        )
         waiting_slots = WaitingSlot.objects.filter(child__family=user)
 
         current_site = Site.objects.get_current()
         context = {
-            'appointments': None,
-            'user': user,
-            'registrations': registrations,
-            'waiting_slots': waiting_slots,
-            'signature': global_preferences['email__SIGNATURE'],
-            'site_name': current_site.name,
-            'site_url': settings.DEBUG and 'http://' + current_site.domain or 'https://' + current_site.domain
+            "appointments": None,
+            "user": user,
+            "registrations": registrations,
+            "waiting_slots": waiting_slots,
+            "signature": global_preferences["email__SIGNATURE"],
+            "site_name": current_site.name,
+            "site_url": settings.DEBUG
+            and "http://" + current_site.domain
+            or "https://" + current_site.domain,
         }
 
-        subject = render_to_string('registrations/confirmation_mail_subject.txt', context=context)
+        subject = render_to_string("registrations/confirmation_mail_subject.txt", context=context)
 
-        body = render_to_string('registrations/confirmation_mail.txt', context=context)
+        body = render_to_string("registrations/confirmation_mail.txt", context=context)
         send_mail.delay(
-            subject=subject, message=body,
-            from_email=global_preferences['email__FROM_MAIL'],
+            subject=subject,
+            message=body,
+            from_email=global_preferences["email__FROM_MAIL"],
             recipients=[user.get_email_string()],
-            reply_to=[global_preferences['email__REPLY_TO_MAIL']]
+            reply_to=[global_preferences["email__REPLY_TO_MAIL"]],
         )
         registrations.update(confirmation_sent_on=now())
     finally:
@@ -116,7 +126,9 @@ def send_confirmation(user_pk, tenant_pk=None, language=settings.LANGUAGE_CODE):
 
 
 @shared_task()
-def send_confirm_from_waiting_list(registration_pk, tenant_pk=None, language=settings.LANGUAGE_CODE):
+def send_confirm_from_waiting_list(
+    registration_pk, tenant_pk=None, language=settings.LANGUAGE_CODE
+):
     cur_lang = translation.get_language()
     try:
         translation.activate(language)
@@ -134,22 +146,29 @@ def send_confirm_from_waiting_list(registration_pk, tenant_pk=None, language=set
 
         current_site = Site.objects.get_current()
         context = {
-            'user': user,
-            'registration': registration,
-            'bill': registration.bill,
-            'signature': global_preferences['email__SIGNATURE'],
-            'site_name': current_site.name,
-            'site_url': settings.DEBUG and 'http://' + current_site.domain or 'https://' + current_site.domain
+            "user": user,
+            "registration": registration,
+            "bill": registration.bill,
+            "signature": global_preferences["email__SIGNATURE"],
+            "site_name": current_site.name,
+            "site_url": settings.DEBUG
+            and "http://" + current_site.domain
+            or "https://" + current_site.domain,
         }
 
-        subject = render_to_string('waiting_slots/confirm_from_waiting_list_mail_subject.txt', context=context)
+        subject = render_to_string(
+            "waiting_slots/confirm_from_waiting_list_mail_subject.txt", context=context
+        )
 
-        body = render_to_string('waiting_slots/confirm_from_waiting_list_mail_body.txt', context=context)
+        body = render_to_string(
+            "waiting_slots/confirm_from_waiting_list_mail_body.txt", context=context
+        )
         send_mail.delay(
-            subject=subject, message=body,
-            from_email=global_preferences['email__FROM_MAIL'],
+            subject=subject,
+            message=body,
+            from_email=global_preferences["email__FROM_MAIL"],
             recipients=[user.get_email_string()],
-            reply_to=[global_preferences['email__REPLY_TO_MAIL']]
+            reply_to=[global_preferences["email__REPLY_TO_MAIL"]],
         )
     finally:
         translation.activate(cur_lang)
@@ -162,8 +181,8 @@ def cancel_expired_registrations():
     current_domain = Domain.objects.filter(is_current=True).first()
     connection.set_tenant(current_domain.tenant)
     registrations = Registration.objects.filter(
-        status='waiting',
-        created__lte=(now() - timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES))
+        status="waiting",
+        created__lte=(now() - timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES)),
     )
     for registration in registrations:
         registration.cancel(reason=Registration.REASON.expired)

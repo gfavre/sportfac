@@ -1,9 +1,7 @@
-from __future__ import unicode_literals
-
 from django.apps import AppConfig
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 class SchoolsConfig(AppConfig):
-    name = 'schools'
+    name = "schools"
     verbose_name = _("Schools")

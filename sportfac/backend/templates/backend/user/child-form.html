@@ -1,23 +1,16 @@
-{% load i18n floppyforms sekizai_tags %}
+{% load i18n   floppyforms crispy_forms_tags sekizai_tags %}
+{% crispy form %}
+
 
 {% addtoblock "js" %}
-{{ form.media }}
-<script src="{{ STATIC_URL }}js/vendor/moment-with-locales.min.js"></script>
-<script src="{{ STATIC_URL }}js/vendor/bootstrap-datetimepicker.min.js"></script>
-<script type="text/javascript">
-  $(function () {
-    $('.datetimepicker').datetimepicker({
-        language: '{{ LANGUAGE_CODE }}',
-        icons: {time: 'icon-clock',
-                date: 'icon-calendar',
-                up:   'icon-up-open',
-                down: 'icon-down-open'}
-        });
-  });
-</script>
-
+{{ form.media.js }}
 {% endaddtoblock %}
 
+{% addtoblock "css" %}
+{{ form.media.css }}
+{% endaddtoblock %}
+
+{% comment %}
 {% form form using %}
 {% formconfig row using "floppyforms/rows/bootstrap.html" %}
 
@@ -29,7 +22,6 @@
 {% if EMERGENCY_NUMBER_MANDATORY %}
   {% formrow form.emergency_number %}
 {% endif %}
-
 
 {% if BIB_NUMBERS %}
   {% formrow form.bib_number %}
@@ -65,3 +57,4 @@
 {% endif %}
 </fieldset>
 {% endform %}
+{% endcomment %}

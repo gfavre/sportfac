@@ -1,12 +1,12 @@
 {% extends "backend/base.html" %}
-{% load i18n floppyforms sekizai_tags %}
+{% load i18n  sekizai_tags %}
 
 {% block title %}{% trans "Create a new activity" %} - {{ block.super }}{% endblock %}
 {% block page_title %}<i class="icon-soccer-ball"></i>&nbsp;&nbsp;{% trans "Create a new activity" %}{% endblock %}
 
 {% block content %}
 
-<form action="" method="post" class="form-horizontal">{% csrf_token %}
+<form action="" method="post" class="form-horizontal">
   {% include "backend/activity/form.html" %}
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">

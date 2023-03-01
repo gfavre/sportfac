@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.contrib import admin
-from .models import AppointmentSlot, Appointment
+
+from .models import Appointment, AppointmentSlot
 
 
 @admin.register(AppointmentSlot)
@@ -12,4 +11,4 @@ class AppointmentSlotAdmin(admin.ModelAdmin):
 
 @admin.register(Appointment)
 class AppointmentAdmin(admin.ModelAdmin):
-    list_display = ('slot', 'child')
+    list_display = ("slot", "child")

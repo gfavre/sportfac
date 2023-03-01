@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-from mock import patch
-
 from activities.tests.factories import CourseFactory
+from mock import patch
 from registrations.models import Child, RegistrationsProfile
 from registrations.tests.factories import ChildFactory
+
 from sportfac.utils import TenantTestCase as TestCase
+
 from ..models import FamilyUser
 from .factories import FamilyUserFactory
 
@@ -15,7 +16,7 @@ class FamilyUserTests(TestCase):
         self.family_user = FamilyUserFactory()
 
     def test_save_creates_profile(self):
-        if hasattr(self.family_user, 'profile'):
+        if hasattr(self.family_user, "profile"):
             self.family_user.profile.delete()
         self.family_user.save(create_profile=True)
         self.assertEqual(RegistrationsProfile.objects.count(), 1)

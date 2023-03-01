@@ -3,27 +3,46 @@ from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from registrations.models import Child
-from sportfac.admin_utils import SportfacModelAdmin, SportfacAdminMixin
+
+from sportfac.admin_utils import SportfacAdminMixin, SportfacModelAdmin
+
 from .models import City, FamilyUser, School, SchoolYear
 
 
 class FamilyCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
     fields, plus a repeated password."""
-    password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
+
+    password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
+    password2 = forms.CharField(label="Password confirmation", widget=forms.PasswordInput)
 
     class Meta:
         model = FamilyUser
-        fields = ('email', 'first_name', 'last_name',
-                  'address', 'zipcode', 'city', 'country',
-                  'private_phone', 'private_phone2',
-                  'birth_date',
-                  'iban', 'ahv', 'js_identifier', 'is_mep', 'is_teacher', 'gender', 'nationality',
-                  'permit_type', 'bank_name', "external_identifier")
+        fields = (
+            "email",
+            "first_name",
+            "last_name",
+            "address",
+            "zipcode",
+            "city",
+            "country",
+            "private_phone",
+            "private_phone2",
+            "birth_date",
+            "iban",
+            "ahv",
+            "js_identifier",
+            "is_mep",
+            "is_teacher",
+            "gender",
+            "nationality",
+            "permit_type",
+            "bank_name",
+            "external_identifier",
+        )
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -47,19 +66,43 @@ class FamilyChangeForm(forms.ModelForm):
     the user, but replaces the password field with admin's
     password hash display field.
     """
-    password = ReadOnlyPasswordHashField(help_text= _("Raw passwords are not stored, so there is no way to see "
-                    "this user's password, but you can change the password "
-                    "using <a href=\"../password/\">this form</a>."))
+
+    password = ReadOnlyPasswordHashField(
+        help_text=_(
+            "Raw passwords are not stored, so there is no way to see "
+            "this user's password, but you can change the password "
+            'using <a href="../password/">this form</a>.'
+        )
+    )
 
     class Meta:
         model = FamilyUser
-        fields = ('email', 'is_staff', 'is_superuser', 'groups',
-                  'first_name', 'last_name',
-                  'address', 'zipcode', 'city', 'country',
-                  'private_phone', 'private_phone2', 'private_phone3',
-                  'birth_date',
-                  'iban', 'ahv', 'js_identifier', 'is_mep', 'is_teacher', 'gender', 'nationality',
-                  'permit_type', 'bank_name', "external_identifier")
+        fields = (
+            "email",
+            "is_staff",
+            "is_superuser",
+            "groups",
+            "first_name",
+            "last_name",
+            "address",
+            "zipcode",
+            "city",
+            "country",
+            "private_phone",
+            "private_phone2",
+            "private_phone3",
+            "birth_date",
+            "iban",
+            "ahv",
+            "js_identifier",
+            "is_mep",
+            "is_teacher",
+            "gender",
+            "nationality",
+            "permit_type",
+            "bank_name",
+            "external_identifier",
+        )
 
     def clean_password(self):
         # Regardless of what the user provides, return the initial value.
@@ -81,54 +124,108 @@ class FamilyAdmin(SportfacAdminMixin, UserAdmin):
     form = FamilyChangeForm
     add_form = FamilyCreationForm
 
-    list_display = ('email', 'first_name', 'last_name', 'children_names', 'last_login', 'date_joined', 'course_names', 'is_instructor')
-    #change_list_filter_template = "admin/filter_listing.html"
-    list_filter = ('is_staff', 'is_superuser', 'is_active', 'is_manager')
+    list_display = (
+        "email",
+        "first_name",
+        "last_name",
+        "children_names",
+        "last_login",
+        "date_joined",
+        "course_names",
+        "is_instructor",
+    )
+    # change_list_filter_template = "admin/filter_listing.html"
+    list_filter = ("is_staff", "is_superuser", "is_active", "is_manager")
 
     fieldsets = (
-        (None, {'fields': ('email', 'password', 'is_staff', 'is_superuser', 'is_active', 'is_manager',)}),
-        ('Personal info', {'fields': ('first_name', 'last_name',
-                                      'address', 'zipcode', 'city', 'country',
-                                      'private_phone', 'private_phone2', 'private_phone3',
-                                      )}),
-        (_("Instructor infos"), {
-            'fields': ["external_identifier", 'birth_date', 'gender', 'ahv',
-                       ('nationality', 'permit_type'),
-                       ('is_mep', 'is_teacher'),
-                       ('iban', 'bank_name'),
-                       ]}
-         ),
+        (
+            None,
+            {
+                "fields": (
+                    "email",
+                    "password",
+                    "is_staff",
+                    "is_superuser",
+                    "is_active",
+                    "is_manager",
+                )
+            },
+        ),
+        (
+            "Personal info",
+            {
+                "fields": (
+                    "first_name",
+                    "last_name",
+                    "address",
+                    "zipcode",
+                    "city",
+                    "country",
+                    "private_phone",
+                    "private_phone2",
+                    "private_phone3",
+                )
+            },
+        ),
+        (
+            _("Instructor infos"),
+            {
+                "fields": [
+                    "external_identifier",
+                    "birth_date",
+                    "gender",
+                    "ahv",
+                    ("nationality", "permit_type"),
+                    ("is_mep", "is_teacher"),
+                    ("iban", "bank_name"),
+                ]
+            },
+        ),
     )
     add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2')}
+        (None, {"classes": ("wide",), "fields": ("email", "password1", "password2")}),
+        (
+            "Personal info",
+            {
+                "fields": (
+                    "first_name",
+                    "last_name",
+                    "address",
+                    "zipcode",
+                    "city",
+                    "country",
+                    "private_phone",
+                    "private_phone2",
+                    "birth_date",
+                    "iban",
+                    "ahv",
+                )
+            },
         ),
-        ('Personal info', {'fields': ('first_name', 'last_name',
-                                      'address', 'zipcode', 'city', 'country',
-                                      'private_phone', 'private_phone2',
-                                      'birth_date', 'iban', 'ahv')}),
     )
-    search_fields = ('email', 'last_name', 'first_name',)
-    ordering = ('last_name', 'first_name')
+    search_fields = (
+        "email",
+        "last_name",
+        "first_name",
+    )
+    ordering = ("last_name", "first_name")
     # inlines = [ChildInline]
 
 
 @admin.register(City)
 class CityAdmin(SportfacModelAdmin):
-    list_display = ('zipcode', 'name', 'country')
-    search_fields = ('zipcode', 'name')
-    list_filter = ('country', )
+    list_display = ("zipcode", "name", "country")
+    search_fields = ("zipcode", "name")
+    list_filter = ("country",)
 
 
 @admin.register(SchoolYear)
 class SchoolYearAdmin(SportfacModelAdmin):
-    list_display = ('year', 'visible')
-    list_filter = ('visible',)
+    list_display = ("year", "visible")
+    list_filter = ("visible",)
 
 
 @admin.register(School)
 class SchoolAdmin(SportfacModelAdmin):
-    list_display = ('name', 'selectable')
-    list_filter = ('selectable',)
-
+    list_display = ("name", "selectable")
+    list_filter = ("selectable",)

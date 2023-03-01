@@ -1,7 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 
-from .database_router import MASTER_DB, LOCAL_DB
+from .database_router import LOCAL_DB, MASTER_DB
+
 
 UserModel = get_user_model()
 

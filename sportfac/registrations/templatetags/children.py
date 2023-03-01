@@ -8,7 +8,9 @@ register = template.Library()
 
 @register.filter
 def child_level(child, course):
-    level, created = ChildActivityLevel.objects.get_or_create(child=child, activity=course.activity)
+    level, created = ChildActivityLevel.objects.get_or_create(
+        child=child, activity=course.activity
+    )
     return level
 
 
@@ -18,10 +20,8 @@ def child_announced_level(child, course):
     try:
         registration = Registration.objects.get(course=course, child=child)
     except Registration.DoesNotExist:
-        return ''
-    qs = registration.extra_infos.filter(key__question_label='Niveau de ski/snowboard')
+        return ""
+    qs = registration.extra_infos.filter(key__question_label="Niveau de ski/snowboard")
     if qs.exists():
         return qs.last().value
-    return ''
-
-
+    return ""

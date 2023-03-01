@@ -1,26 +1,27 @@
 # -*- coding: utf-8 -*-
 import re
 
-from django.db.models import Min, Max
-from django.utils.translation import ugettext as _
+from django.db.models import Max, Min
 from django.utils.six import moves
+from django.utils.translation import gettext as _
 
+import six
 import xlrd
-
+from profiles.models import SchoolYear
+from six.moves import range, zip
 
 from .models import Teacher
-from profiles.models import SchoolYear
 
 
-TEACHER_MANDATORY_FIELDS = (u'ID LAGAPEO', u'Nom', u'Prénom', u'Maîtrises')
+TEACHER_MANDATORY_FIELDS = ("ID LAGAPEO", "Nom", "Prénom", "Maîtrises")
 TEACHER_IMPORT_TO_FIELD = {
-    u'ID LAGAPEO': 'number',
-    u'Nom': 'last_name',
-    u'Prénom': 'first_name',
-    u'Courriel 1': 'email',
+    "ID LAGAPEO": "number",
+    "Nom": "last_name",
+    "Prénom": "first_name",
+    "Courriel 1": "email",
 }
-YEARS_MINMAX = SchoolYear.objects.all().aggregate(Min('year'), Max('year'))
-ALL_YEARS = range(YEARS_MINMAX['year__min'], YEARS_MINMAX['year__max'] + 1)
+YEARS_MINMAX = SchoolYear.objects.all().aggregate(Min("year"), Max("year"))
+ALL_YEARS = list(range(YEARS_MINMAX["year__min"], YEARS_MINMAX["year__max"] + 1))
 
 
 def load_teachers(filelike, building=None):
@@ -30,7 +31,9 @@ def load_teachers(filelike, building=None):
         header_row = sheet.row_values(0)
 
         if not all(key in header_row for key in TEACHER_MANDATORY_FIELDS):
-            raise ValueError(_("All these fields are mandatory: %s") % unicode(TEACHER_MANDATORY_FIELDS))
+            raise ValueError(
+                _("All these fields are mandatory: %s") % six.text_type(TEACHER_MANDATORY_FIELDS)
+            )
     except xlrd.XLRDError:
         raise ValueError(_("File format is unreadable"))
 
@@ -44,9 +47,9 @@ def load_teachers(filelike, building=None):
             if key in TEACHER_IMPORT_TO_FIELD:
                 translated[TEACHER_IMPORT_TO_FIELD[key]] = val
 
-        number = translated.pop('number')
+        number = translated.pop("number")
 
-        classes = values.get(u'Maîtrises', '')
+        classes = values.get("Maîtrises", "")
         if not classes:
             nb_skipped += 1
             continue
@@ -61,8 +64,8 @@ def load_teachers(filelike, building=None):
             nb_updated += 1
 
         years = set()
-        for classes_part in classes.split(','):
-            match = re.match('(\d+)(?:\-(\d+))?[a-zA-Z]+[\d]?/\w+', classes_part.strip())
+        for classes_part in classes.split(","):
+            match = re.match("(\d+)(?:\-(\d+))?[a-zA-Z]+[\d]?/\w+", classes_part.strip())
             if not match:
                 # ACC or DES
                 years = years.union(ALL_YEARS)
@@ -79,5 +82,3 @@ def load_teachers(filelike, building=None):
                 continue
 
     return nb_created, nb_updated, nb_skipped
-
-

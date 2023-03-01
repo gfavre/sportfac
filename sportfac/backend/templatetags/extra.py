@@ -12,7 +12,7 @@ def answer_to(registration, question):
         qs = registration.extra_infos.filter(key__question_label__startswith=question)
     if qs.count():
         return qs.last().value
-    return ''
+    return ""
 
 
 @register.filter(is_safe=True)

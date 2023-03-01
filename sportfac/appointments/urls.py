@@ -1,10 +1,11 @@
-# -*- coding: utf-8 -*-
-from django.conf.urls import url
+from django.urls import path
 
 from .views.register import SlotsView, SuccessfulRegister
 
-urlpatterns = [
-    url('success$', SuccessfulRegister.as_view(), name='success'),
-    url('$', SlotsView.as_view(), name='register'),
 
+app_name = "appointments"
+
+urlpatterns = [
+    path("success", SuccessfulRegister.as_view(), name="success"),
+    path("", SlotsView.as_view(), name="register"),
 ]

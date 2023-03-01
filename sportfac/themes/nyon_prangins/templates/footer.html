@@ -1,6 +1,4 @@
 {% load static i18n %}
-
-
 <footer id="footer">
   <div class="container">
     <div>
@@ -9,7 +7,7 @@
       <img src="{{ STATIC_URL }}img/prangins.png" class="hidden-xs hidden-sm hidden-print" style="height: 50px"/>
 
       <ul class="footer-links hidden-print">
-        <li><a href="{% url 'contact' %}">{% trans "Contact" %}</a></li>
+        <li><a href="{% url 'contact:contact' %}">{% trans "Contact" %}</a></li>
         <li class="muted">·</li>
         <li><a href="{% url 'privacy' %}">{% trans "Privacy" %}</a></li>
       </ul>

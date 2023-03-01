@@ -1,11 +1,15 @@
+from __future__ import absolute_import, print_function
+
 from django.core.mail import send_mail
-from sportfac.context_processors import *
+
 from profiles.models import Registration
+
+from sportfac.context_processors import *
 
 
 parents = set([reg.child.family for reg in Registration.objects.all()])
 for parent in parents:
-    body = u"""Chers parents, 
+    body = """Chers parents, 
 
 Suite à la décision 180, 181 et du plan de protection pour la pratique du chant du DFJC voici les précautions sanitaires qui seront scrupuleusement mises en place dès le jeudi 5 novembre. Pour les cours qui sont suspendus, nous décalerons simplement les semaines une fois que la pratique sera à nouveau possible. 
 
@@ -44,12 +48,16 @@ Guillaume Strobino
 Responsable régional
 Ville de Nyon & Prangins
 Toutes les informations sur : www.nyon.ch/ssf"""
-    
-    to = u'%s %s <%s>' % (parent.first_name, parent.last_name, parent.email)
-    print to
-    send_mail(u'Sport scolaire facultatif de Nyon-Prangins - nouvelles mesures sanitaires',
-              body,
-              u'Guillaume Strobino <ssf@nyon.ch>',
-              [to,])
+
+    to = "%s %s <%s>" % (parent.first_name, parent.last_name, parent.email)
+    print(to)
+    send_mail(
+        "Sport scolaire facultatif de Nyon-Prangins - nouvelles mesures sanitaires",
+        body,
+        "Guillaume Strobino <ssf@nyon.ch>",
+        [
+            to,
+        ],
+    )
 
 len(parents)

@@ -1,5 +1,5 @@
 {% extends "backend/base.html" %}
-{% load i18n floppyforms staticfiles sekizai_tags %}
+{% load i18n floppyforms static sekizai_tags %}
 {% block title %}{% trans "Update course" %} - {{ block.super }}{% endblock %}
 {% block page_title %}{% trans "Update course" %}{% endblock %}
 
@@ -14,8 +14,7 @@
   </form>
 
   {% addtoblock "js" %}
-    {{ form.media }}
-    <script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
+    {{ form.media.js }}
     {% if EXPLICIT_SESSION_DATES %}
       <script src="{% static 'js/vendor/bootstrap-datepicker.js' %}"></script>
       <script
@@ -51,5 +50,10 @@
       });
     </script>
   {% endaddtoblock %}
+
+{% addtoblock "css" %}
+  {{ form.media.css }}
+{% endaddtoblock %}
+
 
 {% endblock content %}

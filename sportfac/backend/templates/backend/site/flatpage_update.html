@@ -1,12 +1,11 @@
 {% extends "backend/base.html" %}
-{% load i18n floppyforms staticfiles sekizai_tags %}
+{% load i18n crispy_forms_tags static sekizai_tags %}
 {% block title %}{% trans "Update page" %} - {{ block.super }}{% endblock %}
 {% block page_title %}{% trans "Update page" %}{% endblock %}
 
 {% block content %}
   <form action="" method="post" class="form-horizontal">{% csrf_token %}
-    {{ form.errors }}
-    {% form form using "floppyforms/layouts/bootstrap.html" %}
+    {% crispy form %}
 
     <div class=" form-group">
       <div class="col-sm-offset-2 col-sm-10">
@@ -18,10 +17,13 @@
   </form>
 
   {% addtoblock "js" %}
-    {{ form.media }}
+    {{ form.media.js }}
     <script>
      CKEDITOR.config.contentsCss = '/static/css/style.css' ;
     </script>
+  {% endaddtoblock %}
+  {% addtoblock "css" %}
+    {{ form.media.css }}
   {% endaddtoblock %}
 
 {% endblock content %}
