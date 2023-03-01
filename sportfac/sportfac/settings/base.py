@@ -1,13 +1,7 @@
-# -*- coding:utf-8 -*-
 """Common settings and globals."""
 from os.path import abspath, basename, dirname, join, normpath
 from sys import path
 
-import django
-
-# Normally you should not import ANYTHING from Django directly
-# into your settings, but ImproperlyConfigured is an exception.
-from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import gettext_lazy as _
 
 import environ

@@ -226,13 +226,13 @@ class CourseForm(forms.ModelForm):
                     Div("day", css_class="col-md-6"),
                     css_class="course-visible camp-hidden multicourse-hidden row",
                 ),
+                Div(
+                    Div("start_date", css_class="col-md-6"),
+                    Div("end_date", css_class="col-md-6"),
+                    css_class="row",
+                ),
             ]
         dates_section += [
-            Div(
-                Div("start_date", css_class="col-md-6"),
-                Div("end_date", css_class="col-md-6"),
-                css_class="row",
-            ),
             Div(
                 Div(
                     AppendedText("start_time", '<span class="icon-clock"></span>'),

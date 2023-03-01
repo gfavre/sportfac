@@ -12,7 +12,7 @@ from activities.models import Course, ExtraNeed
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from crispy_forms.bootstrap import AppendedText
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Field, Layout
+from crispy_forms.layout import Layout
 from django_select2 import forms as s2forms
 from registrations.models import Child, ExtraInfo, Registration
 from six.moves import zip
@@ -56,10 +56,6 @@ class TimePickerInput(forms.TimeInput):
     def render(self, name, value, attrs=None, renderer=None):
         attrs["class"] = "form-control timepicker"
         return super().render(name, value, attrs=attrs, renderer=renderer)
-
-
-class Select2Widget(forms.Select):
-    template_name = "floppyforms/select2.html"
 
 
 class ActivityWidget(s2forms.ModelSelect2Widget):
@@ -162,14 +158,6 @@ class TransportWidget(s2forms.ModelSelect2Widget):
         default_attrs.update(base_attrs)
         attrs = super().build_attrs(default_attrs, extra_attrs=extra_attrs)
         return attrs
-
-
-class Select2MultipleWidget(forms.SelectMultiple):
-    template_name = "floppyforms/select2.html"
-
-    def build_attrs(self, extra_attrs=None, **kwargs):
-        self.attrs.setdefault("multiple", "multiple")
-        return super(Select2MultipleWidget, self).build_attrs(extra_attrs, **kwargs)
 
 
 class RegistrationDatesForm(forms.Form):

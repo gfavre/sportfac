@@ -27,7 +27,7 @@ django-import-export == 3.0.2
 
 django-floppyforms==1.9.0
 django-braces == 1.14.0
-Django-Select2 == 8.0.0  # Select2 widget (autocompletion on selects)
+django-select2 ~= 8.1.0
 django-autoslug == 1.9.8
 # WYSIWYG editor
 django-picklefield == 1.0.0
