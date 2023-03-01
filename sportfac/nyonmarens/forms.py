@@ -1,14 +1,15 @@
 from django import forms
-from django.core.mail import EmailMessage
 from django.conf import settings
+from django.core.mail import EmailMessage
 from django.template import loader
 
+from backend.dynamic_preferences_registry import global_preferences_registry
 from captcha.fields import ReCaptchaField
 from captcha.widgets import ReCaptchaV3
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Div, Layout, Fieldset, Field, Submit
 from crispy_forms.bootstrap import FormActions
-from backend.dynamic_preferences_registry import global_preferences_registry
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Div, Field, Fieldset, Layout, Submit
+
 
 FORM_TYPES = [
     ("Déposer un témoignage", "Déposer un témoignage"),
@@ -26,21 +27,14 @@ SCHOOL_YEARS = [
 
 
 class WhistleForm(forms.Form):
-    context = forms.CharField(label="",
-                              widget=forms.Textarea(),
-                              required=True)
-    form_type = forms.ChoiceField(label="",
-                                  choices=FORM_TYPES,
-                                  required=True)
+    context = forms.CharField(label="", widget=forms.Textarea(), required=True)
+    form_type = forms.ChoiceField(label="", choices=FORM_TYPES, required=True)
 
     other_type = forms.CharField(label="Autre", required=False)
     school_year = forms.ChoiceField(label="Année scolaire", required=False, choices=SCHOOL_YEARS)
     age = forms.IntegerField(label="Âge", required=False)
 
-    email = forms.EmailField(
-        label="E-mail",
-        widget=forms.EmailInput(),
-        required=False)
+    email = forms.EmailField(label="E-mail", widget=forms.EmailInput(), required=False)
     phone = forms.CharField(label="Téléphone", required=False)
 
     def send_mail(self, fail_silently=False):
@@ -92,6 +86,5 @@ class WhistleForm(forms.Form):
             ),
             FormActions(
                 Submit("submit", "Envoyer", css_class="btn btn-primary"),
-            )
-
+            ),
         )
