@@ -2,6 +2,7 @@ from django import forms
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.template import loader
+from django.utils.safestring import mark_safe
 
 from backend.dynamic_preferences_registry import global_preferences_registry
 from captcha.fields import ReCaptchaField
@@ -42,13 +43,13 @@ class WhistleForm(forms.Form):
         from_email = preferences["email__FROM_MAIL"]
         body_tmpl = loader.get_template("nyonmarens/whistle_email.txt")
         context = {
-            "context": self.cleaned_data["context"],
-            "form_type": self.cleaned_data["form_type"],
-            "form_type_other": self.cleaned_data["other_type"],
-            "school_year": self.cleaned_data["school_year"],
-            "age": self.cleaned_data["age"],
-            "email": self.cleaned_data["email"],
-            "phone": self.cleaned_data["phone"],
+            "context": mark_safe(self.cleaned_data["context"]),
+            "form_type": mark_safe(self.cleaned_data["form_type"]),
+            "form_type_other": mark_safe(self.cleaned_data["other_type"]),
+            "school_year": mark_safe(self.cleaned_data["school_year"]),
+            "age": mark_safe(self.cleaned_data["age"]),
+            "email": mark_safe(self.cleaned_data["email"]),
+            "phone": mark_safe(self.cleaned_data["phone"]),
         }
         email = EmailMessage(
             subject="Formulaire d'annonce de situation - EPS Nyon-Marens",
@@ -85,6 +86,6 @@ class WhistleForm(forms.Form):
                 "phone",
             ),
             FormActions(
-                Submit("submit", "Envoyer", css_class="btn btn-primary"),
+                Submit("submit", "Envoyer"),
             ),
         )
