@@ -7,7 +7,7 @@ from .views import ContactView
 
 class Sitemap(sitemaps.Sitemap):
     def items(self):
-        return ["contact"]
+        return ["contact:contact"]
 
     def location(self, item):
         return reverse(item)
