@@ -1,18 +1,21 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags %}
+{% load i18n crispy_forms_tags sekizai_tags %}
 
 {% block title %}{% trans "Update activity" %} - {{ block.super }}{% endblock %}
 {% block page_title %}<i class="icon-soccer-ball"></i>&nbsp;&nbsp;{% trans "Update activity" %}{% endblock %}
 
 {% block content %}
+{% addtoblock "css" %}
+{{ form.media.css }}
+{% endaddtoblock %}
 
 {% addtoblock "js" %}
-{{ form.media }}
+{{ form.media.js }}
 {% endaddtoblock %}
 
 <form action="" method="post" class="form-horizontal">
 
-  {% include "backend/activity/form.html" %}
+{% crispy form %}
   <div class=" form-group">
     <div class="col-sm-offset-2 col-sm-10">
 

@@ -3,18 +3,17 @@ import datetime
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.forms.widgets import TextInput
+from django.forms.widgets import TextInput, DateInput
 from django.utils.translation import gettext as _
 
 from backend.forms import (
     ActivityWidget,
     CityMultipleWidget,
-    DatePickerInput,
     ExtraNeedMultipleWidget,
     FamilyUserMultipleWidget,
     MultiDateInput,
-    TimePickerInput,
 )
+from bootstrap_datepicker_plus.widgets import DatePickerInput, TimePickerInput
 from crispy_forms.bootstrap import AppendedText
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Fieldset, Layout
@@ -45,18 +44,20 @@ class CourseForm(forms.ModelForm):
         widget=forms.Textarea(attrs={"rows": 3}),
         required=False,
     )
-    start_date = forms.DateTimeField(
+    start_date = forms.DateField(
         label=_("Start date"),
         required=True,
-        input_formats=["%d.%m.%Y", "%Y-%m-%d"],
-        widget=DatePickerInput(format="%d.%m.%Y"),
+        input_formats=["%d.%m.%Y"],
+        widget=DateInput(format="%d.%m.%Y"),
+        #widget=DatePickerInput(format="%d.%m.%Y"),
         help_text=_("format: dd.mm.yyyy, e.g. 31.07.2016"),
     )
     end_date = forms.DateTimeField(
         label=_("End date"),
         required=True,
-        input_formats=["%d.%m.%Y", "%Y-%m-%d"],
-        widget=DatePickerInput(format="%d.%m.%Y"),
+        input_formats=["%d.%m.%Y"],
+        #input_formats=["%d.%m.%Y", "%Y-%m-%d"],
+        widget=DateInput(format="%d.%m.%Y"),
         help_text=_("format: dd.mm.yyyy, e.g. 31.07.2016"),
     )
     start_time = forms.TimeField(
@@ -200,6 +201,7 @@ class CourseForm(forms.ModelForm):
         self._filter_price_field()
         self.helper = FormHelper()
         self.helper.form_tag = False
+        self.helper.include_media = False
         if settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
             pricing_section = [
                 "local_city_override",
@@ -331,7 +333,7 @@ class MultipleDatesField(forms.CharField):
     widget = MultiDateInput()
 
     def widget_attrs(self, widget):
-        attrs = super(MultipleDatesField, self).widget_attrs(widget)
+        attrs = super().widget_attrs(widget)
         attrs.update({"format": self.date_format})
         return attrs
 

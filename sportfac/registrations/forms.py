@@ -7,11 +7,11 @@ from activities.models import Course
 from backend.forms import (
     BuildingWidget,
     CourseWidget,
-    DatePickerInput,
     FamilyUserWidget,
     TeacherWidget,
     TransportWidget,
 )
+from bootstrap_datepicker_plus.widgets import DatePickerInput
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, ButtonHolder, Div, Fieldset, Layout
 from profiles.models import FamilyUser, School, SchoolYear

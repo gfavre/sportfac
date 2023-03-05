@@ -1,20 +1,24 @@
 {% extends "backend/base.html" %}
-{% load i18n floppyforms static sekizai_tags %}
+{% load i18n floppyforms static sekizai_tags crispy_forms_tags %}
 {% block title %}{% trans "Update course" %} - {{ block.super }}{% endblock %}
 {% block page_title %}{% trans "Update course" %}{% endblock %}
 
 {% block content %}
-  <form action="" method="post">{% csrf_token %}
-    {% include "backend/course/form.html" %}
+  <form action="" method="post">
+    {% crispy form %}
     <div class=" form-group">
-      <button type="submit" class="btn btn-success ">{% trans 'Update course' %}</button>
-      &nbsp;
+      <button type="submit" class="btn btn-success ">{% trans 'Update course' %}</button>&nbsp;
       <a href="{% url 'backend:course-list' %}" class="btn  btn-default">{% trans 'Cancel' %}</a>
     </div>
   </form>
 
   {% addtoblock "js" %}
+    <footer></footer>
     {{ form.media.js }}
+        <footer></footer>
+
+          <!--
+
     {% if EXPLICIT_SESSION_DATES %}
       <script src="{% static 'js/vendor/bootstrap-datepicker.js' %}"></script>
       <script
@@ -35,6 +39,7 @@
           });
 
         {% else %}
+          /*
           $('.datetimepicker').datetimepicker({
               language: '{{ LANGUAGE_CODE }}',
               icons: {
@@ -44,11 +49,13 @@
                 down: 'icon-down-open'
               }
             }
-          );
+          );*/
         {% endif %}
 
       });
+      -->
     </script>
+
   {% endaddtoblock %}
 
 {% addtoblock "css" %}

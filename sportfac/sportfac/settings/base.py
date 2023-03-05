@@ -223,6 +223,7 @@ SHARED_APPS = (
     "django.contrib.sitemaps",
     # third party apps
     "anymail",  # send mail
+    "bootstrap_datepicker_plus",
     "captcha",  # recaptcha
     "ckeditor",  # wysiwyg editor
     "ckeditor_uploader",
@@ -367,9 +368,9 @@ DYNAMIC_PREFERENCES = {
 
 ########## END DYNAMIC PREFERENCES CONFIGURATION
 
-SWISS_DATE_SHORT = "%d.%m.%Y"
+SWISS_DATE_ = "%d.%m.%Y"
 DATE_INPUT_FORMATS = [
-    SWISS_DATE_SHORT,
+    SWISS_DATE_,
     "%Y-%m-%d",
     "%m/%d/%Y",
     "%m/%d/%y",  # '2006-10-25', '10/25/2006', '10/25/06'
@@ -495,6 +496,18 @@ PHONENUMBER_DEFAULT_REGION = "CH"
 ############ Crispy
 CRISPY_TEMPLATE_PACK = "bootstrap3"
 
+############ Date picker
+# The link above contains all settings
+BOOTSTRAP_DATEPICKER_PLUS = {
+    "options": {
+        "locale": "fr",
+    },
+    "variant_options": {
+        "date": {
+            "format": "DD.MM.YYYY",
+        },
+    }
+}
 
 ################################################################################
 # Kepchup Options

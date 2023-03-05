@@ -37,7 +37,7 @@ class DatePickerInput(forms.DateInput):
     def __init__(self, attrs=None, format=None):
         if not format:
             self.format = "%d.%m.%Y"
-        super(DatePickerInput, self).__init__(attrs, format=format)
+        super().__init__(attrs, format=format)
 
     def format_value(self, value):
         try:

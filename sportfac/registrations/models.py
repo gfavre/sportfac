@@ -92,7 +92,7 @@ class Registration(TimeStampedModel, StatusModel):
 
     @property
     def cancel_url(self):
-        return reverse("cancel-registration", kwargs={"pk": self.pk})
+        return reverse("registrations:cancel-registration", kwargs={"pk": self.pk})
 
     @property
     def delete_url(self):
