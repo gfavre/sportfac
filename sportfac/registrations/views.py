@@ -57,11 +57,11 @@ class BillDetailView(LoginRequiredMixin, BillMixin, DetailView):
         return Bill.objects.filter(family=self.request.user)
 
     def get_context_data(self, **kwargs):
-        context = super(BillDetailView, self).get_context_data(**kwargs)
-        if not self.get_object().is_paid and settings.KEPCHUP_PAYMENT_METHOD == "datatrans":
+        context = super().get_context_data(**kwargs)
+        bill = self.get_object()
+        if not bill.is_paid and settings.KEPCHUP_PAYMENT_METHOD == "datatrans":
             from payments.datatrans import get_transaction
-
-            transaction = get_transaction(self.request, context["bill"])
+            transaction = get_transaction(self.request, bill)
             context["transaction"] = transaction
         return context
 

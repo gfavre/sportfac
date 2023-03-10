@@ -53,7 +53,7 @@ def get_transaction(request, invoice):
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         details = e.response.json()
-        raise e
+        raise
     transaction_id = response.json().get("transactionId")
 
     return DatatransTransaction.objects.create(
