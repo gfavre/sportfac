@@ -28,7 +28,7 @@ def get_ssf_decompte_heures(course, instructor):
     pdf_file = os.path.join(settings.STATIC_ROOT, "pdf", "SSF_decompte_moniteur.pdf")
 
     fields = {
-        "Escol": global_preferences["email__SCHOOL_NAME"].decode("utf-8"),
+        "Escol": global_preferences["email__SCHOOL_NAME"],
         "Discipline": course.activity.name,
         "groupe n°": course.number,
         "du": course.start_date.strftime("%d/%m/%Y"),
