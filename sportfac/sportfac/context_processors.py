@@ -137,7 +137,7 @@ def registration_opened_context(request):
 def activities_context(request):
     activities = []
     for slug, label in settings.KEPCHUP_ACTIVITY_TYPES:
-        activities.append((label, Activity.objects.visible().filter(type=slug)))
+        activities.append((label, Activity.objects.visible().filter(type=slug).order_by('name')))
     return {"activities_types": activities}
 
 
