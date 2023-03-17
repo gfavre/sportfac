@@ -27,12 +27,10 @@ class ChildImportForm(forms.Form):
 
 
 class DateTimePickerInput(forms.DateTimeInput):
-    # template_name = "floppyforms/datetime.html"
     pass
 
 
-class DatePickerInput(forms.DateInput):
-    template_name = "floppyforms/date.html"
+class DatePickerInput(forms.widgets.DateInput):
 
     def __init__(self, attrs=None, format=None):
         if not format:
@@ -47,7 +45,14 @@ class DatePickerInput(forms.DateInput):
 
 
 class MultiDateInput(DatePickerInput):
-    template_name = "floppyforms/date-multiple.html"
+    template_name = "backend/widgets/multidatepicker.html"
+
+    class Media:
+        js = [
+            "js/vendor/bootstrap-datepicker.js",
+            "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.fr.min.js",
+            "js/backend/multidatepicker.js",
+        ]
 
 
 class TimePickerInput(forms.TimeInput):

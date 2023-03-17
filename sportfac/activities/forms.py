@@ -48,16 +48,14 @@ class CourseForm(forms.ModelForm):
         label=_("Start date"),
         required=True,
         input_formats=["%d.%m.%Y"],
-        widget=DateInput(format="%d.%m.%Y"),
-        #widget=DatePickerInput(format="%d.%m.%Y"),
+        widget=DatePickerInput(format="%d.%m.%Y"),
         help_text=_("format: dd.mm.yyyy, e.g. 31.07.2016"),
     )
     end_date = forms.DateTimeField(
         label=_("End date"),
         required=True,
         input_formats=["%d.%m.%Y"],
-        #input_formats=["%d.%m.%Y", "%Y-%m-%d"],
-        widget=DateInput(format="%d.%m.%Y"),
+        widget=DatePickerInput(format="%d.%m.%Y"),
         help_text=_("format: dd.mm.yyyy, e.g. 31.07.2016"),
     )
     start_time = forms.TimeField(
