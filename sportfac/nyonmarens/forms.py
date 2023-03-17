@@ -5,11 +5,9 @@ from django.template import loader
 from django.utils.safestring import mark_safe
 
 from backend.dynamic_preferences_registry import global_preferences_registry
-from captcha.fields import ReCaptchaField
-from captcha.widgets import ReCaptchaV3
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Div, Field, Fieldset, Layout, Submit
+from crispy_forms.layout import Div, Field, Fieldset, Layout, Submit, HTML
 
 
 FORM_TYPES = [
@@ -28,7 +26,7 @@ SCHOOL_YEARS = [
 
 
 class WhistleForm(forms.Form):
-    context = forms.CharField(label="", widget=forms.Textarea(), required=True)
+    context = forms.CharField(label="", widget=forms.Textarea(), required=True, help_text="Champ obligatoire")
     form_type = forms.ChoiceField(label="", choices=FORM_TYPES, required=True)
 
     other_type = forms.CharField(label="Autre", required=False)
@@ -64,7 +62,7 @@ class WhistleForm(forms.Form):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(
-                "1. Qu'est-ce qui s'est passé ? *",
+                "1. Qu'est-ce qui s'est passé ?",
                 Field("context", rows=6),
             ),
             Fieldset(
