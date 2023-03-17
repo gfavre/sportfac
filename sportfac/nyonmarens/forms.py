@@ -17,6 +17,7 @@ FORM_TYPES = [
     ("Autre", "Autre"),
 ]
 SCHOOL_YEARS = [
+    ('', '--------'),
     ("9e", "9e"),
     ("10e", "10e"),
     ("11e", "11e"),
