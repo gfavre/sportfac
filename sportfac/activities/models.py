@@ -717,7 +717,7 @@ class Course(TimeStampedModel):
 class CoursesInstructors(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     instructor = models.ForeignKey("profiles.FamilyUser", on_delete=models.CASCADE)
-    function = models.ForeignKey("payroll.Function", on_delete=models.SET_NULL, null=True)
+    function = models.ForeignKey("payroll.Function", on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
         unique_together = ("course", "instructor")

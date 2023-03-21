@@ -174,6 +174,7 @@ class CourseForm(forms.ModelForm):
         CoursesInstructors.objects.filter(course=instance).exclude(
             instructor__in=self.cleaned_data["instructors"]
         ).delete()
+        
         if instance.is_camp and not settings.KEPCHUP_EXPLICIT_SESSION_DATES:
             delta = instance.end_date - instance.start_date
             dates = []
