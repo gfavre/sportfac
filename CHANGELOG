@@ -1,8 +1,10 @@
+3.0.3 - 2023-03-21
+Fix:
+- Local city override pas sauvé
+
 3.0.2 - 2023-03-17
 Fix:
 - Sélection de dates multiples dans le calendrier
-- Local city override pas sauvé
-
 
 3.0.1 - 2023-03-01
 - Ajout de l'app Nyon-Marens qui contient un formulaire d'annonce de cas.

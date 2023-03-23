@@ -63,6 +63,18 @@
       .help-block {
     font-style: italic; font-size: 0.8em;
   }
+      h1.title_post {
+        border-bottom: 1px solid rgb(30, 115, 190);
+        margin-left: 0;
+        margin-bottom: 1.5em;
+
+      }
+      .content_bloc {
+        padding-top: 15px!important;
+      }
+      #elements {
+        margin-top: 0;
+      }
 
   </style>
 
@@ -85,7 +97,9 @@ margin-bottom: 25px;
     .form-group label {
       font-weight: 600;
     }
-
+  .title_post {
+    font-weight: 400;
+  }
     .form-control {
       display: block;
       width: 100%;
@@ -99,7 +113,9 @@ margin-bottom: 25px;
       border-radius: 4px;
       box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
     }
-
+#contact_home {
+  top: 0
+}
   </style>
 
 </head>
@@ -134,20 +150,22 @@ margin-bottom: 25px;
     </div>
   </div>
 </div>
+
+
 <div id="home_content" class="container">
+<h1 class="span12 title_post">{% block page_title %}{% endblock %}</h1>
+
   <div class="row relative">
     <div class="span8">
-      <div>
         <div id="elements" class="row" style="height: 1100px;">
           <div class="span8 tiled" style="display: block; position: absolute;">
-            <h5>{% block page_title %}{% endblock %}</h5>
+            <!--<h5></h5>-->
             <div class="content_bloc">
               {% block content %}{% endblock %}
 
             </div>
           </div>
         </div>
-      </div>
     </div>
     <div id="contact_home" class="span4">
       <div id="contact_middle">
@@ -155,11 +173,14 @@ margin-bottom: 25px;
           <h3>Tu peux également contacter</h3>
           <br>
           <ul>
-            <li style="margin-bottom: 1em">le numéro <a href="tel:147">147</a> (ligne d’aide pour les jeunes 24h/24)</li>
+            <li style="margin-bottom: 1em">Le numéro <a href="tel:147">147</a> (ligne d’aide pour les jeunes 24h/24)</li>
             <li>Le service PPLS de Nyon :<br> <a href="tel:+4122 557 55 64">022 557 55 64</a></li>
           </ul>
+          {% block "right" %}
 
+        {% endblock %}
         </div>
+
       </div>
 
 
@@ -171,7 +192,7 @@ margin-bottom: 25px;
     <div class="container">
       <div class="row">
         <div class="span12">
-          Etablissement secondaire Nyon-Marens<br>Route du Stand 5 - 1260 Nyon - Secrétariat : +41 22 557 54 00
+          Établissement secondaire Nyon-Marens<br>Route du Stand 5 - 1260 Nyon - Secrétariat : +41 22 557 54 00
         </div>
       </div>
     </div>
