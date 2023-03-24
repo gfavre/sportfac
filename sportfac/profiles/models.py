@@ -151,7 +151,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     js_identifier = models.CharField(_("J+S identifier"), max_length=30, blank=True)
     is_mep = models.BooleanField(default=False, verbose_name=_("Is sports teacher"))
     is_teacher = models.BooleanField(default=False, verbose_name=_("Is teacher"))
-    gender = models.CharField(choices=GENDERS, blank=True, max_length=1)
+    gender = models.CharField(_("Gender"), choices=GENDERS, blank=True, max_length=1)
     nationality = CountryField(_("Nationality"), blank=True)
     permit_type = models.CharField(
         _("Permit type"), max_length=2, choices=PERMIT_TYPES, blank=True, null=True

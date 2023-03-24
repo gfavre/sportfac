@@ -144,7 +144,10 @@ class ChildForm(forms.ModelForm):
                 css_class="row",
             ),
             "sex",
-            "birth_date",
+            Div(
+                Div("birth_date", css_class="col-sm-3"),
+                css_class="row",
+            ),
             Div(
                 Div("nationality", css_class="col-sm-6"),
                 Div("language", css_class="col-sm-6"),

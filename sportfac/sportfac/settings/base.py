@@ -499,15 +499,30 @@ CRISPY_TEMPLATE_PACK = "bootstrap3"
 ############ Date picker
 # The link above contains all settings
 BOOTSTRAP_DATEPICKER_PLUS = {
+    # Options for all input widgets
+    # More options: https://getdatepicker.com/4/Options/
     "options": {
         "locale": "fr",
+        "allowInputToggle": True,
+
+
     },
-    "variant_options": {
+    "addon_icon_classes": {
+        "month": "bi-calendar-month",
+        "date": "icon-calendar",
+    },    "variant_options": {
         "date": {
             "format": "DD.MM.YYYY",
         },
-    }
+
+    },
 }
+
+
+
+
+
+
 
 ################################################################################
 # Kepchup Options

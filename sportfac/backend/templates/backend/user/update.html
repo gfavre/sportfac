@@ -5,37 +5,23 @@
 {% block page_title %}<i class="icon-user"></i>&nbsp;&nbsp;{% trans "Update user" %}{% endblock %}
 
 {% block content %}
-
-{% addtoblock "js" %}
-{{ form.media }}
-{% if is_instructor %}
-<script src="{{ STATIC_URL }}js/vendor/moment-with-locales.min.js"></script>
-<script src="{{ STATIC_URL }}js/vendor/bootstrap-datetimepicker.min.js"></script>
-<script type="text/javascript">
-  $(function () {
-    $('.datetimepicker').datetimepicker({
-        language: '{{ LANGUAGE_CODE }}',
-        icons: {time: 'icon-clock',
-                date: 'icon-calendar',
-                up:   'icon-up-open',
-                down: 'icon-down-open'}
-        });
-  });
-</script>
-
-{% endif %}
-{% endaddtoblock %}
-
 <form action="" method="post" class="form-horizontal">
 {% crispy form %}
-
   <div class=" form-group">
     <div class="col-sm-offset-2 col-sm-10">
       <button type="submit" class="btn btn-primary ">{% trans 'Update user' %}</button>
-      &nbsp;
+      &nbsp
       <a href="{% url 'backend:user-list' %}" class="btn  btn-default">{% trans 'Cancel' %}</a>
     </div>
   </div>
-
 </form>
+
+  {% addtoblock "js" %}
+{{ form.media.js }}
+{% endaddtoblock %}
+
+{% addtoblock "css" %}
+{{ form.media.css }}
+{% endaddtoblock %}
+
 {% endblock content %}

@@ -6,9 +6,9 @@ from django.urls import reverse
 from django.utils.html import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from backend.forms import DatePickerInput
+from bootstrap_datepicker_plus.widgets import DatePickerInput
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import HTML, Fieldset, Layout, Submit
+from crispy_forms.layout import HTML, Fieldset, Layout, Submit, Div
 
 # noinspection PyPackageRequirements
 from localflavor.generic.forms import IBANFormField
@@ -177,6 +177,8 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
         self.helper.label_class = "col-sm-2"
         self.helper.field_class = "col-sm-10"
         self.helper.form_tag = False
+        self.helper.include_media = False
+
         self.helper.layout = Layout()
         if self.initial:
             password_change = reverse("backend:password-change", args=[self.instance.pk])
