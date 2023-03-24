@@ -1,11 +1,12 @@
 {% extends "wizard.html" %}
-{% load i18n floppyforms sekizai_tags %}
+{% load i18n crispy_forms_tags %}
 
 {% block title %}{% trans "Inscription" %}{% endblock title %}
 {% block page_title %}{% trans "Inscription" %}
   <small>- responsable légal</small>{% endblock page_title %}
 
 {% block content %}
+
   {% form form using %}
     {% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
     <form action="." method="post" class="form-horizontal" ole="form">{% csrf_token %}
