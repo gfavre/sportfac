@@ -1,3 +1,9 @@
+3.0.4 - 2023-03-24
+Fix:
+- Date de naissance des moniteurs ni cliquable ni enregistrée
+Changement:
+- PDF moniteur mis à jour pour que les champs soient plus lisibles
+
 3.0.3 - 2023-03-21
 Fix:
 - Local city override pas sauvé
