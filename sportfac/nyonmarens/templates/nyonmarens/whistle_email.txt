@@ -1,5 +1,5 @@
 {% load duration mail_tags switzerland %}
-1. Que s’est-il passé ?
+1. Qu’est ce qui s’est passé ?
 {{ context }}
 
 2. En remplissant ce formulaire tu souhaites:
