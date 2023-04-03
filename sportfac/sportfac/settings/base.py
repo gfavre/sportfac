@@ -510,10 +510,15 @@ BOOTSTRAP_DATEPICKER_PLUS = {
     "addon_icon_classes": {
         "month": "bi-calendar-month",
         "date": "icon-calendar",
-    },    "variant_options": {
+        "time": "icon-clock ",
+    },
+    "variant_options": {
         "date": {
             "format": "DD.MM.YYYY",
         },
+        "time": {
+            "format": "HH:mm",
+        }
 
     },
 }

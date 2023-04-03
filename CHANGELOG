@@ -1,24 +1,35 @@
+3.0.5 - 2023-04-03
+Fix:
+- Date de début et fin des cours (dates non explicites) non éditables.
+- Heure de début et de fin non-cliquables
+
+
 3.0.4 - 2023-03-24
 Fix:
 - Date de naissance des moniteurs ni cliquable ni enregistrée
 Changement:
 - PDF moniteur mis à jour pour que les champs soient plus lisibles
 
+
 3.0.3 - 2023-03-21
 Fix:
 - Local city override pas sauvé
+
 
 3.0.2 - 2023-03-17
 Fix:
 - Sélection de dates multiples dans le calendrier
 
+
 3.0.1 - 2023-03-01
 - Ajout de l'app Nyon-Marens qui contient un formulaire d'annonce de cas.
 - Fixes diverses python3
 
+
 3.0.0 - 2023-03-01
 - Passage à python3
 - Passage à django 3.2
+
 
 1.0.2 - 12.10.2022
 Envoi d'emails lors de la bascule d'un élève de la liste d'attente.

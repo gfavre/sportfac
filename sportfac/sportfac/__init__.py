@@ -1,3 +1,3 @@
 from .celery import app as celery_app
 
-__version__ = "3.0.4"
+__version__ = "3.0.5"

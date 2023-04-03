@@ -3,7 +3,7 @@ import datetime
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.forms.widgets import TextInput, DateInput
+from django.forms.widgets import TextInput
 from django.utils.translation import gettext as _
 
 from backend.forms import (
@@ -14,7 +14,6 @@ from backend.forms import (
     MultiDateInput,
 )
 from bootstrap_datepicker_plus.widgets import DatePickerInput, TimePickerInput
-from crispy_forms.bootstrap import AppendedText
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Fieldset, Layout
 from profiles.models import City, FamilyUser
@@ -47,25 +46,25 @@ class CourseForm(forms.ModelForm):
     start_date = forms.DateField(
         label=_("Start date"),
         required=True,
-        input_formats=["%d.%m.%Y"],
         widget=DatePickerInput(format="%d.%m.%Y"),
         help_text=_("format: dd.mm.yyyy, e.g. 31.07.2016"),
     )
     end_date = forms.DateTimeField(
         label=_("End date"),
         required=True,
-        input_formats=["%d.%m.%Y"],
         widget=DatePickerInput(format="%d.%m.%Y"),
         help_text=_("format: dd.mm.yyyy, e.g. 31.07.2016"),
     )
     start_time = forms.TimeField(
         label=_("Start time"),
         required=False,
+        widget=TimePickerInput(format="%H:%M"),
         help_text=_("format: hh:mm, e.g. 17:45"),
     )
     end_time = forms.TimeField(
         label=_("End time"),
         required=False,
+        widget=TimePickerInput(format="%H:%M"),
         help_text=_("format: hh:mm, e.g. 17:45"),
     )
     extra = forms.ModelMultipleChoiceField(
@@ -134,7 +133,6 @@ class CourseForm(forms.ModelForm):
 
     class Media:
         js = (
-            "js/vendor/moment-with-locales.min.js",
             "js/backend/course-form.js",
         )
 
@@ -236,11 +234,11 @@ class CourseForm(forms.ModelForm):
         dates_section += [
             Div(
                 Div(
-                    AppendedText("start_time", '<span class="icon-clock"></span>'),
+                    "start_time",
                     css_class="col-md-6",
                 ),
                 Div(
-                    AppendedText("end_time", '<span class="icon-clock"></span>'),
+                    "end_time",
                     css_class="col-md-6",
                 ),
                 css_class="course-visible camp-hidden multicourse-hidden row",
