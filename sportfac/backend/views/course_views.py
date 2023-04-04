@@ -166,12 +166,12 @@ class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
             course.extra.remove(removed_extra)
         for extra in form.cleaned_data["extra"]:
             course.extra.add(extra)
-
-        removed_cities = set(course.local_city_override.all()) - set(form.cleaned_data["local_city_override"])
-        for removed_city in removed_cities:
-            course.local_city_override.remove(removed_city)
-        for city in form.cleaned_data["local_city_override"]:
-            course.local_city_override.add(city)
+        if "local_city_override" in form.cleaned_data:
+            removed_cities = set(course.local_city_override.all()) - set(form.cleaned_data["local_city_override"])
+            for removed_city in removed_cities:
+                course.local_city_override.remove(removed_city)
+            for city in form.cleaned_data["local_city_override"]:
+                course.local_city_override.add(city)
         return response
 
 
