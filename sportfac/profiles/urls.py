@@ -48,9 +48,7 @@ if settings.KEPCHUP_USE_SSO:
         ),
         path(
             "password/reset/done/",
-            auth_views.PasswordResetDoneView.as_view(
-                success_url=reverse_lazy("profiles:password_reset_complete")
-            ),
+            auth_views.PasswordResetDoneView.as_view(),
             name="password_reset_done",
         ),
         path(
