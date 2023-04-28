@@ -46,3 +46,7 @@ django-async-messages == 0.3.1
 django_environ == 0.4.4
 requests==2.28.1
 python-memcached==1.59
+
+# Montreux
+django-simple-sso==1.2.0
+itsdangerous==1.1.0
