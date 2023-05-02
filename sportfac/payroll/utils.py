@@ -4,7 +4,7 @@ from django.conf import settings
 from django.utils.timezone import now
 
 from absences.models import Session
-from activities.models import RATE_MODES, CoursesInstructors
+from activities.models import CoursesInstructors
 
 from sportfac.utils import ExcelWriter
 

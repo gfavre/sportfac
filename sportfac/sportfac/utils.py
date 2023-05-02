@@ -16,27 +16,18 @@ class ExcelWriter:
     A CSV writer which will write rows to CSV file "f",
     which is encoded in the given encoding.
     """
+    def __init__(self, file_path, headers=None):
+        self.file_path = file_path
+        self.headers = headers
+        self.file = open(self.file_path, 'w', newline='', encoding='utf-8')
+        self.writer = csv.writer(self.file, dialect='excel')
 
-    def __init__(self, f, dialect=ExcelSemicolon, encoding="utf-8", **kwds):
-        # Redirect output to a queue
-        self.queue = StringIO()
-        self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
-        self.stream = f
-        self.encoder = codecs.getincrementalencoder(encoding)()
-        self.encoding = encoding
+    def write_header(self):
+        if self.headers:
+            self.writer.writerow(self.headers)
 
-    def writerow(self, row):
-        self.writer.writerow([s.encode(self.encoding, "ignore") for s in row])
-        # Fetch UTF-8 output from the queue ...
-        data = self.queue.getvalue()
-        # write to the target stream
-        self.stream.write(data)
-        # empty queue
-        self.queue.truncate(0)
-
-    def writerows(self, rows):
-        for row in rows:
-            self.writerow(row)
+    def close(self):
+        self.file.close()
 
 
 class TenantTestCase(BaseTenantTestCase):
