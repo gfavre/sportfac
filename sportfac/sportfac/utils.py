@@ -1,7 +1,7 @@
 import codecs
 import csv
 from datetime import date
-from io import BytesIO
+from io import StringIO
 
 from django_tenants.test.cases import FastTenantTestCase as BaseTenantTestCase
 from django_tenants.test.client import TenantClient
@@ -17,7 +17,7 @@ class ExcelWriter:
     which is encoded in the given encoding.
     """
     def __init__(self, file, headers=None):
-        self.file = file or BytesIO()
+        self.file = file or StringIO()
         self.headers = headers
         self.writer = csv.writer(self.file, dialect='excel')
 

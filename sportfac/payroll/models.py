@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from io import BytesIO
+from io import StringIO
 
 from django.core.files.base import ContentFile
 from django.db import models
@@ -64,7 +64,7 @@ class Payroll(TimeStampedModel):
     def generate_csv(self):
         from .utils import get_payroll_csv
 
-        filelike = BytesIO()
+        filelike = StringIO()
         get_payroll_csv(self, filelike)
         self.csv_file.save(
             "{start}_{end}.csv".format(start=self.start, end=self.end),

@@ -17,12 +17,11 @@ def get_payroll_csv(payroll_obj, filelike):
     count = {}
     for (course_id, instructor_id) in sessions:
         count[(course_id, instructor_id)] = count.get((course_id, instructor_id), 0) + 1
-
     writer = ExcelWriter(
         filelike,
     )
     for course_instructor in CoursesInstructors.objects.all():
-        if not (course_instructor.course_id, course_instructor.instructor_id) in count:
+        if (course_instructor.course_id, course_instructor.instructor_id) not in count:
             continue
         if not course_instructor.instructor.external_identifier:
             continue
@@ -44,7 +43,7 @@ def get_payroll_csv(payroll_obj, filelike):
         line = [
             course_instructor.instructor.external_identifier,
             course_instructor.function.code,
-            str(nb_hours),
+            round(nb_hours, 2),
             payroll_obj.start.strftime(settings.SWISS_DATE_SHORT),
             payroll_obj.end.strftime(settings.SWISS_DATE_SHORT),
         ]

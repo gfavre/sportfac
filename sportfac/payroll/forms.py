@@ -33,7 +33,7 @@ class PayrollExportForm(forms.ModelForm):
         fields = ("set_as_exported", "include_already_exported", "add_details")
 
     def __init__(self, *args, **kwargs):
-        super(PayrollExportForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_class = "form-horizontal"
         self.helper.form_group_wrapper_class = "row"
