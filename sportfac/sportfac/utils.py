@@ -25,6 +25,9 @@ class ExcelWriter:
         if self.headers:
             self.writer.writerow(self.headers)
 
+    def writerow(self, row):
+        self.writer.writerow(row)
+
     def write_row(self, row):
         self.writer.writerow(row)
 
