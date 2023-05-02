@@ -25,6 +25,13 @@ class ExcelWriter:
         if self.headers:
             self.writer.writerow(self.headers)
 
+    def write_row(self, row):
+        self.writer.writerow(row)
+
+    def getvalue(self):
+        if isinstance(self.file, BytesIO):
+            return self.file.getvalue()
+
     def close(self):
         self.file.close()
 
