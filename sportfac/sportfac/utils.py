@@ -32,7 +32,7 @@ class ExcelWriter:
         self.writer.writerow(row)
 
     def getvalue(self):
-        if isinstance(self.file, BytesIO):
+        if isinstance(self.file, StringIO):
             return self.file.getvalue()
 
     def close(self):
