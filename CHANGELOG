@@ -3,6 +3,7 @@ Fix:
 - Creation of future absences when a student moves from one course to another
 - Suppression of a message to the user when creating a new period.
 - Catch exception when datatrans service is not available
+- exception if all mail recipients are invalid
 
 3.0.5 - 2023-04-03
 Fix:

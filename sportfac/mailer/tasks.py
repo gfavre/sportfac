@@ -8,6 +8,8 @@ from django.conf import settings
 from django.core.mail import EmailMessage
 from django.utils import timezone
 
+from anymail.exceptions import AnymailRecipientsRefused
+
 from activities.models import Course
 from celery.utils.log import get_task_logger
 from profiles.models import FamilyUser
@@ -71,9 +73,14 @@ def send_mail(
                 logger.warning(
                     "No user found for pk={} email={}".format(recipient_pk, recipients[0])
                 )
+    except AnymailRecipientsRefused as exc:
+        logger.error(
+            "Message {} to {} could not be sent: {}".format(subject, recipients, exc)
+        )
+
     except SMTPException as smtp_exc:
         logger.error(
-            "Message {} to {} could not be sent: {}".format(subject, recipients, smtp_exc.message)
+            "Message {} to {} could not be sent: {}".format(subject, recipients, smtp_exc)
         )
         # 5s for first retry, 25 for second, 2mn for third ~10mn for fourth, 52mn for fifth
         self.retry(countdown=5**self.request.retries)
