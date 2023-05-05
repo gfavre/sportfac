@@ -209,8 +209,6 @@ def create_tenant(
             "link_start": format_html('<a href="{}">', reverse("backend:year-list")),
             "link_end": format_html("</a>"),
         }
-        messages.success(user, mark_safe(msg % params))
-        logger.debug("Warned user for period activation")
 
 
 @shared_task

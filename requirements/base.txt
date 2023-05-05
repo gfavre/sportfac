@@ -49,4 +49,3 @@ python-memcached==1.59
 
 # Montreux
 django-simple-sso==1.2.0
-itsdangerous==1.1.0
