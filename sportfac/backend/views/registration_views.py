@@ -123,6 +123,7 @@ class RegistrationsMoveView(BackendMixin, FormView):
                 registration.course = course
                 registration.set_confirmed()
                 registration.save()
+                registration.create_future_absences()
         for course in previous_courses:
             course.save()
         message = _("Registrations of %(nb)s children have been moved.")
