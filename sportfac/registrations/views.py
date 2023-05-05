@@ -1,6 +1,8 @@
 import datetime
 import json
 
+import requests
+
 from django.conf import settings
 from django.contrib import messages
 from django.db import IntegrityError
@@ -61,7 +63,10 @@ class BillDetailView(LoginRequiredMixin, BillMixin, DetailView):
         bill = self.get_object()
         if not bill.is_paid and settings.KEPCHUP_PAYMENT_METHOD == "datatrans":
             from payments.datatrans import get_transaction
-            transaction = get_transaction(self.request, bill)
+            try:
+                transaction = get_transaction(self.request, bill)
+            except requests.exceptions.RequestException:
+                transaction = None
             context["transaction"] = transaction
         return context
 
@@ -271,8 +276,10 @@ class WizardBillingView(LoginRequiredMixin, BillMixin, WizardMixin, TemplateView
 
         if settings.KEPCHUP_PAYMENT_METHOD == "datatrans":
             from payments.datatrans import get_transaction
-
-            transaction = get_transaction(self.request, context["bill"])
+            try:
+                transaction = get_transaction(self.request, context["bill"])
+            except requests.exceptions.RequestException:
+                transaction = None
             context["transaction"] = transaction
 
         return context

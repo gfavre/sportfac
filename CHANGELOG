@@ -1,53 +1,58 @@
+3.0.6 - 2023-05-05
+Fix:
+- Creation of future absences when a student moves from one course to another
+- Suppression of a message to the user when creating a new period.
+- Catch exception when datatrans service is not available
+
 3.0.5 - 2023-04-03
 Fix:
-- Date de début et fin des cours (dates non explicites) non éditables.
-- Heure de début et de fin non-cliquables
+- Course start and end dates (not explicit) not editable.
+- Non-clickable start and end times
 
 
 3.0.4 - 2023-03-24
 Fix:
-- Date de naissance des moniteurs ni cliquable ni enregistrée
-Changement:
-- PDF moniteur mis à jour pour que les champs soient plus lisibles
+- Date of birth of monitors not clickable or registered
+Change:
+- PDF dor supervisors updated to make fields more readable
 
 
 3.0.3 - 2023-03-21
 Fix:
-- Local city override pas sauvé
+- Local city override not saved
 
 
 3.0.2 - 2023-03-17
 Fix:
-- Sélection de dates multiples dans le calendrier
+- Multiple dates selection in calendar
 
 
 3.0.1 - 2023-03-01
-- Ajout de l'app Nyon-Marens qui contient un formulaire d'annonce de cas.
-- Fixes diverses python3
+- Addition of the Nyon-Marens app which contains a case report form.
+- python3 fixes
 
 
 3.0.0 - 2023-03-01
-- Passage à python3
-- Passage à django 3.2
+- Switch to python3
+- Upgrade to django 3.2
 
 
 1.0.2 - 12.10.2022
-Envoi d'emails lors de la bascule d'un élève de la liste d'attente.
+Sending emails when a student is switched from the waitlist.
 
 1.0.1 - 15.6.2020
 Administration
-- Possibilité de supprimer des utilisateurs
-- Edition des textes des pages statiques (accueil, règlement, protection des données)
-- Ajout d'un champ "Remarques" pour les cours
-- Suppression des questions complémentaires si la fonctionnalité n'est pas utilisée
+- Ability to delete users
+- Editing of static page texts (homepage, rules, data protection)
+- Addition of a "Remarks" field for courses
+- Delete follow-up questions if the functionality is not used
 
 
 1.0.0 - 12.6.2020
 Administration:
-- Statistiques de provenance des familles / enfants
-- Amélioration de la page d'accueil de l'administrateur si la période d'inscription est relativement longue (> 45 jours)
+- Family/Child Origin Statistics
+- Improved admin homepage if registration period is relatively long (> 45 days)
 
-Inscription:
-- Après la création d'une nouvelle période d'inscription, et si les enfants ont été recopiés depuis la précédente,
-le système invite les parents lorsqu'ils se connectent à vérifier les données des enfants (via une notification).
-
+Enrollment:
+- After a new registration period is created, and if children have been copied from the previous one,
+the system prompts parents when they log in to verify the children's data (via a notification).
