@@ -34,7 +34,6 @@ class RegistrationResource(resources.ModelResource):
             "child_name",
             "before_level",
             "after_level",
-            "note",
         )
         export_order = (
             "id",
@@ -45,7 +44,6 @@ class RegistrationResource(resources.ModelResource):
             "child_name",
             "before_level",
             "after_level",
-            "note",
         )
 
     def dehydrate_child_name(self, registration):
