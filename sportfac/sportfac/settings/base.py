@@ -390,7 +390,7 @@ AUTH_USER_MODEL = "profiles.FamilyUser"
 REGISTRATION_OPEN = True
 LOGIN_URL = "profiles:auth_login"
 LOGOUT_URL = "profiles:logout"
-LOGIN_REDIRECT_URL = "profiles:redirection"
+LOGIN_REDIRECT_URL = "profiles:authenticated-home"
 
 ########## END USER and REGISTRAION
 
