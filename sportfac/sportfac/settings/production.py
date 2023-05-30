@@ -1,6 +1,10 @@
 """Production settings and globals."""
 from .base import *
-
+import logging
+import sentry_sdk
+from sentry_sdk.integrations.celery import CeleryIntegration
+from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
 
 INSTALLED_APPS += (
     "gunicorn",  # web server
@@ -92,14 +96,25 @@ BROKER_URL = env("BROKER_URL")
 
 ########### Sentry
 
-import sentry_sdk
-sentry_sdk.init(
-    dsn="https://3f862f015a1044e1962fd7a4e77ec5a2:5404be0237894b8fbfbf0122fd280280@sentry.io/1194911",
+SENTRY_DSN = env(
+    "SENTRY_DSN",
+    default="https://3f862f015a1044e1962fd7a4e77ec5a2:5404be0237894b8fbfbf0122fd280280@sentry.io/1194911"
+)
+SENTRY_LOG_LEVEL = env.int("DJANGO_SENTRY_LOG_LEVEL", logging.INFO)
 
+sentry_logging = LoggingIntegration(
+    level=SENTRY_LOG_LEVEL,  # Capture info and above as breadcrumbs
+    event_level=logging.ERROR,  # Send errors as events
+)
+integrations = [sentry_logging, DjangoIntegration(), CeleryIntegration()]
+
+sentry_sdk.init(
+    dsn=SENTRY_DSN,
+    integrations=integrations,
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for performance monitoring.
     # We recommend adjusting this value in production,
-    traces_sample_rate=1.0,
+    traces_sample_rate=env.float("SENTRY_TRACES_SAMPLE_RATE", default=0.0),  # noqa: F405
 )
 
 
