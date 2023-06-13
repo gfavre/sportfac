@@ -1,8 +1,8 @@
 """Development settings and globals."""
-from .base import *
+from .base import *  # noqa: F403
 
 
-########## DEBUG CONFIGURATION
+# DEBUG CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = True
 
@@ -11,20 +11,20 @@ DEBUG = True
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 # Note: This key only used for development and testing.
-SECRET_KEY = env("DJANGO_SECRET_KEY", default="CHANGEME!!!")
+SECRET_KEY = env("DJANGO_SECRET_KEY", default="CHANGEME!!!")  # noqa: F405
 
 
-SHARED_APPS += (
+SHARED_APPS += (  # noqa: F405
     "djcelery",
     "kombu.transport.django",
 )
 
-INSTALLED_APPS += (
+INSTALLED_APPS += (  # noqa: F405
     "django_extensions",  # more commands
     "debug_toolbar",  # debugging
     "corsheaders",
 )
-MIDDLEWARE = ["corsheaders.middleware.CorsMiddleware"] + MIDDLEWARE
+MIDDLEWARE = ["corsheaders.middleware.CorsMiddleware"] + MIDDLEWARE  # noqa: F405
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 
 
@@ -32,22 +32,22 @@ CORS_ALLOW_ALL_ORIGINS = DEBUG
 INTERNAL_IPS = ("127.0.0.1",)
 
 # See: https://github.com/django-debug-toolbar/django-debug-toolbar#installation
-MIDDLEWARE += [
+MIDDLEWARE += [  # noqa: F405
     "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 
 ALLOWED_HOSTS = ("127.0.0.1", "localhost", "test.com", "tenant.test.com", "testserver")
 
-########## END DEBUG CONFIGURATION
+# END DEBUG CONFIGURATION
 
 
-########## DATABA:qSE CONFIGURATION
+# DATABA:qSE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
-    #'other': env.db('DATABASE_URL', default='postgres:///sportfac'),
-    "master_users": env.db("MASTER_DATABASE_URL", default="postgres:///kepchup_users"),
-    "default": env.db("OTHER_DB", "postgres:///sportfac_montreux"),
+    # 'other': env.db('DATABASE_URL', default='postgres:///sportfac'),
+    "master_users": env.db("MASTER_DATABASE_URL", default="postgres:///kepchup_users"),  # noqa: F405
+    "default": env.db("OTHER_DB", "postgres:///sportfac_montreux"),  # noqa: F405
 }
 DATABASES["default"]["ENGINE"] = "django_tenants.postgresql_backend"
 
@@ -60,10 +60,10 @@ AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
 )
 SESSION_COOKIE_NAME = "sportfac"
-########## END DATABASE CONFIGURATION
+# END DATABASE CONFIGURATION
 
 
-########## TOOLBAR CONFIGURATION
+# TOOLBAR CONFIGURATION
 # See: https://github.com/django-debug-toolbar/django-debug-toolbar#installation
 
 
@@ -86,40 +86,32 @@ DEBUG_TOOLBAR_PANELS = [
     "debug_toolbar.panels.logging.LoggingPanel",
     "debug_toolbar.panels.redirects.RedirectsPanel",
 ]
-########## END TOOLBAR CONFIGURATION
+# END TOOLBAR CONFIGURATION
 
 
-########### EMAIL:
+# EMAIL:
 DEFAULT_FROM_EMAIL = "sportfac@localhost"
-EMAIL_SUBJECT_PREFIX = "[%s] " % SITE_NAME
+EMAIL_SUBJECT_PREFIX = "[%s] " % SITE_NAME  # noqa: F405
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 # EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 # EMAIL_FILE_PATH = env('EMAIL_FILE_PATH', default='/tmp/app-messages')
+# END EMAIL CONFIGURATION
 
-
-########## END EMAIL CONFIGURATION
-
-
-############ Celery
-# Asynchrnous tasks.
-# See http://celery.readthedocs.org/en/latest/configuration.html
-CELERY_ALWAYS_EAGER = True
-
-TEMPLATES[0]["DIRS"] = [
-    normpath(join(SITE_ROOT, "themes", "coppet", "templates")),
-    normpath(join(SITE_ROOT, "templates")),
+TEMPLATES[0]["DIRS"] = [  # noqa: F405
+    normpath(join(SITE_ROOT, "themes", "coppet", "templates")),  # noqa: F405
+    normpath(join(SITE_ROOT, "templates")),  # noqa: F405
 ]
 
 STATICFILES_DIRS = (
-    normpath(join(SITE_ROOT, "themes", "coppet", "static")),
-    normpath(join(SITE_ROOT, "static")),
+    normpath(join(SITE_ROOT, "themes", "coppet", "static")),  # noqa: F405
+    normpath(join(SITE_ROOT, "static")),  # noqa: F405
 )
 COMPRESS_ENABLED = True
 
 
-INSTALLED_APPS += ['nyonmarens']
+INSTALLED_APPS += ["nyonmarens"]  # noqa: F405
 KEPCHUP_ACTIVATE_NYON_MARENS = True
 
 KEPCHUP_USE_ABSENCES = True
@@ -128,10 +120,8 @@ KEPCHUP_ABSENCES_ORDER_ASC = True
 
 KEPCHUP_USE_APPOINTMENTS = True
 KEPCHUP_USE_BUILDINGS = False
-KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = False
 KEPCHUP_SEND_PRESENCE_LIST = True
 KEPCHUP_SEND_COPY_CONTACT_MAIL_TO_ADMIN = True
-KEPCHUP_NO_PAYMENT = False
 KEPCHUP_NO_TERMS = False
 KEPCHUP_CHILD_SCHOOL = True
 KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS = [
@@ -146,7 +136,6 @@ KEPCHUP_CALENDAR_HIDDEN_DAYS = [
 KEPCHUP_BIB_NUMBERS = True
 KEPCHUP_CHILDREN_HIDDEN_FIELDS = []
 KEPCHUP_FICHE_SALAIRE_MONTREUX = True
-KEPCHUP_REGISTRATION_LEVELS = True
 KEPCHUP_DISPLAY_CAR_NUMBER = True
 KEPCHUP_DISPLAY_REGISTRATION_NOTE = True
 KEPCHUP_DISPLAY_PARENT_CITY = True
@@ -227,19 +216,19 @@ KEPCHUP_ENABLE_WAITING_LISTS = True
 
 
 # Registration steps
-#########################################
+#
 KEPCHUP_ALTERNATIVE_ACTIVITIES_LABEL = "Inscription"
 KEPCHUP_ALTERNATIVE_CONFIRM_LABEL = "Résumé"
 KEPCHUP_ALTERNATIVE_BILLING_LABEL = "Confirmation"
 
 # Single Sign On
-#########################################
+#
 KEPCHUP_USE_SSO = False
 # LOGIN_URL = '/client/'
 # LOGOUT_URL = 'https://users.ssfmontreux.ch/logout/'
 
 # Payment
-#########################################
+#
 # if true, disable invoicing system
 KEPCHUP_NO_PAYMENT = False
 KEPCHUP_DISPLAY_FREE_WHEN_PRICE_IS_0 = False
@@ -248,12 +237,14 @@ KEPCHUP_PAYMENT_METHOD = "datatrans"
 KEPCHUP_USE_DIFFERENTIATED_PRICES = True
 KEPCHUP_LOCAL_ZIPCODES = ["1814", "1272"]
 KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = True
+KEPCHUP_SEND_BILL_TO_ACCOUNTANT = True
+
 
 CELERY_ALWAYS_EAGER = True
 
-CELERYBEAT_SCHEDULE["notify-absences"] = {
+CELERYBEAT_SCHEDULE["notify-absences"] = {  # noqa F405
     "task": "absences.tasks.notify_absences",
-    "schedule": crontab(hour=19, minute=0),
+    "schedule": crontab(hour=19, minute=0),  # noqa F405
 }
 CACHES = {
     "default": {
@@ -268,5 +259,5 @@ CACHES = {
 
 SILENCED_SYSTEM_CHECKS = ["captcha.recaptcha_test_key_error"]
 
-RECAPTCHA_PUBLIC_KEY = env("RECAPTCHA_PUBLIC_KEY", default="")
-RECAPTCHA_PRIVATE_KEY = env("RECAPTCHA_PRIVATE_KEY", default="")
+RECAPTCHA_PUBLIC_KEY = env("RECAPTCHA_PUBLIC_KEY", default="")  # noqa F405
+RECAPTCHA_PRIVATE_KEY = env("RECAPTCHA_PRIVATE_KEY", default="")  # noqa F405

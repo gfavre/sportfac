@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import collections
 
 from django.conf import settings
@@ -12,16 +11,7 @@ from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import (
-    CreateView,
-    DeleteView,
-    DetailView,
-    FormView,
-    ListView,
-    TemplateView,
-    UpdateView,
-    View,
-)
+from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, TemplateView, UpdateView, View
 
 from absences.models import Absence
 from activities.models import Activity, Course, ExtraNeed
@@ -83,9 +73,9 @@ class RegistrationListView(BackendMixin, ListView):
     template_name = "backend/registration/list.html"
 
     def get_queryset(self):
-        return Registration.objects.select_related(
-            "course", "child", "child__family"
-        ).prefetch_related("course__activity")
+        return Registration.objects.select_related("course", "child", "child__family").prefetch_related(
+            "course__activity"
+        )
 
 
 class RegistrationsMoveView(BackendMixin, FormView):
@@ -93,7 +83,7 @@ class RegistrationsMoveView(BackendMixin, FormView):
     template_name = "backend/registration/move.html"
 
     def get_initial(self):
-        initial = super(RegistrationsMoveView, self).get_initial()
+        initial = super().get_initial()
         if "course" in self.request.GET:
             try:
                 prev_course_id = int(self.request.GET.get("course"))
@@ -138,9 +128,7 @@ class RegistrationsMoveView(BackendMixin, FormView):
         if "activity" in self.request.GET:
             try:
                 prev_activity_id = int(self.request.GET.get("activity"))
-                kwargs["success_url"] = Activity.objects.get(
-                    pk=prev_activity_id
-                ).backend_absences_url
+                kwargs["success_url"] = Activity.objects.get(pk=prev_activity_id).backend_absences_url
             except (IndexError, TypeError, Activity.DoesNotExist):
                 pass
         elif "course" in self.request.GET:
@@ -152,7 +140,7 @@ class RegistrationsMoveView(BackendMixin, FormView):
         if hasattr(form, "cleaned_data"):
             kwargs["children"] = [reg.child for reg in form.cleaned_data.get("registrations", [])]
 
-        return super(RegistrationsMoveView, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
 def show_extra_questions(wizard):
@@ -198,17 +186,14 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
                 if self.instance.get_price() == 0:
                     status = Bill.STATUS.paid
             bill = Bill.objects.create(status=status, family=user)
-            bill.update_billing_identifier()
+            # noinspection PyUnresolvedReferences
+            bill.send_to_accountant()
             bill.save()
             if send_confirmation:
                 bill.send_confirmation()
             self.instance.bill = bill
-            message = _(
-                'The bill %(identifier)s has been created. <a href="%(url)s">Please review it.</a>'
-            )
-            message = mark_safe(
-                message % {"identifier": bill.billing_identifier, "url": bill.backend_url}
-            )
+            message = _('The bill %(identifier)s has been created. <a href="%(url)s">Please review it.</a>')
+            message = mark_safe(message % {"identifier": bill.billing_identifier, "url": bill.backend_url})
             messages.add_message(self.request, messages.INFO, message)
             self.instance.set_confirmed()
             self.instance.save()
@@ -235,9 +220,8 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
         course = self.request.GET.get("course", None)
         if not course:
             return self.success_url
-        else:
-            course_obj = get_object_or_404(Course, pk=course)
-            return course_obj.get_backend_url()
+        course_obj = get_object_or_404(Course, pk=course)
+        return course_obj.get_backend_url()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -257,13 +241,9 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
             try:
                 self.object.extra_infos.get(key=question)
             except ExtraInfo.DoesNotExist:
-                ExtraInfo.objects.create(
-                    registration=self.object, key=question, value=question.default
-                )
+                ExtraInfo.objects.create(registration=self.object, key=question, value=question.default)
         extrainfo_form = ExtraInfoFormSet(instance=self.object)
-        return self.render_to_response(
-            self.get_context_data(form=form, extrainfo_form=extrainfo_form)
-        )
+        return self.render_to_response(self.get_context_data(form=form, extrainfo_form=extrainfo_form))
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -291,11 +271,7 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
             self.object.set_confirmed()
         elif self.object.status == Registration.STATUS.canceled:
             self.object.cancel()
-        if (
-            self.object.status == Registration.STATUS.confirmed
-            and not self.object.paid
-            and not self.object.bill
-        ):
+        if self.object.status == Registration.STATUS.confirmed and not self.object.paid and not self.object.bill:
             status = Bill.STATUS.waiting
             if self.object.get_price() == 0:
                 status = Bill.STATUS.paid
@@ -313,9 +289,7 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
         return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, form, extrainfo_form):
-        return self.render_to_response(
-            self.get_context_data(form=form, extrainfo_form=extrainfo_form)
-        )
+        return self.render_to_response(self.get_context_data(form=form, extrainfo_form=extrainfo_form))
 
 
 class RegistrationDeleteView(BackendMixin, DeleteView):
@@ -343,14 +317,12 @@ class RegistrationValidateView(BackendMixin, TemplateView):
     template_name = "backend/registration/confirm_validate.html"
 
     def get_context_data(self, **kwargs):
-        context = super(RegistrationValidateView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["registrations"] = Registration.objects.filter(status=Registration.STATUS.waiting)
         return context
 
     def post(self, request, *args, **kwargs):
-        to_update = Registration.objects.filter(status=Registration.STATUS.waiting).select_related(
-            "child__family"
-        )
+        to_update = Registration.objects.filter(status=Registration.STATUS.waiting).select_related("child__family")
         families = {registration.child.family for registration in to_update}
         count = to_update.count()
         to_update.update(status=Registration.STATUS.confirmed)
@@ -364,8 +336,8 @@ class RegistrationValidateView(BackendMixin, TemplateView):
                 tenant_pk = None
             transaction.on_commit(
                 lambda: send_confirmation_task.delay(
-                    user_pk=str(family.pk),
-                    tenant_pk=tenant_pk,
+                    user_pk=str(family.pk),  # noqa: B023
+                    tenant_pk=tenant_pk,  # noqa: B023
                     language=get_language(),
                 )
             )
@@ -418,32 +390,26 @@ class TransportDetailView(BackendMixin, DetailView):
     )
 
     def get_context_data(self, **kwargs):
-        children = set([registration.child for registration in self.object.participants.all()])
+        children = {registration.child for registration in self.object.participants.all()}
         if settings.KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES:
-            courses = set(
-                [
-                    absence.session.course
-                    for child in children
-                    for absence in child.absence_set.select_related(
-                        "session__course", "session__course__activity"
-                    )
-                ]
-            )
+            courses = {
+                absence.session.course
+                for child in children
+                for absence in child.absence_set.select_related("session__course", "session__course__activity")
+            }
         else:
-            courses = set([registration.course for registration in self.object.participants.all()])
+            courses = {registration.course for registration in self.object.participants.all()}
 
         try:
             questions = ExtraNeed.objects.filter(question_label__startswith="Arr")
-            all_extras = dict(
-                [
-                    (extra.registration.child, extra.value)
-                    for extra in ExtraInfo.objects.filter(
-                        registration__child__in=children,
-                        registration__course__in=courses,
-                        key__in=questions,
-                    )
-                ]
-            )
+            all_extras = {
+                extra.registration.child: extra.value
+                for extra in ExtraInfo.objects.filter(
+                    registration__child__in=children,
+                    registration__course__in=courses,
+                    key__in=questions,
+                )
+            }
         except ExtraNeed.DoesNotExist:
             all_extras = {}
         Participant = collections.namedtuple(
@@ -462,14 +428,8 @@ class TransportDetailView(BackendMixin, DetailView):
         kwargs["all_dates"].sort(reverse=True)
 
         for registration in self.object.participants.all():
-            child_absences = {
-                absence.session.date: absence
-                for absence in qs
-                if absence.child == registration.child
-            }
-            absences = [
-                child_absences.get(session_date, None) for session_date in kwargs["all_dates"]
-            ]
+            child_absences = {absence.session.date: absence for absence in qs if absence.child == registration.child}
+            absences = [child_absences.get(session_date, None) for session_date in kwargs["all_dates"]]
             participant = Participant(
                 registration=registration,
                 child=registration.child,
@@ -480,7 +440,7 @@ class TransportDetailView(BackendMixin, DetailView):
             participants_list.append(participant)
         kwargs["participants_list"] = list(participants_list)
 
-        return super(TransportDetailView, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
 class TransportCreateView(SuccessMessageMixin, BackendMixin, CreateView):
@@ -535,4 +495,4 @@ class TransportMoveView(BackendMixin, FormView):
         form = self.get_form()
         form.is_valid()
         kwargs["children"] = [reg.child for reg in form.cleaned_data.get("registrations", [])]
-        return super(TransportMoveView, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)

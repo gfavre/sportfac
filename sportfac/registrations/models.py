@@ -11,6 +11,7 @@ from django.utils.timezone import now
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 
+from dynamic_preferences.registries import global_preferences_registry
 from model_utils import Choices
 from model_utils.models import StatusModel
 from phonenumber_field.modelfields import PhoneNumberField
@@ -20,22 +21,16 @@ from sportfac.models import TimeStampedModel
 
 class RegistrationManager(models.Manager):
     def get_queryset(self):
-        return (
-            super(RegistrationManager, self)
-            .get_queryset()
-            .exclude(status=Registration.STATUS.canceled)
-        )
+        return super().get_queryset().exclude(status=Registration.STATUS.canceled)
 
     def all_with_deleted(self):
-        return super(RegistrationManager, self).get_queryset().all()
+        return super().get_queryset().all()
 
     def waiting(self):
         return self.get_queryset().filter(status=Registration.STATUS.waiting)
 
     def validated(self):
-        return self.get_queryset().filter(
-            status__in=(Registration.STATUS.valid, Registration.STATUS.confirmed)
-        )
+        return self.get_queryset().filter(status__in=(Registration.STATUS.valid, Registration.STATUS.confirmed))
 
 
 class Registration(TimeStampedModel, StatusModel):
@@ -57,9 +52,7 @@ class Registration(TimeStampedModel, StatusModel):
         on_delete=models.CASCADE,
     )
     child = models.ForeignKey("Child", related_name="registrations", on_delete=models.CASCADE)
-    bill = models.ForeignKey(
-        "Bill", related_name="registrations", null=True, blank=True, on_delete=models.SET_NULL
-    )
+    bill = models.ForeignKey("Bill", related_name="registrations", null=True, blank=True, on_delete=models.SET_NULL)
     paid = models.BooleanField(default=False, verbose_name=_("Has paid"))
     price = models.PositiveIntegerField(null=True, blank=True)
     allocation_account = models.ForeignKey(
@@ -122,8 +115,7 @@ class Registration(TimeStampedModel, StatusModel):
             if self.bill and self.bill.datatrans_successful_transaction:
                 return self.bill.datatrans_successful_transaction.payment_method
             return "cash"
-        else:
-            return settings.KEPCHUP_PAYMENT_METHOD
+        return settings.KEPCHUP_PAYMENT_METHOD
 
     @property
     def update_url(self):
@@ -150,7 +142,7 @@ class Registration(TimeStampedModel, StatusModel):
 
     def delete(self, *args, **kwargs):
         with transaction.atomic():
-            super(Registration, self).delete(*args, **kwargs)
+            super().delete(*args, **kwargs)
             self.course.save()
             if self.bill:
                 self.bill.save()
@@ -202,20 +194,17 @@ class Registration(TimeStampedModel, StatusModel):
                         self.course.price_local_family,
                         Course._meta.get_field("price_local_family").verbose_name,
                     )
-                else:
-                    return (
-                        self.course.price_family,
-                        Course._meta.get_field("price_family").verbose_name,
-                    )
-            else:
-                if self.is_local_pricing:
-                    # tarif indigène
-                    return (
-                        self.course.price_local,
-                        Course._meta.get_field("price_local").verbose_name,
-                    )
-                else:
-                    return self.course.price, _("Price for external people")
+                return (
+                    self.course.price_family,
+                    Course._meta.get_field("price_family").verbose_name,
+                )
+            if self.is_local_pricing:
+                # tarif indigène
+                return (
+                    self.course.price_local,
+                    Course._meta.get_field("price_local").verbose_name,
+                )
+            return self.course.price, _("Price for external people")
         return self.course.price, ""
 
     def get_update_url(self):
@@ -257,9 +246,7 @@ class Registration(TimeStampedModel, StatusModel):
 
         latest_start = max(self.course.start_time, r2.course.start_time)
         earliest_end = min(self.course.end_time, r2.course.end_time)
-        delta = datetime.combine(date.today(), earliest_end) - datetime.combine(
-            date.today(), latest_start
-        )
+        delta = datetime.combine(date.today(), earliest_end) - datetime.combine(date.today(), latest_start)
 
         if delta.days < 0:
             # they don't overlap
@@ -267,9 +254,8 @@ class Registration(TimeStampedModel, StatusModel):
                 # less than half an hour between courses
                 return True
             return False
-        else:
-            # they overlap
-            return True
+        # they overlap
+        return True
 
     def save(self, *args, **kwargs):
         with transaction.atomic():
@@ -277,13 +263,11 @@ class Registration(TimeStampedModel, StatusModel):
                 self.allocation_account = self.course.activity.allocation_account
             if not settings.KEPCHUP_NO_PAYMENT and self.price is None:
                 self.price = self.get_price()
-            super(Registration, self).save(*args, **kwargs)
+            super().save(*args, **kwargs)
             if self.bill:
                 self.bill.save()
             else:
-                profile, created = RegistrationsProfile.objects.get_or_create(
-                    user=self.child.family
-                )
+                profile, created = RegistrationsProfile.objects.get_or_create(user=self.child.family)
                 profile.save()
             if settings.KEPCHUP_USE_ABSENCES:
                 self.create_future_absences()
@@ -323,7 +307,7 @@ class Registration(TimeStampedModel, StatusModel):
             "activity": self.course.activity.name,
         }
         if self.status == self.STATUS.canceled:
-            out = "CANCELED - " + out
+            return "CANCELED - " + out
         return out
 
 
@@ -352,15 +336,13 @@ class Transport(TimeStampedModel):
 
 class BillManager(models.Manager):
     def get_queryset(self):
-        return super(BillManager, self).get_queryset().exclude(status=Bill.STATUS.canceled)
+        return super().get_queryset().exclude(status=Bill.STATUS.canceled)
 
     def all_with_deleted(self):
-        return super(BillManager, self).get_queryset().all()
+        return super().get_queryset().all()
 
     def waiting(self):
-        return self.get_queryset().filter(
-            status__in=(Bill.STATUS.just_created, Registration.STATUS.waiting)
-        )
+        return self.get_queryset().filter(status__in=(Bill.STATUS.just_created, Registration.STATUS.waiting))
 
     def paid(self):
         return self.get_queryset().filter(status=Bill.STATUS.paid)
@@ -378,12 +360,8 @@ class Bill(TimeStampedModel, StatusModel):
         ("canceled", _("Canceled by administrator")),
     )
     billing_identifier = models.CharField(_("Billing identifier"), max_length=45, blank=True)
-    payment_method = models.CharField(
-        _("Payment method"), choices=METHODS, max_length=20, blank=True
-    )
-    family = models.ForeignKey(
-        "profiles.FamilyUser", related_name="bills", null=True, on_delete=models.CASCADE
-    )
+    payment_method = models.CharField(_("Payment method"), choices=METHODS, max_length=20, blank=True)
+    family = models.ForeignKey("profiles.FamilyUser", related_name="bills", null=True, on_delete=models.CASCADE)
     total = models.PositiveIntegerField(default=0, verbose_name=_("Total to be paid"))
     reminder_sent = models.BooleanField(_("Reminder sent"), default=False)
     reminder_sent_date = models.DateTimeField(_("Reminder sent date"), null=True, blank=True)
@@ -429,16 +407,17 @@ class Bill(TimeStampedModel, StatusModel):
             registration.paid = True
             registration.save()
 
-    def get_pdf(self):
+    def generate_pdf(self):
         from mailer.pdfutils import InvoiceRenderer
 
         renderer = InvoiceRenderer({"bill": self})
-        filename = "facture-{}.pdf".format(self.pk)
+        filename = f"facture-{self.pk}.pdf"
         tempdir = mkdtemp()
         filepath = os.path.join(tempdir, filename)
         renderer.render_to_pdf(filepath)
         with open(filepath, "rb") as pdf_file:
             self.pdf.save(filename, File(pdf_file), save=True)
+        self.save()
 
     def get_absolute_url(self):
         return reverse("registrations:registrations_bill_detail", kwargs={"pk": self.pk})
@@ -464,7 +443,7 @@ class Bill(TimeStampedModel, StatusModel):
             self.update_status()
         if not self.billing_identifier:
             self.update_billing_identifier()
-        super(Bill, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         if self.family:
             self.family.save()
 
@@ -484,6 +463,29 @@ class Bill(TimeStampedModel, StatusModel):
             )
         )
 
+    def send_to_accountant(self):
+        if not self.total:
+            # Accountants do not care about bills with no total :)
+            return
+        if not settings.KEPCHUP_SEND_BILL_TO_ACCOUNTANT:
+            return
+        global_preferences = global_preferences_registry.manager()
+        end = global_preferences["phase__OTHER_END_REGISTRATION"]
+        if now() < end:
+            return
+        try:
+            tenant_pk = connection.tenant.pk
+        except AttributeError:
+            tenant_pk = None
+        from .tasks import send_invoice_pdf
+
+        transaction.on_commit(
+            lambda: send_invoice_pdf.delay(
+                bill_pk=self.pk,
+                tenant_pk=tenant_pk,
+            )
+        )
+
     def set_paid(self):
         self.status = self.STATUS.paid
         self.save()
@@ -500,26 +502,20 @@ class Bill(TimeStampedModel, StatusModel):
             if len("-".join(identifier)) <= 20:
                 self.billing_identifier = "-".join(identifier)
             else:
-                identifier = "{}-{}".format(name_part[0], number_part)
+                identifier = f"{name_part[0]}-{number_part}"
                 if len(identifier) <= 20:
                     self.billing_identifier = identifier
                 else:
-                    self.billing_identifier = (
-                        name_part[0][: (20 - len(number_part) - 1)] + "-" + number_part
-                    )
+                    self.billing_identifier = name_part[0][: (20 - len(number_part) - 1)] + "-" + number_part
 
     def update_total(self):
-        self.total = sum(
-            [registration.price for registration in self.registrations.all() if registration.price]
-        )
+        self.total = sum([registration.price for registration in self.registrations.all() if registration.price])
 
     def update_status(self):
         if (
             self.status == "waiting"
             and self.registrations.exists()
-            and not self.registrations.exclude(status=Registration.STATUS.canceled)
-            .filter(paid=False)
-            .exists()
+            and not self.registrations.exclude(status=Registration.STATUS.canceled).filter(paid=False).exists()
         ):
             self.status = self.STATUS.paid
 
@@ -542,7 +538,7 @@ class ExtraInfo(models.Model):
         return self.key.price_dict.get(self.value, 0)
 
     def save(self, *args, **kwargs):
-        super(ExtraInfo, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         self.registration.save()
 
 
@@ -573,9 +569,7 @@ class Child(TimeStampedModel, StatusModel):
     nationality = models.CharField(choices=NATIONALITY, max_length=3, default=NATIONALITY.CH)
     language = models.CharField(choices=LANGUAGE, max_length=2, default=LANGUAGE.F)
 
-    school_year = models.ForeignKey(
-        "profiles.SchoolYear", null=True, blank=True, on_delete=models.SET_NULL
-    )
+    school_year = models.ForeignKey("profiles.SchoolYear", null=True, blank=True, on_delete=models.SET_NULL)
     building = models.ForeignKey(
         "schools.Building",
         related_name="students",
@@ -658,22 +652,19 @@ class Child(TimeStampedModel, StatusModel):
     @property
     def montreux_needs_appointment(self):
         for registration in self.registrations.all():
-            if registration.extra_infos.filter(
-                key__question_label__contains="matériel", value="OUI"
-            ).exists():
+            if registration.extra_infos.filter(key__question_label__contains="matériel", value="OUI").exists():
                 return True
         return False
 
     @property
     def ordering_name(self):
-        return "{} {}".format(self.last_name.lower().strip(), self.first_name.lower().strip())
+        return f"{self.last_name.lower().strip()} {self.first_name.lower().strip()}"
 
     @property
     def school_name(self):
         if self.school:
             return self.school.name
-        else:
-            return self.other_school
+        return self.other_school
 
     @property
     def update_url(self):
@@ -694,7 +685,7 @@ class Child(TimeStampedModel, StatusModel):
         return reverse("backend:child-delete", kwargs={"child": self.pk})
 
     def get_full_name(self):
-        full_name = "%s %s" % (self.first_name.title(), self.last_name.title())
+        full_name = f"{self.first_name.title()} {self.last_name.title()}"
         return full_name.strip()
 
     def get_update_url(self):
@@ -761,9 +752,7 @@ class ChildActivityLevel(TimeStampedModel):
         blank=True,
         verbose_name=_("Level -1"),
     )
-    after_level = models.CharField(
-        choices=LEVELS, max_length=5, blank=True, verbose_name=_("End course level")
-    )
+    after_level = models.CharField(choices=LEVELS, max_length=5, blank=True, verbose_name=_("End course level"))
     note = models.CharField(max_length=50, verbose_name=_("Note"), blank=True)
     activity = models.ForeignKey(
         "activities.Activity",
@@ -789,9 +778,7 @@ class RegistrationsProfile(TimeStampedModel):
     This model acts as a cache to avoid useless comparisons
     """
 
-    user = models.OneToOneField(
-        "profiles.FamilyUser", related_name="profile", null=True, on_delete=models.SET_NULL
-    )
+    user = models.OneToOneField("profiles.FamilyUser", related_name="profile", null=True, on_delete=models.SET_NULL)
 
     has_paid_all = models.BooleanField(default=False, blank=True)
     finished_registering = models.BooleanField(default=False, blank=True, editable=False)
@@ -801,4 +788,4 @@ class RegistrationsProfile(TimeStampedModel):
         self.has_paid_all = self.user.paid
         self.finished_registering = self.user.finished_registrations
         self.last_registration = self.user.last_registration
-        super(RegistrationsProfile, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)

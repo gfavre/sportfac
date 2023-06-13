@@ -1,5 +1,6 @@
 from registrations.models import Registration
 
+
 r = Registration.objects.get(child__first_name__startswith="Sidney", course__number="EN/01-2023")
 r.create_future_absences()
 
@@ -24,4 +25,10 @@ r = Registration.objects.get(child__first_name="Mael", course__number="EN/04-202
 r.create_future_absences()
 
 r = Registration.objects.get(child__first_name="Numa", course__number="EN/04-2023")
+r.create_future_absences()
+
+r = Registration.objects.get(child__first_name="Luciana", course__number="EN/03-2023")
+r.create_future_absences()
+
+r = Registration.objects.get(child__first_name="Enzo Raphael", course__number="EN/02-2023")
 r.create_future_absences()
