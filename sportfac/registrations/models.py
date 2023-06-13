@@ -430,6 +430,8 @@ class Bill(TimeStampedModel, StatusModel):
     def get_due_date(self):
         global_preferences = global_preferences_registry.manager()
         delay = global_preferences["payment__DELAY_DAYS"]
+        if not self.created:
+            self.created = now()
         return self.created + relativedelta(days=delay)
 
     def get_pay_url(self):
