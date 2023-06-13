@@ -206,7 +206,9 @@ def send_invoice_pdf(bill_pk, tenant_pk=None):
         "site_name": current_site.name,
         "site_url": settings.DEBUG and "http://" + current_site.domain or "https://" + current_site.domain,
     }
-    subject = render_to_string("registrations/accountant_bill_mail_subject.txt", context=context)
+    subject = (
+        render_to_string("registrations/accountant_bill_mail_subject.txt", context=context).replace("\n", "").strip()
+    )
     body = render_to_string("registrations/accountant_bill_mail.txt", context=context)
 
     email = EmailMessage(

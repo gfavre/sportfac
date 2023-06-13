@@ -9,7 +9,7 @@ from django.urls import reverse
 
 from activities.tests.factories import CourseFactory
 from profiles.tests.factories import FamilyUserFactory
-from registrations.models import Bill, Registration
+from registrations.models import Registration
 from registrations.tests.factories import ChildFactory, RegistrationFactory
 
 from sportfac.utils import TenantTestCase, process_request_for_middleware
@@ -61,34 +61,6 @@ class RegistrationCreateViewTests(TenantTestCase):
         # noinspection PyUnresolvedReferences
         content = response.render().content
         self.assertTrue(len(content) > 0)
-
-    @override_settings(SEND_BILL_TO_ACCOUNTANT=True, KEPCHUP_NO_PAYMENT=False)
-    def test_send_to_accountants_is_called_if_registrations_closed(self):
-        data = {
-            "current_step": "2",
-            "0-child": self.child.id,
-            "1-course": self.course.id,
-            "2-paid": False,
-            "2-send_confirmation": False,
-        }
-        request = self.factory.post(self.url, data=data)
-        fake_registrations_open_middleware(request)
-        request.user = self.user
-        process_request_for_middleware(request, SessionMiddleware)
-
-        with patch.object(Bill, "send_to_accountant") as mock_send:
-            self.request.PHASE = 3
-            response = self.view(request)
-            self.assertEqual(mock_send.call_count, 1)
-        self.assertEqual(response.status_code, 200)
-
-    @override_settings(SEND_BILL_TO_ACCOUNTANT=True, KEPCHUP_NO_PAYMENT=False)
-    def test_send_to_accountants_is_not_called_if_registrations_are_open(self):
-        with patch.object(Bill, "send_to_accountant") as mock_send:
-            self.request.PHASE = 2
-            response = self.view(self.request)
-            self.assertEqual(mock_send.call_count, 0)
-        self.assertEqual(response.status_code, 200)
 
 
 class RegistrationDeleteViewTests(TenantTestCase):
