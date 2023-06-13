@@ -4,16 +4,16 @@ from django.utils.translation import gettext_lazy as _
 import tablib
 from activities.models import ExtraNeed
 from backend.templatetags.switzerland import phone
-from import_export import fields, resources
+from import_export import fields, resources, widgets
 
-from .models import ChildActivityLevel, Registration
+from .models import Bill, ChildActivityLevel, Registration
 
 
 class ExtraNeedField(fields.Field):
     def __init__(self, *args, **kwargs):
         self.extra_need = kwargs.pop("extra_need")
         kwargs["column_name"] = kwargs.pop("column_name", self.extra_need.question_label)
-        super(ExtraNeedField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_value(self, obj):
         value = None
@@ -35,12 +35,8 @@ class RegistrationResource(resources.ModelResource):
     birth_date = fields.Field(attribute="child", column_name=_("Birth date"))
     school_year = fields.Field(attribute="child__school_year__year", column_name=_("School year"))
     school_name = fields.Field(attribute="child", column_name=_("School"))
-    parent_first_name = fields.Field(
-        attribute="child__family__first_name", column_name=_("Parent's first name")
-    )
-    parent_last_name = fields.Field(
-        attribute="child__family__last_name", column_name=_("Parent's last name")
-    )
+    parent_first_name = fields.Field(attribute="child__family__first_name", column_name=_("Parent's first name"))
+    parent_last_name = fields.Field(attribute="child__family__last_name", column_name=_("Parent's last name"))
     parent_email = fields.Field(attribute="child__family__email", column_name=_("Email"))
     parent_address = fields.Field(attribute="child__family__address", column_name=_("Address"))
     parent_zipcode = fields.Field(attribute="child__family__zipcode", column_name=_("NPA"))
@@ -80,14 +76,14 @@ class RegistrationResource(resources.ModelResource):
 
     def __init__(self, *args, **kwargs):
         self.course = kwargs.pop("course", None)
-        super(RegistrationResource, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.course:
             queryset = ExtraNeed.objects.filter(courses__in=[self.course])
         else:
             queryset = ExtraNeed.objects.all()
         for extra in queryset:
             field = ExtraNeedField(extra_need=extra)
-            self.fields["extra_{}".format(extra.id)] = field
+            self.fields[f"extra_{extra.id}"] = field
         if not settings.KEPCHUP_CHILD_SCHOOL and "school_name" in self.fields:
             # Resource objects are cached by the import-export library. Therefore we could
             # try to remove an already removed field :(
@@ -122,18 +118,15 @@ class RegistrationResource(resources.ModelResource):
         activity = obj.course.activity
         if activity.number.startswith("200"):
             return "A "
-        elif activity.number.startswith("270"):
+        if activity.number.startswith("270"):
             return "S "
-        elif obj.extra_infos.exists():
-            extra = obj.extra_infos.filter(
-                key__question_label__startswith="Snowboard ou ski"
-            ).last()
+        if obj.extra_infos.exists():
+            extra = obj.extra_infos.filter(key__question_label__startswith="Snowboard ou ski").last()
             if not extra:
                 return ""
             if extra.value.lower() == "ski":
                 return "A "
-            else:
-                return "S "
+            return "S "
         return ""
 
     def dehydrate_before_level(self, obj):
@@ -184,7 +177,7 @@ class RegistrationResource(resources.ModelResource):
         )
         if self.course:
             queryset = queryset.filter(course=self.course)
-        return queryset
+        return queryset  # noqa R504
 
     def get_export_order(self):
         order = tuple(self._meta.export_order or ())
@@ -200,3 +193,45 @@ class RegistrationResource(resources.ModelResource):
             removable_fields.append("transport")
         order = tuple([field for field in order if field not in removable_fields])
         return order + tuple(k for k in self.fields.keys() if k not in order)
+
+
+class BillResource(resources.ModelResource):
+    billing_identifier = fields.Field(
+        attribute="billing_identifier", column_name=_("Billing identifier"), widget=widgets.CharWidget()
+    )
+    amount = fields.Field(attribute="total", column_name=_("Amount"), widget=widgets.DecimalWidget())
+    due_date = fields.Field(
+        attribute="due_date", column_name=_("Due date"), widget=widgets.DateWidget(format="%d.%m.%Y")
+    )
+    parent = fields.Field(attribute="family", column_name=_("Parent"))
+    children = fields.Field(attribute="registrations", column_name=_("Children"))
+    paid = fields.Field(attribute="is_paid", column_name=_("Paid"), widget=widgets.BooleanWidget())
+
+    class Meta:
+        model = Bill
+        fields = ("billing_identifier", "amount", "due_date", "paid", "parent", "children")
+        export_order = fields
+
+    def dehydrate_children(self, obj):
+        return ", ".join([registration.child.full_name for registration in obj.registrations.all()])
+
+    def dehydrate_parent(self, obj):
+        return obj.family.full_name
+
+    def export(self, queryset=None, *args, **kwargs):
+        """
+        Exports a resource.
+        """
+
+        self.before_export(queryset, *args, **kwargs)
+
+        if queryset is None:
+            queryset = self.get_queryset()
+        headers = self.get_export_headers()
+        data = tablib.Dataset(headers=headers)
+        for obj in queryset:
+            data.append(self.export_resource(obj))
+
+        self.after_export(queryset, data, *args, **kwargs)
+
+        return data

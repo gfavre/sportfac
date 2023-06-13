@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse, reverse_lazy
@@ -13,19 +12,6 @@ from registrations.models import Bill, Registration
 from registrations.views import BillMixin
 
 from .mixins import BackendMixin
-
-
-__all__ = [
-    "MailArchiveListView",
-    "NeedConfirmationView",
-    "NotPaidYetView",
-    "MailConfirmationParticipantsView",
-    "MailCreateView",
-    "MailPreview",
-    "ParticipantsMailCreateView",
-    "ParticipantsMailPreview",
-    "MailCourseInstructorsView",
-]
 
 
 class MailArchiveListView(BackendMixin, ListView):
@@ -59,7 +45,7 @@ class MailPreview(BackendMixin, ArchivedMailMixin, mailer_views.MailPreviewView)
                 reverse("wizard_confirm"),
             )
         )
-        return super(MailPreview, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
 class ParticipantsMailCreateView(BackendMixin, mailer_views.ParticipantsMailCreateView):
@@ -68,14 +54,10 @@ class ParticipantsMailCreateView(BackendMixin, mailer_views.ParticipantsMailCrea
     template_name = "backend/mail/create.html"
 
     def get_success_url(self):
-        return reverse(
-            "backend:mail-participants-custom-preview", kwargs={"course": self.course.pk}
-        )
+        return reverse("backend:mail-participants-custom-preview", kwargs={"course": self.course.pk})
 
 
-class ParticipantsMailPreview(
-    BackendMixin, ArchivedMailMixin, mailer_views.ParticipantsMailPreviewView
-):
+class ParticipantsMailPreview(BackendMixin, ArchivedMailMixin, mailer_views.ParticipantsMailPreviewView):
     """Send email to all participants of a course - preview"""
 
     template_name = "backend/mail/preview.html"
@@ -109,9 +91,7 @@ class MailConfirmationParticipantsView(
         return self.course.backend_url
 
 
-class NotPaidYetView(
-    BackendMixin, BillMixin, TemplatedEmailMixin, mailer_views.BrowsableMailPreviewView
-):
+class NotPaidYetView(BackendMixin, BillMixin, TemplatedEmailMixin, mailer_views.BrowsableMailPreviewView):
     """Mail to people having registered to courses but not paid yet"""
 
     subject_template = "mailer/notpaid_subject.txt"
@@ -125,16 +105,14 @@ class NotPaidYetView(
         kwargs["iban"] = self.global_preferences["payment__IBAN"]
         kwargs["address"] = self.global_preferences["payment__ADDRESS"]
         kwargs["place"] = self.global_preferences["payment__PLACE"]
-        return super(NotPaidYetView, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
     def get_recipients(self):
         bills = Bill.objects.filter(status=Bill.STATUS.waiting, total__gt=0, reminder_sent=False)
         return list(FamilyUser.objects.filter(pk__in=[bill.family.pk for bill in bills]))
 
 
-class NeedConfirmationView(
-    BackendMixin, TemplatedEmailMixin, mailer_views.BrowsableMailPreviewView
-):
+class NeedConfirmationView(BackendMixin, TemplatedEmailMixin, mailer_views.BrowsableMailPreviewView):
     """Mail to people having not confirmed activities yet."""
 
     success_url = reverse_lazy("backend:home")
@@ -144,8 +122,7 @@ class NeedConfirmationView(
     mail_type = "need_confirmation"
 
     def get_recipients(self):
-        parents = list(set([reg.child.family for reg in Registration.objects.waiting()]))
-        return parents
+        return list({reg.child.family for reg in Registration.objects.waiting()})
 
     def get_context_data(self, **kwargs):
         kwargs["url"] = "".join(
@@ -155,4 +132,4 @@ class NeedConfirmationView(
                 reverse("wizard_confirm"),
             )
         )
-        return super(NeedConfirmationView, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)

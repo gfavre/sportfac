@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import collections
 import os
 from tempfile import mkdtemp
@@ -25,16 +24,6 @@ from ..utils import AbsencePDFRenderer
 from .mixins import BackendMixin
 
 
-__all__ = [
-    "ActivityDetailView",
-    "ActivityListView",
-    "ActivityCreateView",
-    "ActivityUpdateView",
-    "ActivityDeleteView",
-    "ActivityAbsenceView",
-]
-
-
 class ActivityDetailView(BackendMixin, DetailView):
     model = Activity
     slug_field = "slug"
@@ -51,9 +40,7 @@ class ActivityCreateView(SuccessMessageMixin, BackendMixin, CreateView):
     model = Activity
     form_class = ActivityForm
     success_url = reverse_lazy("backend:activity-list")
-    success_message = _(
-        '<a href="%(url)s" class="alert-link">Activity (%(number)s)</a> has been created.'
-    )
+    success_message = _('<a href="%(url)s" class="alert-link">Activity (%(number)s)</a> has been created.')
     template_name = "backend/activity/create.html"
 
     def get_success_message(self, cleaned_data):
@@ -117,24 +104,18 @@ class ActivityAbsenceView(BackendMixin, DetailView):
             sessions = kwargs["course"].sessions.all()
         else:
             sessions = self.object.sessions.all()
-        kwargs["sessions"] = dict([(session.date, session) for session in sessions])
+        kwargs["sessions"] = {session.date: session for session in sessions}
         kwargs["closest_session"] = closest_session(sessions)
         # kwargs['sessions'] = dict([(absence.session.date, absence.session) for absence in qs])
-        kwargs["all_dates"] = sorted(
-            [session_date for session_date in kwargs["sessions"].keys()], reverse=True
-        )
+        kwargs["all_dates"] = sorted(kwargs["sessions"].keys(), reverse=True)
 
-        registrations = dict(
-            [(registration.child, registration) for registration in all_registrations]
-        )
+        registrations = {registration.child: registration for registration in all_registrations}
         child_absences = collections.OrderedDict()
-        for (child, registration) in sorted(
-            list(registrations.items()), key=lambda x: x[0].ordering_name
-        ):
+        for child, registration in sorted(registrations.items(), key=lambda x: x[0].ordering_name):
             child_absences[(child, registration)] = {}
         for absence in qs:
             child = absence.child
-            if not child in registrations:
+            if child not in registrations:
                 # happens if child was previously attending this course but is no longer
                 continue
             registration = registrations[child]
@@ -149,28 +130,22 @@ class ActivityAbsenceView(BackendMixin, DetailView):
         # kwargs['courses_list'] = Course.objects.select_related('activity')
         if settings.KEPCHUP_REGISTRATION_LEVELS:
             kwargs["levels"] = ChildActivityLevel.LEVELS
-            kwargs["child_levels"] = dict(
-                [
-                    (lvl.child, lvl)
-                    for lvl in ChildActivityLevel.objects.filter(
-                        activity=self.object
-                    ).select_related("child")
-                ]
-            )
+            kwargs["child_levels"] = {
+                lvl.child: lvl
+                for lvl in ChildActivityLevel.objects.filter(activity=self.object).select_related("child")
+            }
             try:
                 questions = ExtraNeed.objects.filter(question_label__startswith="Niveau")
-                all_extras = dict(
-                    [
-                        (extra.registration.child, extra.value)
-                        for extra in ExtraInfo.objects.filter(
-                            registration__course__activity=self.object, key__in=questions
-                        ).select_related("registration__child")
-                    ]
-                )
+                all_extras = {
+                    extra.registration.child: extra.value
+                    for extra in ExtraInfo.objects.filter(
+                        registration__course__activity=self.object, key__in=questions
+                    ).select_related("registration__child")
+                }
             except ExtraNeed.DoesNotExist:
                 all_extras = {}
             kwargs["extras"] = all_extras
-        return super(ActivityAbsenceView, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
     def get(self, request, *args, **kwargs):
         if "pdf" in self.request.GET:
@@ -178,14 +153,14 @@ class ActivityAbsenceView(BackendMixin, DetailView):
             context = self.get_context_data(object=self.object)
             renderer = AbsencePDFRenderer(context, self.request)
             tempdir = mkdtemp()
-            filename = "absences-{}.pdf".format(slugify(self.object.number))
+            filename = f"absences-{slugify(self.object.number)}.pdf"
             filepath = os.path.join(tempdir, filename)
             renderer.render_to_pdf(filepath)
             with open(filepath, "rb") as f:
                 response = HttpResponse(f.read(), content_type="application/pdf")
-            response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
+            response["Content-Disposition"] = f'attachment; filename="{filename}"'
             return response
-        return super(ActivityAbsenceView, self).get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
 
 class ActivityUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
@@ -194,9 +169,7 @@ class ActivityUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
     slug_field = "slug"
     slug_url_kwarg = "activity"
     success_url = reverse_lazy("backend:activity-list")
-    success_message = _(
-        '<a href="%(url)s" class="alert-link">Activity (%(number)s)</a> has been updated.'
-    )
+    success_message = _('<a href="%(url)s" class="alert-link">Activity (%(number)s)</a> has been updated.')
     template_name = "backend/activity/update.html"
 
     def get_success_message(self, cleaned_data):
@@ -220,4 +193,4 @@ class ActivityDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
             self.request,
             _("Activity %(identifier)s has been deleted.") % {"identifier": identifier},
         )
-        return super(ActivityDeleteView, self).delete(request, *args, **kwargs)
+        return super().delete(request, *args, **kwargs)

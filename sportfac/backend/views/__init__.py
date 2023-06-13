@@ -1,34 +1,104 @@
-from .activity_views import *
-from .allocation_views import (
-    AllocationAccountCreateView,
-    AllocationAccountDeleteView,
-    AllocationAccountListView,
-    AllocationAccountReportView,
-    AllocationAccountUpdateView,
-)
-from .course_views import *
-from .dashboard_views import *
-from .mail_views import *
-from .payroll_views import (
-    FunctionCreateView,
-    FunctionDeleteView,
-    FunctionListView,
-    FunctionUpdateView,
-    PayrollReportView,
-    SupervisorRolesList,
-)
-from .registration_views import *
-from .site_views import (
-    AppointmentDeleteView,
-    AppointmentsExportView,
-    AppointmentsListView,
-    AppointmentsManagementView,
-    FlatPageListView,
-    FlatPageUpdateView,
-    GenericEmailListView,
-    GenericEmailUpdateView,
-)
-from .teacher_views import *
-from .user_views import *
-from .waiting_slots_views import WaitingSlotDeleteView, WaitingSlotTransformView
-from .year_views import *
+from .activity_views import ActivityAbsenceView  # noqa F401
+from .activity_views import ActivityCreateView  # noqa F401
+from .activity_views import ActivityDeleteView  # noqa F401
+from .activity_views import ActivityDetailView  # noqa F401
+from .activity_views import ActivityListView  # noqa F401
+from .activity_views import ActivityUpdateView  # noqa F401
+from .allocation_views import AllocationAccountCreateView  # noqa F401
+from .allocation_views import AllocationAccountDeleteView  # noqa F401
+from .allocation_views import AllocationAccountListView  # noqa F401
+from .allocation_views import AllocationAccountReportView  # noqa F401
+from .allocation_views import AllocationAccountUpdateView  # noqa F401
+from .course_views import CourseAbsenceView  # noqa F401
+from .course_views import CourseCreateView  # noqa F401
+from .course_views import CourseDeleteView  # noqa F401
+from .course_views import CourseDetailView  # noqa F401
+from .course_views import CourseJSCSVView  # noqa F401
+from .course_views import CourseListView  # noqa F401
+from .course_views import CourseParticipantsExportView  # noqa F401
+from .course_views import CourseParticipantsView  # noqa F401
+from .course_views import CoursesAbsenceView  # noqa F401
+from .course_views import CourseUpdateView  # noqa F401
+from .course_views import PaySlipMontreux  # noqa F401
+from .dashboard_views import HomePageView, RegistrationDatesView  # noqa F401
+from .mail_views import MailArchiveListView  # noqa F401
+from .mail_views import MailConfirmationParticipantsView  # noqa F401
+from .mail_views import MailCourseInstructorsView  # noqa F401
+from .mail_views import MailCreateView  # noqa F401
+from .mail_views import MailPreview  # noqa F401
+from .mail_views import NeedConfirmationView  # noqa F401
+from .mail_views import NotPaidYetView  # noqa F401
+from .mail_views import ParticipantsMailCreateView  # noqa F401
+from .mail_views import ParticipantsMailPreview  # noqa F401
+from .payroll_views import FunctionCreateView  # noqa F401
+from .payroll_views import FunctionDeleteView  # noqa F401
+from .payroll_views import FunctionListView  # noqa F401
+from .payroll_views import FunctionUpdateView  # noqa F401
+from .payroll_views import PayrollReportView  # noqa F401
+from .payroll_views import SupervisorRolesList  # noqa F401
+from .registration_views import BillDetailView  # noqa F401
+from .registration_views import BillListView  # noqa F401
+from .registration_views import BillUpdateView  # noqa F401
+from .registration_views import RegistrationCreateView  # noqa F401
+from .registration_views import RegistrationDeleteView  # noqa F401
+from .registration_views import RegistrationDetailView  # noqa F401
+from .registration_views import RegistrationExportView  # noqa F401
+from .registration_views import RegistrationListView  # noqa F401
+from .registration_views import RegistrationsMoveView  # noqa F401
+from .registration_views import RegistrationUpdateView  # noqa F401
+from .registration_views import RegistrationValidateView  # noqa F401
+from .registration_views import TransportCreateView  # noqa F401
+from .registration_views import TransportDeleteView  # noqa F401
+from .registration_views import TransportDetailView  # noqa F401
+from .registration_views import TransportListView  # noqa F401
+from .registration_views import TransportMoveView  # noqa F401
+from .registration_views import TransportUpdateView  # noqa F401
+from .site_views import AppointmentDeleteView  # noqa F401
+from .site_views import AppointmentsExportView  # noqa F401
+from .site_views import AppointmentsListView  # noqa F401
+from .site_views import AppointmentsManagementView  # noqa F401
+from .site_views import FlatPageListView  # noqa F401
+from .site_views import FlatPageUpdateView  # noqa F401
+from .site_views import GenericEmailListView  # noqa F401
+from .site_views import GenericEmailUpdateView  # noqa F401
+from .teacher_views import BuildingCreateView  # noqa F401
+from .teacher_views import BuildingDeleteView  # noqa F401
+from .teacher_views import BuildingDetailView  # noqa F401
+from .teacher_views import BuildingListView  # noqa F401
+from .teacher_views import BuildingTeacherImportView  # noqa F401
+from .teacher_views import BuildingUpdateView  # noqa F401
+from .teacher_views import TeacherCreateView  # noqa F401
+from .teacher_views import TeacherDeleteView  # noqa F401
+from .teacher_views import TeacherDetailView  # noqa F401
+from .teacher_views import TeacherImportView  # noqa F401
+from .teacher_views import TeacherListView  # noqa F401
+from .teacher_views import TeacherUpdateView  # noqa F401
+from .user_views import ChildAbsencesView  # noqa F401
+from .user_views import ChildCreateView  # noqa F401
+from .user_views import ChildDeleteView  # noqa F401
+from .user_views import ChildDetailView  # noqa F401
+from .user_views import ChildImportView  # noqa F401
+from .user_views import ChildListView  # noqa F401
+from .user_views import ChildUpdateView  # noqa F401
+from .user_views import InstructorCreateView  # noqa F401
+from .user_views import InstructorDetailView  # noqa F401
+from .user_views import InstructorExportView  # noqa F401
+from .user_views import InstructorListView  # noqa F401
+from .user_views import MailUsersView  # noqa F401
+from .user_views import ManagerCreateView  # noqa F401
+from .user_views import ManagerExportView  # noqa F401
+from .user_views import ManagerListView  # noqa F401
+from .user_views import PasswordSetView  # noqa F401
+from .user_views import UserCreateView  # noqa F401
+from .user_views import UserDeleteView  # noqa F401
+from .user_views import UserDetailView  # noqa F401
+from .user_views import UserExportView  # noqa F401
+from .user_views import UserListView  # noqa F401
+from .user_views import UserUpdateView  # noqa F401
+from .waiting_slots_views import WaitingSlotDeleteView, WaitingSlotTransformView  # noqa F401
+from .year_views import ChangeProductionYearFormView  # noqa F401
+from .year_views import ChangeYearFormView  # noqa F401
+from .year_views import YearCreateView  # noqa F401
+from .year_views import YearDeleteView  # noqa F401
+from .year_views import YearListView  # noqa F401
+from .year_views import YearUpdateView  # noqa F401

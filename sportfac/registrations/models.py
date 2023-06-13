@@ -11,6 +11,7 @@ from django.utils.timezone import now
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 
+from dateutil.relativedelta import relativedelta
 from dynamic_preferences.registries import global_preferences_registry
 from model_utils import Choices
 from model_utils.models import StatusModel
@@ -363,6 +364,7 @@ class Bill(TimeStampedModel, StatusModel):
     payment_method = models.CharField(_("Payment method"), choices=METHODS, max_length=20, blank=True)
     family = models.ForeignKey("profiles.FamilyUser", related_name="bills", null=True, on_delete=models.CASCADE)
     total = models.PositiveIntegerField(default=0, verbose_name=_("Total to be paid"))
+    due_date = models.DateField(_("Due date"), null=True, blank=True)
     reminder_sent = models.BooleanField(_("Reminder sent"), default=False)
     reminder_sent_date = models.DateTimeField(_("Reminder sent date"), null=True, blank=True)
     pdf = models.FileField(_("PDF"), null=True, blank=True)
@@ -425,6 +427,13 @@ class Bill(TimeStampedModel, StatusModel):
     def get_backend_url(self):
         return reverse("backend:bill-detail", kwargs={"pk": self.pk})
 
+    def get_due_date(self):
+        global_preferences = global_preferences_registry.manager()
+        delay = global_preferences["payment__DELAY_DAYS"]
+        if not self.created:
+            self.created = now()
+        return self.created + relativedelta(days=delay)
+
     def get_pay_url(self):
         return reverse("backend:bill-update", kwargs={"pk": self.pk})
 
@@ -433,6 +442,8 @@ class Bill(TimeStampedModel, StatusModel):
 
     @transaction.atomic
     def save(self, force_status=False, *args, **kwargs):
+        if not self.due_date:
+            self.due_date = self.get_due_date()
         if not self.payment_method:
             if settings.KEPCHUP_PAYMENT_METHOD == "wire_transfer":
                 self.payment_method = self.METHODS.iban

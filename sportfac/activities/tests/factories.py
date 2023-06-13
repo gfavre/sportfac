@@ -17,7 +17,7 @@ class AllocationAccountFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = AllocationAccount
 
-    account = factory.Sequence(lambda n: "account-{}".format(n))
+    account = factory.Sequence(lambda n: f"account-{n}")
     name = factory.Faker("bs")
 
 
@@ -25,8 +25,8 @@ class ActivityFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Activity
 
-    number = factory.Sequence(lambda a: "{0}".format(a))
-    name = factory.Sequence(lambda a: fake.bs() + f" -{a}")
+    number = factory.Sequence(lambda a: f"{a}")
+    name = factory.Sequence(lambda a: fake.word() + f" -{a}")
     description = factory.Faker("text")
     informations = factory.Faker("text")
 
@@ -36,8 +36,8 @@ class CourseFactory(factory.django.DjangoModelFactory):
         model = Course
 
     activity = factory.SubFactory(ActivityFactory)
-
-    number = factory.Sequence(lambda x: "{0}".format(x))
+    name = factory.Faker("word")
+    number = factory.Sequence(lambda x: f"{x}")
     number_of_sessions = factory.fuzzy.FuzzyInteger(0, 42)
     start_date = factory.fuzzy.FuzzyDate(start_date=datetime.date(2014, 1, 1))
     end_date = factory.LazyAttribute(lambda c: c.start_date + datetime.timedelta(days=90))

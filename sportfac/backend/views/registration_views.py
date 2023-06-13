@@ -1,14 +1,16 @@
 import collections
+from datetime import datetime
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db import IntegrityError, connection, transaction
 from django.db.models import Count
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
+from django.utils.timezone import now
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, TemplateView, UpdateView, View
@@ -24,33 +26,12 @@ from backend.forms import (
     SendConfirmationForm,
 )
 from formtools.wizard.views import SessionWizardView
-from registrations.forms import BillForm, MoveRegistrationsForm, MoveTransportForm, TransportForm
+from registrations.forms import BillExportForm, BillForm, MoveRegistrationsForm, MoveTransportForm, TransportForm
 from registrations.models import Bill, ExtraInfo, Registration, Transport
-from registrations.resources import RegistrationResource
+from registrations.resources import BillResource, RegistrationResource
 from registrations.views import BillMixin
 
 from .mixins import BackendMixin, ExcelResponseMixin
-
-
-__all__ = (
-    "RegistrationCreateView",
-    "RegistrationDeleteView",
-    "RegistrationDetailView",
-    "RegistrationListView",
-    "RegistrationExportView",
-    "RegistrationUpdateView",
-    "RegistrationsMoveView",
-    "RegistrationValidateView",
-    "BillListView",
-    "BillDetailView",
-    "BillUpdateView",
-    "TransportListView",
-    "TransportCreateView",
-    "TransportUpdateView",
-    "TransportDetailView",
-    "TransportDeleteView",
-    "TransportMoveView",
-)
 
 
 class RegistrationDetailView(BackendMixin, DetailView):
@@ -348,8 +329,53 @@ class BillListView(BackendMixin, ListView):
     model = Bill
     template_name = "backend/registration/bill-list.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["start"], context["end"] = self.get_start_end()
+        if "form" not in kwargs:
+            context["form"] = BillExportForm()
+        return context
+
+    def get_start_end(self):
+        start = Bill.objects.order_by("created").first().created
+        end = now()
+        if "start" in self.request.GET:
+            try:
+                start = datetime.strptime(self.request.GET.get("start"), "%Y-%m-%d").date()
+            except ValueError:
+                pass
+        if "end" in self.request.GET:
+            try:
+                end = datetime.strptime(self.request.GET.get("end"), "%Y-%m-%d").date()
+            except ValueError:
+                pass
+        return start, end
+
     def get_queryset(self):
-        return Bill.objects.all().select_related("family").order_by("status", "billing_identifier")
+        start, end = self.get_start_end()
+        return (
+            Bill.objects.filter(created__gte=start, created__lte=end)
+            .select_related("family")
+            .order_by("status", "billing_identifier")
+        )
+
+    def post(self, request, *args, **kwargs):
+        start, end = self.get_start_end()
+        form = BillExportForm(request.POST)
+        if form.is_valid():
+            qs = self.get_queryset().prefetch_related("registrations__child")
+            if not form.cleaned_data.get("include_0_bills"):
+                qs = qs.exclude(total=0)
+
+            filename = _("invoices-{}-{}.xlsx".format(start.strftime("%Y-%m-%d"), end.strftime("%Y-%m-%d")))
+            content_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            resource = BillResource()
+            export = resource.export(qs)
+            response = HttpResponse(content_type=content_type)
+            response["Content-Disposition"] = f'attachment; filename="{filename}"'
+            response.write(export.xlsx)
+            return response
+        return self.render_to_response(self.get_context_data(form=form))
 
 
 class BillDetailView(BackendMixin, BillMixin, DetailView):

@@ -10,15 +10,7 @@ from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import urlencode
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext as _
-from django.views.generic import (
-    CreateView,
-    DeleteView,
-    DetailView,
-    FormView,
-    ListView,
-    UpdateView,
-    View,
-)
+from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, UpdateView, View
 
 from absences.models import Absence
 from profiles.forms import InstructorForm, ManagerForm, SetPasswordForm
@@ -32,53 +24,25 @@ from ..tasks import import_children
 from .mixins import BackendMixin, ExcelResponseMixin
 
 
-__all__ = (
-    "UserListView",
-    "UserCreateView",
-    "PasswordSetView",
-    "UserUpdateView",
-    "UserDeleteView",
-    "UserDetailView",
-    "UserExportView",
-    "MailUsersView",
-    "ChildDetailView",
-    "ChildListView",
-    "ChildCreateView",
-    "ChildUpdateView",
-    "ChildDeleteView",
-    "ChildImportView",
-    "ChildAbsencesView",
-    "ManagerListView",
-    "ManagerCreateView",
-    "ManagerExportView",
-    "InstructorListView",
-    "InstructorCreateView",
-    "InstructorDetailView",
-    "InstructorExportView",
-)
-
-
 class MailUsersView(BackendMixin, View):
     def post(self, request, *args, **kwargs):
         userids = list(set(json.loads(request.POST.get("data", "[]"))))
         self.request.session["mail-userids"] = userids
         params = ""
         if "prev" in request.GET:
-            params = "?prev=" + urlencode(request.GET.get("prev"))
+            params += "?prev=" + urlencode(request.GET.get("prev"))
         return HttpResponseRedirect(reverse("backend:custom-mail-custom-users") + params)
 
 
-class InstructorMixin(object):
+class InstructorMixin:
     @staticmethod
     def get_queryset():
         return (
-            FamilyUser.objects.filter(is_active=True)
-            .annotate(num_courses=Count("course"))
-            .filter(num_courses__gt=0)
+            FamilyUser.objects.filter(is_active=True).annotate(num_courses=Count("course")).filter(num_courses__gt=0)
         )
 
 
-class ManagerMixin(object):
+class ManagerMixin:
     @staticmethod
     def get_queryset():
         return FamilyUser.objects.filter(is_manager=True, is_active=True)
@@ -93,9 +57,7 @@ class UserListView(BackendMixin, ListView):
             FamilyUser.active_objects.annotate(num_children=Count("children"))
             .annotate(
                 valid_registrations=Count(
-                    Case(
-                        When(children__registrations__in=Registration.objects.validated(), then=1)
-                    )
+                    Case(When(children__registrations__in=Registration.objects.validated(), then=1))
                 ),
                 waiting_registrations=Count(
                     Case(When(children__registrations__in=Registration.objects.waiting(), then=1))
@@ -108,9 +70,7 @@ class UserListView(BackendMixin, ListView):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.POST.get("data", "[]"))
         if data == -1:
-            self.request.session["mail-userids"] = [
-                str(id) for id in FamilyUser.objects.values_list("id", flat=True)
-            ]
+            self.request.session["mail-userids"] = [str(id) for id in FamilyUser.objects.values_list("id", flat=True)]
         else:
             self.request.session["mail-userids"] = list(set(data))
         return HttpResponseRedirect(reverse("backend:custom-mail-custom-users"))
@@ -150,7 +110,7 @@ class UserCreateView(BackendMixin, SuccessMessageMixin, CreateView):
         self.object.set_password(form.cleaned_data["password1"])
         self.object.save()
         self.object.is_manager = form.cleaned_data["is_manager"]
-        return super(UserCreateView, self).form_valid(form)
+        return super().form_valid(form)
 
     def get_success_message(self, cleaned_data):
         return _("User %s has been added.") % self.object.full_name
@@ -160,12 +120,12 @@ class ManagerCreateView(UserCreateView):
     success_url = reverse_lazy("backend:manager-list")
 
     def get_context_data(self, **kwargs):
-        ctx = super(ManagerCreateView, self).get_context_data(**kwargs)
+        ctx = super().get_context_data(**kwargs)
         ctx["is_manager"] = True
         return ctx
 
     def get_initial(self):
-        initial = super(ManagerCreateView, self).get_initial()
+        initial = super().get_initial()
         initial["is_manager"] = True
         return initial
 
@@ -178,14 +138,14 @@ class InstructorCreateView(UserCreateView):
     form_class = InstructorForm
 
     def get_context_data(self, **kwargs):
-        ctx = super(InstructorCreateView, self).get_context_data(**kwargs)
+        ctx = super().get_context_data(**kwargs)
         ctx["is_instructor"] = True
         return ctx
 
     def form_valid(self, form):
         self.object = form.save()
         self.object.is_manager = form.cleaned_data["is_manager"]
-        return super(InstructorCreateView, self).form_valid(form)
+        return super().form_valid(form)
 
     def get_success_message(self, cleaned_data):
         return _("Instructor %s has been added.") % self.object.full_name
@@ -196,7 +156,7 @@ class UserUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
     template_name = "backend/user/update.html"
 
     def get_initial(self):
-        initial = super(UserUpdateView, self).get_initial()
+        initial = super().get_initial()
         initial["is_manager"] = self.object.is_manager
         return initial
 
@@ -206,7 +166,7 @@ class UserUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
         return ManagerForm
 
     def get_context_data(self, **kwargs):
-        ctx = super(UserUpdateView, self).get_context_data(**kwargs)
+        ctx = super().get_context_data(**kwargs)
         ctx["is_instructor"] = self.object.is_instructor
         return ctx
 
@@ -214,7 +174,7 @@ class UserUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
         self.object = form.save()
         self.object.is_manager = form.cleaned_data["is_manager"]
         self.object.save()
-        return super(UserUpdateView, self).form_valid(form)
+        return super().form_valid(form)
 
     def get_success_url(self):
         if self.object.is_instructor:
@@ -248,7 +208,7 @@ class UserDetailView(BackendMixin, DetailView):
         template_names = ["backend/user/detail.html"]
         if user.is_instructor:
             template_names = ["backend/user/detail-instructor.html"] + template_names
-        return template_names
+        return template_names  # noqa: R504
 
 
 class InstructorDetailView(BackendMixin, DetailView):
@@ -304,13 +264,13 @@ class ChildCreateView(BackendMixin, SuccessMessageMixin, CreateView):
     template_name = "backend/user/child-create.html"
 
     def get_context_data(self, **kwargs):
-        context = super(ChildCreateView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         if "user" in self.kwargs:
             context["family"] = get_object_or_404(FamilyUser, pk=self.kwargs["user"])
         return context
 
     def get_initial(self):
-        initial = super(ChildCreateView, self).get_initial()
+        initial = super().get_initial()
         if "user" in self.kwargs:
             initial = initial.copy()
             initial["family"] = get_object_or_404(FamilyUser, pk=self.kwargs["user"])
@@ -377,7 +337,7 @@ class ChildAbsencesView(BackendMixin, DetailView):
         kwargs["course_absences"] = course_absences
         kwargs["levels"] = ChildActivityLevel.LEVELS
 
-        return super(ChildAbsencesView, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
 class ChildDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
@@ -399,7 +359,5 @@ class ChildImportView(BackendMixin, SuccessMessageMixin, FormView):
         for chunk in self.request.FILES["thefile"].chunks():
             temp_file.write(chunk)
         temp_file.close()
-        import_children.delay(
-            temp_file.name, tenant_id=self.request.tenant.pk, user_id=str(self.request.user.pk)
-        )
-        return super(ChildImportView, self).form_valid(form)
+        import_children.delay(temp_file.name, tenant_id=self.request.tenant.pk, user_id=str(self.request.user.pk))
+        return super().form_valid(form)

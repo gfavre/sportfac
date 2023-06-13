@@ -4,13 +4,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from activities.models import Course
-from backend.forms import (
-    BuildingWidget,
-    CourseWidget,
-    FamilyUserWidget,
-    TeacherWidget,
-    TransportWidget,
-)
+from backend.forms import BuildingWidget, CourseWidget, FamilyUserWidget, TeacherWidget, TransportWidget
 from bootstrap_datepicker_plus.widgets import DatePickerInput
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, ButtonHolder, Div, Fieldset, Layout
@@ -69,9 +63,7 @@ class ChildForm(forms.ModelForm):
     )
     id_lagapeo = forms.IntegerField(label=_("SSF number"), required=False)
 
-    school = forms.ModelChoiceField(
-        label=_("School"), queryset=School.objects.filter(selectable=True), required=False
-    )
+    school = forms.ModelChoiceField(label=_("School"), queryset=School.objects.filter(selectable=True), required=False)
     emergency_number = forms.CharField(label=_("Emergency number"), required=False)
     bib_number = forms.CharField(label=_("Bib number"), required=False)
     avs = forms.CharField(label=_("AVS"), required=False, help_text="756.XXXX.XXXX.XX")
@@ -123,7 +115,7 @@ class ChildForm(forms.ModelForm):
         return HTML(
             """
                     <button type="submit" class="btn btn-success btn-large" name="action" value="save">
-                      <i class="icon-plus"></i> {0}
+                      <i class="icon-plus"></i> {}
                     </button>
                     """.format(
                 _("Create child")
@@ -162,18 +154,10 @@ class ChildForm(forms.ModelForm):
                 settings.KEPCHUP_IMPORT_CHILDREN and "id_lagapeo" or HTML(""),
                 Div(
                     Div("school_year", css_class="col-sm-6"),
-                    settings.KEPCHUP_USE_BUILDINGS
-                    and Div("building", css_class="col-sm-6")
-                    or HTML(""),
-                    settings.KEPCHUP_PREFILL_YEARS_WITH_TEACHERS
-                    and Div("teacher", css_class="col-sm-6")
-                    or HTML(""),
-                    settings.KEPCHUP_CHILD_SCHOOL
-                    and Div("school", css_class="col-sm-6")
-                    or HTML(""),
-                    settings.KEPCHUP_CHILD_SCHOOL
-                    and Div("other_school", css_class="col-sm-6")
-                    or HTML(""),
+                    settings.KEPCHUP_USE_BUILDINGS and Div("building", css_class="col-sm-6") or HTML(""),
+                    settings.KEPCHUP_PREFILL_YEARS_WITH_TEACHERS and Div("teacher", css_class="col-sm-6") or HTML(""),
+                    settings.KEPCHUP_CHILD_SCHOOL and Div("school", css_class="col-sm-6") or HTML(""),
+                    settings.KEPCHUP_CHILD_SCHOOL and Div("other_school", css_class="col-sm-6") or HTML(""),
                     css_class="row",
                 ),
             ),
@@ -186,7 +170,7 @@ class ChildUpdateForm(ChildForm):
         return HTML(
             """
                     <button type="submit" class="btn btn-success btn-large" name="action" value="save">
-                      {0}
+                      {}
                     </button>
                     """.format(
                 _("Update child")
@@ -253,3 +237,28 @@ class TransportForm(forms.ModelForm):
         self.helper.form_group_wrapper_class = "row"
         self.helper.label_class = "col-sm-2"
         self.helper.field_class = "col-sm-10"
+
+
+class BillExportForm(forms.Form):
+    include_0_bills = forms.BooleanField(label=_("Include 0.- bills"), initial=False, required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_class = "form-horizontal"
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-10"
+        submit_label = _("Export to XLS")
+        self.helper.layout = Layout(
+            "include_0_bills",
+            ButtonHolder(
+                HTML(
+                    f"""
+                <button type="submit" class="btn btn-primary btn-large" name="action" value="export">
+                      <i class="icon-file-excel"></i> {submit_label}
+                    </button>"""
+                ),
+                css_class="col-sm-offset-2",
+            ),
+        )
