@@ -1,13 +1,16 @@
 import datetime
+from pathlib import Path
 
 import factory.fuzzy
-import faker
 from activities.tests.factories import CourseFactory
+from faker import Faker
 from profiles.tests.factories import FamilyUserFactory
 from registrations.models import Bill, Child, Registration
 
 
-fake = faker.Factory.create("fr_CH")
+fake = Faker(locale="fr_CH")
+FIXTURES_PATH = Path(__file__).parent / "media_fixtures"
+BILL_PATH = FIXTURES_PATH / "bill.pdf"
 
 
 class ChildFactory(factory.django.DjangoModelFactory):
@@ -44,6 +47,7 @@ class BillFactory(factory.django.DjangoModelFactory):
 
     billing_identifier = factory.fuzzy.FuzzyText(length=10)
     family = factory.SubFactory(FamilyUserFactory)
+    pdf = factory.django.FileField(from_path=BILL_PATH)
 
     @factory.post_generation
     def registrations(self, create, extracted, **kwargs):

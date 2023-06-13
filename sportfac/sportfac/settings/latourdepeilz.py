@@ -1,18 +1,16 @@
-# -*- coding:utf-8 -*-
 """Production settings and globals."""
-from django.utils.translation import gettext_lazy as _
 
-from .production import *
+from .production import *  # noqa: F403
 
 
-TEMPLATES[0]["DIRS"] = [
-    normpath(join(SITE_ROOT, "themes", "latourdepeilz", "templates")),
-    normpath(join(SITE_ROOT, "templates")),
+TEMPLATES[0]["DIRS"] = [  # noqa: F405
+    normpath(join(SITE_ROOT, "themes", "latourdepeilz", "templates")),  # noqa: F405
+    normpath(join(SITE_ROOT, "templates")),  # noqa: F405
 ]
 
 STATICFILES_DIRS = (
-    normpath(join(SITE_ROOT, "themes", "latourdepeilz", "static")),
-    normpath(join(SITE_ROOT, "static")),
+    normpath(join(SITE_ROOT, "themes", "latourdepeilz", "static")),  # noqa: F405
+    normpath(join(SITE_ROOT, "static")),  # noqa: F405
 )
 
 # Absences
@@ -66,11 +64,11 @@ KEPCHUP_LOCAL_ZIPCODES = ["1814"]
 KEPCHUP_IMPORT_CHILDREN = False
 KEPCHUP_ENABLE_TEACHER_MANAGEMENT = False
 
-CELERYBEAT_SCHEDULE["notify-absences"] = {
+CELERYBEAT_SCHEDULE["notify-absences"] = {  # noqa: F405
     "task": "absences.tasks.notify_absences",
-    "schedule": crontab(hour=0o4, minute=0),
+    "schedule": crontab(hour=0o4, minute=0),  # noqa: F405
 }
-CELERYBEAT_SCHEDULE["cancel-expired-registrations"] = {
+CELERYBEAT_SCHEDULE["cancel-expired-registrations"] = {  # noqa: F405
     "task": "registrations.tasks.cancel_expired_registrations",
-    "schedule": crontab(minute="*/15"),
+    "schedule": crontab(minute="*/15"),  # noqa: F405
 }

@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.forms.formsets import BaseFormSet
@@ -5,10 +7,10 @@ from django.forms.models import BaseModelFormSet, model_to_dict
 from django.test import RequestFactory, override_settings
 from django.urls import reverse
 
-from mock import patch
+from activities.tests.factories import CourseFactory
 from profiles.tests.factories import FamilyUserFactory
 from registrations.models import Registration
-from registrations.tests.factories import RegistrationFactory
+from registrations.tests.factories import ChildFactory, RegistrationFactory
 
 from sportfac.utils import TenantTestCase, process_request_for_middleware
 
@@ -25,15 +27,18 @@ from .base import fake_registrations_open_middleware
 
 class RegistrationCreateViewTests(TenantTestCase):
     def setUp(self):
-        super(RegistrationCreateViewTests, self).setUp()
+        super().setUp()
+        self.factory = RequestFactory()
         self.login_url = reverse("profiles:auth_login")
         self.url = reverse("backend:registration-create")
         self.user = FamilyUserFactory(is_manager=True)
         self.view = RegistrationCreateView.as_view()
-        self.request = RequestFactory().get(self.url)
+        self.request = self.factory.get(self.url)
         fake_registrations_open_middleware(self.request)
         self.request.user = self.user
         process_request_for_middleware(self.request, SessionMiddleware)
+        self.child = ChildFactory()
+        self.course = CourseFactory()
 
     def test_access_forbidden_for_anonymous_users(self):
         self.request.user = AnonymousUser()
@@ -107,7 +112,7 @@ class RegistrationDeleteViewTests(TenantTestCase):
 
 class RegistrationDetailViewTests(TenantTestCase):
     def setUp(self):
-        super(RegistrationDetailViewTests, self).setUp()
+        super().setUp()
         self.user = FamilyUserFactory(is_manager=True)
         self.registration = RegistrationFactory()
         self.login_url = reverse("profiles:auth_login")
@@ -151,7 +156,7 @@ class RegistrationDetailViewTests(TenantTestCase):
 
 class RegistrationListViewTests(TenantTestCase):
     def setUp(self):
-        super(RegistrationListViewTests, self).setUp()
+        super().setUp()
         self.registration = RegistrationFactory()
         self.login_url = reverse("profiles:auth_login")
         self.url = reverse("backend:registration-list")
@@ -186,7 +191,7 @@ class RegistrationListViewTests(TenantTestCase):
 
 class RegistrationUpdateViewTests(TenantTestCase):
     def setUp(self):
-        super(RegistrationUpdateViewTests, self).setUp()
+        super().setUp()
         self.registration = RegistrationFactory()
         self.login_url = reverse("profiles:auth_login")
         self.url = self.registration.get_update_url()
@@ -236,7 +241,7 @@ class RegistrationUpdateViewTests(TenantTestCase):
 
 class RegistrationMoveViewTests(TenantTestCase):
     def setUp(self):
-        super(RegistrationMoveViewTests, self).setUp()
+        super().setUp()
         self.user = FamilyUserFactory(is_manager=True)
         self.registration = RegistrationFactory()
         self.login_url = reverse("profiles:auth_login")
@@ -263,27 +268,19 @@ class RegistrationMoveViewTests(TenantTestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_initial_course(self):
-        self.url = reverse("backend:registrations-move") + "?course={}".format(
-            self.registration.course.pk
-        )
+        self.url = reverse("backend:registrations-move") + f"?course={self.registration.course.pk}"
         self.request = RequestFactory().get(self.url)
         fake_registrations_open_middleware(self.request)
         self.request.user = self.user
         response = self.view(self.request)
         context = response.context_data
-        self.assertEqual(
-            context["form"].initial, {"origin_course_id": self.registration.course.pk}
-        )
+        self.assertEqual(context["form"].initial, {"origin_course_id": self.registration.course.pk})
 
     def test_initial_activity(self):
-        self.url = reverse("backend:registrations-move") + "?activity={}".format(
-            self.registration.course.activity.pk
-        )
+        self.url = reverse("backend:registrations-move") + f"?activity={self.registration.course.activity.pk}"
         self.request = RequestFactory().get(self.url)
         fake_registrations_open_middleware(self.request)
         self.request.user = self.user
         response = self.view(self.request)
         context = response.context_data
-        self.assertEqual(
-            context["form"].initial, {"origin_activity_id": self.registration.course.activity.pk}
-        )
+        self.assertEqual(context["form"].initial, {"origin_activity_id": self.registration.course.activity.pk})

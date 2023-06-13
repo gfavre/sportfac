@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import collections
 import os
 from tempfile import mkdtemp
@@ -24,7 +23,6 @@ from activities.models import Activity, Course, ExtraNeed
 from profiles.models import FamilyUser
 from registrations.models import ChildActivityLevel, ExtraInfo
 from registrations.resources import RegistrationResource
-from six.moves import range
 
 from sportfac.views import CSVMixin
 
@@ -51,9 +49,7 @@ __all__ = (
 class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
     template_name = "backend/course/create.html"
     success_url = reverse_lazy("backend:course-list")
-    success_message = _(
-        '<a href="%(url)s" class="alert-link">Course (%(number)s)</a> has been created.'
-    )
+    success_message = _('<a href="%(url)s" class="alert-link">Course (%(number)s)</a> has been created.')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -90,7 +86,7 @@ class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
         self.object = form.save()
         for extra in form.cleaned_data["extra"]:
             self.object.extra.add(extra)
-        for city in form.cleaned_data["local_city_override"]:
+        for city in form.cleaned_data.get("local_city_override", []):
             self.object.local_city_override.add(city)
         return HttpResponseRedirect(self.get_success_url())
 
@@ -104,9 +100,7 @@ class CourseDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
 
     def delete(self, request, *args, **kwargs):
         identifier = self.get_object().short_name
-        messages.success(
-            self.request, _("Course %(identifier)s has been deleted.") % {"identifier": identifier}
-        )
+        messages.success(self.request, _("Course %(identifier)s has been deleted.") % {"identifier": identifier})
         return super().delete(request, *args, **kwargs)
 
 
@@ -135,9 +129,7 @@ class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
     template_name = "backend/course/update.html"
     pk_url_kwarg = "course"
     success_url = reverse_lazy("backend:course-list")
-    success_message = _(
-        '<a href="%(url)s" class="alert-link">Course (%(number)s)</a> has been updated.'
-    )
+    success_message = _('<a href="%(url)s" class="alert-link">Course (%(number)s)</a> has been updated.')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -172,7 +164,7 @@ class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
                 course.local_city_override.remove(removed_city)
             for city in form.cleaned_data["local_city_override"]:
                 course.local_city_override.add(city)
-        return response
+        return response  # noqa: R504
 
 
 class CourseAbsenceView(BackendMixin, DetailView):
@@ -219,26 +211,22 @@ class CourseAbsenceView(BackendMixin, DetailView):
         else:
             qs = qs.order_by("child__last_name", "child__first_name")
         sessions = self.object.sessions.all()
-        kwargs["sessions"] = dict([(session.date, session) for session in sessions])
+        kwargs["sessions"] = {session.date: session for session in sessions}
         kwargs["closest_session"] = closest_session(sessions)
 
         # kwargs['sessions'] = dict([(absence.session.date, absence.session) for absence in qs])
         kwargs["all_dates"] = sorted(
-            [session_date for session_date in kwargs["sessions"].keys()],
+            kwargs["sessions"].keys(),
             reverse=not settings.KEPCHUP_ABSENCES_ORDER_ASC,
         )
 
-        registrations = dict(
-            [(registration.child, registration) for registration in self.object.participants.all()]
-        )
+        registrations = {registration.child: registration for registration in self.object.participants.all()}
         child_absences = collections.OrderedDict()
-        for (child, registration) in sorted(
-            list(registrations.items()), key=lambda x: x[0].ordering_name
-        ):
+        for child, registration in sorted(registrations.items(), key=lambda x: x[0].ordering_name):
             child_absences[(child, registration)] = {}
         for absence in qs:
             child = absence.child
-            if not child in registrations:
+            if child not in registrations:
                 # happens if child was previously attending this course but is no longer
                 continue
             registration = registrations[child]
@@ -253,24 +241,18 @@ class CourseAbsenceView(BackendMixin, DetailView):
         kwargs["courses_list"] = Course.objects.select_related("activity")
         if settings.KEPCHUP_REGISTRATION_LEVELS:
             kwargs["levels"] = ChildActivityLevel.LEVELS
-            kwargs["child_levels"] = dict(
-                [
-                    (lvl.child, lvl)
-                    for lvl in ChildActivityLevel.objects.filter(
-                        activity=self.object.activity
-                    ).select_related("child")
-                ]
-            )
+            kwargs["child_levels"] = {
+                lvl.child: lvl
+                for lvl in ChildActivityLevel.objects.filter(activity=self.object.activity).select_related("child")
+            }
             try:
                 questions = ExtraNeed.objects.filter(question_label__startswith="Niveau")
-                all_extras = dict(
-                    [
-                        (extra.registration.child, extra.value)
-                        for extra in ExtraInfo.objects.filter(
-                            registration__course=self.object, key__in=questions
-                        ).select_related("registration__child")
-                    ]
-                )
+                all_extras = {
+                    extra.registration.child: extra.value
+                    for extra in ExtraInfo.objects.filter(
+                        registration__course=self.object, key__in=questions
+                    ).select_related("registration__child")
+                }
             except ExtraNeed.DoesNotExist:
                 all_extras = {}
             kwargs["extras"] = all_extras
@@ -282,12 +264,12 @@ class CourseAbsenceView(BackendMixin, DetailView):
             context = self.get_context_data(object=self.object)
             renderer = AbsencePDFRenderer(context, self.request)
             tempdir = mkdtemp()
-            filename = "absences-{}.pdf".format(slugify(self.object.number))
+            filename = f"absences-{slugify(self.object.number)}.pdf"
             filepath = os.path.join(tempdir, filename)
             renderer.render_to_pdf(filepath)
             with open(filepath, "rb") as f:
                 response = HttpResponse(f.read(), content_type="application/pdf")
-            response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
+            response["Content-Disposition"] = f'attachment; filename="{filename}"'
             return response
         return super().get(request, *args, **kwargs)
 
@@ -319,16 +301,11 @@ class CoursesAbsenceView(BackendMixin, ListView):
             )
             child_announced_levels = {extra.registration.child: extra.value for extra in extras}
             levels = ChildActivityLevel.objects.select_related("child").filter(
-                activity__in=set([absence.session.course.activity for absence in qs])
+                activity__in={absence.session.course.activity for absence in qs}
             )
             child_levels = {level.child: level for level in levels}
 
-        course_children = dict(
-            [
-                (course, [reg.child for reg in course.participants.all()])
-                for course in self.get_queryset()
-            ]
-        )
+        course_children = {course: [reg.child for reg in course.participants.all()] for course in self.get_queryset()}
         course_absences = collections.OrderedDict()
 
         for absence in qs:
@@ -367,7 +344,7 @@ class CoursesAbsenceView(BackendMixin, ListView):
                         self.request,
                         _("Session %s has been added.") % session.date.strftime("%d.%m.%Y"),
                     )
-        params = "&".join(["c={}".format(course.id) for course in courses])
+        params = "&".join([f"c={course.id}" for course in courses])
         return HttpResponseRedirect(reverse("backend:courses-absence") + "?" + params)
 
     def get(self, request, *args, **kwargs):
@@ -385,7 +362,7 @@ class CoursesAbsenceView(BackendMixin, ListView):
             renderer.render_to_pdf(filepath)
             with open(filepath, "rb") as f:
                 response = HttpResponse(f.read(), content_type="application/pdf")
-            response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
+            response["Content-Disposition"] = f'attachment; filename="{filename}"'
             return response
         return super().get(request, *args, **kwargs)
 
@@ -412,9 +389,7 @@ class CourseParticipantsView(CourseDetailView):
 
 class CourseListView(BackendMixin, ListView):
     model = Course
-    queryset = Course.objects.select_related("activity").prefetch_related(
-        "participants", "instructors"
-    )
+    queryset = Course.objects.select_related("activity").prefetch_related("participants", "instructors")
 
     def get_template_names(self):
         if self.request.PHASE == 1:
@@ -450,12 +425,10 @@ class PaySlipMontreux(BackendMixin, CreateView):
         from activities.models import CoursesInstructors
 
         try:
-            courses_instructor = CoursesInstructors.objects.get(
-                course=course, instructor=instructor
-            )
+            courses_instructor = CoursesInstructors.objects.get(course=course, instructor=instructor)
             function = courses_instructor.function
             if function:
-                initial["function"] = "%s (%s)" % (function.name, function.code)
+                initial["function"] = f"{function.name} ({function.code})"
                 initial["rate_mode"] = function.rate_mode
                 initial["rate"] = function.rate
 

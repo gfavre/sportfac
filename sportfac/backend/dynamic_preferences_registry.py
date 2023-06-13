@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
 
 from django import forms
@@ -49,7 +48,7 @@ class DateTimeSerializer(BaseSerializer):
     def to_python(cls, value, **kwargs):
         try:
             return dateutil.parser.parse(value)
-        except:
+        except ValueError:
             raise cls.exception("Value {0} cannot be converted to datetime")
 
 
@@ -59,7 +58,7 @@ class DateTimePreference(BasePreferenceType):
 
 
 @global_preferences_registry.register
-class FromMail(StringPreference):
+class SiteName(StringPreference):
     section = site
     name = "SITE_NAME"
     default = "Sport scolaire facultatif"
@@ -84,6 +83,13 @@ class ContactRecipientMail(StringPreference):
     section = email
     name = "CONTACT_MAIL"
     default = "info@kepchup.ch"
+
+
+@global_preferences_registry.register
+class AccountantMail(StringPreference):
+    section = email
+    name = "ACCOUNTANT_MAIL"
+    default = ""
 
 
 @global_preferences_registry.register

@@ -1,19 +1,20 @@
 """Common settings and globals."""
+import warnings
 from os.path import abspath, basename, dirname, join, normpath
 from sys import path
 
+from django.contrib.messages import constants as messages
 from django.utils.translation import gettext_lazy as _
 
 import environ
 from celery.schedules import crontab
-from six.moves import range
 
 
 env = environ.Env()
 
-gettext = lambda s: s
+gettext = lambda s: s  # noqa
 
-########## PATH CONFIGURATION
+# PATH CONFIGURATION
 # Absolute filesystem path to the Django project directory:
 DJANGO_ROOT = dirname(dirname(abspath(__file__)))
 
@@ -26,27 +27,27 @@ SITE_NAME = basename(DJANGO_ROOT)
 # Add our project to our pythonpath, this way we don't need to type our project
 # name in our dotted import paths:
 path.append(DJANGO_ROOT)
-########## END PATH CONFIGURATION
+# END PATH CONFIGURATION
 
 
-########## DEBUG CONFIGURATION
+# DEBUG CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = env.bool("DEBUG", default=False)
 
-########## END DEBUG CONFIGURATION
+# END DEBUG CONFIGURATION
 
 
-########## MANAGER CONFIGURATION
+# MANAGER CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#admins
 ADMINS = (("Gregory Favre", "gregory.favre@gmail.com"),)
 
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
-########## END MANAGER CONFIGURATION
+# END MANAGER CONFIGURATION
 
 
-########## DATABASE CONFIGURATION
+# DATABASE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
     "default": {
@@ -70,10 +71,10 @@ TENANT_CREATION_FAKES_MIGRATIONS = False
 VERSION_SESSION_NAME = "period"
 
 
-########## END DATABASE CONFIGURATION
+# END DATABASE CONFIGURATION
 
 
-########## GENERAL CONFIGURATION
+# GENERAL CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#time-zone
 TIME_ZONE = "Europe/Zurich"
 
@@ -91,23 +92,22 @@ SITE_ID = 1
 USE_I18N = True
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#use-l10n
-USE_L10N = True
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#use-tz
 USE_TZ = True
-########## END GENERAL CONFIGURATION
+# END GENERAL CONFIGURATION
 
 
-########## MEDIA CONFIGURATION
+# MEDIA CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-root
 MEDIA_ROOT = normpath(join(SITE_ROOT, "media"))
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = "/media/"
-########## END MEDIA CONFIGURATION
+# END MEDIA CONFIGURATION
 
 
-########## STATIC FILE CONFIGURATION
+# STATIC FILE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
 STATIC_ROOT = normpath(join(SITE_ROOT, "assets"))
 
@@ -126,21 +126,21 @@ STATICFILES_FINDERS = (
 )
 
 
-########## END STATIC FILE CONFIGURATION
+# END STATIC FILE CONFIGURATION
 
 
-########## END SECRET CONFIGURATION
+# END SECRET CONFIGURATION
 
 
-########## FIXTURE CONFIGURATION
+# FIXTURE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FIXTURE_DIRS
 FIXTURE_DIRS = (
     # normpath(join(SITE_ROOT, 'fixtures')),
 )
-########## END FIXTURE CONFIGURATION
+# END FIXTURE CONFIGURATION
 
 
-########## TEMPLATE CONFIGURATION
+# TEMPLATE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-context-processors
 TEMPLATES = [
     {
@@ -176,10 +176,10 @@ TEMPLATES = [
 ]
 
 
-########## END TEMPLATE CONFIGURATION
+# END TEMPLATE CONFIGURATION
 
 
-########## MIDDLEWARE CONFIGURATION
+# MIDDLEWARE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#middleware-classes
 MIDDLEWARE = [
     # Default Django middleware.
@@ -193,20 +193,18 @@ MIDDLEWARE = [
     "django.contrib.sites.middleware.CurrentSiteMiddleware",
     "sportfac.middleware.VersionMiddleware",
     "sportfac.middleware.RegistrationOpenedMiddleware",
-    # asynchronous messages
-    #'async_messages.middleware.AsyncMiddleware',
     "django.contrib.flatpages.middleware.FlatpageFallbackMiddleware",
 ]
-########## END MIDDLEWARE CONFIGURATION
+# END MIDDLEWARE CONFIGURATION
 
 
-########## URL CONFIGURATION
+# URL CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#root-urlconf
 ROOT_URLCONF = "%s.urls" % SITE_NAME
-########## END URL CONFIGURATION
+# END URL CONFIGURATION
 
 
-########## APP CONFIGURATION
+# APP CONFIGURATION
 
 SHARED_APPS = (
     "django_tenants",
@@ -261,11 +259,11 @@ TENANT_APPS = (
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]
-########## END APP CONFIGURATION
+# END APP CONFIGURATION
 
 ADMIN_URL = env.str("ADMIN_URL", default="admin/")
 
-########## LOGGING CONFIGURATION
+# LOGGING CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#logging
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -289,20 +287,18 @@ LOGGING = {
         },
     },
 }
-########## END LOGGING CONFIGURATION
+# END LOGGING CONFIGURATION
 
 TEST_RUNNER = "django.test.runner.DiscoverRunner"
 
-########## WSGI CONFIGURATION
+# WSGI CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#wsgi-application
 WSGI_APPLICATION = "wsgi.application"
-########## END WSGI CONFIGURATION
+# END WSGI CONFIGURATION
 
 
-##########  MESSAGE CONFIGURATION
+# MESSAGE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/messages/
-
-from django.contrib.messages import constants as messages
 
 
 MESSAGE_TAGS = {
@@ -314,10 +310,10 @@ MESSAGE_TAGS = {
 }
 
 
-########## END WSGI CONFIGURATION
+# END WSGI CONFIGURATION
 
 
-########## REST FRAMEWORK CONFIGURATION
+# REST FRAMEWORK CONFIGURATION
 
 REST_FRAMEWORK = {
     # Use hyperlinked styles by default.
@@ -326,9 +322,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": None,  # "rest_framework.pagination.PageNumberPagination",
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
-    ],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"],
     "DEFAULT_RENDERER_CLASSES": (
         "rest_framework.renderers.JSONRenderer",
         "rest_framework.renderers.BrowsableAPIRenderer",
@@ -338,9 +332,9 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 50,
 }
 
-########## END REST FRAMEWORK CONFIGURATION
+# END REST FRAMEWORK CONFIGURATION
 
-########## DYNAMIC PREFERENCES CONFIGURATION
+# DYNAMIC PREFERENCES CONFIGURATION
 # see http://django-dynamic-preferences.readthedocs.io
 
 DYNAMIC_PREFERENCES = {
@@ -366,7 +360,7 @@ DYNAMIC_PREFERENCES = {
     "VALIDATE_NAMES": True,
 }
 
-########## END DYNAMIC PREFERENCES CONFIGURATION
+# END DYNAMIC PREFERENCES CONFIGURATION
 
 SWISS_DATE_SHORT = "%d.%m.%Y"
 DATE_INPUT_FORMATS = [
@@ -385,28 +379,28 @@ DATE_INPUT_FORMATS = [
 ]
 
 
-########## USER and REGISTRATION
+# USER and REGISTRATION
 AUTH_USER_MODEL = "profiles.FamilyUser"
 REGISTRATION_OPEN = True
 LOGIN_URL = "profiles:auth_login"
 LOGOUT_URL = "profiles:logout"
 LOGIN_REDIRECT_URL = "profiles:authenticated-home"
 
-########## END USER and REGISTRAION
+# END USER and REGISTRAION
 
 
-########### GRAPPELLI CONFIG
+# GRAPPELLI CONFIG
 GRAPPELLI_ADMIN_TITLE = "Administration du sport scolaire facultatif"
-########## END GRAPPELLI CONFIG
+# END GRAPPELLI CONFIG
 
 
-########### PIPELINE CONFIG
+# PIPELINE CONFIG
 # STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 
-########## END PIPELINE CONFIG
+# END PIPELINE CONFIG
 
 
-########### CKEDITOR
+# CKEDITOR
 CKEDITOR_CONFIGS = {
     "default": {
         "alignment": {"options": ["left", "right"]},
@@ -444,7 +438,7 @@ CKEDITOR_CONFIGS = {
             ["Link", "Unlink", "Anchor"],
             "/",
             ["Image", "Table", "HorizontalRule"],
-            ["Styles", "SpecialChar"],  #'Emojione',
+            ["Styles", "SpecialChar"],
         ],
     }
 }
@@ -466,11 +460,11 @@ CACHES = {
 # Tell select2 which cache configuration to use:
 SELECT2_CACHE_BACKEND = "default"
 
-############# Select2
+# Select2
 AUTO_RENDER_SELECT2_STATICS = False
 
 
-############ Celery
+# Celery
 # Asynchrnous tasks.
 # See http://celery.readthedocs.org/en/latest/configuration.html
 CELERY_ACCEPT_CONTENT = ["json"]
@@ -489,14 +483,14 @@ PHANTOMJSCLOUD_APIKEY = env("PHANTOMJSCLOUD_APIKEY")
 DBTEMPLATES_USE_CODEMIRROR = True
 
 
-############# Phonenumbers
+# Phonenumbers
 PHONENUMBER_DEFAULT_REGION = "CH"
 
 
-############ Crispy
+# Crispy
 CRISPY_TEMPLATE_PACK = "bootstrap3"
 
-############ Date picker
+# Date picker
 # The link above contains all settings
 BOOTSTRAP_DATEPICKER_PLUS = {
     # Options for all input widgets
@@ -504,8 +498,6 @@ BOOTSTRAP_DATEPICKER_PLUS = {
     "options": {
         "locale": "fr",
         "allowInputToggle": True,
-
-
     },
     "addon_icon_classes": {
         "month": "bi-calendar-month",
@@ -518,23 +510,17 @@ BOOTSTRAP_DATEPICKER_PLUS = {
         },
         "time": {
             "format": "HH:mm",
-        }
-
+        },
     },
 }
 
 
-
-
-
-
-
-################################################################################
+#
 # Kepchup Options
-################################################################################
+#
 
 # general
-#########################################
+#
 
 # Use a splash page rather than home. Use by Montreux who has 2 kepchup instances
 KEPCHUP_SPLASH_PAGE = False
@@ -571,15 +557,15 @@ KEPCHUP_ENABLE_PAYROLLS = False
 KEPCHUP_ENABLE_WAITING_LISTS = True
 
 # User accounts
-#########################################
+#
 KEPCHUP_REGISTER_ACCOUNTS_AT_ANY_TIME = False
-KEPCHUP_ZIPCODE_RESTRICTION = list()
+KEPCHUP_ZIPCODE_RESTRICTION = []
 KEPCHUP_INSTRUCTORS_DISPLAY_EXTERNAL_ID = False
 KEPCHUP_INSTRUCTORS_CAN_EDIT_EXTERNAL_ID = False
 
 
 # Payment
-#########################################
+#
 # if true, disable invoicing system
 KEPCHUP_NO_PAYMENT = False
 KEPCHUP_DISPLAY_FREE_WHEN_PRICE_IS_0 = False
@@ -587,9 +573,10 @@ KEPCHUP_DISPLAY_FREE_WHEN_PRICE_IS_0 = False
 KEPCHUP_PAYMENT_METHOD = "wire_transfer"
 KEPCHUP_USE_DIFFERENTIATED_PRICES = False
 KEPCHUP_LOCAL_ZIPCODES = []
+KEPCHUP_SEND_BILL_TO_ACCOUNTANT = False
 
 # Registration steps
-#########################################
+#
 KEPCHUP_ALTERNATIVE_ABOUT_LABEL = None
 KEPCHUP_ALTERNATIVE_CHILDREN_LABEL = None
 KEPCHUP_ALTERNATIVE_ACTIVITIES_LABEL = None
@@ -598,7 +585,7 @@ KEPCHUP_ALTERNATIVE_BILLING_LABEL = None
 
 
 # Children
-#########################################
+#
 
 # Children have a bib number (n° dossard)
 KEPCHUP_BIB_NUMBERS = False
@@ -629,7 +616,7 @@ KEPCHUP_CAN_DELETE_CHILD = True
 KEPCHUP_USE_BLACKLISTS = False
 
 # Activities
-#########################################
+#
 
 # In Coppet-Rojalets children can register Poterie at different periods of the year.
 KEPCHUP_ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE = False
@@ -644,7 +631,7 @@ KEPCHUP_ENABLE_ALLOCATION_ACCOUNTS = False
 KEPCHUP_ACTIVITY_TYPES = [("activity", _("Activities"))]
 
 # Email
-#########################################
+#
 
 # Send presence list to instructors
 KEPCHUP_SEND_PRESENCE_LIST = True
@@ -653,15 +640,11 @@ KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS = []
 # If true: do not send E_SSF_decompte_heures_%s_%s.pdf to instructors
 KEPCHUP_NO_SSF = False
 
-import warnings
 
-
-warnings.filterwarnings(
-    "ignore", module="floppyforms", message="Unable to import floppyforms.gis.*"
-)
+warnings.filterwarnings("ignore", module="floppyforms", message="Unable to import floppyforms.gis.*")
 
 # Single Sign On
-#######################git ##################
+# git #
 KEPCHUP_USE_SSO = False
 SSO_PRIVATE_KEY = env.str("SSO_PRIVATE_KEY", default="")
 SSO_PUBLIC_KEY = env.str("SSO_PUBLIC_KEY", default="")
@@ -669,12 +652,12 @@ SSO_SERVER = env.str("SSO_SERVER", default="")
 SSO_DASHBOARD_REDIRECT = env.str("SSO_DASHBOARD_REDIRECT", default="/")
 
 # Appointments
-############################################
+#
 KEPCHUP_USE_APPOINTMENTS = False
 
 
 # Payments
-############################################
+#
 DATATRANS_API_URL = env.url("DATATRANS_API_URL", default="https://api.sandbox.datatrans.com/")
 DATATRANS_PAY_URL = env.url("DATATRANS_PAY_URL", default="https://pay.sandbox.datatrans.com/")
 # See: https://api-reference.datatrans.ch/#operation/init
@@ -684,7 +667,7 @@ DATATRANS_PASSWORD = env.str("DATATRANS_PASSWORD", default="")
 
 
 # Dashboard
-############################################
+#
 KEPCHUP_DASHBOARD_SHOW_CHILDREN_STATS = True
 KEPCHUP_DASHBOARD_SHOW_FAMILY_STATS = True
 
