@@ -12,22 +12,6 @@ from schools.models import Building, Teacher
 from .mixins import BackendMixin
 
 
-__all__ = [
-    "TeacherDetailView",
-    "TeacherListView",
-    "TeacherCreateView",
-    "TeacherUpdateView",
-    "TeacherDeleteView",
-    "TeacherImportView",
-    "BuildingDetailView",
-    "BuildingListView",
-    "BuildingCreateView",
-    "BuildingUpdateView",
-    "BuildingDeleteView",
-    "BuildingTeacherImportView",
-]
-
-
 class TeacherDetailView(BackendMixin, DetailView):
     model = Teacher
     template_name = "backend/teacher/detail.html"
@@ -40,7 +24,7 @@ class TeacherDetailView(BackendMixin, DetailView):
             )
             .prefetch_related("registrations", "registrations__course__activity")
         }
-        return super(TeacherDetailView, self).get_context_data(**context)
+        return super().get_context_data(**context)
 
 
 class TeacherListView(BackendMixin, ListView):
@@ -54,9 +38,7 @@ class TeacherCreateView(BackendMixin, SuccessMessageMixin, CreateView):
     form_class = TeacherForm
     template_name = "backend/teacher/create.html"
     success_url = reverse_lazy("backend:teacher-list")
-    success_message = _(
-        '<a href="%(url)s" class="alert-link">Teacher %(name)s)</a> has been created.'
-    )
+    success_message = _('<a href="%(url)s" class="alert-link">Teacher %(name)s)</a> has been created.')
 
     def get_success_message(self, cleaned_data):
         url = self.object.get_backend_url()
@@ -83,7 +65,7 @@ class TeacherDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
             messages.SUCCESS,
             _("Teacher %(name)s has been deleted.") % {"name": self.object.get_full_name()},
         )
-        return super(TeacherDeleteView, self).delete(request, *args, **kwargs)
+        return super().delete(request, *args, **kwargs)
 
 
 class TeacherImportView(BackendMixin, SuccessMessageMixin, FormView):
@@ -106,7 +88,7 @@ class TeacherImportView(BackendMixin, SuccessMessageMixin, FormView):
             "%i teachers have been created, %i have been updated. "
             "%i were skipped because they are not responsible of a class."
         ) % (created, updated, skipped)
-        return super(TeacherImportView, self).form_valid(form)
+        return super().form_valid(form)
 
 
 class BuildingDetailView(BackendMixin, DetailView):
@@ -125,9 +107,7 @@ class BuildingCreateView(BackendMixin, SuccessMessageMixin, CreateView):
     form_class = BuildingForm
     template_name = "backend/building/create.html"
     success_url = reverse_lazy("backend:building-list")
-    success_message = _(
-        '<a href="%(url)s" class="alert-link">Building %(name)s)</a> has been created.'
-    )
+    success_message = _('<a href="%(url)s" class="alert-link">Building %(name)s)</a> has been created.')
 
     def get_success_message(self, cleaned_data):
         url = self.object.get_backend_url()
@@ -154,7 +134,7 @@ class BuildingDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
             messages.SUCCESS,
             _("Building %(name)s has been deleted.") % {"name": building.name},
         )
-        return super(BuildingDeleteView, self).delete(request, *args, **kwargs)
+        return super().delete(request, *args, **kwargs)
 
 
 class BuildingTeacherImportView(BackendMixin, SuccessMessageMixin, FormView):
@@ -181,8 +161,7 @@ class BuildingTeacherImportView(BackendMixin, SuccessMessageMixin, FormView):
         )
         if skipped:
             self.success_message += (
-                "<br>"
-                + _("%i were skipped because they are not responsible of a class.") % skipped
+                "<br>" + _("%i were skipped because they are not responsible of a class.") % skipped
             )
 
-        return super(BuildingTeacherImportView, self).form_valid(form)
+        return super().form_valid(form)

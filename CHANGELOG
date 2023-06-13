@@ -6,13 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## 3.1.9 - 2023-06-13
+## 3.1.0 - 2023-06-13
 ### Added
 - Send paying invoices to accountants if after registration period
+- Export of invoices to excel format
+
+### Fixed
+- course creation was not possible if no city override was provided
 
 
 ## 3.0.6 - 2023-05-05
-### Fix
+### Fixed
 - Creation of future absences when a student moves from one course to another
 - Suppression of a message to the user when creating a new period.
 - Catch exception when datatrans service is not available
@@ -20,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## 3.0.5 - 2023-04-03
-### Fix
+### Fixed
 - Course start and end dates (not explicit) not editable.
 - Non-clickable start and end times
 

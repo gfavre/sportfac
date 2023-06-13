@@ -15,16 +15,10 @@ from django.views.generic import FormView, TemplateView
 from activities.models import Activity, Course, CoursesInstructors
 from backend.forms import RegistrationDatesForm
 from profiles.models import City, FamilyUser, SchoolYear
-from registrations.models import Bill, Child, Registration
+from registrations.models import Bill, Registration
 from schools.models import Teacher
 
 from .mixins import BackendMixin
-
-
-__all__ = (
-    "HomePageView",
-    "RegistrationDatesView",
-)
 
 
 ###############################################################################
@@ -49,15 +43,9 @@ class HomePageView(BackendMixin, TemplateView):
 
     def get_additional_context_phase1(self, context):
         context["nb_teachers"] = Teacher.objects.count()
-        context["last_teacher_update"] = (
-            Teacher.objects.aggregate(latest=Max("modified"))["latest"] or "n/a"
-        )
-        years = SchoolYear.visible_objects.annotate(num_teachers=(Count("teacher"))).filter(
-            num_teachers__gt=0
-        )
-        context["teachers_per_year"] = [
-            (year.get_year_display(), year.num_teachers) for year in years
-        ]
+        context["last_teacher_update"] = Teacher.objects.aggregate(latest=Max("modified"))["latest"] or "n/a"
+        years = SchoolYear.visible_objects.annotate(num_teachers=(Count("teacher"))).filter(num_teachers__gt=0)
+        context["teachers_per_year"] = [(year.get_year_display(), year.num_teachers) for year in years]
 
         courses = Course.objects.all()
         context["nb_courses"] = courses.count()
@@ -66,14 +54,10 @@ class HomePageView(BackendMixin, TemplateView):
 
         context["ready_courses"] = courses.filter(uptodate=True).count()
         context["notready_courses"] = context["nb_courses"] - context["ready_courses"]
-        context["total_sessions"] = (
-            list(courses.aggregate(Sum("number_of_sessions")).values())[0] or 0
-        )
+        context["total_sessions"] = list(courses.aggregate(Sum("number_of_sessions")).values())[0] or 0
         context["total_instructors"] = FamilyUser.instructors_objects.count()
 
-        context["last_course_update"] = (
-            courses.aggregate(latest=Max("modified"))["latest"] or "n/a"
-        )
+        context["last_course_update"] = courses.aggregate(latest=Max("modified"))["latest"] or "n/a"
 
         return context
 
@@ -83,9 +67,7 @@ class HomePageView(BackendMixin, TemplateView):
         end = self.request.tenant.preferences["phase__END_REGISTRATION"]
         registrations = [
             d.date()
-            for d in Registration.objects.filter(created__range=(start, end)).values_list(
-                "created", flat=True
-            )
+            for d in Registration.objects.filter(created__range=(start, end)).values_list("created", flat=True)
         ]
 
         for date in registrations:
@@ -111,8 +93,7 @@ class HomePageView(BackendMixin, TemplateView):
         from django.template.defaultfilters import date as _date
 
         return OrderedDict(
-            (_date(datetime(reg["year"], reg["month"], 1), "b Y"), reg["total"])
-            for reg in registrations
+            (_date(datetime(reg["year"], reg["month"], 1), "b Y"), reg["total"]) for reg in registrations
         )
 
     def get_additional_context_phase2(self, context):
@@ -134,14 +115,14 @@ class HomePageView(BackendMixin, TemplateView):
         # noinspection PyUnresolvedReferences
         context["paid"] = Bill.paid.filter(total__gt=0).count()
 
-        participants = Course.objects.annotate(
-            count_participants=Count("participants")
-        ).values_list("min_participants", "max_participants", "count_participants")
+        participants = Course.objects.annotate(count_participants=Count("participants")).values_list(
+            "min_participants", "max_participants", "count_participants"
+        )
         context["nb_courses"] = len(participants)
         context["nb_full_courses"] = 0
         context["nb_minimal_courses"] = 0
 
-        for (min_participants, max_participants, count_participants) in participants:
+        for min_participants, max_participants, count_participants in participants:
             if min_participants <= count_participants:
                 context["nb_minimal_courses"] += 1
                 if max_participants == count_participants:
@@ -153,9 +134,9 @@ class HomePageView(BackendMixin, TemplateView):
         return context
 
     def get_additional_context_phase3(self, context):
-        participants = Course.objects.annotate(
-            count_participants=Count("participants")
-        ).values_list("min_participants", "max_participants", "count_participants")
+        participants = Course.objects.annotate(count_participants=Count("participants")).values_list(
+            "min_participants", "max_participants", "count_participants"
+        )
         context["nb_courses"] = len(participants)
         context["nb_full_courses"] = 0
         context["nb_minimal_courses"] = 0
@@ -171,7 +152,7 @@ class HomePageView(BackendMixin, TemplateView):
         )
         context["waiting"] = len(waiting)
         context["valid"] = len(valid)
-        for (min_participants, max_participants, count_participants) in participants:
+        for min_participants, max_participants, count_participants in participants:
             if min_participants <= count_participants:
                 context["nb_minimal_courses"] += 1
                 if max_participants == count_participants:
@@ -192,8 +173,8 @@ class HomePageView(BackendMixin, TemplateView):
         ).select_related("child", "child__family")
 
         context["nb_registrations"] = Registration.objects.count()
-        children = set([reg.child for reg in qs])
-        families = set([child.family for child in children])
+        children = {reg.child for reg in qs}
+        families = {child.family for child in children}
         context["nb_families"] = len(families)
         context["nb_children"] = len(children)
 
@@ -202,11 +183,11 @@ class HomePageView(BackendMixin, TemplateView):
         families_per_zip = {UNKNOWN: set()}
 
         cities = dict(
-            City.objects.filter(
-                zipcode__in=qs.values_list("child__family__zipcode").distinct()
-            ).values_list("zipcode", "name")
+            City.objects.filter(zipcode__in=qs.values_list("child__family__zipcode").distinct()).values_list(
+                "zipcode", "name"
+            )
         )
-        for zipcode, city in cities.items():
+        for zipcode, _city in cities.items():
             children_per_zip[zipcode] = set()
             families_per_zip[zipcode] = set()
 
@@ -221,33 +202,23 @@ class HomePageView(BackendMixin, TemplateView):
             families_per_zip[zipcode].add(registration.child.family)
 
         children_per_zip_ordered = sorted(
-            list([(zipcode, len(children)) for (zipcode, children) in children_per_zip.items()]),
+            [(zipcode, len(children)) for (zipcode, children) in children_per_zip.items()],
             key=lambda x: x[1],
         )
 
         context["children_per_zip_labels"] = json.dumps(
-            [
-                "{} {}".format(zipcode, cities.get(zipcode, "")).strip()
-                for zipcode, nb in children_per_zip_ordered
-            ]
+            ["{} {}".format(zipcode, cities.get(zipcode, "")).strip() for zipcode, nb in children_per_zip_ordered]
         )
-        context["children_per_zip_data"] = json.dumps(
-            [nb for zipcode, nb in children_per_zip_ordered]
-        )
+        context["children_per_zip_data"] = json.dumps([nb for zipcode, nb in children_per_zip_ordered])
 
         families_per_zip_ordered = sorted(
-            list([(zipcode, len(families)) for (zipcode, families) in families_per_zip.items()]),
+            [(zipcode, len(families)) for (zipcode, families) in families_per_zip.items()],
             key=lambda x: x[1],
         )
         context["families_per_zip_labels"] = json.dumps(
-            [
-                "{} {}".format(zipcode, cities.get(zipcode, "")).strip()
-                for zipcode, nb in families_per_zip_ordered
-            ]
+            ["{} {}".format(zipcode, cities.get(zipcode, "")).strip() for zipcode, nb in families_per_zip_ordered]
         )
-        context["families_per_zip_data"] = json.dumps(
-            [nb for zipcode, nb in families_per_zip_ordered]
-        )
+        context["families_per_zip_data"] = json.dumps([nb for zipcode, nb in families_per_zip_ordered])
 
         return context
 
@@ -265,16 +236,14 @@ class HomePageView(BackendMixin, TemplateView):
         return context
 
     def get_context_data(self, **kwargs):
-        context = super(HomePageView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["now"] = now()
 
         courses = Course.objects.all()
         context["nb_courses"] = courses.count()
         activities = Activity.objects.all()
         context["nb_activities"] = activities.count()
-        context["total_sessions"] = (
-            list(courses.aggregate(Sum("number_of_sessions")).values())[0] or 0
-        )
+        context["total_sessions"] = list(courses.aggregate(Sum("number_of_sessions")).values())[0] or 0
         context["total_instructors"] = CoursesInstructors.objects.distinct("instructor").count()
         timedeltas = []
         for course in courses:
@@ -285,9 +254,7 @@ class HomePageView(BackendMixin, TemplateView):
         context["total_remaining_minutes"] = (td.seconds % 3600) / 60
 
         method_name = "get_additional_context_phase%i" % self.request.PHASE
-        context = getattr(self, method_name)(context)
-
-        return context
+        return getattr(self, method_name)(context)
 
 
 ###############################################################################
@@ -304,16 +271,10 @@ class RegistrationDatesView(BackendMixin, FormView):
         return initial
 
     def form_valid(self, form):
-        self.request.tenant.preferences["phase__START_REGISTRATION"] = form.cleaned_data[
-            "opening_date"
-        ]
-        self.request.tenant.preferences["phase__END_REGISTRATION"] = form.cleaned_data[
-            "closing_date"
-        ]
-        messages.add_message(
-            self.request, messages.SUCCESS, _("Opening and closing dates have been changed")
-        )
-        return super(RegistrationDatesView, self).form_valid(form)
+        self.request.tenant.preferences["phase__START_REGISTRATION"] = form.cleaned_data["opening_date"]
+        self.request.tenant.preferences["phase__END_REGISTRATION"] = form.cleaned_data["closing_date"]
+        messages.add_message(self.request, messages.SUCCESS, _("Opening and closing dates have been changed"))
+        return super().form_valid(form)
 
     def form_invalid(self, form):
         messages.add_message(
@@ -321,4 +282,4 @@ class RegistrationDatesView(BackendMixin, FormView):
             messages.ERROR,
             mark_safe(_("An error was found in form %s") % form.non_field_errors()),
         )
-        return super(RegistrationDatesView, self).form_invalid(form)
+        return super().form_invalid(form)
