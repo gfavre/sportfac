@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.conf.urls import url
 from django.urls import include, path
 
 from . import views
@@ -48,6 +47,7 @@ courses_patterns = [
     path("", view=views.CourseListView.as_view(), name="course-list"),
     path("absences", view=views.CoursesAbsenceView.as_view(), name="courses-absence"),
     path("new", view=views.CourseCreateView.as_view(), name="course-create"),
+    path("mail-confirmation", view=views.MailConfirmationCoursesView.as_view(), name="courses-mail-confirmation"),
     path("<slug:course>/", view=views.CourseDetailView.as_view(), name="course-detail"),
     path(
         "<slug:course>/export",
@@ -107,9 +107,7 @@ mail_patterns = [
         name="mail-participants-custom-preview",
     ),
     path("custom", view=views.MailCreateView.as_view(), name="custom-mail-custom-users"),
-    path(
-        "custom/preview", view=views.MailPreview.as_view(), name="custom-mail-custom-users-preview"
-    ),
+    path("custom/preview", view=views.MailPreview.as_view(), name="custom-mail-custom-users-preview"),
 ]
 
 registrations_patterns = [

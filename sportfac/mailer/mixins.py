@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -6,7 +5,6 @@ from django.template import loader
 from django.utils.encoding import force_str
 from django.utils.translation import gettext as _
 
-import six
 from activities.models import Course, TemplatedEmailReceipt
 from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser
@@ -15,10 +13,10 @@ from . import tasks
 from .models import MailArchive
 
 
-class GlobalPreferencesMixin(object):
+class GlobalPreferencesMixin:
     def __init__(self, *args, **kwargs):
         self.global_preferences = global_preferences_registry.manager()
-        super(GlobalPreferencesMixin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 class BaseEmailMixin(GlobalPreferencesMixin):
@@ -36,10 +34,9 @@ class BaseEmailMixin(GlobalPreferencesMixin):
         """Accepts a template object, path-to-template or list of paths"""
         if isinstance(template, (list, tuple)):
             return loader.select_template(template)
-        elif isinstance(template, six.string_types):
+        if isinstance(template, str):
             return loader.get_template(template)
-        else:
-            return template
+        return template
 
     def get_success_message(self):
         return self.success_message % {"number": len(self.get_recipients())}
@@ -91,9 +88,10 @@ class BaseEmailMixin(GlobalPreferencesMixin):
     def get_attachments(self, context):
         if not self.attachments:
             return []
+        return self.attachments
 
 
-class CancelableMixin(object):
+class CancelableMixin:
     cancel_url = None
 
     def get_cancel_url(self):
@@ -103,7 +101,7 @@ class CancelableMixin(object):
         return None
 
 
-class EditableMixin(object):
+class EditableMixin:
     edit_url = None
 
     def get_edit_url(self):
@@ -122,15 +120,15 @@ class ArchivedMailMixin(BaseEmailMixin):
 
     def get(self, request, *args, **kwargs):
         self.archive = self.get_mail_archive()
-        return super(ArchivedMailMixin, self).get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         self.archive = self.get_mail_archive()
-        return super(ArchivedMailMixin, self).post(request, *args, **kwargs)
+        return super().post(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         kwargs["mail_archive"] = self.archive
-        return super(ArchivedMailMixin, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
     def get_recipients(self):
         return list(FamilyUser.objects.filter(pk__in=self.archive.recipients))
@@ -179,7 +177,7 @@ class TemplatedEmailMixin(BaseEmailMixin):
         return template.render(context)
 
 
-class ParticipantsBaseMixin(object):
+class ParticipantsBaseMixin:
     group_mails = False
 
     def get_recipients(self):
@@ -191,15 +189,17 @@ class ParticipantsBaseMixin(object):
 
     def get_context_data(self, **kwargs):
         kwargs["course"] = self.course
-        return super(ParticipantsBaseMixin, self).get_context_data(**kwargs)
+        # noinspection PyUnresolvedReferences
+        return super().get_context_data(**kwargs)
 
     def get(self, request, *args, **kwargs):
         self.course = get_object_or_404(Course, pk=self.kwargs["course"])
-        return super(ParticipantsBaseMixin, self).get(request, *args, **kwargs)
+        # noinspection PyUnresolvedReferences
+        return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         self.course = get_object_or_404(Course, pk=self.kwargs["course"])
-        return super(ParticipantsBaseMixin, self).post(request, *args, **kwargs)
+        return super().post(request, *args, **kwargs)
 
 
 class ParticipantsMixin(ParticipantsBaseMixin, BaseEmailMixin):
@@ -211,9 +211,7 @@ class ParticipantsMixin(ParticipantsBaseMixin, BaseEmailMixin):
             pass
 
     def get_mail_context(self, base_context, recipient, bcc_list=None, child=None):
-        base_context = super(ParticipantsMixin, self).get_mail_context(
-            base_context, recipient, bcc_list
-        )
+        base_context = super().get_mail_context(base_context, recipient, bcc_list)
         if child:
             base_context["registration"] = self.course.participants.get(child=child)
             base_context["child"] = child
@@ -224,7 +222,7 @@ class ParticipantsMixin(ParticipantsBaseMixin, BaseEmailMixin):
         message = self.get_mail_body(mail_context)
         tasks.send_mail.delay(
             subject=self.get_subject(mail_context),
-            message=self.get_mail_body(mail_context),
+            message=message,
             from_email=self.get_from_address(),
             recipients=[recipient.get_email_string()],
             reply_to=[self.get_reply_to_address()],
@@ -237,7 +235,7 @@ class ParticipantsMixin(ParticipantsBaseMixin, BaseEmailMixin):
 
     def get(self, request, *args, **kwargs):
         self.course = get_object_or_404(Course, pk=self.kwargs["course"])
-        return super(ParticipantsMixin, self).get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         self.course = get_object_or_404(Course, pk=self.kwargs["course"])

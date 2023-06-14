@@ -70,35 +70,55 @@
             }
           });
         {% endif %}
+        $('form.convocations').submit(function (event) {
+          var ids = table.rows({selected: true}).nodes().map(function (elem) {
+            return $(elem).data('courseid');
+          });
+          for (var i = 0; i < ids.length; i++) {
+            $(this).append($('<input name="c" value="' + ids[i] + '" type="hidden">'))
+          }
+        });
       });
-
-
     </script>
   {% endaddtoblock %}
 
-  <a href="{% url 'backend:course-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New course" %}
+  <a href="{% url 'backend:course-create' %}" class="btn btn-success">
+    <i class="icon-plus"></i> {% trans "New course" %}
   </a>
   <hr>
-
   {% if USE_ABSENCES %}
+
     <div class="btn-group">
+
       <form class="absences" method="GET" action="{% url 'backend:courses-absence' %}">
         <button type="submit" class="btn btn-secondary needs-select disabled"><i
             class="icon-calendar"></i>&nbsp;&nbsp;{% trans "Manage multiple courses absences" %}</button>
       </form>
     </div>
   {% endif %}
-  <label class="radio-inline"> J+S:</label>
+  <div class="btn-group">
 
-  <label class="radio-inline">
-    <input type="radio" name="only_js" value="announced"> {% trans "Announced courses" %}
-  </label>
-  <label class="radio-inline ">
-    <input type="radio" name="only_js" value="notannounced"> {% trans "Not announced courses" %}
-  </label>
-  <label class="radio-inline ">
-    <input type="radio" name="only_js" value="both" checked="checked"> {% trans "Both" %}
-  </label>
+    <form class="convocations" method="GET"
+          action="{% url 'backend:courses-mail-confirmation' %}">
+
+      <button type="submit" class="btn btn-secondary needs-select disabled">
+        <i class="icon-mail"></i>&nbsp;{% trans "Send convocation email" %}
+      </button>
+    </form>
+  </div>
+  <hr>
+  <div>
+    <label class="radio-inline"> J+S:</label>
+
+    <label class="radio-inline">
+      <input type="radio" name="only_js" value="announced"> {% trans "Announced courses" %}
+    </label>
+    <label class="radio-inline ">
+      <input type="radio" name="only_js" value="notannounced"> {% trans "Not announced courses" %}
+    </label>
+    <label class="radio-inline ">
+      <input type="radio" name="only_js" value="both" checked="checked"> {% trans "Both" %}
+    </label></div>
 
   <table class="table">
     <thead>
@@ -133,9 +153,10 @@
         </td>
         <td data-order="{{ course.start_date|date:'w' }}">
           {% if course.is_multi_course %}
-          <ul class="list-unstyled">
-            {% for day in course.days_names %}<li>{{ day }}</li>{% endfor %}
-          </ul>
+            <ul class="list-unstyled">
+              {% for day in course.days_names %}
+                <li>{{ day }}</li>{% endfor %}
+            </ul>
           {% else %}
             {{ course.day_name }}
           {% endif %}
@@ -143,13 +164,14 @@
         <td data-order="{{ course.start_date|date:'c' }}">{{ course.start_date|date:"SHORT_DATE_FORMAT" }}</td>
         <td>
           {% if course.is_course %}
-          {{ course.start_time|time:"H:i" }}
+            {{ course.start_time|time:"H:i" }}
           {% elif course.is_multi_course %}
-          <ul class="list-unstyled">
-            {% for hour in course.start_hours %}<li>{{ hour|time:"H:i" }}</li>{% endfor %}
-          </ul>
+            <ul class="list-unstyled">
+              {% for hour in course.start_hours %}
+                <li>{{ hour|time:"H:i" }}</li>{% endfor %}
+            </ul>
           {% else %}
-          n/a
+            n/a
           {% endif %}
         </td>
         <td data-order="{{ course.duration|seconds }}">{{ course.duration|duration }}</td>
@@ -181,7 +203,8 @@
         </td>
         <td data-order="{{ course.uptodate }}"
             data-search="{% trans 'up to date' %}">
-           {% if course.uptodate %}<i class="icon-ok-circled success"></i>{% else %}<i class="icon-cancel-circled  danger"></i>{% endif %}
+          {% if course.uptodate %}<i class="icon-ok-circled success"></i>{% else %}
+            <i class="icon-cancel-circled  danger"></i>{% endif %}
         </td>
         <td>
           <ul class="list-unstyled">
@@ -194,7 +217,8 @@
             <li class="text-nowrap"><a href="{{ course.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update course" %}
             </a></li>
 
-            <li class="text-nowrap"><a href="{{ course.get_duplicate_url }}" class="btn btn-sm"><i class="icon-docs"></i>&nbsp;{% trans "Duplicate course" %}</a></li>
+            <li class="text-nowrap"><a href="{{ course.get_duplicate_url }}" class="btn btn-sm"><i
+                class="icon-docs"></i>&nbsp;{% trans "Duplicate course" %}</a></li>
             {% if not course.is_camp %}
               <li class="text-nowrap"><a href="{{ course.get_js_export_url }}" class="btn btn-sm"><i
                   class="icon-doc"></i>&nbsp;{% trans "Get BDNS: J+S export file" %}</a></li>
