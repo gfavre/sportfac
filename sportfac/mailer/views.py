@@ -18,13 +18,7 @@ from profiles.models import FamilyUser
 
 from . import tasks
 from .forms import CopiesForm, CourseMailForm, MailForm
-from .mixins import (
-    CancelableMixin,
-    EditableMixin,
-    ParticipantsBaseMixin,
-    ParticipantsMixin,
-    TemplatedEmailMixin,
-)
+from .mixins import CancelableMixin, EditableMixin, ParticipantsBaseMixin, ParticipantsMixin, TemplatedEmailMixin
 from .models import Attachment, MailArchive
 
 
@@ -93,7 +87,7 @@ class MailCreateView(FormView):
         kwargs["prev"] = self.request.GET.get("prev", None)
         kwargs["archive"] = self.get_archive_from_session()
         kwargs["recipients"] = self.get_recipients_email()
-        return super(MailCreateView, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
     @transaction.atomic
     def form_valid(self, form):
@@ -129,7 +123,7 @@ class MailCreateView(FormView):
         template.save()
         self.request.session["mail"] = archive.id
 
-        return super(MailCreateView, self).form_valid(form)
+        return super().form_valid(form)
 
 
 class MailPreviewView(CancelableMixin, EditableMixin, TemplateView):
@@ -145,10 +139,8 @@ class MailPreviewView(CancelableMixin, EditableMixin, TemplateView):
     def get_success_url(self):
         if self.success_url:
             # Forcing possible reverse_lazy evaluation
-            url = force_str(self.success_url)
-        else:
-            raise ImproperlyConfigured("No URL to redirect to. Provide a success_url.")
-        return url
+            return force_str(self.success_url)
+        raise ImproperlyConfigured("No URL to redirect to. Provide a success_url.")
 
     def add_mail_context(self, context):
         context["subject"] = self.get_subject(context)
@@ -161,22 +153,20 @@ class MailPreviewView(CancelableMixin, EditableMixin, TemplateView):
     def get_context_data(self, **kwargs):
         current_site = get_current_site(self.request)
         kwargs["site_name"] = current_site.name
-        kwargs["site_url"] = (
-            settings.DEBUG and "http://" + current_site.domain or "https://" + current_site.domain
-        )
+        kwargs["site_url"] = settings.DEBUG and "http://" + current_site.domain or "https://" + current_site.domain
         kwargs["signature"] = self.global_preferences["email__SIGNATURE"]
         kwargs["edit_url"] = self.get_edit_url()
         kwargs["cancel_url"] = self.get_cancel_url()
         if self.get_recipients():
             self.add_mail_context(kwargs)
-        return super(MailPreviewView, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
     def send_mail(self, recipient, bcc_recipients, base_context):
         mail_context = self.get_mail_context(base_context, recipient, bcc_recipients)
         message = self.get_mail_body(mail_context)
         tasks.send_mail.delay(
             subject=self.get_subject(mail_context),
-            message=self.get_mail_body(mail_context),
+            message=message,
             from_email=self.get_from_address(),
             recipients=[recipient.get_email_string()],
             reply_to=[self.get_reply_to_address()],
@@ -231,7 +221,7 @@ class BrowsableMailPreviewView(MailPreviewView):
         kwargs["has_next"] = mail_number + 1 != kwargs["total"]
         kwargs["next"] = mail_number + 2
         self.add_nth_mail_context(kwargs, mail_number)
-        return super(BrowsableMailPreviewView, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
 class ParticipantsMailCreateView(ParticipantsBaseMixin, MailCreateView):
@@ -244,12 +234,10 @@ class ParticipantsMailPreviewView(ParticipantsMixin, MailPreviewView):
 
     def get_context_data(self, **kwargs):
         kwargs["prev"] = self.request.GET.get("prev", None)
-        return super(ParticipantsMailPreviewView, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
-class MailCourseInstructorsView(
-    ParticipantsBaseMixin, TemplatedEmailMixin, CancelableMixin, FormView
-):
+class MailCourseInstructorsView(ParticipantsBaseMixin, TemplatedEmailMixin, CancelableMixin, FormView):
     form_class = CopiesForm
 
     message_template = "mailer/instructor.txt"
@@ -265,9 +253,7 @@ class MailCourseInstructorsView(
         current_site = get_current_site(self.request)
         return {
             "site_name": current_site.name,
-            "site_url": settings.DEBUG
-            and "http://" + current_site.domain
-            or "https://" + current_site.domain,
+            "site_url": settings.DEBUG and "http://" + current_site.domain or "https://" + current_site.domain,
             "signature": self.global_preferences["email__SIGNATURE"],
             "from_email": self.get_from_address(),
             "to_email": recipient.get_email_string(),
@@ -276,33 +262,41 @@ class MailCourseInstructorsView(
             "course": self.course,
         }
 
-    def form_valid(self, form):
+    def get_bcc_list(self, form):
         bcc_list = set()
         if form.cleaned_data.get("send_copy", False):
             bcc_list.add(self.request.user)
         if form.cleaned_data.get("copy_all_admins", False):
             for manager in FamilyUser.managers_objects.exclude(pk=str(self.request.user.pk)):
                 bcc_list.add(manager)
+        return bcc_list
+
+    def form_valid(self, form):
+        bcc_list = self.get_bcc_list(form)
         if form.cleaned_data.get("copy_all_instructors", False):
             recipients = self.course.instructors.all()
         else:
             recipients = self.get_recipients()
 
         for instructor in recipients:
-            context = self.get_instructor_context(instructor, bcc_list)
-            tasks.send_instructors_email.delay(
-                course_pk=self.course.pk,
-                instructor_pk=str(instructor.pk),
-                subject=self.get_subject(context),
-                message=self.get_mail_body(context),
-                from_email=self.get_from_address(),
-                reply_to=[self.get_reply_to_address()],
-                bcc=[bcc_user.get_email_string() for bcc_user in bcc_list],
-            )
+            self.send_to_instructor(instructor, bcc_list)
         self.create_receipt()
         messages.success(
             self.request,
-            _("Your email is being sent to %(number)s recipients.")
-            % {"number": len(self.get_recipients())},
+            _("Your email is being sent to %(number)s recipients.") % {"number": len(self.get_recipients())},
         )
-        return super(MailCourseInstructorsView, self).form_valid(form)
+        return super().form_valid(form)
+
+    def send_to_instructor(self, instructor, bcc_list=None):
+        if not bcc_list:
+            bcc_list = set()
+        context = self.get_instructor_context(instructor, bcc_list)
+        tasks.send_instructors_email.delay(
+            course_pk=self.course.pk,
+            instructor_pk=str(instructor.pk),
+            subject=self.get_subject(context),
+            message=self.get_mail_body(context),
+            from_email=self.get_from_address(),
+            reply_to=[self.get_reply_to_address()],
+            bcc=[bcc_user.get_email_string() for bcc_user in bcc_list],
+        )

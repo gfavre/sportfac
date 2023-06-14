@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
+from django.utils.translation import gettext as _
 from django.views.generic import ListView
 
 import mailer.views as mailer_views
@@ -167,6 +168,59 @@ class MailConfirmationCoursesView(
             attachments=[attachment.pk for attachment in self.get_attachments(mail_context)],
         )
         return message
+
+
+class MailInstructorsCoursesView(MailCourseInstructorsView):
+    template_name = "backend/course/confirm_send.html"
+
+    def get_context_data(self, **kwargs):
+        kwargs["courses"] = self.courses
+        kwargs["cancel_url"] = self.get_cancel_url()
+        return super().get_context_data(**kwargs)
+
+    def get(self, *args, **kwargs):
+        courses_pk = [int(pk) for pk in self.request.GET.getlist("c") if pk.isdigit()]
+        self.courses = Course.objects.filter(pk__in=courses_pk)
+        self.course = self.courses.first()
+        return self.render_to_response(self.get_context_data())
+
+    def post(self, *args, **kwargs):
+        courses_pk = [int(pk) for pk in self.request.GET.getlist("c") if pk.isdigit()]
+        self.courses = Course.objects.filter(pk__in=courses_pk)
+        self.course = self.courses.first()
+
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        return self.form_invalid(form)
+
+    def get_recipients(self):
+        return self.course.instructors.all()
+
+    def form_valid(self, form):
+        bcc_list = self.get_bcc_list(form)
+        recipients_nb = 0
+        for course in self.courses:
+            self.course = course
+            if form.cleaned_data.get("copy_all_instructors", False):
+                recipients = self.course.instructors.all()
+            else:
+                recipients = self.get_recipients()
+            recipients_nb += len(recipients)
+            for instructor in recipients:
+                self.send_to_instructor(instructor, bcc_list)
+            self.create_receipt()
+        messages.success(
+            self.request,
+            _("Your email is being sent to %(number)s recipients.") % {"number": recipients_nb},
+        )
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse("backend:course-list")
+
+    def get_cancel_url(self):
+        return reverse("backend:course-list")
 
 
 class NotPaidYetView(BackendMixin, BillMixin, TemplatedEmailMixin, mailer_views.BrowsableMailPreviewView):

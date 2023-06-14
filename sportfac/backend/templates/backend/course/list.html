@@ -78,6 +78,16 @@
             $(this).append($('<input name="c" value="' + ids[i] + '" type="hidden">'))
           }
         });
+
+        $('form.instructors').submit(function (event) {
+          var ids = table.rows({selected: true}).nodes().map(function (elem) {
+            return $(elem).data('courseid');
+          });
+          for (var i = 0; i < ids.length; i++) {
+            $(this).append($('<input name="c" value="' + ids[i] + '" type="hidden">'))
+          }
+        });
+
       });
     </script>
   {% endaddtoblock %}
@@ -97,7 +107,6 @@
     </div>
   {% endif %}
   <div class="btn-group">
-
     <form class="convocations" method="GET"
           action="{% url 'backend:courses-mail-confirmation' %}">
 
@@ -106,6 +115,17 @@
       </button>
     </form>
   </div>
+  <div class="btn-group">
+    <form class="instructors" method="GET"
+          action="{% url 'backend:courses-mail-instructors' %}">
+
+      <button type="submit" class="btn btn-secondary needs-select disabled">
+        <i class="icon-tasks"></i>&nbsp;{% trans "Send infos to instructors" %}
+      </button>
+    </form>
+  </div>
+
+
   <hr>
   <div>
     <label class="radio-inline"> J+S:</label>
