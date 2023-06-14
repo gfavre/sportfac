@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Send paying invoices to accountants if after registration period
 - Export of invoices to excel format
+- Send confirmation mail to multiple courses
 
 ### Fixed
 - course creation was not possible if no city override was provided
