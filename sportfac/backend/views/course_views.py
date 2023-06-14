@@ -31,21 +31,6 @@ from ..utils import AbsencePDFRenderer, AbsencesPDFRenderer
 from .mixins import BackendMixin, ExcelResponseMixin
 
 
-__all__ = (
-    "CourseCreateView",
-    "CourseDeleteView",
-    "CourseDetailView",
-    "CourseJSCSVView",
-    "CourseParticipantsExportView",
-    "CourseAbsenceView",
-    "CoursesAbsenceView",
-    "CourseListView",
-    "CourseUpdateView",
-    "CourseParticipantsView",
-    "PaySlipMontreux",
-)
-
-
 class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
     template_name = "backend/course/create.html"
     success_url = reverse_lazy("backend:course-list")

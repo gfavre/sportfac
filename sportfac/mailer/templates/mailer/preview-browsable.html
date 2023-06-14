@@ -1,13 +1,27 @@
 {% extends "mailer/preview.html" %}
 {% load i18n %}
 {% block mail_nav %}
+  {% if courses %}
+ <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+  {% for tab_course in courses %}
+    <li role="presentation" {% if tab_course == course %}class="active"{% endif %}>
+      <a href="{{ base_url }}&selected={{ tab_course.pk }}"
+         aria-controls="home" role="tab" >
+        {{ tab_course.short_name }}
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
 <h5 class="text-center">
 {% if has_prev %}
-  <a href="?number={{ prev }}" title="{% trans 'Previous email' %}"><i class=" icon-left-dir"></i></a>
+  <a href="{% if base_url %}{{ base_url }}&selected={{ course.pk }}&{% else %}?{% endif %}number={{ prev }}" title="{% trans 'Previous email' %}"><i class=" icon-left-dir"></i></a>
 {% endif %}
 {% blocktrans with identifier=mailidentifier total=total %}Message {{ identifier }} / {{ total }}{% endblocktrans %}
 {% if has_next %}
-  <a href="?number={{ next }}" title="{% trans 'Next email' %}"><i class=" icon-right-dir"></i></a>
+  <a href="{% if base_url %}{{ base_url }}&selected={{ course.pk }}&{% else %}?{% endif %}number={{ next }}" title="{% trans 'Next email' %}"><i class=" icon-right-dir"></i></a>
 {% endif %}
 </h5>
 {% endblock %}
