@@ -26,6 +26,7 @@ from .mail_views import MailConfirmationCoursesView  # noqa F401
 from .mail_views import MailConfirmationParticipantsView  # noqa F401
 from .mail_views import MailCourseInstructorsView  # noqa F401
 from .mail_views import MailCreateView  # noqa F401
+from .mail_views import MailInstructorsCoursesView  # noqa F401
 from .mail_views import MailPreview  # noqa F401
 from .mail_views import NeedConfirmationView  # noqa F401
 from .mail_views import NotPaidYetView  # noqa F401
