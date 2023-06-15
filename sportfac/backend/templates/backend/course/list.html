@@ -22,20 +22,18 @@
       $(function () {
         var table = $('.table').DataTable({
           {% if LANGUAGE_CODE == 'fr' %}
-            "language": {
-              "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
+            language: {
+              url: "{{ STATIC_URL }}js/vendor/datatables/French.json"
             },
           {% endif %}
-          {% if USE_ABSENCES %}
             /*dom: 'T<"clear">Blfrtip',*/
             select: {
               style: 'multi'
             },
-          {% endif %}
-          "aoColumnDefs": [
+          aoColumnDefs: [
             {'bSortable': false, 'bSearchable': false, 'aTargets': [-1]}
           ],
-          "paging": false
+          paging: false
         });
         table.on('select', function () {
           $('.needs-select').removeClass('disabled');
