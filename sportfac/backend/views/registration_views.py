@@ -168,8 +168,8 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
                     status = Bill.STATUS.paid
             bill = Bill.objects.create(status=status, family=user)
             # noinspection PyUnresolvedReferences
-            bill.send_to_accountant()
             bill.save()
+            bill.send_to_accountant()
             if send_confirmation:
                 bill.send_confirmation()
             self.instance.bill = bill

@@ -90,6 +90,7 @@ class AccountantMail(StringPreference):
     section = email
     name = "ACCOUNTANT_MAIL"
     default = ""
+    help_text = _("Email address of the accountant, if multiple separate by comma")
 
 
 @global_preferences_registry.register

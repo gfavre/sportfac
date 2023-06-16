@@ -215,7 +215,7 @@ def send_invoice_pdf(bill_pk, tenant_pk=None):
         subject=subject,
         body=body,
         from_email=global_preferences["email__FROM_MAIL"],
-        to=[global_preferences["email__ACCOUNTANT_MAIL"]],
+        to=[email.strip() for email in global_preferences["email__ACCOUNTANT_MAIL"].split(",")],
         bcc=[],
     )
     try:
