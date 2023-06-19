@@ -475,22 +475,24 @@ class Bill(TimeStampedModel, StatusModel):
         )
 
     def send_to_accountant(self):
+        if not self.total:
+            # Accountants do not care about bills with no total :)
+            return
         if not settings.KEPCHUP_SEND_BILL_TO_ACCOUNTANT:
             return
-        global_preferences = global_preferences_registry.manager()
-        end = global_preferences["phase__END_REGISTRATION"]
+        tenant = connection.get_tenant()
+
+        tenant_preferences = tenant.get_preferences()
+        end = tenant_preferences["phase__END_REGISTRATION"]
         if now() < end:
             return
-        try:
-            tenant_pk = connection.tenant.pk
-        except AttributeError:
-            tenant_pk = None
+
         from .tasks import send_invoice_pdf
 
         transaction.on_commit(
             lambda: send_invoice_pdf.delay(
                 bill_pk=self.pk,
-                tenant_pk=tenant_pk,
+                tenant_pk=tenant.pk,
             )
         )
 
