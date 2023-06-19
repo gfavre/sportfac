@@ -136,7 +136,6 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
     form_list = (
         (_("Child"), ChildSelectForm),
         (_("Course"), CourseSelectForm),
-        # (_('Questions'), CourseSelectForm),
         (_("Email"), SendConfirmationForm),
         (_("Billing"), BillingForm),
     )
@@ -147,13 +146,20 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
     template_name = "backend/registration/wizard.html"
     instance = None
 
+    def set_message(self, level=messages.INFO, message=""):
+        messages.add_message(self.request, level, message)
+
     @transaction.atomic
     def done(self, form_list, form_dict, **kwargs):
+        # form_list
+        # [<ChildSelectForm bound=True, valid=True, fields=(child)>,
+        # <CourseSelectForm bound=True, valid=True, fields=(course)>,
+        # <BillingForm bound=True, valid=True, fields=(paid;send_confirmation)>]
         user = self.instance.child.family
         message = _("Registration for %(child)s to %(course)s has been validated.")
         message %= {"child": self.instance.child, "course": self.instance.course.short_name}
         send_confirmation = form_list[-1].cleaned_data.get("send_confirmation", False)
-        messages.success(self.request, message)
+        self.set_message(messages.SUCCESS, message)
         response = HttpResponseRedirect(self.instance.course.get_backend_url())
         if settings.KEPCHUP_NO_PAYMENT:
             self.instance.set_confirmed(send_confirmation=send_confirmation)
@@ -175,13 +181,13 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
             self.instance.bill = bill
             message = _('The bill %(identifier)s has been created. <a href="%(url)s">Please review it.</a>')
             message = mark_safe(message % {"identifier": bill.billing_identifier, "url": bill.backend_url})
-            messages.add_message(self.request, messages.INFO, message)
+            self.set_message(messages.INFO, message)
             self.instance.set_confirmed()
             self.instance.save()
         except IntegrityError:
             message = _("A registration for %(child)s to %(course)s already exists.")
             message %= {"child": self.instance.child, "course": self.instance.course.short_name}
-            messages.add_message(self.request, messages.WARNING, message)
+            self.set_message(messages.WARNING, message)
         return response
 
     def get_form_instance(self, step):

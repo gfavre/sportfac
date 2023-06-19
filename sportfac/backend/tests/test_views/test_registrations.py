@@ -1,3 +1,4 @@
+from unittest import mock
 from unittest.mock import patch
 
 from django.contrib.auth.models import AnonymousUser
@@ -6,10 +7,12 @@ from django.forms.formsets import BaseFormSet
 from django.forms.models import BaseModelFormSet, model_to_dict
 from django.test import RequestFactory, override_settings
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 
 from activities.tests.factories import CourseFactory
+from backend.forms import BillingForm, ChildSelectForm, CourseSelectForm
 from profiles.tests.factories import FamilyUserFactory
-from registrations.models import Registration
+from registrations.models import Bill, Registration
 from registrations.tests.factories import ChildFactory, RegistrationFactory
 
 from sportfac.utils import TenantTestCase, process_request_for_middleware
@@ -39,6 +42,19 @@ class RegistrationCreateViewTests(TenantTestCase):
         process_request_for_middleware(self.request, SessionMiddleware)
         self.child = ChildFactory()
         self.course = CourseFactory()
+        self.registration = Registration()
+        self.child_form = ChildSelectForm(instance=self.registration, data={"child": self.child})
+        self.child_form.is_valid()
+        self.course_form = CourseSelectForm(instance=self.registration, data={"course": self.course})
+        self.course_form.is_valid()
+        self.billing_form = BillingForm(instance=self.registration, data={"paid": False, "send_confirmation": True})
+        self.billing_form.is_valid()
+        self.form_list = [self.child_form, self.course_form, self.billing_form]
+        self.form_dict = {
+            _("Child"): self.child_form,
+            _("Course"): self.course_form,
+            _("Billing"): self.billing_form,
+        }
 
     def test_access_forbidden_for_anonymous_users(self):
         self.request.user = AnonymousUser()
@@ -61,6 +77,56 @@ class RegistrationCreateViewTests(TenantTestCase):
         # noinspection PyUnresolvedReferences
         content = response.render().content
         self.assertTrue(len(content) > 0)
+
+    @override_settings(KEPCHUP_NO_PAYMENT=True)
+    @mock.patch.object(RegistrationCreateView, "set_message")
+    def test_done_no_payment(self, _set_message):
+        view = RegistrationCreateView()
+        self.registration.save()
+        view.instance = self.registration
+        with mock.patch.object(Registration, "set_confirmed") as mock_set_confirmed:
+            response = view.done(self.form_list, self.form_dict)
+            mock_set_confirmed.assert_called_once_with(
+                send_confirmation=self.billing_form.cleaned_data["send_confirmation"]
+            )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, self.course.get_backend_url())
+
+    @override_settings(KEPCHUP_NO_PAYMENT=False)
+    @mock.patch.object(RegistrationCreateView, "set_message")
+    def test_done_creates_bill(self, _set_message):
+        view = RegistrationCreateView()
+        self.registration.save()
+        view.instance = self.registration
+        with mock.patch.object(Registration, "set_confirmed") as set_confirmed, mock.patch.object(
+            Bill, "send_to_accountant"
+        ) as send_to_accountant, mock.patch.object(Bill, "send_confirmation") as send_confirmation:
+            response = view.done(self.form_list, self.form_dict)
+            self.assertEqual(response.status_code, 302)
+            self.assertEqual(response.url, self.course.get_backend_url())
+            send_to_accountant.assert_called_once()
+            send_confirmation.assert_called_once()
+            set_confirmed
+
+        self.registration.refresh_from_db()
+        self.assertTrue(hasattr(self.registration, "bill"))
+
+    @override_settings(KEPCHUP_NO_PAYMENT=False)
+    @mock.patch.object(RegistrationCreateView, "set_message")
+    def test_done_sets_bill_status_to_paid(self, _set_message):
+        view = RegistrationCreateView()
+        self.registration.save()
+        view.instance = self.registration
+        with mock.patch.object(Registration, "set_confirmed"), mock.patch.object(
+            Registration, "get_price", return_value=0
+        ), mock.patch.object(Bill, "send_to_accountant"), mock.patch.object(Bill, "send_confirmation"):
+            view.done(self.form_list, self.form_dict)
+
+        self.registration.refresh_from_db()
+        self.assertTrue(hasattr(self.registration, "bill"))
+        bill = self.registration.bill
+        self.assertTrue(bill.is_paid)
 
 
 class RegistrationDeleteViewTests(TenantTestCase):
