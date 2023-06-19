@@ -475,13 +475,10 @@ class Bill(TimeStampedModel, StatusModel):
         )
 
     def send_to_accountant(self):
-        if not self.total:
-            # Accountants do not care about bills with no total :)
-            return
         if not settings.KEPCHUP_SEND_BILL_TO_ACCOUNTANT:
             return
         global_preferences = global_preferences_registry.manager()
-        end = global_preferences["phase__OTHER_END_REGISTRATION"]
+        end = global_preferences["phase__END_REGISTRATION"]
         if now() < end:
             return
         try:
