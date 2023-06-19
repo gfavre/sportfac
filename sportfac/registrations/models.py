@@ -482,7 +482,7 @@ class Bill(TimeStampedModel, StatusModel):
             return
         tenant = connection.get_tenant()
 
-        tenant_preferences = tenant.get_preferences()
+        tenant_preferences = tenant.preferences
         end = tenant_preferences["phase__END_REGISTRATION"]
         if now() < end:
             return
