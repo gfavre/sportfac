@@ -173,9 +173,6 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
                 if self.instance.get_price() == 0:
                     status = Bill.STATUS.paid
             bill = Bill.objects.create(status=status, family=user)
-            # noinspection PyUnresolvedReferences
-            bill.save()
-            bill.send_to_accountant()
             if send_confirmation:
                 bill.send_confirmation()
             self.instance.bill = bill
@@ -184,6 +181,7 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
             self.set_message(messages.INFO, message)
             self.instance.set_confirmed()
             self.instance.save()
+            bill.send_to_accountant()
         except IntegrityError:
             message = _("A registration for %(child)s to %(course)s already exists.")
             message %= {"child": self.instance.child, "course": self.instance.course.short_name}
