@@ -100,12 +100,12 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 # END EMAIL CONFIGURATION
 
 TEMPLATES[0]["DIRS"] = [  # noqa: F405
-    normpath(join(SITE_ROOT, "themes", "coppet", "templates")),  # noqa: F405
+    normpath(join(SITE_ROOT, "themes", "monthey", "templates")),  # noqa: F405
     normpath(join(SITE_ROOT, "templates")),  # noqa: F405
 ]
 
 STATICFILES_DIRS = (
-    normpath(join(SITE_ROOT, "themes", "coppet", "static")),  # noqa: F405
+    normpath(join(SITE_ROOT, "themes", "monthey", "static")),  # noqa: F405
     normpath(join(SITE_ROOT, "static")),  # noqa: F405
 )
 COMPRESS_ENABLED = True
@@ -144,7 +144,7 @@ KEPCHUP_ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE = True
 KEPCHUP_NO_SSF = True
 KEPCHUP_IMPORT_CHILDREN = True
 KEPCHUP_DISPLAY_NUMBER_OF_SESSIONS = False
-KEPCHUP_SPLASH_PAGE = True
+KEPCHUP_SPLASH_PAGE = False
 KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = ["first_name", "last_name", "school_year", "school"]
 KEPCHUP_REGISTER_ACCOUNTS_AT_ANY_TIME = True
 KEPCHUP_EXPLICIT_SESSION_DATES = False
