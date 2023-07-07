@@ -1,0 +1,16 @@
+{% extends "contact/contact.html" %}
+
+{% block addresses %}
+    <section style="padding-top: 0">
+      <h4 itemprop="name">Établissement secondaire de Nyon-Marens</h4>
+      <address itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+        <span itemprop="streetAddress">Rte du Stand 5</span><br />
+        <abbr itemprop="addressCountry" title="Switzerland">CH</abbr>-<span itemprop="postalCode">1260</span> <span itemprop="addressLocality">Nyon</span>
+      </address>
+      <dl class="dl-horizontal">
+        <dt>Téléphone</dt><dd><a href="tel:+41225575400" itemprop="telephone">022 557 54 00</a></dd>
+        <dt>Fax</dt><dd><a href="fax:+41225575403" itemprop="faxNumber">022 557 54 03</a></dd>
+        <dt>Email</dt><dd><a itemprop="email" href="mailto:patrizia.maas@vd.ch">patrizia.maas@vd.ch</a></dd>
+      </dl>
+    </section>
+{% endblock %}

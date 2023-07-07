@@ -1,0 +1,16 @@
+{% load static i18n %}
+<footer id="footer">
+  <div class="container">
+    <div>
+      {% include "address.html" %}
+      <img src="{{ STATIC_URL }}img/logo-epmonthey-v1light.gif" class="hidden-xs hidden-sm hidden-print"/>
+
+      <ul class="footer-links hidden-print">
+        <li><a href="{% url 'contact:contact' %}">{% trans "Contact" %}</a></li>
+        <li class="muted">·</li>
+        <li><a href="{% url 'privacy' %}">{% trans "Privacy" %}</a></li>
+      </ul>
+      <small class="hidden-print"><a href="https://www.beyondthewall.ch">Développé par Beyond the Wall, Genolier</a></small>
+    </div>
+  </div>
+</footer>
