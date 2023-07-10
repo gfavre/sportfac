@@ -252,12 +252,15 @@ def dynamic_preferences_context(request):
     try:
         start = make_aware(global_preferences["phase__OTHER_START_REGISTRATION"], get_default_timezone())
     except IndexError:
+        start = None
+    except ValueError:
         start = global_preferences["phase__OTHER_START_REGISTRATION"]
     try:
         end = make_aware(global_preferences["phase__OTHER_END_REGISTRATION"], get_default_timezone())
     except IndexError:
+        end = None
+    except ValueError:
         end = global_preferences["phase__OTHER_END_REGISTRATION"]
-
     if start > now():
         other_phase = 1
     elif end > now():
