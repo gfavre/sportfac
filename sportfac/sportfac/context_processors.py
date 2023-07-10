@@ -22,9 +22,6 @@ class Step:
     def __str__(self):
         return self.id
 
-    def __str__(self):
-        return self.id
-
     def ensure_activable(self):
         # Resolve returns a resolver_match that can be used to get view class and then call static method
         from sportfac.views import NotReachableException
@@ -72,9 +69,7 @@ def wizard_context(request):
     )
     all_steps = [about, children, activities, confirmation]
     if settings.KEPCHUP_USE_APPOINTMENTS:
-        appointment_step = Step(
-            request, "appointment-step", _("Appointments"), "wizard_appointments"
-        )
+        appointment_step = Step(request, "appointment-step", _("Appointments"), "wizard_appointments")
         all_steps += [appointment_step]
 
     if not settings.KEPCHUP_NO_PAYMENT:
@@ -117,8 +112,11 @@ def wizard_context(request):
 
 
 def registration_opened_context(request):
-    start = request.REGISTRATION_START
-    end = request.REGISTRATION_END
+    try:
+        start = request.REGISTRATION_START
+        end = request.REGISTRATION_END
+    except AttributeError:
+        return {}
     now = timezone.now()
     minutes_spent = int((now - start).total_seconds() / 60)
     minutes_total = int((end - start).total_seconds() / 60)
@@ -137,7 +135,7 @@ def registration_opened_context(request):
 def activities_context(request):
     activities = []
     for slug, label in settings.KEPCHUP_ACTIVITY_TYPES:
-        activities.append((label, Activity.objects.visible().filter(type=slug).order_by('name')))
+        activities.append((label, Activity.objects.visible().filter(type=slug).order_by("name")))
     return {"activities_types": activities}
 
 
@@ -146,8 +144,8 @@ def tenants_context(request):
 
     if user.is_authenticated and user.is_manager or user.is_superuser or user.is_staff:
         return {"tenants": YearTenant.objects.all()}
-    elif user.is_authenticated and user.is_kepchup_staff:
-        tenants = list()
+    if user.is_authenticated and user.is_kepchup_staff:
+        tenants = []
         with connection.cursor() as cursor:
             for tenant in YearTenant.objects.all():
                 cursor.execute(
@@ -160,12 +158,10 @@ def tenants_context(request):
                 if row:
                     tenants.append(tenant)
         return {"tenants": tenants}
-    else:
-        return {}
+    return {}
 
 
 def kepchup_context(request):
-
     return {
         "AVS_HIDDEN": "avs" in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
         "BIB_NUMBER_HIDDEN": "bib_number" in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
@@ -185,8 +181,7 @@ def kepchup_context(request):
         "BIB_NUMBER_EDITABLE": "bib_number" not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
         "BIRTH_DATE_EDITABLE": "birth_date" not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
         "BUILDING_EDITABLE": "building" not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
-        "EMERGENCY_NUMBER_EDITABLE": "emergency_number"
-        not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
+        "EMERGENCY_NUMBER_EDITABLE": "emergency_number" not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
         "EMERGENCY_NUMBER_MANDATORY": settings.KEPCHUP_EMERGENCY_NUMBER_MANDATORY,
         "FIRST_NAME_EDITABLE": "first_name" not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
         "ID_LAGAPEO_EDITABLE": "id_lagapeo" not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
@@ -255,16 +250,12 @@ def kepchup_context(request):
 def dynamic_preferences_context(request):
     global_preferences = global_preferences_registry.manager()
     try:
-        start = make_aware(
-            global_preferences["phase__OTHER_START_REGISTRATION"], get_default_timezone()
-        )
-    except:
+        start = make_aware(global_preferences["phase__OTHER_START_REGISTRATION"], get_default_timezone())
+    except IndexError:
         start = global_preferences["phase__OTHER_START_REGISTRATION"]
     try:
-        end = make_aware(
-            global_preferences["phase__OTHER_END_REGISTRATION"], get_default_timezone()
-        )
-    except:
+        end = make_aware(global_preferences["phase__OTHER_END_REGISTRATION"], get_default_timezone())
+    except IndexError:
         end = global_preferences["phase__OTHER_END_REGISTRATION"]
 
     if start > now():
@@ -276,12 +267,8 @@ def dynamic_preferences_context(request):
     return {
         "site_name": global_preferences["site__SITE_NAME"],
         "preferences_period_name": global_preferences["PERIOD_NAME"],
-        "preference_other_instance_start_registration": global_preferences[
-            "phase__OTHER_START_REGISTRATION"
-        ],
-        "preference_other_instance_end_registration": global_preferences[
-            "phase__OTHER_END_REGISTRATION"
-        ],
+        "preference_other_instance_start_registration": global_preferences["phase__OTHER_START_REGISTRATION"],
+        "preference_other_instance_end_registration": global_preferences["phase__OTHER_END_REGISTRATION"],
         "other_instance_phase": other_phase,
         "other_instance_started_registrations": other_phase == 2,
         "MAX_REGISTRATIONS_PER_CHILD": global_preferences["MAX_REGISTRATIONS"],
