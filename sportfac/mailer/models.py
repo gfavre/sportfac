@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import os
 import re
 
@@ -19,7 +18,7 @@ __all__ = ("MailArchive", "Attachment", "GenericEmail")
 
 class SentMailManager(models.Manager):
     def get_queryset(self):
-        return super(SentMailManager, self).get_queryset().filter(status=MailArchive.STATUS.sent)
+        return super().get_queryset().filter(status=MailArchive.STATUS.sent)
 
 
 class DraftMailManager(models.Manager):
@@ -78,9 +77,7 @@ class GenericEmail(TimeStampedModel):
     subject_template = models.ForeignKey(
         "dbtemplates.Template", related_name="email_subject", on_delete=models.CASCADE
     )
-    body_template = models.ForeignKey(
-        "dbtemplates.Template", related_name="email_body", on_delete=models.CASCADE
-    )
+    body_template = models.ForeignKey("dbtemplates.Template", related_name="email_body", on_delete=models.CASCADE)
     help_text = RichTextField(blank=True)
 
     @property
@@ -89,3 +86,6 @@ class GenericEmail(TimeStampedModel):
 
     def get_absolute_url(self):
         return reverse("backend:emails-update", kwargs={"pk": self.pk})
+
+    def __str__(self):
+        return self.subject

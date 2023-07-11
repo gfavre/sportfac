@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.contrib import admin
 
 from sportfac.admin_utils import SportfacModelAdmin
@@ -11,7 +10,6 @@ class MailArchiveAdmin(SportfacModelAdmin):
     list_display = (
         "id",
         "subject",
-        #'admin_recipients',
         "admin_message",
         "created",
         "status",
@@ -22,4 +20,4 @@ class MailArchiveAdmin(SportfacModelAdmin):
 
 @admin.register(GenericEmail)
 class GenericEmailAdmin(SportfacModelAdmin):
-    list_display = ("subject_template", "body_template")
+    list_display = ("subject", "subject_template", "body_template")
