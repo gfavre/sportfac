@@ -48,7 +48,7 @@ class ChangeProductionYearFormView(SuccessMessageMixin, BackendMixin, FormView):
     form_class = YearSelectForm
 
     def get_success_url(self):
-        if not url_has_allowed_host_and_scheme(url=self.success_url, host=self.request.get_host()):
+        if not url_has_allowed_host_and_scheme(url=self.success_url, allowed_hosts=[self.request.get_host()]):
             return reverse("backend:home")
         return self.success_url
 
