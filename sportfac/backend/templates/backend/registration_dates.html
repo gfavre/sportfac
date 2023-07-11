@@ -6,29 +6,20 @@
 
 {% block content %}
 
+{% addtoblock "js" %}
+  {{ form.media.js }}
+{% endaddtoblock %}
+
+{% addtoblock "css" %}
+  {{ form.media.css }}
+{% endaddtoblock %}
+
 <form action="" method="post" class="form-horizontal">
   {% crispy form %}
-  
-    <div class="form-group">
-      <div class="col-sm-offset-2 col-sm-10">
-        <button type="submit" class="btn btn-primary btn-large">{% trans "Save" %}</button>
-      </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-primary btn-large">{% trans "Save" %}</button>
     </div>
+  </div>
 </form>
-
-  {% addtoblock "js" %}
-  <script src="{{ STATIC_URL }}js/vendor/moment-with-locales.min.js"></script>
-<script src="{{ STATIC_URL }}js/vendor/bootstrap-datetimepicker.min.js"></script>
-<script type="text/javascript">
-  $(function () {
-    $('.datetimepickerinput').datetimepicker({
-        language: '{{ LANGUAGE_CODE }}',
-        icons: {time: 'icon-clock',
-                date: 'icon-calendar',
-                up: 'icon-up-open',
-                down: 'icon-down-open'}
-        });
-  });
-</script>
-  {% endaddtoblock %}
 {% endblock content %}

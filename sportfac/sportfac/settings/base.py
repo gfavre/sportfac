@@ -509,6 +509,9 @@ BOOTSTRAP_DATEPICKER_PLUS = {
         "date": {
             "format": "DD.MM.YYYY",
         },
+        "datetime": {
+            "format": "DD.MM.YYYY HH:mm",
+        },
         "time": {
             "format": "HH:mm",
         },

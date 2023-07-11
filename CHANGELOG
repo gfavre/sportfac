@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - settings for Monthey
 
+### Fixed
+- Date input for period dates.
+- Update datepicker
+- Fix timezone issue
+
+
 ## 3.1.0 - 2023-06-14
 ### Added
 - Send paying invoices to accountants if after registration period

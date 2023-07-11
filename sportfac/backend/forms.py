@@ -9,29 +9,26 @@ from django.utils.html import mark_safe
 from django.utils.translation import gettext as _
 
 from activities.models import Course, ExtraNeed
+from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
-from crispy_forms.bootstrap import AppendedText
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout
 from django_select2 import forms as s2forms
 from registrations.models import Child, ExtraInfo, Registration
-from six.moves import zip
 
 from .models import YearTenant
 
 
 class ChildImportForm(forms.Form):
-    thefile = forms.FileField(
-        label=_("File"), help_text=_("Extraction from LAGAPEO, excel format")
-    )
+    thefile = forms.FileField(label=_("File"), help_text=_("Extraction from LAGAPEO, excel format"))
 
 
-class DateTimePickerInput(forms.DateTimeInput):
-    pass
+#
+# class DateTimePickerInput(forms.DateTimeInput):
+#    pass
 
 
 class DatePickerInput(forms.widgets.DateInput):
-
     def __init__(self, attrs=None, format=None):
         if not format:
             self.format = "%d.%m.%Y"
@@ -72,8 +69,7 @@ class ActivityWidget(s2forms.ModelSelect2Widget):
     def build_attrs(self, base_attrs, extra_attrs=None):
         default_attrs = {"data-minimum-input-length": 0}
         default_attrs.update(base_attrs)
-        attrs = super().build_attrs(default_attrs, extra_attrs=extra_attrs)
-        return attrs
+        return super().build_attrs(default_attrs, extra_attrs=extra_attrs)
 
 
 class ChildWidget(s2forms.ModelSelect2Widget):
@@ -93,8 +89,7 @@ class CourseWidget(s2forms.ModelSelect2Widget):
     def build_attrs(self, base_attrs, extra_attrs=None):
         default_attrs = {"data-minimum-input-length": 0}
         default_attrs.update(base_attrs)
-        attrs = super().build_attrs(default_attrs, extra_attrs=extra_attrs)
-        return attrs
+        return super().build_attrs(default_attrs, extra_attrs=extra_attrs)
 
 
 class CityMultipleWidget(s2forms.ModelSelect2MultipleWidget):
@@ -161,8 +156,7 @@ class TransportWidget(s2forms.ModelSelect2Widget):
     def build_attrs(self, base_attrs, extra_attrs=None):
         default_attrs = {"data-minimum-input-length": 0}
         default_attrs.update(base_attrs)
-        attrs = super().build_attrs(default_attrs, extra_attrs=extra_attrs)
-        return attrs
+        return super().build_attrs(default_attrs, extra_attrs=extra_attrs)
 
 
 class RegistrationDatesForm(forms.Form):
@@ -178,7 +172,7 @@ class RegistrationDatesForm(forms.Form):
         closing_date = self.cleaned_data.get("closing_date")
         if opening_date and closing_date and not opening_date < closing_date:
             raise forms.ValidationError(_("Closing date should come after opening date"))
-        super(RegistrationDatesForm, self).clean()
+        super().clean()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -187,9 +181,10 @@ class RegistrationDatesForm(forms.Form):
         self.helper.form_group_wrapper_class = "row"
         self.helper.label_class = "col-sm-2"
         self.helper.field_class = "col-sm-3"
+        self.helper.include_media = False
         self.helper.layout = Layout(
-            AppendedText("opening_date", '<span class="icon-calendar"></span>'),
-            AppendedText("closing_date", '<span class="icon-calendar"></span>'),
+            "opening_date",
+            "closing_date",
         )
 
 
@@ -290,7 +285,7 @@ class ExtraInfoForm(forms.ModelForm):
         read_only = ("key",)
 
     def __init__(self, *args, **kwargs):
-        super(ExtraInfoForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.form_class = "form-horizontal"
@@ -300,8 +295,7 @@ class ExtraInfoForm(forms.ModelForm):
         if self.instance:
             if self.instance.key.choices:
                 self.fields["value"] = forms.ChoiceField(
-                    choices=[("", "----")]
-                    + list(zip(self.instance.key.choices, self.instance.key.choices)),
+                    choices=[("", "----")] + list(zip(self.instance.key.choices, self.instance.key.choices)),
                     label=_("Answer"),
                 )
             elif self.instance.key.type == "B":
@@ -336,16 +330,13 @@ class CourseSelectForm(CourseSelectMixin, forms.ModelForm):
     """Course selection, used in registration creation wizard"""
 
     def __init__(self, *args, **kwargs):
-        super(CourseSelectForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         course_qs = self.fields["course"].queryset
         # do not offer registrations to already registered courses.
         try:
             if self.instance.child.registrations.count():
                 course_qs = course_qs.exclude(
-                    pk__in=[
-                        registration.course.pk
-                        for registration in self.instance.child.registrations.all()
-                    ]
+                    pk__in=[registration.course.pk for registration in self.instance.child.registrations.all()]
                 )
         except Child.DoesNotExist:
             pass
@@ -358,9 +349,7 @@ class CourseSelectForm(CourseSelectMixin, forms.ModelForm):
 
 
 class SendConfirmationForm(forms.Form):
-    send_confirmation = forms.BooleanField(
-        required=False, label=_("Send confirmation email?"), initial=True
-    )
+    send_confirmation = forms.BooleanField(required=False, label=_("Send confirmation email?"), initial=True)
 
 
 class BillingForm(forms.ModelForm):
@@ -369,9 +358,7 @@ class BillingForm(forms.ModelForm):
         label=_("Mark as paid?"),
         help_text=_("If not checked, a bill will be created"),
     )
-    send_confirmation = forms.BooleanField(
-        required=False, initial=True, label=_("Send confirmation email?")
-    )
+    send_confirmation = forms.BooleanField(required=False, initial=True, label=_("Send confirmation email?"))
 
     class Meta:
         model = Registration
@@ -389,9 +376,7 @@ class SessionForm(forms.Form):
 
 
 class YearSelectForm(forms.Form):
-    tenant = forms.ModelChoiceField(
-        label=_("Period"), queryset=YearTenant.objects.all(), required=True
-    )
+    tenant = forms.ModelChoiceField(label=_("Period"), queryset=YearTenant.objects.all(), required=True)
     next = forms.CharField(max_length=255, required=True)
 
 
@@ -441,7 +426,7 @@ class YearForm(forms.ModelForm):
         fields = ("start_date", "end_date")
 
     def __init__(self, *args, **kwargs):
-        super(YearForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.form_class = "form-horizontal"
@@ -460,9 +445,7 @@ class PayslipMontreuxForm(forms.Form):
         choices=(("day", _("Daily")), ("hour", _("Hourly"))),
         widget=forms.RadioSelect,
     )
-    rate = forms.DecimalField(
-        label=_("Rate"), max_digits=6, decimal_places=2, required=True, widget=TextInput()
-    )
+    rate = forms.DecimalField(label=_("Rate"), max_digits=6, decimal_places=2, required=True, widget=TextInput())
     start_date = forms.DateField(
         label=_("Start date"),
         required=True,
@@ -477,7 +460,7 @@ class PayslipMontreuxForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        super(PayslipMontreuxForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_group_wrapper_class = "row"
         self.helper.label_class = "col-sm-2"
@@ -487,9 +470,7 @@ class PayslipMontreuxForm(forms.Form):
 class FlatPageForm(forms.ModelForm):
     content = forms.CharField(
         label=_("Content"),
-        widget=CKEditorUploadingWidget(
-            config_name="default", extra_plugins=None, external_plugin_resources=None
-        ),
+        widget=CKEditorUploadingWidget(config_name="default", extra_plugins=None, external_plugin_resources=None),
     )
 
     class Meta:
@@ -497,7 +478,7 @@ class FlatPageForm(forms.ModelForm):
         fields = ("title", "content")
 
     def __init__(self, *args, **kwargs):
-        super(FlatPageForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.form_group_wrapper_class = "row"
