@@ -74,8 +74,8 @@ class ChangeProductionYearFormView(SuccessMessageMixin, BackendMixin, FormView):
         now = timezone.now()
         tenant = cleaned_data["tenant"]
         possible_new_tenants = (
-            YearTenant.objects.filter(start_date__lte=now, end_date__gte=now, status=YearTenant.STATUS.ready)
-            .exclude(domains=tenant.domains.all())
+            YearTenant.objects.exclude(domains__in=tenant.domains.all())
+            .filter(start_date__lte=now, end_date__gte=now, status=YearTenant.STATUS.ready)
             .order_by("start_date", "end_date")
         )
 
