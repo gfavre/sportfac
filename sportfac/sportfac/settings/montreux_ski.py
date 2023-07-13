@@ -1,16 +1,16 @@
 """Production settings and globals."""
 
-from .production import *
+from .production import *  # noqa: F403, F401
 
 
-TEMPLATES[0]["DIRS"] = [
-    normpath(join(SITE_ROOT, "themes", "montreux_ski", "templates")),
-    normpath(join(SITE_ROOT, "templates")),
+TEMPLATES[0]["DIRS"] = [  # noqa: F405
+    normpath(join(SITE_ROOT, "themes", "montreux_ski", "templates")),  # noqa: F405
+    normpath(join(SITE_ROOT, "templates")),  # noqa: F405
 ]
 
 STATICFILES_DIRS = (
-    normpath(join(SITE_ROOT, "themes", "montreux_ski", "static")),
-    normpath(join(SITE_ROOT, "static")),
+    normpath(join(SITE_ROOT, "themes", "montreux_ski", "static")),  # noqa: F405
+    normpath(join(SITE_ROOT, "static")),  # noqa: F405
 )
 
 # We switch to postmark. Here are the old settings which ended up in mailgun
@@ -20,8 +20,8 @@ STATICFILES_DIRS = (
 # EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
 
 MASTER_DB = "master_users"
-DATABASES[MASTER_DB] = env.db("MASTER_DATABASE_URL", default="postgres:///kepchup_users")
-DATABASES["default"]["ENGINE"] = "django_tenants.postgresql_backend"
+DATABASES[MASTER_DB] = env.db("MASTER_DATABASE_URL", default="postgres:///kepchup_users")  # noqa: F405
+DATABASES["default"]["ENGINE"] = "django_tenants.postgresql_backend"  # noqa: F405
 DATABASE_ROUTERS = [
     "django_tenants.routers.TenantSyncRouter",
     "sportfac.database_router.MasterRouter",
@@ -40,6 +40,7 @@ KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = False
 KEPCHUP_SEND_PRESENCE_LIST = True
 KEPCHUP_SEND_COPY_CONTACT_MAIL_TO_ADMIN = True
 KEPCHUP_NO_PAYMENT = False
+KEPCHUP_PAYMENT_METHOD = "postfinance"
 KEPCHUP_NO_TERMS = False
 KEPCHUP_NO_SSF = True
 KEPCHUP_CHILD_SCHOOL = True
@@ -88,13 +89,13 @@ STATIC_URL = "/hiver/static/"
 FORCE_SCRIPT_NAME = "/hiver"
 SESSION_COOKIE_PATH = FORCE_SCRIPT_NAME
 
-CELERYBEAT_SCHEDULE["notify-absences"] = {
+CELERYBEAT_SCHEDULE["notify-absences"] = {  # noqa: F405
     "task": "absences.tasks.notify_absences",
-    "schedule": crontab(hour=19, minute=0),
+    "schedule": crontab(hour=19, minute=0),  # noqa: F405
 }
-CELERYBEAT_SCHEDULE["sync_from_master"] = {
+CELERYBEAT_SCHEDULE["sync_from_master"] = {  # noqa: F405
     "task": "profiles.tasks.sync_from_master",
-    "schedule": crontab(minute="*/10"),
+    "schedule": crontab(minute="*/10"),  # noqa: F405
 }
 
 # Single Sign On

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import uuid
 
 from django.conf import settings
@@ -44,9 +43,7 @@ class DatatransTransaction(TimeStampedModel, StatusModel):
     )
     expiration = models.DateTimeField(null=True)
     id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
-    invoice = models.ForeignKey(
-        "registrations.Bill", related_name="datatrans_transactions", on_delete=models.CASCADE
-    )
+    invoice = models.ForeignKey("registrations.Bill", related_name="datatrans_transactions", on_delete=models.CASCADE)
     payment_method = models.CharField(max_length=4, choices=METHODS, default=METHODS.TWI)
     transaction_id = models.BigIntegerField(db_index=True)
     webhook = JSONField(null=True, blank=True)
@@ -71,17 +68,47 @@ class DatatransTransaction(TimeStampedModel, StatusModel):
 
     @property
     def script_url(self):
-        return "{}upp/payment/js/datatrans-2.0.0.js".format(settings.DATATRANS_PAY_URL.geturl())
+        return f"{settings.DATATRANS_PAY_URL.geturl()}upp/payment/js/datatrans-2.0.0.js"
 
     def update_invoice(self):
         if self.is_success:
             self.invoice.set_paid()
             for registration in self.invoice.registrations.all():
                 registration.set_paid()
-        elif (
-            self.status in (self.STATUS.canceled, self.STATUS.failed) and not self.invoice.is_paid
-        ):
+        elif self.status in (self.STATUS.canceled, self.STATUS.failed) and not self.invoice.is_paid:
             self.invoice.set_waiting()
 
     def __str__(self):
-        return "{} {}".format(self.invoice, self.status)
+        return f"{self.invoice} {self.status}"
+
+
+class PostfinanceTransaction(TimeStampedModel, StatusModel):
+    STATUS = Choices(
+        ("PENDING", _("Pending")),  # The transaction is created but it is not confirmed by the merchant system.
+        (
+            "CONFIRMED",
+            _("Confirmed"),
+        ),  # The transaction is created and confirmed however the processing has not yet started.
+        ("PROCESSING", _("Processing")),  # The transaction is processing.
+        ("FAILED", _("Failed")),  # The transaction authorization failed.
+        ("AUTHORIZED", _("Authorized")),  # The transaction is authorized.
+        ("COMPLETED", _("Completed")),  # The transaction is completed.
+        ("FULFILL", _("Fulfill")),  # The transaction is ready to be delivered.
+        ("DECLINE", _("Decline")),  # The goods or services should not be delivered.
+        ("VOIDED", _("Voided")),  # The authorization is voided and hence no money is transfered.
+    )
+    invoice = models.ForeignKey(
+        "registrations.Bill", related_name="postfinance_transactions", on_delete=models.CASCADE
+    )
+
+    @property
+    def is_success(self):
+        return self.status in (
+            self.STATUS.AUTHORIZED,
+            self.STATUS.COMPLETED,
+            self.STATUS.FULFILL,
+        )
+
+    @property
+    def refno(self):
+        return self.invoice.billing_identifier

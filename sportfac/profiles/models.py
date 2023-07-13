@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import os
 import re
 import uuid
@@ -11,7 +10,6 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-import six
 from activities.models import SCHOOL_YEARS
 from django_countries.fields import CountryField
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
@@ -25,9 +23,7 @@ from .ahv import AHVField
 
 
 class FamilyManager(BaseUserManager):
-    def create_user(
-        self, email, first_name, last_name, zipcode, city, password=None, **extra_fields
-    ):
+    def create_user(self, email, first_name, last_name, zipcode, city, password=None, **extra_fields):
         """
         Creates and saves a User with the given email, favorite topping, and password.
         """
@@ -53,15 +49,13 @@ class FamilyManager(BaseUserManager):
             last_name=last_name,
             zipcode=zipcode,
             city=city,
-            **extra_fields
+            **extra_fields,
         )
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(
-        self, email, first_name, last_name, zipcode, city, password, **extra_fields
-    ):
+    def create_superuser(self, email, first_name, last_name, zipcode, city, password, **extra_fields):
         """
         Creates and saves a superuser with the given email, favorite topping and password.
         """
@@ -72,7 +66,7 @@ class FamilyManager(BaseUserManager):
             zipcode=zipcode,
             city=city,
             password=password,
-            **extra_fields
+            **extra_fields,
         )
         user.is_admin = True
         user.is_staff = True
@@ -83,22 +77,17 @@ class FamilyManager(BaseUserManager):
 
 class ActiveFamilyManager(FamilyManager):
     def get_queryset(self):
-        return super(ActiveFamilyManager, self).get_queryset().filter(is_active=True)
+        return super().get_queryset().filter(is_active=True)
 
 
 class InstructorFamilyUserManager(ActiveFamilyManager):
     def get_queryset(self):
-        return (
-            super(InstructorFamilyUserManager, self)
-            .get_queryset()
-            .annotate(num_courses=Count("course"))
-            .filter(num_courses__gt=0)
-        )
+        return super().get_queryset().annotate(num_courses=Count("course")).filter(num_courses__gt=0)
 
 
 class ManagerFamilyUserManager(ActiveFamilyManager):
     def get_queryset(self):
-        return super(ManagerFamilyUserManager, self).get_queryset().filter(is_manager=True)
+        return super().get_queryset().filter(is_manager=True)
 
 
 SETTINGS_NAME = os.environ.get("DJANGO_SETTINGS_MODULE", "").split(".")[-1]
@@ -126,12 +115,8 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     )
 
     id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
-    external_identifier = models.CharField(
-        verbose_name=_("Identifier"), max_length=255, blank=True, null=True
-    )
-    email = models.EmailField(
-        verbose_name=_("Email address"), max_length=255, unique=True, db_index=True
-    )
+    external_identifier = models.CharField(verbose_name=_("Identifier"), max_length=255, blank=True, null=True)
+    email = models.EmailField(verbose_name=_("Email address"), max_length=255, unique=True, db_index=True)
     first_name = models.CharField(_("First name"), max_length=30, blank=True)
     last_name = models.CharField(_("Last name"), max_length=30, blank=True)
     address = models.TextField(_("Street"), blank=True)
@@ -145,17 +130,13 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     # TODO: move me to a separate SupervisorInfo model...
     iban = IBANField(include_countries=IBAN_SEPA_COUNTRIES, blank=True)
     birth_date = models.DateField(_("Birth date"), null=True, blank=True)
-    ahv = AHVField(
-        _("AHV number"), help_text=_("New AHV number, e.g. 756.1234.5678.90"), blank=True
-    )
+    ahv = AHVField(_("AHV number"), help_text=_("New AHV number, e.g. 756.1234.5678.90"), blank=True)
     js_identifier = models.CharField(_("J+S identifier"), max_length=30, blank=True)
     is_mep = models.BooleanField(default=False, verbose_name=_("Is sports teacher"))
     is_teacher = models.BooleanField(default=False, verbose_name=_("Is teacher"))
     gender = models.CharField(_("Gender"), choices=GENDERS, blank=True, max_length=1)
     nationality = CountryField(_("Nationality"), blank=True)
-    permit_type = models.CharField(
-        _("Permit type"), max_length=2, choices=PERMIT_TYPES, blank=True, null=True
-    )
+    permit_type = models.CharField(_("Permit type"), max_length=2, choices=PERMIT_TYPES, blank=True, null=True)
     bank_name = models.CharField(_("Bank name"), max_length=50, blank=True)
 
     is_active = models.BooleanField(
@@ -196,13 +177,22 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
 
     @property
     def children_names(self):
-        return ", ".join([six.text_type(child) for child in self.children.all()])
+        return ", ".join([str(child) for child in self.children.all()])
 
     @property
     def course_names(self):
-        return ", ".join(
-            [six.text_type(ci.course.short_name) for ci in self.coursesinstructors_set.all()]
-        )
+        return ", ".join([str(ci.course.short_name) for ci in self.coursesinstructors_set.all()])
+
+    @property
+    def country_iso_3166(self):
+        return {
+            "CH": "CH",
+            "FL": "LI",
+            "D": "DE",
+            "F": "FR",
+            "I": "IT",
+            "A": "AT",
+        }[self.country]
 
     @property
     def full_name(self):
@@ -240,9 +230,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
 
     @property
     def last_registration(self):
-        registrations = (
-            Registration.objects.validated().filter(child__family=self).order_by("-created")
-        )
+        registrations = Registration.objects.validated().filter(child__family=self).order_by("-created")
         if not registrations.exists():
             return None
         return registrations.first().created
@@ -251,9 +239,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     def montreux_needs_appointment(self):
         registrations = Registration.objects.filter(child__family=self)
         for registration in registrations:
-            if registration.extra_infos.filter(
-                key__question_label__contains="matériel", value="OUI"
-            ).exists():
+            if registration.extra_infos.filter(key__question_label__contains="matériel", value="OUI").exists():
                 return True
         return False
 
@@ -283,10 +269,10 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         return reverse("backend:user-delete", kwargs={"pk": self.pk})
 
     def get_email_string(self):
-        return "%s %s <%s>" % (self.first_name, self.last_name, self.email)
+        return f"{self.first_name} {self.last_name} <{self.email}>"
 
     def get_full_name(self):
-        full_name = "{} {}".format(self.first_name, self.last_name)
+        full_name = f"{self.first_name} {self.last_name}"
         return full_name.strip().title()
 
     def get_initials(self):
@@ -299,9 +285,8 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
             else:
                 # No capitals found; just use first letter
                 initial += self.last_name[:1].upper()
-        else:
-            initial = self.email[:1].upper()
-        return initial
+            return initial
+        return self.email[:1].upper()
 
     def get_payment_url(self):
         return reverse("backend:user-pay", kwargs={"pk": self.pk})
@@ -323,7 +308,8 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         staff_apps = [
             "activities",
             "backend",
-            "extended_flatpages" "profiles",
+            "extended_flatpages",
+            "profiles",
             "registrations",
             "schools",
         ]
@@ -342,7 +328,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
 
         from registrations.models import RegistrationsProfile
 
-        super(FamilyUser, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         if create_profile:
             try:
                 profile, created = RegistrationsProfile.objects.get_or_create(user=self)
@@ -360,7 +346,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         from activities.models import CoursesInstructors
 
         self.is_active = False
-        self.email = "deleted_{}_{}".format(self.pk, self.email)
+        self.email = f"deleted_{self.pk}_{self.email}"
         self.is_manager = False
         CoursesInstructors.objects.filter(instructor=self).delete()
         for child in self.children.all():
@@ -373,7 +359,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
 
 class VisibleYearManager(models.Manager):
     def get_queryset(self):
-        return super(VisibleYearManager, self).get_queryset().filter(visible=True)
+        return super().get_queryset().filter(visible=True)
 
 
 class SchoolYear(models.Model):
@@ -385,9 +371,9 @@ class SchoolYear(models.Model):
 
     def __str__(self):
         try:
-            return six.text_type(dict(SCHOOL_YEARS)[self.year])
+            return str(dict(SCHOOL_YEARS)[self.year])
         except KeyError:
-            return six.text_type(self.year)
+            return str(self.year)
 
     class Meta:
         verbose_name = _("School year")
@@ -428,4 +414,4 @@ class City(models.Model):
         ordering = ("zipcode", "name")
 
     def __str__(self):
-        return "{} {}".format(self.zipcode, self.name)
+        return f"{self.zipcode} {self.name}"

@@ -1,25 +1,23 @@
-# -*- coding: utf-8 -*-
 """Production settings and globals."""
+from .production import *  # noqa: F403, F401
 
-from .production import *
 
-
-TEMPLATES[0]["DIRS"] = [
-    normpath(join(SITE_ROOT, "themes", "montreux", "templates")),
-    normpath(join(SITE_ROOT, "templates")),
+TEMPLATES[0]["DIRS"] = [  # noqa: F405
+    normpath(join(SITE_ROOT, "themes", "montreux", "templates")),  # noqa: F405
+    normpath(join(SITE_ROOT, "templates")),  # noqa: F405
 ]
 
 STATICFILES_DIRS = (
-    normpath(join(SITE_ROOT, "themes", "montreux", "static")),
-    normpath(join(SITE_ROOT, "static")),
+    normpath(join(SITE_ROOT, "themes", "montreux", "static")),  # noqa: F405
+    normpath(join(SITE_ROOT, "static")),  # noqa: F405
 )
 
 MASTER_DB = "master_users"
-DATABASES[MASTER_DB] = env.db("MASTER_DATABASE_URL", default="postgres:///kepchup_users")
+DATABASES[MASTER_DB] = env.db("MASTER_DATABASE_URL", default="postgres:///kepchup_users")  # noqa: F405
 OTHER_DB = "other"
-DATABASES[OTHER_DB] = env.db("OTHER_DATABASE_URL", default="postgres:///sportfac_montreux_ski")
+DATABASES[OTHER_DB] = env.db("OTHER_DATABASE_URL", default="postgres:///sportfac_montreux_ski")  # noqa: F405
 
-DATABASES["default"]["ENGINE"] = "django_tenants.postgresql_backend"
+DATABASES["default"]["ENGINE"] = "django_tenants.postgresql_backend"  # noqa: F405
 DATABASE_ROUTERS = [
     "django_tenants.routers.TenantSyncRouter",
     "sportfac.database_router.MasterRouter",
@@ -42,7 +40,7 @@ KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = False
 KEPCHUP_SEND_PRESENCE_LIST = True
 KEPCHUP_SEND_COPY_CONTACT_MAIL_TO_ADMIN = True
 KEPCHUP_NO_PAYMENT = False
-KEPCHUP_PAYMENT_METHOD = "external"
+KEPCHUP_PAYMENT_METHOD = "postfinance"
 KEPCHUP_NO_TERMS = False
 KEPCHUP_CHILD_SCHOOL = True
 KEPCHUP_FICHE_SALAIRE_MONTREUX = True
@@ -87,13 +85,13 @@ KEPCHUP_USE_SSO = True
 LOGIN_URL = "/client/"
 
 
-CELERYBEAT_SCHEDULE["notify-absences"] = {
+CELERYBEAT_SCHEDULE["notify-absences"] = {  # noqa: F405
     "task": "absences.tasks.notify_absences",
-    "schedule": crontab(hour=19, minute=0),
+    "schedule": crontab(hour=19, minute=0),  # noqa: F405
 }
-CELERYBEAT_SCHEDULE["sync_from_master"] = {
+CELERYBEAT_SCHEDULE["sync_from_master"] = {  # noqa: F405
     "task": "profiles.tasks.sync_from_master",
-    "schedule": crontab(minute="*/10"),
+    "schedule": crontab(minute="*/10"),  # noqa: F405
 }
 
 # Dashboard

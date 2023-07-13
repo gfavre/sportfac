@@ -116,6 +116,10 @@ class Registration(TimeStampedModel, StatusModel):
             if self.bill and self.bill.datatrans_successful_transaction:
                 return self.bill.datatrans_successful_transaction.payment_method
             return "cash"
+        if settings.KETCHUP_PAYMENT_METHOD == "postfinance":
+            if self.bill and self.bill.postfinance_successful_transaction:
+                return self.bill.postfinance_successful_transaction.payment_method
+            return "cash"
         return settings.KEPCHUP_PAYMENT_METHOD
 
     @property
@@ -353,6 +357,7 @@ class Bill(TimeStampedModel, StatusModel):
     METHODS = Choices(
         ("iban", _("Later with wire transfer")),
         ("datatrans", _("immediate with credit card (datatrans)")),
+        ("postfinance", _("immediate with credit card (postfinance)")),
     )
     STATUS = Choices(
         ("just_created", _("Just created")),
@@ -385,6 +390,12 @@ class Bill(TimeStampedModel, StatusModel):
         from payments.models import DatatransTransaction
 
         return DatatransTransaction.successful.filter(invoice=self).last()
+
+    @property
+    def postfinance_successful_transaction(self):
+        from payments.models import PostfinanceTransaction
+
+        return PostfinanceTransaction.successful.filter(invoice=self).last()
 
     @property
     def is_ok(self):
