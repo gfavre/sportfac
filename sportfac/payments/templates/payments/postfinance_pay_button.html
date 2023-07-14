@@ -1,0 +1,7 @@
+{% load i18n %}
+
+<div class="hidden-print d-print-none text-center mt-3 mb-3" style="margin-top: 1em; margin-bottom: 2em">
+  <a href="{{ transaction.payment_page_url }}" id="pay-button" class="btn btn-lg btn-success">
+    <i class="icon-credit-card-1"></i> &nbsp;{% trans "Pay" %}
+  </a>
+</div>

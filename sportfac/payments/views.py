@@ -90,3 +90,4 @@ class PostfinanceWebhookView(APIView):
                 _("Payment was rejected either by you or the bank"),
                 "warning",
             )
+        return Response("Webhook accepted")

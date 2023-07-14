@@ -21,7 +21,7 @@ def invoice_to_transaction(request, invoice):
         lines.append(
             LineItem(
                 name=f"{ registration.course.activity.name } - {registration.child.full_name}",
-                unique_id=registration.id,
+                unique_id=str(registration.id),
                 quantity=1,
                 amount_including_tax=registration.price,
                 type=LineItemType.PRODUCT,
@@ -70,7 +70,7 @@ def get_transaction(request, invoice):
         invoice=invoice,
         transaction_id=transaction_create.id,
         payment_page_url=payment_page_url,
-        status=transaction_create.state,
+        status=transaction_create.state.value,
     )
 
 
@@ -82,4 +82,4 @@ def get_new_status(transaction_id):
     )
     transaction_service = TransactionServiceApi(config)
     transaction = transaction_service.read(space_id=settings.POSTFINANCE_SPACE_ID, id=transaction_id)
-    return transaction.state
+    return transaction.state.value

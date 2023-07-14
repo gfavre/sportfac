@@ -11,7 +11,7 @@ from activities.urls import sitemap as activity_sitemap
 from backend.utils import manager_required
 from ckeditor_uploader import views as ckeditor_views
 from contact.urls import Sitemap as ContactSitemap
-from payments.views import DatatransWebhookView
+from payments.views import DatatransWebhookView, PostfinanceWebhookView
 
 
 admin.autodiscover()
@@ -25,17 +25,13 @@ sitemaps = {
 
 class TextPlainView(TemplateView):
     def render_to_response(self, context, **kwargs):
-        return super(TextPlainView, self).render_to_response(
-            context, content_type="text/plain", **kwargs
-        )
+        return super().render_to_response(context, content_type="text/plain", **kwargs)
 
 
 if settings.KEPCHUP_USE_SSO:
     from profiles.client import KepchupClient
 
-    sso_client = KepchupClient(
-        settings.SSO_SERVER, settings.SSO_PUBLIC_KEY, settings.SSO_PRIVATE_KEY
-    )
+    sso_client = KepchupClient(settings.SSO_SERVER, settings.SSO_PUBLIC_KEY, settings.SSO_PRIVATE_KEY)
     if settings.KEPCHUP_SPLASH_PAGE:
         urlpatterns = [
             path("client/", include(sso_client.get_urls())),
@@ -64,9 +60,7 @@ if settings.KEPCHUP_USE_APPOINTMENTS:
 
 
 if settings.KEPCHUP_ACTIVATE_NYON_MARENS:
-    urlpatterns += [
-        path("nyon-marens/", include("nyonmarens.urls", namespace="nyonmarens"))
-    ]
+    urlpatterns += [path("nyon-marens/", include("nyonmarens.urls", namespace="nyonmarens"))]
 
 urlpatterns += [
     path("reglement/", flatviews.flatpage, {"url": "/reglement/"}, name="terms"),
@@ -92,6 +86,7 @@ urlpatterns += [
     path("ckeditor/upload/", manager_required(ckeditor_views.upload), name="ckeditor_upload"),
     path("ckeditor/browse/", manager_required(ckeditor_views.browse), name="ckeditor_browse"),
     path("datatrans/", DatatransWebhookView.as_view(), name="datatrans_webhook"),
+    path("postfinance/", PostfinanceWebhookView.as_view(), name="postfinance_webhook"),
     path("select2/", include("django_select2.urls")),
     path(settings.ADMIN_URL, admin.site.urls),
 ]

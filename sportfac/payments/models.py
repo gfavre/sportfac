@@ -122,9 +122,7 @@ class PostfinanceTransaction(TimeStampedModel, StatusModel):
             self.invoice.set_paid()
             for registration in self.invoice.registrations.all():
                 registration.set_paid()
-        elif (
-            self.status in (self.STATUS.FAILED, self.STATUS.DECLINED, self.STATUS.VOIDED) and not self.invoice.is_paid
-        ):
+        elif self.status in (self.STATUS.FAILED, self.STATUS.DECLINE, self.STATUS.VOIDED) and not self.invoice.is_paid:
             self.invoice.set_waiting()
 
     def update_status(self):

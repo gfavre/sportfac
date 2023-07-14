@@ -1,8 +1,6 @@
 import datetime
 import json
 
-import requests
-
 from django.conf import settings
 from django.contrib import messages
 from django.db import IntegrityError
@@ -13,6 +11,7 @@ from django.utils.timezone import now
 from django.utils.translation import gettext as _
 from django.views.generic import DeleteView, DetailView, FormView, ListView, TemplateView
 
+import requests
 from appointments.models import Appointment
 from backend.dynamic_preferences_registry import global_preferences_registry
 from braces.views import LoginRequiredMixin, UserPassesTestMixin
@@ -27,7 +26,7 @@ from .models import Bill, Child, Registration
 class BillMixin:
     def get_context_data(self, **kwargs):
         # noinspection PyUnresolvedReferences
-        context = super(BillMixin, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         preferences = global_preferences_registry.manager()
         offset_days = preferences["payment__DELAY_DAYS"]
         # noinspection PyUnresolvedReferences
@@ -63,6 +62,7 @@ class BillDetailView(LoginRequiredMixin, BillMixin, DetailView):
         bill = self.get_object()
         if not bill.is_paid and settings.KEPCHUP_PAYMENT_METHOD == "datatrans":
             from payments.datatrans import get_transaction
+
             try:
                 transaction = get_transaction(self.request, bill)
             except requests.exceptions.RequestException:
@@ -76,11 +76,9 @@ class ChildrenListView(LoginRequiredMixin, ListView):
     context_object_name = "children"
 
     def get_context_data(self, **kwargs):
-        context = super(ChildrenListView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         if settings.KEPCHUP_CHILD_SCHOOL:
-            context["schools"] = json.dumps(
-                list(School.objects.filter(selectable=True).values("id", "name"))
-            )
+            context["schools"] = json.dumps(list(School.objects.filter(selectable=True).values("id", "name")))
         else:
             context["school"] = json.dumps([])
         return context
@@ -128,8 +126,6 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
 
     def get_success_url(self):
         if self.bill and self.bill.is_paid:
-            global_preferences = global_preferences_registry.manager()
-
             messages.success(self.request, _("Your registrations have been recorded, thank you!"))
             return reverse_lazy("registrations:registrations_registered_activities")
         if settings.KEPCHUP_USE_APPOINTMENTS:
@@ -145,42 +141,40 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
             .filter(child__in=self.request.user.children.all())
         )
 
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super(RegisteredActivitiesListView, self).get_context_data(**kwargs)
-        registrations = self.get_queryset()
-        context["registered_list"] = registrations
-        registrations = registrations.order_by("course__start_date", "course__end_date")
+    def set_price_modifiers(self, registrations, context):
         price_modifiers = {}
         for registration in registrations:
             for extra in registration.course.extra.all():
                 price_modifiers[extra.id] = extra.price_dict
         context["price_modifiers"] = price_modifiers
-
-        context["applied_price_modifications"] = {}
         for registration in registrations:
             for extra in registration.extra_infos.all():
                 if extra.key.id in price_modifiers:
                     price_modif = price_modifiers[extra.key.id].get(extra.value, 0)
                     if price_modif:
                         context["applied_price_modifications"][extra.key.id] = price_modif
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        registrations = self.get_queryset()
+        context["registered_list"] = registrations
+        registrations = registrations.order_by("course__start_date", "course__end_date")
+        self.set_price_modifiers(registrations, context)
+        context["price_modifiers"] = self.get_price_modifiers(registrations)
+        context["applied_price_modifications"] = {}
+
         context["has_price_modification"] = len(context["applied_price_modifications"]) != 0
         if settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
-            context["subtotal"] = sum(
-                [registration.get_price_category()[0] or 0 for registration in registrations]
-            )
+            context["subtotal"] = sum([registration.get_price_category()[0] or 0 for registration in registrations])
         else:
-            context["subtotal"] = sum(
-                [registration.get_price() or 0 for registration in registrations]
-            )
-        context["total_price"] = context["subtotal"] + sum(
-            context["applied_price_modifications"].values()
-        )
+            context["subtotal"] = sum([registration.get_price() or 0 for registration in registrations])
+        context["total_price"] = context["subtotal"] + sum(context["applied_price_modifications"].values())
         context["overlaps"] = []
         context["overlapped"] = set()
         if settings.KEPCHUP_DISPLAY_OVERLAP_HELP:
-            for (idx, registration) in list(enumerate(registrations))[:-1]:
-                for registration2 in registrations[idx + 1 :]:
+            for idx, registration in list(enumerate(registrations))[:-1]:
+                for registration2 in registrations[idx + 1 :]:  # noqa: E203
                     if registration.overlap(registration2):
                         context["overlaps"].append((registration, registration2))
                         context["overlapped"].add(registration.id)
@@ -206,13 +200,11 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
         if self.bill.total == 0:
             self.bill.status = Bill.STATUS.paid
             self.bill.save()
-        if not (
-            settings.KEPCHUP_USE_APPOINTMENTS or settings.KEPCHUP_PAYMENT_METHOD == "datatrans"
-        ):
+        if not (settings.KEPCHUP_USE_APPOINTMENTS or settings.KEPCHUP_PAYMENT_METHOD == "datatrans"):
             # FIXME: si la facture est à 0: aucun paiement
             self.bill.send_confirmation()
 
-        return super(RegisteredActivitiesListView, self).form_valid(form)
+        return super().form_valid(form)
 
 
 class RegistrationDeleteView(InstructorMixin, DeleteView):
@@ -241,7 +233,7 @@ class SummaryView(LoginRequiredMixin, TemplateView):
     template_name = "registrations/summary.html"
 
     def get_context_data(self, **kwargs):
-        context = super(SummaryView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["registered_list"] = self.request.user.get_registrations()
         return context
 
@@ -265,7 +257,7 @@ class WizardBillingView(LoginRequiredMixin, BillMixin, WizardMixin, TemplateView
             raise NotReachableException("No Bill available")
 
     def get_context_data(self, **kwargs):
-        context = super(WizardBillingView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["bill"] = Bill.objects.filter(family=self.request.user).order_by("created").last()
 
         context["include_calendar"] = False
@@ -276,6 +268,16 @@ class WizardBillingView(LoginRequiredMixin, BillMixin, WizardMixin, TemplateView
 
         if settings.KEPCHUP_PAYMENT_METHOD == "datatrans":
             from payments.datatrans import get_transaction
+
+            try:
+                transaction = get_transaction(self.request, context["bill"])
+            except requests.exceptions.RequestException:
+                transaction = None
+            context["transaction"] = transaction
+
+        elif settings.KEPCHUP_PAYMENT_METHOD == "postfinance":
+            from payments.postfinance import get_transaction
+
             try:
                 transaction = get_transaction(self.request, context["bill"])
             except requests.exceptions.RequestException:
@@ -285,14 +287,13 @@ class WizardBillingView(LoginRequiredMixin, BillMixin, WizardMixin, TemplateView
         return context
 
     def get(self, request, *args, **kwargs):
-        response = super(WizardBillingView, self).get(request, *args, **kwargs)
+        response = super().get(request, *args, **kwargs)
         for bill in Bill.objects.filter(status=Bill.STATUS.just_created, family=self.request.user):
             bill.status = Bill.STATUS.waiting
             bill.save()
             if settings.KEPCHUP_USE_APPOINTMENTS and bill.is_wire_transfer:
                 bill.send_confirmation()
-
-        return response
+        return response  # noqa: R504
 
 
 class WizardChildrenListView(WizardMixin, ChildrenListView):
