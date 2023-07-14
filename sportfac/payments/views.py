@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
 from django.views.generic import TemplateView
@@ -13,12 +13,13 @@ from rest_framework.views import APIView
 
 from sportfac.views import WizardMixin
 
-from .models import DatatransTransaction
+from .models import DatatransTransaction, PostfinanceTransaction
 
 
 class DatatransWebhookView(APIView):
     permission_classes = [AllowAny]
 
+    # noinspection PyMethodMayBeStatic
     def post(self, request, *args, **kwargs):
         data = request.data
         if "transactionId" and "refno" not in data:
@@ -51,7 +52,7 @@ class PaymentSuccessView(LoginRequiredMixin, WizardMixin, TemplateView):
 
     @staticmethod
     def check_initial_condition(request):
-        # Condition verified externally, datatrans redirects us here.
+        # Condition verified externally, payment provider redirects us here.
         pass
 
 
@@ -60,5 +61,32 @@ class PaymentFailureView(LoginRequiredMixin, WizardMixin, TemplateView):
 
     @staticmethod
     def check_initial_condition(request):
-        # Condition verified externally, datatrans redirects us here.
+        # Condition verified externally, payment provider redirects us here.
         pass
+
+
+class PostfinanceWebhookView(APIView):
+    # TODO filter by IP, only these urls:
+    #  ["52.211.247.160", "52.211.171.77", "52.211.239.229", "52.211.209.173", "52.208.210.84", "52.212.109.85",
+    #  "52.210.89.1", "52.212.185.152", "52.212.192.130"]
+    permission_classes = [AllowAny]
+
+    # noinspection PyMethodMayBeStatic
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        if "entityId" and "spaceId" not in data:
+            raise ValidationError("missing parameters")
+        if data["spaceId"] != settings.POSTFINANCE_SPACE_ID:
+            raise ValidationError("invalid spaceId")
+        transaction = get_object_or_404(PostfinanceTransaction, transaction_id=data.get("entityId"))
+        transaction.update_status()
+        transaction.update_invoice()
+
+        if transaction.is_success:
+            transaction.invoice.send_confirmation()
+        else:
+            message_user(
+                transaction.invoice.family,
+                _("Payment was rejected either by you or the bank"),
+                "warning",
+            )

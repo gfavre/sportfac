@@ -97,9 +97,13 @@ class PostfinanceTransaction(TimeStampedModel, StatusModel):
         ("DECLINE", _("Decline")),  # The goods or services should not be delivered.
         ("VOIDED", _("Voided")),  # The authorization is voided and hence no money is transfered.
     )
+
+    id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
     invoice = models.ForeignKey(
         "registrations.Bill", related_name="postfinance_transactions", on_delete=models.CASCADE
     )
+    transaction_id = models.BigIntegerField(db_index=True)
+    payment_page_url = models.URLField(null=True, blank=True)
 
     @property
     def is_success(self):
@@ -112,3 +116,19 @@ class PostfinanceTransaction(TimeStampedModel, StatusModel):
     @property
     def refno(self):
         return self.invoice.billing_identifier
+
+    def update_invoice(self):
+        if self.is_success:
+            self.invoice.set_paid()
+            for registration in self.invoice.registrations.all():
+                registration.set_paid()
+        elif (
+            self.status in (self.STATUS.FAILED, self.STATUS.DECLINED, self.STATUS.VOIDED) and not self.invoice.is_paid
+        ):
+            self.invoice.set_waiting()
+
+    def update_status(self):
+        from .postfinance import get_new_status
+
+        self.status = get_new_status(self.transaction_id)
+        self.save(update_fields=("status",))

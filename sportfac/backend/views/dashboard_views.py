@@ -250,8 +250,8 @@ class HomePageView(BackendMixin, TemplateView):
             if not course.is_camp:
                 timedeltas.append(course.number_of_sessions * course.duration)
         td = sum(timedeltas, timedelta())
-        context["total_hours"] = td.days * 24 + td.seconds / 3600
-        context["total_remaining_minutes"] = (td.seconds % 3600) / 60
+        context["total_hours"] = int(td.days * 24 + td.seconds / 3600)
+        context["total_remaining_minutes"] = int((td.seconds % 3600) / 60)
 
         method_name = "get_additional_context_phase%i" % self.request.PHASE
         return getattr(self, method_name)(context)

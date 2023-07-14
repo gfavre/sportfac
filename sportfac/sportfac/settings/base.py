@@ -670,8 +670,8 @@ DATATRANS_USER = env.str("DATATRANS_USER", default="")
 DATATRANS_PASSWORD = env.str("DATATRANS_PASSWORD", default="")
 
 
-POSTFINANCE_SPACE_ID = env.str("POSTFINANCE_SPACE_ID", default="")
-POSTFINANCE_USER_ID = env.str("POSTFINANCE_USER_ID", default="")
+POSTFINANCE_SPACE_ID = env.int("POSTFINANCE_SPACE_ID", default="")
+POSTFINANCE_USER_ID = env.int("POSTFINANCE_USER_ID", default="")
 POSTFINANCE_API_SECRET = env.str("POSTFINANCE_API_SECRET", default="")
 
 # Dashboard

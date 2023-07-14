@@ -1,13 +1,19 @@
+from django.conf import settings
 from django.urls import reverse
 
+from postfinancecheckout import Configuration
+from postfinancecheckout.api import TransactionPaymentPageServiceApi, TransactionServiceApi
 from postfinancecheckout.models import AddressCreate, LineItem, LineItemType, TransactionCreate
+
+from .models import PostfinanceTransaction
 
 
 CURR_CHF = "CHF"
+DEFAULT_TIMEOUT = 5
+DEFAULT_LANGUAGE = "fr"
 
 
 def invoice_to_transaction(request, invoice):
-    #         self.total = sum([registration.price for registration in self.registrations.all() if registration.price])
     lines = []
     for registration in invoice.registrations.all():
         if registration.price == 0:
@@ -44,3 +50,36 @@ def invoice_to_transaction(request, invoice):
         successUrl=success_url,
         failedUrl=fail_url,
     )
+
+
+def get_transaction(request, invoice):
+    config = Configuration(
+        user_id=settings.POSTFINANCE_USER_ID,
+        api_secret=settings.POSTFINANCE_API_SECRET,
+        request_timeout=DEFAULT_TIMEOUT,
+    )
+    transaction_service = TransactionServiceApi(config)
+    transaction_page_service = TransactionPaymentPageServiceApi(config)
+
+    transaction = invoice_to_transaction(request, invoice)
+    transaction_create = transaction_service.create(space_id=settings.POSTFINANCE_SPACE_ID, transaction=transaction)
+    payment_page_url = transaction_page_service.payment_page_url(
+        space_id=settings.POSTFINANCE_SPACE_ID, id=transaction_create.id
+    )
+    return PostfinanceTransaction.objects.create(
+        invoice=invoice,
+        transaction_id=transaction_create.id,
+        payment_page_url=payment_page_url,
+        status=transaction_create.state,
+    )
+
+
+def get_new_status(transaction_id):
+    config = Configuration(
+        user_id=settings.POSTFINANCE_USER_ID,
+        api_secret=settings.POSTFINANCE_API_SECRET,
+        request_timeout=DEFAULT_TIMEOUT,
+    )
+    transaction_service = TransactionServiceApi(config)
+    transaction = transaction_service.read(space_id=settings.POSTFINANCE_SPACE_ID, id=transaction_id)
+    return transaction.state
