@@ -3,32 +3,34 @@ from .production import *  # noqa: F403
 
 
 TEMPLATES[0]["DIRS"] = [  # noqa: F405
-    normpath(join(SITE_ROOT, "themes", "monthey", "templates")),  # noqa: F405
+    normpath(join(SITE_ROOT, "themes", "oron", "templates")),  # noqa: F405
     normpath(join(SITE_ROOT, "templates")),  # noqa: F405
 ]
 
 STATICFILES_DIRS = (
-    normpath(join(SITE_ROOT, "themes", "monthey", "static")),  # noqa: F405
+    normpath(join(SITE_ROOT, "themes", "oron", "static")),  # noqa: F405
     normpath(join(SITE_ROOT, "static")),  # noqa: F405
 )
 
 # General
 KEPCHUP_USE_ABSENCES = True
-KEPCHUP_NO_PAYMENT = False
+KEPCHUP_NO_PAYMENT = True
+KEPCHUP_USE_BLACKLISTS = False
 
 # User accounts
-KEPCHUP_ZIPCODE_RESTRICTION = [
-    ["1870", "Monthey"],
-    ["1871", "Choëx"],
-]
+KEPCHUP_REGISTER_ACCOUNTS_AT_ANY_TIME = True
+KEPCHUP_ZIPCODE_RESTRICTION = []
+KEPCHUP_INSTRUCTORS_DISPLAY_EXTERNAL_ID = False
+KEPCHUP_INSTRUCTORS_CAN_EDIT_EXTERNAL_ID = False
 
 # Children
+KEPCHUP_BIB_NUMBERS = False
 KEPCHUP_CHILD_SCHOOL = True
 KEPCHUP_ENABLE_TEACHER_MANAGEMENT = True
 KEPCHUP_EMERGENCY_NUMBER_MANDATORY = True
 
 # LAGAPEO
-KEPCHUP_IMPORT_CHILDREN = True
+KEPCHUP_IMPORT_CHILDREN = False
 KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = True
 
 # Limitations
@@ -37,9 +39,10 @@ KEPCHUP_LIMIT_BY_SCHOOL_YEAR = True
 
 # Registrations
 KEPCHUP_ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE = True
+KEPCHUP_INSTRUCTORS_CAN_REMOVE_REGISTRATIONS = True
 
 # Dates
-KEPCHUP_EXPLICIT_SESSION_DATES = True
+KEPCHUP_EXPLICIT_SESSION_DATES = False
 
 # Emails
 KEPCHUP_SEND_PRESENCE_LIST = True
