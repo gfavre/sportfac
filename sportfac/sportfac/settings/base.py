@@ -471,7 +471,7 @@ AUTO_RENDER_SELECT2_STATICS = False
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
-
+CELERY_PREFIX = ""
 CELERYBEAT_SCHEDULE = {
     "update-periods": {
         "task": "backend.tasks.update_current_tenant",

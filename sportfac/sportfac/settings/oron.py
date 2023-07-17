@@ -11,6 +11,8 @@ STATICFILES_DIRS = (
     normpath(join(SITE_ROOT, "themes", "oron", "static")),  # noqa: F405
     normpath(join(SITE_ROOT, "static")),  # noqa: F405
 )
+CELERY_PREFIX = "oron:"
+
 
 # General
 KEPCHUP_USE_ABSENCES = True
