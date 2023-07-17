@@ -11,6 +11,7 @@ STATICFILES_DIRS = (
     normpath(join(SITE_ROOT, "themes", "monthey", "static")),  # noqa: F405
     normpath(join(SITE_ROOT, "static")),  # noqa: F405
 )
+CELERY_PREFIX = "monthey:"
 
 # General
 KEPCHUP_USE_ABSENCES = True
