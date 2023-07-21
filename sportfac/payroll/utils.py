@@ -29,7 +29,7 @@ def get_payroll_csv(payroll_obj, filelike):
             "Date de fin",
             "Moniteur",
             "Activité",
-            "Course",
+            "Cours",
             "Durée",
             "Fonction",
             "Tarif horaire",
@@ -69,7 +69,7 @@ def get_payroll_csv(payroll_obj, filelike):
             line += [
                 course_instructor.instructor.full_name,
                 course_instructor.course.activity.name,
-                course_instructor.course.name,
+                course_instructor.course.number,
                 course_instructor.course.duration,
                 course_instructor.function.name,
                 course_instructor.function.rate,
