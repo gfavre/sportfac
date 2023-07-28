@@ -51,3 +51,9 @@ KEPCHUP_SEND_PRESENCE_LIST = True
 KEPCHUP_NO_SSF = False
 
 # Payment
+
+
+CELERYBEAT_SCHEDULE["notify-absences"] = {  # noqa: F405
+    "task": "absences.tasks.notify_absences",
+    "schedule": crontab(hour=6, minute=0),  # noqa: F405
+}

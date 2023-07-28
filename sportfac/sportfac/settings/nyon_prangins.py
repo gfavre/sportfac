@@ -1,17 +1,16 @@
-# -*- coding: utf-8 -*-
 """Production settings and globals."""
 
-from .production import *
+from .production import *  # noqa: F403
 
 
-TEMPLATES[0]["DIRS"] = [
-    normpath(join(SITE_ROOT, "themes", "nyon_prangins", "templates")),
-    normpath(join(SITE_ROOT, "templates")),
+TEMPLATES[0]["DIRS"] = [  # noqa: F405
+    normpath(join(SITE_ROOT, "themes", "nyon_prangins", "templates")),  # noqa: F405
+    normpath(join(SITE_ROOT, "templates")),  # noqa: F405
 ]
 
 STATICFILES_DIRS = (
-    normpath(join(SITE_ROOT, "themes", "nyon_prangins", "static")),
-    normpath(join(SITE_ROOT, "static")),
+    normpath(join(SITE_ROOT, "themes", "nyon_prangins", "static")),  # noqa: F405
+    normpath(join(SITE_ROOT, "static")),  # noqa: F405
 )
 
 # We switch to postmark. Here are the old settings which ended up in mailgun
@@ -85,3 +84,9 @@ KEPCHUP_ZIPCODE_RESTRICTION = [
     ["1184", "Vinzel"],
 ]
 KEPCHUP_INSTRUCTORS_CAN_REMOVE_REGISTRATIONS = True
+
+
+CELERYBEAT_SCHEDULE["notify-absences"] = {  # noqa: F405
+    "task": "absences.tasks.notify_absences",
+    "schedule": crontab(hour=6, minute=0),  # noqa: F405
+}
