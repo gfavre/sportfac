@@ -161,7 +161,6 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
         context["registered_list"] = registrations
         registrations = registrations.order_by("course__start_date", "course__end_date")
         self.set_price_modifiers(registrations, context)
-        context["price_modifiers"] = self.get_price_modifiers(registrations)
         context["applied_price_modifications"] = {}
 
         context["has_price_modification"] = len(context["applied_price_modifications"]) != 0
