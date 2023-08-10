@@ -19,6 +19,7 @@ from braces.views import LoginRequiredMixin, UserPassesTestMixin
 from postfinancecheckout.rest import ApiException
 from profiles.forms import AcceptTermsForm
 from profiles.models import School
+from sentry_sdk import capture_exception
 
 from sportfac.views import NotReachableException, WizardMixin
 
@@ -287,6 +288,7 @@ class WizardBillingView(LoginRequiredMixin, BillMixin, WizardMixin, TemplateView
             except requests.exceptions.RequestException:
                 transaction = None
             except ApiException as exc:
+                capture_exception(exc)
                 logger.error("Postfinance API error: %s", exc)
                 transaction = None
             context["transaction"] = transaction
