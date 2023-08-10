@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
 from django.views.generic import TemplateView
 
+from api.permissions import PostfinanceIPFilterPermission
 from async_messages import message_user
 from braces.views import LoginRequiredMixin
 from registrations.models import Bill
@@ -66,10 +67,7 @@ class PaymentFailureView(LoginRequiredMixin, WizardMixin, TemplateView):
 
 
 class PostfinanceWebhookView(APIView):
-    # TODO filter by IP, only these urls:
-    #  ["52.211.247.160", "52.211.171.77", "52.211.239.229", "52.211.209.173", "52.208.210.84", "52.212.109.85",
-    #  "52.210.89.1", "52.212.185.152", "52.212.192.130"]
-    permission_classes = [AllowAny]
+    permission_classes = [PostfinanceIPFilterPermission]
 
     # noinspection PyMethodMayBeStatic
     def post(self, request, *args, **kwargs):
