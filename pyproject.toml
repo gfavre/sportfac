@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.9"
-Django = "3.0"
+Django = "3.1.14"
 #djangorestframework = "*"
 #django-filter = "*"
 #celery = "^5.2.7"
