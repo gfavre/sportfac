@@ -1,5 +1,6 @@
 import datetime
 import json
+import logging
 
 from django.conf import settings
 from django.contrib import messages
@@ -15,12 +16,16 @@ import requests
 from appointments.models import Appointment
 from backend.dynamic_preferences_registry import global_preferences_registry
 from braces.views import LoginRequiredMixin, UserPassesTestMixin
+from postfinancecheckout.rest import ApiException
 from profiles.forms import AcceptTermsForm
 from profiles.models import School
 
 from sportfac.views import NotReachableException, WizardMixin
 
 from .models import Bill, Child, Registration
+
+
+logger = logging.getLogger(__name__)
 
 
 class BillMixin:
@@ -280,6 +285,9 @@ class WizardBillingView(LoginRequiredMixin, BillMixin, WizardMixin, TemplateView
             try:
                 transaction = get_transaction(self.request, context["bill"])
             except requests.exceptions.RequestException:
+                transaction = None
+            except ApiException as exc:
+                logger.error("Postfinance API error: %s", exc)
                 transaction = None
             context["transaction"] = transaction
 
