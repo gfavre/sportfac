@@ -82,5 +82,12 @@ class PostfinanceIPFilterPermission(permissions.BasePermission):
     ]
 
     def has_permission(self, request, view):
-        user_ip = request.META.get("REMOTE_ADDR")
+        user_ip = self.get_client_ip(request)
         return user_ip in self.allowed_ips
+
+    # noinspection PyMethodMayBeStatic
+    def get_client_ip(self, request):
+        x_forwarded_for = request.headers.get("x-forwarded-for")
+        if x_forwarded_for:
+            return x_forwarded_for.split(",")[0]
+        return request.META.get("REMOTE_ADDR")
