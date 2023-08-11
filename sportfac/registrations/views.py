@@ -29,6 +29,32 @@ from .models import Bill, Child, Registration
 logger = logging.getLogger(__name__)
 
 
+class PaymentMixin:
+    def get_transaction(self, invoice):
+        if settings.KEPCHUP_PAYMENT_METHOD == "datatrans":
+            from payments.datatrans import get_transaction
+
+            try:
+                transaction = get_transaction(self.request, invoice)
+            except requests.exceptions.RequestException:
+                transaction = None
+            return transaction
+
+        if settings.KEPCHUP_PAYMENT_METHOD == "postfinance":
+            from payments.postfinance import get_transaction
+
+            try:
+                transaction = get_transaction(self.request, invoice)
+            except requests.exceptions.RequestException:
+                transaction = None
+            except ApiException as exc:
+                capture_exception(exc)
+                logger.error("Postfinance API error: %s", exc)
+                transaction = None
+            return transaction
+        return None
+
+
 class BillMixin:
     def get_context_data(self, **kwargs):
         # noinspection PyUnresolvedReferences
@@ -55,7 +81,7 @@ class BillingView(LoginRequiredMixin, BillMixin, ListView):
         return Bill.objects.filter(family=self.request.user).order_by("created")
 
 
-class BillDetailView(LoginRequiredMixin, BillMixin, DetailView):
+class BillDetailView(LoginRequiredMixin, PaymentMixin, BillMixin, DetailView):
     template_name = "registrations/bill-detail.html"
 
     def get_queryset(self):
@@ -64,16 +90,11 @@ class BillDetailView(LoginRequiredMixin, BillMixin, DetailView):
         return Bill.objects.filter(family=self.request.user)
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
         bill = self.get_object()
-        if not bill.is_paid and settings.KEPCHUP_PAYMENT_METHOD == "datatrans":
-            from payments.datatrans import get_transaction
-
-            try:
-                transaction = get_transaction(self.request, bill)
-            except requests.exceptions.RequestException:
-                transaction = None
-            context["transaction"] = transaction
+        context = super().get_context_data(**kwargs)
+        context["bill"] = bill
+        if not bill.is_paid:
+            context["transaction"] = self.get_transaction(bill)
         return context
 
 
@@ -243,7 +264,7 @@ class SummaryView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class WizardBillingView(LoginRequiredMixin, BillMixin, WizardMixin, TemplateView):
+class WizardBillingView(LoginRequiredMixin, BillMixin, PaymentMixin, WizardMixin, TemplateView):
     template_name = "registrations/wizard_billing.html"
 
     @staticmethod
@@ -271,28 +292,7 @@ class WizardBillingView(LoginRequiredMixin, BillMixin, WizardMixin, TemplateView
             context["include_calendar"] = True
             context["appointments"] = Appointment.objects.filter(family=self.request.user)
 
-        if settings.KEPCHUP_PAYMENT_METHOD == "datatrans":
-            from payments.datatrans import get_transaction
-
-            try:
-                transaction = get_transaction(self.request, context["bill"])
-            except requests.exceptions.RequestException:
-                transaction = None
-            context["transaction"] = transaction
-
-        elif settings.KEPCHUP_PAYMENT_METHOD == "postfinance":
-            from payments.postfinance import get_transaction
-
-            try:
-                transaction = get_transaction(self.request, context["bill"])
-            except requests.exceptions.RequestException:
-                transaction = None
-            except ApiException as exc:
-                capture_exception(exc)
-                logger.error("Postfinance API error: %s", exc)
-                transaction = None
-            context["transaction"] = transaction
-
+        context["transaction"] = self.get_transaction(context["bill"])
         return context
 
     def get(self, request, *args, **kwargs):

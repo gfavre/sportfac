@@ -22,7 +22,7 @@
         <th>{% trans "Price" %}</th>
         <th class="hidden-print">{% trans "Actions" %}</th>
       </tr>
-    </thead> 
+    </thead>
     <tfoot>
       <tr>
         <th colspan="4" class="nowrap" style="text-align: right">{% trans "Total" %}</th>
@@ -80,7 +80,12 @@
     {% endfor %}
     </tbody>
   </table>
-  <p class="hidden-print text-center"><button class="btn btn-secondary btn-large print-button"><i class="icon icon-print"></i> Imprimer</button></p>
+  {% if transaction %}
+  {% include "registrations/billing_partial.html" %}
+  {% endif %}
+  <p class="hidden-print text-center">
+    <button class="btn btn-secondary btn-large print-button"><i class="icon icon-print"></i> Imprimer</button>
+  </p>
 </section>
 
 {% addtoblock "js" %}
