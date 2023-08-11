@@ -36,8 +36,15 @@ def invoice_to_transaction(request, invoice):
         postcode=invoice.family.zipcode,
         street=invoice.family.address,
     )
-    success_url = "https://{}{}".format(request.get_host(), reverse("wizard_payment_success"))
-    fail_url = "https://{}{}".format(request.get_host(), reverse("wizard_billing"))
+    if request.get_full_path().startswith(reverse("backend:bill-list")):
+        success_url = "https://{}{}".format(request.get_host(), reverse("backend:bill-list"))
+        fail_url = f"https://{request.get_host()}{invoice.get_pay_url()}"
+    elif request.get_full_path().startswith(reverse("wizard_billing")):
+        success_url = "https://{}{}".format(request.get_host(), reverse("wizard_payment_success"))
+        fail_url = "https://{}{}".format(request.get_host(), reverse("wizard_billing"))
+    else:
+        success_url = "https://{}{}".format(request.get_host(), reverse("registrations:registrations_billing"))
+        fail_url = f"https://{request.get_host()}{request.get_full_path()}"
 
     return TransactionCreate(
         billing_address=billing_address,

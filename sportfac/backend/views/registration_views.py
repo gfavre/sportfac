@@ -1,4 +1,5 @@
 import collections
+import logging
 from datetime import datetime
 
 from django.conf import settings
@@ -29,9 +30,12 @@ from formtools.wizard.views import SessionWizardView
 from registrations.forms import BillExportForm, BillForm, MoveRegistrationsForm, MoveTransportForm, TransportForm
 from registrations.models import Bill, ExtraInfo, Registration, Transport
 from registrations.resources import BillResource, RegistrationResource
-from registrations.views import BillMixin
+from registrations.views import BillMixin, PaymentMixin
 
 from .mixins import BackendMixin, ExcelResponseMixin
+
+
+logger = logging.getLogger(__name__)
 
 
 class RegistrationDetailView(BackendMixin, DetailView):
@@ -382,9 +386,16 @@ class BillListView(BackendMixin, ListView):
         return self.render_to_response(self.get_context_data(form=form))
 
 
-class BillDetailView(BackendMixin, BillMixin, DetailView):
+class BillDetailView(BackendMixin, BillMixin, PaymentMixin, DetailView):
     model = Bill
     template_name = "backend/registration/bill-detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.object.is_paid:
+            return context
+        context["transaction"] = self.get_transaction(self.object)
+        return context
 
 
 class BillUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):

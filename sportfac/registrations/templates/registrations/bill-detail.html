@@ -9,6 +9,7 @@
 {% block extra_body %}class="bill"{% endblock %}
 
 {% block content %}
+{% include "registrations/bill-partial.html" %}
 
 
 <section>
@@ -94,14 +95,10 @@
     {% endfor %}
     </tbody>
   </table>
-{% include "registrations/bill-partial.html" %}
 
 {% if transaction %}
-  <div class="hidden-print">
-  <p>Le paiement peut se faire via Twint (débit direct) ou Mastercard et Visa (cartes de crédit).</p>
-  {% include 'payments/datatrans_pay_button.html' %}
-</div>
-  {% endif %}
+    {% include "registrations/billing_partial.html" %}
+ {% endif %}
 
   <p class="hidden-print text-center">
 
@@ -117,6 +114,3 @@
 </script>
 {% endaddtoblock %}
 {% endblock content %}
-
-
-
