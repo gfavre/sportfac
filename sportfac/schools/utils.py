@@ -1,14 +1,10 @@
-# -*- coding: utf-8 -*-
 import re
 
 from django.db.models import Max, Min
-from django.utils.six import moves
 from django.utils.translation import gettext as _
 
-import six
 import xlrd
 from profiles.models import SchoolYear
-from six.moves import range, zip
 
 from .models import Teacher
 
@@ -24,23 +20,21 @@ YEARS_MINMAX = SchoolYear.objects.all().aggregate(Min("year"), Max("year"))
 ALL_YEARS = list(range(YEARS_MINMAX["year__min"], YEARS_MINMAX["year__max"] + 1))
 
 
-def load_teachers(filelike, building=None):
+def load_teachers(filelike, building=None):  # noqa: CCR001
     try:
         xls_book = xlrd.open_workbook(file_contents=filelike.read())
         sheet = xls_book.sheets()[0]
         header_row = sheet.row_values(0)
 
         if not all(key in header_row for key in TEACHER_MANDATORY_FIELDS):
-            raise ValueError(
-                _("All these fields are mandatory: %s") % six.text_type(TEACHER_MANDATORY_FIELDS)
-            )
+            raise ValueError(_("All these fields are mandatory: %s") % str(TEACHER_MANDATORY_FIELDS))
     except xlrd.XLRDError:
         raise ValueError(_("File format is unreadable"))
 
     nb_created = 0
     nb_updated = 0
     nb_skipped = 0
-    for i in moves.range(1, sheet.nrows):
+    for i in range(1, sheet.nrows):
         values = dict(zip(header_row, sheet.row_values(i)))
         translated = {}
         for key, val in values.items():
@@ -65,12 +59,12 @@ def load_teachers(filelike, building=None):
 
         years = set()
         for classes_part in classes.split(","):
-            match = re.match("(\d+)(?:\-(\d+))?[a-zA-Z]+[\d]?/\w+", classes_part.strip())
+            match = re.match(r"(\d+)(?:-(\d+))?[a-zA-Z]+\d?/\w+", classes_part.strip())
             if not match:
                 # ACC or DES
                 years = years.union(ALL_YEARS)
             else:
-                years = years.union(match.groups())
+                years = years.union(map(int, match.groups()))
 
         for year in years:
             if year is None:
