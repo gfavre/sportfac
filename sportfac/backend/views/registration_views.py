@@ -345,7 +345,11 @@ class BillListView(BackendMixin, ListView):
         return context
 
     def get_start_end(self):
-        start = Bill.objects.order_by("created").first().created
+        bill = Bill.objects.order_by("created").first()
+        if bill:
+            start = Bill.objects.order_by("created").first().created
+        else:
+            start = now()
         end = now()
         if "start" in self.request.GET:
             try:
