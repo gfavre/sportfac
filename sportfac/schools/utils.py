@@ -59,7 +59,7 @@ def load_teachers(filelike, building=None):  # noqa: CCR001
 
         years = set()
         for classes_part in classes.split(","):
-            match = re.match(r"(\d+)(?:-(\d+))?[a-zA-Z]+\d?/\w+", classes_part.strip())
+            match = re.match(r"(\d+)(?:-(\d+))?[a-zA-Z]+\d?/?\w*", classes_part.strip())
             if not match:
                 # ACC or DES
                 years = years.union(ALL_YEARS)
