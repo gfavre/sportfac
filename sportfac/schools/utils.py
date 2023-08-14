@@ -3,15 +3,16 @@ import re
 from django.db.models import Max, Min
 from django.utils.translation import gettext as _
 
-import xlrd
+from openpyxl import load_workbook
 from profiles.models import SchoolYear
 
 from .models import Teacher
 
 
-TEACHER_MANDATORY_FIELDS = ("ID LAGAPEO", "Nom", "Prénom", "Maîtrises")
+TEACHER_MANDATORY_FIELDS = ("Numéro SPEV", "Nom", "Prénom", "Maîtrises")
 TEACHER_IMPORT_TO_FIELD = {
     "ID LAGAPEO": "number",
+    "Numéro SPEV": "number",
     "Nom": "last_name",
     "Prénom": "first_name",
     "Courriel 1": "email",
@@ -22,20 +23,19 @@ ALL_YEARS = list(range(YEARS_MINMAX["year__min"], YEARS_MINMAX["year__max"] + 1)
 
 def load_teachers(filelike, building=None):  # noqa: CCR001
     try:
-        xls_book = xlrd.open_workbook(file_contents=filelike.read())
-        sheet = xls_book.sheets()[0]
-        header_row = sheet.row_values(0)
-
+        xls_book = load_workbook(filelike)
+        sheet = xls_book.active
+        header_row = [cell.value for cell in sheet[1]]
         if not all(key in header_row for key in TEACHER_MANDATORY_FIELDS):
             raise ValueError(_("All these fields are mandatory: %s") % str(TEACHER_MANDATORY_FIELDS))
-    except xlrd.XLRDError:
-        raise ValueError(_("File format is unreadable"))
+    except (ValueError, KeyError) as exc:
+        raise ValueError(_("File format is unreadable")) from exc
 
     nb_created = 0
     nb_updated = 0
     nb_skipped = 0
-    for i in range(1, sheet.nrows):
-        values = dict(zip(header_row, sheet.row_values(i)))
+    for row in sheet.iter_rows(min_row=2, values_only=True):
+        values = dict(zip(header_row, row))
         translated = {}
         for key, val in values.items():
             if key in TEACHER_IMPORT_TO_FIELD:
@@ -64,7 +64,7 @@ def load_teachers(filelike, building=None):  # noqa: CCR001
                 # ACC or DES
                 years = years.union(ALL_YEARS)
             else:
-                years = years.union(map(int, match.groups()))
+                years = years.union([int(year) for year in match.groups() if year is not None])
 
         for year in years:
             if year is None:
