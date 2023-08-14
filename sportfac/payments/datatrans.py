@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.conf import settings
 from django.urls import reverse
 from django.utils.timezone import now
@@ -6,16 +5,18 @@ from django.utils.translation import get_language
 
 import requests
 from dateutil.relativedelta import relativedelta
-from requests.auth import HTTPBasicAuth
+
+from .models import DatatransTransaction
 
 
-INITIALIZE_TRANSACTION_ENDPOINT = "{}v1/transactions".format(settings.DATATRANS_API_URL.geturl())
+INITIALIZE_TRANSACTION_ENDPOINT = f"{settings.DATATRANS_API_URL.geturl()}v1/transactions"
 DEFAULT_CURRENCY = "CHF"
 DATATRANS_TIMEOUT_SECONDS = 5
 
 
 class DataTransException(Exception):
     pass
+
 
 def invoice_to_meta_data(request, invoice):
     return {
@@ -25,9 +26,7 @@ def invoice_to_meta_data(request, invoice):
         "language": get_language(),
         "paymentMethods": settings.DATATRANS_PAYMENT_METHODS,
         "redirect": {
-            "successUrl": "https://{}{}".format(
-                request.get_host(), reverse("wizard_payment_success")
-            ),
+            "successUrl": "https://{}{}".format(request.get_host(), reverse("wizard_payment_success")),
             "cancelUrl": "https://{}{}".format(request.get_host(), reverse("wizard_billing")),
             "errorUrl": "https://{}{}".format(request.get_host(), reverse("wizard_billing")),
         },
