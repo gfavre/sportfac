@@ -76,7 +76,18 @@ class PostfinanceWebhookView(APIView):
             raise ValidationError("missing parameters")
         if data["spaceId"] != settings.POSTFINANCE_SPACE_ID:
             raise ValidationError("invalid spaceId")
-        transaction = get_object_or_404(PostfinanceTransaction, transaction_id=data.get("entityId"))
+        # Note: normally the following line would be the perfect way to do get the transaction object.
+        # transaction = get_object_or_404(PostfinanceTransaction, transaction_id=data.get("entityId"))
+        # However, in the case of Montreux we have 2 separate sites, but a single contract. Postfinance can't set a
+        # webhook location different for each postfinance-user-id. The administrative wa to handle this issue is to
+        # create another space, but that requires another contract, and another contract requires a lot of time.
+        # Therefore we have 2 webhook adresses on which every transaction is sent, regardless of the kepchup instance.
+        # These webhooks would generate a 404 error on the other instance, so we have to silence it.
+        # This is not very elegant, but it alleviates the administration burden.
+        transaction = PostfinanceTransaction.objects.filter(transaction_id=data.get("entityId")).first()
+        if not transaction:
+            return Response("Webhook accepted but not handled")
+
         transaction.update_status()
         transaction.update_invoice()
 
