@@ -5,6 +5,7 @@ from django.utils.translation import get_language
 
 import requests
 from dateutil.relativedelta import relativedelta
+from requests.auth import HTTPBasicAuth
 
 from .models import DatatransTransaction
 
@@ -46,7 +47,7 @@ def get_transaction(request, invoice):
     response = requests.post(
         INITIALIZE_TRANSACTION_ENDPOINT,
         json=invoice_to_meta_data(request, invoice),
-        auth=requests.auth.HTTPBasicAuth(username, password),
+        auth=HTTPBasicAuth(username, password),
         timeout=DATATRANS_TIMEOUT_SECONDS,
     )
     response.raise_for_status()
