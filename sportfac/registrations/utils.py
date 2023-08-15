@@ -44,7 +44,7 @@ class ChildParser:
         self.schoolyears = {year.year: year for year in SchoolYear.objects.all()}
         self.schools = {school.code: school for school in School.objects.all()}
         self.fields_dict = {
-            "id_lagapeo": lambda id_lagapeo: int(id_lagapeo),
+            "id_lagapeo": self.parse_id_lagapeo,
             "first_name": lambda first_name: first_name,
             "last_name": lambda last_name: last_name,
             "birth_date": self.parse_birth_date,
@@ -55,6 +55,13 @@ class ChildParser:
             "school": self.parse_school,
             "is_blacklisted": self.parse_blacklist,
         }
+
+    @staticmethod
+    def parse_id_lagapeo(value):
+        try:
+            return int(value)
+        except (ValueError, TypeError):
+            return None
 
     @staticmethod
     def parse_blacklist(value):
@@ -155,6 +162,9 @@ def load_children(filelike):
             parsed = parser.parse(values)
         except Exception as exc:
             logger.warning(f"{exc}: Could not parse row={real_row_number}, values={values}")
+            continue
+        logger.debug(real_row_number, parsed)
+        if not parsed.get("id_lagapeo"):
             continue
         id_lagapeo = parsed.pop("id_lagapeo")
         if not parsed.get("birth_date"):
