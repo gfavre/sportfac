@@ -78,6 +78,8 @@ class ChildParser:
     @staticmethod
     def parse_birth_date(value):
         try:
+            if isinstance(value, datetime):
+                return value.date()
             if isinstance(value, str):
                 return datetime.strptime(value, "%d.%m.%Y").date()
             return from_excel(value)
