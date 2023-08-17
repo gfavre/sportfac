@@ -1,5 +1,19 @@
-{% load i18n %}
+{% load i18n sekizai_tags %}
 
+{% addtoblock "js" %}
+<script src="{{ transaction.payment_page_url }}" type="text/javascript"></script>
+<script type="text/javascript">
+jQuery(function($){
+  let paymentMethodConfigurationId = null;
+  $('#pay-button').on('click', function(){
+    window.LightboxCheckoutHandler.startPayment(paymentMethodConfigurationId, function(){
+      alert('An error occurred during the initialization of the payment lightbox.');
+    });
+  });
+})
+
+</script>
+{% endaddtoblock %}
 <div class="hidden-print d-print-none text-center mt-3 mb-3" style="margin-top: 1em; margin-bottom: 2em">
   <a href="{{ transaction.payment_page_url }}" id="pay-button" class="btn btn-lg btn-success">
     <i class="icon-credit-card-1"></i> &nbsp;{% trans "Pay" %}

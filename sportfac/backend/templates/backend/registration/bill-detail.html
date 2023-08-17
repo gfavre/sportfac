@@ -35,6 +35,7 @@
       <tr>
         <td>
           <span class="nowrap"><a href="{{ registration.child.backend_url }}">{{ registration.child.full_name }}</a></span>
+          {% if DISPLAY_LAGAPEO %}<br><small>{{ registration.child.id_lagapeo }}</small>{% endif %}
         </td>
         <td>
           <a href="{{ registration.course.activity.backend_url }}">{{ registration.course.activity.name }}</a>
