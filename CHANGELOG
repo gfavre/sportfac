@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Import of children from Lagapeo
 - Typo in Wizard
+- Do not send success emails on every webhooks received by postfinance
 
 
 ## 3.2.1 - 2023-08-14

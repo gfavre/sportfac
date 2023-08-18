@@ -91,9 +91,7 @@ class PostfinanceWebhookView(APIView):
         transaction.update_status()
         transaction.update_invoice()
 
-        if transaction.is_success:
-            transaction.invoice.send_confirmation()
-        else:
+        if not transaction.is_success:
             message_user(
                 transaction.invoice.family,
                 _("Payment was rejected either by you or the bank"),
