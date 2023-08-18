@@ -41,6 +41,8 @@
     <tr>
       <td>
         <span class="nowrap">{{ registered.child.first_name }} {{ registered.child.last_name }}</span>
+        {% if DISPLAY_LAGAPEO %}<br><small>{{ registered.child.id_lagapeo }}</small>{% endif %}
+
       </td>
       <td>{{ registered.course.activity.name }}
     </td>

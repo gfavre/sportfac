@@ -97,7 +97,10 @@ CELERYBEAT_SCHEDULE["sync_from_master"] = {  # noqa: F405
     "task": "profiles.tasks.sync_from_master",
     "schedule": crontab(minute="*/10"),  # noqa: F405
 }
-
+CELERYBEAT_SCHEDULE["cancel-expired-registrations"] = {  # noqa: F405
+    "task": "registrations.tasks.cancel_expired_registrations",
+    "schedule": crontab(minute="*/15"),  # noqa: F405
+}
 # Single Sign On
 #########################################
 KEPCHUP_USE_SSO = True

@@ -8,8 +8,10 @@ from django.db import IntegrityError
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 from django.utils.timezone import now
 from django.utils.translation import gettext as _
+from django.views.decorators.cache import never_cache
 from django.views.generic import DeleteView, DetailView, FormView, ListView, TemplateView
 
 import requests
@@ -29,6 +31,7 @@ from .models import Bill, Child, Registration
 logger = logging.getLogger(__name__)
 
 
+@method_decorator(never_cache, name="dispatch")
 class PaymentMixin:
     def get_transaction(self, invoice):
         if settings.KEPCHUP_PAYMENT_METHOD == "datatrans":
@@ -53,6 +56,9 @@ class PaymentMixin:
                 transaction = None
             return transaction
         return None
+
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
 
 
 class BillMixin:

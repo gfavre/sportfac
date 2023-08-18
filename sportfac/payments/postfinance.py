@@ -2,7 +2,10 @@ from django.conf import settings
 from django.urls import reverse
 
 from postfinancecheckout import Configuration
-from postfinancecheckout.api import TransactionPaymentPageServiceApi, TransactionServiceApi
+from postfinancecheckout.api import (  # TransactionPaymentPageServiceApi,
+    TransactionLightboxServiceApi,
+    TransactionServiceApi,
+)
 from postfinancecheckout.models import AddressCreate, LineItem, LineItemType, TransactionCreate
 
 from .models import PostfinanceTransaction
@@ -48,14 +51,14 @@ def invoice_to_transaction(request, invoice):
 
     return TransactionCreate(
         billing_address=billing_address,
-        invoiceMerchantReference=invoice.billing_identifier,
+        invoice_merchant_reference=invoice.billing_identifier,
         language="fr",
         line_items=lines,
         currency=CURR_CHF,
-        autoConfirmationEnabled=True,  # When auto confirmation is enabled the transaction can be confirmed by the user
-        # and does not require an explicit confirmation through the web service API.
-        successUrl=success_url,
-        failedUrl=fail_url,
+        auto_confirmation_enabled=True,  # When auto confirmation is enabled the transaction can be confirmed by the
+        # user and does not require an explicit confirmation through the web service API.
+        success_url=success_url,
+        failed_url=fail_url,
     )
 
 
@@ -66,19 +69,29 @@ def get_transaction(request, invoice):
         request_timeout=DEFAULT_TIMEOUT,
     )
     transaction_service = TransactionServiceApi(config)
-    transaction_page_service = TransactionPaymentPageServiceApi(config)
-
+    # transaction_page_service = TransactionPaymentPageServiceApi(config)
+    transaction_lightbox_service = TransactionLightboxServiceApi(config)
     transaction = invoice_to_transaction(request, invoice)
     transaction_create = transaction_service.create(space_id=settings.POSTFINANCE_SPACE_ID, transaction=transaction)
-    payment_page_url = transaction_page_service.payment_page_url(
+    # payment_page_url = transaction_page_service.payment_page_url(
+    #    space_id=settings.POSTFINANCE_SPACE_ID, id=transaction_create.id
+    # )
+    javascript_url = transaction_lightbox_service.javascript_url(
         space_id=settings.POSTFINANCE_SPACE_ID, id=transaction_create.id
     )
     return PostfinanceTransaction.objects.create(
         invoice=invoice,
         transaction_id=transaction_create.id,
-        payment_page_url=payment_page_url,
+        payment_page_url=javascript_url,
         status=transaction_create.state.value,
     )
+
+    # return PostfinanceTransaction.objects.create(
+    #     invoice=invoice,
+    #     transaction_id=transaction_create.id,
+    #     payment_page_url=payment_page_url,
+    #     status=transaction_create.state.value,
+    # )
 
 
 def get_new_status(transaction_id):
