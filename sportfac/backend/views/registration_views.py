@@ -128,14 +128,6 @@ class RegistrationsMoveView(BackendMixin, FormView):
         return super().get_context_data(**kwargs)
 
 
-def show_extra_questions(wizard):
-    cleaned_data = wizard.get_cleaned_data_for_step(_("Course")) or {}
-    course = cleaned_data.get("course")
-    if course and course.extra.count():
-        return True
-    return False
-
-
 class RegistrationCreateView(BackendMixin, SessionWizardView):
     form_list = (
         (_("Child"), ChildSelectForm),
@@ -196,6 +188,27 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
         if self.instance is None:
             self.instance = Registration()
         return self.instance
+
+
+class RegistrationDeleteView(BackendMixin, DeleteView):
+    model = Registration
+    template_name = "backend/registration/confirm_delete.html"
+
+    def get_success_url(self):
+        return self.object.course.get_backend_url()
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        try:
+            self.object.cancel()
+            self.object.save()
+        except IntegrityError:
+            # The registration for child and course existed previously and
+            # was already canceled. We do not need to cancel it again
+            self.object.delete()
+        messages.success(self.request, _("Registration has been canceled."))
+        return HttpResponseRedirect(success_url)
 
 
 class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
@@ -279,27 +292,6 @@ class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
 
     def form_invalid(self, form, extrainfo_form):
         return self.render_to_response(self.get_context_data(form=form, extrainfo_form=extrainfo_form))
-
-
-class RegistrationDeleteView(BackendMixin, DeleteView):
-    model = Registration
-    template_name = "backend/registration/confirm_delete.html"
-
-    def get_success_url(self):
-        return self.object.course.get_backend_url()
-
-    def delete(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        success_url = self.get_success_url()
-        try:
-            self.object.cancel()
-            self.object.save()
-        except IntegrityError:
-            # The registration for child and course existed previously and
-            # was already canceled. We do not need to cancel it again
-            self.object.delete()
-        messages.success(self.request, _("Registration has been canceled."))
-        return HttpResponseRedirect(success_url)
 
 
 class RegistrationValidateView(BackendMixin, TemplateView):
@@ -541,3 +533,11 @@ class TransportMoveView(BackendMixin, FormView):
         form.is_valid()
         kwargs["children"] = [reg.child for reg in form.cleaned_data.get("registrations", [])]
         return super().get_context_data(**kwargs)
+
+
+def show_extra_questions(wizard):
+    cleaned_data = wizard.get_cleaned_data_for_step(_("Course")) or {}
+    course = cleaned_data.get("course")
+    if course and course.extra.count():
+        return True
+    return False
