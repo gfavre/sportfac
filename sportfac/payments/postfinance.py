@@ -51,14 +51,14 @@ def invoice_to_transaction(request, invoice):
 
     return TransactionCreate(
         billing_address=billing_address,
-        invoiceMerchantReference=invoice.billing_identifier,
+        invoice_merchant_reference=invoice.billing_identifier,
         language="fr",
         line_items=lines,
         currency=CURR_CHF,
-        autoConfirmationEnabled=True,  # When auto confirmation is enabled the transaction can be confirmed by the user
-        # and does not require an explicit confirmation through the web service API.
-        successUrl=success_url,
-        failedUrl=fail_url,
+        auto_confirmation_enabled=True,  # When auto confirmation is enabled the transaction can be confirmed by the
+        # user and does not require an explicit confirmation through the web service API.
+        success_url=success_url,
+        failed_url=fail_url,
     )
 
 
