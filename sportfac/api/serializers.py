@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 from django.conf import settings
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.utils.translation import gettext_lazy as _
@@ -210,9 +209,7 @@ class SimpleChildrenSerializer(serializers.ModelSerializer):
 
 
 class ChildrenSerializer(serializers.ModelSerializer):
-    birth_date = serializers.DateField(
-        format="iso-8601", input_formats=("iso-8601", "%d/%m/%Y", "%d.%m.%Y")
-    )
+    birth_date = serializers.DateField(format="iso-8601", input_formats=("iso-8601", "%d/%m/%Y", "%d.%m.%Y"))
     teacher = serializers.PrimaryKeyRelatedField(
         many=False,
         read_only=False,
@@ -227,13 +224,9 @@ class ChildrenSerializer(serializers.ModelSerializer):
         required=False,
         allow_null=True,
     )
-    school_year = SchoolYearField(
-        many=False, read_only=False, queryset=SchoolYear.visible_objects.all()
-    )
-    ext_id = serializers.IntegerField(
-        source="id_lagapeo", required=False, allow_null=True, max_value=100000000
-    )
-    avs = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    school_year = SchoolYearField(many=False, read_only=False, queryset=SchoolYear.visible_objects.all())
+    ext_id = serializers.IntegerField(source="id_lagapeo", required=False, allow_null=True, max_value=100000000)
+    avs = serializers.CharField(required=False, allow_null=True, allow_blank=True, max_length=16)
 
     class Meta:
         model = Child
@@ -270,9 +263,7 @@ class ChildrenSerializer(serializers.ModelSerializer):
 
 class RegistrationSerializer(serializers.ModelSerializer):
     child = serializers.PrimaryKeyRelatedField(queryset=Child.objects.all())
-    course = serializers.PrimaryKeyRelatedField(
-        queryset=Course.objects.visible().select_related("activity")
-    )
+    course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.visible().select_related("activity"))
 
     class Meta:
         model = Registration
@@ -283,27 +274,15 @@ class RegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(_("Course is full"))
 
         if settings.KEPCHUP_LIMIT_BY_SCHOOL_YEAR:
-            if (
-                data["child"].school_year
-                and data["child"].school_year.year not in data["course"].school_years
-            ):
+            if data["child"].school_year and data["child"].school_year.year not in data["course"].school_years:
                 raise serializers.ValidationError(
                     _("This course is not opened to children of school year %(year)s")
                     % {"year": data["child"].school_year}
                 )
         else:
-            if not (
-                data["course"].max_birth_date
-                <= data["child"].birth_date
-                <= data["course"].min_birth_date
-            ):
-                raise serializers.ValidationError(
-                    _("This course is not opened to children of this age")
-                )
-        if (
-            data["child"].registrations.count()
-            >= global_preferences_registry.manager()["MAX_REGISTRATIONS"]
-        ):
+            if not (data["course"].max_birth_date <= data["child"].birth_date <= data["course"].min_birth_date):
+                raise serializers.ValidationError(_("This course is not opened to children of this age"))
+        if data["child"].registrations.count() >= global_preferences_registry.manager()["MAX_REGISTRATIONS"]:
             raise serializers.ValidationError(_("Max number of registrations reached."))
         return data
 
@@ -315,12 +294,8 @@ class WaitingSlotSerializer(serializers.ModelSerializer):
 
 
 class ExtraSerializer(serializers.ModelSerializer):
-    registration = serializers.PrimaryKeyRelatedField(
-        many=False, read_only=False, queryset=Registration.objects.all()
-    )
-    key = serializers.PrimaryKeyRelatedField(
-        many=False, read_only=False, queryset=ExtraNeed.objects.all()
-    )
+    registration = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=Registration.objects.all())
+    key = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=ExtraNeed.objects.all())
 
     class Meta:
         model = ExtraInfo
@@ -349,9 +324,7 @@ class ChildActivityLevelSerializer(serializers.ModelSerializer):
 
 
 class SessionSerializer(serializers.ModelSerializer):
-    course = serializers.PrimaryKeyRelatedField(
-        queryset=Course.objects.all().select_related("activity")
-    )
+    course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all().select_related("activity"))
     date = serializers.DateField()
     instructor = InstructorSerializer(allow_null=True)
 
@@ -361,9 +334,7 @@ class SessionSerializer(serializers.ModelSerializer):
 
 
 class SessionUpdateSerializer(SessionSerializer):
-    instructor = serializers.PrimaryKeyRelatedField(
-        queryset=FamilyUser.instructors_objects.all(), allow_null=True
-    )
+    instructor = serializers.PrimaryKeyRelatedField(queryset=FamilyUser.instructors_objects.all(), allow_null=True)
 
 
 class AbsenceSerializer(serializers.ModelSerializer):
@@ -496,6 +467,4 @@ class CoursesInstructorsRoleSerializer(serializers.ModelSerializer):
         return obj.course.short_name
 
     def get_instructor(self, obj):
-        return "{} ({})".format(
-            obj.instructor.full_name, obj.instructor.external_identifier or "n/a"
-        )
+        return "{} ({})".format(obj.instructor.full_name, obj.instructor.external_identifier or "n/a")
