@@ -2,7 +2,13 @@
 {% load i18n %}
 
 {% block title %}{% trans "Your children" %}{% endblock title %}
-{% block page_title %}{% trans "About your children" %}{% endblock page_title %}
+{% block page_title %}
+{% if ALTERNATIVE_CHILDREN_LABEL %}
+  {{ ALTERNATIVE_CHILDREN_LABEL }}
+{% else %}
+  {% trans "About your children" %}
+{% endif %}
+{% endblock page_title %}
 
 {% block content %}
 {% include "profiles/children_list_partial.html" %}
