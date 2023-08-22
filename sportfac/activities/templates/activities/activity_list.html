@@ -2,7 +2,13 @@
 {% load i18n sekizai_tags %}
 
 
-{% block page_title %}{% trans "Activities" %}{% endblock page_title%}
+{% block page_title %}
+  {% if ALTERNATIVE_ACTIVITIES_LABEL %}
+    {{ ALTERNATIVE_ACTIVITIES_LABEL }}
+  {% else %}
+    {% trans "Activities" %}
+  {% endif %}
+{% endblock page_title %}
 
 {% block content %}
 

@@ -95,7 +95,7 @@ CELERYBEAT_SCHEDULE["sync_from_master"] = {  # noqa: F405
 }
 CELERYBEAT_SCHEDULE["cancel-expired-registrations"] = {  # noqa: F405
     "task": "registrations.tasks.cancel_expired_registrations",
-    "schedule": crontab(minute="*/15"),  # noqa: F405
+    "schedule": crontab(minute="*/60"),  # noqa: F405
 }
 # Dashboard
 ############################################
