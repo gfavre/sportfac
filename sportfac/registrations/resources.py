@@ -45,6 +45,7 @@ class RegistrationResource(resources.ModelResource):
     emergency_number = fields.Field(attribute="child", column_name=_("Emergency number"))
     before_level = fields.Field(attribute="child", column_name=_("Level -1"))
     after_level = fields.Field(attribute="child", column_name=_("Level 0"))
+    paid = fields.Field(attribute="paid", column_name=_("Paid"), widget=widgets.BooleanWidget())
 
     class Meta:
         model = Registration
@@ -53,6 +54,7 @@ class RegistrationResource(resources.ModelResource):
             "activity",
             "course",
             "price",
+            "paid",
             "bib_number",
             "transport",
             "first_name",
