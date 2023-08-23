@@ -32,7 +32,6 @@ AUTHENTICATION_BACKENDS = (
 )
 SESSION_COOKIE_NAME = "ssfmontreux_hiver"
 
-
 KEPCHUP_USE_ABSENCES = True
 KEPCHUP_USE_APPOINTMENTS = True
 KEPCHUP_IMPORT_CHILDREN = True
@@ -85,6 +84,9 @@ KEPCHUP_ALTERNATIVE_CONFIRM_LABEL = "Validation"
 KEPCHUP_ALTERNATIVE_BILLING_LABEL = "Confirmation"
 
 
+KEPCHUP_REGISTRATION_EXPIRE_MINUTES = 60
+
+
 STATIC_URL = "/hiver/static/"
 FORCE_SCRIPT_NAME = "/hiver"
 SESSION_COOKIE_PATH = FORCE_SCRIPT_NAME
@@ -99,7 +101,7 @@ CELERYBEAT_SCHEDULE["sync_from_master"] = {  # noqa: F405
 }
 CELERYBEAT_SCHEDULE["cancel-expired-registrations"] = {  # noqa: F405
     "task": "registrations.tasks.cancel_expired_registrations",
-    "schedule": crontab(minute="*/15"),  # noqa: F405
+    "schedule": crontab(minute="*/5"),  # noqa: F405
 }
 # Single Sign On
 #########################################
