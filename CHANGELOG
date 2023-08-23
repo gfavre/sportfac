@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## unreleased
+
+### Added
+- Add some text on payment page if registration is set to expire after a delay
+- New paid column to registrations export
+
+### Fixed
+- Ensure we send confirmation after the payment is done, not when payment page is displayed
+
+
 ## 3.2.2 - 2023-08-22
 ### Added
 - Display lagapeo number in invoices
