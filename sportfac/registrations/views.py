@@ -232,7 +232,7 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
         if self.bill.total == 0:
             self.bill.status = Bill.STATUS.paid
             self.bill.save()
-        if not (settings.KEPCHUP_USE_APPOINTMENTS or settings.KEPCHUP_PAYMENT_METHOD == "datatrans"):
+        if not (settings.KEPCHUP_USE_APPOINTMENTS or settings.KEPCHUP_PAYMENT_METHOD in ["datatrans", "postfinance"]):
             # FIXME: si la facture est à 0: aucun paiement
             self.bill.send_confirmation()
 
