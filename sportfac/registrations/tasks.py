@@ -170,9 +170,15 @@ def cancel_expired_registrations():
         status="waiting",
         created__lte=(now() - timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES)),
     )
+    invoices = set()
     for registration in registrations:
         registration.cancel(reason=Registration.REASON.expired)
         registration.save()
+        invoices.add(registration.bill)
+    for invoice in invoices:
+        if hasattr(invoice, "postfinance_transactions") and invoice.postfinance_transactions.exists():
+            for transaction in invoice.postfinance_transactions.all():
+                transaction.void()
 
 
 @shared_task

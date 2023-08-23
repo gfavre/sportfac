@@ -106,6 +106,10 @@ class PostfinanceTransaction(TimeStampedModel, StatusModel):
     payment_page_url = models.URLField(null=True, blank=True)
 
     @property
+    def is_pending(self):
+        return self.status in (self.STATUS.PENDING, self.STATUS.PROCESSING)
+
+    @property
     def is_success(self):
         return self.status in (
             self.STATUS.AUTHORIZED,
@@ -130,3 +134,12 @@ class PostfinanceTransaction(TimeStampedModel, StatusModel):
 
         self.status = get_new_status(self.transaction_id)
         self.save(update_fields=("status",))
+
+    def void(self):
+        from .postfinance import void_transaction
+
+        void_status = void_transaction(self.transaction_id)
+        if void_status == "SUCCESSFUL":
+            self.status = self.STATUS.VOIDED
+            self.save(update_fields=("status",))
+            self.update_invoice()
