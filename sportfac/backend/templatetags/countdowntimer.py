@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
 from django import template
 from django.conf import settings
 from django.utils.timezone import now
+from django.utils.translation import gettext as _
 
 
 register = template.Library()
@@ -16,3 +16,11 @@ def countdown(context, date):
         "remaining_days": (date - now()).days,
         sekizai_context: context[sekizai_context],
     }
+
+
+@register.filter
+def human_readable_time(minutes):
+    if minutes >= 1440:
+        hours = minutes // 60
+        return _("{hours} hours").format(hours=hours)
+    return _("{minutes} minutes").format(minutes=minutes)

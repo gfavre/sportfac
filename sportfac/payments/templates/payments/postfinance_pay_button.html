@@ -1,4 +1,4 @@
-{% load i18n sekizai_tags %}
+{% load i18n sekizai_tags countdowntimer %}
 
 {% addtoblock "js" %}
 <script src="{{ transaction.payment_page_url }}" type="text/javascript"></script>
@@ -13,6 +13,13 @@ jQuery(document).ready(function($){
 
 </script>
 {% endaddtoblock %}
+{% if REGISTRATION_EXPIRE_MINUTES %}
+  <div class=" hidden-print d-print-none">
+  {% blocktrans with minutes=REGISTRATION_EXPIRE_MINUTES|human_readable_time %}
+  Your registrations are reserved for the next {{ minutes }}. If payment is not received within this time, your
+  registration will be cancelled and your place will be made available again.{% endblocktrans %}
+  </div>
+{% endif %}
 <div class="hidden-print d-print-none text-center mt-3 mb-3" style="margin-top: 1em; margin-bottom: 2em">
   <a href="#" id="pay-button" class="btn btn-lg btn-success">
     <i class="icon-credit-card-1"></i> &nbsp;{% trans "Pay" %}
