@@ -95,9 +95,12 @@ CELERYBEAT_SCHEDULE["sync_from_master"] = {  # noqa: F405
 }
 CELERYBEAT_SCHEDULE["cancel-expired-registrations"] = {  # noqa: F405
     "task": "registrations.tasks.cancel_expired_registrations",
-    "schedule": crontab(minute="*/60"),  # noqa: F405
+    "schedule": crontab(minute="*/5"),  # noqa: F405
 }
+
+
 # Dashboard
 ############################################
 KEPCHUP_DASHBOARD_SHOW_CHILDREN_STATS = True
 KEPCHUP_DASHBOARD_SHOW_FAMILY_STATS = False
+KEPCHUP_REGISTRATION_EXPIRE_MINUTES = 60
