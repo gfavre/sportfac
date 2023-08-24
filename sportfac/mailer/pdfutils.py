@@ -137,7 +137,8 @@ class PDFRenderer:
                 },
                 "requestSettings": {
                     "waitInterval": 0,
-                    "resourceTimeout": 2000,
+                    "resourceWait": 5000,
+                    "resourceTimeout": 5000,
                     "doneWhen": [{"event": "domReady"}],
                 },
             }
