@@ -167,7 +167,7 @@ def cancel_expired_registrations():
     current_domain = Domain.objects.filter(is_current=True).first()
     connection.set_tenant(current_domain.tenant)
     registrations = Registration.objects.filter(
-        status="waiting",
+        status=Registration.STATUS.waiting,
         created__lte=(now() - timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES)),
     )
     invoices = set()
