@@ -47,35 +47,42 @@ class SendInvoicePDFTests(TenantTestCase):
             generate_pdf.assert_called_once()
 
 
-@override_settings(KEPCHUP_REGISTRATION_EXPIRE_MINUTES=5)
 class CancelExpiredRegistrationsTests(TenantTestCase):
     # noinspection PyAttributeOutsideInit
     def setUp(self):
         self.expired_invoice = BillFactory()
-        self.expired_registration = RegistrationFactory(
-            status=Registration.STATUS.waiting, created=now() - timedelta(minutes=15), bill=self.expired_invoice
-        )
+        self.expired_registration = RegistrationFactory(status=Registration.STATUS.waiting, bill=self.expired_invoice)
+        self.expired_registration.created = now() - timedelta(minutes=15)
+        self.expired_registration.save()
         self.valid_invoice = BillFactory()
         self.valid_registration = RegistrationFactory(status=Registration.STATUS.waiting, bill=self.valid_invoice)
 
+    @override_settings(KEPCHUP_REGISTRATION_EXPIRE_MINUTES=5)
     def test_cancel_expired_registrations(self):
         cancel_expired_registrations()
         self.expired_registration.refresh_from_db()
         self.assertEqual(self.expired_registration.status, Registration.STATUS.canceled)
 
+    @override_settings(KEPCHUP_REGISTRATION_EXPIRE_MINUTES=5)
     def test_does_not_cancel_valid_registrations(self):
         cancel_expired_registrations()
         self.valid_registration.refresh_from_db()
         self.assertEqual(self.valid_registration.status, Registration.STATUS.waiting)
 
+    @override_settings(KEPCHUP_REGISTRATION_EXPIRE_MINUTES=5)
     def test_void_all_pf_transactions(self):
-        transactions = PostfinanceTransactionFactory.create_batch(2, invoice=self.expired_registration.bill)
+        nb_payout_attempts = fake.pyint(min_value=1, max_value=8)
+        PostfinanceTransactionFactory.create_batch(nb_payout_attempts, invoice=self.expired_registration.bill)
         with mock.patch.object(PostfinanceTransaction, "void") as void_method:
             cancel_expired_registrations()
             void_method.assert_called()
-        for transaction in transactions:
-            transaction.refresh_from_db()
-            self.assertEqual(transaction.status, PostfinanceTransaction.STATUS.VOIDED)
+            self.assertEqual(void_method.call_count, nb_payout_attempts)
 
+    @override_settings(KEPCHUP_REGISTRATION_EXPIRE_MINUTES=5)
     def do_not_void_valid_pf_transactions(self):
         self.expired_registration.delete()
+        nb_payout_attempts = fake.pyint(min_value=1, max_value=8)
+        PostfinanceTransactionFactory.create_batch(nb_payout_attempts, invoice=self.expired_registration.bill)
+        with mock.patch.object(PostfinanceTransaction, "void") as void_method:
+            cancel_expired_registrations()
+            void_method.assert_not_called()
