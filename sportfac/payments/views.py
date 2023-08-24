@@ -87,11 +87,13 @@ class PostfinanceWebhookView(APIView):
         transaction = PostfinanceTransaction.objects.filter(transaction_id=data.get("entityId")).first()
         if not transaction:
             return Response("Webhook accepted but not handled")
-
+        was_pending = transaction.is_pending
         transaction.update_status()
         transaction.update_invoice()
-
-        if not transaction.is_success:
+        if transaction.is_success and was_pending:
+            # we receive at least 5 webhooks for the same transaction, so we only send the confirmation once
+            transaction.invoice.send_confirmation()
+        else:
             message_user(
                 transaction.invoice.family,
                 _("Payment was rejected either by you or the bank"),

@@ -5,6 +5,7 @@ from postfinancecheckout import Configuration
 from postfinancecheckout.api import (  # TransactionPaymentPageServiceApi,
     TransactionLightboxServiceApi,
     TransactionServiceApi,
+    TransactionVoidServiceApi,
 )
 from postfinancecheckout.models import AddressCreate, LineItem, LineItemType, TransactionCreate
 
@@ -103,3 +104,14 @@ def get_new_status(transaction_id):
     transaction_service = TransactionServiceApi(config)
     transaction = transaction_service.read(space_id=settings.POSTFINANCE_SPACE_ID, id=transaction_id)
     return transaction.state.value
+
+
+def void_transaction(transaction_id):
+    config = Configuration(
+        user_id=settings.POSTFINANCE_USER_ID,
+        api_secret=settings.POSTFINANCE_API_SECRET,
+        request_timeout=DEFAULT_TIMEOUT,
+    )
+    transaction_service = TransactionVoidServiceApi(config)
+    transaction_void = transaction_service.void_offline(space_id=settings.POSTFINANCE_SPACE_ID, id=transaction_id)
+    return transaction_void.state.value

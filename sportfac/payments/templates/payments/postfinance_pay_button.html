@@ -1,20 +1,29 @@
-{% load i18n sekizai_tags %}
+{% load i18n sekizai_tags countdowntimer %}
 
 {% addtoblock "js" %}
-<script src="{{ transaction.payment_page_url }}" type="text/javascript"></script>
-<script type="text/javascript">
-jQuery(document).ready(function($){
-  let paymentMethodConfigurationId = null;
-  $('#pay-button').on('click', function(evt){
-    evt.preventDefault();
-    window.LightboxCheckoutHandler.startPayment();
-  });
-})
+  <script src="{{ transaction.payment_page_url }}" type="text/javascript"></script>
+  <script type="text/javascript">
+    jQuery(document).ready(function ($) {
+      let paymentMethodConfigurationId = null;
+      $('#pay-button').on('click', function (evt) {
+        evt.preventDefault();
+        window.LightboxCheckoutHandler.startPayment();
+      });
+    })
 
-</script>
+  </script>
 {% endaddtoblock %}
-<div class="hidden-print d-print-none text-center mt-3 mb-3" style="margin-top: 1em; margin-bottom: 2em">
-  <a href="#" id="pay-button" class="btn btn-lg btn-success">
-    <i class="icon-credit-card-1"></i> &nbsp;{% trans "Pay" %}
-  </a>
+
+<div class=" hidden-print d-print-none  mt-3 mb-3" style="margin-top: 1em; margin-bottom: 2em">
+  {% if REGISTRATION_EXPIRE_MINUTES %}
+    <p>{% blocktrans with minutes=REGISTRATION_EXPIRE_MINUTES|human_readable_time %}
+      Your registrations are reserved for the next {{ minutes }}. If payment is not received within this time, your
+      registration will be cancelled and your place will be made available again.{% endblocktrans %}
+    </p>
+  {% endif %}
+  <p class="text-center">
+    <a href="#" id="pay-button" class="btn btn-lg btn-success">
+      <i class="icon-credit-card-1"></i> &nbsp;{% trans "Pay" %}
+    </a>
+  </p>
 </div>
