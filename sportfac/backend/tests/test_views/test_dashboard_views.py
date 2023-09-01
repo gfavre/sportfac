@@ -2,14 +2,14 @@
 from django.test import RequestFactory, override_settings
 from django.urls import reverse
 
+import faker
+import pytz
+from activities.tests.factories import CourseFactory
+from mock import patch
+from profiles.tests.factories import FamilyUserFactory
+
 from sportfac.utils import TenantTestCase as TestCase
 
-import faker
-from mock import patch
-import pytz
-
-from activities.tests.factories import CourseFactory
-from profiles.tests.factories import FamilyUserFactory
 from ...views.dashboard_views import HomePageView
 
 
@@ -20,7 +20,7 @@ class HomePageViewTests(TestCase):
     def setUp(self):
         super(HomePageViewTests, self).setUp()
         self.manager = FamilyUserFactory(is_manager=True)
-        self.url = reverse('backend:home')
+        self.url = reverse("backend:home")
         self.view = HomePageView.as_view()
         self.request = RequestFactory().get(self.url)
         self.request.user = self.manager

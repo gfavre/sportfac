@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
-from subprocess import Popen, PIPE
-from os import path
-import os, subprocess
+from __future__ import absolute_import, print_function
 
 import json
+import os
+import subprocess
+from os import path
+from subprocess import PIPE, Popen
+
 
 IGNORE_DEFAULT = set(["SHLVL", "PWD", "_"])
 
@@ -35,8 +38,10 @@ def list_vars(script_path, ignore=IGNORE_DEFAULT):
     :rtype: list
     """
     if path.isfile(script_path):
-        input = (""". "%s"; env | awk -F = '/[a-zA-Z_][a-zA-Z_0-9]*=/ """ % script_path +
-                 """{ if (!system("[ -n \\"${" $1 "}\\" ]")) print $1 }'""")
+        input = (
+            """. "%s"; env | awk -F = '/[a-zA-Z_][a-zA-Z_0-9]*=/ """ % script_path
+            + """{ if (!system("[ -n \\"${" $1 "}\\" ]")) print $1 }'"""
+        )
         cmd = "env -i bash".split()
 
         p = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
@@ -81,8 +86,8 @@ def get_var(script_path, var):
     :return: str
     """
     if path.isfile(script_path):
-        input = '. "%s"; echo -n "$%s"\n'% (script_path, var)
-        pipe = Popen(["bash"],  stdout=PIPE, stdin=PIPE, stderr=PIPE)
+        input = '. "%s"; echo -n "$%s"\n' % (script_path, var)
+        pipe = Popen(["bash"], stdout=PIPE, stdin=PIPE, stderr=PIPE)
         stdout_data, stderr_data = pipe.communicate(input=input)
         if stderr_data:
             raise ShellScriptException(script_path, stderr_data)
@@ -92,19 +97,21 @@ def get_var(script_path, var):
         raise _noscripterror(script_path)
 
 
-PYTHONPATH = '/home/grfavre/.virtualenvs/{}/bin'
-PROJECTPATH = '/home/grfavre/webapps/{}'
-POSTACTIVATE = PYTHONPATH + '/postactivate'
+PYTHONPATH = "/home/grfavre/.virtualenvs/{}/bin"
+PROJECTPATH = "/home/grfavre/webapps/{}"
+POSTACTIVATE = PYTHONPATH + "/postactivate"
 
 
 def run_command(env_name, command, *args):
     env_file = POSTACTIVATE.format(env_name)
     envvars = get_vars(env_file)
     pythonpath = PYTHONPATH.format(env_name)
-    p = subprocess.Popen([pythonpath + '/python', 'sportfac/manage.py', command] + list(args),
-                         cwd=PROJECTPATH.format(env_name),
-                         env=envvars,
-                         stdout=subprocess.PIPE)
+    p = subprocess.Popen(
+        [pythonpath + "/python", "sportfac/manage.py", command] + list(args),
+        cwd=PROJECTPATH.format(env_name),
+        env=envvars,
+        stdout=subprocess.PIPE,
+    )
     out, err = p.communicate()
     return out
 
@@ -112,35 +119,48 @@ def run_command(env_name, command, *args):
 def set_env():
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "sportfac.settings.local")
     import django
+
     django.setup()
 
 
-FIELDS_TO_IMPORT = ('country', 'last_name', 'birth_date', 'password',
-                    'private_phone', 'private_phone2', 'private_phone3', 'city', 'first_name',
-                    'iban', 'address', 'zipcode', 'email',
-                    )
+FIELDS_TO_IMPORT = (
+    "country",
+    "last_name",
+    "birth_date",
+    "password",
+    "private_phone",
+    "private_phone2",
+    "private_phone3",
+    "city",
+    "first_name",
+    "iban",
+    "address",
+    "zipcode",
+    "email",
+)
 
 
 def copy_users(source_env):
     set_env()
-    users = run_command(source_env, 'dumpdata', 'profiles.familyUser')
+    users = run_command(source_env, "dumpdata", "profiles.familyUser")
     from profiles.models import FamilyUser
+
     data = json.loads(users)
     all_existing_users = {}
     for user in FamilyUser.objects.all():
         all_existing_users[user.email] = user
 
     for user in data:
-        fields = user['fields']
+        fields = user["fields"]
         user_data = {}
         for field in FIELDS_TO_IMPORT:
             user_data[field] = fields[field]
-        if user_data['email'] and user_data['email'] not in all_existing_users:
+        if user_data["email"] and user_data["email"] not in all_existing_users:
             FamilyUser.objects.create(**user_data)
-            print('Created user: %s' % fields['email'])
-        elif user_data['email'] in all_existing_users:
+            print(("Created user: %s" % fields["email"]))
+        elif user_data["email"] in all_existing_users:
             user.update(**user_data)
-            print('Updated user: %s' % fields['email'])
+            print(("Updated user: %s" % fields["email"]))
 
 
-copy_users('sportfac_montreux_ski')
+copy_users("sportfac_montreux_ski")

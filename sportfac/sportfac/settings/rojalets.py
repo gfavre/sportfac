@@ -1,15 +1,16 @@
 """Production settings and globals."""
 
-from production import *
+from .production import *
 
-TEMPLATES[0]['DIRS'] = [
-    normpath(join(SITE_ROOT, 'themes', 'rojalets', 'templates')),
-    normpath(join(SITE_ROOT, 'templates')),
+
+TEMPLATES[0]["DIRS"] = [
+    normpath(join(SITE_ROOT, "themes", "rojalets", "templates")),
+    normpath(join(SITE_ROOT, "templates")),
 ]
 
 STATICFILES_DIRS = (
-    normpath(join(SITE_ROOT, 'themes', 'rojalets', 'static')),
-    normpath(join(SITE_ROOT, 'static')),
+    normpath(join(SITE_ROOT, "themes", "rojalets", "static")),
+    normpath(join(SITE_ROOT, "static")),
 )
 
 # We switch to postmark. Here are the old settings which ended up in mailgun
@@ -39,7 +40,7 @@ KEPCHUP_DISPLAY_CAR_NUMBER = False
 KEPCHUP_DISPLAY_REGISTRATION_NOTE = False
 
 
-CELERYBEAT_SCHEDULE['notify-absences'] = {
-        'task': 'absences.tasks.notify_absences',
-        'schedule': crontab(hour=19, minute=0),
+CELERYBEAT_SCHEDULE["notify-absences"] = {
+    "task": "absences.tasks.notify_absences",
+    "schedule": crontab(hour=19, minute=0),
 }

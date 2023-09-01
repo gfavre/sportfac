@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+from .celery import app as celery_app  # noqa F401
 
-from .celery import app as celery_app
 
+__version__ = "3.2.1"

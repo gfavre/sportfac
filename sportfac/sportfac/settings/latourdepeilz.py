@@ -1,17 +1,16 @@
-# -*- coding:utf-8 -*-
 """Production settings and globals."""
-from django.utils.translation import ugettext_lazy as _
 
-from production import *
+from .production import *  # noqa: F403
 
-TEMPLATES[0]['DIRS'] = [
-    normpath(join(SITE_ROOT, 'themes', 'latourdepeilz', 'templates')),
-    normpath(join(SITE_ROOT, 'templates')),
+
+TEMPLATES[0]["DIRS"] = [  # noqa: F405
+    normpath(join(SITE_ROOT, "themes", "latourdepeilz", "templates")),  # noqa: F405
+    normpath(join(SITE_ROOT, "templates")),  # noqa: F405
 ]
 
 STATICFILES_DIRS = (
-    normpath(join(SITE_ROOT, 'themes', 'latourdepeilz', 'static')),
-    normpath(join(SITE_ROOT, 'static')),
+    normpath(join(SITE_ROOT, "themes", "latourdepeilz", "static")),  # noqa: F405
+    normpath(join(SITE_ROOT, "static")),  # noqa: F405
 )
 
 # Absences
@@ -22,7 +21,10 @@ KEPCHUP_ABSENCES_ORDER_ASC = True
 # Activities
 KEPCHUP_ENABLE_ALLOCATION_ACCOUNTS = True
 KEPCHUP_ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE = True
-KEPCHUP_ACTIVITY_TYPES = [('activity', u"Prestations"), ('sportfac', u"Sports scolaires facultatifs")]
+KEPCHUP_ACTIVITY_TYPES = [
+    ("activity", "Prestations"),
+    ("sportfac", "Sports scolaires facultatifs"),
+]
 
 
 # Accounts
@@ -43,8 +45,8 @@ KEPCHUP_INSTRUCTORS_CAN_REMOVE_REGISTRATIONS = True
 KEPCHUP_ALTERNATIVE_STEPS_NAMING = True
 KEPCHUP_ALTERNATIVE_ABOUT_LABEL = None
 KEPCHUP_ALTERNATIVE_CHILDREN_LABEL = None
-KEPCHUP_ALTERNATIVE_ACTIVITIES_LABEL = u'Prestations'
-KEPCHUP_ALTERNATIVE_CONFIRM_LABEL = u'Récapitulation'
+KEPCHUP_ALTERNATIVE_ACTIVITIES_LABEL = "Prestations"
+KEPCHUP_ALTERNATIVE_CONFIRM_LABEL = "Récapitulation"
 KEPCHUP_ALTERNATIVE_BILLING_LABEL = None
 KEPCHUP_LIMIT_BY_AGE = True
 KEPCHUP_LIMIT_BY_SCHOOL_YEAR = not KEPCHUP_LIMIT_BY_AGE
@@ -54,19 +56,19 @@ KEPCHUP_REGISTRATION_EXPIRE_MINUTES = 60 * 24
 # Payment
 #########################################
 KEPCHUP_NO_PAYMENT = False
-KEPCHUP_PAYMENT_METHOD = 'datatrans'
+KEPCHUP_PAYMENT_METHOD = "datatrans"
 KEPCHUP_USE_DIFFERENTIATED_PRICES = True
-KEPCHUP_LOCAL_ZIPCODES = ['1814']
+KEPCHUP_LOCAL_ZIPCODES = ["1814"]
 
 # Misc
 KEPCHUP_IMPORT_CHILDREN = False
 KEPCHUP_ENABLE_TEACHER_MANAGEMENT = False
 
-CELERYBEAT_SCHEDULE['notify-absences'] = {
-        'task': 'absences.tasks.notify_absences',
-        'schedule': crontab(hour=04, minute=0),
+CELERYBEAT_SCHEDULE["notify-absences"] = {  # noqa: F405
+    "task": "absences.tasks.notify_absences",
+    "schedule": crontab(hour=0o4, minute=0),  # noqa: F405
 }
-CELERYBEAT_SCHEDULE['cancel-expired-registrations'] = {
-        'task': 'registrations.tasks.cancel_expired_registrations',
-        'schedule': crontab(minute="*/15"),
+CELERYBEAT_SCHEDULE["cancel-expired-registrations"] = {  # noqa: F405
+    "task": "registrations.tasks.cancel_expired_registrations",
+    "schedule": crontab(minute="*/15"),  # noqa: F405
 }

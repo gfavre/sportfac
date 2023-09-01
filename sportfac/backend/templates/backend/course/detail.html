@@ -1,6 +1,6 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags staticfiles %}
-{% load duration switzerland %}
+{% load i18n sekizai_tags static %}
+{% load duration registrations switzerland %}
 
 {% block title %}{{ course.activity.name }} - {{ block.super }}{% endblock %}
 {% block page_title %}
@@ -323,24 +323,8 @@
             </td>
           {% endif %}
           <td>{{ registration.child.family.email | urlize }}</td>
-          {% for extra in registration.extra_infos.all %}
-            {% if extra.key in course.extra.all %}
-              <td data-order="{{ extra.value }}">
-                {% if extra.key.type == 'B' %}
-                  {% if extra.value == '1' %}
-                    <i class="icon-ok-circled text-success"></i>
-                  {% else %}
-                    <i class="icon-cancel-circled text-danger"></i>
-                  {% endif %}
-                {% else %}
-                  {{ extra.value }}
-                {% endif %}
-              </td>
-            {% endif %}
-            {% empty %}
-            {% for extra in course.extra.all %}
-              <td data-order=""></td>
-            {% endfor %}
+          {% for extra_question in course.extra.all %}
+            {% get_extra_info_td registration extra_question %}
           {% endfor %}
           <td>
             <ul class="list-unstyled">
@@ -355,7 +339,7 @@
       {% endfor %}
     </table>
   </section>
-
+{% if ENABLE_WAITING_LISTS %}
 <hr>
   <section>
     <h2>{% trans "Waiting list" %}</h2>
@@ -453,4 +437,5 @@
       {% endfor %}
     </table>
   </section>
+  {% endif %}
 {% endblock content %}

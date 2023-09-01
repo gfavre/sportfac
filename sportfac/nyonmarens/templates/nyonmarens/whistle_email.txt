@@ -1,0 +1,17 @@
+{% load duration mail_tags switzerland %}
+1. Qu’est ce qui s’est passé ?
+{{ context }}
+
+2. En remplissant ce formulaire tu souhaites:
+{{ form_type }}
+{% if form_type == "Autre" %}
+{{ form_type_other }}
+{% endif %}
+
+3. Informations facultatives:
+Classe: {{ school_year|default:"n/a" }}
+Âge: {{ age|default:"n/a" }}
+
+4. À remplir uniquement si tu souhaites être contacté pour un échange:
+email: {{ email|default:"n/a" }}
+téléphone: {{ phone|default:"n/a" }}

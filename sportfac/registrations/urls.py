@@ -1,12 +1,19 @@
-from django.conf.urls import url
+from django.urls import path
 
-from .views import BillingView, BillDetailView, RegistrationDeleteView, ChildrenListView, SummaryView
+from .views import (
+    BillDetailView,
+    BillingView,
+    ChildrenListView,
+    RegistrationDeleteView,
+    SummaryView,
+)
 
 
+app_name = "registrations"
 urlpatterns = [
-    url(r'^children/$', ChildrenListView.as_view(), name="registrations_children"),
-    url(r'^payment/$', BillingView.as_view(), name="registrations_billing"),
-    url(r'^payment/(?P<pk>\d+)$', BillDetailView.as_view(), name="registrations_bill_detail"),
-    url(r'^summary/$', SummaryView.as_view(), name="registrations_registered_activities"),
-    url(r'^cancel/(?P<pk>\d+)$', RegistrationDeleteView.as_view(), name="cancel-registration"),
+    path("children/", ChildrenListView.as_view(), name="registrations_children"),
+    path("payment/", BillingView.as_view(), name="registrations_billing"),
+    path("payment/<int:pk>", BillDetailView.as_view(), name="registrations_bill_detail"),
+    path("summary/", SummaryView.as_view(), name="registrations_registered_activities"),
+    path("cancel/<int:pk>", RegistrationDeleteView.as_view(), name="cancel-registration"),
 ]

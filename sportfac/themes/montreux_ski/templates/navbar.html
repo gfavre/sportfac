@@ -1,0 +1,169 @@
+{% load i18n static sekizai_tags %}
+
+{% addtoblock "js" %}
+<script>
+jQuery(function($){
+  $('#topnav .change-tenant').on('click', function (evt){
+    evt.stopPropagation();
+    $('#tenant-change input[name=tenant]').val($(this).data('tenant-id')); $('#tenant-change').submit();
+  })
+});
+</script>
+
+{% endaddtoblock %}
+
+<header class="navbar navbar-inverse" role="banner">
+  <div class="container">
+    <div class="navbar-header">
+      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topnav">
+        <span class="sr-only">{% trans "Toggle navigation" %}</span>
+        <span class="icon-menu" style="color:#fff;"></span>
+      </button>
+      <a href="/" class="navbar-brand navbar-brand-white">{% include "main-title.html" %}</a>
+    </div> <!-- /.navbar-header -->
+
+    <nav class="collapse navbar-collapse hidden-print" role="navigation" id="topnav">
+      <ul class="nav navbar-nav  navbar-left">
+        {% if not NO_TERMS %}
+          <li><a href="{% url 'terms' %}">{% trans "Terms and conditions" %}</a></li>
+        {% endif %}
+        {% for activity_type, activities in activities_types %}
+          {% if activities %}
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                 aria-expanded="false">{{ activity_type }} <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                {% for activity in activities %}
+                  <li><a href="{{ activity.get_absolute_url }}">{{ activity.name }}</a></li>
+                {% endfor %}
+              </ul>
+            </li>
+          {% endif %}
+        {% endfor %}
+
+          <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                 aria-expanded="false">Circulaires<span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="{% static "pdf/circulaire-ski-2023-rochers-petits-v18.12.pdf" %}">Rochers-de-Naye 3-6P</a></li>
+                <li><a href="{% static "pdf/circulaire-ski-2023-rochers-grands-v.18.12.pdf" %}">Rochers-de-Naye 5P-12S</a></li>
+                <li><a href="{% static "pdf/circulaire-ski-2023-mosses-v.18.12.pdf" %}">Les Mosses</a></li>
+                <li><a href="{% static "pdf/circulaire-ski-2023-diablerets-grands-v.18.12.pdf" %}">Les Diablerets</a></li>
+
+              </ul>
+          </li>
+
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        {% if user.is_authenticated and user.is_kepchup_staff %}
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+              <i class="icon-sitemap"></i> {{ request.tenant }} <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" role="menu">
+              <form id="tenant-change" action="{% url 'backend:year-change' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}"/>
+                <input type="hidden" name="tenant" value="{{ request.tenant.pk }}"/>
+              </form>
+
+              {% for tenant in tenants %}
+                {% if tenant == request.tenant %}
+                  <li class="disabled">
+                    <a><i class="icon-star"></i> {{ tenant }}</a>
+                  </li>
+                {% elif tenant.is_ready %}
+                  <li>
+                    <a href="#" class="change-tenant" data-tenant-id="{{ tenant.pk }}">
+                      {% if tenant.is_past %}{% trans "Review" %}{% elif tenant.is_future %}
+                        {% trans "Preview" %}{% endif %} {{ tenant }}
+                    </a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+              {% if user.is_manager or user.is_superuser %}
+              <li class="divider"></li>
+              <li>
+                <a href="{% url 'backend:year-list' %}"><i class="icon-exchange"></i> {% trans "Manage periods" %}</a>
+              </li>
+              {% endif %}
+            </ul>
+          </li>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+              <i class="icon-user"></i>
+              {{ user.full_name }}
+              {% if user.nb_notifications %}
+                <span class="badge badge-danger">{{ user.nb_notifications }}</span>{% endif %}<span
+                class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" role="menu">
+              <li>
+                <a href="{% url 'profiles:profiles_account' %}"><i class="icon-pencil"></i> {% trans "My account" %}</a>
+              </li>
+              <li>
+                <a href="{% url 'registrations:registrations_children' %}">
+                  <i class="icon-group"></i> {% trans "My family" %}
+                  {% if user.updatable_children %}
+                    <span class="badge badge-danger">{{ user.updatable_children }}</span>{% endif %}</a>
+              </li>
+
+              {% if user.has_registrations %}
+                <li>
+                  <a href="{% url 'registrations:registrations_registered_activities' %}"> <i
+                      class="icon-calendar"></i> {% trans "My registered activities" %}</a>
+                </li>
+                <li>
+                  <a href="{% url 'registrations:registrations_billing' %}"> <i class="icon-credit-card-1"></i> {% trans "My bills" %}
+                  </a>
+                </li>
+              {% endif %}
+
+            {% if USE_APPOINTMENTS and request.PHASE > 1 %}
+              <li>
+                  <a href="{% url 'appointments:register' %}"> <i class="icon-calendar-1"></i> {% trans "My appointments" %}
+                  </a>
+                </li>
+            {% endif %}
+
+              {% if user.is_instructor %}
+                <li class="divider"></li>
+                <li>
+                  <a href="{% url 'activities:my-courses' %}"><i
+                      class="icon-graduation-cap"></i> {% trans "My courses" %}</a>
+                </li>
+              {% endif %}
+
+
+              {% if user.is_manager or user.is_staff or user.is_superuser %}
+                <li class="divider"></li>
+                <li>
+                  <a href="{% url 'backend:home' %}"><i class="icon-cogs"></i> {% trans "Administration" %}</a>
+                </li>
+              {% endif %}
+              {% if user.is_staff or user.is_superuser %}
+                <li class="divider"></li>
+                <li>
+                  <a href="{% url 'admin:index' %}"><i class="icon-lock"></i> Django admin</a>
+                </li>
+              {% endif %}
+              <li class="divider"></li>
+              <li><a href="{% block logout_url %}{% url 'profiles:auth_logout' %}?next=/{% endblock %}">{% trans "logout" %}</a>
+              </li>
+            </ul>
+          </li>
+        {% else %}
+          {% if not USE_SSO %}
+            <li>
+              <a href="{% url 'profiles:auth_login' %}?next={% url 'authenticated-home' %}"><i
+                  class="icon-user icon-white"></i> {% trans "login" %}</a>
+            </li>
+          {% endif %}
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+</header>

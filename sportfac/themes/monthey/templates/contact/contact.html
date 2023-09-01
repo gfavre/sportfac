@@ -1,0 +1,29 @@
+{% extends "contact/contact.html" %}
+
+{% block addresses %}
+    <section style="padding-top: 0">
+      <h4 itemprop="name">Écoles primaires de Monthey</h4>
+      <address itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+        <span itemprop="streetAddress">
+          Collège de l'Europe<br>
+          Avenue de l'Europe 30
+        </span><br />
+        <abbr itemprop="addressCountry" title="Switzerland">CH</abbr>-<span itemprop="postalCode">1870</span> <span itemprop="addressLocality">Monthey</span>
+      </address>
+      <dl class="dl-horizontal">
+        <dt>Téléphone</dt><dd><a href="tel:+41244757930" itemprop="telephone">024 475 79 30</a></dd>
+        <dt>Email</dt><dd><a itemprop="email" href="mailto:secretariat.ep@monthey.ch">secretariat.ep@monthey.ch</a></dd>
+      </dl>
+    </section>
+
+
+    <section itemprop="member" itemscope itemtype="http://www.schema.org/Person">
+      <h4 itemprop="jobTitle">Responsable Sport Scolaire Facultatif</h4>
+      <p itemprop="name">M. Sébastien Fracheboud</p>
+      <dl class="dl-horizontal">
+        <dt>Téléphone</dt><dd itemprop="telephone"><a href="tel:+41792012808">+41 79 201 28 08</a></dd>
+        <dt>Email</dt><dd><a itemprop="email" href="mailto:sebastien.fracheboud@edu.vs.ch">sebastien.fracheboud@edu.vs.ch</a></dd>
+      </dl>
+    </section>
+
+{% endblock %}

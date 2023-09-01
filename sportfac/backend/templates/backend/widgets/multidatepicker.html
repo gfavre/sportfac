@@ -1,0 +1,7 @@
+
+<div class="input-group date datepicker" id="dt-{{ widget.name }}">
+<input type="{{ widget.type }}" name="{{ widget.name }}"{% if widget.value != None %} value="{{ widget.value|stringformat:'s' }}"{% endif %}{% include "django/forms/widgets/attrs.html" %}
+data-date-format="DD.MM.YYYY" data-date-useCurrent="false"  data-date-pickTime="false">
+
+  <span class="input-group-addon"><span class="icon-calendar"></span></span>
+</div>

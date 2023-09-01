@@ -1,33 +1,36 @@
-# -*- coding: utf-8 -*-
-from datetime import datetime
 import logging
 import re
+from datetime import datetime
 
-from django.utils.six import moves
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
-import xlrd
-
-from registrations.models import Child
+from openpyxl import load_workbook
+from openpyxl.utils.datetime import from_excel
 from profiles.models import School, SchoolYear
+from registrations.models import Child
 
 
 logger = logging.getLogger(__name__)
 
 
-CHILD_MANDATORY_FIELDS = (u'ID LAGAPEO', u'Nom', u'Prénom', u'Genre', u'Date de naissance',)
-CHILD_MANDATORY_FIELDS = ('id_lagapeo', 'first_name', 'last_name', 'sex', 'birth_date',)
+CHILD_MANDATORY_FIELDS = (
+    "id_lagapeo",
+    "first_name",
+    "last_name",
+    "sex",
+    "birth_date",
+)
 CORRESPONDANCE_DICT = {
-    'id_lagapeo': [u'ID LAGAPEO', u'ELEVE_ID_PERS'],
-    'first_name': [u'Prénom', u'ELEVE_PRENOM'],
-    'last_name': [u'Nom', u'ELEVE_NOM'],
-    'birth_date': [u'Date de naissance', u'ELEVE_DATE_NAISS'],
-    'sex': [u'Genre', u'ELEVE_GENRE'],
-    'school_year': [u'Année', u'ANNEE', u'ELEVE_ANNEE_SCOL'],
-    'nationality': [u'Nationalité'],
-    'language': [u'Langue maternelle', u'LANGUE MATERNELLE'],
-    'school': [u'Etablissement', u'ETABLISSEMENT', u'ETABLISSEMENT_NOM'],
-    'is_blacklisted': [u'Blacklist', u'BLACKLIST'],
+    "id_lagapeo": ["ID LAGAPEO", "ELEVE_ID_PERS"],
+    "first_name": ["Prénom", "ELEVE_PRENOM"],
+    "last_name": ["Nom", "ELEVE_NOM"],
+    "birth_date": ["Date de naissance", "ELEVE_DATE_NAISS"],
+    "sex": ["Genre", "ELEVE_GENRE"],
+    "school_year": ["Année", "ANNEE", "ELEVE_ANNEE_SCOL", "Année2"],
+    "nationality": ["Nationalité"],
+    "language": ["Langue maternelle", "LANGUE MATERNELLE"],
+    "school": ["Etablissement", "ETABLISSEMENT", "ETABLISSEMENT_NOM"],
+    "is_blacklisted": ["Blacklist", "BLACKLIST"],
 }
 
 col_name_to_field = {}
@@ -37,112 +40,93 @@ for k, v in CORRESPONDANCE_DICT.items():
 
 
 class ChildParser:
-    def __init__(self, book=None):
-        self.schoolyears = dict([(year.year, year) for year in SchoolYear.objects.all()])
-        self.schools = dict([(school.code, school) for school in School.objects.all()])
-        if book:
-            self.datemode = book.datemode
-        else:
-            self.datemode = 0
-
+    def __init__(self):
+        self.schoolyears = {year.year: year for year in SchoolYear.objects.all()}
+        self.schools = {school.code: school for school in School.objects.all()}
         self.fields_dict = {
-            'id_lagapeo': lambda x: int(x),
-            'first_name': lambda x: x,
-            'last_name': lambda x: x,
-            'birth_date': self.parse_birth_date,
-            'sex': self.parse_sex,
-            'nationality': self.parse_nationality,
-            'language': self.parse_language,
-            'school_year': self.parse_school_year,
-            'school': self.parse_school,
-            'is_blacklisted': self.parse_blacklist,
+            "id_lagapeo": self.parse_id_lagapeo,
+            "first_name": lambda first_name: first_name,
+            "last_name": lambda last_name: last_name,
+            "birth_date": self.parse_birth_date,
+            "sex": self.parse_sex,
+            "nationality": self.parse_nationality,
+            "language": self.parse_language,
+            "school_year": self.parse_school_year,
+            "school": self.parse_school,
+            "is_blacklisted": self.parse_blacklist,
         }
-        # self.fields_dict = {
-        #     u'ID LAGAPEO': ('id_lagapeo', lambda x: int(x)),
-        #     u'ELEVE_ID_PERS': ('id_lagapeo', lambda x: int(x)),
-        #     u'Nom': ('last_name', lambda x: x),
-        #     u'Prénom': ('first_name', lambda x: x),
-        #     u'Genre': ('sex', self.parse_sex),
-        #     u'Date de naissance': ('birth_date', self.parse_birth_date),
-        #     u'Nationalité': ('nationality', self.parse_nationality),
-        #     u'Langue maternelle': ('language', self.parse_language),
-        #     u'LANGUE MATERNELLE': ('language', self.parse_language),
-        #     u'Année': ('school_year', self.parse_school_year),
-        #     u'ANNEE': ('school_year', self.parse_school_year),
-        #     u'Etablissement': ('school', self.parse_school),
-        #     u'ETABLISSEMENT': ('school', self.parse_school),
-        #     u'Blacklist': ('is_blacklisted', self.parse_blacklist),
-        #     u'BLACKLIST': ('is_blacklisted', self.parse_blacklist),
-        #
-        # }
 
-    def parse_blacklist(self, value):
-        if not value or value in (0, '0', 'FALSE'):
+    @staticmethod
+    def parse_id_lagapeo(value):
+        try:
+            return int(value)
+        except (ValueError, TypeError):
+            return None
+
+    @staticmethod
+    def parse_blacklist(value):
+        if not value or value in (0, "0", "FALSE"):
             return False
         return True
 
-    def parse_sex(self, value):
-        if value == 'G':
+    @staticmethod
+    def parse_sex(value):
+        if value == "G":
             return Child.SEX.M
         return Child.SEX.F
 
-    def parse_birth_date(self, value):
+    @staticmethod
+    def parse_birth_date(value):
         try:
-            if isinstance(value, basestring):
-                return datetime.strptime(value, '%d.%m.%Y').date()
-            else:
-                return xlrd.xldate_as_datetime(value, self.datemode)
-        except ValueError:
-            return None
-        except TypeError:
+            if isinstance(value, datetime):
+                return value.date()
+            if isinstance(value, str):
+                return datetime.strptime(value, "%d.%m.%Y").date()
+            return from_excel(value)
+        except (ValueError, TypeError):
             return None
 
-    def parse_nationality(self, value):
-        if value in (u'Suisse', u'CH'):
+    @staticmethod
+    def parse_nationality(value):
+        if value in ("Suisse", "CH"):
             return Child.NATIONALITY.CH
-        elif value == u'Liechtenstein':
+        if value == "Liechtenstein":
             return Child.NATIONALITY.FL
-        else:
-            return Child.NATIONALITY.DIV
+        return Child.NATIONALITY.DIV
 
-    def parse_language(self, value):
-        if value in (u'Français', u'F'):
+    @staticmethod
+    def parse_language(value):
+        if value in ("Français", "F"):
             return Child.LANGUAGE.F
-        elif value == u'Italien':
+        if value == "Italien":
             return Child.LANGUAGE.I
-        elif value == u'Allemand':
+        if value == "Allemand":
             return Child.LANGUAGE.D
-        elif value == u'Anglais':
+        if value == "Anglais":
             return Child.LANGUAGE.E
-
         return Child.LANGUAGE.F
 
     def parse_school(self, value):
         return self.schools.get(value, None)
 
     def parse_school_year(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             try:
-                match = re.match(r'\s*(\d+)\s?\w*.*', value)
+                match = re.match(r"\s*(\d+)\s?\w*.*", value)
                 if not match:
-                    logger.debug('Year not parsed: {}'.format(value))
+                    logger.debug(f"Year not parsed: {value}")
                     return None
                 value = int(match.group(1))
             except TypeError:
-                print('typeerror')
                 return self.schoolyears.get(value, None)
-            except ValueError:
-                print('valueerror')
-                return None
-            except IndexError:
-                print('indexerror')
+            except (ValueError, IndexError):
                 return None
         elif isinstance(value, float):
             value = int(value)
 
         year = self.schoolyears.get(value, None)
         if not year:
-            logger.debug('no corresponding year found: {}'.format(value))
+            logger.debug(f"no corresponding year found: {value}")
         return year
 
     def parse(self, row):
@@ -150,66 +134,47 @@ class ChildParser:
         for key, val in row.items():
             translitterated_key = col_name_to_field.get(key, None)
             try:
-                translitterated_value = self.fields_dict.get(
-                    translitterated_key, lambda notfound: None)(val)
+                translitterated_value = self.fields_dict.get(translitterated_key, lambda notfound: None)(val)
                 if translitterated_value:
                     out[translitterated_key] = translitterated_value
             except Exception as exc:
-                logger.warning(u'{}: Could not parse key={}, value={}'.format(exc, key, val))
+                logger.warning(f"{exc}: Could not parse key={key}, value={val}")
                 continue
         return out
 
 
 def load_children(filelike):
     try:
-        xls_book = xlrd.open_workbook(file_contents=filelike.read())
-        sheet = xls_book.sheets()[0]
-        header_row = sheet.row_values(0)
+        xls_book = load_workbook(filelike)
+        sheet = xls_book.active
+        header_row = [cell.value for cell in sheet[1]]
         for field in CHILD_MANDATORY_FIELDS:
             if not any(set(CORRESPONDANCE_DICT[field]).intersection(set(header_row))):
-                raise ValueError(u'Missing mandatory field: {}'.format(field))
+                raise ValueError(f"Missing mandatory field: {field}")
 
-    except xlrd.XLRDError:
-        raise ValueError(_("File format is unreadable"))
+    except (ValueError, KeyError) as exc:
+        raise ValueError(_("File format is unreadable")) from exc
     nb_created = 0
     nb_updated = 0
-    parser = ChildParser(xls_book)
-    for i in moves.range(1, sheet.nrows):
-        values = dict(zip(header_row, sheet.row_values(i)))
+    parser = ChildParser()
+    for row_number, row in enumerate(sheet.iter_rows(min_row=2, values_only=True)):
+        real_row_number = row_number + 2
+        values = dict(zip(header_row, row))
         try:
             parsed = parser.parse(values)
         except Exception as exc:
-            logger.warning(u'{}: Could not parse row={}, values={}'.format(exc, i, values))
+            logger.warning(f"{exc}: Could not parse row={real_row_number}, values={values}")
             continue
-        id_lagapeo = parsed.pop('id_lagapeo')
-        if not parsed.get('birth_date'):
-            logger.warning(u'{}: Could not add, missing birth date'.format(id_lagapeo))
+        logger.debug(real_row_number, parsed)
+        if not parsed.get("id_lagapeo"):
             continue
-
+        id_lagapeo = parsed.pop("id_lagapeo")
+        if not parsed.get("birth_date"):
+            logger.warning(f"{id_lagapeo}: Could not add, missing birth date")
+            continue
         child, created = Child.objects.update_or_create(id_lagapeo=id_lagapeo, defaults=parsed)
         if created:
             nb_created += 1
         else:
             nb_updated += 1
     return nb_created, nb_updated
-
-"""
-import re
-
-from django.utils.translation import ugettext as _
-from django.utils.six import moves
-
-import xlrd
-
-from registrations.utils import ChildParser
-
-f = open('/Users/grfavre/Desktop/exportExcel_ssf.xlsx')
-xls_book = xlrd.open_workbook(file_contents=f.read())
-sheet = xls_book.sheets()[0]
-header_row = sheet.row_values(0)
-parser = ChildParser()
-for i in moves.range(1, sheet.nrows):
-    values = dict(zip(header_row, sheet.row_values(i)))
-    print parser.parse(values)
-
-"""

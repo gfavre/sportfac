@@ -1,19 +1,21 @@
-# -*- coding: utf-8 -*-
 import datetime
 
-import floppyforms.__future__ as forms
-from ckeditor_uploader.widgets import CKEditorUploadingWidget
-from crispy_forms.helper import FormHelper
+from django import forms
 from django.conf import settings
 from django.contrib.flatpages.models import FlatPage
-from django.db.models import Case, IntegerField, Sum, When
 from django.forms import inlineformset_factory
 from django.forms.widgets import TextInput
-from django.utils.text import mark_safe
-from django.utils.translation import ugettext as _
+from django.utils.html import mark_safe
+from django.utils.translation import gettext as _
 
 from activities.models import Course, ExtraNeed
+from bootstrap_datepicker_plus.widgets import DateTimePickerInput
+from ckeditor_uploader.widgets import CKEditorUploadingWidget
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout
+from django_select2 import forms as s2forms
 from registrations.models import Child, ExtraInfo, Registration
+
 from .models import YearTenant
 
 
@@ -21,73 +23,184 @@ class ChildImportForm(forms.Form):
     thefile = forms.FileField(label=_("File"), help_text=_("Extraction from LAGAPEO, excel format"))
 
 
-class DateTimePickerInput(forms.DateTimeInput):
-    template_name = 'floppyforms/datetime.html'
+#
+# class DateTimePickerInput(forms.DateTimeInput):
+#    pass
 
 
-class DatePickerInput(forms.DateInput):
-    template_name = 'floppyforms/date.html'
-
+class DatePickerInput(forms.widgets.DateInput):
     def __init__(self, attrs=None, format=None):
         if not format:
-            self.format = '%d.%m.%Y'
-        super(DatePickerInput, self).__init__(attrs, format=format)
+            self.format = "%d.%m.%Y"
+        super().__init__(attrs, format=format)
 
     def format_value(self, value):
         try:
-            return value.strftime('%d.%m.%Y')
+            return value.strftime("%d.%m.%Y")
         except AttributeError:
             return value
 
 
 class MultiDateInput(DatePickerInput):
-    template_name = 'floppyforms/date-multiple.html'
+    template_name = "backend/widgets/multidatepicker.html"
+
+    class Media:
+        js = [
+            "js/vendor/bootstrap-datepicker.js",
+            "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.fr.min.js",
+            "js/backend/multidatepicker.js",
+        ]
 
 
 class TimePickerInput(forms.TimeInput):
-    template_name = 'floppyforms/time.html'
+    template_name = "floppyforms/time.html"
+
+    def render(self, name, value, attrs=None, renderer=None):
+        attrs["class"] = "form-control timepicker"
+        return super().render(name, value, attrs=attrs, renderer=renderer)
 
 
-class Select2Widget(forms.Select):
-    template_name = 'floppyforms/select2.html'
+class ActivityWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "name__icontains",
+        "number__icontains",
+    ]
+
+    def build_attrs(self, base_attrs, extra_attrs=None):
+        default_attrs = {"data-minimum-input-length": 0}
+        default_attrs.update(base_attrs)
+        return super().build_attrs(default_attrs, extra_attrs=extra_attrs)
 
 
-class Select2MultipleWidget(forms.SelectMultiple):
-    template_name = 'floppyforms/select2.html'
+class ChildWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "first_name__icontains",
+        "last_name__icontains",
+    ]
 
-    def build_attrs(self, extra_attrs=None, **kwargs):
-        self.attrs.setdefault('multiple', 'multiple')
-        return super(Select2MultipleWidget, self).build_attrs(extra_attrs, **kwargs)
+
+class CourseWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "activity__name__icontains",
+        "name__icontains",
+        "number__icontains",
+    ]
+
+    def build_attrs(self, base_attrs, extra_attrs=None):
+        default_attrs = {"data-minimum-input-length": 0}
+        default_attrs.update(base_attrs)
+        return super().build_attrs(default_attrs, extra_attrs=extra_attrs)
+
+
+class CityMultipleWidget(s2forms.ModelSelect2MultipleWidget):
+    search_fields = [
+        "name__icontains",
+        "zipcode__icontains",
+    ]
+
+
+class ExtraNeedMultipleWidget(s2forms.ModelSelect2MultipleWidget):
+    search_fields = [
+        "question_label__icontains",
+    ]
+
+
+class FamilyUserWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "first_name__icontains",
+        "last_name__icontains",
+        "email__icontains",
+    ]
+
+
+class FamilyUserMultipleWidget(s2forms.ModelSelect2MultipleWidget):
+    search_fields = [
+        "first_name__icontains",
+        "last_name__icontains",
+        "email__icontains",
+    ]
+
+
+class BuildingWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "name__icontains",
+        "address__icontains",
+        "zip_code__icontains",
+        "city__icontains",
+    ]
+
+
+class RegistrationWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "child__first_name__icontains",
+        "child__last_name__icontains",
+        "course__activity__name__icontains",
+        "course__name__icontains",
+        "course__number__icontains",
+    ]
+
+
+class TeacherWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "first_name__icontains",
+        "last_name__icontains",
+        "email__icontains",
+    ]
+
+
+class TransportWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "name__icontains",
+    ]
+
+    def build_attrs(self, base_attrs, extra_attrs=None):
+        default_attrs = {"data-minimum-input-length": 0}
+        default_attrs.update(base_attrs)
+        return super().build_attrs(default_attrs, extra_attrs=extra_attrs)
 
 
 class RegistrationDatesForm(forms.Form):
-    opening_date = forms.DateTimeField(label=_("Opening date"), required=True,
-                                       widget=DateTimePickerInput(format='%d.%m.%Y %H:%M'))
-    closing_date = forms.DateTimeField(label=_("Closing date"), required=True,
-                                       widget=DateTimePickerInput(format='%d.%m.%Y %H:%M'))
+    opening_date = forms.DateTimeField(
+        label=_("Opening date"), required=True, widget=DateTimePickerInput(format="%d.%m.%Y %H:%M")
+    )
+    closing_date = forms.DateTimeField(
+        label=_("Closing date"), required=True, widget=DateTimePickerInput(format="%d.%m.%Y %H:%M")
+    )
 
     def clean(self):
-        opening_date = self.cleaned_data.get('opening_date')
-        closing_date = self.cleaned_data.get('closing_date')
+        opening_date = self.cleaned_data.get("opening_date")
+        closing_date = self.cleaned_data.get("closing_date")
         if opening_date and closing_date and not opening_date < closing_date:
             raise forms.ValidationError(_("Closing date should come after opening date"))
-        super(RegistrationDatesForm, self).clean()
-
-
-class CourseSelectMixin(object):
-    course = forms.ModelChoiceField(label=_("Course"),
-                                    queryset=Course.objects,
-                                    empty_label=None,
-                                    widget=Select2Widget())
+        super().clean()
 
     def __init__(self, *args, **kwargs):
-        super(CourseSelectMixin, self).__init__(*args, **kwargs)
-        course_qs = Course.objects.select_related('activity')
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-3"
+        self.helper.include_media = False
+        self.helper.layout = Layout(
+            "opening_date",
+            "closing_date",
+        )
+
+
+class CourseSelectMixin:
+    course = forms.ModelChoiceField(
+        label=_("Course"), queryset=Course.objects.all(), empty_label=None, widget=CourseWidget()
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        course_qs = Course.objects.select_related("activity")
         if self.instance.pk:
             # course_qs = course_qs.filter(
             #    Q(pk=self.instance.course.pk) | Q(nb_participants__lt=F('max_participants'))
             # )
-            #course_qs = course_qs.filter(pk=self.instance.course.pk)
+            # course_qs = course_qs.filter(pk=self.instance.course.pk)
             course_qs = course_qs.all()
         # else:
         #    course_qs = course_qs.filter(nb_participants__lt=F('max_participants'))
@@ -109,33 +222,41 @@ class CourseSelectMixin(object):
                 )
         except Child.DoesNotExist:
             pass
-        self.fields['course'].queryset = course_qs
+        self.fields["course"].queryset = course_qs
 
 
 class RegistrationForm(CourseSelectMixin, forms.ModelForm):
-    child = forms.ModelChoiceField(label=_("Child"),
-                                   queryset=Child.objects.exclude(family=None),
-                                   empty_label=None,
-                                   widget=Select2Widget())
+    child = forms.ModelChoiceField(
+        label=_("Child"),
+        queryset=Child.objects.exclude(family=None),
+        empty_label=None,
+        widget=ChildWidget(),
+    )
 
     status = forms.ChoiceField(label=_("Status"), choices=Registration.STATUS)
 
     class Meta:
         model = Registration
-        fields = ('child', 'course', 'status', 'transport')
-        widgets = {'course': Select2Widget()}
+        fields = ("child", "course", "status", "transport")
 
     def __init__(self, *args, **kwargs):
-        super(RegistrationForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_class = "form-horizontal"
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.include_media = False
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-10"
         if not settings.KEPCHUP_DISPLAY_CAR_NUMBER:
-            del self.fields['transport']
+            del self.fields["transport"]
 
 
 class PlainTextWidget(forms.Widget):
     def render(self, name, value, attrs=None, renderer=None):
         if isinstance(value, datetime.date):
-            value = value.strftime('%d-%m-%Y')
-        markup = u'<p class="form-control-static">{}</p>'
+            value = value.strftime("%d-%m-%Y")
+        markup = '<p class="form-control-static">{}</p>'
 
         return mark_safe(markup.format(value))
 
@@ -144,74 +265,87 @@ class PlainTextExtraNeedWidget(forms.Widget):
     def render(self, name, value, attrs=None, renderer=None):
         extra = ExtraNeed.objects.get(pk=value)
         value = extra.question_label
-        markup = u'<p class="form-control-static">{}</p>'
+        markup = '<p class="form-control-static">{}</p>'
         return mark_safe(markup.format(value))
 
 
 class ExtraInfoForm(forms.ModelForm):
-    key = forms.ModelChoiceField(label=_("Question"),
-                                 queryset=ExtraNeed.objects.all(),
-                                 empty_label=None,
-                                 disabled=True,
-                                 widget=PlainTextExtraNeedWidget)
+    key = forms.ModelChoiceField(
+        label=_("Question"),
+        queryset=ExtraNeed.objects.all(),
+        empty_label=None,
+        disabled=True,
+        widget=PlainTextExtraNeedWidget,
+    )
     value = forms.CharField(required=True, label=_("Answer"))
 
     class Meta:
         model = ExtraInfo
-        fields = ('key', 'value')
-        read_only = ('key',)
+        fields = ("key", "value")
+        read_only = ("key",)
 
     def __init__(self, *args, **kwargs):
-        super(ExtraInfoForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_class = "form-horizontal"
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-10"
         if self.instance:
             if self.instance.key.choices:
-                self.fields['value'] = forms.ChoiceField(choices=[('', '----')] + zip(self.instance.key.choices,
-                                                                                      self.instance.key.choices),
+                self.fields["value"] = forms.ChoiceField(
+                    choices=[("", "----")] + list(zip(self.instance.key.choices, self.instance.key.choices)),
+                    label=_("Answer"),
+                )
+            elif self.instance.key.type == "B":
+                self.fields["value"] = forms.BooleanField(label=_("Answer"))
 
-                                                         label=_("Answer"))
-            elif self.instance.type == 'B':
-                self.fields['value'] = forms.BooleanField(label=_("Answer"))
-
-            elif self.instance.type == 'I':
-                self.fields['value'] = forms.IntegerField(label=_("Answer"))
+            elif self.instance.key.type == "I":
+                self.fields["value"] = forms.IntegerField(label=_("Answer"))
 
 
-ExtraInfoFormSet = inlineformset_factory(Registration, ExtraInfo, form=ExtraInfoForm, fields=('key', 'value'),
-                                         extra=0, can_delete=False)
+ExtraInfoFormSet = inlineformset_factory(
+    Registration, ExtraInfo, form=ExtraInfoForm, fields=("key", "value"), extra=0, can_delete=False
+)
 
 
 class ChildSelectForm(forms.ModelForm):
     """Child selection, with select2 widget.
-       Used in registration creation wizard"""
-    child = forms.ModelChoiceField(label=_("Child"),
-                                   queryset=Child.objects.exclude(family=None),
-                                   empty_label=None,
-                                   widget=Select2Widget())
+    Used in registration creation wizard"""
+
+    child = forms.ModelChoiceField(
+        label=_("Child"),
+        queryset=Child.objects.exclude(family=None),
+        empty_label=None,
+        widget=ChildWidget(),
+    )
 
     class Meta:
         model = Registration
-        fields = ('child',)
+        fields = ("child",)
 
 
 class CourseSelectForm(CourseSelectMixin, forms.ModelForm):
     """Course selection, used in registration creation wizard"""
 
     def __init__(self, *args, **kwargs):
-        super(CourseSelectForm, self).__init__(*args, **kwargs)
-        course_qs = self.fields['course'].queryset
+        super().__init__(*args, **kwargs)
+        course_qs = self.fields["course"].queryset
         # do not offer registrations to already registered courses.
         try:
             if self.instance.child.registrations.count():
-                course_qs = course_qs.exclude(pk__in=[registration.course.pk for registration in
-                                                      self.instance.child.registrations.all()])
+                course_qs = course_qs.exclude(
+                    pk__in=[registration.course.pk for registration in self.instance.child.registrations.all()]
+                )
         except Child.DoesNotExist:
             pass
-        self.fields['course'].queryset = course_qs
+        self.fields["course"].queryset = course_qs
 
     class Meta:
         model = Registration
-        fields = ('course',)
-        widgets = {'course': Select2Widget}
+        fields = ("course",)
+        # widgets = {"course": CourseWidget}
 
 
 class SendConfirmationForm(forms.Form):
@@ -219,20 +353,26 @@ class SendConfirmationForm(forms.Form):
 
 
 class BillingForm(forms.ModelForm):
-    paid = forms.BooleanField(required=False, label=_("Mark as paid?"),
-                              help_text=_("If not checked, a bill will be created"))
+    paid = forms.BooleanField(
+        required=False,
+        label=_("Mark as paid?"),
+        help_text=_("If not checked, a bill will be created"),
+    )
     send_confirmation = forms.BooleanField(required=False, initial=True, label=_("Send confirmation email?"))
 
     class Meta:
         model = Registration
-        fields = ('paid', 'send_confirmation')
+        fields = ("paid", "send_confirmation")
 
 
 class SessionForm(forms.Form):
-    date = forms.DateField(label=_("Session date"), required=True,
-                           help_text=_("Format: DD.MM.YYYY"),
-                           widget=DatePickerInput(),
-                           initial=datetime.date.today())
+    date = forms.DateField(
+        label=_("Session date"),
+        required=True,
+        help_text=_("Format: DD.MM.YYYY"),
+        widget=DatePickerInput(),
+        initial=datetime.date.today(),
+    )
 
 
 class YearSelectForm(forms.Form):
@@ -241,84 +381,106 @@ class YearSelectForm(forms.Form):
 
 
 class YearCreateForm(forms.Form):
-    start_date = forms.DateField(label=_("Period start date"), required=True,
-                                 help_text=_("Format: DD.MM.YYYY"),
-                                 widget=DatePickerInput())
-    end_date = forms.DateField(label=_("Period end date"), required=True,
-                               help_text=_("Format: DD.MM.YYYY"),
-                               widget=DatePickerInput())
+    start_date = forms.DateField(
+        label=_("Period start date"),
+        required=True,
+        help_text=_("Format: DD.MM.YYYY"),
+        widget=DatePickerInput(),
+    )
+    end_date = forms.DateField(
+        label=_("Period end date"),
+        required=True,
+        help_text=_("Format: DD.MM.YYYY"),
+        widget=DatePickerInput(),
+    )
     copy_activities = forms.ModelChoiceField(
         label=_("Copy courses"),
         help_text=_("Copy all activities and courses from the selected period"),
-        queryset=YearTenant.objects.all(), required=False)
+        queryset=YearTenant.objects.all(),
+        required=False,
+    )
     copy_children = forms.ModelChoiceField(
         label=_("Copy children"),
         help_text=_("Copy all children from the selected period"),
-        queryset=YearTenant.objects.all(), required=False)
+        queryset=YearTenant.objects.all(),
+        required=False,
+    )
 
 
 class YearForm(forms.ModelForm):
-    start_date = forms.DateField(label=_("Period start date"), required=True,
-                                 help_text=_("Format: DD.MM.YYYY"),
-                                 widget=DatePickerInput())
-    end_date = forms.DateField(label=_("Period end date"), required=True,
-                               help_text=_("Format: DD.MM.YYYY"),
-                               widget=DatePickerInput())
+    start_date = forms.DateField(
+        label=_("Period start date"),
+        required=True,
+        help_text=_("Format: DD.MM.YYYY"),
+        widget=DatePickerInput(),
+    )
+    end_date = forms.DateField(
+        label=_("Period end date"),
+        required=True,
+        help_text=_("Format: DD.MM.YYYY"),
+        widget=DatePickerInput(),
+    )
 
     class Meta:
         model = YearTenant
-        fields = ('start_date', 'end_date')
+        fields = ("start_date", "end_date")
 
     def __init__(self, *args, **kwargs):
-        super(YearForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
-        self.helper.form_class = 'form-horizontal'
-        self.helper.form_group_wrapper_class = 'row'
-        self.helper.label_class = 'col-sm-2'
-        self.helper.field_class = 'col-sm-10'
-        #self.helper.form_group_wrapper_class = 'row'
-        #self.helper.label_class = 'col-sm-2'
-        #self.helper.field_class = 'col-sm-10'
+        self.helper.form_class = "form-horizontal"
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-10"
+        # self.helper.form_group_wrapper_class = 'row'
+        # self.helper.label_class = 'col-sm-2'
+        # self.helper.field_class = 'col-sm-10'
 
 
 class PayslipMontreuxForm(forms.Form):
     function = forms.CharField(label=_("Function"), required=True)
-    rate_mode = forms.ChoiceField(label=_("Rate mode"),
-                                  choices=(('day', _("Daily")),
-                                           ('hour', _("Hourly"))),
-                                  widget=forms.RadioSelect
-                                  )
+    rate_mode = forms.ChoiceField(
+        label=_("Rate mode"),
+        choices=(("day", _("Daily")), ("hour", _("Hourly"))),
+        widget=forms.RadioSelect,
+    )
     rate = forms.DecimalField(label=_("Rate"), max_digits=6, decimal_places=2, required=True, widget=TextInput())
-    start_date = forms.DateField(label=_("Start date"), required=True,
-                                 help_text=_("Format: DD.MM.YYYY"),
-                                 widget=DatePickerInput())
-    end_date = forms.DateField(label=_("End date"), required=True,
-                               help_text=_("Format: DD.MM.YYYY"),
-                               widget=DatePickerInput())
+    start_date = forms.DateField(
+        label=_("Start date"),
+        required=True,
+        help_text=_("Format: DD.MM.YYYY"),
+        widget=DatePickerInput(),
+    )
+    end_date = forms.DateField(
+        label=_("End date"),
+        required=True,
+        help_text=_("Format: DD.MM.YYYY"),
+        widget=DatePickerInput(),
+    )
 
     def __init__(self, *args, **kwargs):
-        super(PayslipMontreuxForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helper.form_group_wrapper_class = 'row'
-        self.helper.label_class = 'col-sm-2'
-        self.helper.field_class = 'col-sm-10'
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-10"
 
 
 class FlatPageForm(forms.ModelForm):
     content = forms.CharField(
         label=_("Content"),
-        widget=CKEditorUploadingWidget(config_name='default', extra_plugins=None, external_plugin_resources=None)
+        widget=CKEditorUploadingWidget(config_name="default", extra_plugins=None, external_plugin_resources=None),
     )
 
     class Meta:
         model = FlatPage
-        fields = ('title', 'content')
+        fields = ("title", "content")
 
     def __init__(self, *args, **kwargs):
-        super(FlatPageForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
-        self.helper.form_group_wrapper_class = 'row'
-        self.helper.label_class = 'col-sm-2'
-        self.helper.field_class = 'col-sm-10'
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-10"

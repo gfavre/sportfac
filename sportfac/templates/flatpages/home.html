@@ -9,12 +9,12 @@
 <p style="text-align: center">
   {% if user.is_authenticated %}
     {% if user.finished_registration %}
-    <a href="{% url 'registrations_registered_activities' %}" class="btn btn-large btn-primary"><i class="icon-fixed-width icon-calendar"></i> {% trans "My registered activities" %}</a>
+    <a href="{% url 'registrations:registrations_registered_activities' %}" class="btn btn-large btn-primary"><i class="icon-fixed-width icon-calendar"></i> {% trans "My registered activities" %}</a>
     {% else  %}
     <a href="{% url 'wizard' %}" class="btn btn-large btn-success"><i class="icon-fixed-width icon-calendar"></i>{% trans "Register activities" %}</a>
     {% endif %}
   {% else %}
-  <a href="{% url 'auth_login' %}?next={% url 'wizard' %}" class="btn btn-large btn-success">{% trans "Registration" %}</a>
+  <a href="{% url 'profiles:auth_login' %}?next={% url 'wizard' %}" class="btn btn-large btn-success">{% trans "Registration" %}</a>
   {% endif %}
 </p>
 {% else %}
@@ -26,11 +26,11 @@
   {% endif %}
   <p class="text-center">
   {% if not user.is_authenticated and REGISTER_ACCOUNTS_AT_ANY_TIME %}
-  <a href="{% url 'anytime_registeraccount' %}" class="btn  btn-info"><i class="icon-fixed-width icon-user"></i> {% trans "Create an account" %}</a>
+  <a href="{% url 'profiles:anytime_registeraccount' %}" class="btn  btn-info"><i class="icon-fixed-width icon-user"></i> {% trans "Create an account" %}</a>
   {% endif %}
 
   {%  if request.PHASE == 3 %}
-  <a href="{% url 'registrations_registered_activities' %}" class="btn  btn-info"><i class="icon-fixed-width icon-calendar"></i> {% trans "Review my registered activities" %}</a>
+  <a href="{% url 'registrations:registrations_registered_activities' %}" class="btn  btn-info"><i class="icon-fixed-width icon-calendar"></i> {% trans "Review my registered activities" %}</a>
   {% endif %}
   </p>
 </div>

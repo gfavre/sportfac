@@ -9,6 +9,7 @@
 {% block extra_body %}class="bill"{% endblock %}
 
 {% block content %}
+{% include "registrations/bill-partial.html" %}
 
 
 <section>
@@ -35,6 +36,7 @@
       <tr>
         <td>
           <span class="nowrap"><a href="{{ registration.child.backend_url }}">{{ registration.child.full_name }}</a></span>
+          {% if DISPLAY_LAGAPEO %}<br><small>{{ registration.child.id_lagapeo }}</small>{% endif %}
         </td>
         <td>
           <a href="{{ registration.course.activity.backend_url }}">{{ registration.course.activity.name }}</a>
@@ -94,14 +96,10 @@
     {% endfor %}
     </tbody>
   </table>
-{% include "registrations/bill-partial.html" %}
 
 {% if transaction %}
-  <div class="hidden-print">
-  <p>Le paiement peut se faire via Twint (débit direct) ou Mastercard et Visa (cartes de crédit).</p>
-  {% include 'payments/datatrans_pay_button.html' %}
-</div>
-  {% endif %}
+    {% include "registrations/billing_partial.html" %}
+ {% endif %}
 
   <p class="hidden-print text-center">
 
@@ -117,6 +115,3 @@
 </script>
 {% endaddtoblock %}
 {% endblock content %}
-
-
-

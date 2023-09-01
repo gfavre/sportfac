@@ -1,55 +1,23 @@
 {% extends "backend/base.html" %}
-{% load i18n floppyforms staticfiles sekizai_tags %}
+{% load i18n static sekizai_tags crispy_forms_tags %}
 {% block title %}{% trans "Update course" %} - {{ block.super }}{% endblock %}
 {% block page_title %}{% trans "Update course" %}{% endblock %}
 
 {% block content %}
-  <form action="" method="post">{% csrf_token %}
-    {% include "backend/course/form.html" %}
+  <form action="" method="post">
+    {% crispy form %}
     <div class=" form-group">
-      <button type="submit" class="btn btn-success ">{% trans 'Update course' %}</button>
-      &nbsp;
+      <button type="submit" class="btn btn-success ">{% trans 'Update course' %}</button>&nbsp;
       <a href="{% url 'backend:course-list' %}" class="btn  btn-default">{% trans 'Cancel' %}</a>
     </div>
   </form>
 
   {% addtoblock "js" %}
-    {{ form.media }}
-    <script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
-    {% if EXPLICIT_SESSION_DATES %}
-      <script src="{% static 'js/vendor/bootstrap-datepicker.js' %}"></script>
-      <script
-          src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.fr.min.js"></script>
-      <script
-          src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.de.min.js"></script>
-    {% else %}
-      <script src="{% static 'js/vendor/bootstrap-datetimepicker.min.js' %}"></script>
-    {% endif %}
-    <script type="text/javascript">
-      $(function () {
-        {% if EXPLICIT_SESSION_DATES %}
-          $('.datepicker').datepicker({
-            multidate: true,
-            multidateSeparator: ',',
-            language: '{{ LANGUAGE_CODE }}',
-            format: "dd.mm.yyyy"
-          });
+    {{ form.media.js }}
+  {% endaddtoblock %}
 
-        {% else %}
-          $('.datetimepicker').datetimepicker({
-              language: '{{ LANGUAGE_CODE }}',
-              icons: {
-                time: 'icon-clock',
-                date: 'icon-calendar',
-                up: 'icon-up-open',
-                down: 'icon-down-open'
-              }
-            }
-          );
-        {% endif %}
-
-      });
-    </script>
+  {% addtoblock "css" %}
+    {{ form.media.css }}
   {% endaddtoblock %}
 
 {% endblock content %}

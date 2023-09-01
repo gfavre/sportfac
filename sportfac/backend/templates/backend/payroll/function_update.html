@@ -1,5 +1,5 @@
 {% extends "backend/base.html" %}
-{% load i18n floppyforms sekizai_tags %}
+{% load i18n crispy_forms_tags sekizai_tags %}
 
 {% block title %}{% trans "Update function" %} - {{ block.super }}{% endblock %}
 {% block page_title %}<i class="icon-adult"></i>&nbsp;&nbsp;{% trans "Update function" %}{% endblock %}
@@ -10,9 +10,8 @@
 {{ form.media }}
 {% endaddtoblock %}
 
-<form action="" method="post" class="form-horizontal">{% csrf_token %}
-
-  {% include "backend/payroll/form.html" %}
+<form action="" method="post" class="form-horizontal">
+  {% crispy form %}
   <div class=" form-group">
     <div class="col-sm-offset-2 col-sm-10">
 

@@ -1,15 +1,17 @@
+from django import forms
 from django.conf import settings
-from django.db.models import Count, Case, When, IntegerField
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
-import floppyforms.__future__ as forms
-
-from .models import Bill, Child, Registration, Transport
-from activities.models import Activity, Course
-from backend.forms import Select2Widget, DatePickerInput
+from activities.models import Course
+from backend.forms import BuildingWidget, CourseWidget, FamilyUserWidget, TeacherWidget, TransportWidget
+from bootstrap_datepicker_plus.widgets import DatePickerInput
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import HTML, ButtonHolder, Div, Fieldset, Layout
 from profiles.models import FamilyUser, School, SchoolYear
 from schools.models import Building, Teacher
+
+from .models import Bill, Child, Registration, Transport
 
 
 class BillForm(forms.ModelForm):
@@ -17,48 +19,76 @@ class BillForm(forms.ModelForm):
 
     class Meta:
         model = Bill
-        fields = ('status',)
+        fields = ("status",)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_class = "form-horizontal"
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-10"
 
 
 class ChildForm(forms.ModelForm):
-    birth_date = forms.DateTimeField(label=_("Birth date"),
-                                     widget=DatePickerInput(format='%d.%m.%Y'),
-                                     help_text=_("Format: 31.12.2012"))
-    sex = forms.ChoiceField(label=_("Sex"),widget=forms.widgets.RadioSelect, choices=Child.SEX)
-    teacher = forms.ModelChoiceField(label=_("Teacher"),
-                                     queryset=Teacher.objects.prefetch_related('years'),
-                                     widget=Select2Widget(),
-                                     required=False)
-    building = forms.ModelChoiceField(label=_("Building"),
-                                     queryset=Building.objects.all(),
-                                     widget=Select2Widget(),
-                                     required=False)
+    birth_date = forms.DateTimeField(
+        label=_("Birth date"),
+        widget=DatePickerInput(format="%d.%m.%Y"),
+        help_text=_("Format: 31.12.2012"),
+    )
+    sex = forms.ChoiceField(label=_("Sex"), widget=forms.widgets.RadioSelect, choices=Child.SEX)
+    teacher = forms.ModelChoiceField(
+        label=_("Teacher"),
+        queryset=Teacher.objects.prefetch_related("years"),
+        required=False,
+        widget=TeacherWidget,
+    )
+    building = forms.ModelChoiceField(
+        label=_("Building"),
+        queryset=Building.objects.all(),
+        required=False,
+        widget=BuildingWidget,
+    )
     nationality = forms.ChoiceField(label=_("Nationality"), choices=Child.NATIONALITY)
     language = forms.ChoiceField(label=_("Language"), choices=Child.LANGUAGE)
-    school_year = forms.ModelChoiceField(label=_("School year"),
-                                         queryset=SchoolYear.visible_objects.all(), required=False)
+    school_year = forms.ModelChoiceField(
+        label=_("School year"), queryset=SchoolYear.visible_objects.all(), required=False
+    )
     family = forms.ModelChoiceField(
-        label=_("Parent"), queryset=FamilyUser.active_objects.all(), widget=Select2Widget(), required=False
+        label=_("Parent"),
+        queryset=FamilyUser.active_objects.all(),
+        required=False,
+        widget=FamilyUserWidget,
     )
     id_lagapeo = forms.IntegerField(label=_("SSF number"), required=False)
 
-    school = forms.ModelChoiceField(label=_("School"),
-                                    queryset=School.objects.filter(selectable=True),
-                                    required=False)
+    school = forms.ModelChoiceField(label=_("School"), queryset=School.objects.filter(selectable=True), required=False)
     emergency_number = forms.CharField(label=_("Emergency number"), required=False)
     bib_number = forms.CharField(label=_("Bib number"), required=False)
     avs = forms.CharField(label=_("AVS"), required=False, help_text="756.XXXX.XXXX.XX")
-    
+
     class Meta:
         model = Child
-        fields = ('id_lagapeo', 'family', 'first_name', 'last_name', 'sex', 'birth_date', 'nationality', 'avs',
-                  'language', 'school', 'other_school', 'school_year', 'teacher', 'building', 'emergency_number',
-                  'bib_number', 'is_blacklisted')
-
-    def __init__(self, *args, **kwargs):
-        super(ChildForm, self).__init__(*args, **kwargs)
-        if not settings.KEPCHUP_USE_BUILDINGS:
-            del self.fields['building']
+        fields = (
+            "id_lagapeo",
+            "family",
+            "first_name",
+            "last_name",
+            "sex",
+            "birth_date",
+            "nationality",
+            "avs",
+            "language",
+            "school",
+            "other_school",
+            "school_year",
+            "teacher",
+            "building",
+            "emergency_number",
+            "bib_number",
+            "is_blacklisted",
+        )
 
     def clean_id_lagapeo(self):
         id_lagapeo = self.cleaned_data["id_lagapeo"]
@@ -67,14 +97,85 @@ class ChildForm(forms.ModelForm):
         try:
             child = Child.objects.get(id_lagapeo=id_lagapeo)
             if self.instance and self.instance != child:
-                raise forms.ValidationError(mark_safe(
-        _("This identifer is already attributed to another child.<br>"
-          "Please <a href=\"%s\" target=\"_blank\">review and delete the other child account</a>.") % child.get_backend_detail_url()),
-                    code='unique'
+                raise forms.ValidationError(
+                    mark_safe(
+                        _(
+                            "This identifer is already attributed to another child.<br>"
+                            'Please <a href="%s" target="_blank">review and delete the other child account</a>.'
+                        )
+                        % child.get_backend_detail_url()
+                    ),
+                    code="unique",
                 )
         except Child.DoesNotExist:
             return id_lagapeo
         return id_lagapeo
+
+    def get_submit_button(self):
+        return HTML(
+            """
+                    <button type="submit" class="btn btn-success btn-large" name="action" value="save">
+                      <i class="icon-plus"></i> {}
+                    </button>
+                    """.format(
+                _("Create child")
+            )
+        )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not settings.KEPCHUP_USE_BUILDINGS:
+            del self.fields["building"]
+        self.helper = FormHelper()
+        self.helper.include_media = False
+        self.helper.layout = Layout(
+            "family",
+            Div(
+                Div("first_name", css_class="col-sm-6"),
+                Div("last_name", css_class="col-sm-6"),
+                css_class="row",
+            ),
+            "sex",
+            Div(
+                Div("birth_date", css_class="col-sm-3"),
+                css_class="row",
+            ),
+            Div(
+                Div("nationality", css_class="col-sm-6"),
+                Div("language", css_class="col-sm-6"),
+                css_class="row",
+            ),
+            "avs",
+            settings.KEPCHUP_EMERGENCY_NUMBER_MANDATORY and "emergency_number" or HTML(""),
+            settings.KEPCHUP_BIB_NUMBERS and "bib_number" or HTML(""),
+            settings.KEPCHUP_USE_BLACKLISTS and "is_blacklisted" or HTML(""),
+            Fieldset(
+                _("School informations"),
+                settings.KEPCHUP_IMPORT_CHILDREN and "id_lagapeo" or HTML(""),
+                Div(
+                    Div("school_year", css_class="col-sm-6"),
+                    settings.KEPCHUP_USE_BUILDINGS and Div("building", css_class="col-sm-6") or HTML(""),
+                    settings.KEPCHUP_PREFILL_YEARS_WITH_TEACHERS and Div("teacher", css_class="col-sm-6") or HTML(""),
+                    settings.KEPCHUP_CHILD_SCHOOL and Div("school", css_class="col-sm-6") or HTML(""),
+                    settings.KEPCHUP_CHILD_SCHOOL and Div("other_school", css_class="col-sm-6") or HTML(""),
+                    css_class="row",
+                ),
+            ),
+            ButtonHolder(self.get_submit_button()),
+        )
+
+
+class ChildUpdateForm(ChildForm):
+    def get_submit_button(self):
+        return HTML(
+            """
+                    <button type="submit" class="btn btn-success btn-large" name="action" value="save">
+                      {}
+                    </button>
+                    """.format(
+                _("Update child")
+            )
+        )
 
 
 class RegistrationModelChoiceField(forms.ModelChoiceField):
@@ -83,29 +184,81 @@ class RegistrationModelChoiceField(forms.ModelChoiceField):
 
 
 class MoveRegistrationsForm(forms.Form):
-    registrations = forms.ModelMultipleChoiceField(queryset=Registration.objects.all(),
-                                                   widget=forms.MultipleHiddenInput)
-    destination = RegistrationModelChoiceField(
-            queryset=Course.objects.select_related('activity'),#\
-            #                       .annotate(
-            #    nb_participants=Count(Case(
-            #        When(participants__status__in=['waiting', 'valid', 'confirmed'], then=1),
-            #        output_field=IntegerField()
-            #    )),
-            #),
-            widget=Select2Widget()
+    registrations = forms.ModelMultipleChoiceField(
+        queryset=Registration.objects.all(), widget=forms.MultipleHiddenInput
     )
+    destination = RegistrationModelChoiceField(
+        queryset=Course.objects.select_related("activity"),  # \
+        #                       .annotate(
+        #    nb_participants=Count(Case(
+        #        When(participants__status__in=['waiting', 'valid', 'confirmed'], then=1),
+        #        output_field=IntegerField()
+        #    )),
+        # ),
+        widget=CourseWidget(),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_class = "form-horizontal"
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-10"
 
 
 class MoveTransportForm(forms.Form):
-    registrations = forms.ModelMultipleChoiceField(queryset=Registration.objects.all(),
-                                                   widget=forms.MultipleHiddenInput)
-    destination = forms.ModelChoiceField(
-            queryset=Transport.objects.all(),
-            widget=Select2Widget())
+    registrations = forms.ModelMultipleChoiceField(
+        queryset=Registration.objects.all(), widget=forms.MultipleHiddenInput
+    )
+    destination = forms.ModelChoiceField(queryset=Transport.objects.all(), widget=TransportWidget)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_class = "form-horizontal"
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-10"
 
 
 class TransportForm(forms.ModelForm):
     class Meta:
         model = Transport
-        fields = ('name',)
+        fields = ("name",)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_class = "form-horizontal"
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-10"
+
+
+class BillExportForm(forms.Form):
+    include_0_bills = forms.BooleanField(label=_("Include 0.- bills"), initial=False, required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_class = "form-horizontal"
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-10"
+        submit_label = _("Export to XLS")
+        self.helper.layout = Layout(
+            "include_0_bills",
+            ButtonHolder(
+                HTML(
+                    f"""
+                <button type="submit" class="btn btn-primary btn-large" name="action" value="export">
+                      <i class="icon-file-excel"></i> {submit_label}
+                    </button>"""
+                ),
+                css_class="col-sm-offset-2",
+            ),
+        )

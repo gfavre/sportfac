@@ -2,7 +2,12 @@
 {% load i18n  sekizai_tags switzerland%}
 
 
-{% block page_title %}{% if bill.total > 0 and not NO_PAYMENT %}{% trans "Billing" %}{% else %}{% trans "Registrations validated" %}{% endif %}{% endblock page_title%}
+{% block page_title %}
+  {% if bill.total > 0 and not NO_PAYMENT %}
+    {% if ALTERNATIVE_BILLING_LABEL %}{{ ALTERNATIVE_BILLING_LABEL }}{% else %}{% trans "Billing" %}{% endif %}
+  {% else %}{% trans "Registrations validated" %}
+  {% endif %}
+{% endblock page_title%}
 
 {% block content %}
 {% if bill.total > 0 and not NO_PAYMENT %}
@@ -41,6 +46,8 @@
     <tr>
       <td>
         <span class="nowrap">{{ registered.child.first_name }} {{ registered.child.last_name }}</span>
+        {% if DISPLAY_LAGAPEO %}<br><small>{{ registered.child.id_lagapeo }}</small>{% endif %}
+
       </td>
       <td>{{ registered.course.activity.name }}
     </td>

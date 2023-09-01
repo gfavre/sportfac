@@ -1,16 +1,96 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags switzerland staticfiles %}
+{% load i18n sekizai_tags switzerland static crispy_forms_tags %}
 
 
 {% block title %}{% trans "List bills" %} - {{ block.super }}{% endblock %}
 {% block page_title %}{% trans "List bills" %}{% endblock %}
+{% block subtitle %}
+  <div class="visible-print">
+    <p>
+      {% blocktrans with start=start|date end=end|date %}Period from {{ start }} to {{ end }}{% endblocktrans %}
+    </p>
+  </div>
+{% endblock %}
 
 {% block content %}
-{% addtoblock  "js" %}    
+{% addtoblock "css" %}
+<link rel="stylesheet" type="text/css"
+      href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
+<link rel="stylesheet" type="text/css"
+      href="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.css"/>
+{% endaddtoblock %}
+
+
+{% addtoblock  "js" %}
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
 <script src="{% static 'js/vendor/datatables/jquery.dataTables.min.js' %}"></script>
 <script src="{% static 'js/vendor/datatables/dataTables.bootstrap.js' %}"></script>
 <script>
 $(function () {
+  moment.locale('fr', {
+    months: 'janvier_février_mars_avril_mai_juin_juillet_août_septembre_octobre_novembre_décembre'.split('_'),
+  });
+  moment.locale('fr');
+  let start = moment("{{ start | date:'c' }}");
+  let end = moment("{{ end | date:'c' }}");
+  function cb(start, end) {
+    $('#reportrange span').html(start.format('D MMMM YYYY') + ' - ' + end.format('D MMMM YYYY'));
+  }
+  $('#reportrange').daterangepicker({
+    startDate: start,
+    endDate: end,
+    applyButtonClasses: "btn-secondary",
+    locale: {
+      "format": "DD.MM.YYYY",
+      "firstDay": 1,
+      "daysOfWeek": [
+        "{% trans "Sun" %}",
+        "{% trans "Mon" %}",
+        "{% trans "Tue" %}",
+        "{% trans "Wed" %}",
+        "{% trans "Thu" %}",
+        "{% trans "Fri" %}",
+        "{% trans "Sat" %}"],
+      "monthNames": [
+        "{% trans "January" %}",
+        "{% trans "February" %}",
+        "{% trans "March" %}",
+        "{% trans "April" %}",
+        "{% trans "May" %}",
+        "{% trans "June" %}",
+        "{% trans "July" %}",
+        "{% trans "August" %}",
+        "{% trans "September" %}",
+        "{% trans "October" %}",
+        "{% trans "November" %}",
+        "{% trans "December" %}"
+      ],
+      "applyLabel": "{% trans "Apply" %}",
+      "cancelLabel": "{% trans "Cancel" %}",
+      "customRangeLabel": "{% trans "Custom range" %}",
+    },
+    ranges: {
+      '{% trans "Today" %}': [moment(), moment()],
+      '{% trans "Yesterday" %}': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+      '{% trans "Last 7 days" %}': [moment().subtract(6, 'days'), moment()],
+      '{% trans "Last 30 days" %}': [moment().subtract(29, 'days'), moment()],
+      '{% trans "This month" %}': [moment().startOf('month'), moment().endOf('month')],
+      '{% trans "Last month" %}': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+    }
+  }, cb);
+
+  $('#reportrange').on('apply.daterangepicker', function (ev, picker) {
+    //do something, like clearing an input
+    window.location.href = window.location.href.replace(
+      /[\?#].*|$/,
+      "?start=" + picker.startDate.format('YYYY-MM-DD') + "&end=" + picker.endDate.format('YYYY-MM-DD')
+    );
+  });
+
+  cb(start, end);
+
   $(".table").dataTable({
 {% if LANGUAGE_CODE == 'fr' %}
       "language": {
@@ -28,7 +108,16 @@ $(function () {
 });
 </script>
 {% endaddtoblock %}
+<section class="portlet">
+    <div id="reportrange"
+         class="hidden-print "
+         style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+      <i class="icon-calendar"></i>&nbsp;
+      <span></span> <i class="fa fa-caret-down"></i>
+    </div>
+  </section>
 
+  <h4>{% trans "Invoices" %}, {{ start |date }} - {{ end |date }}</h4>
 
 <table class="table">
   <thead>
@@ -63,4 +152,7 @@ $(function () {
     </tr>
   {% endfor %}
 </table>
+  <hr>
+    {% crispy form %}
+
 {% endblock content %}

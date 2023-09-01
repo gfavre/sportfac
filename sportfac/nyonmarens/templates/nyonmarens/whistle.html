@@ -1,0 +1,31 @@
+{% extends "nyonmarens/base.html" %}
+
+{% load i18n crispy_forms_tags sekizai_tags %}
+
+{% block title %}{% trans "Parlons-en..." %}{% endblock title %}
+{% block page_title %}{% trans "Parlons-en..." %}{% endblock page_title %}
+
+{% block content %}
+  {% addtoblock "js" %}
+  {{ form.media.js }}
+  {% endaddtoblock %}
+
+
+  <p class="lead" style="font-size: 1.5em">
+Ce formulaire a pour objectif d’offrir la parole aux élèves et d’améliorer le climat de l’école.
+Toutes les situations racontées seront lues et traitées par la direction.
+  </p>
+  {% crispy form %}
+
+
+{% endblock %}
+
+{% block "right" %}
+<hr>
+  <ul>
+    <li><strong>La personne utilisant la plateforme s’engage à décrire le plus fidèlement possible des faits vus ou vécus</strong></li>
+    <li><strong>La direction s’engage à assurer l’anonymat total des élèves</strong></li>
+    <li><strong>Un langage correct doit être utilisé dans les messages</strong></li>
+  </ul>
+
+{% endblock %}

@@ -1,17 +1,14 @@
-try:
-    import urlparse
-    from urllib import urlencode
-except ImportError: # For Python 3
-    import urllib.parse as urlparse
-    from urllib.parse import urlencode
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 from django import template
- 
+
+
 register = template.Library()
 
+
 @register.filter(is_safe=True)
-def index(aList, idx):
-    return aList[int(idx)]
+def index(a_list, idx):
+    return a_list[int(idx)]
 
 
 @register.filter
@@ -21,9 +18,9 @@ def get_item(dictionary, key):
 
 @register.filter
 def add_pdf_param(url):
-    params = {'pdf': 1}
-    url_parts = list(urlparse.urlparse(url))
-    query = dict(urlparse.parse_qsl(url_parts[4]))
+    params = {"pdf": 1}
+    url_parts = list(urlparse(url))
+    query = dict(parse_qsl(url_parts[4]))
     query.update(params)
     url_parts[4] = urlencode(query)
-    return urlparse.urlunparse(url_parts)
+    return urlunparse(url_parts)

@@ -1,41 +1,25 @@
 {% extends "backend/base.html" %}
-{% load i18n floppyforms %}
+{% load i18n crispy_forms_tags sekizai_tags %}
 
 {% block title %}{% trans "Change opening and closing dates" %} - {{ block.super }}{% endblock %}
 {% block page_title %}{% trans "Change opening and closing dates" %}{% endblock %}
 
 {% block content %}
 
-{% form form using %}
-{% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap-sm-3.html" %}{% endblock %}
-<form action="" method="post" class="form-horizontal">{% csrf_token %}
-  {% block errors %}{% endblock %}
-  {% formrow form.opening_date %}
-  {% formrow form.closing_date %}
-  
-    <div class="form-group">
-      <div class="col-sm-offset-2 col-sm-10">
-        <button type="submit" class="btn btn-success btn-large">{% trans "Save" %}</button>
-      </div>
+{% addtoblock "js" %}
+  {{ form.media.js }}
+{% endaddtoblock %}
+
+{% addtoblock "css" %}
+  {{ form.media.css }}
+{% endaddtoblock %}
+
+<form action="" method="post" class="form-horizontal">
+  {% crispy form %}
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-primary btn-large">{% trans "Save" %}</button>
     </div>
+  </div>
 </form>
-{% endform %}
-
 {% endblock content %}
-
-{% block extra_js %}
-{{ block.super }}
-<script src="{{ STATIC_URL }}js/vendor/moment-with-locales.min.js"></script>
-<script src="{{ STATIC_URL }}js/vendor/bootstrap-datetimepicker.min.js"></script>
-<script type="text/javascript">
-  $(function () {
-    $('.datetimepicker').datetimepicker({
-        language: '{{ LANGUAGE_CODE }}',
-        icons: {time: 'icon-clock', 
-                date: 'icon-calendar', 
-                up: 'icon-up-open', 
-                down: 'icon-down-open'}
-        });
-  });
-</script>
-{% endblock extra_js %}

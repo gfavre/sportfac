@@ -2,7 +2,13 @@
 {% load i18n sekizai_tags %}
 
 
-{% block page_title %}{% trans "Activities" %}{% endblock page_title%}
+{% block page_title %}
+  {% if ALTERNATIVE_ACTIVITIES_LABEL %}
+    {{ ALTERNATIVE_ACTIVITIES_LABEL }}
+  {% else %}
+    {% trans "Activities" %}
+  {% endif %}
+{% endblock page_title %}
 
 {% block content %}
 
@@ -35,7 +41,7 @@ usewaitingslots="{{ ENABLE_WAITING_LISTS|yesno:'true,false' }}"
         <li>Choisir une activité disponible à gauche.</li>
         <li>Sélectionner le cours dans le semainier.</li>
         <li>Valider le cours en bleu → il doit passer en vert.</li>
-        <li>Appuyez sur le bouton "Terminer l'inscription" au bas de cette page pour passer à la validation</li>
+        <li>Appuyez sur le bouton "Suivant" au bas de cette page pour passer à la validation</li>
       </ol>
     </div>
 <nav>

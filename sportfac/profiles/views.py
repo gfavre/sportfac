@@ -1,65 +1,64 @@
+from django.conf import settings
 from django.contrib.auth import authenticate, login
 import django.contrib.auth.views as auth_views
-from django.conf import settings
-from django.core.urlresolvers import reverse_lazy, reverse
-from django.core.exceptions import PermissionDenied
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
-from django.utils.translation import ugettext as _
-from django.views.generic import UpdateView, FormView, RedirectView
+from django.urls import reverse, reverse_lazy
+from django.utils.translation import gettext as _
+from django.views.generic import FormView, RedirectView, UpdateView
 
 from braces.views import LoginRequiredMixin
-# from registration.backends.simple.views import RegistrationView as BaseRegistrationView
+
 from registration import signals
 
 from sportfac.views import WizardMixin
+
+from .forms import InstructorForm, RegistrationForm, UserForm
 from .models import FamilyUser
-from .forms import RegistrationForm, InstructorForm, PasswordChangeForm, PasswordResetForm
 
 
-__all__ = ('password_change', 'password_reset',
-           'AccountView',
-           'WizardAccountView', 'WizardRegistrationView', 'AccountRedirectView')
-
-
-def password_change(request):
-    """Wrap the built-in password reset view and pass it the arguments"""
-    return auth_views.password_change(request, password_change_form=PasswordChangeForm)
-
-
-def password_reset(request):
-    """Wrap the built-in password reset view and pass it the arguments"""
-    return auth_views.password_reset(request, password_reset_form=PasswordResetForm)
+__all__ = (
+    "AccountView",
+    "WizardAccountView",
+    "WizardRegistrationView",
+    "AccountRedirectView",
+)
 
 
 class AccountRedirectView(LoginRequiredMixin, RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         user = self.request.user
         if user.is_manager or user.is_superuser or user.is_staff:
-            return reverse('backend:home')
+            return reverse("backend:home")
         elif user.is_kepchup_staff:
-            return reverse('activities:my-courses')
-        return reverse('registrations_registered_activities')
+            return reverse("activities:my-courses")
+        return reverse("registrations:registrations_registered_activities")
 
 
 class _BaseAccount(LoginRequiredMixin, UpdateView):
     model = FamilyUser
     form_class = InstructorForm
 
+    def get_form_class(self):
+        if self.request.user.is_instructor:
+            return InstructorForm
+        return UserForm
+
     def get_object(self, queryset=None):
         return self.request.user
 
 
 class AccountView(SuccessMessageMixin, _BaseAccount):
-    template_name = 'profiles/account.html'
+    template_name = "profiles/account.html"
 
     def get_success_message(self, form):
-        return _('Your contact informations have been saved.')
+        return _("Your contact informations have been saved.")
 
 
 class WizardAccountView(WizardMixin, _BaseAccount):
-    template_name = 'profiles/wizard_account.html'
-    success_url = reverse_lazy('wizard_children')
+    template_name = "profiles/wizard_account.html"
+    success_url = reverse_lazy("wizard_children")
 
     @staticmethod
     def check_initial_condition(request):
@@ -85,37 +84,42 @@ class RegistrationBaseView(FormView):
             return redirect(to, *args, **kwargs)
 
     def register(self, form):
-        email, password = form.cleaned_data['email'], form.cleaned_data['password1']
-        first_name, last_name = form.cleaned_data['first_name'], form.cleaned_data['last_name']
-        address, zipcode, city = form.cleaned_data['address'], form.cleaned_data['zipcode'], form.cleaned_data['city']
-        country = form.cleaned_data['country']
-        private_phone = form.cleaned_data['private_phone']
-        private_phone2 = form.cleaned_data['private_phone2']
-        private_phone3 = form.cleaned_data['private_phone3']
+        email, password = form.cleaned_data["email"], form.cleaned_data["password1"]
+        first_name, last_name = form.cleaned_data["first_name"], form.cleaned_data["last_name"]
+        address, zipcode, city = (
+            form.cleaned_data["address"],
+            form.cleaned_data["zipcode"],
+            form.cleaned_data["city"],
+        )
+        country = form.cleaned_data["country"]
+        private_phone = form.cleaned_data["private_phone"]
+        private_phone2 = form.cleaned_data["private_phone2"]
+        private_phone3 = form.cleaned_data["private_phone3"]
 
         FamilyUser.objects.create_user(
-            first_name=first_name, last_name=last_name,
-            password=password, email=email,
-            address=address, zipcode=zipcode, city=city, country=country,
+            first_name=first_name,
+            last_name=last_name,
+            password=password,
+            email=email,
+            address=address,
+            zipcode=zipcode,
+            city=city,
+            country=country,
             private_phone=private_phone,
             private_phone2=private_phone2,
-            private_phone3=private_phone3
+            private_phone3=private_phone3,
         )
         user = authenticate(email=email, password=password)
         login(self.request, user)
-        signals.user_registered.send(
-            sender=self.__class__,
-            user=user,
-            request=self.request
-        )
+        signals.user_registered.send(sender=self.__class__, user=user, request=self.request)
         return user
 
 
 class RegistrationView(RegistrationBaseView):
-    template_name = 'profiles/registration_form.html'
+    template_name = "profiles/registration_form.html"
 
     def get_success_url(self):
-        return reverse('profiles_account')
+        return reverse("profiles:profiles_account")
 
     def dispatch(self, request, *args, **kwargs):
         """Called before get or post methods"""
@@ -131,19 +135,21 @@ class WizardRegistrationView(WizardMixin, RegistrationBaseView):
     (the bare minimum for a useful account), and is immediately signed
     up and logged in).
     """
+
     form_class = RegistrationForm
-    template_name = 'profiles/wizard_registration_form.html'
+    template_name = "profiles/wizard_registration_form.html"
 
     @staticmethod
     def check_initial_condition(request):
         return
 
     def get_success_url(self):
-        return reverse('wizard_children')
+        return reverse("wizard_children")
 
 
 class LogoutView(auth_views.LogoutView):
     def get_next_page(self):
         if settings.KEPCHUP_USE_SSO:
-            return 'https://users.ssfmontreux.ch/logout'
+            # FIXME: wgat is this hardcoded crap?
+            return "https://users.ssfmontreux.ch/logout"
         return super(LogoutView, self).get_next_page()

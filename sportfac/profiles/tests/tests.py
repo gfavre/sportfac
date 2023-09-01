@@ -1,13 +1,12 @@
 """
 Tests for profiles app.
 """
-from .factories import FamilyUserFactory
 from sportfac.utils import TenantTestCase
 
+from .factories import FamilyUserFactory
 
-        
+
 class FamilyUserTestCase(TenantTestCase):
-
     def setUp(self):
         super(FamilyUserTestCase, self).setUp()
         self.superuser = FamilyUserFactory(is_superuser=True, is_admin=True)

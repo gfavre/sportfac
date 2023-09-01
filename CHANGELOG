@@ -1,20 +1,139 @@
-12.10.2022
-Envoi d'emails lors de la bascule d'un élève de la liste d'attente.
+# Changelog
 
-1.0.1 - 15.6.2020
-Administration
-- Possibilité de supprimer des utilisateurs
-- Edition des textes des pages statiques (accueil, règlement, protection des données)
-- Ajout d'un champ "Remarques" pour les cours
-- Suppression des questions complémentaires si la fonctionnalité n'est pas utilisée
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## unreleased
+
+### Added
+- Add some text on payment page if registration is set to expire after a delay
+- New paid column to registrations export
+
+### Fixed
+- Ensure we send confirmation after the payment is done, not when payment page is displayed
 
 
-1.0.0 - 12.6.2020
-Administration:
-- Statistiques de provenance des familles / enfants
-- Amélioration de la page d'accueil de l'administrateur si la période d'inscription est relativement longue (> 45 jours)
+## 3.2.2 - 2023-08-22
+### Added
+- Display lagapeo number in invoices
 
-Inscription:
-- Après la création d'une nouvelle période d'inscription, et si les enfants ont été recopiés depuis la précédente,
-le système invite les parents lorsqu'ils se connectent à vérifier les données des enfants (via une notification).
+### Changed
+- Switch postfinance to lightbox mode
+- Step labels for Montreux
+- Page headings in wizard are now coherent with step labels
 
+### Fixed
+- Import of children from Lagapeo
+- Typo in Wizard
+- Do not send success emails on every webhooks received by postfinance
+- Montreux varia
+
+
+## 3.2.1 - 2023-08-14
+### Added
+- Postfinance IP check
+
+### Changed
+- Webhook handling for postfinance - do not raise 404 errors
+- Simplified settings for Oron
+
+### Fixed
+- Teacher import
+- Issue if no bill is available
+
+
+## 3.2.0 - 2023-08-10
+### Added
+- Postfinance payment method
+
+
+## 3.1.1 -2023-07-07
+### Added
+- settings for Monthey
+- settings for Oron
+- More fields to detail export of payroll
+
+### Fixed
+- Date input for period dates.
+- Update datepicker
+- Fix timezone issue
+- Import of cities and initial data
+
+
+## 3.1.0 - 2023-06-14
+### Added
+- Send paying invoices to accountants if after registration period
+- Export of invoices to excel format
+- Send confirmation mail to multiple courses
+- Send information mail to supervisors of multiple courses
+
+### Fixed
+- course creation was not possible if no city override was provided
+
+
+## 3.0.6 - 2023-05-05
+### Fixed
+- Creation of future absences when a student moves from one course to another
+- Suppression of a message to the user when creating a new period.
+- Catch exception when datatrans service is not available
+- exception if all mail recipients are invalid
+
+
+## 3.0.5 - 2023-04-03
+### Fixed
+- Course start and end dates (not explicit) not editable.
+- Non-clickable start and end times
+
+
+## 3.0.4 - 2023-03-24
+### Fix
+- Date of birth of monitors not clickable or registered
+Change:
+- PDF dor supervisors updated to make fields more readable
+
+
+## 3.0.3 - 2023-03-21
+### Fix
+- Local city override not saved
+
+
+## 3.0.2 - 2023-03-17
+### Fix
+- Multiple dates selection in calendar
+
+
+## 3.0.1 - 2023-03-01
+### Added
+- Nyon-Marens app which contains a case report form.
+
+### Fix
+python3 fixes
+
+
+## 3.0.0 - 2023-03-01
+### Changed
+- Switch to python3
+- Upgrade to django 3.2
+
+
+## 1.0.2 - 12.10.2022
+- Sending emails when a student is switched from the waitlist.
+
+## 1.0.1 - 15.6.2020
+### Administration
+- Ability to delete users
+- Editing of static page texts (homepage, rules, data protection)
+- Addition of a "Remarks" field for courses
+- Delete follow-up questions if the functionality is not used
+
+
+## 1.0.0 - 12.6.2020
+### Administration
+- Family/Child Origin Statistics
+- Improved admin homepage if registration period is relatively long (> 45 days)
+
+### Enrollment
+- After a new registration period is created, and if children have been copied from the previous one,
+the system prompts parents when they log in to verify the children's data (via a notification).

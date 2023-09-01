@@ -1,22 +1,27 @@
 {% extends "backend/base.html" %}
-{% load i18n floppyforms %}
+{% load i18n sekizai_tags crispy_forms_tags %}
 
 {% block title %}{% trans "Update registration" %} - {{ block.super }}{% endblock %}
 {% block page_title %}{% trans "Update registration" %}{% endblock %}
 
 {% block content %}
+{% addtoblock "js" %}
+  {{ form.media.js }}
+{% endaddtoblock %}
 
+  {% addtoblock "css" %}
+  {{ form.media.css }}
+{% endaddtoblock %}
 
-<form action="" method="post" class="form-horizontal">{% csrf_token %}
-  {% block errors %}{% endblock %}
-  {% form form using "floppyforms/layouts/bootstrap.html" %}
+<form action="" method="post" class="form-horizontal">
+  {% crispy form %}
 
-{{ extrainfo_form.management_form }}
+{{ extrainfo_form.management_form | crispy}}
 {% if need_extra %}
     <fieldset>
       <legend>{% trans "Extra questions" %}</legend>
 
-      {% form extrainfo_form using "floppyforms/layouts/bootstrap.html" %}
+      {% crispy extrainfo_form %}
     </fieldset>
 
 {% endif %}
@@ -24,7 +29,7 @@
     <div class="col-sm-offset-2 col-sm-10">
       <button type="submit" class="btn btn-success btn-large">{% trans "Update" %}</button>
       &nbsp;
-      <a href="{% url 'backend:registration-list' %}" class="btn  btn-default">{% trans 'Cancel' %}</a>
+      <a href="{% url 'backend:registration-list' %}" class="btn btn-default">{% trans 'Cancel' %}</a>
 
     </div>
   </div>

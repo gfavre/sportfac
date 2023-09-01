@@ -1,25 +1,24 @@
-# -*- coding: utf-8 -*-
 import os
 import re
 import uuid
 
 from django.conf import settings
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models, transaction
 from django.db.models.aggregates import Count
-from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
-from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.urls import reverse
 from django.utils import timezone
-
-from django_countries.fields import CountryField
-from localflavor.generic.models import IBANField
-from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
-from model_utils import Choices
-from model_utils.fields import AutoLastModifiedField, AutoCreatedField
-from phonenumber_field.modelfields import PhoneNumberField
+from django.utils.translation import gettext_lazy as _
 
 from activities.models import SCHOOL_YEARS
-from registrations.models import Registration, Bill
+from django_countries.fields import CountryField
+from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
+from localflavor.generic.models import IBANField
+from model_utils import Choices
+from model_utils.fields import AutoCreatedField, AutoLastModifiedField
+from phonenumber_field.modelfields import PhoneNumberField
+from registrations.models import Bill, Registration
+
 from .ahv import AHVField
 
 
@@ -50,7 +49,7 @@ class FamilyManager(BaseUserManager):
             last_name=last_name,
             zipcode=zipcode,
             city=city,
-            **extra_fields
+            **extra_fields,
         )
         user.set_password(password)
         user.save(using=self._db)
@@ -60,8 +59,15 @@ class FamilyManager(BaseUserManager):
         """
         Creates and saves a superuser with the given email, favorite topping and password.
         """
-        user = self.create_user(email=email, first_name=first_name, last_name=last_name,
-                                zipcode=zipcode, city=city, password=password, **extra_fields)
+        user = self.create_user(
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            zipcode=zipcode,
+            city=city,
+            password=password,
+            **extra_fields,
+        )
         user.is_admin = True
         user.is_staff = True
         user.is_superuser = True
@@ -71,57 +77,52 @@ class FamilyManager(BaseUserManager):
 
 class ActiveFamilyManager(FamilyManager):
     def get_queryset(self):
-        return super(ActiveFamilyManager, self).get_queryset().filter(is_active=True)
+        return super().get_queryset().filter(is_active=True)
 
 
 class InstructorFamilyUserManager(ActiveFamilyManager):
     def get_queryset(self):
-        return super(InstructorFamilyUserManager, self).get_queryset()\
-                                                       .annotate(num_courses=Count('course'))\
-                                                       .filter(num_courses__gt=0)
+        return super().get_queryset().annotate(num_courses=Count("course")).filter(num_courses__gt=0)
 
 
 class ManagerFamilyUserManager(ActiveFamilyManager):
     def get_queryset(self):
-        return super(ManagerFamilyUserManager, self).get_queryset().filter(is_manager=True)
+        return super().get_queryset().filter(is_manager=True)
 
 
-SETTINGS_NAME = os.environ.get('DJANGO_SETTINGS_MODULE', '').split('.')[-1]
+SETTINGS_NAME = os.environ.get("DJANGO_SETTINGS_MODULE", "").split(".")[-1]
 
 
 class FamilyUser(PermissionsMixin, AbstractBaseUser):
     COUNTRY = Choices(
-        ('CH', _("Switzerland")),
-        ('FL', _("Liechtenstein")),
-        ('D', _("Germany")),
-        ('F', _("France")),
-        ('I', _("Italy")),
-        ('A', _("Austria"))
+        ("CH", _("Switzerland")),
+        ("FL", _("Liechtenstein")),
+        ("D", _("Germany")),
+        ("F", _("France")),
+        ("I", _("Italy")),
+        ("A", _("Austria")),
     )
-    GENDERS = Choices(
-        ('f', _("Female")),
-        ('m', _("Male"))
-    )
+    GENDERS = Choices(("f", _("Female")), ("m", _("Male")))
     PERMIT_TYPES = Choices(
-        ('L', _("L - Short-term residence permit")),
-        ('B', _("B - Residence permit")),
-        ('C', _("C - Settlement permit")),
-        ('Ci', _("Ci - Residence permit with gainful employment")),
-        ('G', _("G - Cross-border commuter permit")),
-        ('F', _("F - Provisionally admitted foreigners")),
-        ('N', _("N - Permit for asylum-seekers")),
-        ('S', _("S - People in need of protection")),
+        ("L", _("L - Short-term residence permit")),
+        ("B", _("B - Residence permit")),
+        ("C", _("C - Settlement permit")),
+        ("Ci", _("Ci - Residence permit with gainful employment")),
+        ("G", _("G - Cross-border commuter permit")),
+        ("F", _("F - Provisionally admitted foreigners")),
+        ("N", _("N - Permit for asylum-seekers")),
+        ("S", _("S - People in need of protection")),
     )
 
     id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
-    external_identifier = models.CharField(verbose_name=_('Identifier'), max_length=255, blank=True, null=True)
-    email = models.EmailField(verbose_name=_('Email address'), max_length=255, unique=True, db_index=True)
-    first_name = models.CharField(_('First name'), max_length=30, blank=True)
-    last_name = models.CharField(_('Last name'), max_length=30, blank=True)
+    external_identifier = models.CharField(verbose_name=_("Identifier"), max_length=255, blank=True, null=True)
+    email = models.EmailField(verbose_name=_("Email address"), max_length=255, unique=True, db_index=True)
+    first_name = models.CharField(_("First name"), max_length=30, blank=True)
+    last_name = models.CharField(_("Last name"), max_length=30, blank=True)
     address = models.TextField(_("Street"), blank=True)
     zipcode = models.CharField(_("NPA"), blank=True, max_length=5)
-    city = models.CharField(_('City'), max_length=100, blank=True)
-    country = models.CharField(_('Country'), max_length=2, choices=COUNTRY, default=COUNTRY.CH)
+    city = models.CharField(_("City"), max_length=100, blank=True)
+    country = models.CharField(_("Country"), max_length=2, choices=COUNTRY, default=COUNTRY.CH)
     private_phone = PhoneNumberField(_("Home phone"), max_length=30, blank=True)
     private_phone2 = PhoneNumberField(_("Mobile phone"), max_length=30, blank=True)
     private_phone3 = PhoneNumberField(_("Other phone"), max_length=30, blank=True)
@@ -129,40 +130,44 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     # TODO: move me to a separate SupervisorInfo model...
     iban = IBANField(include_countries=IBAN_SEPA_COUNTRIES, blank=True)
     birth_date = models.DateField(_("Birth date"), null=True, blank=True)
-    ahv = AHVField(_('AHV number'),
-                   help_text=_("New AHV number, e.g. 756.1234.5678.90"),
-                   blank=True)
+    ahv = AHVField(_("AHV number"), help_text=_("New AHV number, e.g. 756.1234.5678.90"), blank=True)
     js_identifier = models.CharField(_("J+S identifier"), max_length=30, blank=True)
     is_mep = models.BooleanField(default=False, verbose_name=_("Is sports teacher"))
     is_teacher = models.BooleanField(default=False, verbose_name=_("Is teacher"))
-    gender = models.CharField(choices=GENDERS, blank=True, max_length=1)
+    gender = models.CharField(_("Gender"), choices=GENDERS, blank=True, max_length=1)
     nationality = CountryField(_("Nationality"), blank=True)
     permit_type = models.CharField(_("Permit type"), max_length=2, choices=PERMIT_TYPES, blank=True, null=True)
     bank_name = models.CharField(_("Bank name"), max_length=50, blank=True)
 
-    is_active = models.BooleanField(default=True, help_text='Designates whether this user should be treated as active.')
+    is_active = models.BooleanField(
+        default=True, help_text="Designates whether this user should be treated as active."
+    )
     is_admin = models.BooleanField(default=False)
-    is_staff = models.BooleanField('staff status', default=False,
-                                   help_text=_('Designates whether the user can log into this admin site.'))
+    is_staff = models.BooleanField(
+        "staff status",
+        default=False,
+        help_text=_("Designates whether the user can log into this admin site."),
+    )
     is_manager = models.BooleanField(_("Is manager"), default=False)
-    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
+    date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
 
-    created = AutoCreatedField(_('created'))
-    modified = AutoLastModifiedField(_('modified'))
-    created_on = models.CharField(_("Instance name"), max_length=255, blank=True, default=SETTINGS_NAME,
-                                  editable=False)
+    created = AutoCreatedField(_("created"))
+    modified = AutoLastModifiedField(_("modified"))
+    created_on = models.CharField(
+        _("Instance name"), max_length=255, blank=True, default=SETTINGS_NAME, editable=False
+    )
 
     objects = FamilyManager()
     active_objects = ActiveFamilyManager()
     instructors_objects = InstructorFamilyUserManager()
     managers_objects = ManagerFamilyUserManager()
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ('first_name', 'last_name', 'zipcode', 'city', 'country')
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ("first_name", "last_name", "zipcode", "city", "country")
 
     class Meta:
         get_latest_by = "date_joined"
-        ordering = ('last_name', 'first_name')
+        ordering = ("last_name", "first_name")
         verbose_name = _("User")
         verbose_name_plural = _("Users")
 
@@ -172,11 +177,22 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
 
     @property
     def children_names(self):
-        return ', '.join([unicode(child) for child in self.children.all()])
+        return ", ".join([str(child) for child in self.children.all()])
 
     @property
     def course_names(self):
-        return ', '.join([unicode(ci.course.short_name) for ci in self.coursesinstructors_set.all()])
+        return ", ".join([str(ci.course.short_name) for ci in self.coursesinstructors_set.all()])
+
+    @property
+    def country_iso_3166(self):
+        return {
+            "CH": "CH",
+            "FL": "LI",
+            "D": "DE",
+            "F": "FR",
+            "I": "IT",
+            "A": "AT",
+        }[self.country]
 
     @property
     def full_name(self):
@@ -184,19 +200,19 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
 
     @property
     def finished_registrations(self):
-        if hasattr(self, 'waiting_registrations'):
+        if hasattr(self, "waiting_registrations"):
             return self.waiting_registrations == 0
         return not self.has_open_registrations
 
     @property
     def has_open_bills(self):
-        if hasattr(self, 'opened_bills'):
+        if hasattr(self, "opened_bills"):
             return self.opened_bills > 0
         return self.bills.filter(status=Bill.STATUS.waiting).exists()
 
     @property
     def has_open_registrations(self):
-        if hasattr(self, 'waiting_registrations'):
+        if hasattr(self, "waiting_registrations"):
             return self.waiting_registrations > 0
         return self.get_registrations(validated=False).exists()
 
@@ -214,7 +230,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
 
     @property
     def last_registration(self):
-        registrations = Registration.objects.validated().filter(child__family=self).order_by('-created')
+        registrations = Registration.objects.validated().filter(child__family=self).order_by("-created")
         if not registrations.exists():
             return None
         return registrations.first().created
@@ -223,7 +239,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     def montreux_needs_appointment(self):
         registrations = Registration.objects.filter(child__family=self)
         for registration in registrations:
-            if registration.extra_infos.filter(key__question_label__contains=u"matériel", value='OUI').exists():
+            if registration.extra_infos.filter(key__question_label__contains="matériel", value="OUI").exists():
                 return True
         return False
 
@@ -233,47 +249,47 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
 
     @property
     def paid(self):
-        if hasattr(self, 'opened_bills'):
+        if hasattr(self, "opened_bills"):
             return self.opened_bills == 0
         return not self.has_open_bills
 
     @property
     def updatable_children(self):
         from registrations.models import Child
+
         return self.children.filter(status=Child.STATUS.imported).count()
 
     def get_absolute_url(self):
-        return reverse('profiles_account')
+        return reverse("profiles:profiles_account")
 
     def get_backend_url(self):
-        return reverse('backend:user-detail', kwargs={'pk': self.pk})
+        return reverse("backend:user-detail", kwargs={"pk": self.pk})
 
     def get_delete_url(self):
-        return reverse('backend:user-delete', kwargs={'pk': self.pk})
+        return reverse("backend:user-delete", kwargs={"pk": self.pk})
 
     def get_email_string(self):
-        return "%s %s <%s>" % (self.first_name, self.last_name, self.email)
+        return f"{self.first_name} {self.last_name} <{self.email}>"
 
     def get_full_name(self):
-        full_name = u'{} {}'.format(self.first_name, self.last_name)
+        full_name = f"{self.first_name} {self.last_name}"
         return full_name.strip().title()
 
     def get_initials(self):
         if self.first_name and self.last_name:
             initial = self.first_name[:1].upper()
-            match = re.search(r'[A-Z]', self.last_name)
+            match = re.search(r"[A-Z]", self.last_name)
             if match:
                 # Use first capital letter
                 initial += match.group()
             else:
                 # No capitals found; just use first letter
                 initial += self.last_name[:1].upper()
-        else:
-            initial = self.email[:1].upper()
-        return initial
+            return initial
+        return self.email[:1].upper()
 
     def get_payment_url(self):
-        return reverse('backend:user-pay', kwargs={'pk': self.pk})
+        return reverse("backend:user-pay", kwargs={"pk": self.pk})
 
     def get_registrations(self, validated=True):
         if validated:
@@ -286,10 +302,17 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         return self.first_name
 
     def get_update_url(self):
-        return reverse('backend:user-update', kwargs={'pk': self.pk})
+        return reverse("backend:user-update", kwargs={"pk": self.pk})
 
     def has_module_perms(self, app_label):
-        staff_apps = ['activities', 'backend', 'extended_flatpages' 'profiles', 'registrations', 'schools']
+        staff_apps = [
+            "activities",
+            "backend",
+            "extended_flatpages",
+            "profiles",
+            "registrations",
+            "schools",
+        ]
         # no registration nore auth
         if self.is_superuser:
             return True
@@ -301,9 +324,11 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         return course in self.course.all()
 
     def save(self, create_profile=True, sync=True, *args, **kwargs):
-        from registrations.models import RegistrationsProfile
         from django.db import ProgrammingError
-        super(FamilyUser, self).save(*args, **kwargs)
+
+        from registrations.models import RegistrationsProfile
+
+        super().save(*args, **kwargs)
         if create_profile:
             try:
                 profile, created = RegistrationsProfile.objects.get_or_create(user=self)
@@ -313,26 +338,28 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
                 # we are running from shell where no tenant has been selected.
                 pass
         if len(settings.DATABASES) > 1 and sync:
-            from .tasks import save_to_master, LOCAL_DB
-            transaction.on_commit(lambda: save_to_master(self.pk, kwargs.get('using', LOCAL_DB)))
+            from .tasks import LOCAL_DB, save_to_master
+
+            transaction.on_commit(lambda: save_to_master(self.pk, kwargs.get("using", LOCAL_DB)))
 
     def soft_delete(self):
+        from activities.models import CoursesInstructors
+
         self.is_active = False
-        self.email = 'deleted_{}_{}'.format(self.pk, self.email)
-        if self.course.exists():
-            self.course = []
+        self.email = f"deleted_{self.pk}_{self.email}"
         self.is_manager = False
+        CoursesInstructors.objects.filter(instructor=self).delete()
         for child in self.children.all():
             child.delete()
         self.save()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.get_email_string()
 
 
 class VisibleYearManager(models.Manager):
     def get_queryset(self):
-        return super(VisibleYearManager, self).get_queryset().filter(visible=True)
+        return super().get_queryset().filter(visible=True)
 
 
 class SchoolYear(models.Model):
@@ -342,16 +369,16 @@ class SchoolYear(models.Model):
     objects = models.Manager()
     visible_objects = VisibleYearManager()
 
-    def __unicode__(self):
+    def __str__(self):
         try:
-            return unicode(dict(SCHOOL_YEARS)[self.year])
+            return str(dict(SCHOOL_YEARS)[self.year])
         except KeyError:
-            return unicode(self.year)
+            return str(self.year)
 
     class Meta:
         verbose_name = _("School year")
         verbose_name_plural = _("School years")
-        ordering = ('year',)
+        ordering = ("year",)
 
 
 class School(models.Model):
@@ -359,30 +386,32 @@ class School(models.Model):
     code = models.CharField(_("Code name"), max_length=50, blank=True)
     selectable = models.BooleanField(default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
         verbose_name = _("school")
         verbose_name_plural = _("schools")
-        ordering = ('name', )
+        ordering = ("name",)
 
 
 class City(models.Model):
-    COUNTRY = Choices(('CH', _("Switzerland")),
-                      ('FL', _("Liechtenstein")),
-                      ('D', _("Germany")),
-                      ('F', _("France")),
-                      ('I', _("Italy")),
-                      ('A', _("Austria")))
+    COUNTRY = Choices(
+        ("CH", _("Switzerland")),
+        ("FL", _("Liechtenstein")),
+        ("D", _("Germany")),
+        ("F", _("France")),
+        ("I", _("Italy")),
+        ("A", _("Austria")),
+    )
     zipcode = models.CharField(_("NPA"), max_length=5)
-    name = models.CharField(_('Name'), max_length=100)
-    country = models.CharField(_('Country'), max_length=2, choices=COUNTRY, default=COUNTRY.CH)
+    name = models.CharField(_("Name"), max_length=100)
+    country = models.CharField(_("Country"), max_length=2, choices=COUNTRY, default=COUNTRY.CH)
 
     class Meta:
         verbose_name = _("City")
         verbose_name_plural = _("Cities")
-        ordering = ('zipcode', 'name')
+        ordering = ("zipcode", "name")
 
-    def __unicode__(self):
-        return u'{} {}'.format(self.zipcode, self.name)
+    def __str__(self):
+        return f"{self.zipcode} {self.name}"

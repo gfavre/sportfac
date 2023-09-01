@@ -1,0 +1,10 @@
+{% load switzerland i18n %}
+Bonjour,
+
+Une nouvelle facture a été créée dans le cadre du {{ site_name }}. Vous la trouverez en pièce jointe.
+
+Montant: {{ bill.total|money }}
+Identifiant de paiement: {{ bill.billing_identifier }}
+
+
+{{ signature }}

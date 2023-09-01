@@ -2,6 +2,8 @@ import ast
 
 from django.db import models
 
+import six
+
 
 class ListField(models.TextField):
     description = "Stores a python list"
@@ -9,7 +11,7 @@ class ListField(models.TextField):
     def __init__(self, *args, **kwargs):
         super(ListField, self).__init__(*args, **kwargs)
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, expression, connection):
         if value is None:
             return value
         return ast.literal_eval(value)
@@ -26,7 +28,7 @@ class ListField(models.TextField):
     def get_prep_value(self, value):
         if value is None:
             return value
-        return unicode(value)
+        return six.text_type(value)
 
     def value_to_string(self, obj):
         value = self.value_from_object(obj)
@@ -37,7 +39,9 @@ class TimeStampedModel(models.Model):
     """
     An abstract base class model that provides self-updating ``created`` and ``modified`` fields.
     """
+
     created = models.DateTimeField(auto_now_add=True, db_index=True)
     modified = models.DateTimeField(auto_now=True, db_index=True)
+
     class Meta:
         abstract = True

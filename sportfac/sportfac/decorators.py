@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
-
 from contextlib import contextmanager
 from functools import wraps
 
@@ -55,6 +53,7 @@ def respects_language(fun):
 
     @wraps(fun)
     def _inner(*args, **kwargs):
-        with respect_language(kwargs.pop('language', None)):
+        with respect_language(kwargs.pop("language", None)):
             return fun(*args, **kwargs)
+
     return _inner
