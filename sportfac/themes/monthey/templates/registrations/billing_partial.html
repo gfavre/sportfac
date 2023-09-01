@@ -1,0 +1,26 @@
+{% load i18n l10n humanize sekizai_tags switzerland %}
+
+<p>Les inscriptions seront définitivement validées à la suite du règlement de la finance de participation pour les cours choisis.</p>
+<p>Le montant total pour vos inscriptions s'élève à : <strong>{{ bill.total|money }}</strong></p>
+
+{% if PAYMENT_METHOD == 'wire_transfer' %}
+<div class="well">
+  <dl class="dl-horizontal">
+    <dt>Montant</dt><dd>{{ bill.total|money }}</dd>
+    <dt>Identifiant</dt><dd>{{ bill.billing_identifier }}</dd>
+  </dl>
+</div>
+<p>La finance d'inscription devra être apportée au moniteur lors du premier cours</p>
+{% elif PAYMENT_METHOD == 'datatrans' %}
+  <p>Le paiement peut se faire via Twint (débit direct) ou Mastercard et Visa (cartes de crédit).</p>
+  {% include 'payments/datatrans_pay_button.html' %}
+
+{% elif PAYMENT_METHOD == 'postfinance' %}
+    {% include 'payments/postfinance_pay_button.html' %}
+
+{% elif PAYMENT_METHOD == 'external' %}
+  <p>La facture vous sera envoyée par courrier.</p>
+
+{% endif %}
+
+  <p><strong>Aucun remboursement ne pourra être demandé en cas de désistement.</strong></p>

@@ -1,0 +1,36 @@
+{% load i18n switzerland static  %}
+
+
+
+<section>
+  <div class="row">
+     <div class="col-sm-6 visible-print-block">
+       <img src="{{ STATIC_URL }}img/logo.png' %}"/>
+     {% include "address.html" %}
+    </div>
+
+
+    <div class="col-sm-6 col-sm-offset-6">
+      <address>
+        {{ bill.family.full_name }}<br/>
+        {{ bill.family.address }}<br/>
+        {{ bill.family.zipcode }} {{ bill.family.city }}<br />
+        {{ bill.family.get_country_display }}
+      </address>
+      <p style="margin-top: 4em;">
+          {% if place %}{{ place }}, {% endif %}{{ bill.created|date:"j F Y" }}
+      </p>
+    </div>
+  </div>
+  <h2>{% trans "Bill detail" %}</h2>
+
+  <dl class="dl-horizontal">
+
+      <dt>{% trans "Billing identifier" %}</dt><dd>{{ bill.billing_identifier }}</dd>
+      <dt>{% trans "Total" %}</dt><dd>{{ bill.total|money }}</dd>
+
+  </dl>
+    {% if bill.is_wire_transfer %}
+      <p>La finance d'inscription devra être apportée au moniteur lors du premier cours</p>
+      {% endif %}
+</section>
