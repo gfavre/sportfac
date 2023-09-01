@@ -152,6 +152,7 @@ class ChildrenViewSet(viewsets.ModelViewSet):
             del serializer.validated_data['ext_id']
         if serializer.validated_data.get('school', None):
             serializer.validated_data['other_school'] = ''
+
         serializer.validated_data['status'] = Child.STATUS.updated
         serializer.save()
 
