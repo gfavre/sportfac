@@ -17,12 +17,13 @@ INSTALLED_APPS += ["nyonmarens"]  # noqa: F405
 
 KEPCHUP_ACTIVATE_NYON_MARENS = True
 KEPCHUP_NYON_MARENS_EMAIL_RECIPIENTS = [
-    "Guillaume Strobino <guillaume.strobino@vd.ch>",
     "Anne-Marie Garcia <Anne-marie.garcia@vd.ch>",
     "Gérard Produit <Gerard.produit@vd.ch>",
     "Nicole Ortelli <Nicole.ortelli@vd.ch>",
     "Michaël Ferrari <Michael.ferrari@vd.ch>",
     "Sandrine Breitenmoser <Sandrine.breitenmoser@vd.ch>",
+    "vlad.andrievici@vd.ch",
+    "timothee.tramaux@vd.ch",
     "2911_direction@edu-vd.ch",
 ]
 KEPCHUP_USE_ABSENCES = True
