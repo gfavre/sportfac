@@ -30,6 +30,7 @@ class RegistrationResource(resources.ModelResource):
     first_name = fields.Field(attribute="child__first_name", column_name=_("First name"))
     last_name = fields.Field(attribute="child__last_name", column_name=_("Last name"))
     child_id = fields.Field(attribute="child", column_name=_("Child identifier"))
+    invoice_identifier = fields.Field(attribute="bill__billing_identifier", column_name=_("Billing identifier"))
     bib_number = fields.Field(attribute="child__bib_number", column_name=_("Bib number"))
     transport = fields.Field(attribute="transport__name", column_name=_("Transport"))
     birth_date = fields.Field(attribute="child", column_name=_("Birth date"))
@@ -55,6 +56,7 @@ class RegistrationResource(resources.ModelResource):
             "course",
             "price",
             "paid",
+            "invoice_identifier",
             "bib_number",
             "transport",
             "first_name",
@@ -98,6 +100,9 @@ class RegistrationResource(resources.ModelResource):
             del self.fields["after_level"]
         if not settings.KEPCHUP_DISPLAY_CAR_NUMBER and "transport" in self.fields:
             del self.fields["transport"]
+        if settings.KEPCHUP_NO_PAYMENT:
+            del self.fields["paid"]
+            del self.fields["invoice_identifier"]
 
     def dehydrate_child_id(self, obj):
         if settings.KEPCHUP_IMPORT_CHILDREN:
