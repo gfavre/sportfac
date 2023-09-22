@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - payment method and texts for Monthey
+- removed error if mail cannot be sent (anymail error), set it as warning instead
 
 ### Fixed
 - Ensure we send confirmation after the payment is done, not when payment page is displayed

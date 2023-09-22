@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 import os
 import shutil
 from smtplib import SMTPException
@@ -8,21 +7,15 @@ from django.conf import settings
 from django.core.mail import EmailMessage
 from django.utils import timezone
 
-from anymail.exceptions import AnymailRecipientsRefused
-
 from activities.models import Course
+from anymail.exceptions import AnymailRecipientsRefused
 from celery.utils.log import get_task_logger
 from profiles.models import FamilyUser
 
 from sportfac.celery import app
 
 from .models import Attachment
-from .pdfutils import (
-    CourseParticipants,
-    CourseParticipantsPresence,
-    MyCourses,
-    get_ssf_decompte_heures,
-)
+from .pdfutils import CourseParticipants, CourseParticipantsPresence, MyCourses, get_ssf_decompte_heures
 
 
 logger = get_task_logger(__name__)
@@ -60,7 +53,7 @@ def send_mail(
         email.attach_file(attachment.file.path)
     try:
         email.send()
-        logger.info('Sent email "{}" to {}'.format(subject, recipients))
+        logger.info(f'Sent email "{subject}" to {recipients}')
         if update_bills and recipient_pk:
             try:
                 recipient = FamilyUser.objects.get(pk=recipient_pk)
@@ -68,28 +61,20 @@ def send_mail(
                     bill.reminder_sent = True
                     bill.reminder_sent_date = timezone.now()
                     bill.save()
-                    logger.debug("Updated bill sent status for {}".format(bill.id))
+                    logger.debug(f"Updated bill sent status for {bill.id}")
             except FamilyUser.DoesNotExist:
-                logger.warning(
-                    "No user found for pk={} email={}".format(recipient_pk, recipients[0])
-                )
+                logger.warning(f"No user found for pk={recipient_pk} email={recipients[0]}")
     except AnymailRecipientsRefused as exc:
-        logger.error(
-            "Message {} to {} could not be sent: {}".format(subject, recipients, exc)
-        )
+        logger.warning(f"Message {subject} to {recipients} could not be sent: {exc}")
 
     except SMTPException as smtp_exc:
-        logger.error(
-            "Message {} to {} could not be sent: {}".format(subject, recipients, smtp_exc)
-        )
+        logger.warning(f"Message {subject} to {recipients} could not be sent: {smtp_exc}")
         # 5s for first retry, 25 for second, 2mn for third ~10mn for fourth, 52mn for fifth
         self.retry(countdown=5**self.request.retries)
 
 
 @app.task(bind=True, max_retries=6)
-def send_instructors_email(
-    self, course_pk, instructor_pk, subject, message, from_email, reply_to, bcc=None
-):
+def send_instructors_email(self, course_pk, instructor_pk, subject, message, from_email, reply_to, bcc=None):
     logger.debug("Forging email to instructors of course #%s" % course_pk)
     if bcc is None:
         bcc = []
@@ -117,9 +102,7 @@ def send_instructors_email(
     logger.debug("Participants.pdf attached")
     filename = "mes_cours.pdf"
     filepath = os.path.join(tempdir, filename)
-    cp_generator = MyCourses(
-        {"instructor": instructor, "courses": Course.objects.filter(instructors=instructor)}
-    )
+    cp_generator = MyCourses({"instructor": instructor, "courses": Course.objects.filter(instructors=instructor)})
     cp_generator.render_to_pdf(filepath)
     with open(filepath, "rb") as my_courses_pdf:
         email.attach(filename, my_courses_pdf.read(), "application/pdf")
@@ -127,7 +110,7 @@ def send_instructors_email(
 
     if not (settings.KEPCHUP_NO_SSF or settings.KEPCHUP_FICHE_SALAIRE_MONTREUX):
         filepath = get_ssf_decompte_heures(course, instructor)
-        filename = "SSF_decompte_moniteur_%s_%s.pdf" % (
+        filename = "SSF_decompte_moniteur_{}_{}.pdf".format(
             instructor.first_name,
             instructor.last_name,
         )
@@ -151,13 +134,9 @@ def send_instructors_email(
     logger.debug("Email forged, sending...")
     try:
         email.send()
-        logger.info("Sent instructor email to {}".format(instructor.get_email_string()))
+        logger.info(f"Sent instructor email to {instructor.get_email_string()}")
     except SMTPException as smtp_exc:
-        logger.error(
-            "Message {} to {} could not be sent: {}".format(
-                subject, [instructor.get_email_string()], smtp_exc.message
-            )
-        )
+        logger.error(f"Message {subject} to {[instructor.get_email_string()]} could not be sent: {smtp_exc.message}")
         # 5s for first retry, 25 for second, 2mn for third ~10mn for fourth, 52mn for fifth
         self.retry(countdown=5**self.request.retries)
     finally:
