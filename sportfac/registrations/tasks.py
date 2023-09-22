@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMessage
-from django.db import connection
+from django.db import IntegrityError, connection
 from django.template.loader import render_to_string
 from django.utils import translation
 from django.utils.timezone import now
@@ -172,9 +172,12 @@ def cancel_expired_registrations():
     )
     invoices = set()
     for registration in registrations:
-        registration.cancel(reason=Registration.REASON.expired)
-        registration.save()
         invoices.add(registration.bill)
+        registration.cancel(reason=Registration.REASON.expired)
+        try:
+            registration.save()
+        except IntegrityError:
+            registration.delete()
     for invoice in invoices:
         if hasattr(invoice, "postfinance_transactions") and invoice.postfinance_transactions.exists():
             for transaction in invoice.postfinance_transactions.all():
