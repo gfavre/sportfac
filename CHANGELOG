@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Ensure we send confirmation after the payment is done, not when payment page is displayed
 - Ensure we don't get stuck expiring already expired registrations
+- Avoid a crash if the same child is registered twice in the same course
 
 
 ## 3.2.2 - 2023-08-22

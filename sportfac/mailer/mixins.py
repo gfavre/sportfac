@@ -8,6 +8,7 @@ from django.utils.translation import gettext as _
 from activities.models import Course, TemplatedEmailReceipt
 from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser
+from registrations.models import Registration
 
 from . import tasks
 from .models import MailArchive
@@ -213,7 +214,10 @@ class ParticipantsMixin(ParticipantsBaseMixin, BaseEmailMixin):
     def get_mail_context(self, base_context, recipient, bcc_list=None, child=None):
         base_context = super().get_mail_context(base_context, recipient, bcc_list)
         if child:
-            base_context["registration"] = self.course.participants.get(child=child)
+            try:
+                base_context["registration"] = self.course.participants.get(child=child)
+            except Registration.MultipleObjectsReturned:
+                base_context["registration"] = self.course.participants.filter(child=child).first()
             base_context["child"] = child
         return base_context
 
