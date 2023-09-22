@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import uuid
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
@@ -14,12 +13,10 @@ from django.template.defaultfilters import date as _date
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-import six
 from autoslug import AutoSlugField
 from ckeditor_uploader.fields import RichTextUploadingField
 from dateutil.relativedelta import relativedelta
 from model_utils import Choices
-from six.moves import range, zip
 
 from sportfac.models import TimeStampedModel
 
@@ -51,19 +48,12 @@ SCHOOL_YEARS = (
     (12, _("12S")),
 )
 
-AGES = Choices(
-    *[(age, "a{}".format(age), _("%i years old") % age) for age in settings.KEPCHUP_AGES]
-)
+AGES = Choices(*[(age, f"a{age}", _("%i years old") % age) for age in settings.KEPCHUP_AGES])
 
 
 class ActivityManager(models.Manager):
     def visible(self):
-        return (
-            self.get_queryset()
-            .filter(courses__visible=True)
-            .annotate(count=Count("courses"))
-            .filter(count__gt=0)
-        )
+        return self.get_queryset().filter(courses__visible=True).annotate(count=Count("courses")).filter(count__gt=0)
 
 
 class Activity(TimeStampedModel):
@@ -174,7 +164,7 @@ class AllocationAccount(TimeStampedModel):
 
     def __str__(self):
         if self.name:
-            return "{} {}".format(self.account, self.name)
+            return f"{self.account} {self.name}"
         return self.account
 
     def get_backend_url(self):
@@ -220,9 +210,7 @@ class Course(TimeStampedModel):
     activity = models.ForeignKey(
         "Activity", related_name="courses", verbose_name=_("Activity"), on_delete=models.CASCADE
     )
-    course_type = models.CharField(
-        _("Course type"), max_length=16, choices=TYPE, default=TYPE.course
-    )
+    course_type = models.CharField(_("Course type"), max_length=16, choices=TYPE, default=TYPE.course)
     number = models.CharField(
         max_length=30,
         db_index=True,
@@ -244,12 +232,8 @@ class Course(TimeStampedModel):
         through="CoursesInstructors",
     )
 
-    local_city_override = models.ManyToManyField(
-        to="profiles.City", verbose_name=_("Local city override"), blank=True
-    )
-    price = models.DecimalField(
-        max_digits=5, decimal_places=2, verbose_name=_("Price"), null=True, blank=True
-    )
+    local_city_override = models.ManyToManyField(to="profiles.City", verbose_name=_("Local city override"), blank=True)
+    price = models.DecimalField(max_digits=5, decimal_places=2, verbose_name=_("Price"), null=True, blank=True)
     price_local = models.DecimalField(
         max_digits=5,
         decimal_places=2,
@@ -272,18 +256,13 @@ class Course(TimeStampedModel):
         blank=True,
         verbose_name=_("Price for local family members"),
         help_text=_(
-            "Applied for the second and following members registered to the same course if the "
-            "family is local"
+            "Applied for the second and following members registered to the same course if the family is local"
         ),
     )
     price_description = models.TextField(_("Informations about pricing"), blank=True)
 
-    number_of_sessions = models.PositiveSmallIntegerField(
-        verbose_name=_("Number of sessions"), default=0
-    )
-    day = models.PositiveSmallIntegerField(
-        choices=DAYS_OF_WEEK, verbose_name=_("Day"), default=1, blank=True
-    )
+    number_of_sessions = models.PositiveSmallIntegerField(verbose_name=_("Number of sessions"), default=0)
+    day = models.PositiveSmallIntegerField(choices=DAYS_OF_WEEK, verbose_name=_("Day"), default=1, blank=True)
     start_date = models.DateField(verbose_name=_("Start date"), null=True)
     end_date = models.DateField(verbose_name=_("End date"), null=True)
     start_time = models.TimeField(verbose_name=_("Start time"), null=True, blank=True)
@@ -291,37 +270,23 @@ class Course(TimeStampedModel):
 
     start_time_mon = models.TimeField(verbose_name=_("Start time, mondays"), null=True, blank=True)
     end_time_mon = models.TimeField(verbose_name=_("End time, mondays"), null=True, blank=True)
-    start_time_tue = models.TimeField(
-        verbose_name=_("Start time, tuesdays"), null=True, blank=True
-    )
+    start_time_tue = models.TimeField(verbose_name=_("Start time, tuesdays"), null=True, blank=True)
     end_time_tue = models.TimeField(verbose_name=_("End time, tuesdays"), null=True, blank=True)
-    start_time_wed = models.TimeField(
-        verbose_name=_("Start time, wednesdays"), null=True, blank=True
-    )
+    start_time_wed = models.TimeField(verbose_name=_("Start time, wednesdays"), null=True, blank=True)
     end_time_wed = models.TimeField(verbose_name=_("End time, wednesdays"), null=True, blank=True)
-    start_time_thu = models.TimeField(
-        verbose_name=_("Start time, thursdays"), null=True, blank=True
-    )
+    start_time_thu = models.TimeField(verbose_name=_("Start time, thursdays"), null=True, blank=True)
     end_time_thu = models.TimeField(verbose_name=_("End time, thursdays"), null=True, blank=True)
     start_time_fri = models.TimeField(verbose_name=_("Start time, fridays"), null=True, blank=True)
     end_time_fri = models.TimeField(verbose_name=_("End time, fridays"), null=True, blank=True)
-    start_time_sat = models.TimeField(
-        verbose_name=_("Start time, saturdays"), null=True, blank=True
-    )
+    start_time_sat = models.TimeField(verbose_name=_("Start time, saturdays"), null=True, blank=True)
     end_time_sat = models.TimeField(verbose_name=_("End time, saturdays"), null=True, blank=True)
     start_time_sun = models.TimeField(verbose_name=_("Start time, sundays"), null=True, blank=True)
     end_time_sun = models.TimeField(verbose_name=_("End time, sundays"), null=True, blank=True)
 
     place = models.TextField(verbose_name=_("Place"))
-    nb_participants = models.SmallIntegerField(
-        verbose_name=_("Current nb of participants"), default=0
-    )
-    min_participants = models.PositiveSmallIntegerField(
-        verbose_name=_("Minimal number of participants")
-    )
-    max_participants = models.PositiveSmallIntegerField(
-        verbose_name=_("Maximal number of participants")
-    )
+    nb_participants = models.SmallIntegerField(verbose_name=_("Current nb of participants"), default=0)
+    min_participants = models.PositiveSmallIntegerField(verbose_name=_("Minimal number of participants"))
+    max_participants = models.PositiveSmallIntegerField(verbose_name=_("Maximal number of participants"))
 
     schoolyear_min = models.PositiveIntegerField(
         choices=SCHOOL_YEARS, verbose_name=_("Minimal school year"), blank=True, null=True
@@ -344,12 +309,8 @@ class Course(TimeStampedModel):
         blank=True,
         null=True,
     )
-    min_birth_date = models.DateField(
-        verbose_name=_("Minimal birth date to register"), null=True, editable=False
-    )
-    max_birth_date = models.DateField(
-        verbose_name=_("Maximal birth date to register"), null=True, editable=False
-    )
+    min_birth_date = models.DateField(verbose_name=_("Minimal birth date to register"), null=True, editable=False)
+    max_birth_date = models.DateField(verbose_name=_("Maximal birth date to register"), null=True, editable=False)
 
     announced_js = models.BooleanField(_("Course announced to J+S"), default=False)
 
@@ -377,6 +338,16 @@ class Course(TimeStampedModel):
         return [dict(AGES)[age] for age in self.ages]
 
     @property
+    def all_dates(self):
+        if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
+            return [session.date for session in self.sessions.all().order_by("date")]
+        return [
+            self.start_date + timedelta(days=i)
+            for i in range(0, (self.end_date - self.start_date).days + 1, 7)
+            if self.start_date + timedelta(days=i) <= self.end_date
+        ]
+
+    @property
     def available_places(self):
         return self.max_participants - self.count_participants
 
@@ -397,32 +368,28 @@ class Course(TimeStampedModel):
         days = dict(DAYS_OF_WEEK)
         if self.is_camp:
             if self.start_date and self.end_date:
-                return (
-                    six.text_type(days[self.start_date.isoweekday()])
-                    + " - "
-                    + six.text_type(days[self.end_date.isoweekday()])
-                )
+                return str(days[self.start_date.isoweekday()]) + " - " + str(days[self.end_date.isoweekday()])
             return ""
-        return six.text_type(dict(DAYS_OF_WEEK).get(self.day, str(self.day)))
+        return str(dict(DAYS_OF_WEEK).get(self.day, str(self.day)))
 
     @property
     def days_names(self):
         days = dict(DAYS_OF_WEEK)
         out = []
         if self.start_time_mon:
-            out.append(six.text_type(days[1]))
+            out.append(str(days[1]))
         if self.start_time_tue:
-            out.append(six.text_type(days[2]))
+            out.append(str(days[2]))
         if self.start_time_wed:
-            out.append(six.text_type(days[3]))
+            out.append(str(days[3]))
         if self.start_time_thu:
-            out.append(six.text_type(days[4]))
+            out.append(str(days[4]))
         if self.start_time_fri:
-            out.append(six.text_type(days[5]))
+            out.append(str(days[5]))
         if self.start_time_sat:
-            out.append(six.text_type(days[6]))
+            out.append(str(days[6]))
         if self.start_time_sun:
-            out.append(six.text_type(days[7]))
+            out.append(str(days[7]))
         return out
 
     @property
@@ -430,17 +397,14 @@ class Course(TimeStampedModel):
         return self.get_delete_url()
 
     @property
-    def duration(self):
+    def duration(self):  # noqa: CCR001
         if self.is_camp:
             if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
                 if self.sessions.exists():
-                    return (
-                        self.sessions.last().date + timedelta(days=1) - self.sessions.first().date
-                    )
+                    return self.sessions.last().date + timedelta(days=1) - self.sessions.first().date
                 return None
-            else:
-                return (self.end_date - self.start_date) + timedelta(days=1)
-        elif self.is_multi_course:
+            return (self.end_date - self.start_date) + timedelta(days=1)
+        if self.is_multi_course:
             return max(
                 [
                     datetime.combine(date.today(), self.end_time_mon or time(0, 0))
@@ -469,7 +433,7 @@ class Course(TimeStampedModel):
 
     @property
     def get_js_name(self):
-        return "%s - %s" % (self.number, self.activity.name)
+        return f"{self.number} - {self.activity.name}"
 
     @property
     def has_issue(self):
@@ -512,22 +476,14 @@ class Course(TimeStampedModel):
 
     @property
     def last_convocation_email(self):
-        receipt = (
-            self.email_receipts.filter(type=TemplatedEmailReceipt.TYPE.convocation)
-            .order_by("modified")
-            .last()
-        )
+        receipt = self.email_receipts.filter(type=TemplatedEmailReceipt.TYPE.convocation).order_by("modified").last()
         if receipt:
             return receipt.modified
         return None
 
     @property
     def last_instructor_email(self):
-        receipt = (
-            self.email_receipts.filter(type=TemplatedEmailReceipt.TYPE.instructors)
-            .order_by("modified")
-            .last()
-        )
+        receipt = self.email_receipts.filter(type=TemplatedEmailReceipt.TYPE.instructors).order_by("modified").last()
         if receipt:
             return receipt.modified
         return None
@@ -535,7 +491,7 @@ class Course(TimeStampedModel):
     @property
     def long_name(self):
         if self.name:
-            return "{} - {}".format(self.short_name, self.name)
+            return f"{self.short_name} - {self.name}"
         return self.short_name
 
     @property
@@ -561,7 +517,7 @@ class Course(TimeStampedModel):
 
     @property
     def short_name(self):
-        return "%s (%s)" % (self.activity.name, self.number)
+        return f"{self.activity.name} ({self.number})"
 
     @property
     def update_url(self):
@@ -585,7 +541,7 @@ class Course(TimeStampedModel):
         return session
 
     def detailed_label(self):
-        base = six.text_type(self)
+        base = str(self)
         if self.is_course:
             dates = _("from %(start)s to %(end)s, every %(day)s at %(hour)s.")
             return (
@@ -599,10 +555,8 @@ class Course(TimeStampedModel):
                     "hour": self.start_time.strftime("%H:%M"),
                 }
             )
-        elif self.is_camp:
-            return base + ", {}-{}".format(
-                self.start_date.strftime("%d/%m/%Y"), self.end_date.strftime("%d/%m/%Y")
-            )
+        if self.is_camp:
+            return base + ", {}-{}".format(self.start_date.strftime("%d/%m/%Y"), self.end_date.strftime("%d/%m/%Y"))
         return base
 
     def get_absences_url(self):
@@ -613,9 +567,7 @@ class Course(TimeStampedModel):
 
     def get_backend_absences_url(self):
         if settings.KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES:
-            return reverse(
-                "backend:activity-absences", kwargs={"activity": self.activity.slug}
-            ) + "?c={}".format(self.pk)
+            return reverse("backend:activity-absences", kwargs={"activity": self.activity.slug}) + f"?c={self.pk}"
         return reverse("backend:course-absence", kwargs={"course": self.pk})
 
     def get_custom_mail_custom_users_instructors_url(self):
@@ -634,7 +586,7 @@ class Course(TimeStampedModel):
         return reverse("backend:course-delete", kwargs={"course": self.pk})
 
     def get_duplicate_url(self):
-        return reverse("backend:course-create") + "?source={}".format(self.pk)
+        return reverse("backend:course-create") + f"?source={self.pk}"
 
     def get_js_export_url(self):
         return reverse("backend:course-js-export", kwargs={"course": self.pk})
@@ -655,10 +607,8 @@ class Course(TimeStampedModel):
         if self.start_date.year == self.end_date.year:
             if self.start_date.month == self.end_date.month:
                 return _date(self.start_date, "F Y")
-            else:
-                return _date(self.start_date, "F") + " - " + _date(self.end_date, "F Y")
-        else:
-            return _date(self.start_date, "F Y") + " - " + _date(self.end_date, "F Y")
+            return _date(self.start_date, "F") + " - " + _date(self.end_date, "F Y")
+        return _date(self.start_date, "F Y") + " - " + _date(self.end_date, "F Y")
 
     def get_sessions(self):
         return self.sessions.all()
@@ -678,7 +628,7 @@ class Course(TimeStampedModel):
             # if we say up to 6 years old, we want to include children of 6 1/2 years old, hence the +1
             self.max_birth_date = self.start_date - relativedelta(years=self.age_max + 1)
         self.update_nb_participants()
-        super(Course, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def update_dates_from_sessions(self, commit=True):
         dates = self.sessions.values_list("date", flat=True)
@@ -729,18 +679,12 @@ EXTRA_TYPES = (("B", _("Boolean")), ("C", _("Characters")), ("I", _("Integer")))
 class ExtraNeed(TimeStampedModel):
     courses = models.ManyToManyField("Course", related_name="extra", blank=True)
 
-    question_label = models.CharField(
-        max_length=255, verbose_name=_("Question"), help_text=_("e.g. Shoes size?")
-    )
+    question_label = models.CharField(max_length=255, verbose_name=_("Question"), help_text=_("e.g. Shoes size?"))
     extra_info = models.TextField(blank=True)
     mandatory = models.BooleanField(default=True)
-    type = models.CharField(
-        verbose_name=_("Type of answer"), choices=EXTRA_TYPES, default="C", max_length=2
-    )
+    type = models.CharField(verbose_name=_("Type of answer"), choices=EXTRA_TYPES, default="C", max_length=2)
     choices = ArrayField(
-        verbose_name=_(
-            "Limit to values (internal name, display name),(internal name 2, display name 2)"
-        ),
+        verbose_name=_("Limit to values (internal name, display name),(internal name 2, display name 2)"),
         base_field=models.CharField(max_length=255),
         blank=True,
         null=True,
@@ -752,9 +696,7 @@ class ExtraNeed(TimeStampedModel):
         blank=True,
         null=True,
     )
-    default = models.CharField(
-        verbose_name=_("Default value"), default="", blank=True, max_length=255
-    )
+    default = models.CharField(verbose_name=_("Default value"), default="", blank=True, max_length=255)
 
     class Meta:
         verbose_name = _("extra question")
@@ -768,7 +710,7 @@ class ExtraNeed(TimeStampedModel):
 
     def __str__(self):
         if self.choices:
-            out = "%s (%s)" % (self.question_label, ", ".join(self.choices))
+            out = "{} ({})".format(self.question_label, ", ".join(self.choices))
             if self.price_modifier:
                 out += " - (" + ", ".join([str(price) for price in self.price_modifier]) + ")"
             return out
@@ -780,14 +722,10 @@ RATE_MODES = Choices(("day", _("Daily")), ("hour", _("Hourly")))
 
 class PaySlip(TimeStampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    instructor = models.ForeignKey(
-        "profiles.FamilyUser", verbose_name=_("Instructor"), on_delete=models.CASCADE
-    )
+    instructor = models.ForeignKey("profiles.FamilyUser", verbose_name=_("Instructor"), on_delete=models.CASCADE)
     course = models.ForeignKey("Course", verbose_name=_("Course"), on_delete=models.CASCADE)
     rate = models.DecimalField(_("Rate"), max_digits=6, decimal_places=2)
-    rate_mode = models.CharField(
-        _("Rate mode"), max_length=10, choices=RATE_MODES, default=RATE_MODES.hour
-    )
+    rate_mode = models.CharField(_("Rate mode"), max_length=10, choices=RATE_MODES, default=RATE_MODES.hour)
     start_date = models.DateField(_("Start date"))
     end_date = models.DateField(_("End date"))
     function = models.CharField(_("Function"), max_length=255)
@@ -803,8 +741,7 @@ class PaySlip(TimeStampedModel):
             duration = self.course.duration
             hours = Decimal(duration.seconds / 3600.0 + duration.days * 24)
             return Decimal(self.rate) * Decimal(self.sessions.count()) * hours
-        else:
-            return Decimal(self.sessions.count()) * self.rate
+        return Decimal(self.sessions.count()) * self.rate
 
     @property
     def average_presentees(self):
@@ -842,7 +779,7 @@ class TemplatedEmailReceipt(TimeStampedModel):
 
 def _invalidate_course_data(pk):
     tenant_pk = connection.get_tenant().pk
-    cache_key = "tenant_{}_course_{}".format(tenant_pk, pk)
+    cache_key = f"tenant_{tenant_pk}_course_{pk}"
     cache.delete(cache_key)
 
 

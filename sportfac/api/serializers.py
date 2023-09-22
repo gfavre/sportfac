@@ -84,6 +84,7 @@ class CourseInlineSerializer(serializers.ModelSerializer):
             "day",
             "start_date",
             "end_date",
+            "all_dates",
             "all_day",
             "start_time",
             "end_time",
@@ -133,6 +134,7 @@ class CourseSerializer(serializers.ModelSerializer):
             "day",
             "start_date",
             "end_date",
+            "all_dates",
             "all_day",
             "start_time",
             "end_time",
@@ -161,16 +163,11 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class ActivityDetailedSerializer(serializers.ModelSerializer):
-    courses = serializers.SerializerMethodField()
+    courses = CourseInlineSerializer(many=True, read_only=True)
 
     class Meta:
         model = Activity
         fields = ("id", "name", "number", "courses")
-
-    # noinspection PyMethodMayBeStatic
-    def get_courses(self, obj):
-        courses = [course for course in obj.courses.order_by("start_date") if course.visible]
-        return CourseInlineSerializer(courses, many=True, read_only=True).data
 
 
 class BuildingSerializer(serializers.ModelSerializer):

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.conf import settings
 from django.core.cache import cache
 from django.http import Http404
@@ -23,7 +22,7 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
     model = Activity
 
     def get_queryset(self):
-        queryset = Activity.objects.prefetch_related("courses", "courses__instructors")
+        queryset = Activity.objects.prefetch_related("courses", "courses__instructors", "courses__sessions")
         if settings.KEPCHUP_LIMIT_BY_SCHOOL_YEAR:
             school_year = self.request.query_params.get("year")
             if school_year is not None:
@@ -52,15 +51,15 @@ class CourseViewSet(viewsets.ReadOnlyModelViewSet):
     model = Course
 
     def get_queryset(self):
-        return Course.objects.visible().select_related("activity").prefetch_related("instructors")
+        return Course.objects.visible().select_related("activity").prefetch_related("instructors", "sessions")
 
     def retrieve(self, request, pk=None):
         tenant_pk = request.tenant.pk
-        cache_key = "tenant_{}_course_{}".format(tenant_pk, pk)
+        cache_key = f"tenant_{tenant_pk}_course_{pk}"
         data = cache.get(cache_key)
         if data:
             return Response(data)
-        response = super(CourseViewSet, self).retrieve(request, pk=pk)
+        response = super().retrieve(request, pk=pk)
         cache.set(cache_key, response.data)
         return response
 

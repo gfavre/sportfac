@@ -30,7 +30,7 @@ function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, Regi
   } else {
     $scope.hiddenDays = [];
   }
-  
+
   $scope.urls = {
     activity: $attrs.activityserviceurl,
     child: $attrs.childserviceurl,
@@ -86,11 +86,8 @@ function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, Regi
   };
   $scope.isOnWaitingList = function(course, child){
     let compare = function(slot){
-       console.log("comparing", slot, child, course);
        return slot.child === child.id && slot.course === course.id;
     };
-    console.log("slots:", $scope.waitingSlots);
-    console.log("filter res:", $filter('filter')($scope.waitingSlots, compare))
     return $filter('filter')($scope.waitingSlots, compare).length === 1;
   }
   $scope.removeFromWaitingList = function(course, child){
@@ -189,18 +186,10 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
   });
 
   $scope.overlap = function(event1, event2){
-    // Two dates overlap if StartA <= EndB and startB <= EndA
-    // Here wee need periods to overlap and running day to be the same.
-    // Moreover, times of day should overlap
-    var start1 = new Date(event1.start_date);
-    var start2 = new Date(event2.start_date);
-    var end1   = new Date(event1.end_date);
-    var end2   = new Date(event2.end_date);
-    if (( start1 <= end2 ) && (start2 <= end1) && event1.day === event2.day) {
-      // dates overlap. Let's see if times overlap
-      return event1.start_time <= event2.end_time && event2.start_time <= event1.end_time;
-    }
-    return false;
+    let set1 = new Set(event1.all_dates);
+    let set2 = new Set(event2.all_dates);
+    let combinedSet = new Set([...set1, ...set2]);
+    return combinedSet.size < set1.size + set2.size;
   };
 
   $scope.$watch('registrations.length', function(){
