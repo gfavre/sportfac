@@ -1,4 +1,4 @@
-{% load static i18n %}
+{% load static i18n static %}
 
 
 <footer id="footer">
@@ -10,6 +10,8 @@
         <li><a href="{% url 'contact:contact' %}">{% trans "Contact" %}</a></li>
         <li class="muted">·</li>
         <li><a href="{% url 'terms' %}">{% trans "Terms and conditions" %}</a></li>
+        <li class="muted">·</li>
+        <li><a href="{% static 'pdf/Reglement-kepchup-ssf.pdf' %}">Règlement SSF</a></li>
         <li class="muted">·</li>
         <li><a href="{% url 'privacy' %}">{% trans "Privacy" %}</a></li>
       </ul>

@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n static %}
 <header class="navbar navbar-inverse" role="banner">
   <div class="container">
     <div class="navbar-header">
@@ -13,6 +13,7 @@
       <ul class="nav navbar-nav  navbar-left">
         {% if not NO_TERMS %}
           <li><a href="{% url 'terms' %}">{% trans "Terms and conditions" %}</a></li>
+          <li><a href="{% static 'pdf/Reglement-kepchup-ssf.pdf' %}">Règlement SSF</a></li>
         {% endif %}
         {% for activity_type, activities in activities_types %}
           {% if activities %}
