@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.contrib import admin
 from django.contrib.flatpages.admin import FlatPageAdmin
 from django.contrib.flatpages.models import FlatPage
@@ -101,7 +100,7 @@ admin.site.register(AllocationAccount)
 
 @admin.register(ExtraNeed)
 class ExtraNeedAdmin(SportfacModelAdmin):
-    pass
+    filter_horizontal = ("courses",)
 
 
 class ParticipantsListFilter(admin.SimpleListFilter):
@@ -138,11 +137,12 @@ class ParticipantsListFilter(admin.SimpleListFilter):
             return queryset.filter(participants__count__lt=models.F("min_participants"))
         if self.value() == "max":
             return queryset.filter(participants__count__gte=models.F("max_participants"))
-        elif self.value() == "ok":
+        if self.value() == "ok":
             return queryset.filter(
                 participants__count__lt=models.F("max_participants"),
                 participants__count__gte=models.F("min_participants"),
             )
+        return queryset
 
 
 @admin.register(Course)
@@ -175,20 +175,19 @@ class CoursesAdmin(SportfacAdminMixin, ImportExportModelAdmin):
     resource_class = CourseResource
 
     def get_queryset(self, request):
-        qs = super(CoursesAdmin, self).get_queryset(request)
-        qs = qs.annotate(models.Count("participants"))
-        return qs
+        qs = super().get_queryset(request)
+        return qs.annotate(models.Count("participants"))
 
+    @admin.display(
+        description=_("number of participants"),
+        ordering="participants__count",
+    )
     def number_of_participants(self, obj):
         return Registration.objects.filter(course=obj).count()
 
-    number_of_participants.admin_order_field = "participants__count"
-    number_of_participants.short_description = _("number of participants")
-
+    @admin.display(description=_("Duration"))
     def duration(self, obj):
         return obj.duration
-
-    duration.short_description = _("Duration")
 
 
 @admin.register(TemplatedEmailReceipt)
@@ -231,14 +230,15 @@ class PaySlipAdmin(admin.ModelAdmin):
     )
 
     def get_queryset(self, request):
-        queryset = super(PaySlipAdmin, self).get_queryset(request)
+        queryset = super().get_queryset(request)
         return queryset.select_related("instructor", "course", "course__activity")
 
+    @admin.display(
+        description=_("Course"),
+        ordering="course",
+    )
     def get_course(self, obj):
         return obj.course.short_name
-
-    get_course.short_description = _("Course")
-    get_course.admin_order_field = "course"
 
 
 admin.site.unregister(FlatPage)
