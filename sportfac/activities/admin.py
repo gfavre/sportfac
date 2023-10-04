@@ -147,6 +147,9 @@ class ParticipantsListFilter(admin.SimpleListFilter):
 
 @admin.register(Course)
 class CoursesAdmin(SportfacAdminMixin, ImportExportModelAdmin):
+    change_list_filter_template = "admin/filter_listing.html"
+    filter_horizontal = ("local_city_override",)
+
     list_display = (
         "activity",
         "number",
@@ -157,22 +160,20 @@ class CoursesAdmin(SportfacAdminMixin, ImportExportModelAdmin):
         "number_of_participants",
         "uptodate",
     )
-    verbose_name = _("course")
-    verbose_name_plural = _("courses")
-
-    ordering = ("number", "activity__number", "activity__name", "start_date", "start_time")
     list_filter = (
         ParticipantsListFilter,
         "uptodate",
     )
-    change_list_filter_template = "admin/filter_listing.html"
-    save_as = True
+    ordering = ("number", "activity__number", "activity__name", "start_date", "start_time")
     inlines = (
         InstructorInline,
         ExtraInline,
     )
     readonly_fields = ("id", "min_birth_date", "max_birth_date")
     resource_class = CourseResource
+    save_as = True
+    verbose_name = _("course")
+    verbose_name_plural = _("courses")
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
