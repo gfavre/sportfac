@@ -550,6 +550,7 @@ class ExtraInfo(models.Model):
     )
     key = models.ForeignKey("activities.ExtraNeed", on_delete=models.CASCADE)
     value = models.CharField(max_length=255, blank=True)
+    image = models.ImageField(upload_to="extra_infos", blank=True, null=True)
 
     class Meta:
         ordering = ("key", "registration")

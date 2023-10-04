@@ -697,6 +697,7 @@ class ExtraNeed(TimeStampedModel):
         null=True,
     )
     default = models.CharField(verbose_name=_("Default value"), default="", blank=True, max_length=255)
+    display_image_field = models.BooleanField(default=False, verbose_name=_("Display image field"))
 
     class Meta:
         verbose_name = _("extra question")
