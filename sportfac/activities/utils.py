@@ -44,4 +44,5 @@ def course_to_js_csv(course, filelike):
                 course.get_js_name,
             )
         )
-    writer.writerows(rows)
+    for row in rows:
+        writer.writerow(row)

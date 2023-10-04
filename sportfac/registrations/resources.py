@@ -198,6 +198,9 @@ class RegistrationResource(resources.ModelResource):
             removable_fields.append("bib_number")
         if not settings.KEPCHUP_DISPLAY_CAR_NUMBER:
             removable_fields.append("transport")
+        if settings.KEPCHUP_NO_PAYMENT:
+            removable_fields.append("paid")
+            removable_fields.append("invoice_identifier")
         order = tuple([field for field in order if field not in removable_fields])
         return order + tuple(k for k in self.fields.keys() if k not in order)
 
