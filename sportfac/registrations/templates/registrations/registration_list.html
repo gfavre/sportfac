@@ -31,9 +31,14 @@
         <span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span>
       </button>
     <p><strong><i class="icon-exclamation"></i></strong>
-      {% blocktrans with REGISTRATION_EXPIRE_MINUTES|minutes_duration as duration %}
+      {% if REGISTRATION_EXPIRE_MINUTES == 60 %}
+        {% blocktrans %}The following registrations are reserved for the next hour.{% endblocktrans %}
+        {% else %}
+         {% blocktrans with REGISTRATION_EXPIRE_MINUTES|minutes_duration as duration %}
       The following registrations are reserved for the next {{ duration}}.
-      {% endblocktrans %}</p>
+      {% endblocktrans %}
+      {% endif %}
+     </p>
   </div>
   {% endif %}
   {% if overlaps %}
