@@ -673,7 +673,7 @@ class CoursesInstructors(models.Model):
         unique_together = ("course", "instructor")
 
 
-EXTRA_TYPES = (("B", _("Boolean")), ("C", _("Characters")), ("I", _("Integer")))
+EXTRA_TYPES = (("B", _("Boolean")), ("C", _("Characters")), ("I", _("Integer")), ("IM", _("Image")))
 
 
 class ExtraNeed(TimeStampedModel):
@@ -697,7 +697,6 @@ class ExtraNeed(TimeStampedModel):
         null=True,
     )
     default = models.CharField(verbose_name=_("Default value"), default="", blank=True, max_length=255)
-    display_image_field = models.BooleanField(default=False, verbose_name=_("Display image field"))
 
     class Meta:
         verbose_name = _("extra question")

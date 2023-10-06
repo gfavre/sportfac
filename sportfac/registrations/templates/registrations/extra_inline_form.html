@@ -1,0 +1,77 @@
+{% load i18n %}
+<div class="form-group">
+  <label for="{{ registered.id }}-extra-{{ extra.id }}"
+         class="col-sm-3 control-label">{{ extra.question_label }} {% if extra.mandatory %}
+    *{% endif %}</label>
+  <div class="col-sm-6">
+    {% if extra.choices %}
+      <select name="extra-{{ extra.id }}" id="{{ registered.id }}-extra-{{ extra.id }}"
+              class="form-control" {% if extra.mandatory %}required{% endif %}>
+        {% if not extra.mandatory %}
+          <option></option>
+        {% endif %}
+        {% for choice in extra.choices %}
+          <option value="{{ choice }}"
+                  {% if choice == extra.default %}checked{% endif %}>{{ choice }}</option>
+        {% endfor %}
+      </select>
+    {% else %}
+      {% if extra.type == 'C' %}
+        <input type="text" name="extra-{{ extra.id }}" class="form-control"
+               value="{{ extra.default|default:"" }}"
+               id="{{ registered.id }}-extra-{{ extra.id }}"
+               {% if extra.mandatory %}required{% endif %}/>
+      {% elif extra.type == 'I' %}
+        <input type="number" name="extra-{{ extra.id }}" class="form-control"
+               value="{{ extra.default|default:"" }}"
+               id="{{ registered.id }}-extra-{{ extra.id }}"
+               {% if extra.mandatory %}required{% endif %}/>
+      {% elif extra.type == "B" %}
+        <label class="radio-inline">
+          <input type="radio" name="extra-{{ extra.id }}" value="1"
+                 {% if extra.default == "1" %}checked{% endif %}
+                 {% if extra.mandatory %}required{% endif %}/> {% trans "yes" %}
+        </label>
+        <label class="radio-inline">
+          <input type="radio" name="extra-{{ extra.id }}" value="0"
+                 {% if extra.default == "0" %}checked{% endif %}> {% trans "no" %}
+        </label>
+      {% elif extra.type == "IM" %}
+        <label class="radio-inline">
+          <input type="radio" name="extra-{{ extra.id }}" value="1"
+                 {% if extra.default == "1" %}checked{% endif %}
+                 {% if extra.mandatory %}required{% endif %}/> {% trans "yes" %}
+        </label>
+        <label class="radio-inline">
+          <input type="radio" name="extra-{{ extra.id }}" value="0"
+                 {% if extra.default == "0" %}checked{% endif %}> {% trans "no" %}
+        </label>
+      {% endif %}
+    {% endif %}
+    <div class="help-block with-errors">{{ extra.extra_info }}</div>
+  </div>
+
+  <div class="col-sm-3 text-right invoice-item" id="reduction-label-{{ extra.id }}" data-value="0">
+
+  </div>
+</div>
+{% if extra.type == "IM" %}
+  <script>
+    document.querySelectorAll('input[name="extra-{{ extra.id }}"]').forEach(function (radio) {
+      radio.addEventListener('change', function () {
+        if (this.value === "1") {
+          document.querySelector('#extra-{{ extra.id }}-file-ctnr').classList.remove('hidden');
+        } else {
+          document.querySelector('#extra-{{ extra.id }}-file-ctnr').classList.add('hidden');
+        }
+      });
+    });
+  </script>
+  <div class="form-group hidden" id="extra-{{ extra.id }}-file-ctnr">
+    <label for="extra-{{ extra.id }}-file" class="col-sm-3 control-label">{% trans "Image" %}</label>
+    <div class="col-sm-9">
+      <input type="file" class="form-control-file" accept="image/*" capture="environment"
+             name="image" id="extra-{{ extra.id }}-file">
+    </div>
+  </div>
+{% endif %}
