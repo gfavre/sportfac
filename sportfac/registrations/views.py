@@ -193,8 +193,8 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
         registrations = self.get_queryset()
         context["registered_list"] = registrations
         registrations = registrations.order_by("course__start_date", "course__end_date")
-        self.set_price_modifiers(registrations, context)
         context["applied_price_modifications"] = {}
+        self.set_price_modifiers(registrations, context)
 
         context["has_price_modification"] = len(context["applied_price_modifications"]) != 0
         if settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
