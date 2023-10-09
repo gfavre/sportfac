@@ -2,6 +2,7 @@
 {% load i18n l10n humanize switzerland json_tags duration %}
 
 
+{% block title %}{% if ALTERNATIVE_CONFIRM_LABEL %}{{ ALTERNATIVE_CONFIRM_LABEL }}{% else %}{% trans "Confirmation" %}{% endif %} - {{ block.super }}{% endblock %}
 {% block page_title %}
   {% if ALTERNATIVE_CONFIRM_LABEL %}
     {{ ALTERNATIVE_CONFIRM_LABEL }}
@@ -144,7 +145,23 @@
             <dl class="dl-horizontal extras">
               {% for extra in registered.extra_infos.all %}
                 <dt>{{ extra.key.question_label }}</dt>
-                <dd>{{ extra.value }}
+                <dd>
+                  {% if extra.key.is_boolean %}
+                    <span class="label {{ extra.value|yesno:"label-success,label-error" }}">
+                      <i class="icon-{{ extra.value|yesno:'ok,cancel' }}"></i>
+                    </span>
+                  {% elif extra.key.is_image %}
+                    <span class="label {{ extra.value|yesno:"label-success,label-error" }}">
+                      <i class="icon-{{ extra.value|yesno:'ok,cancel' }}"></i>
+                    </span>
+                    {% if extra.value %}
+                    <span style="display: inline-block; margin-left: 1em">
+                      <a href="{{ extra.image.url }}"  target="_blank">{% trans "image" %}</a>
+                    </span>
+                    {% endif %}
+                  {% else %}
+                  {{ extra.value }}
+                  {% endif %}
                   {% if extra.key.price_modifier %}
                     <span class="pull-right invoice-item"
                           data-value="{{ extra.price_modifier }}">{{ extra.price_modifier|money_sign }}</span>
@@ -153,8 +170,6 @@
               {% endfor %}
             </dl>
           {% endif %}
-
-
           <p class="alert alert-info hide" role="alert">
             <i class="icon-refresh icon-spin"></i> {% trans "Sending info..." %}
           </p>
@@ -178,7 +193,6 @@
           </p>
         </td>
       </tr>
-
     {% endfor %}
     </tbody>
 

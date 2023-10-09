@@ -703,6 +703,22 @@ class ExtraNeed(TimeStampedModel):
         verbose_name_plural = _("extra questions")
 
     @property
+    def is_boolean(self):
+        return self.type == "B"
+
+    @property
+    def is_characters(self):
+        return self.type == "C"
+
+    @property
+    def is_integer(self):
+        return self.type == "I"
+
+    @property
+    def is_image(self):
+        return self.type == "IM"
+
+    @property
     def price_dict(self):
         if not self.price_modifier:
             return {}
