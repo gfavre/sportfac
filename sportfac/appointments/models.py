@@ -1,17 +1,18 @@
-# -*- coding: utf-8 -*-
 from django.db import models
 from django.urls import reverse
-from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 
 from model_utils.models import TimeStampedModel
 from phonenumber_field.modelfields import PhoneNumberField
 
 
+class AppointmentType(TimeStampedModel):
+    label = models.CharField(max_length=50, verbose_name=_("Displayed name"))
+    start = models.DateTimeField()
+    end = models.DateTimeField()
+
+
 class AppointmentSlot(TimeStampedModel):
-    title = models.CharField(
-        null=True, blank=True, max_length=50, verbose_name=_("Displayed name")
-    )
     places = models.PositiveSmallIntegerField(verbose_name=_("Maximal number of participants"))
     start = models.DateTimeField()
     end = models.DateTimeField()
@@ -40,12 +41,8 @@ class AppointmentSlot(TimeStampedModel):
 
 
 class Appointment(TimeStampedModel):
-    slot = models.ForeignKey(
-        "AppointmentSlot", on_delete=models.CASCADE, related_name="appointments"
-    )
-    child = models.OneToOneField(
-        "registrations.Child", on_delete=models.CASCADE, related_name="appointment"
-    )
+    slot = models.ForeignKey("AppointmentSlot", on_delete=models.CASCADE, related_name="appointments")
+    child = models.OneToOneField("registrations.Child", on_delete=models.CASCADE, related_name="appointment")
     family = models.ForeignKey(
         "profiles.FamilyUser", null=True, on_delete=models.SET_NULL, related_name="appointments"
     )
