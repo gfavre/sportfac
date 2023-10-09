@@ -69,7 +69,12 @@ def wizard_context(request):
     )
     all_steps = [about, children, activities, confirmation]
     if settings.KEPCHUP_USE_APPOINTMENTS:
-        appointment_step = Step(request, "appointment-step", _("Appointments"), "wizard_appointments")
+        appointment_step = Step(
+            request,
+            "appointment-step",
+            settings.KEPCHUP_ALTERNATIVE_APPOINTMENTS_LABEL or _("Appointments"),
+            "wizard_appointments",
+        )
         all_steps += [appointment_step]
 
     if not settings.KEPCHUP_NO_PAYMENT:
