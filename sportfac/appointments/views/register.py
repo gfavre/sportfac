@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.utils.timezone import now
 from django.views.generic import TemplateView
 
@@ -13,7 +12,7 @@ class SlotsView(TemplateView):
     template_name = "appointments/slots.html"
 
     def get_context_data(self, **kwargs):
-        context = super(SlotsView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         qs = AppointmentSlot.objects.filter(start__gte=now())
         if qs.exists():
             context["start"] = qs.first().start.date().isoformat()
@@ -24,9 +23,7 @@ class SlotsView(TemplateView):
             and Appointment.objects.filter(family=self.request.user, slot__in=qs)
             or Appointment.objects.none()
         )
-        context["available_dates"] = sorted(
-            set([d.date() for d in qs.values_list("start", flat=True)])
-        )
+        context["available_dates"] = sorted({d.date() for d in qs.values_list("start", flat=True)})
         return context
 
 
