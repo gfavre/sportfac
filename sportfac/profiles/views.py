@@ -1,6 +1,6 @@
+import django.contrib.auth.views as auth_views
 from django.conf import settings
 from django.contrib.auth import authenticate, login
-import django.contrib.auth.views as auth_views
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
@@ -9,10 +9,10 @@ from django.utils.translation import gettext as _
 from django.views.generic import FormView, RedirectView, UpdateView
 
 from braces.views import LoginRequiredMixin
-
 from registration import signals
+from registrations.models import Bill
 
-from sportfac.views import WizardMixin
+from sportfac.views import NotReachableException, WizardMixin
 
 from .forms import InstructorForm, RegistrationForm, UserForm
 from .models import FamilyUser
@@ -31,7 +31,7 @@ class AccountRedirectView(LoginRequiredMixin, RedirectView):
         user = self.request.user
         if user.is_manager or user.is_superuser or user.is_staff:
             return reverse("backend:home")
-        elif user.is_kepchup_staff:
+        if user.is_kepchup_staff:
             return reverse("activities:my-courses")
         return reverse("registrations:registrations_registered_activities")
 
@@ -63,7 +63,12 @@ class WizardAccountView(WizardMixin, _BaseAccount):
     @staticmethod
     def check_initial_condition(request):
         # Condition is to be logged in => _BaseAccount requires login.
-        return
+        if Bill.objects.filter(
+            family=request.user,
+            status=Bill.STATUS.waiting,
+            payment_method__in=(Bill.METHODS.datatrans, Bill.METHODS.postfinance),
+        ).exists():
+            raise NotReachableException("Payment expected first")
 
 
 class RegistrationBaseView(FormView):
@@ -124,7 +129,7 @@ class RegistrationView(RegistrationBaseView):
     def dispatch(self, request, *args, **kwargs):
         """Called before get or post methods"""
         if settings.KEPCHUP_REGISTER_ACCOUNTS_AT_ANY_TIME or request.REGISTRATION_OPENED:
-            return super(RegistrationView, self).dispatch(request, *args, **kwargs)
+            return super().dispatch(request, *args, **kwargs)
         raise PermissionDenied
 
 
@@ -152,4 +157,4 @@ class LogoutView(auth_views.LogoutView):
         if settings.KEPCHUP_USE_SSO:
             # FIXME: wgat is this hardcoded crap?
             return "https://users.ssfmontreux.ch/logout"
-        return super(LogoutView, self).get_next_page()
+        return super().get_next_page()

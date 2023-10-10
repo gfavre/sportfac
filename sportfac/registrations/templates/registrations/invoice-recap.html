@@ -1,0 +1,112 @@
+{% load i18n sekizai_tags switzerland %}
+<section class="portlet">
+  <h3 class="content-title"><u>{% trans "Registrations" %}</u></h3>
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th>{% trans "Name" %}</th>
+      <th>{% trans "Activity" %}</th>
+      <th>{% trans "Period" %}</th>
+      <th>{% trans "Time" %}</th>
+      <th>{% trans "Place" %}</th>
+      {% if not NO_PAYMENT %}
+        <th>{% trans "Price" %}</th>
+      {% endif %}
+    </tr>
+    </thead>
+
+    {% if not NO_PAYMENT %}
+      <tfoot>
+      <tr>
+        <th colspan="5" style="text-align: right">{% trans "Total" %}</th>
+        <th class="nowrap">{{ bill.total|money_html }}</th>
+      </tr>
+      </tfoot>
+    {% endif %}
+
+    <tbody>
+    {% for registered in bill.registrations.all %}
+      <tr>
+        <td>
+          <span class="nowrap">{{ registered.child.first_name }} {{ registered.child.last_name }}</span>
+          {% if DISPLAY_LAGAPEO %}<br><small>{{ registered.child.id_lagapeo }}</small>{% endif %}
+
+        </td>
+        <td>{{ registered.course.activity.name }}
+        </td>
+        <td>
+          <span class="nowrap">{{ registered.course.start_date }}</span> – <span
+            class="nowrap">{{ registered.course.end_date }}</span>
+        </td>
+        <td>
+          {{ registered.course.day_name }} / <span
+            class="nowrap">{{ registered.course.start_time|time:"H:i" }} - {{ registered.course.end_time|time:"H:i" }}</span>
+        </td>
+        <td>{{ registered.course.place }}</td>
+        {% if not NO_PAYMENT %}
+          <td class="nowrap">
+            {{ registered.get_subtotal|money_html }}
+          </td>
+        {% endif %}
+      </tr>
+      <tr>
+        <td colspan="{% if NO_PAYMENT %}5{% else %}6{% endif %}">
+          <dl class="dl-horizontal extras">
+            {% for extra in registered.extra_infos.all %}
+              <dt>{{ extra.key.question_label }}</dt>
+              <dd>
+                {% if extra.key.is_boolean or extra.key.is_image %}
+                  <span class="label {{ extra.value|yesno:"label-success,label-error" }}">
+                      <i class="icon-{{ extra.value|yesno:'ok,cancel' }}"></i>
+                    </span>
+                {% else %}
+                  {{ extra.value }}
+                {% endif %}
+                {% if extra.key.price_modifier %}
+                  <span class="pull-right invoice-item"
+                        data-value="{{ extra.price_modifier }}">{{ extra.price_modifier|money_sign }}</span>
+                {% endif %}
+              </dd>
+            {% endfor %}
+          </dl>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+
+  </table>
+</section>
+{% if USE_APPOINTMENTS and appointments %}
+  <h3>{% trans "Appointments" %}</h3>
+  <ul>
+    {% for appointment in appointments %}
+      <li>{% if appointment.appointment_type %}{{ appointment.appointment_type }}
+        : {% endif %}{{ appointment.child }}, {{ appointment.slot }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+<p class="hidden-print text-center">
+  <button class="btn btn-secondary btn-large print-button"><i class="icon icon-print"></i> {% trans "Print" %}
+  </button>
+</p>
+
+{% addtoblock "js" %}
+  <script>
+    $('.print-button').click(function () {
+      window.print()
+    });
+  </script>
+{% endaddtoblock %}
+{% block extra_css %}
+  <style>
+    .dl-horizontal.extras {
+      margin-top: 20px;
+    }
+
+    .dl-horizontal.extras dt {
+      width: 60%;
+      margin-right: 30px;
+    }
+  </style>
+{% endblock %}

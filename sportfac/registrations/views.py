@@ -277,10 +277,7 @@ class WizardBillingView(LoginRequiredMixin, BillMixin, PaymentMixin, WizardMixin
     def check_initial_condition(request):
         if not request.user.is_authenticated:
             raise NotReachableException("No account created")
-        if (
-            request.user.montreux_needs_appointment
-            and not Appointment.objects.filter(child__in=request.user.children.all()).exists()
-        ):
+        if request.user.montreux_needs_appointment and request.user.montreux_missing_appointments:
             raise NotReachableException("No Appointment taken")
 
         if not Bill.objects.filter(
@@ -318,3 +315,9 @@ class WizardChildrenListView(WizardMixin, ChildrenListView):
     def check_initial_condition(request):
         if not request.user.is_authenticated:
             raise NotReachableException("No account created")
+        if Bill.objects.filter(
+            family=request.user,
+            status=Bill.STATUS.waiting,
+            payment_method__in=(Bill.METHODS.datatrans, Bill.METHODS.postfinance),
+        ).exists():
+            raise NotReachableException("Payment expected first")

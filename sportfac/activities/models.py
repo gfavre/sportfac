@@ -691,7 +691,7 @@ class ExtraNeed(TimeStampedModel):
     )
     price_modifier = ArrayField(
         verbose_name=_("Modify price by xx francs if this value is selected"),
-        help_text=_("List of positive/negative values"),
+        help_text=_("List of positive/negative values, if boolean: False value then True"),
         base_field=models.IntegerField(),
         blank=True,
         null=True,
@@ -722,6 +722,8 @@ class ExtraNeed(TimeStampedModel):
     def price_dict(self):
         if not self.price_modifier:
             return {}
+        if self.is_image or self.is_boolean:
+            return dict(zip(("0", "1"), self.price_modifier))
         return dict(zip(self.choices, self.price_modifier))
 
     def __str__(self):

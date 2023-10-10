@@ -237,11 +237,28 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
 
     @property
     def montreux_needs_appointment(self):
+        from activities.models import ExtraNeed
+
+        material_needs = ExtraNeed.objects.filter(question_label__icontains="matériel")
         registrations = Registration.objects.filter(child__family=self)
-        for registration in registrations:
-            if registration.extra_infos.filter(key__question_label__contains="matériel", value="OUI").exists():
-                return True
-        return False
+        return registrations.filter(extra_infos__key__in=material_needs, extra_infos__value="OUI").exists()
+
+    @property
+    def montreux_missing_appointments(self):
+        from activities.models import ExtraNeed
+        from appointments.models import Appointment, AppointmentType
+
+        material_needs = ExtraNeed.objects.filter(question_label__icontains="matériel")
+        registrations = Registration.objects.filter(child__family=self).prefetch_related("extra_infos")
+        appointment_periods = AppointmentType.objects.all()
+        missing_appointments = []
+        for registration in registrations.filter(
+            extra_infos__key__in=material_needs, extra_infos__value="OUI"
+        ).select_related("child"):
+            types = [app.appointment_type for app in Appointment.objects.filter(child=registration.child)]
+            if set(types) != set(appointment_periods):
+                missing_appointments.append((registration.child, set(appointment_periods) - set(types)))
+        return missing_appointments
 
     @property
     def nb_notifications(self):

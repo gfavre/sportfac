@@ -5,18 +5,35 @@
 {% block page_title %}{% trans "Register an appointment" %}{% endblock %}
 
 {% block content %}
+
+  {% if missing_appointments %}
+    <div class="panel panel-warning">
+      <div class="panel-heading">
+        <h3 class="panel-title">{% trans "Missing appointments" %}</h3>
+      </div>
+      <div class="panel-body">
+        <p>{% blocktrans %}You have not yet selected the appointments required for your registrations:{% endblocktrans %}</p>
+        <ul>
+          {% for child, types in missing_appointments %}
+            <li>{{ child }}: {% for type in types %}{{ type.label }}{% if not forloop.last %}, {% endif %}{% endfor %}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  {% endif %}
+
   {% if appointments %}
     <section class="portlet">
       <h3 class="content-title"><u>{% trans "Your appointments" %}</u></h3>
       <ul>
         {% for appointment in appointments %}
           <li>
+            {% if appointment.appointment_type %}{{ appointment.appointment_type }}: {% endif %}
             {{ appointment.child }}: {{ appointment.slot.start | date:"l d F Y, H:i" }}
           </li>
         {% endfor %}
       </ul>
     </section>
-
   {% endif %}
 
   <section class="portlet">
@@ -28,19 +45,21 @@
 {% endblock %}
 
 {% block page_footer %}
-<nav class="hidden-print">
-  <ul class="pager">
-  {% if previous_step %}
-    <li class="previous">
-      <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span> {% block previous_label %}{% trans "Previous"%}{% endblock %}</a>
-    </li>
-  {% endif %}
-  {% if next_step %}
-    <li class="next">
-      <a {% if appointments %}href="{{ next_step.url }}"{% else %}class="disabled"{% endif %}>{% block next_label %}{% trans "Next"%}{% endblock %}<span aria-hidden="true">&rarr;</span></a>
-    </li>
+  <nav class="hidden-print">
+    <ul class="pager">
+      {% if previous_step %}
+        <li class="previous">
+          <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span>
+            {% block previous_label %}{% trans "Previous" %}{% endblock %}</a>
+        </li>
+      {% endif %}
+      {% if next_step %}
+        <li class="next">
+          <a {% if appointments %}href="{{ next_step.url }}"{% else %}class="disabled"{% endif %}>
+            {% block next_label %}{% trans "Next" %}{% endblock %}<span aria-hidden="true">&rarr;</span></a>
+        </li>
 
-  {% endif %}
-  </ul>
-</nav>
+      {% endif %}
+    </ul>
+  </nav>
 {% endblock page_footer %}

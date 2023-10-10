@@ -63,8 +63,7 @@ class CourseAccessMixin(UserPassesTestMixin, LoginRequiredMixin):
     def test_func(self, user):
         course = self.get_object()
         return user.is_authenticated and (
-            user.is_instructor_of(course)
-            or user in [p.child.family for p in course.participants.all()]
+            user.is_instructor_of(course) or user in [p.child.family for p in course.participants.all()]
         )
 
 
@@ -72,13 +71,11 @@ class ActivityDetailView(DetailView):
     model = Activity
 
     def get_queryset(self):
-        prefetched = Activity.objects.prefetch_related(
-            "courses", "courses__participants", "courses__instructors"
-        )
+        prefetched = Activity.objects.prefetch_related("courses", "courses__participants", "courses__instructors")
         return prefetched.all()
 
     def get_context_data(self, **kwargs):
-        context = super(ActivityDetailView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         activity = kwargs["object"]
         if not self.request.user.is_authenticated:
             context["registrations"] = {}
@@ -107,12 +104,14 @@ class ActivityListView(LoginRequiredMixin, WizardMixin, ListView):
         from registrations.models import Bill
 
         if Bill.objects.filter(
-            family=request.user, status=Bill.STATUS.waiting, payment_method=Bill.METHODS.datatrans
+            family=request.user,
+            status=Bill.STATUS.waiting,
+            payment_method__in=(Bill.METHODS.datatrans, Bill.METHODS.postfinance),
         ).exists():
             raise NotReachableException("Payment expected first")
 
     def get_context_data(self, **kwargs):
-        context = super(ActivityListView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         from backend.dynamic_preferences_registry import global_preferences_registry
 
         context["MAX_REGISTRATIONS"] = global_preferences_registry.manager()["MAX_REGISTRATIONS"]
@@ -155,10 +154,7 @@ class MailUsersView(CourseAccessMixin, View):
         if "prev" in request.GET:
             params = "?prev=" + urllib.parse.urlencode(request.GET.get("prev"))
         return HttpResponseRedirect(
-            reverse(
-                "activities:mail-custom-participants-custom", kwargs={"course": kwargs["course"]}
-            )
-            + params
+            reverse("activities:mail-custom-participants-custom", kwargs={"course": kwargs["course"]}) + params
         )
 
 
@@ -171,9 +167,7 @@ class CustomMailCreateView(InstructorMixin, mailer_views.ParticipantsMailCreateV
         return reverse("activities:mail-preview", kwargs={"course": course})
 
 
-class CustomMailPreview(
-    InstructorMixin, ArchivedMailMixin, mailer_views.ParticipantsMailPreviewView
-):
+class CustomMailPreview(InstructorMixin, ArchivedMailMixin, mailer_views.ParticipantsMailPreviewView):
     group_mails = True
     template_name = "activities/mail-preview-editlink.html"
     edit_url = reverse_lazy("activities:mail-participants-custom")
@@ -195,12 +189,12 @@ class CustomParticipantsCustomMailView(InstructorMixin, mailer_views.MailCreateV
     def get(self, *args, **kwargs):
         # noinspection PyAttributeOutsideInit
         self.course = get_object_or_404(Course, pk=self.kwargs["course"])
-        return super(CustomParticipantsCustomMailView, self).get(*args, **kwargs)
+        return super().get(*args, **kwargs)
 
     def post(self, *args, **kwargs):
         # noinspection PyAttributeOutsideInit
         self.course = get_object_or_404(Course, pk=self.kwargs["course"])
-        return super(CustomParticipantsCustomMailView, self).post(*args, **kwargs)
+        return super().post(*args, **kwargs)
 
     def get_success_url(self):
         return reverse("activities:mail-preview", kwargs={"course": self.course.pk})
@@ -224,7 +218,7 @@ class PaySlipDetailView(DetailView):
     def get(self, request, *args, **kwargs):
         if self.request.GET.get("pdf", False):
             return self.pdf(request, *args, **kwargs)
-        return super(PaySlipDetailView, self).get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
     def pdf(self, request, *args, **kwargs):
         """output: filelike object"""
@@ -253,11 +247,11 @@ class PaySlipDetailView(DetailView):
         }
 
         pdf = requests.post(
-            "https://PhantomJsCloud.com/api/browser/v2/{}/".format(settings.PHANTOMJSCLOUD_APIKEY),
+            f"https://PhantomJsCloud.com/api/browser/v2/{settings.PHANTOMJSCLOUD_APIKEY}/",
             json.dumps(phantomjs_conf),
         )
         if not pdf.status_code == 200:
-            raise IOError(pdf.text)
+            raise OSError(pdf.text)
         response = HttpResponse(pdf.content, content_type="application/pdf")
         response["Content-Disposition"] = "attachment; filename=%s.pdf" % self.object.pk
         return response

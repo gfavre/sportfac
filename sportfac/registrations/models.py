@@ -190,6 +190,9 @@ class Registration(TimeStampedModel, StatusModel):
             return subtotal + modifier
         return 0
 
+    def get_subtotal(self):
+        return self.get_price_category()[0]
+
     def get_price_category(self):
         if settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
             from activities.models import Course
@@ -569,6 +572,9 @@ class ExtraInfo(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.registration.save()
+
+    def __str__(self):
+        return f"{self.key}: {self.value}"
 
 
 class Child(TimeStampedModel, StatusModel):

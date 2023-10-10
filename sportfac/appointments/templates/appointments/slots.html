@@ -12,6 +12,7 @@
       <ul>
         {% for appointment in appointments %}
           <li>
+            {% if appointment.appointment_type %}{{ appointment.appointment_type }}: {% endif %}
             {{ appointment.child }}: {{ appointment.slot.start | date:"l d F Y, H:i" }}
           </li>
         {% endfor %}

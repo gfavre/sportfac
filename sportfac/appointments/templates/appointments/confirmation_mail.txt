@@ -1,9 +1,9 @@
 {% load switzerland i18n %}
 Madame, Monsieur,
 
-Nous avons bien reçu l’inscription pour la prise du matériel d’hiver:
+Nous avons bien reçu l’inscription pour la prise et le retrait du matériel d’hiver:
 {% for appointment in appointments %}
-• {{ appointment.child.full_name }} - {{ appointment.slot.start | date:"l d F Y, H:i" }}
+• {% if appointment.appointment_type %}{{ appointment.appointment_type }}: {% endif %}{{ appointment.child.full_name }}, {{ appointment.slot.start | date:"l d F Y, H:i" }}
 {% endfor %}
 
 Le matériel est à retirer au local de Ski du Collège de Montreux-Est (Rue de la Gare 33, 1820 Montreux)
