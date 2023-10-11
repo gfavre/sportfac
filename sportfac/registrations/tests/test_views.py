@@ -1,13 +1,13 @@
-# -*- coding: utf-8 -*-
+from unittest import mock
+from unittest.mock import patch
+
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.test import RequestFactory, override_settings
 from django.urls import reverse
 
-import mock.mock
 from appointments.tests.factories import AppointmentFactory
-from mock import patch
 from profiles.tests.factories import FamilyUserFactory
 
 from sportfac.utils import TenantTestCase as TestCase
@@ -130,29 +130,6 @@ class SummaryViewTests(TestCase):
         self.assertEqual(qs.first(), self.registration)
 
 
-class WizardChildrenListViewTests(TestCase):
-    def setUp(self):
-        self.factory = RequestFactory()
-        self.view = WizardChildrenListView.as_view()
-        self.url = reverse("wizard_children")
-        self.user = FamilyUserFactory()
-
-    def test_access_forbidden_if_registration_closed(self):
-        request = self.factory.get(self.url)
-        request.user = self.user
-        request.REGISTRATION_OPENED = False
-        with self.assertRaises(PermissionDenied):
-            self.view(request)
-
-    def test_access_forbidden_if_not_logged_in(self):
-        request = self.factory.get(self.url)
-        request.user = AnonymousUser()
-        request.REGISTRATION_OPENED = True
-        response = self.view(request)
-        response.client = self.client
-        self.assertRedirects(response, reverse("profiles:auth_login") + "?next=" + self.url)
-
-
 class RegisteredActivitiesListViewTests(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
@@ -206,7 +183,7 @@ class RegisteredActivitiesListViewTests(TestCase):
         request = self.factory.post(self.url, self.data)
         request.user = self.user
         request.REGISTRATION_OPENED = True
-        registration = RegistrationFactory(child__family=self.user, course__price=100)
+        RegistrationFactory(child__family=self.user, course__price=100)
         self.view(request)
         self.assertTrue(Bill.objects.exists())
         self.assertEqual(Bill.objects.first().status, Bill.STATUS.just_created)
@@ -261,8 +238,11 @@ class WizardBillingViewTests(TestCase):
     def test_redirect_to_appointments_if_appointment_not_taken(self):
         with mock.patch(
             "profiles.models.FamilyUser.montreux_needs_appointment", new_callable=mock.PropertyMock
-        ) as mock_needs_appointment:
+        ) as mock_needs_appointment, mock.patch(
+            "profiles.models.FamilyUser.montreux_missing_appointments", new_callable=mock.PropertyMock
+        ) as mock_missing_appointments:
             mock_needs_appointment.return_value = True
+            mock_missing_appointments.return_value = [self.child, ["some-bs"]]
             response = self.view(self.get_request)
             self.assertTrue(mock_needs_appointment.called)
         self.assertEqual(response.status_code, 302)
@@ -305,3 +285,26 @@ class WizardBillingViewTests(TestCase):
             mock_is_wire_transfer.return_value = True
             self.view(self.get_request)
         send_confirmation_mock.assert_called_once()
+
+
+class WizardChildrenListViewTests(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.view = WizardChildrenListView.as_view()
+        self.url = reverse("wizard_children")
+        self.user = FamilyUserFactory()
+
+    def test_access_forbidden_if_registration_closed(self):
+        request = self.factory.get(self.url)
+        request.user = self.user
+        request.REGISTRATION_OPENED = False
+        with self.assertRaises(PermissionDenied):
+            self.view(request)
+
+    def test_access_forbidden_if_not_logged_in(self):
+        request = self.factory.get(self.url)
+        request.user = AnonymousUser()
+        request.REGISTRATION_OPENED = True
+        response = self.view(request)
+        response.client = self.client
+        self.assertRedirects(response, reverse("profiles:auth_login") + "?next=" + self.url)

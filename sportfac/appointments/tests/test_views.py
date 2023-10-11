@@ -1,10 +1,10 @@
-# -*- coding: utf-8 -*-
+from unittest import mock
+
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
-from django.test import RequestFactory, override_settings
+from django.test import RequestFactory
 from django.urls import reverse
 
-import mock
 from profiles.tests.factories import FamilyUserFactory
 from registrations.tests.factories import BillFactory, RegistrationFactory
 
