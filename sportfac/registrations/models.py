@@ -54,8 +54,8 @@ class Registration(TimeStampedModel, StatusModel):
     )
     child = models.ForeignKey("Child", related_name="registrations", on_delete=models.CASCADE)
     bill = models.ForeignKey("Bill", related_name="registrations", null=True, blank=True, on_delete=models.SET_NULL)
-    paid = models.BooleanField(default=False, verbose_name=_("Has paid"))
-    price = models.PositiveIntegerField(null=True, blank=True)
+    paid = models.BooleanField(default=False, verbose_name=_("Has been paid"))
+    price = models.PositiveIntegerField(verbose_name=_("Price"), null=True, blank=True)
     allocation_account = models.ForeignKey(
         "activities.AllocationAccount",
         null=True,
@@ -91,6 +91,10 @@ class Registration(TimeStampedModel, StatusModel):
     @property
     def delete_url(self):
         return self.get_delete_url()
+
+    @property
+    def details_url(self):
+        return self.get_details_url()
 
     @property
     def extra_needs(self):
@@ -171,6 +175,9 @@ class Registration(TimeStampedModel, StatusModel):
     def get_delete_url(self):
         return reverse("backend:registration-delete", kwargs={"pk": self.pk})
 
+    def get_details_url(self):
+        return reverse("backend:registration-detail", kwargs={"pk": self.pk})
+
     def get_price(self):
         subtotal, __ = self.get_price_category()
         if subtotal is None:
@@ -182,6 +189,9 @@ class Registration(TimeStampedModel, StatusModel):
             # we don't want to give money to users :)
             return subtotal + modifier
         return 0
+
+    def get_subtotal(self):
+        return self.get_price_category()[0]
 
     def get_price_category(self):
         if settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
@@ -550,6 +560,7 @@ class ExtraInfo(models.Model):
     )
     key = models.ForeignKey("activities.ExtraNeed", on_delete=models.CASCADE)
     value = models.CharField(max_length=255, blank=True)
+    image = models.FileField(upload_to="extra_infos", blank=True, null=True)
 
     class Meta:
         ordering = ("key", "registration")
@@ -561,6 +572,9 @@ class ExtraInfo(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.registration.save()
+
+    def __str__(self):
+        return f"{self.key}: {self.value}"
 
 
 class Child(TimeStampedModel, StatusModel):

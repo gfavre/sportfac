@@ -99,7 +99,7 @@ admin.site.register(AllocationAccount)
 
 
 @admin.register(ExtraNeed)
-class ExtraNeedAdmin(SportfacModelAdmin):
+class ExtraNeedAdmin(admin.ModelAdmin):
     filter_horizontal = ("courses",)
 
 

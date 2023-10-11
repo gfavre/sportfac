@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 from profiles.models import SchoolYear
 from registrations.models import ExtraInfo, Registration
 from rest_framework import status, viewsets
@@ -35,11 +34,15 @@ class ExtraInfoViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         base_data = {"registration": request.data.get("registration", None)}
         output = []
-        for (key, value) in request.data.items():
+
+        for key, value in request.data.items():
             if key.startswith("extra-") and value:
                 data = base_data.copy()
                 data["key"] = key.split("-")[1]
                 data["value"] = value
+                if request.data.get("image", None):
+                    data["image"] = request.data.get("image")
+
                 serializer = self.get_serializer(data=data)
                 serializer.is_valid(raise_exception=True)
                 self.perform_create(serializer)
@@ -73,12 +76,12 @@ class RegistrationViewSet(viewsets.ModelViewSet):
             if data:
                 return Response(data, status=status.HTTP_201_CREATED)
             return Response(errors, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            serializer = RegistrationSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = RegistrationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class TeacherViewSet(viewsets.ReadOnlyModelViewSet):

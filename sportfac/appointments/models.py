@@ -1,17 +1,26 @@
-# -*- coding: utf-8 -*-
 from django.db import models
 from django.urls import reverse
-from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 
 from model_utils.models import TimeStampedModel
 from phonenumber_field.modelfields import PhoneNumberField
 
 
+class AppointmentType(TimeStampedModel):
+    label = models.CharField(max_length=50, verbose_name=_("Displayed name"))
+    start = models.DateTimeField()
+    end = models.DateTimeField()
+
+    class Meta:
+        ordering = ("start", "end")
+        verbose_name = _("Appointment type")
+        verbose_name_plural = _("Appointment types")
+
+    def __str__(self):
+        return self.label
+
+
 class AppointmentSlot(TimeStampedModel):
-    title = models.CharField(
-        null=True, blank=True, max_length=50, verbose_name=_("Displayed name")
-    )
     places = models.PositiveSmallIntegerField(verbose_name=_("Maximal number of participants"))
     start = models.DateTimeField()
     end = models.DateTimeField()
@@ -35,22 +44,30 @@ class AppointmentSlot(TimeStampedModel):
     def api_management_url(self):
         return reverse("api:slots-detail", kwargs={"pk": self.id})
 
+    @property
+    def appointment_type(self):
+        return AppointmentType.objects.filter(start__lte=self.start, end__gte=self.end).first()
+
     def __str__(self):
-        return self.start.isoformat() + " - " + self.end.isoformat()
+        if self.start.day == self.end.day:
+            return self.start.strftime("%d.%m.%Y, %H:%M-") + self.end.strftime("%H:%M")
+        return self.start.strftime("%d.%m.%Y %H:%M") + " - " + self.end.strftime("%d.%m.%Y %H:%M")
 
 
 class Appointment(TimeStampedModel):
-    slot = models.ForeignKey(
-        "AppointmentSlot", on_delete=models.CASCADE, related_name="appointments"
-    )
-    child = models.OneToOneField(
-        "registrations.Child", on_delete=models.CASCADE, related_name="appointment"
-    )
+    slot = models.ForeignKey("AppointmentSlot", on_delete=models.CASCADE, related_name="appointments")
+    child = models.ForeignKey("registrations.Child", on_delete=models.CASCADE, related_name="appointment")
     family = models.ForeignKey(
         "profiles.FamilyUser", null=True, on_delete=models.SET_NULL, related_name="appointments"
     )
     email = models.CharField(_("Email"), blank=True, null=True, max_length=255)
     phone_number = PhoneNumberField(_("Phone number"), max_length=30, blank=True)
+    appointment_type = models.ForeignKey("AppointmentType", null=True, blank=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        verbose_name = _("Appointment")
+        verbose_name_plural = _("Appointments")
+        ordering = ("slot__start", "slot__end")
 
     @property
     def get_backend_delete_url(self):

@@ -111,9 +111,11 @@
           </small></td>
           <td>
             <ul class="list-unstyled">
-              <li class="text-nowrap"><a href="{{ registration.get_update_url }}" class="btn btn-sm"><i
+              <li class="text-nowrap"><a href="{{ registration.details_url }}" class="btn btn-sm"><i
+                  class=" icon-help"></i>&nbsp;{% trans "Registration details" %}</a></li>
+              <li class="text-nowrap"><a href="{{ registration.update_url }}" class="btn btn-sm"><i
                   class="icon-edit"></i>&nbsp;{% trans "Update registration" %}</a></li>
-              <li class="text-nowrap"><a href="{{ registration.get_delete_url }}" class="btn btn-sm"><i
+              <li class="text-nowrap"><a href="{{ registration.delete_url }}" class="btn btn-sm"><i
                   class="icon-cancel"></i>&nbsp;{% trans "Cancel registration" %}</a></li>
             </ul>
           </td>

@@ -193,8 +193,8 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
         registrations = self.get_queryset()
         context["registered_list"] = registrations
         registrations = registrations.order_by("course__start_date", "course__end_date")
-        self.set_price_modifiers(registrations, context)
         context["applied_price_modifications"] = {}
+        self.set_price_modifiers(registrations, context)
 
         context["has_price_modification"] = len(context["applied_price_modifications"]) != 0
         if settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
@@ -277,10 +277,7 @@ class WizardBillingView(LoginRequiredMixin, BillMixin, PaymentMixin, WizardMixin
     def check_initial_condition(request):
         if not request.user.is_authenticated:
             raise NotReachableException("No account created")
-        if (
-            request.user.montreux_needs_appointment
-            and not Appointment.objects.filter(child__in=request.user.children.all()).exists()
-        ):
+        if request.user.montreux_needs_appointment and request.user.montreux_missing_appointments:
             raise NotReachableException("No Appointment taken")
 
         if not Bill.objects.filter(
@@ -318,3 +315,9 @@ class WizardChildrenListView(WizardMixin, ChildrenListView):
     def check_initial_condition(request):
         if not request.user.is_authenticated:
             raise NotReachableException("No account created")
+        if Bill.objects.filter(
+            family=request.user,
+            status=Bill.STATUS.waiting,
+            payment_method__in=(Bill.METHODS.datatrans, Bill.METHODS.postfinance),
+        ).exists():
+            raise NotReachableException("Payment expected first")

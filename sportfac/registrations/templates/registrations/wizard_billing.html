@@ -1,80 +1,28 @@
 {% extends "wizard.html" %}
-{% load i18n  sekizai_tags switzerland%}
+{% load i18n  sekizai_tags switzerland %}
 
-
+{% block title %}{% if bill.total > 0 and not NO_PAYMENT %}
+  {% if ALTERNATIVE_BILLING_LABEL %}{{ ALTERNATIVE_BILLING_LABEL }}{% else %}{% trans "Billing" %}{% endif %}
+  {% else %}{% trans "Registrations validated" %}
+{% endif %}
+  - {{ block.super }}
+{% endblock %}
 {% block page_title %}
   {% if bill.total > 0 and not NO_PAYMENT %}
     {% if ALTERNATIVE_BILLING_LABEL %}{{ ALTERNATIVE_BILLING_LABEL }}{% else %}{% trans "Billing" %}{% endif %}
-  {% else %}{% trans "Registrations validated" %}
+    {% else %}{% trans "Registrations validated" %}
   {% endif %}
-{% endblock page_title%}
+{% endblock page_title %}
+
 
 {% block content %}
-{% if bill.total > 0 and not NO_PAYMENT %}
-  {% include "registrations/billing_partial.html" %}
-{% else %}
-  {% include "registrations/wizard-complete.html" %}
-{% endif %}
+  {% if bill.total > 0 and not NO_PAYMENT %}
+    {% include "registrations/billing_partial.html" %}
+  {% else %}
+    {% include "registrations/wizard-complete.html" %}
+  {% endif %}
 
-<hr />
-<h3>Inscriptions</h3>
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th>{% trans "Name" %}</th>
-      <th>{% trans "Activity" %}</th>
-      <th>{% trans "Period" %}</th>
-      <th>{% trans "Time" %}</th>
-      <th>{% trans "Place" %}</th>
-{% if not NO_PAYMENT  %}
-      <th>{% trans "Price" %}</th>
-{% endif %}
-    </tr>
-  </thead>
-
-{% if not NO_PAYMENT  %}
- <tfoot>
-    <tr>
-      <th colspan="5" style="text-align: right">{% trans "Total" %}</th>
-      <th class="nowrap">{{ bill.total|money_html }}</th>
-    </tr>
-  </tfoot>
-{% endif %}
-
-  <tbody>
-  {% for registered in bill.registrations.all %}
-    <tr>
-      <td>
-        <span class="nowrap">{{ registered.child.first_name }} {{ registered.child.last_name }}</span>
-        {% if DISPLAY_LAGAPEO %}<br><small>{{ registered.child.id_lagapeo }}</small>{% endif %}
-
-      </td>
-      <td>{{ registered.course.activity.name }}
-    </td>
-      <td>
-        <span class="nowrap">{{ registered.course.start_date }}</span> – <span class="nowrap">{{ registered.course.end_date }}</span>
-      </td>
-      <td>
-        {{ registered.course.day_name }} / <span class="nowrap">{{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</span>
-      </td>
-      <td>{{ registered.course.place }}</td>
-{% if not NO_PAYMENT  %}
-      <td class="nowrap">
-        {{ registered.price|money_html }}
-      </td>
-{% endif %}
-    </tr>
-  {% endfor %}
-  </tbody>
-
-</table>
-
-  <p class="hidden-print text-center"><button class="btn btn-secondary btn-large print-button"><i class="icon icon-print"></i> {% trans "Print" %}</button></p>
-
-  {% addtoblock "js" %}
-<script>
-  $('.print-button').click(function(){window.print()});
-</script>
-{% endaddtoblock %}
+  <hr/>
+ {% include "registrations/invoice-recap.html" %}
 
 {% endblock %}

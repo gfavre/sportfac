@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.utils.translation import gettext as _
 
 from phonenumber_field.modelfields import PhoneNumberField
@@ -22,13 +21,10 @@ class SlotSerializer(serializers.ModelSerializer):
         return obj.available_places
 
     def get_title(self, obj):
-        if obj.title:
-            return obj.title
-        else:
-            return _("%(available)s out of %(total)s available") % {
-                "available": obj.available_places,
-                "total": obj.places,
-            }
+        return _("%(available)s out of %(total)s available") % {
+            "available": obj.available_places,
+            "total": obj.places,
+        }
 
     def get_url(self, obj):
         return obj.api_register_url

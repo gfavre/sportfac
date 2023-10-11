@@ -1,0 +1,183 @@
+{% load i18n sekizai_tags json_tags %}
+<div class="form-group">
+  <label for="{{ registered.id }}-extra-{{ extra.id }}"
+         class="col-sm-3 control-label">{{ extra.question_label }} {% if extra.mandatory %}
+    *{% endif %}</label>
+  <div class="col-sm-6">
+    {% if extra.choices %}
+      <select name="extra-{{ extra.id }}" id="{{ registered.id }}-extra-{{ extra.id }}"
+              class="form-control" {% if extra.mandatory %}required{% endif %}>
+        {% if not extra.mandatory %}
+          <option></option>
+        {% endif %}
+        {% for choice in extra.choices %}
+          <option value="{{ choice }}"
+                  {% if choice == extra.default %}checked{% endif %}>{{ choice }}</option>
+        {% endfor %}
+      </select>
+    {% else %}
+      {% if extra.type == 'C' %}
+        <input type="text" name="extra-{{ extra.id }}" class="form-control"
+               value="{{ extra.default|default:"" }}"
+               id="{{ registered.id }}-extra-{{ extra.id }}"
+               {% if extra.mandatory %}required{% endif %}/>
+      {% elif extra.type == 'I' %}
+        <input type="number" name="extra-{{ extra.id }}" class="form-control"
+               value="{{ extra.default|default:"" }}"
+               id="{{ registered.id }}-extra-{{ extra.id }}"
+               {% if extra.mandatory %}required{% endif %}/>
+      {% elif extra.type == "B" %}
+        <label class="radio-inline">
+          <input type="radio" name="extra-{{ extra.id }}" value="1"
+                 {% if extra.default == "1" %}checked{% endif %}
+                 {% if extra.mandatory %}required{% endif %}/> {% trans "yes" %}
+        </label>
+        <label class="radio-inline">
+          <input type="radio" name="extra-{{ extra.id }}" value="0"
+                 {% if extra.default == "0" %}checked{% endif %}> {% trans "no" %}
+        </label>
+      {% elif extra.type == "IM" %}
+        <label class="radio-inline">
+          <input type="radio" name="extra-{{ extra.id }}" value="1"
+                 {% if extra.default == "1" %}checked{% endif %}
+                 {% if extra.mandatory %}required{% endif %}/> {% trans "yes" %}
+        </label>
+        <label class="radio-inline">
+          <input type="radio" name="extra-{{ extra.id }}" value="0"
+                 {% if extra.default == "0" %}checked{% endif %}> {% trans "no" %}
+        </label>
+      {% endif %}
+    {% endif %}
+    <div class="help-block with-errors">{{ extra.extra_info }}</div>
+  </div>
+
+  <div class="col-sm-3 text-right invoice-item" id="reduction-label-{{ extra.id }}" data-value="0">
+
+  </div>
+</div>
+{% if extra.type == "IM" %}
+  {% addtoblock "js" %}
+  <script>
+    document.querySelectorAll('input[name="extra-{{ extra.id }}"]').forEach(function (radio) {
+      radio.addEventListener('change', function () {
+        if (this.value === "1") {
+          document.querySelector('#extra-{{ extra.id }}-file-ctnr').classList.remove('hidden');
+          document.querySelector('#extra-{{ extra.id }}-file').setAttribute('required', "required");
+        } else {
+          document.querySelector('#extra-{{ extra.id }}-file-ctnr').classList.add('hidden');
+          document.querySelector('#extra-{{ extra.id }}-file').removeAttribute('required');
+
+        }
+        $("#extraform-{{ extra.id }}").validator('update');
+
+      });
+    });
+  </script>
+  {% endaddtoblock %}
+  <div class="form-group hidden" id="extra-{{ extra.id }}-file-ctnr">
+    <label for="extra-{{ extra.id }}-file" class="col-sm-3 control-label">{% trans "Image" %} *</label>
+    <div class="col-sm-9">
+      <input type="file" class="form-control-file" accept="image/*" capture="environment"
+             name="image" id="extra-{{ extra.id }}-file">
+    </div>
+  </div>
+{% endif %}
+
+
+{% addtoblock "js" %}
+  <script src="{{ STATIC_URL }}js/vendor/jquery.form.min.js"></script>
+  <script src="{{ STATIC_URL }}js/vendor/validator.js"></script>
+
+  <script>
+    $(document).ready(function () {
+      let prices = {{ price_modifiers | to_json }};
+
+      let computePrice = function () {
+        let getSum = function (total, num) {
+          return total + num;
+        };
+        let arr = $('.invoice-item:visible').map(function (n, el) {
+          return parseInt($(el).data('value'))
+        });
+        let new_total = $.makeArray(arr).reduce(getSum);
+        $('#total-price .value').text(intPart(new_total));
+      };
+
+      let intPart = function (value) {
+        if (value % 1 != 0) {
+          return value;
+        } else {
+          return value + '.-';
+        }
+      };
+      let intToChf = function (value) {
+        let text = '';
+        if (value < 0) {
+          text = '– CHF ' + intPart(Math.abs(value));
+        } else if (value == 0) {
+          text = '';
+        } else {
+          text = '+ CHF ' + intPart(value);
+        }
+        return text;
+      };
+
+      $('form.extra-info select').change(function () {
+        let extra_id = $(this).attr('name').split('-')[1];
+        if (extra_id === undefined) return;
+        if (extra_id in prices) {
+          let value = $(this).val();
+          if (value in prices[extra_id]) {
+            let intval = prices[extra_id][value];
+            let $reduc = $('.invoice-item', $(this).parent().parent());
+            $reduc.data('value', intval)
+            $reduc.text(intToChf(intval));
+            computePrice();
+          }
+        }
+      });
+
+      $('.extra-info').ajaxForm({
+        url: '{% url "api:api-extra-list" %}',
+        success: function (res, status, xhr, form) {
+          var $parent = form.parent('td');
+          $('.alert-info', $parent).addClass('hide');
+          $.each(res, function () {
+            let $value = $('.alert-success .value-' + this.key, $parent);
+            let val = this.value;
+            let trueVal = '<span class="label"><i class="icon-ok"></i></span>';
+            let falseVal = '<span class="label"><i class="icon-cancel"></i></span>';
+            switch (this.type) {
+              case 'IM':
+                val = this.value === "1"? trueVal : falseVal;
+                break;
+              case 'B':
+                val = this.value === "1"? trueVal : falseVal;
+                break;
+            }
+            $('.extra-value', $value).html(val);
+            if (this.value in prices[this.key]) {
+              let price = prices[this.key][this.value];
+              $('.invoice-item', $value).text(intToChf(price));
+              $('.invoice-item', $value).data('value', price);
+
+            }
+          });
+          $('.alert-success', $parent).removeClass('hide');
+          $('.alert-danger', $parent).addClass('hide');
+          computePrice();
+        },
+        error: function (xhr, status, error, form) {
+          var $parent = form.parent('td');
+          $('.alert-info', $parent).addClass('hide');
+          $('.alert-danger', $parent).removeClass('hide');
+        },
+        beforeSubmit: function (formData, form, options) {
+          form.addClass('hide');
+          var $parent = form.parent('td');
+          $('.alert-info', $parent).removeClass('hide');
+        }
+      });
+    });
+  </script>
+{% endaddtoblock %}

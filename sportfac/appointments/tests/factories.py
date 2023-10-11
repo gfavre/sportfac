@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import datetime
 
 from django.utils import timezone
@@ -12,7 +11,6 @@ class AppointmentSlotFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = AppointmentSlot
 
-    title = factory.Faker("bs")
     places = factory.fuzzy.FuzzyInteger(1, 5)
     start = factory.Faker("future_datetime", tzinfo=timezone.get_current_timezone())
     end = factory.lazy_attribute(lambda o: o.start + datetime.timedelta(hours=1))

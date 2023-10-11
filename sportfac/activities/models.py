@@ -673,7 +673,7 @@ class CoursesInstructors(models.Model):
         unique_together = ("course", "instructor")
 
 
-EXTRA_TYPES = (("B", _("Boolean")), ("C", _("Characters")), ("I", _("Integer")))
+EXTRA_TYPES = (("B", _("Boolean")), ("C", _("Characters")), ("I", _("Integer")), ("IM", _("Image")))
 
 
 class ExtraNeed(TimeStampedModel):
@@ -691,7 +691,7 @@ class ExtraNeed(TimeStampedModel):
     )
     price_modifier = ArrayField(
         verbose_name=_("Modify price by xx francs if this value is selected"),
-        help_text=_("List of positive/negative values"),
+        help_text=_("List of positive/negative values, if boolean: False value then True"),
         base_field=models.IntegerField(),
         blank=True,
         null=True,
@@ -703,9 +703,27 @@ class ExtraNeed(TimeStampedModel):
         verbose_name_plural = _("extra questions")
 
     @property
+    def is_boolean(self):
+        return self.type == "B"
+
+    @property
+    def is_characters(self):
+        return self.type == "C"
+
+    @property
+    def is_integer(self):
+        return self.type == "I"
+
+    @property
+    def is_image(self):
+        return self.type == "IM"
+
+    @property
     def price_dict(self):
         if not self.price_modifier:
             return {}
+        if self.is_image or self.is_boolean:
+            return dict(zip(("0", "1"), self.price_modifier))
         return dict(zip(self.choices, self.price_modifier))
 
     def __str__(self):

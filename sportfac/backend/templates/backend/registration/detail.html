@@ -1,85 +1,100 @@
 {% extends "backend/base.html" %}
-{% load i18n %}
+{% load i18n switzerland %}
 
-{% block title %}{{ course.activity.name }} - {{ block.super }}{% endblock %}
-{% block page_title %}{{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }}{% endblocktrans %}{% endblock %}
+{% block title %}{% trans "Registration details" %}{% endblock %}
+{% block page_title %}{% trans "Registration details" %}{% endblock %}
 
 {% block content %}
-<section class="portlet">
-  <div class="pricing-plan">
-    <header class="pricing-header">
-      <p class="pricing-plan-label">{{ course.start_date | date:"j F Y" }} – {{ course.end_date | date:'j F Y'  }}</p>
-      <p class="lead">Chaque {{ course.day_name|lower }} de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }}</p>
-    </header>
+
+  <section class="portlet">
     <dl class="dl-horizontal">
-      <dt>{% trans "Activity number" %}</dt><dd><a href="{{ course.activity.get_backend_url }}">{{ course.activity.number }}</a></dd>  
-      <dt>{% trans "Instructors" %}</dt>
-      <dd> 
-        <ul class="list-unstyled">
-        {% for instructor in course.instructors.all %}
-          <li><a href="{{ instructor.get_backend_url }}">{{ instructor.full_name  }}</a></li>
-        {% endfor %}
-        </ul>
-      </dd>
-      <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
-      <dt>{% trans "Number of sessions" %}</dt><dd>{{ course.number_of_sessions }} cours</dd>
-      <dt>{% trans "Price" %}</dt><dd>CHF {{ course.price }}</dd>
-      <dt>{% trans "School years" %}</dt>
-      <dd>{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
+      <dt>{% trans "Child" %}</dt>
+      <dd><a href="{{ registration.child.get_backend_url }}">{{ registration.child }}</a></dd>
+      <dt>{% trans "Course" %}</dt>
+      <dd><a href="{{ registration.course.get_backend_url }}">{{ registration.course.short_name }}</a></dd>
+      <dt>{% trans "Status" %}</dt>
+      <dd>{{ registration.get_status_display }}</dd>
+      <dt>{% trans "Creation" %}</dt>
+      <dd>{{ registration.created|date:"SHORT_DATETIME_FORMAT" }}</dd>
+      <dt>{% trans "Last modification" %}</dt>
+      <dd>{{ registration.modified|date:"SHORT_DATETIME_FORMAT" }}</dd>
+      <dt>{% trans "Confirmation mail sent on" %}</dt>
+      <dd>{{ registration.confirmation_sent_on|date:"SHORT_DATE_FORMAT"|default:"n/a" }}</dd>
     </dl>
-      
-    <h4 class="content-title"><u>{% trans "Availability"%}</u></h4>      
-    <p>{{ course.count_participants }} participants <span class="pull-right strong"> {{ course.max_participants }} places</span></p>
-    <div class="progress" style="margin-bottom: 0;">
-      <div class="progress-bar {% if course.full %}progress-bar-danger{% elif course.minimal_participants_reached %}progress-bar-success{% else %}progress-bar-warning{% endif %}" style="width: {{ course.percentage_full }}%">{% if course.full %}{% trans "Course full" %}{% elif course.minimal_participants_reached %}{% trans "Minimal number of participants reached" %}{% else %}{% trans "Not enough participants" %}{% endif %}</div>
-    </div>
-    <p class="text-right"><small>{{ course.min_participants }} participants requis pour que l'activité ait lieu</small></p>
-  </div>
-</section>
+  </section>
+
+{% if DISPLAY_CAR_NUMBER %}
+  <section class="portlet">
+    <h4 class="portlet-title">{% trans "Transport" %}</h4>
+    <dl class="dl-horizontal">
+      <dt>{% trans "Transport number" %}</dt>
+      <dd>
+        {% if registration.transport %}
+          <a href="{{ registration.transport.backend_url }}">{{ registration.transport }}</a>
+        {% else %}
+          n/a
+        {% endif %}
+      </dd>
+    </dl>
+  </section>
+{% endif %}
+
+{% if not KEPCHUP_NO_PAYMENT %}
+  <section class="portlet">
+    <h4 class="portlet-title">{% trans "Payment" %}</h4>
+    <dl class="dl-horizontal">
+      <dt>{% trans "Invoice" %}</dt>
+      <dd>
+        {% if registration.bill %}
+          <a href="{{ registration.bill.backend_url }}">{{ registration.bill.billing_identifier }}</a>
+        {% else %}n/a{% endif %}
+      </dd>
+      <dt>{% trans "Price" %}</dt>
+      <dd>{{ registration.price|money }}</dd>
+      <dt>{% trans "Is paid" %}</dt>
+      <dd>
+          <span class="label {{ registration.paid|yesno:"label-success,label-danger" }}">
+            <i class="icon-{{ registration.paid|yesno:'ok,cancel' }}"></i>
+          </span>
+      </dd>
+    </dl>
+  </section>
+{% endif %}
 
 
-<section>
-  <h2>{% trans "Registrations" %}</h2>
-  
-  <table class="table">
-    <thead>
-      <tr>
-        <th>{% trans "First name" %}</th>
-        <th>{% trans "Last name" %}</th>
-        <th>{% trans "Birth date" %}</th>
-        <th>{% trans "School year" %}</th>
-        <th>{% trans "Parents phone" %}</th>
-        <th>{% trans "Parents email" %}</th>
-        <th>{% trans "Actions" %}</th>
-
-      </tr>
-    {% for registration in course.participants.all %}
-      <tr>
-        <td>{{ registration.child.first_name|title }}</td>
-        <td>{{ registration.child.last_name|title }}</td>
-        <td>{{ registration.child.birth_date }}</td>
-        <td>{{ registration.child.school_year }}</td>
-        <td>
-          <ul>
-            {% if registration.child.family.private_phone %}
-            <li>{{ registration.child.family.private_phone }}</li>
+{% if registration.extra_infos.exists %}
+  <section class="portlet">
+    <h4 class="portlet-title">{% trans "Additional questions" %}</h4>
+    <dl class="dl-horizontal">
+      {% for extra in registration.extra_infos.all %}
+        <dt>{{ extra.key.question_label }}</dt>
+        <dd>
+          {% if extra.key.is_boolean %}
+            <span class="label {{ extra.value|yesno:"label-success,label-danger" }}">
+                <i class="icon-{{ extra.value|yesno:'ok,cancel' }}"></i>
+              </span>
+          {% elif extra.key.is_image %}
+            <span class="label {{ extra.value|yesno:"label-success,label-danger" }}">
+                <i class="icon-{{ extra.value|yesno:'ok,cancel' }}"></i>
+              </span>
+            {% if extra.value %}
+              <div>
+                <img src="{{ extra.image.url }}" alt="{% trans "User uploaded content" %}" class="img-responsive">
+              </div>
             {% endif %}
-            {% if registration.child.family.private_phone2 %}
-            <li>{{ registration.child.family.private_phone2 }}</li>
-            {% endif %}
-            {% if registration.child.family.private_phone3 %}
-            <li>{{ registration.child.family.private_phone3 }}</li>
-            {% endif %}
-        </td>
-        <td>{{ registration.child.family.email  }}</td>
-        <td>
-            <a href="{{ registration.get_delete_url }}"><i class="icon-cancel"></i> {% trans "Cancel registration" %}</a>
-        </td>
+          {% else %}
+            {{ extra.value }}
+          {% endif %}
+          {% if extra.key.price_modifier %}
+            <span class="pull-right invoice-item"
+                  data-value="{{ extra.price_modifier }}">{{ extra.price_modifier|money_sign }}</span>
+          {% endif %}
+        </dd>
+      {% endfor %}
+    </dl>
+  </section>
+{% endif %}
 
-      </tr>
-    {% empty %}
-    
-    {% endfor %}
-  </table>
-</section>   
+
+
 {% endblock content %}

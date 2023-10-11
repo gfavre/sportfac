@@ -1,7 +1,8 @@
 {% extends "wizard.html" %}
-{% load i18n l10n humanize switzerland json_tags duration %}
+{% load i18n l10n humanize switzerland  duration sekizai_tags %}
 
 
+{% block title %}{% if ALTERNATIVE_CONFIRM_LABEL %}{{ ALTERNATIVE_CONFIRM_LABEL }}{% else %}{% trans "Confirmation" %}{% endif %} - {{ block.super }}{% endblock %}
 {% block page_title %}
   {% if ALTERNATIVE_CONFIRM_LABEL %}
     {{ ALTERNATIVE_CONFIRM_LABEL }}
@@ -31,9 +32,14 @@
         <span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span>
       </button>
     <p><strong><i class="icon-exclamation"></i></strong>
-      {% blocktrans with REGISTRATION_EXPIRE_MINUTES|minutes_duration as duration %}
+      {% if REGISTRATION_EXPIRE_MINUTES == 60 %}
+        {% blocktrans %}The following registrations are reserved for the next hour.{% endblocktrans %}
+        {% else %}
+         {% blocktrans with REGISTRATION_EXPIRE_MINUTES|minutes_duration as duration %}
       The following registrations are reserved for the next {{ duration}}.
-      {% endblocktrans %}</p>
+      {% endblocktrans %}
+      {% endif %}
+     </p>
   </div>
   {% endif %}
   {% if overlaps %}
@@ -120,58 +126,14 @@
       <tr>
         <td colspan="{{ NO_PAYMENT|yesno:"4,5" }}">
           {% if registered.extra_needs %}
-            <form class="extra-info form-horizontal" method="post"
-                  data-toggle="validator" role="form">{% csrf_token %}
+            <form class="extra-info form-horizontal" method="post" enctype="multipart/form-data"
+                  data-toggle="validator" role="form" id="extraform-{{ extra.id }}">{% csrf_token %}
               <div class="alert alert-danger form-error" style="display: none">
                 <i class="icon-warning icon-large"></i> {% trans "Please submit this form." %}
               </div>
               <input type="hidden" name="registration" value="{{ registered.id }}"/>
               {% for extra in registered.extra_needs %}
-                <div class="form-group">
-                  <label for="{{ registered.id }}-extra-{{ extra.id }}"
-                         class="col-sm-3 control-label">{{ extra.question_label }} {% if extra.mandatory %}
-                    *{% endif %}</label>
-                  <div class="col-sm-6">
-                    {% if extra.choices %}
-                      <select name="extra-{{ extra.id }}" id="{{ registered.id }}-extra-{{ extra.id }}"
-                              class="form-control" {% if extra.mandatory %}required{% endif %}>
-                        {% if not extra.mandatory %}
-                          <option></option>
-                        {% endif %}
-                        {% for choice in extra.choices %}
-                          <option value="{{ choice }}"
-                                  {% if choice == extra.default %}checked{% endif %}>{{ choice }}</option>
-                        {% endfor %}
-                      </select>
-                    {% else %}
-                      {% if extra.type == 'C' %}
-                        <input type="text" name="extra-{{ extra.id }}" class="form-control"
-                               value="{{ extra.default|default:"" }}"
-                               id="{{ registered.id }}-extra-{{ extra.id }}"
-                               {% if extra.mandatory %}required{% endif %}/>
-                      {% elif extra.type == 'I' %}
-                        <input type="number" name="extra-{{ extra.id }}" class="form-control"
-                               value="{{ extra.default|default:"" }}"
-                               id="{{ registered.id }}-extra-{{ extra.id }}"
-                               {% if extra.mandatory %}required{% endif %}/>
-                      {% else %}
-                        <label class="radio-inline">
-                          <input type="radio" name="extra-{{ extra.id }}" value="1"
-                                 {% if extra.default == "1" %}checked{% endif %}
-                                 {% if extra.mandatory %}required{% endif %}/> {% trans "yes" %}
-                        </label>
-                        <label class="radio-inline">
-                          <input type="radio" name="extra-{{ extra.id }}" value="0"
-                                 {% if extra.default == "0" %}checked{% endif %}> {% trans "no" %}
-                        </label>
-                      {% endif %}
-                    {% endif %}
-                    <div class="help-block with-errors">{{ extra.extra_info }}</div>
-                  </div>
-                  <div class="col-sm-3 text-right invoice-item" id="reduction-label-{{ extra.id }}" data-value="0">
-
-                  </div>
-                </div>
+                {% include "registrations/extra_inline_form.html" with extra=extra %}
               {% endfor %}
               <div class="form-group">
                 <div class="col-sm-offset-3 col-sm-9">
@@ -183,7 +145,23 @@
             <dl class="dl-horizontal extras">
               {% for extra in registered.extra_infos.all %}
                 <dt>{{ extra.key.question_label }}</dt>
-                <dd>{{ extra.value }}
+                <dd>
+                  {% if extra.key.is_boolean %}
+                    <span class="label {{ extra.value|yesno:"label-success,label-error" }}">
+                      <i class="icon-{{ extra.value|yesno:'ok,cancel' }}"></i>
+                    </span>
+                  {% elif extra.key.is_image %}
+                    <span class="label {{ extra.value|yesno:"label-success,label-error" }}">
+                      <i class="icon-{{ extra.value|yesno:'ok,cancel' }}"></i>
+                    </span>
+                    {% if extra.value %}
+                    <span style="display: inline-block; margin-left: 1em">
+                      <a href="{{ extra.image.url }}"  target="_blank">{% trans "image" %}</a>
+                    </span>
+                    {% endif %}
+                  {% else %}
+                  {{ extra.value }}
+                  {% endif %}
                   {% if extra.key.price_modifier %}
                     <span class="pull-right invoice-item"
                           data-value="{{ extra.price_modifier }}">{{ extra.price_modifier|money_sign }}</span>
@@ -192,8 +170,6 @@
               {% endfor %}
             </dl>
           {% endif %}
-
-
           <p class="alert alert-info hide" role="alert">
             <i class="icon-refresh icon-spin"></i> {% trans "Sending info..." %}
           </p>
@@ -217,7 +193,6 @@
           </p>
         </td>
       </tr>
-
     {% endfor %}
     </tbody>
 
@@ -265,43 +240,9 @@
   </form>
 {% endblock page_footer %}
 
-{% block extra_js %}
-  <script src="{{ STATIC_URL }}js/vendor/jquery.form.min.js"></script>
-  <script src="{{ STATIC_URL }}js/vendor/validator.js"></script>
-
+{% addtoblock "js" %}
   <script>
     $(document).ready(function () {
-      let prices = {{ price_modifiers | to_json }};
-
-      let computePrice = function () {
-        let getSum = function (total, num) {
-          return total + num;
-        };
-        let arr = $('.invoice-item:visible').map(function (n, el) {
-          return parseInt($(el).data('value'))
-        });
-        let new_total = $.makeArray(arr).reduce(getSum);
-        $('#total-price .value').text(intPart(new_total));
-      };
-
-      let intPart = function (value) {
-        if (value % 1 != 0) {
-          return value;
-        } else {
-          return value + '.-';
-        }
-      };
-      let intToChf = function (value) {
-        let text = '';
-        if (value < 0) {
-          text = '– CHF ' + intPart(Math.abs(value));
-        } else if (value == 0) {
-          text = '';
-        } else {
-          text = '+ CHF ' + intPart(value);
-        }
-        return text;
-      };
 
       $('.btn-next').click(function (event) {
         if ($('form.extra-info').is(':visible')) {
@@ -309,22 +250,6 @@
           $('form.extra-info:visible .form-control').first().focus()
           event.preventDefault();
         }
-      });
-
-      $('form.extra-info select').change(function () {
-        let extra_id = $(this).attr('name').split('-')[1];
-        if (extra_id === undefined) return;
-        if (extra_id in prices) {
-          let value = $(this).val();
-          if (value in prices[extra_id]) {
-            let intval = prices[extra_id][value];
-            let $reduc = $('.invoice-item', $(this).parent().parent());
-            $reduc.data('value', intval)
-            $reduc.text(intToChf(intval));
-            computePrice();
-          }
-        }
-
       });
 
       $('.highlight').hover(function () {
@@ -335,37 +260,6 @@
         $(this).parents('.has-error').removeClass('has-error');
         $('#accept button').prop('disabled', !$('#accept button').prop('disabled'));
       });
-
-      $('.extra-info').ajaxForm({
-        url: '{% url "api:api-extra-list" %}',
-        success: function (res, status, xhr, form) {
-          var $parent = form.parent('td');
-          $('.alert-info', $parent).addClass('hide');
-          $.each(res, function () {
-            let $value = $('.alert-success .value-' + this.key, $parent);
-            $('.extra-value', $value).html(this.value);
-            if (this.value in prices[this.key]) {
-              let price = prices[this.key][this.value];
-              $('.invoice-item', $value).text(intToChf(price));
-              $('.invoice-item', $value).data('value', price);
-
-            }
-          });
-          $('.alert-success', $parent).removeClass('hide');
-          $('.alert-danger', $parent).addClass('hide');
-          computePrice();
-        },
-        error: function (xhr, status, error, form) {
-          var $parent = form.parent('td');
-          $('.alert-info', $parent).addClass('hide');
-          $('.alert-danger', $parent).removeClass('hide');
-        },
-        beforeSubmit: function (formData, form, options) {
-          form.addClass('hide');
-          var $parent = form.parent('td');
-          $('.alert-info', $parent).removeClass('hide');
-        }
-      });
     });
   </script>
-{% endblock extra_js %}
+{% endaddtoblock %}

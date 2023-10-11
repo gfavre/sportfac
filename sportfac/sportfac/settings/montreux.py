@@ -28,12 +28,6 @@ AUTHENTICATION_BACKENDS = (
 )
 SESSION_COOKIE_NAME = "ssfmontreux_automne"
 
-# We switch to postmark. Here are the old settings which ended up in mailgun
-# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-# EMAIL_HOST = env('EMAIL_HOST', default='')
-# EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
-# EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
-
 KEPCHUP_USE_ABSENCES = True
 KEPCHUP_IMPORT_CHILDREN = True
 KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = False
@@ -97,6 +91,7 @@ CELERYBEAT_SCHEDULE["cancel-expired-registrations"] = {  # noqa: F405
     "task": "registrations.tasks.cancel_expired_registrations",
     "schedule": crontab(minute="*/5"),  # noqa: F405
 }
+KEPCHUP_USE_APPOINTMENTS = True
 
 
 # Dashboard

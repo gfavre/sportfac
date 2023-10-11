@@ -4,6 +4,7 @@ from django.utils.translation import gettext as _
 from django.views.generic import TemplateView
 
 from api.permissions import PostfinanceIPFilterPermission
+from appointments.models import Appointment
 from async_messages import message_user
 from braces.views import LoginRequiredMixin
 from registrations.models import Bill
@@ -55,6 +56,14 @@ class PaymentSuccessView(LoginRequiredMixin, WizardMixin, TemplateView):
     def check_initial_condition(request):
         # Condition verified externally, payment provider redirects us here.
         pass
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["bill"] = self.request.user.bills.order_by("-created").first()
+        if settings.KEPCHUP_USE_APPOINTMENTS:
+            context["include_calendar"] = True
+            context["appointments"] = Appointment.objects.filter(family=self.request.user)
+        return context
 
 
 class PaymentFailureView(LoginRequiredMixin, WizardMixin, TemplateView):

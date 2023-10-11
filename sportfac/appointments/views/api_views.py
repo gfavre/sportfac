@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.contrib import messages
 from django.db import connection, transaction
 from django.shortcuts import get_object_or_404
@@ -13,7 +12,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from ..models import Appointment, AppointmentSlot
+from ..models import Appointment, AppointmentSlot, AppointmentType
 from ..serializers import AdminAppointmentSlotSerializer, AppointmentSerializer, SlotSerializer
 from ..tasks import send_confirmation_mail as send_appointment_confirmation_email
 
@@ -43,25 +42,25 @@ class RegisterSlot(generics.GenericAPIView):
             defaults = {
                 "phone_number": serializer.validated_data["phone"],
                 "email": serializer.validated_data["email"],
-                "slot": slot,
+                "appointment_type": AppointmentType.objects.filter(start__lte=slot.start, end__gte=slot.end).first(),
             }
             if request.user.is_authenticated:
                 defaults["family"] = request.user
 
-            appointment, created = Appointment.objects.update_or_create(
-                child=child, defaults=defaults
-            )
+            appointment, created = Appointment.objects.update_or_create(child=child, slot=slot, defaults=defaults)
             appointments.append(appointment)
             if created:
                 total += 1
         data = {"total": total}
+
         if self.request.user.is_authenticated:
             user = str(self.request.user.pk)
             data["url"] = serializer.validated_data["url"] or reverse("appointments:register")
+
             messages.add_message(
                 request,
                 messages.SUCCESS,
-                _(" Your appointment is registered. You should receive a reminder email shortly."),
+                _("Your appointment is registered. You should receive a reminder email shortly."),
             )
 
         else:

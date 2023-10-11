@@ -12,7 +12,7 @@ from activities.models import Course, ExtraNeed
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout
+from crispy_forms.layout import Fieldset, Layout
 from django_select2 import forms as s2forms
 from registrations.models import Child, ExtraInfo, Registration
 
@@ -237,7 +237,7 @@ class RegistrationForm(CourseSelectMixin, forms.ModelForm):
 
     class Meta:
         model = Registration
-        fields = ("child", "course", "status", "transport")
+        fields = ("child", "course", "status", "transport", "price", "paid")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -250,6 +250,22 @@ class RegistrationForm(CourseSelectMixin, forms.ModelForm):
         self.helper.field_class = "col-sm-10"
         if not settings.KEPCHUP_DISPLAY_CAR_NUMBER:
             del self.fields["transport"]
+        if settings.KEPCHUP_NO_PAYMENT:
+            del self.fields["paid"]
+            del self.fields["price"]
+        self.helper.layout = Layout(
+            "child",
+            "course",
+            "status",
+            settings.KEPCHUP_DISPLAY_CAR_NUMBER and "transport" or "",
+            not settings.KEPCHUP_NO_PAYMENT
+            and Fieldset(
+                _("Payment"),
+                "price",
+                "paid",
+            )
+            or "",
+        )
 
 
 class PlainTextWidget(forms.Widget):

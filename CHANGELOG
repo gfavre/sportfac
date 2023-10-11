@@ -5,16 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## unreleased
+## 3.3.0 - 2023-10-11
 
 ### Added
 - Add some text on payment page if registration is set to expire after a delay
 - New paid column to registrations export
+- Multiple appointments for a single course
 
 ### Changed
 - payment method and texts for Monthey
 - removed error if mail cannot be sent (anymail error), set it as warning instead
 - Courses overlap is now calculated using real dates when available, not just weekdays
+- Better recap of registration after payment
 
 ### Fixed
 - Ensure we send confirmation after the payment is done, not when payment page is displayed
