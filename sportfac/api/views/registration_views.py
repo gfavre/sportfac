@@ -40,10 +40,10 @@ class ExtraInfoViewSet(viewsets.ModelViewSet):
                 data = base_data.copy()
                 data["key"] = key.split("-")[1]
                 data["value"] = value
-                data["image"] = request.data.get("image", None)
+                if request.data.get("image", None):
+                    data["image"] = request.data.get("image")
 
                 serializer = self.get_serializer(data=data)
-
                 serializer.is_valid(raise_exception=True)
                 self.perform_create(serializer)
                 output.append(serializer.data)

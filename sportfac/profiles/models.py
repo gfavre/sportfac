@@ -241,7 +241,9 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
 
         material_needs = ExtraNeed.objects.filter(question_label__icontains="matériel")
         registrations = Registration.objects.filter(child__family=self)
-        return registrations.filter(extra_infos__key__in=material_needs, extra_infos__value="OUI").exists()
+        return registrations.filter(
+            extra_infos__key__in=material_needs, extra_infos__value__in=["OUI", 1, "1"]
+        ).exists()
 
     @property
     def montreux_missing_appointments(self):
@@ -253,7 +255,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         appointment_periods = AppointmentType.objects.all()
         missing_appointments = []
         for registration in registrations.filter(
-            extra_infos__key__in=material_needs, extra_infos__value="OUI"
+            extra_infos__key__in=material_needs, extra_infos__value__in=["OUI", 1, "1"]
         ).select_related("child"):
             types = [app.appointment_type for app in Appointment.objects.filter(child=registration.child)]
             if set(types) != set(appointment_periods):

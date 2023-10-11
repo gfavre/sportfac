@@ -1,5 +1,5 @@
 {% extends "wizard.html" %}
-{% load i18n l10n humanize switzerland json_tags duration %}
+{% load i18n l10n humanize switzerland  duration sekizai_tags %}
 
 
 {% block title %}{% if ALTERNATIVE_CONFIRM_LABEL %}{{ ALTERNATIVE_CONFIRM_LABEL }}{% else %}{% trans "Confirmation" %}{% endif %} - {{ block.super }}{% endblock %}
@@ -127,7 +127,7 @@
         <td colspan="{{ NO_PAYMENT|yesno:"4,5" }}">
           {% if registered.extra_needs %}
             <form class="extra-info form-horizontal" method="post" enctype="multipart/form-data"
-                  data-toggle="validator" role="form">{% csrf_token %}
+                  data-toggle="validator" role="form" id="extraform-{{ extra.id }}">{% csrf_token %}
               <div class="alert alert-danger form-error" style="display: none">
                 <i class="icon-warning icon-large"></i> {% trans "Please submit this form." %}
               </div>
@@ -240,43 +240,9 @@
   </form>
 {% endblock page_footer %}
 
-{% block extra_js %}
-  <script src="{{ STATIC_URL }}js/vendor/jquery.form.min.js"></script>
-  <script src="{{ STATIC_URL }}js/vendor/validator.js"></script>
-
+{% addtoblock "js" %}
   <script>
     $(document).ready(function () {
-      let prices = {{ price_modifiers | to_json }};
-
-      let computePrice = function () {
-        let getSum = function (total, num) {
-          return total + num;
-        };
-        let arr = $('.invoice-item:visible').map(function (n, el) {
-          return parseInt($(el).data('value'))
-        });
-        let new_total = $.makeArray(arr).reduce(getSum);
-        $('#total-price .value').text(intPart(new_total));
-      };
-
-      let intPart = function (value) {
-        if (value % 1 != 0) {
-          return value;
-        } else {
-          return value + '.-';
-        }
-      };
-      let intToChf = function (value) {
-        let text = '';
-        if (value < 0) {
-          text = '– CHF ' + intPart(Math.abs(value));
-        } else if (value == 0) {
-          text = '';
-        } else {
-          text = '+ CHF ' + intPart(value);
-        }
-        return text;
-      };
 
       $('.btn-next').click(function (event) {
         if ($('form.extra-info').is(':visible')) {
@@ -284,22 +250,6 @@
           $('form.extra-info:visible .form-control').first().focus()
           event.preventDefault();
         }
-      });
-
-      $('form.extra-info select').change(function () {
-        let extra_id = $(this).attr('name').split('-')[1];
-        if (extra_id === undefined) return;
-        if (extra_id in prices) {
-          let value = $(this).val();
-          if (value in prices[extra_id]) {
-            let intval = prices[extra_id][value];
-            let $reduc = $('.invoice-item', $(this).parent().parent());
-            $reduc.data('value', intval)
-            $reduc.text(intToChf(intval));
-            computePrice();
-          }
-        }
-
       });
 
       $('.highlight').hover(function () {
@@ -310,37 +260,6 @@
         $(this).parents('.has-error').removeClass('has-error');
         $('#accept button').prop('disabled', !$('#accept button').prop('disabled'));
       });
-
-      $('.extra-info').ajaxForm({
-        url: '{% url "api:api-extra-list" %}',
-        success: function (res, status, xhr, form) {
-          var $parent = form.parent('td');
-          $('.alert-info', $parent).addClass('hide');
-          $.each(res, function () {
-            let $value = $('.alert-success .value-' + this.key, $parent);
-            $('.extra-value', $value).html(this.value);
-            if (this.value in prices[this.key]) {
-              let price = prices[this.key][this.value];
-              $('.invoice-item', $value).text(intToChf(price));
-              $('.invoice-item', $value).data('value', price);
-
-            }
-          });
-          $('.alert-success', $parent).removeClass('hide');
-          $('.alert-danger', $parent).addClass('hide');
-          computePrice();
-        },
-        error: function (xhr, status, error, form) {
-          var $parent = form.parent('td');
-          $('.alert-info', $parent).addClass('hide');
-          $('.alert-danger', $parent).removeClass('hide');
-        },
-        beforeSubmit: function (formData, form, options) {
-          form.addClass('hide');
-          var $parent = form.parent('td');
-          $('.alert-info', $parent).removeClass('hide');
-        }
-      });
     });
   </script>
-{% endblock extra_js %}
+{% endaddtoblock %}

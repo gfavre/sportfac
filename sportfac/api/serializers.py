@@ -293,10 +293,11 @@ class WaitingSlotSerializer(serializers.ModelSerializer):
 class ExtraSerializer(serializers.ModelSerializer):
     registration = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=Registration.objects.all())
     key = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=ExtraNeed.objects.all())
+    type = serializers.CharField(source="key.type", read_only=True)
 
     class Meta:
         model = ExtraInfo
-        fields = ("id", "registration", "key", "value", "image")
+        fields = ("id", "registration", "key", "value", "type", "image")
 
 
 class LevelSerializer(serializers.ModelSerializer):
