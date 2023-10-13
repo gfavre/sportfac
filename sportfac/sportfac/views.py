@@ -9,13 +9,13 @@ from braces.views import LoginRequiredMixin
 from .context_processors import wizard_context
 
 
-class OpenedPeriodMixin(object):
+class OpenedPeriodMixin:
     """Raise a 403 status when period is not opened"""
 
     def dispatch(self, request, *args, **kwargs):
         """Called before get or post methods"""
         if request.REGISTRATION_OPENED:
-            return super(OpenedPeriodMixin, self).dispatch(request, *args, **kwargs)
+            return super().dispatch(request, *args, **kwargs)
         raise PermissionDenied
 
 
@@ -25,8 +25,7 @@ class PhaseForbiddenMixin(LoginRequiredMixin):
     def get_forbidden_phases(self):
         if self.forbidden_phases is None:
             raise ImproperlyConfigured(
-                '{0} requires the "forbidden_phases" attribute to be '
-                "set.".format(self.__class__.__name__)
+                f'{self.__class__.__name__} requires the "forbidden_phases" attribute to be set.'
             )
         return self.forbidden_phases
 
@@ -42,10 +41,8 @@ class PhaseForbiddenMixin(LoginRequiredMixin):
         if not correct_phase:
             if self.raise_exception:
                 raise PermissionDenied  # Return a 403
-            return redirect_to_login(
-                request.get_full_path(), self.get_login_url(), self.get_redirect_field_name()
-            )
-        return super(PhaseForbiddenMixin, self).dispatch(request, *args, **kwargs)
+            return redirect_to_login(request.get_full_path(), self.get_login_url(), self.get_redirect_field_name())
+        return super().dispatch(request, *args, **kwargs)
 
 
 class NotReachableException(Exception):
@@ -65,7 +62,7 @@ class WizardMixin(OpenedPeriodMixin):
             context = wizard_context(request)
             return redirect(context["max_step"])
         # noinspection PyUnresolvedReferences
-        return super(WizardMixin, self).get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
 
 class WizardView(WizardMixin, RedirectView):
@@ -78,7 +75,7 @@ class WizardView(WizardMixin, RedirectView):
         return context.get("max_step")
 
 
-class CSVMixin(object):
+class CSVMixin:
     def get_csv_filename(self):
         return NotImplementedError
 
@@ -89,8 +86,11 @@ class CSVMixin(object):
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         response = HttpResponse(content_type="text/csv")
-        cd = 'attachment; filename="{0}"'.format(self.get_csv_filename())
+        cd = f'attachment; filename="{self.get_csv_filename()}"'
         response["Content-Disposition"] = cd
+        # Add BOM for Excel compatibility
+        response.write("\ufeff")
+
         self.write_csv(response)
         return response
 

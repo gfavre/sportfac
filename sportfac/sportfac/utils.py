@@ -1,4 +1,3 @@
-import codecs
 import csv
 from datetime import date
 from io import StringIO
@@ -16,10 +15,11 @@ class ExcelWriter:
     A CSV writer which will write rows to CSV file "f",
     which is encoded in the given encoding.
     """
+
     def __init__(self, file, headers=None):
         self.file = file or StringIO()
         self.headers = headers
-        self.writer = csv.writer(self.file, dialect='excel')
+        self.writer = csv.writer(self.file, delimiter=";", quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
     def write_header(self):
         if self.headers:
@@ -34,6 +34,8 @@ class ExcelWriter:
     def getvalue(self):
         if isinstance(self.file, StringIO):
             return self.file.getvalue()
+        self.file.seek(0)
+        return self.file.read()
 
     def close(self):
         self.file.close()
