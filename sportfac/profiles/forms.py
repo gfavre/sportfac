@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 from bootstrap_datepicker_plus.widgets import DatePickerInput
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import HTML, Fieldset, Layout, Submit, Div
+from crispy_forms.layout import HTML, Fieldset, Layout, Submit
 
 # noinspection PyPackageRequirements
 from localflavor.generic.forms import IBANFormField
@@ -48,9 +48,7 @@ class AuthenticationForm(auth_forms.AuthenticationForm):
 class PasswordChangeForm(auth_forms.PasswordChangeForm):
     old_password = forms.CharField(label=_("Old password"), widget=forms.PasswordInput)
     new_password1 = forms.CharField(label=_("New password"), widget=forms.PasswordInput)
-    new_password2 = forms.CharField(
-        label=_("New password confirmation"), widget=forms.PasswordInput
-    )
+    new_password2 = forms.CharField(label=_("New password confirmation"), widget=forms.PasswordInput)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -92,22 +90,19 @@ class SetPasswordForm(auth_forms.SetPasswordForm):
 
 
 class AcceptTermsForm(forms.Form):
-    accept = forms.BooleanField(
-        required=True, widget=forms.CheckboxInput(attrs={"style": "margin-top:0;"})
-    )
+    accept = forms.BooleanField(required=True, widget=forms.CheckboxInput(attrs={"style": "margin-top:0;"}))
 
     def __init__(self, *args, **kwargs):
-        super(AcceptTermsForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields["accept"].label = mark_safe(
-            _("""I've read and agree to the full <a href="%s">terms and conditions</a>""")
-            % reverse("terms")
+            _("""I've read and agree to the full <a href="%s">terms and conditions</a>""") % reverse("terms")
         )
 
 
 class PhoneRequiredMixin:
     def clean(self):
         # noinspection PyUnresolvedReferences
-        cleaned_data = super(PhoneRequiredMixin, self).clean()
+        cleaned_data = super().clean()
         if not (
             cleaned_data.get("private_phone", False)
             or cleaned_data.get("private_phone2", False)
@@ -117,15 +112,9 @@ class PhoneRequiredMixin:
 
 
 class UserForm(PhoneRequiredMixin, forms.ModelForm):
-    address = forms.CharField(
-        label=_("Address"), widget=forms.Textarea(attrs={"rows": 3}), required=True
-    )
-    email = forms.EmailField(
-        label=_("E-mail"), widget=forms.EmailInput(attrs={"placeholder": "john@example.com"})
-    )
-    city = forms.CharField(
-        label=_("City"), widget=forms.TextInput(attrs={"placeholder": _("City")})
-    )
+    address = forms.CharField(label=_("Address"), widget=forms.Textarea(attrs={"rows": 3}), required=True)
+    email = forms.EmailField(label=_("E-mail"), widget=forms.EmailInput(attrs={"placeholder": "john@example.com"}))
+    city = forms.CharField(label=_("City"), widget=forms.TextInput(attrs={"placeholder": _("City")}))
     private_phone = PhoneNumberField(
         label=_("Home phone"),
         max_length=30,
@@ -145,9 +134,7 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
         required=False,
     )
     password1 = forms.CharField(widget=forms.PasswordInput, label=_("Password"), required=False)
-    password2 = forms.CharField(
-        widget=forms.PasswordInput, label=_("Password (again)"), required=False
-    )
+    password2 = forms.CharField(widget=forms.PasswordInput, label=_("Password (again)"), required=False)
 
     class Meta:
         model = get_user_model()
@@ -167,10 +154,10 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
     def clean(self):
         super().clean()
         if self.cleaned_data.get("password1") != self.cleaned_data.get("password2"):
-            raise forms.ValidationError(_("You must type the same password" " each time."))
+            raise forms.ValidationError(_("You must type the same password each time."))
 
     def __init__(self, *args, **kwargs):
-        super(UserForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_class = "form-horizontal"
         self.helper.form_group_wrapper_class = "row"
@@ -209,10 +196,10 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
                 "address",
                 "zipcode",
                 "city",
-                "country",
+                not settings.KEPCHUP_REGISTRATION_HIDE_COUNTRY and "country" or HTML(""),
                 "private_phone",
-                "private_phone2",
-                "private_phone3",
+                not settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES and "private_phone2" or HTML(""),
+                not settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES and "private_phone3" or HTML(""),
             )
         )
 
@@ -225,7 +212,7 @@ class ManagerForm(UserForm):
     )
 
     def __init__(self, *args, **kwargs):
-        super(ManagerForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         instance = kwargs["instance"]
         if instance:
             self.fields["is_manager"].initial = instance.is_manager
@@ -233,9 +220,7 @@ class ManagerForm(UserForm):
 
 
 class InstructorForm(ManagerForm):
-    iban = IBANFormField(
-        label=_("IBAN"), widget=forms.TextInput(attrs={"placeholder": "CH37..."}), required=False
-    )
+    iban = IBANFormField(label=_("IBAN"), widget=forms.TextInput(attrs={"placeholder": "CH37..."}), required=False)
     birth_date = forms.DateTimeField(
         label=_("Birth date"),
         widget=DatePickerInput(format="%d.%m.%Y"),
@@ -277,9 +262,7 @@ class InstructorForm(ManagerForm):
         self.helper.layout.append(
             Fieldset(
                 _("Instructor informations"),
-                settings.KEPCHUP_INSTRUCTORS_DISPLAY_EXTERNAL_ID
-                and "external_identifier"
-                or HTML(""),
+                settings.KEPCHUP_INSTRUCTORS_DISPLAY_EXTERNAL_ID and "external_identifier" or HTML(""),
                 "ahv",
                 "gender",
                 "birth_date",
@@ -320,9 +303,7 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
     )
     first_name = forms.CharField(label=_("First name"), max_length=30, required=True)
     last_name = forms.CharField(label=_("Last name"), max_length=30, required=True)
-    address = forms.CharField(
-        label=_("Address"), widget=forms.Textarea(attrs={"rows": 3}), required=True
-    )
+    address = forms.CharField(label=_("Address"), widget=forms.Textarea(attrs={"rows": 3}), required=True)
     zipcode = forms.CharField(
         label=_("NPA"),
         required=True,
@@ -359,13 +340,6 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
     password1 = forms.CharField(widget=forms.PasswordInput, label=_("Password"))
     password2 = forms.CharField(widget=forms.PasswordInput, label=_("Password (again)"))
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if settings.KEPCHUP_ZIPCODE_RESTRICTION:
-            self.fields["zipcode"].widget = forms.Select(
-                choices=settings.KEPCHUP_ZIPCODE_RESTRICTION
-            )
-
     def clean_email(self):
         """
         Validate that the email is alphanumeric and is not already
@@ -378,13 +352,11 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
                 ' <a href="%s" class="btn-link" style="margin-right:1em"><i class="icon-lock-open"></i>%s</a>'
                 % (reverse("profiles:auth_login"), _("Login"))
             )
-            message += (
-                ' <a href="#" class="new-mail btn-link"><i class="icon-cancel-circled"></i>%s</a>'
-                % _("Use another email address")
+            message += ' <a href="#" class="new-mail btn-link"><i class="icon-cancel-circled"></i>%s</a>' % _(
+                "Use another email address"
             )
             raise forms.ValidationError(mark_safe(message))
-        else:
-            return self.cleaned_data["email"]
+        return self.cleaned_data["email"]
 
     def clean_email2(self):
         email1 = self.cleaned_data.get("email")
@@ -421,10 +393,10 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
                 "address",
                 "zipcode",
                 "city",
-                "country",
+                not settings.KEPCHUP_REGISTRATION_HIDE_COUNTRY and "country",
                 "private_phone",
-                "private_phone2",
-                "private_phone3",
+                not settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES and "private_phone2",
+                not settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES and "private_phone3",
             ),
             Fieldset(
                 _("Login informations"),

@@ -122,7 +122,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     address = models.TextField(_("Street"), blank=True)
     zipcode = models.CharField(_("NPA"), blank=True, max_length=5)
     city = models.CharField(_("City"), max_length=100, blank=True)
-    country = models.CharField(_("Country"), max_length=2, choices=COUNTRY, default=COUNTRY.CH)
+    country = models.CharField(_("Country"), max_length=2, choices=COUNTRY, default=COUNTRY.CH, blank=True)
     private_phone = PhoneNumberField(_("Home phone"), max_length=30, blank=True)
     private_phone2 = PhoneNumberField(_("Mobile phone"), max_length=30, blank=True)
     private_phone3 = PhoneNumberField(_("Other phone"), max_length=30, blank=True)

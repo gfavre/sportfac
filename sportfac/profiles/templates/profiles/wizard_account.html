@@ -1,14 +1,12 @@
 {% extends "wizard.html" %}
-
 {% load i18n floppyforms %}
 
-{% block title %}{% trans "My account" %}{% endblock title %}
+{% block title %}{% trans "My account" %} - {{ block.super }}{% endblock title %}
 {% block page_title %}{% trans "My account" %} <small>- responsable légal</small>{% endblock page_title %}
 
 {% block content %}
-<form action="." method="post" class="form-horizontal" role="form">{% csrf_token %}
-
-{% include "profiles/account_form.html" %}
+<form action="." method="post" class="form-horizontal" role="form">
+  {% include "profiles/account_form.html" %}
 
   <div class="form-group">
     <div class="col-sm-12">
@@ -20,8 +18,3 @@
 </form>
 {% endblock content %}
 {% block page_footer %}{% endblock page_footer %}
-
-
-
-
-

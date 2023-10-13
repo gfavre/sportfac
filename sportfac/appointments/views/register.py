@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.http import Http404
 from django.utils.timezone import now
 from django.views.generic import TemplateView
 
@@ -8,7 +10,7 @@ from sportfac.views import NotReachableException, WizardMixin
 from ..models import Appointment, AppointmentSlot, AppointmentType
 
 
-class SlotsView(TemplateView):
+class SlotsBaseView(TemplateView):
     template_name = "appointments/slots.html"
 
     def get_context_data(self, **kwargs):
@@ -52,7 +54,14 @@ class SuccessfulRegister(TemplateView):
     template_name = "appointments/success.html"
 
 
-class WizardSlotsView(LoginRequiredMixin, WizardMixin, SlotsView):
+class SlotsView(SlotsBaseView):
+    def get(self, request, *args, **kwargs):
+        if not settings.KEPCHUP_APPOINTMENTS_WITHOUT_WIZARD:
+            raise Http404()
+        return super().get(request, *args, **kwargs)
+
+
+class WizardSlotsView(LoginRequiredMixin, WizardMixin, SlotsBaseView):
     template_name = "appointments/wizard_register.html"
 
     @staticmethod

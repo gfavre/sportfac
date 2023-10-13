@@ -63,11 +63,14 @@ class WizardAccountView(WizardMixin, _BaseAccount):
     @staticmethod
     def check_initial_condition(request):
         # Condition is to be logged in => _BaseAccount requires login.
-        if Bill.objects.filter(
-            family=request.user,
-            status=Bill.STATUS.waiting,
-            payment_method__in=(Bill.METHODS.datatrans, Bill.METHODS.postfinance),
-        ).exists():
+        if (
+            request.user.is_authenticated
+            and Bill.objects.filter(
+                family=request.user,
+                status=Bill.STATUS.waiting,
+                payment_method__in=(Bill.METHODS.datatrans, Bill.METHODS.postfinance),
+            ).exists()
+        ):
             raise NotReachableException("Payment expected first")
 
 

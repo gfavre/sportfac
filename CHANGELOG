@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add some text on payment page if registration is set to expire after a delay
 - New paid column to registrations export
 - Multiple appointments for a single course
+- New settings (KEPCHUP_REGISTRATION_HIDE_COUNTRY, KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES,
+  KEPCHUP_APPOINTMENTS_WITHOUT_WIZARD)
 
 ### Changed
 - payment method and texts for Monthey
