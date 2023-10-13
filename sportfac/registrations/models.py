@@ -1,4 +1,5 @@
 import os
+import re
 from datetime import date, datetime
 from tempfile import mkdtemp
 
@@ -675,14 +676,59 @@ class Child(TimeStampedModel, StatusModel):
         return self.registrations.exclude(status=Registration.STATUS.canceled).exists()
 
     @property
+    def js_avs(self):
+        avs = re.sub(r"\D", "", self.avs)
+        if len(avs) != "13":
+            return avs
+        return f"{avs[:3]}.{avs[3:7]}.{avs[7:11]}.{avs[11:]}"
+
+    @property
     def js_birth_date(self):
         return self.birth_date.strftime("%d.%m.%Y")
 
     @property
     def js_sex(self):
         if self.sex == self.SEX.M:
-            return "1"
-        return "2"
+            return "h"
+        return "f"
+
+    @property
+    def js_language(self):
+        return {"D": "DE", "F": "FR", "I": "IT"}.get(self.language, "autre")
+
+    @property
+    def js_nationality(self):
+        return {"CH": "CH", "FL": "LI"}.get(self.nationality, "autre")
+
+    @property
+    def js_country(self):
+        if not self.family:
+            return "CH"
+        return {"CH": "CH", "FL": "LI", "F": "FR", "I": "IT", "A": "AT"}.get(self.family.country, "CH")
+
+    @property
+    def js_street(self):
+        if not self.family:
+            return ""
+        return self.family.street_and_number[0]
+
+    @property
+    def js_street_number(self):
+        if not self.family:
+            return ""
+        return self.family.street_and_number[1]
+
+    @property
+    def js_zipcode(self):
+        if not self.family:
+            return ""
+        return self.family.zipcode
+
+    @property
+    def js_city(self):
+        if not self.family:
+            return ""
+        return self.family.city
 
     @property
     def montreux_needs_appointment(self):

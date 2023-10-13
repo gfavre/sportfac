@@ -2,19 +2,20 @@ from sportfac.utils import ExcelWriter
 
 
 JS_CSV_COLUMNS = (
-    "NO_PERS_BDNJS",
-    "SEXE",
+    "N° PERSONNEL",
     "NOM",
     "PRENOM",
-    "DAT_NAISSANCE",
+    "DATE DE NAISSANCE",
+    "SEXE",
     "N_AVS",
+    "PEID",
+    "NATIONALITE",
+    "LANGUE MATERNELLE",
     "RUE",
+    "NUMERO",
     "NPA",
     "LOCALITE",
     "PAYS",
-    "NATIONALITE",
-    "1ERE_LANGUE",
-    "CLASSE/GROUPE",
 )
 
 
@@ -26,22 +27,22 @@ def course_to_js_csv(course, filelike):
     rows = []
     for registration in course.participants.all():
         child = registration.child
-        family = registration.child.family
         rows.append(
             (
                 "",
-                child.js_sex,
                 child.last_name,
                 child.first_name.title(),
                 child.js_birth_date,
-                child.avs or "",
-                family.address,
-                family.zipcode,
-                family.city,
-                family.country,
-                child.nationality,
-                child.language,
-                course.get_js_name,
+                child.js_sex,
+                child.js_avs or "",
+                "",
+                child.js_nationality,
+                child.js_language,
+                child.js_street,
+                child.js_street_number,
+                child.js_zipcode,
+                child.js_city,
+                child.js_country,
             )
         )
     for row in rows:

@@ -20,6 +20,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 from registrations.models import Bill, Registration
 
 from .ahv import AHVField
+from .utils import get_street_and_number
 
 
 class FamilyManager(BaseUserManager):
@@ -271,6 +272,10 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         if hasattr(self, "opened_bills"):
             return self.opened_bills == 0
         return not self.has_open_bills
+
+    @property
+    def street_and_number(self):
+        return get_street_and_number(self.address)
 
     @property
     def updatable_children(self):
