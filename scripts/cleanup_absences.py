@@ -18,11 +18,11 @@ for course in Course.objects.filter(visible=True).prefetch_related("sessions", "
 # Check coherence, and cleanup
 
 for course in Course.objects.all().prefetch_related("sessions", "participants", "participants__child"):
-    print(f"course: {course}")
+    # print(f"course: {course}")
     for session in course.sessions.all():
         if session.absences.count() > course.participants.count():
             print(f"session: {session}")
-            # session.absences.exclude(child__in=course.participants.values_list("child", flat=True)).delete()
+            session.absences.exclude(child__in=course.participants.values_list("child", flat=True)).delete()
 
 
 for reg in Registration.objects.all_with_deleted().filter(status="canceled"):
