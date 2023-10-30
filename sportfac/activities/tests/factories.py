@@ -3,7 +3,7 @@ import datetime
 from django.conf import settings
 
 import factory.fuzzy
-from activities.models import SCHOOL_YEARS, Activity, AllocationAccount, Course, CoursesInstructors
+from activities.models import SCHOOL_YEARS, Activity, AllocationAccount, Course, CoursesInstructors, ExtraNeed
 from faker import Faker
 from profiles.tests.factories import FamilyUserFactory
 
@@ -76,3 +76,10 @@ class CoursesInstructorsFactory(factory.django.DjangoModelFactory):
 
     course = factory.SubFactory(CourseFactory)
     instructor = factory.SubFactory(FamilyUserFactory)
+
+
+class ExtraNeedFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = ExtraNeed
+
+    question_label = factory.Faker("sentence")

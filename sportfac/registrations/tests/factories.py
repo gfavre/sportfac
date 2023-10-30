@@ -2,10 +2,10 @@ import datetime
 from pathlib import Path
 
 import factory.fuzzy
-from activities.tests.factories import CourseFactory
+from activities.tests.factories import CourseFactory, ExtraNeedFactory
 from faker import Faker
 from profiles.tests.factories import FamilyUserFactory
-from registrations.models import Bill, Child, Registration
+from registrations.models import Bill, Child, ExtraInfo, Registration
 
 
 fake = Faker(locale="fr_CH")
@@ -63,3 +63,12 @@ class WaitingBillFactory(BillFactory):
         model = Bill
 
     status = Bill.STATUS.waiting
+
+
+class ExtraInfoFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = ExtraInfo
+
+    registration = factory.SubFactory(RegistrationFactory)
+    key = factory.SubFactory(ExtraNeedFactory)
+    value = factory.Faker("sentence")

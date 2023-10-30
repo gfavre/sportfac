@@ -567,6 +567,13 @@ class ExtraInfo(models.Model):
         ordering = ("key", "registration")
 
     @property
+    def is_true(self):
+        return self.value in ["True", "true", "1"]
+
+    def is_false(self):
+        return self.value in ["False", "false", "0"]
+
+    @property
     def price_modifier(self):
         return self.key.price_dict.get(self.value, 0)
 

@@ -70,16 +70,16 @@
         <dt>{{ extra.key.question_label }}</dt>
         <dd>
           {% if extra.key.is_boolean %}
-            <span class="label {{ extra.value|yesno:"label-success,label-danger" }}">
-                <i class="icon-{{ extra.value|yesno:'ok,cancel' }}"></i>
+            <span class="label {{ extra.is_true|yesno:"label-success,label-danger" }}">
+                <i class="icon-{{ extra.is_true|yesno:'ok,cancel' }}"></i>
               </span>
           {% elif extra.key.is_image %}
-            <span class="label {{ extra.value|yesno:"label-success,label-danger" }}">
-                <i class="icon-{{ extra.value|yesno:'ok,cancel' }}"></i>
+              <span class="label {{ extra.is_true|yesno:"label-success,label-danger" }}">
+                <i class="icon-{{ extra.is_true|yesno:'ok,cancel' }}"></i>
               </span>
-            {% if extra.value %}
+            {% if extra.is_true and extra.image %}
               <div>
-                <img src="{{ extra.image.url }}" alt="{% trans "User uploaded content" %}" class="img-responsive">
+                <img src="{{ extra.image.url }}" class="img-responsive">
               </div>
             {% endif %}
           {% else %}

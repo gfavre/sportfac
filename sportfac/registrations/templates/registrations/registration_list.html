@@ -147,20 +147,20 @@
                 <dt>{{ extra.key.question_label }}</dt>
                 <dd>
                   {% if extra.key.is_boolean %}
-                    <span class="label {{ extra.value|yesno:"label-success,label-error" }}">
-                      <i class="icon-{{ extra.value|yesno:'ok,cancel' }}"></i>
+                    <span class="label {{ extra.is_true|yesno:"label-success,label-error" }}">
+                      <i class="icon-{{ extra.is_true|yesno:'ok,cancel' }}"></i>
                     </span>
                   {% elif extra.key.is_image %}
-                    <span class="label {{ extra.value|yesno:"label-success,label-error" }}">
-                      <i class="icon-{{ extra.value|yesno:'ok,cancel' }}"></i>
+                    <span class="label {{ extra.is_true|yesno:"label-success,label-error" }}">
+                      <i class="icon-{{ extra.is_true|yesno:'ok,cancel' }}"></i>
                     </span>
-                    {% if extra.value %}
+                    {% if extra.is_true and extra.image %}
                     <span style="display: inline-block; margin-left: 1em">
                       <a href="{{ extra.image.url }}"  target="_blank">{% trans "image" %}</a>
                     </span>
                     {% endif %}
                   {% else %}
-                  {{ extra.value }}
+                    {{ extra.value }}
                   {% endif %}
                   {% if extra.key.price_modifier %}
                     <span class="pull-right invoice-item"

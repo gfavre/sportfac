@@ -56,8 +56,8 @@
               <dt>{{ extra.key.question_label }}</dt>
               <dd>
                 {% if extra.key.is_boolean or extra.key.is_image %}
-                  <span class="label {{ extra.value|yesno:"label-success,label-error" }}">
-                      <i class="icon-{{ extra.value|yesno:'ok,cancel' }}"></i>
+                  <span class="label {{ extra.is_true|yesno:"label-success,label-error" }}">
+                      <i class="icon-{{ extra.is_true|yesno:'ok,cancel' }}"></i>
                     </span>
                 {% else %}
                   {{ extra.value }}

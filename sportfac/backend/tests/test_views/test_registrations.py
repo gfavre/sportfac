@@ -3,17 +3,19 @@ from unittest.mock import patch
 
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.sessions.middleware import SessionMiddleware
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.formsets import BaseFormSet
 from django.forms.models import BaseModelFormSet, model_to_dict
 from django.test import RequestFactory, override_settings
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from activities.tests.factories import CourseFactory
+from activities.tests.factories import CourseFactory, ExtraNeedFactory
 from backend.forms import BillingForm, ChildSelectForm, CourseSelectForm
+from bs4 import BeautifulSoup
 from profiles.tests.factories import FamilyUserFactory
 from registrations.models import Bill, Registration
-from registrations.tests.factories import ChildFactory, RegistrationFactory
+from registrations.tests.factories import FIXTURES_PATH, ChildFactory, ExtraInfoFactory, RegistrationFactory
 
 from sportfac.utils import TenantTestCase, process_request_for_middleware
 
@@ -218,6 +220,75 @@ class RegistrationDetailViewTests(TenantTestCase):
         # noinspection PyUnresolvedReferences
         content = response.render().content
         self.assertTrue(len(content) > 0)
+
+    def test_extra_is_displayed_boolean(self):
+        extra_need_true = ExtraNeedFactory(type="B")
+        ExtraInfoFactory(registration=self.registration, key=extra_need_true, value="1")
+        extra_need_false = ExtraNeedFactory(type="B")
+        ExtraInfoFactory(registration=self.registration, key=extra_need_false, value="0")
+        response = self.view(self.request, pk=self.registration.pk)
+        content = response.render().content
+        soup = BeautifulSoup(content, "html.parser")
+        dt_element = soup.find("dt", string=extra_need_true.question_label)
+        self.assertIsNotNone(dt_element, "Question label not found in the rendered HTML!")
+        # Check if the next element is a <dd> containing an <i> with class 'icon-ok'
+        next_element = dt_element.find_next_sibling()
+        if next_element and next_element.name == "dd":
+            icon_element = next_element.find("i", class_="icon-ok")
+            self.assertIsNotNone(icon_element, "Icon with class 'icon-ok' not found in the subsequent <dd>!")
+        else:
+            self.fail("<dd> tag not found after the <dt> tag with the question label!")
+        dt_element = soup.find("dt", string=extra_need_false.question_label)
+        self.assertIsNotNone(dt_element, "Question label not found in the rendered HTML!")
+        # Check if the next element is a <dd> containing an <i> with class 'icon-ok'
+        next_element = dt_element.find_next_sibling()
+        if next_element and next_element.name == "dd":
+            icon_element = next_element.find("i", class_="icon-cancel")
+            self.assertIsNotNone(icon_element, "Icon with class 'icon-cancel' not found in the subsequent <dd>!")
+        else:
+            self.fail("<dd> tag not found after the <dt> tag with the question label!")
+
+    def test_extra_is_displayed_image(self):
+        extra_need = ExtraNeedFactory(type="IM")
+        extra_info = ExtraInfoFactory(registration=self.registration, key=extra_need, value="1")
+        image_path = FIXTURES_PATH / "magic_pass.png"
+        with open(image_path, "rb") as image:
+            file_data = SimpleUploadedFile("magic_pass.png", image.read(), content_type="image/png")
+            extra_info.image = file_data
+            extra_info.save()
+        response = self.view(self.request, pk=self.registration.pk)
+        content = response.render().content
+        soup = BeautifulSoup(content, "html.parser")
+        dt_element = soup.find("dt", string=extra_need.question_label)
+        self.assertIsNotNone(dt_element, "Question label not found in the rendered HTML!")
+        # Check if the next element is a <dd> containing an <i> with class 'icon-ok'
+        next_element = dt_element.find_next_sibling()
+        if next_element and next_element.name == "dd":
+            icon_element = next_element.find("i", class_="icon-ok")
+            self.assertIsNotNone(icon_element, "Icon with class 'icon-ok' not found in the subsequent <dd>!")
+        else:
+            self.fail("<dd> tag not found after the <dt> tag with the question label!")
+        img_element = next_element.find("img")
+        self.assertIsNotNone(img_element, "image not found!")
+        self.assertEqual(img_element["src"], extra_info.image.url)
+
+    def test_extra_is_displayed_image_empty(self):
+        extra_need = ExtraNeedFactory(type="IM")
+        ExtraInfoFactory(registration=self.registration, key=extra_need, value="0")
+        response = self.view(self.request, pk=self.registration.pk)
+        content = response.render().content
+        soup = BeautifulSoup(content, "html.parser")
+        dt_element = soup.find("dt", string=extra_need.question_label)
+        self.assertIsNotNone(dt_element, "Question label not found in the rendered HTML!")
+        # Check if the next element is a <dd> containing an <i> with class 'icon-ok'
+        next_element = dt_element.find_next_sibling()
+        if next_element and next_element.name == "dd":
+            icon_element = next_element.find("i", class_="icon-cancel")
+            self.assertIsNotNone(icon_element, "Icon with class 'icon-cancel' not found in the subsequent <dd>!")
+        else:
+            self.fail("<dd> tag not found after the <dt> tag with the question label!")
+        img_element = next_element.find("img")
+        self.assertIsNone(img_element, "image is present but should not!")
 
 
 class RegistrationListViewTests(TenantTestCase):

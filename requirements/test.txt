@@ -5,3 +5,4 @@ factory_boy == 3.2.1
 psycopg2-binary == 2.8.6
 isort==5.10.1
 django-coverage==1.2.4
+beautifulsoup4
