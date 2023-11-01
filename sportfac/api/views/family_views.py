@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.db import IntegrityError
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
@@ -10,17 +9,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.throttling import UserRateThrottle
 
-from ..permissions import (
-    FamilyPermission,
-    InstructorPermission,
-    IsAuthenticated,
-    ManagerPermission,
-)
-from ..serializers import (
-    ChildActivityLevelSerializer,
-    ChildrenSerializer,
-    SimpleChildrenSerializer,
-)
+from ..permissions import FamilyPermission, InstructorPermission, IsAuthenticated, ManagerPermission
+from ..serializers import ChildActivityLevelSerializer, ChildrenSerializer, SimpleChildrenSerializer
 
 
 class FamilyView(mixins.ListModelMixin, generics.GenericAPIView):
@@ -41,8 +31,7 @@ class FetchPermission(FamilyPermission):
     def has_permission(self, request, view):
         if view.action == "fetch_ext_id":
             return True
-        else:
-            return super(FetchPermission, self).has_permission(request, view)
+        return super().has_permission(request, view)
 
 
 class ChildActivityLevelViewSet(viewsets.ModelViewSet):
@@ -82,7 +71,7 @@ class ChildActivityLevelViewSet(viewsets.ModelViewSet):
         if not serializer.is_valid() and "non_field_errors" in serializer.errors:
             # non_field_errors: we are in a duplicate state (a level already exists for same child
             return self.update(request, *args, **kwargs)
-        return super(ChildActivityLevelViewSet, self).create(request, *args, **kwargs)
+        return super().create(request, *args, **kwargs)
 
 
 class SearchChildThrottle(UserRateThrottle):
@@ -145,10 +134,7 @@ class ChildrenViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=data)
         if serializer.is_valid():
             serializer.validated_data["family"] = request.user
-            if (
-                serializer.validated_data.get("school", None)
-                and "other_school" in serializer.validated_data
-            ):
+            if serializer.validated_data.get("school", None) and "other_school" in serializer.validated_data:
                 del serializer.validated_data["other_school"]
             try:
                 # noinspection PyAttributeOutsideInit

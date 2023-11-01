@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from datetime import timedelta
 
 from django.utils.timezone import now
@@ -25,8 +24,6 @@ class DashboardFamilyView(generics.ListAPIView):
     serializer_class = FamilySerializer
 
     class Meta:
-        """Meta class for viewset."""
-
         datatables_extra_json = ("get_search_panes",)
 
     def get_search_panes(self):
@@ -37,17 +34,13 @@ class DashboardFamilyView(generics.ListAPIView):
                         "label": _("Has finished registering"),
                         "value": 1,
                         "count": 0,
-                        "total": FamilyUser.objects.filter(
-                            profile__finished_registering=True
-                        ).count(),
+                        "total": FamilyUser.objects.filter(profile__finished_registering=True).count(),
                     },
                     {
                         "label": _("Has not finished registering"),
                         "value": 0,
                         "count": 0,
-                        "total": FamilyUser.objects.filter(
-                            profile__finished_registering=False
-                        ).count(),
+                        "total": FamilyUser.objects.filter(profile__finished_registering=False).count(),
                     },
                 ],
                 "last_registration": [
@@ -55,17 +48,13 @@ class DashboardFamilyView(generics.ListAPIView):
                         "label": _("Has registrations"),
                         "value": self.request.REGISTRATION_START,
                         "count": 0,
-                        "total": FamilyUser.objects.exclude(
-                            profile__last_registration=None
-                        ).count(),
+                        "total": FamilyUser.objects.exclude(profile__last_registration=None).count(),
                     },
                     {
                         "label": _("Has no registration"),
                         "value": now() + timedelta(days=366),
                         "count": 0,
-                        "total": FamilyUser.objects.filter(
-                            profile__last_registration=None
-                        ).count(),
+                        "total": FamilyUser.objects.filter(profile__last_registration=None).count(),
                     },
                 ],
                 "has_paid": [

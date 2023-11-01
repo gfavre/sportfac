@@ -384,6 +384,7 @@ class InlineChildrenSerializer(serializers.ModelSerializer):
 class FamilySerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(source="get_full_name", read_only=True)
     children = InlineChildrenSerializer(many=True)
+    phone = serializers.SerializerMethodField()
     finished_registrations = serializers.BooleanField(source="profile.finished_registering")
     has_paid = serializers.BooleanField(source="profile.has_paid_all")
     last_registration = serializers.DateTimeField(source="profile.last_registration")
@@ -401,6 +402,7 @@ class FamilySerializer(serializers.ModelSerializer):
             "email",
             "zipcode",
             "city",
+            "phone",
             "children",
             "finished_registrations",
             "has_paid",
@@ -417,6 +419,17 @@ class FamilySerializer(serializers.ModelSerializer):
     @staticmethod
     def get_registered_this_period(obj):
         return obj.last_registration is not None
+
+    @staticmethod
+    def get_phone(obj):
+        output = []
+        if obj.private_phone:
+            output.append(obj.private_phone.as_international)
+        if obj.private_phone2:
+            output.append(obj.private_phone2.as_international)
+        if obj.private_phone3:
+            output.append(obj.private_phone3.as_international)
+        return output
 
     # noinspection PyMethodMayBeStatic
     def get_actions(self, obj):

@@ -69,10 +69,10 @@
             {data: 'last_name', name: 'last_name'},
             {data: 'zipcode', name: 'zipcode'},
             {data: 'city', name: 'city'},
-
+            {data: 'phone', name: 'private_phone,private_phone2,private_phone3' },
             {data: 'children', name: 'children.first_name,children.last_name'},
             {data: 'finished_registrations', name: 'profile.finished_registering'},
-              {% if not NO_PAYMENT %}{data: 'has_paid', name: 'profile.has_paid_all'},{% endif %}
+            {% if not NO_PAYMENT %}{data: 'has_paid', name: 'profile.has_paid_all'},{% endif %}
             {data: 'last_registration', name: 'profile.last_registration'},
             {data: 'last_registration_natural', name: 'profile.last_registration'},
             {data: 'actions'},
@@ -80,7 +80,7 @@
           columnDefs: [
             {
               visible: false,
-              targets: ['user-id', 'email', 'zipcode', 'last_registration', {% if NO_PAYMENT %}, 'has-paid'{% endif %}],
+              targets: ['user-id', 'email', 'zipcode', 'last_registration', 'last_registration_natural' {% if NO_PAYMENT %}, 'has-paid'{% endif %}]
             },
             {
               searchable: false,
@@ -94,7 +94,15 @@
               targets: ['finished_registrations', 'last_registration', 'has-paid']
             },
 
-
+            {
+              render: function (data, type, row) {
+                let phones = row['phone'].flatMap(
+                  phone => `<li><a href="tel:${phone}">${phone}</a></li>`
+                ).join('');
+                return '<ul class="list-unstyled">' + phones + '</ul>';
+              },
+              targets: ['phone']
+            },
             {
               render: function (data, type, row) {
                 let children = row['children'].flatMap(
@@ -212,6 +220,8 @@
       <th class="last-name">{% trans "Last name" %}</th>
       <th class="zipcode">Zipcode</th>
       <th class="city">{% trans "City" %}</th>
+      <th class="phone">{% trans "Phone" %}</th>
+
       <th class="user-children">{% trans "Children" %}</th>
       <th class="finished_registrations">{% trans "Finished registration" %}</th>
       {% if not NO_PAYMENT %}
