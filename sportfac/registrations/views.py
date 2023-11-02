@@ -25,6 +25,7 @@ from sentry_sdk import capture_exception
 
 from sportfac.views import NotReachableException, WizardMixin
 
+from .forms import EmptyForm
 from .models import Bill, Child, Registration
 
 
@@ -158,13 +159,14 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
             raise NotReachableException("No waiting Registration available")
 
     def get_success_url(self):
-        if self.bill and self.bill.is_paid:
-            messages.success(self.request, _("Your registrations have been recorded, thank you!"))
-            return reverse_lazy("registrations:registrations_registered_activities")
         if settings.KEPCHUP_USE_APPOINTMENTS:
             if self.request.user.montreux_needs_appointment:
                 return reverse_lazy("wizard_appointments")
-        return self.success_url
+        if self.bill and self.bill.is_paid:
+            messages.success(self.request, _("Your registrations have been recorded, thank you!"))
+            return reverse_lazy("registrations:registrations_registered_activities")
+
+        return self.success_url  # reverse_lazy("wizard_billing")
 
     def get_queryset(self):
         # noinspection PyUnresolvedReferences
@@ -306,6 +308,29 @@ class WizardBillingView(LoginRequiredMixin, BillMixin, PaymentMixin, WizardMixin
             if settings.KEPCHUP_USE_APPOINTMENTS and bill.is_wire_transfer:
                 bill.send_confirmation()
         return response  # noqa: R504
+
+
+class WizardCancelRegistrationView(LoginRequiredMixin, WizardMixin, FormView):
+    success_url = reverse_lazy("wizard_activities")
+    form_class = EmptyForm
+
+    @staticmethod
+    def check_initial_condition(request):
+        if not request.user.is_authenticated:
+            raise NotReachableException("No account created")
+
+        if not Bill.objects.filter(
+            status__in=(Bill.STATUS.just_created, Bill.STATUS.waiting), family=request.user
+        ).exists():
+            raise NotReachableException("No Bill available")
+
+    def form_valid(self, form):
+        for bill in Bill.objects.filter(
+            status__in=(Bill.STATUS.just_created, Bill.STATUS.waiting), family=self.request.user
+        ):
+            bill.registrations.all().update(status=Registration.STATUS.waiting, bill=None)
+            bill.delete()
+        return super().form_valid(form)
 
 
 class WizardChildrenListView(WizardMixin, ChildrenListView):

@@ -21,9 +21,16 @@
       registration will be cancelled and your place will be made available again.{% endblocktrans %}
     </p>
   {% endif %}
-  <p class="text-center">
-    <a href="#" id="pay-button" class="btn btn-lg btn-success">
-      <i class="icon-credit-card-1"></i> &nbsp;{% trans "Pay" %}
-    </a>
-  </p>
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-6 text-right" style="min-height: 46px;">
+        <a href="#" id="pay-button" class="btn btn-lg btn-success">
+          <i class="icon-credit-card-1"></i> &nbsp;{% trans "Pay" %}
+        </a>
+      </div>
+      <div class="col-xs-6"  style="min-height: 46px;  padding-top: 6px;">
+        {% include 'registrations/billing_cancel.html' %}
+      </div>
+    </div>
+  </div>
 </div>

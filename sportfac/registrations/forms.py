@@ -14,6 +14,10 @@ from schools.models import Building, Teacher
 from .models import Bill, Child, Registration, Transport
 
 
+class EmptyForm(forms.Form):
+    pass
+
+
 class BillForm(forms.ModelForm):
     status = forms.ChoiceField(choices=list(Bill.STATUS)[1:])
 

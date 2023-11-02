@@ -7,6 +7,7 @@ from profiles.views import WizardAccountView, WizardRegistrationView
 from registrations.views import (
     RegisteredActivitiesListView,
     WizardBillingView,
+    WizardCancelRegistrationView,
     WizardChildrenListView,
 )
 
@@ -22,6 +23,7 @@ urlpatterns = [
     path("confirm/", RegisteredActivitiesListView.as_view(), name="wizard_confirm"),
     path("appointments/", WizardSlotsView.as_view(), name="wizard_appointments"),
     path("billing/", WizardBillingView.as_view(), name="wizard_billing"),
+    path("cancel/", WizardCancelRegistrationView.as_view(), name="wizard_cancel"),
     path("payment/failure/", PaymentFailureView.as_view(), name="wizard_payment_failure"),
     path("payment/success/", PaymentSuccessView.as_view(), name="wizard_payment_success"),
 ]
