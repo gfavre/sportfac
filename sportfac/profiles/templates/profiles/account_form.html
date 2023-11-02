@@ -1,3 +1,5 @@
-{% load crispy_forms_tags %}
+{% load crispy_forms_tags sekizai_tags %}
 
 {% crispy form %}
+
+{% addtoblock "js" %}{{ form.media }}{% endaddtoblock %}

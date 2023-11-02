@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Possibility to cancel registration and invoice from the payment page
+- When a single phone field is used, change its label to "mobile phone"
+
+### Fixed
+- Instructor form in wizard now displays date selector widget
 
 
 ## 3.4.1 - 2023-10-30

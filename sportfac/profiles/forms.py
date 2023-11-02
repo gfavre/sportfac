@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 from bootstrap_datepicker_plus.widgets import DatePickerInput
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import HTML, Fieldset, Layout, Submit
+from crispy_forms.layout import HTML, Field, Fieldset, Layout, Submit
 
 # noinspection PyPackageRequirements
 from localflavor.generic.forms import IBANFormField
@@ -188,6 +188,10 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
                     "password2",
                 )
             )
+
+        if settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES:
+            self.fields["private_phone"].label = _("Mobile phone")
+
         self.helper.layout.append(
             Fieldset(
                 _("Contact informations"),
@@ -394,7 +398,9 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
                 "zipcode",
                 "city",
                 not settings.KEPCHUP_REGISTRATION_HIDE_COUNTRY and "country",
-                "private_phone",
+                settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES
+                and Field("private_phone", label=_("Mobile phone"))
+                or Field("private_phone"),
                 not settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES and "private_phone2",
                 not settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES and "private_phone3",
             ),
