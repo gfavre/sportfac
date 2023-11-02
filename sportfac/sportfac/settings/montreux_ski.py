@@ -51,6 +51,7 @@ KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = [
     "birth_date",
     "school_year",
     "school",
+    "avs",
 ]
 KEPCHUP_CHILDREN_HIDDEN_FIELDS = ["language", "nationality"]
 KEPCHUP_CALENDAR_DISPLAY_DATES = False

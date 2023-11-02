@@ -53,6 +53,7 @@ KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = [
     "other_school",
     "nationality",
     "language",
+    "avs",
 ]
 KEPCHUP_CHILDREN_HIDDEN_FIELDS = ["language", "nationality"]
 KEPCHUP_EXPLICIT_SESSION_DATES = True
