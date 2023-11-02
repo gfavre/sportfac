@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When a single phone field is used, change its label to "mobile phone"
 - Make AVS uneditable for Montreux
 - Make base fields required on user form
+- Appointment message less misleading
 
 ### Fixed
 - Instructor form in wizard now displays date selector widget

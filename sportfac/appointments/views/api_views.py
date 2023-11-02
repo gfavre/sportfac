@@ -60,7 +60,7 @@ class RegisterSlot(generics.GenericAPIView):
             messages.add_message(
                 request,
                 messages.SUCCESS,
-                _("Your appointment is registered. You should receive a reminder email shortly."),
+                _("Your appointment is registered."),
             )
 
         else:

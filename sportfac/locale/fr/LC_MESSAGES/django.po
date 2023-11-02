@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-02 13:53+0100\n"
-"PO-Revision-Date: 2023-11-02 13:54+0100\n"
+"POT-Creation-Date: 2023-11-02 17:36+0100\n"
+"PO-Revision-Date: 2023-11-02 17:36+0100\n"
 "Last-Translator: Gregory Favre <greg@beyondthewall.ch>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -1338,7 +1338,7 @@ msgstr "Dossard"
 #: sportfac/backend/templates/backend/site/flatpage_list.html:16
 #: sportfac/backend/templates/backend/user/detail-instructor.html:12
 #: sportfac/backend/templates/backend/user/detail.html:11
-#: sportfac/profiles/forms.py:115 sportfac/profiles/forms.py:306
+#: sportfac/profiles/forms.py:115 sportfac/profiles/forms.py:315
 #: sportfac/registrations/resources.py:42
 #: sportfac/registrations/templates/registrations/bill-partial.html:34
 #: sportfac/themes/coppet/templates/registrations/bill-partial.html:35
@@ -1376,7 +1376,7 @@ msgstr "Année scolaire"
 #: sportfac/backend/templates/backend/user/child-detail.html:24
 #: sportfac/backend/templates/backend/user/detail-instructor.html:38
 #: sportfac/backend/templates/backend/user/detail.html:94
-#: sportfac/profiles/forms.py:225 sportfac/profiles/models.py:133
+#: sportfac/profiles/forms.py:234 sportfac/profiles/models.py:133
 #: sportfac/profiles/resources.py:62 sportfac/registrations/forms.py:40
 #: sportfac/registrations/models.py:611 sportfac/registrations/resources.py:36
 msgid "Birth date"
@@ -1664,7 +1664,7 @@ msgstr "Rendez-vous"
 #: sportfac/backend/templates/backend/user/list.html:219
 #: sportfac/backend/templates/backend/user/manager-list.html:150
 #: sportfac/backend/templates/backend/user/manager-list.html:151
-#: sportfac/profiles/forms.py:304 sportfac/profiles/models.py:121
+#: sportfac/profiles/forms.py:313 sportfac/profiles/models.py:121
 #: sportfac/profiles/resources.py:25 sportfac/registrations/models.py:608
 #: sportfac/registrations/resources.py:30 sportfac/schools/models.py:16
 msgid "First name"
@@ -1674,7 +1674,7 @@ msgstr "Prénom"
 #: sportfac/backend/templates/backend/user/instructor-list.html:169
 #: sportfac/backend/templates/backend/user/list.html:220
 #: sportfac/backend/templates/backend/user/manager-list.html:152
-#: sportfac/profiles/forms.py:305 sportfac/profiles/models.py:122
+#: sportfac/profiles/forms.py:314 sportfac/profiles/models.py:122
 #: sportfac/profiles/resources.py:26 sportfac/registrations/models.py:609
 #: sportfac/registrations/resources.py:31 sportfac/schools/models.py:17
 msgid "Last name"
@@ -1822,7 +1822,7 @@ msgstr "Ajouter un enfant"
 
 #: sportfac/appointments/templates/appointments/register.html:176
 #: sportfac/contact/forms.py:16 sportfac/profiles/forms.py:116
-#: sportfac/profiles/forms.py:294
+#: sportfac/profiles/forms.py:303
 msgid "E-mail"
 msgstr "E-mail"
 
@@ -1847,7 +1847,6 @@ msgid "Success"
 msgstr "Succès"
 
 #: sportfac/appointments/templates/appointments/success.html:9
-#: sportfac/appointments/views/api_views.py:63
 msgid ""
 "Your appointment is registered. You should receive a reminder email shortly."
 msgstr ""
@@ -1868,6 +1867,10 @@ msgid ""
 msgstr ""
 "Vous n'avez pas encore choisi les rendez-vous nécessaires pour vos "
 "inscriptions :"
+
+#: sportfac/appointments/views/api_views.py:63
+msgid "Your appointment is registered."
+msgstr "Votre rendez-vous est enregistré."
 
 #: sportfac/backend/dynamic_preferences_registry.py:93
 msgid "Email address of the accountant, if multiple separate by comma"
@@ -1893,7 +1896,7 @@ msgstr "Jours entre la fin des inscriptions et le paiement"
 
 #: sportfac/backend/dynamic_preferences_registry.py:179
 #: sportfac/backend/templates/backend/user/detail-instructor.html:49
-#: sportfac/profiles/forms.py:223 sportfac/profiles/resources.py:61
+#: sportfac/profiles/forms.py:232 sportfac/profiles/resources.py:61
 #: sportfac/registrations/templates/registrations/bill-partial.html:33
 #: sportfac/themes/coppet/templates/registrations/bill-partial.html:34
 msgid "IBAN"
@@ -2513,8 +2516,8 @@ msgstr "Nouveau bâtiment"
 
 #: sportfac/backend/templates/backend/building/list.html:38
 #: sportfac/backend/templates/backend/user/list.html:222
-#: sportfac/profiles/forms.py:117 sportfac/profiles/forms.py:314
-#: sportfac/profiles/forms.py:317 sportfac/profiles/models.py:125
+#: sportfac/profiles/forms.py:117 sportfac/profiles/forms.py:323
+#: sportfac/profiles/forms.py:326 sportfac/profiles/models.py:125
 #: sportfac/profiles/models.py:436 sportfac/profiles/resources.py:29
 #: sportfac/registrations/resources.py:44 sportfac/schools/models.py:73
 #: sportfac/themes/nyon_prangins/templates/profiles/account_form.bak.html:29
@@ -3993,7 +3996,7 @@ msgstr "Créer un gestionnaire"
 
 #: sportfac/backend/templates/backend/user/detail-instructor.html:10
 #: sportfac/backend/templates/backend/user/detail.html:9
-#: sportfac/profiles/forms.py:193 sportfac/profiles/forms.py:390
+#: sportfac/profiles/forms.py:202 sportfac/profiles/forms.py:399
 #: sportfac/themes/nyon_prangins/templates/profiles/account_form.bak.html:23
 #: sportfac/themes/nyon_prangins/templates/profiles/wizard_registration_form.bak.html:29
 msgid "Contact informations"
@@ -4001,13 +4004,14 @@ msgstr "Informations de contact"
 
 #: sportfac/backend/templates/backend/user/detail-instructor.html:21
 #: sportfac/backend/templates/backend/user/detail.html:19
-#: sportfac/profiles/forms.py:119 sportfac/profiles/forms.py:322
+#: sportfac/profiles/forms.py:119 sportfac/profiles/forms.py:331
 #: sportfac/profiles/models.py:127 sportfac/profiles/resources.py:32
 msgid "Home phone"
 msgstr "Téléphone (domicile)"
 
 #: sportfac/backend/templates/backend/user/detail-instructor.html:27
 #: sportfac/backend/templates/backend/user/detail.html:25
+#: sportfac/profiles/forms.py:198 sportfac/profiles/forms.py:407
 #: sportfac/profiles/models.py:128 sportfac/profiles/resources.py:35
 msgid "Mobile phone"
 msgstr "Téléphone portable"
@@ -4136,7 +4140,7 @@ msgstr "Exporter les gestionnaires"
 
 #: sportfac/backend/templates/backend/user/password-change.html:4
 #: sportfac/backend/templates/backend/user/password-change.html:5
-#: sportfac/profiles/forms.py:172
+#: sportfac/profiles/forms.py:176
 #: sportfac/profiles/templates/profiles/baseprofile.html:34
 #: sportfac/templates/registration/password_change_done.html:3
 #: sportfac/templates/registration/password_change_done.html:5
@@ -5034,19 +5038,19 @@ msgstr ""
 msgid "At least one phone number is mandatory"
 msgstr "Au moins un numéro de téléphone est obligatoire"
 
-#: sportfac/profiles/forms.py:125 sportfac/profiles/forms.py:328
+#: sportfac/profiles/forms.py:125 sportfac/profiles/forms.py:337
 msgid "Mobile phone #1"
 msgstr "Téléphone portable"
 
-#: sportfac/profiles/forms.py:131 sportfac/profiles/forms.py:334
+#: sportfac/profiles/forms.py:131 sportfac/profiles/forms.py:343
 msgid "Mobile phone #2"
 msgstr "Autre téléphone"
 
-#: sportfac/profiles/forms.py:136 sportfac/profiles/forms.py:340
+#: sportfac/profiles/forms.py:136 sportfac/profiles/forms.py:349
 msgid "Password"
 msgstr "Mot de passe"
 
-#: sportfac/profiles/forms.py:137 sportfac/profiles/forms.py:341
+#: sportfac/profiles/forms.py:137 sportfac/profiles/forms.py:350
 msgid "Password (again)"
 msgstr "Mot de passe (encore)"
 
@@ -5054,69 +5058,69 @@ msgstr "Mot de passe (encore)"
 msgid "You must type the same password each time."
 msgstr "Vous devez entrer le même mot de passe dans chaque champ."
 
-#: sportfac/profiles/forms.py:175 sportfac/profiles/forms.py:185
-#: sportfac/profiles/forms.py:402
+#: sportfac/profiles/forms.py:179 sportfac/profiles/forms.py:189
+#: sportfac/profiles/forms.py:413
 #: sportfac/themes/nyon_prangins/templates/profiles/wizard_registration_form.bak.html:48
 msgid "Login informations"
 msgstr "Informations de connexion"
 
-#: sportfac/profiles/forms.py:210
+#: sportfac/profiles/forms.py:219
 msgid "Is a manager"
 msgstr "Gestionnaire de sport facultatif"
 
-#: sportfac/profiles/forms.py:211
+#: sportfac/profiles/forms.py:220
 msgid "Grant access for this user to this backend interface"
 msgstr ""
 "Donner les accès à cette interface d'administration pour cet utilisateur"
 
-#: sportfac/profiles/forms.py:227 sportfac/registrations/forms.py:42
+#: sportfac/profiles/forms.py:236 sportfac/registrations/forms.py:42
 msgid "Format: 31.12.2012"
 msgstr "Format: 31.12.2012"
 
-#: sportfac/profiles/forms.py:264
+#: sportfac/profiles/forms.py:273
 #: sportfac/themes/nyon_prangins/templates/profiles/account_form.bak.html:43
 msgid "Instructor informations"
 msgstr "Informations du moniteur"
 
-#: sportfac/profiles/forms.py:299
+#: sportfac/profiles/forms.py:308
 msgid "Email (again)"
 msgstr "Email (encore)"
 
-#: sportfac/profiles/forms.py:302
+#: sportfac/profiles/forms.py:311
 msgid "Enter the same email as before, for verification."
 msgstr "Entrez la même adresse email qu'au-dessus, pour vérification."
 
-#: sportfac/profiles/forms.py:308 sportfac/profiles/forms.py:311
+#: sportfac/profiles/forms.py:317 sportfac/profiles/forms.py:320
 #: sportfac/profiles/models.py:124 sportfac/profiles/models.py:431
 #: sportfac/profiles/resources.py:28 sportfac/registrations/resources.py:43
 #: sportfac/schools/models.py:72
 msgid "NPA"
 msgstr "NPA"
 
-#: sportfac/profiles/forms.py:319 sportfac/profiles/models.py:126
+#: sportfac/profiles/forms.py:328 sportfac/profiles/models.py:126
 #: sportfac/profiles/models.py:433 sportfac/profiles/resources.py:30
 #: sportfac/registrations/resources.py:45 sportfac/schools/models.py:74
 msgid "Country"
 msgstr "Pays de résidence"
 
-#: sportfac/profiles/forms.py:350
+#: sportfac/profiles/forms.py:359
 msgid "A user with that username already exists."
 msgstr "Cette adresse email est déjà utilisée."
 
-#: sportfac/profiles/forms.py:353 sportfac/templates/registration/login.html:4
+#: sportfac/profiles/forms.py:362 sportfac/templates/registration/login.html:4
 #: sportfac/templates/registration/login.html:5
 msgid "Login"
 msgstr "Connexion"
 
-#: sportfac/profiles/forms.py:356
+#: sportfac/profiles/forms.py:365
 msgid "Use another email address"
 msgstr "Utiliser une autre adresse email"
 
-#: sportfac/profiles/forms.py:365
+#: sportfac/profiles/forms.py:374
 msgid "The two email fields didn't match."
 msgstr "Les deux adresses email ne sont pas identiques."
 
-#: sportfac/profiles/forms.py:378
+#: sportfac/profiles/forms.py:387
 msgid "The two password fields didn't match."
 msgstr "Les deux mots de passe ne sont pas identiques."
 
