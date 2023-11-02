@@ -158,6 +158,10 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["first_name"].required = True
+        self.fields["last_name"].required = True
+        self.fields["zipcode"].required = True
+
         self.helper = FormHelper()
         self.helper.form_class = "form-horizontal"
         self.helper.form_group_wrapper_class = "row"
@@ -190,6 +194,7 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
             )
 
         if settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES:
+            self.fields["private_phone"].required = True
             self.fields["private_phone"].label = _("Mobile phone")
 
         self.helper.layout.append(
