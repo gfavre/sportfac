@@ -79,7 +79,7 @@
               </span>
             {% if extra.is_true and extra.image %}
               <div>
-                <img src="{{ extra.image.url }}" class="img-responsive">
+                <img src="{{ request.build_absolute_url(extra.image.url) }}" class="img-responsive">
               </div>
             {% endif %}
           {% else %}

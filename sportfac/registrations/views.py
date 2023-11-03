@@ -328,6 +328,8 @@ class WizardCancelRegistrationView(LoginRequiredMixin, WizardMixin, FormView):
         for bill in Bill.objects.filter(
             status__in=(Bill.STATUS.just_created, Bill.STATUS.waiting), family=self.request.user
         ):
+            for reg in bill.registrations.all():
+                reg.extra_infos.all().delete()
             bill.registrations.all().update(status=Registration.STATUS.waiting, bill=None)
             bill.delete()
         return super().form_valid(form)

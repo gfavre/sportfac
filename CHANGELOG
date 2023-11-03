@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Make base fields required on user form
 - Appointment message less misleading
 
+
 ### Fixed
 - Instructor form in wizard now displays date selector widget
 
