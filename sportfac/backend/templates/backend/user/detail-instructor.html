@@ -64,6 +64,70 @@
           class="icon-edit"></i>&nbsp;&nbsp;{% trans "Update contact informations" %}</a>
     </p>
   </section>
+  {% if object.children.exists %}
+  <section class="portlet">
+  <h4 class="portlet-title"><u>{% trans "Children" %}</u></h4>
+  <div class="row">
+  {% for child in object.children.all %}
+    <div class="col-sm-6 col-lg-4">
+      <div class="pricing-plan">
+        <header class="pricing-header">
+          <h4 class="pricing-plan-title">
+            {{  child }}
+            {% if BIB_NUMBERS %}
+            <small> &mdash; {{ child.bib_number|default:_("No bib number") }}</small>
+            {% endif %}
+          </h4>
+        </header>
+        <dl class="dl-horizontal">
+          <dt>{% trans "Birth date" %}</dt><dd> {{ child.birth_date | date:"j F Y" }}</dd>
+          <dt>{% trans "Sex" %}</dt><dd> {{ child.get_sex_display }}</dd>
+          <dt>{% trans "Nationality" %}</dt><dd> {{ child.get_nationality_display }}</dd>
+          <dt>{% trans "Language" %}</dt><dd> {{ child.get_language_display }}</dd>
+          <dt>{% trans "School year" %}</dt><dd> {{ child.school_year }}</dd>
+{% if PREFILL_YEARS_WITH_TEACHERS %}
+          <dt>{% trans "Teacher" %}</dt><dd> {{ child.teacher.get_full_name }}</dd>
+{% endif %}
+{% if CHILD_SCHOOL %}
+          <dt>{% trans "School" %}</dt><dd>{{ child.school_name }}</dd>
+{% endif %}
+        </dl>
+        <p class="text-center">
+           <a href="{{ child.get_update_url }}" class="btn btn-default btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Update child" %}</a>&nbsp; <a href="{{ child.get_delete_url }}" class="btn btn-danger btn-sm"><i class="icon-trash"></i>&nbsp;&nbsp;{% trans "Delete child" %}</a>
+        </p><hr />
+        <h5 >{% trans "Registrations" %}</h5>
+        <table class="table">
+          <thead class="sr-only">
+            <tr>
+              <th>{% trans "Course" %}</th>
+              <th>{% trans "Actions" %}</th>
+            </tr>
+          </thead>
+          {% for registration in child.registrations.all %}
+          <tr>
+            <td>
+             <a href="{{ registration.course.get_backend_url }}">{{ registration.course.short_name }}</a>
+            </td>
+            <td>
+              <ul class="list-unstyled">
+                <li class="text-nowrap"><a href="{{ registration.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update registration" %}</a></li>
+                <li class="text-nowrap"><a href="{{ registration.get_delete_url }}" class="btn btn-sm"><i class="icon-cancel"></i>&nbsp;{% trans "Cancel registration" %}</a></li>
+              </ul>
+
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="2">{% trans "No registration for this child" %}</td></tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+  <a href="{% url 'backend:child-create' user=object.pk %}" class="btn btn-success"><i class="icon-plus"></i>&nbsp;&nbsp;{% trans "Add child" %}</a>
+</section>
+  {% endif %}
+
   <section class="portlet">
     <h4 class="portlet-title"><u>{% trans "Courses" %}</u></h4>
     <div class="row">
