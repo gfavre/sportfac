@@ -26,6 +26,7 @@ CORRESPONDANCE_DICT = {
     "last_name": ["Nom", "ELEVE_NOM"],
     "birth_date": ["Date de naissance", "ELEVE_DATE_NAISS"],
     "sex": ["Genre", "ELEVE_GENRE"],
+    "avs": ["AVS", "N_AVS"],
     "school_year": ["Année", "ANNEE", "ELEVE_ANNEE_SCOL", "Année2"],
     "nationality": ["Nationalité"],
     "language": ["Langue maternelle", "LANGUE MATERNELLE"],
@@ -54,6 +55,7 @@ class ChildParser:
             "school_year": self.parse_school_year,
             "school": self.parse_school,
             "is_blacklisted": self.parse_blacklist,
+            "avs": lambda avs: avs,
         }
 
     @staticmethod
