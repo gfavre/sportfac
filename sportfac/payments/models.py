@@ -107,7 +107,7 @@ class PostfinanceTransaction(TimeStampedModel, StatusModel):
 
     @property
     def is_pending(self):
-        return self.status in (self.STATUS.PENDING, self.status.CONFIRMED, self.STATUS.PROCESSING)
+        return self.status in (self.STATUS.PENDING, self.STATUS.CONFIRMED, self.STATUS.PROCESSING)
 
     @property
     def is_success(self):

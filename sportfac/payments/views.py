@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
@@ -18,12 +20,16 @@ from sportfac.views import WizardMixin
 from .models import DatatransTransaction, PostfinanceTransaction
 
 
+logger = logging.getLogger(__name__)
+
+
 class DatatransWebhookView(APIView):
     permission_classes = [AllowAny]
 
     # noinspection PyMethodMayBeStatic
     def post(self, request, *args, **kwargs):
         data = request.data
+        logger.info("webhook received: %s", data)
         if "transactionId" and "refno" not in data:
             raise ValidationError("missing parameters")
         invoice = get_object_or_404(Bill, billing_identifier=data.get("refno"))
