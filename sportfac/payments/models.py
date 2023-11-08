@@ -1,6 +1,7 @@
 import uuid
 
 from django.conf import settings
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.db.models import JSONField
 from django.utils.translation import gettext_lazy as _
@@ -105,7 +106,7 @@ class PostfinanceTransaction(TimeStampedModel, StatusModel):
     transaction_id = models.BigIntegerField(db_index=True)
     payment_page_url = models.URLField(null=True, blank=True)
     payment_method = models.CharField(max_length=255, blank=True, default="")
-    webhook = JSONField(null=True, blank=True)
+    webhook = JSONField(null=True, blank=True, encoder=DjangoJSONEncoder)
 
     @property
     def is_pending(self):
@@ -136,7 +137,12 @@ class PostfinanceTransaction(TimeStampedModel, StatusModel):
 
         status, pf_transaction = get_new_status(self.transaction_id)
         self.status = status
-        self.save(update_fields=("status",))
+        self.webhook = pf_transaction.to_dict()
+        try:
+            self.payment_method = pf_transaction.payment_connector_configuration.name
+            self.save(update_fields=("status", "webhook", "payment_method"))
+        except AttributeError:
+            self.save(update_fields=("status", "webhook"))
 
     def void(self):
         from .postfinance import void_transaction
@@ -146,3 +152,6 @@ class PostfinanceTransaction(TimeStampedModel, StatusModel):
             self.status = self.STATUS.VOIDED
             self.save(update_fields=("status",))
             self.update_invoice()
+
+    def __str__(self):
+        return f"{self.transaction_id} - {self.status}"
