@@ -4863,7 +4863,7 @@ msgstr "Terminé"
 
 #: sportfac/payments/models.py:96
 msgid "Fulfill"
-msgstr "Ready"
+msgstr "Payé (fulfill)"
 
 #: sportfac/payments/models.py:97
 msgid "Decline"
