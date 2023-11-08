@@ -45,7 +45,7 @@ def invoice_to_transaction(request, invoice):
         fail_url = f"https://{request.get_host()}{invoice.get_pay_url()}"
     elif request.get_full_path().startswith(reverse("wizard_billing")):
         success_url = "https://{}{}".format(request.get_host(), reverse("wizard_payment_success"))
-        fail_url = "https://{}{}".format(request.get_host(), reverse("wizard_billing"))
+        fail_url = "https://{}{}".format(request.get_host(), reverse("wizard_payment_failure"))
     else:
         success_url = "https://{}{}".format(request.get_host(), reverse("registrations:registrations_billing"))
         fail_url = f"https://{request.get_host()}{request.get_full_path()}"
@@ -103,7 +103,7 @@ def get_new_status(transaction_id):
     )
     transaction_service = TransactionServiceApi(config)
     transaction = transaction_service.read(space_id=settings.POSTFINANCE_SPACE_ID, id=transaction_id)
-    return transaction.state.value
+    return transaction.state.value, transaction
 
 
 def void_transaction(transaction_id):

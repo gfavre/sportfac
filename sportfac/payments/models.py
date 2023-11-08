@@ -104,6 +104,8 @@ class PostfinanceTransaction(TimeStampedModel, StatusModel):
     )
     transaction_id = models.BigIntegerField(db_index=True)
     payment_page_url = models.URLField(null=True, blank=True)
+    payment_method = models.CharField(max_length=255, blank=True, default="")
+    webhook = JSONField(null=True, blank=True)
 
     @property
     def is_pending(self):
@@ -132,7 +134,8 @@ class PostfinanceTransaction(TimeStampedModel, StatusModel):
     def update_status(self):
         from .postfinance import get_new_status
 
-        self.status = get_new_status(self.transaction_id)
+        status, pf_transaction = get_new_status(self.transaction_id)
+        self.status = status
         self.save(update_fields=("status",))
 
     def void(self):

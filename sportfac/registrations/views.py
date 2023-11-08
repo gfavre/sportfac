@@ -89,6 +89,10 @@ class BillingView(LoginRequiredMixin, BillMixin, ListView):
 
 
 class BillDetailView(LoginRequiredMixin, PaymentMixin, BillMixin, DetailView):
+    """
+    Display the bill (family user view)
+    """
+
     template_name = "registrations/bill-detail.html"
 
     def get_queryset(self):
@@ -273,6 +277,10 @@ class SummaryView(LoginRequiredMixin, TemplateView):
 
 
 class WizardBillingView(LoginRequiredMixin, BillMixin, PaymentMixin, WizardMixin, TemplateView):
+    """
+    Display the bill: wizard final step view with pay button
+    """
+
     template_name = "registrations/wizard_billing.html"
 
     @staticmethod

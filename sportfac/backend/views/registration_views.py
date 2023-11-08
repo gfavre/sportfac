@@ -383,6 +383,10 @@ class BillListView(BackendMixin, ListView):
 
 
 class BillDetailView(BackendMixin, BillMixin, PaymentMixin, DetailView):
+    """
+    Display the bill: admin view
+    """
+
     model = Bill
     template_name = "backend/registration/bill-detail.html"
 

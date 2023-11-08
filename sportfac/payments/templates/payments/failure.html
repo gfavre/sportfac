@@ -9,8 +9,9 @@
   <div class="portlet ">
     <p class="lead">{% trans "The payment has not been made." %}</p>
     <p>
-      <a href="{% url 'registrations:registrations_registered_activities' %}"><i class="icon-calendar"></i> {% trans "My registered activities" %}</a>&nbsp; &mdash;&nbsp;
-      <a href="{% url 'registrations:registrations_billing' %}"><i class="icon-credit-card-1"></i> {% trans "My invoices" %}</a>
+      <!--<a href="{% url 'registrations:registrations_registered_activities' %}"><i class="icon-calendar"></i> {% trans "My registered activities" %}</a>&nbsp; &mdash;&nbsp;-->
+      <a href="{% url "wizard_billing" %}"> {% trans "Payment" %}</a>
+      <!--<a href="{% url 'registrations:registrations_billing' %}"><i class="icon-credit-card-1"></i> {% trans "My invoices" %}</a>-->
   </p>
 
   </div>
