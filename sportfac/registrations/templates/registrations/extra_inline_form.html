@@ -38,12 +38,12 @@
         </label>
       {% elif extra.type == "IM" %}
         <label class="radio-inline">
-          <input type="radio" name="extra-{{ extra.id }}" value="1"
+          <input type="radio" name="extra-{{ extra.id }}-{{ registered.id }}" value="1"
                  {% if extra.default == "1" %}checked{% endif %}
                  {% if extra.mandatory %}required{% endif %}/> {% trans "yes" %}
         </label>
         <label class="radio-inline">
-          <input type="radio" name="extra-{{ extra.id }}" value="0"
+          <input type="radio" name="extra-{{ extra.id }}-{{ registered.id }}" value="0"
                  {% if extra.default == "0" %}checked{% endif %}> {% trans "no" %}
         </label>
       {% endif %}
@@ -56,29 +56,27 @@
   </div>
 </div>
 {% if extra.type == "IM" %}
-  {% addtoblock "js" %}
   <script>
-    document.querySelectorAll('input[name="extra-{{ extra.id }}"]').forEach(function (radio) {
+    document.querySelectorAll('input[name="extra-{{ extra.id }}-{{ registered.id }}"]').forEach(function (radio) {
       radio.addEventListener('change', function () {
         if (this.value === "1") {
-          document.querySelector('#extra-{{ extra.id }}-file-ctnr').classList.remove('hidden');
-          document.querySelector('#extra-{{ extra.id }}-file').setAttribute('required', "required");
+          document.querySelector('#extra-{{ extra.id }}-{{ registered.id }}-file-ctnr').classList.remove('hidden');
+          document.querySelector('#extra-{{ extra.id }}-{{ registered.id }}-file').setAttribute('required', "required");
         } else {
-          document.querySelector('#extra-{{ extra.id }}-file-ctnr').classList.add('hidden');
-          document.querySelector('#extra-{{ extra.id }}-file').removeAttribute('required');
+          document.querySelector('#extra-{{ extra.id }}-{{ registered.id }}-file-ctnr').classList.add('hidden');
+          document.querySelector('#extra-{{ extra.id }}-{{ registered.id }}-file').removeAttribute('required');
 
         }
-        $("#extraform-{{ extra.id }}").validator('update');
+        //$("#extraform-{{ extra.id }}").validator('update');
 
       });
     });
   </script>
-  {% endaddtoblock %}
-  <div class="form-group hidden" id="extra-{{ extra.id }}-file-ctnr">
-    <label for="extra-{{ extra.id }}-file" class="col-sm-3 control-label">{% trans "Image" %} *</label>
+  <div class="form-group hidden" id="extra-{{ extra.id }}-{{ registered.id }}-file-ctnr">
+    <label for="extra-{{ extra.id }}-{{ registered.id }}-file" class="col-sm-3 control-label">{% trans "Image" %} *</label>
     <div class="col-sm-9">
       <input type="file" class="form-control-file" accept="image/*" capture="environment"
-             name="image" id="extra-{{ extra.id }}-file">
+             name="image" id="extra-{{ extra.id }}-{{ registered.id }}-file">
     </div>
   </div>
 {% endif %}
@@ -89,6 +87,9 @@
   <script src="{{ STATIC_URL }}js/vendor/validator.js"></script>
 
   <script>
+    let updateValidation = function () {
+
+    };
     $(document).ready(function () {
       let prices = {{ price_modifiers | to_json }};
 
