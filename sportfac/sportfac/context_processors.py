@@ -106,13 +106,16 @@ def wizard_context(request):
 
     if current != len(all_steps) - 1:
         next_step = all_steps[current + 1]
-
+    try:
+        max_step = [step.url for step in all_steps if step.activable][-1]
+    except IndexError:
+        max_step = all_steps[current].url
     return {
         "previous_step": previous_step,
         "next_step": next_step,
         "steps": all_steps,
         "current_step": all_steps[current],
-        "max_step": [step.url for step in all_steps if step.activable][-1],
+        "max_step": max_step,
     }
 
 
