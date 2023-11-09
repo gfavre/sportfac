@@ -1,0 +1,7 @@
+{% load i18n %}
+{% if user.is_authenticated and user.is_impersonate %}
+<div style="background-color: darkred; height: 3em; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;">
+  {% blocktrans with user=user %}Your are impersonating {{ user }}{% endblocktrans %}&nbsp;&nbsp; &mdash; &nbsp;&nbsp;
+  <a href="{% url 'impersonate-stop' %}" style="color:white;" class="btn btn-danger "><i class="icon-cancel-circled"></i> {% trans "Stop" %}</a>
+</div>
+{% endif %}

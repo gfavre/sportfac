@@ -1,10 +1,17 @@
+from datetime import datetime
+
 from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
-from django.http import HttpResponse
-from django.shortcuts import redirect, render
+from django.http import Http404, HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 from django.views.generic.base import RedirectView
 
 from braces.views import LoginRequiredMixin
+from impersonate.decorators import allowed_user_required
+from impersonate.helpers import check_allow_for_user, get_redir_path
+from impersonate.signals import session_begin
+from profiles.models import FamilyUser
 
 from .context_processors import wizard_context
 
@@ -107,3 +114,42 @@ def server_error(request, exception=None):
     response = render(request, "500.html", {})
     response.status_code = 500
     return response
+
+
+@allowed_user_required
+def impersonate(request, uid):
+    """
+    Override django-impersonate view to handle users who have uuids as pk.
+    Takes in the UID of the user to impersonate.
+    Takes in the UID of the user to impersonate.
+    Takes in the UID of the user to impersonate.
+    View will fetch the User instance and store it
+    in the request.session under the '_impersonate' key.
+
+    The middleware will then pick up on it and adjust the
+    request object as needed.
+
+    Also store the user's 'starting'/'original' URL so
+    we can return them to it.
+    """
+    try:
+        new_user = get_object_or_404(FamilyUser, pk=uid)
+    except ValueError:
+        # Invalid uid value passed
+        raise Http404("Invalid value given.")
+    if check_allow_for_user(request, new_user):
+        request.session["_impersonate"] = str(new_user.pk)
+        request.session["_impersonate_start"] = datetime.now(tz=timezone.utc).timestamp()
+        prev_path = request.headers.get("referer")
+        if prev_path:
+            request.session["_impersonate_prev_path"] = request.build_absolute_uri(prev_path)
+
+        request.session.modified = True  # Let's make sure...
+        # can be used to hook up auditing of the session
+        session_begin.send(
+            sender=None,
+            impersonator=request.user,
+            impersonating=new_user,
+            request=request,
+        )
+    return redirect(get_redir_path(request))

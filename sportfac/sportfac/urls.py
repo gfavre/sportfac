@@ -11,7 +11,10 @@ from activities.urls import sitemap as activity_sitemap
 from backend.utils import manager_required
 from ckeditor_uploader import views as ckeditor_views
 from contact.urls import Sitemap as ContactSitemap
+from impersonate import views as impersonate_views
 from payments.views import DatatransWebhookView, PostfinanceWebhookView
+
+from .views import impersonate as impersonate_view
 
 
 admin.autodiscover()
@@ -88,10 +91,10 @@ urlpatterns += [
     path("datatrans/", DatatransWebhookView.as_view(), name="datatrans_webhook"),
     path("postfinance/", PostfinanceWebhookView.as_view(), name="postfinance_webhook"),
     path("select2/", include("django_select2.urls")),
-    path("impersonate/", include("impersonate.urls")),
+    path("impersonate/<path:uid>/", impersonate_view, name="impersonate-start"),
+    path("impersonate-stop/", impersonate_views.stop_impersonate, name="impersonate-stop"),
     path(settings.ADMIN_URL, admin.site.urls),
 ]
-
 
 handler404 = "sportfac.views.not_found"
 handler500 = "sportfac.views.server_error"
