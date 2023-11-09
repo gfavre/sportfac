@@ -689,5 +689,5 @@ KEPCHUP_NYON_MARENS_EMAIL_RECIPIENTS = ADMINS
 
 IMPERSONATE = {
     "USE_HTTP_REFERER": True,
-    # CUSTOM_ALLOW:  A string that represents a function (e.g. module.submodule.mod.function_name) that will be called
+    "CUSTOM_ALLOW": "profiles.utils.can_impersonate",
 }
