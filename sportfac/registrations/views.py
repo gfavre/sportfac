@@ -299,7 +299,7 @@ class WizardBillingView(LoginRequiredMixin, BillMixin, PaymentMixin, WizardMixin
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["bill"] = Bill.objects.filter(family=self.request.user).order_by("created").last()
+        context["bill"] = Bill.objects.filter(family=self.request.user, total__gt=0).order_by("created").last()
 
         context["include_calendar"] = False
 
