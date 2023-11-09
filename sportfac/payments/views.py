@@ -99,6 +99,7 @@ class PostfinanceWebhookView(APIView):
         # Therefore we have 2 webhook adresses on which every transaction is sent, regardless of the kepchup instance.
         # These webhooks would generate a 404 error on the other instance, so we have to silence it.
         # This is not very elegant, but it alleviates the administration burden.
+        logger.info("webhook received: %s", data)
         transaction = PostfinanceTransaction.objects.filter(transaction_id=data.get("entityId")).first()
         if not transaction:
             return Response("Webhook accepted but not handled")
