@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from model_utils.models import TimeStampedModel
@@ -49,9 +50,11 @@ class AppointmentSlot(TimeStampedModel):
         return AppointmentType.objects.filter(start__lte=self.start, end__gte=self.end).first()
 
     def __str__(self):
-        if self.start.day == self.end.day:
-            return self.start.strftime("%d.%m.%Y, %H:%M-") + self.end.strftime("%H:%M")
-        return self.start.strftime("%d.%m.%Y %H:%M") + " - " + self.end.strftime("%d.%m.%Y %H:%M")
+        local_start = timezone.localtime(self.start)
+        local_end = timezone.localtime(self.end)
+        if local_start.day == local_end.day:
+            return local_start.strftime("%d.%m.%Y, %H:%M-") + local_end.strftime("%H:%M")
+        return local_start.strftime("%d.%m.%Y %H:%M") + " - " + local_end.strftime("%d.%m.%Y %H:%M")
 
 
 class Appointment(TimeStampedModel):
