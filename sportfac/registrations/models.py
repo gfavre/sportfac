@@ -5,7 +5,7 @@ from tempfile import mkdtemp
 
 from django.conf import settings
 from django.core.files import File
-from django.db import connection, models, transaction
+from django.db import IntegrityError, connection, models, transaction
 from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils.timezone import now
@@ -525,6 +525,19 @@ class Bill(TimeStampedModel, StatusModel):
     def set_waiting(self):
         self.status = self.STATUS.waiting
         self.save()
+
+    def cancel(self):
+        for registration in self.registrations.all():
+            registration.cancel(reason=Registration.REASON.expired)
+            try:
+                registration.save()
+            except IntegrityError:
+                registration.delete()
+        if hasattr(self, "postfinance_transactions") and self.postfinance_transactions.exists():
+            for pf_transaction in self.postfinance_transactions.all():
+                pf_transaction.void()
+        self.status = self.STATUS.canceled
+        self.save(force_status=True)
 
     def update_billing_identifier(self):
         if self.pk:

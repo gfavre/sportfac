@@ -147,6 +147,7 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
     """
     This view is used after the course selection in the wizard. The user has selected all his courses
     and now has to confirm his registrations.
+    When this step is completed, we create the invoice
     """
 
     model = Registration
@@ -234,12 +235,13 @@ class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
             registration.bill = self.bill
             registration.save()
 
-        self.bill.save()
+        self.bill.save()  # => bill status become paid if all registrations are paid
         if self.bill.total == 0:
             self.bill.status = Bill.STATUS.paid
             self.bill.save()
         if not (settings.KEPCHUP_USE_APPOINTMENTS or settings.KEPCHUP_PAYMENT_METHOD in ["datatrans", "postfinance"]):
             # FIXME: si la facture est à 0: aucun paiement
+            # Ceci est le "s'il n'y a pas d'autre étape, envoie la confirmation par email"
             self.bill.send_confirmation()
 
         return super().form_valid(form)
@@ -314,6 +316,7 @@ class WizardBillingView(LoginRequiredMixin, BillMixin, PaymentMixin, WizardMixin
             bill.status = Bill.STATUS.waiting
             bill.save()
             if settings.KEPCHUP_USE_APPOINTMENTS and bill.is_wire_transfer:
+                # Are we last step? If so, send confirmation
                 bill.send_confirmation()
         return response  # noqa: R504
 

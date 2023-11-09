@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMessage
-from django.db import IntegrityError, connection
+from django.db import connection
 from django.template.loader import render_to_string
 from django.utils import translation
 from django.utils.timezone import now
@@ -166,22 +166,12 @@ def cancel_expired_registrations():
         return
     current_domain = Domain.objects.filter(is_current=True).first()
     connection.set_tenant(current_domain.tenant)
-    registrations = Registration.objects.filter(
-        status="waiting",
-        created__lte=(now() - timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES)),
+    expired_invoices = Bill.objects.filter(
+        status=Bill.STATUS.waiting,
+        modified__lte=(now() - timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES)),
     )
-    invoices = set()
-    for registration in registrations:
-        invoices.add(registration.bill)
-        registration.cancel(reason=Registration.REASON.expired)
-        try:
-            registration.save()
-        except IntegrityError:
-            registration.delete()
-    for invoice in invoices:
-        if hasattr(invoice, "postfinance_transactions") and invoice.postfinance_transactions.exists():
-            for transaction in invoice.postfinance_transactions.all():
-                transaction.void()
+    for invoice in expired_invoices:
+        invoice.cancel()
 
 
 @shared_task
