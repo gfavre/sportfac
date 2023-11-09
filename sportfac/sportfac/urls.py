@@ -88,6 +88,7 @@ urlpatterns += [
     path("datatrans/", DatatransWebhookView.as_view(), name="datatrans_webhook"),
     path("postfinance/", PostfinanceWebhookView.as_view(), name="postfinance_webhook"),
     path("select2/", include("django_select2.urls")),
+    path("impersonate/", include("impersonate.urls")),
     path(settings.ADMIN_URL, admin.site.urls),
 ]
 
