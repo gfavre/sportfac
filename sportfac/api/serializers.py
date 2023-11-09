@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.humanize.templatetags.humanize import naturaltime
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from absences.models import Absence, Session
@@ -436,6 +437,11 @@ class FamilySerializer(serializers.ModelSerializer):
         return [
             {"url": obj.get_backend_url(), "label": _("User details"), "icon_class": "icon-user"},
             {"url": obj.get_update_url(), "label": _("Update user"), "icon_class": "icon-edit"},
+            {
+                "url": reverse("impersonate-start", kwargs={"uid": obj.id}),
+                "label": _("Impersonate"),
+                "icon_class": "icon-guidedog",
+            },
             {"url": obj.get_delete_url(), "label": _("Delete user"), "icon_class": "icon-trash"},
         ]
 

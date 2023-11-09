@@ -194,6 +194,7 @@ MIDDLEWARE = [
     "sportfac.middleware.VersionMiddleware",
     "sportfac.middleware.RegistrationOpenedMiddleware",
     "django.contrib.flatpages.middleware.FlatpageFallbackMiddleware",
+    "impersonate.middleware.ImpersonateMiddleware",
 ]
 # END MIDDLEWARE CONFIGURATION
 
@@ -231,6 +232,7 @@ SHARED_APPS = (
     "dynamic_preferences",
     "floppyforms",  # better forms => bootstrap components
     "import_export",
+    "impersonate",  # impersonate users
     "mathfilters",
     "phonenumber_field",
     "rest_framework",  # REST API
@@ -683,3 +685,9 @@ KEPCHUP_DASHBOARD_SHOW_FAMILY_STATS = True
 
 KEPCHUP_ACTIVATE_NYON_MARENS = False
 KEPCHUP_NYON_MARENS_EMAIL_RECIPIENTS = ADMINS
+
+
+IMPERSONATE = {
+    "USE_HTTP_REFERER": True,
+    "CUSTOM_ALLOW": "profiles.utils.can_impersonate",
+}

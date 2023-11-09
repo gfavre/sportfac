@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 3.5.0 - 2023-11-09
+### Added
+- Impersonation of users
+
+### Changed
+- Postfinance webhooks are now saved
+- Add failure view rather than redirecto to payment
+
+### Fixed
+- Multi save of extra forms
+- Improve autocancel to use invoices instead of registrations
+- Next button in wizard if multiple extra questions available
+- Use local time in appoitments
+
+
 ## 3.4.2 - 2023-11-03
 ### Added
 - Display (and search) of phone numbers in user list
@@ -15,7 +30,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Make AVS uneditable for Montreux
 - Make base fields required on user form
 - Appointment message less misleading
-
 
 ### Fixed
 - Instructor form in wizard now displays date selector widget

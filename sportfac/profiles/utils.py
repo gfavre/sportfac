@@ -27,6 +27,12 @@ def get_street_and_number(address: str) -> (str, str):
     return address, street_number or ""
 
 
+def can_impersonate(request):
+    if not request.user.is_authenticated:
+        return False
+    return request.user.is_superuser or request.user.is_staff or request.user.is_manager
+
+
 # TODO: MOVE THIS TO TESTS
 test = """
 # Example usage:
