@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from .models import Appointment, AppointmentSlot, AppointmentType
@@ -14,14 +15,14 @@ class AppointmentSlotAdmin(admin.ModelAdmin):
         ordering="start",
     )
     def formatted_start(self, obj):
-        return obj.start.strftime("%d.%m.%Y %H:%M")
+        return timezone.localtime(obj.start).strftime("%d.%m.%Y %H:%M")
 
     @admin.display(
         description=_("End"),
         ordering="end",
     )
     def formatted_end(self, obj):
-        return obj.end.strftime("%d.%m.%Y %H:%M")
+        return timezone.localtime(obj.end).strftime("%d.%m.%Y %H:%M")
 
 
 @admin.register(Appointment)

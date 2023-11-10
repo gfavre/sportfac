@@ -1,3 +1,5 @@
+import logging
+
 from profiles.models import SchoolYear
 from registrations.models import ExtraInfo, Registration
 from rest_framework import status, viewsets
@@ -13,6 +15,9 @@ from ..serializers import (
     TeacherSerializer,
     YearSerializer,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 class BuildingViewSet(viewsets.ReadOnlyModelViewSet):
@@ -38,15 +43,19 @@ class ExtraInfoViewSet(viewsets.ModelViewSet):
         for key, value in request.data.items():
             if key.startswith("extra-") and value:
                 data = base_data.copy()
-                data["key"] = key.split("-")[1]
-                data["value"] = value
-                if request.data.get("image", None):
-                    data["image"] = request.data.get("image")
+                try:
+                    data["key"] = key.split("-")[1]
+                    data["value"] = value
+                    if request.data.get("image", None):
+                        data["image"] = request.data.get("image")
 
-                serializer = self.get_serializer(data=data)
-                serializer.is_valid(raise_exception=True)
-                self.perform_create(serializer)
-                output.append(serializer.data)
+                    serializer = self.get_serializer(data=data)
+                    serializer.is_valid(raise_exception=True)
+                    self.perform_create(serializer)
+                    output.append(serializer.data)
+                except Exception as e:
+                    logger.error(f"error with extra infos {data}", exc_info=e)
+                    continue
 
         return Response(output, status=status.HTTP_201_CREATED)
 
