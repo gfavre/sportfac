@@ -33,20 +33,7 @@ DAYS_OF_WEEK = (
     (7, _("Sunday")),
 )
 
-SCHOOL_YEARS = (
-    (1, _("1P")),
-    (2, _("2P")),
-    (3, _("3P")),
-    (4, _("4P")),
-    (5, _("5P")),
-    (6, _("6P")),
-    (7, _("7P")),
-    (8, _("8P")),
-    (9, _("9S")),
-    (10, _("10S")),
-    (11, _("11S")),
-    (12, _("12S")),
-)
+SCHOOL_YEARS = settings.KEPCHUP_YEAR_NAMES.items()
 
 AGES = Choices(*[(age, f"a{age}", _("%i years old") % age) for age in settings.KEPCHUP_AGES])
 

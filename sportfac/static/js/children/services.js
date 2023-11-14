@@ -9,13 +9,13 @@ angular.module('sportfacChildren.services', [])
         });
       }
     };
-        
+
     var ModelUtils = {
         get: function(url, id){
           return $http.get(url + id + '/').then(function(response){
             return response.data;
           });
-          
+
         },
         create: function(url, obj, errors){
           return $http.post(url, obj).
@@ -47,12 +47,15 @@ angular.module('sportfacChildren.services', [])
 }])
 
 .factory('Child', ['$filter', function($filter){
-    var Child = function(data){
+    let Child = function(data){
       angular.extend(this, {
         toModel: function(){
-          var converted = angular.copy(this);
+          let converted = angular.copy(this);
           if (converted.teacher && typeof converted.teacher === 'object'){
             converted.teacher = converted.teacher.id;
+          }
+          if (converted.school_year && typeof converted.school_year === 'object') {
+            converted.school_year = converted.school_year.year;
           }
           if (typeof converted.birth_date === 'object'){
             converted.birth_date = $filter('date')(converted.birth_date, 'yyyy-MM-dd');
@@ -60,7 +63,7 @@ angular.module('sportfacChildren.services', [])
           return converted;
         }
       });
-      
+
       angular.extend(this, data);
     };
     return Child;
@@ -128,6 +131,6 @@ angular.module('sportfacChildren.services', [])
           }
         }
     };
-    
+
     return ModelUtils;
   }]);

@@ -41,7 +41,6 @@ DEBUG = env.bool("DEBUG", default=False)
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#admins
 ADMINS = (("Gregory Favre", "gregory.favre@gmail.com"),)
 
-
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
 # END MANAGER CONFIGURATION
@@ -69,7 +68,6 @@ TENANT_MODEL = "backend.YearTenant"  # app.Model
 TENANT_DOMAIN_MODEL = "backend.Domain"  # app.Model
 TENANT_CREATION_FAKES_MIGRATIONS = False
 VERSION_SESSION_NAME = "period"
-
 
 # END DATABASE CONFIGURATION
 
@@ -125,7 +123,6 @@ STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
 )
 
-
 # END STATIC FILE CONFIGURATION
 
 
@@ -174,7 +171,6 @@ TEMPLATES = [
         },
     },
 ]
-
 
 # END TEMPLATE CONFIGURATION
 
@@ -247,7 +243,6 @@ SHARED_APPS = (
     "django_select2",  # select2 form input
 )
 
-
 TENANT_APPS = (
     "absences",
     "activities",
@@ -310,7 +305,6 @@ MESSAGE_TAGS = {
     messages.WARNING: "alert-warning",
     messages.ERROR: "alert-danger",
 }
-
 
 # END WSGI CONFIGURATION
 
@@ -382,7 +376,6 @@ DATE_INPUT_FORMATS = [
     "%d %B, %Y",  # '25 October 2006', '25 October, 2006'
 ]
 
-
 # USER and REGISTRATION
 AUTH_USER_MODEL = "profiles.FamilyUser"
 REGISTRATION_OPEN = True
@@ -452,7 +445,6 @@ CKEDITOR_BROWSE_SHOW_DIRS = True
 CKEDITOR_IMAGE_BACKEND = "pillow"
 X_FRAME_OPTIONS = "SAMEORIGIN"
 
-
 CACHES = {
     # … default cache config and others
     "default": {
@@ -466,7 +458,6 @@ SELECT2_CACHE_BACKEND = "default"
 
 # Select2
 AUTO_RENDER_SELECT2_STATICS = False
-
 
 # Celery
 # Asynchrnous tasks.
@@ -486,10 +477,8 @@ PHANTOMJSCLOUD_APIKEY = env("PHANTOMJSCLOUD_APIKEY")
 
 DBTEMPLATES_USE_CODEMIRROR = True
 
-
 # Phonenumbers
 PHONENUMBER_DEFAULT_REGION = "CH"
-
 
 # Crispy
 CRISPY_TEMPLATE_PACK = "bootstrap3"
@@ -520,7 +509,6 @@ BOOTSTRAP_DATEPICKER_PLUS = {
         },
     },
 }
-
 
 #
 # Kepchup Options
@@ -622,7 +610,21 @@ KEPCHUP_DISPLAY_LAGAPEO = False
 KEPCHUP_CAN_DELETE_CHILD = True
 # Blacklist to block children from registering
 KEPCHUP_USE_BLACKLISTS = False
-
+# Years
+KEPCHUP_YEAR_NAMES = {
+    1: "1P",
+    2: "2P",
+    3: "3P",
+    4: "4P",
+    5: "5P",
+    6: "6P",
+    7: "7P",
+    8: "8P",
+    9: "9S",
+    10: "10S",
+    11: "11S",
+    12: "12R",
+}
 # Activities
 #
 
@@ -648,7 +650,6 @@ KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS = []
 # If true: do not send E_SSF_decompte_heures_%s_%s.pdf to instructors
 KEPCHUP_NO_SSF = False
 
-
 warnings.filterwarnings("ignore", module="floppyforms", message="Unable to import floppyforms.gis.*")
 
 # Single Sign On
@@ -673,7 +674,6 @@ DATATRANS_PAYMENT_METHODS = env.list("DATATRANS_PAYMENT_METHODS", default=["TWI"
 DATATRANS_USER = env.str("DATATRANS_USER", default="")
 DATATRANS_PASSWORD = env.str("DATATRANS_PASSWORD", default="")
 
-
 POSTFINANCE_SPACE_ID = env.int("POSTFINANCE_SPACE_ID", default="")
 POSTFINANCE_USER_ID = env.int("POSTFINANCE_USER_ID", default="")
 POSTFINANCE_API_SECRET = env.str("POSTFINANCE_API_SECRET", default="")
@@ -685,7 +685,6 @@ KEPCHUP_DASHBOARD_SHOW_FAMILY_STATS = True
 
 KEPCHUP_ACTIVATE_NYON_MARENS = False
 KEPCHUP_NYON_MARENS_EMAIL_RECIPIENTS = ADMINS
-
 
 IMPERSONATE = {
     "USE_HTTP_REFERER": True,

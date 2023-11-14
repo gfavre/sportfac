@@ -394,10 +394,7 @@ class SchoolYear(models.Model):
     visible_objects = VisibleYearManager()
 
     def __str__(self):
-        try:
-            return str(dict(SCHOOL_YEARS)[self.year])
-        except KeyError:
-            return str(self.year)
+        return settings.KEPCHUP_YEAR_NAMES.get(self.year, str(self.year))
 
     class Meta:
         verbose_name = _("School year")

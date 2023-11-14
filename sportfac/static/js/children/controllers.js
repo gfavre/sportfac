@@ -50,7 +50,7 @@ function($scope, $attrs, $routeParams, $http, ChildrenService) {
 
   $scope.loadYears = function(){
     $http.get($scope.urls.year).success(function(data, status, headers, config ){
-        $scope.years = data.map(function(year){ return year.year; });
+        $scope.years = data;
     });
   };
 
@@ -77,22 +77,6 @@ function($scope, $attrs, $routeParams, $http, ChildrenService) {
         $scope.selectedChild.selected = false;
     }
     $scope.selectedChild = undefined;
-  };
-
-  $scope.toHarmos = function(year) {
-    return {1: "1P",
-            2: "2P",
-            3: "3P",
-            4: "4P",
-            5: "5P",
-            6: "6P",
-            7: "7P",
-            8: "8P",
-            9: "9S",
-            10: "10S",
-            11: "11S",
-            12: "12R"}[year];
-
   };
 }])
 
