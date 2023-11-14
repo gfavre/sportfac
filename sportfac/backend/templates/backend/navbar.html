@@ -46,6 +46,13 @@
                 <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New course" %}
               </a>
             </li>
+            <li>
+              <a href="{% url 'backend:courses-export' %}">
+                <i class="icon-file-excel"></i>
+                &nbsp;&nbsp;{% trans "Export courses" %}
+              </a>
+            </li>
+
 
             {% if ENABLE_PAYROLLS %}
               <li class="divider"></li>

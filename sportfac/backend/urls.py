@@ -46,6 +46,7 @@ allocations_patterns = [
 courses_patterns = [
     path("", view=views.CourseListView.as_view(), name="course-list"),
     path("absences", view=views.CoursesAbsenceView.as_view(), name="courses-absence"),
+    path("export/xlsx", view=views.CoursesExportView.as_view(), name="courses-export"),
     path("new", view=views.CourseCreateView.as_view(), name="course-create"),
     path("mail-confirmation", view=views.MailConfirmationCoursesView.as_view(), name="courses-mail-confirmation"),
     path("mail-instructors", view=views.MailInstructorsCoursesView.as_view(), name="courses-mail-instructors"),

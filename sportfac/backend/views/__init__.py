@@ -18,6 +18,7 @@ from .course_views import CourseListView  # noqa F401
 from .course_views import CourseParticipantsExportView  # noqa F401
 from .course_views import CourseParticipantsView  # noqa F401
 from .course_views import CoursesAbsenceView  # noqa F401
+from .course_views import CoursesExportView  # noqa F401
 from .course_views import CourseUpdateView  # noqa F401
 from .course_views import PaySlipMontreux  # noqa F401
 from .dashboard_views import HomePageView, RegistrationDatesView  # noqa F401
