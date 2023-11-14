@@ -20,6 +20,7 @@ from absences.models import Absence, Session
 from absences.utils import closest_session
 from activities.forms import CourseForm, ExplicitDatesCourseForm, PaySlipForm
 from activities.models import Activity, Course, ExtraNeed
+from activities.resources import CourseResource
 from profiles.models import FamilyUser
 from registrations.models import ChildActivityLevel, ExtraInfo
 from registrations.resources import RegistrationResource
@@ -380,6 +381,16 @@ class CourseListView(BackendMixin, ListView):
         if self.request.PHASE == 1:
             return "backend/course/list-phase1.html"
         return "backend/course/list.html"
+
+
+class CoursesExportView(BackendMixin, ExcelResponseMixin, View):
+    filename = _("courses")
+
+    def get_resource(self):
+        return CourseResource()
+
+    def get(self, request, *args, **kwargs):
+        return self.render_to_response()
 
 
 class CourseParticipantsExportView(BackendMixin, SingleObjectMixin, ExcelResponseMixin, View):
