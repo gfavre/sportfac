@@ -27,7 +27,20 @@ KEPCHUP_ZIPCODE_RESTRICTION = [
 KEPCHUP_CHILD_SCHOOL = False
 KEPCHUP_ENABLE_TEACHER_MANAGEMENT = True
 KEPCHUP_EMERGENCY_NUMBER_MANDATORY = True
-
+KEPCHUP_YEAR_NAMES = {
+    1: "1H",
+    2: "2H",
+    3: "3H",
+    4: "4H",
+    5: "5H",
+    6: "6H",
+    7: "7H",
+    8: "8H",
+    9: "9H",
+    10: "10H",
+    11: "11H",
+    12: "12H",
+}
 # LAGAPEO
 KEPCHUP_IMPORT_CHILDREN = False
 KEPCHUP_DISPLAY_LAGAPEO = False

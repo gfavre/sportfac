@@ -195,9 +195,15 @@ class TeacherSerializer(serializers.ModelSerializer):
 
 
 class YearSerializer(serializers.ModelSerializer):
+    label = serializers.SerializerMethodField()
+
     class Meta:
         model = SchoolYear
-        fields = ("year",)
+        fields = ("year", "label")
+
+    # noinspection PyMethodMayBeStatic
+    def get_label(self, obj):
+        return str(obj)
 
 
 class SimpleChildrenSerializer(serializers.ModelSerializer):
