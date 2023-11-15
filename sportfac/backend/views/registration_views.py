@@ -411,6 +411,7 @@ class BillUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
             self.object.close()
         else:
             self.object.status = form.cleaned_data["status"]
+        self.object.payment_method = form.cleaned_data["payment_method"]
         self.object.save(force_status=True)
         return HttpResponseRedirect(self.get_success_url())
 

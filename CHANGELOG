@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - new setting KEPCHUP_YEAR_NAMES to override the default year names
 - Export of courses to excel format
 
+### Changed
+- payment method is now modifiable and exported in the registrations export
 
 ## 3.5.0 - 2023-11-09
 ### Added

@@ -369,6 +369,7 @@ class Bill(TimeStampedModel, StatusModel):
         ("iban", _("Later with wire transfer")),
         ("datatrans", _("immediate with credit card (datatrans)")),
         ("postfinance", _("immediate with credit card (postfinance)")),
+        ("external", _("External invoice")),
     )
     STATUS = Choices(
         ("just_created", _("Just created")),

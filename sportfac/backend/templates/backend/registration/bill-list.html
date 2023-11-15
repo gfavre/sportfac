@@ -136,12 +136,14 @@ $(function () {
       <td data-order="{{ bill.created|date:'c' }}">{{ bill.created|date:"SHORT_DATE_FORMAT" }}</td>
       <td data-order="{{ bill.family.last_name}} {{ bill.family.first_name}}"><a href="{{ family.get_backend_url }}">{{ bill.family.full_name }}</a></td>
       <td data-order="{{ bill.total }}">{{ bill.total|money }}</td>
-      <td data-order="{{ bill.is_ok }}" data-search="{% if bill.is_ok %}{% trans 'paid' %}{% endif %}">
+      <td data-order="{{ bill.is_ok }}" data-search="{% if bill.is_ok %}{% trans 'paid' %}{% endif %} {{ bill.get_payment_method_display }}">
         {% if bill.is_ok %}
         <i class="icon-ok-circled success"></i>
         {% else %}
         <i class="icon-cancel-circled danger"></i>
         {% endif %}
+      <br>
+        {{ bill.get_payment_method_display }}
       </td>
       <td>
         <ul class="list-unstyled">

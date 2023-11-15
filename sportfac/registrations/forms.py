@@ -14,16 +14,24 @@ from schools.models import Building, Teacher
 from .models import Bill, Child, Registration, Transport
 
 
+AVAILABLE_PAYMENT_METHODS = [
+    (method, label)
+    for (method, label) in Bill.METHODS
+    if method in settings.KEPCHUP_ALTERNATIVE_PAYMENT_METHODS_FROM_BACKEND or method == settings.KEPCHUP_PAYMENT_METHOD
+]
+
+
 class EmptyForm(forms.Form):
     pass
 
 
 class BillForm(forms.ModelForm):
     status = forms.ChoiceField(choices=list(Bill.STATUS)[1:])
+    payment_method = forms.ChoiceField(choices=AVAILABLE_PAYMENT_METHODS, required=False)
 
     class Meta:
         model = Bill
-        fields = ("status",)
+        fields = ("status", "payment_method")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

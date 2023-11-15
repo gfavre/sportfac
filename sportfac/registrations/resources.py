@@ -27,6 +27,7 @@ class RegistrationResource(resources.ModelResource):
     activity = fields.Field(attribute="course__activity__name", column_name=_("Activity"))
     course = fields.Field(attribute="course__number", column_name=_("Course"))
     price = fields.Field(attribute="course__price", column_name=_("Price"))
+    payment_method = fields.Field(attribute="bill__payment_method", column_name=_("Payment method"))
     first_name = fields.Field(attribute="child__first_name", column_name=_("First name"))
     last_name = fields.Field(attribute="child__last_name", column_name=_("Last name"))
     child_id = fields.Field(attribute="child", column_name=_("Child identifier"))
@@ -56,6 +57,7 @@ class RegistrationResource(resources.ModelResource):
             "course",
             "price",
             "paid",
+            "payment_method",
             "invoice_identifier",
             "bib_number",
             "transport",
@@ -102,6 +104,7 @@ class RegistrationResource(resources.ModelResource):
             del self.fields["transport"]
         if settings.KEPCHUP_NO_PAYMENT:
             del self.fields["paid"]
+            del self.fields["payment_method"]
             del self.fields["invoice_identifier"]
 
     def dehydrate_child_id(self, obj):
