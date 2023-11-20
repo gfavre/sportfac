@@ -58,14 +58,25 @@ class AppointmentSlot(TimeStampedModel):
 
 
 class Appointment(TimeStampedModel):
-    slot = models.ForeignKey("AppointmentSlot", on_delete=models.CASCADE, related_name="appointments")
-    child = models.ForeignKey("registrations.Child", on_delete=models.CASCADE, related_name="appointment")
+    slot = models.ForeignKey(
+        "AppointmentSlot", verbose_name=_("Appointment slot"), on_delete=models.CASCADE, related_name="appointments"
+    )
+    child = models.ForeignKey(
+        "registrations.Child", verbose_name=_("Child"), on_delete=models.CASCADE, related_name="appointment"
+    )
     family = models.ForeignKey(
-        "profiles.FamilyUser", null=True, on_delete=models.SET_NULL, related_name="appointments"
+        "profiles.FamilyUser",
+        verbose_name=_("Family"),
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="appointments",
+        blank=True,
     )
     email = models.CharField(_("Email"), blank=True, null=True, max_length=255)
     phone_number = PhoneNumberField(_("Phone number"), max_length=30, blank=True)
-    appointment_type = models.ForeignKey("AppointmentType", null=True, blank=True, on_delete=models.SET_NULL)
+    appointment_type = models.ForeignKey(
+        "AppointmentType", verbose_name=_("Appointment type"), null=True, blank=True, on_delete=models.SET_NULL
+    )
 
     class Meta:
         verbose_name = _("Appointment")
@@ -75,6 +86,11 @@ class Appointment(TimeStampedModel):
     @property
     def get_backend_delete_url(self):
         return reverse("backend:appointment-delete", kwargs={"appointment": self.pk})
+
+    def save(self, *args, **kwargs):
+        if self.child and not self.family:
+            self.family = self.child.family
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return "{} - {}".format(self.child, self.slot.start.strftime("%d.%m.%Y - %Hh%M"))

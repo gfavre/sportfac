@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.safestring import mark_safe
@@ -94,11 +93,6 @@ class RegistrationAdmin(SportfacAdminMixin, ImportExportModelAdmin):
         qs = self.model._default_manager.all_with_deleted()
         return qs.select_related("course", "course__activity", "child", "transport")
 
-    def get_actions(self, request):
-        actions = super(RegistrationAdmin, self).get_actions(request)
-        del actions["delete_selected"]
-        return actions
-
 
 @admin.register(RegistrationsProfile)
 class RegistrationsProfileAdmin(SportfacModelAdmin):
@@ -171,8 +165,9 @@ class BillAdmin(SportfacModelAdmin):
     inlines = [RegistrationInline]
 
     def get_queryset(self, request):
-        return super(BillAdmin, self).get_queryset(request).select_related("family")
+        return super().get_queryset(request).select_related("family")
 
+    @admin.display(description=_("Family"))
     def get_family(self, obj):
         return mark_safe(
             '<a href="{}">{}</a>'.format(
@@ -180,8 +175,6 @@ class BillAdmin(SportfacModelAdmin):
                 obj.family.full_name,
             )
         )
-
-    get_family.short_description = _("Family")
 
 
 @admin.register(Transport)

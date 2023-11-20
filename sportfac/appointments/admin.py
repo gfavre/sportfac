@@ -29,6 +29,15 @@ class AppointmentSlotAdmin(admin.ModelAdmin):
 class AppointmentAdmin(admin.ModelAdmin):
     list_display = ("slot", "child")
     raw_id_fields = ("slot", "child", "family")
+    search_fields = (
+        "child__first_name",
+        "child__last_name",
+        "child__id_lagapeo",
+        "child__family__first_name",
+        "child__family__last_name",
+    )
+    date_hierarchy = "slot__start"
+    list_filter = ("appointment_type",)
 
 
 @admin.register(AppointmentType)
