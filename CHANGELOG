@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 3.5.2 - 2023-11-20
 ### Changed
 - Appointment admin is now searchable and filterable. Not required fields are effectively not required.
+- Restrict children list to children requiring appointments
 
 ## 3.5.1 - 2023-11-14
 ### Added

@@ -6,7 +6,9 @@
     <h4>{{ label }}</h4>
     <ul style="margin-bottom: 2em">
   {% for date in dates %}
-    <li><a class="calendar-change" data-date="{{ date|date:'c'}}" href="#">{{ date | date:'d.m.Y' }}</a></li>
+    <li>
+      <a class="calendar-change" data-date="{{ date|date:'c'}}" href="#calendar">{{ date | date:'d.m.Y' }}</a>
+    </li>
   {% endfor %}
 </ul>
   </div>
@@ -57,7 +59,7 @@
       calendar.render();
 
       $('.calendar-change').on('click', function(e) {
-        e.preventDefault();
+        //e.preventDefault();
         calendar.gotoDate($(this).data('date'));
       });
 
@@ -146,7 +148,7 @@
             <div class="children">
               <p class="alert alert-warning hidden" id="warning-children"><i class="icon-warning"></i> {% trans "Please select at least one child" %}</p>
               {% if request.user and request.user.children %}
-                {% for child in request.user.children.all %}
+                {% for child in request.user.children_who_can_take_appointments %}
                   <div class="checkbox">
                     <label>
                       <input type="checkbox" value="{{ child.id }}" name="children" {% if child.montreux_needs_appointment %}checked="checked"{% endif %}>
@@ -157,6 +159,7 @@
                 {% endfor %}
               {% endif %}
             </div>
+            {% if APPOINTMENTS_WITHOUT_WIZARD %}
             <hr>
             <div class="form-group">
               <label class="control-label col-sm-4" for="id_email">{% trans "Add child" %}</label>
@@ -171,6 +174,7 @@
                 </div>
               </div>
             </div>
+            {% endif %}
             <hr>
             <div class="form-group">
               <label class="control-label col-sm-2" for="id_email">{% trans "E-mail" %}<span

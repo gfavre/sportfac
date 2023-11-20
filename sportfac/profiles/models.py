@@ -181,6 +181,12 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         return ", ".join([str(child) for child in self.children.all()])
 
     @property
+    def children_who_can_take_appointments(self):
+        if settings.KEPCHUP_APPOINTMENTS_WITHOUT_WIZARD:
+            return self.children.all()
+        return [child for child in self.children.all() if child.montreux_needs_appointment]
+
+    @property
     def course_names(self):
         return ", ".join([str(ci.course.short_name) for ci in self.coursesinstructors_set.all()])
 
