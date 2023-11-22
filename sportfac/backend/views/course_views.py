@@ -153,6 +153,20 @@ class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
         return response  # noqa: R504
 
 
+class CoursesToggleVisibilityView(BackendMixin, View):
+    def get_queryset(self):
+        courses_pk = [int(pk) for pk in self.request.POST.getlist("c") if pk.isdigit()]
+        return Course.objects.filter(pk__in=courses_pk)
+
+    def post(self, *args, **kwargs):
+        courses = self.get_queryset()
+        for course in courses:
+            course.visible = not course.visible
+            course.save()
+        messages.info(self.request, _("Courses visibility has been toggled, %s courses changed.") % courses.count())
+        return HttpResponseRedirect(reverse("backend:course-list"))
+
+
 class CourseAbsenceView(BackendMixin, DetailView):
     model = Course
     template_name = "backend/course/absences.html"

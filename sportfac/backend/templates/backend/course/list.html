@@ -60,7 +60,7 @@
 
         {% if USE_ABSENCES %}
           $('form.absences').submit(function (event) {
-            var ids = table.rows({selected: true}).nodes().map(function (elem) {
+            let ids = table.rows({selected: true}).nodes().map(function (elem) {
               return $(elem).data('courseid');
             });
             for (var i = 0; i < ids.length; i++) {
@@ -69,7 +69,7 @@
           });
         {% endif %}
         $('form.convocations').submit(function (event) {
-          var ids = table.rows({selected: true}).nodes().map(function (elem) {
+          let ids = table.rows({selected: true}).nodes().map(function (elem) {
             return $(elem).data('courseid');
           });
           for (var i = 0; i < ids.length; i++) {
@@ -78,13 +78,23 @@
         });
 
         $('form.instructors').submit(function (event) {
-          var ids = table.rows({selected: true}).nodes().map(function (elem) {
+          let ids = table.rows({selected: true}).nodes().map(function (elem) {
             return $(elem).data('courseid');
           });
           for (var i = 0; i < ids.length; i++) {
             $(this).append($('<input name="c" value="' + ids[i] + '" type="hidden">'))
           }
         });
+
+        $('form.visibility').submit(function (event) {
+          let ids = table.rows({selected: true}).nodes().map(function (elem) {
+            return $(elem).data('courseid');
+          });
+          for (var i = 0; i < ids.length; i++) {
+            $(this).append($('<input name="c" value="' + ids[i] + '" type="hidden">'))
+          }
+        });
+
 
       });
     </script>
@@ -109,7 +119,7 @@
           action="{% url 'backend:courses-mail-confirmation' %}">
 
       <button type="submit" class="btn btn-secondary needs-select disabled">
-        <i class="icon-mail"></i>&nbsp;{% trans "Send convocation email" %}
+        <i class="icon-mail"></i>&nbsp;{% trans "Convocation email" %}
       </button>
     </form>
   </div>
@@ -118,10 +128,20 @@
           action="{% url 'backend:courses-mail-instructors' %}">
 
       <button type="submit" class="btn btn-secondary needs-select disabled">
-        <i class="icon-tasks"></i>&nbsp;{% trans "Send infos to instructors" %}
+        <i class="icon-tasks"></i>&nbsp;{% trans "Infos to instructors" %}
       </button>
     </form>
   </div>
+  <div class="btn-group">
+    <form class="visibility" method="POST"
+          action="{% url 'backend:courses-toggle-visibility' %}">{% csrf_token %}
+
+      <button type="submit" class="btn btn-secondary needs-select disabled">
+        <i class="icon-eye-off"></i>&nbsp;{% trans "Toggle visibility" %}
+      </button>
+    </form>
+  </div>
+
 
 
   <hr>

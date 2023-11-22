@@ -50,6 +50,7 @@ courses_patterns = [
     path("new", view=views.CourseCreateView.as_view(), name="course-create"),
     path("mail-confirmation", view=views.MailConfirmationCoursesView.as_view(), name="courses-mail-confirmation"),
     path("mail-instructors", view=views.MailInstructorsCoursesView.as_view(), name="courses-mail-instructors"),
+    path("visibility", view=views.CoursesToggleVisibilityView.as_view(), name="courses-toggle-visibility"),
     path("<slug:course>/", view=views.CourseDetailView.as_view(), name="course-detail"),
     path(
         "<slug:course>/export",
