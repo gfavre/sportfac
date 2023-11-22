@@ -4,6 +4,11 @@ from django import template
 register = template.Library()
 
 
+@register.filter
+def is_image(filename):
+    return filename.lower().endswith((".png", ".jpg", ".jpeg", ".gif", ".svg"))
+
+
 @register.filter(is_safe=True)
 def answer_to(registration, question):
     if question.isdigit():

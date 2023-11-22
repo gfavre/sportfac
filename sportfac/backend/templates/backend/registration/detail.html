@@ -1,5 +1,5 @@
 {% extends "backend/base.html" %}
-{% load i18n switzerland %}
+{% load i18n switzerland extra %}
 
 {% block title %}{% trans "Registration details" %}{% endblock %}
 {% block page_title %}{% trans "Registration details" %}{% endblock %}
@@ -79,7 +79,7 @@
               </span>
             {% if extra.is_true and extra.image %}
               <div>
-              {% if extra.image.url.lower|endswith:".jpg" or extra.image.url.lower|endswith:".jpeg" or extra.image.url.lower|endswith:".png" or extra.image.url.lower|endswith:".gif" %}
+              {% if extra.image.url|is_image %}
                 <img src="{{ extra.image.url }}" class="img-responsive">
               {% else %}
                 <a href="{{ extra.image.url }}" download>{% trans "download" %}</a>
