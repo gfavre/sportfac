@@ -753,10 +753,12 @@ class Child(TimeStampedModel, StatusModel):
 
     @property
     def montreux_needs_appointment(self):
-        for registration in self.registrations.all():
-            if registration.extra_infos.filter(key__question_label__contains="matériel", value="OUI").exists():
-                return True
-        return False
+        from activities.models import ExtraNeed
+
+        material_needs = ExtraNeed.objects.filter(question_label__icontains="matériel")
+        return self.registrations.filter(
+            extra_infos__key__in=material_needs, extra_infos__value__in=["OUI", 1, "1"]
+        ).exists()
 
     @property
     def ordering_name(self):
