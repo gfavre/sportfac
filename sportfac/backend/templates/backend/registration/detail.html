@@ -79,7 +79,10 @@
               </span>
             {% if extra.is_true and extra.image %}
               <div>
+              {% if extra.image.url.lower|endswith:".jpg" or extra.image.url.lower|endswith:".jpeg" or extra.image.url.lower|endswith:".png" or extra.image.url.lower|endswith:".gif" %}
                 <img src="{{ extra.image.url }}" class="img-responsive">
+              {% else %}
+                <a href="{{ extra.image.url }}" download>{% trans "download" %}</a>
               </div>
             {% endif %}
           {% else %}
