@@ -14,22 +14,20 @@
           href="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.css"/>
   {% endaddtoblock %}
   {% addtoblock "js" %}
-
     <script type="text/javascript"
             src="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.js"></script>
 
     <script>
       $(function () {
-        var table = $('.table').DataTable({
+        let table = $('.table').DataTable({
           {% if LANGUAGE_CODE == 'fr' %}
             language: {
               url: "{{ STATIC_URL }}js/vendor/datatables/French.json"
             },
           {% endif %}
-            /*dom: 'T<"clear">Blfrtip',*/
-            select: {
-              style: 'multi'
-            },
+          select: {
+            style: 'multi'
+          },
           aoColumnDefs: [
             {'bSortable': false, 'bSearchable': false, 'aTargets': [-1]}
           ],
@@ -39,7 +37,7 @@
           $('.needs-select').removeClass('disabled');
         });
         table.on('deselect', function () {
-          if (table.rows({selected: true}).count() == 0) {
+          if (table.rows({selected: true}).count() === 0) {
             $('.needs-select').addClass('disabled');
           }
         });
@@ -58,44 +56,29 @@
           }
         });
 
+        let createHiddenIDInputs = function($form) {
+          table.rows({selected: true}).nodes().each(function() {
+            let id = $(this).data('courseid');
+            $form.append(`<input name="c" value="${id}" type="hidden">`);
+          });
+        };
+
         {% if USE_ABSENCES %}
-          $('form.absences').submit(function (event) {
-            let ids = table.rows({selected: true}).nodes().map(function (elem) {
-              return $(elem).data('courseid');
-            });
-            for (var i = 0; i < ids.length; i++) {
-              $(this).append($('<input name="c" value="' + ids[i] + '" type="hidden">'))
-            }
+          $('form.absences').submit(function() {
+            createHiddenIDInputs($(this));
           });
         {% endif %}
-        $('form.convocations').submit(function (event) {
-          let ids = table.rows({selected: true}).nodes().map(function (elem) {
-            return $(elem).data('courseid');
-          });
-          for (var i = 0; i < ids.length; i++) {
-            $(this).append($('<input name="c" value="' + ids[i] + '" type="hidden">'))
-          }
+        $('form.convocations').submit(function() {
+            createHiddenIDInputs($(this));
         });
 
-        $('form.instructors').submit(function (event) {
-          let ids = table.rows({selected: true}).nodes().map(function (elem) {
-            return $(elem).data('courseid');
-          });
-          for (var i = 0; i < ids.length; i++) {
-            $(this).append($('<input name="c" value="' + ids[i] + '" type="hidden">'))
-          }
+        $('form.instructors').submit(function() {
+          createHiddenIDInputs($(this));
         });
 
-        $('form.visibility').submit(function (event) {
-          let ids = table.rows({selected: true}).nodes().map(function (elem) {
-            return $(elem).data('courseid');
-          });
-          for (var i = 0; i < ids.length; i++) {
-            $(this).append($('<input name="c" value="' + ids[i] + '" type="hidden">'))
-          }
+        $('form.visibility').submit(function() {
+            createHiddenIDInputs($(this));
         });
-
-
       });
     </script>
   {% endaddtoblock %}
@@ -104,45 +87,42 @@
     <i class="icon-plus"></i> {% trans "New course" %}
   </a>
   <hr>
+
   {% if USE_ABSENCES %}
-
     <div class="btn-group">
-
       <form class="absences" method="GET" action="{% url 'backend:courses-absence' %}">
         <button type="submit" class="btn btn-secondary needs-select disabled"><i
             class="icon-calendar"></i>&nbsp;&nbsp;{% trans "Manage multiple courses absences" %}</button>
       </form>
     </div>
   {% endif %}
+
   <div class="btn-group">
     <form class="convocations" method="GET"
           action="{% url 'backend:courses-mail-confirmation' %}">
-
       <button type="submit" class="btn btn-secondary needs-select disabled">
         <i class="icon-mail"></i>&nbsp;{% trans "Convocation email" %}
       </button>
     </form>
   </div>
+
   <div class="btn-group">
     <form class="instructors" method="GET"
           action="{% url 'backend:courses-mail-instructors' %}">
-
       <button type="submit" class="btn btn-secondary needs-select disabled">
         <i class="icon-tasks"></i>&nbsp;{% trans "Infos to instructors" %}
       </button>
     </form>
   </div>
+
   <div class="btn-group">
     <form class="visibility" method="POST"
           action="{% url 'backend:courses-toggle-visibility' %}">{% csrf_token %}
-
       <button type="submit" class="btn btn-secondary needs-select disabled">
         <i class="icon-eye-off"></i>&nbsp;{% trans "Toggle visibility" %}
       </button>
     </form>
   </div>
-
-
 
   <hr>
   <div>
@@ -175,7 +155,7 @@
     </tr>
     </thead>
     {% for course in object_list %}
-      <tr {% if not course.visible %}class="info"{% elif course.has_issue %}class="danger"{% endif %}
+      <tr class="{% if not course.visible %}info{% elif course.has_issue %}danger{% endif %}"
           data-courseid="{{ course.id }}">
         <td data-order="{{ course.number }}">
           <a href="{{ course.get_backend_url }}">{{ course.number }}</a>
@@ -228,7 +208,6 @@
             </strong>
           {% else %}
             {{ course.count_participants }}&nbsp;/&nbsp;{{ course.max_participants }}
-
           {% endif %}
         </td>
         <td data-order="{{ course.announced_js }}"
@@ -246,25 +225,40 @@
         </td>
         <td>
           <ul class="list-unstyled">
-            <li class="text-nowrap"><a href="{{ course.get_backend_url }}" class="btn btn-sm"><i class="icon-check"></i>&nbsp;{% trans "Check registrations" %}
+            <li class="text-nowrap">
+              <a href="{{ course.get_backend_url }}" class="btn btn-sm">
+                <i class="icon-check"></i>&nbsp;{% trans "Check registrations" %}
             </a></li>
             {% if USE_ABSENCES %}
-              <li class="text-nowrap"><a href="{{ course.get_backend_absences_url }}" class="btn btn-sm"><i
-                  class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}</a></li>
+              <li class="text-nowrap">
+                <a href="{{ course.get_backend_absences_url }}" class="btn btn-sm">
+                  <i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}
+                </a>
+              </li>
             {% endif %}
-            <li class="text-nowrap"><a href="{{ course.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update course" %}
-            </a></li>
+            <li class="text-nowrap">
+              <a href="{{ course.get_update_url }}" class="btn btn-sm">
+                <i class="icon-edit"></i>&nbsp;{% trans "Update course" %}
+              </a>
+            </li>
 
-            <li class="text-nowrap"><a href="{{ course.get_duplicate_url }}" class="btn btn-sm"><i
-                class="icon-docs"></i>&nbsp;{% trans "Duplicate course" %}</a></li>
+            <li class="text-nowrap">
+              <a href="{{ course.get_duplicate_url }}" class="btn btn-sm">
+                <i class="icon-docs"></i>&nbsp;{% trans "Duplicate course" %}
+              </a>
+            </li>
             {% if not course.is_camp %}
-              <li class="text-nowrap"><a href="{{ course.get_js_export_url }}" class="btn btn-sm"><i
-                  class="icon-doc"></i>&nbsp;{% trans "Get BDNS: J+S export file" %}</a></li>
+              <li class="text-nowrap">
+                <a href="{{ course.get_js_export_url }}" class="btn btn-sm">
+                  <i class="icon-doc"></i>&nbsp;{% trans "Get BDNS: J+S export file" %}
+                </a>
+              </li>
             {% endif %}
-            <li class="text-nowrap"><a href="{{ course.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete course" %}
-            </a></li>
-
-
+            <li class="text-nowrap">
+              <a href="{{ course.get_delete_url }}" class="btn btn-sm">
+                <i class="icon-trash"></i>&nbsp;{% trans "Delete course" %}
+              </a>
+            </li>
           </ul>
         </td>
       </tr>
