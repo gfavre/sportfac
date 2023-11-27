@@ -390,6 +390,7 @@ class CourseParticipantsView(CourseDetailView):
 class CourseListView(BackendMixin, ListView):
     model = Course
     queryset = Course.objects.select_related("activity").prefetch_related("participants", "instructors")
+    template_name = "backend/course/list.html"
 
 
 class CoursesExportView(BackendMixin, ExcelResponseMixin, View):
