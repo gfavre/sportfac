@@ -295,6 +295,7 @@ years_patterns = [
 ]
 
 waiting_slots_patterns = [
+    path("add/<int:course_id>", view=views.WaitingSlotCreateView.as_view(), name="waiting_slot-add"),
     path(
         "<int:pk>/transform",
         view=views.WaitingSlotTransformView.as_view(),

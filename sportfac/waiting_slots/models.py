@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.conf import settings
 from django.db import connection, models, transaction
 from django.urls import reverse
@@ -42,12 +41,10 @@ class WaitingSlot(TimeStampedModel):
                 tenant_pk = connection.tenant.pk
             except AttributeError:
                 tenant_pk = None
-            transaction.on_commit(
-                lambda: send_confirm_from_waiting_list.delay(registration.pk, tenant_pk)
-            )
+            transaction.on_commit(lambda: send_confirm_from_waiting_list.delay(registration.pk, tenant_pk))
 
     def __repr__(self):
         return self.__str__()
 
     def __str__(self):
-        return "{} - {}".format(self.child, self.course.short_name)
+        return f"{self.child} - {self.course.short_name}"

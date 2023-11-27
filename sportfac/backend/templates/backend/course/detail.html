@@ -1,6 +1,6 @@
 {% extends "backend/base.html" %}
 {% load i18n sekizai_tags static %}
-{% load duration registrations switzerland %}
+{% load duration registrations switzerland crispy_forms_tags %}
 
 {% block title %}{{ course.activity.name }} - {{ block.super }}{% endblock %}
 {% block page_title %}
@@ -161,7 +161,30 @@
   </div>
 </section>
 
-  {% addtoblock  "js" %}
+
+  <section>
+    <h2>{% trans "Registrations" %}</h2>
+    <a href="{{ course.get_xls_export_url }}" class="btn btn-default">
+      <i class="icon-file-excel"></i> {% trans "Export participants" %}
+    </a>
+    <hr/>
+    <div class="btn-group">
+      <a class="btn btn-default selectall">{% trans "Select all" %}</a>
+      <a class="btn btn-default deselectall needs-select disabled">{% trans "Deselect all" %}</a>
+    </div>
+    <div class="btn-group">
+      <form class="mail" method="post" action="{%  url 'backend:mail-users' %}?prev={{ request.get_full_path | urlencode }}">{% csrf_token %}
+        <input type="hidden" name="data" value='' />
+        <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-mail"></i>&nbsp;&nbsp;{% trans "Send email..." %}</button>
+      </form>
+    </div>
+    <div class="btn-group">
+      <form class="move" method="post" action="{% url 'backend:registrations-move' %}?course={{ course.id }}">{% csrf_token %}
+        <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-loop-alt"></i>&nbsp;&nbsp;{% trans "Move to another course..." %}</button>
+      </form>
+    </div>
+
+   {% addtoblock  "js" %}
     <script src="{% static 'js/vendor/datatables/jquery.dataTables.min.js' %}"></script>
     <script src="{% static 'js/vendor/datatables/dataTables.tableTools.min.js' %}"></script>
     <script src="{% static 'js/vendor/datatables/dataTables.bootstrap.js' %}"></script>
@@ -227,29 +250,9 @@
         });
       });
     </script>
-  {% endaddtoblock %}
 
-  <section>
-    <h2>{% trans "Registrations" %}</h2>
-    <a href="{{ course.get_xls_export_url }}" class="btn btn-default">
-      <i class="icon-file-excel"></i> {% trans "Export participants" %}
-    </a>
-    <hr/>
-    <div class="btn-group">
-      <a class="btn btn-default selectall">{% trans "Select all" %}</a>
-      <a class="btn btn-default deselectall needs-select disabled">{% trans "Deselect all" %}</a>
-    </div>
-    <div class="btn-group">
-      <form class="mail" method="post" action="{%  url 'backend:mail-users' %}?prev={{ request.get_full_path | urlencode }}">{% csrf_token %}
-        <input type="hidden" name="data" value='' />
-        <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-mail"></i>&nbsp;&nbsp;{% trans "Send email..." %}</button>
-      </form>
-    </div>
-    <div class="btn-group">
-      <form class="move" method="post" action="{% url 'backend:registrations-move' %}?course={{ course.id }}">{% csrf_token %}
-        <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-loop-alt"></i>&nbsp;&nbsp;{% trans "Move to another course..." %}</button>
-      </form>
-    </div>
+
+  {% endaddtoblock %}
 
     <table class="table participants">
       <thead>
@@ -343,14 +346,18 @@
 <hr>
   <section>
     <h2>{% trans "Waiting list" %}</h2>
-  <table class="table waiting-slots">
+    <table class="table waiting-slots">
       <thead>
         <tr>
           {% if BIB_NUMBERS %}
             <th class="bibnumber">{% trans "Bib number" %}</th>
           {% endif %}
           <th class="child-name">{% trans "Name" %}</th>
-          {% if LIMIT_BY_SCHOOL_YEAR %}<th class="school">{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>{% endif %}
+          {% if LIMIT_BY_SCHOOL_YEAR %}
+            <th class="school">
+              {% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}
+            </th>
+          {% endif %}
           {% if EMERGENCY_NUMBER_MANDATORY %}
             <th>{% trans "Emergency number" %}</th>
           {% else %}
@@ -433,9 +440,24 @@
 
         </tr>
         {% empty %}
-
+        <tr>
+          <td colspan="{% if BIB_NUMBERS and LIMIT_BY_SCHOOL_YEAR %}6{% elif BIB_NUMBERS or LIMIT_BY_SCHOOL_YEAR %}5{% else %}4{% endif %}"
+              class="text-center"
+              style="padding: 2em;"
+          >
+            {% trans "No one in waiting list" %}
+          </td>
+        </tr>
       {% endfor %}
     </table>
+    {% crispy waiting_list_form %}
+    {% addtoblock "js" %}
+      {{ waiting_list_form.media }}
+    {% endaddtoblock %}
   </section>
   {% endif %}
+
+
+
+
 {% endblock content %}

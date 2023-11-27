@@ -1,14 +1,30 @@
-# -*- coding: utf-8 -*-
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
-from django.views.generic import DeleteView, UpdateView
+from django.views.generic import CreateView, DeleteView, UpdateView
 
-from waiting_slots.forms import WaitingSlotTransformForm
+from activities.models import Course
+from waiting_slots.forms import WaitingSlotForm, WaitingSlotTransformForm
 from waiting_slots.models import WaitingSlot
 
 from .mixins import BackendMixin
+
+
+class WaitingSlotCreateView(SuccessMessageMixin, BackendMixin, CreateView):
+    form_class = WaitingSlotForm
+    queryset = WaitingSlot.objects.all()
+    template_name = "backend/waiting_slots/create.html"
+
+    def get_initial(self):
+        course = get_object_or_404(Course, pk=self.kwargs["course_id"])
+        initial = super().get_initial()
+        initial["course"] = course
+        return initial
+
+    def get_success_url(self):
+        return self.object.course.get_backend_url()
 
 
 class WaitingSlotTransformView(SuccessMessageMixin, BackendMixin, UpdateView):
@@ -37,10 +53,7 @@ class WaitingSlotTransformView(SuccessMessageMixin, BackendMixin, UpdateView):
         self.object.delete()
         messages.success(
             self.request,
-            _(
-                "%(child)s has been added to participants and removed from waiting list. "
-                "Please contact the parents."
-            )
+            _("%(child)s has been added to participants and removed from waiting list. Please contact the parents.")
             % {"child": child.get_full_name()},
         )
         return HttpResponseRedirect(success_url)

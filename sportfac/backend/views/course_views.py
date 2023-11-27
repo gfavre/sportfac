@@ -24,6 +24,7 @@ from activities.resources import CourseResource
 from profiles.models import FamilyUser
 from registrations.models import ChildActivityLevel, ExtraInfo
 from registrations.resources import RegistrationResource
+from waiting_slots.forms import WaitingSlotForm
 
 from sportfac.views import CSVMixin
 
@@ -107,6 +108,7 @@ class CourseDetailView(BackendMixin, DetailView):
         context = super().get_context_data(**kwargs)
         registrations = self.get_object().participants.all()
         context["registrations"] = registrations
+        context["waiting_list_form"] = WaitingSlotForm(initial={"course": self.get_object()})
         return context
 
 

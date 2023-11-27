@@ -99,7 +99,9 @@ from .user_views import UserDetailView  # noqa F401
 from .user_views import UserExportView  # noqa F401
 from .user_views import UserListView  # noqa F401
 from .user_views import UserUpdateView  # noqa F401
-from .waiting_slots_views import WaitingSlotDeleteView, WaitingSlotTransformView  # noqa F401
+from .waiting_slots_views import WaitingSlotCreateView  # noqa F401
+from .waiting_slots_views import WaitingSlotDeleteView  # noqa F401
+from .waiting_slots_views import WaitingSlotTransformView  # noqa F401
 from .year_views import ChangeProductionYearFormView  # noqa F401
 from .year_views import ChangeYearFormView  # noqa F401
 from .year_views import YearCreateView  # noqa F401

@@ -1,6 +1,6 @@
 {% extends "backend/base.html" %}
 {% load i18n %}
-{% load humanize %} 
+{% load humanize %}
 
 
 {% block title %}{% trans "Administration" %} - {{ block.super }}{% endblock %}
@@ -19,7 +19,7 @@
     {% include 'backend/portlets/period.html'%}
 
   </section>
-    
+
   <section class="col-sm-12 col-md-8">
     {% include 'backend/portlets/courses.html'%}
   </section>
@@ -29,5 +29,19 @@
     {% include 'backend/portlets/teachers.html'%}
   </section>
 </div>
+
+<div class="row">
+    {% if DASHBOARD_SHOW_FAMILY_STATS %}
+      <div class="col-md-6">
+        {% include 'backend/portlets/families.html' %}
+      </div>
+    {% endif %}
+
+    {% if DASHBOARD_SHOW_CHILDREN_STATS %}
+      <div class="col-md-6">
+        {% include 'backend/portlets/children.html' %}
+      </div>
+    {% endif %}
+  </div>
 
 {% endblock content %}
