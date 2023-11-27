@@ -87,7 +87,7 @@
     <i class="icon-plus"></i> {% trans "New course" %}
   </a>
   <hr>
- <!-- ici -->
+
   {% if USE_ABSENCES %}
     <div class="btn-group">
       <form class="absences" method="GET" action="{% url 'backend:courses-absence' %}">
@@ -97,7 +97,6 @@
       </form>
     </div>
   {% endif %}
- <!-- après if -->
 
   <div class="btn-group">
     <form class="convocations" method="GET"

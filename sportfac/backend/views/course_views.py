@@ -391,11 +391,6 @@ class CourseListView(BackendMixin, ListView):
     model = Course
     queryset = Course.objects.select_related("activity").prefetch_related("participants", "instructors")
 
-    def get_template_names(self):
-        if self.request.PHASE == 1:
-            return "backend/course/list-phase1.html"
-        return "backend/course/list.html"
-
 
 class CoursesExportView(BackendMixin, ExcelResponseMixin, View):
     filename = _("courses")
