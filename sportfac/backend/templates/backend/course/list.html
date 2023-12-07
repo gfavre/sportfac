@@ -57,8 +57,8 @@
         });
 
         let createHiddenIDInputs = function($form) {
-          table.rows({selected: true}).nodes().each(function() {
-            let id = $(this).data('courseid');
+          table.rows({selected: true}).nodes().each(function(row) {
+            let id = $(row).data('courseid');
             $form.append(`<input name="c" value="${id}" type="hidden">`);
           });
         };
