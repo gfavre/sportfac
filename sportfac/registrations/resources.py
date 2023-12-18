@@ -141,10 +141,13 @@ class RegistrationResource(resources.ModelResource):
 
     def dehydrate_before_level(self, obj):
         activity = obj.course.activity
-
         try:
             level = obj.child.levels.get(activity=activity)
-            return level.before_level and self.montreux_prepend(obj) + level.before_level or ""
+            if level.before_level and (level.before_level.startswith("S ") or level.before_level.startswith("A ")):
+                return level.before_level
+            if level.before_level:
+                return self.montreux_prepend(obj) + level.before_level
+            return ""
         except ChildActivityLevel.DoesNotExist:
             return ""
 
@@ -152,7 +155,11 @@ class RegistrationResource(resources.ModelResource):
         activity = obj.course.activity
         try:
             level = obj.child.levels.get(activity=activity)
-            return level.after_level and self.montreux_prepend(obj) + level.after_level or ""
+            if level.after_level and (level.after_level.startswith("S ") or level.after_level.startswith("A ")):
+                return level.after_level
+            if level.after_level:
+                return self.montreux_prepend(obj) + level.after_level
+            return ""
         except ChildActivityLevel.DoesNotExist:
             return ""
 
