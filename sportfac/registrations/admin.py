@@ -8,7 +8,7 @@ from import_export.admin import ImportExportModelAdmin
 
 from sportfac.admin_utils import SportfacAdminMixin, SportfacModelAdmin
 
-from .models import Bill, Child, ExtraInfo, Registration, RegistrationsProfile, Transport
+from .models import Bill, Child, ChildActivityLevel, ExtraInfo, Registration, RegistrationsProfile, Transport
 
 
 class RegistrationResource(resources.ModelResource):
@@ -179,4 +179,9 @@ class BillAdmin(SportfacModelAdmin):
 
 @admin.register(Transport)
 class TransportAdmin(SportfacModelAdmin):
+    pass
+
+
+@admin.register(ChildActivityLevel)
+class ChildActivityLevelAdmin(SportfacModelAdmin):
     pass
