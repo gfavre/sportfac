@@ -184,4 +184,11 @@ class TransportAdmin(SportfacModelAdmin):
 
 @admin.register(ChildActivityLevel)
 class ChildActivityLevelAdmin(SportfacModelAdmin):
-    pass
+    list_display = ("child", "activity")
+    list_filter = ("activity",)
+    raw_id_fields = ("child",)
+    search_fields = (
+        "child__first_name",
+        "child__last_name",
+        "activity__name",
+    )
