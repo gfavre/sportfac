@@ -84,7 +84,8 @@ class RegistrationsMoveView(BackendMixin, FormView):
         return initial
 
     def form_valid(self, form):
-        course = form.cleaned_data["destination"]
+        destination_course = form.cleaned_data["destination"]
+        destination_children = {registration.child for registration in destination_course.participants.all()}
         if "success_url" in form.data:
             redirect = form.data["success_url"]
         else:
@@ -92,14 +93,28 @@ class RegistrationsMoveView(BackendMixin, FormView):
         previous_courses = set()
         with transaction.atomic():
             for registration in form.cleaned_data["registrations"]:
-                if registration.course != course:
-                    registration.delete_future_absences()
-                    previous_courses.add(registration.course)
-                registration.course = course
+                if registration.course == destination_course:
+                    # The child is not moving, let's just confirm the registration
+                    registration.set_confirmed()
+                    registration.save()
+                    continue
+
+                # from this point, we know that previous registration has to be canceled one way or another
+                previous_courses.add(registration.course)
+                if registration.child in destination_children:
+                    # Child is already registered to destination course, we just need to remove him from previous course
+                    registration.cancel()
+                    registration.save()
+                    continue
+                # the child is moving to a new course, and leaving the previous one
+                registration.delete_future_absences()
+                registration.course = destination_course
                 registration.set_confirmed()
                 registration.save()
                 registration.create_future_absences()
+
         for course in previous_courses:
+            # Trigger the calculation of #participants
             course.save()
         message = _("Registrations of %(nb)s children have been moved.")
         message %= {"nb": form.cleaned_data["registrations"].count()}
