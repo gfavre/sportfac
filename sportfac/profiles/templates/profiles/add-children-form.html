@@ -180,7 +180,6 @@
       {% endif %}
     </div>
   </div>
-
   <div ng-show="!prefillTeachers">
     <div class="form-group {% if SCHOOL_YEAR_HIDDEN %} hidden{% endif %}">
       <label class="col-sm-4 control-label" for="inputYear">
@@ -191,7 +190,11 @@
                 {% if SCHOOL_YEAR_MANDATORY %}required{% endif %}
                 {% if not SCHOOL_YEAR_EDITABLE %}ng-disabled="detailedChild.school_year"{% endif %}
         >
-          <option ng-repeat="year in years" value="{[{ year.year }]}" ng-selected="year.year === detailedChild.school_year">{[{ year.label }]}</option>
+          <option ng-repeat="year in years"
+                  value="{[{ year.year }]}" ng-selected="year.year === detailedChild.school_year">
+            {[{ year.label }]}iii
+            <pre>{[{ year }]}</pre>
+          </option>
         </select>
         <span ng-show="childform.name.$error.required">Ce champ est obligatoire</span>
       </div>
