@@ -192,8 +192,7 @@
         >
           <option ng-repeat="year in years"
                   value="{[{ year.year }]}" ng-selected="year.year === detailedChild.school_year">
-            {[{ year.label }]}iii
-            <pre>{[{ year }]}</pre>
+            {[{ year.label }]}
           </option>
         </select>
         <span ng-show="childform.name.$error.required">Ce champ est obligatoire</span>

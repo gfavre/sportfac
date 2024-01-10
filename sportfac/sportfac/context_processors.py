@@ -9,6 +9,8 @@ from activities.models import Activity
 from backend.models import YearTenant
 from dynamic_preferences.registries import global_preferences_registry
 
+from . import __version__ as kepchup_version
+
 
 class Step:
     def __init__(self, request, identifier, title, urlname):
@@ -171,6 +173,7 @@ def tenants_context(request):
 
 def kepchup_context(request):
     return {
+        "VERSION": kepchup_version,
         "AVS_HIDDEN": "avs" in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
         "BIB_NUMBER_HIDDEN": "bib_number" in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
         "BIRTH_DATE_HIDDEN": "birth_date" in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,

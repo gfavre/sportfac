@@ -74,9 +74,9 @@ yearServiceUrl="{% url 'api:year-list' %}"
   <script src="{{ STATIC_URL }}js/children/app.js"></script>
 {% else %}
   {% comment %}
-  uglifyjs ../vendor/angular.min.js ../vendor/angular-locale_fr-ch.js ../vendor/angular-route.min.js ../vendor/angular-cookies.min.js ../vendor/angular-sanitize.min.js  ../vendor/angularstrap/angular-strap.min.js ../vendor/angularstrap/angular-strap.tpl.min.js filters.js services.js controllers.js app.js -o app.min.js
+  uglifyjs ../vendor/angular.min.js ../vendor/angular-locale_fr-ch.js ../vendor/angular-route.min.js ../vendor/angular-cookies.min.js ../vendor/angularstrap/angular-strap.min.js ../vendor/angularstrap/angular-strap.tpl.min.js services.js controllers.js app.js -o app.min.js
   {% endcomment %}
-  <script src="{{ STATIC_URL }}js/children/app.min.js"></script>
+  <script src="{{ STATIC_URL }}js/children/app.min.js?{{ VERSION }}"></script>
 {% endif %}
 
 {% endaddtoblock %}
