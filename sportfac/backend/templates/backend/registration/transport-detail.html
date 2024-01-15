@@ -155,8 +155,6 @@
   <div class="btn-group hidden-print">
     <form class="move" method="post"
           action="{% url 'backend:transport-move' %}?prev={{ transport.id }}">{% csrf_token %}
-      <button type="submit" class="btn btn-secondary needs-select disabled"><i
-          class="icon-loop-alt"></i>&nbsp;&nbsp;{% trans "Move to another transport..." %}</button>
     </form>
   </div>
   <table class="table table-bordered table-hover table-condensed absences table-fixed responsive">
@@ -386,12 +384,12 @@
           $('input[value=' + status + ']', $(this)).prop('checked', true);
         });
 
-        var moveRegistrations = function () {
-          var $selected = dtable.rows({selected: true}).nodes();
-          var ids = $selected.map(function (elem) {
+        let moveRegistrations = function () {
+          let $selected = dtable.rows({selected: true}).nodes();
+          let ids = $selected.map(function (elem) {
             return elem.getAttribute('data-registration-id');
           });
-          var $form = $('form.move');
+          let $form = $('form.move');
           $('input[name=registrations]', $form).remove();
           ids.each(function (regId) {
             $('<input type="hidden">').attr('id', 'registrations_' + regId)
@@ -420,6 +418,3 @@
 
   {% endaddtoblock %}
 {% endblock content %}
-
-
-
