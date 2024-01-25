@@ -1,4 +1,5 @@
 import collections
+import json
 import os
 from tempfile import mkdtemp
 
@@ -224,6 +225,10 @@ class CourseAbsenceView(BackendMixin, DetailView):
 
         registrations = {registration.child: registration for registration in self.object.participants.all()}
         child_absences = collections.OrderedDict()
+
+        # ordering = json.loads(self.request.GET.get("order", "[]"))
+        # breakpoint()
+
         for child, registration in sorted(registrations.items(), key=lambda x: x[0].ordering_name):
             child_absences[(child, registration)] = {}
         for absence in qs:
