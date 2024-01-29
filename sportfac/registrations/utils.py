@@ -21,11 +21,11 @@ CHILD_MANDATORY_FIELDS = (
     "birth_date",
 )
 CORRESPONDANCE_DICT = {
-    "id_lagapeo": ["ID LAGAPEO", "ELEVE_ID_PERS"],
-    "first_name": ["Prénom", "ELEVE_PRENOM"],
-    "last_name": ["Nom", "ELEVE_NOM"],
-    "birth_date": ["Date de naissance", "ELEVE_DATE_NAISS"],
-    "sex": ["Genre", "ELEVE_GENRE"],
+    "id_lagapeo": ["ID LAGAPEO", "ELEVE_ID_PERS", "NO"],
+    "first_name": ["Prénom", "ELEVE_PRENOM", "PRENOM"],
+    "last_name": ["Nom", "ELEVE_NOM", "NOM"],
+    "birth_date": ["Date de naissance", "ELEVE_DATE_NAISS", "DAT_NAISSANCE"],
+    "sex": ["Genre", "ELEVE_GENRE", "SEXE"],
     "avs": ["AVS", "N_AVS"],
     "school_year": ["Année", "ANNEE", "ELEVE_ANNEE_SCOL", "Année2"],
     "nationality": ["Nationalité"],
@@ -73,7 +73,7 @@ class ChildParser:
 
     @staticmethod
     def parse_sex(value):
-        if value == "G":
+        if value in ("G", "h"):
             return Child.SEX.M
         return Child.SEX.F
 
@@ -143,6 +143,19 @@ class ChildParser:
                 logger.warning(f"{exc}: Could not parse key={key}, value={val}")
                 continue
         return out
+
+
+def check_children_load_format(filelike):
+    try:
+        xls_book = load_workbook(filelike)
+        sheet = xls_book.active
+        header_row = [cell.value for cell in sheet[1]]
+        for field in CHILD_MANDATORY_FIELDS:
+            if not any(set(CORRESPONDANCE_DICT[field]).intersection(set(header_row))):
+                raise ValueError(_("Missing mandatory field: {field}").format(field=field))
+
+    except KeyError as exc:
+        raise ValueError(_("File format is unreadable")) from exc
 
 
 def load_children(filelike):

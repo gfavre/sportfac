@@ -1,5 +1,5 @@
 {% extends "backend/base.html" %}
-{% load i18n floppyforms sekizai_tags %}
+{% load i18n crispy_forms_tags sekizai_tags %}
 
 {% block title %}{% trans "Import children" %} - {{ block.super }}{% endblock %}
 {% block page_title %}<i class="icon-doc-new"></i>&nbsp;&nbsp;{% trans "Import children" %}{% endblock %}
@@ -9,14 +9,37 @@
 {% addtoblock "js" %}
 {{ form.media }}
 {% endaddtoblock %}
+<div class="panel panel-info">
+  <div class="panel-heading">{% trans "About LAGAPEO file format" %}</div>
+  <div class="panel-body">
+{% blocktrans %}
+  <p>We accept files extracted from LAGAPEO. They should be in .xlsx format and have the mandatory
+    columns named like this:</p>
+  <ul>
+    <li>"ID LAGAPEO" or "ELEVE_ID_PERS" or "NO": unique ID of the child</li>
+    <li>"Nom" or "ELEVE_NOM" or "NOM": last name of the child</li>
+    <li>"Prénom" or "ELEVE_PRENOM" or "PRENOM": first name of the child</li>
+    <li>"Genre" or "ELEVE_GENRE" or "SEXE": Gender of the child (values must be f/h or F/G)</li>
+    <li>"Date de naissance" or "ELEVE_DATE_NAISS" or "DAT_NAISSANCE": date of birth of the child</li>
+  </ul>
+  <p>Additional non-mandatory columns can be imported:</p>
+  <ul>
+    <li>"AVS" or "N_AVS": AVS number</li>
+    <li>"Année" or "ANNEE" or "ELEVE_ANNEE_SCOL" or "Année2": School year</li>
+    <li>"Nationalité": Nationality</li>
+    <li>"Langue maternelle" or "LANGUE MATERNELLE": mother tongue</li>
+    <li>"Etablissement" or "ETABLISSEMENT" or "ETABLISSEMENT_NOM": School name</li>
+    <li>"Blacklist" or "BLACKLIST": Should the child be blacklisted from registrations</li>
+  </ul>
+{% endblocktrans %}
+  </div>
+</div>
+<form action="" method="post"  enctype="multipart/form-data">
+  {% crispy form %}
 
-<form action="" method="post" class="form-horizontal" enctype="multipart/form-data">{% csrf_token %}
-  {% form form using "floppyforms/layouts/bootstrap.html" %}
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
       <button type="submit" class="btn btn-success btn-large">{% trans 'Import children' %}</button>
-      &nbsp;
-      <a href="{% url 'backend:teacher-list' %}" class="btn  btn-default">{% trans 'Cancel' %}</a>
     </div>
   </div>
 </form>

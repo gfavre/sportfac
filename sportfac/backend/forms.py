@@ -1,4 +1,6 @@
 import datetime
+from typing import Any
+from zipfile import BadZipfile
 
 from django import forms
 from django.conf import settings
@@ -15,6 +17,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Fieldset, Layout
 from django_select2 import forms as s2forms
 from registrations.models import Child, ExtraInfo, Registration
+from registrations.utils import check_children_load_format
 
 from .models import YearTenant
 
@@ -22,10 +25,42 @@ from .models import YearTenant
 class ChildImportForm(forms.Form):
     thefile = forms.FileField(label=_("File"), help_text=_("Extraction from LAGAPEO, excel format"))
 
+    def clean(self) -> dict[str, Any]:
+        """
+        Custom clean method to validate the uploaded file.
+        Returns:
+            Dict[str, Any]: Cleaned data of the form fields.
+        Raises:
+            ValueError: If the file format is unreadable or missing mandatory fields.
+        """
+        cleaned_data = super().clean()
+        filelike = cleaned_data.get("thefile")
 
-#
-# class DateTimePickerInput(forms.DateTimeInput):
-#    pass
+        if filelike:
+            try:
+                check_children_load_format(filelike)
+            except BadZipfile as exc:
+                raise forms.ValidationError(
+                    _("File format is unreadable, Lagapeo export should be a .xlsx file")
+                ) from exc
+            except (ValueError, KeyError) as exc:
+                raise forms.ValidationError(str(exc)) from exc
+
+        return cleaned_data
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the form with Crispy Form settings.
+        """
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-3"
+        self.helper.layout = Layout(
+            "thefile",
+        )
 
 
 class DatePickerInput(forms.widgets.DateInput):
