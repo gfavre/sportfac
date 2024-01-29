@@ -1,5 +1,4 @@
 import datetime
-from typing import Any
 from zipfile import BadZipfile
 
 from django import forms
@@ -25,7 +24,7 @@ from .models import YearTenant
 class ChildImportForm(forms.Form):
     thefile = forms.FileField(label=_("File"), help_text=_("Extraction from LAGAPEO, excel format"))
 
-    def clean(self) -> dict[str, Any]:
+    def clean(self):
         """
         Custom clean method to validate the uploaded file.
         Returns:
