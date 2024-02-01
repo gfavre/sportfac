@@ -6,10 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 3.5.11 - 2024-02-01
+### Fixed
+- Issue where times when not compared when checking for overlapping courses
+
+
 ## 3.5.10 - 2024-01-29
 ### Changed
 - Ensure child import is in correct format
-
 
 
 ## 3.5.9 - 2024-01-25

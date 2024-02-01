@@ -188,8 +188,25 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
   $scope.overlap = function(event1, event2){
     let set1 = new Set(event1.all_dates);
     let set2 = new Set(event2.all_dates);
-    let combinedSet = new Set([...set1, ...set2]);
-    return combinedSet.size < set1.size + set2.size;
+
+    // Check if there are any common dates
+    let commonDates = [...set1].filter(date => set2.has(date));
+    if (commonDates.length > 0) {
+        // There are common dates, now check if times overlap
+        // Convert times to comparable format, assuming event1.start_time, etc., are in 'HH:MM' format
+        let startTime1 = event1.start_time.split(':').map(Number);
+        let endTime1 = event1.end_time.split(':').map(Number);
+        let startTime2 = event2.start_time.split(':').map(Number);
+        let endTime2 = event2.end_time.split(':').map(Number);
+
+        // Compare times
+        let start1 = new Date(0, 0, 0, startTime1[0], startTime1[1]);
+        let end1 = new Date(0, 0, 0, endTime1[0], endTime1[1]);
+        let start2 = new Date(0, 0, 0, startTime2[0], startTime2[1]);
+        let end2 = new Date(0, 0, 0, endTime2[0], endTime2[1]);
+        return start1 <= end2 && start2 <= end1;
+    }
+    return false;
   };
 
   $scope.$watch('registrations.length', function(){
@@ -298,7 +315,6 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
       ).reduce(function(overlap1, overlap2) {
           return overlap1 || overlap2;
       }, false);
-      console.log(course, registered, available, overlapping);
       if (!registered && available){
         $scope.availableEventsToFetch += 1;
         if (activityRegistered || overlapping){
