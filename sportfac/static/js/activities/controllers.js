@@ -282,23 +282,23 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
       if ((registeredCourses.indexOf(course.id) !== -1) && !$scope.canregistersameactivity) {
         activityRegistered = true;
       }
-
+      let available = false;
       if ($scope.limitbyschoolyear) {
-        var available = course.schoolyear_min <= $scope.selectedChild.school_year &&
+        available = course.schoolyear_min <= $scope.selectedChild.school_year &&
           course.schoolyear_max >= $scope.selectedChild.school_year;
       } else {
-         var available = course.min_birth_date >= $scope.selectedChild.birth_date &&
+         available = course.min_birth_date >= $scope.selectedChild.birth_date &&
            course.max_birth_date <= $scope.selectedChild.birth_date;
       }
-      var registered = registeredCourses.indexOf(course.id) !== -1;
-      var overlapping = $scope.registeredEvents.map(
+      let registered = registeredCourses.indexOf(course.id) !== -1;
+      let overlapping = $scope.registeredEvents.map(
         function(evt){
           return $scope.overlap(evt.course, course);
         }
       ).reduce(function(overlap1, overlap2) {
           return overlap1 || overlap2;
       }, false);
-
+      console.log(course, registered, available, overlapping);
       if (!registered && available){
         $scope.availableEventsToFetch += 1;
         if (activityRegistered || overlapping){
