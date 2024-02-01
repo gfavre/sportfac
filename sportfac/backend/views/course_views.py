@@ -180,6 +180,79 @@ class CourseAbsenceView(BackendMixin, DetailView):
         "activity",
     )
 
+    def get_sorted_registrations(self, registrations_list):
+        ordering = json.loads(self.request.GET.get("order", "[]"))
+        if not ordering:
+            return registrations_list
+
+        def sort_key(registration):
+            values = []
+            for attr_path, order in ordering:
+                # Split the attribute path and fetch the attribute value
+                attr_obj = registration
+                for attr in attr_path.split("."):
+                    try:
+                        attr_obj = getattr(attr_obj, attr)
+                    except AttributeError:
+                        attr_obj = ""
+                # Append or prepend the value based on sort order
+                values.append(attr_obj)
+            return tuple(values)
+
+        registrations_list.sort(key=sort_key, reverse=ordering[0][1] == "desc")
+        return registrations_list
+
+    def get_child_absences(self):
+        # 1. Get all extra infos for this course
+        registrations = list(self.object.participants.all())
+        announced_levels = ExtraInfo.objects.filter(
+            key__question_label__startswith="Niveau", registration__course__activity=self.object.activity
+        )
+        levels = {level.child: level for level in ChildActivityLevel.objects.filter(activity=self.object.activity)}
+        children_announced_levels = {extra_info.registration.child: extra_info for extra_info in announced_levels}
+
+        # 2. Enrich children to be able to sort without recalculating related fields
+        for registration in registrations:
+            announced_level = children_announced_levels.get(registration.child, None)
+            if announced_level:
+                announced_level = announced_level.value
+            registration.child.announced_level = announced_level or ""
+            level = levels.get(registration.child, None)
+            before_level = after_level = note = ""
+            if level:
+                before_level = level.before_level
+                after_level = level.after_level
+                note = level.note
+            registration.child.before_level = before_level
+            registration.child.after_level = after_level
+            registration.child.note = note
+
+        # 3. Add absences to children
+        child_absences = collections.OrderedDict()
+
+        for registration in self.get_sorted_registrations(registrations):
+            child_absences[(registration.child, registration)] = {}
+
+        qs = Absence.objects.select_related("child", "session").filter(session__course=self.object)
+        if settings.KEPCHUP_BIB_NUMBERS:
+            qs = qs.order_by("child__bib_number", "child__last_name", "child__first_name")
+        else:
+            qs = qs.order_by("child__last_name", "child__first_name")
+
+        for absence in qs:
+            child = absence.child
+            if child not in registrations:
+                # happens if child was previously attending this course but is no longer
+                continue
+            registration = registrations[child]
+
+            the_tuple = (child, registration)
+            if the_tuple in child_absences:
+                child_absences[the_tuple][absence.session.date] = absence
+            else:
+                child_absences[the_tuple] = {absence.session.date: absence}
+        return child_absences
+
     def post(self, *args, **kwargs):
         course = self.get_object()
         form = SessionForm(data=self.request.POST)
@@ -208,11 +281,6 @@ class CourseAbsenceView(BackendMixin, DetailView):
         return HttpResponseRedirect(course.get_backend_absences_url())
 
     def get_context_data(self, **kwargs):
-        qs = Absence.objects.select_related("child", "session").filter(session__course=self.object)
-        if settings.KEPCHUP_BIB_NUMBERS:
-            qs = qs.order_by("child__bib_number", "child__last_name", "child__first_name")
-        else:
-            qs = qs.order_by("child__last_name", "child__first_name")
         sessions = self.object.sessions.all()
         kwargs["sessions"] = {session.date: session for session in sessions}
         kwargs["closest_session"] = closest_session(sessions)
@@ -222,27 +290,7 @@ class CourseAbsenceView(BackendMixin, DetailView):
             kwargs["sessions"].keys(),
             reverse=not settings.KEPCHUP_ABSENCES_ORDER_ASC,
         )
-
-        registrations = {registration.child: registration for registration in self.object.participants.all()}
-        child_absences = collections.OrderedDict()
-
-        # ordering = json.loads(self.request.GET.get("order", "[]"))
-        # breakpoint()
-
-        for child, registration in sorted(registrations.items(), key=lambda x: x[0].ordering_name):
-            child_absences[(child, registration)] = {}
-        for absence in qs:
-            child = absence.child
-            if child not in registrations:
-                # happens if child was previously attending this course but is no longer
-                continue
-            registration = registrations[child]
-
-            the_tuple = (child, registration)
-            if the_tuple in child_absences:
-                child_absences[the_tuple][absence.session.date] = absence
-            else:
-                child_absences[the_tuple] = {absence.session.date: absence}
+        child_absences = self.get_child_absences()
         kwargs["session_form"] = SessionForm()
         kwargs["child_absences"] = child_absences
         kwargs["courses_list"] = Course.objects.select_related("activity")

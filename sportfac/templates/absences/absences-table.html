@@ -129,29 +129,29 @@
       </th>
     {% endif %}
     {% if REGISTRATION_LEVELS %}
-      <th class="rotated-heading min-desktop" data-column-order="">
+      <th class="rotated-heading min-desktop" data-column-order="child.announced_level">
         <div><span>{% trans "Announced level" %}</span></div>
       </th>
-      <th class="rotated-heading min-tablet-l">
+      <th class="rotated-heading min-tablet-l" data-column-order="child.before_level">
         <div><span>{% trans "level -1" %}</span></div>
       </th>
-      <th class="rotated-heading min-tablet-l">
+      <th class="rotated-heading min-tablet-l" data-column-order="child.after_level">
         <div><span>{% trans "level 0" %}</span></div>
       </th>
     {% endif %}
     {% if DISPLAY_CAR_NUMBER %}
-      <th class="rotated-heading min-tablet-p">
+      <th class="rotated-heading min-tablet-p" data-column-order="transport.name">
         <div><span>{% trans "Bus" %}</span></div>
       </th>
     {% endif %}
     {% if DISPLAY_REGISTRATION_NOTE %}
-      <th class="note min-desktop">
+      <th class="note min-desktop" data-column-order="transport.name">
         {% trans "Note" %}
       </th>
     {% endif %}
     {% for session_date in all_dates %}
       {% with session=sessions|get_item:session_date %}
-        <th class="rotated-heading session-col date {% if session == closest_session %} all{% else %} min-tablet-p{% endif %}"
+        <th class="no-sort rotated-heading session-col date {% if session == closest_session %} all{% else %} min-tablet-p{% endif %}"
             data-session="{{ session.id }}">
           <div>
             <span class="session-date">{{ session_date|date:"d.m.Y" }}</span>
@@ -188,7 +188,7 @@
         set course only if a single course is displayed at that time (and not the full activity).
         {% endcomment %}
         {% with session=sessions|get_item:session_date %}
-          <th class="edit-session session-col"
+          <th class="edit-session session-co"
               data-url="{{ session.get_api_url }}"
               data-instructor="{{ session.instructor.id }}"
               data-date="{{ session.date | date:"d.m.Y" }}">
@@ -513,6 +513,12 @@
         dom: "<'row hidden-print'<'col-sm-6'lB><'col-sm-6'f>>" +
           "<'row'<'col-sm-12'tr>>" +
           "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+        columnDefs: [
+          {
+            orderable: false,
+            targets: 'no-sort'
+          }
+        ],
         {% if request.user.is_manager %}
           buttons: [
             {
