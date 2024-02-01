@@ -75,15 +75,15 @@ usewaitingslots="{{ ENABLE_WAITING_LISTS|yesno:'true,false' }}"
   <script src="{{ STATIC_URL }}js/vendor/angularstrap/angular-strap.min.js"></script>
   <script src="{{ STATIC_URL }}js/vendor/angularstrap/angular-strap.tpl.min.js"></script>
 
-  <script src="{{ STATIC_URL }}js/activities/filters.js"></script>
-  <script src="{{ STATIC_URL }}js/activities/services.js"></script>
-  <script src="{{ STATIC_URL }}js/activities/controllers.js"></script>
-  <script src="{{ STATIC_URL }}js/activities/app.js"></script>
+  <script src="{{ STATIC_URL }}js/activities/filters.js?v={{ VERSION }}"></script>
+  <script src="{{ STATIC_URL }}js/activities/services.js?v={{ VERSION }}"></script>
+  <script src="{{ STATIC_URL }}js/activities/controllers.js?v={{ VERSION }}"></script>
+  <script src="{{ STATIC_URL }}js/activities/app.js?v={{ VERSION }}"></script>
 {% else %}
   {% comment %}
   uglifyjs ../vendor/fullcalendar.min.js ../vendor/angular.min.js ../vendor/angular-locale_fr-ch.js ../vendor/angular-route.min.js ../vendor/angular-cookies.min.js ../vendor/angular-sanitize.min.js ../vendor/angular-ui-calendar.js ../vendor/angularstrap/angular-strap.min.js ../vendor/angularstrap/angular-strap.tpl.min.js filters.js services.js controllers.js app.js -o app.min.js
   {% endcomment %}
-  <script src="{{ STATIC_URL }}js/activities/app.min.js"></script>
+  <script src="{{ STATIC_URL }}js/activities/app.min.js?v={{ VERSION }}"></script>
 {% endif %}
 {% endaddtoblock %}
 
