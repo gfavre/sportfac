@@ -187,7 +187,7 @@ class CourseAbsenceView(BackendMixin, DetailView):
 
         def sort_key(registration):
             values = []
-            for attr_path, order in ordering:
+            for attr_path, _order in ordering:
                 # Split the attribute path and fetch the attribute value
                 attr_obj = registration
                 for attr in attr_path.split("."):
