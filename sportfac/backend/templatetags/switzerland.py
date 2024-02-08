@@ -4,7 +4,6 @@ from django import template
 from django.utils.safestring import mark_safe
 
 import phonenumbers
-from six.moves import range
 
 
 register = template.Library()
@@ -16,13 +15,8 @@ def money_html(value):
         number = float(value)
         frac, integer = math.modf(number)
         if frac:
-            return mark_safe(
-                'CHF <span class="value">{:1,.2f}</span>'.format(number).replace(",", "'")
-            )
-        else:
-            return mark_safe(
-                'CHF <span class="value">{:1,.0f}.-</span>'.format(number).replace(",", "'")
-            )
+            return mark_safe(f'CHF <span class="value">{number:1,.2f}</span>'.replace(",", "'"))
+        return mark_safe(f'CHF <span class="value">{number:1,.0f}.-</span>'.replace(",", "'"))
     except ValueError:
         return value
     except TypeError:
@@ -35,17 +29,8 @@ def money(value):
         number = float(value)
         frac, integer = math.modf(number)
         if frac:
-            return mark_safe(
-                "CHF {:1,.2f}".format(number)
-                .replace(",", "'")
-                .replace("CHF -", "<strong>-</strong> CHF ")
-            )
-        else:
-            return mark_safe(
-                "CHF {:1,.0f}.-".format(number)
-                .replace(",", "'")
-                .replace("CHF -", "<strong>-</strong> CHF ")
-            )
+            return mark_safe(f"CHF {number:1,.2f}".replace(",", "'").replace("CHF -", "<strong>-</strong> CHF "))
+        return mark_safe(f"CHF {number:1,.0f}.-".replace(",", "'").replace("CHF -", "<strong>-</strong> CHF "))
     except ValueError:
         return "n/a"
     except TypeError:
@@ -59,18 +44,11 @@ def money_sign(value):
         frac, integer = math.modf(number)
         if frac:
             return mark_safe(
-                "CHF {:+1,.2f}".format(number)
-                .replace(",", "'")
-                .replace("CHF -", "– CHF ")
-                .replace("CHF +", "+ CHF ")
+                f"CHF {number:+1,.2f}".replace(",", "'").replace("CHF -", "– CHF ").replace("CHF +", "+ CHF ")
             )
-        else:
-            return mark_safe(
-                "CHF {:+1,.0f}.-".format(number)
-                .replace(",", "'")
-                .replace("CHF -", "– CHF ")
-                .replace("CHF +", "+ CHF ")
-            )
+        return mark_safe(
+            f"CHF {number:+1,.0f}.-".replace(",", "'").replace("CHF -", "– CHF ").replace("CHF +", "+ CHF ")
+        )
     except ValueError:
         return value
     except TypeError:
@@ -91,13 +69,12 @@ def phone(value, phone_format="national"):
     """phone numbers and formats it"""
     if value in (None, ""):
         return ""
-
     if isinstance(value, phonenumbers.PhoneNumber):
         if phone_format.lower() == "e164":
             return value.as_e164
-        elif phone_format.lower() == "international":
+        if phone_format.lower() == "international" or value.country_code != 41:
             return value.as_international
-        elif phone_format.lower() == "rfc3966":
+        if phone_format.lower() == "rfc3966":
             return value.as_rfc3966
         return value.as_national
 
@@ -121,5 +98,5 @@ def ahv(value):
         return value
     value = value.replace(" ", "").replace(".", "")
     if value:
-        return "%s.%s.%s.%s" % (value[0:3], value[3:7], value[7:11], value[11:])
+        return f"{value[0:3]}.{value[3:7]}.{value[7:11]}.{value[11:]}"
     return value
