@@ -253,33 +253,6 @@ class CourseAbsenceView(BackendMixin, DetailView):
                 child_absences[the_tuple] = {absence.session.date: absence}
         return child_absences
 
-    def post(self, *args, **kwargs):
-        course = self.get_object()
-        form = SessionForm(data=self.request.POST)
-        if form.is_valid():
-            # noinspection PyUnresolvedReferences
-            if self.request.user in course.instructors.all():
-                # noinspection PyUnresolvedReferences
-                instructor = self.request.user
-            else:
-                instructor = None
-            with transaction.atomic():
-                session, created = Session.objects.get_or_create(
-                    course=course,
-                    date=form.cleaned_data["date"],
-                    defaults={"instructor": instructor, "activity": course.activity},
-                )
-                session.fill_absences()
-                if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
-                    session.update_courses_dates()
-                if created:
-                    messages.success(
-                        self.request,
-                        _("Session %s has been added.") % session.date.strftime("%d.%m.%Y"),
-                    )
-
-        return HttpResponseRedirect(course.get_backend_absences_url())
-
     def get_context_data(self, **kwargs):
         sessions = self.object.sessions.all()
         kwargs["sessions"] = {session.date: session for session in sessions}
@@ -327,6 +300,33 @@ class CourseAbsenceView(BackendMixin, DetailView):
             response["Content-Disposition"] = f'attachment; filename="{filename}"'
             return response
         return super().get(request, *args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        course = self.get_object()
+        form = SessionForm(data=self.request.POST)
+        if form.is_valid():
+            # noinspection PyUnresolvedReferences
+            if self.request.user in course.instructors.all():
+                # noinspection PyUnresolvedReferences
+                instructor = self.request.user
+            else:
+                instructor = None
+            with transaction.atomic():
+                session, created = Session.objects.get_or_create(
+                    course=course,
+                    date=form.cleaned_data["date"],
+                    defaults={"instructor": instructor, "activity": course.activity},
+                )
+                session.fill_absences()
+                if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
+                    session.update_courses_dates()
+                if created:
+                    messages.success(
+                        self.request,
+                        _("Session %s has been added.") % session.date.strftime("%d.%m.%Y"),
+                    )
+
+        return HttpResponseRedirect(course.get_backend_absences_url())
 
 
 class CoursesAbsenceView(BackendMixin, ListView):
