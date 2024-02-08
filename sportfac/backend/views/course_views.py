@@ -337,10 +337,25 @@ class CoursesAbsenceView(BackendMixin, ListView):
         courses_pk = [int(pk) for pk in self.request.GET.getlist("c") if pk.isdigit()]
         return Course.objects.filter(pk__in=courses_pk)
 
+    def sort_registrations(self, registrations_list):
+        pass
+
+    def get_unsorted_registrations(self):
+        # 1. find all registrations the will be displayed
+        from registrations.models import Registration
+
+        registrations = Registration.objects.filter(course__in=self.get_queryset())
+        # 2. Get all extra_infos for the courses
+        announced_levels = ExtraInfo.objects.filter(
+            key__question_label__startswith="Niveau", registration__course__in=self.get_queryset()
+        )
+        levels = {level.child: level for level in ChildActivityLevel.objects.filter(activity=self.object.activity)}
+
     def get_context_data(self, **kwargs):
         qs = Absence.objects.filter(session__course__in=self.get_queryset()).select_related(
             "session", "child", "session__course", "session__course__activity"
         )
+
         if settings.KEPCHUP_BIB_NUMBERS:
             qs = qs.order_by("child__bib_number", "child__last_name", "child__first_name")
         else:
@@ -364,6 +379,7 @@ class CoursesAbsenceView(BackendMixin, ListView):
         course_absences = collections.OrderedDict()
 
         for absence in qs:
+            # here we set the ordering!
             if settings.KEPCHUP_REGISTRATION_LEVELS:
                 absence.child.announced_level = child_announced_levels.get(absence.child, "")
                 absence.child.level = child_levels.get(absence.child, "")
