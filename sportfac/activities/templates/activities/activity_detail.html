@@ -86,7 +86,11 @@
             <dd>
               <ul class="list-unstyled">
                 {% for instructor in course.instructors.all %}
-                  <li>{{ instructor.full_name }}</li>
+                  <li>
+                    {{ instructor.full_name }}
+                    (<a href="{{ instructor.best_phone|phone:'RFC3966' }}">{{ instructor.best_phone|phone }}</a>,
+                    {{ instructor.email | urlize }})
+                  </li>
                 {% endfor %}
               </ul>
             </dd>
