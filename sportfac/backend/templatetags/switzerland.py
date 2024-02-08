@@ -72,10 +72,10 @@ def phone(value, phone_format="national"):
     if isinstance(value, phonenumbers.PhoneNumber):
         if phone_format.lower() == "e164":
             return value.as_e164
-        if phone_format.lower() == "international" or value.country_code != 41:
-            return value.as_international
         if phone_format.lower() == "rfc3966":
             return value.as_rfc3966
+        if phone_format.lower() == "international" or value.country_code != 41:
+            return value.as_international
         return value.as_national
 
     fm = phonenumbers.PhoneNumberFormat.NATIONAL
