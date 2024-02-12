@@ -9,7 +9,7 @@ from .allocation_views import AllocationAccountDeleteView  # noqa F401
 from .allocation_views import AllocationAccountListView  # noqa F401
 from .allocation_views import AllocationAccountReportView  # noqa F401
 from .allocation_views import AllocationAccountUpdateView  # noqa F401
-from .course_views import CourseAbsenceView  # noqa F401
+from .course_views import BackendCourseAbsenceView  # noqa F401
 from .course_views import CourseCreateView  # noqa F401
 from .course_views import CourseDeleteView  # noqa F401
 from .course_views import CourseDetailView  # noqa F401
