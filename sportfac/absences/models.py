@@ -20,7 +20,7 @@ class Absence(StatusModel, TimeStampedModel):
         ("na", _("n/a")),
     )
 
-    child = models.ForeignKey("registrations.Child", on_delete=models.CASCADE)
+    child = models.ForeignKey("registrations.Child", on_delete=models.CASCADE, related_name="absences")
     session = models.ForeignKey("Session", related_name="absences", on_delete=models.CASCADE)
     notification_sent = models.BooleanField(default=False)
 
@@ -34,17 +34,11 @@ class Absence(StatusModel, TimeStampedModel):
 
 
 class Session(TimeStampedModel):
-    course = models.ForeignKey(
-        "activities.Course", related_name="sessions", on_delete=models.CASCADE
-    )
-    activity = models.ForeignKey(
-        "activities.Activity", related_name="sessions", null=True, on_delete=models.CASCADE
-    )
+    course = models.ForeignKey("activities.Course", related_name="sessions", on_delete=models.CASCADE)
+    activity = models.ForeignKey("activities.Activity", related_name="sessions", null=True, on_delete=models.CASCADE)
     date = models.DateField()
     instructor = models.ForeignKey("profiles.FamilyUser", null=True, on_delete=models.SET_NULL)
-    export_date = models.DateTimeField(
-        verbose_name=_("Exported to payroll"), null=True, blank=True
-    )
+    export_date = models.DateTimeField(verbose_name=_("Exported to payroll"), null=True, blank=True)
 
     class Meta:
         ordering = ("date", "course")
@@ -68,16 +62,13 @@ class Session(TimeStampedModel):
         absences = [absence for absence in self.absences.all() if absence.child == child]
         if absences:
             return absences[0]
-        else:
-            return None
+        return None
 
     def get_api_url(self):
         return reverse("api:session-detail", kwargs={"pk": self.pk})
 
     def presentees_nb(self):
-        return self.absences.filter(
-            status__in=(Absence.STATUS.present, Absence.STATUS.late)
-        ).count()
+        return self.absences.filter(status__in=(Absence.STATUS.present, Absence.STATUS.late)).count()
 
     def update_courses_dates(self):
         if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
@@ -88,4 +79,4 @@ class Session(TimeStampedModel):
                 self.course.update_dates_from_sessions()
 
     def __str__(self):
-        return "%s - %s" % (self.course.short_name, self.date)
+        return f"{self.course.short_name} - {self.date}"

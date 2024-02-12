@@ -1,5 +1,14 @@
+from django.utils.timezone import now
+
 from registrations.models import Registration
 
+
+for r in Registration.objects.all():
+    future_courses = r.course.sessions.filter(date__gte=now()).count()
+    future_absences = r.child.absence_set.filter(session__date__gte=now(), session__course=r.course).count()
+    if future_courses != future_absences:
+        print(r.child, r.course, future_courses, future_absences)
+        # r.create_future_absences()
 
 r = Registration.objects.get(child__first_name__startswith="Sidney", course__number="EN/01-2023")
 r.create_future_absences()
