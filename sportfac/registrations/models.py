@@ -774,6 +774,13 @@ class Child(TimeStampedModel, StatusModel):
     def update_url(self):
         return self.get_update_url()
 
+    def get_announced_level(self, course):
+        return ExtraInfo.objects.filter(
+            registration__child=self,
+            key__question_label__startswith="Niveau",
+            registration__course__activity=course.activity,
+        ).first()
+
     def get_backend_absences_url(self):
         return reverse("backend:child-absences", kwargs={"child": self.pk})
 
