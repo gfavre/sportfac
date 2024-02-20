@@ -88,8 +88,8 @@
                 {% for instructor in course.instructors.all %}
                   <li>
                     {{ instructor.full_name }}
-                    {% if DISPLAY_PUBLICLY_SUPERVISOR_PHONE %}(<a href="{{ instructor.best_phone|phone:'RFC3966' }}">{{ instructor.best_phone|phone }}</a>,{% endif %}
-                    {% if DISPLAY_PUBLICLY_SUPERVISOR_EMAIL %}{{ instructor.email | urlize }}){% endif %}
+                    {% if DISPLAY_PUBLICLY_SUPERVISOR_PHONE %}<br><a href="{{ instructor.best_phone|phone:'RFC3966' }}">{{ instructor.best_phone|phone }}</a>{% endif %}
+                    {% if DISPLAY_PUBLICLY_SUPERVISOR_EMAIL %}<br>{{ instructor.email | urlize }}{% endif %}
                   </li>
                 {% endfor %}
               </ul>
