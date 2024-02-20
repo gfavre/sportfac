@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 3.5.13 2024-02-20
+### Fixed
+- Supervisor contact previously set up was displayed for everyone.
+
+### Changed
+- TTL settings for La Tour de Peilz
+
 ## 3.5.12 - 2024-02-08
 ### Added
 - New KEPCHUP_DISPLAY_PUBLICLY_SUPERVISOR_PHONE and KEPCHUP_DISPLAY_PUBLICLY_SUPERVISOR_EMAIL settings to display or
