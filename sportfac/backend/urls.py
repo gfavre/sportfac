@@ -60,7 +60,7 @@ courses_patterns = [
     path("<slug:course>/update", view=views.CourseUpdateView.as_view(), name="course-update"),
     path(
         "<slug:course>/absences",
-        view=views.CourseAbsenceView.as_view(),
+        view=views.BackendCourseAbsenceView.as_view(),
         name="course-absence",
     ),
     path("<slug:course>/JS", view=views.CourseJSCSVView.as_view(), name="course-js-export"),

@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+from unittest.mock import patch
+
 from django.contrib.auth.models import AnonymousUser
 from django.forms.models import model_to_dict
 from django.test import RequestFactory, override_settings
@@ -9,14 +10,13 @@ from absences.tests.factories import AbsenceFactory
 from activities.models import Activity, Course
 from activities.tests.factories import CourseFactory
 from backend.utils import AbsencePDFRenderer, AbsencesPDFRenderer
-from mock import patch
 from profiles.tests.factories import FamilyUserFactory
 from registrations.tests.factories import RegistrationFactory
 
 from sportfac.utils import TenantTestCase
 
 from ...views.course_views import (
-    CourseAbsenceView,
+    BackendCourseAbsenceView,
     CourseCreateView,
     CourseDeleteView,
     CourseDetailView,
@@ -29,13 +29,13 @@ from .base import fake_registrations_open_middleware
 
 class CourseAbsenceViewTests(TenantTestCase):
     def setUp(self):
-        super(CourseAbsenceViewTests, self).setUp()
+        super().setUp()
         self.course = CourseFactory()
         self.absence = AbsenceFactory(session__course=self.course)
         self.login_url = reverse("profiles:auth_login")
         self.url = self.course.backend_absences_url
         self.user = FamilyUserFactory(is_manager=True)
-        self.view = CourseAbsenceView.as_view()
+        self.view = BackendCourseAbsenceView.as_view()
         self.request = RequestFactory().get(self.url)
         fake_registrations_open_middleware(self.request)
         self.request.user = self.user
@@ -100,7 +100,7 @@ class CourseAbsenceViewTests(TenantTestCase):
 
 class CoursesAbsenceViewTests(TenantTestCase):
     def setUp(self):
-        super(CoursesAbsenceViewTests, self).setUp()
+        super().setUp()
         self.course1 = CourseFactory()
         self.registration1 = RegistrationFactory(course=self.course1)
         self.absence1 = AbsenceFactory(session__course=self.course1)
@@ -108,9 +108,7 @@ class CoursesAbsenceViewTests(TenantTestCase):
         self.registration2 = RegistrationFactory(course=self.course2)
         self.absence2 = AbsenceFactory(session__course=self.course2)
         self.login_url = reverse("profiles:auth_login")
-        self.url = reverse("backend:courses-absence") + "?c={}&c={}".format(
-            self.course1.pk, self.course2.pk
-        )
+        self.url = reverse("backend:courses-absence") + f"?c={self.course1.pk}&c={self.course2.pk}"
         self.user = FamilyUserFactory(is_manager=True)
         self.view = CoursesAbsenceView.as_view()
         self.request = RequestFactory().get(self.url)
@@ -177,7 +175,7 @@ class CoursesAbsenceViewTests(TenantTestCase):
 
 class CourseCreateViewTests(TenantTestCase):
     def setUp(self):
-        super(CourseCreateViewTests, self).setUp()
+        super().setUp()
         self.login_url = reverse("profiles:auth_login")
         self.url = reverse("backend:course-create")
         self.user = FamilyUserFactory(is_manager=True)
@@ -277,7 +275,7 @@ class CourseDeleteViewTests(TenantTestCase):
 
 class CourseDetailViewTests(TenantTestCase):
     def setUp(self):
-        super(CourseDetailViewTests, self).setUp()
+        super().setUp()
         self.user = FamilyUserFactory(is_manager=True)
         self.course = CourseFactory(instructors=[self.user])
         self.registrations = RegistrationFactory.create_batch(3, course=self.course)
@@ -322,7 +320,7 @@ class CourseDetailViewTests(TenantTestCase):
 
 class CourseListViewTests(TenantTestCase):
     def setUp(self):
-        super(CourseListViewTests, self).setUp()
+        super().setUp()
         self.course = CourseFactory()
         self.login_url = reverse("profiles:auth_login")
         self.url = reverse("backend:activity-list")
@@ -364,7 +362,7 @@ class CourseListViewTests(TenantTestCase):
 
 class CourseUpdateViewTests(TenantTestCase):
     def setUp(self):
-        super(CourseUpdateViewTests, self).setUp()
+        super().setUp()
         self.course = CourseFactory()
         self.login_url = reverse("profiles:auth_login")
         self.url = self.course.get_update_url()
