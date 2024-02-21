@@ -1,6 +1,8 @@
 from django import template
 from django.utils.translation import gettext as _
 
+from ..models import Absence
+
 
 register = template.Library()
 
@@ -23,6 +25,17 @@ def absence_to_status(absence, short=False):
     if short:
         return absence_short(absence.status)
     return absence_status(absence.status)
+
+
+@register.filter(is_safe=True)
+def absence_class(absence):
+    if absence.status == Absence.STATUS.present:
+        return "success"
+    if absence.status == Absence.STATUS.late:
+        return "info"
+    if absence.status in (Absence.STATUS.excused, Absence.STATUS.canceled):
+        return "warning"
+    return "danger"
 
 
 @register.filter(is_safe=True)

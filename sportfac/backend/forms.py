@@ -13,7 +13,7 @@ from activities.models import Course, ExtraNeed
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Fieldset, Layout
+from crispy_forms.layout import Fieldset, Layout, Submit
 from django_select2 import forms as s2forms
 from registrations.models import Child, ExtraInfo, Registration
 from registrations.utils import check_children_load_format
@@ -423,6 +423,22 @@ class SessionForm(forms.Form):
         widget=DatePickerInput(),
         initial=datetime.date.today(),
     )
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the form with Crispy Form settings.
+        """
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.form_class = "form-inline"
+        self.helper.field_template = "bootstrap3/layout/inline_field.html"
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-3"
+        self.helper.layout = Layout(
+            "date", Submit(value=_("New session"), name="submit", css_class="btn btn-secondary")
+        )
 
 
 class YearSelectForm(forms.Form):

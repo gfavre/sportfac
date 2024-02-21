@@ -59,7 +59,7 @@
     .absences .popover .radio input[type=radio] {
       position: absolute;
       margin-left: -20px;
-      margin-top: 2px;
+      margin-top: -6px;
     }
 
     .absences .popover textarea {
@@ -291,7 +291,7 @@
         {% endif %}
         {% for session_date in all_dates %}{% if session_date in absences %}
           {% with absence=absences|get_item:session_date %}
-            <td class="session-col absence {{ absence.status }} {% if absence.status == 'present' %}success{% elif absence.status == 'late' %}info{% elif absence.status == 'excused' %}warning{% elif absence.status == 'canceled' %}warning{% else %}danger{% endif %}">
+            <td class="session-col absence {{ absence.status }} {{ absence|absence_class }}">
           <span class="set-absence"
                 data-pk="{{ absence.pk }}"
                 data-session="{{ absence.session.id }}"
@@ -394,7 +394,7 @@
 </script>
 
 <script type="text/html" id="status-window">
-  <form>
+  <form class="absence-form">
     <div class="radio">
       <label>
         <input type="radio" name="status" id="present" value="present" checked>{% trans "Present" %}

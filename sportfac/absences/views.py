@@ -88,12 +88,13 @@ class CourseAbsenceView(DetailView):
         else:
             qs = qs.order_by("child__last_name", "child__first_name")
 
+        attendees = {reg.child: reg for reg in registrations}
         for absence in qs:
             child = absence.child
-            if child not in registrations:
+            if child not in attendees:
                 # happens if child was previously attending this course but is no longer
                 continue
-            registration = registrations[child]
+            registration = attendees[child]
 
             the_tuple = (child, registration)
             if the_tuple in child_absences:

@@ -1,5 +1,5 @@
 {% extends "backend/base.html" %}
-{% load i18n duration switzerland sekizai_tags floppyforms %}
+{% load i18n duration switzerland sekizai_tags floppyforms crispy_forms_tags %}
 
 {% block title %}{{ course.activity.name }} - Absences - {{ block.super }}{% endblock %}
 {% block page_title %}{{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }}{% endblocktrans %} - {% trans "Absences" %}{% endblock %}
@@ -71,10 +71,7 @@
 
 <div class="hidden-print">
 
-  <form method="POST" class="form-inline">{% csrf_token %}
-    {% form session_form using "floppyforms/layouts/bootstrap-inline.html" %}
-    <button type="submit" class="btn btn-secondary">{% trans "New session" %}</button>
-  </form>
+    {% crispy session_form %}
 </div>
 
 
