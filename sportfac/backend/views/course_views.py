@@ -34,6 +34,15 @@ from ..utils import AbsencesPDFRenderer
 from .mixins import BackendMixin, ExcelResponseMixin
 
 
+class CourseMixin(BackendMixin):
+    # noinspection PyUnresolvedReferences
+    def get_queryset(self):
+        user: FamilyUser = self.request.user
+        if user.is_full_manager:
+            return super().get_queryset()
+        return super().get_queryset().filter(activity__in=user.managed_activities.all())
+
+
 class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
     template_name = "backend/course/create.html"
     success_url = reverse_lazy("backend:course-list")
@@ -79,7 +88,7 @@ class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class CourseDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
+class CourseDeleteView(SuccessMessageMixin, CourseMixin, DeleteView):
     model = Course
     template_name = "backend/course/confirm_delete.html"
     success_url = reverse_lazy("backend:course-list")
@@ -92,7 +101,7 @@ class CourseDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
         return super().delete(request, *args, **kwargs)
 
 
-class CourseDetailView(BackendMixin, DetailView):
+class CourseDetailView(CourseMixin, DetailView):
     model = Course
     template_name = "backend/course/detail.html"
     pk_url_kwarg = "course"
@@ -113,7 +122,7 @@ class CourseDetailView(BackendMixin, DetailView):
         return context
 
 
-class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
+class CourseUpdateView(SuccessMessageMixin, CourseMixin, UpdateView):
     model = Course
     template_name = "backend/course/update.html"
     pk_url_kwarg = "course"
@@ -156,10 +165,10 @@ class CourseUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
         return response  # noqa: R504
 
 
-class CoursesToggleVisibilityView(BackendMixin, View):
+class CoursesToggleVisibilityView(CourseMixin, View):
     def get_queryset(self):
         courses_pk = [int(pk) for pk in self.request.POST.getlist("c") if pk.isdigit()]
-        return Course.objects.filter(pk__in=courses_pk)
+        return super().get_queryset().filter(pk__in=courses_pk)
 
     def post(self, *args, **kwargs):
         courses = self.get_queryset()
@@ -170,7 +179,7 @@ class CoursesToggleVisibilityView(BackendMixin, View):
         return HttpResponseRedirect(reverse("backend:course-list"))
 
 
-class BackendCourseAbsenceView(BackendMixin, CourseAbsenceView):
+class BackendCourseAbsenceView(CourseMixin, CourseAbsenceView):
     template_name = "backend/course/absences.html"
     pk_url_kwarg = "course"
 
@@ -202,13 +211,13 @@ class BackendCourseAbsenceView(BackendMixin, CourseAbsenceView):
         return HttpResponseRedirect(course.get_backend_absences_url())
 
 
-class CoursesAbsenceView(BackendMixin, ListView):
+class CoursesAbsenceView(CourseMixin, ListView):
     model = Course
     template_name = "backend/course/multiple-absences.html"
 
     def get_queryset(self):
         courses_pk = [int(pk) for pk in self.request.GET.getlist("c") if pk.isdigit()]
-        return Course.objects.filter(pk__in=courses_pk)
+        return super().get_queryset().filter(pk__in=courses_pk)
 
     def sort_registrations(self, registrations_list):
         pass
@@ -332,7 +341,7 @@ class CourseParticipantsView(CourseDetailView):
         return self.template_name
 
 
-class CourseListView(BackendMixin, ListView):
+class CourseListView(CourseMixin, ListView):
     model = Course
     queryset = Course.objects.select_related("activity").prefetch_related("participants", "instructors")
     template_name = "backend/course/list.html"
@@ -348,7 +357,7 @@ class CoursesExportView(BackendMixin, ExcelResponseMixin, View):
         return self.render_to_response()
 
 
-class CourseParticipantsExportView(BackendMixin, SingleObjectMixin, ExcelResponseMixin, View):
+class CourseParticipantsExportView(SingleObjectMixin, CourseMixin, ExcelResponseMixin, View):
     model = Course
     pk_url_kwarg = "course"
 
@@ -368,7 +377,11 @@ class PaySlipMontreux(BackendMixin, CreateView):
     form_class = PaySlipForm
 
     def get_initial(self):
-        course = get_object_or_404(Course, pk=self.kwargs["course"])
+        user: FamilyUser = self.request.user
+        if user.is_full_manager:
+            course = get_object_or_404(Course, pk=self.kwargs["course"])
+        else:
+            course = get_object_or_404(Course, pk=self.kwargs["course"], activity__in=user.managed_activities.all())
         session_dates = course.sessions.values_list("date", flat=True)
         initial = {}
         instructor = get_object_or_404(FamilyUser, pk=self.kwargs["instructor"])
