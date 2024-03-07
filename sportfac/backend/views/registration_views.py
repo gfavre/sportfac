@@ -32,7 +32,7 @@ from registrations.models import Bill, ExtraInfo, Registration, Transport
 from registrations.resources import BillResource, RegistrationResource
 from registrations.views import BillMixin, PaymentMixin
 
-from .mixins import BackendMixin, ExcelResponseMixin
+from .mixins import BackendMixin, ExcelResponseMixin, FullBackendMixin
 
 
 logger = logging.getLogger(__name__)
@@ -431,12 +431,12 @@ class BillUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class TransportListView(BackendMixin, ListView):
+class TransportListView(FullBackendMixin, ListView):
     model = Transport
     template_name = "backend/registration/transport-list.html"
 
 
-class TransportDetailView(BackendMixin, DetailView):
+class TransportDetailView(FullBackendMixin, DetailView):
     model = Transport
     template_name = "backend/registration/transport-detail.html"
     queryset = Transport.objects.prefetch_related(
@@ -500,7 +500,7 @@ class TransportDetailView(BackendMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
-class TransportCreateView(SuccessMessageMixin, BackendMixin, CreateView):
+class TransportCreateView(SuccessMessageMixin, FullBackendMixin, CreateView):
     model = Transport
     form_class = TransportForm
     template_name = "backend/registration/transport-create.html"
@@ -508,7 +508,7 @@ class TransportCreateView(SuccessMessageMixin, BackendMixin, CreateView):
     success_message = _("Transport has been created.")
 
 
-class TransportUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
+class TransportUpdateView(SuccessMessageMixin, FullBackendMixin, UpdateView):
     model = Transport
     form_class = TransportForm
     template_name = "backend/registration/transport-update.html"
@@ -516,7 +516,7 @@ class TransportUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
     success_url = reverse_lazy("backend:transport-list")
 
 
-class TransportDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
+class TransportDeleteView(SuccessMessageMixin, FullBackendMixin, DeleteView):
     model = Transport
     template_name = "backend/registration/transport_confirm_delete.html"
     success_url = reverse_lazy("backend:transport-list")

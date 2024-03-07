@@ -17,6 +17,7 @@ from absences.models import Absence, Session
 from absences.utils import closest_session
 from activities.forms import ActivityForm
 from activities.models import Activity, Course, ExtraNeed
+from profiles.models import FamilyUser as User
 from registrations.models import ChildActivityLevel, ExtraInfo
 
 from ..forms import SessionForm
@@ -24,14 +25,23 @@ from ..utils import AbsencePDFRenderer
 from .mixins import BackendMixin
 
 
-class ActivityDetailView(BackendMixin, DetailView):
+class ActivityMixin:
+    # noinspection PyUnresolvedReferences
+    def get_queryset(self):
+        user: User = self.request.user
+        if user.is_full_manager:
+            return super().get_queryset()
+        return user.managed_activities.all()
+
+
+class ActivityDetailView(BackendMixin, ActivityMixin, DetailView):
     model = Activity
     slug_field = "slug"
     slug_url_kwarg = "activity"
     template_name = "backend/activity/detail.html"
 
 
-class ActivityListView(BackendMixin, ListView):
+class ActivityListView(BackendMixin, ActivityMixin, ListView):
     model = Activity
     template_name = "backend/activity/list.html"
 
@@ -43,12 +53,20 @@ class ActivityCreateView(SuccessMessageMixin, BackendMixin, CreateView):
     success_message = _('<a href="%(url)s" class="alert-link">Activity (%(number)s)</a> has been created.')
     template_name = "backend/activity/create.html"
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        user: User = self.request.user
+        if user.is_restricted_manager:
+            user.managed_activities.add(self.object)
+            user.save()
+        return response  # noqa: R504
+
     def get_success_message(self, cleaned_data):
         url = self.object.get_backend_url()
         return mark_safe(self.success_message % {"url": url, "number": self.object.number})
 
 
-class ActivityAbsenceView(BackendMixin, DetailView):
+class ActivityAbsenceView(BackendMixin, ActivityMixin, DetailView):
     model = Activity
     template_name = "backend/activity/absences.html"
     slug_field = "slug"
@@ -163,7 +181,7 @@ class ActivityAbsenceView(BackendMixin, DetailView):
         return super().get(request, *args, **kwargs)
 
 
-class ActivityUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
+class ActivityUpdateView(SuccessMessageMixin, BackendMixin, ActivityMixin, UpdateView):
     model = Activity
     form_class = ActivityForm
     slug_field = "slug"
@@ -177,7 +195,7 @@ class ActivityUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
         return mark_safe(self.success_message % {"url": url, "number": self.object.number})
 
 
-class ActivityDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
+class ActivityDeleteView(SuccessMessageMixin, BackendMixin, ActivityMixin, DeleteView):
     model = Activity
     slug_field = "slug"
     slug_url_kwarg = "activity"

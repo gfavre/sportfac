@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from datetime import timedelta
 
 from django.contrib.flatpages.models import FlatPage
@@ -15,14 +14,14 @@ from mailer.forms import GenericEmailForm
 from mailer.models import GenericEmail
 
 from ..forms import FlatPageForm
-from .mixins import BackendMixin, ExcelResponseMixin
+from .mixins import ExcelResponseMixin, FullBackendMixin
 
 
-class AppointmentsManagementView(BackendMixin, TemplateView):
+class AppointmentsManagementView(FullBackendMixin, TemplateView):
     template_name = "appointments/backend/create.html"
 
     def get_context_data(self, **kwargs):
-        context = super(AppointmentsManagementView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         if AppointmentSlot.objects.exists():
             context["start"] = AppointmentSlot.objects.first().start.date().isoformat()
         else:
@@ -30,7 +29,7 @@ class AppointmentsManagementView(BackendMixin, TemplateView):
         return context
 
 
-class AppointmentsListView(BackendMixin, ListView):
+class AppointmentsListView(FullBackendMixin, ListView):
     model = AppointmentSlot
     template_name = "appointments/backend/list.html"
 
@@ -41,7 +40,7 @@ class AppointmentsListView(BackendMixin, ListView):
         )
 
 
-class AppointmentDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
+class AppointmentDeleteView(SuccessMessageMixin, FullBackendMixin, DeleteView):
     model = Appointment
     template_name = "appointments/backend/confirm_delete.html"
     success_url = reverse_lazy("backend:appointments-list")
@@ -49,7 +48,7 @@ class AppointmentDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
     pk_url_kwarg = "appointment"
 
 
-class AppointmentsExportView(BackendMixin, ExcelResponseMixin, View):
+class AppointmentsExportView(FullBackendMixin, ExcelResponseMixin, View):
     filename = _("appointments")
 
     def get_resource(self):
@@ -59,33 +58,28 @@ class AppointmentsExportView(BackendMixin, ExcelResponseMixin, View):
         return self.render_to_response()
 
 
-class FlatPageListView(BackendMixin, ListView):
+class FlatPageListView(FullBackendMixin, ListView):
     model = FlatPage
     template_name = "backend/site/flatpage_list.html"
 
 
-class FlatPageUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
+class FlatPageUpdateView(SuccessMessageMixin, FullBackendMixin, UpdateView):
     model = FlatPage
     form_class = FlatPageForm
     template_name = "backend/site/flatpage_update.html"
     success_url = reverse_lazy("backend:flatpages-list")
-    success_message = _(
-        '<a href="%(url)s" class="alert-link">Page "%(title)s"</a> has been updated.'
-    )
+    success_message = _('<a href="%(url)s" class="alert-link">Page "%(title)s"</a> has been updated.')
 
     def get_success_message(self, cleaned_data):
-        url = self.success_url
-        return mark_safe(
-            self.success_message % {"url": self.object.url, "title": cleaned_data.get("title")}
-        )
+        return mark_safe(self.success_message % {"url": self.object.url, "title": cleaned_data.get("title")})
 
 
-class GenericEmailListView(BackendMixin, ListView):
+class GenericEmailListView(FullBackendMixin, ListView):
     model = GenericEmail
     template_name = "backend/mail/emails_list.html"
 
 
-class GenericEmailUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
+class GenericEmailUpdateView(SuccessMessageMixin, FullBackendMixin, UpdateView):
     model = GenericEmail
     form_class = GenericEmailForm
     template_name = "backend/mail/emails_update.html"
@@ -105,4 +99,4 @@ class GenericEmailUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
         else:
             self.object.body_template.content = message_body
         self.object.body_template.save()
-        return super(GenericEmailUpdateView, self).form_valid(form)
+        return super().form_valid(form)

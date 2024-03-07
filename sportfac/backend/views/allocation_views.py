@@ -19,7 +19,7 @@ from activities.models import AllocationAccount
 from dateutil.relativedelta import relativedelta
 from payments.models import DatatransTransaction
 
-from .mixins import BackendMixin
+from .mixins import FullBackendMixin
 
 
 __all__ = [
@@ -31,27 +31,23 @@ __all__ = [
 ]
 
 
-class AllocationAccountReportView(BackendMixin, ListView):
+class AllocationAccountReportView(FullBackendMixin, ListView):
     model = AllocationAccount
     template_name = "backend/allocations/report.html"
 
     def get_context_data(self, **kwargs):
-        context = super(AllocationAccountReportView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["start"] = (now() - relativedelta(days=29)).date()
         context["end"] = now().date()
 
         if "start" in self.request.GET:
             try:
-                context["start"] = datetime.datetime.strptime(
-                    self.request.GET.get("start"), "%Y-%m-%d"
-                ).date()
+                context["start"] = datetime.datetime.strptime(self.request.GET.get("start"), "%Y-%m-%d").date()
             except ValueError:
                 pass
         if "end" in self.request.GET:
             try:
-                context["end"] = datetime.datetime.strptime(
-                    self.request.GET.get("end"), "%Y-%m-%d"
-                ).date()
+                context["end"] = datetime.datetime.strptime(self.request.GET.get("end"), "%Y-%m-%d").date()
             except ValueError:
                 pass
 
@@ -74,11 +70,7 @@ class AllocationAccountReportView(BackendMixin, ListView):
                 [registration.price for registration in registrations if registration.paid]
             )
             for method in all_payment_methods:
-                method_list = [
-                    registration
-                    for registration in registrations
-                    if registration.payment_method == method
-                ]
+                method_list = [registration for registration in registrations if registration.payment_method == method]
                 setattr(allocation_account, registrations_method_tmpl.format(method), method_list)
                 setattr(
                     allocation_account,
@@ -96,9 +88,7 @@ class AllocationAccountReportView(BackendMixin, ListView):
                 section["subsections"].append(
                     {
                         "title": str(account),
-                        "registrations": getattr(
-                            account, registrations_method_tmpl.format(method)
-                        ),
+                        "registrations": getattr(account, registrations_method_tmpl.format(method)),
                         "total": getattr(account, total_method_tmpl.format(method)),
                     }
                 )
@@ -130,23 +120,21 @@ class AllocationAccountReportView(BackendMixin, ListView):
             renderer.render_to_pdf(filepath)
             with open(filepath, "rb") as f:
                 response = HttpResponse(f.read(), content_type="application/pdf")
-            response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
+            response["Content-Disposition"] = f'attachment; filename="{filename}"'
             return response
-        return super(AllocationAccountReportView, self).get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
 
-class AllocationAccountListView(BackendMixin, ListView):
+class AllocationAccountListView(FullBackendMixin, ListView):
     model = AllocationAccount
     template_name = "backend/allocations/list.html"
 
 
-class AllocationAccountCreateView(SuccessMessageMixin, BackendMixin, CreateView):
+class AllocationAccountCreateView(SuccessMessageMixin, FullBackendMixin, CreateView):
     model = AllocationAccount
     form_class = AllocationAccountForm
     success_url = reverse_lazy("backend:allocation-list")
-    success_message = _(
-        '<a href="%(url)s" class="alert-link">Allocation account (%(number)s)</a> has been created.'
-    )
+    success_message = _('<a href="%(url)s" class="alert-link">Allocation account (%(number)s)</a> has been created.')
     template_name = "backend/allocations/create.html"
 
     def get_success_message(self, cleaned_data):
@@ -154,13 +142,11 @@ class AllocationAccountCreateView(SuccessMessageMixin, BackendMixin, CreateView)
         return mark_safe(self.success_message % {"url": url, "number": self.object.account})
 
 
-class AllocationAccountUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
+class AllocationAccountUpdateView(SuccessMessageMixin, FullBackendMixin, UpdateView):
     model = AllocationAccount
     form_class = AllocationAccountForm
     success_url = reverse_lazy("backend:allocation-list")
-    success_message = _(
-        '<a href="%(url)s" class="alert-link">Allocation account (%(number)s)</a> has been updated.'
-    )
+    success_message = _('<a href="%(url)s" class="alert-link">Allocation account (%(number)s)</a> has been updated.')
     template_name = "backend/allocations/update.html"
 
     def get_success_message(self, cleaned_data):
@@ -168,7 +154,7 @@ class AllocationAccountUpdateView(SuccessMessageMixin, BackendMixin, UpdateView)
         return mark_safe(self.success_message % {"url": url, "number": self.object.account})
 
 
-class AllocationAccountDeleteView(SuccessMessageMixin, BackendMixin, DeleteView):
+class AllocationAccountDeleteView(SuccessMessageMixin, FullBackendMixin, DeleteView):
     model = AllocationAccount
     success_message = _("Allocation has been deleted.")
     success_url = reverse_lazy("backend:allocation-list")

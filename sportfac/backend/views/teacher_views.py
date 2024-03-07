@@ -9,10 +9,10 @@ from registrations.models import Child
 from schools.forms import BuildingForm, TeacherForm, TeacherImportForm
 from schools.models import Building, Teacher
 
-from .mixins import BackendMixin
+from .mixins import FullBackendMixin
 
 
-class TeacherDetailView(BackendMixin, DetailView):
+class TeacherDetailView(FullBackendMixin, DetailView):
     model = Teacher
     template_name = "backend/teacher/detail.html"
 
@@ -27,13 +27,13 @@ class TeacherDetailView(BackendMixin, DetailView):
         return super().get_context_data(**context)
 
 
-class TeacherListView(BackendMixin, ListView):
+class TeacherListView(FullBackendMixin, ListView):
     model = Teacher
     template_name = "backend/teacher/list.html"
     queryset = Teacher.objects.prefetch_related("years", "buildings")
 
 
-class TeacherCreateView(BackendMixin, SuccessMessageMixin, CreateView):
+class TeacherCreateView(FullBackendMixin, SuccessMessageMixin, CreateView):
     model = Teacher
     form_class = TeacherForm
     template_name = "backend/teacher/create.html"
@@ -45,7 +45,7 @@ class TeacherCreateView(BackendMixin, SuccessMessageMixin, CreateView):
         return mark_safe(self.success_message % {"url": url, "name": self.object.get_full_name()})
 
 
-class TeacherUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
+class TeacherUpdateView(FullBackendMixin, SuccessMessageMixin, UpdateView):
     model = Teacher
     form_class = TeacherForm
     template_name = "backend/teacher/update.html"
@@ -53,7 +53,7 @@ class TeacherUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
     success_message = _("Teacher has been updated.")
 
 
-class TeacherDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
+class TeacherDeleteView(FullBackendMixin, SuccessMessageMixin, DeleteView):
     model = Teacher
     template_name = "backend/teacher/confirm_delete.html"
     success_url = reverse_lazy("backend:teacher-list")
@@ -68,7 +68,7 @@ class TeacherDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
         return super().delete(request, *args, **kwargs)
 
 
-class TeacherImportView(BackendMixin, SuccessMessageMixin, FormView):
+class TeacherImportView(FullBackendMixin, SuccessMessageMixin, FormView):
     form_class = TeacherImportForm
     success_url = reverse_lazy("backend:teacher-list")
     success_message = _("Teachers have been imported")
@@ -91,18 +91,18 @@ class TeacherImportView(BackendMixin, SuccessMessageMixin, FormView):
         return super().form_valid(form)
 
 
-class BuildingDetailView(BackendMixin, DetailView):
+class BuildingDetailView(FullBackendMixin, DetailView):
     model = Building
     template_name = "backend/building/detail.html"
 
 
-class BuildingListView(BackendMixin, ListView):
+class BuildingListView(FullBackendMixin, ListView):
     model = Building
     template_name = "backend/building/list.html"
     queryset = Building.objects.prefetch_related("teachers")
 
 
-class BuildingCreateView(BackendMixin, SuccessMessageMixin, CreateView):
+class BuildingCreateView(FullBackendMixin, SuccessMessageMixin, CreateView):
     model = Building
     form_class = BuildingForm
     template_name = "backend/building/create.html"
@@ -114,7 +114,7 @@ class BuildingCreateView(BackendMixin, SuccessMessageMixin, CreateView):
         return mark_safe(self.success_message % {"url": url, "name": self.object.name})
 
 
-class BuildingUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
+class BuildingUpdateView(FullBackendMixin, SuccessMessageMixin, UpdateView):
     model = Building
     form_class = BuildingForm
     template_name = "backend/building/update.html"
@@ -122,7 +122,7 @@ class BuildingUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
     success_message = _("Building has been updated.")
 
 
-class BuildingDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
+class BuildingDeleteView(FullBackendMixin, SuccessMessageMixin, DeleteView):
     model = Building
     template_name = "backend/building/confirm_delete.html"
     success_url = reverse_lazy("backend:building-list")
@@ -137,7 +137,7 @@ class BuildingDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
         return super().delete(request, *args, **kwargs)
 
 
-class BuildingTeacherImportView(BackendMixin, SuccessMessageMixin, FormView):
+class BuildingTeacherImportView(FullBackendMixin, SuccessMessageMixin, FormView):
     form_class = TeacherImportForm
     success_url = reverse_lazy("backend:teacher-list")
     success_message = _("Teachers have been imported")

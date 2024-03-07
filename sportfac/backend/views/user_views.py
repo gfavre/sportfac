@@ -21,7 +21,7 @@ from registrations.models import Bill, Child, ChildActivityLevel, Registration
 
 from ..forms import ChildImportForm
 from ..tasks import import_children
-from .mixins import BackendMixin, ExcelResponseMixin
+from .mixins import BackendMixin, ExcelResponseMixin, FullBackendMixin
 
 
 class MailUsersView(BackendMixin, View):
@@ -85,12 +85,12 @@ class UserExportView(BackendMixin, ExcelResponseMixin, View):
     resource_class = UserResource
 
 
-class ManagerExportView(BackendMixin, ExcelResponseMixin, ManagerMixin, View):
+class ManagerExportView(FullBackendMixin, ExcelResponseMixin, ManagerMixin, View):
     filename = _("managers")
     resource_class = InstructorResource
 
 
-class ManagerListView(ManagerMixin, UserListView):
+class ManagerListView(FullBackendMixin, ManagerMixin, UserListView):
     template_name = "backend/user/manager-list.html"
 
 
@@ -99,7 +99,7 @@ class InstructorExportView(BackendMixin, ExcelResponseMixin, InstructorMixin, Vi
     resource_class = InstructorResource
 
 
-class UserCreateView(BackendMixin, SuccessMessageMixin, CreateView):
+class UserCreateView(FullBackendMixin, SuccessMessageMixin, CreateView):
     model = FamilyUser
     form_class = ManagerForm
     template_name = "backend/user/create.html"
@@ -133,7 +133,7 @@ class ManagerCreateView(UserCreateView):
         return _("Manager %s has been added.") % self.object.full_name
 
 
-class RestrictedAdminListView(BackendMixin, ListView):
+class RestrictedAdminListView(FullBackendMixin, ListView):
     model = FamilyUser
     template_name = "backend/user/restricted-admin-list.html"
 
@@ -193,7 +193,7 @@ class UserUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
         return _("Contact informations of %s have been updated.") % self.object.full_name
 
 
-class UserDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
+class UserDeleteView(FullBackendMixin, SuccessMessageMixin, DeleteView):
     model = FamilyUser
     success_url = reverse_lazy("backend:user-list")
     success_message = _("User %(user)s has been deleted.")
@@ -356,7 +356,7 @@ class ChildDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
     pk_url_kwarg = "child"
 
 
-class ChildImportView(BackendMixin, SuccessMessageMixin, FormView):
+class ChildImportView(FullBackendMixin, SuccessMessageMixin, FormView):
     form_class = ChildImportForm
     success_url = reverse_lazy("backend:child-list")
     success_message = _("Children are being imported")
