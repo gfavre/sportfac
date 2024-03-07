@@ -85,6 +85,14 @@ class Activity(TimeStampedModel):
         verbose_name=_("Allocation account"),
         on_delete=models.SET_NULL,
     )
+
+    managers = models.ManyToManyField(
+        "profiles.FamilyUser",
+        verbose_name=_("Managers"),
+        related_name="managed_activities",
+        blank=True,
+    )
+
     objects = ActivityManager()
 
     class Meta:

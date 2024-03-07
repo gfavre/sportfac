@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
@@ -54,7 +53,7 @@ class FamilyCreationForm(forms.ModelForm):
 
     def save(self, commit=True):
         # Save the provided password in hashed format
-        user = super(FamilyCreationForm, self).save(commit=False)
+        user = super().save(commit=False)
         user.set_password(self.cleaned_data["password1"])
         if commit:
             user.save()
@@ -135,7 +134,7 @@ class FamilyAdmin(SportfacAdminMixin, UserAdmin):
         "is_instructor",
     )
     # change_list_filter_template = "admin/filter_listing.html"
-    list_filter = ("is_staff", "is_superuser", "is_active", "is_manager")
+    list_filter = ("is_staff", "is_superuser", "is_active", "is_manager", "is_restricted_manager")
 
     fieldsets = (
         (
@@ -148,6 +147,7 @@ class FamilyAdmin(SportfacAdminMixin, UserAdmin):
                     "is_superuser",
                     "is_active",
                     "is_manager",
+                    "is_restricted_manager",
                 )
             },
         ),

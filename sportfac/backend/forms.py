@@ -106,6 +106,13 @@ class ActivityWidget(s2forms.ModelSelect2Widget):
         return super().build_attrs(default_attrs, extra_attrs=extra_attrs)
 
 
+class ActivityMultipleWidget(s2forms.ModelSelect2MultipleWidget):
+    search_fields = [
+        "name__icontains",
+        "number__icontains",
+    ]
+
+
 class ChildWidget(s2forms.ModelSelect2Widget):
     search_fields = [
         "first_name__icontains",

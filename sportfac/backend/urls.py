@@ -183,6 +183,7 @@ users_patterns = [
     path("export", view=views.UserExportView.as_view(), name="user-export"),
     path("managers", view=views.ManagerListView.as_view(), name="manager-list"),
     path("managers/export", view=views.ManagerExportView.as_view(), name="manager-export"),
+    path("restricted-managers", view=views.RestrictedAdminListView.as_view(), name="restricted-admin-list"),
     path("instructors", view=views.InstructorListView.as_view(), name="instructor-list"),
     path(
         "instructors/export",

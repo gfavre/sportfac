@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.db import IntegrityError
 
 from celery import shared_task

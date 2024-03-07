@@ -149,6 +149,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         default=False,
         help_text=_("Designates whether the user can log into this admin site."),
     )
+    is_restricted_manager = models.BooleanField(_("Is restricted manager"), default=False)
     is_manager = models.BooleanField(_("Is manager"), default=False)
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
 
@@ -229,7 +230,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
 
     @property
     def is_kepchup_staff(self):
-        return self.is_manager or self.is_superuser or self.is_instructor
+        return self.is_manager or self.is_restricted_manager or self.is_superuser or self.is_instructor
 
     @property
     def is_instructor(self):

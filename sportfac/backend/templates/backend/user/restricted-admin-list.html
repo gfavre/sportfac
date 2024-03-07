@@ -1,0 +1,111 @@
+{% extends "backend/base.html" %}
+{% load i18n sekizai_tags switzerland %}
+{% get_current_language as LANGUAGE_CODE %}
+
+{% block title %}{% trans "List restricted admins" %} - {{ block.super }}{% endblock %}
+{% block page_title %}{% trans "List restricted admins" %}{% endblock %}
+
+{% block content %}
+  {% addtoblock "css" %}
+    <link rel="stylesheet" type="text/css"
+          href="https://cdn.datatables.net/v/dt/dt-1.10.24/b-1.7.0/r-2.2.7/sc-2.0.3/sp-1.2.1/sl-1.3.2/datatables.min.css"/>
+   <style>
+  table.dataTable {
+    border-collapse: collapse;
+  }
+  .blacklisted {
+    border-left: 4px solid black;
+  }
+  </style>
+  {% endaddtoblock %}
+  {% addtoblock "js" %}
+    <script type="text/javascript"
+            src="https://cdn.datatables.net/v/dt/dt-1.10.24/b-1.7.0/r-2.2.7/sc-2.0.3/sp-1.2.1/sl-1.3.2/datatables.js"></script>
+
+    <script>
+      jQuery(document).ready(function ($) {
+        let table = $('#admins').DataTable({
+          columnDefs: [
+            {
+              orderable: false,
+              searchable: false,
+              className: "nobr",
+              targets: ['actions']
+            }
+          ],
+          language: {
+            info: "{% trans 'Showing _START_ to _END_ of _TOTAL_ entries' %}",
+            infoEmpty: "{% trans "Showing 0 to 0 of 0 entries" %}",
+            infoFiltered: "{% trans "(filtered from _MAX_ total entries)" %}",
+            lengthMenu: "{% trans "Show _MENU_ entries" %}",
+            paginate: {
+              first: "{% trans 'First' %}",
+              last: "{% trans 'Last' %}",
+              previous: "{% trans 'Previous' %}",
+              next: "{% trans 'Next' %}"
+            },
+            search: "",
+            searchPlaceholder: "{% trans 'Search' %}",
+            searchPanes: {
+              title: {
+                _: '{% trans 'Filters selected' %} - %d',
+                0: '{% trans "No filter selected" %}'
+              },
+              clearMessage: '{% trans "Clear All" %}'
+            },
+            select: {
+              'rows': {
+                1: "{% trans "%d row selected" %}",
+                _: "{% trans "%d rows selected" %}"
+              }
+            }
+          },
+          'lengthMenu': [[10, 25, 50, -1], [10, 25, 50, "{% trans 'All admins' %}"] ],
+          order: [[0, 'asc']],
+          pageLength: 50,
+        });
+      });
+    </script>
+
+  {% endaddtoblock %}
+
+  <table class="table" id="admins">
+    <thead>
+    <tr>
+      <th class="name">{% trans "Name" %}</th>
+      <th class="activities">{% trans "Activities" %}</th>
+      <th class="actions">{% trans "Actions" %}</th>
+    </tr>
+    </thead>
+    {% for user in object_list %}
+      <tr data-userid="{{ user.id }}">
+        <td data-order="{{ user.last_name }} {{ user.first_name }}"><a
+            href="{{ user.get_backend_url }}">{{ user.full_name }}</a></td>
+        <td>
+            {% for activity in user.managed_activities.all %}
+              <span class="label label-default">{{ activity }}</span>
+            {% endfor %}
+        </td>
+
+        <td>
+          <ul class="list-unstyled">
+            <li class="text-nowrap"><a href="{{ user.get_backend_url }}" class="btn btn-sm"><i
+                class="icon-child"></i>&nbsp;&nbsp;{% trans "Details" %}</a></li>
+            <li class="text-nowrap"><a href="{{ user.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Edit user" %}
+            </a></li>
+            <li class="text-nowrap">
+              <a href="{% url "impersonate-start" uid=user.id %}" class="btn btn-sm">
+                <i class="icon-guidedog"></i> {% trans "Impersonate" %}</a>
+
+            </li>
+            <li class="text-nowrap"><a href="{{ user.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;&nbsp;{% trans "Delete user" %}
+            </a></li>
+
+          </ul>
+        </td>
+      </tr>
+
+    {% endfor %}
+  </table>
+
+{% endblock content %}

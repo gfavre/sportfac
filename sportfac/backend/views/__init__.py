@@ -93,6 +93,7 @@ from .user_views import ManagerCreateView  # noqa F401
 from .user_views import ManagerExportView  # noqa F401
 from .user_views import ManagerListView  # noqa F401
 from .user_views import PasswordSetView  # noqa F401
+from .user_views import RestrictedAdminListView  # noqa F401
 from .user_views import UserCreateView  # noqa F401
 from .user_views import UserDeleteView  # noqa F401
 from .user_views import UserDetailView  # noqa F401

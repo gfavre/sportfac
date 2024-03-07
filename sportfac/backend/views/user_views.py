@@ -133,6 +133,14 @@ class ManagerCreateView(UserCreateView):
         return _("Manager %s has been added.") % self.object.full_name
 
 
+class RestrictedAdminListView(BackendMixin, ListView):
+    model = FamilyUser
+    template_name = "backend/user/restricted-admin-list.html"
+
+    def get_queryset(self):
+        return FamilyUser.objects.filter(is_restricted_manager=True, is_active=True)
+
+
 class InstructorCreateView(UserCreateView):
     success_url = reverse_lazy("backend:instructor-list")
     form_class = InstructorForm

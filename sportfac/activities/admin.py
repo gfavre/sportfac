@@ -67,7 +67,6 @@ class CourseInline(admin.TabularInline):
                 )
             },
         ),
-        (None, {"fields": ("extra",)}),
     )
     ordering = ["start_date", "start_time"]
     verbose_name = _("course")
@@ -85,8 +84,8 @@ class InstructorInline(admin.StackedInline):
 @admin.register(Activity)
 class ActivityAdmin(SportfacModelAdmin):
     list_display = ("number", "name")
-    inlines = [CourseInline]
-
+    search_fields = ("number", "name")
+    filter_horizontal = ("managers",)
     verbose_name = _("activity")
     verbose_name_plural = _("activities")
     ordering = (

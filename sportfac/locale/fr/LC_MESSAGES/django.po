@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-01-29 07:06+0100\n"
-"PO-Revision-Date: 2024-01-29 06:58+0100\n"
+"PO-Revision-Date: 2024-03-06 18:04+0100\n"
 "Last-Translator: Gregory Favre <greg@beyondthewall.ch>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 3.4.1\n"
+"X-Generator: Poedit 3.4.2\n"
 
 #: sportfac/absences/admin.py:26 sportfac/activities/admin.py:73
 #: sportfac/activities/admin.py:175 sportfac/activities/models.py:311
@@ -4201,7 +4201,7 @@ msgstr "Dernière inscription"
 #: sportfac/backend/templates/backend/user/manager-list.html:5
 #: sportfac/backend/templates/backend/user/manager-list.html:6
 msgid "List managers"
-msgstr "Tous les gestionnaires"
+msgstr "Tous les administrateurs"
 
 #: sportfac/backend/templates/backend/user/manager-list.html:135
 msgid "New manager"
@@ -4209,7 +4209,7 @@ msgstr "Nouveau gestionnaire"
 
 #: sportfac/backend/templates/backend/user/manager-list.html:138
 msgid "Export managers"
-msgstr "Exporter les gestionnaires"
+msgstr "Exporter les administrateurs"
 
 #: sportfac/backend/templates/backend/user/password-change.html:4
 #: sportfac/backend/templates/backend/user/password-change.html:5
@@ -4641,7 +4641,7 @@ msgstr "utilisateurs"
 
 #: sportfac/backend/views/user_views.py:89
 msgid "managers"
-msgstr "gestionnaires"
+msgstr "administrateurs"
 
 #: sportfac/backend/views/user_views.py:116
 #, python-format
@@ -4651,7 +4651,7 @@ msgstr "L'utilisateur %s a été ajouté."
 #: sportfac/backend/views/user_views.py:133
 #, python-format
 msgid "Manager %s has been added."
-msgstr "Le gestionnaire %s a été ajouté."
+msgstr "L'administrateur %s a été ajouté."
 
 #: sportfac/backend/views/user_views.py:151
 #, python-format
@@ -5150,7 +5150,7 @@ msgstr "Informations de connexion"
 
 #: sportfac/profiles/forms.py:219
 msgid "Is a manager"
-msgstr "Gestionnaire de sport facultatif"
+msgstr "Administrateur"
 
 #: sportfac/profiles/forms.py:220
 msgid "Grant access for this user to this backend interface"
@@ -5307,7 +5307,7 @@ msgstr ""
 
 #: sportfac/profiles/models.py:152
 msgid "Is manager"
-msgstr "Gestionnaire de sport facultatif"
+msgstr "Administrateur"
 
 #: sportfac/profiles/models.py:153
 msgid "date joined"
@@ -5518,11 +5518,11 @@ msgstr "Validé par le parent"
 
 #: sportfac/registrations/models.py:42 sportfac/registrations/models.py:378
 msgid "Canceled by administrator"
-msgstr "Annulé par le gestionnaire"
+msgstr "Annulé par l'administrateur"
 
 #: sportfac/registrations/models.py:43
 msgid "Confirmed by administrator"
-msgstr "Confirmé par le gestionnaire"
+msgstr "Confirmé par l'administrateur"
 
 #: sportfac/registrations/models.py:46
 msgid "Expired"

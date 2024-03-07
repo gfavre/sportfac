@@ -6,6 +6,8 @@ from django.urls import reverse
 from django.utils.html import mark_safe
 from django.utils.translation import gettext_lazy as _
 
+from activities.models import Activity
+from backend.forms import ActivityMultipleWidget
 from bootstrap_datepicker_plus.widgets import DatePickerInput
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Field, Fieldset, Layout, Submit
@@ -214,18 +216,61 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
 
 
 class ManagerForm(UserForm):
+    managed_activities = forms.ModelMultipleChoiceField(
+        label=_("Rights on activities"),
+        queryset=Activity.objects.all(),
+        widget=ActivityMultipleWidget()
+        # required=True,
+    )
+
     is_manager = forms.BooleanField(
         required=False,
         label=_("Is a manager"),
         help_text=_("Grant access for this user to this backend interface"),
     )
+    is_restricted_manager = forms.BooleanField(
+        label=_("Restricted manager"),
+        required=False,
+        help_text=_("Grant access for this user on specific activities"),
+    )
+
+    def clean(self):
+        super().clean()
+        is_restricted_manager = self.cleaned_data.get("is_restricted_manager")
+        managed_activities = self.cleaned_data.get("managed_activities")
+
+        # If is_restricted_manager is not ticked, ensure managed_activities is empty
+        if not is_restricted_manager and managed_activities:
+            self.add_error("managed_activities", _("Managed activities must be empty if not a restricted manager."))
+
+        return self.cleaned_data
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if commit:
+            instance.save()
+            if "managed_activities" in self.cleaned_data:
+                instance.managed_activities.clear()
+                for activity in self.cleaned_data["managed_activities"]:
+                    instance.managed_activities.add(activity)
+        return instance
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         instance = kwargs["instance"]
         if instance:
             self.fields["is_manager"].initial = instance.is_manager
-        self.helper.layout.append("is_manager")
+            self.fields["is_restricted_manager"].initial = instance.is_restricted_manager
+            self.fields["managed_activities"].initial = instance.managed_activities.all()
+        self.helper.layout.append(
+            Fieldset(
+                _("Management access"),
+                "is_manager",
+                HTML("<hr>"),
+                "is_restricted_manager",
+                "managed_activities",
+            )
+        )
 
 
 class InstructorForm(ManagerForm):
