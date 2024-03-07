@@ -3,7 +3,7 @@
 {% get_current_language as LANGUAGE_CODE %}
 
 {% block title %}{% trans "List restricted admins" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "List restricted admins" %}{% endblock %}
+{% block page_title %} <i class="icon-rebel"></i> {% trans "Restricted admins" %}{% endblock %}
 
 {% block content %}
   {% addtoblock "css" %}
@@ -68,6 +68,13 @@
     </script>
 
   {% endaddtoblock %}
+  <p >
+  {% blocktrans %}These users have restricted access to the backend. They can only manage the activities they are
+    assigned to. They can also manage the users of these activities and their registrations, but can't change general
+    settings or assign management rights.
+  {% endblocktrans %}
+  </p>
+  <hr>
 
   <table class="table" id="admins">
     <thead>
@@ -89,12 +96,10 @@
 
         <td>
           <ul class="list-unstyled">
-            <li class="text-nowrap"><a href="{{ user.get_backend_url }}" class="btn btn-sm"><i
-                class="icon-child"></i>&nbsp;&nbsp;{% trans "Details" %}</a></li>
             <li class="text-nowrap"><a href="{{ user.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Edit user" %}
             </a></li>
             <li class="text-nowrap">
-              <a href="{% url "impersonate-start" uid=user.id %}" class="btn btn-sm">
+              <a href="{% url "impersonate-start" uid=user.id %}?next={% url "backend:home" %}" class="btn btn-sm">
                 <i class="icon-guidedog"></i> {% trans "Impersonate" %}</a>
 
             </li>

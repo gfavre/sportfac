@@ -59,7 +59,7 @@
                   </li>
                 {% endif %}
               {% endfor %}
-              {% if user.is_manager or user.is_superuser %}
+              {% if user.is_full_manager %}
                 <li class="divider"></li>
                 <li>
                   <a href="{% url 'backend:year-list' %}"><i class="icon-exchange"></i> {% trans "Manage periods" %}</a>
@@ -117,7 +117,7 @@
               {% endif %}
 
 
-              {% if user.is_manager or user.is_staff or user.is_superuser %}
+              {% if user.has_management_rights %}
                 <li class="divider"></li>
                 <li>
                   <a href="{% url 'backend:home' %}"><i class="icon-cogs"></i> {% trans "Administration" %}</a>

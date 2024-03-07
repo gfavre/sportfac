@@ -52,9 +52,8 @@
                 &nbsp;&nbsp;{% trans "Export courses" %}
               </a>
             </li>
-
-
-            {% if ENABLE_PAYROLLS %}
+            {% if ENABLE_PAYROLLS and user.is_full_manager %}
+%}
               <li class="divider"></li>
               <li>
                 <a href="{% url 'backend:function-list' %}">
@@ -72,7 +71,6 @@
                 </a>
               </li>
             {% endif %}
-
           </ul>
         </li>
 
@@ -109,7 +107,7 @@
               </li>
             {% endif %}
 
-            {% if ENABLE_ALLOCATION_ACCOUNTS %}
+            {% if ENABLE_ALLOCATION_ACCOUNTS and user.is_full_manager %}
               <li class="divider"></li>
               <li>
                 <a href="{% url 'backend:allocation-list' %}">
@@ -160,10 +158,17 @@
                 &nbsp;&nbsp;{% trans "All instructors" %}
               </a>
             </li>
+            {% if user.is_full_manager %}
             <li>
               <a href="{% url 'backend:manager-list' %}">
                 <i class="icon-hammer"></i>
                 &nbsp;&nbsp;{% trans "All managers" %}
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'backend:restricted-admin-list' %}">
+                <i class="icon-rebel"></i>
+                &nbsp;&nbsp;{% trans "All restricted administrators" %}
               </a>
             </li>
             <li class="divider"></li>
@@ -172,6 +177,7 @@
                 <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New user" %}
               </a>
             </li>
+            {% endif %}
 
           </ul>
         </li>
@@ -181,7 +187,7 @@
             <i class="icon-down-open"></i>
           </a>
           <ul class="dropdown-menu" role="menu">
-            {% if ENABLE_TEACHER_MANAGEMENT %}
+            {% if ENABLE_TEACHER_MANAGEMENT and user.is_full_manager %}
               <li>
                 <a href="{% url 'backend:teacher-list' %}">
                   <i class="icon-adult"></i>
@@ -212,14 +218,14 @@
                 &nbsp;&nbsp;{% trans "New student" %}
               </a>
             </li>
-            {% if IMPORT_CHILDREN %}
+            {% if IMPORT_CHILDREN and user.is_full_manager %}
               <li>
                 <a href="{% url 'backend:child-import' %}">
                   <i class="icon-doc-new"></i>&nbsp;&nbsp;{% trans "Import students" %}
                 </a>
               </li>
             {% endif %}
-            {% if USE_BUILDINGS %}
+            {% if USE_BUILDINGS and user.is_full_manager %}
               <li class="divider"></li>
               <li>
                 <a href="{% url 'backend:building-list' %}">
@@ -235,6 +241,7 @@
             {% endif %}
           </ul>
         </li>
+        {% if user.is_full_manager %}
         <li class="dropdown">
           <a href="" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
             {% trans "Site" %}
@@ -272,6 +279,7 @@
             {% endif %}
           </ul>
         </li>
+        {% endif %}
       </ul>
     </nav>
   </div> <!-- /.container -->

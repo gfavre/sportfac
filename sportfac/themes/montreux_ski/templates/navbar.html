@@ -80,7 +80,7 @@ jQuery(function($){
                   </li>
                 {% endif %}
               {% endfor %}
-              {% if user.is_manager or user.is_superuser %}
+              {% if user.full_manager %}
               <li class="divider"></li>
               <li>
                 <a href="{% url 'backend:year-list' %}"><i class="icon-exchange"></i> {% trans "Manage periods" %}</a>
@@ -137,7 +137,7 @@ jQuery(function($){
               {% endif %}
 
 
-              {% if user.is_manager or user.is_staff or user.is_superuser %}
+              {% if user.has_management_rights %}
                 <li class="divider"></li>
                 <li>
                   <a href="{% url 'backend:home' %}"><i class="icon-cogs"></i> {% trans "Administration" %}</a>

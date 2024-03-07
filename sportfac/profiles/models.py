@@ -233,6 +233,14 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         return self.is_manager or self.is_restricted_manager or self.is_superuser or self.is_instructor
 
     @property
+    def has_management_rights(self):
+        return self.is_manager or self.is_superuser or self.is_restricted_manager
+
+    @property
+    def is_full_manager(self):
+        return self.is_manager or self.is_superuser
+
+    @property
     def is_instructor(self):
         return self.coursesinstructors_set.exists()
 

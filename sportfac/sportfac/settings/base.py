@@ -693,4 +693,5 @@ KEPCHUP_NYON_MARENS_EMAIL_RECIPIENTS = ADMINS
 IMPERSONATE = {
     "USE_HTTP_REFERER": True,
     "CUSTOM_ALLOW": "profiles.utils.can_impersonate",
+    "REDIRECT_FIELD_NAME": "next",
 }

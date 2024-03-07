@@ -14,18 +14,18 @@ from dateutil.relativedelta import relativedelta
 from payroll.forms import FunctionForm, PayrollExportForm
 from payroll.models import Function
 
-from .mixins import BackendMixin
+from .mixins import FullBackendMixin
 
 
 # TODO: think about a functiondetailview that lists all instructors of a given function and their associated course.
 
 
-class FunctionListView(BackendMixin, ListView):
+class FunctionListView(FullBackendMixin, ListView):
     model = Function
     template_name = "backend/payroll/function_list.html"
 
 
-class FunctionCreateView(BackendMixin, SuccessMessageMixin, CreateView):
+class FunctionCreateView(FullBackendMixin, SuccessMessageMixin, CreateView):
     form_class = FunctionForm
     template_name = "backend/payroll/function_create.html"
     success_url = reverse_lazy("backend:function-list")
@@ -35,13 +35,13 @@ class FunctionCreateView(BackendMixin, SuccessMessageMixin, CreateView):
         return mark_safe(self.success_message % {"name": self.object.name})
 
 
-class FunctionDeleteView(BackendMixin, DeleteView):
+class FunctionDeleteView(FullBackendMixin, DeleteView):
     model = Function
     template_name = "backend/payroll/function_confirm_delete.html"
     success_url = reverse_lazy("backend:function-list")
 
 
-class FunctionUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
+class FunctionUpdateView(FullBackendMixin, SuccessMessageMixin, UpdateView):
     model = Function
     form_class = FunctionForm
     template_name = "backend/payroll/function_update.html"
@@ -49,22 +49,20 @@ class FunctionUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
     success_message = _("Function has been updated.")
 
 
-class SupervisorRolesList(BackendMixin, ListView):
+class SupervisorRolesList(FullBackendMixin, ListView):
     model = CoursesInstructors
     template_name = "backend/payroll/supervisor_roles_list.html"
 
     def get_queryset(self):
-        return CoursesInstructors.objects.select_related(
-            "course", "course__activity", "instructor", "function"
-        ).all()
+        return CoursesInstructors.objects.select_related("course", "course__activity", "instructor", "function").all()
 
     def get_context_data(self, **kwargs):
-        context = super(SupervisorRolesList, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["functions"] = Function.objects.all()
         return context
 
 
-class PayrollReportView(BackendMixin, ListView):
+class PayrollReportView(FullBackendMixin, ListView):
     model = CoursesInstructors
     template_name = "backend/payroll/payroll_report.html"
 
@@ -73,9 +71,7 @@ class PayrollReportView(BackendMixin, ListView):
         end = now()
         if "start" in self.request.GET:
             try:
-                start = datetime.datetime.strptime(
-                    self.request.GET.get("start"), "%Y-%m-%d"
-                ).date()
+                start = datetime.datetime.strptime(self.request.GET.get("start"), "%Y-%m-%d").date()
             except ValueError:
                 pass
         if "end" in self.request.GET:
@@ -86,18 +82,16 @@ class PayrollReportView(BackendMixin, ListView):
         return start, end
 
     def get_queryset(self):
-        qs = super(PayrollReportView, self).get_queryset().select_related("course", "instructor")
+        qs = super().get_queryset().select_related("course", "instructor")
         start, end = self.get_start_end()
         sessions = Session.objects.filter(date__gte=start, date__lte=end).values_list(
             "course", "instructor", "export_date"
         )
         exported_count = {}
         not_exported_count = {}
-        for (course_id, instructor_id, export_date) in sessions:
+        for course_id, instructor_id, export_date in sessions:
             if export_date is not None:
-                exported_count[(course_id, instructor_id)] = (
-                    exported_count.get((course_id, instructor_id), 0) + 1
-                )
+                exported_count[(course_id, instructor_id)] = exported_count.get((course_id, instructor_id), 0) + 1
             else:
                 not_exported_count[(course_id, instructor_id)] = (
                     not_exported_count.get((course_id, instructor_id), 0) + 1
@@ -112,7 +106,7 @@ class PayrollReportView(BackendMixin, ListView):
         return qs
 
     def get_context_data(self, **kwargs):
-        context = super(PayrollReportView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["start"], context["end"] = self.get_start_end()
         if "form" not in kwargs:
             context["form"] = PayrollExportForm()
@@ -130,7 +124,6 @@ class PayrollReportView(BackendMixin, ListView):
             obj.generate_csv()
             filename = obj.csv_file.name.split("/")[-1]
             response = HttpResponse(obj.csv_file.file, content_type="text/csv")
-            response["Content-Disposition"] = 'attachment; filename="{0}"'.format(filename)
+            response["Content-Disposition"] = f'attachment; filename="{filename}"'
             return response
-        else:
-            return self.render_to_response(self.get_context_data(form=form))
+        return self.render_to_response(self.get_context_data(form=form))

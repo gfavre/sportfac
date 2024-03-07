@@ -11,6 +11,13 @@ class BackendMixin(LoginRequiredMixin, UserPassesTestMixin):
         return user.is_active and (user.is_staff or user.is_superuser or user.is_manager or user.is_restricted_manager)
 
 
+class FullBackendMixin(LoginRequiredMixin, UserPassesTestMixin):
+    """Mixin for backend. Ensure that the user is logged in and is a sports manager or course supervisor."""
+
+    def test_func(self, user):
+        return user.is_active and (user.is_staff or user.is_superuser or user.is_manager)
+
+
 class KepchupStaffMixin(LoginRequiredMixin, UserPassesTestMixin):
     """Mixin for backend. Ensure that the user is logged in and is a sports manager or course supervisor."""
 
