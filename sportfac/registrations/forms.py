@@ -200,18 +200,17 @@ class MoveRegistrationsForm(forms.Form):
         queryset=Registration.objects.all(), widget=forms.MultipleHiddenInput
     )
     destination = RegistrationModelChoiceField(
-        queryset=Course.objects.select_related("activity"),  # \
-        #                       .annotate(
-        #    nb_participants=Count(Case(
-        #        When(participants__status__in=['waiting', 'valid', 'confirmed'], then=1),
-        #        output_field=IntegerField()
-        #    )),
-        # ),
+        queryset=Course.objects.all(),
         widget=CourseWidget(),
     )
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
+        course_qs = Course.objects.select_related("activity")
+        if user and user.is_restricted_manager:
+            course_qs = course_qs.filter(activity__managers=user)
+        self.fields["destination"].queryset = course_qs
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.form_class = "form-horizontal"

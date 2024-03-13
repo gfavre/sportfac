@@ -4,6 +4,7 @@ from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from profiles.models import FamilyUser
+from registrations.models import Registration
 from rest_framework import generics
 from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework_datatables.pagination import DatatablesPageNumberPagination
@@ -25,6 +26,14 @@ class DashboardFamilyView(generics.ListAPIView):
 
     class Meta:
         datatables_extra_json = ("get_search_panes",)
+
+    def get_queryset(self):
+        qs = FamilyUser.active_objects.prefetch_related("children").select_related("profile")
+        user: FamilyUser = self.request.user
+        if user.is_restricted_manager:
+            registrations = Registration.objects.filter(course__activity__in=user.managed_activities.all())
+            return qs.filter(children__registrations__in=registrations).distinct()
+        return qs
 
     def get_search_panes(self):
         return "searchPanes", {

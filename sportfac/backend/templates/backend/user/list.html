@@ -199,9 +199,11 @@
   <a href="{% url 'backend:user-create' %}" class="btn btn-success hidden-print">
     <i class="icon-plus"></i> {% trans "New user" %}
   </a>
+  {% if user.is_full_manager %}
   <a href="{% url 'backend:user-export' %}" class="btn btn-default hidden-print">
     <i class="icon-file-excel"></i> {% trans "Export all users" %}
   </a>
+  {% endif %}
   <hr class="hidden-print"/>
 
   <div class="hidden-print">

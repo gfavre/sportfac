@@ -97,7 +97,7 @@
                 <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New registration" %}
               </a>
             </li>
-            {% if not NO_PAYMENT %}
+            {% if not NO_PAYMENT and user.is_full_manager%}
               <li class="divider"></li>
               <li>
                 <a href="{% url 'backend:bill-list' %}">

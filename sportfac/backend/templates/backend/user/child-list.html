@@ -102,72 +102,17 @@
       });
     </script>
 
-    <!--
-
-  <script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
-<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.tableTools.min.js"></script>
-<script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
-<script>
-$(function () {
-  var t = $(".table").dataTable({
-{% if LANGUAGE_CODE == 'fr' %}
-      "language": {
-            "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
-      },
-{% endif %}
-      aoColumnDefs: [
-          { 'sType': 'numeric', 'aTargets': [ 'lagapeo' ]},
-          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ 'actions' ] }
-      ],
-      'lengthMenu': [[10, 25, 50, -1], [10, 25, 50, "{% trans 'All students' %}"] ],
-      pageLength: 50,
-
-      dom: 'T<"clear">lfrtip',
-      tableTools: {
-            "sRowSelect": "multi",
-            "aButtons": [ ],
-            'fnRowSelected': function(){
-                $('.needs-select').removeClass('disabled');
-            },
-            'fnRowDeselected': function(){
-                if ($('tr.active').length == 0){
-                    $('.needs-select').addClass('disabled');
-                }
-            }
-      }
-
-  });
-
-
-  $('.selectall').click(function(){
-      var tabletools = TableTools.fnGetInstance(t[0]);
-      tabletools.fnSelectAll(true);
-  });
-  $('.deselectall').click(function(){
-      var tabletools = TableTools.fnGetInstance(t[0]);
-      tabletools.fnSelectNone();
-  });
-
-  $('form.mail').submit(function(){
-    var tabletools = TableTools.fnGetInstance(t[0]);
-    var ids = tabletools.fnGetSelected().map(function(elem){
-        return elem.getAttribute('data-userid');
-    });
-    $('input[name="data"]').val(JSON.stringify(ids));
-  });
-
-});
-</script>-->
   {% endaddtoblock %}
 
+  {% if user.is_full_manager %}
   <a href="{% url 'backend:child-import' %}" class="btn btn-success">
     <i class="icon-doc-new"></i>&nbsp;&nbsp;{% trans "Import students" %}
   </a>&nbsp;
   <a href="{% url 'backend:child-new' %}" class="btn btn-success">
     <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New student" %}
   </a>
-
   <hr/>
+  {% endif %}
 
   <table class="table" id="children">
     <thead>
@@ -231,12 +176,19 @@ $(function () {
             <li class="text-nowrap"><a href="{{ child.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Edit student" %}
             </a></li>
             {% if USE_ABSENCES %}
-              <li class="text-nowrap"><a href="{{ child.get_backend_absences_url }}" class="btn btn-sm"><i
-                  class="icon-calendar"></i>&nbsp;{% trans "Review absences" %}</a></li>
+            <li class="text-nowrap">
+              <a href="{{ child.get_backend_absences_url }}" class="btn btn-sm">
+                <i class="icon-calendar"></i>&nbsp;{% trans "Review absences" %}
+              </a>
+            </li>
             {% endif %}
-            <li class="text-nowrap"><a href="{{ child.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;&nbsp;{% trans "Delete student" %}
-            </a></li>
-
+            {% if user.is_full_manager %}
+            <li class="text-nowrap">
+              <a href="{{ child.get_delete_url }}" class="btn btn-sm">
+                <i class="icon-trash"></i>&nbsp;&nbsp;{% trans "Delete student" %}
+              </a>
+            </li>
+            {% endif %}
           </ul>
         </td>
       </tr>

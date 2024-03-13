@@ -440,7 +440,7 @@ class FamilySerializer(serializers.ModelSerializer):
 
     # noinspection PyMethodMayBeStatic
     def get_actions(self, obj):
-        return [
+        actions = [
             {"url": obj.get_backend_url(), "label": _("User details"), "icon_class": "icon-user"},
             {"url": obj.get_update_url(), "label": _("Update user"), "icon_class": "icon-edit"},
             {
@@ -448,8 +448,12 @@ class FamilySerializer(serializers.ModelSerializer):
                 "label": _("Impersonate"),
                 "icon_class": "icon-guidedog",
             },
-            {"url": obj.get_delete_url(), "label": _("Delete user"), "icon_class": "icon-trash"},
         ]
+        if self.context["request"].user.is_full_manager:
+            actions.append(
+                {"url": obj.get_delete_url(), "label": _("Delete user"), "icon_class": "icon-trash"},
+            )
+        return actions
 
 
 class InlineCourseSerializer(serializers.ModelSerializer):

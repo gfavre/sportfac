@@ -53,8 +53,14 @@ class UserListView(BackendMixin, ListView):
     template_name = "backend/user/list.html"
 
     def get_queryset(self):
-        return (
-            FamilyUser.active_objects.annotate(num_children=Count("children"))
+        qs = FamilyUser.active_objects.all()
+        user: FamilyUser = self.request.user
+        if user.is_restricted_manager:
+            registrations = Registration.objects.filter(course__activity__in=user.managed_activities.all())
+            qs = qs.filter(children__registrations__in=registrations).distinct()
+
+        qs = (
+            qs.annotate(num_children=Count("children"))
             .annotate(
                 valid_registrations=Count(
                     Case(When(children__registrations__in=Registration.objects.validated(), then=1))
@@ -66,6 +72,8 @@ class UserListView(BackendMixin, ListView):
             )
             .prefetch_related("children")
         )
+
+        return qs
 
     def post(self, request, *args, **kwargs):
         data = json.loads(request.POST.get("data", "[]"))
@@ -80,7 +88,7 @@ class InstructorListView(InstructorMixin, UserListView):
     template_name = "backend/user/instructor-list.html"
 
 
-class UserExportView(BackendMixin, ExcelResponseMixin, View):
+class UserExportView(FullBackendMixin, ExcelResponseMixin, View):
     filename = _("users")
     resource_class = UserResource
 
@@ -94,7 +102,7 @@ class ManagerListView(FullBackendMixin, ManagerMixin, UserListView):
     template_name = "backend/user/manager-list.html"
 
 
-class InstructorExportView(BackendMixin, ExcelResponseMixin, InstructorMixin, View):
+class InstructorExportView(FullBackendMixin, ExcelResponseMixin, InstructorMixin, View):
     filename = _("instructors")
     resource_class = InstructorResource
 
@@ -250,7 +258,18 @@ class PasswordSetView(BackendMixin, SuccessMessageMixin, FormView):
         return super().form_valid(form)
 
 
-class ChildDetailView(BackendMixin, DetailView):
+class ChildMixin(BackendMixin):
+    def get_queryset(self):
+        # noinspection PyUnresolvedReferences
+        user: FamilyUser = self.request.user
+        qs = Child.objects.select_related("family", "school_year", "school", "building")
+        if user.is_restricted_manager:
+            registrations = Registration.objects.filter(course__activity__in=user.managed_activities.all())
+            return qs.filter(registrations__in=registrations).distinct()
+        return qs
+
+
+class ChildDetailView(ChildMixin, DetailView):
     model = Child
     template_name = "backend/user/child-detail.html"
     pk_url_kwarg = "child"
@@ -258,15 +277,12 @@ class ChildDetailView(BackendMixin, DetailView):
     slug_field = "id_lagapeo"
 
 
-class ChildListView(BackendMixin, ListView):
+class ChildListView(ChildMixin, ListView):
     model = Child
     template_name = "backend/user/child-list.html"
 
-    def get_queryset(self):
-        return Child.objects.select_related("family", "school_year", "school", "building")
 
-
-class ChildCreateView(BackendMixin, SuccessMessageMixin, CreateView):
+class ChildCreateView(FullBackendMixin, SuccessMessageMixin, CreateView):
     model = Child
     form_class = ChildForm
     template_name = "backend/user/child-create.html"
@@ -302,7 +318,7 @@ class ChildCreateView(BackendMixin, SuccessMessageMixin, CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class ChildUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
+class ChildUpdateView(ChildMixin, SuccessMessageMixin, UpdateView):
     model = Child
     form_class = ChildUpdateForm
     template_name = "backend/user/child-update.html"
@@ -313,11 +329,10 @@ class ChildUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
         return _("Child %s has been updated.") % self.object.full_name
 
 
-class ChildAbsencesView(BackendMixin, DetailView):
+class ChildAbsencesView(ChildMixin, DetailView):
     model = Child
     pk_url_kwarg = "child"
     template_name = "backend/user/absences.html"
-    queryset = Child.objects.prefetch_related()
 
     def get_context_data(self, **kwargs):
         child = self.get_object()
@@ -348,7 +363,7 @@ class ChildAbsencesView(BackendMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
-class ChildDeleteView(BackendMixin, SuccessMessageMixin, DeleteView):
+class ChildDeleteView(FullBackendMixin, SuccessMessageMixin, DeleteView):
     model = Child
     template_name = "backend/user/child-confirm_delete.html"
     success_url = reverse_lazy("backend:child-list")

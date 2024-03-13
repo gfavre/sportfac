@@ -27,6 +27,7 @@ from backend.forms import (
     SendConfirmationForm,
 )
 from formtools.wizard.views import SessionWizardView
+from profiles.models import FamilyUser as User
 from registrations.forms import BillExportForm, BillForm, MoveRegistrationsForm, MoveTransportForm, TransportForm
 from registrations.models import Bill, ExtraInfo, Registration, Transport
 from registrations.resources import BillResource, RegistrationResource
@@ -38,12 +39,20 @@ from .mixins import BackendMixin, ExcelResponseMixin, FullBackendMixin
 logger = logging.getLogger(__name__)
 
 
-class RegistrationDetailView(BackendMixin, DetailView):
+class RegistrationMixin(BackendMixin):
+    def get_queryset(self):
+        user: User = self.request.user
+        if user.is_full_manager:
+            return super().get_queryset()
+        return Registration.objects.filter(course__activity__in=user.managed_activities.all())
+
+
+class RegistrationDetailView(RegistrationMixin, DetailView):
     model = Registration
     template_name = "backend/registration/detail.html"
 
 
-class RegistrationExportView(BackendMixin, ExcelResponseMixin, View):
+class RegistrationExportView(RegistrationMixin, ExcelResponseMixin, View):
     filename = _("registrations")
 
     def get_resource(self):
@@ -53,13 +62,16 @@ class RegistrationExportView(BackendMixin, ExcelResponseMixin, View):
         return self.render_to_response()
 
 
-class RegistrationListView(BackendMixin, ListView):
+class RegistrationListView(RegistrationMixin, ListView):
     model = Registration
     template_name = "backend/registration/list.html"
 
     def get_queryset(self):
-        return Registration.objects.select_related("course", "child", "child__family").prefetch_related(
-            "course__activity"
+        return (
+            super()
+            .get_queryset()
+            .select_related("course", "child", "child__family")
+            .prefetch_related("course__activity")
         )
 
 
@@ -82,6 +94,11 @@ class RegistrationsMoveView(BackendMixin, FormView):
             except (IndexError, TypeError, Activity.DoesNotExist):
                 pass
         return initial
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
 
     def form_valid(self, form):
         destination_course = form.cleaned_data["destination"]
@@ -204,8 +221,14 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
             self.instance = Registration()
         return self.instance
 
+    def get_form_kwargs(self, step=None):
+        kwargs = super().get_form_kwargs(step)
+        if step == _("Course"):
+            kwargs.update({"user": self.request.user})
+        return kwargs
 
-class RegistrationDeleteView(BackendMixin, DeleteView):
+
+class RegistrationDeleteView(RegistrationMixin, DeleteView):
     model = Registration
     template_name = "backend/registration/confirm_delete.html"
 
@@ -226,12 +249,17 @@ class RegistrationDeleteView(BackendMixin, DeleteView):
         return HttpResponseRedirect(success_url)
 
 
-class RegistrationUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
+class RegistrationUpdateView(SuccessMessageMixin, RegistrationMixin, UpdateView):
     model = Registration
     form_class = RegistrationForm
     template_name = "backend/registration/update.html"
     success_message = _("Registration has been updated.")
     success_url = reverse_lazy("backend:registration-list")
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
 
     def get_success_url(self):
         course = self.request.GET.get("course", None)
@@ -314,7 +342,11 @@ class RegistrationValidateView(BackendMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["registrations"] = Registration.objects.filter(status=Registration.STATUS.waiting)
+        registration_qs = Registration.objects.filter(status=Registration.STATUS.waiting)
+        user: User = self.request.user
+        if user.is_restricted_manager:
+            registration_qs = registration_qs.filter(course__activity__in=user.managed_activities.all())
+        context["registrations"] = registration_qs
         return context
 
     def post(self, request, *args, **kwargs):
@@ -340,7 +372,7 @@ class RegistrationValidateView(BackendMixin, TemplateView):
         return HttpResponseRedirect(reverse_lazy("backend:registration-list"))
 
 
-class BillListView(BackendMixin, ListView):
+class BillListView(FullBackendMixin, ListView):
     model = Bill
     template_name = "backend/registration/bill-list.html"
 
@@ -397,7 +429,7 @@ class BillListView(BackendMixin, ListView):
         return self.render_to_response(self.get_context_data(form=form))
 
 
-class BillDetailView(BackendMixin, BillMixin, PaymentMixin, DetailView):
+class BillDetailView(FullBackendMixin, BillMixin, PaymentMixin, DetailView):
     """
     Display the bill: admin view
     """
@@ -413,7 +445,7 @@ class BillDetailView(BackendMixin, BillMixin, PaymentMixin, DetailView):
         return context
 
 
-class BillUpdateView(SuccessMessageMixin, BackendMixin, UpdateView):
+class BillUpdateView(SuccessMessageMixin, FullBackendMixin, UpdateView):
     model = Bill
     form_class = BillForm
     template_name = "backend/registration/bill-update.html"

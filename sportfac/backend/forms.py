@@ -5,6 +5,7 @@ from django import forms
 from django.conf import settings
 from django.contrib.flatpages.models import FlatPage
 from django.forms import inlineformset_factory
+from django.forms.models import BaseInlineFormSet
 from django.forms.widgets import TextInput
 from django.utils.html import mark_safe
 from django.utils.translation import gettext as _
@@ -13,7 +14,7 @@ from activities.models import Course, ExtraNeed
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Fieldset, Layout, Submit
+from crispy_forms.layout import HTML, Fieldset, Layout, Submit
 from django_select2 import forms as s2forms
 from registrations.models import Child, ExtraInfo, Registration
 from registrations.utils import check_children_load_format
@@ -235,16 +236,11 @@ class CourseSelectMixin:
     )
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
         course_qs = Course.objects.select_related("activity")
-        if self.instance.pk:
-            # course_qs = course_qs.filter(
-            #    Q(pk=self.instance.course.pk) | Q(nb_participants__lt=F('max_participants'))
-            # )
-            # course_qs = course_qs.filter(pk=self.instance.course.pk)
-            course_qs = course_qs.all()
-        # else:
-        #    course_qs = course_qs.filter(nb_participants__lt=F('max_participants'))
+        if user and user.is_restricted_manager:
+            course_qs = course_qs.filter(activity__in=user.managed_activities.all())
         try:
             if settings.KEPCHUP_LIMIT_BY_SCHOOL_YEAR:
                 if self.instance.child.school_year:
@@ -360,10 +356,28 @@ class ExtraInfoForm(forms.ModelForm):
 
             elif self.instance.key.type == "I":
                 self.fields["value"] = forms.IntegerField(label=_("Answer"))
+        self.helper.layout = Layout("key", "value", HTML("<hr>"))
+
+
+class HorizontalInlineFormSet(BaseInlineFormSet):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_class = "form-horizontal"
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-10"
 
 
 ExtraInfoFormSet = inlineformset_factory(
-    Registration, ExtraInfo, form=ExtraInfoForm, fields=("key", "value"), extra=0, can_delete=False
+    Registration,
+    ExtraInfo,
+    form=ExtraInfoForm,
+    fields=("key", "value"),
+    extra=0,
+    can_delete=False,
+    formset=HorizontalInlineFormSet,
 )
 
 
@@ -387,8 +401,11 @@ class CourseSelectForm(CourseSelectMixin, forms.ModelForm):
     """Course selection, used in registration creation wizard"""
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
         course_qs = self.fields["course"].queryset
+        if user and user.is_restricted_manager:
+            course_qs = course_qs.filter(activity__in=user.managed_activities.all())
         # do not offer registrations to already registered courses.
         try:
             if self.instance.child.registrations.count():
@@ -397,6 +414,7 @@ class CourseSelectForm(CourseSelectMixin, forms.ModelForm):
                 )
         except Child.DoesNotExist:
             pass
+
         self.fields["course"].queryset = course_qs
 
     class Meta:
