@@ -85,11 +85,17 @@ class DashboardFamilyView(generics.ListAPIView):
 
 
 class DashboardInstructorsView(DashboardFamilyView):
-    queryset = FamilyUser.instructors_objects.prefetch_related("course", "course__activity")
     serializer_class = InstructorSerializer
 
     class Meta:
         datatables_extra_json = ()
+
+    def get_queryset(self):
+        user: FamilyUser = self.request.user
+        qs = FamilyUser.instructors_objects.all()
+        if user.is_restricted_manager:
+            qs = qs.filter(coursesinstructors__course__activity__in=user.managed_activities.all())
+        return qs.prefetch_related("children").select_related("profile")
 
 
 class DashboardManagersView(DashboardFamilyView):

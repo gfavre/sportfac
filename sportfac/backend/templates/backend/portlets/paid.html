@@ -1,6 +1,6 @@
 {% load i18n sekizai_tags switzerland static %}
 
-
+{% if user.is_full_manager %}
 <section class="portlet">
   <h4 class="portlet-title">
     <u><i class="icon-credit-card-1"></i>&nbsp;&nbsp;{% trans "Validated payments" %}</u>
@@ -10,11 +10,11 @@
       <div class="row-stat">
         <p class="row-stat-label">{% trans "Total due" %}</p>
         <h3 class="row-stat-value">{{ total_due|money }}</h3>
-      </div>    
+      </div>
       <div class="row-stat">
         <p class="row-stat-label">{% trans "Total paid" %}</p>
         <h3 class="row-stat-value">{{ total_paid|money }}</h3>
-      </div>    
+      </div>
     </div>
     <div class="col-sm-pull-6 col-sm-6">
       <div id="pie-chart-paid" class="chart-holder-250"></div>
@@ -32,12 +32,12 @@
    {% endif %}
  </ul>
 
- 
- 
- 
+
+
+
 </section>
-   
-{% addtoblock  "js" %}    
+   {% endif %}
+{% addtoblock  "js" %}
 <script src="{% static 'js/vendor/flot/jquery.flot.pie.min.js' %}"></script>
 <script>
 $(function () {
@@ -47,28 +47,31 @@ $(function () {
       { label: "{% trans 'Validated' %}", data:  {{ paid }} }
   ];
   placeholder = $("#pie-chart-paid");
-  $.plot(placeholder, data, {
-				series: {
-					pie: { 
-						show: true,
-						innerRadius: 0, 
-                        stroke: { width: 2 }
-					}
-				},
-				legend: {
-					show: false
-				},
-				tooltip: true,
-				tooltipOpts: {
-                    content: function(label, xval, yval, flotItem){ return label + ': ' + yval.toString(); }
-                },
-                grid: {
-                    hoverable: true
-                },
+  if (placeholder.length) {
+    $.plot(placeholder, data, {
+      series: {
+        pie: {
+          show: true,
+          innerRadius: 0,
+          stroke: {width: 2}
+        }
+      },
+      legend: {
+        show: false
+      },
+      tooltip: true,
+      tooltipOpts: {
+        content: function (label, xval, yval, flotItem) {
+          return label + ': ' + yval.toString();
+        }
+      },
+      grid: {
+        hoverable: true
+      },
 
-				colors: mvpready_core.layoutColors
-  });
+      colors: mvpready_core.layoutColors
+    });
+  }
 });
 </script>
 {% endaddtoblock %}
-  

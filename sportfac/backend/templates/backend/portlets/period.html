@@ -38,7 +38,9 @@
       <dt>{% trans "Closing date" %}</dt>
       <dd>{{ registration_end|date:"l j E Y, H:i" }}</dd>
     </dl>
+    {% if user.is_full_manager %}
     <p class="text-center">[ <a href="{% url 'backend:dates' %}"><i
         class="icon-calendar"></i>&nbsp;{% trans "Change dates" %}</a> ]</p>
+    {% endif %}
   </div>
 </div>

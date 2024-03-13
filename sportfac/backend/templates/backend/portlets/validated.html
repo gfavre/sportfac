@@ -8,13 +8,18 @@
     <div id="pie-chart-validated" class="chart-holder-250"></div>
     <ul class="list-unstyled">
       <li><a href="{% url 'backend:user-list' %}"><i class="icon-group"></i>&nbsp;{% trans "List users" %}</a></li>
-      <li><a href="{% url 'backend:mail-needconfirmation' %}"><i class="icon-mail"></i>&nbsp;{% trans "Send reminder email" %}</a></li>
-    
+      {% if user.is_full_manager %}
+        <li>
+          <a href="{% url 'backend:mail-needconfirmation' %}">
+            <i class="icon-mail"></i>&nbsp;{% trans "Send reminder email" %}
+          </a>
+        </li>
+      {% endif %}
     </ul>
  </div> <!-- /.portlet-body -->
 </section>
-   
-{% addtoblock  "js" %}    
+
+{% addtoblock  "js" %}
 <script src="{{ STATIC_URL }}js/vendor/flot/jquery.flot.pie.min.js"></script>
 <script>
 $(function () {
@@ -26,9 +31,9 @@ $(function () {
   placeholder = $("#pie-chart-validated");
   $.plot(placeholder, data, {
 				series: {
-					pie: { 
+					pie: {
 						show: true,
-						innerRadius: 0, 
+						innerRadius: 0,
                         stroke: { width: 4 }
 					}
 				},
@@ -48,4 +53,3 @@ $(function () {
 });
 </script>
 {% endaddtoblock %}
-  

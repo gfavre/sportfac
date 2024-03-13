@@ -1,59 +1,63 @@
 {% load i18n humanize sekizai_tags %}
+{% if user.is_full_manager %}
+  <section class="portlet">
+    <h4 class="portlet-title">
+      <u>{% trans "Teachers" %}</u>
+    </h4>
+    <div class="portlet-body">
+      <dl class="dl-horizontal">
+        <dt>{% trans "Number of teachers" %}</dt>
+        <dd>{{ nb_teachers }}</dd>
+        <dt>{% trans "Last update" %}</dt>
+        <dd>{{ last_teacher_update|naturaltime }}</dd>
+      </dl>
+      <div id="pie-chart-teachers" class="chart-holder-250"></div>
+      <ul class="list-unstyled">
+        <li>
+          <a href="{% url 'backend:teacher-list' %}"><i class="icon-adult"></i>&nbsp;{% trans "All teachers" %}</a>
+        </li>
+        <li>
+          <a href="{% url 'backend:teacher-import' %}"><i class="icon-doc-new"></i>&nbsp;{% trans "Import teachers" %}</a>
+        </li>
+      </ul>
+    </div> <!-- /.portlet-body -->
+  </section>
+{% endif %}
 
-<section class="portlet">
-  <h4 class="portlet-title">
-    <u>{% trans "Teachers" %}</u>
-  </h4>
-  <div class="portlet-body">
-    <dl class="dl-horizontal">
-      <dt>{% trans "Number of teachers" %}</dt>
-      <dd>{{ nb_teachers }}</dd>
-      <dt>{% trans "Last update" %}</dt>
-      <dd>{{ last_teacher_update|naturaltime }}</dd>
-    </dl>
-    <div id="pie-chart-teachers" class="chart-holder-250"></div>
-    <ul class="list-unstyled">
-      <li><a href="{% url 'backend:teacher-list' %}"><i class="icon-adult"></i>&nbsp;{% trans "All teachers" %}</a></li>
-      <li><a href="{% url 'backend:teacher-import' %}"><i class="icon-doc-new"></i>&nbsp;{% trans "Import teachers" %}</a></li>
-    </ul>
-  </div> <!-- /.portlet-body -->
-</section>
-
-
-{% addtoblock  "js" %}    
-<script src="{{ STATIC_URL }}js/vendor/flot/jquery.flot.pie.min.js"></script>
-<script>
-$(function () {
-  var data, placeholder;
-  placeholder = $("#pie-chart-teachers");
-  data = [
-  {% for name, value in teachers_per_year %}
-      { label: "{{ name }}", data: {{ value }} }{% if not forloop.last %},{% endif %}
-  {% endfor %}
-  ];
-  placeholder = $("#pie-chart-teachers");
-  $.plot(placeholder, data, {
-				series: {
-					pie: { 
-						show: true,
-						innerRadius: 0, 
-                        stroke: { width: 2 }
-					}
-				},
-				legend: {
-					show: false
-				},
-				tooltip: true,
-				tooltipOpts: {
-                    content: function(label, xval, yval, flotItem){ return label + ': ' + yval.toString(); }
-                },
-                grid: {
-                    hoverable: true
-                },
-
-				colors: mvpready_core.layoutColors
-  });
- 
-});
-</script>
+{% addtoblock "js" %}
+  <script src="{{ STATIC_URL }}js/vendor/flot/jquery.flot.pie.min.js"></script>
+  <script>
+    $(function () {
+      let data = [
+        {% for name, value in teachers_per_year %}
+          {label: "{{ name }}", data: {{ value }}}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      ];
+      let placeholder = $("#pie-chart-teachers");
+      if (placeholder.length) {
+        $.plot(placeholder, data, {
+          series: {
+            pie: {
+              show: true,
+              innerRadius: 0,
+              stroke: {width: 2}
+            }
+          },
+          legend: {
+            show: false
+          },
+          tooltip: true,
+          tooltipOpts: {
+            content: function (label, xval, yval, flotItem) {
+              return label + ': ' + yval.toString();
+            }
+          },
+          grid: {
+            hoverable: true
+          },
+          colors: mvpready_core.layoutColors
+        });
+      }
+    });
+  </script>
 {% endaddtoblock %}

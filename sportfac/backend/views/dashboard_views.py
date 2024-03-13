@@ -12,13 +12,13 @@ from django.utils.timezone import now
 from django.utils.translation import gettext as _
 from django.views.generic import FormView, TemplateView
 
-from activities.models import Activity, Course, CoursesInstructors
+from activities.models import Activity, Course
 from backend.forms import RegistrationDatesForm
 from profiles.models import City, FamilyUser, SchoolYear
 from registrations.models import Bill, Registration
 from schools.models import Teacher
 
-from .mixins import BackendMixin
+from .mixins import BackendMixin, FullBackendMixin
 
 
 ###############################################################################
@@ -42,33 +42,41 @@ class HomePageView(BackendMixin, TemplateView):
         return "backend/dashboard-phase%i.html" % self.request.PHASE
 
     def get_additional_context_phase1(self, context):
+        # noinspection PyUnresolvedReferences
         context["nb_teachers"] = Teacher.objects.count()
         context["last_teacher_update"] = Teacher.objects.aggregate(latest=Max("modified"))["latest"] or "n/a"
         years = SchoolYear.visible_objects.annotate(num_teachers=(Count("teacher"))).filter(num_teachers__gt=0)
         context["teachers_per_year"] = [(year.get_year_display(), year.num_teachers) for year in years]
 
-        courses = Course.objects.all()
-        context["nb_courses"] = courses.count()
-        activities = Activity.objects.all()
-        context["nb_activities"] = activities.count()
+        activities = context["activities"]
+        instructors = context["instructors"]
+        courses = context["courses"]
 
+        context["nb_activities"] = activities.count()
+        context["nb_courses"] = courses.count()
         context["ready_courses"] = courses.filter(uptodate=True).count()
         context["notready_courses"] = context["nb_courses"] - context["ready_courses"]
         context["total_sessions"] = list(courses.aggregate(Sum("number_of_sessions")).values())[0] or 0
-        context["total_instructors"] = FamilyUser.instructors_objects.count()
-
         context["last_course_update"] = courses.aggregate(latest=Max("modified"))["latest"] or "n/a"
 
-        return context
+        context["total_instructors"] = instructors.count()
+        return self._add_cities_context(context)
+
+    def _get_registrations_qs(self):
+        # noinspection PyUnresolvedReferences
+        user: FamilyUser = self.request.user
+        if user.is_restricted_manager:
+            return Registration.objects.filter(course__activity__in=user.managed_activities.all())
+        return Registration.objects.all()
 
     def _get_registrations_per_day(self):
+        # noinspection PyUnresolvedReferences
         total_per_day = {}
         start = self.request.tenant.preferences["phase__START_REGISTRATION"]
         end = self.request.tenant.preferences["phase__END_REGISTRATION"]
-        registrations = [
-            d.date()
-            for d in Registration.objects.filter(created__range=(start, end)).values_list("created", flat=True)
-        ]
+        registrations_qs = self._get_registrations_qs().filter(created__range=(start, end))
+
+        registrations = [d.date() for d in registrations_qs.values_list("created", flat=True)]
 
         for date in registrations:
             milliseconds = int(time.mktime(date.timetuple()) * 1000)
@@ -80,9 +88,9 @@ class HomePageView(BackendMixin, TemplateView):
     def _get_registrations_per_month(self):
         start = self.request.tenant.preferences["phase__START_REGISTRATION"]
         end = self.request.tenant.preferences["phase__END_REGISTRATION"]
-
+        registrations_qs = self._get_registrations_qs()
         registrations = (
-            Registration.objects.filter(created__range=(start, end))
+            registrations_qs.filter(created__range=(start, end))
             .order_by("created")
             .annotate(year=Year("created"), month=Month("created"))
             .order_by("year", "month")
@@ -97,13 +105,14 @@ class HomePageView(BackendMixin, TemplateView):
         )
 
     def get_additional_context_phase2(self, context):
+        registrations_qs = self._get_registrations_qs()
         waiting = set(
-            Registration.objects.filter(status=Registration.STATUS.waiting)
+            registrations_qs.filter(status=Registration.STATUS.waiting)
             .select_related("child__family")
             .values_list("child__family")
         )
         valid = set(
-            Registration.objects.filter(status=Registration.STATUS.valid)
+            registrations_qs.filter(status=Registration.STATUS.valid)
             .select_related("child__family")
             .values_list("child__family")
         )
@@ -114,11 +123,10 @@ class HomePageView(BackendMixin, TemplateView):
         context["payement_due"] = Bill.waiting.filter(total__gt=0).count()
         # noinspection PyUnresolvedReferences
         context["paid"] = Bill.paid.filter(total__gt=0).count()
-
-        participants = Course.objects.annotate(count_participants=Count("participants")).values_list(
+        courses = context["courses"]
+        participants = courses.annotate(count_participants=Count("participants")).values_list(
             "min_participants", "max_participants", "count_participants"
         )
-        context["nb_courses"] = len(participants)
         context["nb_full_courses"] = 0
         context["nb_minimal_courses"] = 0
 
@@ -134,19 +142,21 @@ class HomePageView(BackendMixin, TemplateView):
         return context
 
     def get_additional_context_phase3(self, context):
-        participants = Course.objects.annotate(count_participants=Count("participants")).values_list(
+        courses = context["courses"]
+        participants = courses.annotate(count_participants=Count("participants")).values_list(
             "min_participants", "max_participants", "count_participants"
         )
         context["nb_courses"] = len(participants)
         context["nb_full_courses"] = 0
         context["nb_minimal_courses"] = 0
+        registrations_qs = self._get_registrations_qs()
         waiting = set(
-            Registration.objects.filter(status=Registration.STATUS.waiting)
+            registrations_qs.filter(status=Registration.STATUS.waiting)
             .select_related("child__family")
             .values_list("child__family")
         )
         valid = set(
-            Registration.objects.filter(status=Registration.STATUS.valid)
+            registrations_qs.filter(status=Registration.STATUS.valid)
             .select_related("child__family")
             .values_list("child__family")
         )
@@ -168,11 +178,12 @@ class HomePageView(BackendMixin, TemplateView):
         return context
 
     def _add_cities_context(self, context):
-        qs = Registration.objects.exclude(
-            status__in=(Registration.STATUS.canceled, Registration.STATUS.waiting)
-        ).select_related("child", "child__family")
+        reg_qs = self._get_registrations_qs()
+        qs = reg_qs.exclude(status__in=(Registration.STATUS.canceled, Registration.STATUS.waiting)).select_related(
+            "child", "child__family"
+        )
 
-        context["nb_registrations"] = Registration.objects.count()
+        context["nb_registrations"] = reg_qs.count()
         children = {reg.child for reg in qs}
         families = {child.family for child in children}
         context["nb_families"] = len(families)
@@ -238,13 +249,27 @@ class HomePageView(BackendMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["now"] = now()
+        # noinspection PyUnresolvedReferences
+        user: FamilyUser = self.request.user
+        if user.is_full_manager:
+            activities = Activity.objects.all()
+            courses = Course.objects.all()
+            instructors = FamilyUser.instructors_objects.all()
+        else:
+            activities = user.managed_activities.all()
+            courses = Course.objects.filter(activity__in=activities)
+            instructors = FamilyUser.instructors_objects.filter(coursesinstructors__course__activity__in=activities)
 
-        courses = Course.objects.all()
+        context["courses"] = courses
+        context["activities"] = activities
+        context["instructors"] = instructors
+
         context["nb_courses"] = courses.count()
-        activities = Activity.objects.all()
         context["nb_activities"] = activities.count()
+
         context["total_sessions"] = list(courses.aggregate(Sum("number_of_sessions")).values())[0] or 0
-        context["total_instructors"] = CoursesInstructors.objects.distinct("instructor").count()
+        context["total_instructors"] = instructors.count()
+
         timedeltas = []
         for course in courses:
             if not course.is_camp:
@@ -259,7 +284,7 @@ class HomePageView(BackendMixin, TemplateView):
 
 ###############################################################################
 # Dates
-class RegistrationDatesView(BackendMixin, FormView):
+class RegistrationDatesView(FullBackendMixin, FormView):
     template_name = "backend/registration_dates.html"
     form_class = RegistrationDatesForm
     success_url = reverse_lazy("backend:home")
