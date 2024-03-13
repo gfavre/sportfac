@@ -58,6 +58,12 @@ class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
             return ExplicitDatesCourseForm
         return CourseForm
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        # noinspection PyUnresolvedReferences
+        kwargs["user"] = self.request.user
+        return kwargs
+
     def get_success_message(self, cleaned_data):
         url = self.object.get_backend_url()
         return mark_safe(self.success_message % {"url": url, "number": self.object.number})
@@ -138,6 +144,12 @@ class CourseUpdateView(SuccessMessageMixin, CourseMixin, UpdateView):
         if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
             return ExplicitDatesCourseForm
         return CourseForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        # noinspection PyUnresolvedReferences
+        kwargs["user"] = self.request.user
+        return kwargs
 
     def get_success_message(self, cleaned_data):
         url = self.object.get_backend_url()

@@ -181,6 +181,12 @@ class UserUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
             return InstructorForm
         return ManagerForm
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        # noinspection PyUnresolvedReferences
+        kwargs["user"] = self.request.user
+        return kwargs
+
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["is_instructor"] = self.object.is_instructor

@@ -256,7 +256,10 @@ class ManagerForm(UserForm):
         return instance
 
     def __init__(self, *args, **kwargs):
+        user: FamilyUser = kwargs.pop("user")
         super().__init__(*args, **kwargs)
+        if not user.is_full_manager:
+            return
         instance = kwargs["instance"]
         if instance:
             self.fields["is_manager"].initial = instance.is_manager

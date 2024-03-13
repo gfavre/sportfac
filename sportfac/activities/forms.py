@@ -187,12 +187,14 @@ class CourseForm(forms.ModelForm):
         pass
 
     def __init__(self, *args, **kwargs):
+        user: FamilyUser = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
         self.pop_initial()
         self.fields["local_city_override"].help_text = _("If empty will use: %s") % ", ".join(
             settings.KEPCHUP_LOCAL_ZIPCODES
         )
-
+        if user and user.is_restricted_manager:
+            self.fields["activity"].queryset = user.managed_activities.all()
         self._filter_limitations()
         self._filter_price_field()
         self.helper = FormHelper()
