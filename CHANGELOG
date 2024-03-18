@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 3.7.1 2024-03-18
+### Fixed
+- Overlapping issue if a course is daily and registerd user has already an event on same day, which is not daily.
+
+
 ## 3.7.0 2024-03-13
 ### Added
 - New Restricted Admin role

@@ -192,6 +192,10 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
     // Check if there are any common dates
     let commonDates = [...set1].filter(date => set2.has(date));
     if (commonDates.length > 0) {
+        if (event1.all_day || event2.all_day) {
+          // common dates. if a single lasts all day, overlap is certain
+          return true;
+        }
         // There are common dates, now check if times overlap
         // Convert times to comparable format, assuming event1.start_time, etc., are in 'HH:MM' format
         let startTime1 = event1.start_time.split(':').map(Number);
@@ -293,7 +297,6 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
     }
 
     let activityRegistered = false;
-    console.log("Available courses: ", $scope.selectedActivity.courses);
     angular.forEach($scope.selectedActivity.courses, function(course){
 
       if ((registeredCourses.indexOf(course.id) !== -1) && !$scope.canregistersameactivity) {
@@ -306,7 +309,6 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
       } else {
          available = course.min_birth_date >= $scope.selectedChild.birth_date &&
            course.max_birth_date <= $scope.selectedChild.birth_date;
-         console.log("Available: ", available, course.min_birth_date, $scope.selectedChild.birth_date, course.max_birth_date, $scope.selectedChild.birth_date);
       }
       let registered = registeredCourses.indexOf(course.id) !== -1;
       let overlapping = $scope.registeredEvents.map(
@@ -317,7 +319,6 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
           return overlap1 || overlap2;
       }, false);
       if (!registered && available){
-        console.log("Available: ", course);
         $scope.availableEventsToFetch += 1;
         if (activityRegistered || overlapping){
           CoursesService.get($scope.urls.course, course.id).then(addUnavailableCourse);
