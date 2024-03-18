@@ -293,7 +293,7 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
     }
 
     let activityRegistered = false;
-
+    console.log("Available courses: ", $scope.selectedActivity.courses);
     angular.forEach($scope.selectedActivity.courses, function(course){
 
       if ((registeredCourses.indexOf(course.id) !== -1) && !$scope.canregistersameactivity) {
@@ -306,6 +306,7 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
       } else {
          available = course.min_birth_date >= $scope.selectedChild.birth_date &&
            course.max_birth_date <= $scope.selectedChild.birth_date;
+         console.log("Available: ", available, course.min_birth_date, $scope.selectedChild.birth_date, course.max_birth_date, $scope.selectedChild.birth_date);
       }
       let registered = registeredCourses.indexOf(course.id) !== -1;
       let overlapping = $scope.registeredEvents.map(
@@ -316,6 +317,7 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
           return overlap1 || overlap2;
       }, false);
       if (!registered && available){
+        console.log("Available: ", course);
         $scope.availableEventsToFetch += 1;
         if (activityRegistered || overlapping){
           CoursesService.get($scope.urls.course, course.id).then(addUnavailableCourse);
