@@ -28,7 +28,7 @@ class DashboardFamilyView(generics.ListAPIView):
         datatables_extra_json = ("get_search_panes",)
 
     def get_queryset(self):
-        qs = FamilyUser.active_objects.prefetch_related("children").select_related("profile")
+        qs = super().get_queryset()
         user: FamilyUser = self.request.user
         if user.is_restricted_manager:
             registrations = Registration.objects.filter(course__activity__in=user.managed_activities.all())
