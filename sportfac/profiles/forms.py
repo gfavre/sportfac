@@ -246,6 +246,8 @@ class ManagerForm(UserForm):
         return self.cleaned_data
 
     def save(self, commit=True):
+        self.instance.is_restricted_manager = self.cleaned_data.get("is_restricted_manager", False)
+        self.instance.is_manager = self.cleaned_data.get("is_manager", False)
         instance = super().save(commit=False)
         if commit:
             instance.save()
