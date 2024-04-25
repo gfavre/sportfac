@@ -12,7 +12,7 @@ class CourseResource(resources.ModelResource):
     limitations = fields.Field(column_name=_("Limitations"))
     day_name = fields.Field(column_name=_("Day"))
     schedule = fields.Field(column_name=_("Schedule"))
-    place = fields.Field(column_name=_("Place"))
+    place = fields.Field(column_name=_("Place"), attribute="place")
     instructors = fields.Field(column_name=_("Instructors"))
     instructors_phone = fields.Field(column_name=_("Instructors' phone"))
     instructors_email = fields.Field(column_name=_("Instructors' email"))
