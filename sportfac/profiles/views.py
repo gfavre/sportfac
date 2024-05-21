@@ -41,9 +41,17 @@ class _BaseAccount(LoginRequiredMixin, UpdateView):
     form_class = InstructorForm
 
     def get_form_class(self):
-        if self.request.user.is_instructor:
+        user: FamilyUser = self.request.user  # type: ignore
+        if user.is_instructor:
             return InstructorForm
         return UserForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        user: FamilyUser = self.request.user  # type: ignore
+        if user.is_instructor:
+            kwargs["user"] = user
+        return kwargs
 
     def get_object(self, queryset=None):
         return self.request.user

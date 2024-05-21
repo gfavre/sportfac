@@ -219,8 +219,8 @@ class ManagerForm(UserForm):
     managed_activities = forms.ModelMultipleChoiceField(
         label=_("Rights on activities"),
         queryset=Activity.objects.all(),
-        widget=ActivityMultipleWidget()
-        # required=True,
+        widget=ActivityMultipleWidget(),
+        required=False,
     )
 
     is_manager = forms.BooleanField(

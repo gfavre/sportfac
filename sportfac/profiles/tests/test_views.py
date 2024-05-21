@@ -6,8 +6,8 @@ from django.db import transaction
 from django.forms.models import model_to_dict
 from django.test import RequestFactory, override_settings
 from django.urls import reverse
-from django.utils import timezone
 
+from activities.tests.factories import CourseFactory
 from faker import Faker
 
 from sportfac.utils import TenantTestCase as TestCase
@@ -18,6 +18,7 @@ from .factories import FamilyUserFactory
 
 
 fake = Faker(locale="fr_CH")
+
 
 # noinspection PyUnresolvedReferences
 class UserDataTestCaseMixin:
@@ -109,5 +110,11 @@ class AccountViewTests(TestCase):
         self.assertRedirects(response, reverse("profiles:auth_login") + "?next=" + self.url)
 
     def test_get_returns_200(self):
+        response = self.view(self.request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_for_instructors(self):
+        course = CourseFactory()
+        course.instructors.add(self.user)
         response = self.view(self.request)
         self.assertEqual(response.status_code, 200)

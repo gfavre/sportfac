@@ -220,6 +220,7 @@ def send_invoice_pdf(bill_pk, tenant_pk=None):
     try:
         email.attach_file(bill.pdf.path)
     except ValueError as exc:
+        # The file does not exist. This only happens in tests as the bill.pdf is generated above and mocked in tests.
         logger.exception("Could not attach pdf to accountant email", exc_info=exc)
         return
     try:

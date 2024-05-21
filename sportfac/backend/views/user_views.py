@@ -113,6 +113,12 @@ class UserCreateView(FullBackendMixin, SuccessMessageMixin, CreateView):
     template_name = "backend/user/create.html"
     success_url = reverse_lazy("backend:user-list")
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        # noinspection PyUnresolvedReferences
+        kwargs["user"] = self.request.user
+        return kwargs
+
     def form_valid(self, form):
         self.object = form.save()
         self.object.set_password(form.cleaned_data["password1"])
