@@ -17,6 +17,8 @@ class CourseResource(resources.ModelResource):
     instructors_phone = fields.Field(column_name=_("Instructors' phone"))
     instructors_email = fields.Field(column_name=_("Instructors' email"))
     participants = fields.Field(column_name=_("Participants number"))
+    start_date = fields.Field(column_name=_("Start date"))
+    end_date = fields.Field(column_name=_("End date"))
 
     class Meta:
         model = Course
@@ -24,7 +26,10 @@ class CourseResource(resources.ModelResource):
             "number",
             "long_name",
             "limitations",
+            "price",
             "day_name",
+            "start_date",
+            "end_date",
             "schedule",
             "place",
             "instructors",
@@ -33,6 +38,14 @@ class CourseResource(resources.ModelResource):
             "participants",
         )
         export_order = fields
+
+    def dehydrate_price(self, course):
+        if settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
+            return (
+                f"{course.price}, {course.price_local} (local), {course.price_family}"
+                f" (famille), {course.price_local_family} (local + famille)"
+            )
+        return course.price
 
     def dehydrate_instructors(self, course):
         return ", ".join(instructor.full_name for instructor in course.instructors.all())
