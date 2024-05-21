@@ -73,3 +73,13 @@ class CourseResource(resources.ModelResource):
             school_year_max = settings.KEPCHUP_YEAR_NAMES[course.schoolyear_max]
             return f"{school_year_min} - {school_year_max}"
         return f"{course.age_min} - {course.age_max} ans"
+
+    def dehydrate_start_date(self, course):
+        if settings.KEPCHUP_EXPLICIT_SESSION_DATES and course.all_dates:
+            return course.all_dates[0].strftime("%d.%m.%Y")
+        return course.start_date.strftime("%d.%m.%Y")
+
+    def dehydrate_end_date(self, course):
+        if settings.KEPCHUP_EXPLICIT_SESSION_DATES and course.all_dates:
+            return course.all_dates[-1].strftime("%d.%m.%Y")
+        return course.end_date.strftime("%d.%m.%Y")
