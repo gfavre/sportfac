@@ -205,7 +205,7 @@ def cancel_expired_registrations():
         status=Registration.STATUS.waiting,
         modified__lte=(now() - timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES)),
     ):
-        registration.cancel(reason=Registration.CANCEL_REASON.expired)
+        registration.cancel(reason=Registration.REASON.expired)
 
 
 @shared_task
