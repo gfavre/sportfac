@@ -164,6 +164,7 @@ def send_confirm_from_waiting_list(registration_pk, tenant_pk=None, language=set
 def cancel_expired_registrations():
     if not settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES:
         return
+    # 1: expire registrations linked to invoices (person has seen payment page)
     current_domain = Domain.objects.filter(is_current=True).first()
     connection.set_tenant(current_domain.tenant)
     expired_invoices = Bill.objects.filter(
@@ -172,6 +173,12 @@ def cancel_expired_registrations():
     )
     for invoice in expired_invoices:
         invoice.cancel()
+    # 2. Expire registrations without invoices (person never confirmed)
+    for registration in Registration.objects.filter(
+        status=Registration.STATUS.waiting,
+        modified__lte=(now() - timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES)),
+    ):
+        registration.cancel(reason=Registration.CANCEL_REASON.expired)
 
 
 @shared_task
