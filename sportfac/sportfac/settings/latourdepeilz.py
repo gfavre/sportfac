@@ -52,6 +52,8 @@ KEPCHUP_LIMIT_BY_AGE = True
 KEPCHUP_LIMIT_BY_SCHOOL_YEAR = not KEPCHUP_LIMIT_BY_AGE
 KEPCHUP_SCHOOL_YEAR_MANDATORY = True
 KEPCHUP_REGISTRATION_EXPIRE_MINUTES = 60 * 24 * 7
+KEPCHUP_REGISTRATION_EXPIRE_REMINDER_MINUTES = 60 * 24
+
 
 # Payment
 #########################################
@@ -70,5 +72,9 @@ CELERYBEAT_SCHEDULE["notify-absences"] = {  # noqa: F405
 }
 CELERYBEAT_SCHEDULE["cancel-expired-registrations"] = {  # noqa: F405
     "task": "registrations.tasks.cancel_expired_registrations",
+    "schedule": crontab(minute="*/15"),  # noqa: F405
+}
+CELERYBEAT_SCHEDULE["send-reminders"] = {  # noqa: F405
+    "task": "registrations.tasks.send_reminders",
     "schedule": crontab(minute="*/15"),  # noqa: F405
 }

@@ -120,16 +120,37 @@ def send_confirmation(user_pk, tenant_pk=None, language=settings.LANGUAGE_CODE):
 
 
 @shared_task()
-def send_confirm_from_waiting_list(registration_pk, tenant_pk=None, language=settings.LANGUAGE_CODE):
+def send_reminders(language=settings.LANGUAGE_CODE):
+    if not settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES or not settings.KEPCHUP_REGISTRATION_EXPIRE_REMINDER_MINUTES:
+        return
+    must_be_older_than = (
+        now()
+        - timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES)
+        - timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_REMINDER_MINUTES)
+    )
+
     cur_lang = translation.get_language()
     try:
         translation.activate(language)
-        if tenant_pk:
-            tenant = YearTenant.objects.get(pk=tenant_pk)
-            connection.set_tenant(tenant)
-        else:
-            current_domain = Domain.objects.filter(is_current=True).first()
-            connection.set_tenant(current_domain.tenant)
+        current_domain = Domain.objects.filter(is_current=True).first()
+        connection.set_tenant(current_domain.tenant)
+        expired_invoices = Bill.objects.filter(
+            status=Bill.STATUS.waiting,
+            modified__lte=must_be_older_than,
+        )
+        for invoice in expired_invoices:
+            invoice.send_reminder()
+    finally:
+        translation.activate(cur_lang)
+
+
+@shared_task()
+def send_confirm_from_waiting_list(registration_pk, language=settings.LANGUAGE_CODE):
+    cur_lang = translation.get_language()
+    try:
+        translation.activate(language)
+        current_domain = Domain.objects.filter(is_current=True).first()
+        connection.set_tenant(current_domain.tenant)
 
         global_preferences = global_preferences_registry.manager()
 

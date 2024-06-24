@@ -4,9 +4,11 @@ from datetime import date, datetime
 from tempfile import mkdtemp
 
 from django.conf import settings
+from django.contrib.sites.models import Site
 from django.core.files import File
 from django.db import IntegrityError, connection, models, transaction
 from django.template.defaultfilters import slugify
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import get_language
@@ -495,6 +497,31 @@ class Bill(TimeStampedModel, StatusModel):
                 tenant_pk=tenant_pk,
                 language=get_language(),
             )
+        )
+
+    def send_reminder(self):
+        # 1. build context
+        global_preferences = global_preferences_registry.manager()
+        current_site = Site.objects.get_current()
+        context = {
+            "user": self.family,
+            "registrations": self.registrations.all(),
+            "signature": global_preferences["email__SIGNATURE"],
+            "site_name": current_site.name,
+            "site_url": settings.DEBUG and "http://" + current_site.domain or "https://" + current_site.domain,
+        }
+        # 2. build text
+        subject = render_to_string("registrations/reminder_mail_subject.txt", context=context)
+        body = render_to_string("registrations/reminder_mail.txt", context=context)
+        # 3. send mail
+        from mailer.tasks import send_mail
+
+        send_mail.delay(
+            subject=subject,
+            message=body,
+            from_email=global_preferences["email__FROM_MAIL"],
+            recipients=[self.family.get_email_string()],
+            reply_to=[global_preferences["email__REPLY_TO_MAIL"]],
         )
 
     def send_to_accountant(self):

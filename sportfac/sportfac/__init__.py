@@ -1,4 +1,4 @@
 from .celery import app as celery_app  # noqa F401
 
 
-__version__ = "3.7.4"
+__version__ = "3.8.0"

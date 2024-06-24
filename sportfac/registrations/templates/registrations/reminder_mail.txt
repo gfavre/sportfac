@@ -1,0 +1,13 @@
+{% load switzerland i18n %}
+Madame, Monsieur,
+
+La paiement en ligne relatif aux activités suivantes n'ayant pas été fait dans les 7 jours
+(cf. règlement des Prestations Sport & Jeunesse), nous vous informons que les inscriptions y relatives seront annulées
+ dans les prochaines 24 heures sans versement de votre part d'ici là.
+{% for registration in registrations %}
+• {{ registration.child.full_name|safe }} - {{ registration.course.short_name|safe }}{% if payment %} - {{ registration.price|money }}{% endif %}
+{% endfor %}
+D’avance nous vous remercions de l'intérêt que vous porterez à ces lignes.
+Meilleures salutations.
+
+{{ signature }}
