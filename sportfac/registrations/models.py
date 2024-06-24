@@ -505,7 +505,7 @@ class Bill(TimeStampedModel, StatusModel):
         current_site = Site.objects.get_current()
         context = {
             "user": self.family,
-            "registrations": self.registrations.all(),
+            "registrations": self.registrations.filter(paid=False),
             "signature": global_preferences["email__SIGNATURE"],
             "site_name": current_site.name,
             "site_url": settings.DEBUG and "http://" + current_site.domain or "https://" + current_site.domain,
@@ -555,7 +555,7 @@ class Bill(TimeStampedModel, StatusModel):
         self.save()
 
     def cancel(self):
-        for registration in self.registrations.all():
+        for registration in self.registrations.filter(paid=False):
             registration.cancel(reason=Registration.REASON.expired)
             try:
                 registration.save()
