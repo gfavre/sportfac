@@ -123,10 +123,16 @@ def send_confirmation(user_pk, tenant_pk=None, language=settings.LANGUAGE_CODE):
 def send_reminders(language=settings.LANGUAGE_CODE):
     if not settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES or not settings.KEPCHUP_REGISTRATION_EXPIRE_REMINDER_MINUTES:
         return
+    # If invoice is older than KEPCHUP_REGISTRATION_EXPIRE_MINUTES, cancel it
+    # Invoice                      reminder                                           cancellation
+    # ---x----------------------------x----------------------------------------------------x
+    #    |                 <-- KEPCHUP_REGISTRATION_EXPIRE_MINUTES  -->                    |
+    #    |                            |<-- KEPCHUP_REGISTRATION_EXPIRE_REMINDER_MINUTES -->|
+    #    |<--   expire + reminder  -->|
     must_be_older_than = (
         now()
         - timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES)
-        - timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_REMINDER_MINUTES)
+        + timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_REMINDER_MINUTES)
     )
 
     cur_lang = translation.get_language()
