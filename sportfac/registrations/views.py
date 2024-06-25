@@ -256,10 +256,10 @@ class RegistrationDeleteView(InstructorMixin, DeleteView):
 
     def delete(self, request, *args, **kwargs):
         # noinspection PyAttributeOutsideInit
-        self.object = self.get_object()
+        self.object: Registration = self.get_object()
         success_url = self.get_success_url()
         try:
-            self.object.cancel()
+            self.object.cancel(reason=Registration.REASON.instructor, user=request.user)
             self.object.save()
         except IntegrityError:
             # The registration for child and course existed previously and

@@ -41,12 +41,14 @@ class Registration(TimeStampedModel, StatusModel):
     STATUS = Choices(
         ("waiting", _("Waiting parent's confirmation")),
         ("valid", _("Validated by parent")),
-        ("canceled", _("Canceled by administrator")),
+        ("canceled", _("Canceled")),  # Canceled in American English, Cancelled in British English
         ("confirmed", _("Confirmed by administrator")),
     )
     REASON = Choices(
         ("expired", _("Expired")),
-        ("admin", _("Admin")),
+        ("admin", _("Manager decision")),
+        ("instructor", _("Instructor decision")),
+        ("moved", _("Moved to another course")),
     )
 
     course = models.ForeignKey(
@@ -76,10 +78,14 @@ class Registration(TimeStampedModel, StatusModel):
         on_delete=models.SET_NULL,
     )
     confirmation_sent_on = models.DateField(_("Confirmation mail sent on"), null=True, blank=True)
+    cancelation_person = models.ForeignKey("profiles.FamilyUser", null=True, blank=True, on_delete=models.SET_NULL)
     cancelation_reason = models.CharField(
-        _("Cancelation reason"), max_length=20, null=True, blank=True, choices=REASON
+        _("Cancelation reason"), max_length=20, null=True, blank=True, choices=REASON, db_index=True
     )
+    cancelation_date = models.DateTimeField(_("Cancelation date"), null=True, blank=True)
+
     objects = RegistrationManager()
+    all_objects = models.Manager()
 
     class Meta:
         unique_together = ("course", "child", "status")
@@ -116,6 +122,18 @@ class Registration(TimeStampedModel, StatusModel):
         return self.child.family.zipcode in local_zipcodes
 
     @property
+    def is_canceled(self):
+        return self.status == self.STATUS.canceled
+
+    @property
+    def is_confirmed(self):
+        return self.status == self.STATUS.confirmed
+
+    @property
+    def is_validated(self):
+        return self.status == self.STATUS.valid
+
+    @property
     def payment_method(self):
         if not self.paid:
             return None
@@ -133,11 +151,13 @@ class Registration(TimeStampedModel, StatusModel):
     def update_url(self):
         return self.get_update_url()
 
-    def cancel(self, reason=None):
+    def cancel(self, reason=None, user=None):
         if not reason:
             reason = self.REASON.admin
         self.status = self.STATUS.canceled
         self.cancelation_reason = reason
+        self.cancelation_person = user
+        self.cancelation_date = now()
         if settings.KEPCHUP_USE_ABSENCES:
             self.delete_future_absences()
 

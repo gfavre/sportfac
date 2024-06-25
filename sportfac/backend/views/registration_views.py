@@ -40,11 +40,15 @@ logger = logging.getLogger(__name__)
 
 
 class RegistrationMixin(BackendMixin):
+    def get_queryset_source(self):
+        return super().get_queryset()
+
     def get_queryset(self):
         user: User = self.request.user
+        queryset = self.get_queryset_source()
         if user.is_full_manager:
-            return super().get_queryset()
-        return Registration.objects.filter(course__activity__in=user.managed_activities.all())
+            return queryset
+        return queryset.filter(course__activity__in=user.managed_activities.all())
 
 
 class RegistrationDetailView(RegistrationMixin, DetailView):
@@ -65,6 +69,9 @@ class RegistrationExportView(RegistrationMixin, ExcelResponseMixin, View):
 class RegistrationListView(RegistrationMixin, ListView):
     model = Registration
     template_name = "backend/registration/list.html"
+
+    def get_queryset_source(self):
+        return Registration.all_objects.all()
 
     def get_queryset(self):
         return (
@@ -120,7 +127,7 @@ class RegistrationsMoveView(BackendMixin, FormView):
                 previous_courses.add(registration.course)
                 if registration.child in destination_children:
                     # Child is already registered to destination course, we just need to remove him from previous course
-                    registration.cancel()
+                    registration.cancel(reason=Registration.REASON.moved, user=self.request.user)
                     registration.save()
                     continue
                 # the child is moving to a new course, and leaving the previous one
@@ -239,7 +246,7 @@ class RegistrationDeleteView(RegistrationMixin, DeleteView):
         self.object = self.get_object()
         success_url = self.get_success_url()
         try:
-            self.object.cancel()
+            self.object.cancel(reason=Registration.REASON.admin, user=self.request.user)
             self.object.save()
         except IntegrityError:
             # The registration for child and course existed previously and
@@ -302,21 +309,30 @@ class RegistrationUpdateView(SuccessMessageMixin, RegistrationMixin, UpdateView)
     @transaction.atomic
     def form_valid(self, form, extrainfo_form):
         initial_course = self.get_object().course
+        initial_status = self.get_object().status
+
+        if settings.KEPCHUP_USE_ABSENCES and form.cleaned_data["course"] != initial_course:
+            # as we are changing course, remove the future absences
+            self.object.delete_future_absences()
+
+        # This will trigger the creation of future absences for the new course
         self.object = form.save()
         if self.object.course != initial_course:
-            # this will trigger the calculation of #participants
+            # the course has changed, we need to update the number of participants
             initial_course.save()
-            if settings.KEPCHUP_USE_ABSENCES:
-                self.object.delete_future_absences()
-
         extrainfo_form.instance = self.object
         extrainfo_form.save()
 
-        if self.object.status in (Registration.STATUS.confirmed, Registration.STATUS.valid):
-            self.object.set_confirmed()
-        elif self.object.status == Registration.STATUS.canceled:
-            self.object.cancel()
-        if self.object.status == Registration.STATUS.confirmed and not self.object.paid and not self.object.bill:
+        if initial_status != self.object.status:
+            if self.object.is_confirmed or self.object.is_validated:
+                # Send the conformation message
+                self.object.set_confirmed()
+            elif self.object.is_cancelled:
+                # Cancel and remove future absences
+                self.object.cancel(reason=Registration.REASON.admin, user=self.request.user)
+
+        # Create invoice if necessary
+        if self.object.is_confirmed and not self.object.paid and not self.object.bill:
             status = Bill.STATUS.waiting
             if self.object.get_price() == 0:
                 status = Bill.STATUS.paid

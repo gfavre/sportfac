@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### 3.8.0 2024-06-24
 ### Added
 - Created reminder emails, automatically sent before invoice expiry date (KEPCHUP_REGISTRATION_EXPIRE_REMINDER_MINUTES)
+- Canceled registrations are now displayed in the admin interface. Cancelation reason and operator are displayed
 
 
 ### 3.7.4 2024-06-24
