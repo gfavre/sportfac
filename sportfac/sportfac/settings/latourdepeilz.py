@@ -31,8 +31,16 @@ KEPCHUP_ACTIVITY_TYPES = [
 KEPCHUP_REGISTER_ACCOUNTS_AT_ANY_TIME = True
 
 # Children
-KEPCHUP_EMERGENCY_NUMBER_MANDATORY = True
-
+KEPCHUP_CHILDREN_MANDATORY_FIELDS = [
+    "first_name",
+    "last_name",
+    "sex",
+    "birth_date",
+    "nationality",
+    "language",
+    "school_year",
+    "emergency_number",
+]
 # Email
 #########################################
 KEPCHUP_SEND_PRESENCE_LIST = True

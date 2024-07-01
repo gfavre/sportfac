@@ -1,16 +1,15 @@
 """Production settings and globals."""
+from .production import *  # noqa: F403
 
-from .production import *
 
-
-TEMPLATES[0]["DIRS"] = [
-    normpath(join(SITE_ROOT, "themes", "rojalets", "templates")),
-    normpath(join(SITE_ROOT, "templates")),
+TEMPLATES[0]["DIRS"] = [  # noqa: F405
+    normpath(join(SITE_ROOT, "themes", "rojalets", "templates")),  # noqa: F405
+    normpath(join(SITE_ROOT, "templates")),  # noqa: F405
 ]
 
 STATICFILES_DIRS = (
-    normpath(join(SITE_ROOT, "themes", "rojalets", "static")),
-    normpath(join(SITE_ROOT, "static")),
+    normpath(join(SITE_ROOT, "themes", "rojalets", "static")),  # noqa: F405
+    normpath(join(SITE_ROOT, "static")),  # noqa: F405
 )
 
 # We switch to postmark. Here are the old settings which ended up in mailgun
@@ -27,7 +26,17 @@ KEPCHUP_SEND_COPY_CONTACT_MAIL_TO_ADMIN = True
 KEPCHUP_NO_PAYMENT = False
 KEPCHUP_NO_TERMS = False
 KEPCHUP_CHILD_SCHOOL = False
-KEPCHUP_EMERGENCY_NUMBER_MANDATORY = True
+KEPCHUP_CHILDREN_MANDATORY_FIELDS = [
+    "first_name",
+    "last_name",
+    "sex",
+    "birth_date",
+    "avs",
+    "nationality",
+    "language",
+    "school_year",
+    "emergency_number",
+]
 KEPCHUP_DISPLAY_PARENT_CITY = True
 KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS = []
 KEPCHUP_CALENDAR_DISPLAY_DATES = True
@@ -40,7 +49,7 @@ KEPCHUP_DISPLAY_CAR_NUMBER = False
 KEPCHUP_DISPLAY_REGISTRATION_NOTE = False
 
 
-CELERYBEAT_SCHEDULE["notify-absences"] = {
+CELERYBEAT_SCHEDULE["notify-absences"] = {  # noqa: F405
     "task": "absences.tasks.notify_absences",
-    "schedule": crontab(hour=19, minute=0),
+    "schedule": crontab(hour=19, minute=0),  # noqa: F405
 }

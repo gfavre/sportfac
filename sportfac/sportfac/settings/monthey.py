@@ -28,7 +28,17 @@ KEPCHUP_ZIPCODE_RESTRICTION = [
 # Children
 KEPCHUP_CHILD_SCHOOL = False
 KEPCHUP_ENABLE_TEACHER_MANAGEMENT = True
-KEPCHUP_EMERGENCY_NUMBER_MANDATORY = True
+KEPCHUP_CHILDREN_MANDATORY_FIELDS = [
+    "first_name",
+    "last_name",
+    "sex",
+    "birth_date",
+    "avs",
+    "nationality",
+    "language",
+    "school_year",
+    "emergency_number",
+]
 KEPCHUP_YEAR_NAMES = {
     1: "1H",
     2: "2H",

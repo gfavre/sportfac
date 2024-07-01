@@ -32,6 +32,18 @@ KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = [
     "nationality",
     "language",
 ]
+KEPCHUP_CHILDREN_MANDATORY_FIELDS = [
+    "first_name",
+    "last_name",
+    "sex",
+    "birth_date",
+    "nationality",
+    "avs",
+    "language",
+    "school_year",
+    "emergency_number",
+]
+
 KEPCHUP_DISPLAY_LAGAPEO = True
 KEPCHUP_IMPORT_CHILDREN = True
 

@@ -29,8 +29,17 @@ KEPCHUP_INSTRUCTORS_CAN_EDIT_EXTERNAL_ID = False
 KEPCHUP_BIB_NUMBERS = False
 KEPCHUP_CHILD_SCHOOL = False
 KEPCHUP_ENABLE_TEACHER_MANAGEMENT = False
-KEPCHUP_EMERGENCY_NUMBER_MANDATORY = True
-
+KEPCHUP_CHILDREN_MANDATORY_FIELDS = [
+    "first_name",
+    "last_name",
+    "sex",
+    "birth_date",
+    "avs",
+    "nationality",
+    "language",
+    "school_year",
+    "emergency_number",
+]
 # LAGAPEO
 KEPCHUP_IMPORT_CHILDREN = False
 KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = False

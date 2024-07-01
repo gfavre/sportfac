@@ -148,6 +148,16 @@ KEPCHUP_IMPORT_CHILDREN = True
 KEPCHUP_DISPLAY_NUMBER_OF_SESSIONS = False
 KEPCHUP_SPLASH_PAGE = False
 KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = ["first_name", "last_name", "school"]
+KEPCHUP_CHILDREN_MANDATORY_FIELDS = [
+    "first_name",
+    "last_name",
+    "sex",
+    "birth_date",
+    "nationality",
+    "language",
+    "school_year",
+    "emergency_number",
+]
 KEPCHUP_REGISTER_ACCOUNTS_AT_ANY_TIME = True
 KEPCHUP_EXPLICIT_SESSION_DATES = False
 
