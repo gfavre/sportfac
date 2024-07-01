@@ -67,7 +67,7 @@
 
   <div class="form-group{% if BIRTH_DATE_HIDDEN %} hidden{% endif %}">
     <label class="col-sm-4 control-label" for="inputBirthDate">Date de naissance<span class="required"> *</span></label>
-    <div class="col-sm-5 datepicker">
+    <div class="col-sm-5">
       <input type="text" ng-model="detailedChild.birth_date" id="inputBirthDate" required
              class="form-control"
           {% if BIRTH_DATE_EDITABLE %}
@@ -83,14 +83,15 @@
   </div>
 
   <div class="form-group{% if AVS_HIDDEN %} hidden{% endif %}">
-    <label class="col-sm-4 control-label" for="inputBirthDate">N° AVS</label>
-    <div class="col-sm-5 datepicker">
+    <label class="col-sm-4 control-label" for="inputBirthDate">N° AVS<span class="required"> *</span></label>
+    <div class="col-sm-5">
       <input type="text" ng-model="detailedChild.avs" id="inputAVS"
              class="form-control"
-          {% if AVS_EDITABLE %}
-             placeholder="756.XXXX.XXXX.XX"
-          {% else %}
+          {% if not AVS_EDITABLE %}
              readonly
+          {% endif %}
+          {% if not AVS_HIDDEN %}
+            required
           {% endif %}
       />
     </div>
