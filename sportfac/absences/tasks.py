@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import datetime
 
 from django.conf import settings
@@ -38,9 +37,7 @@ def notify_absences():
     base_context = {
         "signature": preferences["email__SIGNATURE"],
         "site_name": current_site.name,
-        "site_url": settings.DEBUG
-        and "http://" + current_site.domain
-        or "https://" + current_site.domain,
+        "site_url": settings.DEBUG and "http://" + current_site.domain or "https://" + current_site.domain,
     }
     subject_tmpl = loader.get_template("mailer/absence_notification_subject.txt")
     body_tmpl = loader.get_template("mailer/absence_notification.txt")
