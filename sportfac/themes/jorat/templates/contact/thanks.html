@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Thank you!" %}{% endblock title %}
+
+{% block page_title %}{% trans "Thanks for your message" %}{% endblock page_title %}
+
+{% block content %}
+<p class="lead">{% blocktrans %}Your message has been sent. We'll get in touch soon.{% endblocktrans %}</p>
+{% endblock %}

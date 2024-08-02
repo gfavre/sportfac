@@ -1,0 +1,17 @@
+{% extends "contact/contact.html" %}
+
+{% block addresses %}
+    <section style="padding-top: 0">
+      <h4 itemprop="name">EPS du Jorat</h4>
+
+    </section>
+
+      <address itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+        <span itemprop="streetAddress">Chemin du Raffort 11</span><br>
+        <span itemprop="postalCode">1083</span> <span itemprop="addressLocality">Mézières</span><br>
+<br>
+      Secrétariat: <a href="tel:+41215573510">+41 21 557 35 10</a>
+      {% comment %}<br>Email: <a itemprop="email" href="mailto:ssf@nyon.ch">ssf@nyon.ch</a>{% endcomment %}
+      </address>
+
+{% endblock %}
