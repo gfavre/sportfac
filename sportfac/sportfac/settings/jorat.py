@@ -14,75 +14,35 @@ STATICFILES_DIRS = (
 )
 
 
-KEPCHUP_ABSENCE_PDF_LANDSCAPE = True
-KEPCHUP_DISPLAY_PARENT_CITY = True
 KEPCHUP_USE_ABSENCES = True
-KEPCHUP_IMPORT_CHILDREN = False
-KEPCHUP_USE_BUILDINGS = False
-KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = False
-KEPCHUP_SEND_PRESENCE_LIST = True
-KEPCHUP_SEND_COPY_CONTACT_MAIL_TO_ADMIN = True
 KEPCHUP_NO_PAYMENT = True
-KEPCHUP_NO_TERMS = False
-KEPCHUP_NO_SSF = True
-KEPCHUP_DISPLAY_NUMBER_OF_SESSIONS = False
+KEPCHUP_USE_BLACKLISTS = False
+
 KEPCHUP_REGISTER_ACCOUNTS_AT_ANY_TIME = True
-KEPCHUP_NO_EXTRAS = True
+KEPCHUP_INSTRUCTORS_DISPLAY_EXTERNAL_ID = False
+KEPCHUP_INSTRUCTORS_CAN_EDIT_EXTERNAL_ID = False
+KEPCHUP_ZIPCODE_RESTRICTION = []
+
+KEPCHUP_BIB_NUMBERS = False
+KEPCHUP_CHILD_SCHOOL = True
+KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = True
+KEPCHUP_EMERGENCY_NUMBER_MANDATORY = False
+
+KEPCHUP_IMPORT_CHILDREN = True
+
+KEPCHUP_LIMIT_BY_SCHOOL_YEAR = True
+KEPCHUP_LIMIT_BY_AGE = False
+
+KEPCHUP_INSTRUCTORS_CAN_REMOVE_REGISTRATIONS = False
+KEPCHUP_ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE = True
+
 KEPCHUP_EXPLICIT_SESSION_DATES = True
-KEPCHUP_FICHE_SALAIRE_MONTREUX = True
-KEPCHUP_ZIPCODE_RESTRICTION = [
-    ["1277", "Arnex-sur-Nyon"],
-    ["1273", "Arzier-Le Muids"],
-    ["1269", "Bassins"],
-    ["1268", "Begnins"],
-    ["1279", "Bogis-Bossey"],
-    ["1277", "Borex"],
-    ["1195", "Bursinel"],
-    ["1183", "Bursins"],
-    ["1268", "Burtigny"],
-    ["1279", "Chavannes-de-Bogis"],
-    ["1290", "Chavannes-des-Bois"],
-    ["1275", "Chéserex"],
-    ["1267", "Coinsins"],
-    ["1291", "Commugny"],
-    ["1296", "Coppet"],
-    ["1299", "Crans-près-Céligny"],
-    ["1263", "Crassier"],
-    ["1266", "Duillier"],
-    ["1195", "Dully"],
-    ["1186", "Essertines-sur-Rolle"],
-    ["1260", "Eysins"],
-    ["1297", "Founex"],
-    ["1272", "Genolier"],
-    ["1182", "Gilly"],
-    ["1276", "Gingins"],
-    ["1271", "Givrins"],
-    ["1196", "Gland"],
-    ["1276", "Grens"],
-    ["1278", "La Rippe"],
-    ["1261", "Le Vaud"],
-    ["1261", "Longirod"],
-    ["1184", "Luins"],
-    ["1261", "Marchissy"],
-    ["1295", "Mies"],
-    ["1185", "Mont-sur-Rolle"],
-    ["1260", "Nyon"],
-    ["116", "Perroy"],
-    ["1197", "Prangins"],
-    ["1180", "Rolle"],
-    ["1264", "Saint-Cergue"],
-    ["1265", "Saint-George"],
-    ["1188", "Signy-Avenex"],
-    ["1274", "Tannay"],
-    ["1180", "Tartegnin"],
-    ["1270", "Trélex"],
-    ["1267", "Vich"],
-    ["1184", "Vinzel"],
-]
-KEPCHUP_INSTRUCTORS_CAN_REMOVE_REGISTRATIONS = True
+
+KEPCHUP_SEND_PRESENCE_LIST = True
+KEPCHUP_NO_SSF = False
 
 
 CELERYBEAT_SCHEDULE["notify-absences"] = {  # noqa: F405
     "task": "absences.tasks.notify_absences",
-    "schedule": crontab(hour=6, minute=0),  # noqa: F405
+    "schedule": crontab(hour=6, minute=30),  # noqa: F405
 }
