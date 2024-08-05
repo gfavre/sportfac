@@ -13,102 +13,104 @@
 {% endblock %}
 
 {% block content %}
-{% addtoblock "css" %}
-<link rel="stylesheet" type="text/css"
-      href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
-<link rel="stylesheet" type="text/css"
-      href="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.css"/>
-{% endaddtoblock %}
+  {% addtoblock "css" %}
+    <link rel="stylesheet" type="text/css"
+          href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
+    <link rel="stylesheet" type="text/css"
+          href="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.css"/>
+  {% endaddtoblock %}
 
 
-{% addtoblock  "js" %}
-<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+  {% addtoblock "js" %}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 
-<script src="{% static 'js/vendor/datatables/jquery.dataTables.min.js' %}"></script>
-<script src="{% static 'js/vendor/datatables/dataTables.bootstrap.js' %}"></script>
-<script>
-$(function () {
-  moment.locale('fr', {
-    months: 'janvier_février_mars_avril_mai_juin_juillet_août_septembre_octobre_novembre_décembre'.split('_'),
-  });
-  moment.locale('fr');
-  let start = moment("{{ start | date:'c' }}");
-  let end = moment("{{ end | date:'c' }}");
-  function cb(start, end) {
-    $('#reportrange span').html(start.format('D MMMM YYYY') + ' - ' + end.format('D MMMM YYYY'));
-  }
-  $('#reportrange').daterangepicker({
-    startDate: start,
-    endDate: end,
-    applyButtonClasses: "btn-secondary",
-    locale: {
-      "format": "DD.MM.YYYY",
-      "firstDay": 1,
-      "daysOfWeek": [
-        "{% trans "Sun" %}",
-        "{% trans "Mon" %}",
-        "{% trans "Tue" %}",
-        "{% trans "Wed" %}",
-        "{% trans "Thu" %}",
-        "{% trans "Fri" %}",
-        "{% trans "Sat" %}"],
-      "monthNames": [
-        "{% trans "January" %}",
-        "{% trans "February" %}",
-        "{% trans "March" %}",
-        "{% trans "April" %}",
-        "{% trans "May" %}",
-        "{% trans "June" %}",
-        "{% trans "July" %}",
-        "{% trans "August" %}",
-        "{% trans "September" %}",
-        "{% trans "October" %}",
-        "{% trans "November" %}",
-        "{% trans "December" %}"
-      ],
-      "applyLabel": "{% trans "Apply" %}",
-      "cancelLabel": "{% trans "Cancel" %}",
-      "customRangeLabel": "{% trans "Custom range" %}",
-    },
-    ranges: {
-      '{% trans "Today" %}': [moment(), moment()],
-      '{% trans "Yesterday" %}': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-      '{% trans "Last 7 days" %}': [moment().subtract(6, 'days'), moment()],
-      '{% trans "Last 30 days" %}': [moment().subtract(29, 'days'), moment()],
-      '{% trans "This month" %}': [moment().startOf('month'), moment().endOf('month')],
-      '{% trans "Last month" %}': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-    }
-  }, cb);
+    <script src="{% static 'js/vendor/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'js/vendor/datatables/dataTables.bootstrap.js' %}"></script>
+    <script>
+      $(function () {
+        moment.locale('fr', {
+          months: 'janvier_février_mars_avril_mai_juin_juillet_août_septembre_octobre_novembre_décembre'.split('_'),
+        });
+        moment.locale('fr');
+        let start = moment("{{ start | date:'c' }}");
+        let end = moment("{{ end | date:'c' }}");
 
-  $('#reportrange').on('apply.daterangepicker', function (ev, picker) {
-    //do something, like clearing an input
-    window.location.href = window.location.href.replace(
-      /[\?#].*|$/,
-      "?start=" + picker.startDate.format('YYYY-MM-DD') + "&end=" + picker.endDate.format('YYYY-MM-DD')
-    );
-  });
+        function cb(start, end) {
+          $('#reportrange span').html(start.format('D MMMM YYYY') + ' - ' + end.format('D MMMM YYYY'));
+        }
 
-  cb(start, end);
+        $('#reportrange').daterangepicker({
+          startDate: start,
+          endDate: end,
+          applyButtonClasses: "btn-secondary",
+          locale: {
+            "format": "DD.MM.YYYY",
+            "firstDay": 1,
+            "daysOfWeek": [
+              "{% trans "Sun" %}",
+              "{% trans "Mon" %}",
+              "{% trans "Tue" %}",
+              "{% trans "Wed" %}",
+              "{% trans "Thu" %}",
+              "{% trans "Fri" %}",
+              "{% trans "Sat" %}"],
+            "monthNames": [
+              "{% trans "January" %}",
+              "{% trans "February" %}",
+              "{% trans "March" %}",
+              "{% trans "April" %}",
+              "{% trans "May" %}",
+              "{% trans "June" %}",
+              "{% trans "July" %}",
+              "{% trans "August" %}",
+              "{% trans "September" %}",
+              "{% trans "October" %}",
+              "{% trans "November" %}",
+              "{% trans "December" %}"
+            ],
+            "applyLabel": "{% trans "Apply" %}",
+            "cancelLabel": "{% trans "Cancel" %}",
+            "customRangeLabel": "{% trans "Custom range" %}",
+          },
+          ranges: {
+            '{% trans "Today" %}': [moment(), moment()],
+            '{% trans "Yesterday" %}': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            '{% trans "Last 7 days" %}': [moment().subtract(6, 'days'), moment()],
+            '{% trans "Last 30 days" %}': [moment().subtract(29, 'days'), moment()],
+            '{% trans "This month" %}': [moment().startOf('month'), moment().endOf('month')],
+            '{% trans "Last month" %}': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+          }
+        }, cb);
 
-  $(".table").dataTable({
-{% if LANGUAGE_CODE == 'fr' %}
-      "language": {
-            "url": "{% static 'js/vendor/datatables/French.json' %}"
-      },
-{% endif %}
-      "aoColumnDefs": [
-          { 'bSortable': false, 'bSearchable': false, 'aTargets': [ 5 ] }
-      ],
-      "order": [[1, "desc"]],
-      "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "{% trans 'All bills' %}"] ],
-      pageLength: 50,
+        $('#reportrange').on('apply.daterangepicker', function (ev, picker) {
+          //do something, like clearing an input
+          window.location.href = window.location.href.replace(
+            /[\?#].*|$/,
+            "?start=" + picker.startDate.format('YYYY-MM-DD') + "&end=" + picker.endDate.format('YYYY-MM-DD')
+          );
+        });
 
-  });
-});
-</script>
-{% endaddtoblock %}
-<section class="portlet">
+        cb(start, end);
+
+        $(".table").dataTable({
+          {% if LANGUAGE_CODE == 'fr' %}
+            "language": {
+              "url": "{% static 'js/vendor/datatables/French.json' %}"
+            },
+          {% endif %}
+          "aoColumnDefs": [
+            {'bSortable': false, 'bSearchable': false, 'aTargets': [5]}
+          ],
+          "order": [[1, "desc"]],
+          "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "{% trans 'All bills' %}"]],
+          pageLength: 50,
+
+        });
+      });
+    </script>
+  {% endaddtoblock %}
+  <section class="portlet">
     <div id="reportrange"
          class="hidden-print "
          style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
@@ -119,8 +121,8 @@ $(function () {
 
   <h4>{% trans "Invoices" %}, {{ start |date }} - {{ end |date }}</h4>
 
-<table class="table">
-  <thead>
+  <table class="table">
+    <thead>
     <tr>
       <th class="text-nowrap">{% trans "Billing identifier" %}</th>
       <th class="text-nowrap">{% trans "Date" %}</th>
@@ -129,32 +131,39 @@ $(function () {
       <th class="text-nowrap">{% trans "Paid" %}</th>
       <th class="text-nowrap">{% trans "Action" %}</th>
     </tr>
-  </thead>
-  {% for bill in bill_list %}
-   <tr>
-      <td><a href="{{ bill.backend_url }}">{{ bill.billing_identifier }}</a></td>
-      <td data-order="{{ bill.created|date:'c' }}">{{ bill.created|date:"SHORT_DATE_FORMAT" }}</td>
-      <td data-order="{{ bill.family.last_name}} {{ bill.family.first_name}}"><a href="{{ family.get_backend_url }}">{{ bill.family.full_name }}</a></td>
-      <td data-order="{{ bill.total }}">{{ bill.total|money }}</td>
-      <td data-order="{{ bill.is_ok }}" data-search="{% if bill.is_ok %}{% trans 'paid' %}{% endif %} {{ bill.get_payment_method_display }}">
-        {% if bill.is_ok %}
-        <i class="icon-ok-circled success"></i>
-        {% else %}
-        <i class="icon-cancel-circled danger"></i>
-        {% endif %}
-      <br>
-        {{ bill.get_payment_method_display }}
-      </td>
-      <td>
-        <ul class="list-unstyled">
-          <li class="text-nowrap"><a href="{{ bill.get_backend_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Review bill" %}</a></li>
-          <li class="text-nowrap"><a href="{{ bill.pay_url }}" class="btn btn-sm"><i class="icon-credit-card-1"></i>&nbsp;{% trans "Update payment information" %}</a></li>
-        </ul>
-      </td>
-    </tr>
-  {% endfor %}
-</table>
+    </thead>
+    {% for bill in bill_list %}
+      <tr>
+        <td><a href="{{ bill.backend_url }}">{{ bill.billing_identifier }}</a></td>
+        <td data-order="{{ bill.created|date:'c' }}">{{ bill.created|date:"SHORT_DATE_FORMAT" }}</td>
+        <td data-order="{{ bill.family.last_name }} {{ bill.family.first_name }}"><a
+            href="{{ family.get_backend_url }}">{{ bill.family.full_name }}</a></td>
+        <td data-order="{{ bill.total }}">{{ bill.total|money }}</td>
+        <td data-order="{{ bill.is_ok }}"
+            data-search="{% if bill.is_ok %}{% trans 'paid' %}{% endif %} {{ bill.get_payment_method_display }}">
+          {% if bill.is_ok %}
+            <i class="icon-ok-circled success"></i>
+            <br>
+            {% if bill.payment_method %}
+              {{ bill.get_payment_method_display }}<br>
+            {% endif %}
+            {{ bill.payment_date|date:"SHORT_DATE_FORMAT" }}
+          {% else %}
+            <i class="icon-cancel-circled danger"></i>
+          {% endif %}
+        </td>
+        <td>
+          <ul class="list-unstyled">
+            <li class="text-nowrap"><a href="{{ bill.get_backend_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Review bill" %}
+            </a></li>
+            <li class="text-nowrap"><a href="{{ bill.pay_url }}" class="btn btn-sm"><i class="icon-credit-card-1"></i>&nbsp;{% trans "Update payment information" %}
+            </a></li>
+          </ul>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
   <hr>
-    {% crispy form %}
+  {% crispy form %}
 
 {% endblock content %}

@@ -408,6 +408,8 @@ class Bill(TimeStampedModel, StatusModel):
     reminder_sent_date = models.DateTimeField(_("Reminder sent date"), null=True, blank=True)
     pdf = models.FileField(_("PDF"), null=True, blank=True)
 
+    payment_date = models.DateTimeField(_("Payment date"), null=True, blank=True)
+
     objects = BillManager()
 
     class Meta:
@@ -499,6 +501,8 @@ class Bill(TimeStampedModel, StatusModel):
             self.update_status()
         if not self.billing_identifier:
             self.update_billing_identifier()
+        if self.is_paid and not self.payment_date:
+            self.payment_date = now()
         super().save(*args, **kwargs)
         if self.family:
             self.family.save()
@@ -568,6 +572,7 @@ class Bill(TimeStampedModel, StatusModel):
 
     def set_paid(self):
         self.status = self.STATUS.paid
+        self.payment_date = now()
         self.save()
 
     def set_waiting(self):

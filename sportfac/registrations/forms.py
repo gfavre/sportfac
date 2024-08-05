@@ -1,5 +1,6 @@
 from django import forms
 from django.conf import settings
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
@@ -26,8 +27,11 @@ class EmptyForm(forms.Form):
 
 
 class BillForm(forms.ModelForm):
-    status = forms.ChoiceField(choices=list(Bill.STATUS)[1:])
-    payment_method = forms.ChoiceField(choices=AVAILABLE_PAYMENT_METHODS, required=False)
+    status = forms.ChoiceField(choices=list(Bill.STATUS)[1:], label=_("Payment status"))
+    payment_method = forms.ChoiceField(choices=AVAILABLE_PAYMENT_METHODS, required=False, label=_("Payment method"))
+    payment_date = forms.DateTimeField(
+        widget=DatePickerInput(format="%d.%m.%Y"), label=_("Payment date"), required=False
+    )
 
     class Meta:
         model = Bill
@@ -35,12 +39,17 @@ class BillForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields["payment_date"].initial = self.instance.payment_date or timezone.now()
         self.helper = FormHelper()
         self.helper.form_tag = False
-        self.helper.form_class = "form-horizontal"
-        self.helper.form_group_wrapper_class = "row"
-        self.helper.label_class = "col-sm-2"
-        self.helper.field_class = "col-sm-10"
+        self.helper.include_media = False
+
+    def clean_payment_date(self):
+        payment_date = self.cleaned_data["payment_date"]
+        if payment_date and self.cleaned_data["status"] != Bill.STATUS.paid:
+            return None
+        return payment_date
 
 
 class ChildForm(forms.ModelForm):

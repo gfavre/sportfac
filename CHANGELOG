@@ -6,22 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-### 3.8.2 2024-07-22
+## 3.8.3 2024-08-05
+### Added
+- Payment date
+
+## 3.8.2 2024-07-22
 ### Changed
 - Store db name, settings and user for every sentry call made.
 
-### 3.8.1 2024-07-01
+## 3.8.1 2024-07-01
 ### Added
 - AVS is mandatory
 
 
-### 3.8.0 2024-06-24
+## 3.8.0 2024-06-24
 ### Added
 - Created reminder emails, automatically sent before invoice expiry date (KEPCHUP_REGISTRATION_EXPIRE_REMINDER_MINUTES)
 - Canceled registrations are now displayed in the admin interface. Cancelation reason and operator are displayed
 
 
-### 3.7.4 2024-06-24
+## 3.7.4 2024-06-24
 ### Fixed
 - waiting Registrations (i.e. not validated ones) also expire in relation to KEPCHUP_REGISTRATION_EXPIRE_MINUTES
 

@@ -469,12 +469,13 @@ class BillUpdateView(SuccessMessageMixin, FullBackendMixin, UpdateView):
     success_url = reverse_lazy("backend:bill-list")
 
     def form_valid(self, form):
-        self.object = self.get_object()
+        self.object: Bill = self.get_object()
         if form.cleaned_data["status"] == Bill.STATUS.paid:
             self.object.close()
         else:
             self.object.status = form.cleaned_data["status"]
         self.object.payment_method = form.cleaned_data["payment_method"]
+        self.object.payment_date = form.cleaned_data["payment_date"]
         self.object.save(force_status=True)
         return HttpResponseRedirect(self.get_success_url())
 
