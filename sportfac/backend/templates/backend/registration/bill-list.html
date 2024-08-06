@@ -4,13 +4,7 @@
 
 {% block title %}{% trans "List bills" %} - {{ block.super }}{% endblock %}
 {% block page_title %}{% trans "List bills" %}{% endblock %}
-{% block subtitle %}
-  <div class="visible-print">
-    <p>
-      {% blocktrans with start=start|date end=end|date %}Period from {{ start }} to {{ end }}{% endblocktrans %}
-    </p>
-  </div>
-{% endblock %}
+
 
 {% block content %}
   {% addtoblock "css" %}
@@ -18,46 +12,38 @@
           href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
     <link rel="stylesheet" type="text/css"
           href="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.css"/>
-  {% endaddtoblock %}
+    {% endaddtoblock %}
 
   <section class="portlet">
-    <div id="reportrange"
-         class="hidden-print "
-         style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
-      <i class="icon-calendar"></i>&nbsp;
-      <span></span> <i class="fa fa-caret-down"></i>
-    </div>
+
+
+    <!-- Filter Panel -->
+    <div class="filter-panel row">
+      <div class="col-md-4">
+        <label for="reportrange">{% trans "Date Range" %}</label>
+        <div id="reportrange" class="form-control">
+          <i class="icon-calendar"></i>&nbsp;
+          <span></span> <i class="fa fa-caret-down"></i>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <label for="statusFilter">{% trans "Payment status" %}</label>
+        <select id="statusFilter" class="form-control">
+          <option value="all">{% trans "All" %}</option>
+          <option value="paid">{% trans "Paid" %}</option>
+          <option value="waiting">{% trans "Open" %}</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label for="amountFilter">{% trans "Amount" %}</label>
+        <select id="amountFilter" class="form-control">
+          <option value="all">{% trans "All" %}</option>
+          <option value="positive">{% trans "Amounts > 0" %}</option>
+          <option value="zero">{% trans "Amounts = 0" %}</option>
+        </select>
+      </div>
+
   </section>
-
-  <h4>{% trans "Invoices" %}, {{ start |date }} - {{ end |date }}</h4>
-
-
-  <!-- Filter Panel -->
-  <div class="filter-panel row">
-    <div class="col-md-4">
-      <label for="startDate">{% trans "Start Date" %}</label>
-      <input type="text" class="form-control datepicker" id="startDate" placeholder="{% trans 'Select start date' %}">
-    </div>
-    <div class="col-md-4">
-      <label for="endDate">{% trans "End Date" %}</label>
-      <input type="text" class="form-control datepicker" id="endDate" placeholder="{% trans 'Select end date' %}">
-    </div>
-    <div class="col-md-4">
-      <label for="statusFilter">{% trans "Status" %}</label>
-      <select id="statusFilter" class="form-control">
-        <option value="all">{% trans "All" %}</option>
-        <option value="paid">{% trans "Paid" %}</option>
-        <option value="waiting">{% trans "Open" %}</option>
-      </select>
-    </div>
-  </div>
-
-  <!-- Export Panel -->
-  <div class="export-panel row mb-4">
-    <div class="col-md-12 text-right">
-      <button id="exportButton" class="btn btn-primary">{% trans "Export" %}</button>
-    </div>
-  </div>
 
   <table class="table">
     <thead>
@@ -76,7 +62,7 @@
         <td data-order="{{ bill.created|date:'c' }}">{{ bill.created|date:"SHORT_DATE_FORMAT" }}</td>
         <td data-order="{{ bill.family.last_name }} {{ bill.family.first_name }}"><a
             href="{{ family.get_backend_url }}">{{ bill.family.full_name }}</a></td>
-        <td data-order="{{ bill.total }}">{{ bill.total|money }}</td>
+        <td data-order="{{ bill.total }}" data-amount="{{ bill.total }}">{{ bill.total|money }}</td>
         <td data-order="{{ bill.is_ok }}"
             data-search="{% if bill.is_ok %}{% trans 'paid' %}{% endif %} {{ bill.get_payment_method_display }}"
             data-status="{{ bill.status }}"
@@ -107,8 +93,6 @@
   {% crispy form %}
 
 
-
-
   {% addtoblock "js" %}
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
@@ -118,20 +102,15 @@
 
     <script>
       $(function () {
-
-
         moment.locale('fr', {
           months: 'janvier_février_mars_avril_mai_juin_juillet_août_septembre_octobre_novembre_décembre'.split('_'),
         });
         moment.locale('fr');
-        let start = moment("{{ start | date:'c' }}");
-        let end = moment("{{ end | date:'c' }}");
-
-        function cb(start, end) {
-          $('#reportrange span').html(start.format('D MMMM YYYY') + ' - ' + end.format('D MMMM YYYY'));
-        }
+        const start = moment("{{ start | date:'c' }}");
+        const end = moment("{{ end | date:'c' }}");
 
         $('#reportrange').daterangepicker({
+          autoUpdateInput: false,
           startDate: start,
           endDate: end,
           applyButtonClasses: "btn-secondary",
@@ -172,20 +151,14 @@
             '{% trans "This month" %}': [moment().startOf('month'), moment().endOf('month')],
             '{% trans "Last month" %}': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
           }
-        }, cb);
+        }, function(start, end, label) {
+          $('#reportrange span').html(start.format('DD.MM.YYYY') + ' - ' + end.format('DD.MM.YYYY'));
 
-        $('#reportrange').on('apply.daterangepicker', function (ev, picker) {
-
-          //do something, like clearing an input
-          window.location.href = window.location.href.replace(
-            /[\?#].*|$/,
-            "?start=" + picker.startDate.format('YYYY-MM-DD') + "&end=" + picker.endDate.format('YYYY-MM-DD')
-          );
         });
+        $('#reportrange span').html(start.format('DD.MM.YYYY') + ' - ' + end.format('DD.MM.YYYY'));
 
-        cb(start, end);
 
-        let table = $(".table").DataTable({
+        const table = $(".table").DataTable({
           {% if LANGUAGE_CODE == 'fr' %}
             "language": {
               "url": "{% static 'js/vendor/datatables/French.json' %}"
@@ -199,32 +172,78 @@
           pageLength: 50,
         });
 
-        $('#startDate, #endDate, #statusFilter').on('change', function () {
+        $('#reportrange').on('outsideClick.daterangepicker', (ev, picker) => {
+          //$(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+          $.fn.dataTable.ext.search.push(
+            (settings, data, dataIndex) => {
+              const startDate = picker.startDate.format('YYYY-MM-DD');
+              const endDate = picker.endDate.format('YYYY-MM-DD');
+              const dateOrder = table.row(dataIndex).nodes().to$().find('td:eq(1)').attr('data-order');
+              return dateOrder >= startDate && dateOrder <= endDate;
+            }
+          );
           table.draw();
         });
-        // Custom filter for date range and status
-        $.fn.dataTable.ext.search.push(
-          (settings, data, dataIndex) => {
-            const min = $('#startDate').val();
-            const max = $('#endDate').val();
-            const status = $('#statusFilter').val();
-            const date = data[1] || ''; // Use data for the date column
-            const invoiceStatus = table.row(dataIndex).nodes().to$().find('td:eq(4)').data('status');
 
-            if (
-              (min === '' || max === '' || (date >= min && date <= max)) &&
-              (status === 'all' || status.toLowerCase() === invoiceStatus.toLowerCase())
-            ) {
-              return true;
+        $('#reportrange').on('apply.daterangepicker', (ev, picker) => {
+          //$(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+          $.fn.dataTable.ext.search.push(
+            (settings, data, dataIndex) => {
+              const startDate = picker.startDate.format('YYYY-MM-DD');
+              const endDate = picker.endDate.format('YYYY-MM-DD');
+              const dateOrder = table.row(dataIndex).nodes().to$().find('td:eq(1)').attr('data-order');
+              return dateOrder >= startDate && dateOrder <= endDate;
             }
-            return false;
-          }
+          );
+          table.draw();
+        });
+        $('#reportrange').on('cancel.daterangepicker', (ev, picker) => {
+          $(this).val('');
+          // Remove the custom search filter for date range
+          $.fn.dataTable.ext.search.pop();
+          table.draw();
+        });
+
+
+       // Custom filter for amount and status
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                // Amount filter logic
+                const amountFilter = $('#amountFilter').val();
+                const amount = parseFloat(table.row(dataIndex).nodes().to$().find('td:eq(3)').attr('data-amount'));
+
+                if (amountFilter === 'all' || (amountFilter === 'positive' && amount > 0) || (amountFilter === 'zero' && amount === 0)) {
+                    // Status filter logic
+                    const statusFilter = $('#statusFilter').val();
+                    const status = table.row(dataIndex).nodes().to$().find('td:eq(4)').attr('data-status');
+                    if (statusFilter === 'all' || statusFilter === status) {
+                      return true;
+                    }
+                }
+                return false;
+            }
         );
 
+        // Event listener for amount filter change
+        $('#amountFilter, #statusFilter').on('change', () => {
+            table.draw();
+        });
+
+        $('.export-button').on('click', () => {
+          const startDate = $('#reportrange').data('daterangepicker').startDate.format('YYYY-MM-DD');
+          const endDate = $('#reportrange').data('daterangepicker').endDate.format('YYYY-MM-DD');
+          const status = $('#statusFilter').val();
+          const amount = $('#amountFilter').val();
+
+          $('#id_start').val(startDate);
+          $('#id_end').val(endDate);
+          $('#id_status').val(status);
+          $('#id_amount').val(amount);
+
+          $('#export-form').submit();
+        });
 
       });
-
-
     </script>
   {% endaddtoblock %}
 

@@ -260,25 +260,39 @@ class TransportForm(forms.ModelForm):
 
 
 class BillExportForm(forms.Form):
-    include_0_bills = forms.BooleanField(label=_("Include 0.- bills"), initial=False, required=False)
+    STATUS_CHOICES = [("all", "All"), ("paid", "Paid"), ("waiting", "Waiting")]
+
+    AMOUNT_CHOICES = [("all", "All Amounts"), ("positive", "Amounts > 0"), ("zero", "Amounts = 0")]
+
+    start = forms.DateField(required=False, widget=forms.HiddenInput())
+    end = forms.DateField(required=False, widget=forms.HiddenInput())
+    status = forms.ChoiceField(choices=STATUS_CHOICES, required=False, widget=forms.HiddenInput())
+    amount = forms.ChoiceField(choices=AMOUNT_CHOICES, required=False, widget=forms.HiddenInput())
+
+    class Meta:
+        # Ensure correct usage of widgets
+        fields = ["start", "end", "status", "amount"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.form_id = "export-form"
         self.helper.form_class = "form-horizontal"
         self.helper.form_group_wrapper_class = "row"
         self.helper.label_class = "col-sm-2"
         self.helper.field_class = "col-sm-10"
         submit_label = _("Export to XLS")
         self.helper.layout = Layout(
-            "include_0_bills",
+            "start",
+            "end",
+            "status",
+            "amount",
             ButtonHolder(
                 HTML(
                     f"""
-                <button type="submit" class="btn btn-primary btn-large" name="action" value="export">
-                      <i class="icon-file-excel"></i> {submit_label}
-                    </button>"""
+                <button type="submit" class="btn btn-primary btn-large export-button" name="action" value="export" >
+                  <i class="icon-file-excel"></i> {submit_label}
+                </button>"""
                 ),
-                css_class="col-sm-offset-2",
             ),
         )
