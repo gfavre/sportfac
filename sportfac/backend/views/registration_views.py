@@ -433,7 +433,9 @@ class BillListView(FullBackendMixin, ListView):
             end = form.cleaned_data["end"]
             status = form.cleaned_data["status"]
             amount = form.cleaned_data["amount"]
-            qs = self.get_queryset().filter(created__gte=start, created__lte=end)
+            qs = self.get_queryset()
+            if start and end:
+                qs = qs.filter(created__gte=start, created__lte=end)
             if status and status != "all":
                 if status == "paid":
                     qs = qs.filter(status=Bill.STATUS.paid)
@@ -445,7 +447,10 @@ class BillListView(FullBackendMixin, ListView):
                 else:
                     qs = qs.filter(total=0)
             qs = qs.prefetch_related("registrations__child")
-            filename = _("invoices-{}-{}.xlsx".format(start.strftime("%Y-%m-%d"), end.strftime("%Y-%m-%d")))
+            if start and end:
+                filename = _("invoices-{}-{}.xlsx".format(start.strftime("%Y-%m-%d"), end.strftime("%Y-%m-%d")))
+            else:
+                filename = _("invoices.xlsx")
             content_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             resource = BillResource()
             export = resource.export(qs)

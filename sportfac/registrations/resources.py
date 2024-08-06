@@ -220,16 +220,22 @@ class BillResource(resources.ModelResource):
         attribute="billing_identifier", column_name=_("Billing identifier"), widget=widgets.CharWidget()
     )
     amount = fields.Field(attribute="total", column_name=_("Amount"), widget=widgets.DecimalWidget())
+    date = fields.Field(
+        attribute="created", column_name=_("Emission Date"), widget=widgets.DateWidget(format="%d.%m.%Y")
+    )
     due_date = fields.Field(
         attribute="due_date", column_name=_("Due date"), widget=widgets.DateWidget(format="%d.%m.%Y")
     )
+    paid = fields.Field(attribute="is_paid", column_name=_("Paid"), widget=widgets.BooleanWidget())
+    payment_date = fields.Field(
+        attribute="payment_date", column_name=_("Payment date"), widget=widgets.DateWidget(format="%d.%m.%Y")
+    )
     parent = fields.Field(attribute="family", column_name=_("Parent"))
     children = fields.Field(attribute="registrations", column_name=_("Children"))
-    paid = fields.Field(attribute="is_paid", column_name=_("Paid"), widget=widgets.BooleanWidget())
 
     class Meta:
         model = Bill
-        fields = ("billing_identifier", "amount", "due_date", "paid", "parent", "children")
+        fields = ("billing_identifier", "amount", "date", "due_date", "paid", "payment_date", "parent", "children")
         export_order = fields
 
     def dehydrate_children(self, obj):
