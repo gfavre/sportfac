@@ -391,6 +391,7 @@ class Bill(TimeStampedModel, StatusModel):
         ("iban", _("Wire transfer")),
         ("datatrans", _("Credit card (datatrans)")),
         ("postfinance", _("Credit card (postfinance)")),
+        ("on-site", _("On-Site payment")),
         ("external", _("External invoice")),
     )
     STATUS = Choices(
@@ -492,10 +493,7 @@ class Bill(TimeStampedModel, StatusModel):
         if not self.due_date:
             self.due_date = self.get_due_date()
         if not self.payment_method:
-            if settings.KEPCHUP_PAYMENT_METHOD == "wire_transfer":
-                self.payment_method = self.METHODS.iban
-            elif settings.KEPCHUP_PAYMENT_METHOD == "datatrans":
-                self.payment_method = self.METHODS.datatrans
+            self.payment_method = settings.KEPCHUP_PAYMENT_METHOD
         self.update_total()
         if not force_status:
             self.update_status()
