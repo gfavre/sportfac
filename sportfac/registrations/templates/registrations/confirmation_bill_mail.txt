@@ -6,7 +6,7 @@ Nous avons bien reçu vos inscriptions pour les cours suivants:
 • {{ registration.child.full_name|safe }} - {{ registration.course.short_name|safe }}{% if payment %} - {{ registration.price|money }}{% endif %}
 {% endfor %}
 
-{% if payment and PAYMENT_METHOD == 'wire_transfer' %}
+{% if payment and PAYMENT_METHOD == 'iban' %}
 Paiement:
 Identifiant de paiement: {{ bill.billing_identifier }}
 Total: {{ bill.total|money }}

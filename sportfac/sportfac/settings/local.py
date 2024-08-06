@@ -249,7 +249,7 @@ KEPCHUP_USE_SSO = False
 # if true, disable invoicing system
 KEPCHUP_NO_PAYMENT = False
 KEPCHUP_DISPLAY_FREE_WHEN_PRICE_IS_0 = False
-# wire_transfer, datatrans or none
+# iban, datatrans, postfinance, ... or none => see in Bill.payment_method
 KEPCHUP_PAYMENT_METHOD = "postfinance"
 KEPCHUP_ALTERNATIVE_PAYMENT_METHODS_FROM_BACKEND = ["external"]
 KEPCHUP_USE_DIFFERENTIATED_PRICES = True

@@ -3,7 +3,7 @@
 <p>Les inscriptions seront définitivement validées à la suite du règlement de la finance de participation pour les cours choisis.</p>
 <p>Le montant total pour vos inscriptions s'élève à : <strong>{{ bill.total|money }}</strong></p>
 
-{% if PAYMENT_METHOD == 'wire_transfer' %}
+{% if PAYMENT_METHOD == 'iban' %}
 <div class="well">
   <dl class="dl-horizontal">
     <dt>Montant</dt><dd>{{ bill.total|money }}</dd>

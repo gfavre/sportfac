@@ -218,7 +218,7 @@
           </label>
         </div>
       {% endif %}
-      {% if PAYMENT_METHOD == 'wire_transfer' or PAYMENT_METHOD == 'external' %}
+      {% if PAYMENT_METHOD == 'iban' or PAYMENT_METHOD == 'external' %}
       <small><i
           class="icon-warning"></i>{% trans "Confirmation is definitive. You will not be able to change your registrations again." %}
       </small>

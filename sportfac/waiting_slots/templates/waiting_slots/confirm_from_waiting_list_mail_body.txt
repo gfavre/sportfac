@@ -10,7 +10,7 @@ Une place s'étant libérée, nous avons le plaisir de vous informer que {{ regi
 Paiement:
 
 Vous pouvez retrouver votre facture en tous temps sur {{ site_url }}{{ bill.get_absolute_url }}
-{% if PAYMENT_METHOD == 'wire_transfer' %}
+{% if PAYMENT_METHOD == 'iban' %}
 Identifiant de paiement: {{ bill.billing_identifier }}
 Total: {{ bill.total|money }}
 IBAN: {{ iban }}

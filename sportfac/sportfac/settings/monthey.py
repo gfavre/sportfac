@@ -74,7 +74,7 @@ KEPCHUP_SEND_PRESENCE_LIST = True
 KEPCHUP_NO_SSF = False
 
 # Payment
-KEPCHUP_PAYMENT_METHOD = "wire_transfer"
+KEPCHUP_PAYMENT_METHOD = "iban"
 
 
 CELERYBEAT_SCHEDULE["notify-absences"] = {  # noqa: F405
