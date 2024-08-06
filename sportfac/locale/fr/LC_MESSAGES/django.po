@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-06 15:28+0200\n"
-"PO-Revision-Date: 2024-08-06 15:28+0200\n"
+"POT-Creation-Date: 2024-08-06 15:35+0200\n"
+"PO-Revision-Date: 2024-08-06 15:36+0200\n"
 "Last-Translator: Gregory Favre <greg@beyondthewall.ch>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -83,7 +83,7 @@ msgstr "Activité"
 #: sportfac/backend/tests/test_views/test_registrations.py:57
 #: sportfac/backend/views/registration_views.py:173
 #: sportfac/backend/views/registration_views.py:233
-#: sportfac/backend/views/registration_views.py:619
+#: sportfac/backend/views/registration_views.py:624
 #: sportfac/registrations/models.py:57 sportfac/registrations/models.py:923
 #: sportfac/registrations/resources.py:28
 msgid "Course"
@@ -3365,7 +3365,7 @@ msgstr "Fonction"
 #: sportfac/backend/templates/backend/user/detail-instructor.html:69
 #: sportfac/backend/templates/backend/user/detail.html:80
 #: sportfac/backend/templates/backend/user/list.html:227
-#: sportfac/registrations/models.py:733 sportfac/registrations/resources.py:232
+#: sportfac/registrations/models.py:733 sportfac/registrations/resources.py:234
 msgid "Children"
 msgstr "Enfants"
 
@@ -3567,7 +3567,7 @@ msgstr "Tous"
 #: sportfac/backend/templates/backend/registration/bill-list.html:55
 #: sportfac/backend/templates/backend/user/list.html:230
 #: sportfac/registrations/resources.py:50
-#: sportfac/registrations/resources.py:227
+#: sportfac/registrations/resources.py:229
 #: sportfac/registrations/templates/registrations/billing.html:12
 msgid "Paid"
 msgstr "Payé"
@@ -3872,7 +3872,7 @@ msgid "AVS number"
 msgstr "Numéro AVS"
 
 #: sportfac/backend/templates/backend/user/child-detail.html:22
-#: sportfac/registrations/forms.py:80 sportfac/registrations/resources.py:231
+#: sportfac/registrations/forms.py:80 sportfac/registrations/resources.py:233
 msgid "Parent"
 msgstr "Parent"
 
@@ -4647,7 +4647,7 @@ msgid "registrations"
 msgstr "inscriptions"
 
 #: sportfac/backend/views/registration_views.py:143
-#: sportfac/backend/views/registration_views.py:596
+#: sportfac/backend/views/registration_views.py:601
 #, python-format
 msgid "Registrations of %(nb)s children have been moved."
 msgstr "Les inscriptions de %(nb)s enfants ont été déplacées."
@@ -4685,23 +4685,27 @@ msgstr "L'inscription a été mise à jour."
 msgid "%d registrations have been confirmed"
 msgstr "%d inscriptions ont été confirmées"
 
-#: sportfac/backend/views/registration_views.py:448
+#: sportfac/backend/views/registration_views.py:451
 msgid "invoices-{}-{}.xlsx"
 msgstr "invoices-{}-{}.xlsx"
 
-#: sportfac/backend/views/registration_views.py:479
+#: sportfac/backend/views/registration_views.py:453
+msgid "invoices.xlsx"
+msgstr "factures.xlsx"
+
+#: sportfac/backend/views/registration_views.py:484
 msgid "Bill has been updated."
 msgstr "La facture a été mise à jour."
 
-#: sportfac/backend/views/registration_views.py:568
+#: sportfac/backend/views/registration_views.py:573
 msgid "Transport has been created."
 msgstr "Le transport a été créé."
 
-#: sportfac/backend/views/registration_views.py:575
+#: sportfac/backend/views/registration_views.py:580
 msgid "Transport has been updated."
 msgstr "Le transport a été mis à jour."
 
-#: sportfac/backend/views/registration_views.py:583
+#: sportfac/backend/views/registration_views.py:588
 msgid "Transport has been deleted."
 msgstr "Le transport a été supprimé."
 
@@ -5665,7 +5669,7 @@ msgid "Payment method"
 msgstr "Mode de paiement"
 
 #: sportfac/registrations/forms.py:33 sportfac/registrations/models.py:411
-#: sportfac/registrations/resources.py:229
+#: sportfac/registrations/resources.py:231
 msgid "Payment date"
 msgstr "Date de paiement"
 
@@ -5760,16 +5764,16 @@ msgid "Transports"
 msgstr "Transports"
 
 #: sportfac/registrations/models.py:391
-msgid "Later with wire transfer"
-msgstr "Plus tard, par virement bancaire"
+msgid "Wire transfer"
+msgstr "Virement bancaire"
 
 #: sportfac/registrations/models.py:392
-msgid "immediate with credit card (datatrans)"
-msgstr "immédiat avec carte de crédit (datatrans)"
+msgid "Credit card (datatrans)"
+msgstr "Carte de crédit (datatrans)"
 
 #: sportfac/registrations/models.py:393
-msgid "immediate with credit card (postfinance)"
-msgstr "immédiat avec la carte de crédit (postfinance)"
+msgid "Credit card (postfinance)"
+msgstr "Carte de crédit (postfinance)"
 
 #: sportfac/registrations/models.py:394
 msgid "External invoice"
@@ -5795,7 +5799,7 @@ msgstr "Annulé par l'administrateur"
 msgid "Total to be paid"
 msgstr "Total à payer"
 
-#: sportfac/registrations/models.py:406 sportfac/registrations/resources.py:225
+#: sportfac/registrations/models.py:406 sportfac/registrations/resources.py:227
 msgid "Due date"
 msgstr "Date d'échéance"
 
@@ -5871,7 +5875,7 @@ msgstr "Nom du parent"
 msgid "Level 0"
 msgstr "Niveau après le cours"
 
-#: sportfac/registrations/resources.py:223
+#: sportfac/registrations/resources.py:224
 msgid "Emission Date"
 msgstr "Date d'émission"
 

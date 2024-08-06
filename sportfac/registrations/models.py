@@ -388,9 +388,9 @@ class BillManager(models.Manager):
 
 class Bill(TimeStampedModel, StatusModel):
     METHODS = Choices(
-        ("iban", _("Later with wire transfer")),
-        ("datatrans", _("immediate with credit card (datatrans)")),
-        ("postfinance", _("immediate with credit card (postfinance)")),
+        ("iban", _("Wire transfer")),
+        ("datatrans", _("Credit card (datatrans)")),
+        ("postfinance", _("Credit card (postfinance)")),
         ("external", _("External invoice")),
     )
     STATUS = Choices(
