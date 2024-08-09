@@ -135,7 +135,7 @@ class FamilyAdmin(SportfacAdminMixin, UserAdmin):
     )
     # change_list_filter_template = "admin/filter_listing.html"
     list_filter = ("is_staff", "is_superuser", "is_active", "is_manager", "is_restricted_manager")
-    filter_horizontal = ("managed_activities",)
+    # filter_horizontal = ("managed_activities",)
 
     fieldsets = (
         (
@@ -149,7 +149,7 @@ class FamilyAdmin(SportfacAdminMixin, UserAdmin):
                     "is_active",
                     "is_manager",
                     "is_restricted_manager",
-                    "managed_activities",
+                    # "managed_activities",
                 )
             },
         ),
