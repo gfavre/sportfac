@@ -190,6 +190,17 @@
           <p class="text-right">
             <small>{{ course.min_participants }} participants requis pour que l'activité ait lieu</small>
           </p>
+
+          {% if registration_opened and not course.full %}
+            <p class="text-center">
+            {% if user.is_authenticated %}
+              <a href="{% url 'wizard' %}" class="btn btn-large btn-primary">
+                <i class="icon-fixed-width icon-calendar"></i> {% trans "Registration" %}
+              </a>
+            {% else %}
+              <a href="{% url 'profiles:auth_login' %}?next={% url 'wizard' %}" class="btn btn-large btn-success">{% trans "Registration" %}</a>
+            {% endif %}
+          {% endif %}
         </div>
       </section>
     {% endfor %}

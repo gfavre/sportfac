@@ -35,6 +35,8 @@ from .mixins import BackendMixin, ExcelResponseMixin
 
 
 class CourseMixin(BackendMixin):
+    model = Course
+
     # noinspection PyUnresolvedReferences
     def get_queryset(self):
         user: FamilyUser = self.request.user
@@ -95,7 +97,6 @@ class CourseCreateView(SuccessMessageMixin, BackendMixin, CreateView):
 
 
 class CourseDeleteView(SuccessMessageMixin, CourseMixin, DeleteView):
-    model = Course
     template_name = "backend/course/confirm_delete.html"
     success_url = reverse_lazy("backend:course-list")
     success_message = _("Course has been deleted.")
@@ -108,7 +109,6 @@ class CourseDeleteView(SuccessMessageMixin, CourseMixin, DeleteView):
 
 
 class CourseDetailView(CourseMixin, DetailView):
-    model = Course
     template_name = "backend/course/detail.html"
     pk_url_kwarg = "course"
     queryset = Course.objects.select_related("activity").prefetch_related(
@@ -129,7 +129,6 @@ class CourseDetailView(CourseMixin, DetailView):
 
 
 class CourseUpdateView(SuccessMessageMixin, CourseMixin, UpdateView):
-    model = Course
     template_name = "backend/course/update.html"
     pk_url_kwarg = "course"
     success_url = reverse_lazy("backend:course-list")
@@ -177,7 +176,7 @@ class CourseUpdateView(SuccessMessageMixin, CourseMixin, UpdateView):
         return response  # noqa: R504
 
 
-class CoursesToggleVisibilityView(CourseMixin, View):
+class CoursesToggleVisibilityView(CourseMixin, ListView):
     def get_queryset(self):
         courses_pk = [int(pk) for pk in self.request.POST.getlist("c") if pk.isdigit()]
         return super().get_queryset().filter(pk__in=courses_pk)
@@ -224,7 +223,6 @@ class BackendCourseAbsenceView(CourseMixin, CourseAbsenceView):
 
 
 class CoursesAbsenceView(CourseMixin, ListView):
-    model = Course
     template_name = "backend/course/multiple-absences.html"
 
     def get_queryset(self):
@@ -354,7 +352,6 @@ class CourseParticipantsView(CourseDetailView):
 
 
 class CourseListView(CourseMixin, ListView):
-    model = Course
     queryset = Course.objects.select_related("activity").prefetch_related("participants", "instructors")
     template_name = "backend/course/list.html"
 
@@ -370,7 +367,6 @@ class CoursesExportView(BackendMixin, ExcelResponseMixin, View):
 
 
 class CourseParticipantsExportView(SingleObjectMixin, CourseMixin, ExcelResponseMixin, View):
-    model = Course
     pk_url_kwarg = "course"
 
     def get_filename(self):
