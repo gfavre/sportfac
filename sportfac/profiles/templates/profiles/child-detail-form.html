@@ -6,7 +6,13 @@
   </p>
 
   <div class="form-group{% if ID_LAGAPEO_HIDDEN %} hidden{% endif %}" ng-show="{[{ useExternalIdentifiers }]}">
-    <label class="col-sm-4 control-label" for="ext_id">Identifiant (numéro SSF)</label>
+    <label class="col-sm-4 control-label" for="ext_id">
+      {% if ID_LAGAPEO_ALTERNATIVE_LABEL %}
+        {{ ID_LAGAPEO_ALTERNATIVE_LABEL }}
+      {% else %}
+        Identifiant (n° SSF)
+      {% endif %}
+    </label>
     <div class="col-sm-8">
       <p class="form-control-static">{[{ detailedChild.ext_id || "n/a" }]}</p>
     </div>

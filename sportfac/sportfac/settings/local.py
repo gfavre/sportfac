@@ -158,6 +158,8 @@ KEPCHUP_CHILDREN_MANDATORY_FIELDS = [
     "school_year",
     "emergency_number",
 ]
+KEPCHUP_ID_LAGAPEO_ALTERNATIVE_LABEL = "Identifiant pour cours facultatif"
+
 KEPCHUP_REGISTER_ACCOUNTS_AT_ANY_TIME = True
 KEPCHUP_EXPLICIT_SESSION_DATES = False
 

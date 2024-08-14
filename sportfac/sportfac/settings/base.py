@@ -586,7 +586,7 @@ KEPCHUP_ALTERNATIVE_APPOINTMENTS_LABEL = None
 
 # Children
 #
-
+KEPCHUP_ID_LAGAPEO_ALTERNATIVE_LABEL = None
 # Children have a bib number (n° dossard)
 KEPCHUP_BIB_NUMBERS = False
 # Ask for school of the child

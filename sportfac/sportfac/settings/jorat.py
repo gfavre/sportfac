@@ -40,7 +40,8 @@ KEPCHUP_EXPLICIT_SESSION_DATES = True
 
 KEPCHUP_SEND_PRESENCE_LIST = True
 KEPCHUP_NO_SSF = False
-
+KEPCHUP_CHILDREN_HIDDEN_FIELDS = ["language", "nationality", "avs"]
+KEPCHUP_ID_LAGAPEO_ALTERNATIVE_LABEL = "Identifiant pour cours facultatif"
 
 CELERYBEAT_SCHEDULE["notify-absences"] = {  # noqa: F405
     "task": "absences.tasks.notify_absences",

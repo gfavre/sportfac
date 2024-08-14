@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Button to register from activities if registration is open
 - Intelligent phone number search in users view
+- Custom labelling of id lagapeo
 
 ### Fixed
 - Display of dates in invoices and registered activities lists
