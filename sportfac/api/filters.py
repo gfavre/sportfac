@@ -1,3 +1,5 @@
+import re
+
 from django.utils.dateparse import parse_datetime
 from django.utils.timezone import now
 
@@ -33,19 +35,31 @@ def cleanup_value(model_class, accessor, values):
     return accessor, values
 
 
-def parse_phone_numbers(search_value):
-    if search_value.startswith("00"):
-        return "+" + search_value[2:]
-    if search_value.startswith("0") and search_value.isdigit():
-        return "+41" + search_value[1:].lstrip("0")
-    return search_value
+def parse_phone_numbers(search_pattern):
+    # Remove all spaces
+    cleaned_number = search_pattern.replace(" ", "")
+
+    # Check if the cleaned number contains only digits or a '+' followed by digits
+    if re.fullmatch(r"\+?\d+", cleaned_number):
+        # Handle cases where the number starts with '00'
+        if cleaned_number.startswith("00"):
+            return "+" + cleaned_number[2:]
+
+        # Handle cases where the number starts with '0' but not '00'
+        if cleaned_number.startswith("0"):
+            return "+41" + cleaned_number[1:].lstrip("0")
+
+        return cleaned_number
+
+    # Return the original number if it doesn't match the conditions
+    return search_pattern
 
 
 class DatatablesFilterandPanesBackend(DatatablesFilterBackend):
     def filter_queryset(self, request, queryset, view):
         mutable_params = request.query_params.copy()
         if "search[value]" in mutable_params:
-            mutable_params["search[value]"] = parse_phone_numbers(mutable_params["search[value]"])
+            mutable_params["search[value]"] = parse_phone_numbers(mutable_params["search[value]"]).strip()
 
         # This is a hack to make the query_params mutable, and intercept the changes before the lib uses it.
         request._request.GET = mutable_params  # noqa
