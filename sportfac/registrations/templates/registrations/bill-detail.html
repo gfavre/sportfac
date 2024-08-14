@@ -42,7 +42,11 @@
           <a href="{{ registration.course.activity.backend_url }}">{{ registration.course.activity.name }}</a>
         </td>
         <td>
-          <span class="nowrap"><a href="{{ registration.course.backend_url }}">{{ registration.course.start_date }}</span> – <span class="nowrap">{{ registration.course.end_date }}</span></a>
+          <a href="{{ registration.course.backend_url }}">
+            <span class="nowrap">{{ registration.course.start_date | date:"d.m.Y" }}</span>
+            –
+            <span class="nowrap">{{ registration.course.end_date | date:"d.m.Y" }}</span>
+          </a>
         </td>
         <td>
           {% if registration.course.is_course %}

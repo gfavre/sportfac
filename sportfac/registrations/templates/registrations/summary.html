@@ -31,8 +31,8 @@
 
       {% else %}
         <dt>{% trans "Period" %}</dt>
-        <dd>{{ registered.course.start_date }}&nbsp;&nbsp;
-          <i class="icon-right" aria-hidden="true"></i>&nbsp;&nbsp;{{ registered.course.end_date }}
+        <dd>{{ registered.course.start_date | date:"d.m.Y" }}&nbsp;&nbsp;
+          <i class="icon-right" aria-hidden="true"></i>&nbsp;&nbsp;{{ registered.course.end_date | date:"d.m.Y"}}
         </dd>
       {% endif %}
 
