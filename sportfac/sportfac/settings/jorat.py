@@ -40,6 +40,13 @@ KEPCHUP_EXPLICIT_SESSION_DATES = True
 
 KEPCHUP_SEND_PRESENCE_LIST = True
 KEPCHUP_NO_SSF = False
+KEPCHUP_CHILDREN_MANDATORY_FIELDS = [
+    "first_name",
+    "last_name",
+    "sex",
+    "birth_date",
+    "school_year",
+]
 KEPCHUP_CHILDREN_HIDDEN_FIELDS = ["language", "nationality", "avs", "other_school"]
 KEPCHUP_ID_LAGAPEO_ALTERNATIVE_LABEL = "Identifiant pour cours facultatif"
 
