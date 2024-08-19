@@ -293,7 +293,7 @@ class WizardBillingView(LoginRequiredMixin, BillMixin, PaymentMixin, WizardMixin
             raise NotReachableException("No Appointment taken")
 
         if not Bill.objects.filter(
-            status__in=(Bill.STATUS.just_created, Bill.STATUS.waiting), family=request.user
+            status__in=(Bill.STATUS.just_created, Bill.STATUS.waiting), family=request.user, total__gt=0
         ).exists():
             raise NotReachableException("No Bill available")
 
