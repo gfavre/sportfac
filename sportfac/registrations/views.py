@@ -356,6 +356,7 @@ class WizardChildrenListView(WizardMixin, ChildrenListView):
         if Bill.objects.filter(
             family=request.user,
             status=Bill.STATUS.waiting,
+            total__gt=0,
             payment_method__in=(Bill.METHODS.datatrans, Bill.METHODS.postfinance),
         ).exists():
             raise NotReachableException("Payment expected first")
