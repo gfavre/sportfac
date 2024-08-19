@@ -545,6 +545,9 @@ class Bill(TimeStampedModel, StatusModel):
             recipients=[self.family.get_email_string()],
             reply_to=[global_preferences["email__REPLY_TO_MAIL"]],
         )
+        self.reminder_sent = True
+        self.reminder_sent_date = now()
+        self.save()
 
     def send_to_accountant(self):
         if not self.total:

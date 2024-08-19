@@ -145,7 +145,8 @@ def send_reminders(language=settings.LANGUAGE_CODE):
             modified__lte=must_be_older_than,
         )
         for invoice in expired_invoices:
-            invoice.send_reminder()
+            if not invoice.reminder_sent:
+                invoice.send_reminder()
     finally:
         translation.activate(cur_lang)
 
