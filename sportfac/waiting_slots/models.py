@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.db import connection, models, transaction
+from django.db import models, transaction
 from django.urls import reverse
 
 from registrations.models import Bill, Registration
@@ -37,11 +37,7 @@ class WaitingSlot(TimeStampedModel):
         registration.bill = bill
         registration.save()
         if send_confirmation:
-            try:
-                tenant_pk = connection.tenant.pk
-            except AttributeError:
-                tenant_pk = None
-            transaction.on_commit(lambda: send_confirm_from_waiting_list.delay(registration.pk, tenant_pk))
+            transaction.on_commit(lambda: send_confirm_from_waiting_list.delay(registration.pk))
 
     def __repr__(self):
         return self.__str__()
