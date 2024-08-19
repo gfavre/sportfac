@@ -116,6 +116,7 @@ class CourseSerializer(serializers.ModelSerializer):
     end_time = serializers.TimeField(format="%H:%M")
     multi_course = serializers.SerializerMethodField()
     count_participants = serializers.IntegerField(source="nb_participants")
+    title = serializers.SerializerMethodField()
 
     class Meta:
         model = Course
@@ -124,6 +125,7 @@ class CourseSerializer(serializers.ModelSerializer):
             "course_type",
             "number",
             "name",
+            "title",
             "instructors",
             "activity",
             "price",
@@ -161,6 +163,12 @@ class CourseSerializer(serializers.ModelSerializer):
         if not obj.is_multi_course:
             return None
         return MultiCourseInlineSerializer(obj).data
+
+    @staticmethod
+    def get_title(obj):
+        if settings.KEPCHUP_DISPLAY_COURSE_NUMBER_INSTEAD_OF_ACTIVITY:
+            return obj.number
+        return obj.activity.name
 
 
 class ActivityDetailedSerializer(serializers.ModelSerializer):

@@ -211,7 +211,7 @@ factory('Registration', function(){
             return {
               id: eventId,
               groupId: groupId,
-              title: course.activity.name,
+              title: course.title,
               start: start, end: end,
               allDay: false,
               className: className,

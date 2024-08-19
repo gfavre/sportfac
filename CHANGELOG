@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 3.9.0 2024-08-19
+### Fixed
+- Issue preventing the sending of confirmation emails when user is validated through waiting list
+- Issue breaking navigation if the user has one 0.- open bill. This can happen if the administrator changes the bill
+    amount after the registration is done.
+- Issue where reminder emails where sent again and again if the registration was not paid.
+
+### Added
+- New setting "KEPCHUP_DISPLAY_COURSE_NUMBER_INSTEAD_OF_ACTIVITY" to display the couse number on the activities
+    selection page instead of the activity name (e.g. Basket 1 instead of Basket).
+
+### Changed
+- Reminder delay set to 48h for La Tour de Peilz
+
+
 ## 3.8.4 2024-08-14
 ### Added
 - Button to register from activities if registration is open
