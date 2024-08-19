@@ -36,6 +36,8 @@ def invoice_to_meta_data(request, invoice):
 
 
 def get_transaction(request, invoice):
+    if not invoice:
+        return None
     # check if a non-expired transaction exists and return it
     non_expired_transactions = invoice.datatrans_transactions.filter(
         expiration__gte=now(), status=DatatransTransaction.STATUS.initialized
