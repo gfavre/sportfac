@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load duration switzerland %}
+{% load duration switzerland activities %}
 
 {% block title %}{{ activity.name }} - {{ block.super }}{% endblock %}
 {% block page_title %}{{ activity.name }} {% endblock %}
@@ -25,7 +25,7 @@
         <div class="pricing-plan">
           <header class="pricing-header">
             <p class="pricing-plan-label">
-              {% blocktrans with number=course.number %}Course #{{ number }}{% endblocktrans %}
+              {{ course | course_number_display }}
               {% if CALENDAR_DISPLAY_COURSE_NAMES and course.name %}- {{ course.name }}{% endif %}
             </p>
             <h4 class="pricing-plan-title">
