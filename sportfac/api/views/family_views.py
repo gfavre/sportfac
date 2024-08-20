@@ -155,6 +155,14 @@ class ChildrenViewSet(viewsets.ModelViewSet):
         serializer.validated_data["status"] = Child.STATUS.updated
         serializer.save()
 
+    def perform_destroy(self, instance: Child):
+        instance.family = None
+        instance.emergency_number = ""
+        instance.school_year = None
+        instance.teacher = None
+        instance.school = None
+        instance.save()
+
 
 class SimpleChildrenViewSet(viewsets.ReadOnlyModelViewSet):
     model = Child
