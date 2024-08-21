@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.sessions.models import Session
 from django.db import connection, transaction
+from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -46,6 +47,10 @@ class ChangeYearFormView(SuccessMessageMixin, KepchupStaffMixin, FormView):
 
 class ChangeProductionYearFormView(SuccessMessageMixin, BackendMixin, FormView):
     form_class = YearSelectForm
+    template_name = "backend/year/change_production.html"
+
+    def get(self, request, *args, **kwargs):
+        return redirect("backend:year-list")
 
     def get_success_url(self):
         if not url_has_allowed_host_and_scheme(url=self.success_url, allowed_hosts=[self.request.get_host()]):
