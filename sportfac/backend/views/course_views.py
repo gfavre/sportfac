@@ -358,6 +358,7 @@ class CourseListView(CourseMixin, ListView):
 
 class CoursesExportView(BackendMixin, ExcelResponseMixin, View):
     filename = _("courses")
+    model = Course
 
     def get_resource(self):
         return CourseResource()
@@ -368,6 +369,7 @@ class CoursesExportView(BackendMixin, ExcelResponseMixin, View):
 
 class CourseParticipantsExportView(SingleObjectMixin, CourseMixin, ExcelResponseMixin, View):
     pk_url_kwarg = "course"
+    model = Course
 
     def get_filename(self):
         return self.object.number
