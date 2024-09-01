@@ -153,17 +153,19 @@ def send_reminders(language=settings.LANGUAGE_CODE):
 
 @shared_task()
 def send_confirm_from_waiting_list(registration_pk, language=settings.LANGUAGE_CODE):
+    try:
+        registration = Registration.objects.get(pk=registration_pk)
+    except Registration.DoesNotExist:
+        return
+
     cur_lang = translation.get_language()
+
     try:
         translation.activate(language)
         current_domain = Domain.objects.filter(is_current=True).first()
         connection.set_tenant(current_domain.tenant)
-
         global_preferences = global_preferences_registry.manager()
-
-        registration = Registration.objects.get(pk=registration_pk)
         user = registration.child.family
-
         current_site = Site.objects.get_current()
         context = {
             "user": user,
