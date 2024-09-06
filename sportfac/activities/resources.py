@@ -76,10 +76,14 @@ class CourseResource(resources.ModelResource):
 
     def dehydrate_start_date(self, course):
         if settings.KEPCHUP_EXPLICIT_SESSION_DATES and course.all_dates:
-            return course.all_dates[0].strftime("%d.%m.%Y")
-        return course.start_date.strftime("%d.%m.%Y")
+            the_date = course.all_dates[0]
+        else:
+            the_date = course.start_date
+        return the_date.strftime("%d.%m.%Y") if the_date else ""
 
     def dehydrate_end_date(self, course):
         if settings.KEPCHUP_EXPLICIT_SESSION_DATES and course.all_dates:
-            return course.all_dates[-1].strftime("%d.%m.%Y")
-        return course.end_date.strftime("%d.%m.%Y")
+            the_date = course.all_dates[-1]
+        else:
+            the_date = course.end_date
+        return the_date.strftime("%d.%m.%Y") if the_date else ""
