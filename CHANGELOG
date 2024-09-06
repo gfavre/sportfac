@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Issue preventing the export of courses if start or end date is not set
 
+### Changed
+- Course export now contains visibility
+
 ## 3.9.0 2024-08-19
 ### Fixed
 - Issue preventing the sending of confirmation emails when user is validated through waiting list

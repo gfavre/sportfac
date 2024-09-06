@@ -32,6 +32,7 @@ class CourseResource(resources.ModelResource):
             "end_date",
             "schedule",
             "place",
+            "visible",
             "instructors",
             "instructors_phone",
             "instructors_email",
