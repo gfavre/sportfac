@@ -490,18 +490,18 @@ class Bill(TimeStampedModel, StatusModel):
 
     @transaction.atomic
     def save(self, force_status=False, *args, **kwargs):
+        self.update_total()
         if not self.due_date:
             self.due_date = self.get_due_date()
         if not self.payment_method:
             self.payment_method = settings.KEPCHUP_PAYMENT_METHOD
-        self.update_total()
         if not force_status:
             self.update_status()
-        if not self.billing_identifier:
-            self.update_billing_identifier()
         if self.is_paid and not self.payment_date:
             self.payment_date = now()
         super().save(*args, **kwargs)
+        if not self.billing_identifier:
+            self.update_billing_identifier()
         if self.family:
             self.family.save()
 
@@ -606,6 +606,7 @@ class Bill(TimeStampedModel, StatusModel):
                     self.billing_identifier = identifier
                 else:
                     self.billing_identifier = name_part[0][: (20 - len(number_part) - 1)] + "-" + number_part
+            super().save(self, update_fields=["billing_identifier"])
 
     def update_total(self):
         self.total = sum([registration.price for registration in self.registrations.all() if registration.price])

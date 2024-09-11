@@ -1,6 +1,7 @@
 import collections
 import logging
 from datetime import datetime
+from io import BytesIO
 
 from django.conf import settings
 from django.contrib import messages
@@ -30,7 +31,7 @@ from formtools.wizard.views import SessionWizardView
 from profiles.models import FamilyUser as User
 from registrations.forms import BillExportForm, BillForm, MoveRegistrationsForm, MoveTransportForm, TransportForm
 from registrations.models import Bill, ExtraInfo, Registration, Transport
-from registrations.resources import BillResource, RegistrationResource
+from registrations.resources import BillResource, RegistrationResource, enhance_invoices_xls
 from registrations.views import BillMixin, PaymentMixin
 
 from .mixins import BackendMixin, ExcelResponseMixin, FullBackendMixin
@@ -421,44 +422,90 @@ class BillListView(FullBackendMixin, ListView):
     def get_queryset(self):
         start, end = self.get_start_end()
         return (
-            Bill.objects.filter(created__gte=start, created__lte=end)
+            Bill.objects.exclude(status=Bill.STATUS.just_created)
+            .filter(created__gte=start, created__lte=end)
             .select_related("family")
             .order_by("status", "billing_identifier")
         )
 
+    def _apply_filters(self, qs, cleaned_data):
+        """
+        Applies filters to the queryset based on form data.
+        """
+        start = cleaned_data["start"]
+        end = cleaned_data["end"]
+        status = cleaned_data["status"]
+        amount = cleaned_data["amount"]
+
+        if start and end:
+            qs = qs.filter(created__gte=start, created__lte=end)
+
+        if status and status != "all":
+            qs = qs.filter(status=Bill.STATUS.paid if status == "paid" else Bill.STATUS.waiting)
+
+        if amount and amount != "all":
+            qs = qs.exclude(total=0) if amount == "positive" else qs.filter(total=0)
+
+        return qs.prefetch_related("registrations__child")
+
+    def _apply_sorting(self, qs, sorting):
+        """
+        Applies sorting to the queryset based on the sorting data from the form.
+        """
+        if not sorting:
+            return qs
+
+        # Mapping DataTables indices to model fields
+        column_mapping = {
+            0: "billing_identifier",
+            1: "created",
+            2: "user__username",
+            3: "total",
+            4: "status",
+        }
+
+        sorting_fields = []
+        for sort in sorting.split(","):
+            index, direction = sort.split(":")
+            field = column_mapping.get(int(index))
+            if field:
+                sorting_fields.append(f"-{field}" if direction == "desc" else field)
+
+        return qs.order_by(*sorting_fields) if sorting_fields else qs
+
+    def _get_filename(self, start, end):
+        """
+        Generates a filename for the exported file.
+        """
+        if start and end:
+            return _("invoices-{}-{}.xlsx".format(start.strftime("%Y-%m-%d"), end.strftime("%Y-%m-%d")))
+        return _("invoices.xlsx")
+
+    def _generate_export_response(self, qs, filename):
+        """
+        Generates an export response with the given queryset and filename.
+        """
+        content_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        resource = BillResource()
+        export = resource.export(qs)
+
+        rendered_xlsx = BytesIO(export.xlsx)
+        enhanced_xlsx = enhance_invoices_xls(rendered_xlsx)
+        response = HttpResponse(enhanced_xlsx, content_type=content_type)
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
+        return response
+
     def post(self, request, *args, **kwargs):
         form = BillExportForm(request.POST)
-        if form.is_valid():
-            start = form.cleaned_data["start"]
-            end = form.cleaned_data["end"]
-            status = form.cleaned_data["status"]
-            amount = form.cleaned_data["amount"]
-            qs = self.get_queryset()
-            if start and end:
-                qs = qs.filter(created__gte=start, created__lte=end)
-            if status and status != "all":
-                if status == "paid":
-                    qs = qs.filter(status=Bill.STATUS.paid)
-                else:
-                    qs = qs.filter(status=Bill.STATUS.waiting)
-            if amount and amount != "all":
-                if amount == "positive":
-                    qs = qs.exclude(total=0)
-                else:
-                    qs = qs.filter(total=0)
-            qs = qs.prefetch_related("registrations__child")
-            if start and end:
-                filename = _("invoices-{}-{}.xlsx".format(start.strftime("%Y-%m-%d"), end.strftime("%Y-%m-%d")))
-            else:
-                filename = _("invoices.xlsx")
-            content_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            resource = BillResource()
-            export = resource.export(qs)
-            response = HttpResponse(content_type=content_type)
-            response["Content-Disposition"] = f'attachment; filename="{filename}"'
-            response.write(export.xlsx)
-            return response
-        return self.render_to_response(self.get_context_data(form=form))
+        if not form.is_valid():
+            return self.render_to_response(self.get_context_data(form=form))
+
+        # Extract form data
+        cleaned_data = form.cleaned_data
+        qs = self._apply_filters(self.get_queryset(), cleaned_data)
+        qs = self._apply_sorting(qs, cleaned_data.get("sorting"))
+        filename = self._get_filename(cleaned_data.get("start"), cleaned_data.get("end"))
+        return self._generate_export_response(qs, filename)
 
 
 class BillDetailView(FullBackendMixin, BillMixin, PaymentMixin, DetailView):

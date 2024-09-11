@@ -1,3 +1,5 @@
+from io import BytesIO
+
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
@@ -5,6 +7,8 @@ import tablib
 from activities.models import ExtraNeed
 from backend.templatetags.switzerland import phone
 from import_export import fields, resources, widgets
+from openpyxl import load_workbook
+from openpyxl.workbook.workbook import Workbook
 
 from .models import Bill, ChildActivityLevel, Registration
 
@@ -261,3 +265,40 @@ class BillResource(resources.ModelResource):
         self.after_export(queryset, data, *args, **kwargs)
 
         return data
+
+
+def enhance_invoices_xls(invoices: BytesIO) -> BytesIO:
+    """
+    Enhances the given Excel file by adjusting column widths.
+
+    Args:
+        invoices (BytesIO): The in-memory bytes content of the exported .xlsx file.
+
+    Returns:
+        BytesIO: The enhanced Excel file with adjusted column widths.
+    """
+    # Load workbook with openpyxl from the in-memory bytes
+    workbook: Workbook = load_workbook(invoices)
+    sheet = workbook.active
+
+    # Set column widths (adjust according to the actual content of your columns)
+    column_widths = {
+        "A": 12,  # Billing identifier
+        "B": 10,  # Amount
+        "C": 16,  # Emission Date
+        "D": 16,  # Due date
+        "E": 8,  # Paid
+        "F": 16,  # Payment date
+        "G": 20,  # Parent
+        "H": 40,  # Children
+    }
+
+    for col, width in column_widths.items():
+        sheet.column_dimensions[col].width = width
+
+    # Save the enhanced workbook back into a new BytesIO object
+    enhanced_invoices = BytesIO()
+    workbook.save(enhanced_invoices)
+    enhanced_invoices.seek(0)  # Move to the start of the stream for reading
+
+    return enhanced_invoices

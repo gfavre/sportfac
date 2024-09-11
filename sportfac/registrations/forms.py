@@ -268,6 +268,7 @@ class BillExportForm(forms.Form):
     end = forms.DateField(required=False, widget=forms.HiddenInput())
     status = forms.ChoiceField(choices=STATUS_CHOICES, required=False, widget=forms.HiddenInput())
     amount = forms.ChoiceField(choices=AMOUNT_CHOICES, required=False, widget=forms.HiddenInput())
+    sorting = forms.CharField(required=False, widget=forms.HiddenInput())
 
     class Meta:
         # Ensure correct usage of widgets
@@ -287,6 +288,7 @@ class BillExportForm(forms.Form):
             "end",
             "status",
             "amount",
+            "sorting",
             ButtonHolder(
                 HTML(
                     f"""

@@ -15,8 +15,6 @@
     {% endaddtoblock %}
 
   <section class="portlet">
-
-
     <!-- Filter Panel -->
     <div class="filter-panel row">
       <div class="col-md-4">
@@ -42,7 +40,7 @@
           <option value="zero">{% trans "Amounts = 0" %}</option>
         </select>
       </div>
-
+    </div>
   </section>
 
   <table class="table">
@@ -235,10 +233,14 @@
           const status = $('#statusFilter').val();
           const amount = $('#amountFilter').val();
 
+          const sortingOrder = table.order(); // This returns an array, e.g., [[1, "desc"], [2, "asc"]]
+          const sortingFields = sortingOrder.map(order => `${order[0]}:${order[1]}`).join(',');
+
           $('#id_start').val(startDate);
           $('#id_end').val(endDate);
           $('#id_status').val(status);
           $('#id_amount').val(amount);
+          $('#id_sorting').val(sortingFields); // Pass the sorting info to the hidden "sorting" field
 
           $('#export-form').submit();
         });
