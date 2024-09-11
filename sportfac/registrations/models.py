@@ -397,6 +397,7 @@ class Bill(TimeStampedModel, StatusModel):
     STATUS = Choices(
         ("just_created", _("Just created")),
         ("waiting", _("Waiting parent's payment")),
+        ("waiting", _("Waiting parent's payment")),
         ("paid", _("Paid by parent")),
         ("canceled", _("Canceled by administrator")),
     )
@@ -606,7 +607,7 @@ class Bill(TimeStampedModel, StatusModel):
                     self.billing_identifier = identifier
                 else:
                     self.billing_identifier = name_part[0][: (20 - len(number_part) - 1)] + "-" + number_part
-            super().save(self, update_fields=["billing_identifier"])
+            super().save()
 
     def update_total(self):
         self.total = sum([registration.price for registration in self.registrations.all() if registration.price])
