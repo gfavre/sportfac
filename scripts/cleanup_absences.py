@@ -3,7 +3,7 @@ from activities.models import Course
 from registrations.models import Registration
 
 
-for course in Course.objects.filter(visible=True).prefetch_related("sessions", "participants", "participants__child"):
+for course in Course.objects.all().prefetch_related("sessions", "participants", "participants__child"):
     print(f"course: {course}")
     for registration in course.participants.all():
         for session in course.sessions.all():
