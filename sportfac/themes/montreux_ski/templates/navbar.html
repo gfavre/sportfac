@@ -80,7 +80,7 @@ jQuery(function($){
                   </li>
                 {% endif %}
               {% endfor %}
-              {% if user.full_manager %}
+              {% if user.is_full_manager %}
               <li class="divider"></li>
               <li>
                 <a href="{% url 'backend:year-list' %}"><i class="icon-exchange"></i> {% trans "Manage periods" %}</a>
