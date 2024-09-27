@@ -172,7 +172,7 @@
           </h4>
 
           <p>
-            {% if course.full %}
+            {% if course.full or not course.allow_new_participants %}
               {% trans "Course full" %}
             {% else %}
               {% blocktrans with nb=course.count_participants %}{{ nb }} participants{% endblocktrans %}
@@ -184,14 +184,14 @@
 
           <div class="progress" style="margin-bottom: 0;">
             <div
-                class="progress-bar {% if course.full %}progress-bar-danger{% elif course.minimal_participants_reached %}progress-bar-success{% else %}progress-bar-warning{% endif %}"
+                class="progress-bar {% if course.full or not course.allow_new_participants %}progress-bar-danger{% elif course.minimal_participants_reached %}progress-bar-success{% else %}progress-bar-warning{% endif %}"
                 style="width: {{ course.percentage_full }}%"></div>
           </div>
           <p class="text-right">
             <small>{{ course.min_participants }} participants requis pour que l'activité ait lieu</small>
           </p>
 
-          {% if registration_opened and not course.full %}
+          {% if registration_opened and not course.full and course.allow_new_participants %}
             <p class="text-center">
             {% if user.is_authenticated %}
               <a href="{% url 'wizard' %}" class="btn btn-large btn-primary">

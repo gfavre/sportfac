@@ -317,9 +317,11 @@ class CourseForm(forms.ModelForm):
             not settings.KEPCHUP_NO_EXTRAS and ExtraNeed.objects.exists() and "extra" or HTML(""),
             Fieldset(
                 _("Management"),
-                "uptodate",
-                "visible",
                 Div("announced_js", css_class="camp-hidden course-show"),
+                "uptodate",
+                HTML("<hr>"),
+                "visible",
+                "allow_new_participants",
             ),
         )
 

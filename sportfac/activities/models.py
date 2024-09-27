@@ -502,6 +502,8 @@ class Course(TimeStampedModel):
 
     @property
     def percentage_full(self):
+        if self.full or not self.allow_new_participants:
+            return 100
         try:
             return int(100 * float(self.count_participants) / float(self.max_participants))
         except ZeroDivisionError:

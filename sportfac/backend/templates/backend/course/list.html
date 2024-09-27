@@ -156,7 +156,7 @@
     </tr>
     </thead>
     {% for course in object_list %}
-      <tr class="{% if not course.visible %}info{% elif course.has_issue %}danger{% endif %}"
+      <tr class="{% if not course.visible %}info{% elif course.has_issue %}danger{% elif not course.allow_new_participants %}warning{% endif %}"
           data-courseid="{{ course.id }}">
         <td data-order="{{ course.number }}">
           <a href="{{ course.get_backend_url }}">{{ course.number }}</a>
@@ -210,6 +210,7 @@
           {% else %}
             {{ course.count_participants }}&nbsp;/&nbsp;{{ course.max_participants }}
           {% endif %}
+          {% if not course.allow_new_participants %}<br><i class="icon icon-minus-circled text-danger"></i> <small>{% trans "Registrations not allowed "%}</small>{% endif %}
         </td>
         <td data-order="{{ course.announced_js }}"
             data-search="{{ course.announced_js|yesno:"true,false" }}">
