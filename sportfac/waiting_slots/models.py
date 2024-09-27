@@ -10,7 +10,7 @@ from sportfac.models import TimeStampedModel
 
 class WaitingSlot(TimeStampedModel):
     child = models.ForeignKey("registrations.Child", on_delete=models.CASCADE)
-    course = models.ForeignKey("activities.Course", on_delete=models.CASCADE)
+    course = models.ForeignKey("activities.Course", on_delete=models.CASCADE, related_name="waiting_slots")
 
     class Meta:
         ordering = ("course", "created")

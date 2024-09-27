@@ -282,6 +282,13 @@ class Course(TimeStampedModel):
     nb_participants = models.SmallIntegerField(verbose_name=_("Current nb of participants"), default=0)
     min_participants = models.PositiveSmallIntegerField(verbose_name=_("Minimal number of participants"))
     max_participants = models.PositiveSmallIntegerField(verbose_name=_("Maximal number of participants"))
+    allow_new_participants = models.BooleanField(
+        default=True,
+        verbose_name=_("Allow registrations"),
+        help_text=_(
+            "If unchecked, no new registration will be possible. This is more restrictive than the course being full."
+        ),
+    )
 
     schoolyear_min = models.PositiveIntegerField(
         choices=SCHOOL_YEARS, verbose_name=_("Minimal school year"), blank=True, null=True
@@ -622,7 +629,7 @@ class Course(TimeStampedModel):
         if self.age_max and self.start_date:
             # if we say up to 6 years old, we want to include children of 6 1/2 years old, hence the +1
             self.max_birth_date = self.start_date - relativedelta(years=self.age_max + 1)
-        self.update_nb_participants()
+        self.update_nb_participants()  # useful if max participants number has been changed
         super().save(*args, **kwargs)
 
     def update_dates_from_sessions(self, commit=True):
@@ -640,7 +647,22 @@ class Course(TimeStampedModel):
             self.save()
 
     def update_nb_participants(self):
+        # Registration has a custom manager that only displays non canceled registrations.
+        # Therefore, those only appear in admin, but not anywhere else.
         self.nb_participants = self.participants.count()
+        if self.nb_participants >= self.max_participants:
+            self.allow_new_participants = False
+
+    def update_registrations(self, last_registration):
+        self.nb_participants = self.participants.count()
+        if self.nb_participants >= self.max_participants:
+            self.allow_new_participants = False
+        else:
+            if last_registration and last_registration.is_canceled:
+                self.allow_new_participants = False  # Keep it False if the last one was unpaid cancellation
+            else:
+                self.allow_new_participants = True
+        self.save(update_fields=["nb_participants", "allow_new_participants"])
 
     def __str__(self):
         base = "%(invisible)s%(activity)s (%(number)s): %(fullness)s"

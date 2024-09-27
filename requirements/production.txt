@@ -2,9 +2,9 @@
 #	production that isn't in development.
 -r base.txt
 
-gunicorn == 20.1.0
-redis == 4.4.0
-python-memcached == 1.59
-psycopg2-binary == 2.9.5
-ipython == 8.7.0
-sentry-sdk[django] ==1.15.0
+gunicorn == 23.0.0
+redis == 5.0.8
+python-memcached == 1.62
+psycopg2-binary == 2.9.9
+ipython == 8.27.0
+sentry-sdk[django] ==2.14.0

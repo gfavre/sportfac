@@ -282,19 +282,19 @@ class RegistrationSerializer(serializers.ModelSerializer):
         fields = ("id", "child", "course", "status")
 
     def validate(self, data):
-        if data["course"].full:
+        course = data["course"]
+        if not course.allow_new_participants or course.full:
             raise serializers.ValidationError(_("Course is full"))
-
+        child = data["child"]
         if settings.KEPCHUP_LIMIT_BY_SCHOOL_YEAR:
-            if data["child"].school_year and data["child"].school_year.year not in data["course"].school_years:
+            if child.school_year and child.school_year.year not in course.school_years:
                 raise serializers.ValidationError(
-                    _("This course is not opened to children of school year %(year)s")
-                    % {"year": data["child"].school_year}
+                    _("This course is not opened to children of school year %(year)s") % {"year": child.school_year}
                 )
         else:
-            if not (data["course"].max_birth_date <= data["child"].birth_date <= data["course"].min_birth_date):
+            if not (course.max_birth_date <= child.birth_date <= course.min_birth_date):
                 raise serializers.ValidationError(_("This course is not opened to children of this age"))
-        if data["child"].registrations.count() >= global_preferences_registry.manager()["MAX_REGISTRATIONS"]:
+        if child.registrations.count() >= global_preferences_registry.manager()["MAX_REGISTRATIONS"]:
             raise serializers.ValidationError(_("Max number of registrations reached."))
         return data
 

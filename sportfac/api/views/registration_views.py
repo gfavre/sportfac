@@ -70,28 +70,6 @@ class RegistrationViewSet(viewsets.ModelViewSet):
         user = self.request.user
         return Registration.objects.filter(child__in=user.children.all())
 
-    def create(self, request, *args, **kwargs):
-        if type(request.data) is list:
-            data = []
-            errors = []
-            self.get_queryset().exclude(validated=True).exclude(paid=True).delete()
-            for registration in request.data:
-                serializer = RegistrationSerializer(data=registration)
-                if serializer.is_valid():
-                    serializer.save()
-                    data.append(serializer.data)
-                else:
-                    errors.append(serializer.errors)
-            if data:
-                return Response(data, status=status.HTTP_201_CREATED)
-            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
-
-        serializer = RegistrationSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = TeacherSerializer

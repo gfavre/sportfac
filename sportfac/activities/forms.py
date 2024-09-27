@@ -125,6 +125,7 @@ class CourseForm(forms.ModelForm):
             "uptodate",
             "announced_js",
             "visible",
+            "allow_new_participants",
             "extra",
         )
         widgets = {

@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 import datetime
 import json
 import logging
@@ -7,14 +6,16 @@ from django.test import override_settings
 from django.urls import reverse
 
 import faker
-from activities.tests.factories import ActivityFactory, CourseFactory
+from activities.tests.factories import CourseFactory
 from api.serializers import ChildrenSerializer
-from profiles.tests.factories import DEFAULT_PASS, FamilyUserFactory, SchoolYearFactory
+from profiles.tests.factories import FamilyUserFactory, SchoolYearFactory
 from registrations.models import Child
 from registrations.tests.factories import ChildFactory, RegistrationFactory
 from schools.tests.factories import TeacherFactory
 
 from sportfac.utils import TenantTestCase
+
+from .utils import UserMixin
 
 
 fake = faker.Factory.create("fr_CH")
@@ -23,14 +24,9 @@ logger = logging.getLogger("django.request")
 logger.disabled = True
 
 
-class UserMixin(object):
-    def login(self, user):
-        self.tenant_client.login(username=user.email, password=DEFAULT_PASS)
-
-
 class ActivityAPITests(TenantTestCase):
     def setUp(self):
-        super(ActivityAPITests, self).setUp()
+        super().setUp()
         self.school_year = 3
         self.birth_date = fake.date_between(start_date="-10y", end_date="-5y")
         self.age = datetime.date.today().year - self.birth_date.year
@@ -49,30 +45,26 @@ class ActivityAPITests(TenantTestCase):
 
     @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=True)
     def test_filter_by_school_year(self):
-        overlap = CourseFactory(
-            schoolyear_min=self.school_year - 1, schoolyear_max=self.school_year + 1
-        )
-        out_of_range = CourseFactory(
-            schoolyear_min=self.school_year + 1, schoolyear_max=self.school_year + 2
-        )
-        url = reverse("api:activity-list") + "?year={}".format(self.school_year)
+        CourseFactory(schoolyear_min=self.school_year - 1, schoolyear_max=self.school_year + 1)  # overlap
+        CourseFactory(schoolyear_min=self.school_year + 1, schoolyear_max=self.school_year + 2)  # out of range
+        url = reverse("api:activity-list") + f"?year={self.school_year}"
         response = self.tenant_client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 2)
 
     @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False)
     def test_filter_by_age(self):
-        too_young = CourseFactory(
+        CourseFactory(
             age_min=self.age + 1,
             age_max=self.age + 2,
             start_date=datetime.date.today(),
-        )
-        too_old = CourseFactory(
+        )  # too young
+        CourseFactory(
             age_min=self.age - 2,
             age_max=self.age - 1,
             start_date=datetime.date.today(),
-        )
-        url = reverse("api:activity-list") + "?birth_date={}".format(self.birth_date.isoformat())
+        )  # too old
+        url = reverse("api:activity-list") + f"?birth_date={self.birth_date.isoformat()}"
         response = self.tenant_client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
@@ -80,7 +72,7 @@ class ActivityAPITests(TenantTestCase):
 
 class CoursesAPITests(TenantTestCase):
     def setUp(self):
-        super(CoursesAPITests, self).setUp()
+        super().setUp()
         self.course = CourseFactory()
 
     def test_list(self):
@@ -91,16 +83,12 @@ class CoursesAPITests(TenantTestCase):
 
 class ChildrenAPITests(UserMixin, TenantTestCase):
     def setUp(self):
-        super(ChildrenAPITests, self).setUp()
+        super().setUp()
         self.year = SchoolYearFactory()
         self.user1 = FamilyUserFactory()
-        self.children1 = ChildFactory.create_batch(
-            size=3, school_year=self.year, family=self.user1
-        )
+        self.children1 = ChildFactory.create_batch(size=3, school_year=self.year, family=self.user1)
         self.user2 = FamilyUserFactory()
-        self.children2 = ChildFactory.create_batch(
-            size=2, school_year=self.year, family=self.user2
-        )
+        self.children2 = ChildFactory.create_batch(size=2, school_year=self.year, family=self.user2)
         self.admin = FamilyUserFactory()
         self.admin.is_manager = True
         self.teacher = TeacherFactory()
@@ -189,7 +177,7 @@ class ChildrenAPITests(UserMixin, TenantTestCase):
 
 class RegistrationAPITests(UserMixin, TenantTestCase):
     def setUp(self):
-        super(RegistrationAPITests, self).setUp()
+        super().setUp()
         self.year = SchoolYearFactory()
         self.course = CourseFactory(schoolyear_min=self.year.year, schoolyear_max=self.year.year)
         self.child1 = ChildFactory(school_year=self.year)
@@ -260,7 +248,7 @@ class RegistrationAPITests(UserMixin, TenantTestCase):
 
 class TeacherAPITests(UserMixin, TenantTestCase):
     def setUp(self):
-        super(TeacherAPITests, self).setUp()
+        super().setUp()
         self.year = SchoolYearFactory()
         self.teacher = TeacherFactory()
         self.teacher.years.add(self.year)

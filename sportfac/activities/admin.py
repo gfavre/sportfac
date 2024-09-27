@@ -6,7 +6,6 @@ from django.utils.translation import gettext_lazy as _
 
 from ckeditor.widgets import CKEditorWidget
 from import_export.admin import ImportExportModelAdmin
-from registrations.models import Registration
 
 from sportfac.admin_utils import SportfacAdminMixin, SportfacModelAdmin
 
@@ -155,8 +154,7 @@ class CoursesAdmin(SportfacAdminMixin, ImportExportModelAdmin):
         "day",
         "start_date",
         "start_time",
-        "duration",
-        "number_of_participants",
+        "allow_new_participants",
         "uptodate",
     )
     list_filter = (
@@ -177,17 +175,6 @@ class CoursesAdmin(SportfacAdminMixin, ImportExportModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.annotate(models.Count("participants"))
-
-    @admin.display(
-        description=_("number of participants"),
-        ordering="participants__count",
-    )
-    def number_of_participants(self, obj):
-        return Registration.objects.filter(course=obj).count()
-
-    @admin.display(description=_("Duration"))
-    def duration(self, obj):
-        return obj.duration
 
 
 @admin.register(TemplatedEmailReceipt)

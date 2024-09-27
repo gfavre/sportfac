@@ -160,6 +160,7 @@ class Registration(TimeStampedModel, StatusModel):
         self.cancelation_date = now()
         if settings.KEPCHUP_USE_ABSENCES:
             self.delete_future_absences()
+        # TODO: Send email to admin
 
     def create_future_absences(self):
         # move between courses:
@@ -175,12 +176,18 @@ class Registration(TimeStampedModel, StatusModel):
     def delete(self, *args, **kwargs):
         with transaction.atomic():
             super().delete(*args, **kwargs)
-            self.course.save()
+            self.course.update_registrations(None)
             if self.bill:
                 self.bill.save()
             else:
                 # noinspection PyUnresolvedReferences
                 self.child.family.profile.save()
+
+    def expire(self):
+        self.status = self.STATUS.canceled
+        self.cancelation_reason = self.REASON.expired
+        self.cancelation_date = now()
+        self.save()
 
     def delete_future_absences(self):
         # move between courses:
@@ -309,7 +316,7 @@ class Registration(TimeStampedModel, StatusModel):
                 profile.save()
             if settings.KEPCHUP_USE_ABSENCES:
                 self.create_future_absences()
-            self.course.save()
+            self.course.update_registrations(self)
 
     def set_confirmed(self, send_confirmation=False):
         self.status = self.STATUS.confirmed
@@ -588,6 +595,7 @@ class Bill(TimeStampedModel, StatusModel):
                 registration.save()
             except IntegrityError:
                 registration.delete()
+        # FIXME: datatrans???
         if hasattr(self, "postfinance_transactions") and self.postfinance_transactions.exists():
             for pf_transaction in self.postfinance_transactions.all():
                 pf_transaction.void()
