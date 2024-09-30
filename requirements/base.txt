@@ -44,7 +44,7 @@ django-cors-headers == 3.13.0
 
 django_environ == 0.4.4
 requests==2.32.3
-python-memcached==1.59
+python-memcached==1.62
 
 postfinancecheckout==4.0.0  # Payment provider, https://github.com/pfpayments/python-sdk
 django-impersonate==1.9.1  # Impersonate users
