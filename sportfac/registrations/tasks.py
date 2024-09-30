@@ -16,7 +16,8 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 from mailer.tasks import send_mail
 from profiles.models import FamilyUser
-from registrations.models import Bill, Registration
+
+from .models import Bill, Registration
 
 
 logger = get_task_logger(__name__)
@@ -201,14 +202,21 @@ def cancel_expired_registrations():
         status=Bill.STATUS.waiting,
         modified__lte=(now() - timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES)),
     )
+    courses_set = set()
     for invoice in expired_invoices:
+        for registration in invoice.registrations.all():
+            courses_set.add(registration.course)
         invoice.cancel()
     # 2. Expire registrations without invoices (person never confirmed)
     for registration in Registration.objects.filter(
         status=Registration.STATUS.waiting,
         modified__lte=(now() - timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES)),
     ):
+        courses_set.add(registration.course)
         registration.cancel(reason=Registration.REASON.expired)
+    if settings.KEPCHUP_ENABLE_WAITING_LISTS:
+        for course in courses_set:
+            course.send_places_available_reminder()
 
 
 @shared_task

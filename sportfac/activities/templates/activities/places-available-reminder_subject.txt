@@ -1,0 +1,1 @@
+Places libres à assigner pour {{ course.short_name }} [ {{ site_name }} ]

@@ -11,6 +11,7 @@ from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 from django.template.defaultfilters import date as _date
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from autoslug import AutoSlugField
@@ -288,6 +289,9 @@ class Course(TimeStampedModel):
         help_text=_(
             "If unchecked, no new registration will be possible. This is more restrictive than the course being full."
         ),
+    )
+    places_available_reminder_sent_on = models.DateTimeField(
+        verbose_name=_("Places available reminder sent on"), null=True, blank=True
     )
 
     schoolyear_min = models.PositiveIntegerField(
@@ -633,6 +637,27 @@ class Course(TimeStampedModel):
             self.max_birth_date = self.start_date - relativedelta(years=self.age_max + 1)
         self.update_nb_participants()  # useful if max participants number has been changed
         super().save(*args, **kwargs)
+
+    def send_places_available_reminder(self):
+        from .tasks import send_places_available_reminder as send_places_available_reminder_task
+
+        if not settings.KEPCHUP_ENABLE_WAITING_LISTS:
+            # Feature needs to be activated to send a reminder
+            return
+        if self.full:
+            # No need to send a reminder if the course is full
+            return
+        if not self.waiting_slots.exists():
+            # No need to send a reminder if there are no waiting persons
+            return
+        if (
+            self.places_available_reminder_sent_on
+            and self.places_available_reminder_sent_on
+            >= timezone.now() - timedelta(hours=settings.KEPCHUP_WAITING_LIST_REMINDER_HOURS)
+        ):
+            # No need to send a reminder if one was sent less than 24 hours ago
+            return
+        send_places_available_reminder_task.delay(self.pk)
 
     def update_dates_from_sessions(self, commit=True):
         dates = self.sessions.values_list("date", flat=True)
