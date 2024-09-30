@@ -6,5 +6,5 @@ gunicorn == 23.0.0
 redis == 5.0.8
 python-memcached == 1.62
 psycopg2-binary == 2.9.9
-ipython == 8.27.0
+ipython == 8.12.3
 sentry-sdk[django] ==2.14.0
