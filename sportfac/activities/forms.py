@@ -392,6 +392,7 @@ class ExplicitDatesCourseForm(CourseForm):
             "announced_js",
             "visible",
             "extra",
+            "allow_new_participants",
         )
         widgets = {
             "start_time_mon": TimePickerInput(format="%H:%M"),
