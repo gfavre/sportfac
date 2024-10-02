@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block page_header %}
+<div class="container">
+<div class="simple-page-header">
+  <div class="wizard">
+   <ul class="nav nav-pills justify-content-center mb-4">
+        {% for step in steps %}
+            <li class="nav-item">
+                <a href="#" class="nav-link {% if step.slug == current_step_slug %}active{% endif %}">
+                    <span class="badge {% if step.slug == current_step_slug %}badge-primary{% else %}badge-light{% endif %}">
+                        {{ forloop.counter }}
+                    </span>
+                    {{ step.title }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+  </div>
+</div>
+
+ <div class="card">
+        <div class="card-header">
+            <h4>{{ step.title }}</h4>
+        </div>
+        <div class="card-body">
+            <p>{{ step.description }}</p>
+            <form method="post" id="step-form">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="text-center">
+                    <button type="submit" class="btn btn-success">Continue</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+<div class=" page-header">
+  <h1>{% block page_title %}{% endblock page_title %}</h1>
+</div>
+</div>
+
+  <!-- Progress Bar -->
+    <div class="progress mt-4">
+        {% for step in steps %}
+            {% if step.slug == current_step_slug %}
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{ forloop.counter|divisibleby:steps.count|stringformat:"d" }}%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+                    {{ step.title }}
+                </div>
+            {% else %}
+                <div class="progress-bar bg-light" role="progressbar" style="width: {{ forloop.counter|divisibleby:steps.count|stringformat:"d" }}%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+                    {{ step.title }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+{% endblock page_header %}
+
+{% block page_footer %}
+<nav class="hidden-print">
+  <ul class="pager">
+  {% if previous_step %}
+    <li class="previous">
+      <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span> {% block previous_label %}{% trans "Previous"%}{% endblock %}</a>
+    </li>
+  {% endif %}
+  {% if next_step %}
+    <li class="next">
+      <a href="{{ next_step.url }}">{% block next_label %}{% trans "Next"%}{% endblock %}<span aria-hidden="true">&rarr;</span></a>
+    </li>
+
+  {% endif %}
+  </ul>
+</nav>
+{% endblock page_footer %}

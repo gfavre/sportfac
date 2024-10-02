@@ -84,6 +84,7 @@ urlpatterns += [
     path("humans.txt", TextPlainView.as_view(template_name="humans.txt")),
     path("favicon.ico", RedirectView.as_view(url=settings.STATIC_URL + "img/favicon.ico")),
     path("wizard/", include("sportfac.wizardurls")),
+    path("wizard2/", include("wizard.urls")),
     path("404", TemplateView.as_view(template_name="404.html")),
     path("500", TemplateView.as_view(template_name="500.html")),
     path("ckeditor/upload/", manager_required(ckeditor_views.upload), name="ckeditor_upload"),

@@ -217,6 +217,7 @@ SHARED_APPS = (
     "django.contrib.flatpages",
     "django.contrib.sitemaps",
     # third party apps
+    "adminsortable2",  # admin sortable
     "anymail",  # send mail
     "bootstrap_datepicker_plus",
     "captcha",  # recaptcha
@@ -238,6 +239,7 @@ SHARED_APPS = (
     "contact",
     "mailer",
     "profiles",
+    "wizard",
     # last apps
     "django.contrib.admin",
     "django_select2",  # select2 form input
