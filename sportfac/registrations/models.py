@@ -404,7 +404,6 @@ class Bill(TimeStampedModel, StatusModel):
     STATUS = Choices(
         ("just_created", _("Just created")),
         ("waiting", _("Waiting parent's payment")),
-        ("waiting", _("Waiting parent's payment")),
         ("paid", _("Paid by parent")),
         ("canceled", _("Canceled by administrator")),
     )

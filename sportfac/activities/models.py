@@ -331,6 +331,10 @@ class Course(TimeStampedModel):
         verbose_name_plural = _("courses")
 
     @property
+    def accepts_registrations(self):
+        return self.allow_new_participants and not self.full
+
+    @property
     def ages(self):
         return list(
             range(
