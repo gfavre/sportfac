@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 3.10.1 2024-10-02
 ### Fixed
 - Memcached compatibility with Django 3.2
+- Do not display register button for courses that are disabled
 
 ## 3.10.0 2024-09-27
 ### Added
