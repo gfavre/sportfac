@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.text import slugify
 
 from sportfac.models import TimeStampedModel
-from .handlers import get_step_handler
+
 
 class WizardStep(TimeStampedModel):
     STEP_TYPE_CHOICES = [
@@ -11,17 +11,13 @@ class WizardStep(TimeStampedModel):
     ]
 
     title = models.CharField(max_length=50)
-    subtitle = models.CharField(max_length=50, blank=True)
     slug = models.SlugField(max_length=50, unique=True, blank=True)
 
     position = models.PositiveIntegerField(default=0, blank=False, null=False)
     description = models.TextField(blank=True, null=True)
     is_required = models.BooleanField(default=True, verbose_name="Is this step required?")
     step_type = models.CharField(max_length=20, choices=STEP_TYPE_CHOICES, default="always", verbose_name="Step Type")
-    editable_in_backend = models.BooleanField(
-        default=True,
-        verbose_name="Is this step editable in the backend?",
-    )
+
     condition_name = models.CharField(
         max_length=100,
         blank=True,
