@@ -214,6 +214,7 @@ def cancel_expired_registrations():
     ):
         courses_set.add(registration.course)
         registration.cancel(reason=Registration.REASON.expired)
+        registration.save()
     if settings.KEPCHUP_ENABLE_WAITING_LISTS:
         for course in courses_set:
             course.send_places_available_reminder()

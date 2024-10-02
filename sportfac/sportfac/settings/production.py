@@ -53,7 +53,7 @@ DATABASES["default"]["PASSWORD"] = env("DB_PASSWORD")  # noqa: F405
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#caches
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+        "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
         "LOCATION": ["127.0.0.1:11211"],
         "KEY_PREFIX": env("CACHE_KEY_PREFIX"),  # noqa: F405
     }
