@@ -1,5 +1,4 @@
 from django.shortcuts import redirect
-from django.urls import reverse
 from django.views import View
 from django.views.generic import FormView, TemplateView
 
@@ -21,18 +20,12 @@ class BaseWizardStepView(View):
         """Provide context data for rendering the step."""
         context = kwargs
         workflow = self.get_workflow()
-        steps = workflow.get_visible_steps()
-        total_steps = len(steps)
-        current_step = self.get_step()
-        current_index = next((index for index, step in enumerate(steps) if step.slug == self.step_slug), -1)
-        progress_percent = ((current_index + 1) / total_steps) * 100 if total_steps > 0 else 0
         context["workflow"] = workflow
-        context["steps"] = steps
-        context["current_step"] = current_step
-        context["total_steps"] = len(context["steps"])
-        context["current_index"] = current_index + 1
+        context["steps"] = workflow.get_visible_steps()
+        current_step = self.get_step()
         context["current_step_slug"] = current_step.slug
-        context["progress_percent"] = progress_percent  # Pass the calculated progress to the template
+        context["step"] = current_step
+
         return context
 
     def get_step(self):
@@ -51,14 +44,8 @@ class BaseWizardStepView(View):
         user: FamilyUser = self.request.user  # noqa
         return {
             "user": user,
-            "user_registered": user.is_authenticated,
-            "has_children": user.is_authenticated and user.children.exists(),
             # Add more context variables based on your business logic
         }
-
-    def get_success_url(self):
-        next_step = self.get_next_step()
-        return reverse("wizard:step", kwargs={"step_slug": next_step.slug})
 
     def mark_step_complete(self):
         """Mark the current step as complete in the workflow."""
@@ -82,6 +69,7 @@ class FormStepView(BaseWizardStepView, FormView):
         form.save()  # Save form data
         self.mark_step_complete()  # Mark the step as complete
         next_step = self.get_next_step()
+
         if next_step:
             return redirect(next_step.get_absolute_url())
         return redirect("registration_complete")
@@ -103,16 +91,10 @@ class StaticStepView(BaseWizardStepView, TemplateView):
         return redirect("registration_complete")
 
 
-class EntryPointView(View):
-    """
-    Entry point for multi-step forms. Redirects based on user authentication status.
-    """
-
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            # Redirect to the FamilyUser UpdateView
-            return redirect("wizard:step", step_slug="user-update")
-        return redirect("wizard:step", step_slug="user-create")
+class ProfileCreationStepView(FormStepView):
+    template_name = "registration/steps/profile_creation.html"
+    # form_class = ProfileCreationForm  # Define your custom form class
+    step_slug = "profile_creation"
 
 
 class ChildrenStepView(StaticStepView):
