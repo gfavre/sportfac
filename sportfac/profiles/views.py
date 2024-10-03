@@ -11,6 +11,7 @@ from django.views.generic import FormView, RedirectView, UpdateView
 from braces.views import LoginRequiredMixin
 from registration import signals
 from registrations.models import Bill
+from wizard.views import BaseWizardStepView
 
 from sportfac.views import NotReachableException, WizardMixin
 
@@ -132,7 +133,7 @@ class RegistrationBaseView(FormView):
         return user
 
 
-class RegistrationView(RegistrationBaseView):
+class RegistrationView(RegistrationBaseView):  # deprecated
     template_name = "profiles/registration_form.html"
 
     def get_success_url(self):
@@ -145,7 +146,7 @@ class RegistrationView(RegistrationBaseView):
         raise PermissionDenied
 
 
-class WizardRegistrationView(WizardMixin, RegistrationBaseView):
+class WizardRegistrationView(WizardMixin, RegistrationBaseView):  # deprecated
     """
     A registration backend which implements the simplest possible
     workflow: a user supplies a username, email address and password
@@ -162,6 +163,36 @@ class WizardRegistrationView(WizardMixin, RegistrationBaseView):
 
     def get_success_url(self):
         return reverse("wizard_children")
+
+
+class WizardFamilyUserUpdateView(LoginRequiredMixin, BaseWizardStepView, UpdateView):
+    model = FamilyUser
+    template_name = "wizard/account.html"
+    step_name = "update_family_user"
+    step_slug = "user-update"
+
+    def get_form_class(self):
+        user: FamilyUser = self.request.user  # type: ignore
+        if user.is_instructor:
+            return InstructorForm
+        return UserForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        user: FamilyUser = self.request.user  # type: ignore
+        if user.is_instructor:
+            kwargs["user"] = user
+        return kwargs
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def get_context_data(self, **kwargs):
+        """Merge the UpdateView context with the BaseWizardStepView context."""
+        context = super().get_context_data(**kwargs)
+        form_context = UpdateView.get_context_data(self, **kwargs)
+        context.update(form_context)
+        return context
 
 
 class LogoutView(auth_views.LogoutView):

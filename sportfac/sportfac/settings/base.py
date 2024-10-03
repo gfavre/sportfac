@@ -614,6 +614,7 @@ KEPCHUP_CHILDREN_MANDATORY_FIELDS = [
 KEPCHUP_DISPLAY_NUMBER_OF_SESSIONS = True
 # make emergency number mandatory on children
 KEPCHUP_EMERGENCY_NUMBER_MANDATORY = True
+KEPCHUP_EMERGENCY_NUMBER_ON_PARENT = False
 # Import children lists from lagapeo
 KEPCHUP_IMPORT_CHILDREN = False
 # School years are related to main teacher of the child

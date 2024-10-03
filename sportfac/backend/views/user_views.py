@@ -132,6 +132,7 @@ class UserCreateView(FullBackendMixin, SuccessMessageMixin, CreateView):
 
 class ManagerCreateView(UserCreateView):
     success_url = reverse_lazy("backend:manager-list")
+    form_class = ManagerForm
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -183,8 +184,6 @@ class UserUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
         return initial
 
     def get_form_class(self):
-        if self.object.is_instructor:
-            return InstructorForm
         return ManagerForm
 
     def get_form_kwargs(self):
