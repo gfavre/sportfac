@@ -215,7 +215,66 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
         )
 
 
-class ManagerForm(UserForm):
+class InstructorForm(UserForm):
+    iban = IBANFormField(label=_("IBAN"), widget=forms.TextInput(attrs={"placeholder": "CH37..."}), required=False)
+    birth_date = forms.DateTimeField(
+        label=_("Birth date"),
+        widget=DatePickerInput(format="%d.%m.%Y"),
+        help_text=_("Format: 31.12.2012"),
+        required=False,
+    )
+
+    class Meta:
+        model = get_user_model()
+        fields = (
+            "email",
+            "first_name",
+            "last_name",
+            "address",
+            "zipcode",
+            "city",
+            "country",
+            "private_phone",
+            "private_phone2",
+            "private_phone3",
+            "birth_date",
+            "iban",
+            "bank_name",
+            "ahv",
+            "js_identifier",
+            "is_mep",
+            "is_teacher",
+            "external_identifier",
+            "gender",
+            "nationality",
+            "permit_type",
+        )
+        widgets = {
+            "ahv": forms.TextInput(attrs={"placeholder": "756.1234.5678.95"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user", None)
+        super().__init__(*args, **kwargs)
+        self.helper.layout.append(
+            Fieldset(
+                _("Instructor informations"),
+                settings.KEPCHUP_INSTRUCTORS_DISPLAY_EXTERNAL_ID and "external_identifier" or HTML(""),
+                "ahv",
+                "gender",
+                "birth_date",
+                "nationality",
+                "permit_type",
+                "iban",
+                "bank_name",
+                "js_identifier",
+                "is_mep",
+                "is_teacher",
+            )
+        )
+
+
+class ManagerForm(InstructorForm):
     managed_activities = forms.ModelMultipleChoiceField(
         label=_("Rights on activities"),
         queryset=Activity.objects.all(),
@@ -258,9 +317,8 @@ class ManagerForm(UserForm):
         return instance
 
     def __init__(self, *args, **kwargs):
-        user: FamilyUser = kwargs.pop("user")
         super().__init__(*args, **kwargs)
-        if not user.is_full_manager:
+        if not self.user.is_full_manager:
             return
         instance = kwargs["instance"]
         if instance:
@@ -274,64 +332,6 @@ class ManagerForm(UserForm):
                 HTML("<hr>"),
                 "is_restricted_manager",
                 "managed_activities",
-            )
-        )
-
-
-class InstructorForm(ManagerForm):
-    iban = IBANFormField(label=_("IBAN"), widget=forms.TextInput(attrs={"placeholder": "CH37..."}), required=False)
-    birth_date = forms.DateTimeField(
-        label=_("Birth date"),
-        widget=DatePickerInput(format="%d.%m.%Y"),
-        help_text=_("Format: 31.12.2012"),
-        required=False,
-    )
-
-    class Meta:
-        model = get_user_model()
-        fields = (
-            "email",
-            "first_name",
-            "last_name",
-            "address",
-            "zipcode",
-            "city",
-            "country",
-            "private_phone",
-            "private_phone2",
-            "private_phone3",
-            "birth_date",
-            "iban",
-            "bank_name",
-            "ahv",
-            "js_identifier",
-            "is_mep",
-            "is_teacher",
-            "external_identifier",
-            "gender",
-            "nationality",
-            "permit_type",
-        )
-        widgets = {
-            "ahv": forms.TextInput(attrs={"placeholder": "756.1234.5678.95"}),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper.layout.append(
-            Fieldset(
-                _("Instructor informations"),
-                settings.KEPCHUP_INSTRUCTORS_DISPLAY_EXTERNAL_ID and "external_identifier" or HTML(""),
-                "ahv",
-                "gender",
-                "birth_date",
-                "nationality",
-                "permit_type",
-                "iban",
-                "bank_name",
-                "js_identifier",
-                "is_mep",
-                "is_teacher",
             )
         )
 

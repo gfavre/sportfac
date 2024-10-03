@@ -1,0 +1,14 @@
+{% extends "wizard/base.html" %}
+{% load crispy_forms_tags sekizai_tags i18n %}
+
+{% block content %}
+  <form action="." method="post" class="form-horizontal" role="form">
+    {% crispy form %}
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="submit" class="btn btn-success btn-large">{% trans "Save" %}</button>
+      </div>
+    </div>
+  </form>
+  {% addtoblock "js" %}{{ form.media }}{% endaddtoblock %}
+{% endblock %}
