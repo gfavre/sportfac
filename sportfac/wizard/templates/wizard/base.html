@@ -35,19 +35,20 @@
       <p class="text-danger">No steps available. Please check the configuration.</p>
     {% endif %}
 
-
-
     <div class=" page-header">
       <h1>{% block page_title %}{{ current_step.title }}{% endblock page_title %}</h1>
     </div>
   </div>
 {% endblock page_header %}
 
+{% block content %}
 <div class="card">
   <div class="card-body">
-    {% block content %}{% endblock content %}
+    <p class="lead">{{ current_step.description|safe }}</p>
+    {% block wizard_content %}{% endblock wizard_content %}
   </div>
 </div>
+{% endblock content %}
 
 {% block page_footer %}
   <nav class="hidden-print">
