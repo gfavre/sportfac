@@ -16,6 +16,9 @@ class StepHandler:
         """Determine if the step is visible. Default is always visible."""
         return True
 
+    def is_ready(self):
+        return True
+
     def is_complete(self):
         """Determine if the step is complete. Override this method for step-specific logic."""
         return False
@@ -41,8 +44,8 @@ class ProfileCreationStepHandler(StepHandler):
     """Handler for the profile creation step."""
 
     def is_visible(self):
-        """The profile creation step is always visible."""
-        return True
+        """The profile creation step is only visible for not registered users."""
+        return not self.registration_context["user"].is_authenticated
 
     def is_complete(self):
         """Check if the user has completed their profile."""
@@ -54,7 +57,7 @@ class ProfileUpdateStepHandler(StepHandler):
 
     def is_visible(self):
         """The profile update step is always visible."""
-        return True
+        return self.registration_context["user"].is_authenticated
 
     def is_complete(self):
         """Check if the user has completed their profile."""
@@ -63,10 +66,27 @@ class ProfileUpdateStepHandler(StepHandler):
 
 class ChildInformationStepHandler(StepHandler):
     """Handler for child information step."""
+    def is_ready(self):
+        return self.registration_context.get("user").is_authenticated
 
     def is_visible(self):
         """Visible if the user has children linked to their profile."""
-        return bool(self.registration_context.get("has_children", False))
+        return True
+
+    def is_complete(self):
+        """Complete if all required fields for children are filled."""
+        return self.registration_context.get("child_info_complete", False)
+
+
+class ActivitiesStepHandler(StepHandler):
+    """Handler for child information step."""
+    def is_ready(self):
+        user = self.registration_context.get("user")
+        return user.is_authenticated and user.children.exists()
+
+    def is_visible(self):
+        """Visible if the user has children linked to their profile."""
+        return True
 
     def is_complete(self):
         """Complete if all required fields for children are filled."""
@@ -92,7 +112,8 @@ def get_step_handler(step, registration_context):
         "entry_point": EntryPointStepHandler,
         "user-create": ProfileCreationStepHandler,
         "user-update": ProfileUpdateStepHandler,
-        "child_information": ChildInformationStepHandler,
+        "children": ChildInformationStepHandler,
+        "activities": ActivitiesStepHandler,
         # Add more mappings here for different steps
     }
     handler_class = handler_mapping.get(step.slug, StepHandler)
