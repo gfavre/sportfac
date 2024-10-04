@@ -51,6 +51,8 @@ class BaseWizardStepView(View):
         user: FamilyUser = self.request.user  # noqa
         return {
             "user": user,
+            "user_registered": user.is_authenticated,
+            "has_children": user.is_authenticated and user.children.exists(),
             # Add more context variables based on your business logic
         }
 
@@ -111,12 +113,6 @@ class EntryPointView(View):
             # Redirect to the FamilyUser UpdateView
             return redirect("wizard:step", step_slug="user-update")
         return redirect("wizard:step", step_slug="user-create")
-
-
-class ProfileCreationStepView(FormStepView):
-    template_name = "registration/steps/profile_creation.html"
-    # form_class = ProfileCreationForm  # Define your custom form class
-    step_slug = "profile_creation"
 
 
 class ChildrenStepView(StaticStepView):
