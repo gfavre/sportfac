@@ -23,6 +23,8 @@ __all__ = (
     "AccountView",
     "WizardAccountView",
     "WizardRegistrationView",
+    "WizardFamilyUserCreateView",
+    "WizardFamilyUserUpdateView",
     "AccountRedirectView",
 )
 
@@ -163,6 +165,22 @@ class WizardRegistrationView(WizardMixin, RegistrationBaseView):  # deprecated
 
     def get_success_url(self):
         return reverse("wizard_children")
+
+
+class WizardFamilyUserCreateView(BaseWizardStepView, RegistrationBaseView):
+    form_class = RegistrationForm
+    template_name = "wizard/account-create.html"
+    step_slug = "user-create"
+
+    def get_context_data(self, **kwargs):
+        """Merge the UpdateView context with the BaseWizardStepView context."""
+        context = super().get_context_data(**kwargs)
+        form_context = RegistrationBaseView.get_context_data(self, **kwargs)
+        context.update(form_context)
+        return context
+
+    def get_success_url(self):
+        return reverse("wizard:step", kwargs={"step_slug": "user-create"})
 
 
 class WizardFamilyUserUpdateView(LoginRequiredMixin, BaseWizardStepView, UpdateView):
