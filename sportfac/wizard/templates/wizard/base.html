@@ -8,6 +8,7 @@
         <ul class="nav nav-pills justify-content-center mb-4">
           {% for step in steps %}
             <li class="nav-item">
+              {% if step.is_ready %}
               <a href="{% url 'wizard:step' step.slug %}"
                  class="nav-link {% if step.slug == current_step_slug %}active{% endif %}">
                     <span
@@ -16,6 +17,12 @@
                     </span>
                 {{ step.title }}
               </a>
+              {% else %}
+              <span class="badge {% if step.slug == current_step_slug %}badge-primary{% else %}badge-light{% endif %}">
+                {{ forloop.counter }}
+              </span>
+              {{ step.title }}
+              {% endif %}
             </li>
           {% endfor %}
         </ul>
@@ -38,7 +45,9 @@
 
 
     <div class=" page-header">
-      <h1>{% block page_title %}{{ current_step.title }}{% endblock page_title %}</h1>
+      <h1>{% block page_title %}{{ current_step.title }}
+        {% if step.subtitle %}<small>- {{ step.subtitle }}</small>{% endif %}{% endblock page_title %}
+      </h1>
     </div>
   </div>
 {% endblock page_header %}
