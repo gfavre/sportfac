@@ -1,7 +1,7 @@
 {% extends "wizard/base.html" %}
 {% load crispy_forms_tags sekizai_tags i18n %}
 
-{% block content %}
+{% block wizard_content %}
   <form action="." method="post" class="form-horizontal" role="form">
     {% crispy form %}
     <div class="form-group">
@@ -11,4 +11,4 @@
     </div>
   </form>
   {% addtoblock "js" %}{{ form.media }}{% endaddtoblock %}
-{% endblock %}
+{% endblock wizard_content %}

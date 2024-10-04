@@ -198,7 +198,9 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
         if settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES:
             self.fields["private_phone"].required = True
             self.fields["private_phone"].label = _("Mobile phone")
-
+        if settings.KEPCHUP_EMERGENCY_NUMBER_ON_PARENT:
+            self.fields["private_phone"].required = True
+            self.fields["private_phone"].label = _("Emergency phone")
         self.helper.layout.append(
             Fieldset(
                 _("Contact informations"),
