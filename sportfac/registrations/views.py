@@ -347,7 +347,7 @@ class WizardCancelRegistrationView(LoginRequiredMixin, WizardMixin, FormView):
 
 
 class WizardChildrenView(BaseWizardStepView, ChildrenListView):
-    template_name = "registrations/wizard_children.html"
+    template_name = "wizard/children.html"
 
 
 class WizardChildrenListView(WizardMixin, ChildrenListView):
