@@ -1,2 +1,7 @@
 {% extends "wizard/base.html" %}
-blah
+{% load crispy_forms_tags sekizai_tags i18n %}
+
+
+{% block wizard_content %}
+   {% include "profiles/children_list_partial.html" %}
+{% endblock wizard_content %}
