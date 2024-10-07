@@ -446,6 +446,14 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
         self.helper.form_group_wrapper_class = "row"
         self.helper.label_class = "col-sm-2"
         self.helper.field_class = "col-sm-10"
+
+        if settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES:
+            self.fields["private_phone"].required = True
+            self.fields["private_phone"].label = _("Mobile phone")
+        if settings.KEPCHUP_EMERGENCY_NUMBER_ON_PARENT:
+            self.fields["private_phone"].required = True
+            self.fields["private_phone"].label = _("Emergency phone")
+
         self.helper.layout = Layout(
             Fieldset(
                 _("Contact informations"),
@@ -455,11 +463,9 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
                 "zipcode",
                 "city",
                 not settings.KEPCHUP_REGISTRATION_HIDE_COUNTRY and "country",
-                settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES
-                and Field("private_phone", label=_("Mobile phone"))
-                or Field("private_phone"),
-                not settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES and "private_phone2",
-                not settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES and "private_phone3",
+                "private_phone",
+                not settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES and "private_phone2" or HTML(""),
+                not settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES and "private_phone3" or HTML(""),
             ),
             Fieldset(
                 _("Login informations"),
