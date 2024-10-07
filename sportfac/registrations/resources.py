@@ -1,6 +1,7 @@
 from io import BytesIO
 
 from django.conf import settings
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 import tablib
@@ -247,6 +248,11 @@ class BillResource(resources.ModelResource):
 
     def dehydrate_parent(self, obj):
         return obj.family.full_name
+
+    def dehydrate_payment_date(self, obj):
+        if obj.payment_date:
+            return timezone.localtime(obj.payment_date).strftime("%d.%m.%Y")
+        return ""
 
     def export(self, queryset=None, *args, **kwargs):
         """

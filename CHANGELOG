@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Regression introduced in 3.10.0 where the waiting lists were not displayed anymore
 - Issue in waiting slots admin where the search was not working
+- Timezone issue when rendering xls export of invoices (payment date column)
 
 
 ## 3.10.1 2024-10-02
