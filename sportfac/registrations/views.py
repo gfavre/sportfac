@@ -14,17 +14,16 @@ from django.utils.translation import gettext as _
 from django.views.decorators.cache import never_cache
 from django.views.generic import DeleteView, DetailView, FormView, ListView, TemplateView
 
-import requests
-from appointments.models import Appointment
-from backend.dynamic_preferences_registry import global_preferences_registry
 from braces.views import LoginRequiredMixin, UserPassesTestMixin
+import requests
+from wizard.views import BaseWizardStepView
 from postfinancecheckout.rest import ApiException
+from appointments.models import Appointment
+from sentry_sdk import capture_exception
+from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.forms import AcceptTermsForm
 from profiles.models import School
-from sentry_sdk import capture_exception
-
 from sportfac.views import NotReachableException, WizardMixin
-
 from .forms import EmptyForm
 from .models import Bill, Child, Registration
 
@@ -344,6 +343,11 @@ class WizardCancelRegistrationView(LoginRequiredMixin, WizardMixin, FormView):
             bill.registrations.all().update(status=Registration.STATUS.waiting, bill=None)
             bill.delete()
         return super().form_valid(form)
+
+
+class WizardChildrenView(BaseWizardStepView, ChildrenListView):
+    template_name = "registrations/wizard_children.html"
+
 
 
 class WizardChildrenListView(WizardMixin, ChildrenListView):
