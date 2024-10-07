@@ -46,17 +46,17 @@ ALLOWED_HOSTS = ("127.0.0.1", "localhost", "test.com", "tenant.test.com", "tests
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
     # 'other': env.db('DATABASE_URL', default='postgres:///sportfac'),
-    #"master_users": env.db("MASTER_DATABASE_URL", default="postgres:///kepchup_users"),  # noqa: F405
+    # "master_users": env.db("MASTER_DATABASE_URL", default="postgres:///kepchup_users"),  # noqa: F405
     "default": env.db("OTHER_DB", "postgres:///sportfac_montreux"),  # noqa: F405
 }
 DATABASES["default"]["ENGINE"] = "django_tenants.postgresql_backend"
 
 DATABASE_ROUTERS = [
     "django_tenants.routers.TenantSyncRouter",
-    #"sportfac.database_router.MasterRouter",
+    # "sportfac.database_router.MasterRouter",
 ]
 AUTHENTICATION_BACKENDS = (
-    #"sportfac.authentication_backends.MasterUserBackend",
+    # "sportfac.authentication_backends.MasterUserBackend",
     "django.contrib.auth.backends.ModelBackend",
 )
 SESSION_COOKIE_NAME = "sportfac"
@@ -134,6 +134,7 @@ KEPCHUP_CALENDAR_HIDDEN_DAYS = [
     0,
 ]
 KEPCHUP_BIB_NUMBERS = True
+KEPCHUP_CHILDREN_EDITABLE = False
 KEPCHUP_CHILDREN_HIDDEN_FIELDS = []
 KEPCHUP_FICHE_SALAIRE_MONTREUX = True
 KEPCHUP_DISPLAY_CAR_NUMBER = True

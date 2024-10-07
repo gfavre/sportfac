@@ -233,7 +233,7 @@
     </div>
   </div>
   {% endif %}
-
+  {% if not EMERGENCY_NUMBER_ON_PARENT %}
   <div class="form-group{% if EMERGENCY_NUMBER_HIDDEN %} hidden{% endif %}"
        ng-class="{ 'has-error': errors.hasOwnProperty('emergency_number') }">
     <label class="col-sm-4 control-label" for="emergency_number">
@@ -248,7 +248,7 @@
       <span ng-show="errors.emergency_number" class="help-block">{[{ errors.emergency_number[0] }]}</span>
     </div>
   </div>
-
+  {% endif %}
   <div>
     <div class="col-sm-4 col-xs-4">
       <button ng-click="saveChild()" ng-disabled="childform.$invalid" class="btn btn-right btn-success"><i class="icon-ok-sign icon-white"></i> Enregistrer</button>

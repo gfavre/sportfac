@@ -5,10 +5,10 @@ from django.utils import timezone
 from django.utils.timezone import get_default_timezone, make_aware, now
 from django.utils.translation import gettext as _
 
-from activities.models import Activity
-from backend.models import YearTenant
 from dynamic_preferences.registries import global_preferences_registry
 
+from activities.models import Activity
+from backend.models import YearTenant
 from . import __version__ as kepchup_version
 
 
@@ -174,6 +174,7 @@ def tenants_context(request):
 def kepchup_context(request):
     return {
         "VERSION": kepchup_version,
+        "CHILDREN_EDITABLE": settings.KEPCHUP_CHILDREN_EDITABLE,
         "AVS_HIDDEN": "avs" in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
         "BIB_NUMBER_HIDDEN": "bib_number" in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
         "BIRTH_DATE_HIDDEN": "birth_date" in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
@@ -194,6 +195,7 @@ def kepchup_context(request):
         "BUILDING_EDITABLE": "building" not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
         "EMERGENCY_NUMBER_EDITABLE": "emergency_number" not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
         "EMERGENCY_NUMBER_MANDATORY": settings.KEPCHUP_EMERGENCY_NUMBER_MANDATORY,
+        "EMERGENCY_NUMBER_ON_PARENT": settings.KEPCHUP_EMERGENCY_NUMBER_ON_PARENT,
         "FIRST_NAME_EDITABLE": "first_name" not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
         "ID_LAGAPEO_EDITABLE": "id_lagapeo" not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
         "LANGUAGE_EDITABLE": "language" not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
