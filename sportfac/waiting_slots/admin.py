@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.contrib import admin
 
 from .models import WaitingSlot
@@ -12,8 +11,9 @@ class WaitingSlotAdmin(admin.ModelAdmin):
     raw_id_fields = ("child", "course")
     search_fields = (
         "course__activity__name",
-        "course__identifier",
+        "course__number",
         "child__first_name",
         "child__last_name",
+        "child__family__last_name",
     )
     ordering = ("course__activity__name", "course__number", "created")
