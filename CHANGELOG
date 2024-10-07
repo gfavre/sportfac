@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 3.10.2 2024-10-07
 ### Fixed
 - Regression introduced in 3.10.0 where the waiting lists were not displayed anymore
+- Issue in waiting slots admin where the search was not working
 
 
 ## 3.10.1 2024-10-02
