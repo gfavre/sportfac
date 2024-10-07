@@ -864,6 +864,11 @@ class Child(TimeStampedModel, StatusModel):
     def get_update_url(self):
         return reverse("backend:child-update", kwargs={"child": self.pk})
 
+    def save(self, *args, **kwargs):
+        if settings.KEPCHUP_EMERGENCY_NUMBER_ON_PARENT and self.family:
+            self.emergency_number = self.family.best_phone
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.get_full_name()
 
