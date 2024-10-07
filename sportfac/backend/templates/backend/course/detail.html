@@ -369,7 +369,7 @@
         </tr>
       </thead>
       <tbody>
-      {% for waiting_slot in course.waitingslot_set.all %}
+      {% for waiting_slot in waiting_slots %}
         <tr data-waiting-slot-id="{{ waiting_slot.id }}"
             data-user-id="{{ waiting_slot.child.family.id }}">
           {% if BIB_NUMBERS %}

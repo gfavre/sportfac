@@ -122,9 +122,13 @@ class CourseDetailView(CourseMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        registrations = self.get_object().participants.all()
+        course = context["object"]
+
+        registrations = course.participants.all()
         context["registrations"] = registrations
-        context["waiting_list_form"] = WaitingSlotForm(initial={"course": self.get_object()})
+        context["waiting_list_form"] = WaitingSlotForm(initial={"course": course})
+        if settings.KEPCHUP_ENABLE_WAITING_LISTS:
+            context["waiting_slots"] = course.waiting_slots.select_related("child", "child__family")
         return context
 
 
