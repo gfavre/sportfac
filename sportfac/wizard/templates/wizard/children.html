@@ -3,5 +3,17 @@
 
 
 {% block wizard_content %}
-   {% include "profiles/children_list_partial.html" %}
+   {% include "registrations/children_app.html" %}
+  {% if not user.finished_registration %}
+<nav style="margin-top: 1.5em;">
+  <ul class="pager" style="font-size: 1.25em;">
+    <li class="previous">
+      <a href="{{ previous_step.url }}" ><span aria-hidden="true">&larr;</span> {% block previous_label %}{% trans "Previous"%}{% endblock %}</a>
+    </li>
+    <li class="next" ng-class="{disabled: userChildren.length === 0}">
+      <a href="{{ next_step.url }}"><strong>{% trans "Register activities" %} <span aria-hidden="true">&rarr;</span></strong></a>
+    </li>
+  </ul>
+</nav>
+{% endif %}
 {% endblock wizard_content %}
