@@ -1,8 +1,11 @@
+from django.db.models import Max, Min
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views import View
 from django.views.generic import FormView, TemplateView
 
+from activities.models import Course
+from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser
 from .handlers import get_step_handler
 from .models import WizardStep
@@ -125,3 +128,21 @@ class ChildrenStepView(StaticStepView):
 class ActivitiesStepView(StaticStepView):
     template_name = "wizard/activities.html"
     step_slug = "activities"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["MAX_REGISTRATIONS"] = global_preferences_registry.manager()["MAX_REGISTRATIONS"]
+        times = Course.objects.visible().aggregate(Max("end_time"), Min("start_time"))
+        start_time = times["start_time__min"]
+        end_time = times["end_time__max"]
+        context["START_HOUR"] = start_time and start_time.hour - 1 or 8
+
+        if end_time:
+            if end_time.minute == 0:
+                context["END_HOUR"] = end_time.hour
+            else:
+                context["END_HOUR"] = (end_time.hour + 1) % 24
+        else:
+            context["END_HOUR"] = 19
+        return context

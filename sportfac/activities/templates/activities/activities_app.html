@@ -1,75 +1,75 @@
 {% load i18n sekizai_tags %}
 
 {% addtoblock "extra_html" %}
-xmlns:ng="http://angularjs.org"
-ng-app="sportfacCalendar"
-ng-controller="ChildrenCtrl" id="ng-app"
-maxregistrations="{{ MAX_REGISTRATIONS }}"
-starthour="{{ START_HOUR }}"
-endhour="{{ END_HOUR }}"
-activityserviceurl="{% url 'api:activity-list' %}"
-courseserviceurl="{% url 'api:course-list' %}"
-childrenserviceurl="{% url 'api:child-list' %}"
-familyserviceurl="{% url 'api:family-list' %}"
-registrationserviceurl="{% url 'api:registration-list' %}"
-waitingslotsserviceurl="{% url 'api:waiting_slot-list' %}"
-displaydates="{{ CALENDAR_DISPLAY_DATES|yesno:'true,false' }}"
-displaycoursenames="{{ CALENDAR_DISPLAY_COURSE_NAMES|yesno:'true,false' }}"
-canregistersameactivity="{{ ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE|yesno:'true,false' }}"
-hiddendays="{{ CALENDAR_HIDDEN_DAYS }}"
-limitbyschoolyear="{{ LIMIT_BY_SCHOOL_YEAR|yesno:'true,false' }}"
-usewaitingslots="{{ ENABLE_WAITING_LISTS|yesno:'true,false' }}"
-
+  xmlns:ng="http://angularjs.org"
+  ng-app="sportfacCalendar"
+  ng-controller="ChildrenCtrl" id="ng-app"
+  maxregistrations="{{ MAX_REGISTRATIONS }}"
+  starthour="{{ START_HOUR }}"
+  endhour="{{ END_HOUR }}"
+  activityserviceurl="{% url 'api:activity-list' %}"
+  courseserviceurl="{% url 'api:course-list' %}"
+  childrenserviceurl="{% url 'api:child-list' %}"
+  familyserviceurl="{% url 'api:family-list' %}"
+  registrationserviceurl="{% url 'api:registration-list' %}"
+  waitingslotsserviceurl="{% url 'api:waiting_slot-list' %}"
+  displaydates="{{ CALENDAR_DISPLAY_DATES|yesno:'true,false' }}"
+  displaycoursenames="{{ CALENDAR_DISPLAY_COURSE_NAMES|yesno:'true,false' }}"
+  canregistersameactivity="{{ ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE|yesno:'true,false' }}"
+  hiddendays="{{ CALENDAR_HIDDEN_DAYS }}"
+  limitbyschoolyear="{{ LIMIT_BY_SCHOOL_YEAR|yesno:'true,false' }}"
+  usewaitingslots="{{ ENABLE_WAITING_LISTS|yesno:'true,false' }}"
 {% endaddtoblock %}
-    <div class="portlet">
-      <h4 class="portlet-title">
-        <u>Fonctionnement</u>
-      </h4>
-      <ol>
-        <li>Choisir une activité disponible à gauche.</li>
-        <li>Sélectionner le cours dans le semainier.</li>
-        <li>Valider le cours en bleu → il doit passer en vert.</li>
-        <li>Appuyez sur le bouton "Suivant" au bas de cette page</li>
-      </ol>
-    </div>
+
+<div class="portlet">
+  <h4 class="portlet-title">
+    <u>Fonctionnement</u>
+  </h4>
+  <ol>
+    <li>Choisir une activité disponible à gauche.</li>
+    <li>Sélectionner le cours dans le semainier.</li>
+    <li>Valider le cours en bleu → il doit passer en vert.</li>
+    <li>Appuyez sur le bouton "Suivant" au bas de cette page</li>
+  </ol>
+</div>
 <nav>
-  <ul class="nav nav-tabs children">
+  <ul class="nav nav-tabs children" style="margin-bottom: 0">
     <li role="presentation" ng-repeat="child in userChildren"
-                            ng-class="{active: child.selected}">
+        ng-class="{active: child.selected}">
       <a href="./#/child/{[{ child.id }]}/" ng-click="selectChild(child.id)">
         {[{ child.first_name }]}
       </a>
     </li>
   </ul>
   <div class="tab-content">
-
-    <div class="tab-pane active" canregistersameactivity="{{ ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE|yesno:'true,false' }}"
- ng-view></div>
+    <div class="tab-pane active"
+         canregistersameactivity="{{ ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE|yesno:'true,false' }}"
+         ng-view></div>
   </div>
 </nav><!-- end tabbable -->
 
 
 {% addtoblock "js" %}
-{% if debug %}
- <script src="{{ STATIC_URL }}js/vendor/fullcalendar.min.js"></script>
-  <script src="{{ STATIC_URL }}js/vendor/angular.min.js"></script>
-  <script src="{{ STATIC_URL }}js/vendor/angular-locale_fr-ch.js"></script>
-  <script src="{{ STATIC_URL }}js/vendor/angular-route.min.js"></script>
-  <script src="{{ STATIC_URL }}js/vendor/angular-cookies.min.js"></script>
-  <script src="{{ STATIC_URL }}js/vendor/angular-sanitize.min.js"></script>
+  {% if debug %}
+    <script src="{{ STATIC_URL }}js/vendor/fullcalendar.min.js"></script>
+    <script src="{{ STATIC_URL }}js/vendor/angular.min.js"></script>
+    <script src="{{ STATIC_URL }}js/vendor/angular-locale_fr-ch.js"></script>
+    <script src="{{ STATIC_URL }}js/vendor/angular-route.min.js"></script>
+    <script src="{{ STATIC_URL }}js/vendor/angular-cookies.min.js"></script>
+    <script src="{{ STATIC_URL }}js/vendor/angular-sanitize.min.js"></script>
 
-  <script src="{{ STATIC_URL }}js/vendor/angular-ui-calendar.js"></script>
-  <script src="{{ STATIC_URL }}js/vendor/angularstrap/angular-strap.min.js"></script>
-  <script src="{{ STATIC_URL }}js/vendor/angularstrap/angular-strap.tpl.min.js"></script>
+    <script src="{{ STATIC_URL }}js/vendor/angular-ui-calendar.js"></script>
+    <script src="{{ STATIC_URL }}js/vendor/angularstrap/angular-strap.min.js"></script>
+    <script src="{{ STATIC_URL }}js/vendor/angularstrap/angular-strap.tpl.min.js"></script>
 
-  <script src="{{ STATIC_URL }}js/activities/filters.js?v={{ VERSION }}"></script>
-  <script src="{{ STATIC_URL }}js/activities/services.js?v={{ VERSION }}"></script>
-  <script src="{{ STATIC_URL }}js/activities/controllers.js?v={{ VERSION }}"></script>
-  <script src="{{ STATIC_URL }}js/activities/app.js?v={{ VERSION }}"></script>
-{% else %}
-  {% comment %}
+    <script src="{{ STATIC_URL }}js/activities/filters.js?v={{ VERSION }}"></script>
+    <script src="{{ STATIC_URL }}js/activities/services.js?v={{ VERSION }}"></script>
+    <script src="{{ STATIC_URL }}js/activities/controllers.js?v={{ VERSION }}"></script>
+    <script src="{{ STATIC_URL }}js/activities/app.js?v={{ VERSION }}"></script>
+  {% else %}
+    {% comment %}
   uglifyjs ../vendor/fullcalendar.min.js ../vendor/angular.min.js ../vendor/angular-locale_fr-ch.js ../vendor/angular-route.min.js ../vendor/angular-cookies.min.js ../vendor/angular-sanitize.min.js ../vendor/angular-ui-calendar.js ../vendor/angularstrap/angular-strap.min.js ../vendor/angularstrap/angular-strap.tpl.min.js filters.js services.js controllers.js app.js -o app.min.js
   {% endcomment %}
-  <script src="{{ STATIC_URL }}js/activities/app.min.js?v={{ VERSION }}"></script>
-{% endif %}
+    <script src="{{ STATIC_URL }}js/activities/app.min.js?v={{ VERSION }}"></script>
+  {% endif %}
 {% endaddtoblock %}

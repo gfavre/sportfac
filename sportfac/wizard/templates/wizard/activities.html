@@ -4,6 +4,8 @@
 
 {% block wizard_content %}
   {% include "activities/activities_app.html" %}
+{% comment %}
+
   {% if CHILDREN_POPUP  %}
   <div id="confirmModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel">
     <div class="modal-dialog" role="document">
@@ -48,4 +50,7 @@
   </ul>
 </nav>
 {% endif %}
+
+{% endcomment %}
+
 {% endblock wizard_content %}
