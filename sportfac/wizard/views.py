@@ -4,7 +4,6 @@ from django.views import View
 from django.views.generic import FormView, TemplateView
 
 from profiles.models import FamilyUser
-
 from .handlers import get_step_handler
 from .models import WizardStep
 from .workflow import WizardWorkflow
@@ -33,6 +32,7 @@ class BaseWizardStepView(View):
         context["current_index"] = current_index + 1
         context["current_step_slug"] = current_step.slug
         context["progress_percent"] = progress_percent  # Pass the calculated progress to the template
+        context["success_url"] = self.get_success_url()
         return context
 
     def get_step(self):
@@ -58,7 +58,9 @@ class BaseWizardStepView(View):
 
     def get_success_url(self):
         next_step = self.get_next_step()
-        return reverse("wizard:step", kwargs={"step_slug": next_step.slug})
+        if next_step:
+            return reverse("wizard:step", kwargs={"step_slug": next_step.slug})
+        return ""
 
     def mark_step_complete(self):
         """Mark the current step as complete in the workflow."""
@@ -118,3 +120,8 @@ class EntryPointView(View):
 class ChildrenStepView(StaticStepView):
     template_name = "wizard/children.html"
     step_slug = "children"
+
+
+class ActivitiesStepView(StaticStepView):
+    template_name = "wizard/activities.html"
+    step_slug = "activities"
