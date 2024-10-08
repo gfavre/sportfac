@@ -1,4 +1,4 @@
-<h3>{[{ detailedChild.first_name }]} {[{ detailedChild.last_name }]} - données personnelles</h3>
+<h3>{[{ detailedChild.first_name }]} {[{ detailedChild.last_name }]}</h3>
 <br />
 <form name="childform" class="form-horizontal" role="form">
   <p ng-repeat="(name, errs) in errors" class="alert alert-danger" ng-show="errors.length > 0">
@@ -84,7 +84,6 @@
     {% if BIRTH_DATE_EDITABLE %}<p class="help-block col-sm-8 col-sm-offset-4">Format: 31.7.2008</p>{% endif %}
     <p class="col-sm-8 col-sm-offset-4" ng-show="childform.inputBirthDate.$error.required">Ce champ est obligatoire</p>
   </div>
-
   <div class="form-group{% if AVS_HIDDEN %} hidden{% endif %}">
     <label class="col-sm-4 control-label" for="inputAVS">
       N° AVS{% if "avs" in CHILDREN_MANDATORY_FIELDS %}<span class="required"> *</span>{% endif %}
@@ -98,7 +97,6 @@
     {% if AVS_EDITABLE %}<p class="help-block col-sm-8 col-sm-offset-4">Format: 756.XXXX.XXXX.XX</p>{% endif %}
     <p class="col-sm-8 col-sm-offset-4" ng-show="childform.inputAVS.$error.required">Ce champ est obligatoire</p>
   </div>
-
   <div class="form-group{% if NATIONALITY_HIDDEN %} hidden{% endif %}"  ng-class="{'has-error': !detailedChild.nationality}">
     <label class="col-sm-4 control-label" for="nationality">
       Nationalité{% if "nationality" in CHILDREN_MANDATORY_FIELDS %}<span class="required"> *</span>{% endif %}
@@ -115,7 +113,6 @@
       <span ng-show="childform.nationality.$error.required">Ce champ est obligatoire</span>
     </div>
   </div>
-
   <div class="form-group{% if LANGUAGE_HIDDEN %} hidden{% endif %}" ng-class="{'has-error': !detailedChild.language}">
     <label class="col-sm-4 control-label" for="language">
       Langue{% if "language" in CHILDREN_MANDATORY_FIELDS %}<span class="required"> *</span>{% endif %}
@@ -134,7 +131,6 @@
       <span ng-show="childform.language.$error.required">Ce champ est obligatoire</span>
     </div>
   </div>
-
   {% if USE_BUILDINGS %}
   <div ng-show="useBuildings">
     <div class="form-group {% if BUILDING_HIDDEN %} hidden{% endif %}"  ng-class="{'has-error': !detailedChild.building}">
@@ -149,7 +145,6 @@
     </div>
   </div>
   {% endif %}
-
   <div ng-show="prefillTeachers">
     <div class="form-group {% if TEACHER_HIDDEN %} hidden{% endif %}" ng-class="{'has-error': !detailedChild.teacher}">
       <label class="col-sm-4 control-label" for="inputTeacher">Enseignant principal<span class="required"> *</span></label>
@@ -188,7 +183,6 @@
       {% endif %}
     </div>
   </div>
-
   <div ng-show="!prefillTeachers">
     <div class="form-group {% if SCHOOL_YEAR_HIDDEN %} hidden{% endif %}" ng-class="{'has-error': !detailedChild.school_year}">
       <label class="col-sm-4 control-label" for="inputYear">
@@ -205,7 +199,6 @@
       </div>
     </div>
   </div>
-
   {% if CHILD_SCHOOL %}
   <div class="form-group{% if SCHOOL_HIDDEN %} hidden{% endif %}" ng-class="{'has-error': !detailedChild.school}">
     <label class="col-sm-4 control-label" for="school">École<span class="required"> *</span></label>
