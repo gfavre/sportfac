@@ -1,28 +1,31 @@
-<div ng-controller="ActivityCtrl" class="row">
-  <nav class="col-sm-3 bs-docs-sidebar" ng-controller="ActivityListCtrl" style="padding-bottom: 2em;">
-    <ul class="nav nav-pills nav-stacked">
+<div ng-controller="ActivityCtrl" class="row" style="display: flex">
+  <nav class="col-sm-3 bs-docs-sidebar" ng-controller="ActivityListCtrl"
+       style="padding: 1em; background-color: #fcfcfc; border-right: 1px solid #eee; ">
+    <ul class="nav nav-pills nav-stacked" style="margin-bottom: 0">
 
       <li ng-repeat="activity in activities" ng-class="{active: activity.selected}">
         <a href ng-click="selectActivity(activity);">{[{ activity.name }]} <!--<i class="icon-chevron-right"></i>--></a>
       </li>
-      <li ng-show="!activities.length" class="label label-warning">Aucune activité n'est disponible pour votre enfant</li>
+      <li ng-show="!activities.length" class="label label-warning">Aucune activité n'est disponible pour votre enfant
+      </li>
     </ul>
   </nav>
 
-  <div class="col-sm-9" ng-controller="ActivityTimelineCtrl">
-    <div class="alert alert-info" ng-show="getRegistrations(selectedChild).length >= maxregistrations">
+  <div class="col-sm-9" ng-controller="ActivityTimelineCtrl" style="padding-top:1em;">
+    <div class="alert alert-warning" ng-show="getRegistrations(selectedChild).length >= maxregistrations">
       <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-      <strong>Le nombre maximal d'activités ({[{ maxregistrations }]}) est atteint pour {[{ selectedChild.first_name }]}. </strong>
-      <p>Vous devez d'abord désinscrire votre enfant de l'une des activités sélectionnées (en vert) si vous souhaitez l'inscrire à d'autres activités disponibles.</p>
+      <strong>Le nombre maximal d'activités ({[{ maxregistrations }]}) est atteint pour {[{ selectedChild.first_name
+        }]}. </strong>
+      <p>Vous devez d'abord désinscrire votre enfant de l'une des activités sélectionnées (en vert) si vous souhaitez
+        l'inscrire à d'autres activités disponibles.</p>
     </div>
     <div class="portlet">
-    <ul class="list-inline" aria-hidden="true">
-      <li><span class="available">&#9632;</span> cours disponibles</li>
-      <li><span class="registered">&#9632;</span> cours choisis pour cet enfant</li>
-      <li><span class="unavailable">&#9632;</span> cours choisis pour un autre de vos enfants</li>
-    </ul>
-    <div ng-model="eventSources" calendar="weekagenda" ui-calendar="uiConfig.calendar"></div>
+      <ul class="list-inline" aria-hidden="true">
+        <li><span class="available">&#9632;</span> cours disponibles</li>
+        <li><span class="registered">&#9632;</span> cours choisis pour cet enfant</li>
+        <li><span class="unavailable">&#9632;</span> cours choisis pour un autre de vos enfants</li>
+      </ul>
+      <div ng-model="eventSources" calendar="weekagenda" ui-calendar="uiConfig.calendar"></div>
     </div>
-
   </div>
 </div>
