@@ -30,7 +30,7 @@ teacherServiceUrl="{% url 'api:teacher-list' %}"
 yearServiceUrl="{% url 'api:year-list' %}"
 {% endaddtoblock %}
 <div class="row" style="border: 1px solid #eee; display: flex">
-  <div class="col-sm-4  col-sm-push-8"  data-ng-animate="fade" style="padding-top: 1em;  background-color: #fcfcfc;">
+  <div class="col-sm-4  col-sm-push-8" data-ng-animate="fade" style="padding-top: 1em;  background-color: #fcfcfc; ">
     <div ng-show="userChildren.length !== 0">
       {% if CHILDREN_EDITABLE %}
       <h4>{% trans "Edit my children data" %}</h4>
