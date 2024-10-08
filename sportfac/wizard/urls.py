@@ -1,8 +1,7 @@
 from django.urls import path
 
-from profiles.views import WizardFamilyUserUpdateView, WizardFamilyUserCreateView
-
-from .views import ChildrenStepView, EntryPointView
+from profiles.views import WizardFamilyUserCreateView, WizardFamilyUserUpdateView
+from .views import ActivitiesStepView, ChildrenStepView, EntryPointView
 
 
 app_name = "wizard"
@@ -10,7 +9,7 @@ step_view_mapping = {
     "user-update": WizardFamilyUserUpdateView,
     "user-create": WizardFamilyUserCreateView,
     "children": ChildrenStepView,
-    "activities": ChildrenStepView,
+    "activities": ActivitiesStepView,
 }
 
 

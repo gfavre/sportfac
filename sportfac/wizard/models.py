@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.text import slugify
 
 from sportfac.models import TimeStampedModel
-from .handlers import get_step_handler
+
 
 class WizardStep(TimeStampedModel):
     STEP_TYPE_CHOICES = [

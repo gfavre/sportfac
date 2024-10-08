@@ -9,14 +9,13 @@ from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.views.generic import DetailView, ListView, View
 
-import mailer.views as mailer_views
 import requests
 from braces.views import LoginRequiredMixin, UserPassesTestMixin
+
+import mailer.views as mailer_views
 from mailer.forms import CourseMailForm, InstructorCopiesForm
 from mailer.mixins import ArchivedMailMixin
-
 from sportfac.views import NotReachableException, WizardMixin
-
 from .models import Activity, Course, PaySlip
 
 
@@ -96,6 +95,7 @@ class ActivityDetailView(DetailView):
 
 class ActivityListView(LoginRequiredMixin, WizardMixin, ListView):
     model = Activity
+    template_name = "activities/wizard_activities.html"
 
     @staticmethod
     def check_initial_condition(request):

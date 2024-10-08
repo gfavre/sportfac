@@ -67,6 +67,7 @@ yearServiceUrl="{% url 'api:year-list' %}"
 
 {% addtoblock "js" %}
 {% if debug %}
+  {% now "U" as timestamp %}
   <script src="{{ STATIC_URL }}js/vendor/angular.min.js"></script>
   <script src="{{ STATIC_URL }}js/vendor/angular-locale_fr-ch.js"></script>
   <script src="{{ STATIC_URL }}js/vendor/angular-route.min.js"></script>
@@ -75,9 +76,9 @@ yearServiceUrl="{% url 'api:year-list' %}"
   <script src="{{ STATIC_URL }}js/vendor/angularstrap/angular-strap.js"></script>
   <script src="{{ STATIC_URL }}js/vendor/angularstrap/angular-strap.tpl.js"></script>
 
-  <script src="{{ STATIC_URL }}js/children/services.js"></script>
-  <script src="{{ STATIC_URL }}js/children/controllers.js"></script>
-  <script src="{{ STATIC_URL }}js/children/app.js"></script>
+  <script src="{{ STATIC_URL }}js/children/services.js?id={{ timestamp }}"></script>
+  <script src="{{ STATIC_URL }}js/children/controllers.js?id={{ timestamp }}"></script>
+  <script src="{{ STATIC_URL }}js/children/app.js?id={{ timestamp }}"></script>
 {% else %}
   {% comment %}
   uglifyjs ../vendor/angular.min.js ../vendor/angular-locale_fr-ch.js ../vendor/angular-route.min.js ../vendor/angular-cookies.min.js ../vendor/angularstrap/angular-strap.min.js ../vendor/angularstrap/angular-strap.tpl.min.js services.js controllers.js app.js -o app.min.js
