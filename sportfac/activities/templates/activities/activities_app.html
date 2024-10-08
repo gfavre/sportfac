@@ -1,16 +1,4 @@
-{% extends "wizard.html" %}
 {% load i18n sekizai_tags %}
-
-
-{% block page_title %}
-  {% if ALTERNATIVE_ACTIVITIES_LABEL %}
-    {{ ALTERNATIVE_ACTIVITIES_LABEL }}
-  {% else %}
-    {% trans "Activities" %}
-  {% endif %}
-{% endblock page_title %}
-
-{% block content %}
 
 {% addtoblock "extra_html" %}
 xmlns:ng="http://angularjs.org"
@@ -31,7 +19,6 @@ canregistersameactivity="{{ ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE|yesno:'t
 hiddendays="{{ CALENDAR_HIDDEN_DAYS }}"
 limitbyschoolyear="{{ LIMIT_BY_SCHOOL_YEAR|yesno:'true,false' }}"
 usewaitingslots="{{ ENABLE_WAITING_LISTS|yesno:'true,false' }}"
-
 
 {% endaddtoblock %}
     <div class="portlet">
@@ -86,22 +73,3 @@ usewaitingslots="{{ ENABLE_WAITING_LISTS|yesno:'true,false' }}"
   <script src="{{ STATIC_URL }}js/activities/app.min.js?v={{ VERSION }}"></script>
 {% endif %}
 {% endaddtoblock %}
-
-
-
-{% endblock content %}
-
-
-{% block page_footer %}
-<nav>
-  <ul class="pager">
-    <li class="previous">
-      <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span> {% block previous_label %}{% trans "Previous"%}{% endblock %}</a>
-    </li>
-    <li class="next" ng-class="{disabled: registrations.length === 0}">
-      <a href="{{ next_step.url }}" ><b>{% trans "Next" %} <span aria-hidden="true">&rarr;</span></b></a>
-    </li>
-  </ul>
-</nav>
-
-{% endblock page_footer %}

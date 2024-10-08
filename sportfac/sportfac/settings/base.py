@@ -590,6 +590,7 @@ KEPCHUP_ALTERNATIVE_APPOINTMENTS_LABEL = None
 #
 KEPCHUP_CHILDREN_EDITABLE = True
 KEPCHUP_ID_LAGAPEO_ALTERNATIVE_LABEL = None
+KEPCHUP_CHILDREN_POPUP = False
 # Children have a bib number (n° dossard)
 KEPCHUP_BIB_NUMBERS = False
 # Ask for school of the child

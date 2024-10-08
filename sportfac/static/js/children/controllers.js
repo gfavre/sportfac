@@ -1,7 +1,7 @@
 angular.module('sportfacChildren.controllers', [])
 
-.controller('ListCtrl', ["$scope", "$attrs", "$routeParams", "$http", "ChildrenService",
-function($scope, $attrs, $routeParams, $http, ChildrenService) {
+.controller('ListCtrl', ["$scope", "$attrs", "$routeParams", "$http", "$window", "$document", "ChildrenService",
+function($scope, $attrs, $routeParams, $http, $window, $document, ChildrenService) {
   'use strict';
   if (!$attrs.prefill) throw new Error("No prefill option set");
   $scope.prefillTeachers = $attrs.prefill === 'true';
@@ -78,17 +78,49 @@ function($scope, $attrs, $routeParams, $http, ChildrenService) {
     }
     $scope.selectedChild = undefined;
   };
+  $scope.nextStepUrl = '';
+
+  // Function to show the confirmation modal
+  $scope.confirmNavigation = function(event) {
+    event.preventDefault(); // Prevent default link behavior
+
+    // Get the URL from the clicked element's data attribute
+    $scope.nextStepUrl = event.currentTarget.getAttribute('data-url');
+
+    // Show the modal popup
+    $('#confirmModal').modal('show');
+    // Bind the keydown event to handle Enter and Escape keys
+    $document.on('keydown', $scope.handleKeyPress);
+  };
+
+  $scope.handleKeyPress = function(event) {
+    if (event.keyCode === 13) { // Enter key
+      document.getElementById('modalYes').click();
+    } else if (event.keyCode === 27) { // Escape key
+      document.getElementById('modalNo').click();
+    }
+  };
+
+  // Function to navigate to the next step if confirmed
+  $scope.navigateToNextStep = function() {
+    $('#confirmModal').modal('hide'); // Hide the modal popup
+    $window.location.href = $scope.nextStepUrl;
+  };
+  // Clean up event listener when modal is hidden
+  $('#confirmModal').on('hidden.bs.modal', function() {
+    $document.off('keydown', $scope.handleKeyPress);
+  });
 }])
 
 .controller('childDetailCtrl', ["$scope", "$routeParams", "$location", "ChildrenService",
   function($scope, $routeParams, $location, ChildrenService) {
   'use strict';
-  $scope.detailedChild = {};
   this.initialValue = {};
   $scope.errors = {};
   $scope.availableTeachers = $scope.teachers.slice();
 
   $scope.reloadChild = function(){
+    $scope.detailedChild = {};
     ChildrenService.get($scope.urls.child, $routeParams.childId).then(function(child){
       for (var i=0; i< $scope.teachers.length; i++){
         var teacher = $scope.teachers[i];
