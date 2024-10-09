@@ -58,22 +58,3 @@
   </div>
 </div>
 {% endblock content %}
-
-{% block page_footer %}
-  <nav class="hidden-print">
-    <ul class="pager">
-      {% if previous_step %}
-        <li class="previous">
-          <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span>
-            {% block previous_label %}{% trans "Previous" %}{% endblock %}</a>
-        </li>
-      {% endif %}
-      {% if next_step %}
-        <li class="next">
-          <a href="{{ next_step.url }}">{% block next_label %}{% trans "Next" %}{% endblock %}<span aria-hidden="true">&rarr;</span></a>
-        </li>
-
-      {% endif %}
-    </ul>
-  </nav>
-{% endblock page_footer %}

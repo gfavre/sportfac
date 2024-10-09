@@ -137,13 +137,15 @@
 
           <!-- Course NOT full, max number of regisatration NOT reached => we can register -->
           <button
-              ng-show="{[{ selectedCourse.allow_new_participants && selectedCourse.count_participants < selectedCourse.max_participants && getRegistrations(selectedChild).length < maxregistrations}]}"
+              ng-show="{[{ selectedCourse.accepts_registrations && getRegistrations(selectedChild).length < maxregistrations}]}"
               class="btn btn-success" ng-click="register(selectedEvent);$hide()">Inscrire {[{ selectedChild.first_name
             }]}
           </button>
 
-          <!-- If the course is full -->
-          <span ng-hide="{[{ selectedCourse.allow_new_participants && selectedCourse.count_participants < selectedCourse.max_participants && getRegistrations(selectedChild).length < maxregistrations }]}">
+          <!-- do not show waiting list if the course accepts new members (no sense)
+          or if child has already maxed his registrations (won't be able to join later) -->
+
+          <span ng-hide="{[{ selectedCourse.accepts_registrations || getRegistrations(selectedChild).length < maxregistrations }]}">
             <span ng-show="{[{ usewaitingslots  }]}">
               <span ng-hide="{[{ isOnWaitingList(selectedCourse, selectedChild) }]}">
                 <button class="btn btn-primary waiting-slot"
@@ -160,7 +162,6 @@
             </span>
 
           </span>
-
           <!-- If the max number of registrations is reached -->
           <span
               ng-show="{[{ selectedCourse.accepts_registrations && getRegistrations(selectedChild).length >= maxregistrations}]}"
