@@ -1,32 +1,27 @@
 angular.module('sportfacCalendar.controllers', [])
 
-.controller('ChildrenCtrl', ["$scope", "$routeParams", "$attrs", "$location", "$filter", "ChildrenService", "RegistrationsService", "WaitingSlotService",
-function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, RegistrationsService, WaitingSlotService) {
+.controller('ChildrenCtrl', ["$scope", "$routeParams", "$attrs", "$location", "$window", "$document",
+                             "$filter", "ChildrenService", "RegistrationsService", "WaitingSlotService",
+function($scope, $routeParams, $attrs, $location, $window, $document,
+         $filter, ChildrenService, RegistrationsService, WaitingSlotService) {
   'use strict';
-  if (!$attrs.maxregistrations) throw new Error("No maxregistrations option set");
-    $scope.maxregistrations = parseInt($attrs.maxregistrations);
-  if (!$attrs.starthour) throw new Error("No starthour option set");
-    $scope.startHour = parseInt($attrs.starthour);
-  if (!$attrs.endhour) throw new Error("No endhour option set");
-    $scope.endHour = parseInt($attrs.endhour);
-  if (!$attrs.displaydates) throw new Error("No displaydates option set");
-    $scope.displaydates = $attrs.displaydates === 'true';
-  if (!$attrs.displaycoursenames) throw new Error("No displaycoursenames option set");
-    $scope.displaycoursenames = $attrs.displaycoursenames === 'true';
-  if ($attrs.canregistersameactivity){
-    $scope.canregistersameactivity = $attrs.canregistersameactivity === 'true';
-  } else {
-    $scope.canregistersameactivity = false;
-  }
-  $scope.usewaitingslots = !($attrs.usewaitingslots && $attrs.usewaitingslots === 'false');
-
-  if (!$attrs.limitbyschoolyear) throw new Error("No limitbyschoolyear option set");
-    $scope.limitbyschoolyear = $attrs.limitbyschoolyear === 'true';
-  if ($attrs.hiddendays) {
-     $scope.hiddenDays = JSON.parse($attrs.hiddendays);
-  } else {
-    $scope.hiddenDays = [];
-  }
+  // Helper function to parse boolean attributes
+  const parseBooleanAttr = (attrValue) => attrValue === 'true';
+  const requiredAttrs = ['maxregistrations', 'starthour', 'endhour', 'displaydates',
+                                 'displaycoursenames', 'limitbyschoolyear'];
+  requiredAttrs.forEach(attr => {
+    if (!$attrs[attr]) throw new Error(`No ${attr} option set`);
+  });
+  // Parse and set scope attributes
+  $scope.maxregistrations = parseInt($attrs.maxregistrations, 10);
+  $scope.startHour = parseInt($attrs.starthour, 10);
+  $scope.endHour = parseInt($attrs.endhour, 10);
+  $scope.displaydates = parseBooleanAttr($attrs.displaydates);
+  $scope.displaycoursenames = parseBooleanAttr($attrs.displaycoursenames);
+  $scope.canregistersameactivity = parseBooleanAttr($attrs.canregistersameactivity || 'false');
+  $scope.usewaitingslots = !($attrs.usewaitingslots === 'false');
+  $scope.limitbyschoolyear = parseBooleanAttr($attrs.limitbyschoolyear);
+  $scope.hiddenDays = $attrs.hiddendays ? JSON.parse($attrs.hiddendays) : [];
 
   $scope.urls = {
     activity: $attrs.activityserviceurl,
@@ -34,91 +29,117 @@ function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, Regi
     course: $attrs.courseserviceurl,
     family: $attrs.familyserviceurl,
     registration: $attrs.registrationserviceurl,
-    waitingslots: $attrs.waitingslotsserviceurl,
+    waitingSlots: $attrs.waitingslotsserviceurl,
   };
 
-  $scope.loadRegistrations = function(){
-    RegistrationsService.all($scope.urls.registration).then(function(registrations){
+  // Load registrations and waiting slots
+  $scope.loadRegistrations = () => {
+    RegistrationsService.all($scope.urls.registration).then(registrations => {
       $scope.registrations = registrations;
     });
   };
-  $scope.loadWaitingSlots = function(){
-    WaitingSlotService.all($scope.urls.waitingslots).then(function(slots){
+
+  $scope.loadWaitingSlots = () => {
+    WaitingSlotService.all($scope.urls.waitingslots).then(slots => {
       $scope.waitingSlots = slots;
     });
   };
 
-  $scope.getRegistrations = function(child){
-    if (!angular.isDefined($scope.registrations)){
-      return;
+  $scope.getRegistrations = (child) => {
+    return $scope.registrations?.filter(registration => registration.child === child.id);
+  };
+
+  // Unregister a course for a child
+  $scope.unregisterCourse = (child, course) => {
+    const registration = $scope.registrations.find(reg => reg.child === child.id && reg.course === course.id);
+    if (registration) {
+      RegistrationsService.del($scope.urls.registration, registration);
+      $scope.registrations = $scope.registrations.filter(reg => reg !== registration);
     }
-    var compare = function(registration){
-      return registration.child === child.id;
-    };
-    return $filter('filter')($scope.registrations, compare);
   };
 
-  $scope.unregisterCourse = function(child, course){
-    let compare = function(registration){
-       return registration.child === child.id && registration.course === course.id;
-    };
-
-    let registration = $filter('filter')($scope.registrations, compare)[0];
-    RegistrationsService.del($scope.urls.registration, registration);
-    $scope.registrations.remove(registration);
-  };
-
-  $scope.registerCourse = function(child, course){
-    let registration = {child: child.id, course: course.id};
-    RegistrationsService.save($scope.urls.registration, registration).then(function(){
+  // Register a child for a course
+  $scope.registerCourse = (child, course) => {
+    const registration = { child: child.id, course: course.id };
+    RegistrationsService.save($scope.urls.registration, registration).then(() => {
       $scope.registrations.push(registration);
     });
   };
 
-  $scope.addToWaitingList = function(course, child){
-    let slot = {child: child.id, course: course.id};
-    WaitingSlotService.create($scope.urls.waitingslots, slot).then(function(){
+  // Add a child to the waiting list for a course
+  $scope.addToWaitingList = (course, child) => {
+    const slot = { child: child.id, course: course.id };
+    WaitingSlotService.create($scope.urls.waitingslots, slot).then(() => {
       $scope.waitingSlots.push(slot);
     });
   };
-  $scope.isOnWaitingList = function(course, child){
-    let compare = function(slot){
-       return slot.child === child.id && slot.course === course.id;
-    };
-    return $filter('filter')($scope.waitingSlots, compare).length === 1;
-  }
-  $scope.removeFromWaitingList = function(course, child){
-    let compare = function(slot){
-       return slot.child === child.id && slot.course === course.id;
-    };
 
-    let slot = $filter('filter')($scope.waitingSlots, compare)[0];
-    WaitingSlotService.del($scope.urls.waitingslots, slot);
-    $scope.waitingSlots.remove(slot);
+ // Check if a child is on the waiting list for a course
+  $scope.isOnWaitingList = (course, child) => {
+    return $scope.waitingSlots?.some(slot => slot.child === child.id && slot.course === course.id);
   };
 
+  // Remove a child from the waiting list
+  $scope.removeFromWaitingList = (course, child) => {
+    const slot = $scope.waitingSlots.find(slot => slot.child === child.id && slot.course === course.id);
+    if (slot) {
+      WaitingSlotService.del($scope.urls.waitingslots, slot);
+      $scope.waitingSlots = $scope.waitingSlots.filter(s => s !== slot);
+    }
+  };
 
-  $scope.selectChild = function(childId){
-    angular.forEach($scope.userChildren, function(child){
-      if (child.id === childId){
-        child.selected = true;
-        $scope.selectedChild = child;
-      } else {
-        child.selected = false;
-      }
+  // Select a specific child
+  $scope.selectChild = (childId) => {
+    $scope.userChildren.forEach(child => {
+      child.selected = (child.id === childId);
+      if (child.selected) $scope.selectedChild = child;
     });
   };
 
-  ChildrenService.all($scope.urls.family).then(function(children){
+  // Load user children and initialize data
+  ChildrenService.all($scope.urls.family).then(children => {
     $scope.userChildren = children;
-    var childId = parseInt($routeParams.childId, 10);
+    let childId = parseInt($routeParams.childId, 10) || $scope.userChildren[0].id;
     if (isNaN(childId)) {
       childId = $scope.userChildren[0].id;
-      $location.path('/child/' + $scope.userChildren[0].id + '/');
+      $location.path(`/child/${childId}/`);
     }
     $scope.selectChild(childId);
     $scope.loadRegistrations();
     $scope.loadWaitingSlots();
+  });
+
+  $scope.confirmNavigation = (event) => {
+    event.preventDefault(); // Prevent default link behavior
+    // Check if there are any children without a registration
+    $scope.childrenWithoutRegistration = $scope.userChildren.filter(
+      child => !$scope.registrations.some(reg => reg.child === child.id)
+    );
+    if ($scope.childrenWithoutRegistration.length === 0) {
+      $scope.navigateToNextStep();
+    } else {
+      $scope.nextStepUrl = event.currentTarget.getAttribute('data-url');
+      $('#confirmModal').modal('show');
+      $document.on('keydown', $scope.handleKeyPress);
+    }
+  };
+
+  $scope.handleKeyPress = (event) => {
+    const keyActionMap = {
+      13: () => document.getElementById('modalYes').click(),  // Enter key
+      27: () => document.getElementById('modalNo').click()    // Escape key
+    };
+    if (keyActionMap[event.keyCode]) keyActionMap[event.keyCode]();
+  };
+
+  $scope.navigateToNextStep = () => {
+    $('#confirmModal').modal('hide');
+    $window.location.href = $scope.nextStepUrl;
+  };
+
+  // Clean up event listener when modal is hidden
+  $('#confirmModal').on('hidden.bs.modal', () => {
+    $document.off('keydown', $scope.handleKeyPress);
   });
 
 }])
@@ -129,25 +150,34 @@ function($scope, $routeParams, $attrs, $location, $filter, ChildrenService, Regi
 *******************************************************************************/
 .controller('ActivityCtrl', ["$scope", "$http", function($scope, $http) {
   'use strict';
-  $scope.$watch('selectedChild', function(){
-    if (angular.isDefined($scope.selectedChild) ){
-      $scope.loadActivities();
-      $scope.selectedActivity = {};
+
+  // Watch for changes in the selected child
+  $scope.$watch('selectedChild', (newChild) => {
+    if (angular.isDefined(newChild)) {
+      loadActivitiesForChild(newChild);
+      $scope.selectedActivity = {}; // Reset selected activity when child changes
     }
   });
 
-  $scope.selectActivity = function(activity){
-    if ($scope.selectedActivity) { $scope.selectedActivity.selected = false;}
-    activity.selected = true;
-    $scope.selectedActivity = activity;
+  // Function to select an activity
+  $scope.selectActivity = (activity) => {
+    if ($scope.selectedActivity) {
+      $scope.selectedActivity.selected = false; // Unselect previous activity
+    }
+    activity.selected = true; // Mark new activity as selected
+    $scope.selectedActivity = activity; // Set as the current selected activity
   };
 
-  $scope.loadActivities = function(){
-    let url = $scope.urls.activity + '?year=' + $scope.selectedChild.school_year + '&birth_date=' + $scope.selectedChild.birth_date;
-    $http({method: 'GET', url: url, cache: true})
-       .success(function(response){
-           $scope.activities = response;
-       });
+  // Load activities for the selected child
+  const loadActivitiesForChild = (child) => {
+    const url = `${$scope.urls.activity}?year=${child.school_year}&birth_date=${child.birth_date}`;
+    $http({ method: 'GET', url, cache: true })
+      .then((response) => {
+        $scope.activities = response.data;
+      })
+      .catch((error) => {
+        console.error("Failed to load activities", error);
+      });
   };
 }])
 
@@ -472,8 +502,6 @@ function($scope, $filter, $modal, CoursesService, uiCalendarConfig){
       });
     }
   });
-
-
 
 
 }])
