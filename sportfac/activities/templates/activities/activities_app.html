@@ -51,6 +51,7 @@
 
 {% addtoblock "js" %}
   {% if debug %}
+    {% now "U" as timestamp %}
     <script src="{{ STATIC_URL }}js/vendor/fullcalendar.min.js"></script>
     <script src="{{ STATIC_URL }}js/vendor/angular.min.js"></script>
     <script src="{{ STATIC_URL }}js/vendor/angular-locale_fr-ch.js"></script>
@@ -62,10 +63,10 @@
     <script src="{{ STATIC_URL }}js/vendor/angularstrap/angular-strap.min.js"></script>
     <script src="{{ STATIC_URL }}js/vendor/angularstrap/angular-strap.tpl.min.js"></script>
 
-    <script src="{{ STATIC_URL }}js/activities/filters.js?v={{ VERSION }}"></script>
-    <script src="{{ STATIC_URL }}js/activities/services.js?v={{ VERSION }}"></script>
-    <script src="{{ STATIC_URL }}js/activities/controllers.js?v={{ VERSION }}"></script>
-    <script src="{{ STATIC_URL }}js/activities/app.js?v={{ VERSION }}"></script>
+    <script src="{{ STATIC_URL }}js/activities/filters.js?id={{ timestamp }}"></script>
+    <script src="{{ STATIC_URL }}js/activities/services.js?id={{ timestamp }}"></script>
+    <script src="{{ STATIC_URL }}js/activities/controllers.js?id={{ timestamp }}"></script>
+    <script src="{{ STATIC_URL }}js/activities/app.js?id={{ timestamp }}"></script>
   {% else %}
     {% comment %}
   uglifyjs ../vendor/fullcalendar.min.js ../vendor/angular.min.js ../vendor/angular-locale_fr-ch.js ../vendor/angular-route.min.js ../vendor/angular-cookies.min.js ../vendor/angular-sanitize.min.js ../vendor/angular-ui-calendar.js ../vendor/angularstrap/angular-strap.min.js ../vendor/angularstrap/angular-strap.tpl.min.js filters.js services.js controllers.js app.js -o app.min.js

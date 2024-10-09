@@ -35,6 +35,8 @@ class BaseWizardStepView(View):
         context["current_index"] = current_index + 1
         context["current_step_slug"] = current_step.slug
         context["progress_percent"] = progress_percent  # Pass the calculated progress to the template
+        context["next_step"] = self.get_next_step()
+
         context["success_url"] = self.get_success_url()
         return context
 
