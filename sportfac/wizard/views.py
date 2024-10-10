@@ -19,6 +19,9 @@ class BaseWizardStepView(View):
     step_slug = None  # Should be defined in subclasses
     requires_completion = True  # Default behavior is to require completion
 
+    def get_step_slug(self):
+        return self.step_slug
+
     def get_context_data(self, **kwargs):
         """Provide context data for rendering the step."""
         context = kwargs
@@ -26,7 +29,7 @@ class BaseWizardStepView(View):
         steps = workflow.get_visible_steps()
         total_steps = len(steps)
         current_step = self.get_step()
-        current_index = next((index for index, step in enumerate(steps) if step.slug == self.step_slug), -1)
+        current_index = next((index for index, step in enumerate(steps) if step.slug == self.get_step_slug()), -1)
         progress_percent = ((current_index + 1) / total_steps) * 100 if total_steps > 0 else 0
         context["workflow"] = workflow
         context["steps"] = steps
@@ -42,7 +45,7 @@ class BaseWizardStepView(View):
 
     def get_step(self):
         """Retrieve the current step based on the `step_slug`."""
-        return WizardStep.objects.get(slug=self.step_slug)
+        return WizardStep.objects.get(slug=self.get_step_slug())
 
     def get_workflow(self):
         """Return the registration workflow for the current user."""
@@ -148,3 +151,8 @@ class ActivitiesStepView(StaticStepView):
         else:
             context["END_HOUR"] = 19
         return context
+
+
+class AdditionalQuestionStepView(StaticStepView):
+    template_name = "wizard/additional_questions.html"
+    step_slug = "additional-questions"

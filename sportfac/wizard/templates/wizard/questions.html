@@ -1,0 +1,10 @@
+{% extends "wizard/base.html" %}
+{% load crispy_forms_tags sekizai_tags i18n %}
+
+
+{% block wizard_content %}
+  {% for question in questions %}
+  {{ question }}
+    aaa
+  {% endfor %}
+{% endblock %}

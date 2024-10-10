@@ -20,7 +20,6 @@ from dateutil.relativedelta import relativedelta
 from model_utils import Choices
 
 from sportfac.models import TimeStampedModel
-
 from .utils import course_to_js_csv
 
 
@@ -742,6 +741,14 @@ class ExtraNeed(TimeStampedModel):
         base_field=models.IntegerField(),
         blank=True,
         null=True,
+    )
+    step = models.ForeignKey(
+        "wizard.WizardStep",
+        verbose_name=_("Wizard step"),
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="questions",
     )
     default = models.CharField(verbose_name=_("Default value"), default="", blank=True, max_length=255)
 
