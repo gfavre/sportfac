@@ -19,6 +19,7 @@ class WizardStep(TimeStampedModel):
     description = models.TextField(blank=True, null=True)
     is_required = models.BooleanField(default=True, verbose_name="Is this step required?")
     step_type = models.CharField(max_length=20, choices=STEP_TYPE_CHOICES, default="always", verbose_name="Step Type")
+
     editable_in_backend = models.BooleanField(
         default=True,
         verbose_name="Is this step editable in the backend?",

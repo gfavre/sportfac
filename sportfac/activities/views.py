@@ -16,6 +16,7 @@ import mailer.views as mailer_views
 from mailer.forms import CourseMailForm, InstructorCopiesForm
 from mailer.mixins import ArchivedMailMixin
 from sportfac.views import NotReachableException, WizardMixin
+from wizard.views import StaticStepView
 from .models import Activity, Course, PaySlip
 
 
@@ -30,6 +31,7 @@ __all__ = (
     "CustomMailPreview",
     "MailCourseInstructorsView",
     "PaySlipDetailView",
+    "WizardQuestionsStepView",
 )
 
 
@@ -256,3 +258,16 @@ class PaySlipDetailView(DetailView):
         response = HttpResponse(pdf.content, content_type="application/pdf")
         response["Content-Disposition"] = "attachment; filename=%s.pdf" % self.object.pk
         return response
+
+
+class WizardQuestionsStepView(StaticStepView):
+    template_name = "wizard/questions.html"
+
+    def get_step_slug(self):
+        return self.kwargs["step_slug"]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["questions"] = self.get_step().questions.all()
+        context["registrations"] = self
+        return context
