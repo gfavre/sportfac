@@ -631,9 +631,12 @@ class Bill(TimeStampedModel, StatusModel):
         return self.billing_identifier
 
 
-class ExtraInfo(models.Model):
+class ExtraInfo(TimeStampedModel):
     registration = models.ForeignKey(
-        "registrations.Registration", related_name="extra_infos", on_delete=models.CASCADE
+        "registrations.Registration",
+        related_name="extra_infos",
+        on_delete=models.CASCADE,
+        verbose_name=_("Registration"),
     )
     key = models.ForeignKey("activities.ExtraNeed", on_delete=models.CASCADE)
     value = models.CharField(max_length=255, blank=True)

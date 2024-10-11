@@ -1,8 +1,8 @@
 from django.urls import include, path
 
-from appointments.views import api_views as appointment_views
 from rest_framework.routers import DefaultRouter
 
+from appointments.views import api_views as appointment_views
 from . import views
 
 
@@ -13,9 +13,7 @@ router.register("sessions", views.SessionViewSet, basename="session")
 router.register("absences", views.AbsenceViewSet, basename="absence")
 router.register("activities", views.ActivityViewSet, basename="activity")
 router.register("courses", views.CourseViewSet, basename="course")
-router.register(
-    "courses-instructors", views.CourseInstructorsViewSet, basename="course-instructors"
-)
+router.register("courses-instructors", views.CourseInstructorsViewSet, basename="course-instructors")
 router.register("children", views.ChildrenViewSet, basename="child")
 router.register("teachers", views.TeacherViewSet, basename="teacher")
 router.register("buildings", views.BuildingViewSet, basename="building")
@@ -23,7 +21,9 @@ router.register("registrations", views.RegistrationViewSet, basename="registrati
 router.register("levels", views.ChildActivityLevelViewSet, basename="level")
 router.register("waiting_slots", views.WaitingSlotViewSet, basename="waiting_slot")
 
-router.register("extra", views.ExtraInfoViewSet, basename="api-extra")
+router.register("extra", views.OldExtraInfoViewSet, basename="api-extra")  # DEPRECATED
+router.register("extra-infos", views.ExtraInfoViewSet, basename="api-extra-infos")
+
 router.register("years", views.YearViewSet, basename="year")
 
 router.register("all-children", views.SimpleChildrenViewSet, basename="allchildren")

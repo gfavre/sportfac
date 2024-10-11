@@ -1,15 +1,16 @@
 import logging
 
-from profiles.models import SchoolYear
-from registrations.models import ExtraInfo, Registration
 from rest_framework import status, viewsets
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
-from schools.models import Building, Teacher
 
+from profiles.models import SchoolYear
+from registrations.models import ExtraInfo, Registration
+from schools.models import Building, Teacher
 from ..permissions import ChildOrAdminPermission, RegistrationOwnerAdminPermission
 from ..serializers import (
     BuildingSerializer,
+    ExtraInfoSerializer,
     ExtraSerializer,
     RegistrationSerializer,
     TeacherSerializer,
@@ -26,7 +27,8 @@ class BuildingViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Building.objects.all()
 
 
-class ExtraInfoViewSet(viewsets.ModelViewSet):
+class OldExtraInfoViewSet(viewsets.ModelViewSet):
+    # DEPRECATED
     authentication_classes = (SessionAuthentication,)
     permission_classes = (RegistrationOwnerAdminPermission,)
     serializer_class = ExtraSerializer
@@ -58,6 +60,40 @@ class ExtraInfoViewSet(viewsets.ModelViewSet):
                     continue
 
         return Response(output, status=status.HTTP_201_CREATED)
+
+
+class ExtraInfoViewSet(viewsets.ModelViewSet):
+    queryset = ExtraInfo.objects.all()
+    serializer_class = ExtraInfoSerializer
+
+    def create(self, request, *args, **kwargs):
+        """Handle create requests."""
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"success": True, "extra_info_id": serializer.instance.pk, "message": "Created successfully."},
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(
+            {"success": False, "errors": serializer.errors, "message": "Validation failed."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    def update(self, request, *args, **kwargs):
+        """Handle update requests."""
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"success": True, "extra_info_id": serializer.instance.pk, "message": "Updated successfully."},
+                status=status.HTTP_200_OK,
+            )
+        return Response(
+            {"success": False, "errors": serializer.errors, "message": "Update failed."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
 
 class RegistrationViewSet(viewsets.ModelViewSet):

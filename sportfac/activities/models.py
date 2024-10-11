@@ -765,6 +765,10 @@ class ExtraNeed(TimeStampedModel):
         return self.type == "C"
 
     @property
+    def is_choices(self):
+        return len(self.choices) > 0
+
+    @property
     def is_integer(self):
         return self.type == "I"
 
