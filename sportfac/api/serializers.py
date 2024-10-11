@@ -3,13 +3,14 @@ from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+from rest_framework import serializers
+
 from absences.models import Absence, Session
 from activities.models import Activity, Course, CoursesInstructors, ExtraNeed
 from backend.dynamic_preferences_registry import global_preferences_registry
 from payroll.models import Function
 from profiles.models import FamilyUser, School, SchoolYear
 from registrations.models import Child, ChildActivityLevel, ExtraInfo, Registration
-from rest_framework import serializers
 from schools.models import Building, Teacher
 from waiting_slots.models import WaitingSlot
 
@@ -307,6 +308,7 @@ class WaitingSlotSerializer(serializers.ModelSerializer):
 
 
 class ExtraSerializer(serializers.ModelSerializer):
+    # DEPRECATED. Remove me when wizard2 is in production
     registration = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=Registration.objects.all())
     key = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=ExtraNeed.objects.all())
     type = serializers.CharField(source="key.type", read_only=True)
@@ -314,6 +316,25 @@ class ExtraSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExtraInfo
         fields = ("id", "registration", "key", "value", "type", "image")
+
+
+class ExtraInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExtraInfo
+        fields = ["id", "registration", "key", "value", "image"]
+        read_only_fields = ["id"]
+
+    def create(self, validated_data):
+        # Custom create logic if needed
+        return ExtraInfo.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        # Custom update logic if needed
+        instance.value = validated_data.get("value", instance.value)
+        if validated_data.get("image"):
+            instance.image = validated_data["image"]
+        instance.save()
+        return instance
 
 
 class LevelSerializer(serializers.ModelSerializer):
