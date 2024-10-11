@@ -15,6 +15,7 @@ from braces.views import LoginRequiredMixin, UserPassesTestMixin
 import mailer.views as mailer_views
 from mailer.forms import CourseMailForm, InstructorCopiesForm
 from mailer.mixins import ArchivedMailMixin
+from registrations.models import Registration
 from sportfac.views import NotReachableException, WizardMixin
 from wizard.views import StaticStepView
 from .models import Activity, Course, PaySlip
@@ -267,7 +268,34 @@ class WizardQuestionsStepView(StaticStepView):
         return self.kwargs["step_slug"]
 
     def get_context_data(self, **kwargs):
+        from registrations.forms import ExtraInfoForm
+        from registrations.models import ExtraInfo
+
         context = super().get_context_data(**kwargs)
-        context["questions"] = self.get_step().questions.all()
-        context["registrations"] = self
+        questions = self.get_step().questions.all()
+        context["questions"] = questions
+        questions_registrations = {}
+        # Iterate through each ExtraNeed
+        context["forms"] = []
+        for extra_need in questions:
+            # Find all children who are registered in the course related to this ExtraNeed
+            registrations = Registration.waiting.filter(
+                course__in=extra_need.courses.all(), child__family=self.request.user
+            )
+            if registrations:
+                # Store the registrations (children) for this extra need
+                questions_registrations[extra_need] = [registration.child for registration in registrations]
+            for registration in registrations:
+                # Try to retrieve an existing ExtraInfo object for this registration and extra_need
+                answer, _created = ExtraInfo.objects.get_or_create(
+                    key=extra_need,
+                    registration=registration,
+                    defaults={"key": extra_need, "registration": registration},
+                )
+
+                # Create a unique form prefix using `extra_need.pk` and `registration.pk`
+                form_prefix = f"question-{extra_need.pk}-reg-{registration.pk}"
+                form = ExtraInfoForm(prefix=form_prefix, instance=answer)
+                context["forms"].append(form)
+        context["questions_registrations"] = questions_registrations
         return context

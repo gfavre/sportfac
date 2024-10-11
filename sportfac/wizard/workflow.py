@@ -15,7 +15,6 @@ class WizardWorkflow:
         visible_steps = []
         for step in self.steps:
             handler = get_step_handler(step, self.registration_context)
-            print(handler.__class__)
             if handler.is_ready():
                 step.is_ready = True
             if handler.is_visible():

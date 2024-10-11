@@ -7,6 +7,7 @@ from django.views.generic import FormView, TemplateView
 from activities.models import Course
 from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser
+from registrations.models import Registration
 from .handlers import get_step_handler
 from .models import WizardStep
 from .workflow import WizardWorkflow
@@ -25,13 +26,16 @@ class BaseWizardStepView(View):
     def get_context_data(self, **kwargs):
         """Provide context data for rendering the step."""
         context = kwargs
-        workflow = self.get_workflow()
+        registration_context = self.get_registration_context()
+        context.update(registration_context)
+        workflow = self.get_workflow(registration_context)
         steps = workflow.get_visible_steps()
         total_steps = len(steps)
         current_step = self.get_step()
         current_index = next((index for index, step in enumerate(steps) if step.slug == self.get_step_slug()), -1)
         progress_percent = ((current_index + 1) / total_steps) * 100 if total_steps > 0 else 0
         context["workflow"] = workflow
+
         context["steps"] = steps
         context["current_step"] = current_step
         context["total_steps"] = len(context["steps"])
@@ -47,9 +51,10 @@ class BaseWizardStepView(View):
         """Retrieve the current step based on the `step_slug`."""
         return WizardStep.objects.get(slug=self.get_step_slug())
 
-    def get_workflow(self):
+    def get_workflow(self, registration_context=None):
         """Return the registration workflow for the current user."""
-        registration_context = self.get_registration_context()
+        if registration_context is None:
+            registration_context = self.get_registration_context()
         user: FamilyUser = self.request.user  # noqa
         return WizardWorkflow(user, registration_context)
 
@@ -57,10 +62,13 @@ class BaseWizardStepView(View):
         """Return the registration context for evaluating the workflow."""
         # Implement context gathering logic based on user state
         user: FamilyUser = self.request.user  # noqa
+        registrations = user.is_authenticated and Registration.waiting.filter(child__family=user) or []
         return {
             "user": user,
             "user_registered": user.is_authenticated,
             "has_children": user.is_authenticated and user.children.exists(),
+            "has_registrations": len(registrations) > 0,
+            "registrations": registrations,
             # Add more context variables based on your business logic
         }
 
@@ -100,8 +108,6 @@ class FormStepView(BaseWizardStepView, FormView):
 # Static/Template-Based Step
 class StaticStepView(BaseWizardStepView, TemplateView):
     """Class-based view for static content or non-interactive steps."""
-
-    template_name = "registration/static_step.html"  # Set the appropriate template
 
     def post(self, request, *args, **kwargs):
         """Handle navigation to the next step."""

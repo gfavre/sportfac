@@ -7,7 +7,6 @@ from import_export import fields, resources
 from import_export.admin import ImportExportModelAdmin
 
 from sportfac.admin_utils import SportfacAdminMixin, SportfacModelAdmin
-
 from .models import Bill, Child, ChildActivityLevel, ExtraInfo, Registration, RegistrationsProfile, Transport
 
 
@@ -51,7 +50,7 @@ class RegistrationResource(resources.ModelResource):
 
 @admin.register(ExtraInfo)
 class ExtraInfoAdmin(SportfacModelAdmin):
-    list_display = ("registration", "key", "value")
+    list_display = ("registration", "key", "value", "created")
     search_fields = (
         "registration__child__first_name",
         "registration__child__last_name",

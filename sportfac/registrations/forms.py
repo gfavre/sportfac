@@ -1,18 +1,19 @@
 from django import forms
 from django.conf import settings
+from django.forms import widgets
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from activities.models import Course
-from backend.forms import BuildingWidget, CourseWidget, FamilyUserWidget, TeacherWidget, TransportWidget
 from bootstrap_datepicker_plus.widgets import DatePickerInput
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import HTML, ButtonHolder, Div, Fieldset, Layout
+from crispy_forms.layout import HTML, ButtonHolder, Div, Field, Fieldset, Layout
+
+from activities.models import Course
+from backend.forms import BuildingWidget, CourseWidget, FamilyUserWidget, TeacherWidget, TransportWidget
 from profiles.models import FamilyUser, School, SchoolYear
 from schools.models import Building, Teacher
-
-from .models import Bill, Child, Registration, Transport
+from .models import Bill, Child, ExtraInfo, Registration, Transport
 
 
 AVAILABLE_PAYMENT_METHODS = [
@@ -20,6 +21,32 @@ AVAILABLE_PAYMENT_METHODS = [
     for (method, label) in Bill.METHODS
     if method in settings.KEPCHUP_ALTERNATIVE_PAYMENT_METHODS_FROM_BACKEND or method == settings.KEPCHUP_PAYMENT_METHOD
 ]
+
+
+class StaticTextWidget(widgets.Widget):
+    """
+    A custom widget to display static text in a form, styled using Bootstrap's 'form-control-plaintext'.
+    """
+
+    def __init__(self, text=None, attrs=None):
+        super().__init__(attrs)
+        self.text = text
+
+    def render(self, name, value, attrs=None, renderer=None):
+        # Build the final attributes using the provided attributes
+        final_attrs = self.build_attrs(attrs, extra_attrs={"class": "form-control-static"})
+        display_text = self.text if self.text else value
+        return f"<p {self._flat_attrs(final_attrs)}>{display_text}</p>"
+
+    def value_from_datadict(self, data, files, name):
+        # Returning None to ensure this widget does not alter form data
+        return None
+
+    def _flat_attrs(self, attrs):
+        """
+        Converts dictionary of attributes into a single string.
+        """
+        return "".join([f' {key}="{value}"' for key, value in attrs.items() if value is not None])
 
 
 class EmptyForm(forms.Form):
@@ -297,4 +324,84 @@ class BillExportForm(forms.Form):
                 </button>"""
                 ),
             ),
+        )
+
+
+class ExtraInfoForm(forms.ModelForm):
+    id = forms.CharField(required=False, widget=forms.HiddenInput())
+
+    class Media:
+        js = ("js/extra/extra.js",)  # Include the JS file in form's media
+        css = {
+            "all": ["css/extra/extra.css"],
+        }  # Include the JS file in form's media
+
+    class Meta:
+        model = ExtraInfo
+        fields = ("id", "registration", "key", "value", "image")
+        widgets = {
+            "registration": StaticTextWidget(),
+            "key": forms.HiddenInput(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        instance = kwargs.get("instance")
+        super().__init__(*args, **kwargs)
+        image_div = HTML("")
+
+        if instance and instance.key:
+            question = instance.key
+            # Set the initial value of the hidden ID field
+            if instance.pk:
+                self.fields["id"].initial = instance.pk
+            unique_identifier = f"q-{question.pk}-reg-{instance.registration.pk}"
+            self.fields["registration"].widget = StaticTextWidget(text=str(instance.registration))
+
+            # Let's change the response the user has to give
+            self.fields["value"].label = question.question_label
+            if question.is_choices:
+                choices = question.choices
+                # If choices are strings, convert to (value, label) tuples
+                if isinstance(choices, list) and all(isinstance(choice, str) for choice in choices):
+                    choices = [(choice, choice) for choice in choices]
+                choices.insert(0, ("", _("Please choose")))
+                self.fields["value"].widget = forms.widgets.Select(choices=choices)
+            if question.is_image:
+                self.fields["value"].widget.attrs.update({"data-value-field": unique_identifier})
+                self.fields["image"].widget.attrs.update({"data-image-field": unique_identifier})
+                image_div = Div(
+                    Field(
+                        "image",
+                        css_class="file-input",
+                        style="display:none;",
+                        **{"data-file-input": unique_identifier},
+                    ),
+                    Div(
+                        HTML(
+                            f"""<div class="drop-area"  data-drop-area="{unique_identifier}">
+                                 Drag & Drop or Click to Upload an Image
+                                <img data-image-preview="{unique_identifier}" class="image-preview"
+                                    style="display:none;" alt="Image Preview">
+                                </div>"""
+                        ),
+                        css_class="form-group",
+                    ),
+                    css_class="form-group image-drop-container",
+                )
+            else:
+                self.fields.pop("image")
+
+        self.helper = FormHelper()
+        self.helper.form_tag = True
+        # self.helper.form_class = "form-horizontal"
+        # self.helper.form_group_wrapper_class = "row"
+        # self.helper.label_class = "col-sm-6"
+        # self.helper.field_class = "col-sm-6"
+        self.helper.include_media = False
+        self.helper.layout = Layout(
+            "id",
+            "registration",
+            "key",
+            "value",
+            image_div,
         )
