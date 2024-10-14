@@ -338,7 +338,7 @@ class ExtraInfoSerializer(serializers.ModelSerializer):
 
     def validate_value(self, value):
         if not value:
-            raise serializers.ValidationError("This field cannot be blank.")
+            raise serializers.ValidationError(_("This field cannot be left blank."))
         truthy_values = ["true", "yes", "oui", "1"]
         falsy_values = ["false", "no", "non", "0"]
         if value.lower() in truthy_values:
