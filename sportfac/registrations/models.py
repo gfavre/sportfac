@@ -649,8 +649,13 @@ class ExtraInfo(TimeStampedModel):
     def is_true(self):
         return self.value in ["True", "true", "1"]
 
+    @property
     def is_false(self):
         return self.value in ["False", "false", "0"]
+
+    @property
+    def require_image(self):
+        return self.key.is_image and self.is_true
 
     @property
     def price_modifier(self):

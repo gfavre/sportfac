@@ -336,6 +336,28 @@ class ExtraInfoSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+    def validate_value(self, value):
+        if not value:
+            raise serializers.ValidationError("This field cannot be blank.")
+        truthy_values = ["true", "yes", "oui", "1"]
+        falsy_values = ["false", "no", "non", "0"]
+        if value.lower() in truthy_values:
+            return "1"  # Save "1" for any truthy value
+        if value.lower() in falsy_values:
+            return "0"
+
+        return value
+
+    # Custom validation logic for the image field
+    def validate(self, data):
+        # Access the instance if updating
+        question = data.get("key")
+        if question and question.is_image and data["value"] == "1":
+            if not data.get("image"):
+                raise serializers.ValidationError({"image": _("Image is required")})
+
+        return data
+
 
 class LevelSerializer(serializers.ModelSerializer):
     class Meta:
