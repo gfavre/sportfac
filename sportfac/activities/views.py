@@ -261,7 +261,7 @@ class PaySlipDetailView(DetailView):
         return response
 
 
-class WizardQuestionsStepView(StaticStepView):
+class WizardQuestionsStepView(LoginRequiredMixin, StaticStepView):
     template_name = "wizard/questions.html"
 
     def get_step_slug(self):

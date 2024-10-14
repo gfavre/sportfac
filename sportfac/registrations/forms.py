@@ -356,9 +356,11 @@ class ExtraInfoForm(forms.ModelForm):
                 self.fields["id"].initial = instance.pk
             unique_identifier = f"q-{question.pk}-reg-{instance.registration.pk}"
             self.fields["registration"].widget = StaticTextWidget(text=str(instance.registration))
+            self.fields["registration"].required = False
 
             # Let's change the response the user has to give
             self.fields["value"].label = question.question_label
+            self.fields["value"].required = True
             if question.is_choices:
                 choices = question.choices
                 # If choices are strings, convert to (value, label) tuples
@@ -369,6 +371,8 @@ class ExtraInfoForm(forms.ModelForm):
             if question.is_image:
                 self.fields["value"].widget.attrs.update({"data-value-field": unique_identifier})
                 self.fields["image"].widget.attrs.update({"data-image-field": unique_identifier})
+                self.fields["image"].required = True
+
                 image_div = Div(
                     Field(
                         "image",

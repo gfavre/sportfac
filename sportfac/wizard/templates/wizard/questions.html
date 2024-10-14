@@ -3,31 +3,34 @@
 
 
 {% block wizard_content %}
-   {% for form in forms %}
-  {% crispy form %}
-    <hr>
-  {% endfor %}
-   {% addtoblock "css" %}
-   {{ forms.0.media.css }}
+  <div id="alert-container"></div>
+  <div class="form-wrapper">
+    {% for form in forms %}
+      {% crispy form %}
+      <hr>
+    {% endfor %}
+  </div>
+  {% addtoblock "css" %}
+    {{ forms.0.media.css }}
   {% endaddtoblock %}
- {% addtoblock "js" %}
-   {{ forms.0.media.js }}
+  {% addtoblock "js" %}
+    {{ forms.0.media.js }}
   {% endaddtoblock %}
 
   <nav style="margin-top: 1.5em;">
-  <ul class="pager" style="font-size: 1.25em;">
-    <li class="previous">
-      <a href="{{ previous_step.url }}" >
-        <span aria-hidden="true">&larr;</span> {% block previous_label %}{% trans "Previous"%}{% endblock %}
-      </a>
-    </li>
-    <li class="next">
-      {% trans "Next" as default_next %}
-      <a href="{{ success_url }}" id="save-next-button">
-        <strong>{{ next_step.link_display|default:default_next }} <span aria-hidden="true">&rarr;</span></strong>
-      </a>
-    </li>
-  </ul>
-</nav>
+    <ul class="pager" style="font-size: 1.25em;">
+      <li class="previous">
+        <a href="{{ previous_step.url }}">
+          <span aria-hidden="true">&larr;</span> {% block previous_label %}{% trans "Previous" %}{% endblock %}
+        </a>
+      </li>
+      <li class="next">
+        {% trans "Next" as default_next %}
+        <a href="{{ success_url }}" id="save-next-button">
+          <strong>{{ next_step.link_display|default:default_next }} <span aria-hidden="true">&rarr;</span></strong>
+        </a>
+      </li>
+    </ul>
+  </nav>
 
 {% endblock %}
