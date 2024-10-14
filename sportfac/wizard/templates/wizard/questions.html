@@ -3,7 +3,15 @@
 
 
 {% block wizard_content %}
-  <div id="alert-container"></div>
+  <div id="alert-container" style="display: none">
+    <div class="alert alert-danger" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="{% trans 'Close' %}">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <strong>{% trans "Error" %}</strong>
+      {% blocktrans %}There are errors in the form. Please fix them before proceeding.{% endblocktrans %}
+    </div>
+  </div>
   <div class="form-wrapper">
     {% for form in forms %}
       {% crispy form %}
