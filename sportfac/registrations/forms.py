@@ -355,6 +355,8 @@ class ExtraInfoForm(forms.ModelForm):
             if instance.pk:
                 self.fields["id"].initial = instance.pk
             unique_identifier = f"q-{question.pk}-reg-{instance.registration.pk}"
+            self.fields["registration"].label = ""
+
             self.fields["registration"].widget = StaticTextWidget(text=str(instance.registration))
             self.fields["registration"].required = False
 
