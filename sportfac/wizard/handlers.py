@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import redirect
 
 
@@ -66,6 +67,7 @@ class ProfileUpdateStepHandler(StepHandler):
 
 class ChildInformationStepHandler(StepHandler):
     """Handler for child information step."""
+
     def is_ready(self):
         return self.registration_context.get("user").is_authenticated
 
@@ -80,6 +82,7 @@ class ChildInformationStepHandler(StepHandler):
 
 class ActivitiesStepHandler(StepHandler):
     """Handler for child information step."""
+
     def is_ready(self):
         user = self.registration_context.get("user")
         return user.is_authenticated and user.children.exists()
@@ -93,13 +96,11 @@ class ActivitiesStepHandler(StepHandler):
         return self.registration_context.get("child_info_complete", False)
 
 
-class MaterialPickupStepHandler(StepHandler):
-    """Step handler for the material pickup step."""
+class EquipmentPickupStepHandler(StepHandler):
+    """Step handler for the equipment pickup step."""
 
     def is_visible(self):
-        # Only show this step if the user has selected an activity that requires material pickup
-        selected_activities = self.registration_context.get("selected_activities", [])
-        return any(activity.requires_material for activity in selected_activities)
+        return settings.KEPCHUP_USE_APPOINTMENTS
 
     def is_complete(self):
         # Complete if a pickup appointment has been scheduled
@@ -114,6 +115,7 @@ def get_step_handler(step, registration_context):
         "user-update": ProfileUpdateStepHandler,
         "children": ChildInformationStepHandler,
         "activities": ActivitiesStepHandler,
+        "equipment": EquipmentPickupStepHandler,
         # Add more mappings here for different steps
     }
     handler_class = handler_mapping.get(step.slug, StepHandler)
