@@ -6,8 +6,9 @@ from django.views.generic import TemplateView
 from braces.views import LoginRequiredMixin
 
 from sportfac.views import NotReachableException, WizardMixin
-
-from ..models import Appointment, AppointmentSlot, AppointmentType
+from wizard.views import StaticStepView
+from ..forms import RentalSelectionForm
+from ..models import Appointment, AppointmentSlot, AppointmentType, Rental
 
 
 class SlotsBaseView(TemplateView):
@@ -70,3 +71,25 @@ class WizardSlotsView(LoginRequiredMixin, WizardMixin, SlotsBaseView):
             raise NotReachableException("No account created")
         if not request.user.montreux_missing_appointments:
             raise NotReachableException("No appointment expected")
+
+
+class WizardSlotsStepView(LoginRequiredMixin, StaticStepView):
+    template_name = "wizard/equipment.html"
+    requires_completion = True
+    step_slug = "equipment"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["rentals"] = Rental.objects.filter(child__family=self.request.user)
+        context["types"] = AppointmentType.objects.all()
+        # slots_context = SlotsBaseView.get_context_data(self, **kwargs)
+        # context.update(slots_context)
+        context["missing_appointments"] = self.request.user.montreux_missing_appointments
+        context["form"] = RentalSelectionForm(user=self.request.user)
+
+        # qs = AppointmentSlot.objects.filter(start__gte=now())
+
+        return context
+
+    # def get_success_url(self):
+    #    return self.get_next_step_url()
