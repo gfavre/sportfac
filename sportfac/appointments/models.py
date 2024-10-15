@@ -57,6 +57,31 @@ class AppointmentSlot(TimeStampedModel):
         return local_start.strftime("%d.%m.%Y %H:%M") + " - " + local_end.strftime("%d.%m.%Y %H:%M")
 
 
+class Rental(TimeStampedModel):
+    child = models.ForeignKey(
+        "registrations.Child", verbose_name=_("Child"), on_delete=models.CASCADE, related_name="rentals"
+    )
+    invoice = models.ForeignKey(
+        "registrations.Bill", verbose_name=_("Invoice"), on_delete=models.SET_NULL, related_name="rentals", null=True
+    )
+    amount = models.DecimalField(_("Amount"), max_digits=6, decimal_places=2)
+    paid = models.BooleanField(_("Paid"), default=False)
+    pickup_appointment = models.OneToOneField(
+        "Appointment",
+        verbose_name=_("Pickup slot"),
+        on_delete=models.SET_NULL,
+        related_name="pickup_rental",
+        null=True,
+    )
+    return_appointment = models.OneToOneField(
+        "Appointment",
+        verbose_name=_("Return slot"),
+        on_delete=models.SET_NULL,
+        related_name="return_rental",
+        null=True,
+    )
+
+
 class Appointment(TimeStampedModel):
     slot = models.ForeignKey(
         "AppointmentSlot", verbose_name=_("Appointment slot"), on_delete=models.CASCADE, related_name="appointments"

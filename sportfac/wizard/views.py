@@ -49,7 +49,8 @@ class BaseWizardStepView(View):
 
     def get_step(self):
         """Retrieve the current step based on the `step_slug`."""
-        return WizardStep.objects.get(slug=self.get_step_slug())
+        slug = self.get_step_slug()
+        return WizardStep.objects.get(slug=slug)
 
     def get_workflow(self, registration_context=None):
         """Return the registration workflow for the current user."""

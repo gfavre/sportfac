@@ -351,6 +351,18 @@ class ExtraInfoForm(forms.ModelForm):
 
         if instance and instance.key:
             question = instance.key
+            if question.is_choices or question.is_image:
+                truthy_values = ["True", "true", "YES", "Yes", "yes", "OUI", "Oui", "oui", "1"]
+                falsy_values = ["False", "false", "NO", "No", "no", "NON", "Non", "non", "0"]
+
+                if instance.value == "0" and instance.key.is_choices:
+                    self.initial["value"] = next(
+                        (choice for choice in question.choices if choice in falsy_values), "0"
+                    )
+                elif instance.value == "1":
+                    self.initial["value"] = next(
+                        (choice for choice in question.choices if choice in truthy_values), "1"
+                    )
             # Set the initial value of the hidden ID field
             if instance.pk:
                 self.fields["id"].initial = instance.pk
@@ -374,7 +386,6 @@ class ExtraInfoForm(forms.ModelForm):
                 self.fields["value"].widget.attrs.update({"data-value-field": unique_identifier})
                 self.fields["image"].widget.attrs.update({"data-image-field": unique_identifier})
                 self.fields["image"].required = True
-
                 image_div = Div(
                     Field(
                         "image",
