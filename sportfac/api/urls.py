@@ -9,16 +9,17 @@ from . import views
 app_name = "api"
 
 router = DefaultRouter()
-router.register("sessions", views.SessionViewSet, basename="session")
 router.register("absences", views.AbsenceViewSet, basename="absence")
 router.register("activities", views.ActivityViewSet, basename="activity")
+router.register("buildings", views.BuildingViewSet, basename="building")
+router.register("children", views.ChildrenViewSet, basename="child")
 router.register("courses", views.CourseViewSet, basename="course")
 router.register("courses-instructors", views.CourseInstructorsViewSet, basename="course-instructors")
-router.register("children", views.ChildrenViewSet, basename="child")
-router.register("teachers", views.TeacherViewSet, basename="teacher")
-router.register("buildings", views.BuildingViewSet, basename="building")
-router.register("registrations", views.RegistrationViewSet, basename="registration")
 router.register("levels", views.ChildActivityLevelViewSet, basename="level")
+router.register("registrations", views.RegistrationViewSet, basename="registration")
+router.register("rentals", appointment_views.RentalViewSet, basename="rental")
+router.register("sessions", views.SessionViewSet, basename="session")
+router.register("teachers", views.TeacherViewSet, basename="teacher")
 router.register("waiting_slots", views.WaitingSlotViewSet, basename="waiting_slot")
 
 router.register("extra", views.OldExtraInfoViewSet, basename="api-extra")  # DEPRECATED

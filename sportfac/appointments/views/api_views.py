@@ -6,14 +6,14 @@ from django.utils.timezone import now
 from django.utils.translation import get_language
 from django.utils.translation import gettext as _
 
-from api.permissions import ManagerPermission
-from registrations.models import Child
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from ..models import Appointment, AppointmentSlot, AppointmentType
-from ..serializers import AdminAppointmentSlotSerializer, AppointmentSerializer, SlotSerializer
+from api.permissions import ManagerPermission
+from registrations.models import Child
+from ..models import Appointment, AppointmentSlot, AppointmentType, Rental
+from ..serializers import AdminAppointmentSlotSerializer, AppointmentSerializer, RentalSerializer, SlotSerializer
 from ..tasks import send_confirmation_mail as send_appointment_confirmation_email
 
 
@@ -90,3 +90,26 @@ class SlotsViewset(ModelViewSet):
 
     def get_queryset(self):
         return AppointmentSlot.objects.filter(start__gte=now())
+
+
+class RentalViewSet(ModelViewSet):
+    queryset = Rental.objects.all()
+    serializer_class = RentalSerializer
+
+    def destroy(self, request, *args, **kwargs):
+        """Delete a rental if no pickup or return appointment is set."""
+        child_id = kwargs.get("pk")
+        try:
+            rental = Rental.objects.get(child__id=child_id)
+
+            # Check if the rental has any appointments set
+            if rental.pickup_appointment or rental.return_appointment:
+                return Response(
+                    {"success": False, "message": "Cannot delete rental with set appointments."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            rental.delete()
+            return Response({"success": True, "message": "Rental deleted successfully."}, status=status.HTTP_200_OK)
+        except Rental.DoesNotExist:
+            return Response({"success": False, "message": "Rental does not exist."}, status=status.HTTP_404_NOT_FOUND)
