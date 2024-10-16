@@ -1,10 +1,11 @@
 from django.utils.translation import gettext as _
 
 from phonenumber_field.modelfields import PhoneNumberField
-from registrations.models import Child
 from rest_framework import serializers
 
-from .models import AppointmentSlot
+from backend.dynamic_preferences_registry import global_preferences_registry
+from registrations.models import Child
+from .models import AppointmentSlot, Rental
 
 
 class SlotSerializer(serializers.ModelSerializer):
@@ -49,3 +50,19 @@ class AdminAppointmentSlotSerializer(SlotSerializer):
 
     def get_url(self, obj):
         return obj.api_management_url
+
+
+class RentalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rental
+        fields = ["id", "child", "pickup_appointment", "return_appointment"]
+
+    def create(self, validated_data):
+        child = validated_data["child"]
+        # Prevent duplicate rentals for the same child
+        if "amount" not in validated_data:
+            preferences = global_preferences_registry.manager()
+            validated_data["amount"] = preferences["site__RENTAL_PRICE"]
+        if Rental.objects.filter(child=child).exists():
+            raise serializers.ValidationError("Rental already exists for this child.")
+        return super().create(validated_data)

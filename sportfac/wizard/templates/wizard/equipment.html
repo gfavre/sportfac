@@ -3,17 +3,24 @@
 
 
 {% block wizard_content %}
-  {%  crispy form %}
+  {% crispy form %}
+
+
+
+
+
   {% if missing_appointments %}
     <div class="panel panel-warning">
       <div class="panel-heading">
         <h3 class="panel-title">{% trans "Missing appointments" %}</h3>
       </div>
       <div class="panel-body">
-        <p>{% blocktrans %}You have not yet selected the appointments required for your registrations:{% endblocktrans %}</p>
+        <p>{% blocktrans %}You have not yet selected the appointments required for your
+          registrations:{% endblocktrans %}</p>
         <ul>
           {% for child, types in missing_appointments %}
-            <li>{{ child }}: {% for type in types %}{{ type.label }}{% if not forloop.last %}, {% endif %}{% endfor %}</li>
+            <li>{{ child }}:
+              {% for type in types %}{{ type.label }}{% if not forloop.last %}, {% endif %}{% endfor %}</li>
           {% endfor %}
         </ul>
       </div>
@@ -34,15 +41,243 @@
     </section>
   {% endif %}
 
-  <section class="portlet">
+  <section class="portlet" id="dates-selection" style="display: none">
     <h3 class="content-title">
       <u>{% trans "Available dates" %}</u>
     </h3>
-    {% include "appointments/register.html" %}
+    <div id="calendar"></div>
   </section>
-  {% for app_type in types %}
-  <li>{{ app_type }}</li>
-  {% endfor %}
+
+  <!-- Modal Structure for Bootstrap 3 -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+        </div>
+        <div class="modal-body">
+          <!-- Modal content goes here -->
+          This is the content of the modal.
+        </div>
+        <div class="modal-footer">
+          <form>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" id="modal-save-btn">Save changes</button>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  {% addtoblock "css" %}
+    <link href="{% static 'js/vendor/fullcalendar-5/lib/main.css' %}" rel="stylesheet"/>
+  {% endaddtoblock %}
+
+  {% addtoblock "js" %}
+    <script src="{% static 'js/vendor/js.cookie.js' %}"></script>
+    <script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
+    <script src="{% static 'js/vendor/handlebars.min.js' %}"></script>
+    <script src="{% static 'js/vendor/fullcalendar-5/lib/main.js' %}"></script>
+    <script src="{% static 'js/vendor/fullcalendar-5/lib/locales/fr-ch.js' %}"></script>
+
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // DOM Elements
+        const rentalForm = document.getElementById('rental-form');
+        const datesSection = document.getElementById('dates-selection');
+        const calendarEl = document.getElementById('calendar');
+        const modalTitle = $('#myModalLabel');
+        const modalBody = $('#myModal .modal-body');
+        const formAction = $('#myModal form');
+
+        // Rental Map Initialization
+        const rentalMap = {};
+        const rentals = {{ rentals_json|safe }}; // List of existing rentals loaded on page load
+        rentals.forEach(rental => {
+          rentalMap[rental.child_id] = rental;
+        });
+
+        // -------------------------
+        // Helper Functions
+        // -------------------------
+
+        // Show or Hide Dates Section Based on Checkbox Selection
+        function toggleDatesSection() {
+          const anyChecked = Array.from(rentalForm.querySelectorAll('input[type="checkbox"]')).some(checkbox => checkbox.checked);
+          datesSection.style.display = anyChecked ? 'block' : 'none';
+          if (anyChecked) {
+            calendar.render();
+          }
+        }
+
+        // Update Checkmarks for Existing Rentals
+        function updateCheckmarks() {
+          Object.values(rentalMap).forEach(rental => {
+            const checkbox = document.querySelector(`input[type="checkbox"][value="${rental.child_id}"]`);
+            if (!checkbox) {
+              console.warn(`Could not find checkbox for child_id ${rental.child_id}`);
+              return;
+            }
+
+            const childLabel = checkbox.closest('label');
+            const existingCheckmark = childLabel.querySelector('.badge-success');
+
+            if (rental.pickup_appointment && !existingCheckmark) {
+              const checkmark = document.createElement('span');
+              checkmark.className = 'badge badge-success';
+              checkmark.textContent = '✔';
+              childLabel.appendChild(checkmark);
+            } else if (!rental.pickup_appointment && existingCheckmark) {
+              existingCheckmark.remove();
+            }
+          });
+        }
+
+        // Update Modal Checkboxes Based on Calendar Event
+        function updateModalCheckboxes(eventId) {
+          const selectedCheckboxes = rentalForm.querySelectorAll('input[type="checkbox"]:checked');
+          modalBody.empty(); // Clear previous content
+
+          selectedCheckboxes.forEach(checkbox => {
+            const childId = checkbox.value;
+            const childLabel = checkbox.closest('label').textContent.trim();
+
+            const checkboxWrapper = document.createElement('div');
+            checkboxWrapper.className = 'form-check';
+
+            const modalCheckbox = document.createElement('input');
+            modalCheckbox.type = 'checkbox';
+            modalCheckbox.className = 'form-check-input';
+            modalCheckbox.id = `modal-child-${childId}`;
+            modalCheckbox.value = childId;
+
+            const rental = rentalMap[childId];
+            if (rental && (rental.pickup_appointment === eventId || rental.return_appointment === eventId)) {
+              modalCheckbox.checked = true;
+            }
+
+            const modalLabel = document.createElement('label');
+            modalLabel.className = 'form-check-label';
+            modalLabel.htmlFor = `modal-child-${childId}`;
+            modalLabel.textContent = childLabel;
+
+            checkboxWrapper.appendChild(modalCheckbox);
+            checkboxWrapper.appendChild(modalLabel);
+            modalBody.append(checkboxWrapper);
+          });
+        }
+
+        // Show Bootstrap Modal
+        function showModal() {
+          $('#myModal').modal('show');
+        }
+
+        // -------------------------
+        // Rental Management Functions
+        // -------------------------
+
+        function createRental(childId) {
+          fetch(`/api/rentals/`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            },
+            body: JSON.stringify({child: childId})
+          })
+            .then(response => response.json().then(data => ({status: response.status, data})))
+            .then(({status, data}) => {
+              if (status === 201) {
+                rentalMap[childId] = {id: data.id, child_id: childId};
+                updateCheckmarks();
+              } else if (status === 400) {
+                alert("Could not create rental: " + JSON.stringify(data));
+              }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+
+        function deleteRental(childId) {
+          fetch(`/api/rentals/${childId}/`, {
+            method: 'DELETE',
+            headers: {
+              'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            }
+          })
+            .then(response => response.json())
+            .then(data => {
+              if (!data.success) {
+                alert("Could not delete rental: " + data.message);
+              }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+
+        // -------------------------
+        // Event Listeners
+        // -------------------------
+
+        // Listen for changes on the rental form checkboxes
+        rentalForm.addEventListener('change', function (e) {
+          if (e.target.tagName === 'INPUT' && e.target.type === 'checkbox') {
+            toggleDatesSection();
+
+            const childId = e.target.value;
+            const checked = e.target.checked;
+
+            // Decide if we are creating or deleting the rental
+            if (checked) {
+              createRental(childId);
+            } else {
+              const rental = rentalMap[childId];
+              if (rental && (rental.pickup_appointment || rental.return_appointment)) {
+                alert("Cannot delete rental with existing appointments.");
+                e.target.checked = true;
+              } else {
+                deleteRental(childId);
+              }
+            }
+          }
+        });
+
+        // Initialize FullCalendar and its Event Listener
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+          allDaySlot: false,
+          events: '{% url "api:all_slots" %}',
+          initialView: 'timeGridWeek',
+          locale: 'fr-ch',
+          slotDuration: '00:15:00',
+          slotMinTime: '07:00',
+          slotMaxTime: '20:00',
+          eventClick: (info) => {
+            info.jsEvent.preventDefault();
+            if (info.event.extendedProps.available_places > 0) {
+              modalTitle.text(`${moment(info.event.start).format('dddd Do MMM YYYY, h:mm')} - ${moment(info.event.end).format('h:mm')}`);
+              modalBody.text(info.event.extendedProps.description);
+              formAction.attr('action', info.event.extendedProps.url);
+              updateModalCheckboxes(parseInt(info.event.id));
+              showModal();
+            }
+          }
+        });
+        calendar.gotoDate("{{ start }}");
+
+        // -------------------------
+        // Initialization
+        // -------------------------
+
+        toggleDatesSection();
+        updateCheckmarks();
+      });
+
+    </script>
+  {% endaddtoblock "js" %}
+
 {% endblock wizard_content %}
 
 {% block page_footer %}

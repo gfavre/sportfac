@@ -342,83 +342,129 @@ class ExtraInfoForm(forms.ModelForm):
         widgets = {
             "registration": StaticTextWidget(),
             "key": forms.HiddenInput(),
+            "image": forms.FileInput(),
         }
 
     def __init__(self, *args, **kwargs):
         instance = kwargs.get("instance")
         super().__init__(*args, **kwargs)
-        image_div = HTML("")
 
         if instance and instance.key:
             question = instance.key
-            if question.is_choices or question.is_image:
-                truthy_values = ["True", "true", "YES", "Yes", "yes", "OUI", "Oui", "oui", "1"]
-                falsy_values = ["False", "false", "NO", "No", "no", "NON", "Non", "non", "0"]
+            self._handle_initial_value(instance, question)
+            self._handle_base_fields(instance, question)
+            self._handle_choices(question)
+            self._handle_image_field(instance, question)
 
-                if instance.value == "0" and instance.key.is_choices:
-                    self.initial["value"] = next(
-                        (choice for choice in question.choices if choice in falsy_values), "0"
-                    )
-                elif instance.value == "1":
-                    self.initial["value"] = next(
-                        (choice for choice in question.choices if choice in truthy_values), "1"
-                    )
-            # Set the initial value of the hidden ID field
             if instance.pk:
-                self.fields["id"].initial = instance.pk
-            unique_identifier = f"q-{question.pk}-reg-{instance.registration.pk}"
-            self.fields["registration"].label = ""
+                self.fields["id"].initial = instance.pk  # Set the initial value of the hidden ID field
 
-            self.fields["registration"].widget = StaticTextWidget(text=str(instance.registration))
-            self.fields["registration"].required = False
+        # Initialize the form layout with Crispy Forms
+        self._initialize_helper()
 
-            # Let's change the response the user has to give
-            self.fields["value"].label = question.question_label
+    def _handle_initial_value(self, instance, question):
+        if not (question.is_choices or question.is_image):
+            return
+        truthy_values = ["True", "true", "YES", "Yes", "yes", "OUI", "Oui", "oui", "1"]
+        falsy_values = ["False", "false", "NO", "No", "no", "NON", "Non", "non", "0"]
+
+        # Set the initial value for the `value` field
+        if instance.value == "0":
+            self.initial["value"] = next((choice for choice in instance.key.choices if choice in falsy_values), "0")
+        elif instance.value == "1":
+            self.initial["value"] = next((choice for choice in instance.key.choices if choice in truthy_values), "1")
+
+    def _handle_base_fields(self, instance, question):
+        self.fields["registration"].label = ""  # No label for the registration field
+        self.fields["registration"].widget = StaticTextWidget(text=str(instance.registration))  # Static text widget
+        self.fields["registration"].required = False  # Make the field not required since it's static
+        self.fields["value"].label = question.question_label
+
+    def _handle_choices(self, question):
+        # Set up choices if the question involves choices
+        if question.is_choices:
+            choices = question.choices
+            if isinstance(choices, list) and all(isinstance(choice, str) for choice in choices):
+                choices = [(choice, choice) for choice in choices]  # Convert to (value, label) tuples
+            choices.insert(0, ("", _("Please choose")))  # Add a default "please choose" option
+            self.fields["value"].widget = forms.widgets.Select(choices=choices)
             self.fields["value"].required = True
-            if question.is_choices:
-                choices = question.choices
-                # If choices are strings, convert to (value, label) tuples
-                if isinstance(choices, list) and all(isinstance(choice, str) for choice in choices):
-                    choices = [(choice, choice) for choice in choices]
-                choices.insert(0, ("", _("Please choose")))
-                self.fields["value"].widget = forms.widgets.Select(choices=choices)
-            if question.is_image:
-                self.fields["value"].widget.attrs.update({"data-value-field": unique_identifier})
-                self.fields["image"].widget.attrs.update({"data-image-field": unique_identifier})
-                self.fields["image"].required = True
-                image_div = Div(
-                    Field(
-                        "image",
-                        css_class="file-input",
-                        style="display:none;",
-                        **{"data-file-input": unique_identifier},
-                    ),
-                    Div(
-                        HTML(
-                            f"""<div class="drop-area"  data-drop-area="{unique_identifier}">
-                                 Drag & Drop or Click to Upload an Image
-                                <img data-image-preview="{unique_identifier}" class="image-preview"
-                                    style="display:none;" alt="Image Preview">
-                                </div>"""
-                        ),
-                        css_class="form-group",
-                    ),
-                    css_class="form-group image-drop-container",
-                )
-            else:
-                self.fields.pop("image")
 
+    def _handle_image_field(self, instance, question):
+        # Set up image field handling
+        unique_identifier = f"q-{question.pk}-reg-{instance.registration.pk}"
+        if question.is_image:
+            self.fields["value"].widget.attrs.update({"data-value-field": unique_identifier})
+            self.fields["image"].widget.attrs.update({"data-image-field": unique_identifier})
+            self.fields["image"].required = True
+            if instance.image:
+                image_url = instance.image.url
+                self.image_div = self._build_image_field_with_preview(unique_identifier, image_url)
+            else:
+                self.image_div = self._build_image_field(unique_identifier)
+        else:
+            self.fields.pop("image")  # Remove the image field if it's not needed
+
+    def _build_image_field(self, unique_identifier):
+        # Build the image input field layout using Crispy Forms
+        label = _("Drag & drop or click to upload an image")
+        return Div(
+            Field(
+                "image",
+                css_class="file-input",
+                style="display:none;",
+                **{"data-file-input": unique_identifier},
+            ),
+            Div(
+                HTML(
+                    f"""
+                    <div class="drop-area" data-drop-area="{unique_identifier}">
+                        {label}
+                        <img data-image-preview="{unique_identifier}" class="image-preview"
+                            style="display:none;" alt="Image Preview">
+                    </div>
+                    """
+                ),
+                css_class="form-group",
+            ),
+            css_class="form-group image-drop-container",
+        )
+
+    def _build_image_field_with_preview(self, unique_identifier, image_url):
+        # Display the drop area and show the existing image with a preview
+        label = _("Drag & drop or click to upload and modify current image")
+        return Div(
+            Field(
+                "image",
+                css_class="file-input",
+                style="display:none;",
+                **{"data-file-input": unique_identifier},
+            ),
+            Div(
+                HTML(
+                    f"""
+                       <div class="drop-area" data-drop-area="{unique_identifier}">
+                           {label}
+                           <img src="{image_url}" data-image-preview="{unique_identifier}" class="image-preview"
+                               style="display:block;" alt="Image Preview">
+                       </div>
+                       """
+                ),
+                css_class="form-group",
+            ),
+            css_class="form-group image-drop-container",
+        )
+
+    def _initialize_helper(self):
         self.helper = FormHelper()
         self.helper.form_tag = True
-        # self.helper.form_class = "form-horizontal"
-        # self.helper.form_group_wrapper_class = "row"
-        # self.helper.label_class = "col-sm-6"
-        # self.helper.field_class = "col-sm-6"
         self.helper.include_media = False
+
+        # Layout includes the dynamic image div if it's set
         self.helper.layout = Layout(
             "id",
             "registration",
             "key",
             "value",
-            image_div,
+            getattr(self, "image_div", ""),  # Add the image div only if it's been set
         )

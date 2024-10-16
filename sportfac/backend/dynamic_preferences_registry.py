@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from decimal import Decimal
 
 from django import forms
 from django.utils import timezone
@@ -15,6 +16,7 @@ from dynamic_preferences.types import (
     BasePreferenceType,
     BaseSerializer,
     BooleanPreference,
+    DecimalPreference,
     IntegerPreference,
     LongStringPreference,
     StringPreference,
@@ -62,6 +64,13 @@ class SiteName(StringPreference):
     section = site
     name = "SITE_NAME"
     default = "Sport scolaire facultatif"
+
+
+@global_preferences_registry.register
+class RentalPrice(DecimalPreference):
+    section = site
+    name = "RENTAL_PRICE"
+    default = Decimal("50.0")
 
 
 @global_preferences_registry.register

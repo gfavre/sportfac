@@ -5,6 +5,7 @@ from django.views.generic import TemplateView
 
 from braces.views import LoginRequiredMixin
 
+from registrations.models import Child
 from sportfac.views import NotReachableException, WizardMixin
 from wizard.views import StaticStepView
 from ..forms import RentalSelectionForm
@@ -80,15 +81,30 @@ class WizardSlotsStepView(LoginRequiredMixin, StaticStepView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["rentals"] = Rental.objects.filter(child__family=self.request.user)
+        user = self.request.user
+        children_with_rentals = Child.objects.filter(rentals__isnull=False, family=user)
+
+        context["rentals"] = Rental.objects.filter(child__family=user)
+        context["rentals_json"] = [
+            {
+                "id": rental.id,
+                "child_id": rental.child.id,
+                "pickup_appointment": rental.pickup_appointment.slot.id if rental.pickup_appointment else "",
+                "return_appointment": rental.return_appointment.slot.id if rental.return_appointment else "",
+            }
+            for rental in context["rentals"]
+        ]
         context["types"] = AppointmentType.objects.all()
         # slots_context = SlotsBaseView.get_context_data(self, **kwargs)
         # context.update(slots_context)
-        context["missing_appointments"] = self.request.user.montreux_missing_appointments
-        context["form"] = RentalSelectionForm(user=self.request.user)
+        context["missing_appointments"] = user.montreux_missing_appointments
 
-        # qs = AppointmentSlot.objects.filter(start__gte=now())
-
+        context["form"] = RentalSelectionForm(user=user, initial_rentals=children_with_rentals)
+        qs = AppointmentSlot.objects.filter(start__gte=now())
+        if qs.exists():
+            context["start"] = qs.first().start.date().isoformat()
+        else:
+            context["start"] = now().date().isoformat()
         return context
 
     # def get_success_url(self):

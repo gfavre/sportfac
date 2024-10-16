@@ -83,7 +83,12 @@ class ExtraInfoViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         """Handle update requests."""
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        data = request.data.copy()
+        # If image is not included in the request data, retain the existing image
+        if "image" not in request.FILES:
+            data["image"] = instance.image
+
+        serializer = self.get_serializer(instance, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(
