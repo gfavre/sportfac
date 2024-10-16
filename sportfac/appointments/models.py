@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 from model_utils.models import TimeStampedModel
 from phonenumber_field.modelfields import PhoneNumberField
+from pydantic.json import Decimal
 
 
 class AppointmentType(TimeStampedModel):
@@ -62,9 +63,14 @@ class Rental(TimeStampedModel):
         "registrations.Child", verbose_name=_("Child"), on_delete=models.CASCADE, related_name="rentals"
     )
     invoice = models.ForeignKey(
-        "registrations.Bill", verbose_name=_("Invoice"), on_delete=models.SET_NULL, related_name="rentals", null=True
+        "registrations.Bill",
+        verbose_name=_("Invoice"),
+        on_delete=models.SET_NULL,
+        related_name="rentals",
+        null=True,
+        blank=True,
     )
-    amount = models.DecimalField(_("Amount"), max_digits=6, decimal_places=2)
+    amount = models.DecimalField(_("Amount"), max_digits=6, decimal_places=2, default=Decimal(0.0))
     paid = models.BooleanField(_("Paid"), default=False)
     pickup_appointment = models.OneToOneField(
         "Appointment",
@@ -72,6 +78,7 @@ class Rental(TimeStampedModel):
         on_delete=models.SET_NULL,
         related_name="pickup_rental",
         null=True,
+        blank=True,
     )
     return_appointment = models.OneToOneField(
         "Appointment",
@@ -79,7 +86,16 @@ class Rental(TimeStampedModel):
         on_delete=models.SET_NULL,
         related_name="return_rental",
         null=True,
+        blank=True,
     )
+
+    class Meta:
+        verbose_name = _("Rental")
+        verbose_name_plural = _("Rentals")
+        ordering = ("child",)
+
+    def __str__(self):
+        return f"{self.child}"
 
 
 class Appointment(TimeStampedModel):
