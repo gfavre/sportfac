@@ -74,7 +74,7 @@ class WizardSlotsView(LoginRequiredMixin, WizardMixin, SlotsBaseView):
             raise NotReachableException("No appointment expected")
 
 
-class WizardSlotsStepView(LoginRequiredMixin, StaticStepView):
+class WizardRentalStepView(LoginRequiredMixin, StaticStepView):
     template_name = "wizard/equipment.html"
     requires_completion = True
     step_slug = "equipment"
@@ -95,13 +95,11 @@ class WizardSlotsStepView(LoginRequiredMixin, StaticStepView):
             }
             for rental in context["rentals"]
         ]
-        context["types"] = AppointmentType.objects.all()
-        # slots_context = SlotsBaseView.get_context_data(self, **kwargs)
-        # context.update(slots_context)
-        context["missing_appointments"] = user.montreux_missing_appointments
 
-        context["form"] = RentalSelectionForm(user=user, initial_rentals=children_with_rentals)
-        qs = AppointmentSlot.objects.filter(start__gte=now())
+        context["form"] = RentalSelectionForm(
+            user=user, initial_rentals=children_with_rentals, disabled=self.appointment_type != "pickup"
+        )
+        qs = AppointmentSlot.objects.filter(start__gte=now(), appointment_type=self.appointment_type)
         if qs.exists():
             context["start"] = qs.first().start.date().isoformat()
         else:
@@ -110,3 +108,10 @@ class WizardSlotsStepView(LoginRequiredMixin, StaticStepView):
 
     # def get_success_url(self):
     #    return self.get_next_step_url()
+
+
+class WizardReturnStepView(WizardRentalStepView):
+    template_name = "wizard/equipment.html"
+    requires_completion = True
+    step_slug = "equipment-return"
+    appointment_type = "return"

@@ -7,7 +7,7 @@ from .models import Appointment, AppointmentSlot, AppointmentType, Rental
 
 @admin.register(AppointmentSlot)
 class AppointmentSlotAdmin(admin.ModelAdmin):
-    list_display = ("formatted_start", "formatted_end", "places")
+    list_display = ("formatted_start", "formatted_end", "places", "appointment_type")
     ordering = ("start", "end")
 
     @admin.display(
