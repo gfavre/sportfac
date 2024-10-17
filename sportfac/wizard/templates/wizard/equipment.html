@@ -5,7 +5,6 @@
 {% block wizard_content %}
   {% crispy form %}
 
-
   {% if appointments %}
     <section class="portlet">
       <h3 class="content-title"><u>{% trans "Your appointments" %}</u></h3>
@@ -78,6 +77,7 @@
         const modalTitle = $('#myModalLabel');
         const modalBody = $('#myModal .modal-body .children');
         const formAction = $('#myModal form');
+        const nextButton = document.getElementById('next-step-btn');
 
         // Rental Map Initialization
         const rentalMap = {};
@@ -108,7 +108,7 @@
               const checkmark = childLabel.querySelector('.badge-success');
 
               // Check if the child has any appointments (pickup or return)
-              if (rental.pickup_appointment || rental.return_appointment) {
+              if (rental.{{ appointment_type }}_appointment) {
                 if (!checkmark) {
                   const checkmarkElement = document.createElement('span');
                   checkmarkElement.className = 'badge badge-success';
@@ -145,7 +145,7 @@
             modalCheckbox.id = `modal-child-${childId}`;
 
             // Precheck if the child is already registered for this event
-            if (rental && (rental.pickup_appointment == slotId || rental.return_appointment == slotId)) {
+            if (rental && (rental.{{ appointment_type }}_appointment == slotId)) {
               modalCheckbox.checked = true;
             }
 
@@ -164,6 +164,19 @@
           $('#myModal').modal('show');
         }
 
+        function allRentalsFilled() {
+          return Object.values(rentalMap).every(rental => rental.{{ appointment_type }}_appointment && rental.pickup_appointment !== "");
+        }
+
+        function toggleNextButton() {
+          if (allRentalsFilled()) {
+            nextButton.classList.remove('disabled');
+          } else {
+            nextButton.classList.add('disabled');
+          }
+        }
+
+
         // -------------------------
         // Rental Management Functions
         // -------------------------
@@ -180,8 +193,9 @@
             .then(response => response.json().then(data => ({status: response.status, data})))
             .then(({status, data}) => {
               if (status === 201) {
-                rentalMap[childId] = {id: data.id, child: childId};
+                rentalMap[childId] = {id: data.id, child: childId, pickup_appointment: "", return_appointment: ""};
                 updateCheckmarks();
+                toggleNextButton();
               } else if (status === 400) {
                 console.error("Could not create rental: " + JSON.stringify(data));
               }
@@ -198,7 +212,10 @@
           })
             .then(response => response.json())
             .then(data => {
-              if (!data.success) {
+              if (data.success) {
+                delete rentalMap[childId];
+                toggleNextButton();
+              } else {
                 console.error("Could not delete rental: " + data.message);
               }
             })
@@ -228,6 +245,7 @@
                   rentalMap[rental.child] = rental;
                 });
                 updateCheckmarks();
+                toggleNextButton();
               } else if (status === 400) {
                 console.warn("Could not register or update rentals: " + JSON.stringify(data));
               }
@@ -259,6 +277,7 @@
                   rentalMap[rental.child] = rental;
                 });
                 updateCheckmarks();
+                toggleNextButton();
               }
               if (status === 400) {
                 console.warn("Could not remove rentals: " + JSON.stringify(data));
@@ -285,7 +304,7 @@
               createRental(childId);
             } else {
               const rental = rentalMap[childId];
-              if (rental && (rental.pickup_appointment || rental.return_appointment)) {
+              if (rental && (rental.{{ appointment_type }}_appointment)) {
                 console.warn("Cannot delete rental with existing appointments.");
                 e.target.checked = true;
               } else {
@@ -361,8 +380,9 @@
         // Initialization
         // -------------------------
 
-        toggleDatesSection();
         updateCheckmarks();
+        toggleDatesSection();
+        toggleNextButton();
       })
       ;
 
@@ -372,8 +392,8 @@
 {% endblock wizard_content %}
 
 {% block page_footer %}
-  <nav class="hidden-print">
-    <ul class="pager">
+  <nav class="hidden-print" style="margin-top: 1.5em;">
+    <ul class="pager" style="font-size: 1.25em">
       {% if previous_step %}
         <li class="previous">
           <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span>
@@ -382,8 +402,8 @@
       {% endif %}
       {% if next_step %}
         <li class="next">
-          <a {% if appointments %}href="{{ next_step.url }}"{% else %}class="disabled"{% endif %}>
-            {% block next_label %}{% trans "Next" %}{% endblock %}<span aria-hidden="true">&rarr;</span></a>
+          <a {% if appointments %}href="{{ next_step.url }}"{% else %}class="disabled"{% endif %} id="next-step-btn">
+            <strong>{% block next_label %}{% trans "Next" %}{% endblock %} <span aria-hidden="true">&rarr;</span></strong></a>
         </li>
 
       {% endif %}
