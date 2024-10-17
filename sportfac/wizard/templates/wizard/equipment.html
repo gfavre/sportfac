@@ -6,27 +6,6 @@
   {% crispy form %}
 
 
-
-
-
-  {% if missing_appointments %}
-    <div class="panel panel-warning">
-      <div class="panel-heading">
-        <h3 class="panel-title">{% trans "Missing appointments" %}</h3>
-      </div>
-      <div class="panel-body">
-        <p>{% blocktrans %}You have not yet selected the appointments required for your
-          registrations:{% endblocktrans %}</p>
-        <ul>
-          {% for child, types in missing_appointments %}
-            <li>{{ child }}:
-              {% for type in types %}{{ type.label }}{% if not forloop.last %}, {% endif %}{% endfor %}</li>
-          {% endfor %}
-        </ul>
-      </div>
-    </div>
-  {% endif %}
-
   {% if appointments %}
     <section class="portlet">
       <h3 class="content-title"><u>{% trans "Your appointments" %}</u></h3>
@@ -57,17 +36,20 @@
               aria-hidden="true">&times;</span></button>
           <h4 class="modal-title" id="myModalLabel">Modal title</h4>
         </div>
-        <div class="modal-body">
-          <!-- Modal content goes here -->
-          This is the content of the modal.
-        </div>
-        <div class="modal-footer">
-          <form>
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" id="modal-save-btn">Save changes</button>
-          </form>
+        <form data-appointment-type="{{ appointment_type }}">
 
-        </div>
+          <div class="modal-body">
+            <p><strong>{% trans "Register an appointment for these children" %}:</strong></p>
+            <div class="children">
+
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+            <button type="button" class="btn btn-primary" id="modal-save-btn">{% trans "Save" %}</button>
+          </div>
+        </form>
+
       </div>
     </div>
   </div>
@@ -94,14 +76,14 @@
         const datesSection = document.getElementById('dates-selection');
         const calendarEl = document.getElementById('calendar');
         const modalTitle = $('#myModalLabel');
-        const modalBody = $('#myModal .modal-body');
+        const modalBody = $('#myModal .modal-body .children');
         const formAction = $('#myModal form');
 
         // Rental Map Initialization
         const rentalMap = {};
-        const rentals = {{ rentals_json|safe }}; // List of existing rentals loaded on page load
-        rentals.forEach(rental => {
-          rentalMap[rental.child_id] = rental;
+        const initialRentals = {{ rentals_json|safe }}; // List of existing rentals loaded on page load
+        initialRentals.forEach(rental => {
+          rentalMap[rental.child] = rental;
         });
 
         // -------------------------
@@ -120,55 +102,58 @@
         // Update Checkmarks for Existing Rentals
         function updateCheckmarks() {
           Object.values(rentalMap).forEach(rental => {
-            const checkbox = document.querySelector(`input[type="checkbox"][value="${rental.child_id}"]`);
-            if (!checkbox) {
-              console.warn(`Could not find checkbox for child_id ${rental.child_id}`);
-              return;
-            }
+            const checkbox = rentalForm.querySelector(`input[type="checkbox"][value="${rental.child}"]`);
+            if (checkbox) {
+              const childLabel = checkbox.closest('label');
+              const checkmark = childLabel.querySelector('.badge-success');
 
-            const childLabel = checkbox.closest('label');
-            const existingCheckmark = childLabel.querySelector('.badge-success');
-
-            if (rental.pickup_appointment && !existingCheckmark) {
-              const checkmark = document.createElement('span');
-              checkmark.className = 'badge badge-success';
-              checkmark.textContent = '✔';
-              childLabel.appendChild(checkmark);
-            } else if (!rental.pickup_appointment && existingCheckmark) {
-              existingCheckmark.remove();
+              // Check if the child has any appointments (pickup or return)
+              if (rental.pickup_appointment || rental.return_appointment) {
+                if (!checkmark) {
+                  const checkmarkElement = document.createElement('span');
+                  checkmarkElement.className = 'badge badge-success';
+                  checkmarkElement.textContent = '✔';
+                  childLabel.appendChild(checkmarkElement);
+                }
+              } else {
+                if (checkmark) {
+                  checkmark.remove();
+                }
+              }
             }
           });
         }
 
+
         // Update Modal Checkboxes Based on Calendar Event
-        function updateModalCheckboxes(eventId) {
+        function updateModalCheckboxes(slotId) {
           const selectedCheckboxes = rentalForm.querySelectorAll('input[type="checkbox"]:checked');
           modalBody.empty(); // Clear previous content
 
           selectedCheckboxes.forEach(checkbox => {
             const childId = checkbox.value;
             const childLabel = checkbox.closest('label').textContent.trim();
+            const rental = rentalMap[childId];
 
             const checkboxWrapper = document.createElement('div');
-            checkboxWrapper.className = 'form-check';
+            checkboxWrapper.className = 'checkbox';
 
             const modalCheckbox = document.createElement('input');
             modalCheckbox.type = 'checkbox';
             modalCheckbox.className = 'form-check-input';
-            modalCheckbox.id = `modal-child-${childId}`;
             modalCheckbox.value = childId;
+            modalCheckbox.id = `modal-child-${childId}`;
 
-            const rental = rentalMap[childId];
-            if (rental && (rental.pickup_appointment === eventId || rental.return_appointment === eventId)) {
+            // Precheck if the child is already registered for this event
+            if (rental && (rental.pickup_appointment == slotId || rental.return_appointment == slotId)) {
               modalCheckbox.checked = true;
             }
 
             const modalLabel = document.createElement('label');
-            modalLabel.className = 'form-check-label';
             modalLabel.htmlFor = `modal-child-${childId}`;
-            modalLabel.textContent = childLabel;
+            modalLabel.appendChild(modalCheckbox);
+            modalLabel.append(childLabel);
 
-            checkboxWrapper.appendChild(modalCheckbox);
             checkboxWrapper.appendChild(modalLabel);
             modalBody.append(checkboxWrapper);
           });
@@ -184,7 +169,7 @@
         // -------------------------
 
         function createRental(childId) {
-          fetch(`/api/rentals/`, {
+          fetch(`{% url "api:rental-list" %}`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -195,17 +180,17 @@
             .then(response => response.json().then(data => ({status: response.status, data})))
             .then(({status, data}) => {
               if (status === 201) {
-                rentalMap[childId] = {id: data.id, child_id: childId};
+                rentalMap[childId] = {id: data.id, child: childId};
                 updateCheckmarks();
               } else if (status === 400) {
-                alert("Could not create rental: " + JSON.stringify(data));
+                console.error("Could not create rental: " + JSON.stringify(data));
               }
             })
             .catch(error => console.error("Error:", error));
         }
 
         function deleteRental(childId) {
-          fetch(`/api/rentals/${childId}/`, {
+          fetch(`{% url "api:rental-list" %}${childId}/`, {
             method: 'DELETE',
             headers: {
               'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
@@ -214,11 +199,74 @@
             .then(response => response.json())
             .then(data => {
               if (!data.success) {
-                alert("Could not delete rental: " + data.message);
+                console.error("Could not delete rental: " + data.message);
               }
             })
             .catch(error => console.error("Error:", error));
         }
+
+        function registerChildren(childIds, slotId, appointmentType) {
+          const payload = {
+            children: childIds,
+            slot: slotId,
+            appointment_type: appointmentType
+          };
+
+          return fetch('/api/appointments/rentals/' + slotId + "/", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            },
+            body: JSON.stringify(payload)
+          })
+            .then(response => response.json().then(data => ({status: response.status, data})))
+            .then(({status, data}) => {
+              if (status === 201) {
+                // Update rentalMap with returned rentals
+                data.rentals.forEach(rental => {
+                  rentalMap[rental.child] = rental;
+                });
+                updateCheckmarks();
+              } else if (status === 400) {
+                console.warn("Could not register or update rentals: " + JSON.stringify(data));
+              }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+
+        // Function to remove child associations from a slot
+        function unregisterChildren(childIds, slotId, appointmentType) {
+          const payload = {
+            children: childIds,
+            slot: slotId,
+            appointment_type: appointmentType
+          };
+
+          return fetch('/api/appointments/rentals/' + slotId + "/", {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            },
+            body: JSON.stringify(payload)
+          })
+            .then(response => response.json().then(data => ({status: response.status, data})))
+            .then(({status, data}) => {
+              if (status === 200) {
+                // Update rentalMap with new or updated rentals
+                data.rentals.forEach(rental => {
+                  rentalMap[rental.child] = rental;
+                });
+                updateCheckmarks();
+              }
+              if (status === 400) {
+                console.warn("Could not remove rentals: " + JSON.stringify(data));
+              }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+
 
         // -------------------------
         // Event Listeners
@@ -238,13 +286,52 @@
             } else {
               const rental = rentalMap[childId];
               if (rental && (rental.pickup_appointment || rental.return_appointment)) {
-                alert("Cannot delete rental with existing appointments.");
+                console.warn("Cannot delete rental with existing appointments.");
                 e.target.checked = true;
               } else {
                 deleteRental(childId);
+
               }
             }
           }
+        });
+
+        document.getElementById('modal-save-btn').addEventListener('click', function (e) {
+          e.preventDefault();
+
+          const selectedChildren = [];
+          const unselectedChildren = [];
+          const slotId = formAction.data('slot-id'); // Assume the slot ID is set as a data attribute
+          const appointmentType = formAction.data('appointment-type'); // "pickup" or "return"
+          const modalCheckboxes = modalBody.find('input[type="checkbox"]');
+
+          // Collect selected and unselected child IDs
+          modalCheckboxes.each(function () {
+            const childId = parseInt(this.value);
+            if (this.checked) {
+              selectedChildren.push(childId);
+            } else {
+              unselectedChildren.push(childId);
+            }
+          });
+
+          // Send requests to add and remove associations based on the current state
+          const promises = [];
+          if (selectedChildren.length > 0) {
+            promises.push(registerChildren(selectedChildren, slotId, appointmentType));
+          }
+
+          if (unselectedChildren.length > 0) {
+            promises.push(unregisterChildren(unselectedChildren, slotId, appointmentType));
+          }
+
+          Promise.all(promises).then(() => {
+            $('#myModal').modal('hide'); // Close the modal
+            calendar.refetchEvents();
+          }).catch(error => {
+            console.error("Error:", error);
+          });
+
         });
 
         // Initialize FullCalendar and its Event Listener
@@ -262,6 +349,7 @@
               modalTitle.text(`${moment(info.event.start).format('dddd Do MMM YYYY, h:mm')} - ${moment(info.event.end).format('h:mm')}`);
               modalBody.text(info.event.extendedProps.description);
               formAction.attr('action', info.event.extendedProps.url);
+              formAction.data('slot-id', parseInt(info.event.id));
               updateModalCheckboxes(parseInt(info.event.id));
               showModal();
             }
@@ -275,7 +363,8 @@
 
         toggleDatesSection();
         updateCheckmarks();
-      });
+      })
+      ;
 
     </script>
   {% endaddtoblock "js" %}

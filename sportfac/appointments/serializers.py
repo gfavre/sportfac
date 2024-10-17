@@ -53,9 +53,22 @@ class AdminAppointmentSlotSerializer(SlotSerializer):
 
 
 class RentalSerializer(serializers.ModelSerializer):
+    pickup_appointment = serializers.SerializerMethodField()
+    return_appointment = serializers.SerializerMethodField()
+
     class Meta:
         model = Rental
         fields = ["id", "child", "pickup_appointment", "return_appointment"]
+
+    def get_pickup_appointment(self, obj):
+        if obj.pickup_appointment and obj.pickup_appointment.slot:
+            return obj.pickup_appointment.slot.id
+        return None
+
+    def get_return_appointment(self, obj):
+        if obj.return_appointment and obj.return_appointment.slot:
+            return obj.return_appointment.slot.id
+        return None
 
     def create(self, validated_data):
         child = validated_data["child"]
@@ -66,3 +79,23 @@ class RentalSerializer(serializers.ModelSerializer):
         if Rental.objects.filter(child=child).exists():
             raise serializers.ValidationError("Rental already exists for this child.")
         return super().create(validated_data)
+
+
+class RegisterChildrenSerializer(serializers.Serializer):
+    children = serializers.ListField(
+        child=serializers.IntegerField(), allow_empty=False, help_text="A list of child IDs to register."
+    )
+    slot = serializers.PrimaryKeyRelatedField(queryset=AppointmentSlot.objects.all())
+    appointment_type = serializers.ChoiceField(
+        choices=["pickup", "return"], required=False, help_text="Specify if the slot is for pickup or return."
+    )
+
+    def validate_children(self, value):
+        user = self.context.get("request").user
+
+        # Check that each child belongs to the authenticated user
+        valid_child_ids = set(Child.objects.filter(family=user).values_list("id", flat=True))
+        for child_id in value:
+            if child_id not in valid_child_ids:
+                raise serializers.ValidationError(f"Child ID {child_id} does not belong to the user.")
+        return value
