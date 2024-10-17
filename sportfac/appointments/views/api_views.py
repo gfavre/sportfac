@@ -6,14 +6,20 @@ from django.utils.timezone import now
 from django.utils.translation import get_language
 from django.utils.translation import gettext as _
 
-from rest_framework import generics, status
+from rest_framework import generics, mixins, status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from api.permissions import ManagerPermission
 from registrations.models import Child
 from ..models import Appointment, AppointmentSlot, AppointmentType, Rental
-from ..serializers import AdminAppointmentSlotSerializer, AppointmentSerializer, RentalSerializer, SlotSerializer
+from ..serializers import (
+    AdminAppointmentSlotSerializer,
+    AppointmentSerializer,
+    RegisterChildrenSerializer,
+    RentalSerializer,
+    SlotSerializer,
+)
 from ..tasks import send_confirmation_mail as send_appointment_confirmation_email
 
 
@@ -81,6 +87,176 @@ class RegisterSlot(generics.GenericAPIView):
                 )
             )
         return Response(data, status=status.HTTP_201_CREATED)
+
+
+class AppointmentManagementView(mixins.CreateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
+    """
+    ModelViewSet to handle managing appointments and updating rentals accordingly.
+    """
+
+    queryset = AppointmentSlot.objects.filter(start__gte=now())
+    serializer_class = RegisterChildrenSerializer
+
+    def get_serializer_context(self):
+        return {"request": self.request}
+
+    def get_object(self):
+        """
+        Fetch AppointmentSlot using slot_id from the URL.
+        """
+        slot_id = self.kwargs.get("slot_id")
+        return get_object_or_404(AppointmentSlot, id=slot_id)
+
+    def manage_appointment(self, child_id, slot, appointment_type, action="create"):
+        """
+        Helper method to create, update, or remove appointments and adjust rentals.
+        Returns the modified Rental instance or None if not modified.
+        """
+        try:
+            child = Child.objects.get(id=child_id)
+            rental = Rental.objects.get(child=child)
+
+            if action == "create":
+                appointment, _ = Appointment.objects.get_or_create(slot=slot, child=child)
+                if appointment_type == "pickup":
+                    rental.pickup_appointment = appointment
+                elif appointment_type == "return":
+                    rental.return_appointment = appointment
+                rental.save()
+                return rental
+
+            if action == "remove":
+                appointment = Appointment.objects.get(slot=slot, child=child)
+                appointment.delete()
+                rental.refresh_from_db()
+                return rental
+
+        except (Child.DoesNotExist, Rental.DoesNotExist, Appointment.DoesNotExist):
+            return None  # Skip if child, rental, or appointment does not exist
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        """
+        Handle creating or updating child appointments for a given slot.
+        Returns the updated rentals.
+        """
+        serializer = self.get_serializer(data=request.data, context=self.get_serializer_context())
+        if serializer.is_valid():
+            slot = self.get_object()
+            appointment_type = serializer.validated_data["appointment_type"]
+            children_ids = serializer.validated_data["children"]
+            updated_rentals = []
+
+            for child_id in children_ids:
+                rental = self.manage_appointment(child_id, slot, appointment_type, action="create")
+                if rental:
+                    updated_rentals.append(rental)
+
+            rental_serializer = RentalSerializer(updated_rentals, many=True)
+            return Response(
+                {"message": "Children successfully registered to the slot.", "rentals": rental_serializer.data},
+                status=status.HTTP_201_CREATED,
+            )
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        Handle removing child appointments from a given slot.
+        Returns the updated rentals.
+        """
+        serializer = self.get_serializer(data=request.data, context=self.get_serializer_context())
+        if serializer.is_valid():
+            slot = self.get_object()
+            appointment_type = serializer.validated_data["appointment_type"]
+            children_ids = serializer.validated_data["children"]
+            updated_rentals = []
+
+            for child_id in children_ids:
+                rental = self.manage_appointment(child_id, slot, appointment_type, action="remove")
+                if rental:
+                    updated_rentals.append(rental)
+
+            rental_serializer = RentalSerializer(updated_rentals, many=True)
+            return Response(
+                {"message": "Rental(s) successfully removed.", "rentals": rental_serializer.data},
+                status=status.HTTP_200_OK,
+            )
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RemoveChildFromSlotView(generics.GenericAPIView):
+    serializer_class = RegisterChildrenSerializer
+
+    def get_queryset(self):
+        return AppointmentSlot.objects.filter(start__gte=now())
+
+    def delete(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data, context={"request": request})
+        if serializer.is_valid():
+            children_ids = serializer.validated_data["children"]
+            slot = serializer.validated_data["slot"]
+            appointment_type = serializer.validated_data["appointment_type"]
+
+            # Remove associations for each child
+            for child_id in children_ids:
+                try:
+                    appointment = Appointment.objects.get(child__id=child_id, slot=slot)
+                    appointment.delete()
+                    rental = Rental.objects.get(child__id=child_id)
+                    if appointment_type == "pickup" and rental.pickup_appointment == slot:
+                        rental.pickup_appointment = None
+                    elif appointment_type == "return" and rental.return_appointment == slot:
+                        rental.return_appointment = None
+                    rental.save()
+
+                except Rental.DoesNotExist:
+                    continue  # Skip if no existing rental
+                except Appointment.DoesNotExist:
+                    continue
+
+            return Response({"message": "Rental(s) successfully removed."}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RegisterChildrenToSlotView(generics.GenericAPIView):
+    serializer_class = RegisterChildrenSerializer
+
+    def get_queryset(self):
+        return AppointmentSlot.objects.filter(start__gte=now())
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data, context={"request": request})
+        if serializer.is_valid():
+            children_ids = serializer.validated_data["children"]
+            slot = serializer.validated_data["slot"]
+            appointment_type = serializer.validated_data["appointment_type"]
+            for child in children_ids:
+                child = Child.objects.get(id=child)
+                appointment, _ = Appointment.objects.get_or_create(
+                    slot=slot,
+                    child=child,
+                )
+                if appointment_type:
+                    rental = Rental.objects.get(child=child)
+                    if appointment_type == "pickup":
+                        rental.pickup_appointment = appointment
+                    elif appointment_type == "return":
+                        rental.return_appointment = appointment
+                    rental.save()
+
+            return Response(
+                {"message": "Children successfully registered to the slot."}, status=status.HTTP_201_CREATED
+            )
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class SlotsViewset(ModelViewSet):
