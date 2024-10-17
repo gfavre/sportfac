@@ -42,10 +42,19 @@ urlpatterns = [
         name="all_instructors",
     ),
     path("dashboard/managers/", views.DashboardManagersView.as_view(), name="all_managers"),
+    path(
+        "appointments/rentals/<int:slot_id>/",
+        appointment_views.AppointmentManagementView.as_view(),
+        name="appointments-management",
+    ),
     path("appointments/slots/", appointment_views.SlotsList.as_view(), name="all_slots"),
     path(
         "appointments/slots/<int:slot_id>/",
         appointment_views.RegisterSlot.as_view(),
         name="register_slots",
+    ),
+    path("appointments/register", appointment_views.RegisterChildrenToSlotView.as_view(), name="appointment-register"),
+    path(
+        "appointments/unregister", appointment_views.RemoveChildFromSlotView.as_view(), name="appointment-unregister"
     ),
 ]

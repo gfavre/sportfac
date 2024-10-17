@@ -78,17 +78,18 @@ class WizardSlotsStepView(LoginRequiredMixin, StaticStepView):
     template_name = "wizard/equipment.html"
     requires_completion = True
     step_slug = "equipment"
+    appointment_type = "pickup"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
         children_with_rentals = Child.objects.filter(rentals__isnull=False, family=user)
-
+        context["appointment_type"] = self.appointment_type
         context["rentals"] = Rental.objects.filter(child__family=user)
         context["rentals_json"] = [
             {
                 "id": rental.id,
-                "child_id": rental.child.id,
+                "child": rental.child.id,
                 "pickup_appointment": rental.pickup_appointment.slot.id if rental.pickup_appointment else "",
                 "return_appointment": rental.return_appointment.slot.id if rental.return_appointment else "",
             }
