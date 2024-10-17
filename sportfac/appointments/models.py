@@ -23,9 +23,15 @@ class AppointmentType(TimeStampedModel):
 
 
 class AppointmentSlot(TimeStampedModel):
+    APPOINTMENT_TYPES = (
+        ("pickup", _("Pickup")),
+        ("return", _("Return")),
+        ("other", _("Other")),
+    )
     places = models.PositiveSmallIntegerField(verbose_name=_("Maximal number of participants"))
     start = models.DateTimeField()
     end = models.DateTimeField()
+    appointment_type = models.CharField(choices=APPOINTMENT_TYPES, max_length=10, default=APPOINTMENT_TYPES[0][0])
 
     class Meta:
         ordering = ("start", "end")
@@ -45,10 +51,6 @@ class AppointmentSlot(TimeStampedModel):
     @property
     def api_management_url(self):
         return reverse("api:slots-detail", kwargs={"pk": self.id})
-
-    @property
-    def appointment_type(self):
-        return AppointmentType.objects.filter(start__lte=self.start, end__gte=self.end).first()
 
     def __str__(self):
         local_start = timezone.localtime(self.start)
