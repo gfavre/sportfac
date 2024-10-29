@@ -1,0 +1,18 @@
+/*
+.highlight-checkbox {
+    border: 2px solid red;
+}
+*/
+
+.tooltip {
+  /*
+    position: absolute;
+    color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 0.875em;
+    z-index: 100;
+    margin-top: 5px;
+    margin-left: 5px;*/
+  opacity: 1;
+}

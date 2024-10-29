@@ -29,3 +29,11 @@ class WizardWorkflow:
             if step == current_step and index + 1 < len(visible_steps):
                 return visible_steps[index + 1]
         return None
+
+    def get_previous_step(self, current_step):
+        """Get the next step based on the current step's position."""
+        visible_steps = self.get_visible_steps()
+        for index, step in enumerate(visible_steps):
+            if step == current_step and index - 1 >= 0:
+                return visible_steps[index - 1]
+        return None

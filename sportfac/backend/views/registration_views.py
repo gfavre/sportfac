@@ -17,6 +17,8 @@ from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, TemplateView, UpdateView, View
 
+from formtools.wizard.views import SessionWizardView
+
 from absences.models import Absence
 from activities.models import Activity, Course, ExtraNeed
 from backend.forms import (
@@ -27,13 +29,11 @@ from backend.forms import (
     RegistrationForm,
     SendConfirmationForm,
 )
-from formtools.wizard.views import SessionWizardView
 from profiles.models import FamilyUser as User
 from registrations.forms import BillExportForm, BillForm, MoveRegistrationsForm, MoveTransportForm, TransportForm
 from registrations.models import Bill, ExtraInfo, Registration, Transport
 from registrations.resources import BillResource, RegistrationResource, enhance_invoices_xls
-from registrations.views import BillMixin, PaymentMixin
-
+from registrations.views.utils import BillMixin, PaymentMixin
 from .mixins import BackendMixin, ExcelResponseMixin, FullBackendMixin
 
 

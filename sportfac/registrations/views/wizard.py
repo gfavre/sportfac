@@ -1,0 +1,116 @@
+from django.conf import settings
+from django.db import transaction
+from django.shortcuts import HttpResponseRedirect
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
+from django.views.generic import FormView
+
+from braces.views import LoginRequiredMixin
+
+from appointments.models import Rental
+from profiles.models import FamilyUser
+from wizard.views import BaseWizardStepView
+from ..forms import RegistrationValidationForm, RegistrationValidationFreeForm
+from ..models import Bill as Invoice
+from ..models import Registration, RegistrationValidation
+from .user import ChildrenListView
+
+
+class WizardChildrenView(BaseWizardStepView, ChildrenListView):
+    template_name = "wizard/children.html"
+
+
+class WizardConfirmationStepView(LoginRequiredMixin, BaseWizardStepView, FormView):
+    model = RegistrationValidation
+    form_class = RegistrationValidationForm
+    step_slug = "confirmation"
+    template_name = "wizard/confirm.html"
+    success_url = reverse_lazy("payment_page")  # Redirect to payment or another page after confirmation
+
+    def get_form_class(self):
+        user: FamilyUser = self.request.user  # noqa
+        if user.registration_set.filter(status=Registration.STATUS.waiting, price__gt=0).exists():
+            return RegistrationValidationForm
+        if settings.KEPCHUP_USE_APPOINTMENTS and Rental.objects.filter(child__family=user, paid=False).exists():
+            return RegistrationValidationForm
+        return RegistrationValidationFreeForm
+
+    @transaction.atomic
+    def form_valid(self, form):
+        user: FamilyUser = self.request.user  # noqa
+        invoice = Invoice.objects.create(
+            status=Invoice.STATUS.just_created, family=user, payment_method=settings.KEPCHUP_PAYMENT_METHOD
+        )
+        Registration.waiting.filter(child__family=user).update(bill=invoice, status=Registration.STATUS.valid)
+        if settings.KEPCHUP_USE_APPOINTMENTS:
+            Rental.objects.filter(child__family=user, paid=False).update(invoice=invoice)
+
+        invoice.save()  # => bill status become paid if all registrations are paid
+        if invoice.total == 0:
+            invoice.status = Invoice.STATUS.paid
+            invoice.save()
+        # Create validation entry if consent is given
+        RegistrationValidation.objects.create(
+            user=user,
+            invoice=None,  # Assuming there is a logic for the current bill
+            consent_given=True,
+        )
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user: FamilyUser = self.request.user  # noqa
+
+        validation = RegistrationValidation.objects.filter(
+            user=user,
+            consent_given=True,
+        ).first()
+        if validation and (not validation.invoice or not validation.invoice.is_paid):
+            context.update(
+                {
+                    "consent_already_given": True,
+                    "validation_date": validation.modified,
+                }
+            )
+        else:
+            context.update(
+                {
+                    "consent_already_given": False,
+                    "form": self.form_class(
+                        initial={"consent_given": False},
+                        previous_url=self.get_previous_url(),
+                        tooltip_message=_("Vous devez cocher cette case pour continuer."),
+                    ),
+                }
+            )
+        registrations = Registration.waiting.filter(child__in=user.children.all())
+        for reg in registrations:
+            reg.row_span = 1 + reg.extra_infos.count()
+
+        total_amount = sum(reg.price for reg in registrations)
+        total_amount += sum(
+            sum(extra_infos.price_modifier for extra_infos in reg.extra_infos.all()) for reg in registrations
+        )
+        rentals = None
+        if settings.KEPCHUP_USE_APPOINTMENTS:
+            rentals = Rental.objects.filter(child__family=user, paid=False)
+            total_amount += sum(rental.amount for rental in rentals)
+
+        context["overlaps"] = []
+        context["overlapped"] = set()
+        if settings.KEPCHUP_DISPLAY_OVERLAP_HELP:
+            for idx, registration in list(enumerate(registrations))[:-1]:
+                for registration2 in registrations[idx + 1 :]:  # noqa: E203
+                    if registration.overlap(registration2):
+                        context["overlaps"].append((registration, registration2))
+                        context["overlapped"].add(registration.id)
+                        context["overlapped"].add(registration2.id)
+
+        context.update(
+            {
+                "registrations": registrations,
+                "rentals": rentals,
+                "total_amount": total_amount,
+            }
+        )
+        return context

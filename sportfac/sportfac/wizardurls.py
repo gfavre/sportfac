@@ -4,13 +4,12 @@ from activities.views import ActivityListView
 from appointments.views.register import WizardSlotsView
 from payments.views import PaymentFailureView, PaymentSuccessView
 from profiles.views import WizardAccountView, WizardRegistrationView
-from registrations.views import (
+from registrations.views.user import (
     RegisteredActivitiesListView,
     WizardBillingView,
     WizardCancelRegistrationView,
     WizardChildrenListView,
 )
-
 from .views import WizardView
 
 

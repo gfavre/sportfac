@@ -1,4 +1,3 @@
-import datetime
 import json
 import logging
 
@@ -8,77 +7,21 @@ from django.db import IntegrityError
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from django.utils.decorators import method_decorator
-from django.utils.timezone import now
 from django.utils.translation import gettext as _
-from django.views.decorators.cache import never_cache
 from django.views.generic import DeleteView, DetailView, FormView, ListView, TemplateView
 
-import requests
 from braces.views import LoginRequiredMixin, UserPassesTestMixin
-from postfinancecheckout.rest import ApiException
-from sentry_sdk import capture_exception
 
 from appointments.models import Appointment
-from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.forms import AcceptTermsForm
 from profiles.models import School
 from sportfac.views import NotReachableException, WizardMixin
-from wizard.views import BaseWizardStepView
-from .forms import EmptyForm
-from .models import Bill, Child, Registration
+from ..forms import EmptyForm
+from ..models import Bill, Child, Registration
+from .utils import BillMixin, PaymentMixin
 
 
 logger = logging.getLogger(__name__)
-
-
-@method_decorator(never_cache, name="dispatch")
-class PaymentMixin:
-    def get_transaction(self, invoice):
-        if settings.KEPCHUP_PAYMENT_METHOD == "datatrans":
-            from payments.datatrans import get_transaction
-
-            try:
-                transaction = get_transaction(self.request, invoice)
-            except requests.exceptions.RequestException:
-                transaction = None
-            return transaction
-
-        if settings.KEPCHUP_PAYMENT_METHOD == "postfinance":
-            from payments.postfinance import get_transaction
-
-            try:
-                transaction = get_transaction(self.request, invoice)
-            except requests.exceptions.RequestException:
-                transaction = None
-            except ApiException as exc:
-                capture_exception(exc)
-                logger.error("Postfinance API error: %s", exc)
-                transaction = None
-            return transaction
-        return None
-
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-
-
-class BillMixin:
-    def get_context_data(self, **kwargs):
-        # noinspection PyUnresolvedReferences
-        context = super().get_context_data(**kwargs)
-        preferences = global_preferences_registry.manager()
-        offset_days = preferences["payment__DELAY_DAYS"]
-        # noinspection PyUnresolvedReferences
-        if hasattr(self, "object"):
-            base_date = self.object.created  # self.request.REGISTRATION_END
-        else:
-            base_date = now()
-        context["delay"] = base_date + datetime.timedelta(days=offset_days)
-        context["iban"] = preferences["payment__IBAN"]
-        context["address"] = preferences["payment__ADDRESS"]
-        context["place"] = preferences["payment__PLACE"]
-
-        return context
 
 
 class BillingView(LoginRequiredMixin, BillMixin, ListView):
@@ -344,10 +287,6 @@ class WizardCancelRegistrationView(LoginRequiredMixin, WizardMixin, FormView):
             bill.registrations.all().update(status=Registration.STATUS.waiting, bill=None)
             bill.delete()
         return super().form_valid(form)
-
-
-class WizardChildrenView(BaseWizardStepView, ChildrenListView):
-    template_name = "wizard/children.html"
 
 
 class WizardChildrenListView(WizardMixin, ChildrenListView):

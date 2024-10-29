@@ -7,7 +7,16 @@ from import_export import fields, resources
 from import_export.admin import ImportExportModelAdmin
 
 from sportfac.admin_utils import SportfacAdminMixin, SportfacModelAdmin
-from .models import Bill, Child, ChildActivityLevel, ExtraInfo, Registration, RegistrationsProfile, Transport
+from .models import (
+    Bill,
+    Child,
+    ChildActivityLevel,
+    ExtraInfo,
+    Registration,
+    RegistrationsProfile,
+    RegistrationValidation,
+    Transport,
+)
 
 
 class RegistrationResource(resources.ModelResource):
@@ -190,4 +199,14 @@ class ChildActivityLevelAdmin(SportfacModelAdmin):
         "child__first_name",
         "child__last_name",
         "activity__name",
+    )
+
+
+@admin.register(RegistrationValidation)
+class RegistrationValidationAdmin(SportfacModelAdmin):
+    list_display = ("user", "consent_given", "modified")
+    raw_id_fields = ("user",)
+    search_fields = (
+        "user__first_name",
+        "user__last_name",
     )

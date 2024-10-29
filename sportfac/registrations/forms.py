@@ -13,7 +13,7 @@ from activities.models import Course
 from backend.forms import BuildingWidget, CourseWidget, FamilyUserWidget, TeacherWidget, TransportWidget
 from profiles.models import FamilyUser, School, SchoolYear
 from schools.models import Building, Teacher
-from .models import Bill, Child, ExtraInfo, Registration, Transport
+from .models import Bill, Child, ExtraInfo, Registration, RegistrationValidation, Transport
 
 
 AVAILABLE_PAYMENT_METHODS = [
@@ -468,3 +468,68 @@ class ExtraInfoForm(forms.ModelForm):
             "value",
             getattr(self, "image_div", ""),  # Add the image div only if it's been set
         )
+
+
+class RegistrationVvalidationBaseForm(forms.ModelForm):
+    class Media:
+        js = ("js/registration-validation-form.js",)
+        css = {"all": ("css/registration-validation-form.css",)}
+
+    class Meta:
+        model = RegistrationValidation
+        fields = ["consent_given"]
+
+    def __init__(self, *args, **kwargs):
+        tooltip_message = kwargs.pop("tooltip_message", _("You must tick this box to continue."))
+        previous_url = kwargs.pop("previous_url", "#")
+        previous_label = kwargs.pop("previous_label", _("Previous"))
+        next_url = kwargs.pop("next_url", ".")
+        next_label = kwargs.pop("next_label", _("Next"))
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_action = next_url
+        self.helper.attrs = {
+            "id": "registration-validation-form",
+            "data-tooltip-message": tooltip_message,  # Set the tooltip message as a data attribute
+        }
+        self.helper.include_media = False
+        self.helper.layout = Layout(
+            "consent_given",
+            HTML(
+                f"""
+                           <nav style="margin-top: 1.5em;">
+                             <ul class="pager" style="font-size: 1.25em;">
+                               <li class="previous">
+                                 <a href="{previous_url}">
+                                   <span aria-hidden="true">←</span> {previous_label}
+                                 </a>
+                               </li>
+                               <li class="next">
+                                 <button type="submit" class="btn btn-primary" style="font-size: 1.25em;">
+                                   <strong>{next_label} <span aria-hidden="true">→</span></strong>
+                                 </button>
+                               </li>
+                             </ul>
+                           </nav>
+                           """
+            ),
+        )
+
+
+class RegistrationValidationFreeForm(RegistrationVvalidationBaseForm):
+    class Meta:
+        model = RegistrationValidation
+        fields = ["consent_given"]
+        labels = {"consent_given": _("I consent to these registrations and to the terms and conditions.")}
+
+
+class RegistrationValidationForm(RegistrationVvalidationBaseForm):
+    class Meta:
+        model = RegistrationValidation
+        fields = ["consent_given"]
+        labels = {
+            "consent_given": _(
+                "I consent to these registrations and agree to pay the indicated amount "
+                "for these registrations to become effective."
+            )
+        }

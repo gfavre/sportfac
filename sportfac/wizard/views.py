@@ -79,6 +79,12 @@ class BaseWizardStepView(View):
             return reverse("wizard:step", kwargs={"step_slug": next_step.slug})
         return ""
 
+    def get_previous_url(self):
+        previous_step = self.get_previous_step()
+        if previous_step:
+            return reverse("wizard:step", kwargs={"step_slug": previous_step.slug})
+        return ""
+
     def mark_step_complete(self):
         """Mark the current step as complete in the workflow."""
         handler = get_step_handler(self.get_step(), self.get_registration_context())
@@ -89,6 +95,12 @@ class BaseWizardStepView(View):
         workflow = self.get_workflow()
         current_step = self.get_step()
         return workflow.get_next_step(current_step)
+
+    def get_previous_step(self):
+        """Determine the previous step based on the workflow."""
+        workflow = self.get_workflow()
+        current_step = self.get_step()
+        return workflow.get_previous_step(current_step)
 
 
 class FormStepView(BaseWizardStepView, FormView):
@@ -158,8 +170,3 @@ class ActivitiesStepView(StaticStepView):
         else:
             context["END_HOUR"] = 19
         return context
-
-
-class AdditionalQuestionStepView(StaticStepView):
-    template_name = "wizard/additional_questions.html"
-    step_slug = "additional-questions"
