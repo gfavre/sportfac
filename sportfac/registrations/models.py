@@ -617,7 +617,15 @@ class Bill(TimeStampedModel, StatusModel):
             super().save()
 
     def update_total(self):
-        self.total = sum([registration.price for registration in self.registrations.all() if registration.price])
+        registrations_price = sum(
+            [registration.price for registration in self.registrations.all() if registration.price]
+        )
+        extra_price = sum(
+            sum(extra_infos.price_modifier for extra_infos in reg.extra_infos.all())
+            for reg in self.registrations.all()
+        )
+        rental_price = sum([rental.amount for rental in self.rentals.all()])
+        self.total = registrations_price + extra_price + rental_price
 
     def update_status(self):
         if (
@@ -957,6 +965,17 @@ class ChildActivityLevel(TimeStampedModel):
 
     def get_api_url(self):
         return reverse("api:level-detail", kwargs={"pk": self.pk})
+
+
+class RegistrationValidation(TimeStampedModel):
+    user = models.ForeignKey("profiles.FamilyUser", related_name="validations", null=True, on_delete=models.SET_NULL)
+    invoice = models.OneToOneField(
+        "registrations.Bill", related_name="validation", null=True, blank=True, on_delete=models.SET_NULL
+    )
+    consent_given = models.BooleanField(_("Consent given"), default=False)
+
+    def __str__(self):
+        return f"Validation for {self.user}"
 
 
 class RegistrationsProfile(TimeStampedModel):

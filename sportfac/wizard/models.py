@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.text import slugify
 
+from django_tenants.urlresolvers import reverse_lazy
+
 from sportfac.models import TimeStampedModel
 
 
@@ -47,6 +49,9 @@ class WizardStep(TimeStampedModel):
         if not self.slug:
             self.slug = slugify(self.title)
         super().save(*args, **kwargs)
+
+    def url(self):
+        return reverse_lazy("wizard:step", kwargs={"step_slug": self.slug})
 
     def __str__(self):
         return self.title

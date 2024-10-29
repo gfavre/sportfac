@@ -14,8 +14,7 @@ from mailer.models import MailArchive
 from mailer.tasks import send_mail
 from profiles.models import FamilyUser
 from registrations.models import Bill, Registration
-from registrations.views import BillMixin
-
+from registrations.views.utils import BillMixin
 from .mixins import BackendMixin
 
 
