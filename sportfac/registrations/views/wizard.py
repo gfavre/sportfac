@@ -3,7 +3,7 @@ from django.db import transaction
 from django.shortcuts import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import FormView
+from django.views.generic import FormView, TemplateView
 
 from braces.views import LoginRequiredMixin
 
@@ -14,6 +14,7 @@ from ..forms import RegistrationValidationForm, RegistrationValidationFreeForm
 from ..models import Bill as Invoice
 from ..models import Registration, RegistrationValidation
 from .user import ChildrenListView
+from .utils import PaymentMixin
 
 
 class WizardChildrenView(BaseWizardStepView, ChildrenListView):
@@ -95,7 +96,13 @@ class WizardConfirmationStepView(LoginRequiredMixin, BaseWizardStepView, FormVie
         if settings.KEPCHUP_USE_APPOINTMENTS:
             rentals = Rental.objects.filter(child__family=user, paid=False)
             total_amount += sum(rental.amount for rental in rentals)
-
+        context.update(
+            {
+                "registrations": registrations,
+                "rentals": rentals,
+                "total_amount": total_amount,
+            }
+        )
         context["overlaps"] = []
         context["overlapped"] = set()
         if settings.KEPCHUP_DISPLAY_OVERLAP_HELP:
@@ -106,6 +113,31 @@ class WizardConfirmationStepView(LoginRequiredMixin, BaseWizardStepView, FormVie
                         context["overlapped"].add(registration.id)
                         context["overlapped"].add(registration2.id)
 
+        return context
+
+
+class WizardPaymentStepView(LoginRequiredMixin, PaymentMixin, BaseWizardStepView, TemplateView):
+    step_slug = "payment"
+    template_name = "wizard/payment.html"
+    success_url = reverse_lazy("wizard:confirmation")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user: FamilyUser = self.request.user  # noqa
+        context["invoice"] = Invoice.objects.filter(
+            family=user, status__in=(Invoice.STATUS.waiting, Invoice.STATUS.just_created)
+        ).first()
+        registrations = context["invoice"].registrations.all()
+        for reg in registrations:
+            reg.row_span = 1 + reg.extra_infos.count()
+        total_amount = sum(reg.price for reg in registrations)
+        total_amount += sum(
+            sum(extra_infos.price_modifier for extra_infos in reg.extra_infos.all()) for reg in registrations
+        )
+        rentals = None
+        if settings.KEPCHUP_USE_APPOINTMENTS:
+            rentals = Rental.objects.filter(child__family=user, paid=False)
+            total_amount += sum(rental.amount for rental in rentals)
         context.update(
             {
                 "registrations": registrations,
@@ -113,4 +145,7 @@ class WizardConfirmationStepView(LoginRequiredMixin, BaseWizardStepView, FormVie
                 "total_amount": total_amount,
             }
         )
+
+        context["bill"] = context["invoice"]
+        context["transaction"] = self.get_transaction(context["invoice"])
         return context

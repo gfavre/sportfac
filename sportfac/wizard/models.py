@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 
+from ckeditor_uploader.fields import RichTextUploadingField
 from django_tenants.urlresolvers import reverse_lazy
 
 from sportfac.models import TimeStampedModel
@@ -18,7 +19,7 @@ class WizardStep(TimeStampedModel):
     slug = models.SlugField(max_length=50, unique=True, blank=True)
 
     position = models.PositiveIntegerField(default=0, blank=False, null=False)
-    description = models.TextField(blank=True, null=True)
+    description = RichTextUploadingField(blank=True, null=True)
     is_required = models.BooleanField(default=True, verbose_name="Is this step required?")
     step_type = models.CharField(max_length=20, choices=STEP_TYPE_CHOICES, default="always", verbose_name="Step Type")
 

@@ -42,11 +42,11 @@
     <li class="next" ng-class="{disabled: userChildren.length === 0}">
       {% trans "Next" as default_next %}
       {% if CHILDREN_POPUP %}
-       <a href="" ng-click="confirmNavigation($event)" data-url="{{ success_url }}">
+       <button href="{{ next_step.url }}" ng-click="confirmNavigation($event)" data-url="{{ success_url }}"  class="btn btn-primary">
          <strong>{{ next_step.link_display|default:default_next }} <span aria-hidden="true">&rarr;</span></strong>
-       </a>
+       </button>
       {% else %}
-        <a href="{{ success_url }}">
+        <a href="{{ success_url }}" class="btn btn-primary">
           <strong>{{ next_step.link_display|default:default_next }} <span aria-hidden="true">&rarr;</span></strong>
         </a>
       {% endif %}
