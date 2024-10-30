@@ -50,7 +50,7 @@ class ProfileCreationStepHandler(StepHandler):
 
     def is_complete(self):
         """Check if the user has completed their profile."""
-        return bool(self.registration_context.get("profile_complete", False))
+        return bool(self.registration_context["user"].is_authenticated)
 
 
 class ProfileUpdateStepHandler(StepHandler):
@@ -62,7 +62,7 @@ class ProfileUpdateStepHandler(StepHandler):
 
     def is_complete(self):
         """Check if the user has completed their profile."""
-        return bool(self.registration_context.get("profile_complete", False))
+        return bool(self.registration_context["user"].is_authenticated)
 
 
 class ChildInformationStepHandler(StepHandler):
@@ -77,7 +77,7 @@ class ChildInformationStepHandler(StepHandler):
 
     def is_complete(self):
         """Complete if all required fields for children are filled."""
-        return self.registration_context.get("child_info_complete", False)
+        return bool(self.registration_context["has_children"])
 
 
 class ActivitiesStepHandler(StepHandler):
@@ -85,7 +85,7 @@ class ActivitiesStepHandler(StepHandler):
 
     def is_ready(self):
         user = self.registration_context.get("user")
-        return user.is_authenticated and user.children.exists()
+        return user.is_authenticated and user.children.exists() and not self.registration_context.get("invoice")
 
     def is_visible(self):
         """Visible if the user has children linked to their profile."""
@@ -93,7 +93,7 @@ class ActivitiesStepHandler(StepHandler):
 
     def is_complete(self):
         """Complete if all required fields for children are filled."""
-        return self.registration_context.get("child_info_complete", False)
+        return self.registration_context.get("has_registrations", False)
 
 
 class EquipmentPickupStepHandler(StepHandler):
@@ -102,9 +102,59 @@ class EquipmentPickupStepHandler(StepHandler):
     def is_visible(self):
         return settings.KEPCHUP_USE_APPOINTMENTS
 
+    def is_ready(self):
+        user = self.registration_context.get("user")
+        return user.is_authenticated and user.children.exists() and not self.registration_context.get("invoice")
+
     def is_complete(self):
         # Complete if a pickup appointment has been scheduled
         return bool(self.registration_context.get("pickup_appointment"))
+
+
+class EquipmentReturnStepHandler(StepHandler):
+    """Step handler for the equipment pickup step."""
+
+    def is_visible(self):
+        return settings.KEPCHUP_USE_APPOINTMENTS
+
+    def is_ready(self):
+        user = self.registration_context.get("user")
+        rentals = self.registration_context.get("rentals")
+        if not user.is_authenticated and user.children.exists():
+            return False
+        return not self.registration_context.get("invoice") and bool(rentals)
+
+    def is_complete(self):
+        # Complete if a pickup appointment has been scheduled
+        return bool(self.registration_context.get("pickup_appointment"))
+
+
+class QuestionStepHandler(StepHandler):
+    """Handler for question steps."""
+
+    def is_visible(self):
+        if not self.registration_context["registrations"]:
+            return False
+        for question in self.step.questions.prefetch_related("courses"):
+            if self.registration_context["registrations"].filter(course__in=question.courses.all()).exists():
+                return True
+        return False
+
+    def is_ready(self):
+        return not bool(self.registration_context.get("invoice"))
+
+    def is_complete(self):
+        return True
+
+
+class PaymentStepHandler(StepHandler):
+    def is_ready(self):
+        return bool(self.registration_context.get("invoice"))
+
+
+class ConfirmationStepHandler(StepHandler):
+    def is_ready(self):
+        return not self.registration_context.get("invoice") and self.registration_context.get("registrations")
 
 
 def get_step_handler(step, registration_context):
@@ -116,7 +166,10 @@ def get_step_handler(step, registration_context):
         "children": ChildInformationStepHandler,
         "activities": ActivitiesStepHandler,
         "equipment": EquipmentPickupStepHandler,
+        "equipment-return": EquipmentReturnStepHandler,
+        "payment": PaymentStepHandler,
+        "confirmation": ConfirmationStepHandler,
         # Add more mappings here for different steps
     }
-    handler_class = handler_mapping.get(step.slug, StepHandler)
+    handler_class = handler_mapping.get(step.slug, QuestionStepHandler)
     return handler_class(step, registration_context)

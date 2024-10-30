@@ -4,11 +4,23 @@
 {% block wizard_content %}
   <form action="." method="post" class="form-horizontal" role="form">
     {% crispy form %}
-    <div class="form-group">
-      <div class="col-sm-offset-2 col-sm-10">
-        <button type="submit" class="btn btn-success btn-large">{% trans "Save" %}</button>
-      </div>
-    </div>
+    <nav style="margin-top: 1.5em;">
+      <ul class="pager" style="font-size: 1.25em;">
+        <li class="previous">
+          {% if previous_step %}
+          <li class="previous">
+            <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span>
+              {% block previous_label %}{% trans "Previous" %}{% endblock %}</a>
+          </li>
+        {% endif %}
+        <li class="next">
+          {% trans "Next" as default_next %}
+          <button type="submit" class="btn btn-primary" style="font-size: 1.25em;">
+            <strong>{{ next_step.link_display|default:default_next }} <span aria-hidden="true">→</span></strong>
+          </button>
+        </li>
+      </ul>
+    </nav>
   </form>
   {% addtoblock "js" %}{{ form.media }}{% endaddtoblock %}
 {% endblock wizard_content %}

@@ -17,6 +17,8 @@ class WizardWorkflow:
             handler = get_step_handler(step, self.registration_context)
             if handler.is_ready():
                 step.is_ready = True
+            if handler.is_complete():
+                step.is_complete = True
             if handler.is_visible():
                 visible_steps.append(step)
 
