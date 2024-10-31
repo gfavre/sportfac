@@ -156,4 +156,34 @@
 
   </style>
 
+  {% addtoblock "js" %}
+    {% if REGISTRATION_EXPIRE_MINUTES %}
+      <script type="text/javascript">
+        // Get the expiration time in minutes from Django context, converting to milliseconds
+        const expireMinutes = {{ REGISTRATION_EXPIRE_MINUTES|default:0 }};
+        const expireMilliseconds = expireMinutes * 60 * 1000;
+
+        let inactivityTimer;
+
+        // Function to reset the timer
+        function resetInactivityTimer() {
+          clearTimeout(inactivityTimer);
+          if (expireMilliseconds > 0) { // Only set the timer if the expiration is defined and greater than zero
+            inactivityTimer = setTimeout(() => {
+              location.reload();  // Reloads the page after specified inactivity period
+            }, expireMilliseconds);
+          }
+        }
+
+        // Reset inactivity timer on user activity
+        window.addEventListener("mousemove", resetInactivityTimer);
+        window.addEventListener("keydown", resetInactivityTimer);
+        window.addEventListener("scroll", resetInactivityTimer);
+        window.addEventListener("click", resetInactivityTimer);
+
+        // Initialize the timer for the first time
+        resetInactivityTimer();
+      </script>
+    {% endif %}
+  {% endaddtoblock %}
 {% endblock content %}
