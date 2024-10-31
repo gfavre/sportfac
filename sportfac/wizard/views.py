@@ -131,6 +131,19 @@ class EntryPointView(View):
         return redirect("wizard:step", step_slug="user-create")
 
 
+class QuestionsStepView(BaseWizardStepView):
+    step_slug = "questions"
+
+    def dispatch(self, request, *args, **kwargs):
+        direction = request.GET.get("direction")
+        user: FamilyUser = request.user  # noqa
+        if not user.is_authenticated:
+            return redirect("wizard:step", step_slug="user-create")
+        if direction == "previous":
+            return redirect(self.get_previous_step().url())
+        return redirect(self.get_next_step().url())
+
+
 class ChildrenStepView(StaticStepView):
     template_name = "wizard/children.html"
     step_slug = "children"

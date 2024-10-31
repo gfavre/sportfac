@@ -28,7 +28,7 @@
   <nav style="margin-top: 1.5em;">
     <ul class="pager" style="font-size: 1.25em;">
       <li class="previous">
-        <a href="{{ previous_step.url }}">
+        <a href="{{ previous_step.url }}?direction=previous">
           <span aria-hidden="true">&larr;</span> {% block previous_label %}{% trans "Previous" %}{% endblock %}
         </a>
       </li>

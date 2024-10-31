@@ -119,10 +119,8 @@ class EquipmentReturnStepHandler(StepHandler):
 
     def is_ready(self):
         user = self.registration_context.get("user")
-        rentals = self.registration_context.get("rentals")
-        if not user.is_authenticated and user.children.exists():
-            return False
-        return not self.registration_context.get("invoice") and bool(rentals)
+        # rentals = self.registration_context.get("rentals")
+        return user.is_authenticated and user.children.exists() and not self.registration_context.get("invoice")
 
     def is_complete(self):
         # Complete if a pickup appointment has been scheduled
@@ -157,6 +155,10 @@ class ConfirmationStepHandler(StepHandler):
         return not self.registration_context.get("invoice") and self.registration_context.get("registrations")
 
 
+class QuestionsEntryPointHandler(StepHandler):
+    pass
+
+
 def get_step_handler(step, registration_context):
     """Factory function to return the appropriate handler for a given step."""
     handler_mapping = {
@@ -165,6 +167,7 @@ def get_step_handler(step, registration_context):
         "user-update": ProfileUpdateStepHandler,
         "children": ChildInformationStepHandler,
         "activities": ActivitiesStepHandler,
+        "questions": QuestionsEntryPointHandler,
         "equipment": EquipmentPickupStepHandler,
         "equipment-return": EquipmentReturnStepHandler,
         "payment": PaymentStepHandler,
