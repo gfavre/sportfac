@@ -132,7 +132,15 @@
 
           selectedCheckboxes.forEach(checkbox => {
             const childId = checkbox.value;
-            const childLabel = checkbox.closest('label').textContent.trim();
+            const label = checkbox.closest('label');
+
+            // Use `childNodes` to get only the text content and ignore the <span>
+            let childLabel = '';
+            label.childNodes.forEach(node => {
+              if (node.nodeType === Node.TEXT_NODE) {
+                childLabel += node.textContent.trim();
+              }
+            });
             const rental = rentalMap[childId];
 
             const checkboxWrapper = document.createElement('div');
@@ -352,6 +360,18 @@
           });
 
         });
+        document.getElementById('next-step-btn').addEventListener('click', function(event) {
+    // Check if the button has the 'disabled' class
+    if (!this.classList.contains('disabled')) {
+        // Retrieve the URL from the 'data-url' attribute
+        const url = this.getAttribute('data-url');
+        // Navigate to the URL
+        window.location.href = url;
+    } else {
+        // Prevent any default action if the button is disabled
+        event.preventDefault();
+    }
+});
 
         // Initialize FullCalendar and its Event Listener
         const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -402,8 +422,10 @@
       {% endif %}
       {% if next_step %}
         <li class="next">
-          <a {% if appointments %}href="{{ next_step.url }}"{% else %}class="disabled"{% endif %} id="next-step-btn">
-            <strong>{% block next_label %}{% trans "Next" %}{% endblock %} <span aria-hidden="true">&rarr;</span></strong></a>
+          <button class="btn btn-primary {% if not appointments %}disabled{% endif %}"
+                  id="next-step-btn"
+                  data-url="{{ next_step.url }}">
+            <strong>{% block next_label %}{% trans "Next" %}{% endblock %} <span aria-hidden="true">&rarr;</span></strong></button>
         </li>
 
       {% endif %}

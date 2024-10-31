@@ -194,13 +194,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 return false;
             }
         } catch (error) {
-            console.error('Error:', error);
+            /* our data is invalid */
             return false;
         }
     }
 
     async function saveAllForms(event) {
         event.preventDefault();
+        const button = event.currentTarget; // This will always refer to the button element
+        const url = button.getAttribute('data-url');
         const forms = document.querySelectorAll('.form-wrapper form');
         let allValid = true;
 
@@ -210,12 +212,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 allValid = false;
             }
         }
-
-        // If all forms are saved successfully, navigate to the next page
         if (allValid) {
-            window.location.href = event.target.href;  // Manually follow the link
+            window.location.href = url;
         } else {
-            // Show the alert at the top
             displayAlert();
         }
     }

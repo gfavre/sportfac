@@ -15,7 +15,7 @@ class StepHandler:
 
     def is_visible(self):
         """Determine if the step is visible. Default is always visible."""
-        return True
+        return self.step.display_in_navigation
 
     def is_ready(self):
         return True
@@ -64,16 +64,15 @@ class ProfileUpdateStepHandler(StepHandler):
         """Check if the user has completed their profile."""
         return bool(self.registration_context["user"].is_authenticated)
 
+    def is_ready(self):
+        return not self.registration_context.get("invoice")
+
 
 class ChildInformationStepHandler(StepHandler):
     """Handler for child information step."""
 
     def is_ready(self):
-        return self.registration_context.get("user").is_authenticated
-
-    def is_visible(self):
-        """Visible if the user has children linked to their profile."""
-        return True
+        return self.registration_context.get("user").is_authenticated and not self.registration_context.get("invoice")
 
     def is_complete(self):
         """Complete if all required fields for children are filled."""
@@ -93,7 +92,7 @@ class ActivitiesStepHandler(StepHandler):
 
     def is_complete(self):
         """Complete if all required fields for children are filled."""
-        return self.registration_context.get("has_registrations", False)
+        return bool(self.registration_context["registrations"])
 
 
 class EquipmentPickupStepHandler(StepHandler):
@@ -108,41 +107,47 @@ class EquipmentPickupStepHandler(StepHandler):
 
     def is_complete(self):
         # Complete if a pickup appointment has been scheduled
-        return bool(self.registration_context.get("pickup_appointment"))
+
+        return self.registration_context.get("rentals") and all(
+            rental.pickup_appointment for rental in self.registration_context.get("rentals")
+        )
 
 
 class EquipmentReturnStepHandler(StepHandler):
     """Step handler for the equipment pickup step."""
 
     def is_visible(self):
-        return settings.KEPCHUP_USE_APPOINTMENTS
+        return settings.KEPCHUP_USE_APPOINTMENTS and self.registration_context.get("rentals")
 
     def is_ready(self):
-        user = self.registration_context.get("user")
-        # rentals = self.registration_context.get("rentals")
-        return user.is_authenticated and user.children.exists() and not self.registration_context.get("invoice")
+        return self.registration_context.get("rentals") and not self.registration_context.get("invoice")
 
     def is_complete(self):
         # Complete if a pickup appointment has been scheduled
-        return bool(self.registration_context.get("pickup_appointment"))
+        return self.registration_context.get("rentals") and all(
+            rental.return_appointment for rental in self.registration_context.get("rentals")
+        )
 
 
 class QuestionStepHandler(StepHandler):
     """Handler for question steps."""
 
+    def __init__(self, step, registration_context):
+        super().__init__(step, registration_context)
+        self.questions = self.step.questions.all()
+
     def is_visible(self):
         if not self.registration_context["registrations"]:
             return False
-        for question in self.step.questions.prefetch_related("courses"):
-            if self.registration_context["registrations"].filter(course__in=question.courses.all()).exists():
-                return True
-        return False
+        return any(question in self.registration_context["all_questions"] for question in self.questions)
 
     def is_ready(self):
-        return not bool(self.registration_context.get("invoice"))
+        registrations = self.registration_context.get("registrations")
+        invoice = self.registration_context.get("invoice")
+        return registrations and not invoice
 
     def is_complete(self):
-        return True
+        return not any(question in self.registration_context["questions_not_answered"] for question in self.questions)
 
 
 class PaymentStepHandler(StepHandler):
@@ -152,7 +157,19 @@ class PaymentStepHandler(StepHandler):
 
 class ConfirmationStepHandler(StepHandler):
     def is_ready(self):
-        return not self.registration_context.get("invoice") and self.registration_context.get("registrations")
+        if not self.registration_context.get("registrations"):
+            return False
+        if self.registration_context["questions_not_answered"]:
+            return False
+        if self.registration_context.get("rentals"):
+            return all(
+                rental.return_appointment and rental.pickup_appointment
+                for rental in self.registration_context.get("rentals")
+            )
+        return True
+
+    def is_complete(self):
+        return self.registration_context.get("validation") and self.registration_context["validation"].consent_given
 
 
 class QuestionsEntryPointHandler(StepHandler):
@@ -170,9 +187,8 @@ def get_step_handler(step, registration_context):
         "questions": QuestionsEntryPointHandler,
         "equipment": EquipmentPickupStepHandler,
         "equipment-return": EquipmentReturnStepHandler,
-        "payment": PaymentStepHandler,
         "confirmation": ConfirmationStepHandler,
-        # Add more mappings here for different steps
+        "payment": PaymentStepHandler,
     }
     handler_class = handler_mapping.get(step.slug, QuestionStepHandler)
     return handler_class(step, registration_context)

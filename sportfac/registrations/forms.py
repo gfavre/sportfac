@@ -355,7 +355,6 @@ class ExtraInfoForm(forms.ModelForm):
             self._handle_base_fields(instance, question)
             self._handle_choices(question)
             self._handle_image_field(instance, question)
-
             if instance.pk:
                 self.fields["id"].initial = instance.pk  # Set the initial value of the hidden ID field
 
@@ -395,6 +394,8 @@ class ExtraInfoForm(forms.ModelForm):
         unique_identifier = f"q-{question.pk}-reg-{instance.registration.pk}"
         if question.is_image:
             self.fields["value"].widget.attrs.update({"data-value-field": unique_identifier})
+            if question.image_label:
+                self.fields["image"].label = question.image_label
             self.fields["image"].widget.attrs.update({"data-image-field": unique_identifier})
             self.fields["image"].required = True
             if instance.image:
@@ -407,7 +408,7 @@ class ExtraInfoForm(forms.ModelForm):
 
     def _build_image_field(self, unique_identifier):
         # Build the image input field layout using Crispy Forms
-        label = _("Drag & drop or click to upload an image")
+        drag_and_drop_label = _("Drag & drop or click to upload an image")
         return Div(
             Field(
                 "image",
@@ -419,7 +420,7 @@ class ExtraInfoForm(forms.ModelForm):
                 HTML(
                     f"""
                     <div class="drop-area" data-drop-area="{unique_identifier}">
-                        {label}
+                        {drag_and_drop_label}
                         <img data-image-preview="{unique_identifier}" class="image-preview"
                             style="display:none;" alt="Image Preview">
                     </div>
@@ -466,7 +467,7 @@ class ExtraInfoForm(forms.ModelForm):
             "registration",
             "key",
             "value",
-            getattr(self, "image_div", ""),  # Add the image div only if it's been set
+            getattr(self, "image_div", HTML("")),  # Add the image div only if it's been set
         )
 
 

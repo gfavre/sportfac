@@ -1,5 +1,5 @@
 {% load i18n %}
 <form action="{% url 'wizard_cancel' %}" method="POST" style="display:inline">
   {% csrf_token %}
-  <button type="submit" class="btn btn-danger"><i class="icon-cancel"></i> {% trans "Cancel payment and modify registrations" %}</button>
+  <button type="submit" class="btn btn-danger"><i class="icon-cancel"></i> {% trans "Cancel payment and remove all registrations" %}</button>
 </form>

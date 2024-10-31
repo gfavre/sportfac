@@ -66,17 +66,45 @@ class BaseWizardStepView(View):
         """Return the registration context for evaluating the workflow."""
         # Implement context gathering logic based on user state
         user: FamilyUser = self.request.user  # noqa
-        registrations = user.is_authenticated and Registration.waiting.filter(child__family=user) or []
-        invoice = Invoice.objects.filter(family=user, status=Invoice.STATUS.waiting).first()
+        all_questions = set()
+        questions_not_answered = set()
+        if user.is_authenticated:
+            invoice = (
+                Invoice.objects.filter(family=user, status=Invoice.STATUS.waiting).select_related("validation").first()
+            )
+            if invoice:
+                registrations = invoice.registrations.select_related("course").prefetch_related(
+                    "course__extra", "extra_infos"
+                )
+            else:
+                registrations = (
+                    Registration.waiting.filter(child__family=user)
+                    .select_related("course")
+                    .prefetch_related("course__extra", "extra_infos")
+                )
+            for registration in registrations:
+                # Get all questions linked to the course extras in one query (thanks to prefetch)
+                course_questions = registration.course.extra.all()
+                all_questions.update(set(course_questions))
+                # Retrieve extra infos related to this registration only once
+                answered_questions = {answer.key for answer in registration.extra_infos.all() if len(answer.value)}
+                # Check for missing questions
+                missing_questions = [question for question in course_questions if question not in answered_questions]
+                questions_not_answered.update(set(missing_questions))
+        else:
+            registrations = Registration.objects.none()
+
         context = {
             "user": user,
             "user_registered": user.is_authenticated,
             "has_children": user.is_authenticated and user.children.exists(),
             "has_registrations": len(registrations) > 0,
             "registrations": registrations,
+            "all_questions": all_questions,
+            "questions_not_answered": questions_not_answered,
             "invoice": invoice,
-            "rentals": [],
-            # Add more context variables based on your business logic
+            "rentals": Rental.objects.none(),
+            "validation": invoice.validation if invoice else None,
         }
         if settings.KEPCHUP_USE_APPOINTMENTS:
             context["rentals"] = Rental.objects.filter(child__family=user, paid=False)

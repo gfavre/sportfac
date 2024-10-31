@@ -40,7 +40,7 @@ class WizardConfirmationStepView(LoginRequiredMixin, BaseWizardStepView, FormVie
     def form_valid(self, form):
         user: FamilyUser = self.request.user  # noqa
         invoice = Invoice.objects.create(
-            status=Invoice.STATUS.just_created, family=user, payment_method=settings.KEPCHUP_PAYMENT_METHOD
+            status=Invoice.STATUS.waiting, family=user, payment_method=settings.KEPCHUP_PAYMENT_METHOD
         )
         Registration.waiting.filter(child__family=user).update(bill=invoice, status=Registration.STATUS.valid)
         if settings.KEPCHUP_USE_APPOINTMENTS:
@@ -53,7 +53,7 @@ class WizardConfirmationStepView(LoginRequiredMixin, BaseWizardStepView, FormVie
         # Create validation entry if consent is given
         RegistrationValidation.objects.create(
             user=user,
-            invoice=None,  # Assuming there is a logic for the current bill
+            invoice=invoice,
             consent_given=True,
         )
         return HttpResponseRedirect(self.get_success_url())
@@ -62,11 +62,13 @@ class WizardConfirmationStepView(LoginRequiredMixin, BaseWizardStepView, FormVie
         context = super().get_context_data(**kwargs)
         user: FamilyUser = self.request.user  # noqa
 
-        validation = RegistrationValidation.objects.filter(
-            user=user,
-            consent_given=True,
-        ).first()
-        if validation and (not validation.invoice or not validation.invoice.is_paid):
+        validation = context["validation"]
+        if not validation:
+            validation = RegistrationValidation.objects.filter(
+                user=user,
+                consent_given=True,
+            ).first()
+        if validation:
             context.update(
                 {
                     "consent_already_given": True,
@@ -84,7 +86,8 @@ class WizardConfirmationStepView(LoginRequiredMixin, BaseWizardStepView, FormVie
                     ),
                 }
             )
-        registrations = Registration.waiting.filter(child__in=user.children.all())
+
+        registrations = context["registrations"]  # Registration.waiting.filter(child__in=user.children.all())
         for reg in registrations:
             reg.row_span = 1 + reg.extra_infos.count()
 

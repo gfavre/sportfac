@@ -15,7 +15,7 @@
   <div class="form-wrapper">
     {% for form in forms %}
       {% crispy form %}
-      <hr>
+      {% if not forloop.last %}<hr>{% endif %}
     {% endfor %}
   </div>
   {% addtoblock "css" %}
@@ -34,9 +34,9 @@
       </li>
       <li class="next">
         {% trans "Next" as default_next %}
-        <a href="{{ success_url }}" id="save-next-button">
+        <button id="save-next-button" class="btn btn-primary" data-url="{{ success_url }}">
           <strong>{{ next_step.link_display|default:default_next }} <span aria-hidden="true">&rarr;</span></strong>
-        </a>
+        </button>
       </li>
     </ul>
   </nav>
