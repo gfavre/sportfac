@@ -284,7 +284,8 @@ class WizardCancelRegistrationView(LoginRequiredMixin, WizardMixin, FormView):
         ):
             for reg in bill.registrations.all():
                 reg.extra_infos.all().delete()
-            bill.registrations.all().update(status=Registration.STATUS.waiting, bill=None)
+            bill.registrations.all().delete()
+            bill.rentals.all().delete()
             bill.delete()
         return super().form_valid(form)
 

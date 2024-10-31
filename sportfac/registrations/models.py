@@ -463,6 +463,9 @@ class Bill(TimeStampedModel, StatusModel):
         for registration in self.registrations.filter(status=Registration.STATUS.valid):
             registration.paid = True
             registration.save()
+        for rental in self.rentals.all():
+            rental.paid = True
+            rental.save()
 
     def generate_pdf(self):
         from mailer.pdfutils import InvoiceRenderer
