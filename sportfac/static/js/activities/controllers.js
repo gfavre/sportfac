@@ -116,6 +116,7 @@ function($scope, $routeParams, $attrs, $location, $window, $document,
       child => !$scope.registrations.some(reg => reg.child === child.id)
     );
     if ($scope.childrenWithoutRegistration.length === 0) {
+      $scope.nextStepUrl = event.currentTarget.getAttribute('data-url');
       $scope.navigateToNextStep();
     } else {
       $scope.nextStepUrl = event.currentTarget.getAttribute('data-url');

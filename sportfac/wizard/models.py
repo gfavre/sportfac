@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.text import gettext_lazy as _
 from django.utils.text import slugify
 
 from ckeditor_uploader.fields import RichTextUploadingField
@@ -20,9 +21,11 @@ class WizardStep(TimeStampedModel):
 
     position = models.PositiveIntegerField(default=0, blank=False, null=False)
     description = RichTextUploadingField(blank=True, null=True)
+
     is_required = models.BooleanField(default=True, verbose_name="Is this step required?")
     step_type = models.CharField(max_length=20, choices=STEP_TYPE_CHOICES, default="always", verbose_name="Step Type")
 
+    display_in_navigation = models.BooleanField(default=True, verbose_name=_("Display in navigation"))
     editable_in_backend = models.BooleanField(
         default=True,
         verbose_name="Is this step editable in the backend?",
