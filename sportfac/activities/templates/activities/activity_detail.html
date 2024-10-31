@@ -194,7 +194,7 @@
           {% if registration_opened and not course.full and course.allow_new_participants %}
             <p class="text-center">
             {% if user.is_authenticated %}
-              <a href="{% url 'wizard' %}" class="btn btn-large btn-primary">
+              <a href="{% url 'wizard:entry_point' %}" class="btn btn-large btn-primary">
                 <i class="icon-fixed-width icon-calendar"></i> {% trans "Registration" %}
               </a>
             {% else %}
