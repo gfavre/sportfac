@@ -105,7 +105,7 @@ class WizardRentalStepView(LoginRequiredMixin, StaticStepView):
             context["start"] = qs.first().start.date().isoformat()
         else:
             context["start"] = now().date().isoformat()
-        context["available_dates"] = {slot.start.date() for slot in qs if slot.start.date() >= now().date()}
+        context["available_dates"] = sorted({slot.start.date() for slot in qs if slot.start.date() >= now().date()})
         return context
 
     # def get_success_url(self):
