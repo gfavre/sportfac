@@ -47,6 +47,7 @@ urlpatterns = [
         appointment_views.AppointmentManagementView.as_view(),
         name="appointments-management",
     ),
+    path("appointments/rentals/", appointment_views.RentalListView.as_view(), name="all_rentals"),
     path("appointments/slots/", appointment_views.SlotsList.as_view(), name="all_slots"),
     path(
         "appointments/slots/<int:slot_id>/",

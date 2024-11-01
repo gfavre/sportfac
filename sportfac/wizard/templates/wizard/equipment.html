@@ -212,7 +212,7 @@
         }
 
         function deleteRental(childId) {
-          fetch(`{% url "api:rental-list" %}${childId}/`, {
+          fetch("{% url "api:rental-list" %}" + {childId} + "/", {
             method: 'DELETE',
             headers: {
               'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
@@ -237,13 +237,14 @@
             appointment_type: appointmentType
           };
 
-          return fetch('/api/appointments/rentals/' + slotId + "/", {
+          return fetch("{% url "api:all_rentals"  %}" + slotId + "/", {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
             },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
+            credentials: 'include'
           })
             .then(response => response.json().then(data => ({status: response.status, data})))
             .then(({status, data}) => {
@@ -269,7 +270,7 @@
             appointment_type: appointmentType
           };
 
-          return fetch('/api/appointments/rentals/' + slotId + "/", {
+          return fetch(`{% url "api:all_rentals" %}$slotId/`, {
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',
