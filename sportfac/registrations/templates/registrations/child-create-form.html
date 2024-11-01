@@ -235,7 +235,7 @@
       <div class="col-sm-8">
         <input type="text" class="form-control" id="other_school"
                ng-model="detailedChild.other_school"
-            {% if OTHER_SCHOOL_EDITABLE %}
+            {% if OTHER_SCHOOL_EDITABLE and not OTHER_SCHOOL_HIDDEN %}
                ng-required="!detailedChild.school"
             {% else %}
                readonly
