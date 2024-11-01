@@ -1,6 +1,7 @@
 from django import forms
 from django.conf import settings
 from django.forms import widgets
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
@@ -460,7 +461,8 @@ class ExtraInfoForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_tag = True
         self.helper.include_media = False
-
+        api_url = reverse("api:api-extra-infos-list")
+        self.helper.attrs = {"data-api-url": api_url}
         # Layout includes the dynamic image div if it's set
         self.helper.layout = Layout(
             "id",

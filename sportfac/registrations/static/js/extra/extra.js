@@ -148,6 +148,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     async function saveForm(form) {
+        const apiUrl = form.getAttribute("data-api-url");
+
         const formData = new FormData(form);
 
         const idField = form.querySelector('[name$="-id"]');  // Select the field that ends with '-id'
@@ -163,12 +165,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const id = cleanedFormData.get('id');  // Get the id using the prefixed field name
 
-        let url = '/api/extra-infos/';
         let method = 'POST';
-
+        let url = apiUrl;
         // If the form has an existing ID, use PUT to update the record
         if (id) {
-            url = `/api/extra-infos/${id}/`;
+            url = `${apiUrl}${id}/`;
             method = 'PUT';
         }
 
