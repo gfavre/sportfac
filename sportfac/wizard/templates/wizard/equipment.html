@@ -3,6 +3,16 @@
 
 
 {% block wizard_content %}
+
+  <form id="rent-equipment-form">
+    <div class="form-group">
+      <input type="radio" id="rent-yes" name="rent_equipment" value="yes" {% if rentals %}checked{% endif %}>
+      <label for="rent-yes">{% trans "Yes" %}</label>
+      <input type="radio" id="rent-no" name="rent_equipment" value="no" {% if not rentals %}checked{% endif %}>
+      <label for="rent-no">{% trans "No" %}</label>
+    </div>
+  </form>
+
   {% crispy form %}
 
   {% if appointments %}
@@ -19,7 +29,7 @@
     </section>
   {% endif %}
 
-  <section class="portlet" id="dates-selection" style="display: none">
+  <section class="portlet" id="dates-selection">
     <h3 class="content-title">
       <u>{% trans "Available dates" %}</u>
     </h3>
@@ -53,6 +63,28 @@
     </div>
   </div>
 
+  <nav class="hidden-print" style="margin-top: 1.5em;">
+    <ul class="pager" style="font-size: 1.25em">
+      {% if previous_step %}
+        <li class="previous">
+          <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span>
+            {% block previous_label %}{% trans "Previous" %}{% endblock %}</a>
+        </li>
+      {% endif %}
+      {% if next_step %}
+        <li class="next">
+          <button class="btn btn-primary {% if not appointments %}disabled{% endif %}"
+                  id="next-step-btn"
+                  data-url="{{ next_step.url }}">
+            <strong>{% block next_label %}{% trans "Next" %}{% endblock %} <span
+                aria-hidden="true">&rarr;</span></strong></button>
+        </li>
+
+      {% endif %}
+    </ul>
+  </nav>
+
+
 
   {% addtoblock "css" %}
     <link href="{% static 'js/vendor/fullcalendar-5/lib/main.css' %}" rel="stylesheet"/>
@@ -71,7 +103,10 @@
         moment.locale('fr-ch');
 
         // DOM Elements
-        const rentalForm = document.getElementById('rental-form');
+        const rentYes = document.getElementById("rent-yes");
+        const rentNo = document.getElementById("rent-no");
+
+        const childSelectionForm = document.getElementById('rental-form');
         const datesSection = document.getElementById('dates-selection');
         const calendarEl = document.getElementById('calendar');
         const modalTitle = $('#myModalLabel');
@@ -86,14 +121,33 @@
           rentalMap[rental.child] = rental;
         });
 
+        // Function to check if rentalMap is empty
+        function isRentalMapEmpty() {
+          return Object.keys(rentalMap).length === 0;
+        }
+
+
         // -------------------------
         // Helper Functions
         // -------------------------
 
+        function toggleFormAndButton() {
+          if (rentYes.checked) {
+            childSelectionForm.style.display = "";
+          } else if (rentNo.checked) {
+            childSelectionForm.style.display = "none";
+          }
+          toggleDatesSection();
+          toggleNextButton();
+        }
+
+
         // Show or Hide Dates Section Based on Checkbox Selection
         function toggleDatesSection() {
-          const anyChecked = Array.from(rentalForm.querySelectorAll('input[type="checkbox"]')).some(checkbox => checkbox.checked);
+          const anyChecked = Array.from(childSelectionForm.querySelectorAll('input[type="checkbox"]')).some(checkbox => checkbox.checked);
           datesSection.style.display = anyChecked ? 'block' : 'none';
+          rentYes.disabled = anyChecked;
+          rentNo.disabled = anyChecked;
           if (anyChecked) {
             calendar.render();
           }
@@ -102,7 +156,7 @@
         // Update Checkmarks for Existing Rentals
         function updateCheckmarks() {
           Object.values(rentalMap).forEach(rental => {
-            const checkbox = rentalForm.querySelector(`input[type="checkbox"][value="${rental.child}"]`);
+            const checkbox = childSelectionForm.querySelector(`input[type="checkbox"][value="${rental.child}"]`);
             if (checkbox) {
               const childLabel = checkbox.closest('label');
               const checkmark = childLabel.querySelector('.badge-success');
@@ -127,7 +181,7 @@
 
         // Update Modal Checkboxes Based on Calendar Event
         function updateModalCheckboxes(slotId) {
-          const selectedCheckboxes = rentalForm.querySelectorAll('input[type="checkbox"]:checked');
+          const selectedCheckboxes = childSelectionForm.querySelectorAll('input[type="checkbox"]:checked');
           modalBody.empty(); // Clear previous content
 
           selectedCheckboxes.forEach(checkbox => {
@@ -177,7 +231,13 @@
         }
 
         function toggleNextButton() {
-          if (allRentalsFilled()) {
+          // we can always go on if we decide not to rent material
+          if (rentNo.checked) {
+            nextButton.classList.remove('disabled');
+            return;
+          }
+
+          if (allRentalsFilled() && !isRentalMapEmpty()) {
             nextButton.classList.remove('disabled');
           } else {
             nextButton.classList.add('disabled');
@@ -212,7 +272,7 @@
         }
 
         function deleteRental(childId) {
-          fetch("{% url "api:rental-list" %}" + {childId} + "/", {
+          fetch("{% url "api:rental-list" %}" + childId + "/", {
             method: 'DELETE',
             headers: {
               'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
@@ -270,7 +330,7 @@
             appointment_type: appointmentType
           };
 
-          return fetch(`{% url "api:all_rentals" %}$slotId/`, {
+          return fetch("{% url "api:all_rentals" %}" + slotId + "/", {
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',
@@ -300,11 +360,15 @@
         // Event Listeners
         // -------------------------
 
-        // Listen for changes on the rental form checkboxes
-        rentalForm.addEventListener('change', function (e) {
-          if (e.target.tagName === 'INPUT' && e.target.type === 'checkbox') {
-            toggleDatesSection();
+        // Event listeners for the radio buttons
+        if (rentYes && rentNo) {
+          rentYes.addEventListener("change", toggleFormAndButton);
+          rentNo.addEventListener("change", toggleFormAndButton);
+        }
 
+        // Listen for changes on the rental form checkboxes
+        childSelectionForm.addEventListener('change', function (e) {
+          if (e.target.tagName === 'INPUT' && e.target.type === 'checkbox') {
             const childId = e.target.value;
             const checked = e.target.checked;
 
@@ -322,6 +386,7 @@
               }
             }
           }
+          toggleDatesSection();
         });
 
         document.getElementById('modal-save-btn').addEventListener('click', function (e) {
@@ -361,18 +426,18 @@
           });
 
         });
-        document.getElementById('next-step-btn').addEventListener('click', function(event) {
-    // Check if the button has the 'disabled' class
-    if (!this.classList.contains('disabled')) {
-        // Retrieve the URL from the 'data-url' attribute
-        const url = this.getAttribute('data-url');
-        // Navigate to the URL
-        window.location.href = url;
-    } else {
-        // Prevent any default action if the button is disabled
-        event.preventDefault();
-    }
-});
+        document.getElementById('next-step-btn').addEventListener('click', function (event) {
+          // Check if the button has the 'disabled' class
+          if (!this.classList.contains('disabled')) {
+            // Retrieve the URL from the 'data-url' attribute
+            const url = this.getAttribute('data-url');
+            // Navigate to the URL
+            window.location.href = url;
+          } else {
+            // Prevent any default action if the button is disabled
+            event.preventDefault();
+          }
+        });
 
         // Initialize FullCalendar and its Event Listener
         const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -400,10 +465,9 @@
         // -------------------------
         // Initialization
         // -------------------------
-
         updateCheckmarks();
-        toggleDatesSection();
-        toggleNextButton();
+        toggleFormAndButton();
+
       })
       ;
 
@@ -411,25 +475,3 @@
   {% endaddtoblock "js" %}
 
 {% endblock wizard_content %}
-
-{% block page_footer %}
-  <nav class="hidden-print" style="margin-top: 1.5em;">
-    <ul class="pager" style="font-size: 1.25em">
-      {% if previous_step %}
-        <li class="previous">
-          <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span>
-            {% block previous_label %}{% trans "Previous" %}{% endblock %}</a>
-        </li>
-      {% endif %}
-      {% if next_step %}
-        <li class="next">
-          <button class="btn btn-primary {% if not appointments %}disabled{% endif %}"
-                  id="next-step-btn"
-                  data-url="{{ next_step.url }}">
-            <strong>{% block next_label %}{% trans "Next" %}{% endblock %} <span aria-hidden="true">&rarr;</span></strong></button>
-        </li>
-
-      {% endif %}
-    </ul>
-  </nav>
-{% endblock page_footer %}
