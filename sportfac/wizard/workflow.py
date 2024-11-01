@@ -21,21 +21,32 @@ class WizardWorkflow:
                 step.is_complete = True
             if handler.is_visible():
                 visible_steps.append(step)
-
         return visible_steps
+
+    def get_all_steps(self):
+        """Return the list of all steps that are ready."""
+        for step in self.steps:
+            handler = get_step_handler(step, self.registration_context)
+            if handler.is_ready():
+                step.is_ready = True
+            if handler.is_complete():
+                step.is_complete = True
+        return self.steps
 
     def get_next_step(self, current_step):
         """Get the next step based on the current step's position."""
-        visible_steps = self.get_visible_steps()
-        for index, step in enumerate(visible_steps):
-            if step == current_step and index + 1 < len(visible_steps):
-                return visible_steps[index + 1]
+        # All steps, because this one might change the visibility of the next step
+        steps = self.get_all_steps()
+        for index, step in enumerate(steps):
+            if step == current_step and index + 1 < len(steps):
+                return steps[index + 1]
         return None
 
     def get_previous_step(self, current_step):
         """Get the next step based on the current step's position."""
-        visible_steps = self.get_visible_steps()
-        for index, step in enumerate(visible_steps):
+        # All visible steps, because nothing could have changed that revokes a previous step
+        steps = self.get_visible_steps()
+        for index, step in enumerate(steps):
             if step == current_step and index - 1 >= 0:
-                return visible_steps[index - 1]
+                return steps[index - 1]
         return None

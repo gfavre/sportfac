@@ -3,15 +3,16 @@
 
 
 {% block wizard_content %}
-
-  <form id="rent-equipment-form">
-    <div class="form-group">
-      <input type="radio" id="rent-yes" name="rent_equipment" value="yes" {% if rentals %}checked{% endif %}>
-      <label for="rent-yes">{% trans "Yes" %}</label>
-      <input type="radio" id="rent-no" name="rent_equipment" value="no" {% if not rentals %}checked{% endif %}>
-      <label for="rent-no">{% trans "No" %}</label>
-    </div>
-  </form>
+  <div {% if appointment_type != "pickup" %}style="display:none"{% endif %}>
+    <form id="rent-equipment-form">
+      <div class="form-group">
+        <input type="radio" id="rent-yes" name="rent_equipment" value="yes" {% if rentals %}checked{% endif %}>
+        <label for="rent-yes">{% trans "Yes" %}</label>
+        <input type="radio" id="rent-no" name="rent_equipment" value="no" {% if not rentals %}checked{% endif %}>
+        <label for="rent-no">{% trans "No" %}</label>
+      </div>
+    </form>
+  </div>
 
   {% crispy form %}
 
@@ -33,6 +34,13 @@
     <h3 class="content-title">
       <u>{% trans "Available dates" %}</u>
     </h3>
+    <ul class="list-inline" style="margin-bottom: 2em">
+      {% for date in available_dates %}
+        <li style="margin-right:3em">
+          <a class="calendar-change" data-date="{{ date|date:'c' }}" href="#calendar">{{ date | date:'d.m.Y' }}</a>
+        </li>
+      {% endfor %}
+    </ul>
     <div id="calendar"></div>
   </section>
 
@@ -88,6 +96,11 @@
 
   {% addtoblock "css" %}
     <link href="{% static 'js/vendor/fullcalendar-5/lib/main.css' %}" rel="stylesheet"/>
+    <style>
+    .fc .fc-button {
+      padding: 0 0.6em;
+    }
+    </style>
   {% endaddtoblock %}
 
   {% addtoblock "js" %}
@@ -388,6 +401,16 @@
           }
           toggleDatesSection();
         });
+
+        const dateLinks = document.querySelectorAll(".calendar-change");
+          dateLinks.forEach(link => {
+            link.addEventListener("click", function (event) {
+              event.preventDefault();
+              // Get the date from the 'data-date' attribute
+              const selectedDate = this.getAttribute("data-date");
+              calendar.gotoDate(selectedDate);
+            });
+          });
 
         document.getElementById('modal-save-btn').addEventListener('click', function (e) {
           e.preventDefault();

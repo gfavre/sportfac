@@ -107,9 +107,10 @@ class EquipmentPickupStepHandler(StepHandler):
 
     def is_complete(self):
         # Complete if a pickup appointment has been scheduled
-
-        return self.registration_context.get("rentals") and all(
-            rental.pickup_appointment for rental in self.registration_context.get("rentals")
+        return (
+            self.registration_context["invoice"]
+            or self.registration_context.get("rentals")
+            and all(rental.pickup_appointment for rental in self.registration_context.get("rentals"))
         )
 
 
@@ -176,6 +177,10 @@ class QuestionsEntryPointHandler(StepHandler):
     pass
 
 
+class EquipmentEntryPointHandler(StepHandler):
+    pass
+
+
 def get_step_handler(step, registration_context):
     """Factory function to return the appropriate handler for a given step."""
     handler_mapping = {
@@ -187,6 +192,7 @@ def get_step_handler(step, registration_context):
         "questions": QuestionsEntryPointHandler,
         "equipment": EquipmentPickupStepHandler,
         "equipment-return": EquipmentReturnStepHandler,
+        "equipment-need-return": EquipmentEntryPointHandler,
         "confirmation": ConfirmationStepHandler,
         "payment": PaymentStepHandler,
     }
