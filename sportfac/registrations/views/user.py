@@ -265,7 +265,7 @@ class WizardBillingView(LoginRequiredMixin, BillMixin, PaymentMixin, WizardMixin
 
 
 class WizardCancelRegistrationView(LoginRequiredMixin, WizardMixin, FormView):
-    success_url = reverse_lazy("wizard_activities")
+    success_url = reverse_lazy("wizard:entry_point")
     form_class = EmptyForm
 
     @staticmethod
