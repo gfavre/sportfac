@@ -178,7 +178,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 body: cleanedFormData,
                 headers: {
                     'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-                }
+                },
+                credentials: 'include' // Ensures cookies (including CSRF) are sent
+
             });
 
             const data = await response.json();

@@ -63,8 +63,18 @@ class OldExtraInfoViewSet(viewsets.ModelViewSet):
 
 
 class ExtraInfoViewSet(viewsets.ModelViewSet):
+    authentication_classes = (SessionAuthentication,)
+
     queryset = ExtraInfo.objects.all()
     serializer_class = ExtraInfoSerializer
+
+    def get_queryset(self):
+        """Limit queryset to ExtraInfo objects owned by the logged-in user."""
+        user = self.request.user
+        if user.is_authenticated:
+            # Filter ExtraInfo objects by the user’s family
+            return ExtraInfo.objects.filter(registration__child__family=user)
+        return ExtraInfo.objects.none()  # Return an empty queryset if user is not authenticated
 
     def create(self, request, *args, **kwargs):
         """Handle create requests."""
@@ -83,6 +93,12 @@ class ExtraInfoViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         """Handle update requests."""
         instance = self.get_object()
+        if instance.registration.child.family != request.user:
+            return Response(
+                {"success": False, "message": "You do not have permission to update this resource."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         data = request.data.copy()
         # If image is not included in the request data, retain the existing image
         if "image" not in request.FILES:
