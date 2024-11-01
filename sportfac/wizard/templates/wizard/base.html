@@ -57,6 +57,7 @@
               </h1>
             </div>
           </div>
+          {% if current_step.lead %}<p class="lead">{{ current_step.lead }}</p>{% endif %}
           {{ current_step.description|safe }}
           {% block wizard_content %}{% endblock wizard_content %}
         </div>

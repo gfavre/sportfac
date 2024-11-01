@@ -172,6 +172,17 @@ class QuestionsStepView(BaseWizardStepView):
         return redirect(self.get_next_step().url())
 
 
+class EquipmentStepView(BaseWizardStepView):
+    step_slug = "equipment-need-return"
+
+    def dispatch(self, request, *args, **kwargs):
+        user: FamilyUser = request.user
+        if Rental.objects.filter(child__family=user, paid=False).exists():
+            return redirect(reverse("wizard:step", kwargs={"step_slug": "equipment-return"}))
+        workflow = self.get_workflow()
+        return redirect(workflow.get_next_step(self.get_next_step()).url())
+
+
 class ChildrenStepView(StaticStepView):
     template_name = "wizard/children.html"
     step_slug = "children"

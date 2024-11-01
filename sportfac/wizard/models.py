@@ -16,6 +16,7 @@ class WizardStep(TimeStampedModel):
 
     title = models.CharField(max_length=50)
     subtitle = models.CharField(max_length=50, blank=True)
+    lead = models.CharField(max_length=255, blank=True)
     link_display = models.CharField(max_length=50, blank=True)
     slug = models.SlugField(max_length=50, unique=True, blank=True)
 

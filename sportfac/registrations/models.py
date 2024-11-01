@@ -973,7 +973,7 @@ class ChildActivityLevel(TimeStampedModel):
 class RegistrationValidation(TimeStampedModel):
     user = models.ForeignKey("profiles.FamilyUser", related_name="validations", null=True, on_delete=models.SET_NULL)
     invoice = models.OneToOneField(
-        "registrations.Bill", related_name="validation", null=True, blank=True, on_delete=models.SET_NULL
+        "registrations.Bill", related_name="validation", null=True, blank=True, on_delete=models.CASCADE
     )
     consent_given = models.BooleanField(_("Consent given"), default=False)
 

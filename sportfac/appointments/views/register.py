@@ -84,6 +84,7 @@ class WizardRentalStepView(LoginRequiredMixin, StaticStepView):
         context = super().get_context_data(**kwargs)
         user = self.request.user
         children_with_rentals = Child.objects.filter(rentals__isnull=False, family=user)
+
         context["appointment_type"] = self.appointment_type
         context["rentals"] = Rental.objects.filter(child__family=user)
         context["rentals_json"] = [
@@ -104,6 +105,7 @@ class WizardRentalStepView(LoginRequiredMixin, StaticStepView):
             context["start"] = qs.first().start.date().isoformat()
         else:
             context["start"] = now().date().isoformat()
+        context["available_dates"] = {slot.start.date() for slot in qs if slot.start.date() >= now().date()}
         return context
 
     # def get_success_url(self):

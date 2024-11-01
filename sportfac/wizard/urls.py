@@ -4,7 +4,7 @@ from activities.views import WizardQuestionsStepView
 from appointments.views.register import WizardRentalStepView, WizardReturnStepView
 from profiles.views import WizardFamilyUserCreateView, WizardFamilyUserUpdateView
 from registrations.views.wizard import WizardConfirmationStepView, WizardPaymentStepView
-from .views import ActivitiesStepView, ChildrenStepView, EntryPointView, QuestionsStepView
+from .views import ActivitiesStepView, ChildrenStepView, EntryPointView, EquipmentStepView, QuestionsStepView
 
 
 app_name = "wizard"
@@ -15,6 +15,7 @@ step_view_mapping = {
     "activities": ActivitiesStepView,
     "questions": QuestionsStepView,
     "equipment": WizardRentalStepView,
+    "equipment-need-return": EquipmentStepView,
     "equipment-return": WizardReturnStepView,
     "confirmation": WizardConfirmationStepView,
     "payment": WizardPaymentStepView,
