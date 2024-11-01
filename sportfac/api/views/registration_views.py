@@ -71,11 +71,7 @@ class ExtraInfoViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Limit queryset to ExtraInfo objects owned by the logged-in user."""
         user = self.request.user
-        logger.warning(f"User: {user}")
         if user.is_authenticated:
-            # Filter ExtraInfo objects by the user’s family
-            logger.warning(ExtraInfo.objects.filter(registration__child__family=user))
-
             return ExtraInfo.objects.filter(registration__child__family=user)
         return ExtraInfo.objects.none()  # Return an empty queryset if user is not authenticated
 
