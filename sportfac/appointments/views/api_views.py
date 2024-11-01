@@ -89,6 +89,13 @@ class RegisterSlot(generics.GenericAPIView):
         return Response(data, status=status.HTTP_201_CREATED)
 
 
+class RentalListView(generics.ListAPIView):
+    serializer_class = RentalSerializer
+
+    def get_queryset(self):
+        return Rental.objects.filter(child__family=self.request.user)
+
+
 class AppointmentManagementView(mixins.CreateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
     """
     ModelViewSet to handle managing appointments and updating rentals accordingly.
@@ -113,7 +120,7 @@ class AppointmentManagementView(mixins.CreateModelMixin, mixins.DestroyModelMixi
         Returns the modified Rental instance or None if not modified.
         """
         try:
-            child = Child.objects.get(id=child_id)
+            child = Child.objects.get(id=child_id, family=self.request.user)
             rental = Rental.objects.get(child=child)
 
             if action == "create":
@@ -147,6 +154,7 @@ class AppointmentManagementView(mixins.CreateModelMixin, mixins.DestroyModelMixi
             slot = self.get_object()
             appointment_type = serializer.validated_data["appointment_type"]
             children_ids = serializer.validated_data["children"]
+
             updated_rentals = []
 
             for child_id in children_ids:
