@@ -282,6 +282,7 @@ class WizardQuestionsStepView(LoginRequiredMixin, StaticStepView):
             registrations = Registration.waiting.filter(
                 course__in=extra_need.courses.all(), child__family=self.request.user
             )
+
             if registrations:
                 # Store the registrations (children) for this extra need
                 questions_registrations[extra_need] = [registration.child for registration in registrations]
