@@ -267,9 +267,8 @@ class RegisterChildrenToSlotView(generics.GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class SlotsViewset(ModelViewSet):
+class SlotsViewSet(ModelViewSet):
     permission_classes = (ManagerPermission,)
-    queryset = AppointmentSlot.objects.all()
     serializer_class = AdminAppointmentSlotSerializer
 
     def get_queryset(self):
