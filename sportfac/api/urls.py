@@ -28,7 +28,7 @@ router.register("extra-infos", views.ExtraInfoViewSet, basename="api-extra-infos
 router.register("years", views.YearViewSet, basename="year")
 
 router.register("all-children", views.SimpleChildrenViewSet, basename="allchildren")
-router.register("all-slots", appointment_views.SlotsViewset, basename="slots")
+router.register("all-slots", appointment_views.SlotsViewSet, basename="slots")
 
 urlpatterns = [
     path("", include(router.urls)),

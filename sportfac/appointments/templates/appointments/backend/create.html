@@ -11,7 +11,11 @@
 {% block content %}
   {% addtoblock "css" %}
     <link href="{% static 'js/vendor/fullcalendar-5/lib/main.css' %}" rel="stylesheet"/>
-
+    <style>
+      .fc .fc-button {
+        padding: 0 0.6em;
+      }
+    </style>
   {% endaddtoblock %}
   {% addtoblock "js" %}
     <script src="{% static 'js/vendor/js.cookie.js' %}"></script>
@@ -48,30 +52,39 @@
           },
           eventClick: function (info) {
             info.jsEvent.preventDefault();
-            $('.modal-title', $modal).text(moment(info.event.start).format('dddd Do MMM YYYY, h:mm') + '-' + moment(info.event.end).format('h:mm'));
-            $('#id_places', $modal).val(info.event.extendedProps.places);
-            $('form', $modal).attr('action', info.event.url);
-            $modal.modal();
+            openModal(info.event);
           },
+          headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,timeGridWeek,timeGridDay'
+    },
+          // Show the date picker for quick navigation
+    customButtons: {
+      datePicker: {
+        text: "{% trans 'Jump to Date...' %}",
+        click: function() {
+          const selectedDate = prompt("{% trans "Enter a date (DD.MM.YYYY)" %}");
+          const formattedDate = moment(selectedDate, 'DD.MM.YYYY', true); // Parse Swiss format
 
+          // Check if the date is valid
+          if (formattedDate.isValid()) {
+            calendar.gotoDate(formattedDate.format('YYYY-MM-DD')); // Convert to FullCalendar format
+          } else {
+            alert("{% trans "Invalid date, please use dd.mm.yyyy format, like 31.12.2028" %}"); // Alert if invalid
+          }
+        }
+      }
+    },
+    footerToolbar: {
+      center: 'datePicker'  // Place the custom date picker button in the footer
+    },
 
           initialView: 'timeGridWeek',
           locale: 'fr-ch',
           selectable: true,
           select: function (info) {
-            info.jsEvent.preventDefault();
-            let places = prompt("{% trans "Number of places" %}");
-            if (places) {
-              $.ajax({
-                type: "POST",
-                url: '{% url "api:slots-list" %}',
-                data: {'places': places, 'start': info.startStr, 'end': info.endStr},
-                dataType: "json",
-                success: function (data) {
-                  calendar.refetchEvents();
-                }
-              });
-            }
+            openModalForNewSlot(info);
           },
           slotDuration: '00:15:00',
           slotMinTime: '07:00',
@@ -79,6 +92,34 @@
         });
         calendar.gotoDate("{{ start }}");
         calendar.render();
+
+        // Function to open the modal with event data for editing
+        function openModal(event) {
+          $('.modal-title', $modal).text(moment(event.start).format('dddd Do MMM YYYY, h:mm') + '-' + moment(event.end).format('h:mm'));
+          $('#id_places', $modal).val(event.extendedProps.places);
+          $("#id_appointment_type", $modal).val(event.extendedProps.appointment_type);
+          $('form', $modal).attr('action', event.url);
+          $('form', $modal).data('method', 'PATCH'); // Set method to PATCH for existing slots
+          $modal.modal();
+        }
+
+        // Function to open the modal for creating a new slot
+        function openModalForNewSlot(info) {
+          // Set the modal title to the selected start and end times
+          $('.modal-title', $modal).text(moment(info.start).format('dddd Do MMM YYYY, h:mm') + '-' + moment(info.end).format('h:mm'));
+
+          // Clear previous values and set default
+          $('#id_places', $modal).val(''); // Empty for new slot
+          $('form', $modal).attr('action', '{% url "api:slots-list" %}'); // Set action to slot list URL
+          $('form', $modal).data('method', 'POST'); // Set method to POST for new slots
+
+          // Store start and end dates for the new slot submission
+          $('form', $modal).data('start', info.startStr);
+          $('form', $modal).data('end', info.endStr);
+
+          $modal.modal();
+        }
+
 
         $('#remove-event').on('click', function (event) {
           let url = $('form', $modal).attr('action');
@@ -91,19 +132,31 @@
           });
         });
 
-        $('form', $modal).on('submit', function (event) {
-          event.preventDefault()
-          let url = $('form', $modal).attr('action');
-          $.ajax({
-            url: url,
-            type: 'PATCH',
-            data: {'places': $('#id_places', $modal).val()},
-            success: function (response) {
-              $modal.modal('hide');
-              calendar.refetchEvents();
-            }
-          });
-        });
+      // Handle form submission in the modal for both new and existing slots
+    $('form', $modal).on('submit', function (event) {
+      event.preventDefault();
+      let url = $('form', $modal).attr('action');
+      let method = $('form', $modal).data('method'); // Use method set in data attributes
+
+      // Prepare data for submission
+      let data = {'places': $('#id_places', $modal).val(), 'appointment_type': $('#id_appointment_type', $modal).val()};
+      if (method === 'POST') {
+        // Include start and end times for new slots
+        data.start = $('form', $modal).data('start');
+        data.end = $('form', $modal).data('end');
+      }
+
+      $.ajax({
+        url: url,
+        type: method,
+        data: data,
+        dataType: 'json',
+        success: function (response) {
+          $modal.modal('hide');
+          calendar.refetchEvents();
+        }
+      });
+    });
       });
 
 
@@ -135,6 +188,18 @@
                   <span id="help-places" class="help-block"></span>
                 </div>
               </div>
+              <div class="form-group">
+                <label class="control-label col-sm-4" for="id_appointment_type">{% trans "Type of appointment" %}</label>
+                <div class="col-sm-8">
+                  <select name="appointment_type" id="id_appointment_type" class="form-control">
+                    <option value="pickup">{% trans "Pickup" %}</option>
+                    <option value="return">{% trans "Return" %}</option>
+                    <option value="other">{% trans "Other" %}</option>
+                  </select>
+                  <span id="help-appointment_types" class="help-block"></span>
+                </div>
+              </div>
+
               <div class="row">
                 <div class="col-md-6">
                   <button type="button" class="btn btn-danger" id="remove-event" data-dismiss="modal"><i

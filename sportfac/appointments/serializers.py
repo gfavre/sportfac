@@ -46,7 +46,7 @@ class AdminAppointmentSlotSerializer(SlotSerializer):
 
     class Meta:
         model = AppointmentSlot
-        fields = ("id", "title", "available_places", "places", "start", "end", "url", "color")
+        fields = ("id", "title", "available_places", "places", "appointment_type", "start", "end", "url", "color")
 
     def get_url(self, obj):
         return obj.api_management_url
