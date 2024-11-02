@@ -55,30 +55,30 @@
             openModal(info.event);
           },
           headerToolbar: {
-      left: 'prev,next today',
-      center: 'title',
-      right: 'dayGridMonth,timeGridWeek,timeGridDay'
-    },
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+          },
           // Show the date picker for quick navigation
-    customButtons: {
-      datePicker: {
-        text: "{% trans 'Jump to Date...' %}",
-        click: function() {
-          const selectedDate = prompt("{% trans "Enter a date (DD.MM.YYYY)" %}");
-          const formattedDate = moment(selectedDate, 'DD.MM.YYYY', true); // Parse Swiss format
+          customButtons: {
+            datePicker: {
+              text: "{% trans 'Jump to Date...' %}",
+              click: function () {
+                const selectedDate = prompt("{% trans "Enter a date (DD.MM.YYYY)" %}");
+                const formattedDate = moment(selectedDate, 'DD.MM.YYYY', true); // Parse Swiss format
 
-          // Check if the date is valid
-          if (formattedDate.isValid()) {
-            calendar.gotoDate(formattedDate.format('YYYY-MM-DD')); // Convert to FullCalendar format
-          } else {
-            alert("{% trans "Invalid date, please use dd.mm.yyyy format, like 31.12.2028" %}"); // Alert if invalid
-          }
-        }
-      }
-    },
-    footerToolbar: {
-      center: 'datePicker'  // Place the custom date picker button in the footer
-    },
+                // Check if the date is valid
+                if (formattedDate.isValid()) {
+                  calendar.gotoDate(formattedDate.format('YYYY-MM-DD')); // Convert to FullCalendar format
+                } else {
+                  alert("{% trans "Invalid date, please use dd.mm.yyyy format, like 31.12.2028" %}"); // Alert if invalid
+                }
+              }
+            }
+          },
+          footerToolbar: {
+            center: 'datePicker'  // Place the custom date picker button in the footer
+          },
 
           initialView: 'timeGridWeek',
           locale: 'fr-ch',
@@ -95,7 +95,7 @@
 
         // Function to open the modal with event data for editing
         function openModal(event) {
-          $('.modal-title', $modal).text(moment(event.start).format('dddd Do MMM YYYY, h:mm') + '-' + moment(event.end).format('h:mm'));
+          $('.modal-title', $modal).text(moment(event.start).format('dddd Do MMM YYYY, HH:mm') + '-' + moment(event.end).format('HH:mm'));
           $('#id_places', $modal).val(event.extendedProps.places);
           $("#id_appointment_type", $modal).val(event.extendedProps.appointment_type);
           $('form', $modal).attr('action', event.url);
@@ -106,7 +106,7 @@
         // Function to open the modal for creating a new slot
         function openModalForNewSlot(info) {
           // Set the modal title to the selected start and end times
-          $('.modal-title', $modal).text(moment(info.start).format('dddd Do MMM YYYY, h:mm') + '-' + moment(info.end).format('h:mm'));
+          $('.modal-title', $modal).text(moment(info.start).format('dddd Do MMM YYYY, HH:mm') + '-' + moment(info.end).format('HH:mm'));
 
           // Clear previous values and set default
           $('#id_places', $modal).val(''); // Empty for new slot
@@ -132,31 +132,34 @@
           });
         });
 
-      // Handle form submission in the modal for both new and existing slots
-    $('form', $modal).on('submit', function (event) {
-      event.preventDefault();
-      let url = $('form', $modal).attr('action');
-      let method = $('form', $modal).data('method'); // Use method set in data attributes
+        // Handle form submission in the modal for both new and existing slots
+        $('form', $modal).on('submit', function (event) {
+          event.preventDefault();
+          let url = $('form', $modal).attr('action');
+          let method = $('form', $modal).data('method'); // Use method set in data attributes
 
-      // Prepare data for submission
-      let data = {'places': $('#id_places', $modal).val(), 'appointment_type': $('#id_appointment_type', $modal).val()};
-      if (method === 'POST') {
-        // Include start and end times for new slots
-        data.start = $('form', $modal).data('start');
-        data.end = $('form', $modal).data('end');
-      }
+          // Prepare data for submission
+          let data = {
+            'places': $('#id_places', $modal).val(),
+            'appointment_type': $('#id_appointment_type', $modal).val()
+          };
+          if (method === 'POST') {
+            // Include start and end times for new slots
+            data.start = $('form', $modal).data('start');
+            data.end = $('form', $modal).data('end');
+          }
 
-      $.ajax({
-        url: url,
-        type: method,
-        data: data,
-        dataType: 'json',
-        success: function (response) {
-          $modal.modal('hide');
-          calendar.refetchEvents();
-        }
-      });
-    });
+          $.ajax({
+            url: url,
+            type: method,
+            data: data,
+            dataType: 'json',
+            success: function (response) {
+              $modal.modal('hide');
+              calendar.refetchEvents();
+            }
+          });
+        });
       });
 
 
@@ -189,7 +192,8 @@
                 </div>
               </div>
               <div class="form-group">
-                <label class="control-label col-sm-4" for="id_appointment_type">{% trans "Type of appointment" %}</label>
+                <label class="control-label col-sm-4"
+                       for="id_appointment_type">{% trans "Type of appointment" %}</label>
                 <div class="col-sm-8">
                   <select name="appointment_type" id="id_appointment_type" class="form-control">
                     <option value="pickup">{% trans "Pickup" %}</option>
