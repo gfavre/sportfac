@@ -70,10 +70,11 @@ angular.module('sportfacCalendar', ['sportfacCalendar.filters', 'sportfacCalenda
 
 config(['$routeProvider', function($routeProvider) {
     'use strict';
+    const basePath = window.location.pathname.split('/wizard')[0];
     $routeProvider.when('/child/:childId/',
-      { templateUrl: '/static/partials/activity-list.html?v=1', controller: 'ActivityCtrl' });
+      { templateUrl: `${basePath}/static/partials/activity-list.html?v=3`, controller: 'ActivityCtrl' });
     $routeProvider.otherwise(
-      {templateUrl: '/static/partials/activity-list.html?v=2', controller: 'ActivityCtrl'});
+      {templateUrl: `${basePath}/static/partials/activity-list.html?v=3`, controller: 'ActivityCtrl'});
 }]).
 
 config(["$interpolateProvider", function($interpolateProvider) {

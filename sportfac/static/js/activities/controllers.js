@@ -207,10 +207,11 @@ angular.module('sportfacCalendar.controllers', [])
       let year = today.getFullYear();
       let month = today.getMonth();
       let day = today.getDate();
+      const basePath = window.location.pathname.split('/wizard')[0];
 
       var modalwindow = $modal(
         {
-          template: '/static/partials/activity-detail.html',
+          template: `${basePath}/static/partials/activity-detail.html`,
           show: false,
           backdrop: 'static',
           persist: true,
