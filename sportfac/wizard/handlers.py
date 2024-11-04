@@ -46,11 +46,11 @@ class ProfileCreationStepHandler(StepHandler):
 
     def is_visible(self):
         """The profile creation step is only visible for not registered users."""
-        return not self.registration_context["user"].is_authenticated
+        return not self.registration_context["user_registered"]
 
     def is_complete(self):
         """Check if the user has completed their profile."""
-        return bool(self.registration_context["user"].is_authenticated)
+        return self.registration_context["user_registered"]
 
 
 class ProfileUpdateStepHandler(StepHandler):
@@ -58,11 +58,11 @@ class ProfileUpdateStepHandler(StepHandler):
 
     def is_visible(self):
         """The profile update step is always visible."""
-        return self.registration_context["user"].is_authenticated
+        return self.registration_context["user_registered"]
 
     def is_complete(self):
         """Check if the user has completed their profile."""
-        return bool(self.registration_context["user"].is_authenticated)
+        return self.registration_context["user_registered"]
 
     def is_ready(self):
         return not self.registration_context.get("invoice")
@@ -72,7 +72,7 @@ class ChildInformationStepHandler(StepHandler):
     """Handler for child information step."""
 
     def is_ready(self):
-        return self.registration_context.get("user").is_authenticated and not self.registration_context.get("invoice")
+        return self.registration_context["user_registered"] and not self.registration_context.get("invoice")
 
     def is_complete(self):
         """Complete if all required fields for children are filled."""
@@ -83,8 +83,7 @@ class ActivitiesStepHandler(StepHandler):
     """Handler for child information step."""
 
     def is_ready(self):
-        user = self.registration_context.get("user")
-        return user.is_authenticated and user.children.exists() and not self.registration_context.get("invoice")
+        return self.registration_context["has_children"] and not self.registration_context.get("invoice")
 
     def is_visible(self):
         """Visible if the user has children linked to their profile."""
@@ -102,8 +101,7 @@ class EquipmentPickupStepHandler(StepHandler):
         return settings.KEPCHUP_USE_APPOINTMENTS
 
     def is_ready(self):
-        user = self.registration_context.get("user")
-        return user.is_authenticated and user.children.exists() and not self.registration_context.get("invoice")
+        return self.registration_context["has_children"] and not self.registration_context.get("invoice")
 
     def is_complete(self):
         # Complete if a pickup appointment has been scheduled
@@ -135,7 +133,7 @@ class QuestionStepHandler(StepHandler):
 
     def __init__(self, step, registration_context):
         super().__init__(step, registration_context)
-        self.questions = self.step.questions.all()
+        self.questions = [question for question in registration_context["all_questions"] if question.step == step]
 
     def is_visible(self):
         if not self.registration_context["registrations"]:

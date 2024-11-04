@@ -1,3 +1,5 @@
+from django.core.cache import cache
+
 from .handlers import get_step_handler
 from .models import WizardStep
 
@@ -8,7 +10,12 @@ class WizardWorkflow:
     def __init__(self, user, registration_context):
         self.user = user
         self.registration_context = registration_context
-        self.steps = WizardStep.objects.all().order_by("position")
+        wizard_steps = cache.get("all_wizard_steps")
+        if wizard_steps is None:
+            # Cache miss, so we query the database
+            wizard_steps = list(WizardStep.objects.all())
+            cache.set("all_wizard_steps", wizard_steps, None)
+        self.steps = wizard_steps
 
     def get_visible_steps(self):
         """Return the list of visible steps based on the current registration context."""
