@@ -1,4 +1,7 @@
+from django.core.cache import cache
 from django.db import models
+from django.db.models.signals import post_delete, post_save
+from django.dispatch import receiver
 from django.utils.text import gettext_lazy as _
 from django.utils.text import slugify
 
@@ -60,3 +63,22 @@ class WizardStep(TimeStampedModel):
 
     def __str__(self):
         return self.title
+
+
+# Clear the cache for all wizard steps and individual step cache
+def clear_wizard_step_cache(instance=None):
+    cache.delete("all_wizard_steps")  # Invalidate all steps cache
+
+    if instance:
+        cache_key = f"wizard_step_{instance.slug}"
+        cache.delete(cache_key)  # Invalidate the cache for the individual step
+
+
+@receiver(post_save, sender=WizardStep)
+def clear_wizard_step_cache_on_save(sender, instance, **kwargs):
+    clear_wizard_step_cache(instance)
+
+
+@receiver(post_delete, sender=WizardStep)
+def clear_wizard_step_cache_on_delete(sender, instance, **kwargs):
+    clear_wizard_step_cache(instance)

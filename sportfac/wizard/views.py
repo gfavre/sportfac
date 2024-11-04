@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.cache import cache
 from django.db.models import Max, Min
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -44,16 +45,23 @@ class BaseWizardStepView(View):
         context["current_index"] = current_index + 1
         context["current_step_slug"] = current_step.slug
         context["progress_percent"] = progress_percent  # Pass the calculated progress to the template
-        context["next_step"] = self.get_next_step()
-        context["previous_step"] = self.get_previous_step()
-
-        context["success_url"] = self.get_success_url()
+        context["next_step"] = self.get_next_step(workflow)
+        context["previous_step"] = self.get_previous_step(workflow)
+        context["success_url"] = self.get_success_url(workflow)
         return context
 
     def get_step(self):
         """Retrieve the current step based on the `step_slug`."""
         slug = self.get_step_slug()
-        return WizardStep.objects.get(slug=slug)
+        cache_key = f"wizard_step_{slug}"
+        # Try to get the cached WizardStep object
+        step = cache.get(cache_key)
+        if step is None:
+            # Cache miss, so we query the database
+            step = WizardStep.objects.get(slug=slug)
+            # Store in cache (None = no expiration unless invalidated)
+            cache.set(cache_key, step, None)
+        return step
 
     def get_workflow(self, registration_context=None):
         """Return the registration workflow for the current user."""
@@ -110,8 +118,10 @@ class BaseWizardStepView(View):
             context["rentals"] = Rental.objects.filter(child__family=user, paid=False)
         return context
 
-    def get_success_url(self):
-        next_step = self.get_next_step()
+    def get_success_url(self, workflow=None):
+        if not workflow:
+            workflow = self.get_workflow()
+        next_step = self.get_next_step(workflow)
         if next_step:
             return reverse("wizard:step", kwargs={"step_slug": next_step.slug})
         return ""
@@ -122,15 +132,17 @@ class BaseWizardStepView(View):
             return reverse("wizard:step", kwargs={"step_slug": previous_step.slug})
         return ""
 
-    def get_next_step(self):
+    def get_next_step(self, workflow=None):
         """Determine the next step based on the workflow."""
-        workflow = self.get_workflow()
+        if not workflow:
+            workflow = self.get_workflow()
         current_step = self.get_step()
         return workflow.get_next_step(current_step)
 
-    def get_previous_step(self):
+    def get_previous_step(self, workflow=None):
         """Determine the previous step based on the workflow."""
-        workflow = self.get_workflow()
+        if not workflow:
+            workflow = self.get_workflow()
         current_step = self.get_step()
         return workflow.get_previous_step(current_step)
 
