@@ -24,9 +24,8 @@ def invoice_to_transaction(request, invoice):
     for registration in invoice.registrations.prefetch_related("extra_infos").all():
         extra_price = Decimal("0") + sum(extra_infos.price_modifier for extra_infos in registration.extra_infos.all())
         total_registration_price = registration.price + extra_price
-        if total_registration_price.price == 0:
+        if total_registration_price == 0:
             continue
-
         lines.append(
             LineItem(
                 name=f"{ registration.course.activity.name } - {registration.child.full_name}",
