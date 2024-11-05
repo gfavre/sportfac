@@ -28,7 +28,7 @@ def invoice_to_transaction(request, invoice):
             name="Inscriptions",
             unique_id=str(invoice.id),
             quantity=1,
-            amount_including_tax=invoice.price,
+            amount_including_tax=invoice.total,
             type=LineItemType.PRODUCT,
         )
     )
