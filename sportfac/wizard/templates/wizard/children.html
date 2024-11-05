@@ -31,7 +31,6 @@
   </div>
   {% endif %}
 
-{% if not user.finished_registration %}
 <nav style="margin-top: 1.5em;">
   <ul class="pager" style="font-size: 1.25em;">
     <li class="previous">
@@ -39,19 +38,14 @@
         <span aria-hidden="true">&larr;</span> {% block previous_label %}{% trans "Previous"%}{% endblock %}
       </a>
     </li>
-    <li class="next" ng-class="{disabled: userChildren.length === 0}">
+    <li class="next" >
       {% trans "Next" as default_next %}
-      {% if CHILDREN_POPUP %}
-       <button ng-click="confirmNavigation($event)" data-url="{{ success_url }}" class="btn btn-primary">
+       <button data-url="{{ success_url }}" class="btn btn-primary"
+               {% if CHILDREN_POPUP %}ng-click="confirmNavigation($event)"{% endif %}
+               ng-class="{disabled: userChildren.length === 0}">
          <strong>{{ next_step.link_display|default:default_next }} <span aria-hidden="true">&rarr;</span></strong>
        </button>
-      {% else %}
-        <a href="{{ success_url }}" class="btn btn-primary">
-          <strong>{{ next_step.link_display|default:default_next }} <span aria-hidden="true">&rarr;</span></strong>
-        </a>
-      {% endif %}
     </li>
   </ul>
 </nav>
-{% endif %}
 {% endblock wizard_content %}
