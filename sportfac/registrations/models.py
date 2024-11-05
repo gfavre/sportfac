@@ -607,6 +607,9 @@ class Bill(TimeStampedModel, StatusModel):
                 registration.save()
             except IntegrityError:
                 registration.delete()
+        if self.rentals:
+            for rental in self.rentals.all():
+                rental.delete()
         # FIXME: datatrans???
         if hasattr(self, "postfinance_transactions") and self.postfinance_transactions.exists():
             for pf_transaction in self.postfinance_transactions.all():
