@@ -1,5 +1,4 @@
 import logging
-from decimal import Decimal
 
 from django.conf import settings
 from django.urls import reverse
@@ -24,33 +23,15 @@ logger = logging.getLogger(__name__)
 
 def invoice_to_transaction(request, invoice):
     lines = []
-    for registration in invoice.registrations.prefetch_related("extra_infos").all():
-        extra_price = Decimal("0") + sum(extra_infos.price_modifier for extra_infos in registration.extra_infos.all())
-        total_registration_price = registration.price + extra_price
-        if total_registration_price == 0:
-            continue
-        lines.append(
-            LineItem(
-                name=f"{ registration.course.activity.name } - {registration.child.full_name}",
-                unique_id=str(registration.id),
-                quantity=1,
-                amount_including_tax=float(total_registration_price),
-                type=LineItemType.PRODUCT,
-            )
+    lines.append(
+        LineItem(
+            name="Inscriptions",
+            unique_id=str(invoice.id),
+            quantity=1,
+            amount_including_tax=invoice.price,
+            type=LineItemType.PRODUCT,
         )
-    if settings.KEPCHUP_USE_APPOINTMENTS:
-        for rental in invoice.rentals.all():
-            if rental.amount == 0:
-                continue
-            lines.append(
-                LineItem(
-                    name=f"Location de matériel - {rental.child.full_name}",
-                    unique_id=str(rental.id),
-                    quantity=1,
-                    amount_including_tax=float(rental.amount),
-                    type=LineItemType.PRODUCT,
-                )
-            )
+    )
 
     billing_address = AddressCreate(
         city=invoice.family.city,
