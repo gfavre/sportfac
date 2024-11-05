@@ -178,6 +178,17 @@ class WizardFamilyUserCreateView(BaseWizardStepView, RegistrationBaseView):
         context.update(form_context)
         return context
 
+    def get_success_url(self, workflow=None):
+        """Determine the next step based on the workflow."""
+        return reverse("wizard:step", kwargs={"step_slug": "children"})
+
+    def get(self, request, *args, **kwargs):
+        """Handle GET requests: instantiate a blank version of the form."""
+        user: FamilyUser = request.user  # noqa
+        if user.is_authenticated:
+            return redirect(reverse("wizard:step", kwargs={"step_slug": "user-update"}))
+        return super().get(request, *args, **kwargs)
+
 
 class WizardFamilyUserUpdateView(LoginRequiredMixin, BaseWizardStepView, UpdateView):
     model = FamilyUser

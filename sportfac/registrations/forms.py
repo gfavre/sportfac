@@ -473,7 +473,7 @@ class ExtraInfoForm(forms.ModelForm):
         )
 
 
-class RegistrationVvalidationBaseForm(forms.ModelForm):
+class RegistrationValidationBaseForm(forms.ModelForm):
     class Media:
         js = ("js/registration-validation-form.js",)
         css = {"all": ("css/registration-validation-form.css",)}
@@ -519,14 +519,14 @@ class RegistrationVvalidationBaseForm(forms.ModelForm):
         )
 
 
-class RegistrationValidationFreeForm(RegistrationVvalidationBaseForm):
+class RegistrationValidationFreeForm(RegistrationValidationBaseForm):
     class Meta:
         model = RegistrationValidation
         fields = ["consent_given"]
         labels = {"consent_given": _("I consent to these registrations and to the terms and conditions.")}
 
 
-class RegistrationValidationForm(RegistrationVvalidationBaseForm):
+class RegistrationValidationForm(RegistrationValidationBaseForm):
     class Meta:
         model = RegistrationValidation
         fields = ["consent_given"]
