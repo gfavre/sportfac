@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.conf import settings
 from django.urls import reverse
 
@@ -19,18 +21,35 @@ DEFAULT_LANGUAGE = "fr"
 
 def invoice_to_transaction(request, invoice):
     lines = []
-    for registration in invoice.registrations.all():
-        if registration.price == 0:
+    for registration in invoice.registrations.prefetch_related("extra_infos").all():
+        extra_price = Decimal("0") + sum(extra_infos.price_modifier for extra_infos in registration.extra_infos.all())
+        total_registration_price = registration.price + extra_price
+        if total_registration_price.price == 0:
             continue
+
         lines.append(
             LineItem(
                 name=f"{ registration.course.activity.name } - {registration.child.full_name}",
                 unique_id=str(registration.id),
                 quantity=1,
-                amount_including_tax=registration.price,
+                amount_including_tax=total_registration_price,
                 type=LineItemType.PRODUCT,
             )
         )
+    if settings.KEPCHUP_USE_APPOINTMENTS:
+        for rental in invoice.rentals.all():
+            if rental.amount == 0:
+                continue
+            lines.append(
+                LineItem(
+                    name=f"Location de matériel - {rental.child.full_name}",
+                    unique_id=str(rental.id),
+                    quantity=1,
+                    amount_including_tax=rental.price,
+                    type=LineItemType.PRODUCT,
+                )
+            )
+
     billing_address = AddressCreate(
         city=invoice.family.city,
         country=invoice.family.country_iso_3166,
