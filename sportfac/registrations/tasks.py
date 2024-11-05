@@ -10,14 +10,14 @@ from django.utils import translation
 from django.utils.timezone import now
 
 from anymail.exceptions import AnymailRecipientsRefused
+from celery import shared_task
+from celery.utils.log import get_task_logger
+
 from appointments.models import Appointment
 from backend.dynamic_preferences_registry import global_preferences_registry
 from backend.models import Domain, YearTenant
-from celery import shared_task
-from celery.utils.log import get_task_logger
 from mailer.tasks import send_mail
 from profiles.models import FamilyUser
-
 from .models import Bill, Registration
 
 
@@ -208,6 +208,7 @@ def cancel_expired_registrations():
         for registration in invoice.registrations.all():
             courses_set.add(registration.course)
         invoice.cancel()
+
     # 2. Expire registrations without invoices (person never confirmed)
     for registration in Registration.objects.filter(
         status=Registration.STATUS.waiting,
