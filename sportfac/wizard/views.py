@@ -76,6 +76,7 @@ class BaseWizardStepView(View):
         user: FamilyUser = self.request.user  # noqa
         all_questions = set()
         questions_not_answered = set()
+        invoice = None
         if user.is_authenticated:
             invoice = (
                 Invoice.objects.filter(family=user, status=Invoice.STATUS.waiting).select_related("validation").first()
