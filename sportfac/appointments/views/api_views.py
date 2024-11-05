@@ -102,6 +102,8 @@ class AppointmentManagementView(mixins.CreateModelMixin, mixins.DestroyModelMixi
     ModelViewSet to handle managing appointments and updating rentals accordingly.
     """
 
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAuthenticated,)  # Ensure only authenticated users can access
     queryset = AppointmentSlot.objects.filter(start__gte=now())
     serializer_class = RegisterChildrenSerializer
 
