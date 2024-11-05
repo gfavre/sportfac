@@ -57,6 +57,7 @@ class PaymentMixin:
             except ApiException as exc:
                 capture_exception(exc)
                 logger.error("Postfinance API error: %s", exc)
+                logger.error(exc.reason)
                 transaction = None
             return transaction
         return None
