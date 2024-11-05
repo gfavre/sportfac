@@ -2,14 +2,14 @@
 
 
 
-<section>  
+<section>
   <div class="row">
      <div class="col-sm-6 visible-print-block">
-       <img src="{{ STATIC_URL }}img/logo.png' %}"/>
+       <img src="{{ STATIC_URL }}img/logo.png"/>
      {% include "address.html" %}
     </div>
 
-      
+
     <div class="col-sm-6 col-sm-offset-6">
       <address>
         {{ bill.family.full_name }}<br/>
@@ -23,9 +23,9 @@
     </div>
   </div>
   <h2>{% trans "Bill detail" %}</h2>
-  
-  <dl class="dl-horizontal">  
-      
+
+  <dl class="dl-horizontal">
+
       <dt>{% trans "Billing identifier" %}</dt><dd>{{ bill.billing_identifier }}</dd>
       <dt>{% trans "Total" %}</dt><dd>{{ bill.total|money }}</dd>
       {% if bill.is_wire_transfer %}
