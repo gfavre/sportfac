@@ -49,6 +49,15 @@ class WizardWorkflow:
                 return steps[index + 1]
         return None
 
+    def get_next_visible_step(self, current_step):
+        """Get the next step based on the current step's position."""
+        # All visible steps, because nothing could have changed that revokes a previous step
+        steps = self.get_visible_steps()
+        for index, step in enumerate(steps):
+            if step == current_step and index + 1 < len(steps):
+                return steps[index + 1]
+        return None
+
     def get_previous_step(self, current_step):
         """Get the next step based on the current step's position."""
         # All visible steps, because nothing could have changed that revokes a previous step
