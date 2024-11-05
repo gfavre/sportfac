@@ -1,11 +1,12 @@
 {% extends "wizard/base.html" %}
-{% load crispy_forms_tags sekizai_tags i18n switzerland %}
+{% load countdowntimer crispy_forms_tags sekizai_tags i18n switzerland %}
 
 
 {% block wizard_content %}
 
 <p>Les inscriptions seront définitivement validées à la suite du règlement de la finance de participation pour les cours choisis.</p>
 <p>Le montant total pour vos inscriptions s'élève à : <strong>{{ bill.total|money }}</strong></p>
+
 
 {% if PAYMENT_METHOD == 'iban' %}
 <p>L'identifiant pour votre transaction est le suivant : <strong>{{ bill.billing_identifier }}</strong></p>
@@ -21,8 +22,29 @@
 <p>en indiquant, sous communications ou motif, votre identifiant de transaction.</p>
 {% elif PAYMENT_METHOD == 'datatrans' %}
   <p>Le paiement peut se faire via Twint (débit direct) ou Mastercard et Visa (cartes de crédit).</p>
+  {% if REGISTRATION_EXPIRE_MINUTES %}
+    <div class="alert alert-warning">
+       <h4 class="alert-heading"><i class="icon icon-warning"></i> {% trans "Important notice" %}</h4>
+    {% with bill.registrations_valid_to|date:"j F Y, H:i" as formatted_date %}
+      {% blocktrans with minutes=REGISTRATION_EXPIRE_MINUTES|human_readable_time validity=formatted_date %}
+      Your registrations are reserved for the next {{ minutes }}. If payment is not received before <strong>{{ validity }}</strong>, your
+      registrations will be cancelled and your place will be made available again.{% endblocktrans %}
+    {% endwith %}
+    </div>
+  {% endif %}
   {% include 'payments/datatrans_pay_button.html' %}
 {% elif PAYMENT_METHOD == 'postfinance' %}
+  {% if REGISTRATION_EXPIRE_MINUTES %}
+   <div class="alert alert-warning">
+       <h4 class="alert-heading"><i class="icon icon-warning"></i> {% trans "Important notice" %}</h4>
+
+      {% with bill.registrations_valid_to|date:"j F Y, H:i" as formatted_date %}
+      {% blocktrans with minutes=REGISTRATION_EXPIRE_MINUTES|human_readable_time validity=formatted_date %}
+      Your registrations are reserved for the next {{ minutes }}. If payment is not received before <strong>{{ validity }}</strong>, your
+      registrations will be cancelled and your place will be made available again.{% endblocktrans %}
+    {% endwith %}
+   </div>
+  {% endif %}
   {% include 'payments/postfinance_pay_button.html' %}
 {% elif PAYMENT_METHOD == 'external' %}
   <p>La facture vous sera envoyée par courrier.</p>

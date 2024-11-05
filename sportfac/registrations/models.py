@@ -1,6 +1,6 @@
 import os
 import re
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from tempfile import mkdtemp
 
 from django.conf import settings
@@ -456,6 +456,16 @@ class Bill(TimeStampedModel, StatusModel):
     @property
     def pay_url(self):
         return self.get_pay_url()
+
+    @property
+    def registrations_valid_to(self):
+        print(settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES)
+
+        if not settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES:
+            return None
+        print(self.modified + timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES))
+
+        return self.modified + timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES)
 
     @transaction.atomic
     def close(self):
