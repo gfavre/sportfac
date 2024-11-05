@@ -96,6 +96,13 @@ class Rental(TimeStampedModel):
         verbose_name_plural = _("Rentals")
         ordering = ("child",)
 
+    def delete(self, using=None, keep_parents=False):
+        if self.pickup_appointment:
+            self.pickup_appointment.delete()
+        if self.return_appointment:
+            self.return_appointment.delete()
+        super().delete(using, keep_parents)
+
     def __str__(self):
         return f"{self.child}"
 
