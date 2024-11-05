@@ -7,10 +7,11 @@ from django.utils.translation import get_language
 from django.utils.translation import gettext as _
 
 from rest_framework import generics, mixins, status
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from api.permissions import ManagerPermission
+from api.permissions import IsAuthenticated, ManagerPermission
 from registrations.models import Child
 from ..models import Appointment, AppointmentSlot, AppointmentType, Rental
 from ..serializers import (
@@ -200,6 +201,8 @@ class AppointmentManagementView(mixins.CreateModelMixin, mixins.DestroyModelMixi
 
 
 class RemoveChildFromSlotView(generics.GenericAPIView):
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAuthenticated,)  # Ensure only authenticated users can access
     serializer_class = RegisterChildrenSerializer
 
     def get_queryset(self):
@@ -235,6 +238,9 @@ class RemoveChildFromSlotView(generics.GenericAPIView):
 
 
 class RegisterChildrenToSlotView(generics.GenericAPIView):
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAuthenticated,)  # Ensure only authenticated users can access
+
     serializer_class = RegisterChildrenSerializer
 
     def get_queryset(self):
@@ -268,6 +274,7 @@ class RegisterChildrenToSlotView(generics.GenericAPIView):
 
 
 class SlotsViewSet(ModelViewSet):
+    authentication_classes = (SessionAuthentication,)
     permission_classes = (ManagerPermission,)
     serializer_class = AdminAppointmentSlotSerializer
 
@@ -276,6 +283,9 @@ class SlotsViewSet(ModelViewSet):
 
 
 class RentalViewSet(ModelViewSet):
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAuthenticated,)  # Ensure only authenticated users can access
+
     queryset = Rental.objects.all()
     serializer_class = RentalSerializer
 
