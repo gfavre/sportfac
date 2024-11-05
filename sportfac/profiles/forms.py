@@ -6,17 +6,17 @@ from django.urls import reverse
 from django.utils.html import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from activities.models import Activity
-from backend.forms import ActivityMultipleWidget
 from bootstrap_datepicker_plus.widgets import DatePickerInput
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import HTML, Field, Fieldset, Layout, Submit
+from crispy_forms.layout import HTML, Fieldset, Layout, Submit
 
 # noinspection PyPackageRequirements
 from localflavor.generic.forms import IBANFormField
 from phonenumber_field.formfields import PhoneNumberField
 from phonenumber_field.widgets import RegionalPhoneNumberWidget
 
+from activities.models import Activity
+from backend.forms import ActivityMultipleWidget
 from .models import FamilyUser
 
 
@@ -377,7 +377,7 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
         required=True,
         widget=forms.TextInput(attrs={"placeholder": _("City")}),
     )
-    country = forms.ChoiceField(label=_("Country"), choices=FamilyUser.COUNTRY)
+    country = forms.ChoiceField(label=_("Country"), choices=FamilyUser.COUNTRY, required=True, initial="CH")
 
     private_phone = PhoneNumberField(
         label=_("Home phone"),
@@ -446,6 +446,10 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
         self.helper.form_group_wrapper_class = "row"
         self.helper.label_class = "col-sm-2"
         self.helper.field_class = "col-sm-10"
+        self.fields["country"].initial = FamilyUser.COUNTRY.CH
+
+        if settings.KEPCHUP_REGISTRATION_HIDE_COUNTRY:
+            self.fields["country"].widget = forms.HiddenInput()
 
         if settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES:
             self.fields["private_phone"].required = True
@@ -462,7 +466,7 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
                 "address",
                 "zipcode",
                 "city",
-                not settings.KEPCHUP_REGISTRATION_HIDE_COUNTRY and "country",
+                "country",
                 "private_phone",
                 not settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES and "private_phone2" or HTML(""),
                 not settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES and "private_phone3" or HTML(""),

@@ -10,7 +10,7 @@
     <div class="col-sm-6 "  style="border-right: 1px solid #ccc">
       {% if registration_opened %}
         <p class="lead text-center">{% trans "You don't have an account?" %}<br>
-          <a href="{% url 'wizard_register' %}" class="btn btn-large btn-primary" style="margin-top: 30px;">
+          <a href="{% url 'wizard:entry_point' %}" class="btn btn-large btn-primary" style="margin-top: 30px;">
             {% trans "Registration" %}
           </a>
         </p>
