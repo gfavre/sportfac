@@ -63,7 +63,7 @@ class OldExtraInfoViewSet(viewsets.ModelViewSet):
 
 
 class ExtraInfoViewSet(viewsets.ModelViewSet):
-    authentication_classes = (SessionAuthentication,)
+    # authentication_classes = (SessionAuthentication,)
 
     queryset = ExtraInfo.objects.all()
     serializer_class = ExtraInfoSerializer
