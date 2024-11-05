@@ -10,11 +10,10 @@ from django.views.generic import FormView, RedirectView, UpdateView
 
 from braces.views import LoginRequiredMixin
 from registration import signals
+
 from registrations.models import Bill
-from wizard.views import BaseWizardStepView
-
 from sportfac.views import NotReachableException, WizardMixin
-
+from wizard.views import BaseWizardStepView
 from .forms import InstructorForm, RegistrationForm, UserForm
 from .models import FamilyUser
 
@@ -178,9 +177,6 @@ class WizardFamilyUserCreateView(BaseWizardStepView, RegistrationBaseView):
         form_context = RegistrationBaseView.get_context_data(self, **kwargs)
         context.update(form_context)
         return context
-
-    def get_success_url(self):
-        return reverse("wizard:step", kwargs={"step_slug": "user-create"})
 
 
 class WizardFamilyUserUpdateView(LoginRequiredMixin, BaseWizardStepView, UpdateView):
