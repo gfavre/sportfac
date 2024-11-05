@@ -18,6 +18,7 @@
     <tr id="{{ registration.id }}" {% if registration.id in overlapped %}class="warning"{% endif %}>
       <td rowspan="{{ registration.row_span }}" class="text-nowrap">
         <strong>{{ registration.child.full_name }}</strong>
+         {% if DISPLAY_LAGAPEO %}<br><small>{{ registration.child.id_lagapeo }}</small>{% endif %}
       </td>
       <td>
         <strong>{{ registration.course.activity.name }}</strong>

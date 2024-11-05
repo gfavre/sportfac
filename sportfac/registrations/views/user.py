@@ -47,8 +47,13 @@ class BillDetailView(LoginRequiredMixin, PaymentMixin, BillMixin, DetailView):
         bill = self.get_object()
         context = super().get_context_data(**kwargs)
         context["bill"] = bill
+        context["registrations"] = bill.registrations.all()
+        for reg in context["registrations"]:
+            reg.row_span = 1 + reg.extra_infos.count()
+        context["rentals"] = bill.rentals.all()
         if not bill.is_paid:
             context["transaction"] = self.get_transaction(bill)
+        context["total_amount"] = bill.total
         return context
 
 
