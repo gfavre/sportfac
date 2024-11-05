@@ -44,7 +44,7 @@ def invoice_to_transaction(request, invoice):
                     name=f"Location de matériel - {rental.child.full_name}",
                     unique_id=str(rental.id),
                     quantity=1,
-                    amount_including_tax=rental.price,
+                    amount_including_tax=rental.amount,
                     type=LineItemType.PRODUCT,
                 )
             )
