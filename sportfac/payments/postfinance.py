@@ -1,3 +1,6 @@
+import logging
+from decimal import Decimal
+
 from django.conf import settings
 from django.urls import reverse
 
@@ -16,11 +19,13 @@ CURR_CHF = "CHF"
 DEFAULT_TIMEOUT = 5
 DEFAULT_LANGUAGE = "fr"
 
+logger = logging.getLogger(__name__)
+
 
 def invoice_to_transaction(request, invoice):
     lines = []
     for registration in invoice.registrations.prefetch_related("extra_infos").all():
-        extra_price = 0 + sum(extra_infos.price_modifier for extra_infos in registration.extra_infos.all())
+        extra_price = Decimal("0") + sum(extra_infos.price_modifier for extra_infos in registration.extra_infos.all())
         total_registration_price = registration.price + extra_price
         if total_registration_price == 0:
             continue
@@ -29,7 +34,7 @@ def invoice_to_transaction(request, invoice):
                 name=f"{ registration.course.activity.name } - {registration.child.full_name}",
                 unique_id=str(registration.id),
                 quantity=1,
-                amount_including_tax=float(total_registration_price),
+                amount_including_tax=Decimal(total_registration_price),
                 type=LineItemType.PRODUCT,
             )
         )
@@ -42,7 +47,7 @@ def invoice_to_transaction(request, invoice):
                     name=f"Location de matériel - {rental.child.full_name}",
                     unique_id=str(rental.id),
                     quantity=1,
-                    amount_including_tax=float(rental.amount),
+                    amount_including_tax=Decimal(rental.amount),
                     type=LineItemType.PRODUCT,
                 )
             )
@@ -89,6 +94,7 @@ def get_transaction(request, invoice):
     # transaction_page_service = TransactionPaymentPageServiceApi(config)
     transaction_lightbox_service = TransactionLightboxServiceApi(config)
     transaction = invoice_to_transaction(request, invoice)
+    logger.info("Transaction: %s", transaction)
     transaction_create = transaction_service.create(space_id=settings.POSTFINANCE_SPACE_ID, transaction=transaction)
     # payment_page_url = transaction_page_service.payment_page_url(
     #    space_id=settings.POSTFINANCE_SPACE_ID, id=transaction_create.id
