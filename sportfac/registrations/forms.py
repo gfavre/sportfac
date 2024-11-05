@@ -410,6 +410,7 @@ class ExtraInfoForm(forms.ModelForm):
     def _build_image_field(self, unique_identifier):
         # Build the image input field layout using Crispy Forms
         drag_and_drop_label = _("Drag & drop or click to upload an image")
+        help_text_label = _("Supported formats: JPG, PNG, GIF, WebP")
         return Div(
             Field(
                 "image",
@@ -425,6 +426,7 @@ class ExtraInfoForm(forms.ModelForm):
                         <img data-image-preview="{unique_identifier}" class="image-preview"
                             style="display:none;" alt="Image Preview">
                     </div>
+                    <div class="help-block">{help_text_label}</div>
                     """
                 ),
                 css_class="form-group",
@@ -435,6 +437,7 @@ class ExtraInfoForm(forms.ModelForm):
     def _build_image_field_with_preview(self, unique_identifier, image_url):
         # Display the drop area and show the existing image with a preview
         label = _("Drag & drop or click to upload and modify current image")
+        help_text_label = _("Supported formats: JPG, PNG, GIF, WebP")
         return Div(
             Field(
                 "image",
@@ -450,6 +453,7 @@ class ExtraInfoForm(forms.ModelForm):
                            <img src="{image_url}" data-image-preview="{unique_identifier}" class="image-preview"
                                style="display:block;" alt="Image Preview">
                        </div>
+                       <div class="help-block">{help_text_label}</div>
                        """
                 ),
                 css_class="form-group",
