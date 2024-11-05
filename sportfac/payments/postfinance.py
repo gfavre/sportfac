@@ -34,7 +34,7 @@ def invoice_to_transaction(request, invoice):
                 name=f"{ registration.course.activity.name } - {registration.child.full_name}",
                 unique_id=str(registration.id),
                 quantity=1,
-                amount_including_tax=Decimal(total_registration_price),
+                amount_including_tax=float(total_registration_price),
                 type=LineItemType.PRODUCT,
             )
         )
@@ -47,7 +47,7 @@ def invoice_to_transaction(request, invoice):
                     name=f"Location de matériel - {rental.child.full_name}",
                     unique_id=str(rental.id),
                     quantity=1,
-                    amount_including_tax=Decimal(rental.amount),
+                    amount_including_tax=float(rental.amount),
                     type=LineItemType.PRODUCT,
                 )
             )
