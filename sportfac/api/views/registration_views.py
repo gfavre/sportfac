@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from profiles.models import SchoolYear
 from registrations.models import ExtraInfo, Registration
 from schools.models import Building, Teacher
-from ..permissions import ChildOrAdminPermission, RegistrationOwnerAdminPermission
+from ..permissions import ChildOrAdminPermission, IsAuthenticated, RegistrationOwnerAdminPermission
 from ..serializers import (
     BuildingSerializer,
     ExtraInfoSerializer,
@@ -63,7 +63,8 @@ class OldExtraInfoViewSet(viewsets.ModelViewSet):
 
 
 class ExtraInfoViewSet(viewsets.ModelViewSet):
-    # authentication_classes = (SessionAuthentication,)
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAuthenticated,)  # Ensure only authenticated users can access
 
     queryset = ExtraInfo.objects.all()
     serializer_class = ExtraInfoSerializer
@@ -92,6 +93,7 @@ class ExtraInfoViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         """Handle update requests."""
         instance = self.get_object()
+        logger.info(instance.registration.child.family, request.user)
         if instance.registration.child.family != request.user:
             return Response(
                 {"success": False, "message": "You do not have permission to update this resource."},
