@@ -76,7 +76,10 @@ class BaseWizardStepView(View):
         user: FamilyUser = self.request.user  # noqa
         all_questions = set()
         questions_not_answered = set()
-        invoice = None
+        invoice = Invoice.objects.none()
+        registrations = Registration.objects.none()
+        rentals = Rental.objects.none()
+
         if user.is_authenticated:
             invoice = (
                 Invoice.objects.filter(family=user, status=Invoice.STATUS.waiting).select_related("validation").first()
@@ -100,10 +103,10 @@ class BaseWizardStepView(View):
                 # Check for missing questions
                 missing_questions = [question for question in course_questions if question not in answered_questions]
                 questions_not_answered.update(set(missing_questions))
-        else:
-            registrations = Registration.objects.none()
+            if settings.KEPCHUP_USE_APPOINTMENTS:
+                rentals = Rental.objects.filter(child__family=user, paid=False)
 
-        context = {
+        return {
             "user": user,
             "user_registered": user.is_authenticated,
             "has_children": user.is_authenticated and user.children.exists(),
@@ -112,12 +115,9 @@ class BaseWizardStepView(View):
             "all_questions": all_questions,
             "questions_not_answered": questions_not_answered,
             "invoice": invoice,
-            "rentals": Rental.objects.none(),
+            "rentals": rentals,
             "validation": invoice.validation if invoice else None,
         }
-        if settings.KEPCHUP_USE_APPOINTMENTS:
-            context["rentals"] = Rental.objects.filter(child__family=user, paid=False)
-        return context
 
     def get_success_url(self, workflow=None):
         if not workflow:
