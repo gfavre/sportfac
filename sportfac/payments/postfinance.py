@@ -1,5 +1,3 @@
-from decimal import Decimal
-
 from django.conf import settings
 from django.urls import reverse
 
@@ -22,7 +20,7 @@ DEFAULT_LANGUAGE = "fr"
 def invoice_to_transaction(request, invoice):
     lines = []
     for registration in invoice.registrations.prefetch_related("extra_infos").all():
-        extra_price = Decimal("0") + sum(extra_infos.price_modifier for extra_infos in registration.extra_infos.all())
+        extra_price = 0 + sum(extra_infos.price_modifier for extra_infos in registration.extra_infos.all())
         total_registration_price = registration.price + extra_price
         if total_registration_price == 0:
             continue
