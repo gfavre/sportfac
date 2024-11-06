@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-06 14:49+0100\n"
-"PO-Revision-Date: 2024-11-06 14:49+0100\n"
+"POT-Creation-Date: 2024-11-06 14:54+0100\n"
+"PO-Revision-Date: 2024-11-06 14:55+0100\n"
 "Last-Translator: Gregory Favre <greg@beyondthewall.ch>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -82,7 +82,7 @@ msgstr "Activité"
 #: sportfac/backend/tests/test_views/test_registrations.py:57
 #: sportfac/backend/views/registration_views.py:174
 #: sportfac/backend/views/registration_views.py:234
-#: sportfac/backend/views/registration_views.py:676
+#: sportfac/backend/views/registration_views.py:677
 #: sportfac/registrations/models.py:57 sportfac/registrations/models.py:970
 #: sportfac/registrations/resources.py:33
 msgid "Course"
@@ -1482,7 +1482,7 @@ msgstr "Envoyer un email..."
 #: sportfac/backend/templates/backend/user/detail.html:11
 #: sportfac/profiles/forms.py:117 sportfac/profiles/forms.py:367
 #: sportfac/registrations/resources.py:48
-#: sportfac/registrations/templates/registrations/invoice-part-heading.html:65
+#: sportfac/registrations/templates/registrations/invoice-part-heading.html:69
 #: sportfac/themes/coppet/templates/registrations/bill-partial.html:35
 msgid "Address"
 msgstr "Adresse"
@@ -1887,7 +1887,7 @@ msgstr "Les créneaux de rendez-vous"
 #: sportfac/backend/templates/backend/allocations/report.html:114
 #: sportfac/backend/templates/backend/registration/detail.html:46
 #: sportfac/payments/admin.py:24 sportfac/payments/admin.py:44
-#: sportfac/registrations/templates/registrations/invoice-part-heading.html:55
+#: sportfac/registrations/templates/registrations/invoice-part-heading.html:59
 msgid "Invoice"
 msgstr "Facture"
 
@@ -1905,7 +1905,7 @@ msgstr "Montant"
 #: sportfac/registrations/resources.py:55
 #: sportfac/registrations/resources.py:234
 #: sportfac/registrations/templates/registrations/billing.html:12
-#: sportfac/registrations/templates/registrations/invoice-part-heading.html:9
+#: sportfac/registrations/templates/registrations/invoice-part-heading.html:10
 msgid "Paid"
 msgstr "Payé"
 
@@ -2184,7 +2184,7 @@ msgstr "Jours entre la fin des inscriptions et le paiement"
 #: sportfac/backend/dynamic_preferences_registry.py:188
 #: sportfac/backend/templates/backend/user/detail-instructor.html:49
 #: sportfac/profiles/forms.py:221 sportfac/profiles/resources.py:61
-#: sportfac/registrations/templates/registrations/invoice-part-heading.html:63
+#: sportfac/registrations/templates/registrations/invoice-part-heading.html:67
 #: sportfac/themes/coppet/templates/registrations/bill-partial.html:34
 msgid "IBAN"
 msgstr "IBAN"
@@ -3690,7 +3690,7 @@ msgstr "Montants = 0"
 #: sportfac/registrations/models.py:410 sportfac/registrations/resources.py:39
 #: sportfac/registrations/resources.py:225
 #: sportfac/registrations/templates/registrations/billing.html:9
-#: sportfac/registrations/templates/registrations/invoice-part-heading.html:58
+#: sportfac/registrations/templates/registrations/invoice-part-heading.html:62
 #: sportfac/themes/coppet/templates/registrations/bill-partial.html:30
 #: sportfac/themes/monthey/templates/registrations/bill-partial.html:29
 msgid "Billing identifier"
@@ -4758,7 +4758,7 @@ msgid "registrations"
 msgstr "inscriptions"
 
 #: sportfac/backend/views/registration_views.py:144
-#: sportfac/backend/views/registration_views.py:653
+#: sportfac/backend/views/registration_views.py:654
 #, python-format
 msgid "Registrations of %(nb)s children have been moved."
 msgstr "Les inscriptions de %(nb)s enfants ont été déplacées."
@@ -4783,7 +4783,7 @@ msgid "A registration for %(child)s to %(course)s already exists."
 msgstr "Une inscription pour %(child)s au cours %(course)s existe déjà."
 
 #: sportfac/backend/views/registration_views.py:256
-#: sportfac/registrations/views/user.py:215
+#: sportfac/registrations/views/user.py:216
 msgid "Registration has been canceled."
 msgstr "L'inscription a été annulée."
 
@@ -4804,19 +4804,19 @@ msgstr "invoices-{}-{}.xlsx"
 msgid "invoices.xlsx"
 msgstr "factures.xlsx"
 
-#: sportfac/backend/views/registration_views.py:536
+#: sportfac/backend/views/registration_views.py:537
 msgid "Bill has been updated."
 msgstr "La facture a été mise à jour."
 
-#: sportfac/backend/views/registration_views.py:625
+#: sportfac/backend/views/registration_views.py:626
 msgid "Transport has been created."
 msgstr "Le transport a été créé."
 
-#: sportfac/backend/views/registration_views.py:632
+#: sportfac/backend/views/registration_views.py:633
 msgid "Transport has been updated."
 msgstr "Le transport a été mis à jour."
 
-#: sportfac/backend/views/registration_views.py:640
+#: sportfac/backend/views/registration_views.py:641
 msgid "Transport has been deleted."
 msgstr "Le transport a été supprimé."
 
@@ -6035,10 +6035,14 @@ msgstr "Éditer les données de mes enfants"
 
 #: sportfac/registrations/templates/registrations/invoice-part-heading.html:7
 #, python-format
-msgid "Paid on %(payment_date)s"
-msgstr "Payé le %(payment_date)s"
+msgid ""
+"Paid on\n"
+"          %(payment_date)s"
+msgstr ""
+"Payé le\n"
+"          %(payment_date)s"
 
-#: sportfac/registrations/templates/registrations/invoice-part-heading.html:61
+#: sportfac/registrations/templates/registrations/invoice-part-heading.html:65
 #: sportfac/themes/coppet/templates/registrations/bill-partial.html:33
 msgid "Payable until"
 msgstr "Payable jusqu'au"
@@ -6132,7 +6136,7 @@ msgstr "Champ obligatoire manquant : {field}"
 msgid "File format is unreadable"
 msgstr "Le fichier n'a pas pu être lu: mauvais format"
 
-#: sportfac/registrations/views/user.py:118
+#: sportfac/registrations/views/user.py:119
 msgid "Your registrations have been recorded, thank you!"
 msgstr "Vos inscriptions ont bien été enregistrées, merci beaucoup!"
 
