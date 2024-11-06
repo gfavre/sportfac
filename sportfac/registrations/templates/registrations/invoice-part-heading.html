@@ -1,38 +1,42 @@
 {% load i18n switzerland static sekizai_tags %}
 
 <section class="invoice-heading">
-  {% if not invoice.is_paid %}
-  <div class="ribbon">
-    {% if invoice.payment_date %}
-    {% blocktrans with payment_date=invoice.payment_date|date:"j b. Y" %}Paid on {{ payment_date }}{% endblocktrans %}
+  {% if invoice.is_paid %}
+    <div class="ribbon">
+      {% if invoice.payment_date %}
+        {% blocktrans with payment_date=invoice.payment_date|date:"j b. Y" %}Paid on
+          {{ payment_date }}{% endblocktrans %}
       {% else %}
-      {% trans "Paid" %}
-    {% endif %}
-  </div>
-{% endif %}
-  <style>
-  .invoice-heading {
-    position: relative;
-  }
-  .ribbon {
-    position: absolute;
-    top: 30px;
-    left: -50px; /* Adjust based on the ribbon size */
-    background-color: #28a745; /* Green for "Paid" */
-    color: white;
-    padding: 5px 70px; /* Width of the ribbon */
-    font-size: 16px;
-    font-weight: bold;
-    text-align: center;
-    transform: rotate(-45deg); /* Rotate the ribbon */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-}
-  @media print {
-    .ribbon {
-      display: none;
-    }
-  }
-  </style>
+        {% trans "Paid" %}
+      {% endif %}
+    </div>
+    <style>
+      .invoice-heading {
+        position: relative;
+      }
+
+      .ribbon {
+        position: absolute;
+        top: 30px;
+        left: -50px; /* Adjust based on the ribbon size */
+        background-color: #28a745; /* Green for "Paid" */
+        color: white;
+        padding: 5px 70px; /* Width of the ribbon */
+        font-size: 16px;
+        font-weight: bold;
+        text-align: center;
+        transform: rotate(-45deg); /* Rotate the ribbon */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+      }
+
+      @media print {
+        .ribbon {
+          display: none;
+        }
+      }
+    </style>
+  {% endif %}
+
 
   <div class="row">
     <div class="col-sm-6 visible-print-block">
