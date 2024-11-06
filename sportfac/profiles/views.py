@@ -178,7 +178,7 @@ class WizardFamilyUserCreateView(BaseWizardStepView, RegistrationBaseView):
         context.update(form_context)
         return context
 
-    def get_success_url(self, workflow=None):
+    def get_success_url(self):
         """Determine the next step based on the workflow."""
         return reverse("wizard:step", kwargs={"step_slug": "children"})
 

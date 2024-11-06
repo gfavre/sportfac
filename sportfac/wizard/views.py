@@ -12,6 +12,7 @@ from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser
 from registrations.models import Bill as Invoice
 from registrations.models import Registration
+from .handlers import get_step_handler
 from .models import WizardStep
 from .workflow import WizardWorkflow
 
@@ -23,15 +24,20 @@ class BaseWizardStepView(View):
     step_slug = None  # Should be defined in subclasses
     requires_completion = True  # Default behavior is to require completion
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._registration_context = None
+        self._workflow = None
+        self._step = None
+
     def get_step_slug(self):
         return self.step_slug
 
     def get_context_data(self, **kwargs):
         """Provide context data for rendering the step."""
         context = kwargs
-        registration_context = self.get_registration_context()
-        context.update(registration_context)
-        workflow = self.get_workflow(registration_context)
+        context.update(self.get_registration_context())
+        workflow = self.get_workflow()
         steps = workflow.get_visible_steps()
         total_steps = len(steps)
         current_step = self.get_step()
@@ -45,13 +51,15 @@ class BaseWizardStepView(View):
         context["current_index"] = current_index + 1
         context["current_step_slug"] = current_step.slug
         context["progress_percent"] = progress_percent  # Pass the calculated progress to the template
-        context["next_step"] = self.get_next_step(workflow)
-        context["previous_step"] = self.get_previous_step(workflow)
-        context["success_url"] = self.get_success_url(workflow)
+        context["next_step"] = self.get_next_step()
+        context["previous_step"] = self.get_previous_step()
+        context["success_url"] = self.get_success_url()
         return context
 
     def get_step(self):
         """Retrieve the current step based on the `step_slug`."""
+        if self._step:
+            return self._step
         slug = self.get_step_slug()
         cache_key = f"wizard_step_{slug}"
         # Try to get the cached WizardStep object
@@ -61,17 +69,23 @@ class BaseWizardStepView(View):
             step = WizardStep.objects.get(slug=slug)
             # Store in cache (None = no expiration unless invalidated)
             cache.set(cache_key, step, None)
-        return step
+        self._step = step
+        return self._step
 
     def get_workflow(self, registration_context=None):
         """Return the registration workflow for the current user."""
+        if self._workflow:
+            return self._workflow
         if registration_context is None:
             registration_context = self.get_registration_context()
         user: FamilyUser = self.request.user  # noqa
-        return WizardWorkflow(user, registration_context)
+        self._workflow = WizardWorkflow(user, registration_context)
+        return self._workflow
 
     def get_registration_context(self):
         """Return the registration context for evaluating the workflow."""
+        if self._registration_context:
+            return self._registration_context
         # Implement context gathering logic based on user state
         user: FamilyUser = self.request.user  # noqa
         all_questions = set()
@@ -106,7 +120,7 @@ class BaseWizardStepView(View):
             if settings.KEPCHUP_USE_APPOINTMENTS:
                 rentals = Rental.objects.filter(child__family=user, paid=False)
 
-        return {
+        self._registration_context = {
             "user": user,
             "user_registered": user.is_authenticated,
             "has_children": user.is_authenticated and user.children.exists(),
@@ -118,11 +132,10 @@ class BaseWizardStepView(View):
             "rentals": rentals,
             "validation": invoice.validation if invoice else None,
         }
+        return self._registration_context
 
-    def get_success_url(self, workflow=None):
-        if not workflow:
-            workflow = self.get_workflow()
-        next_step = self.get_next_step(workflow)
+    def get_success_url(self):
+        next_step = self.get_next_step()
         if next_step:
             return reverse("wizard:step", kwargs={"step_slug": next_step.slug})
         return ""
@@ -133,19 +146,23 @@ class BaseWizardStepView(View):
             return reverse("wizard:step", kwargs={"step_slug": previous_step.slug})
         return ""
 
-    def get_next_step(self, workflow=None):
+    def get_next_step(self):
         """Determine the next step based on the workflow."""
-        if not workflow:
-            workflow = self.get_workflow()
         current_step = self.get_step()
-        return workflow.get_next_step(current_step)
+        return self.get_workflow().get_next_step(current_step)
 
-    def get_previous_step(self, workflow=None):
+    def get_previous_step(self):
         """Determine the previous step based on the workflow."""
-        if not workflow:
-            workflow = self.get_workflow()
         current_step = self.get_step()
-        return workflow.get_previous_step(current_step)
+        return self.get_workflow().get_previous_step(current_step)
+
+    def dispatch(self, request, *args, **kwargs):
+        if not get_step_handler(self.get_step(), self.get_registration_context()).is_ready():
+            visible_steps = self.get_workflow().get_visible_steps()
+            for step in reversed(visible_steps):
+                if get_step_handler(step, self.get_registration_context()).is_ready():
+                    return redirect(step.url())
+        return super().dispatch(request, *args, **kwargs)
 
 
 # Static/Template-Based Step
@@ -173,19 +190,27 @@ class EntryPointView(View):
 
 
 class QuestionsStepView(BaseWizardStepView):
+    """
+    This class is only used to navigate between questions, no need to deep analyze ready steps as it only
+    redirects to views that will handle the logic.
+    """
+
     step_slug = "questions"
 
     def dispatch(self, request, *args, **kwargs):
         direction = request.GET.get("direction")
-        user: FamilyUser = request.user  # noqa
-        if not user.is_authenticated:
-            return redirect("wizard:step", step_slug="user-create")
         if direction == "previous":
             return redirect(self.get_previous_step().url())
         return redirect(self.get_next_step().url())
 
 
 class EquipmentStepView(BaseWizardStepView):
+    """
+    This class is only used to navigate between if rental exists or not, no need to deep analyze ready steps as it only
+    redirects to views that will handle the logic.
+    TODO: However we might need to assert if it is still necessary
+    """
+
     step_slug = "equipment-need-return"
 
     def dispatch(self, request, *args, **kwargs):
