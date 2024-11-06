@@ -156,15 +156,16 @@ class PaymentStepHandler(StepHandler):
 
 class ConfirmationStepHandler(StepHandler):
     def is_ready(self):
-        if not self.registration_context.get("registrations"):
-            return False
         if self.registration_context["questions_not_answered"]:
+            return False
+        if not self.registration_context.get("registrations") and not self.registration_context.get("rentals"):
             return False
         if self.registration_context.get("rentals"):
             return all(
                 rental.return_appointment and rental.pickup_appointment
                 for rental in self.registration_context.get("rentals")
             )
+
         return True
 
     def is_complete(self):
