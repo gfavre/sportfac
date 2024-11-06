@@ -97,9 +97,9 @@
   {% addtoblock "css" %}
     <link href="{% static 'js/vendor/fullcalendar-5/lib/main.css' %}" rel="stylesheet"/>
     <style>
-    .fc .fc-button {
-      padding: 0 0.6em;
-    }
+      .fc .fc-button {
+        padding: 0 0.6em;
+      }
     </style>
   {% endaddtoblock %}
 
@@ -109,8 +109,6 @@
     <script src="{% static 'js/vendor/handlebars.min.js' %}"></script>
     <script src="{% static 'js/vendor/fullcalendar-5/lib/main.js' %}"></script>
     <script src="{% static 'js/vendor/fullcalendar-5/lib/locales/fr-ch.js' %}"></script>
-
-
     <script>
       document.addEventListener('DOMContentLoaded', function () {
         moment.locale('fr-ch');
@@ -153,7 +151,6 @@
           toggleDatesSection();
           toggleNextButton();
         }
-
 
         // Show or Hide Dates Section Based on Checkbox Selection
         function toggleDatesSection() {
@@ -198,41 +195,70 @@
           modalBody.empty(); // Clear previous content
 
           selectedCheckboxes.forEach(checkbox => {
-            const childId = checkbox.value;
-            const label = checkbox.closest('label');
+              const childId = checkbox.value;
+              const label = checkbox.closest('label');
 
-            // Use `childNodes` to get only the text content and ignore the <span>
-            let childLabel = '';
-            label.childNodes.forEach(node => {
-              if (node.nodeType === Node.TEXT_NODE) {
-                childLabel += node.textContent.trim();
+              // Use `childNodes` to get only the text content and ignore the <span>
+              let childLabel = '';
+              label.childNodes.forEach(node => {
+                if (node.nodeType === Node.TEXT_NODE) {
+                  childLabel += node.textContent.trim();
+                }
+              });
+              const rental = rentalMap[childId];
+              // Skip if child is already registered for a different event
+              const checkboxWrapper = document.createElement('div');
+              checkboxWrapper.className = 'checkbox';
+
+              const modalCheckbox = document.createElement('input');
+              modalCheckbox.type = 'checkbox';
+              modalCheckbox.className = 'form-check-input';
+              modalCheckbox.value = childId;
+              modalCheckbox.id = `modal-child-${childId}`;
+
+
+              // Display note with appointment date and time
+              const appointmentInfo = document.createElement('small');
+              appointmentInfo.className = 'text-muted';
+              appointmentInfo.textContent = "({% trans "already has appointment" %})";
+
+              if (rental && rental.{{ appointment_type }}_appointment) {
+                if (parseInt(rental.{{ appointment_type }}_appointment) === slotId) {
+                  // Child is already registered for this event slot, pre-check but keep enabled
+                  modalCheckbox.checked = true;
+                } else {
+                  // Child is registered for a different slot, disable and show note
+                  modalCheckbox.checked = true;
+                  modalCheckbox.disabled = true;
+
+                  const appointmentInfo = document.createElement('small');
+                  appointmentInfo.className = 'text-muted';
+                  appointmentInfo.textContent = ` (already has appointment)`;
+
+                  const modalLabel = document.createElement('label');
+                  modalLabel.htmlFor = `modal-child-${childId}`;
+                  modalLabel.appendChild(modalCheckbox);
+                  modalLabel.append(childLabel);
+                  modalLabel.appendChild(appointmentInfo); // Add appointment info after child name
+
+                  checkboxWrapper.appendChild(modalLabel);
+                  modalBody.append(checkboxWrapper);
+                  return; // Skip to the next child since this one is already registered
+                }
+
+                // Child is not registered for any conflicting slot, so add a standard checkbox
+                const modalLabel = document.createElement('label');
+                modalLabel.htmlFor = `modal-child-${childId}`;
+                modalLabel.appendChild(modalCheckbox);
+                modalLabel.append(childLabel);
+
+                checkboxWrapper.appendChild(modalLabel);
+                modalBody.append(checkboxWrapper);
               }
-            });
-            const rental = rentalMap[childId];
-
-            const checkboxWrapper = document.createElement('div');
-            checkboxWrapper.className = 'checkbox';
-
-            const modalCheckbox = document.createElement('input');
-            modalCheckbox.type = 'checkbox';
-            modalCheckbox.className = 'form-check-input';
-            modalCheckbox.value = childId;
-            modalCheckbox.id = `modal-child-${childId}`;
-
-            // Precheck if the child is already registered for this event
-            if (rental && (rental.{{ appointment_type }}_appointment == slotId)) {
-              modalCheckbox.checked = true;
             }
-
-            const modalLabel = document.createElement('label');
-            modalLabel.htmlFor = `modal-child-${childId}`;
-            modalLabel.appendChild(modalCheckbox);
-            modalLabel.append(childLabel);
-
-            checkboxWrapper.appendChild(modalLabel);
-            modalBody.append(checkboxWrapper);
-          });
+          );
         }
+
 
         // Show Bootstrap Modal
         function showModal() {
@@ -403,14 +429,14 @@
         });
 
         const dateLinks = document.querySelectorAll(".calendar-change");
-          dateLinks.forEach(link => {
-            link.addEventListener("click", function (event) {
-              event.preventDefault();
-              // Get the date from the 'data-date' attribute
-              const selectedDate = this.getAttribute("data-date");
-              calendar.gotoDate(selectedDate);
-            });
+        dateLinks.forEach(link => {
+          link.addEventListener("click", function (event) {
+            event.preventDefault();
+            // Get the date from the 'data-date' attribute
+            const selectedDate = this.getAttribute("data-date");
+            calendar.gotoDate(selectedDate);
           });
+        });
 
         document.getElementById('modal-save-btn').addEventListener('click', function (e) {
           e.preventDefault();
@@ -491,9 +517,8 @@
         updateCheckmarks();
         toggleFormAndButton();
 
-      })
-      ;
-
+        }
+      );
     </script>
   {% endaddtoblock "js" %}
 
