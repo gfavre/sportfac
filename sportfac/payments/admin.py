@@ -4,14 +4,13 @@ from django.utils.html import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from sportfac.admin_utils import SportfacModelAdmin
-
 from .models import DatatransTransaction, PostfinanceTransaction
 
 
 @admin.register(DatatransTransaction)
 class DatatransTransactionAdmin(SportfacModelAdmin):
     date_hierarchy = "created"
-    list_display = ("transaction_id", "get_invoice_identifier", "status", "expiration")
+    list_display = ("transaction_id", "get_invoice_identifier", "status", "expiration", "created", "modified")
     search_fields = (
         "transaction_id",
         "invoice__billing_identifier",
@@ -31,7 +30,7 @@ class DatatransTransactionAdmin(SportfacModelAdmin):
 @admin.register(PostfinanceTransaction)
 class PostfinanceTransactionAdmin(SportfacModelAdmin):
     date_hierarchy = "created"
-    list_display = ("transaction_id", "get_invoice_identifier", "status")
+    list_display = ("transaction_id", "get_invoice_identifier", "status", "created", "modified")
     search_fields = (
         "transaction_id",
         "invoice__billing_identifier",
