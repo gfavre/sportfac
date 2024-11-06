@@ -688,11 +688,10 @@ class Course(TimeStampedModel):
         self.nb_participants = self.participants.count()
         if self.nb_participants >= self.max_participants:
             self.allow_new_participants = False
+        elif self.nb_participants + 1 == self.max_participants and last_registration and last_registration.is_canceled:
+            self.allow_new_participants = False  # Keep it False if the last one was unpaid cancellation
         else:
-            if last_registration and last_registration.is_canceled:
-                self.allow_new_participants = False  # Keep it False if the last one was unpaid cancellation
-            else:
-                self.allow_new_participants = True
+            self.allow_new_participants = True
         self.save(update_fields=["nb_participants", "allow_new_participants"])
 
     def __str__(self):
