@@ -27,7 +27,7 @@ class AppointmentSlotAdmin(admin.ModelAdmin):
 
 @admin.register(Appointment)
 class AppointmentAdmin(admin.ModelAdmin):
-    list_display = ("slot", "child")
+    list_display = ("slot", "child", "created", "modified")
     raw_id_fields = ("slot", "child", "family")
     search_fields = (
         "child__first_name",
