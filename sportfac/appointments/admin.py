@@ -63,3 +63,12 @@ class AppointmentTypeAdmin(admin.ModelAdmin):
 @admin.register(Rental)
 class RentalAdmin(admin.ModelAdmin):
     list_display = ("child", "pickup_appointment", "return_appointment", "created", "modified")
+    raw_id_fields = ("child",)
+    search_fields = (
+        "child__first_name",
+        "child__last_name",
+        "child__id_lagapeo",
+        "child__family__first_name",
+        "child__family__last_name",
+    )
+    date_hierarchy = "pickup_appointment__slot__start"
