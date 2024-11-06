@@ -48,6 +48,11 @@ def invoice_to_transaction(request, invoice):
     elif request.get_full_path().startswith(reverse("wizard_billing")):
         success_url = "https://{}{}".format(request.get_host(), reverse("wizard_payment_success"))
         fail_url = "https://{}{}".format(request.get_host(), reverse("wizard_payment_failure"))
+    elif request.get_full_path().startswith(reverse("wizard:step", kwargs={"step_slug": "payment"})):
+        success_url = "https://{}{}".format(
+            request.get_host(), reverse("registrations:registrations_registered_activities")
+        )
+        fail_url = "https://{}{}".format(request.get_host(), reverse("wizard:step", kwargs={"step_slug": "payment"}))
     else:
         success_url = "https://{}{}".format(request.get_host(), reverse("registrations:registrations_billing"))
         fail_url = f"https://{request.get_host()}{request.get_full_path()}"

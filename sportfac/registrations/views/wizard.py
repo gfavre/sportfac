@@ -26,7 +26,6 @@ class WizardConfirmationStepView(LoginRequiredMixin, BaseWizardStepView, FormVie
     form_class = RegistrationValidationForm
     step_slug = "confirmation"
     template_name = "wizard/confirm.html"
-    success_url = reverse_lazy("payment_page")  # Redirect to payment or another page after confirmation
 
     def get_form_class(self):
         user: FamilyUser = self.request.user  # noqa
@@ -56,6 +55,7 @@ class WizardConfirmationStepView(LoginRequiredMixin, BaseWizardStepView, FormVie
             invoice=invoice,
             consent_given=True,
         )
+        # TODO Redirect to success or to payment depending on the invoice amount
         return HttpResponseRedirect(self.get_success_url())
 
     def get_context_data(self, **kwargs):
