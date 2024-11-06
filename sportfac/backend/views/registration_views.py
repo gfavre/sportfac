@@ -513,14 +513,20 @@ class BillDetailView(FullBackendMixin, BillMixin, PaymentMixin, DetailView):
     Display the bill: admin view
     """
 
+    context_object_name = "invoice"
     model = Bill
-    template_name = "backend/registration/bill-detail.html"
+    template_name = "backend/registration/invoice-detail.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.object.is_paid:
-            return context
-        context["transaction"] = self.get_transaction(self.object)
+        invoice = self.object
+        context["registrations"] = invoice.registrations.all()
+        for reg in context["registrations"]:
+            reg.row_span = 1 + reg.extra_infos.count()
+        context["rentals"] = invoice.rentals.all()
+        if not invoice.is_paid:
+            context["transaction"] = self.get_transaction(invoice)
+        context["total_amount"] = invoice.total
         return context
 
 
