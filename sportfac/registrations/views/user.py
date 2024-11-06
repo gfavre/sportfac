@@ -36,7 +36,8 @@ class BillDetailView(LoginRequiredMixin, PaymentMixin, BillMixin, DetailView):
     Display the bill (family user view)
     """
 
-    template_name = "registrations/bill-detail.html"
+    context_object_name = "invoice"
+    template_name = "registrations/invoice-detail.html"
 
     def get_queryset(self):
         if self.request.user.is_manager:
@@ -44,16 +45,15 @@ class BillDetailView(LoginRequiredMixin, PaymentMixin, BillMixin, DetailView):
         return Bill.objects.filter(family=self.request.user)
 
     def get_context_data(self, **kwargs):
-        bill = self.get_object()
         context = super().get_context_data(**kwargs)
-        context["bill"] = bill
-        context["registrations"] = bill.registrations.all()
+        invoice = self.get_object()
+        context["registrations"] = invoice.registrations.all()
         for reg in context["registrations"]:
             reg.row_span = 1 + reg.extra_infos.count()
-        context["rentals"] = bill.rentals.all()
-        if not bill.is_paid:
-            context["transaction"] = self.get_transaction(bill)
-        context["total_amount"] = bill.total
+        context["rentals"] = invoice.rentals.all()
+        if not invoice.is_paid:
+            context["transaction"] = self.get_transaction(invoice)
+        context["total_amount"] = invoice.total
         return context
 
 

@@ -1,0 +1,91 @@
+{% load i18n switzerland static sekizai_tags %}
+
+<section class="invoice-heading">
+  {% if not invoice.is_paid %}
+  <div class="ribbon">
+    {% if invoice.payment_date %}
+    {% blocktrans with payment_date=invoice.payment_date|date:"j b. Y" %}Paid on {{ payment_date }}{% endblocktrans %}
+      {% else %}
+      {% trans "Paid" %}
+    {% endif %}
+  </div>
+{% endif %}
+  <style>
+  .invoice-heading {
+    position: relative;
+  }
+  .ribbon {
+    position: absolute;
+    top: 30px;
+    left: -50px; /* Adjust based on the ribbon size */
+    background-color: #28a745; /* Green for "Paid" */
+    color: white;
+    padding: 5px 70px; /* Width of the ribbon */
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    transform: rotate(-45deg); /* Rotate the ribbon */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+  @media print {
+    .ribbon {
+      display: none;
+    }
+  }
+  </style>
+
+  <div class="row">
+    <div class="col-sm-6 visible-print-block">
+      <img src="{{ STATIC_URL }}img/logo.png"/>
+      {% include "address.html" %}
+    </div>
+
+    <div class="col-sm-6 col-sm-offset-6">
+      <address>
+        {{ invoice.family.full_name }}<br/>
+        {{ invoice.family.address }}<br/>
+        {{ invoice.family.zipcode }} {{ bill.family.city }}<br/>
+        {{ invoice.family.get_country_display }}
+      </address>
+      <p style="margin-top: 4em;">
+        {% if place %}{{ place }}, {% endif %}{{ invoice.created|date:"j F Y" }}
+      </p>
+    </div>
+  </div>
+  <h2>{% trans "Invoice" %}</h2>
+  <dl class="dl-horizontal">
+
+    <dt>{% trans "Billing identifier" %}</dt>
+    <dd>{{ invoice.billing_identifier }}</dd>
+    {% if invoice.is_wire_transfer %}
+      <dt>{% trans "Payable until" %}</dt>
+      <dd>{{ delay|date:"j F Y" }}</dd>
+      <dt>{% trans "IBAN" %}</dt>
+      <dd>{{ iban }}</dd>
+      <dt>{% trans "Address" %}</dt>
+      <dd>{{ address|linebreaksbr }}</dd>
+    {% endif %}
+  </dl>
+</section>
+
+
+{% addtoblock "css" %}
+  <style>
+    @media print {
+      .row {
+        display: flex;
+        flex-direction: row;
+      }
+
+      .col-sm-6 {
+        width: 50% !important;
+        float: left;
+        display: inline-block;
+      }
+
+      .visible-print-block {
+        display: block !important;
+      }
+    }
+  </style>
+{% endaddtoblock %}
