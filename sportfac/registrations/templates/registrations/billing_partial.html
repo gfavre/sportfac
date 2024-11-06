@@ -1,15 +1,15 @@
 {% load i18n l10n humanize sekizai_tags switzerland %}
 
 <p>Les inscriptions seront définitivement validées à la suite du règlement de la finance de participation pour les cours choisis.</p>
-<p>Le montant total pour vos inscriptions s'élève à : <strong>{{ bill.total|money }}</strong></p>
+<p>Le montant total pour vos inscriptions s'élève à : <strong>{{ invoice.total|money }}</strong></p>
 
 {% if PAYMENT_METHOD == 'iban' %}
 <p>L'identifiant pour votre transaction est le suivant : <strong>{{ bill.billing_identifier }}</strong></p>
 <p>Nous vous remercions de verser cette somme d’ici au  <strong>{{ delay|date:"j F Y" }}</strong> en privilégiant le virement bancaire sur le compte : </p>
 <div class="well">
   <dl class="dl-horizontal">
-    <dt>Montant</dt><dd>{{ bill.total|money }}</dd>
-    <dt>Identifiant</dt><dd>{{ bill.billing_identifier }}</dd>
+    <dt>Montant</dt><dd>{{ invoice.total|money }}</dd>
+    <dt>Identifiant</dt><dd>{{ invoice.billing_identifier }}</dd>
     <dt>IBAN</dt><dd>{{ iban }}</dd>
     <dt>Adresse</dt><dd>{{ address|linebreaksbr }}</dd>
   </dl>
