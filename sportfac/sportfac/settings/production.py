@@ -121,3 +121,6 @@ RECAPTCHA_REQUIRED_SCORE = env("RECAPTCHA_REQUIRED_SCORE", default=0.85)  # noqa
 
 DATATRANS_API_URL = env.url("DATATRANS_API_URL", default="https://api.datatrans.com/")  # noqa: F405
 DATATRANS_PAY_URL = env.url("DATATRANS_PAY_URL", default="https://pay.datatrans.com/")  # noqa: F405
+
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
