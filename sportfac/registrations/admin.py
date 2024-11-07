@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from import_export import fields, resources
 from import_export.admin import ImportExportModelAdmin
 
+from appointments.models import Rental
 from sportfac.admin_utils import SportfacAdminMixin, SportfacModelAdmin
 from .models import (
     Bill,
@@ -154,6 +155,12 @@ class RegistrationInline(admin.StackedInline):
     extra = 0
 
 
+class RentalsInline(admin.StackedInline):
+    model = Rental
+    raw_id_fields = ("child", "pickup_appointment", "return_appointment")
+    extra = 0
+
+
 @admin.register(Bill)
 class BillAdmin(SportfacModelAdmin):
     list_display = (
@@ -170,7 +177,7 @@ class BillAdmin(SportfacModelAdmin):
     date_hierarchy = "created"
     search_fields = ("billing_identifier", "family__first_name", "family__last_name")
 
-    inlines = [RegistrationInline]
+    inlines = [RegistrationInline, RentalsInline]
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related("family")
