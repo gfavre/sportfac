@@ -63,11 +63,6 @@ class WizardConfirmationStepView(LoginRequiredMixin, BaseWizardStepView, FormVie
         user: FamilyUser = self.request.user  # noqa
 
         validation = context["validation"]
-        if not validation:
-            validation = RegistrationValidation.objects.filter(
-                user=user,
-                consent_given=True,
-            ).first()
         if validation:
             context.update(
                 {
