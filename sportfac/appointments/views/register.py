@@ -83,6 +83,7 @@ class WizardRentalStepView(LoginRequiredMixin, StaticStepView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
+
         disabled_children = Child.objects.filter(rentals__isnull=False, rentals__paid=True, family=user)
         children_with_rentals = Child.objects.filter(rentals__isnull=False, rentals__paid=False, family=user)
 

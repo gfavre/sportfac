@@ -22,19 +22,20 @@ step_view_mapping = {
 }
 
 
-def get_step_view(step_slug):
-    try:
-        return step_view_mapping[step_slug].as_view()
-    except KeyError:
-        return WizardQuestionsStepView.as_view()
+# View function for entry point
+def entry_point_view(request):
+    return EntryPointView.as_view()(request)
+
+
+# View function for handling dynamic steps
+def step_view(request, step_slug):
+    # Use WizardQuestionsStepView as the fallback if the step_slug is not found
+    view_class = step_view_mapping.get(step_slug, WizardQuestionsStepView)
+    return view_class.as_view()(request, step_slug=step_slug)
 
 
 # URL patterns
 urlpatterns = [
-    path("", lambda request: EntryPointView.as_view()(request), name="entry_point"),
-    path(
-        "steps/<slug:step_slug>/",
-        lambda request, step_slug: get_step_view(step_slug)(request, step_slug=step_slug),
-        name="step",
-    ),
+    path("", entry_point_view, name="entry_point"),
+    path("steps/<slug:step_slug>/", step_view, name="step"),
 ]
