@@ -14,7 +14,7 @@
     <a href="{% url 'wizard:entry_point' %}" class="btn btn-large btn-success"><i class="icon-fixed-width icon-calendar"></i> {% trans "Register activities" %}</a>
     {% endif %}
   {% else %}
-  <a href="{% url 'profiles:auth_login' %}?next={% url 'wizard:entry_point' %}" class="btn btn-large btn-success">{% trans "Registration" %}</a>
+  <a href="{% url 'wizard:entry_point' %}" class="btn btn-large btn-success">{% trans "Registration" %}</a>
   {% endif %}
 </p>
 {% else %}
