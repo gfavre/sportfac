@@ -174,6 +174,7 @@ class WizardFamilyUserCreateView(BaseWizardStepView, RegistrationBaseView):
     def get_context_data(self, **kwargs):
         """Merge the UpdateView context with the BaseWizardStepView context."""
         context = super().get_context_data(**kwargs)
+        context["LOGIN_URL"] = settings.LOGIN_URL if settings.KEPCHUP_USE_SSO else reverse(settings.LOGIN_URL)
         form_context = RegistrationBaseView.get_context_data(self, **kwargs)
         context.update(form_context)
         return context

@@ -447,7 +447,7 @@ class Bill(TimeStampedModel, StatusModel):
 
     @property
     def is_paid(self):
-        return self.status in (self.STATUS.paid, self.STATUS.canceled)
+        return self.status == self.STATUS.paid
 
     @property
     def is_wire_transfer(self):
@@ -459,12 +459,8 @@ class Bill(TimeStampedModel, StatusModel):
 
     @property
     def registrations_valid_to(self):
-        print(settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES)
-
         if not settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES:
             return None
-        print(self.modified + timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES))
-
         return self.modified + timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES)
 
     @transaction.atomic
@@ -594,6 +590,11 @@ class Bill(TimeStampedModel, StatusModel):
     def set_paid(self):
         self.status = self.STATUS.paid
         self.payment_date = now()
+        for registration in self.registrations.all():
+            registration.set_paid()
+        for rental in self.rentals.all():
+            rental.paid = True
+            rental.save(update_fields=("paid",))
         self.save()
 
     def set_waiting(self):

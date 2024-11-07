@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-06 20:35+0100\n"
-"PO-Revision-Date: 2024-11-06 20:35+0100\n"
+"POT-Creation-Date: 2024-11-07 10:13+0100\n"
+"PO-Revision-Date: 2024-11-07 10:13+0100\n"
 "Last-Translator: Gregory Favre <greg@beyondthewall.ch>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -83,7 +83,7 @@ msgstr "Activité"
 #: sportfac/backend/views/registration_views.py:174
 #: sportfac/backend/views/registration_views.py:234
 #: sportfac/backend/views/registration_views.py:677
-#: sportfac/registrations/models.py:57 sportfac/registrations/models.py:970
+#: sportfac/registrations/models.py:57 sportfac/registrations/models.py:971
 #: sportfac/registrations/resources.py:33
 msgid "Course"
 msgstr "Cours"
@@ -166,7 +166,7 @@ msgstr "niv. 0"
 #: sportfac/absences/templates/absences/absences-table-child.html:33
 #: sportfac/absences/templates/absences/absences-table-courses.html:111
 #: sportfac/absences/templates/absences/absences-table.html:149
-#: sportfac/registrations/models.py:966
+#: sportfac/registrations/models.py:967
 msgid "Note"
 msgstr "Note"
 
@@ -190,7 +190,7 @@ msgstr "Editer la note"
 #: sportfac/registrations/templates/registrations/registration_list.html:140
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:144
 #: sportfac/themes/montreux_ski/templates/registrations/registration_list_back.html:147
-#: sportfac/wizard/templates/wizard/equipment.html:66
+#: sportfac/wizard/templates/wizard/equipment.html:65
 msgid "Save"
 msgstr "Enregistrer"
 
@@ -255,7 +255,7 @@ msgstr "AT"
 #: sportfac/backend/templates/backend/registration/list.html:91
 #: sportfac/backend/tests/test_views/test_registrations.py:56
 #: sportfac/backend/views/registration_views.py:173
-#: sportfac/registrations/models.py:774 sportfac/waiting_slots/forms.py:16
+#: sportfac/registrations/models.py:775 sportfac/waiting_slots/forms.py:16
 msgid "Child"
 msgstr "Enfant"
 
@@ -268,7 +268,7 @@ msgstr "Enfant"
 #: sportfac/backend/templates/backend/registration/transport-detail.html:165
 #: sportfac/backend/templates/backend/user/child-detail.html:12
 #: sportfac/backend/templates/backend/user/child-list.html:124
-#: sportfac/registrations/forms.py:117 sportfac/registrations/models.py:765
+#: sportfac/registrations/forms.py:117 sportfac/registrations/models.py:766
 #: sportfac/registrations/resources.py:40
 msgid "Bib number"
 msgstr "Dossard"
@@ -1271,7 +1271,7 @@ msgstr "%(nb)s places"
 
 #: sportfac/activities/templates/activities/activity_detail.html:198
 #: sportfac/activities/templates/activities/activity_detail.html:201
-#: sportfac/registrations/models.py:92 sportfac/registrations/models.py:663
+#: sportfac/registrations/models.py:92 sportfac/registrations/models.py:664
 #: sportfac/templates/flatpages/home.html:17
 #: sportfac/templates/registration/login.html:14
 #: sportfac/templates/registration/login.html:20
@@ -1522,7 +1522,7 @@ msgstr "Année scolaire"
 #: sportfac/backend/templates/backend/user/detail.html:94
 #: sportfac/profiles/forms.py:223 sportfac/profiles/models.py:133
 #: sportfac/profiles/resources.py:62 sportfac/registrations/forms.py:85
-#: sportfac/registrations/models.py:719 sportfac/registrations/resources.py:42
+#: sportfac/registrations/models.py:720 sportfac/registrations/resources.py:42
 msgid "Birth date"
 msgstr "Date de naissance"
 
@@ -1530,7 +1530,7 @@ msgstr "Date de naissance"
 #: sportfac/backend/templates/backend/course/detail.html:266
 #: sportfac/backend/templates/backend/course/detail.html:362
 #: sportfac/backend/templates/backend/user/child-list.html:130
-#: sportfac/registrations/forms.py:116 sportfac/registrations/models.py:756
+#: sportfac/registrations/forms.py:116 sportfac/registrations/models.py:757
 #: sportfac/registrations/resources.py:52
 msgid "Emergency number"
 msgstr "Numéro d'urgence"
@@ -1675,12 +1675,12 @@ msgstr "Activités"
 #: sportfac/templates/wizard.html:35
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:206
 #: sportfac/themes/montreux_ski/templates/registrations/registration_list_back.html:209
-#: sportfac/wizard/templates/wizard/account-create.html:23
+#: sportfac/wizard/templates/wizard/account-create.html:22
 #: sportfac/wizard/templates/wizard/account.html:13
 #: sportfac/wizard/templates/wizard/activities.html:45
 #: sportfac/wizard/templates/wizard/children.html:38
 #: sportfac/wizard/templates/wizard/confirm.html:79
-#: sportfac/wizard/templates/wizard/equipment.html:79
+#: sportfac/wizard/templates/wizard/equipment.html:78
 #: sportfac/wizard/templates/wizard/questions.html:32
 msgid "Previous"
 msgstr "Précédent"
@@ -1696,12 +1696,12 @@ msgstr "Précédent"
 #: sportfac/registrations/forms.py:494
 #: sportfac/registrations/templates/registrations/registration_list.html:235
 #: sportfac/templates/wizard.html:40
-#: sportfac/wizard/templates/wizard/account-create.html:27
+#: sportfac/wizard/templates/wizard/account-create.html:26
 #: sportfac/wizard/templates/wizard/account.html:17
 #: sportfac/wizard/templates/wizard/activities.html:49
 #: sportfac/wizard/templates/wizard/children.html:42
 #: sportfac/wizard/templates/wizard/confirm.html:85
-#: sportfac/wizard/templates/wizard/equipment.html:87
+#: sportfac/wizard/templates/wizard/equipment.html:86
 #: sportfac/wizard/templates/wizard/questions.html:36
 msgid "Next"
 msgstr "Suivant"
@@ -1846,6 +1846,10 @@ msgid "End"
 msgstr "Fin"
 
 #: sportfac/appointments/forms.py:11
+msgid "Children who already have a rental"
+msgstr "Enfants ayant déjà une location"
+
+#: sportfac/appointments/forms.py:17
 msgid "Rent equipment for these children"
 msgstr "Louer du matériel pour ces enfants"
 
@@ -1871,7 +1875,7 @@ msgstr "Retour"
 
 #: sportfac/appointments/models.py:29
 #: sportfac/appointments/templates/appointments/backend/create.html:201
-#: sportfac/registrations/models.py:708
+#: sportfac/registrations/models.py:709
 msgid "Other"
 msgstr "Autre"
 
@@ -1953,7 +1957,7 @@ msgstr "Rendez-vous"
 #: sportfac/backend/templates/backend/user/manager-list.html:150
 #: sportfac/backend/templates/backend/user/manager-list.html:151
 #: sportfac/profiles/forms.py:365 sportfac/profiles/models.py:121
-#: sportfac/profiles/resources.py:25 sportfac/registrations/models.py:716
+#: sportfac/profiles/resources.py:25 sportfac/registrations/models.py:717
 #: sportfac/registrations/resources.py:36 sportfac/schools/models.py:16
 msgid "First name"
 msgstr "Prénom"
@@ -1963,7 +1967,7 @@ msgstr "Prénom"
 #: sportfac/backend/templates/backend/user/list.html:222
 #: sportfac/backend/templates/backend/user/manager-list.html:152
 #: sportfac/profiles/forms.py:366 sportfac/profiles/models.py:122
-#: sportfac/profiles/resources.py:26 sportfac/registrations/models.py:717
+#: sportfac/profiles/resources.py:26 sportfac/registrations/models.py:718
 #: sportfac/registrations/resources.py:37 sportfac/schools/models.py:17
 msgid "Last name"
 msgstr "Nom"
@@ -2034,7 +2038,7 @@ msgstr ""
 #: sportfac/appointments/templates/appointments/backend/create.html:171
 #: sportfac/appointments/templates/appointments/slots.html:26
 #: sportfac/appointments/templates/appointments/wizard_register.html:41
-#: sportfac/wizard/templates/wizard/equipment.html:35
+#: sportfac/wizard/templates/wizard/equipment.html:34
 msgid "Available dates"
 msgstr "Dates disponibles"
 
@@ -2065,7 +2069,7 @@ msgstr "Supprimer le créneau"
 #: sportfac/wizard/templates/wizard/children.html:13
 #: sportfac/wizard/templates/wizard/confirm.html:9
 #: sportfac/wizard/templates/wizard/confirm.html:26
-#: sportfac/wizard/templates/wizard/equipment.html:65
+#: sportfac/wizard/templates/wizard/equipment.html:64
 #: sportfac/wizard/templates/wizard/questions.html:8
 msgid "Close"
 msgstr "Fermer"
@@ -2124,7 +2128,7 @@ msgstr "Inscription"
 
 #: sportfac/appointments/templates/appointments/slots.html:11
 #: sportfac/appointments/templates/appointments/wizard_register.html:27
-#: sportfac/wizard/templates/wizard/equipment.html:21
+#: sportfac/wizard/templates/wizard/equipment.html:20
 msgid "Your appointments"
 msgstr "Vos rendez-vous"
 
@@ -3486,7 +3490,7 @@ msgstr "Fonction"
 #: sportfac/backend/templates/backend/user/detail-instructor.html:69
 #: sportfac/backend/templates/backend/user/detail.html:80
 #: sportfac/backend/templates/backend/user/list.html:227
-#: sportfac/registrations/models.py:775 sportfac/registrations/resources.py:239
+#: sportfac/registrations/models.py:776 sportfac/registrations/resources.py:239
 msgid "Children"
 msgstr "Enfants"
 
@@ -3990,7 +3994,7 @@ msgstr "Parent"
 #: sportfac/backend/templates/backend/user/child-detail.html:25
 #: sportfac/backend/templates/backend/user/detail-instructor.html:84
 #: sportfac/backend/templates/backend/user/detail.html:95
-#: sportfac/registrations/forms.py:89 sportfac/registrations/models.py:718
+#: sportfac/registrations/forms.py:89 sportfac/registrations/models.py:719
 msgid "Sex"
 msgstr "Sexe"
 
@@ -5179,7 +5183,7 @@ msgstr "Défi en cours"
 msgid "Authenticated"
 msgstr "Authentifié"
 
-#: sportfac/payments/models.py:39 sportfac/payments/models.py:95
+#: sportfac/payments/models.py:39 sportfac/payments/models.py:93
 msgid "Authorized"
 msgstr "Autorisé"
 
@@ -5195,35 +5199,35 @@ msgstr "Annulée"
 msgid "Transmitted"
 msgstr "Transmis"
 
-#: sportfac/payments/models.py:43 sportfac/payments/models.py:94
+#: sportfac/payments/models.py:43 sportfac/payments/models.py:92
 msgid "Failed"
 msgstr "Échoué"
 
-#: sportfac/payments/models.py:88
+#: sportfac/payments/models.py:86
 msgid "Pending"
 msgstr "En attente"
 
-#: sportfac/payments/models.py:91
+#: sportfac/payments/models.py:89
 msgid "Confirmed"
 msgstr "Confirmé"
 
-#: sportfac/payments/models.py:93
+#: sportfac/payments/models.py:91
 msgid "Processing"
 msgstr "En traitement"
 
-#: sportfac/payments/models.py:96
+#: sportfac/payments/models.py:94
 msgid "Completed"
 msgstr "Terminé"
 
-#: sportfac/payments/models.py:97
+#: sportfac/payments/models.py:95
 msgid "Fulfill"
 msgstr "Payé (fulfill)"
 
-#: sportfac/payments/models.py:98
+#: sportfac/payments/models.py:96
 msgid "Decline"
 msgstr "Refusé"
 
-#: sportfac/payments/models.py:99
+#: sportfac/payments/models.py:97
 msgid "Voided"
 msgstr "Annulée"
 
@@ -5496,7 +5500,7 @@ msgid "Switzerland"
 msgstr "Suisse"
 
 #: sportfac/profiles/models.py:100 sportfac/profiles/models.py:437
-#: sportfac/registrations/models.py:707 sportfac/schools/models.py:62
+#: sportfac/registrations/models.py:708 sportfac/schools/models.py:62
 msgid "Liechtenstein"
 msgstr "Liechtenstein"
 
@@ -5520,11 +5524,11 @@ msgstr "Italie"
 msgid "Austria"
 msgstr "Autriche"
 
-#: sportfac/profiles/models.py:106 sportfac/registrations/models.py:703
+#: sportfac/profiles/models.py:106 sportfac/registrations/models.py:704
 msgid "Female"
 msgstr "Féminin"
 
-#: sportfac/profiles/models.py:106 sportfac/registrations/models.py:702
+#: sportfac/profiles/models.py:106 sportfac/registrations/models.py:703
 msgid "Male"
 msgstr "Masculin"
 
@@ -5777,7 +5781,7 @@ msgstr "Date de paiement"
 msgid "Building"
 msgstr "Bâtiment"
 
-#: sportfac/registrations/forms.py:118 sportfac/registrations/models.py:755
+#: sportfac/registrations/forms.py:118 sportfac/registrations/models.py:756
 msgid "AVS"
 msgstr "AVS"
 
@@ -5953,39 +5957,39 @@ msgstr "Facture"
 msgid "Bills"
 msgstr "Factures"
 
-#: sportfac/registrations/models.py:698
+#: sportfac/registrations/models.py:699
 msgid "Updated"
 msgstr "Mis à jour"
 
-#: sportfac/registrations/models.py:699
+#: sportfac/registrations/models.py:700
 msgid "Imported"
 msgstr "Importé"
 
-#: sportfac/registrations/models.py:706
+#: sportfac/registrations/models.py:707
 msgid "Swiss"
 msgstr "Suisse"
 
-#: sportfac/registrations/models.py:753
+#: sportfac/registrations/models.py:754
 msgid "Lagapeo Identification number"
 msgstr "Identifiant Lagapeo"
 
-#: sportfac/registrations/models.py:764
+#: sportfac/registrations/models.py:765
 msgid "Other school"
 msgstr "Autre école"
 
-#: sportfac/registrations/models.py:766
+#: sportfac/registrations/models.py:767
 msgid "Is blacklisted"
 msgstr "Est sur la liste noire"
 
-#: sportfac/registrations/models.py:963 sportfac/registrations/resources.py:53
+#: sportfac/registrations/models.py:964 sportfac/registrations/resources.py:53
 msgid "Level -1"
 msgstr "Niveau avant le cours"
 
-#: sportfac/registrations/models.py:965
+#: sportfac/registrations/models.py:966
 msgid "End course level"
 msgstr "Niveau après le cours"
 
-#: sportfac/registrations/models.py:991
+#: sportfac/registrations/models.py:992
 msgid "Consent given"
 msgstr "Consentement donné"
 
@@ -6533,13 +6537,13 @@ msgstr ""
 "%(duration)s.\n"
 "          "
 
-#: sportfac/wizard/templates/wizard/equipment.html:59
+#: sportfac/wizard/templates/wizard/equipment.html:58
 msgid "Register an appointment for these children"
 msgstr "Prendre un rendez-vous pour les enfants suivants"
 
-#: sportfac/wizard/templates/wizard/equipment.html:223
-msgid "already has appointment"
-msgstr "a déjà un rendez-vous"
+#: sportfac/wizard/templates/wizard/equipment.html:229
+msgid "already has appointment scheduled at another time"
+msgstr "a déjà un rendez-vous prévu à un autre moment"
 
 #: sportfac/wizard/templates/wizard/payment.html:27
 #: sportfac/wizard/templates/wizard/payment.html:39

@@ -13,7 +13,6 @@
       </div>
     </form>
   </div>
-
   {% crispy form %}
 
   {% if appointments %}
@@ -154,7 +153,7 @@
 
         // Show or Hide Dates Section Based on Checkbox Selection
         function toggleDatesSection() {
-          const anyChecked = Array.from(childSelectionForm.querySelectorAll('input[type="checkbox"]')).some(checkbox => checkbox.checked);
+          const anyChecked = Array.from(childSelectionForm.querySelectorAll('input[name="children"]')).some(checkbox => checkbox.checked);
           datesSection.style.display = anyChecked ? 'block' : 'none';
           rentYes.disabled = anyChecked;
           rentNo.disabled = anyChecked;
@@ -191,7 +190,7 @@
 
         // Update Modal Checkboxes Based on Calendar Event
         function updateModalCheckboxes(slotId) {
-          const selectedCheckboxes = childSelectionForm.querySelectorAll('input[type="checkbox"]:checked');
+          const selectedCheckboxes = childSelectionForm.querySelectorAll('input[name="children"]:checked');
           modalBody.empty(); // Clear previous content
 
           selectedCheckboxes.forEach(checkbox => {
@@ -216,12 +215,6 @@
               modalCheckbox.value = childId;
               modalCheckbox.id = `modal-child-${childId}`;
 
-
-              // Display note with appointment date and time
-              const appointmentInfo = document.createElement('small');
-              appointmentInfo.className = 'text-muted';
-              appointmentInfo.textContent = "({% trans "already has appointment" %})";
-
               if (rental && rental.{{ appointment_type }}_appointment) {
                 if (parseInt(rental.{{ appointment_type }}_appointment) === slotId) {
                   // Child is already registered for this event slot, pre-check but keep enabled
@@ -233,7 +226,7 @@
 
                   const appointmentInfo = document.createElement('small');
                   appointmentInfo.className = 'text-muted';
-                  appointmentInfo.textContent = ` (already has appointment)`;
+                  appointmentInfo.textContent = " ({% trans "already has appointment scheduled at another time" %})";
 
                   const modalLabel = document.createElement('label');
                   modalLabel.htmlFor = `modal-child-${childId}`;
@@ -245,16 +238,16 @@
                   modalBody.append(checkboxWrapper);
                   return; // Skip to the next child since this one is already registered
                 }
-
-                // Child is not registered for any conflicting slot, so add a standard checkbox
-                const modalLabel = document.createElement('label');
-                modalLabel.htmlFor = `modal-child-${childId}`;
-                modalLabel.appendChild(modalCheckbox);
-                modalLabel.append(childLabel);
-
-                checkboxWrapper.appendChild(modalLabel);
-                modalBody.append(checkboxWrapper);
               }
+              // Child is not registered for any conflicting slot, so add a standard checkbox
+              const modalLabel = document.createElement('label');
+              modalLabel.htmlFor = `modal-child-${childId}`;
+              modalLabel.appendChild(modalCheckbox);
+              modalLabel.append(childLabel);
+
+              checkboxWrapper.appendChild(modalLabel);
+              modalBody.append(checkboxWrapper);
+
             }
           );
         }

@@ -63,7 +63,7 @@ class AppointmentTypeAdmin(admin.ModelAdmin):
 @admin.register(Rental)
 class RentalAdmin(admin.ModelAdmin):
     list_display = ("child", "pickup_appointment", "return_appointment", "created", "modified")
-    raw_id_fields = ("child",)
+    raw_id_fields = ("child", "invoice", "pickup_appointment", "return_appointment")
     search_fields = (
         "child__first_name",
         "child__last_name",
