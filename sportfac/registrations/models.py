@@ -611,10 +611,7 @@ class Bill(TimeStampedModel, StatusModel):
         if self.rentals:
             for rental in self.rentals.all():
                 rental.delete()
-        # FIXME: datatrans???
-        if hasattr(self, "postfinance_transactions") and self.postfinance_transactions.exists():
-            for pf_transaction in self.postfinance_transactions.all():
-                pf_transaction.void()
+
         self.status = self.STATUS.canceled
         self.save(force_status=True)
 
