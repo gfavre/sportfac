@@ -107,7 +107,7 @@ class ExtraInfoViewSet(viewsets.ModelViewSet):
         else:
             data = dict(request.data)  # Create a new dictionary if it's already a dict-like object
 
-        if "image" not in request.FILES:
+        if "image" not in request.FILES and instance.image:
             data["image"] = instance.image
 
         serializer = self.get_serializer(instance, data=data, partial=True)
