@@ -1,5 +1,7 @@
 import logging
 
+from django.http import QueryDict
+
 from rest_framework import status, viewsets
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
@@ -100,11 +102,15 @@ class ExtraInfoViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        partial_data = request.data.dict() if not isinstance(request.data, dict) else request.data
-        if "image" not in request.FILES:
-            partial_data["image"] = instance.image
+        if isinstance(request.data, QueryDict):
+            data = request.data.dict()  # Convert QueryDict to a regular dictionary
+        else:
+            data = dict(request.data)  # Create a new dictionary if it's already a dict-like object
 
-        serializer = self.get_serializer(instance, data=partial_data, partial=True)
+        if "image" not in request.FILES:
+            data["image"] = instance.image
+
+        serializer = self.get_serializer(instance, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(
