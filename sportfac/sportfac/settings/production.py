@@ -123,7 +123,7 @@ DATATRANS_API_URL = env.url("DATATRANS_API_URL", default="https://api.datatrans.
 DATATRANS_PAY_URL = env.url("DATATRANS_PAY_URL", default="https://pay.datatrans.com/")  # noqa: F405
 
 
-DATA_UPLOAD_MAX_MEMORY_SIZE = (50 * 1024 * 1024,)  # 50 MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024  # 50 MB
 REST_FRAMEWORK = {
     "DATA_UPLOAD_MAX_MEMORY_SIZE": 50 * 1024 * 1024,  # 50 MB
 }
