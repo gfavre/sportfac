@@ -9,13 +9,13 @@ from registrations.models import Child
 class RentalSelectionForm(forms.Form):
     disabled_children = forms.ModelMultipleChoiceField(
         label=_("Children who already have a rental"),
-        queryset=None,  # We'll set this in the view to only show the current user's children
+        queryset=Child.objects.none(),
         widget=forms.CheckboxSelectMultiple,
         required=False,
     )
     children = forms.ModelMultipleChoiceField(
         label=_("Rent equipment for these children"),
-        queryset=None,  # We'll set this in the view to only show the current user's children
+        queryset=Child.objects.none(),
         widget=forms.CheckboxSelectMultiple,
         required=True,
     )
@@ -25,6 +25,8 @@ class RentalSelectionForm(forms.Form):
         initial_rentals = kwargs.pop("initial_children", [])  # Pre-selected rentals
         disabled_children_initial = kwargs.pop("disabled_children_initial", [])  # Pre-selected rentals
 
+        # if not disabled_children_initial:
+        #    self.fields.pop
         disabled = kwargs.pop("disabled", False)
         super().__init__(*args, **kwargs)
         self.helper = FormHelper(self)
@@ -40,6 +42,7 @@ class RentalSelectionForm(forms.Form):
             self.fields["children"].queryset = Child.objects.filter(
                 family=user, registrations__isnull=False
             ).distinct()
+            self.fields["disabled_children"].widget = forms.HiddenInput()
 
         if initial_rentals:
             # Pre-select the children who already have a rental
