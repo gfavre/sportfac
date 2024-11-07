@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMessage
-from django.db import connection
+from django.db import connection, transaction
 from django.db.utils import IntegrityError
 from django.template.loader import render_to_string
 from django.utils import translation
@@ -13,7 +13,7 @@ from anymail.exceptions import AnymailRecipientsRefused
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
-from appointments.models import Appointment
+from appointments.models import Appointment, Rental
 from backend.dynamic_preferences_registry import global_preferences_registry
 from backend.models import Domain, YearTenant
 from mailer.tasks import send_mail
@@ -196,31 +196,45 @@ def send_confirm_from_waiting_list(registration_pk, language=settings.LANGUAGE_C
 def cancel_expired_registrations():
     if not settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES:
         return
+    expiration_cutoff = now() - timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES)
     # 1: expire registrations linked to invoices (person has seen payment page)
     current_domain = Domain.objects.filter(is_current=True).first()
     connection.set_tenant(current_domain.tenant)
     expired_invoices = Bill.objects.filter(
         status=Bill.STATUS.waiting,
-        modified__lte=(now() - timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES)),
+        modified__lte=expiration_cutoff,
     )
     courses_set = set()
-    for invoice in expired_invoices:
-        for registration in invoice.registrations.all():
-            courses_set.add(registration.course)
-        invoice.cancel()
 
-    # 2. Expire registrations without invoices (person never confirmed)
-    for registration in Registration.objects.filter(
-        status=Registration.STATUS.waiting,
-        modified__lte=(now() - timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES)),
-    ):
-        courses_set.add(registration.course)
-        try:
-            registration.cancel(reason=Registration.REASON.expired)
-            registration.save()
-        except IntegrityError:
-            # There is an anlready existing cancellation for this person and course.
-            registration.delete()
+    with transaction.atomic():
+        for invoice in expired_invoices:
+            for registration in invoice.registrations.all():
+                courses_set.add(registration.course)
+            invoice.cancel()
+
+        # 2. Expire registrations without invoices (person never confirmed)
+        for registration in Registration.objects.filter(
+            status=Registration.STATUS.waiting,
+            modified__lte=expiration_cutoff,
+        ):
+            courses_set.add(registration.course)
+            try:
+                registration.cancel(reason=Registration.REASON.expired)
+                registration.save()
+            except IntegrityError:
+                # There is an anlready existing cancellation for this person and course.
+                registration.delete()
+
+        # 3. expire rentals without invoices (person never confirmed)
+        if settings.KEPCHUP_USE_APPOINTMENTS:
+            for rental in Rental.objects.filter(
+                invoice=None,
+                paid=False,
+                modified__lte=expiration_cutoff,
+            ):
+                rental.delete()
+
+    # Outside of the transaction, send reminders for available places
     if settings.KEPCHUP_ENABLE_WAITING_LISTS:
         for course in courses_set:
             course.send_places_available_reminder()
