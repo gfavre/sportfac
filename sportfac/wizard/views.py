@@ -119,13 +119,15 @@ class BaseWizardStepView(View):
                 questions_not_answered.update(set(missing_questions))
             if settings.KEPCHUP_USE_APPOINTMENTS:
                 rentals = Rental.objects.filter(child__family=user, paid=False)
-
+        has_children = user.is_authenticated and user.children.exists()
         self._registration_context = {
             "user": user,
             "user_registered": user.is_authenticated,
-            "has_children": user.is_authenticated and user.children.exists(),
+            "has_children": has_children,
             "has_registrations": len(registrations) > 0,
             "registrations": registrations,
+            "children_with_registrations": has_children
+            and user.children.filter(registrations__isnull=False).distinct(),
             "all_questions": all_questions,
             "questions_not_answered": questions_not_answered,
             "invoice": invoice,

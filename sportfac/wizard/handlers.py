@@ -101,7 +101,9 @@ class EquipmentPickupStepHandler(StepHandler):
         return settings.KEPCHUP_USE_APPOINTMENTS
 
     def is_ready(self):
-        return self.registration_context["has_children"] and not self.registration_context.get("invoice")
+        return self.registration_context["children_with_registrations"] and not self.registration_context.get(
+            "invoice"
+        )
 
     def is_complete(self):
         # Complete if a pickup appointment has been scheduled

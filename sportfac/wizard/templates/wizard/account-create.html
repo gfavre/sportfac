@@ -4,7 +4,7 @@
 {% block wizard_content %}
 <p class="lead text-center" style="line-height: 1.75em; ">
   {% trans "You already have an account?" %}<br>
-  <a href="{% url 'profiles:auth_login' %}?next={% url 'wizard:entry_point' %}" class="btn btn-primary">
+  <a href="{{ LOGIN_URL }}?next={% url 'wizard:entry_point' %}" class="btn btn-primary">
     <i class="icon-user icon-white"></i> {% trans "login" %}
   </a>
   <br>
@@ -12,8 +12,7 @@
 </p>
   <form action="." method="post" class="form-horizontal" role="form">
     {% crispy form %}
-    <!-- {{ form.errors }} -     {{ success_url }}
--->
+
     <nav style="margin-top: 1.5em;">
       <ul class="pager" style="font-size: 1.25em;">
         <li class="previous">

@@ -83,10 +83,11 @@ class WizardRentalStepView(LoginRequiredMixin, StaticStepView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        children_with_rentals = Child.objects.filter(rentals__isnull=False, family=user)
+        disabled_children = Child.objects.filter(rentals__isnull=False, rentals__paid=True, family=user)
+        children_with_rentals = Child.objects.filter(rentals__isnull=False, rentals__paid=False, family=user)
 
         context["appointment_type"] = self.appointment_type
-        context["rentals"] = Rental.objects.filter(child__family=user)
+        context["rentals"] = Rental.objects.filter(child__family=user, paid=False)
         context["rentals_json"] = [
             {
                 "id": rental.id,
@@ -98,7 +99,10 @@ class WizardRentalStepView(LoginRequiredMixin, StaticStepView):
         ]
 
         context["form"] = RentalSelectionForm(
-            user=user, initial_rentals=children_with_rentals, disabled=self.appointment_type != "pickup"
+            user=user,
+            initial_children=children_with_rentals,
+            disabled_children_initial=disabled_children,
+            disabled=self.appointment_type != "pickup",
         )
         qs = AppointmentSlot.objects.filter(start__gte=now(), appointment_type=self.appointment_type)
         if qs.exists():
