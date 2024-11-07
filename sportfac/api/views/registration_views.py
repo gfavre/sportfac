@@ -100,7 +100,7 @@ class ExtraInfoViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        data = request.data.copy()
+        data = request.data.dict() if not isinstance(request.data, dict) else request.data
         # If image is not included in the request data, retain the existing image
         if "image" not in request.FILES:
             data["image"] = instance.image
