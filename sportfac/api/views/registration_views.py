@@ -100,12 +100,11 @@ class ExtraInfoViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        data = request.data.dict() if not isinstance(request.data, dict) else request.data
-        # If image is not included in the request data, retain the existing image
+        partial_data = request.data.dict() if not isinstance(request.data, dict) else request.data
         if "image" not in request.FILES:
-            data["image"] = instance.image
+            partial_data["image"] = instance.image
 
-        serializer = self.get_serializer(instance, data=data, partial=True)
+        serializer = self.get_serializer(instance, data=partial_data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(
