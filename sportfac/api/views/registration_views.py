@@ -106,11 +106,12 @@ class ExtraInfoViewSet(viewsets.ModelViewSet):
             data = request.data.dict()  # Convert QueryDict to a regular dictionary
         else:
             data = dict(request.data)  # Create a new dictionary if it's already a dict-like object
+        if not data.get("image", None):
+            if "image" not in request.FILES and instance.image:
+                data["image"] = instance.image
+            else:
+                data["image"] = None
 
-        if "image" not in request.FILES and instance.image:
-            data["image"] = instance.image
-        else:
-            data["image"] = None
         serializer = self.get_serializer(instance, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -118,6 +119,7 @@ class ExtraInfoViewSet(viewsets.ModelViewSet):
                 {"success": True, "extra_info_id": serializer.instance.pk, "message": "Updated successfully."},
                 status=status.HTTP_200_OK,
             )
+
         return Response(
             {"success": False, "errors": serializer.errors, "message": "Update failed."},
             status=status.HTTP_400_BAD_REQUEST,
