@@ -109,7 +109,8 @@ class ExtraInfoViewSet(viewsets.ModelViewSet):
 
         if "image" not in request.FILES and instance.image:
             data["image"] = instance.image
-
+        else:
+            data["image"] = None
         serializer = self.get_serializer(instance, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()

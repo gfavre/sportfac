@@ -120,6 +120,9 @@ class BaseWizardStepView(View):
             if settings.KEPCHUP_USE_APPOINTMENTS:
                 rentals = Rental.objects.filter(child__family=user, paid=False)
         has_children = user.is_authenticated and user.children.exists()
+        validation = None
+        if invoice and hasattr(invoice, "validation"):
+            validation = invoice.validation
         self._registration_context = {
             "user": user,
             "user_registered": user.is_authenticated,
@@ -132,7 +135,7 @@ class BaseWizardStepView(View):
             "questions_not_answered": questions_not_answered,
             "invoice": invoice,
             "rentals": rentals,
-            "validation": invoice.validation if invoice else None,
+            "validation": validation,
         }
         return self._registration_context
 
