@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMessage
-from django.db import connection, transaction
+from django.db import IntegrityError, connection, transaction
 from django.template.loader import render_to_string
 from django.utils import translation
 from django.utils.timezone import now
@@ -218,7 +218,12 @@ def cancel_expired_registrations():
         ):
             courses_set.add(registration.course)
             registration.cancel(reason=Registration.REASON.expired)
-            registration.save()
+            try:
+                registration.save()
+            except IntegrityError:
+                # The registration was already canceled another way, we can delete it. The error happens because
+                # we can't have 2 registrations with the same (course, child, status) triplet.
+                registration.delete()
 
         # 3. expire rentals without invoices (person never confirmed)
         if settings.KEPCHUP_USE_APPOINTMENTS:
