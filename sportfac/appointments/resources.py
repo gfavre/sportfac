@@ -46,6 +46,9 @@ class AppointmentResource(resources.ModelResource):
     def dehydrate_child(self, appointment):
         return appointment.child.full_name
 
+    def dehydrate_email(self, appointment):
+        return appointment.child.family.email or ""
+
     # noinspection PyMethodMayBeStatic
     def dehydrate_has_registrations(self, appointment):
         return appointment.child.has_registrations
