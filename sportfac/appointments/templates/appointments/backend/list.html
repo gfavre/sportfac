@@ -22,8 +22,8 @@
             {% for appointment in slot.appointments.all %}
               <li>
                 {% if appointment.child.id_lagapeo  %}{{ appointment.child.id_lagapeo }} : {% endif %}{{ appointment.child }} -
-                <a href="{{ appointment.phone_number|phone:'RFC3966' }}">{{ appointment.phone_number|phone }}</a>
-                - {{ appointment.email | urlize}}
+                <a href="{{ appointment.child.family.best_phone|phone:'RFC3966' }}">{{ appointment.child.family.best_phone|phone }}</a>
+                - {{ appointment.child.family.email | urlize}}
                   <a class="btn btn-sm" style="margin-left: 80px" href="{{ appointment.get_backend_delete_url }}"><i class="icon-trash"></i> {% trans "Delete" %}</a>
 
               </li>

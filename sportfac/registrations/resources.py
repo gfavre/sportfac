@@ -5,12 +5,12 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 import tablib
-from activities.models import ExtraNeed
-from backend.templatetags.switzerland import phone
 from import_export import fields, resources, widgets
 from openpyxl import load_workbook
 from openpyxl.workbook.workbook import Workbook
 
+from activities.models import ExtraNeed
+from backend.templatetags.switzerland import phone
 from .models import Bill, ChildActivityLevel, Registration
 
 
@@ -45,6 +45,7 @@ class RegistrationResource(resources.ModelResource):
     parent_first_name = fields.Field(attribute="child__family__first_name", column_name=_("Parent's first name"))
     parent_last_name = fields.Field(attribute="child__family__last_name", column_name=_("Parent's last name"))
     parent_email = fields.Field(attribute="child__family__email", column_name=_("Email"))
+
     parent_address = fields.Field(attribute="child__family__address", column_name=_("Address"))
     parent_zipcode = fields.Field(attribute="child__family__zipcode", column_name=_("NPA"))
     parent_city = fields.Field(attribute="child__family__city", column_name=_("City"))
