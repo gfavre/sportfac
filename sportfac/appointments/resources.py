@@ -34,6 +34,9 @@ class AppointmentResource(resources.ModelResource):
         )
         export_order = fields
 
+    def get_queryset(self):
+        return super().get_queryset().select_related("slot", "child", "child__family")
+
     # noinspection PyMethodMayBeStatic
     def dehydrate_date(self, appointment):
         return timezone.localtime(appointment.slot.start).date()
