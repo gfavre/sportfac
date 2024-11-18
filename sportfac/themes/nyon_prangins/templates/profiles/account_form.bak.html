@@ -1,4 +1,4 @@
-{% load i18n floppyforms sekizai_tags %}
+{% load floppyforms i18n sekizai_tags %}
 
 {% form form using %}
 {% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap.html" %}{% endblock %}
@@ -20,13 +20,13 @@
   {% formconfig row using "floppyforms/rows/bootstrap.html" %}
 
   <fieldset>
-    {% if object.is_instructor %}<legend>{% trans "Contact informations" %}</legend>{% endif %}
+    {% if object.is_instructor %}<legend>{% translate "Contact informations" %}</legend>{% endif %}
     {% formrow form.first_name %}
     {% formrow form.last_name %}
     {% formrow form.email %}
     {% formrow form.address %}
     <div class="form-group">
-      <label class="control-label col-sm-2">{% trans "City" %} <span class="required">*</span></label>
+      <label class="control-label col-sm-2">{% translate "City" %} <span class="required">*</span></label>
       <div class="col-sm-10">
         {% formfield form.zipcode %}
         <input type="hidden" id="id_city" name="city" value="{{ object.city }}">
@@ -40,14 +40,14 @@
   </fieldset>
   {% if object.is_instructor %}
   <fieldset>
-    <legend>{% trans "Instructor informations" %}</legend>
+    <legend>{% translate "Instructor informations" %}</legend>
     {% formconfig row using "floppyforms/rows/bootstrap-sm-3.html" %}
     {% formrow form.birth_date %}
     {% formconfig row using "floppyforms/rows/bootstrap.html" %}
     {% formrow form.ahv form.iban %}
   </fieldset>
   {% endif %}
-  
+
 {% endform %}
 
 {% addtoblock "js" %}

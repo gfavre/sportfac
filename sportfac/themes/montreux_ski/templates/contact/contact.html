@@ -39,13 +39,14 @@
       </dd>
     </dl>
   </section>
-{% endblock %}
+{% endblock addresses %}
 
 {% comment %}
-{% load i18n floppyforms %}
+{% load floppyforms i18n %}
 
-{% block title %}{% trans "Contact" %}{% endblock title %}
-{% block page_title %}{% trans "Contact" %}{% endblock page_title %}
+{% block title %}{% translate "Contact" %}{% endblock %}
+
+{% block page_title %}{% translate "Contact" %}{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -59,7 +60,7 @@
         {% formrow form.message %}
       {% endform %}
       <div class="pull-right">
-        <button type="submit" class="btn btn-primary btn-large"><i class="icon icon-envelope-alt"></i>  {% trans "Send message" %}</button>
+        <button type="submit" class="btn btn-primary btn-large"><i class="icon icon-envelope-alt"></i>  {% translate "Send message" %}</button>
       </div>
     </form>
   </div>
@@ -106,6 +107,6 @@
 
   </div>
 </div>
-{% endblock %}
+{% endblock content %}
 
 {% endcomment %}

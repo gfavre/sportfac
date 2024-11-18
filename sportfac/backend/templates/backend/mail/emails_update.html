@@ -1,7 +1,8 @@
 {% extends "backend/base.html" %}
-{% load i18n static crispy_forms_tags sekizai_tags  %}
-{% block title %}{% trans "Update email" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "Update generic email" %}{% endblock %}
+{% load crispy_forms_tags i18n sekizai_tags static %}
+{% block title %}{% translate "Update email" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Update generic email" %}{% endblock %}
 
 {% block content %}
   <div class="row">

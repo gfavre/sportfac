@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% load i18n static %}
 
-{% block title %}{% trans "Page not found" %}{% endblock %}
+{% block title %}{% translate "Page not found" %}{% endblock %}
 
-{% block page_title %}{% trans "Page not found" %}{% endblock page_title %}
+{% block page_title %}{% translate "Page not found" %}{% endblock %}
 
 {% block content %}
-<p>{% trans "Sorry, this is probably not the page you were looking for." %}</p>
+<p>{% translate "Sorry, this is probably not the page you were looking for." %}</p>
 <img src="{% static 'img/404.jpg' %}" class="img-responsive" />
 {% endblock content %}

@@ -1,18 +1,19 @@
 {% extends "backend/base.html" %}
-{% load i18n %}
-{% load duration switzerland sekizai_tags crispy_forms_tags %}
+{% load crispy_forms_tags duration i18n sekizai_tags switzerland %}
 
-{% block title %}{% trans "Payroll" %} - {{ block.super }}{% endblock %}
+{% block title %}{% translate "Payroll" %} - {{ block.super }}{% endblock %}
+
 {% block page_title %}
-  {% trans "Payroll" %}
-{% endblock %}
+  {% translate "Payroll" %}
+{% endblock page_title %}
+
 {% block subtitle %}
   <div class="visible-print">
     <p>
-      {% blocktrans with start=start|date end=end|date %}Period from {{ start }} to {{ end }}{% endblocktrans %}
+      {% blocktranslate with start=start|date end=end|date %}Period from {{ start }} to {{ end }}{% endblocktranslate %}
   </div>
 
-{% endblock %}
+{% endblock subtitle %}
 
 {% block content %}
   {% addtoblock "css" %}
@@ -35,8 +36,8 @@
           months: 'janvier_février_mars_avril_mai_juin_juillet_août_septembre_octobre_novembre_décembre'.split('_'),
         });
         moment.locale('fr');
-        let start = moment("{{ start | date:'c' }}");
-        let end = moment("{{ end | date:'c' }}");
+        let start = moment("{{ start|date:'c' }}");
+        let end = moment("{{ end|date:'c' }}");
 
         function cb(start, end) {
           $('#reportrange span').html(start.format('D MMMM YYYY') + ' - ' + end.format('D MMMM YYYY'));
@@ -50,38 +51,38 @@
             "format": "DD.MM.YYYY",
             "firstDay": 1,
             "daysOfWeek": [
-              "{% trans "Sun" %}",
-              "{% trans "Mon" %}",
-              "{% trans "Tue" %}",
-              "{% trans "Wed" %}",
-              "{% trans "Thu" %}",
-              "{% trans "Fri" %}",
-              "{% trans "Sat" %}"],
+              "{% translate "Sun" %}",
+              "{% translate "Mon" %}",
+              "{% translate "Tue" %}",
+              "{% translate "Wed" %}",
+              "{% translate "Thu" %}",
+              "{% translate "Fri" %}",
+              "{% translate "Sat" %}"],
             "monthNames": [
-              "{% trans "January" %}",
-              "{% trans "February" %}",
-              "{% trans "March" %}",
-              "{% trans "April" %}",
-              "{% trans "May" %}",
-              "{% trans "June" %}",
-              "{% trans "July" %}",
-              "{% trans "August" %}",
-              "{% trans "September" %}",
-              "{% trans "October" %}",
-              "{% trans "November" %}",
-              "{% trans "December" %}"
+              "{% translate "January" %}",
+              "{% translate "February" %}",
+              "{% translate "March" %}",
+              "{% translate "April" %}",
+              "{% translate "May" %}",
+              "{% translate "June" %}",
+              "{% translate "July" %}",
+              "{% translate "August" %}",
+              "{% translate "September" %}",
+              "{% translate "October" %}",
+              "{% translate "November" %}",
+              "{% translate "December" %}"
             ],
-            "applyLabel": "{% trans "Apply" %}",
-            "cancelLabel": "{% trans "Cancel" %}",
-            "customRangeLabel": "{% trans "Custom range" %}",
+            "applyLabel": "{% translate "Apply" %}",
+            "cancelLabel": "{% translate "Cancel" %}",
+            "customRangeLabel": "{% translate "Custom range" %}",
           },
           ranges: {
-            '{% trans "Today" %}': [moment(), moment()],
-            '{% trans "Yesterday" %}': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-            '{% trans "Last 7 days" %}': [moment().subtract(6, 'days'), moment()],
-            '{% trans "Last 30 days" %}': [moment().subtract(29, 'days'), moment()],
-            '{% trans "This month" %}': [moment().startOf('month'), moment().endOf('month')],
-            '{% trans "Last month" %}': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            '{% translate "Today" %}': [moment(), moment()],
+            '{% translate "Yesterday" %}': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            '{% translate "Last 7 days" %}': [moment().subtract(6, 'days'), moment()],
+            '{% translate "Last 30 days" %}': [moment().subtract(29, 'days'), moment()],
+            '{% translate "This month" %}': [moment().startOf('month'), moment().endOf('month')],
+            '{% translate "Last month" %}': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
           }
         }, cb);
 
@@ -121,14 +122,14 @@
     </div>
   </section>
 
-  <h4>{% trans "Summary" %}, {{ start |date }} - {{ end |date }}</h4>
+  <h4>{% translate "Summary" %}, {{ start|date }} - {{ end|date }}</h4>
   <table class="table">
     <thead>
     <tr>
-      <th>{% trans "Course (code)" %}</th>
-      <th>{% trans "Instructor (identifier)" %}</th>
-      <th>{% trans "Exported sessions" %}</th>
-      <th>{% trans "Not exported sessions" %}</th>
+      <th>{% translate "Course (code)" %}</th>
+      <th>{% translate "Instructor (identifier)" %}</th>
+      <th>{% translate "Exported sessions" %}</th>
+      <th>{% translate "Not exported sessions" %}</th>
     </tr>
     </thead>
     <tbody>
@@ -163,7 +164,7 @@
   <hr>
   <p class="alert alert-warning lead">
     <i class="icon icon-warning"></i>
-    {% trans "Note that supervisors not having an identifier or a function defined will not be exported" %}
+    {% translate "Note that supervisors not having an identifier or a function defined will not be exported" %}
   </p>
   {% crispy form %}
   <p></p>

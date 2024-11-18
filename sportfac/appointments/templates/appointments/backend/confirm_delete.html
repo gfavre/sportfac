@@ -1,14 +1,15 @@
 {% extends "backend/base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Delete appointment" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "Please confirm cancelation" %}{% endblock %}
+{% block title %}{% translate "Delete appointment" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Please confirm cancelation" %}{% endblock %}
 
 {% block content %}
 <form action="{{ object.get_backend_delete_url }}" method="post">{% csrf_token %}
-  <p>{% blocktrans %}Are you sure you want to cancel "{{ object }}"?{% endblocktrans %}</p>
+  <p>{% blocktranslate %}Are you sure you want to cancel "{{ object }}"?{% endblocktranslate %}</p>
   <div class="form-group">
-    <button type="submit" class="btn btn-danger"><i class="icon icon-trash"></i>&nbsp;{% trans 'Cancel appointment' %}</button>
+    <button type="submit" class="btn btn-danger"><i class="icon icon-trash"></i>&nbsp;{% translate 'Cancel appointment' %}</button>
   </div>
 </form>
 

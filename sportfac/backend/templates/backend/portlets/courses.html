@@ -1,31 +1,31 @@
-{% load i18n humanize sekizai_tags %}
+{% load humanize i18n sekizai_tags %}
 
 <section class="portlet">
   <h4 class="portlet-title">
-    <u><i class="icon-graduation-cap"></i>&nbsp;&nbsp;{% trans "Activities &amp; courses" %}</u>
+    <u><i class="icon-graduation-cap"></i>&nbsp;&nbsp;{% translate "Activities &amp; courses" %}</u>
   </h4>
   <div class="portlet-body row">
     <div class="col-md-8">
-      <p><strong>{{ nb_courses }}</strong> <a href="{% url 'backend:course-list' %}">{% trans "courses" %}</a> {% trans "in" %} <strong>{{ nb_activities }}</strong> <a href="{% url 'backend:activity-list' %}">{% trans "activities" %}</a>. {% trans "Last update" %}: {{ last_course_update|naturaltime }}</p>
+      <p><strong>{{ nb_courses }}</strong> <a href="{% url 'backend:course-list' %}">{% translate "courses" %}</a> {% translate "in" %} <strong>{{ nb_activities }}</strong> <a href="{% url 'backend:activity-list' %}">{% translate "activities" %}</a>. {% translate "Last update" %}: {{ last_course_update|naturaltime }}</p>
       <div id="courses-horizontal-chart" class="chart-holder-200" style="height: 100px;"></div>
 
         <p>
         <ul class="list-unstyled">
-        <li><a href="{% url 'backend:activity-list' %}"><i class="icon-soccer-ball"></i>&nbsp;{% trans "Manage activities" %}</a></li>
-        <li><a href="{% url 'backend:course-list' %}"><i class="icon-graduation-cap"></i>&nbsp;{% trans "Manage courses" %}</a></li>
-        <li><a href="{% url 'backend:instructor-list' %}"><i class="icon-user"></i>&nbsp;{% trans "Manage instructors" %}</a></li>
+        <li><a href="{% url 'backend:activity-list' %}"><i class="icon-soccer-ball"></i>&nbsp;{% translate "Manage activities" %}</a></li>
+        <li><a href="{% url 'backend:course-list' %}"><i class="icon-graduation-cap"></i>&nbsp;{% translate "Manage courses" %}</a></li>
+        <li><a href="{% url 'backend:instructor-list' %}"><i class="icon-user"></i>&nbsp;{% translate "Manage instructors" %}</a></li>
         </ul>
         </p>
     </div>
     <div class="col-md-4">
       <div class="row-stat">
-        <p class="row-stat-label">{% trans "Total sessions" %}</p>
+        <p class="row-stat-label">{% translate "Total sessions" %}</p>
         <h3 class="row-stat-value">{{ total_sessions }}</h3>
       </div>
     </div>
     <div class="col-md-4">
       <div class="row-stat">
-        <p class="row-stat-label">{% trans "Total instructors" %}</p>
+        <p class="row-stat-label">{% translate "Total instructors" %}</p>
         <h3 class="row-stat-value">{{ total_instructors }}</h3>
       </div>
     </div>
@@ -33,7 +33,7 @@
   </div> <!-- /.portlet-body -->
 </section>
 
-{% addtoblock  "js" %}
+{% addtoblock "js" %}
 
 <script>
 $(function () {
@@ -53,11 +53,11 @@ $(function () {
   }]
 
   data = [
-          {  label: "{% trans "Not Ready" %}",
+          {  label: "{% translate "Not Ready" %}",
              data: [[{{ notready_courses }}, 1]]
           },
           {
-             label: "{% trans "Ready" %}",
+             label: "{% translate "Ready" %}",
              data: [[{{ ready_courses }}, 1]]
           }
          ]
@@ -108,4 +108,3 @@ $(function () {
 })
 </script>
 {% endaddtoblock %}
-

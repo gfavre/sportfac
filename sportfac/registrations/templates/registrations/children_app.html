@@ -19,9 +19,9 @@
 {% addtoblock "extra_html" %}
 ng-app="sportfacChildren"
 ng-controller="ListCtrl"
-prefill="{{ PREFILL_YEARS_WITH_TEACHERS|yesno:'true,false'}}"
-buildings="{{ USE_BUILDINGS|yesno:'true,false'}}"
-external="{{ IMPORT_CHILDREN|yesno:'true,false'}}"
+prefill="{{ PREFILL_YEARS_WITH_TEACHERS|yesno:'true,false' }}"
+buildings="{{ USE_BUILDINGS|yesno:'true,false' }}"
+external="{{ IMPORT_CHILDREN|yesno:'true,false' }}"
 schools="{{ schools }}"
 buildingServiceUrl="{% url 'api:building-list' %}"
 childServiceUrl="{% url 'api:child-list' %}"
@@ -32,12 +32,12 @@ yearServiceUrl="{% url 'api:year-list' %}"
   <div class="col-sm-4  col-sm-push-8" data-ng-animate="fade" style="padding-top: 1em;  background-color: #fcfcfc; ">
     <div ng-show="userChildren.length !== 0">
       {% if CHILDREN_EDITABLE %}
-      <h4>{% trans "Edit my children data" %}</h4>
+      <h4>{% translate "Edit my children data" %}</h4>
       {% else %}
-      <h4>{% trans "Your children" %}</h4>
+      <h4>{% translate "Your children" %}</h4>
       {% endif %}
       <a href="#/new" class="btn btn-success" style="font-size: inherit; width: 100%; margin-bottom: .5em;"
-         ng-show="selectedChild"><i class="icon-plus"></i> {% trans "Add child" %}</a>
+         ng-show="selectedChild"><i class="icon-plus"></i> {% translate "Add child" %}</a>
       <hr />
       <ul class="nav nav-pills nav-stacked children-list">
 

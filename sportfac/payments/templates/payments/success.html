@@ -1,16 +1,16 @@
 {% extends "base.html" %}
-{% load i18n %}
-{% load duration switzerland %}
+{% load duration i18n switzerland %}
 
-{% block title %}{% trans "Payment successful" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "Payment successful" %} {% endblock %}
+{% block title %}{% translate "Payment successful" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Payment successful" %} {% endblock %}
 
 {% block content %}
   <div class="portlet hidden-print">
-    <p class="lead">{% trans "The payment was successful." %}</p>
+    <p class="lead">{% translate "The payment was successful." %}</p>
     <p>
-      <a href="{% url 'registrations:registrations_registered_activities' %}"><i class="icon-calendar"></i> {% trans "My registered activities" %}</a>&nbsp; &mdash;&nbsp;
-      <a href="{% url 'registrations:registrations_billing' %}"><i class="icon-credit-card-1"></i> {% trans "My invoices" %}</a>
+      <a href="{% url 'registrations:registrations_registered_activities' %}"><i class="icon-calendar"></i> {% translate "My registered activities" %}</a>&nbsp; &mdash;&nbsp;
+      <a href="{% url 'registrations:registrations_billing' %}"><i class="icon-credit-card-1"></i> {% translate "My invoices" %}</a>
   </p>
   </div>
 {% include "registrations/invoice-recap.html" %}

@@ -1,13 +1,14 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags duration %}
+{% load duration i18n sekizai_tags %}
 {% get_current_language as LANGUAGE_CODE %}
 
-{% block title %}{% trans "List activities" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "List activities" %}{% endblock %}
+{% block title %}{% translate "List activities" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "List activities" %}{% endblock %}
 
 {% block content %}
 
-{% addtoblock  "js" %}    
+{% addtoblock "js" %}
 <script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
 <script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
 <script>
@@ -29,14 +30,14 @@ $(function () {
 
 
 
-<a href="{% url 'backend:activity-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New activity" %}</a>
+<a href="{% url 'backend:activity-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% translate "New activity" %}</a>
 <hr />
 <table class="table">
   <thead>
     <tr>
-      <th>{% trans "Identifier" %}</th>
-      <th>{% trans "Name" %}</th>
-      <th>{% trans "Actions" %}</th>
+      <th>{% translate "Identifier" %}</th>
+      <th>{% translate "Name" %}</th>
+      <th>{% translate "Actions" %}</th>
     </tr>
   </thead>
   {% for activity in object_list %}
@@ -45,12 +46,12 @@ $(function () {
       <td><a href="{{ activity.get_backend_url }}">{{ activity.name }}</a></td>
       <td>
         <ul class="list-unstyled">
-          <li class="text-nowrap"><a href="{{ activity.get_backend_url }}" class="btn btn-sm"><i class="icon-graduation-cap"></i>&nbsp;{% trans "Check courses" %}</a></li>
+          <li class="text-nowrap"><a href="{{ activity.get_backend_url }}" class="btn btn-sm"><i class="icon-graduation-cap"></i>&nbsp;{% translate "Check courses" %}</a></li>
           {% if USE_ABSENCES and ABSENCES_RELATE_TO_ACTIVITIES %}
-          <li class="text-nowrap"><a href="{{ activity.backend_absences_url }}" class="btn btn-sm"><i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}</a></li>
+          <li class="text-nowrap"><a href="{{ activity.backend_absences_url }}" class="btn btn-sm"><i class="icon-calendar"></i>&nbsp;{% translate "Manage absences" %}</a></li>
           {% endif %}
-          <li class="text-nowrap"><a href="{{ activity.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update activity" %}</a></li>
-          <li class="text-nowrap"><a href="{{ activity.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete activity" %}</a></li>
+          <li class="text-nowrap"><a href="{{ activity.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% translate "Update activity" %}</a></li>
+          <li class="text-nowrap"><a href="{{ activity.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% translate "Delete activity" %}</a></li>
         </ul>
       </td>
     </tr>

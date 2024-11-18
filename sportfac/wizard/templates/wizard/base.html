@@ -8,9 +8,9 @@
              role="progressbar"
              style="width: {{ progress_percent }}%;"
              aria-valuenow="{{ progress_percent }}" aria-valuemin="0" aria-valuemax="100">
-          {% blocktrans with current_index=current_index total_steps=total_steps progress_percent=progress_percent|floatformat:0 %}
+          {% blocktranslate with current_index=current_index total_steps=total_steps progress_percent=progress_percent|floatformat:0 %}
             Step {{ current_index }} of {{ total_steps }} ({{ progress_percent }}%)
-          {% endblocktrans %}
+          {% endblocktranslate %}
         </div>
       </div>
     {% else %}
@@ -59,7 +59,7 @@
           </div>
           {% if current_step.lead %}<p class="lead">{{ current_step.lead }}</p>{% endif %}
           {{ current_step.description|safe }}
-          {% block wizard_content %}{% endblock wizard_content %}
+          {% block wizard_content %}{% endblock %}
         </div>
       </main>
     </div>

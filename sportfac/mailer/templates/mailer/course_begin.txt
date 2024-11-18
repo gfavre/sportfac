@@ -1,12 +1,12 @@
 {% load duration mail_tags %}
 Madame, Monsieur,
 
-Nous avons le plaisir d'inviter votre enfant {{ child }} à la première séance du cours suivant : 
+Nous avons le plaisir d'inviter votre enfant {{ child }} à la première séance du cours suivant :
 
 {{ course.short_name }}
 Moniteur{{ course.instructors.count|pluralize:"s" }} : {% for instructor in course.instructors.all %}{{ instructor.full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}
 Jour : {{ course.day_name }} de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }}
-Date 1ère séance : {{ course.start_date | date:"j F Y" }}
+Date 1ère séance : {{ course.start_date|date:"j F Y" }}
 Nombre de séances : {{ course.number_of_sessions }}
 Rendez-vous/lieu du cours : {{ course.place }}
 

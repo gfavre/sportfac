@@ -1,31 +1,31 @@
 {% extends "base.html" %}
-{% load i18n crispy_forms_tags humanize l10n countdowntimer %}
+{% load countdowntimer crispy_forms_tags humanize i18n l10n %}
 
-{% block title %}{% trans "Login" %}{% endblock %}
-{% block page_title %}{% trans "Login" %}{% endblock page_title %}
+{% block title %}{% translate "Login" %}{% endblock %}
 
+{% block page_title %}{% translate "Login" %}{% endblock %}
 
 {% block content %}
   <div class="row">
     <div class="col-sm-6 "  style="border-right: 1px solid #ccc">
       {% if registration_opened %}
-        <p class="lead text-center">{% trans "You don't have an account?" %}<br>
+        <p class="lead text-center">{% translate "You don't have an account?" %}<br>
           <a href="{% url 'wizard:entry_point' %}" class="btn btn-large btn-primary" style="margin-top: 30px;">
-            {% trans "Registration" %}
+            {% translate "Registration" %}
           </a>
         </p>
       {% elif REGISTER_ACCOUNTS_AT_ANY_TIME %}
-        <p class="lead text-center">{% trans "You don't have an account?" %}<br>
+        <p class="lead text-center">{% translate "You don't have an account?" %}<br>
           <a href="{% url 'profiles:anytime_registeraccount' %}" class="btn btn-large btn-primary" style="margin-top: 30px;">
-            {% trans "Registration" %}
+            {% translate "Registration" %}
           </a>
         </p>
       {% else %}
-        <h4>{% trans "Registrations are currently closed" %}</h4>
+        <h4>{% translate "Registrations are currently closed" %}</h4>
         {% if request.PHASE == 1 %}
           <p>
-            {% blocktrans with registration_start=registration_start|date:"j F Y" registration_end=registration_end|date:"j F Y" %}
-              They will open from {{ registration_start }} until {{ registration_end }}.{% endblocktrans %}</p>
+            {% blocktranslate with registration_start=registration_start|date:"j F Y" registration_end=registration_end|date:"j F Y" %}
+              They will open from {{ registration_start }} until {{ registration_end }}.{% endblocktranslate %}</p>
           {% countdown registration_start %}
 
         {% endif %}
@@ -36,7 +36,7 @@
       <hr class="hidden-sm hidden-md hidden-lg">
 
       {% if registration_opened or REGISTER_ACCOUNTS_AT_ANY_TIME %}
-        <p class="lead text-center">{% trans "You already have an account" %}</p>
+        <p class="lead text-center">{% translate "You already have an account" %}</p>
       {% endif %}
       <form action="{{ app_path }}" method="post" id="login-form" class="form-horizontal">
         {% crispy form %}
@@ -45,7 +45,7 @@
 
         <div class="form-group">
           <div class="col-sm-offset-3 col-sm-9">
-            <button type="submit" class="btn btn-primary">{% trans 'Log in' %}</button>
+            <button type="submit" class="btn btn-primary">{% translate 'Log in' %}</button>
           </div>
         </div>
       </form>
@@ -58,4 +58,4 @@
   <script>
     $('#id_username').focus();
   </script>
-{% endblock %}
+{% endblock extra_js %}

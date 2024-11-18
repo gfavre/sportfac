@@ -1,4 +1,4 @@
-{% load switzerland i18n %}
+{% load i18n switzerland %}
 Madame, Monsieur,
 
 Vous étiez inscrit sur la liste d'attente du cours suivant:

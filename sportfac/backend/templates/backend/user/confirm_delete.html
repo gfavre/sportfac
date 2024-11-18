@@ -1,19 +1,20 @@
 {% extends "backend/base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Delete user" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "Please confirm deletion" %}{% endblock %}
+{% block title %}{% translate "Delete user" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Please confirm deletion" %}{% endblock %}
 
 {% block content %}
   {% if object.is_instructor %}
     <article class="panel panel-warning">
       <div class="panel-heading">
-        <h3 class="panel-title">{% trans "Warning - instructor" %}</h3>
+        <h3 class="panel-title">{% translate "Warning - instructor" %}</h3>
       </div>
       <div class="panel-body">
-        <p>{% blocktrans %}
+        <p>{% blocktranslate %}
           This user is an instructor for the following courses. Maybe you simply want to remove his
-          rights?{% endblocktrans %}</p>
+          rights?{% endblocktranslate %}</p>
         <ul>
           {% for course in object.course.all %}
             <li><a href="{{ course.get_backend_url }}">{{ course }}</a></li>
@@ -26,24 +27,24 @@
   {% if object.is_manager %}
     <article class="panel panel-warning">
       <div class="panel-heading">
-        <h3 class="panel-title">{% trans "Warning - manager" %}</h3>
+        <h3 class="panel-title">{% translate "Warning - manager" %}</h3>
       </div>
       <div class="panel-body">
-        <p>{% blocktrans %}
-          This user is a manager. Maybe you simply want to remove his rights?{% endblocktrans %}</p>
+        <p>{% blocktranslate %}
+          This user is a manager. Maybe you simply want to remove his rights?{% endblocktranslate %}</p>
         <a href="{{ object.get_backend_url }}" class="btn btn-sm btn-default"><i
-            class="icon-edit"></i> {% trans "Edit user" %}</a></li>
+            class="icon-edit"></i> {% translate "Edit user" %}</a></li>
 
       </div>
     </article>
   {% endif %}
 
-  <p>{% blocktrans with full_name=object.full_name email=object.email %}
-    Are you sure you want to delete {{ full_name }} ({{ email }})?{% endblocktrans %}</p>
+  <p>{% blocktranslate with full_name=object.full_name email=object.email %}
+    Are you sure you want to delete {{ full_name }} ({{ email }})?{% endblocktranslate %}</p>
 
   {% if object.children.exists %}
-    <p>{% blocktrans %}The following children along with their registrations will also be
-      removed:{% endblocktrans %}</p>
+    <p>{% blocktranslate %}The following children along with their registrations will also be
+      removed:{% endblocktranslate %}</p>
     <ul>
       {% for child in object.children.all %}
         <li>
@@ -63,9 +64,9 @@
 
 
     <div class="form-group">
-      <button type="submit" class="btn btn-danger"><i class="icon icon-trash"></i>&nbsp;{% trans 'Delete user' %}
+      <button type="submit" class="btn btn-danger"><i class="icon icon-trash"></i>&nbsp;{% translate 'Delete user' %}
       </button>
-      <a href="{% url 'backend:user-list' %}" class="btn  btn-default">{% trans 'Cancel' %}</a>
+      <a href="{% url 'backend:user-list' %}" class="btn  btn-default">{% translate 'Cancel' %}</a>
     </div>
   </form>
 

@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags duration switzerland %}
+{% load duration i18n sekizai_tags switzerland %}
 
-{% block title %}{% trans "All appointments" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "All appointments" %}{% endblock %}
+{% block title %}{% translate "All appointments" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "All appointments" %}{% endblock %}
 
 {% get_current_language as LANGUAGE_CODE %}
 
@@ -10,21 +11,21 @@
 
 {% block content %}
   <p>
-    <a href="{% url 'backend:appointments-export' %}" class="btn btn-primary"><i class="icon-file-excel"></i> {% trans "Export appointments" %}</a>
+    <a href="{% url 'backend:appointments-export' %}" class="btn btn-primary"><i class="icon-file-excel"></i> {% translate "Export appointments" %}</a>
   </p>
   {% regroup object_list by start|date:"l d F Y" as slots_per_day %}
   {% for slot in slots_per_day %}
     <section class="portlet">
       <h3 class="content-title"><u>{{ slot.grouper }}</u></h3>
       {% for slot in slot.list %}
-        <h4>{{ slot.start | date:"H:i" }} - {{ slot.end | date:"H:i" }}</h4>
+        <h4>{{ slot.start|date:"H:i" }} - {{ slot.end|date:"H:i" }}</h4>
           <ul>
             {% for appointment in slot.appointments.all %}
               <li>
-                {% if appointment.child.id_lagapeo  %}{{ appointment.child.id_lagapeo }} : {% endif %}{{ appointment.child }} -
+                {% if appointment.child.id_lagapeo %}{{ appointment.child.id_lagapeo }} : {% endif %}{{ appointment.child }} -
                 <a href="{{ appointment.child.family.best_phone|phone:'RFC3966' }}">{{ appointment.child.family.best_phone|phone }}</a>
-                - {{ appointment.child.family.email | urlize}}
-                  <a class="btn btn-sm" style="margin-left: 80px" href="{{ appointment.get_backend_delete_url }}"><i class="icon-trash"></i> {% trans "Delete" %}</a>
+                - {{ appointment.child.family.email|urlize }}
+                  <a class="btn btn-sm" style="margin-left: 80px" href="{{ appointment.get_backend_delete_url }}"><i class="icon-trash"></i> {% translate "Delete" %}</a>
 
               </li>
             {% endfor %}

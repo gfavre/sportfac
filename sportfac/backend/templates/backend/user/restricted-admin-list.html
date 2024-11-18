@@ -2,8 +2,9 @@
 {% load i18n sekizai_tags switzerland %}
 {% get_current_language as LANGUAGE_CODE %}
 
-{% block title %}{% trans "List restricted admins" %} - {{ block.super }}{% endblock %}
-{% block page_title %} <i class="icon-rebel"></i> {% trans "Restricted admins" %}{% endblock %}
+{% block title %}{% translate "List restricted admins" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %} <i class="icon-rebel"></i> {% translate "Restricted admins" %}{% endblock %}
 
 {% block content %}
   {% addtoblock "css" %}
@@ -34,33 +35,33 @@
             }
           ],
           language: {
-            info: "{% trans 'Showing _START_ to _END_ of _TOTAL_ entries' %}",
-            infoEmpty: "{% trans "Showing 0 to 0 of 0 entries" %}",
-            infoFiltered: "{% trans "(filtered from _MAX_ total entries)" %}",
-            lengthMenu: "{% trans "Show _MENU_ entries" %}",
+            info: "{% translate 'Showing _START_ to _END_ of _TOTAL_ entries' %}",
+            infoEmpty: "{% translate "Showing 0 to 0 of 0 entries" %}",
+            infoFiltered: "{% translate "(filtered from _MAX_ total entries)" %}",
+            lengthMenu: "{% translate "Show _MENU_ entries" %}",
             paginate: {
-              first: "{% trans 'First' %}",
-              last: "{% trans 'Last' %}",
-              previous: "{% trans 'Previous' %}",
-              next: "{% trans 'Next' %}"
+              first: "{% translate 'First' %}",
+              last: "{% translate 'Last' %}",
+              previous: "{% translate 'Previous' %}",
+              next: "{% translate 'Next' %}"
             },
             search: "",
-            searchPlaceholder: "{% trans 'Search' %}",
+            searchPlaceholder: "{% translate 'Search' %}",
             searchPanes: {
               title: {
-                _: '{% trans 'Filters selected' %} - %d',
-                0: '{% trans "No filter selected" %}'
+                _: '{% translate 'Filters selected' %} - %d',
+                0: '{% translate "No filter selected" %}'
               },
-              clearMessage: '{% trans "Clear All" %}'
+              clearMessage: '{% translate "Clear All" %}'
             },
             select: {
               'rows': {
-                1: "{% trans "%d row selected" %}",
-                _: "{% trans "%d rows selected" %}"
+                1: "{% translate "%d row selected" %}",
+                _: "{% translate "%d rows selected" %}"
               }
             }
           },
-          'lengthMenu': [[10, 25, 50, -1], [10, 25, 50, "{% trans 'All admins' %}"] ],
+          'lengthMenu': [[10, 25, 50, -1], [10, 25, 50, "{% translate 'All admins' %}"] ],
           order: [[0, 'asc']],
           pageLength: 50,
         });
@@ -69,19 +70,19 @@
 
   {% endaddtoblock %}
   <p >
-  {% blocktrans %}These users have restricted access to the backend. They can only manage the activities they are
+  {% blocktranslate %}These users have restricted access to the backend. They can only manage the activities they are
     assigned to. They can also manage the users of these activities and their registrations, but can't change general
     settings or assign management rights.
-  {% endblocktrans %}
+  {% endblocktranslate %}
   </p>
   <hr>
 
   <table class="table" id="admins">
     <thead>
     <tr>
-      <th class="name">{% trans "Name" %}</th>
-      <th class="activities">{% trans "Activities" %}</th>
-      <th class="actions">{% trans "Actions" %}</th>
+      <th class="name">{% translate "Name" %}</th>
+      <th class="activities">{% translate "Activities" %}</th>
+      <th class="actions">{% translate "Actions" %}</th>
     </tr>
     </thead>
     {% for user in object_list %}
@@ -96,14 +97,14 @@
 
         <td>
           <ul class="list-unstyled">
-            <li class="text-nowrap"><a href="{{ user.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Edit user" %}
+            <li class="text-nowrap"><a href="{{ user.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% translate "Edit user" %}
             </a></li>
             <li class="text-nowrap">
               <a href="{% url "impersonate-start" uid=user.id %}?next={% url "backend:home" %}" class="btn btn-sm">
-                <i class="icon-guidedog"></i> {% trans "Impersonate" %}</a>
+                <i class="icon-guidedog"></i> {% translate "Impersonate" %}</a>
 
             </li>
-            <li class="text-nowrap"><a href="{{ user.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;&nbsp;{% trans "Delete user" %}
+            <li class="text-nowrap"><a href="{{ user.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;&nbsp;{% translate "Delete user" %}
             </a></li>
 
           </ul>

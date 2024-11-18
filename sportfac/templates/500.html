@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% load i18n static%}
+{% load i18n static %}
 
-{% block title %}{% trans "Internal Error" %}{% endblock %}
+{% block title %}{% translate "Internal Error" %}{% endblock %}
 
-{% block page_title %}{% trans "Internal Error" %}{% endblock page_title %}
+{% block page_title %}{% translate "Internal Error" %}{% endblock %}
 
 {% block content %}
-<p>{% trans "Sorry, an error has happened. This is not your fault. Really." %}<br />
-{% trans "Administrators have been warned." %}</p>
+<p>{% translate "Sorry, an error has happened. This is not your fault. Really." %}<br />
+{% translate "Administrators have been warned." %}</p>
 <img src="{% static 'img/500.jpg' %}" class="img-responsive" />
 {% endblock content %}

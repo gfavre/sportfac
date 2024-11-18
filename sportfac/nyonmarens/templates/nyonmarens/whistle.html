@@ -1,9 +1,10 @@
 {% extends "nyonmarens/base.html" %}
 
-{% load i18n crispy_forms_tags sekizai_tags %}
+{% load crispy_forms_tags i18n sekizai_tags %}
 
-{% block title %}{% trans "Parlons-en..." %}{% endblock title %}
-{% block page_title %}{% trans "Parlons-en..." %}{% endblock page_title %}
+{% block title %}{% translate "Parlons-en..." %}{% endblock %}
+
+{% block page_title %}{% translate "Parlons-en..." %}{% endblock %}
 
 {% block content %}
   {% addtoblock "js" %}
@@ -18,7 +19,7 @@ Toutes les situations racontées seront lues et traitées par la direction.
   {% crispy form %}
 
 
-{% endblock %}
+{% endblock content %}
 
 {% block "right" %}
 <hr>
@@ -28,4 +29,4 @@ Toutes les situations racontées seront lues et traitées par la direction.
     <li><strong>Un langage correct doit être utilisé dans les messages</strong></li>
   </ul>
 
-{% endblock %}
+{% endblock "right" %}

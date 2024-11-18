@@ -1,5 +1,5 @@
 {% extends "flatpages/default.html" %}
-{% load i18n humanize l10n countdowntimer %}
+{% load countdowntimer humanize i18n l10n %}
 
 
 {% block content %}
@@ -9,28 +9,28 @@
 <p class="text-center">
   {% if user.is_authenticated %}
     {% if user.finished_registration %}
-    <a href="{% url 'registrations:registrations_registered_activities' %}" class="btn btn-large btn-primary"><i class="icon-fixed-width icon-calendar"></i> {% trans "My registered activities" %}</a>
-    {% else  %}
-    <a href="{% url 'wizard:entry_point' %}" class="btn btn-large btn-success"><i class="icon-fixed-width icon-calendar"></i> {% trans "Register activities" %}</a>
+    <a href="{% url 'registrations:registrations_registered_activities' %}" class="btn btn-large btn-primary"><i class="icon-fixed-width icon-calendar"></i> {% translate "My registered activities" %}</a>
+    {% else %}
+    <a href="{% url 'wizard:entry_point' %}" class="btn btn-large btn-success"><i class="icon-fixed-width icon-calendar"></i> {% translate "Register activities" %}</a>
     {% endif %}
   {% else %}
-  <a href="{% url 'wizard:entry_point' %}" class="btn btn-large btn-success">{% trans "Registration" %}</a>
+  <a href="{% url 'wizard:entry_point' %}" class="btn btn-large btn-success">{% translate "Registration" %}</a>
   {% endif %}
 </p>
 {% else %}
 <div class="alert alert-info alert-block">
-  <h4>{% trans "Registrations are currently closed" %}</h4>
-  {%  if request.PHASE == 1 %}
+  <h4>{% translate "Registrations are currently closed" %}</h4>
+  {% if request.PHASE == 1 %}
   {% countdown registration_start %}
-  <p>{% blocktrans with registration_start=registration_start|date:"j F Y" registration_end=registration_end|date:"j F Y"%}They will open from {{ registration_start }} until {{ registration_end }}.{% endblocktrans %}</p>
+  <p>{% blocktranslate with registration_start=registration_start|date:"j F Y" registration_end=registration_end|date:"j F Y" %}They will open from {{ registration_start }} until {{ registration_end }}.{% endblocktranslate %}</p>
   {% endif %}
   <p class="text-center">
   {% if not user.is_authenticated and REGISTER_ACCOUNTS_AT_ANY_TIME %}
-  <a href="{% url 'profiles:anytime_registeraccount' %}" class="btn  btn-info"><i class="icon-fixed-width icon-user"></i> {% trans "Create an account" %}</a>
+  <a href="{% url 'profiles:anytime_registeraccount' %}" class="btn  btn-info"><i class="icon-fixed-width icon-user"></i> {% translate "Create an account" %}</a>
   {% endif %}
 
-  {%  if request.PHASE == 3 %}
-  <a href="{% url 'registrations:registrations_registered_activities' %}" class="btn  btn-info"><i class="icon-fixed-width icon-calendar"></i> {% trans "Review my registered activities" %}</a>
+  {% if request.PHASE == 3 %}
+  <a href="{% url 'registrations:registrations_registered_activities' %}" class="btn  btn-info"><i class="icon-fixed-width icon-calendar"></i> {% translate "Review my registered activities" %}</a>
   {% endif %}
   </p>
 </div>

@@ -1,12 +1,13 @@
 {% extends "wizard.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Your children" %}{% endblock title %}
+{% block title %}{% translate "Your children" %}{% endblock %}
+
 {% block page_title %}
 {% if ALTERNATIVE_CHILDREN_LABEL %}
   {{ ALTERNATIVE_CHILDREN_LABEL }}
 {% else %}
-  {% trans "About your children" %}
+  {% translate "About your children" %}
 {% endif %}
 {% endblock page_title %}
 
@@ -14,16 +15,17 @@
 {% include "registrations/children_app.html" %}
 {% endblock content %}
 
-{% block next_label %}{% trans "Register activities"%}{% endblock %}
+{% block next_label %}{% translate "Register activities" %}{% endblock %}
+
 {% block page_footer %}
 {% if not user.finished_registration %}
 <nav>
   <ul class="pager">
     <li class="previous">
-      <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span> {% block previous_label %}{% trans "Previous"%}{% endblock %}</a>
+      <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span> {% block previous_label %}{% translate "Previous" %}{% endblock %}</a>
     </li>
     <li class="next" ng-class="{disabled: userChildren.length === 0}">
-      <a href="{{ next_step.url }}"><strong>{% trans "Register activities" %} <span aria-hidden="true">&rarr;</span></strong></a>
+      <a href="{{ next_step.url }}"><strong>{% translate "Register activities" %} <span aria-hidden="true">&rarr;</span></strong></a>
     </li>
   </ul>
 </nav>

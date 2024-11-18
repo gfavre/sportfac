@@ -1,12 +1,12 @@
-{% load switzerland i18n %}
+{% load i18n switzerland %}
 Cher administrateur,
 
 Nous vous informons que des inscriptions au cours {{ course.short_name }} ont été annulées.
-Ce cours comporte {{ waiting_list }} personne{{ waiting_list|pluralize }} en liste d'attente pour {{ available_places }} place{{available_places|pluralize}} disponibles.
+Ce cours comporte {{ waiting_list }} personne{{ waiting_list|pluralize }} en liste d'attente pour {{ available_places }} place{{ available_places|pluralize }} disponibles.
 
 Nous vous invitons à attribuer les places désormais disponibles aux personnes en attente en consultant la page du cours:
 
-{{site_url}}{{ course.get_absolute_url }}
+{{ site_url }}{{ course.get_absolute_url }}
 
 Bien à vous,
 {{ signature }}

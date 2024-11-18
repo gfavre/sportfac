@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n crispy_forms_tags sekizai_tags %}
+{% load crispy_forms_tags i18n sekizai_tags %}
 
-{% block title %}{% trans "Create user" %} - {{ block.super }}{% endblock %}
-{% block page_title %}<i class="icon-user"></i>&nbsp;&nbsp;{% if is_instructor %}{% trans "Create instructor" %}{% elif is_manager %}{% trans "Create manager" %}{% else %}{% trans "Create user" %}{% endif %}{% endblock %}
+{% block title %}{% translate "Create user" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}<i class="icon-user"></i>&nbsp;&nbsp;{% if is_instructor %}{% translate "Create instructor" %}{% elif is_manager %}{% translate "Create manager" %}{% else %}{% translate "Create user" %}{% endif %}{% endblock %}
 
 {% block content %}
 
@@ -30,7 +31,7 @@
 
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-primary btn-large"><i class="icon-plus"></i>&nbsp;{% if is_instructor %}{% trans "Create instructor" %}{% elif is_manager %}{% trans "Create manager" %}{% else %}{% trans "Create user" %}{% endif %}</button>
+      <button type="submit" class="btn btn-primary btn-large"><i class="icon-plus"></i>&nbsp;{% if is_instructor %}{% translate "Create instructor" %}{% elif is_manager %}{% translate "Create manager" %}{% else %}{% translate "Create user" %}{% endif %}</button>
     </div>
   </div>
 </form>

@@ -2,18 +2,18 @@
 
 {% if to_email %}
 <section>
-  <h4 class="content-title"><u>{% trans "Preview" %}</u></h4>
+  <h4 class="content-title"><u>{% translate "Preview" %}</u></h4>
   {% block mail_nav %}{% endblock %}
   <dl class="dl-horizontal">
-    <dt>{% trans "From" %}</dt><dd>{{ from_email }}</dd>
-    <dt>{% trans "To" %}</dt>
+    <dt>{% translate "From" %}</dt><dd>{{ from_email }}</dd>
+    <dt>{% translate "To" %}</dt>
     <dd>
       {% for recipient in to_email %}
           <span class="label label-primary">{{ recipient }}</span>
       {% endfor %}
     </dd>
     {% if bcc_email %}
-    <dt>{% trans "BCC" %}</dt>
+    <dt>{% translate "BCC" %}</dt>
     <dd>
       {% for recipient in bcc_email %}
           <span class="label label-primary">{{ recipient }}</span>
@@ -21,9 +21,9 @@
     </dd>
     {% endif %}
 
-    <dt>{% trans "Subject" %}</dt><dd>{{ subject }}</dd>
+    <dt>{% translate "Subject" %}</dt><dd>{{ subject }}</dd>
     {% if attachments %}
-      <dt>{% trans "Attachments" %}</dt>
+      <dt>{% translate "Attachments" %}</dt>
       <dd>
         <ul class="list-horizontal">
           {% for attachment in attachments %}
@@ -39,21 +39,21 @@
 <section>
   <form action="" method="post">{% csrf_token %}
     <p>
-      {% blocktrans %}Are you sure you want to send this mail ?{% endblocktrans %}
-      {% if edit_url %}<a href="{{ edit_url }}"><i class="icon icon-edit"></i> {% trans "Modify mail" %}</a>{% endif %}
+      {% blocktranslate %}Are you sure you want to send this mail ?{% endblocktranslate %}
+      {% if edit_url %}<a href="{{ edit_url }}"><i class="icon icon-edit"></i> {% translate "Modify mail" %}</a>{% endif %}
     </p>
 
     <div class="form-group">
-      <button type="submit" class="btn btn-success"><i class="icon icon-mail"></i>&nbsp;{% trans 'Send all emails' %}</button>
+      <button type="submit" class="btn btn-success"><i class="icon icon-mail"></i>&nbsp;{% translate 'Send all emails' %}</button>
       {% if cancel_url %}&nbsp;
-        <a href="{{ cancel_url }}" class="btn btn-default">{% trans 'Cancel' %}</a>
+        <a href="{{ cancel_url }}" class="btn btn-default">{% translate 'Cancel' %}</a>
       {% endif %}
     </div>
   </form>
 </section>
 {% else %}
   <section>
-    {% blocktrans %}There are no recipients for this email{% endblocktrans %}
+    {% blocktranslate %}There are no recipients for this email{% endblocktranslate %}
   </section>
 
 {% endif %}

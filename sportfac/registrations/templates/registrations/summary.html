@@ -1,26 +1,26 @@
 {% extends "profiles/baseprofile.html" %}
-{% load i18n l10n humanize switzerland %}
+{% load humanize i18n l10n switzerland %}
 
 
-{% block page_title %}{% trans "Registered activities" %}{% endblock page_title %}
+{% block page_title %}{% translate "Registered activities" %}{% endblock %}
 
 {% block content %}
 
   {% if registration_opened %}
     <p class="text-center hidden-print" style="margin-bottom: 2em;">
       <a href="{% url 'wizard:entry_point' %}" class="btn btn-large btn-primary"><i
-          class="icon-calendar"></i> {% trans "Register new activities" %}</a>
+          class="icon-calendar"></i> {% translate "Register new activities" %}</a>
     </p>
   {% endif %}
 
   {% for registered in registered_list %}
     <h4 class="content-title"><u>{{ registered.child.full_name }} - {{ registered.course.short_name }} </u><small
         class="hidden-print"><a href="{{ registered.course.get_absolute_url }}" class="" style="float: right"><i
-        class="icon-check"></i>&nbsp;&nbsp;{% trans "Details" %}</a></small></h4>
+        class="icon-check"></i>&nbsp;&nbsp;{% translate "Details" %}</a></small></h4>
 
     <dl class="dl-horizontal">
       {% if EXPLICIT_SESSION_DATES %}
-        <dt>{% trans "Dates" %}</dt>
+        <dt>{% translate "Dates" %}</dt>
         <dd>
           <ul class="list-unstyled">
             {% for session in registered.course.get_sessions %}
@@ -30,35 +30,35 @@
         </dd>
 
       {% else %}
-        <dt>{% trans "Period" %}</dt>
-        <dd>{{ registered.course.start_date | date:"d.m.Y" }}&nbsp;&nbsp;
-          <i class="icon-right" aria-hidden="true"></i>&nbsp;&nbsp;{{ registered.course.end_date | date:"d.m.Y"}}
+        <dt>{% translate "Period" %}</dt>
+        <dd>{{ registered.course.start_date|date:"d.m.Y" }}&nbsp;&nbsp;
+          <i class="icon-right" aria-hidden="true"></i>&nbsp;&nbsp;{{ registered.course.end_date|date:"d.m.Y" }}
         </dd>
       {% endif %}
 
       {% if course.is_course %}
-        <dt>{% trans "Time" %}</dt>
+        <dt>{% translate "Time" %}</dt>
         <dd>{{ registered.course.day_name }}, {{ registered.course.start_time|time:"H:i" }}
           - {{ registered.course.end_time|time:"H:i" }}</dd>
       {% endif %}
 
-      <dt>{% trans "Instructors" %}</dt>
+      <dt>{% translate "Instructors" %}</dt>
       <dd>
         <ul class="list-unstyled">
           {% for instructor in registered.course.instructors.all %}
             <li>
               {{ instructor.full_name }}<br/>
               <a href="{{ instructor.best_phone|phone:'RFC3966' }}">{{ instructor.best_phone|phone }}</a><br/>
-              {{ instructor.email | urlize }}
+              {{ instructor.email|urlize }}
             </li>
           {% endfor %}
         </ul>
       </dd>
 
-      <dt>{% trans "Place" %}</dt>
+      <dt>{% translate "Place" %}</dt>
       <dd>{{ registered.course.place }}</dd>
       {% if registered.course.activity.informations %}
-        <dt>{% trans "Informations" %}</dt>
+        <dt>{% translate "Informations" %}</dt>
         <dd>{{ registered.course.activity.informations|safe }}</dd>
       {% endif %}
     </dl>
@@ -69,7 +69,7 @@
 
 
   <p class="hidden-print text-center">
-    <button class="btn btn-secondary btn-large print-button"><i class="icon icon-print"></i> {% trans "Print" %}</button>
+    <button class="btn btn-secondary btn-large print-button"><i class="icon icon-print"></i> {% translate "Print" %}</button>
   </p>
 
 {% endblock content %}

@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n floppyforms sekizai_tags %}
+{% load floppyforms i18n sekizai_tags %}
 
-{% block title %}{% trans "Change payment status" %} - {{ block.super }}{% endblock %}
-{% block page_title %}<i class="icon-credit-card-1"></i>&nbsp;&nbsp;{% trans "Change payment status" %}{% endblock %}
+{% block title %}{% translate "Change payment status" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}<i class="icon-credit-card-1"></i>&nbsp;&nbsp;{% translate "Change payment status" %}{% endblock %}
 
 {% block content %}
 
@@ -12,8 +13,8 @@
   $("input[type='checkbox']").bootstrapSwitch({
       onColor: 'success',
       offColor: 'danger',
-      onText: '{% trans "Yes" %}',
-      offText: '{% trans "No" %}'
+      onText: '{% translate "Yes" %}',
+      offText: '{% translate "No" %}'
   });
 </script>
 
@@ -21,12 +22,12 @@
 
 <form action="" method="post" class="form-horizontal">{% csrf_token %}
   <div class="form-group">
-    <label class="control-label col-sm-2" for="parent_name">{% trans "User" %}</label>
+    <label class="control-label col-sm-2" for="parent_name">{% translate "User" %}</label>
     <p class="col-sm-10 form-control-static" id="parent_name">{{ object.full_name }}</p>
   </div>
 {{ form.errors }}
-  
-  {% form form using  %}
+
+  {% form form using %}
   {% formconfig row using "floppyforms/rows/bootstrap.html" %}
 
   {% formrow form.finished_registration %}
@@ -37,9 +38,9 @@
   <div class=" form-group">
     <div class="col-sm-offset-2 col-sm-10">
 
-      <button type="submit" class="btn btn-primary ">{% trans 'Update status' %}</button>
+      <button type="submit" class="btn btn-primary ">{% translate 'Update status' %}</button>
       &nbsp;
-      <a href="{% url 'backend:user-list' %}" class="btn  btn-default">{% trans 'Cancel' %}</a>
+      <a href="{% url 'backend:user-list' %}" class="btn  btn-default">{% translate 'Cancel' %}</a>
     </div>
   </div>
 

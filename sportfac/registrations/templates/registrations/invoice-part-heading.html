@@ -1,13 +1,13 @@
-{% load i18n switzerland static sekizai_tags %}
+{% load i18n sekizai_tags static switzerland %}
 
 <section class="invoice-heading">
   {% if invoice.is_paid %}
     <div class="ribbon">
       {% if invoice.payment_date %}
-        {% blocktrans with payment_date=invoice.payment_date|date:"j b. Y" %}Paid on
-          {{ payment_date }}{% endblocktrans %}
+        {% blocktranslate with payment_date=invoice.payment_date|date:"j b. Y" %}Paid on
+          {{ payment_date }}{% endblocktranslate %}
       {% else %}
-        {% trans "Paid" %}
+        {% translate "Paid" %}
       {% endif %}
     </div>
     <style>
@@ -56,17 +56,17 @@
       </p>
     </div>
   </div>
-  <h2>{% trans "Invoice" %}</h2>
+  <h2>{% translate "Invoice" %}</h2>
   <dl class="dl-horizontal">
 
-    <dt>{% trans "Billing identifier" %}</dt>
+    <dt>{% translate "Billing identifier" %}</dt>
     <dd>{{ invoice.billing_identifier }}</dd>
     {% if invoice.is_wire_transfer %}
-      <dt>{% trans "Payable until" %}</dt>
+      <dt>{% translate "Payable until" %}</dt>
       <dd>{{ delay|date:"j F Y" }}</dd>
-      <dt>{% trans "IBAN" %}</dt>
+      <dt>{% translate "IBAN" %}</dt>
       <dd>{{ iban }}</dd>
-      <dt>{% trans "Address" %}</dt>
+      <dt>{% translate "Address" %}</dt>
       <dd>{{ address|linebreaksbr }}</dd>
     {% endif %}
   </dl>
