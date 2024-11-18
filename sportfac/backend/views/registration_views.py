@@ -328,7 +328,7 @@ class RegistrationUpdateView(SuccessMessageMixin, RegistrationMixin, UpdateView)
             if self.object.is_confirmed or self.object.is_validated:
                 # Send the conformation message
                 self.object.set_confirmed()
-            elif self.object.is_cancelled:
+            elif self.object.is_canceled:
                 # Cancel and remove future absences
                 self.object.cancel(reason=Registration.REASON.admin, user=self.request.user)
 

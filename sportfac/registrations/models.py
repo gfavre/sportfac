@@ -588,7 +588,7 @@ class Bill(TimeStampedModel, StatusModel):
         self.save()
 
     def cancel(self):
-        for registration in self.registrations.filter(paid=False):
+        for registration in self.registrations.filter(paid=False, price__gt=0):
             registration.cancel(reason=Registration.REASON.expired)
             try:
                 registration.save()
