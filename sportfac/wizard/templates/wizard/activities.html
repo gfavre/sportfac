@@ -1,5 +1,5 @@
 {% extends "wizard/base.html" %}
-{% load crispy_forms_tags sekizai_tags i18n %}
+{% load crispy_forms_tags i18n sekizai_tags %}
 
 
 {% block wizard_content %}
@@ -9,28 +9,28 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h4 class="modal-title" id="confirmModalLabel">{% trans "Confirm step" %}</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="{% trans "Close" %}"
+            <h4 class="modal-title" id="confirmModalLabel">{% translate "Confirm step" %}</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="{% translate "Close" %}"
                     style="margin-top: -25px;">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
-            <strong>{% trans "At least one child is not enrolled in an activity" %}:</strong>
+            <strong>{% translate "At least one child is not enrolled in an activity" %}:</strong>
             <ul>
               <li ng-repeat="child in childrenWithoutRegistration">
                 <strong>{[{ child.first_name }]} {[{ child.last_name }]}</strong>
               </li>
             </ul>
-            <p>{% blocktrans %}You can always come back later to add activities. Do you want to proceed with the
-              registration or stay on this page to add them now?{% endblocktrans %}</p>
+            <p>{% blocktranslate %}You can always come back later to add activities. Do you want to proceed with the
+              registration or stay on this page to add them now?{% endblocktranslate %}</p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn" data-dismiss="modal" id="modalNo">
-              {% trans "Stay on this page" %}
+              {% translate "Stay on this page" %}
             </button>
             <button type="button" class="btn btn-primary" ng-click="navigateToNextStep()" id="modalYes">
-              {% trans "Continue without enrolling" %}
+              {% translate "Continue without enrolling" %}
             </button>
           </div>
         </div>
@@ -42,11 +42,11 @@
       <ul class="pager" style="font-size: 1.25em;">
         <li class="previous">
           <a href="{{ previous_step.url }}">
-            <span aria-hidden="true">&larr;</span> {% block previous_label %}{% trans "Previous" %}{% endblock %}
+            <span aria-hidden="true">&larr;</span> {% block previous_label %}{% translate "Previous" %}{% endblock %}
           </a>
         </li>
         <li class="next" ng-class="{disabled: registrations.length === 0}">
-          {% trans "Next" as default_next %}
+          {% translate "Next" as default_next %}
           {% if ACTIVITIES_POPUP %}
             <button ng-click="confirmNavigation($event)" data-url="{{ success_url }}" class="btn btn-primary">
               <strong>{{ next_step.link_display|default:default_next }} <span aria-hidden="true">&rarr;</span></strong>

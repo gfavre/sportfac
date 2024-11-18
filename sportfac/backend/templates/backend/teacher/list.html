@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
 {% load i18n sekizai_tags %}
 
-{% block title %}{% trans "View teachers" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "List teachers" %}{% endblock %}
+{% block title %}{% translate "View teachers" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "List teachers" %}{% endblock %}
 
 {% get_current_language as LANGUAGE_CODE %}
 
@@ -10,7 +11,7 @@
 
 {% block content %}
 
-{% addtoblock  "js" %}
+{% addtoblock "js" %}
 <script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
 <script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
 <script>
@@ -29,17 +30,17 @@ $(function () {
 </script>
 {% endaddtoblock %}
 
-<a href="{% url 'backend:teacher-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New teacher" %}</a> &nbsp; <a href="{% url 'backend:teacher-import' %}" class="btn btn-default"><i class="icon-doc-new"></i> {% trans "Import teachers" %}</a>
+<a href="{% url 'backend:teacher-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% translate "New teacher" %}</a> &nbsp; <a href="{% url 'backend:teacher-import' %}" class="btn btn-default"><i class="icon-doc-new"></i> {% translate "Import teachers" %}</a>
 <hr>
 <table class="table">
   <thead>
     <tr>
-      <th class="text-nowrap">{% trans "Name" %}</th>
-      <th class="text-nowrap">{% trans "Years" %}</th>
+      <th class="text-nowrap">{% translate "Name" %}</th>
+      <th class="text-nowrap">{% translate "Years" %}</th>
       {% if USE_BUILDINGS %}
-      <th class="text-nowrap">{% trans "Buildings" %}</th>
+      <th class="text-nowrap">{% translate "Buildings" %}</th>
       {% endif %}
-      <th class="text-nowrap">{% trans "Actions" %}</th>
+      <th class="text-nowrap">{% translate "Actions" %}</th>
     </tr>
   </thead>
   {% for teacher in object_list %}
@@ -65,9 +66,9 @@ $(function () {
       {% endif %}
       <td>
         <ul class="list-unstyled">
-          <li class="text-nowrap"><a href="{{ teacher.get_backend_url }}" class="btn btn-sm"><i class="icon-check"></i>&nbsp;{% trans "Check students" %}</a></li>
-          <li class="text-nowrap"><a href="{{ teacher.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update teacher" %}</a></li>
-          <li class="text-nowrap"><a href="{{ teacher.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete teacher" %}</a></li>
+          <li class="text-nowrap"><a href="{{ teacher.get_backend_url }}" class="btn btn-sm"><i class="icon-check"></i>&nbsp;{% translate "Check students" %}</a></li>
+          <li class="text-nowrap"><a href="{{ teacher.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% translate "Update teacher" %}</a></li>
+          <li class="text-nowrap"><a href="{{ teacher.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% translate "Delete teacher" %}</a></li>
 
 
 

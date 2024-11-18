@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
 {% load i18n sekizai_tags static %}
 
-{% block title %}{% trans "Roles" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "All supervisor roles" %}{% endblock %}
+{% block title %}{% translate "Roles" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "All supervisor roles" %}{% endblock %}
 
 {% get_current_language as LANGUAGE_CODE %}
 
@@ -32,7 +33,7 @@
         let id = $(this).parents('tr').data('id');
         let $success = $(this).siblings('.success')
         $.ajax({
-          url: '{% url "api:course-instructors-list"  %}' + id + '/',
+          url: '{% url "api:course-instructors-list" %}' + id + '/',
           type: 'PUT',
           data: {
             function: $(this).val()
@@ -48,11 +49,11 @@
   <table class="table">
     <thead>
     <tr>
-      <th class="text-nowrap">{% trans "Course" %}</th>
-      <th class="text-nowrap">{% trans "Supervisor" %}</th>
-      <th class="text-nowrap">{% trans "Role" %}</th>
+      <th class="text-nowrap">{% translate "Course" %}</th>
+      <th class="text-nowrap">{% translate "Supervisor" %}</th>
+      <th class="text-nowrap">{% translate "Role" %}</th>
       {% if FICHE_SALAIRE_MONTREUX %}
-        <th class="text-nowrap">{% trans "Actions" %}</th>
+        <th class="text-nowrap">{% translate "Actions" %}</th>
       {% endif %}
     </tr>
     </thead>
@@ -85,7 +86,7 @@
           <td>
             <a href="{% url 'backend:pay-slip-montreux' course=course_instructor.course.pk instructor=course_instructor.instructor.pk %}"
                class="btn btn-sm">
-              <i class="icon-doc-text"></i> {% trans "Create pay slip" %}
+              <i class="icon-doc-text"></i> {% translate "Create pay slip" %}
             </a>
           </td>
         {% endif %}

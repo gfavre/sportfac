@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags duration switzerland static %}
+{% load duration i18n sekizai_tags static switzerland %}
 
-{% block title %}{% trans "Manage agenda" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "Manage agenda" %}{% endblock %}
+{% block title %}{% translate "Manage agenda" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Manage agenda" %}{% endblock %}
 
 {% get_current_language as LANGUAGE_CODE %}
 
@@ -62,16 +63,16 @@
           // Show the date picker for quick navigation
           customButtons: {
             datePicker: {
-              text: "{% trans 'Jump to Date...' %}",
+              text: "{% translate 'Jump to Date...' %}",
               click: function () {
-                const selectedDate = prompt("{% trans "Enter a date (DD.MM.YYYY)" %}");
+                const selectedDate = prompt("{% translate "Enter a date (DD.MM.YYYY)" %}");
                 const formattedDate = moment(selectedDate, 'DD.MM.YYYY', true); // Parse Swiss format
 
                 // Check if the date is valid
                 if (formattedDate.isValid()) {
                   calendar.gotoDate(formattedDate.format('YYYY-MM-DD')); // Convert to FullCalendar format
                 } else {
-                  alert("{% trans "Invalid date, please use dd.mm.yyyy format, like 31.12.2028" %}"); // Alert if invalid
+                  alert("{% translate "Invalid date, please use dd.mm.yyyy format, like 31.12.2028" %}"); // Alert if invalid
                 }
               }
             }
@@ -168,7 +169,7 @@
 
   <section class="portlet">
 
-    <h3 class="content-title"><u> {% trans "Available dates" %} </u>
+    <h3 class="content-title"><u> {% translate "Available dates" %} </u>
     </h3>
     <div id="calendar"></div>
 
@@ -179,12 +180,12 @@
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                 aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title">{% trans "Edit slot" %}</h4>
+            <h4 class="modal-title">{% translate "Edit slot" %}</h4>
           </div>
           <div class="modal-body">
             <form method="post" class="form-horizontal" action="">{% csrf_token %}
               <div class="form-group">
-                <label class="control-label col-sm-4" for="id_places">{% trans "Number of places" %}</label>
+                <label class="control-label col-sm-4" for="id_places">{% translate "Number of places" %}</label>
                 <div class="col-sm-8">
                   <input type="number" name="places" value="" min="0"
                          required="" id="id_places" class="form-control">
@@ -193,12 +194,12 @@
               </div>
               <div class="form-group">
                 <label class="control-label col-sm-4"
-                       for="id_appointment_type">{% trans "Type of appointment" %}</label>
+                       for="id_appointment_type">{% translate "Type of appointment" %}</label>
                 <div class="col-sm-8">
                   <select name="appointment_type" id="id_appointment_type" class="form-control">
-                    <option value="pickup">{% trans "Pickup" %}</option>
-                    <option value="return">{% trans "Return" %}</option>
-                    <option value="other">{% trans "Other" %}</option>
+                    <option value="pickup">{% translate "Pickup" %}</option>
+                    <option value="return">{% translate "Return" %}</option>
+                    <option value="other">{% translate "Other" %}</option>
                   </select>
                   <span id="help-appointment_types" class="help-block"></span>
                 </div>
@@ -207,11 +208,11 @@
               <div class="row">
                 <div class="col-md-6">
                   <button type="button" class="btn btn-danger" id="remove-event" data-dismiss="modal"><i
-                      class="icon-trash"></i> {% trans "Remove slot" %}</button>
+                      class="icon-trash"></i> {% translate "Remove slot" %}</button>
                 </div>
                 <div class="col-md-6 text-right">
-                  <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
-                  <button type="submit" class="btn btn-success" id="save-event">{% trans "Save" %}</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal">{% translate "Close" %}</button>
+                  <button type="submit" class="btn btn-success" id="save-event">{% translate "Save" %}</button>
                 </div>
               </div>
             </form>

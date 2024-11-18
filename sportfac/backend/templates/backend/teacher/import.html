@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n floppyforms sekizai_tags %}
+{% load floppyforms i18n sekizai_tags %}
 
-{% block title %}{% trans "Import teachers" %} - {{ block.super }}{% endblock %}
-{% block page_title %}<i class="icon-doc-new"></i>&nbsp;&nbsp;{% trans "Import teachers" %}{% endblock %}
+{% block title %}{% translate "Import teachers" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}<i class="icon-doc-new"></i>&nbsp;&nbsp;{% translate "Import teachers" %}{% endblock %}
 
 {% block content %}
 
@@ -14,9 +15,9 @@
   {% include "backend/teacher/form.html" %}
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-success btn-large">{% trans 'Import teachers' %}</button>
+      <button type="submit" class="btn btn-success btn-large">{% translate 'Import teachers' %}</button>
       &nbsp;
-      <a href="{% url 'backend:teacher-list' %}" class="btn  btn-default">{% trans 'Cancel' %}</a>
+      <a href="{% url 'backend:teacher-list' %}" class="btn  btn-default">{% translate 'Cancel' %}</a>
     </div>
   </div>
 </form>

@@ -1,5 +1,5 @@
 {% extends "wizard/base.html" %}
-{% load countdowntimer crispy_forms_tags sekizai_tags i18n switzerland %}
+{% load countdowntimer crispy_forms_tags i18n sekizai_tags switzerland %}
 
 
 {% block wizard_content %}
@@ -24,11 +24,11 @@
   <p>Le paiement peut se faire via Twint (débit direct) ou Mastercard et Visa (cartes de crédit).</p>
   {% if REGISTRATION_EXPIRE_MINUTES %}
     <div class="alert alert-warning">
-       <h4 class="alert-heading"><i class="icon icon-warning"></i> {% trans "Important notice" %}</h4>
-    {% with bill.registrations_valid_to|date:"j F Y, H:i" as formatted_date %}
-      {% blocktrans with minutes=REGISTRATION_EXPIRE_MINUTES|human_readable_time validity=formatted_date %}
+       <h4 class="alert-heading"><i class="icon icon-warning"></i> {% translate "Important notice" %}</h4>
+    {% with formatted_date=bill.registrations_valid_to|date:"j F Y, H:i" %}
+      {% blocktranslate with minutes=REGISTRATION_EXPIRE_MINUTES|human_readable_time validity=formatted_date %}
       Your registrations are reserved for the next {{ minutes }}. If payment is not received before <strong>{{ validity }}</strong>, your
-      registrations will be cancelled and your place will be made available again.{% endblocktrans %}
+      registrations will be cancelled and your place will be made available again.{% endblocktranslate %}
     {% endwith %}
     </div>
   {% endif %}
@@ -36,12 +36,12 @@
 {% elif PAYMENT_METHOD == 'postfinance' %}
   {% if REGISTRATION_EXPIRE_MINUTES %}
    <div class="alert alert-warning">
-       <h4 class="alert-heading"><i class="icon icon-warning"></i> {% trans "Important notice" %}</h4>
+       <h4 class="alert-heading"><i class="icon icon-warning"></i> {% translate "Important notice" %}</h4>
 
-      {% with bill.registrations_valid_to|date:"j F Y, H:i" as formatted_date %}
-      {% blocktrans with minutes=REGISTRATION_EXPIRE_MINUTES|human_readable_time validity=formatted_date %}
+      {% with formatted_date=bill.registrations_valid_to|date:"j F Y, H:i" %}
+      {% blocktranslate with minutes=REGISTRATION_EXPIRE_MINUTES|human_readable_time validity=formatted_date %}
       Your registrations are reserved for the next {{ minutes }}. If payment is not received before <strong>{{ validity }}</strong>, your
-      registrations will be cancelled and your place will be made available again.{% endblocktrans %}
+      registrations will be cancelled and your place will be made available again.{% endblocktranslate %}
     {% endwith %}
    </div>
   {% endif %}
@@ -52,4 +52,4 @@
 
  {% include "registrations/invoice-part-registrations.html" %}
 
-{% endblock %}
+{% endblock wizard_content %}

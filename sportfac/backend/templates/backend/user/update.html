@@ -1,17 +1,18 @@
 {% extends "backend/base.html" %}
-{% load i18n crispy_forms_tags sekizai_tags %}
+{% load crispy_forms_tags i18n sekizai_tags %}
 
-{% block title %}{% trans "Update user" %} - {{ block.super }}{% endblock %}
-{% block page_title %}<i class="icon-user"></i>&nbsp;&nbsp;{% trans "Update user" %}{% endblock %}
+{% block title %}{% translate "Update user" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}<i class="icon-user"></i>&nbsp;&nbsp;{% translate "Update user" %}{% endblock %}
 
 {% block content %}
 <form action="" method="post" class="form-horizontal">
 {% crispy form %}
   <div class=" form-group">
     <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-primary ">{% trans 'Update user' %}</button>
+      <button type="submit" class="btn btn-primary ">{% translate 'Update user' %}</button>
       &nbsp
-      <a href="{% url 'backend:user-list' %}" class="btn  btn-default">{% trans 'Cancel' %}</a>
+      <a href="{% url 'backend:user-list' %}" class="btn  btn-default">{% translate 'Cancel' %}</a>
     </div>
   </div>
 </form>

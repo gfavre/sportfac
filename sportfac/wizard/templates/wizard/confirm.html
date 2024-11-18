@@ -1,20 +1,20 @@
 {% extends "wizard/base.html" %}
-{% load crispy_forms_tags humanize duration sekizai_tags switzerland i18n %}
+{% load crispy_forms_tags duration humanize i18n sekizai_tags switzerland %}
 
 
 {% block wizard_content %}
   {% if REGISTRATION_EXPIRE_MINUTES %}
     <div class="alert alert-info alert-dismissible" role="alert">
       <button type="button" class="close" data-dismiss="alert">
-        <span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span>
+        <span aria-hidden="true">&times;</span><span class="sr-only">{% translate "Close" %}</span>
       </button>
       <p><strong><i class="icon-exclamation"></i></strong>
         {% if REGISTRATION_EXPIRE_MINUTES == 60 %}
-          {% blocktrans %}The following registrations are reserved for the next hour.{% endblocktrans %}
+          {% blocktranslate %}The following registrations are reserved for the next hour.{% endblocktranslate %}
         {% else %}
-          {% blocktrans with REGISTRATION_EXPIRE_MINUTES|minutes_duration as duration %}
+          {% blocktranslate with duration=REGISTRATION_EXPIRE_MINUTES|minutes_duration %}
             The following registrations are reserved for the next {{ duration }}.
-          {% endblocktrans %}
+          {% endblocktranslate %}
         {% endif %}
       </p>
     </div>
@@ -23,14 +23,14 @@
   {% if overlaps %}
     <div class="alert alert-warning alert-dismissible" role="alert">
       <button type="button" class="close" data-dismiss="alert">
-        <span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span>
+        <span aria-hidden="true">&times;</span><span class="sr-only">{% translate "Close" %}</span>
       </button>
-      <strong><i class="icon-warning"></i>&nbsp;{% trans "Warning!" %}</strong>
+      <strong><i class="icon-warning"></i>&nbsp;{% translate "Warning!" %}</strong>
       <p>
         {% if user.children.count > 1 %}
-          {% trans "The following courses occur at the same or close times. It may be difficult to bring your children." %}
+          {% translate "The following courses occur at the same or close times. It may be difficult to bring your children." %}
         {% else %}
-          {% trans "The following courses occur at the same or close times. It may be difficult to bring your child." %}
+          {% translate "The following courses occur at the same or close times. It may be difficult to bring your child." %}
         {% endif %}
       <ul>
         {% for overlap in overlaps %}
@@ -67,7 +67,7 @@
       {{ form.media.css }}
     {% endaddtoblock %}
   {% endif %}
-{% endblock %}
+{% endblock wizard_content %}
 
 {% block page_footer %}
   {% if consent_already_given %}
@@ -76,13 +76,13 @@
         {% if previous_step %}
           <li class="previous">
             <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span>
-              {% block previous_label %}{% trans "Previous" %}{% endblock %}</a>
+              {% block previous_label %}{% translate "Previous" %}{% endblock %}</a>
           </li>
         {% endif %}
         {% if next_step %}
           <li class="next">
             <a href="{{ next_step.url }}" id="next-step-btn">
-              <strong>{% block next_label %}{% trans "Next" %}{% endblock %} <span
+              <strong>{% block next_label %}{% translate "Next" %}{% endblock %} <span
                   aria-hidden="true">&rarr;</span></strong></a>
           </li>
 

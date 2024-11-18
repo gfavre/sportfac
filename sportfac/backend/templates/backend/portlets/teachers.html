@@ -1,23 +1,23 @@
-{% load i18n humanize sekizai_tags %}
+{% load humanize i18n sekizai_tags %}
 {% if user.is_full_manager %}
   <section class="portlet">
     <h4 class="portlet-title">
-      <u>{% trans "Teachers" %}</u>
+      <u>{% translate "Teachers" %}</u>
     </h4>
     <div class="portlet-body">
       <dl class="dl-horizontal">
-        <dt>{% trans "Number of teachers" %}</dt>
+        <dt>{% translate "Number of teachers" %}</dt>
         <dd>{{ nb_teachers }}</dd>
-        <dt>{% trans "Last update" %}</dt>
+        <dt>{% translate "Last update" %}</dt>
         <dd>{{ last_teacher_update|naturaltime }}</dd>
       </dl>
       <div id="pie-chart-teachers" class="chart-holder-250"></div>
       <ul class="list-unstyled">
         <li>
-          <a href="{% url 'backend:teacher-list' %}"><i class="icon-adult"></i>&nbsp;{% trans "All teachers" %}</a>
+          <a href="{% url 'backend:teacher-list' %}"><i class="icon-adult"></i>&nbsp;{% translate "All teachers" %}</a>
         </li>
         <li>
-          <a href="{% url 'backend:teacher-import' %}"><i class="icon-doc-new"></i>&nbsp;{% trans "Import teachers" %}</a>
+          <a href="{% url 'backend:teacher-import' %}"><i class="icon-doc-new"></i>&nbsp;{% translate "Import teachers" %}</a>
         </li>
       </ul>
     </div> <!-- /.portlet-body -->

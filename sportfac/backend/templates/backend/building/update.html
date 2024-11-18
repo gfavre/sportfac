@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n floppyforms sekizai_tags %}
+{% load floppyforms i18n sekizai_tags %}
 
-{% block title %}{% trans "Update building" %} - {{ block.super }}{% endblock %}
-{% block page_title %}<i class="icon-location"></i>&nbsp;&nbsp;{% trans "Update building" %}{% endblock %}
+{% block title %}{% translate "Update building" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}<i class="icon-location"></i>&nbsp;&nbsp;{% translate "Update building" %}{% endblock %}
 
 {% block content %}
 
@@ -16,9 +17,9 @@
   <div class=" form-group">
     <div class="col-sm-offset-2 col-sm-10">
 
-      <button type="submit" class="btn btn-success ">{% trans 'Update building' %}</button>
+      <button type="submit" class="btn btn-success ">{% translate 'Update building' %}</button>
       &nbsp;
-      <a href="{% url 'backend:building-list' %}" class="btn  btn-default">{% trans 'Cancel' %}</a>
+      <a href="{% url 'backend:building-list' %}" class="btn  btn-default">{% translate 'Cancel' %}</a>
     </div>
   </div>
 

@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n crispy_forms_tags %}
+{% load crispy_forms_tags i18n %}
 
-{% block title %}{% trans "Create a new allocation account" %} - {{ block.super }}{% endblock %}
-{% block page_title %}<i class="icon-list-bullet"></i>&nbsp;&nbsp;{% trans "Create a new allocation account" %}{% endblock %}
+{% block title %}{% translate "Create a new allocation account" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}<i class="icon-list-bullet"></i>&nbsp;&nbsp;{% translate "Create a new allocation account" %}{% endblock %}
 
 {% block content %}
 
@@ -10,7 +11,7 @@
   {% crispy form %}
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-success btn-large"><i class="icon-plus"></i>&nbsp;{% trans 'Create account' %}</button>
+      <button type="submit" class="btn btn-success btn-large"><i class="icon-plus"></i>&nbsp;{% translate 'Create account' %}</button>
     </div>
   </div>
 </form>

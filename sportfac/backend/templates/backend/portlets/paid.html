@@ -1,18 +1,18 @@
-{% load i18n sekizai_tags switzerland static %}
+{% load i18n sekizai_tags static switzerland %}
 
 {% if user.is_full_manager %}
 <section class="portlet">
   <h4 class="portlet-title">
-    <u><i class="icon-credit-card-1"></i>&nbsp;&nbsp;{% trans "Validated payments" %}</u>
+    <u><i class="icon-credit-card-1"></i>&nbsp;&nbsp;{% translate "Validated payments" %}</u>
   </h4>
   <div class="portlet-body row">
     <div class="col-sm-push-6 col-sm-6 ">
       <div class="row-stat">
-        <p class="row-stat-label">{% trans "Total due" %}</p>
+        <p class="row-stat-label">{% translate "Total due" %}</p>
         <h3 class="row-stat-value">{{ total_due|money }}</h3>
       </div>
       <div class="row-stat">
-        <p class="row-stat-label">{% trans "Total paid" %}</p>
+        <p class="row-stat-label">{% translate "Total paid" %}</p>
         <h3 class="row-stat-value">{{ total_paid|money }}</h3>
       </div>
     </div>
@@ -23,12 +23,12 @@
  <ul class="list-unstyled">
    <li>
      <a href="{% url 'backend:bill-list' %}">
-       <i class="icon-credit-card-1"></i>&nbsp;{% trans "All bills" %}
+       <i class="icon-credit-card-1"></i>&nbsp;{% translate "All bills" %}
      </a>
    </li>
-   <li><a href="{% url 'backend:user-list' %}"><i class="icon-group"></i>&nbsp;{% trans "List users" %}</a></li>
+   <li><a href="{% url 'backend:user-list' %}"><i class="icon-group"></i>&nbsp;{% translate "List users" %}</a></li>
    {% if payement_due > 0 %}
-   <li><a href="{% url 'backend:mail-notpaidyet' %}"><i class="icon-mail"></i>&nbsp;{% trans "Send reminder email" %}</a></li>
+   <li><a href="{% url 'backend:mail-notpaidyet' %}"><i class="icon-mail"></i>&nbsp;{% translate "Send reminder email" %}</a></li>
    {% endif %}
  </ul>
 
@@ -37,14 +37,14 @@
 
 </section>
    {% endif %}
-{% addtoblock  "js" %}
+{% addtoblock "js" %}
 <script src="{% static 'js/vendor/flot/jquery.flot.pie.min.js' %}"></script>
 <script>
 $(function () {
   var data, placeholder;
   data = [
-      { label: "{% trans 'Not yet' %}", data: {{ payement_due }} },
-      { label: "{% trans 'Validated' %}", data:  {{ paid }} }
+      { label: "{% translate 'Not yet' %}", data: {{ payement_due }} },
+      { label: "{% translate 'Validated' %}", data:  {{ paid }} }
   ];
   placeholder = $("#pie-chart-paid");
   if (placeholder.length) {

@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n  sekizai_tags crispy_forms_tags %}
+{% load crispy_forms_tags i18n sekizai_tags %}
 
-{% block title %}{% trans "Create a new activity" %} - {{ block.super }}{% endblock %}
-{% block page_title %}<i class="icon-soccer-ball"></i>&nbsp;&nbsp;{% trans "Create a new activity" %}{% endblock %}
+{% block title %}{% translate "Create a new activity" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}<i class="icon-soccer-ball"></i>&nbsp;&nbsp;{% translate "Create a new activity" %}{% endblock %}
 
 {% block content %}
 
@@ -18,7 +19,7 @@
   {% crispy form %}
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-success btn-large"><i class="icon-plus"></i>&nbsp;{% trans 'Create activity' %}</button>
+      <button type="submit" class="btn btn-success btn-large"><i class="icon-plus"></i>&nbsp;{% translate 'Create activity' %}</button>
     </div>
   </div>
 </form>

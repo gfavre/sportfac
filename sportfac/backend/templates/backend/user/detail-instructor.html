@@ -1,15 +1,15 @@
 {% extends "backend/base.html" %}
-{% load i18n %}
-{% load duration switzerland %}
+{% load duration i18n switzerland %}
 
 {% block title %}{{ object.full_name }} - {{ block.super }}{% endblock %}
+
 {% block page_title %}{{ object.full_name }}{% endblock %}
 
 {% block content %}
   <section class="portlet">
-    <h4 class="portlet-title"><u>{% trans "Contact informations" %}</u></h4>
+    <h4 class="portlet-title"><u>{% translate "Contact informations" %}</u></h4>
     <dl class="dl-horizontal">
-      <dt>{% trans "Address" %}</dt>
+      <dt>{% translate "Address" %}</dt>
       <dd>
         {% if object.address %}{{ object.address }}<br/>{% endif %}
         {{ object.zipcode }} {{ object.city }}<br/>
@@ -18,89 +18,89 @@
       <dt>Email</dt>
       <dd><a href="mailto:{{ object.email }}">{{ object.email }} </a></dd>
       {% if object.private_phone %}
-        <dt>{% trans "Home phone" %}</dt>
+        <dt>{% translate "Home phone" %}</dt>
         <dd>
           <a href="{{ object.private_phone|phone:'RFC3966' }}">{{ object.private_phone|phone }}</a>
         </dd>
       {% endif %}
       {% if object.private_phone2 %}
-        <dt>{% trans "Mobile phone" %}</dt>
+        <dt>{% translate "Mobile phone" %}</dt>
         <dd>
           <a href="{{ object.private_phone2|phone:'RFC3966' }}">{{ object.private_phone2|phone }}</a>
         </dd>
       {% endif %}
       {% if object.private_phone3 %}
-        <dt>{% trans "Other phone" %}</dt>
+        <dt>{% translate "Other phone" %}</dt>
         <dd>
           <a href="{{ object.private_phone3|phone:'RFC3966' }}">{{ object.private_phone3|phone }}</a>
         </dd>
       {% endif %}
-      <dt>{% trans "Birth date" %}</dt>
-      <dd>{{ object.birth_date | date:"j F Y" }}</dd>
-      <dt>{% trans "Gender" %}</dt>
+      <dt>{% translate "Birth date" %}</dt>
+      <dd>{{ object.birth_date|date:"j F Y" }}</dd>
+      <dt>{% translate "Gender" %}</dt>
       <dd>{{ object.get_gender_display }}</dd>
 
-      <dt>{% trans "Nationality" %}</dt>
+      <dt>{% translate "Nationality" %}</dt>
       <dd>{{ object.get_nationality_display }}</dd>
       {% if object.nationality != 'CH' %}
-        <dt>{% trans "permit_type" %}</dt>
+        <dt>{% translate "permit_type" %}</dt>
         <dd>{{ object.get_permit_type_display }}</dd>
       {% endif %}
-      <dt>{% trans "IBAN" %}</dt>
+      <dt>{% translate "IBAN" %}</dt>
       <dd>{{ object.iban|iban }} {% if object.bank_name %} &mdash; {{ object.bank_name }}{% endif %}</dd>
-      <dt>{% trans "AHV number" %}</dt>
+      <dt>{% translate "AHV number" %}</dt>
       <dd>{{ object.ahv|ahv }}</dd>
-      <dt>{% trans "Is sports teacher" %}</dt>
+      <dt>{% translate "Is sports teacher" %}</dt>
       <dd>{{ object.is_mep }}</dd>
-      <dt>{% trans "Is teacher" %}</dt>
+      <dt>{% translate "Is teacher" %}</dt>
       <dd>{{ object.is_teacher }}</dd>
-      <dt>{% trans "J+S identifier" %}</dt>
+      <dt>{% translate "J+S identifier" %}</dt>
       <dd>{{ object.js_identifier }}</dd>
-      <dt>{% trans "External identifier" %}</dt>
+      <dt>{% translate "External identifier" %}</dt>
       <dd>{{ object.external_identifier }}</dd>
     </dl>
     <p class="text-center">
       <a href="{{ object.get_update_url }}" class="btn btn-default btn-sm"><i
-          class="icon-edit"></i>&nbsp;&nbsp;{% trans "Update contact informations" %}</a>
+          class="icon-edit"></i>&nbsp;&nbsp;{% translate "Update contact informations" %}</a>
     </p>
   </section>
   {% if object.children.exists %}
   <section class="portlet">
-  <h4 class="portlet-title"><u>{% trans "Children" %}</u></h4>
+  <h4 class="portlet-title"><u>{% translate "Children" %}</u></h4>
   <div class="row">
   {% for child in object.children.all %}
     <div class="col-sm-6 col-lg-4">
       <div class="pricing-plan">
         <header class="pricing-header">
           <h4 class="pricing-plan-title">
-            {{  child }}
+            {{ child }}
             {% if BIB_NUMBERS %}
             <small> &mdash; {{ child.bib_number|default:_("No bib number") }}</small>
             {% endif %}
           </h4>
         </header>
         <dl class="dl-horizontal">
-          <dt>{% trans "Birth date" %}</dt><dd> {{ child.birth_date | date:"j F Y" }}</dd>
-          <dt>{% trans "Sex" %}</dt><dd> {{ child.get_sex_display }}</dd>
-          <dt>{% trans "Nationality" %}</dt><dd> {{ child.get_nationality_display }}</dd>
-          <dt>{% trans "Language" %}</dt><dd> {{ child.get_language_display }}</dd>
-          <dt>{% trans "School year" %}</dt><dd> {{ child.school_year }}</dd>
+          <dt>{% translate "Birth date" %}</dt><dd> {{ child.birth_date|date:"j F Y" }}</dd>
+          <dt>{% translate "Sex" %}</dt><dd> {{ child.get_sex_display }}</dd>
+          <dt>{% translate "Nationality" %}</dt><dd> {{ child.get_nationality_display }}</dd>
+          <dt>{% translate "Language" %}</dt><dd> {{ child.get_language_display }}</dd>
+          <dt>{% translate "School year" %}</dt><dd> {{ child.school_year }}</dd>
 {% if PREFILL_YEARS_WITH_TEACHERS %}
-          <dt>{% trans "Teacher" %}</dt><dd> {{ child.teacher.get_full_name }}</dd>
+          <dt>{% translate "Teacher" %}</dt><dd> {{ child.teacher.get_full_name }}</dd>
 {% endif %}
 {% if CHILD_SCHOOL %}
-          <dt>{% trans "School" %}</dt><dd>{{ child.school_name }}</dd>
+          <dt>{% translate "School" %}</dt><dd>{{ child.school_name }}</dd>
 {% endif %}
         </dl>
         <p class="text-center">
-           <a href="{{ child.get_update_url }}" class="btn btn-default btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Update child" %}</a>&nbsp; <a href="{{ child.get_delete_url }}" class="btn btn-danger btn-sm"><i class="icon-trash"></i>&nbsp;&nbsp;{% trans "Delete child" %}</a>
+           <a href="{{ child.get_update_url }}" class="btn btn-default btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% translate "Update child" %}</a>&nbsp; <a href="{{ child.get_delete_url }}" class="btn btn-danger btn-sm"><i class="icon-trash"></i>&nbsp;&nbsp;{% translate "Delete child" %}</a>
         </p><hr />
-        <h5 >{% trans "Registrations" %}</h5>
+        <h5 >{% translate "Registrations" %}</h5>
         <table class="table">
           <thead class="sr-only">
             <tr>
-              <th>{% trans "Course" %}</th>
-              <th>{% trans "Actions" %}</th>
+              <th>{% translate "Course" %}</th>
+              <th>{% translate "Actions" %}</th>
             </tr>
           </thead>
           {% for registration in child.registrations.all %}
@@ -110,43 +110,43 @@
             </td>
             <td>
               <ul class="list-unstyled">
-                <li class="text-nowrap"><a href="{{ registration.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update registration" %}</a></li>
-                <li class="text-nowrap"><a href="{{ registration.get_delete_url }}" class="btn btn-sm"><i class="icon-cancel"></i>&nbsp;{% trans "Cancel registration" %}</a></li>
+                <li class="text-nowrap"><a href="{{ registration.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% translate "Update registration" %}</a></li>
+                <li class="text-nowrap"><a href="{{ registration.get_delete_url }}" class="btn btn-sm"><i class="icon-cancel"></i>&nbsp;{% translate "Cancel registration" %}</a></li>
               </ul>
 
             </td>
           </tr>
           {% empty %}
-          <tr><td colspan="2">{% trans "No registration for this child" %}</td></tr>
+          <tr><td colspan="2">{% translate "No registration for this child" %}</td></tr>
           {% endfor %}
         </table>
       </div>
     </div>
   {% endfor %}
   </div>
-  <a href="{% url 'backend:child-create' user=object.pk %}" class="btn btn-success"><i class="icon-plus"></i>&nbsp;&nbsp;{% trans "Add child" %}</a>
+  <a href="{% url 'backend:child-create' user=object.pk %}" class="btn btn-success"><i class="icon-plus"></i>&nbsp;&nbsp;{% translate "Add child" %}</a>
 </section>
   {% endif %}
 
   <section class="portlet">
-    <h4 class="portlet-title"><u>{% trans "Courses" %}</u></h4>
+    <h4 class="portlet-title"><u>{% translate "Courses" %}</u></h4>
     <div class="row">
       {% for course in object.course.all %}
         <section class="col-sm-6 topped">
           <div class="pricing-plan">
             <header class="pricing-header">
-              <p class="pricing-plan-label">{% blocktrans with number=course.number %}Course #
-                {{ number }}{% endblocktrans %}</p>
+              <p class="pricing-plan-label">{% blocktranslate with number=course.number %}Course #
+                {{ number }}{% endblocktranslate %}</p>
               <h4 class="pricing-plan-title">
-                {{ course.start_date | date:"j F Y" }} – {{ course.end_date | date:'j F Y' }}
+                {{ course.start_date|date:"j F Y" }} – {{ course.end_date|date:'j F Y' }}
               </h4>
               <p class="pricing-plan-label">
-                {% blocktrans with day=course.day_name|lower  start_time=course.start_time|time:"H:i" end_time=course.end_time|time:"H:i" duration=course.duration|duration %}
-                  Every {{ day }} from {{ start_time }} to {{ end_time }} ({{ duration }}){% endblocktrans %}</p>
+                {% blocktranslate with day=course.day_name|lower start_time=course.start_time|time:"H:i" end_time=course.end_time|time:"H:i" duration=course.duration|duration %}
+                  Every {{ day }} from {{ start_time }} to {{ end_time }} ({{ duration }}){% endblocktranslate %}</p>
             </header>
 
             <dl class="dl-horizontal">
-              <dt>{% trans "Instructors" %}</dt>
+              <dt>{% translate "Instructors" %}</dt>
               <dd>
                 <ul class="list-unstyled">
                   {% for instructor in course.instructors.all %}
@@ -154,39 +154,39 @@
                   {% endfor %}
                 </ul>
               </dd>
-              <dt>{% trans "Place" %}</dt>
+              <dt>{% translate "Place" %}</dt>
               <dd>{{ course.place }}</dd>
-              <dt>{% trans "Number of sessions" %}</dt>
+              <dt>{% translate "Number of sessions" %}</dt>
               <dd>{{ course.number_of_sessions }} cours
               </dd>
-              <dt>{% trans "Price" %}</dt>
+              <dt>{% translate "Price" %}</dt>
               <dd>{{ course.price|money }}</dd>
-              <dt>{% trans "School years" %}</dt>
+              <dt>{% translate "School years" %}</dt>
               <dd>{% for year in course.school_years %}{{ year }}P{% if not forloop.last %} -
               {% endif %} {% endfor %}</dd>
             </dl>
             <p class="text-center"><a href="{{ course.get_update_url }}" class="btn btn-default"><i
-                class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a></p>
+                class="icon-edit"></i>&nbsp;{% translate "Edit" %}</a></p>
             <h4 class="content-title">
-              <u>{% trans "Availability" %}</u>
+              <u>{% translate "Availability" %}</u>
             </h4>
-            <p>{% blocktrans with count=course.count_participants %}{{ count }} participants{% endblocktrans %} <span
-                class="pull-right strong">{% blocktrans with max_number=course.max_participants %}{{ max_number }}
-              places{% endblocktrans %}</span></p>
+            <p>{% blocktranslate with count=course.count_participants %}{{ count }} participants{% endblocktranslate %} <span
+                class="pull-right strong">{% blocktranslate with max_number=course.max_participants %}{{ max_number }}
+              places{% endblocktranslate %}</span></p>
             <div class="progress" style="margin-bottom: 0;">
               <div
                   class="progress-bar {% if course.full %}progress-bar-danger{% elif course.minimal_participants_reached %}progress-bar-success{% else %}progress-bar-warning{% endif %}"
                   style="width: {{ course.percentage_full }}%">
-                {% if course.full %}{% trans "Course full" %}{% elif course.minimal_participants_reached %}
-                  {% trans "Minimal number of participants reached" %}{% else %}
-                  {% trans "Not enough participants" %}{% endif %}</div>
+                {% if course.full %}{% translate "Course full" %}{% elif course.minimal_participants_reached %}
+                  {% translate "Minimal number of participants reached" %}{% else %}
+                  {% translate "Not enough participants" %}{% endif %}</div>
             </div>
             <p class="text-right"><small>
-              {% blocktrans with min_number=course.min_participants %}{{ min_number }} participants required foractivity
-                to take place{% endblocktrans %}</small></p>
+              {% blocktranslate with min_number=course.min_participants %}{{ min_number }} participants required foractivity
+                to take place{% endblocktranslate %}</small></p>
 
             <p class="text-center"><a href="{{ course.get_backend_url }}" class="btn btn-default"><i
-                class="icon-check"></i>&nbsp;{% trans "Check registrations" %}</a></p>
+                class="icon-check"></i>&nbsp;{% translate "Check registrations" %}</a></p>
 
 
           </div>

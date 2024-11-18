@@ -2,7 +2,7 @@
 <html lang="{{ LANGUAGE_CODE }}" >
   <head>
     <meta charset="utf-8">
-    <title>{% block title %}Inscription au sport facultatif - EP Coppet{% endblock title %}</title>
+    <title>{% block title %}Inscription au sport facultatif - EP Coppet{% endblock %}</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
@@ -16,7 +16,7 @@
 
     <link href="{% static 'css/style.css' %}" rel="stylesheet" media="all" />
 
-    {% block extra_css %}{% endblock extra_css %}
+    {% block extra_css %}{% endblock %}
     {% render_block "css" %}
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -32,7 +32,7 @@
    <div class="container">
      {% block content %}
 {{ flatpage.content }}
-{% endblock %}
+{% endblock content %}
 
 
    </div>
@@ -52,7 +52,7 @@
       ga('send', 'pageview');
     </script>
 
-    {% block extra_js %}{% endblock extra_js %}
+    {% block extra_js %}{% endblock %}
     {% render_block "js" %}
   </body>
 </html>

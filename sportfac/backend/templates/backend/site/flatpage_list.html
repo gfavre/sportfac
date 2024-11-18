@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags duration %}
+{% load duration i18n sekizai_tags %}
 
-{% block title %}{% trans "View pages" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "List pages" %}{% endblock %}
+{% block title %}{% translate "View pages" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "List pages" %}{% endblock %}
 
 {% get_current_language as LANGUAGE_CODE %}
 
@@ -12,9 +13,9 @@
 <table class="table">
   <thead>
     <tr>
-      <th class="text-nowrap">{% trans "Name" %}</th>
-      <th class="text-nowrap">{% trans "Address" %}</th>
-      <th class="text-nowrap">{% trans "Actions" %}</th>
+      <th class="text-nowrap">{% translate "Name" %}</th>
+      <th class="text-nowrap">{% translate "Address" %}</th>
+      <th class="text-nowrap">{% translate "Actions" %}</th>
     </tr>
   </thead>
   {% for page in object_list %}
@@ -29,7 +30,7 @@
         <ul class="list-unstyled">
           <li class="text-nowrap">
             <a href="{% url 'backend:flatpages-update' pk=page.pk %}" class="btn btn-sm">
-              <i class="icon-check"></i>&nbsp;{% trans "Edit page" %}</a>
+              <i class="icon-check"></i>&nbsp;{% translate "Edit page" %}</a>
           </li>
 
         </ul>

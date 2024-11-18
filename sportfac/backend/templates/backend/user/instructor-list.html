@@ -2,8 +2,9 @@
 {% load i18n sekizai_tags %}
 {% get_current_language as LANGUAGE_CODE %}
 
-{% block title %}{% trans "List instructors" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "List instructors" %}{% endblock %}
+{% block title %}{% translate "List instructors" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "List instructors" %}{% endblock %}
 
 {% block content %}
   {% addtoblock "css" %}
@@ -29,7 +30,7 @@
                 $(node).removeClass('dt-button')
               },
               tag: 'a',
-              text: "{% trans 'Select all' %}",
+              text: "{% translate 'Select all' %}",
             },
             {
               className: 'btn btn-default',
@@ -39,7 +40,7 @@
                 $(node).removeClass('dt-button')
               },
               tag: 'a',
-              text: "{% trans 'Deselect all' %}",
+              text: "{% translate 'Deselect all' %}",
             },
             {
               action: function (e, dt, node, config) {
@@ -53,7 +54,7 @@
                 $(node).removeClass('dt-button')
               },
               tag: 'a',
-              text: '<i class="icon-mail"></i>&nbsp; {% trans "Send email to selected users" %}',
+              text: '<i class="icon-mail"></i>&nbsp; {% translate "Send email to selected users" %}',
             },
           ],
           dom: 'BfrlitiplB',
@@ -100,29 +101,29 @@
             }
           ],
           language: {
-            info: "{% trans 'Showing _START_ to _END_ of _TOTAL_ entries' %}",
-            infoEmpty: "{% trans "Showing 0 to 0 of 0 entries" %}",
-            infoFiltered: "{% trans "(filtered from _MAX_ total entries)" %}",
-            lengthMenu: "{% trans "Show _MENU_ entries" %}",
+            info: "{% translate 'Showing _START_ to _END_ of _TOTAL_ entries' %}",
+            infoEmpty: "{% translate "Showing 0 to 0 of 0 entries" %}",
+            infoFiltered: "{% translate "(filtered from _MAX_ total entries)" %}",
+            lengthMenu: "{% translate "Show _MENU_ entries" %}",
             paginate: {
-              first: "{% trans 'First' %}",
-              last: "{% trans 'Last' %}",
-              previous: "{% trans 'Previous' %}",
-              next: "{% trans 'Next' %}"
+              first: "{% translate 'First' %}",
+              last: "{% translate 'Last' %}",
+              previous: "{% translate 'Previous' %}",
+              next: "{% translate 'Next' %}"
             },
             search: "",
-            searchPlaceholder: "{% trans 'Search' %}",
+            searchPlaceholder: "{% translate 'Search' %}",
             searchPanes: {
               title: {
-                _: '{% trans 'Filters selected' %} - %d',
-                0: '{% trans "No filter selected" %}'
+                _: '{% translate 'Filters selected' %} - %d',
+                0: '{% translate "No filter selected" %}'
               },
-              clearMessage: '{% trans "Clear All" %}'
+              clearMessage: '{% translate "Clear All" %}'
             },
             select: {
               'rows': {
-                1: "{% trans "%d row selected" %}",
-                _: "{% trans "%d rows selected" %}"
+                1: "{% translate "%d row selected" %}",
+                _: "{% translate "%d rows selected" %}"
               }
             }
           },
@@ -148,12 +149,12 @@
   {% endaddtoblock %}
 
   <a href="{% url 'backend:instructor-create' %}" class="btn btn-success">
-    <i class="icon-plus"></i> {% trans "New instructor" %}
+    <i class="icon-plus"></i> {% translate "New instructor" %}
   </a>
   {% if user.is_full_manager %}
     <a href="{% url 'backend:instructor-export' %}" class="btn btn-default">
     <i class="icon-file-excel"></i>
-    &nbsp;&nbsp;{% trans "Export instructors" %}
+    &nbsp;&nbsp;{% translate "Export instructors" %}
   </a>
   {% endif %}
   <hr/>
@@ -166,12 +167,12 @@
   <table class="table" id="users">
     <thead>
     <tr>
-      <th class="user-id">{% trans "First name" %}</th>
-      <th class="external_identifier">{% trans "Identifier" %}</th>
-      <th class="first_name">{% trans "First name" %}</th>
-      <th class="last_name">{% trans "Last name" %}</th>
-      <th class="course">{% trans "Courses" %}</th>
-      <th class="actions">{% trans "Actions" %}</th>
+      <th class="user-id">{% translate "First name" %}</th>
+      <th class="external_identifier">{% translate "Identifier" %}</th>
+      <th class="first_name">{% translate "First name" %}</th>
+      <th class="last_name">{% translate "Last name" %}</th>
+      <th class="course">{% translate "Courses" %}</th>
+      <th class="actions">{% translate "Actions" %}</th>
     </tr>
     </thead>
   </table>

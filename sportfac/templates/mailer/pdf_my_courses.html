@@ -1,5 +1,5 @@
 {% extends "mailer/base_pdf.html" %}
-{% load i18n duration %}
+{% load duration i18n %}
 
 
 {% block page_header %}
@@ -8,19 +8,19 @@ Tous les cours de {{ instructor.full_name }}
 
 {% block content %}
 
-  
-   
+
+
 <table class="table table-striped ">
   <thead>
     <tr>
-    <th class="text-nowrap">{% trans "Identifier" %}</th>
-    <th class="text-nowrap">{% trans "Activity" %}</th>
-    <th class="text-nowrap">{% trans "Day" %}</th>
-    <th class="text-nowrap">{% trans "Start date" %}</th>
-    <th class="text-nowrap">{% trans "End date" %}</th>
-    <th class="text-nowrap">{% trans "Time" %}</th>
-    <th class="text-nowrap">{% trans "Duration" %}</th>
-    <th class="text-nowrap">{% trans "Place" %}</th>
+    <th class="text-nowrap">{% translate "Identifier" %}</th>
+    <th class="text-nowrap">{% translate "Activity" %}</th>
+    <th class="text-nowrap">{% translate "Day" %}</th>
+    <th class="text-nowrap">{% translate "Start date" %}</th>
+    <th class="text-nowrap">{% translate "End date" %}</th>
+    <th class="text-nowrap">{% translate "Time" %}</th>
+    <th class="text-nowrap">{% translate "Duration" %}</th>
+    <th class="text-nowrap">{% translate "Place" %}</th>
    </tr>
    </thead>
    {% for course in courses %}
@@ -32,9 +32,9 @@ Tous les cours de {{ instructor.full_name }}
       <td>{{ course.end_date|date:"SHORT_DATE_FORMAT" }}</td>
       <td>{{ course.start_time|time:"H:i" }}</td>
       <td>{{ course.duration|duration }}</td>
-      <td>{{ course.place  }}</td>
+      <td>{{ course.place }}</td>
     </tr>
   {% endfor %}
 </table>
 
-{% endblock %}
+{% endblock content %}

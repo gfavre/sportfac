@@ -5,7 +5,7 @@
     {% block field %}
         {% block widget %}{% formfield field %}{% endblock %}
         {% block hidden_fields %}{% for field in hidden_fields %}{{ field.as_hidden }}{% endfor %}{% endblock %}
-    {% endblock %}
+    {% endblock field %}
     {% endwith %}
 </div><!--- .form-group{% if field.errors %}.error{% endif %} -->
-{% endfor %}{% endblock %}
+{% endfor %}{% endblock row %}

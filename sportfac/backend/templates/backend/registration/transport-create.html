@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n crispy_forms_tags sekizai_tags %}
+{% load crispy_forms_tags i18n sekizai_tags %}
 
-{% block title %}{% trans "Create transport" %} - {{ block.super }}{% endblock %}
-{% block page_title %}<i class="icon-bus"></i>&nbsp;&nbsp;{% trans "Create transport" %}{% endblock %}
+{% block title %}{% translate "Create transport" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}<i class="icon-bus"></i>&nbsp;&nbsp;{% translate "Create transport" %}{% endblock %}
 
 {% block content %}
   <form action="" method="post" class="form-horizontal">
@@ -10,9 +11,9 @@
 
     <div class=" form-group">
       <div class="col-sm-offset-2 col-sm-10">
-        <button type="submit" class="btn btn-success ">{% trans 'Create transport' %}</button>
+        <button type="submit" class="btn btn-success ">{% translate 'Create transport' %}</button>
         &nbsp;
-        <a href="{% url 'backend:transport-list' %}" class="btn btn-default">{% trans 'Cancel' %}</a>
+        <a href="{% url 'backend:transport-list' %}" class="btn btn-default">{% translate 'Cancel' %}</a>
       </div>
     </div>
   </form>

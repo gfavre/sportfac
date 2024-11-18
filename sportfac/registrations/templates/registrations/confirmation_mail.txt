@@ -1,4 +1,4 @@
-{% load switzerland i18n %}
+{% load i18n switzerland %}
 Madame, Monsieur,
 
 Nous avons bien reçu vos inscriptions pour les cours suivants:

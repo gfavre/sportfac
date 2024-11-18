@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags duration %}
+{% load duration i18n sekizai_tags %}
 
-{% block title %}{% trans "View emails" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "List emails" %}{% endblock %}
+{% block title %}{% translate "View emails" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "List emails" %}{% endblock %}
 
 {% get_current_language as LANGUAGE_CODE %}
 
@@ -12,9 +13,9 @@
 <table class="table">
   <thead>
     <tr>
-      <th class="text-nowrap">{% trans "Subject" %}</th>
-      <th class="text-nowrap">{% trans "Last modification" %}</th>
-      <th class="text-nowrap">{% trans "Actions" %}</th>
+      <th class="text-nowrap">{% translate "Subject" %}</th>
+      <th class="text-nowrap">{% translate "Last modification" %}</th>
+      <th class="text-nowrap">{% translate "Actions" %}</th>
     </tr>
   </thead>
   {% for email in object_list %}
@@ -29,7 +30,7 @@
         <ul class="list-unstyled">
           <li class="text-nowrap">
             <a href="{{ email.get_absolute_url }}" class="btn btn-sm">
-              <i class="icon-check"></i>&nbsp;{% trans "Edit email" %}</a>
+              <i class="icon-check"></i>&nbsp;{% translate "Edit email" %}</a>
           </li>
         </ul>
       </td>

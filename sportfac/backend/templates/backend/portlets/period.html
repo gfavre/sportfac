@@ -1,21 +1,21 @@
-{% load i18n humanize %}
+{% load humanize i18n %}
 
 <div class="portlet">
   <h4 class="portlet-title">
-    <u><i class="icon-hourglass"></i>{% trans "Opening & closing" %}</u>
+    <u><i class="icon-hourglass"></i>{% translate "Opening & closing" %}</u>
   </h4>
   {% if registration_start < now and now < registration_end %}
   {% widthratio minutes_spent minutes_total 100|add:"0" as percentage %}
   <div class="progress-stat">
-    <div class="progress-stat-label">{% trans "Registrations open"%}</div>
-    <div class="progress-stat-value">{% blocktrans with time=registration_end|timeuntil %}{{ time }} remaining{% endblocktrans %}</div>
+    <div class="progress-stat-label">{% translate "Registrations open" %}</div>
+    <div class="progress-stat-value">{% blocktranslate with time=registration_end|timeuntil %}{{ time }} remaining{% endblocktranslate %}</div>
     <div class="progress progress-sm">
       {% with pp=percentage|add:"0" %}
       <div class="progress-bar {% if pp < 50 %}progress-bar-success{% elif pp < 80 %}progress-bar-warning{% else %}progress-bar-danger{% endif %}" role="progressbar"
            aria-valuenow="{{ minutes_spent }}" aria-valuemin="0"
            aria-valuemax="{{ minutes_total }}"
            style="width: {{ percentage }}%">
-        <span class="sr-only">{% blocktrans with time=registration_start|timesince %}{{ time }} since opening of registrations{% endblocktrans %}</span>
+        <span class="sr-only">{% blocktranslate with time=registration_start|timesince %}{{ time }} since opening of registrations{% endblocktranslate %}</span>
       </div>
       {% endwith %}
     </div>
@@ -24,23 +24,23 @@
   <div class="portlet-body">
     {% if registration_start > now %}
     <p>
-      {% blocktrans with natural_time=registration_start|naturaltime %}Opening in {{ natural_time }}{% endblocktrans %}
+      {% blocktranslate with natural_time=registration_start|naturaltime %}Opening in {{ natural_time }}{% endblocktranslate %}
     </p>
     {% elif registration_end < now %}
     <p>
-      {% blocktrans with natural_time=registration_end|naturaltime %}Closed since {{ natural_time }}{% endblocktrans %}
+      {% blocktranslate with natural_time=registration_end|naturaltime %}Closed since {{ natural_time }}{% endblocktranslate %}
     </p>
     {% endif %}
 
     <dl class="dl-horizontal">
-      <dt>{% trans "Opening date" %}</dt>
+      <dt>{% translate "Opening date" %}</dt>
       <dd>{{ registration_start|date:"l j E Y, H:i" }}</dd>
-      <dt>{% trans "Closing date" %}</dt>
+      <dt>{% translate "Closing date" %}</dt>
       <dd>{{ registration_end|date:"l j E Y, H:i" }}</dd>
     </dl>
     {% if user.is_full_manager %}
     <p class="text-center">[ <a href="{% url 'backend:dates' %}"><i
-        class="icon-calendar"></i>&nbsp;{% trans "Change dates" %}</a> ]</p>
+        class="icon-calendar"></i>&nbsp;{% translate "Change dates" %}</a> ]</p>
     {% endif %}
   </div>
 </div>

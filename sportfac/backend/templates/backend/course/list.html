@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags duration %}
+{% load duration i18n sekizai_tags %}
 
-{% block title %}{% trans "View courses" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "List courses" %}{% endblock %}
+{% block title %}{% translate "View courses" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "List courses" %}{% endblock %}
 
 {% get_current_language as LANGUAGE_CODE %}
 
@@ -84,7 +85,7 @@
   {% endaddtoblock %}
 
   <a href="{% url 'backend:course-create' %}" class="btn btn-success">
-    <i class="icon-plus"></i> {% trans "New course" %}
+    <i class="icon-plus"></i> {% translate "New course" %}
   </a>
   <hr>
 
@@ -92,7 +93,7 @@
     <div class="btn-group">
       <form class="absences" method="GET" action="{% url 'backend:courses-absence' %}">
         <button type="submit" class="btn btn-secondary needs-select disabled">
-          <i class="icon-calendar"></i>&nbsp;&nbsp;{% trans "Manage multiple courses absences" %}
+          <i class="icon-calendar"></i>&nbsp;&nbsp;{% translate "Manage multiple courses absences" %}
         </button>
       </form>
     </div>
@@ -102,7 +103,7 @@
     <form class="convocations" method="GET"
           action="{% url 'backend:courses-mail-confirmation' %}">
       <button type="submit" class="btn btn-secondary needs-select disabled">
-        <i class="icon-mail"></i>&nbsp;{% trans "Convocation email" %}
+        <i class="icon-mail"></i>&nbsp;{% translate "Convocation email" %}
       </button>
     </form>
   </div>
@@ -111,7 +112,7 @@
     <form class="instructors" method="GET"
           action="{% url 'backend:courses-mail-instructors' %}">
       <button type="submit" class="btn btn-secondary needs-select disabled">
-        <i class="icon-tasks"></i>&nbsp;{% trans "Infos to instructors" %}
+        <i class="icon-tasks"></i>&nbsp;{% translate "Infos to instructors" %}
       </button>
     </form>
   </div>
@@ -120,7 +121,7 @@
     <form class="visibility" method="POST"
           action="{% url 'backend:courses-toggle-visibility' %}">{% csrf_token %}
       <button type="submit" class="btn btn-secondary needs-select disabled">
-        <i class="icon-eye-off"></i>&nbsp;{% trans "Toggle visibility" %}
+        <i class="icon-eye-off"></i>&nbsp;{% translate "Toggle visibility" %}
       </button>
     </form>
   </div>
@@ -130,29 +131,29 @@
     <label class="radio-inline"> J+S:</label>
 
     <label class="radio-inline">
-      <input type="radio" name="only_js" value="announced"> {% trans "Announced courses" %}
+      <input type="radio" name="only_js" value="announced"> {% translate "Announced courses" %}
     </label>
     <label class="radio-inline ">
-      <input type="radio" name="only_js" value="notannounced"> {% trans "Not announced courses" %}
+      <input type="radio" name="only_js" value="notannounced"> {% translate "Not announced courses" %}
     </label>
     <label class="radio-inline ">
-      <input type="radio" name="only_js" value="both" checked="checked"> {% trans "Both" %}
+      <input type="radio" name="only_js" value="both" checked="checked"> {% translate "Both" %}
     </label></div>
 
   <table class="table">
     <thead>
     <tr>
-      <th class="text-nowrap">{% trans "Identifier" %}</th>
-      <th class="text-nowrap">{% trans "Activity" %}</th>
-      <th class="text-nowrap">{% trans "Day(s)" %}</th>
-      <th class="text-nowrap">{% trans "Start date" %}</th>
-      <th class="text-nowrap">{% trans "Hour(s)" %}</th>
-      <th class="text-nowrap">{% trans "Duration" %}</th>
-      <th class="text-nowrap">{% trans "Instructors" %}</th>
-      <th class="text-nowrap">{% trans "Registrations" %}</th>
-      <th class="text-nowrap">{% trans "J+S" %}</th>
-      <th class="text-nowrap">{% trans "Up to date?" %}</th>
-      <th class="text-nowrap">{% trans "Actions" %}</th>
+      <th class="text-nowrap">{% translate "Identifier" %}</th>
+      <th class="text-nowrap">{% translate "Activity" %}</th>
+      <th class="text-nowrap">{% translate "Day(s)" %}</th>
+      <th class="text-nowrap">{% translate "Start date" %}</th>
+      <th class="text-nowrap">{% translate "Hour(s)" %}</th>
+      <th class="text-nowrap">{% translate "Duration" %}</th>
+      <th class="text-nowrap">{% translate "Instructors" %}</th>
+      <th class="text-nowrap">{% translate "Registrations" %}</th>
+      <th class="text-nowrap">{% translate "J+S" %}</th>
+      <th class="text-nowrap">{% translate "Up to date?" %}</th>
+      <th class="text-nowrap">{% translate "Actions" %}</th>
     </tr>
     </thead>
     {% for course in object_list %}
@@ -161,7 +162,7 @@
         <td data-order="{{ course.number }}">
           <a href="{{ course.get_backend_url }}">{{ course.number }}</a>
           {% if not course.visible %}<br>
-            <span class="text-muted"><small>{% trans "Invisible" %}</small></span>
+            <span class="text-muted"><small>{% translate "Invisible" %}</small></span>
           {% endif %}
         </td>
         <td>
@@ -210,7 +211,7 @@
           {% else %}
             {{ course.count_participants }}&nbsp;/&nbsp;{{ course.max_participants }}
           {% endif %}
-          {% if not course.allow_new_participants %}<br><i class="icon icon-minus-circled text-danger"></i> <small>{% trans "Registrations not allowed "%}</small>{% endif %}
+          {% if not course.allow_new_participants %}<br><i class="icon icon-minus-circled text-danger"></i> <small>{% translate "Registrations not allowed " %}</small>{% endif %}
         </td>
         <td data-order="{{ course.announced_js }}"
             data-search="{{ course.announced_js|yesno:"true,false" }}">
@@ -221,7 +222,7 @@
           {% endif %}
         </td>
         <td data-order="{{ course.uptodate }}"
-            data-search="{% trans 'up to date' %}">
+            data-search="{% translate 'up to date' %}">
           {% if course.uptodate %}<i class="icon-ok-circled success"></i>{% else %}
             <i class="icon-cancel-circled  danger"></i>{% endif %}
         </td>
@@ -229,36 +230,36 @@
           <ul class="list-unstyled">
             <li class="text-nowrap">
               <a href="{{ course.get_backend_url }}" class="btn btn-sm">
-                <i class="icon-check"></i>&nbsp;{% trans "Check registrations" %}
+                <i class="icon-check"></i>&nbsp;{% translate "Check registrations" %}
             </a></li>
             {% if USE_ABSENCES %}
               <li class="text-nowrap">
                 <a href="{{ course.get_backend_absences_url }}" class="btn btn-sm">
-                  <i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}
+                  <i class="icon-calendar"></i>&nbsp;{% translate "Manage absences" %}
                 </a>
               </li>
             {% endif %}
             <li class="text-nowrap">
               <a href="{{ course.get_update_url }}" class="btn btn-sm">
-                <i class="icon-edit"></i>&nbsp;{% trans "Update course" %}
+                <i class="icon-edit"></i>&nbsp;{% translate "Update course" %}
               </a>
             </li>
 
             <li class="text-nowrap">
               <a href="{{ course.get_duplicate_url }}" class="btn btn-sm">
-                <i class="icon-docs"></i>&nbsp;{% trans "Duplicate course" %}
+                <i class="icon-docs"></i>&nbsp;{% translate "Duplicate course" %}
               </a>
             </li>
             {% if not course.is_camp %}
               <li class="text-nowrap">
                 <a href="{{ course.get_js_export_url }}" class="btn btn-sm">
-                  <i class="icon-doc"></i>&nbsp;{% trans "Get BDNS: J+S export file" %}
+                  <i class="icon-doc"></i>&nbsp;{% translate "Get BDNS: J+S export file" %}
                 </a>
               </li>
             {% endif %}
             <li class="text-nowrap">
               <a href="{{ course.get_delete_url }}" class="btn btn-sm">
-                <i class="icon-trash"></i>&nbsp;{% trans "Delete course" %}
+                <i class="icon-trash"></i>&nbsp;{% translate "Delete course" %}
               </a>
             </li>
           </ul>

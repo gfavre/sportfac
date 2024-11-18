@@ -2,21 +2,22 @@
 {% load i18n %}
 
 {% block title %}{{ building.name }} - {{ block.super }}{% endblock %}
+
 {% block page_title %}{{ building.name }}{% endblock %}
 
 {% block content %}
 <section class="portlet">
-  <h4 class="portlet-title"><u>{% trans "Address" %}</u></h4>
+  <h4 class="portlet-title"><u>{% translate "Address" %}</u></h4>
   <address>
     {{ building.name }}
     {{ building.address }}<br/>
     {% if building.country %}{{ building.country }}-{% endif %}{{ building.zipcode }} {{ building.city }}
   </address>
-  <p class="text-center"><a href="{{ building.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a> </p>
+  <p class="text-center"><a href="{{ building.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% translate "Edit" %}</a> </p>
 
 </section>
 <section class="portlet">
-  <h4 class="portlet-title"><u>{% trans "Teachers working there" %}</u></h4>
+  <h4 class="portlet-title"><u>{% translate "Teachers working there" %}</u></h4>
   <ul>
     {% for teacher in building.teachers.all %}
     <li>
@@ -24,9 +25,9 @@
     </li>
     {% empty %}
     <li>
-      {% trans "No teacher imported yet." %}
+      {% translate "No teacher imported yet." %}
       <a href="{% url 'backend:teacher-import' %}" class="btn btn-default">
-        <i class="icon-doc-new"></i>&nbsp;&nbsp;{% trans "Import teachers" %}
+        <i class="icon-doc-new"></i>&nbsp;&nbsp;{% translate "Import teachers" %}
       </a>
     </li>
   {% endfor %}

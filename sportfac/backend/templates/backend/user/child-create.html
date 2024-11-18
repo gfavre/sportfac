@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags crispy_forms_tags %}
+{% load crispy_forms_tags i18n sekizai_tags %}
 
-{% block title %}{% trans "Create child" %} - {{ block.super }}{% endblock %}
-{% block page_title %}<i class="icon-user"></i>&nbsp;&nbsp;{% trans "Create child" %}{% endblock %}
+{% block title %}{% translate "Create child" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}<i class="icon-user"></i>&nbsp;&nbsp;{% translate "Create child" %}{% endblock %}
 
 {% block content %}
   {% crispy form %}

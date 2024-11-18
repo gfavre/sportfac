@@ -3,7 +3,6 @@
 
 {% block extra_body %}{{ block.super }} class="pdf"{% endblock %}
 
-
 {% block page_header %}
 
 <div class="container pdf-heading">
@@ -14,17 +13,17 @@
         1814 La Tour-de-Peilz</p>
     </div>
   <div class="col-xs-9 page-header">
-    {% block site_title %}<h5 class="visible-print">{{ site_name }}</h5>{% endblock site_title %}
+    {% block site_title %}<h5 class="visible-print">{{ site_name }}</h5>{% endblock %}
 
-    <h1>{% block page_title %}Example Base Template{% endblock page_title %}</h1>
+    <h1>{% block page_title %}Example Base Template{% endblock %}</h1>
     {% block subtitle %}
 
 
-    {% endblock %}
+    {% endblock subtitle %}
   </div>
 
   </div>
 
 </div>
 
-{% endblock %}
+{% endblock page_header %}

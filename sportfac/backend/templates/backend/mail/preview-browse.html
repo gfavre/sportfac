@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
 {% load i18n mail_tags %}
 
-{% block title %}{% trans "Send email" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "Please confirm email" %}{% endblock %}
+{% block title %}{% translate "Send email" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Please confirm email" %}{% endblock %}
 
 {% block content %}
 {% include "mailer/preview-browsable.html" %}

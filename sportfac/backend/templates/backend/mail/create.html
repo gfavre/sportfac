@@ -1,22 +1,23 @@
 {% extends "backend/base.html" %}
-{% load i18n crispy_forms_tags mail_tags %}
+{% load crispy_forms_tags i18n mail_tags %}
 
-{% block title %}{% trans "New email" %} - {{ block.super }}{% endblock %}
-{% block page_title %}<i class="icon icon-mail"></i>&nbsp;&nbsp;{% trans "New email" %}{% endblock %}
+{% block title %}{% translate "New email" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}<i class="icon icon-mail"></i>&nbsp;&nbsp;{% translate "New email" %}{% endblock %}
 
 {% block content %}
   <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
     {% if recipients %}
       <div class="form-group">
         <label class="control-label" for="id_recipients" class="control-label">
-          {% trans "To" %}
+          {% translate "To" %}
         </label>
         <div class=" field-recipient controls">
           <p class="form-control-static">
             {% for recipient in recipients %}
               <span class="label label-primary">{{ recipient }}</span>
             {% endfor %}<br>
-            <small>({{ recipients|length }} {% trans "recipients" %})</small>
+            <small>({{ recipients|length }} {% translate "recipients" %})</small>
           </p>
         </div>
       </div>
@@ -52,11 +53,10 @@
 
     <div class="form-group">
       <button type="submit" class="btn btn-success btn-large"><i
-          class="icon-check"></i>&nbsp;{% trans 'Save and preview' %}</button>
+          class="icon-check"></i>&nbsp;{% translate 'Save and preview' %}</button>
       {% if prev %}&nbsp;
-        <a href="{{ prev }}" class="btn btn-default">{% trans 'Cancel' %}</a>
+        <a href="{{ prev }}" class="btn btn-default">{% translate 'Cancel' %}</a>
       {% endif %}
     </div>
   </form>
 {% endblock content %}
-

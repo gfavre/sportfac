@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n crispy_forms_tags sekizai_tags %}
+{% load crispy_forms_tags i18n sekizai_tags %}
 
-{% block title %}{% trans "Change payment status" %} - {{ block.super }}{% endblock %}
-{% block page_title %}<i class="icon-credit-card-1"></i>&nbsp;&nbsp;{% trans "Change payment status" %}{% endblock %}
+{% block title %}{% translate "Change payment status" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}<i class="icon-credit-card-1"></i>&nbsp;&nbsp;{% translate "Change payment status" %}{% endblock %}
 
 {% block content %}
 
@@ -28,8 +29,8 @@
   <form action="" method="post" class="form">
     {% crispy form %}
     <div class="form-group">
-      <button type="submit" class="btn btn-primary ">{% trans 'Update status' %}</button>
-      <a href="{% url 'backend:user-list' %}" class="btn  btn-default">{% trans 'Cancel' %}</a>
+      <button type="submit" class="btn btn-primary ">{% translate 'Update status' %}</button>
+      <a href="{% url 'backend:user-list' %}" class="btn  btn-default">{% translate 'Cancel' %}</a>
     </div>
   </form>
 {% endblock content %}

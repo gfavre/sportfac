@@ -1,5 +1,5 @@
 {% extends "wizard/base.html" %}
-{% load i18n sekizai_tags static humanize crispy_forms_tags %}
+{% load crispy_forms_tags humanize i18n sekizai_tags static %}
 
 
 {% block wizard_content %}
@@ -7,9 +7,9 @@
     <form id="rent-equipment-form">
       <div class="form-group">
         <input type="radio" id="rent-yes" name="rent_equipment" value="yes" {% if rentals %}checked{% endif %}>
-        <label for="rent-yes">{% trans "Yes" %}</label>
+        <label for="rent-yes">{% translate "Yes" %}</label>
         <input type="radio" id="rent-no" name="rent_equipment" value="no" {% if not rentals %}checked{% endif %}>
-        <label for="rent-no">{% trans "No" %}</label>
+        <label for="rent-no">{% translate "No" %}</label>
       </div>
     </form>
   </div>
@@ -17,12 +17,12 @@
 
   {% if appointments %}
     <section class="portlet">
-      <h3 class="content-title"><u>{% trans "Your appointments" %}</u></h3>
+      <h3 class="content-title"><u>{% translate "Your appointments" %}</u></h3>
       <ul>
         {% for appointment in appointments %}
           <li>
             {% if appointment.appointment_type %}{{ appointment.appointment_type }}: {% endif %}
-            {{ appointment.child }}: {{ appointment.slot.start | date:"l d F Y, H:i" }}
+            {{ appointment.child }}: {{ appointment.slot.start|date:"l d F Y, H:i" }}
           </li>
         {% endfor %}
       </ul>
@@ -31,12 +31,12 @@
 
   <section class="portlet" id="dates-selection">
     <h3 class="content-title">
-      <u>{% trans "Available dates" %}</u>
+      <u>{% translate "Available dates" %}</u>
     </h3>
     <ul class="list-inline" style="margin-bottom: 2em">
       {% for date in available_dates %}
         <li style="margin-right:3em">
-          <a class="calendar-change" data-date="{{ date|date:'c' }}" href="#calendar">{{ date | date:'d.m.Y' }}</a>
+          <a class="calendar-change" data-date="{{ date|date:'c' }}" href="#calendar">{{ date|date:'d.m.Y' }}</a>
         </li>
       {% endfor %}
     </ul>
@@ -55,14 +55,14 @@
         <form data-appointment-type="{{ appointment_type }}">
 
           <div class="modal-body">
-            <p><strong>{% trans "Register an appointment for these children" %}:</strong></p>
+            <p><strong>{% translate "Register an appointment for these children" %}:</strong></p>
             <div class="children">
 
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
-            <button type="button" class="btn btn-primary" id="modal-save-btn">{% trans "Save" %}</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">{% translate "Close" %}</button>
+            <button type="button" class="btn btn-primary" id="modal-save-btn">{% translate "Save" %}</button>
           </div>
         </form>
 
@@ -75,7 +75,7 @@
       {% if previous_step %}
         <li class="previous">
           <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span>
-            {% block previous_label %}{% trans "Previous" %}{% endblock %}</a>
+            {% block previous_label %}{% translate "Previous" %}{% endblock %}</a>
         </li>
       {% endif %}
       {% if next_step %}
@@ -83,7 +83,7 @@
           <button class="btn btn-primary {% if not appointments %}disabled{% endif %}"
                   id="next-step-btn"
                   data-url="{{ next_step.url }}">
-            <strong>{% block next_label %}{% trans "Next" %}{% endblock %} <span
+            <strong>{% block next_label %}{% translate "Next" %}{% endblock %} <span
                 aria-hidden="true">&rarr;</span></strong></button>
         </li>
 
@@ -226,7 +226,7 @@
 
                   const appointmentInfo = document.createElement('small');
                   appointmentInfo.className = 'text-muted';
-                  appointmentInfo.textContent = " ({% trans "already has appointment scheduled at another time" %})";
+                  appointmentInfo.textContent = " ({% translate "already has appointment scheduled at another time" %})";
 
                   const modalLabel = document.createElement('label');
                   modalLabel.htmlFor = `modal-child-${childId}`;
@@ -329,7 +329,7 @@
             appointment_type: appointmentType
           };
 
-          return fetch("{% url "api:all_rentals"  %}" + slotId + "/", {
+          return fetch("{% url "api:all_rentals" %}" + slotId + "/", {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

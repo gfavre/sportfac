@@ -1,4 +1,4 @@
-{% load static i18n flatpages %}
+{% load flatpages i18n static %}
 <footer id="footer">
   <div class="container">
     <div>
@@ -6,7 +6,7 @@
       <img src="{{ STATIC_URL }}img/logo.png" class="hidden-xs hidden-sm hidden-print"/>
       {% get_flatpages as flatpages %}
       <ul class="footer-links hidden-print">
-        <li><a href="{% url 'contact:contact' %}">{% trans "Contact" %}</a></li>
+        <li><a href="{% url 'contact:contact' %}">{% translate "Contact" %}</a></li>
         <li class="muted">·</li>
         {% for page in flatpages %}
           {% if page.url != '/' and page.url != '/accueil/' and page.url != '/splash/' %}

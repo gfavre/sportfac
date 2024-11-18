@@ -1,16 +1,17 @@
 {% extends "profiles/baseprofile.html" %}
 {% load i18n sekizai_tags switzerland %}
-{% block page_title %}{% trans "My bills" %}{% endblock page_title%}
+{% block page_title %}{% translate "My bills" %}{% endblock %}
+
 {% block content %}
 
  <table class="table">
   <thead>
     <tr>
-      <th class="text-nowrap">{% trans "Billing identifier" %}</th>
-      <th class="text-nowrap">{% trans "Billing Date" %}</th>
-      <th class="text-nowrap">{% trans "Total" %}</th>
-      <th class="text-nowrap">{% trans "Paid" %}</th>
-      <th class="text-nowrap">{% trans "Action" %}</th>
+      <th class="text-nowrap">{% translate "Billing identifier" %}</th>
+      <th class="text-nowrap">{% translate "Billing Date" %}</th>
+      <th class="text-nowrap">{% translate "Total" %}</th>
+      <th class="text-nowrap">{% translate "Paid" %}</th>
+      <th class="text-nowrap">{% translate "Action" %}</th>
     </tr>
   </thead>
   {% for bill in bill_list %}
@@ -18,7 +19,7 @@
       <td><a href="{{ bill.backend_url }}">{{ bill.billing_identifier }}</a></td>
       <td data-order="{{ bill.created|date:'c' }}">{{ bill.created|date:"SHORT_DATE_FORMAT" }}</td>
       <td data-order="{{ bill.total }}">{{ bill.total|money }}</td>
-      <td data-order="{{ bill.is_ok }}" data-search="{% if bill.is_ok %}{% trans 'paid' %}{% endif %}">
+      <td data-order="{{ bill.is_ok }}" data-search="{% if bill.is_ok %}{% translate 'paid' %}{% endif %}">
         {% if bill.is_ok %}
         <i class="icon-ok-circled text-success"></i>
         {% else %}
@@ -27,7 +28,7 @@
       </td>
       <td>
         <ul class="list-unstyled">
-          <li class="text-nowrap"><a href="{{ bill.get_absolute_url }}" class="btn btn-sm"><i class="icon-check"></i>&nbsp;{% trans "Review bill" %}</a></li>
+          <li class="text-nowrap"><a href="{{ bill.get_absolute_url }}" class="btn btn-sm"><i class="icon-check"></i>&nbsp;{% translate "Review bill" %}</a></li>
         </ul>
       </td>
     </tr>
@@ -37,11 +38,11 @@
 
 
 
-  <p class="hidden-print text-center"><button class="btn btn-secondary btn-large print-button"><i class="icon icon-print"></i> {% trans "Print" %}</button></p>
+  <p class="hidden-print text-center"><button class="btn btn-secondary btn-large print-button"><i class="icon icon-print"></i> {% translate "Print" %}</button></p>
 
 {% addtoblock "js" %}
 <script>
   $('.print-button').click(function(){window.print()});
 </script>
 {% endaddtoblock %}
-{% endblock %}
+{% endblock content %}

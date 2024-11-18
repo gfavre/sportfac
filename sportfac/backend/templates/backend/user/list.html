@@ -2,8 +2,9 @@
 {% load i18n sekizai_tags static %}
 {% get_current_language as LANGUAGE_CODE %}
 
-{% block title %}{% trans "List users" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "List users" %}{% endblock %}
+{% block title %}{% translate "List users" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "List users" %}{% endblock %}
 
 {% block content %}
   {% addtoblock "css" %}
@@ -34,7 +35,7 @@
                 $(node).removeClass('dt-button')
               },
               tag: 'a',
-              text: "{% trans 'Select all' %}",
+              text: "{% translate 'Select all' %}",
             },
             {
               className: 'btn btn-default',
@@ -44,7 +45,7 @@
                 $(node).removeClass('dt-button')
               },
               tag: 'a',
-              text: "{% trans 'Deselect all' %}",
+              text: "{% translate 'Deselect all' %}",
             },
             {
               action: function (e, dt, node, config) {
@@ -58,7 +59,7 @@
                 $(node).removeClass('dt-button')
               },
               tag: 'a',
-              text: '<i class="icon-mail"></i>&nbsp; {% trans "Send email to selected users" %}',
+              text: '<i class="icon-mail"></i>&nbsp; {% translate "Send email to selected users" %}',
             },
           ],
           dom: 'PBfrlitiplB',
@@ -147,29 +148,29 @@
             }
           ],
           language: {
-            info: "{% trans 'Showing _START_ to _END_ of _TOTAL_ entries' %}",
-            infoEmpty: "{% trans "Showing 0 to 0 of 0 entries" %}",
-            infoFiltered: "{% trans "(filtered from _MAX_ total entries)" %}",
-            lengthMenu: "{% trans "Show _MENU_ entries" %}",
+            info: "{% translate 'Showing _START_ to _END_ of _TOTAL_ entries' %}",
+            infoEmpty: "{% translate "Showing 0 to 0 of 0 entries" %}",
+            infoFiltered: "{% translate "(filtered from _MAX_ total entries)" %}",
+            lengthMenu: "{% translate "Show _MENU_ entries" %}",
             paginate: {
-              first: "{% trans 'First' %}",
-              last: "{% trans 'Last' %}",
-              previous: "{% trans 'Previous' %}",
-              next: "{% trans 'Next' %}"
+              first: "{% translate 'First' %}",
+              last: "{% translate 'Last' %}",
+              previous: "{% translate 'Previous' %}",
+              next: "{% translate 'Next' %}"
             },
             search: "",
-            searchPlaceholder: "{% trans 'Search' %}",
+            searchPlaceholder: "{% translate 'Search' %}",
             searchPanes: {
               title: {
-                _: '{% trans 'Filters selected' %} - %d',
-                0: '{% trans "No filter selected" %}'
+                _: '{% translate 'Filters selected' %} - %d',
+                0: '{% translate "No filter selected" %}'
               },
-              clearMessage: '{% trans "Clear All" %}'
+              clearMessage: '{% translate "Clear All" %}'
             },
             select: {
               'rows': {
-                1: "{% trans "%d row selected" %}",
-                _: "{% trans "%d rows selected" %}"
+                1: "{% translate "%d row selected" %}",
+                _: "{% translate "%d rows selected" %}"
               }
             }
           },
@@ -197,11 +198,11 @@
   {% endaddtoblock %}
 
   <a href="{% url 'backend:user-create' %}" class="btn btn-success hidden-print">
-    <i class="icon-plus"></i> {% trans "New user" %}
+    <i class="icon-plus"></i> {% translate "New user" %}
   </a>
   {% if user.is_full_manager %}
   <a href="{% url 'backend:user-export' %}" class="btn btn-default hidden-print">
-    <i class="icon-file-excel"></i> {% trans "Export all users" %}
+    <i class="icon-file-excel"></i> {% translate "Export all users" %}
   </a>
   {% endif %}
   <hr class="hidden-print"/>
@@ -218,21 +219,21 @@
       <th class="user-id">ID</th>
       <th class="email">Email</th>
 
-      <th class="first-name">{% trans "First name" %}</th>
-      <th class="last-name">{% trans "Last name" %}</th>
+      <th class="first-name">{% translate "First name" %}</th>
+      <th class="last-name">{% translate "Last name" %}</th>
       <th class="zipcode">Zipcode</th>
-      <th class="city">{% trans "City" %}</th>
-      <th class="phone">{% trans "Phone" %}</th>
+      <th class="city">{% translate "City" %}</th>
+      <th class="phone">{% translate "Phone" %}</th>
 
-      <th class="user-children">{% trans "Children" %}</th>
-      <th class="finished_registrations">{% trans "Finished registration" %}</th>
+      <th class="user-children">{% translate "Children" %}</th>
+      <th class="finished_registrations">{% translate "Finished registration" %}</th>
       {% if not NO_PAYMENT %}
-        <th class="has-paid">{% trans "Paid" %}</th>
+        <th class="has-paid">{% translate "Paid" %}</th>
       {% endif %}
-      <th class="last_registration">{% trans "Last registration" %}</th>
-      <th class="last_registration_natural">{% trans "Last registration" %}</th>
+      <th class="last_registration">{% translate "Last registration" %}</th>
+      <th class="last_registration_natural">{% translate "Last registration" %}</th>
 
-      <th class="hidden-print actions">{% trans "Actions" %}</th>
+      <th class="hidden-print actions">{% translate "Actions" %}</th>
     </tr>
     </thead>
   </table>

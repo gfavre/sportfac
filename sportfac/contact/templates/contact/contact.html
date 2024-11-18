@@ -1,8 +1,9 @@
 {% extends "base.html" %}
-{% load i18n crispy_forms_tags sekizai_tags %}
+{% load crispy_forms_tags i18n sekizai_tags %}
 
-{% block title %}{% trans "Contact" %}{% endblock title %}
-{% block page_title %}{% trans "Contact" %}{% endblock page_title %}
+{% block title %}{% translate "Contact" %}{% endblock %}
+
+{% block page_title %}{% translate "Contact" %}{% endblock %}
 
 {% block content %}
   {% addtoblock "js" %}
@@ -14,7 +15,7 @@
     <form action="" method="post" class="form-horizontal">
       {% crispy form %}
       <div class="pull-right">
-        <button type="submit" class="btn btn-primary btn-large"><i class="icon icon-envelope-alt"></i>  {% trans "Send message" %}</button>
+        <button type="submit" class="btn btn-primary btn-large"><i class="icon icon-envelope-alt"></i>  {% translate "Send message" %}</button>
       </div>
     </form>
     {% endblock form %}
@@ -34,7 +35,7 @@
       </dl>
     </section>
 
-    <section itemprop="member" itemscope itemtype="http://www.schema.org/Person">          
+    <section itemprop="member" itemscope itemtype="http://www.schema.org/Person">
       <h4 itemprop="jobTitle">Responsable Sport Scolaire Facultatif</h4>
       <p itemprop="name">Remo Aeschbach</p>
       <address itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
@@ -50,5 +51,4 @@
     {% endblock addresses %}
   </div>
 </div>
-{% endblock %}
-
+{% endblock content %}

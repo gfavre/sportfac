@@ -7,7 +7,7 @@ Liste de présence<br>Cours n°{{ course.number }} | {{ course.activity.name }}
 {% endblock page_header %}
 
 {% block content %}
-<p>Cours du {{ course.day_name| lower }} de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }} | début le {{ course.start_date|date:"j.n.Y"}} | fin au plus tard le {{ course.end_date|date:"j.n.Y"}} </p>
+<p>Cours du {{ course.day_name|lower }} de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }} | début le {{ course.start_date|date:"j.n.Y" }} | fin au plus tard le {{ course.end_date|date:"j.n.Y" }} </p>
 
 
 
@@ -54,4 +54,4 @@ Liste de présence<br>Cours n°{{ course.number }} | {{ course.activity.name }}
     </tfoot>
   </table>
 
-{% endblock %}
+{% endblock content %}

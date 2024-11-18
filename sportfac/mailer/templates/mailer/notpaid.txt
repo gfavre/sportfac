@@ -1,7 +1,7 @@
-{% load i18n l10n humanize sekizai_tags switzerland %}Madame, Monsieur,
+{% load humanize i18n l10n sekizai_tags switzerland %}Madame, Monsieur,
 
-À ce jour jour et sauf erreur de notre part, nous n’avons pas reçu vo{{ recipient.bills.waiting.count | pluralize:"tre,s" }} paiement{{ recipient.bills.waiting.count | pluralize }} pour les activités de sport scolaire facultatif de votre enfant.
-Nous vous saurions gré d’effectuer vo{{ recipient.bills.waiting.count | pluralize:"tre,s" }} versement{{ recipient.bills.waiting.count | pluralize }}:
+À ce jour jour et sauf erreur de notre part, nous n’avons pas reçu vo{{ recipient.bills.waiting.count|pluralize:"tre,s" }} paiement{{ recipient.bills.waiting.count|pluralize }} pour les activités de sport scolaire facultatif de votre enfant.
+Nous vous saurions gré d’effectuer vo{{ recipient.bills.waiting.count|pluralize:"tre,s" }} versement{{ recipient.bills.waiting.count|pluralize }}:
 
 {% for bill in recipient.bills.waiting %}
 Identifiant: {{ bill.billing_identifier }}
@@ -17,7 +17,7 @@ IBAN {{ iban }}
 {{ address }}
 
 
-en précisant vo{{ recipient.bills.waiting.count | pluralize:"tre,s" }} identifiant{{ recipient.bills.waiting.count | pluralize }} dans les communications
+en précisant vo{{ recipient.bills.waiting.count|pluralize:"tre,s" }} identifiant{{ recipient.bills.waiting.count|pluralize }} dans les communications
 
 Vous pouvez également passer à notre secrétariat (avec une copie imprimée du présent mail) qui pourra encaisser directement votre finance d’inscription.
 

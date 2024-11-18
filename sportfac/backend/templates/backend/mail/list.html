@@ -1,13 +1,14 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags duration %}
+{% load duration i18n sekizai_tags %}
 {% get_current_language as LANGUAGE_CODE %}
 
-{% block title %}{% trans "Mail archive" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "Mail archive" %}{% endblock %}
+{% block title %}{% translate "Mail archive" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Mail archive" %}{% endblock %}
 
 {% block content %}
 
-{% addtoblock  "js" %}    
+{% addtoblock "js" %}
 <script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
 <script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
 <script>
@@ -18,7 +19,7 @@ $(function () {
             "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
       }
 {% endif %}
-      
+
   });
 });
 </script>
@@ -28,11 +29,11 @@ $(function () {
 <table class="table">
   <thead>
     <tr>
-      <th>{% trans "Date" %}</th>
+      <th>{% translate "Date" %}</th>
 
-      <th>{% trans "Subject" %}</th>
-      <th>{% trans "Recipient" %}</th>
-      <th>{% trans "Message" %}</th>
+      <th>{% translate "Subject" %}</th>
+      <th>{% translate "Recipient" %}</th>
+      <th>{% translate "Message" %}</th>
     </tr>
   </thead>
   {% for mailarchive in object_list %}

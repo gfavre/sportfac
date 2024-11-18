@@ -4,7 +4,7 @@
   <div class="container">
     <div class="navbar-header">
       <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topnav">
-        <span class="sr-only">{% trans "Toggle navigation" %}</span>
+        <span class="sr-only">{% translate "Toggle navigation" %}</span>
         <span class="icon-menu" style="color:#fff;"></span>
       </button>
       <a href="/" class="navbar-brand navbar-brand-white">{% include "main-title.html" %}</a>
@@ -13,7 +13,7 @@
     <nav class="collapse navbar-collapse hidden-print" role="navigation" id="topnav">
       <ul class="nav navbar-nav  navbar-left">
         {% if not NO_TERMS %}
-          <li><a href="{% url 'terms' %}">{% trans "Terms and conditions" %}</a></li>
+          <li><a href="{% url 'terms' %}">{% translate "Terms and conditions" %}</a></li>
           <li><a href="{% static 'pdf/Reglement-kepchup-ssf.pdf' %}">Règlement SSF</a></li>
         {% endif %}
         {% for activity_type, activities in activities_types %}
@@ -53,8 +53,8 @@
                   <li>
                     <a href="#"
                        onclick="$('#tenant-change input[name=tenant]').val({{ tenant.pk }}); $('#tenant-change').submit();">
-                      {% if tenant.is_past %}{% trans "Review" %}{% elif tenant.is_future %}
-                        {% trans "Preview" %}{% endif %} {{ tenant }}
+                      {% if tenant.is_past %}{% translate "Review" %}{% elif tenant.is_future %}
+                        {% translate "Preview" %}{% endif %} {{ tenant }}
                     </a>
                   </li>
                 {% endif %}
@@ -62,7 +62,7 @@
               {% if user.is_full_manager %}
                 <li class="divider"></li>
                 <li>
-                  <a href="{% url 'backend:year-list' %}"><i class="icon-exchange"></i> {% trans "Manage periods" %}</a>
+                  <a href="{% url 'backend:year-list' %}"><i class="icon-exchange"></i> {% translate "Manage periods" %}</a>
                 </li>
               {% endif %}
             </ul>
@@ -80,11 +80,11 @@
             </a>
             <ul class="dropdown-menu" role="menu">
               <li>
-                <a href="{% url 'profiles:profiles_account' %}"><i class="icon-pencil"></i> {% trans "My account" %}</a>
+                <a href="{% url 'profiles:profiles_account' %}"><i class="icon-pencil"></i> {% translate "My account" %}</a>
               </li>
               <li>
                 <a href="{% url 'registrations:registrations_children' %}">
-                  <i class="icon-group"></i> {% trans "My family" %}
+                  <i class="icon-group"></i> {% translate "My family" %}
                   {% if user.updatable_children %}
                     <span class="badge badge-danger">{{ user.updatable_children }}</span>{% endif %}</a>
               </li>
@@ -92,10 +92,10 @@
               {% if user.has_registrations %}
                 <li>
                   <a href="{% url 'registrations:registrations_registered_activities' %}"> <i
-                      class="icon-calendar"></i> {% trans "My registered activities" %}</a>
+                      class="icon-calendar"></i> {% translate "My registered activities" %}</a>
                 </li>
                 <li>
-                  <a href="{% url 'registrations:registrations_billing' %}"> <i class="icon-credit-card-1"></i> {% trans "My bills" %}
+                  <a href="{% url 'registrations:registrations_billing' %}"> <i class="icon-credit-card-1"></i> {% translate "My bills" %}
                   </a>
                 </li>
               {% endif %}
@@ -103,7 +103,7 @@
               {% if USE_APPOINTMENTS and request.PHASE > 1 %}
                 <li>
                   <a href="{% url 'appointments:register' %}"> <i
-                      class="icon-calendar-1"></i> {% trans "My appointments" %}
+                      class="icon-calendar-1"></i> {% translate "My appointments" %}
                   </a>
                 </li>
               {% endif %}
@@ -112,7 +112,7 @@
                 <li class="divider"></li>
                 <li>
                   <a href="{% url 'activities:my-courses' %}"><i
-                      class="icon-graduation-cap"></i> {% trans "My courses" %}</a>
+                      class="icon-graduation-cap"></i> {% translate "My courses" %}</a>
                 </li>
               {% endif %}
 
@@ -120,7 +120,7 @@
               {% if user.has_management_rights %}
                 <li class="divider"></li>
                 <li>
-                  <a href="{% url 'backend:home' %}"><i class="icon-cogs"></i> {% trans "Administration" %}</a>
+                  <a href="{% url 'backend:home' %}"><i class="icon-cogs"></i> {% translate "Administration" %}</a>
                 </li>
               {% endif %}
               {% if user.is_staff or user.is_superuser %}
@@ -130,7 +130,7 @@
                 </li>
               {% endif %}
               <li class="divider"></li>
-              <li><a href="{% block logout_url %}{% url 'profiles:auth_logout' %}?next=/{% endblock %}">{% trans "logout" %}</a>
+              <li><a href="{% block logout_url %}{% url 'profiles:auth_logout' %}?next=/{% endblock %}">{% translate "logout" %}</a>
               </li>
             </ul>
           </li>
@@ -138,7 +138,7 @@
           {% if not USE_SSO %}
             <li>
               <a href="{% url 'profiles:auth_login' %}?next={% url 'registrations:registrations_children' %}"><i
-                  class="icon-user icon-white"></i> {% trans "login" %}</a>
+                  class="icon-user icon-white"></i> {% translate "login" %}</a>
             </li>
           {% endif %}
         {% endif %}

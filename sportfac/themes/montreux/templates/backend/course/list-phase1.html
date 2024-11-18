@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags duration %}
+{% load duration i18n sekizai_tags %}
 
-{% block title %}{% trans "View courses" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "List courses" %}{% endblock %}
+{% block title %}{% translate "View courses" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "List courses" %}{% endblock %}
 
 {% get_current_language as LANGUAGE_CODE %}
 
@@ -12,7 +13,7 @@
 {% addtoblock "css" %}
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.css"/>
 {% endaddtoblock %}
-{% addtoblock  "js" %}
+{% addtoblock "js" %}
 
   <script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.js"></script>
 
@@ -41,20 +42,20 @@ $(function () {
 </script>
 {% endaddtoblock %}
 
-<a href="{% url 'backend:course-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New course" %}</a>
+<a href="{% url 'backend:course-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% translate "New course" %}</a>
 
 <table class="table">
   <thead>
     <tr>
-      <th class="text-nowrap">{% trans "Identifier" %}</th>
-      <th class="text-nowrap">{% trans "Activity" %}</th>
-      <th class="text-nowrap">{% trans "Place" %}</th>
-      <th class="text-nowrap">{% trans "Day" %}</th>
-      <th class="text-nowrap">{% trans "Start date" %}</th>
-      <th class="text-nowrap">{% trans "Time" %}</th>
-      <th class="text-nowrap">{% trans "Duration" %}</th>
-      <th class="text-nowrap">{% trans "Instructors" %}</th>
-      <th class="text-nowrap">{% trans "Actions" %}</th>
+      <th class="text-nowrap">{% translate "Identifier" %}</th>
+      <th class="text-nowrap">{% translate "Activity" %}</th>
+      <th class="text-nowrap">{% translate "Place" %}</th>
+      <th class="text-nowrap">{% translate "Day" %}</th>
+      <th class="text-nowrap">{% translate "Start date" %}</th>
+      <th class="text-nowrap">{% translate "Time" %}</th>
+      <th class="text-nowrap">{% translate "Duration" %}</th>
+      <th class="text-nowrap">{% translate "Instructors" %}</th>
+      <th class="text-nowrap">{% translate "Actions" %}</th>
     </tr>
   </thead>
   {% for course in object_list %}
@@ -62,7 +63,7 @@ $(function () {
       <td data-order="{{ course.number }}">
           <a href="{{ course.get_backend_url }}">{{ course.number }}</a>
           {% if not course.visible %}<br>
-          <span class="text-muted"><small>{% trans "Invisible" %}</small></span>
+          <span class="text-muted"><small>{% translate "Invisible" %}</small></span>
           {% endif %}
       </td>
       <td>
@@ -81,7 +82,7 @@ $(function () {
             {{ course.day_name }}
           {% endif %}
       </td>
-      <td data-order="{{ course.start_date|date:'c'}}">{{ course.start_date|date:"SHORT_DATE_FORMAT" }}</td>
+      <td data-order="{{ course.start_date|date:'c' }}">{{ course.start_date|date:"SHORT_DATE_FORMAT" }}</td>
       <td data-order="{{ course.start_date|date:'w' }}">
           {% if course.is_course %}
           {{ course.start_time|time:"H:i" }}
@@ -97,14 +98,14 @@ $(function () {
       <td>
         <ul class="list-unstyled">
         {% for instructor in course.instructors.all %}
-          <li><a href="{{ instructor.get_backend_url }}">{{ instructor.full_name  }}</a></li>
+          <li><a href="{{ instructor.get_backend_url }}">{{ instructor.full_name }}</a></li>
         {% endfor %}
         </ul>
       </td>
       <td>
         <ul class="list-unstyled">
-          <li class="text-nowrap"><a href="{{ course.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update course" %}</a></li>
-          <li class="text-nowrap"><a href="{{ course.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete course" %}</a></li>
+          <li class="text-nowrap"><a href="{{ course.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% translate "Update course" %}</a></li>
+          <li class="text-nowrap"><a href="{{ course.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% translate "Delete course" %}</a></li>
         </ul>
       </td>
     </tr>

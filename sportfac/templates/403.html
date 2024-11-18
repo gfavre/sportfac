@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "403 Forbidden" %}{% endblock %}
+{% block title %}{% translate "403 Forbidden" %}{% endblock %}
 
-{% block page_title %}{% trans "Access not authorized" %}{% endblock page_title %}
+{% block page_title %}{% translate "Access not authorized" %}{% endblock %}
 
 {% block content %}
 {% if not registration_opened %}
 <div class="alert alert-danger alert-block">
-  <h4>{% trans "Registrations are currently closed" %}</h4>
-  <p>{% blocktrans with registration_start=registration_start|date:"j F Y" registration_end=registration_end|date:"j F Y"%}They will open from {{ registration_start }} until {{ registration_end }}.{% endblocktrans %}</p>
+  <h4>{% translate "Registrations are currently closed" %}</h4>
+  <p>{% blocktranslate with registration_start=registration_start|date:"j F Y" registration_end=registration_end|date:"j F Y" %}They will open from {{ registration_start }} until {{ registration_end }}.{% endblocktranslate %}</p>
   <p class="text-center">
     <a href="{% url 'registrations:registrations_registered_activities' %}" class="btn  btn-default">
-      <i class="icon-calendar"></i>&nbsp;&nbsp; {% trans "Review my registered activities" %}
+      <i class="icon-calendar"></i>&nbsp;&nbsp; {% translate "Review my registered activities" %}
     </a>
   </p>
 </div>

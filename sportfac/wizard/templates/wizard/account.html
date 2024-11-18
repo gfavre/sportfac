@@ -1,5 +1,5 @@
 {% extends "wizard/base.html" %}
-{% load crispy_forms_tags sekizai_tags i18n %}
+{% load crispy_forms_tags i18n sekizai_tags %}
 
 {% block wizard_content %}
   <form action="." method="post" class="form-horizontal" role="form">
@@ -10,11 +10,11 @@
           {% if previous_step %}
           <li class="previous">
             <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span>
-              {% block previous_label %}{% trans "Previous" %}{% endblock %}</a>
+              {% block previous_label %}{% translate "Previous" %}{% endblock %}</a>
           </li>
         {% endif %}
         <li class="next">
-          {% trans "Next" as default_next %}
+          {% translate "Next" as default_next %}
           <button type="submit" class="btn btn-primary" style="font-size: 1.25em;">
             <strong>{{ next_step.link_display|default:default_next }} <span aria-hidden="true">→</span></strong>
           </button>

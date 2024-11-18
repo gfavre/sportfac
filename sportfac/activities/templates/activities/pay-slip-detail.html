@@ -1,4 +1,4 @@
-{% load i18n static duration switzerland %}<!DOCTYPE html>
+{% load duration i18n static switzerland %}<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -131,7 +131,7 @@
             <strong>Durée:</strong>
           </div>
           <div class="col-xs-6">
-            {{ payslip.average_presentees | floatformat:"0" }}<br>
+            {{ payslip.average_presentees|floatformat:"0" }}<br>
             {{ payslip.sessions.count }}<br>
             {{ payslip.course.duration|duration }}
           </div>
@@ -149,7 +149,7 @@
           <tbody>
           {% for session in payslip.sessions %}
             <tr>
-              <td>{{ session.date | date:"d.m.Y" }}</td>
+              <td>{{ session.date|date:"d.m.Y" }}</td>
               <td>{{ session.presentees_nb }}</td>
             </tr>
           {% endfor %}
@@ -201,7 +201,7 @@
         <td>&times;</td>
         <td>{{ payslip.rate|money }}</td>
         <td>=</td>
-        <td>{{ payslip.amount | money }}</td>
+        <td>{{ payslip.amount|money }}</td>
       </tr>
     </table>
   </section>

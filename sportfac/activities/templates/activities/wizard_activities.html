@@ -6,7 +6,7 @@
   {% if ALTERNATIVE_ACTIVITIES_LABEL %}
     {{ ALTERNATIVE_ACTIVITIES_LABEL }}
   {% else %}
-    {% trans "Activities" %}
+    {% translate "Activities" %}
   {% endif %}
 {% endblock page_title %}
 
@@ -15,15 +15,14 @@
 
 {% endblock content %}
 
-
 {% block page_footer %}
 <nav>
   <ul class="pager">
     <li class="previous">
-      <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span> {% block previous_label %}{% trans "Previous"%}{% endblock %}</a>
+      <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span> {% block previous_label %}{% translate "Previous" %}{% endblock %}</a>
     </li>
     <li class="next" ng-class="{disabled: registrations.length === 0}">
-      <a href="{{ next_step.url }}" ><b>{% trans "Next" %} <span aria-hidden="true">&rarr;</span></b></a>
+      <a href="{{ next_step.url }}" ><b>{% translate "Next" %} <span aria-hidden="true">&rarr;</span></b></a>
     </li>
   </ul>
 </nav>

@@ -1,27 +1,27 @@
 {% extends "wizard.html" %}
-{% load i18n l10n humanize switzerland %}
+{% load humanize i18n l10n switzerland %}
 
 
-{% block page_title %}{% trans "Confirmation" %}{% endblock page_title%}
+{% block page_title %}{% translate "Confirmation" %}{% endblock %}
 
 {% block content %}
 {% if overlaps %}
 <div class="alert alert-warning alert-dismissible" role="alert">
   <button type="button" class="close" data-dismiss="alert">
-    <span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span>
+    <span aria-hidden="true">&times;</span><span class="sr-only">{% translate "Close" %}</span>
   </button>
-  <strong><i class="icon-warning"></i>&nbsp;{% trans "Warning!" %}</strong>
+  <strong><i class="icon-warning"></i>&nbsp;{% translate "Warning!" %}</strong>
   <p>
     {% if user.children.count > 1 %}
-    {% trans "The following courses occur at the same or close times. It may be difficult to bring your children." %}
+    {% translate "The following courses occur at the same or close times. It may be difficult to bring your children." %}
     {% else %}
-    {% trans "The following courses occur at the same or close times. It may be difficult to bring your child." %}
+    {% translate "The following courses occur at the same or close times. It may be difficult to bring your child." %}
     {% endif %}
     <ul>
     {% for overlap in overlaps %}
       <li>
-        <span class="highlight" rel="{{ overlap.0.id}}">{{ overlap.0.child.first_name }} - {{ overlap.0.course.activity.name }}</span> /
-        <span class="highlight" rel="{{ overlap.1.id}}">{{ overlap.1.child.first_name }} - {{ overlap.1.course.activity.name }}</span>
+        <span class="highlight" rel="{{ overlap.0.id }}">{{ overlap.0.child.first_name }} - {{ overlap.0.course.activity.name }}</span> /
+        <span class="highlight" rel="{{ overlap.1.id }}">{{ overlap.1.child.first_name }} - {{ overlap.1.course.activity.name }}</span>
       </li>
     {% endfor %}
     </ul>
@@ -32,18 +32,18 @@
 <table class=" table table-hover table-striped">
   <thead>
     <tr>
-      <th class="text-center">{% trans "Name" %}</th>
-      <th class="text-center">{% trans "Activity" %}</th>
-      <th class="text-center">{% trans "Period" %}</th>
-      <th class="text-center">{% trans "Time" %}</th>
-      <th class="text-center">{% trans "Place" %}</th>
-      <th class="text-center">{% trans "Price" %}</th>
+      <th class="text-center">{% translate "Name" %}</th>
+      <th class="text-center">{% translate "Activity" %}</th>
+      <th class="text-center">{% translate "Period" %}</th>
+      <th class="text-center">{% translate "Time" %}</th>
+      <th class="text-center">{% translate "Place" %}</th>
+      <th class="text-center">{% translate "Price" %}</th>
     </tr>
   </thead>
 
   <tfoot>
   <tr>
-      <th colspan="5" class="text-right">{% trans "Total" %}</th>
+      <th colspan="5" class="text-right">{% translate "Total" %}</th>
       <th class="nowrap">{{ total_price|money }}</th>
     </tr>
   </tfoot>
@@ -57,7 +57,7 @@
       <td><p>{{ registered.course.activity.name }}</p>
       {% for extra in registered.extra_needs %}
         <p class="alert alert-error form-error" style="display: none">
-          <i class="icon-warning-sign icon-large"></i> {% trans "Please submit this form." %}</span>
+          <i class="icon-warning-sign icon-large"></i> {% translate "Please submit this form." %}</span>
         </p>
 
         <form class=" extra-info" method="post" role="form">{% csrf_token %}
@@ -68,16 +68,16 @@
               <label for="question-{{ extra.id }}">{{ extra.question_label }}</label>
               <input type="text" name="value" class="input-small" value="" id="question-{{ extra.id }}" required />
             </div>
-            <button type="submit" class="btn btn-success disabled" >{% trans "Save" %}</button>
+            <button type="submit" class="btn btn-success disabled" >{% translate "Save" %}</button>
           </div>
           <p class="alert alert-info hide" role="alert">
-            <i class="icon-refresh icon-spin"></i> {% trans "Sending info..." %}
+            <i class="icon-refresh icon-spin"></i> {% translate "Sending info..." %}
           </p>
           <p class="alert alert-success hide" role="alert">
             <i class="icon-ok"></i> {{ extra.question_label }}: <span class="value"></span>
           </p>
           <p class="alert alert-danger hide" role="alert">
-            <i class="icon-cross"></i> {% trans "An error has occurred. Please contact us." %}</span>
+            <i class="icon-cross"></i> {% translate "An error has occurred. Please contact us." %}</span>
           </p>
         </form>
       {% empty %}
@@ -90,7 +90,7 @@
         <span class="nowrap">{{ registered.course.start_date }}</span><br><span class="icon-down-1" aria-hidden="true"></span><br><span class="nowrap">{{ registered.course.end_date }}</span>
       </td>
       <td class="text-center">
-        {{ registered.course.day_name }} <br /> <span class="nowrap">{{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</span>
+        {{ registered.course.day_name }} <br /> <span class="nowrap">{{ registered.course.start_time|time:"H:i" }} - {{ registered.course.end_time|time:"H:i" }}</span>
       </td>
       <td>{{ registered.course.place }}</td>
       <td class="nowrap">{{ registered.price|money }}</td>
@@ -100,8 +100,6 @@
 
 </table>
 {% endblock content %}
-
-
 
 {% block page_footer %}
 <hr />
@@ -113,14 +111,14 @@
     <label>{{ form.accept }} {{ form.accept.label }}</label>
   </div>
   <div class="clearfix"></div>
-  <span class="pull-right"><small ><i class="icon-warning"></i>{% trans "Confirmation is definitive. You will not be able to change your registrations again." %}</small> </span>
+  <span class="pull-right"><small ><i class="icon-warning"></i>{% translate "Confirmation is definitive. You will not be able to change your registrations again." %}</small> </span>
 <nav >
   <ul class="pager">
     <li class="previous">
-      <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span> {% trans "Previous"%}</a>
+      <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span> {% translate "Previous" %}</a>
     </li>
     <li class="next">
-      <button type="submit" class="btn btn-primary btn-large btn-next pull-right">{% trans "Confirm and proceed to checkout"%}</button>
+      <button type="submit" class="btn btn-primary btn-large btn-next pull-right">{% translate "Confirm and proceed to checkout" %}</button>
     </li>
   </ul>
 

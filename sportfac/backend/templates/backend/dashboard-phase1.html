@@ -1,32 +1,31 @@
 {% extends "backend/base.html" %}
-{% load i18n %}
-{% load humanize %}
+{% load humanize i18n %}
 
 
-{% block title %}{% trans "Administration" %} - {{ block.super }}{% endblock %}
+{% block title %}{% translate "Administration" %} - {{ block.super }}{% endblock %}
 
 {{% block page_header %}
 <div class="container">
   <div class="page-header">
-    <h3 class="content-title"><u>{% trans "Administration" %} <small>- {% trans "preparation phase" %}</small></u></h3>
+    <h3 class="content-title"><u>{% translate "Administration" %} <small>- {% translate "preparation phase" %}</small></u></h3>
   </div>
 </div>
-{% endblock %}
+{% endblock page_header %}
 
 {% block content %}
 <div class="row">
   <section class="col-sm-12 col-md-4">
-    {% include 'backend/portlets/period.html'%}
+    {% include 'backend/portlets/period.html' %}
 
   </section>
 
   <section class="col-sm-12 col-md-8">
-    {% include 'backend/portlets/courses.html'%}
+    {% include 'backend/portlets/courses.html' %}
   </section>
 
 
   <section class="col-md-4">
-    {% include 'backend/portlets/teachers.html'%}
+    {% include 'backend/portlets/teachers.html' %}
   </section>
 </div>
 

@@ -2,18 +2,18 @@
 
 <section class="portlet">
   <h4 class="portlet-title">
-    <u>{% trans "Courses" %}</u>
+    <u>{% translate "Courses" %}</u>
   </h4>
   <div class="portlet-body">
      {% widthratio nb_full_courses nb_courses 100|add:"0" as percentage %}
       <div class="progress-stat">
-        <div class="progress-stat-label">{% trans "Full courses"%}</div>
+        <div class="progress-stat-label">{% translate "Full courses" %}</div>
         <div class="progress-stat-value">{{ nb_full_courses }} / {{ nb_courses }}</div>
         <div class="progress progress-sm">
           {% with pp=percentage|add:"0" %}
-          <div class="progress-bar progress-bar-danger" role="progressbar" 
-               aria-valuenow="{{ nb_full_courses }}" aria-valuemin="0" 
-               aria-valuemax="{{ nb_courses }}" 
+          <div class="progress-bar progress-bar-danger" role="progressbar"
+               aria-valuenow="{{ nb_full_courses }}" aria-valuemin="0"
+               aria-valuemax="{{ nb_courses }}"
                style="width: {{ percentage }}%">
           </div>
           {% endwith %}
@@ -22,13 +22,13 @@
 
      {% widthratio nb_minimal_courses nb_courses 100|add:"0" as percentage %}
       <div class="progress-stat">
-        <div class="progress-stat-label">{% trans "Minimal participants reached courses"%}</div>
+        <div class="progress-stat-label">{% translate "Minimal participants reached courses" %}</div>
         <div class="progress-stat-value">{{ nb_minimal_courses }} / {{ nb_courses }}</div>
         <div class="progress progress-sm">
           {% with pp=percentage|add:"0" %}
-          <div class="progress-bar progress-bar-warning" role="progressbar" 
-               aria-valuenow="{{ nb_minimal_courses }}" aria-valuemin="0" 
-               aria-valuemax="{{ nb_courses }}" 
+          <div class="progress-bar progress-bar-warning" role="progressbar"
+               aria-valuenow="{{ nb_minimal_courses }}" aria-valuemin="0"
+               aria-valuemax="{{ nb_courses }}"
                style="width: {{ percentage }}%">
           </div>
           {% endwith %}
@@ -36,7 +36,7 @@
       </div>
 
     <p class="text-center">
-        [&nbsp;<a href="{% url 'backend:course-list' %}"><i class="icon-graduation-cap"></i>&nbsp;{% trans "List courses" %}</a>&nbsp;]
+        [&nbsp;<a href="{% url 'backend:course-list' %}"><i class="icon-graduation-cap"></i>&nbsp;{% translate "List courses" %}</a>&nbsp;]
     </p>
   </div> <!-- /.portlet-body -->
 </section>

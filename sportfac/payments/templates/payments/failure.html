@@ -1,17 +1,17 @@
 {% extends "base.html" %}
-{% load i18n %}
-{% load duration switzerland %}
+{% load duration i18n switzerland %}
 
-{% block title %}{% trans "Payment failure" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "Payment failed" %} {% endblock %}
+{% block title %}{% translate "Payment failure" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Payment failed" %} {% endblock %}
 
 {% block content %}
   <div class="portlet ">
-    <p class="lead">{% trans "The payment has not been made." %}</p>
+    <p class="lead">{% translate "The payment has not been made." %}</p>
     <p>
-      <!--<a href="{% url 'registrations:registrations_registered_activities' %}"><i class="icon-calendar"></i> {% trans "My registered activities" %}</a>&nbsp; &mdash;&nbsp;-->
-      <a href="{% url "wizard_billing" %}"> {% trans "Payment" %}</a>
-      <!--<a href="{% url 'registrations:registrations_billing' %}"><i class="icon-credit-card-1"></i> {% trans "My invoices" %}</a>-->
+      <!--<a href="{% url 'registrations:registrations_registered_activities' %}"><i class="icon-calendar"></i> {% translate "My registered activities" %}</a>&nbsp; &mdash;&nbsp;-->
+      <a href="{% url "wizard_billing" %}"> {% translate "Payment" %}</a>
+      <!--<a href="{% url 'registrations:registrations_billing' %}"><i class="icon-credit-card-1"></i> {% translate "My invoices" %}</a>-->
   </p>
 
   </div>

@@ -1,9 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags floppyforms static %}
+{% load floppyforms i18n sekizai_tags static %}
 
-{% block title %}{% blocktrans %}Absence management{% endblocktrans %} - {{ block.super }}{% endblock %}
-{% block page_title %}<i class="icon-calendar"></i>&nbsp;&nbsp;{% trans "Absences" %}{% endblock %}
+{% block title %}{% blocktranslate %}Absence management{% endblocktranslate %} - {{ block.super }}{% endblock %}
 
+{% block page_title %}<i class="icon-calendar"></i>&nbsp;&nbsp;{% translate "Absences" %}{% endblock %}
 
 {% block content %}
 {% addtoblock "css" %}
@@ -56,7 +56,7 @@
 {% endaddtoblock %}
 
 <section class="portlet">
-  <h4 class="portlet-title"><u>{% trans "Courses" %}</u></h4>
+  <h4 class="portlet-title"><u>{% translate "Courses" %}</u></h4>
   <ul class="courses-list">
   {% for course in course_list %}
     <li>
@@ -81,7 +81,7 @@
   <div class="hidden-print">
     <form method="POST" class="form-inline">{% csrf_token %}
       {% form session_form using "floppyforms/layouts/bootstrap-inline.html" %}
-      <button type="submit" class="btn btn-secondary">{% trans "Create session for all courses" %}</button>
+      <button type="submit" class="btn btn-secondary">{% translate "Create session for all courses" %}</button>
     </form>
     <hr>
   </div>

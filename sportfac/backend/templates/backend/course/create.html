@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n crispy_forms_tags static sekizai_tags %}
+{% load crispy_forms_tags i18n sekizai_tags static %}
 
-{% block title %}{% trans "Create a new course" %} - {{ block.super }}{% endblock %}
-{% block page_title %}<i class="icon-graduation-cap"></i>&nbsp;&nbsp;{% trans "Create a new course" %}{% endblock %}
+{% block title %}{% translate "Create a new course" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}<i class="icon-graduation-cap"></i>&nbsp;&nbsp;{% translate "Create a new course" %}{% endblock %}
 
 {% block content %}
 
@@ -17,7 +18,7 @@
   <form action="" method="post">{% csrf_token %}
     {% include "backend/course/form.html" %}
     <div class="form-group">
-      <button type="submit" class="btn btn-success btn-large">{% trans 'Create course' %}</button>
+      <button type="submit" class="btn btn-success btn-large">{% translate 'Create course' %}</button>
     </div>
   </form>
 

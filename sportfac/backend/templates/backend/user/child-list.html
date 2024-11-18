@@ -2,8 +2,9 @@
 {% load i18n sekizai_tags switzerland %}
 {% get_current_language as LANGUAGE_CODE %}
 
-{% block title %}{% trans "List students" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "List students" %}{% endblock %}
+{% block title %}{% translate "List students" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "List students" %}{% endblock %}
 
 {% block content %}
   {% addtoblock "css" %}
@@ -64,33 +65,33 @@
           dom: 'Pfrlitipl',
         {% endif %}
           language: {
-            info: "{% trans 'Showing _START_ to _END_ of _TOTAL_ entries' %}",
-            infoEmpty: "{% trans "Showing 0 to 0 of 0 entries" %}",
-            infoFiltered: "{% trans "(filtered from _MAX_ total entries)" %}",
-            lengthMenu: "{% trans "Show _MENU_ entries" %}",
+            info: "{% translate 'Showing _START_ to _END_ of _TOTAL_ entries' %}",
+            infoEmpty: "{% translate "Showing 0 to 0 of 0 entries" %}",
+            infoFiltered: "{% translate "(filtered from _MAX_ total entries)" %}",
+            lengthMenu: "{% translate "Show _MENU_ entries" %}",
             paginate: {
-              first: "{% trans 'First' %}",
-              last: "{% trans 'Last' %}",
-              previous: "{% trans 'Previous' %}",
-              next: "{% trans 'Next' %}"
+              first: "{% translate 'First' %}",
+              last: "{% translate 'Last' %}",
+              previous: "{% translate 'Previous' %}",
+              next: "{% translate 'Next' %}"
             },
             search: "",
-            searchPlaceholder: "{% trans 'Search' %}",
+            searchPlaceholder: "{% translate 'Search' %}",
             searchPanes: {
               title: {
-                _: '{% trans 'Filters selected' %} - %d',
-                0: '{% trans "No filter selected" %}'
+                _: '{% translate 'Filters selected' %} - %d',
+                0: '{% translate "No filter selected" %}'
               },
-              clearMessage: '{% trans "Clear All" %}'
+              clearMessage: '{% translate "Clear All" %}'
             },
             select: {
               'rows': {
-                1: "{% trans "%d row selected" %}",
-                _: "{% trans "%d rows selected" %}"
+                1: "{% translate "%d row selected" %}",
+                _: "{% translate "%d rows selected" %}"
               }
             }
           },
-          'lengthMenu': [[10, 25, 50, -1], [10, 25, 50, "{% trans 'All students' %}"] ],
+          'lengthMenu': [[10, 25, 50, -1], [10, 25, 50, "{% translate 'All students' %}"] ],
           order: [[name_column, 'asc']],
           pageLength: 50,
           {% if USE_BLACKLISTS %}
@@ -106,10 +107,10 @@
 
   {% if user.is_full_manager %}
   <a href="{% url 'backend:child-import' %}" class="btn btn-success">
-    <i class="icon-doc-new"></i>&nbsp;&nbsp;{% trans "Import students" %}
+    <i class="icon-doc-new"></i>&nbsp;&nbsp;{% translate "Import students" %}
   </a>&nbsp;
   <a href="{% url 'backend:child-new' %}" class="btn btn-success">
-    <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New student" %}
+    <i class="icon-plus"></i>&nbsp;&nbsp;{% translate "New student" %}
   </a>
   <hr/>
   {% endif %}
@@ -118,21 +119,21 @@
     <thead>
     <tr>
       {% if IMPORT_CHILDREN %}
-        <th class="lagapeo">{% trans "Identifier" %}</th>
+        <th class="lagapeo">{% translate "Identifier" %}</th>
       {% endif %}
       {% if BIB_NUMBERS %}
-        <th class="name">{% trans "Bib number" %}</th>
+        <th class="name">{% translate "Bib number" %}</th>
       {% endif %}
-      <th>{% trans "Name" %}</th>
-      <th class="family">{% trans "Family" %}</th>
-      <th class="school">{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>
+      <th>{% translate "Name" %}</th>
+      <th class="family">{% translate "Family" %}</th>
+      <th class="school">{% if CHILD_SCHOOL %}{% translate "School infos" %}{% else %}{% translate "School year" %}{% endif %}</th>
       {% if EMERGENCY_NUMBER_MANDATORY %}
-        <th class="phone">{% trans "Emergency number" %}</th>
+        <th class="phone">{% translate "Emergency number" %}</th>
       {% endif %}
       {% if USE_BLACKLISTS %}
-        <th class="is_blacklisted">{% trans "Blacklisted" %}</th>
+        <th class="is_blacklisted">{% translate "Blacklisted" %}</th>
       {% endif %}
-      <th class="actions">{% trans "Actions" %}</th>
+      <th class="actions">{% translate "Actions" %}</th>
     </tr>
     </thead>
     {% for child in object_list %}
@@ -167,25 +168,25 @@
         {% endif %}
 
  {% if USE_BLACKLISTS %}
-        <td>{% if child.is_blacklisted %}{% trans "yes" %}{% else %}{% trans "no" %}{% endif %}</td>
+        <td>{% if child.is_blacklisted %}{% translate "yes" %}{% else %}{% translate "no" %}{% endif %}</td>
       {% endif %}
         <td>
           <ul class="list-unstyled">
             <li class="text-nowrap"><a href="{{ child.get_backend_detail_url }}" class="btn btn-sm"><i
-                class="icon-child"></i>&nbsp;&nbsp;{% trans "Child details" %}</a></li>
-            <li class="text-nowrap"><a href="{{ child.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% trans "Edit student" %}
+                class="icon-child"></i>&nbsp;&nbsp;{% translate "Child details" %}</a></li>
+            <li class="text-nowrap"><a href="{{ child.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% translate "Edit student" %}
             </a></li>
             {% if USE_ABSENCES %}
             <li class="text-nowrap">
               <a href="{{ child.get_backend_absences_url }}" class="btn btn-sm">
-                <i class="icon-calendar"></i>&nbsp;{% trans "Review absences" %}
+                <i class="icon-calendar"></i>&nbsp;{% translate "Review absences" %}
               </a>
             </li>
             {% endif %}
             {% if user.is_full_manager %}
             <li class="text-nowrap">
               <a href="{{ child.get_delete_url }}" class="btn btn-sm">
-                <i class="icon-trash"></i>&nbsp;&nbsp;{% trans "Delete student" %}
+                <i class="icon-trash"></i>&nbsp;&nbsp;{% translate "Delete student" %}
               </a>
             </li>
             {% endif %}

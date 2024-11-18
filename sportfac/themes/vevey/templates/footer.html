@@ -1,15 +1,15 @@
-{% load static i18n %}
+{% load i18n static %}
 <footer id="footer">
   <div class="container">
     <div>
       {% include "address.html" %}
       <img src="{{ STATIC_URL }}img/logo-vevey.svg" class="hidden-xs hidden-sm hidden-print logo"/>
       <ul class="footer-links hidden-print">
-        <li><a href="{% url 'contact:contact' %}">{% trans "Contact" %}</a></li>
+        <li><a href="{% url 'contact:contact' %}">{% translate "Contact" %}</a></li>
         <li class="muted">·</li>
-        <li><a href="{% url 'terms' %}">{% trans "Terms and conditions" %}</a></li>
+        <li><a href="{% url 'terms' %}">{% translate "Terms and conditions" %}</a></li>
         <li class="muted">·</li>
-        <li><a href="{% url 'privacy' %}">{% trans "Privacy" %}</a></li>
+        <li><a href="{% url 'privacy' %}">{% translate "Privacy" %}</a></li>
       </ul>
       <small class="hidden-print"><a href="https://www.beyondthewall.ch">Développé par Beyond the Wall, Genolier</a></small>
     </div>

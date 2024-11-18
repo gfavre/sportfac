@@ -1,5 +1,4 @@
-{% load i18n %}
-{% load duration switzerland extra sekizai_tags static matrix status mathfilters children %}
+{% load children duration extra i18n mathfilters matrix sekizai_tags static status switzerland %}
 {% addtoblock "css" %}
 <style>
 .rotated-heading {
@@ -22,20 +21,20 @@
   <table class="table table-bordered table-hover table-condensed absences" style="table-layout: fixed;">
     <thead>
       <tr>
-        <th>{% trans "Activity" %}</th>
+        <th>{% translate "Activity" %}</th>
         {% if REGISTRATION_LEVELS %}
-          <th class="rotated-heading"><div><span>{% trans "Announced level" %}</span></div></th>
-          <th class="rotated-heading"><div><span>{% trans "level -1" %}</span></div></th>
-          <th class="rotated-heading"><div><span>{% trans "level 0" %}</span></div></th>
+          <th class="rotated-heading"><div><span>{% translate "Announced level" %}</span></div></th>
+          <th class="rotated-heading"><div><span>{% translate "level -1" %}</span></div></th>
+          <th class="rotated-heading"><div><span>{% translate "level 0" %}</span></div></th>
         {% endif %}
         {% if DISPLAY_REGISTRATION_NOTE %}
         <th class="note">
-          {% trans "Note" %}
+          {% translate "Note" %}
         </th>
         {% endif %}
-        <th>{% trans "Course" %}</th>
+        <th>{% translate "Course" %}</th>
         {% for session_date in all_dates %}
-          <th class="rotated-heading"><div><span>{{ session_date | date:"j b. Y" }}</span></div></th>
+          <th class="rotated-heading"><div><span>{{ session_date|date:"j b. Y" }}</span></div></th>
         {% endfor %}
       </tr>
     </thead>
@@ -86,7 +85,7 @@
         >
           <div class="note">{{ level.note }}</div>
           <a class="note has-popover hidden-print" role="button" data-toggle="popover" data-trigger="click focus">
-            <i class="icon-pencil"></i>&nbsp;{% trans "Edit note" %}
+            <i class="icon-pencil"></i>&nbsp;{% translate "Edit note" %}
           </a>
         </th>
 
@@ -137,40 +136,40 @@
 <script type="text/html" id="note-window">
   <form class="note-form">
     <textarea></textarea>
-    <input type="submit" class="form-control  btn-primary" value="{% trans "Save" %}">
+    <input type="submit" class="form-control  btn-primary" value="{% translate "Save" %}">
   </form>
 </script>
 <script type="text/html" id="status-window">
   <form>
     <div class="radio">
       <label>
-        <input type="radio" name="status" id="present" value="present" checked>{% trans "Present" %}
+        <input type="radio" name="status" id="present" value="present" checked>{% translate "Present" %}
       </label>
     </div>
      <div class="radio">
       <label>
-        <input type="radio" name="status" id="absent" value="absent">{% trans "Absent" %}
+        <input type="radio" name="status" id="absent" value="absent">{% translate "Absent" %}
       </label>
     </div>
      <div class="radio">
       <label>
-        <input type="radio" name="status" id="excused" value="excused">{% trans "Excused" %}
+        <input type="radio" name="status" id="excused" value="excused">{% translate "Excused" %}
       </label>
     </div>
     <div class="radio">
       <label>
-        <input type="radio" name="status" id="canceled" value="canceled">{% trans "Canceled course" %}
+        <input type="radio" name="status" id="canceled" value="canceled">{% translate "Canceled course" %}
       </label>
     </div>
 
     <div class="radio">
       <label>
-        <input type="radio" name="status" id="medical" value="medical">{% trans "Medical certificate" %}
+        <input type="radio" name="status" id="medical" value="medical">{% translate "Medical certificate" %}
       </label>
     </div>
     <div class="radio">
       <label>
-        <input type="radio" name="status" id="late" value="late">{% trans "Late" %}
+        <input type="radio" name="status" id="late" value="late">{% translate "Late" %}
       </label>
     </div>
   </form>
@@ -200,27 +199,27 @@ jQuery(function($){
         var classes = '';
         switch(response.status){
           case 'present':
-            label = "{% trans 'P' %}";
+            label = "{% translate 'P' %}";
             classes = "success present";
             break;
           case 'absent':
-            label = "{% trans 'A' %}";
+            label = "{% translate 'A' %}";
             classes = "danger absent";
             break;
           case 'excused':
-            label = "{% trans 'E' %}";
+            label = "{% translate 'E' %}";
             classes = "warning excused";
             break;
           case 'canceled':
-            label = "{% trans 'AA' %}";
+            label = "{% translate 'AA' %}";
             classes = "warning canceled";
             break;
           case 'medical':
-            label = "{% trans 'MC' %}";
+            label = "{% translate 'MC' %}";
             classes = "danger medical";
             break;
           case 'late':
-            label = "{% trans 'LA' %}";
+            label = "{% translate 'LA' %}";
             classes = "info late";
             break;
         }

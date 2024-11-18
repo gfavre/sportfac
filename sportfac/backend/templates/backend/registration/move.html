@@ -1,16 +1,17 @@
 {% extends "backend/base.html" %}
-{% load i18n crispy_forms_tags sekizai_tags %}
+{% load crispy_forms_tags i18n sekizai_tags %}
 
-{% block title %}{% trans "Move registrations" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "Move registrations" %}{% endblock %}
+{% block title %}{% translate "Move registrations" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Move registrations" %}{% endblock %}
 
 {% block content %}
 <form action="" method="post" class="form-horizontal">
   <div class="form-group">
-    <label class="col-sm-2 control-label" for="children-list">{% trans "Move" %}</label>
+    <label class="col-sm-2 control-label" for="children-list">{% translate "Move" %}</label>
     <div class="col-sm-10 " >
       <p class="form-control-static" id="children-list">
-        {% for child in children %}<span class="label label-primary">{{  child  }}</span> {% endfor %}
+        {% for child in children %}<span class="label label-primary">{{ child }}</span> {% endfor %}
       </p>
     </div>
   </div>
@@ -19,7 +20,7 @@
   {% endif %}
   {% if origin %}
   <div class="form-group">
-    <label class="col-sm-2 control-label" for="origin">{% trans "From" %}</label>
+    <label class="col-sm-2 control-label" for="origin">{% translate "From" %}</label>
     <div class="col-sm-10">
       <p class="form-control-static" id="origin">{{ origin }}</p>
     </div>
@@ -33,10 +34,10 @@
 
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-success btn-large">{% trans "Update" %}</button>
+      <button type="submit" class="btn btn-success btn-large">{% translate "Update" %}</button>
 
       {% if origin %}&nbsp;
-        <a href="{{ origin.backend_url }}" class="btn btn-default">{% trans 'Cancel' %}</a>
+        <a href="{{ origin.backend_url }}" class="btn btn-default">{% translate 'Cancel' %}</a>
       {% endif %}
     </div>
   </div>
@@ -50,4 +51,3 @@
 {% endaddtoblock %}
 
 {% endblock content %}
-

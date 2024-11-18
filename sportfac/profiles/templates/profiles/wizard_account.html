@@ -1,8 +1,9 @@
 {% extends "wizard.html" %}
-{% load i18n floppyforms %}
+{% load floppyforms i18n %}
 
-{% block title %}{% trans "My account" %} - {{ block.super }}{% endblock title %}
-{% block page_title %}{% trans "My account" %} <small>- responsable légal</small>{% endblock page_title %}
+{% block title %}{% translate "My account" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "My account" %} <small>- responsable légal</small>{% endblock %}
 
 {% block content %}
 <form action="." method="post" class="form-horizontal" role="form">
@@ -11,10 +12,11 @@
   <div class="form-group">
     <div class="col-sm-12">
       <div class="pull-right">
-        <button type="submit" class="btn btn-primary btn-large">{% trans "Save and continue" %} <span class="icon-chevron-right icon-white"></span></button>
+        <button type="submit" class="btn btn-primary btn-large">{% translate "Save and continue" %} <span class="icon-chevron-right icon-white"></span></button>
       </div>
     </div>
   </div>
 </form>
 {% endblock content %}
-{% block page_footer %}{% endblock page_footer %}
+
+{% block page_footer %}{% endblock %}

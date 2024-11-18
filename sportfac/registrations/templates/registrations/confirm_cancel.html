@@ -1,14 +1,15 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Cancel registration" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "Cancel registration" %}{% endblock %}
+{% block title %}{% translate "Cancel registration" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Cancel registration" %}{% endblock %}
 
 {% block content %}
 <form action="" method="post">{% csrf_token %}
-  <p>{% blocktrans with child=object.child|title course=object.course.short_name %}Are you sure you want to cancel registration to {{ course }} for {{ child }}?{% endblocktrans %}</p>
+  <p>{% blocktranslate with child=object.child|title course=object.course.short_name %}Are you sure you want to cancel registration to {{ course }} for {{ child }}?{% endblocktranslate %}</p>
   <div class="form-group">
-    <button type="submit" class="btn btn-danger"><i class="icon icon-cancel"></i>&nbsp;{% trans 'confirm' %}</button>
+    <button type="submit" class="btn btn-danger"><i class="icon icon-cancel"></i>&nbsp;{% translate 'confirm' %}</button>
   </div>
 </form>
 

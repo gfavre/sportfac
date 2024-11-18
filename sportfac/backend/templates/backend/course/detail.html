@@ -1,76 +1,76 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags static %}
-{% load duration registrations switzerland crispy_forms_tags %}
+{% load crispy_forms_tags duration i18n registrations sekizai_tags static switzerland %}
 
 {% block title %}{{ course.activity.name }} - {{ block.super }}{% endblock %}
+
 {% block page_title %}
-  {{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }}{% endblocktrans %}
+  {{ course.activity.name }} - {% blocktranslate with identifier=course.number %}course #{{ identifier }}{% endblocktranslate %}
   {% if CALENDAR_DISPLAY_COURSE_NAMES and course.name %}
     - {{ course.name }}
   {% endif %}
-{% endblock %}
+{% endblock page_title %}
 
 {% block content %}
 <section class="portlet">
   <div class="pricing-plan">
     <header class="pricing-header">
-      <p class="pricing-plan-label">{{ course.start_date | date:"j F Y" }} – {{ course.end_date | date:'j F Y'  }}</p>
+      <p class="pricing-plan-label">{{ course.start_date|date:"j F Y" }} – {{ course.end_date|date:'j F Y' }}</p>
         <p class="lead">
                 {% if course.is_course %}
 
-          {% blocktrans with day_name=course.day_name|lower start_time=course.start_time|time:"H:i" end_time=course.end_time|time:"H:i" duration=course.duration|duration %}Every {{ day_name }}, from {{ start_time }} to {{ end_time }} ({{ duration }}{% endblocktrans %}
+          {% blocktranslate with day_name=course.day_name|lower start_time=course.start_time|time:"H:i" end_time=course.end_time|time:"H:i" duration=course.duration|duration %}Every {{ day_name }}, from {{ start_time }} to {{ end_time }} ({{ duration }}{% endblocktranslate %}
 
           {% elif course.is_multi_course %}
             {% if course.start_time_mon %}
-              {% blocktrans with start_time=course.start_time_mon|time:"H:i" end_time=course.end_time_mon|time:"H:i" %}Mondays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+              {% blocktranslate with start_time=course.start_time_mon|time:"H:i" end_time=course.end_time_mon|time:"H:i" %}Mondays, from {{ start_time }} to {{ end_time }}{% endblocktranslate %}<br>
             {% endif %}
             {% if course.start_time_tue %}
-              {% blocktrans with start_time=course.start_time_tue|time:"H:i" end_time=course.end_time_tue|time:"H:i" %}Tuesdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+              {% blocktranslate with start_time=course.start_time_tue|time:"H:i" end_time=course.end_time_tue|time:"H:i" %}Tuesdays, from {{ start_time }} to {{ end_time }}{% endblocktranslate %}<br>
             {% endif %}
             {% if course.start_time_wed %}
-              {% blocktrans with start_time=course.start_time_wed|time:"H:i" end_time=course.end_time_wed|time:"H:i" %}Wednesdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+              {% blocktranslate with start_time=course.start_time_wed|time:"H:i" end_time=course.end_time_wed|time:"H:i" %}Wednesdays, from {{ start_time }} to {{ end_time }}{% endblocktranslate %}<br>
             {% endif %}
             {% if course.start_time_thu %}
-              {% blocktrans with start_time=course.start_time_thu|time:"H:i" end_time=course.end_time_thu|time:"H:i" %}Thursdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+              {% blocktranslate with start_time=course.start_time_thu|time:"H:i" end_time=course.end_time_thu|time:"H:i" %}Thursdays, from {{ start_time }} to {{ end_time }}{% endblocktranslate %}<br>
             {% endif %}
             {% if course.start_time_fri %}
-              {% blocktrans with start_time=course.start_time_fri|time:"H:i" end_time=course.end_time_fri|time:"H:i" %}Fridays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+              {% blocktranslate with start_time=course.start_time_fri|time:"H:i" end_time=course.end_time_fri|time:"H:i" %}Fridays, from {{ start_time }} to {{ end_time }}{% endblocktranslate %}<br>
             {% endif %}
             {% if course.start_time_sat %}
-              {% blocktrans with start_time=course.start_time_sat|time:"H:i" end_time=course.end_time_sat|time:"H:i" %}Saturdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+              {% blocktranslate with start_time=course.start_time_sat|time:"H:i" end_time=course.end_time_sat|time:"H:i" %}Saturdays, from {{ start_time }} to {{ end_time }}{% endblocktranslate %}<br>
             {% endif %}
             {% if course.start_time_sun %}
-              {% blocktrans with start_time=course.start_time_sun|time:"H:i" end_time=course.end_time_sun|time:"H:i" %}Sundays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+              {% blocktranslate with start_time=course.start_time_sun|time:"H:i" end_time=course.end_time_sun|time:"H:i" %}Sundays, from {{ start_time }} to {{ end_time }}{% endblocktranslate %}<br>
             {% endif %}
         </p>
       {% endif %}
     </header>
     <dl class="dl-horizontal">
-      <dt>{% trans "Activity" %}</dt><dd><a href="{{ course.activity.get_backend_url }}">{{ course.activity }}</a></dd>
-      <dt>{% trans "Course number" %}</dt><dd>{{ course.number }}</dd>
+      <dt>{% translate "Activity" %}</dt><dd><a href="{{ course.activity.get_backend_url }}">{{ course.activity }}</a></dd>
+      <dt>{% translate "Course number" %}</dt><dd>{{ course.number }}</dd>
 
-      <dt>{% trans "Instructors" %}</dt>
+      <dt>{% translate "Instructors" %}</dt>
       <dd>
         <ul class="list-unstyled">
           {% for instructor in course.instructors.all %}
             <li>
               <a href="{{ instructor.get_backend_url }}">{{ instructor.full_name }}</a>
               {% if FICHE_SALAIRE_MONTREUX %}
-                &mdash;<a href="{% url 'backend:pay-slip-montreux' course=course.pk instructor=instructor.pk %}"  target="_blank"><i class="icon-doc-text"></i> {% trans "Create pay slip" %}</a>
+                &mdash;<a href="{% url 'backend:pay-slip-montreux' course=course.pk instructor=instructor.pk %}"  target="_blank"><i class="icon-doc-text"></i> {% translate "Create pay slip" %}</a>
               {% endif %}
             </li>
           {% endfor %}
         </ul>
       </dd>
-      <dt>{% trans "Place" %}</dt><dd>{{ course.place  }}</dd>
+      <dt>{% translate "Place" %}</dt><dd>{{ course.place }}</dd>
       {% if course.comments %}
-        <dt>{% trans "Comments" %}</dt>
+        <dt>{% translate "Comments" %}</dt>
         <dd>{{ course.comments|safe }}</dd>
       {% endif %}
 
-      {% if course.is_course %}<dt>{% trans "Number of sessions" %}</dt><dd>{{ course.number_of_sessions }} cours</dd>{% endif %}
+      {% if course.is_course %}<dt>{% translate "Number of sessions" %}</dt><dd>{{ course.number_of_sessions }} cours</dd>{% endif %}
       {% if not NO_PAYMENT %}
-        <dt>{% trans "Price" %}</dt>
+        <dt>{% translate "Price" %}</dt>
       <dd>
         {% if USE_DIFFERENTIATED_PRICES %}
           <ul>
@@ -87,41 +87,41 @@
         {% endif %}
       </dd>
       {% endif %}
-      <dt>{% trans "School years" %}</dt>
-      <dd>{% for year in course.school_years_label %}{{year}}{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
+      <dt>{% translate "School years" %}</dt>
+      <dd>{% for year in course.school_years_label %}{{ year }}{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
       <dt></dt>
 
       {% if not NO_EXTRAS %}
-      <dt>{% trans "Extra questions" %}</dt>
+      <dt>{% translate "Extra questions" %}</dt>
       <dd>
         <ul class="list-unstyled">
           {% for extra in course.extra.all %}
             <li>{{ extra.question_label }}{% if extra.choices %}: <em>({{ extra.choices|join:", " }})</em>{% endif %}</li>
             {% empty %}
-            <li>{% trans "No extra question required" %}</li>
+            <li>{% translate "No extra question required" %}</li>
           {% endfor %}
         </ul>
       </dd>
       {% endif %}
     </dl>
     <p class="text-center">
-      <a href="{{ course.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a>
+      <a href="{{ course.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% translate "Edit" %}</a>
     </p>
 
-    <h4 class="content-title"><u>{% trans "Availability"%}</u></h4>
-    <p>{{ course.count_participants  }} participants <span class="pull-right strong"> {{ course.max_participants }} places</span></p>
+    <h4 class="content-title"><u>{% translate "Availability" %}</u></h4>
+    <p>{{ course.count_participants }} participants <span class="pull-right strong"> {{ course.max_participants }} places</span></p>
     <div class="progress" style="margin-bottom: 0;">
-      <div class="progress-bar {% if course.full %}progress-bar-danger{% elif course.minimal_participants_reached %}progress-bar-success{% else %}progress-bar-warning{% endif %}" style="width: {{ course.percentage_full }}%">{% if course.full %}{% trans "Course full" %}{% elif course.minimal_participants_reached %}{% trans "Minimal number of participants reached" %}{% else %}{% trans "Not enough participants" %}{% endif %}</div>
+      <div class="progress-bar {% if course.full %}progress-bar-danger{% elif course.minimal_participants_reached %}progress-bar-success{% else %}progress-bar-warning{% endif %}" style="width: {{ course.percentage_full }}%">{% if course.full %}{% translate "Course full" %}{% elif course.minimal_participants_reached %}{% translate "Minimal number of participants reached" %}{% else %}{% translate "Not enough participants" %}{% endif %}</div>
     </div>
     <p class="text-right"><small>{{ course.min_participants }} participants requis pour que l'activité ait lieu</small></p>
 
     {% if course.has_participants %}
-    <h4 class="content-title"><u>{% trans "Management"%}</u></h4>
+    <h4 class="content-title"><u>{% translate "Management" %}</u></h4>
     <div>
       {% if USE_ABSENCES %}
       <div style="display: inline-block; min-height: 50px">
         <a href="{{ course.get_backend_absences_url }}" class="btn btn-sm">
-          <i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}
+          <i class="icon-calendar"></i>&nbsp;{% translate "Manage absences" %}
         </a>
         <br><small>&nbsp;</small>
       </div>
@@ -129,28 +129,28 @@
 
       <div style="display: inline-block; min-height: 50px">
         <a href="{{ course.get_mail_instructors_url }}" class="btn btn-sm">
-          <i class="icon-tasks"></i>&nbsp;{% trans "Send infos to instructors" %}
+          <i class="icon-tasks"></i>&nbsp;{% translate "Send infos to instructors" %}
         </a>
         <br>
         <small style="padding-left: 13px">
-          {% trans "Last email sent on:" %} {{ course.last_instructor_email | date:"d F Y H:i" | default:"n/a" }}
+          {% translate "Last email sent on:" %} {{ course.last_instructor_email|date:"d F Y H:i"|default:"n/a" }}
         </small>
       </div>
 
       <div style="display: inline-block; min-height: 50px">
         <a href="{{ course.get_mail_confirmation_url }}" class="btn btn-sm">
-          <i class="icon-mail"></i>&nbsp;{% trans "Send convocation email" %}
+          <i class="icon-mail"></i>&nbsp;{% translate "Send convocation email" %}
         </a>
         <br>
          <small style="padding-left: 13px">
-          {% trans "Last email sent on:" %} {{ course.last_convocation_email | date:"d F Y H:i" | default:"n/a" }}
+          {% translate "Last email sent on:" %} {{ course.last_convocation_email|date:"d F Y H:i"|default:"n/a" }}
         </small>
       </div>
 
       {% if not course.is_camp %}
       <div style="display: inline-block; min-height: 50px">
         <a href="{{ course.get_js_export_url }}" class="btn btn-sm">
-          <i class="icon-doc"></i>&nbsp;{% trans "Get BDNS: J+S export file" %}
+          <i class="icon-doc"></i>&nbsp;{% translate "Get BDNS: J+S export file" %}
         </a>
         <br><small>&nbsp;</small>
       </div>
@@ -163,28 +163,28 @@
 
 
   <section>
-    <h2>{% trans "Registrations" %}</h2>
+    <h2>{% translate "Registrations" %}</h2>
     <a href="{{ course.get_xls_export_url }}" class="btn btn-default">
-      <i class="icon-file-excel"></i> {% trans "Export participants" %}
+      <i class="icon-file-excel"></i> {% translate "Export participants" %}
     </a>
     <hr/>
     <div class="btn-group">
-      <a class="btn btn-default selectall">{% trans "Select all" %}</a>
-      <a class="btn btn-default deselectall needs-select disabled">{% trans "Deselect all" %}</a>
+      <a class="btn btn-default selectall">{% translate "Select all" %}</a>
+      <a class="btn btn-default deselectall needs-select disabled">{% translate "Deselect all" %}</a>
     </div>
     <div class="btn-group">
-      <form class="mail" method="post" action="{%  url 'backend:mail-users' %}?prev={{ request.get_full_path | urlencode }}">{% csrf_token %}
+      <form class="mail" method="post" action="{% url 'backend:mail-users' %}?prev={{ request.get_full_path|urlencode }}">{% csrf_token %}
         <input type="hidden" name="data" value='' />
-        <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-mail"></i>&nbsp;&nbsp;{% trans "Send email..." %}</button>
+        <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-mail"></i>&nbsp;&nbsp;{% translate "Send email..." %}</button>
       </form>
     </div>
     <div class="btn-group">
       <form class="move" method="post" action="{% url 'backend:registrations-move' %}?course={{ course.id }}">{% csrf_token %}
-        <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-loop-alt"></i>&nbsp;&nbsp;{% trans "Move to another course..." %}</button>
+        <button type="submit" class="btn btn-secondary needs-select disabled"><i class="icon-loop-alt"></i>&nbsp;&nbsp;{% translate "Move to another course..." %}</button>
       </form>
     </div>
 
-   {% addtoblock  "js" %}
+   {% addtoblock "js" %}
     <script src="{% static 'js/vendor/datatables/jquery.dataTables.min.js' %}"></script>
     <script src="{% static 'js/vendor/datatables/dataTables.tableTools.min.js' %}"></script>
     <script src="{% static 'js/vendor/datatables/dataTables.bootstrap.js' %}"></script>
@@ -258,20 +258,20 @@
       <thead>
         <tr>
           {% if BIB_NUMBERS %}
-            <th class="bibnumber">{% trans "Bib number" %}</th>
+            <th class="bibnumber">{% translate "Bib number" %}</th>
           {% endif %}
-          <th class="child-name">{% trans "Name" %}</th>
-          {% if LIMIT_BY_SCHOOL_YEAR %}<th class="school">{% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}</th>{% endif %}
+          <th class="child-name">{% translate "Name" %}</th>
+          {% if LIMIT_BY_SCHOOL_YEAR %}<th class="school">{% if CHILD_SCHOOL %}{% translate "School infos" %}{% else %}{% translate "School year" %}{% endif %}</th>{% endif %}
           {% if EMERGENCY_NUMBER_MANDATORY %}
-            <th>{% trans "Emergency number" %}</th>
+            <th>{% translate "Emergency number" %}</th>
           {% else %}
-            <th>{% trans "Parents phone" %}</th>
+            <th>{% translate "Parents phone" %}</th>
           {% endif %}
-          <th>{% trans "Parents email" %}</th>
+          <th>{% translate "Parents email" %}</th>
           {% for extra in course.extra.all %}
             <th class="extra">{{ extra.question_label }}</th>
           {% endfor %}
-          <th>{% trans "Actions" %}</th>
+          <th>{% translate "Actions" %}</th>
         </tr>
       </thead>
       <tbody>
@@ -325,14 +325,14 @@
               </ul>
             </td>
           {% endif %}
-          <td>{{ registration.child.family.email | urlize }}</td>
+          <td>{{ registration.child.family.email|urlize }}</td>
           {% for extra_question in course.extra.all %}
             {% get_extra_info_td registration extra_question %}
           {% endfor %}
           <td>
             <ul class="list-unstyled">
-              <li class="text-nowrap"><a href="{{ registration.get_update_url }}?course={{ course.pk }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update registration" %}</a></li>
-              <li class="text-nowrap"><a href="{{ registration.get_delete_url }}" class="btn btn-sm"><i class="icon-cancel"></i>&nbsp;{% trans "Cancel registration" %}</a></li>
+              <li class="text-nowrap"><a href="{{ registration.get_update_url }}?course={{ course.pk }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% translate "Update registration" %}</a></li>
+              <li class="text-nowrap"><a href="{{ registration.get_delete_url }}" class="btn btn-sm"><i class="icon-cancel"></i>&nbsp;{% translate "Cancel registration" %}</a></li>
             </ul>
           </td>
 
@@ -345,27 +345,27 @@
 {% if ENABLE_WAITING_LISTS %}
 <hr>
   <section>
-    <h2>{% trans "Waiting list" %}</h2>
+    <h2>{% translate "Waiting list" %}</h2>
     <table class="table waiting-slots">
       <thead>
         <tr>
           {% if BIB_NUMBERS %}
-            <th class="bibnumber">{% trans "Bib number" %}</th>
+            <th class="bibnumber">{% translate "Bib number" %}</th>
           {% endif %}
-          <th class="child-name">{% trans "Name" %}</th>
+          <th class="child-name">{% translate "Name" %}</th>
           {% if LIMIT_BY_SCHOOL_YEAR %}
             <th class="school">
-              {% if CHILD_SCHOOL %}{% trans "School infos" %}{% else %}{% trans "School year" %}{% endif %}
+              {% if CHILD_SCHOOL %}{% translate "School infos" %}{% else %}{% translate "School year" %}{% endif %}
             </th>
           {% endif %}
           {% if EMERGENCY_NUMBER_MANDATORY %}
-            <th>{% trans "Emergency number" %}</th>
+            <th>{% translate "Emergency number" %}</th>
           {% else %}
-            <th>{% trans "Parents phone" %}</th>
+            <th>{% translate "Parents phone" %}</th>
           {% endif %}
-          <th>{% trans "Parents email" %}</th>
-          <th>{% trans "Other registrations" %}</th>
-          <th>{% trans "Actions" %}</th>
+          <th>{% translate "Parents email" %}</th>
+          <th>{% translate "Other registrations" %}</th>
+          <th>{% translate "Actions" %}</th>
         </tr>
       </thead>
       <tbody>
@@ -419,7 +419,7 @@
               </ul>
             </td>
           {% endif %}
-          <td>{{ waiting_slot.child.family.email | urlize }}</td>
+          <td>{{ waiting_slot.child.family.email|urlize }}</td>
           <td>
             {{ waiting_slot.child.registrations.count }} / {{ MAX_REGISTRATIONS_PER_CHILD }}
             <ul class="list-unstyled">
@@ -433,8 +433,8 @@
           </td>
           <td>
             <ul class="list-unstyled">
-              <li class="text-nowrap"><a href="{{ waiting_slot.get_transform_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Add to participants" %}</a></li>
-              <li class="text-nowrap"><a href="{{ waiting_slot.get_delete_url }}" class="btn btn-sm"><i class="icon-cancel"></i>&nbsp;{% trans "Remove from waiting list" %}</a></li>
+              <li class="text-nowrap"><a href="{{ waiting_slot.get_transform_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% translate "Add to participants" %}</a></li>
+              <li class="text-nowrap"><a href="{{ waiting_slot.get_delete_url }}" class="btn btn-sm"><i class="icon-cancel"></i>&nbsp;{% translate "Remove from waiting list" %}</a></li>
             </ul>
           </td>
 
@@ -445,7 +445,7 @@
               class="text-center"
               style="padding: 2em;"
           >
-            {% trans "No one in waiting list" %}
+            {% translate "No one in waiting list" %}
           </td>
         </tr>
       {% endfor %}

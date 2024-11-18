@@ -1,8 +1,8 @@
 {% extends "wizard.html" %}
-{% load i18n  sekizai_tags switzerland%}
+{% load i18n sekizai_tags switzerland %}
 
 
-{% block page_title %}{% if bill.total > 0 %}{% trans "Billing" %}{% else %}{% trans "Registrations validated" %}{% endif %}{% endblock page_title%}
+{% block page_title %}{% if bill.total > 0 %}{% translate "Billing" %}{% else %}{% translate "Registrations validated" %}{% endif %}{% endblock %}
 
 {% block content %}
   {% include "registrations/wizard-complete.html" %}
@@ -13,19 +13,19 @@
 <table class=" table table-striped">
   <thead>
     <tr>
-      <th>{% trans "Name" %}</th>
-      <th>{% trans "Activity" %}</th>
-      <th>{% trans "Period" %}</th>
-      <th>{% trans "Time" %}</th>
-      <th>{% trans "Place" %}</th>
-      <th>{% trans "Price" %}</th>
+      <th>{% translate "Name" %}</th>
+      <th>{% translate "Activity" %}</th>
+      <th>{% translate "Period" %}</th>
+      <th>{% translate "Time" %}</th>
+      <th>{% translate "Place" %}</th>
+      <th>{% translate "Price" %}</th>
 {% endif %}
     </tr>
   </thead>
 
  <tfoot>
     <tr>
-      <th colspan="5" style="text-align: right">{% trans "Total" %}</th>
+      <th colspan="5" style="text-align: right">{% translate "Total" %}</th>
       <th class="nowrap">{{ bill.total|money }}</th>
     </tr>
   </tfoot>
@@ -42,10 +42,10 @@
         <span class="nowrap">{{ registered.course.start_date }}</span> – <span class="nowrap">{{ registered.course.end_date }}</span>
       </td>
       <td>
-        {{ registered.course.day_name }} / <span class="nowrap">{{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</span>
+        {{ registered.course.day_name }} / <span class="nowrap">{{ registered.course.start_time|time:"H:i" }} - {{ registered.course.end_time|time:"H:i" }}</span>
       </td>
       <td>{{ registered.course.place }}</td>
-{% if not NO_PAYMENT  %}
+{% if not NO_PAYMENT %}
       <td class="nowrap">{{ registered.price|money }}</td>
 {% endif %}
     </tr>
@@ -60,7 +60,7 @@
 {% endif %}
 
 <p>Un e-mail avec les horaires de train/car et des informations complémentaires vous parviendrons par e-mail avant la fin de l'année.</p>
-  <p class="hidden-print text-center"><button class="btn btn-success btn-large print-button"><i class="icon icon-print"></i> {% trans "Print" %}</button></p>
+  <p class="hidden-print text-center"><button class="btn btn-success btn-large print-button"><i class="icon icon-print"></i> {% translate "Print" %}</button></p>
 
 
 {% addtoblock "js" %}
@@ -68,4 +68,4 @@
   $('.print-button').click(function(){window.print()});
 </script>
 {% endaddtoblock %}
-{% endblock %}​
+{% endblock content %}​

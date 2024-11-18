@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n duration switzerland sekizai_tags floppyforms %}
+{% load duration floppyforms i18n sekizai_tags switzerland %}
 
 {% block title %}{{ activity.name }} - Absences - {{ block.super }}{% endblock %}
-{% block page_title %}{{ activity.name }} - {% trans "Absences" %}{% endblock %}
+
+{% block page_title %}{{ activity.name }} - {% translate "Absences" %}{% endblock %}
 
 {% block content %}
 
@@ -10,7 +11,7 @@
 
   <form method="POST" class="form-inline">{% csrf_token %}
     {% form session_form using "floppyforms/layouts/bootstrap-inline.html" %}
-    <button type="submit" class="btn btn-secondary">{% trans "New session" %}</button>
+    <button type="submit" class="btn btn-secondary">{% translate "New session" %}</button>
   </form>
 </div>
 

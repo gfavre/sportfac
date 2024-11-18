@@ -1,4 +1,4 @@
-{% load switzerland i18n %}
+{% load i18n switzerland %}
 Madame, Monsieur,
 
 La paiement en ligne relatif aux activités suivantes n'ayant pas été fait dans les 7 jours

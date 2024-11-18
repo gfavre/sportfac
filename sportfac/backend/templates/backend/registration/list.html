@@ -2,8 +2,9 @@
 {% load i18n sekizai_tags %}
 
 
-{% block title %}{% trans "List registrations" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "List registrations" %}{% endblock %}
+{% block title %}{% translate "List registrations" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "List registrations" %}{% endblock %}
 
 {% block content %}
   {% addtoblock "js" %}
@@ -70,27 +71,27 @@
   {% endaddtoblock %}
 
   <a href="{% url 'backend:registration-create' %}" class="btn btn-success"><i
-      class="icon-plus"></i> {% trans "New registration" %}</a>
+      class="icon-plus"></i> {% translate "New registration" %}</a>
   {% if registration_list.count %}
     &nbsp;&nbsp;
     <a href="{% url 'backend:registrations-validate-all' %}" class="btn btn-secondary"><i
-        class="icon-check"></i> {% trans "Validate all registrations" %}</a>
+        class="icon-check"></i> {% translate "Validate all registrations" %}</a>
   {% endif %}
   <hr/>
   <table class="table">
     <thead>
     <tr>
-      <th class="text-nowrap course">{% trans "Course Identifier" %}</th>
-      <th class="text-nowrap activity">{% trans "Activity" %}</th>
-      <th class="text-nowrap day">{% trans "Day" %}</th>
-      <th class="text-nowrap start">{% trans "Start date" %}</th>
-      <th class="text-nowrap time">{% trans "Time" %}</th>
+      <th class="text-nowrap course">{% translate "Course Identifier" %}</th>
+      <th class="text-nowrap activity">{% translate "Activity" %}</th>
+      <th class="text-nowrap day">{% translate "Day" %}</th>
+      <th class="text-nowrap start">{% translate "Start date" %}</th>
+      <th class="text-nowrap time">{% translate "Time" %}</th>
       {% if BIB_NUMBERS %}
-        <th class="text-nowrap bibnumber">{% trans "Bib number" %}</th>
+        <th class="text-nowrap bibnumber">{% translate "Bib number" %}</th>
       {% endif %}
-      <th class="text-nowrap child">{% trans "Child" %}</th>
-      <th class="text-nowrap status">{% trans "Status" %}</th>
-      <th class="text-nowrap">{% trans "Action" %}</th>
+      <th class="text-nowrap child">{% translate "Child" %}</th>
+      <th class="text-nowrap status">{% translate "Status" %}</th>
+      <th class="text-nowrap">{% translate "Action" %}</th>
     </tr>
     </thead>
     {% for registration in registration_list %}
@@ -122,11 +123,11 @@
             {% if not registration.is_canceled %}
               <ul class="list-unstyled">
                 <li class="text-nowrap"><a href="{{ registration.details_url }}" class="btn btn-sm"><i
-                    class=" icon-help"></i>&nbsp;{% trans "Registration details" %}</a></li>
+                    class=" icon-help"></i>&nbsp;{% translate "Registration details" %}</a></li>
                 <li class="text-nowrap"><a href="{{ registration.update_url }}" class="btn btn-sm"><i
-                    class="icon-edit"></i>&nbsp;{% trans "Update registration" %}</a></li>
+                    class="icon-edit"></i>&nbsp;{% translate "Update registration" %}</a></li>
                 <li class="text-nowrap"><a href="{{ registration.delete_url }}" class="btn btn-sm"><i
-                    class="icon-cancel"></i>&nbsp;{% trans "Cancel registration" %}</a></li>
+                    class="icon-cancel"></i>&nbsp;{% translate "Cancel registration" %}</a></li>
               </ul>
             {% endif %}
           </td>

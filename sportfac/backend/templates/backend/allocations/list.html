@@ -1,13 +1,14 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags duration switzerland %}
+{% load duration i18n sekizai_tags switzerland %}
 {% get_current_language as LANGUAGE_CODE %}
 
-{% block title %}{% trans "List allocation accounts" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "List allocation accounts" %}{% endblock %}
+{% block title %}{% translate "List allocation accounts" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "List allocation accounts" %}{% endblock %}
 
 {% block content %}
 
-{% addtoblock  "js" %}    
+{% addtoblock "js" %}
 <script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
 <script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
 <script>
@@ -29,15 +30,15 @@ $(function () {
 
 
 
-<a href="{% url 'backend:allocation-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New allocation account" %}</a>
+<a href="{% url 'backend:allocation-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% translate "New allocation account" %}</a>
 <hr />
 <table class="table">
   <thead>
     <tr>
-      <th>{% trans "Account" %}</th>
-      <th>{% trans "Name" %}</th>
-      <th>{% trans "Period sum" %}</th>
-      <th>{% trans "Actions" %}</th>
+      <th>{% translate "Account" %}</th>
+      <th>{% translate "Name" %}</th>
+      <th>{% translate "Period sum" %}</th>
+      <th>{% translate "Actions" %}</th>
     </tr>
   </thead>
   {% for allocation_account in object_list %}
@@ -47,8 +48,8 @@ $(function () {
       <td>{{ allocation_account.get_total_transactions|money }}</td>
       <td>
         <ul class="list-unstyled">
-          <li class="text-nowrap"><a href="{{ allocation_account.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update account" %}</a></li>
-          <li class="text-nowrap"><a href="{{ allocation_account.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete account" %}</a></li>
+          <li class="text-nowrap"><a href="{{ allocation_account.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% translate "Update account" %}</a></li>
+          <li class="text-nowrap"><a href="{{ allocation_account.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% translate "Delete account" %}</a></li>
         </ul>
       </td>
     </tr>

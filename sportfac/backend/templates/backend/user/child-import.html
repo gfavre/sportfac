@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n crispy_forms_tags sekizai_tags %}
+{% load crispy_forms_tags i18n sekizai_tags %}
 
-{% block title %}{% trans "Import children" %} - {{ block.super }}{% endblock %}
-{% block page_title %}<i class="icon-doc-new"></i>&nbsp;&nbsp;{% trans "Import children" %}{% endblock %}
+{% block title %}{% translate "Import children" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}<i class="icon-doc-new"></i>&nbsp;&nbsp;{% translate "Import children" %}{% endblock %}
 
 {% block content %}
 
@@ -10,9 +11,9 @@
 {{ form.media }}
 {% endaddtoblock %}
 <div class="panel panel-info">
-  <div class="panel-heading">{% trans "About LAGAPEO file format" %}</div>
+  <div class="panel-heading">{% translate "About LAGAPEO file format" %}</div>
   <div class="panel-body">
-{% blocktrans %}
+{% blocktranslate %}
   <p>We accept files extracted from LAGAPEO. They should be in .xlsx format and have the mandatory
     columns named like this:</p>
   <ul>
@@ -31,7 +32,7 @@
     <li>"Etablissement" or "ETABLISSEMENT" or "ETABLISSEMENT_NOM": School name</li>
     <li>"Blacklist" or "BLACKLIST": Should the child be blacklisted from registrations</li>
   </ul>
-{% endblocktrans %}
+{% endblocktranslate %}
   </div>
 </div>
 <form action="" method="post"  enctype="multipart/form-data">
@@ -39,7 +40,7 @@
 
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-success btn-large">{% trans 'Import children' %}</button>
+      <button type="submit" class="btn btn-success btn-large">{% translate 'Import children' %}</button>
     </div>
   </div>
 </form>

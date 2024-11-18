@@ -10,7 +10,7 @@
       {{ label }}
       {% if field.field.required %}<span class="required">&nbsp;*</span>{% endif %}
       {% if field|id %}</label>{% endif %}
-    {% endblock %}
+    {% endblock label %}
     {% block field %}
       {% block widget %}{% formfield field %}{% endblock %}
       {% block errors %}{% include "floppyforms/errors.html" with errors=field.errors %}{% endblock %}
@@ -18,11 +18,11 @@
         {% if field.help_text %}
         <p class="help-block">{{ field.help_text }}</p>
         {% endif %}
-      {% endblock %}
+      {% endblock help_text %}
       {% block hidden_fields %}{% for field in hidden_fields %}{{ field.as_hidden }}{% endfor %}{% endblock %}
-    {% endblock %}
+    {% endblock field %}
     {% endwith %}
   </div>
   {% endfor %}
 </div>
-{% endblock %}
+{% endblock row %}

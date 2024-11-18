@@ -1,19 +1,19 @@
 {% extends "wizard.html" %}
-{% load i18n  sekizai_tags switzerland %}
+{% load i18n sekizai_tags switzerland %}
 
 {% block title %}{% if bill.total > 0 and not NO_PAYMENT %}
-  {% if ALTERNATIVE_BILLING_LABEL %}{{ ALTERNATIVE_BILLING_LABEL }}{% else %}{% trans "Billing" %}{% endif %}
-  {% else %}{% trans "Registrations validated" %}
+  {% if ALTERNATIVE_BILLING_LABEL %}{{ ALTERNATIVE_BILLING_LABEL }}{% else %}{% translate "Billing" %}{% endif %}
+  {% else %}{% translate "Registrations validated" %}
 {% endif %}
   - {{ block.super }}
-{% endblock %}
+{% endblock title %}
+
 {% block page_title %}
   {% if bill.total > 0 and not NO_PAYMENT %}
-    {% if ALTERNATIVE_BILLING_LABEL %}{{ ALTERNATIVE_BILLING_LABEL }}{% else %}{% trans "Billing" %}{% endif %}
-    {% else %}{% trans "Registrations validated" %}
+    {% if ALTERNATIVE_BILLING_LABEL %}{{ ALTERNATIVE_BILLING_LABEL }}{% else %}{% translate "Billing" %}{% endif %}
+    {% else %}{% translate "Registrations validated" %}
   {% endif %}
 {% endblock page_title %}
-
 
 {% block content %}
   {% if bill.total > 0 and not NO_PAYMENT %}
@@ -25,4 +25,4 @@
   <hr/>
  {% include "registrations/invoice-recap.html" %}
 
-{% endblock %}
+{% endblock content %}

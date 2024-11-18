@@ -1,14 +1,15 @@
 {% extends "base.html" %}
-{% load i18n sekizai_tags static humanize %}
+{% load humanize i18n sekizai_tags static %}
 
 
-{% block title %}{% trans "Success" %}{% endblock %}
-{% block page_title %}{% trans "Success" %}{% endblock %}
+{% block title %}{% translate "Success" %}{% endblock %}
+
+{% block page_title %}{% translate "Success" %}{% endblock %}
 
 {% block content %}
-<p class="lead">{% trans "Your appointment is registered. You should receive a reminder email shortly." %}</p>
+<p class="lead">{% translate "Your appointment is registered. You should receive a reminder email shortly." %}</p>
 <p class="text-center">
   <a href="{% url "appointments:register" %}"
-     class="btn btn-primary btn-large">{% trans "Register another appointment" %}</a>
+     class="btn btn-primary btn-large">{% translate "Register another appointment" %}</a>
 </p>
-{% endblock %}
+{% endblock content %}

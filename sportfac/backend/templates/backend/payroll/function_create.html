@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n crispy_forms_tags sekizai_tags %}
+{% load crispy_forms_tags i18n sekizai_tags %}
 
-{% block title %}{% trans "Create a new function" %} - {{ block.super }}{% endblock %}
-{% block page_title %}<i class="icon-adult"></i>&nbsp;&nbsp;{% trans "Create a new function" %}{% endblock %}
+{% block title %}{% translate "Create a new function" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}<i class="icon-adult"></i>&nbsp;&nbsp;{% translate "Create a new function" %}{% endblock %}
 
 {% block content %}
 
@@ -14,7 +15,7 @@
  {% crispy form %}
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-success btn-large"><i class="icon-plus"></i>&nbsp;{% trans 'Create function' %}</button>
+      <button type="submit" class="btn btn-success btn-large"><i class="icon-plus"></i>&nbsp;{% translate 'Create function' %}</button>
     </div>
   </div>
 </form>

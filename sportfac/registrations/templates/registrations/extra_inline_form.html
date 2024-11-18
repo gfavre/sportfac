@@ -1,4 +1,4 @@
-{% load i18n sekizai_tags json_tags %}
+{% load i18n json_tags sekizai_tags %}
 <div class="form-group">
   <label for="{{ registered.id }}-extra-{{ extra.id }}"
          class="col-sm-3 control-label">{{ extra.question_label }} {% if extra.mandatory %}
@@ -30,21 +30,21 @@
         <label class="radio-inline">
           <input type="radio" name="extra-{{ extra.id }}" value="1"
                  {% if extra.default == "1" %}checked{% endif %}
-                 {% if extra.mandatory %}required{% endif %}/> {% trans "yes" %}
+                 {% if extra.mandatory %}required{% endif %}/> {% translate "yes" %}
         </label>
         <label class="radio-inline">
           <input type="radio" name="extra-{{ extra.id }}" value="0"
-                 {% if extra.default == "0" %}checked{% endif %}> {% trans "no" %}
+                 {% if extra.default == "0" %}checked{% endif %}> {% translate "no" %}
         </label>
       {% elif extra.type == "IM" %}
         <label class="radio-inline">
           <input type="radio" name="extra-{{ extra.id }}-{{ registered.id }}" value="1"
                  {% if extra.default == "1" %}checked{% endif %}
-                 {% if extra.mandatory %}required{% endif %}/> {% trans "yes" %}
+                 {% if extra.mandatory %}required{% endif %}/> {% translate "yes" %}
         </label>
         <label class="radio-inline">
           <input type="radio" name="extra-{{ extra.id }}-{{ registered.id }}" value="0"
-                 {% if extra.default == "0" %}checked{% endif %}> {% trans "no" %}
+                 {% if extra.default == "0" %}checked{% endif %}> {% translate "no" %}
         </label>
       {% endif %}
     {% endif %}
@@ -73,7 +73,7 @@
     });
   </script>
   <div class="form-group hidden" id="extra-{{ extra.id }}-{{ registered.id }}-file-ctnr">
-    <label for="extra-{{ extra.id }}-{{ registered.id }}-file" class="col-sm-3 control-label">{% trans "Image" %} *</label>
+    <label for="extra-{{ extra.id }}-{{ registered.id }}-file" class="col-sm-3 control-label">{% translate "Image" %} *</label>
     <div class="col-sm-9">
       <input type="file" class="form-control-file" accept="image/*" capture="environment"
              name="image" id="extra-{{ extra.id }}-{{ registered.id }}-file">
@@ -88,7 +88,7 @@
 
   <script>
     $(document).ready(function () {
-      let prices = {{ price_modifiers | to_json }};
+      let prices = {{ price_modifiers|to_json }};
 
       let computePrice = function () {
         let getSum = function (total, num) {

@@ -1,5 +1,4 @@
-{% load i18n %}
-{% load duration switzerland extra sekizai_tags static matrix status mathfilters children %}
+{% load children duration extra i18n mathfilters matrix sekizai_tags static status switzerland %}
 {% addtoblock "css" %}
   <link rel="stylesheet" type="text/css"
         href="https://cdn.datatables.net/v/bs/dt-1.10.16/b-1.5.1/fc-3.2.4/fh-3.1.3/r-2.2.1/sc-1.4.3/sl-1.2.4/datatables.min.css"/>
@@ -117,36 +116,36 @@
 <table class="table table-bordered table-hover table-condensed absences table-fixed responsive">
   <thead>
   <tr>
-    <th class="all child-col" data-column-order="child.ordering_name">{% trans "Name" %}</th>
+    <th class="all child-col" data-column-order="child.ordering_name">{% translate "Name" %}</th>
     {% if BIB_NUMBERS %}
       <th class="rotated-heading all" data-column-order="child.bib_number">
-        <div><span>{% trans "Bib number" %}</span></div>
+        <div><span>{% translate "Bib number" %}</span></div>
       </th>
     {% endif %}
     {% if from_activity %}
       <th class="rotated-heading all" data-column-order="course.name">
-        <div><span>{% trans "Course" %}</span></div>
+        <div><span>{% translate "Course" %}</span></div>
       </th>
     {% endif %}
     {% if REGISTRATION_LEVELS %}
       <th class="rotated-heading min-desktop" data-column-order="child.announced_level">
-        <div><span>{% trans "Announced level" %}</span></div>
+        <div><span>{% translate "Announced level" %}</span></div>
       </th>
       <th class="rotated-heading min-tablet-l" data-column-order="child.before_level">
-        <div><span>{% trans "level -1" %}</span></div>
+        <div><span>{% translate "level -1" %}</span></div>
       </th>
       <th class="rotated-heading min-tablet-l" data-column-order="child.after_level">
-        <div><span>{% trans "level 0" %}</span></div>
+        <div><span>{% translate "level 0" %}</span></div>
       </th>
     {% endif %}
     {% if DISPLAY_CAR_NUMBER %}
       <th class="rotated-heading min-tablet-p" data-column-order="transport.name">
-        <div><span>{% trans "Bus" %}</span></div>
+        <div><span>{% translate "Bus" %}</span></div>
       </th>
     {% endif %}
     {% if DISPLAY_REGISTRATION_NOTE %}
       <th class="note min-desktop" data-column-order="transport.name">
-        {% trans "Note" %}
+        {% translate "Note" %}
       </th>
     {% endif %}
     {% for session_date in all_dates %}
@@ -191,14 +190,14 @@
           <th class="edit-session session-co"
               data-url="{{ session.get_api_url }}"
               data-instructor="{{ session.instructor.id }}"
-              data-date="{{ session.date | date:"d.m.Y" }}">
+              data-date="{{ session.date|date:"d.m.Y" }}">
             <a class="has-popover" role="button" data-toggle="popover"
-               title="{% trans "Edit session" %}"
+               title="{% translate "Edit session" %}"
                data-placement="top"
                data-trigger="click focus">
 
               <abbr
-                  title="{{ session.instructor.full_name | default:_("Unknown instructor") }}">{{ session.instructor.get_initials | default:"n/a" }}</abbr>
+                  title="{{ session.instructor.full_name|default:_("Unknown instructor") }}">{{ session.instructor.get_initials|default:"n/a" }}</abbr>
               <i class="icon-pencil hidden-print" style="clear:both;"></i>&nbsp;
             </a>
           </th>
@@ -283,7 +282,7 @@
             <div class="note">{{ level.note }}</div>
             <a class="note has-popover hidden-print" role="button" data-toggle="popover"
                data-trigger="click focus">
-              <i class="icon-pencil"></i>&nbsp;{% trans "Edit" %}
+              <i class="icon-pencil"></i>&nbsp;{% translate "Edit" %}
             </a>
           </span>
             </th>
@@ -325,7 +324,7 @@
 {% endif %}
 <p class="hidden-print text-center">
   <button class="btn btn-success btn-large" id="generate-pdf">
-    <i class="icon icon-file-pdf"></i> {% trans "Export to PDF" %}
+    <i class="icon icon-file-pdf"></i> {% translate "Export to PDF" %}
   </button>
 </p>
 
@@ -334,19 +333,19 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">{% trans "Remove session" %}</h4>
+        <h4 class="modal-title">{% translate "Remove session" %}</h4>
       </div>
        <div class="modal-body">
-         <p><strong id="removed-session-date"></strong>: {% trans "Are you sure you want to remove this session?" %}</p>
+         <p><strong id="removed-session-date"></strong>: {% translate "Are you sure you want to remove this session?" %}</p>
       </div>
       <div class="modal-footer">
         <button type="button" id="confirm-remove-session" class="btn btn-success" data-dismiss="modal">
           <i class="icon-ok"></i>
-          {% trans "Yes, remove it" %}
+          {% translate "Yes, remove it" %}
         </button>
         <button type="button" id="cancel-remove-session" class="btn btn-default" data-dismiss="modal">
           <i class="icon-cancel-circled"></i>
-          {% trans "No, keep the session" %}
+          {% translate "No, keep the session" %}
         </button>
       </div>
     </div>
@@ -357,19 +356,19 @@
 <script type="text/html" id="session-window">
   <form class="session-form hidden-print">
     <div class="form-group">
-      <label>{% trans "Instructor" %}</label>
+      <label>{% translate "Instructor" %}</label>
       <select name="instructor" class="form-control instructor">
         {% for instructor in course.instructors.all %}
           <option value="{{ instructor.id }}">
             {{ instructor.full_name }}
           </option>
         {% endfor %}
-        <option value="" selected>{% trans "other" %}</option>
+        <option value="" selected>{% translate "other" %}</option>
       </select>
     </div>
     {% if not EXPLICIT_SESSION_DATES %}
       <div class="form-group">
-        <label>{% trans "Date" %}</label>
+        <label>{% translate "Date" %}</label>
         <div class="input-group date datetimepicker session-update">
           <input type="text" class="form-control" name="date" required
                  data-date-format="DD.MM.YYYY"
@@ -381,12 +380,12 @@
       </div>
     {% endif %}
     <div class="form-group">
-      <button type="submit" class="form-control  btn-primary"><i class="icon-ok"></i> {% trans "Save" %}</button>
+      <button type="submit" class="form-control  btn-primary"><i class="icon-ok"></i> {% translate "Save" %}</button>
     </div>
     <div class="form-group text-right">
       <a href="#" class="session-delete hidden-print btn btn-sm btn-danger"
          data-session-url="{{ session.get_api_url }}">
-        <i class="icon-trash"></i> {% trans "Delete session" %}
+        <i class="icon-trash"></i> {% translate "Delete session" %}
       </a>
     </div>
 
@@ -397,32 +396,32 @@
   <form class="absence-form">
     <div class="radio">
       <label>
-        <input type="radio" name="status" id="present" value="present" checked>{% trans "Present" %}
+        <input type="radio" name="status" id="present" value="present" checked>{% translate "Present" %}
       </label>
     </div>
     <div class="radio">
       <label>
-        <input type="radio" name="status" id="absent" value="absent">{% trans "Absent" %}
+        <input type="radio" name="status" id="absent" value="absent">{% translate "Absent" %}
       </label>
     </div>
     <div class="radio">
       <label>
-        <input type="radio" name="status" id="excused" value="excused">{% trans "Excused" %}
+        <input type="radio" name="status" id="excused" value="excused">{% translate "Excused" %}
       </label>
     </div>
     <div class="radio">
       <label>
-        <input type="radio" name="status" id="canceled" value="canceled">{% trans "Canceled course" %}
+        <input type="radio" name="status" id="canceled" value="canceled">{% translate "Canceled course" %}
       </label>
     </div>
     <div class="radio">
       <label>
-        <input type="radio" name="status" id="medical" value="medical">{% trans "Medical certificate" %}
+        <input type="radio" name="status" id="medical" value="medical">{% translate "Medical certificate" %}
       </label>
     </div>
     <div class="radio">
       <label>
-        <input type="radio" name="status" id="late" value="late">{% trans "Late" %}
+        <input type="radio" name="status" id="late" value="late">{% translate "Late" %}
       </label>
     </div>
   </form>
@@ -441,14 +440,14 @@
 <script type="text/html" id="before-level-window">
   <form class="before-level-form">
     <input type="text" class="form-control" name="level">
-    <input type="submit" class="form-control btn-primary" value="{% trans "Save" %}">
+    <input type="submit" class="form-control btn-primary" value="{% translate "Save" %}">
   </form>
 </script>
 
 <script type="text/html" id="note-window">
   <form class="note-form">
     <textarea></textarea>
-    <input type="submit" class="form-control  btn-primary" value="{% trans "Save" %}">
+    <input type="submit" class="form-control  btn-primary" value="{% translate "Save" %}">
   </form>
 </script>
 
@@ -523,7 +522,7 @@
           buttons: [
             {
               extend: 'selected',
-              text: '<i class="icon-loop-alt"></i>&nbsp;&nbsp;{% trans "Move to another course..." %}',
+              text: '<i class="icon-loop-alt"></i>&nbsp;&nbsp;{% translate "Move to another course..." %}',
               action: function () {
                 moveChildren();
               }
@@ -596,27 +595,27 @@
             let classes = '';
             switch (response.status) {
               case 'present':
-                label = "{% trans 'P' %}";
+                label = "{% translate 'P' %}";
                 classes = "success present";
                 break;
               case 'absent':
-                label = "{% trans 'A' %}";
+                label = "{% translate 'A' %}";
                 classes = "danger absent";
                 break;
               case 'excused':
-                label = "{% trans 'E' %}";
+                label = "{% translate 'E' %}";
                 classes = "danger excused";
                 break;
               case 'canceled':
-                label = "{% trans 'AA' %}";
+                label = "{% translate 'AA' %}";
                 classes = "warning canceled";
                 break;
               case 'medical':
-                label = "{% trans 'MC' %}";
+                label = "{% translate 'MC' %}";
                 classes = "danger medical";
                 break;
               case 'late':
-                label = "{% trans 'LA' %}";
+                label = "{% translate 'LA' %}";
                 classes = "info late";
                 break;
             }

@@ -1,14 +1,14 @@
 {% extends "wizard/base.html" %}
-{% load crispy_forms_tags sekizai_tags i18n %}
+{% load crispy_forms_tags i18n sekizai_tags %}
 
 {% block wizard_content %}
 <p class="lead text-center" style="line-height: 1.75em; ">
-  {% trans "You already have an account?" %}<br>
+  {% translate "You already have an account?" %}<br>
   <a href="{{ LOGIN_URL }}?next={% url 'wizard:entry_point' %}" class="btn btn-primary">
-    <i class="icon-user icon-white"></i> {% trans "login" %}
+    <i class="icon-user icon-white"></i> {% translate "login" %}
   </a>
   <br>
-  {% trans "or you can fill in the following form:" %}
+  {% translate "or you can fill in the following form:" %}
 </p>
   <form action="." method="post" class="form-horizontal" role="form">
     {% crispy form %}
@@ -19,11 +19,11 @@
           {% if previous_step %}
           <li class="previous">
             <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span>
-              {% block previous_label %}{% trans "Previous" %}{% endblock %}</a>
+              {% block previous_label %}{% translate "Previous" %}{% endblock %}</a>
           </li>
         {% endif %}
         <li class="next">
-          {% trans "Next" as default_next %}
+          {% translate "Next" as default_next %}
           <button type="submit" class="btn btn-primary" style="font-size: 1.25em;">
             <strong>{{ next_step.link_display|default:default_next }} <span aria-hidden="true">→</span></strong>
           </button>
@@ -32,4 +32,4 @@
     </nav>
   </form>
   {% addtoblock "js" %}{{ form.media }}{% endaddtoblock %}
-{% endblock %}
+{% endblock wizard_content %}

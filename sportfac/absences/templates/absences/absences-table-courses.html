@@ -1,5 +1,4 @@
-{% load i18n %}
-{% load duration switzerland extra sekizai_tags static matrix status mathfilters children %}
+{% load children duration extra i18n mathfilters matrix sekizai_tags static status switzerland %}
 {% addtoblock "css" %}
   {% comment %}Ne pas utiliser  sekizai a de la peine si static_url est absolu en prod {% endcomment %}
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/dt-1.10.16/b-1.5.1/fc-3.2.4/fh-3.1.3/r-2.2.1/sc-1.4.3/sl-1.2.4/datatables.min.css"/>
@@ -95,19 +94,19 @@ table.dataTable tbody td.selected .popover {
   <table class="table table-bordered table-hover table-condensed absences table-fixed responsive">
     <thead>
       <tr>
-        <th class="all child-col">{% trans "Child" %}</th>
+        <th class="all child-col">{% translate "Child" %}</th>
         {% if BIB_NUMBERS %}
-        <th class="rotated-heading all bib-number-col"><div><span>{% trans "Bib number" %}</span></div></th>
+        <th class="rotated-heading all bib-number-col"><div><span>{% translate "Bib number" %}</span></div></th>
         {% endif %}
-        <th class="min-mobile-l course-col">{% trans "Course" %}</th>
+        <th class="min-mobile-l course-col">{% translate "Course" %}</th>
         {% if REGISTRATION_LEVELS %}
-          <th class="min-desktop rotated-heading level-col"><div><span>{% trans "Announced level" %}</span></div></th>
-          <th class="min-tablet-l rotated-heading level-col"><div><span>{% trans "level -1" %}</span></div></th>
-          <th class="min-tablet-l rotated-heading level-col"><div><span>{% trans "level 0" %}</span></div></th>
+          <th class="min-desktop rotated-heading level-col"><div><span>{% translate "Announced level" %}</span></div></th>
+          <th class="min-tablet-l rotated-heading level-col"><div><span>{% translate "level -1" %}</span></div></th>
+          <th class="min-tablet-l rotated-heading level-col"><div><span>{% translate "level 0" %}</span></div></th>
         {% endif %}
         {% if DISPLAY_REGISTRATION_NOTE %}
         <th class="min-desktop note note-col">
-          {% trans "Note" %}
+          {% translate "Note" %}
         </th>
         {% endif %}
         {% for session_date in all_dates %}
@@ -142,7 +141,7 @@ table.dataTable tbody td.selected .popover {
             <a class="course has-popover hidden-print" role="button"
                data-toggle="popover"
                data-trigger="click focus">
-              <i class="icon-pencil"></i> {% trans "Switch course" %}
+              <i class="icon-pencil"></i> {% translate "Switch course" %}
             </a>
           </span>
         </th>
@@ -192,7 +191,7 @@ table.dataTable tbody td.selected .popover {
             <a class="note has-popover hidden-print" role="button"
                data-toggle="popover"
                data-trigger="click focus">
-              <i class="icon-pencil"></i>&nbsp;{% trans "Edit note" %}
+              <i class="icon-pencil"></i>&nbsp;{% translate "Edit note" %}
             </a>
           </span>
         </th>
@@ -225,7 +224,7 @@ table.dataTable tbody td.selected .popover {
   </table>
 
 <p class="hidden-print text-center">
-  <a class="btn btn-success btn-large" href="{{ request.get_full_path }}&pdf=1"><i class="icon icon-file-pdf"></i> {% trans "Export to PDF" %}</a>
+  <a class="btn btn-success btn-large" href="{{ request.get_full_path }}&pdf=1"><i class="icon icon-file-pdf"></i> {% translate "Export to PDF" %}</a>
 </p>
 
 {% addtoblock "js" %}
@@ -251,40 +250,40 @@ table.dataTable tbody td.selected .popover {
 <script type="text/html" id="note-window">
   <form class="note-form">
     <textarea></textarea>
-    <input type="submit" class="form-control  btn-primary" value="{% trans "Save" %}">
+    <input type="submit" class="form-control  btn-primary" value="{% translate "Save" %}">
   </form>
 </script>
 <script type="text/html" id="status-window">
   <form>
     <div class="radio">
       <label>
-        <input type="radio" name="status" id="present" value="present">{% trans "Present" %}
+        <input type="radio" name="status" id="present" value="present">{% translate "Present" %}
       </label>
     </div>
      <div class="radio">
       <label>
-        <input type="radio" name="status" id="absent" value="absent">{% trans "Absent" %}
+        <input type="radio" name="status" id="absent" value="absent">{% translate "Absent" %}
       </label>
     </div>
      <div class="radio">
       <label>
-        <input type="radio" name="status" id="excused" value="excused">{% trans "Excused" %}
+        <input type="radio" name="status" id="excused" value="excused">{% translate "Excused" %}
       </label>
     </div>
     <div class="radio">
       <label>
-        <input type="radio" name="status" id="canceled" value="canceled">{% trans "Canceled course" %}
+        <input type="radio" name="status" id="canceled" value="canceled">{% translate "Canceled course" %}
       </label>
     </div>
 
     <div class="radio">
       <label>
-        <input type="radio" name="status" id="medical" value="medical">{% trans "Medical certificate" %}
+        <input type="radio" name="status" id="medical" value="medical">{% translate "Medical certificate" %}
       </label>
     </div>
     <div class="radio">
       <label>
-        <input type="radio" name="status" id="late" value="late">{% trans "Late" %}
+        <input type="radio" name="status" id="late" value="late">{% translate "Late" %}
       </label>
     </div>
   </form>
@@ -326,27 +325,27 @@ jQuery(function($){
         var classes = '';
         switch(response.status){
           case 'present':
-            label = "{% trans 'P' %}";
+            label = "{% translate 'P' %}";
             classes = "success present";
             break;
           case 'absent':
-            label = "{% trans 'A' %}";
+            label = "{% translate 'A' %}";
             classes = "danger absent";
             break;
           case 'excused':
-            label = "{% trans 'E' %}";
+            label = "{% translate 'E' %}";
             classes = "warning excused";
             break;
           case 'canceled':
-            label = "{% trans 'AA' %}";
+            label = "{% translate 'AA' %}";
             classes = "warning canceled";
             break;
           case 'medical':
-            label = "{% trans 'MC' %}";
+            label = "{% translate 'MC' %}";
             classes = "danger medical";
             break;
           case 'late':
-            label = "{% trans 'LA' %}";
+            label = "{% translate 'LA' %}";
             classes = "info late";
             break;
         }
