@@ -8,11 +8,11 @@ from django.utils.timezone import now
 from django.utils.translation import gettext as _
 from django.views.generic import DeleteView, ListView, TemplateView, UpdateView, View
 
+from appointments.forms import AppointmentForm
 from appointments.models import Appointment, AppointmentSlot
 from appointments.resources import AppointmentResource
 from mailer.forms import GenericEmailForm
 from mailer.models import GenericEmail
-
 from ..forms import FlatPageForm
 from .mixins import ExcelResponseMixin, FullBackendMixin
 
@@ -38,6 +38,15 @@ class AppointmentsListView(FullBackendMixin, ListView):
         return AppointmentSlot.objects.filter(start__gte=min_date).prefetch_related(
             "appointments", "appointments__child"
         )
+
+
+class AppointmentUpdateView(SuccessMessageMixin, FullBackendMixin, UpdateView):
+    form_class = AppointmentForm
+    model = Appointment
+    pk_url_kwarg = "appointment"
+    success_url = reverse_lazy("backend:appointments-list")
+    success_message = _("Appointment has been updated.")
+    template_name = "appointments/backend/update.html"
 
 
 class AppointmentDeleteView(SuccessMessageMixin, FullBackendMixin, DeleteView):

@@ -61,6 +61,7 @@ from .site_views import AppointmentDeleteView  # noqa F401
 from .site_views import AppointmentsExportView  # noqa F401
 from .site_views import AppointmentsListView  # noqa F401
 from .site_views import AppointmentsManagementView  # noqa F401
+from .site_views import AppointmentUpdateView  # noqa F401
 from .site_views import FlatPageListView  # noqa F401
 from .site_views import FlatPageUpdateView  # noqa F401
 from .site_views import GenericEmailListView  # noqa F401

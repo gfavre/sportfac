@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from crispy_forms.helper import FormHelper
 
 from registrations.models import Child
+from .models import Appointment, AppointmentSlot
 
 
 class RentalSelectionForm(forms.Form):
@@ -49,3 +50,24 @@ class RentalSelectionForm(forms.Form):
             self.initial["children"] = initial_rentals
         if disabled:
             self.fields["children"].widget.attrs["disabled"] = "disabled"
+
+
+class AppointmentForm(forms.ModelForm):
+    class Meta:
+        model = Appointment
+        fields = ["child", "slot"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["child"].disabled = True
+        self.fields["slot"].queryset = (
+            AppointmentSlot.objects.with_available_places()
+            .filter(count_available_places__gt=0)
+            .order_by("start", "end")
+        )
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False
+        self.helper.form_group_wrapper_class = "row"
+        self.helper.form_class = "form-horizontal"
+        self.helper.label_class = "col-sm-2"
+        self.helper.field_class = "col-sm-10"
