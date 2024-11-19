@@ -1,4 +1,4 @@
-from datetime import timedelta
+# from datetime import timedelta
 
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.messages.views import SuccessMessageMixin
@@ -33,11 +33,11 @@ class AppointmentsListView(FullBackendMixin, ListView):
     model = AppointmentSlot
     template_name = "appointments/backend/list.html"
 
-    def get_queryset(self):
-        min_date = now() - timedelta(hours=4)
-        return AppointmentSlot.objects.filter(start__gte=min_date).prefetch_related(
-            "appointments", "appointments__child"
-        )
+    # def get_queryset(self):
+    #    min_date = now() - timedelta(hours=4)
+    #    return AppointmentSlot.objects.filter(start__gte=min_date).prefetch_related(
+    #        "appointments", "appointments__child"
+    #    )
 
 
 class AppointmentUpdateView(SuccessMessageMixin, FullBackendMixin, UpdateView):
