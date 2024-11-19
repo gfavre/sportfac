@@ -1,0 +1,21 @@
+{% extends "backend/base.html" %}
+{% load crispy_forms_tags duration i18n sekizai_tags switzerland %}
+
+{% block title %}{% translate "Edit appointment" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Edit appointment" %}{% endblock %}
+
+{% get_current_language as LANGUAGE_CODE %}
+
+
+
+{% block content %}
+<form class="form-horizontal" method="post">
+  {% crispy form %}
+<div class="row">
+  <div class="col-sm-offset-2 col-sm-10">
+    <button type="submit" class="btn btn-success">&nbsp;{% translate 'Save' %}</button>
+  </div>
+</div>
+  </form>
+{% endblock content %}

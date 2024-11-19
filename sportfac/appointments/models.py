@@ -22,6 +22,11 @@ class AppointmentType(TimeStampedModel):
         return self.label
 
 
+class AppointmentSlotManager(models.Manager):
+    def with_available_places(self):
+        return self.annotate(count_available_places=models.F("places") - models.Count("appointments"))
+
+
 class AppointmentSlot(TimeStampedModel):
     APPOINTMENT_TYPES = (
         ("pickup", _("Pickup")),
@@ -33,6 +38,8 @@ class AppointmentSlot(TimeStampedModel):
     end = models.DateTimeField()
     appointment_type = models.CharField(choices=APPOINTMENT_TYPES, max_length=10, default=APPOINTMENT_TYPES[0][0])
 
+    objects = AppointmentSlotManager()
+
     class Meta:
         ordering = ("start", "end")
         verbose_name = _("Appointment slot")
@@ -40,6 +47,8 @@ class AppointmentSlot(TimeStampedModel):
 
     @property
     def available_places(self):
+        if hasattr(self, "count_available_places"):
+            return self.count_available_places
         if hasattr(self, "appointments"):
             return self.places - self.appointments.count()
         return self.places
@@ -55,9 +64,12 @@ class AppointmentSlot(TimeStampedModel):
     def __str__(self):
         local_start = timezone.localtime(self.start)
         local_end = timezone.localtime(self.end)
+        places_str = ""
+        if self.places:
+            places_str = _(" - %(remaining_places)d remaining places") % {"remaining_places": self.available_places}
         if local_start.day == local_end.day:
-            return local_start.strftime("%d.%m.%Y, %H:%M-") + local_end.strftime("%H:%M")
-        return local_start.strftime("%d.%m.%Y %H:%M") + " - " + local_end.strftime("%d.%m.%Y %H:%M")
+            return local_start.strftime("%d.%m.%Y, %H:%M-") + local_end.strftime("%H:%M") + places_str
+        return local_start.strftime("%d.%m.%Y %H:%M") + " - " + local_end.strftime("%d.%m.%Y %H:%M") + places_str
 
 
 class Rental(TimeStampedModel):
@@ -136,6 +148,10 @@ class Appointment(TimeStampedModel):
     @property
     def get_backend_delete_url(self):
         return reverse("backend:appointment-delete", kwargs={"appointment": self.pk})
+
+    @property
+    def get_backend_edit_url(self):
+        return reverse("backend:appointment-update", kwargs={"appointment": self.pk})
 
     def save(self, *args, **kwargs):
         if self.child and not self.family:

@@ -255,6 +255,11 @@ site_patterns = [
         name="appointments-export",
     ),
     path(
+        "appointments/<int:appointment>/update",
+        view=views.AppointmentUpdateView.as_view(),
+        name="appointment-update",
+    ),
+    path(
         "appointments/<int:appointment>/delete",
         view=views.AppointmentDeleteView.as_view(),
         name="appointment-delete",
