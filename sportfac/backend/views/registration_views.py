@@ -508,6 +508,16 @@ class BillListView(FullBackendMixin, ListView):
         return self._generate_export_response(qs, filename)
 
 
+class BillExportView(FullBackendMixin, ExcelResponseMixin, View):
+    filename = _("invoices")
+
+    def get_resource(self):
+        return BillResource()
+
+    def get(self, request, *args, **kwargs):
+        return self.render_to_response()
+
+
 class BillDetailView(FullBackendMixin, BillMixin, PaymentMixin, DetailView):
     """
     Display the bill: admin view

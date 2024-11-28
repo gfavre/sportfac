@@ -104,6 +104,12 @@
                   <i class="icon-credit-card-1"></i>&nbsp;&nbsp;{% translate "All bills" %}
                 </a>
               </li>
+               <li>
+              <a href="{% url 'backend:bill-export' %}">
+                <i class="icon-file-excel"></i>
+                &nbsp;&nbsp;{% translate "Export all invoices" %}
+              </a>
+            <li>
             {% endif %}
 
             {% if ENABLE_ALLOCATION_ACCOUNTS and user.is_full_manager %}

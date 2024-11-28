@@ -41,6 +41,7 @@ from .payroll_views import FunctionUpdateView  # noqa F401
 from .payroll_views import PayrollReportView  # noqa F401
 from .payroll_views import SupervisorRolesList  # noqa F401
 from .registration_views import BillDetailView  # noqa F401
+from .registration_views import BillExportView  # noqa F401
 from .registration_views import BillListView  # noqa F401
 from .registration_views import BillUpdateView  # noqa F401
 from .registration_views import RegistrationCreateView  # noqa F401
