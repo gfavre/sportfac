@@ -18,13 +18,18 @@ class ExtraNeedField(fields.Field):
     def __init__(self, *args, **kwargs):
         self.extra_need = kwargs.pop("extra_need")
         kwargs["column_name"] = kwargs.pop("column_name", self.extra_need.question_label)
+        if self.extra_need.is_boolean or self.extra_need.is_image:
+            kwargs["widget"] = widgets.BooleanWidget()
         super().__init__(*args, **kwargs)
 
     def get_value(self, obj):
         value = None
-        for question in obj.extra_infos.all():
-            if question.key == self.extra_need:
-                value = question.value
+        for response in obj.extra_infos.all():
+            if response.key == self.extra_need:
+                if response.key.is_boolean or response.key.is_image:
+                    value = response.is_true
+                else:
+                    value = response.value
         return value
 
 
@@ -55,6 +60,8 @@ class RegistrationResource(resources.ModelResource):
     after_level = fields.Field(attribute="child", column_name=_("Level 0"))
     paid = fields.Field(attribute="paid", column_name=_("Paid"), widget=widgets.BooleanWidget())
 
+    rental = fields.Field(attribute="child", column_name=_("Rental"), widget=widgets.BooleanWidget())
+
     class Meta:
         model = Registration
         fields = (
@@ -83,6 +90,7 @@ class RegistrationResource(resources.ModelResource):
             "parent_country",
             "before_level",
             "after_level",
+            "rental",
         )
         export_order = fields
 
@@ -112,6 +120,8 @@ class RegistrationResource(resources.ModelResource):
             del self.fields["paid"]
             del self.fields["payment_method"]
             del self.fields["invoice_identifier"]
+        if not settings.KEPCHUP_USE_APPOINTMENTS:
+            del self.fields["rental"]
 
     def dehydrate_child_id(self, obj):
         if settings.KEPCHUP_IMPORT_CHILDREN:
@@ -169,11 +179,11 @@ class RegistrationResource(resources.ModelResource):
         except ChildActivityLevel.DoesNotExist:
             return ""
 
-    def export(self, queryset=None, *args, **kwargs):
-        """
-        Exports a resource.
-        """
+    def dehydrate_rental(self, obj):
+        child = obj.child
+        return child.rentals.exists()
 
+    def export(self, queryset=None, *args, **kwargs):
         self.before_export(queryset, *args, **kwargs)
 
         if queryset is None:
