@@ -67,6 +67,8 @@ from .site_views import FlatPageListView  # noqa F401
 from .site_views import FlatPageUpdateView  # noqa F401
 from .site_views import GenericEmailListView  # noqa F401
 from .site_views import GenericEmailUpdateView  # noqa F401
+from .site_views import WizardStepListView  # noqa F401
+from .site_views import WizardStepUpdateView  # noqa F401
 from .teacher_views import BuildingCreateView  # noqa F401
 from .teacher_views import BuildingDeleteView  # noqa F401
 from .teacher_views import BuildingDetailView  # noqa F401

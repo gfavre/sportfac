@@ -13,6 +13,8 @@ from appointments.models import Appointment, AppointmentSlot
 from appointments.resources import AppointmentResource
 from mailer.forms import GenericEmailForm
 from mailer.models import GenericEmail
+from wizard.forms import WizardStepForm
+from wizard.models import WizardStep
 from ..forms import FlatPageForm
 from .mixins import ExcelResponseMixin, FullBackendMixin
 
@@ -109,3 +111,18 @@ class GenericEmailUpdateView(SuccessMessageMixin, FullBackendMixin, UpdateView):
             self.object.body_template.content = message_body
         self.object.body_template.save()
         return super().form_valid(form)
+
+
+class WizardStepListView(FullBackendMixin, ListView):
+    model = WizardStep
+    template_name = "backend/wizard/step_list.html"
+
+    def get_queryset(self):
+        return super().get_queryset().filter(editable_in_backend=True)
+
+
+class WizardStepUpdateView(FullBackendMixin, UpdateView):
+    model = WizardStep
+    form_class = WizardStepForm
+    template_name = "backend/wizard/step_update.html"
+    success_url = reverse_lazy("backend:wizard-steps")
