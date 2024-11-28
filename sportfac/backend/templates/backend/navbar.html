@@ -264,6 +264,16 @@
                 &nbsp;&nbsp;{% translate "Generic emails" %}
               </a>
             </li>
+            <li class="divider"></li>
+          <li>
+                <a href="{% url 'backend:wizard-steps' %}">
+                  <i class="icon-server"></i>
+                  &nbsp;&nbsp;{% translate "Manage registration steps" %}
+                </a>
+              </li>
+
+
+
             {% if USE_APPOINTMENTS %}
               <li class="divider"></li>
               <li>
