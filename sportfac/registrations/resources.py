@@ -247,16 +247,31 @@ class BillResource(resources.ModelResource):
     payment_date = fields.Field(
         attribute="payment_date", column_name=_("Payment date"), widget=widgets.DateWidget(format="%d.%m.%Y")
     )
+    payment_method = fields.Field(attribute="payment_method", column_name=_("Payment method"))
     parent = fields.Field(attribute="family", column_name=_("Parent"))
-    children = fields.Field(attribute="registrations", column_name=_("Children"))
+    lines = fields.Field(attribute="total", column_name=_("Lines"))
 
     class Meta:
         model = Bill
-        fields = ("billing_identifier", "amount", "date", "due_date", "paid", "payment_date", "parent", "children")
+        fields = (
+            "billing_identifier",
+            "amount",
+            "date",
+            "due_date",
+            "payment_method",
+            "paid",
+            "payment_date",
+            "parent",
+            "lines",
+        )
         export_order = fields
 
-    def dehydrate_children(self, obj):
-        return ", ".join([registration.child.full_name for registration in obj.registrations.all()])
+    def dehydrate_lines(self, obj):
+        lines = [f"{line.child} ⇒ {line.course.short_name}) (CHF {line.price})" for line in obj.registrations.all()]
+        if settings.KEPCHUP_USE_APPOINTMENTS:
+            label = _("Rental")
+            lines += [f"{label}: {line.child.full_name} (CHF {line.amount})" for line in obj.rentals.all()]
+        return "; ".join(lines)
 
     def dehydrate_parent(self, obj):
         return obj.family.full_name
@@ -267,21 +282,14 @@ class BillResource(resources.ModelResource):
         return ""
 
     def export(self, queryset=None, *args, **kwargs):
-        """
-        Exports a resource.
-        """
-
         self.before_export(queryset, *args, **kwargs)
-
         if queryset is None:
             queryset = self.get_queryset()
         headers = self.get_export_headers()
         data = tablib.Dataset(headers=headers)
         for obj in queryset:
             data.append(self.export_resource(obj))
-
         self.after_export(queryset, data, *args, **kwargs)
-
         return data
 
 
