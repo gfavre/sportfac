@@ -137,6 +137,7 @@ registrations_patterns = [
     path("bills", view=views.BillListView.as_view(), name="bill-list"),
     path("bills/<int:pk>/", view=views.BillDetailView.as_view(), name="bill-detail"),
     path("bills/<int:pk>/pay", view=views.BillUpdateView.as_view(), name="bill-update"),
+    path("bills/export", view=views.BillExportView.as_view(), name="bill-export"),
     path("transport", view=views.TransportListView.as_view(), name="transport-list"),
     path("transport/<int:pk>/", view=views.TransportDetailView.as_view(), name="transport-detail"),
     path(
