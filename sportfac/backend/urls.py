@@ -315,6 +315,11 @@ waiting_slots_patterns = [
     ),
 ]
 
+wizard_steps_patterns = [
+    path("", view=views.WizardStepListView.as_view(), name="wizard-steps"),
+    path("<slug:slug>/update", view=views.WizardStepUpdateView.as_view(), name="wizard-step-update"),
+]
+
 urlpatterns = [
     path("", views.HomePageView.as_view(), name="home"),
     path("activity/", include(activities_patterns)),
@@ -331,4 +336,5 @@ urlpatterns = [
     path("site/", include(site_patterns)),
     path("year/", include(years_patterns)),
     path("waiting-slots/", include(waiting_slots_patterns)),
+    path("wizard-steps/", include(wizard_steps_patterns)),
 ]

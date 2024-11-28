@@ -12,41 +12,32 @@ from sportfac.models import TimeStampedModel
 
 
 class WizardStep(TimeStampedModel):
-    STEP_TYPE_CHOICES = [
-        ("always", "Always visible"),
-        ("conditional", "Visible based on conditions"),
-    ]
-
-    title = models.CharField(max_length=50)
-    subtitle = models.CharField(max_length=50, blank=True)
-    lead = models.CharField(max_length=255, blank=True)
+    title = models.CharField(max_length=50, help_text=_("The title is used in navigation and on top of the page"))
+    subtitle = models.CharField(
+        max_length=50,
+        blank=True,
+        help_text=_("Displayed next to the title, in smaller caps. Not visible in navigation."),
+    )
+    lead = models.CharField(max_length=255, blank=True, help_text=_("Big text displayed below the title."))
     link_display = models.CharField(max_length=50, blank=True)
-    slug = models.SlugField(max_length=50, unique=True, blank=True)
+    description = RichTextUploadingField(
+        blank=True, null=True, help_text=_("Free form description, with images if necessary")
+    )
 
+    slug = models.SlugField(
+        max_length=50,
+        unique=True,
+        blank=True,
+        help_text=_(
+            "Part of the url. Must be unique, and not contain spaces, accentuated letters or special characters."
+        ),
+    )
     position = models.PositiveIntegerField(default=0, blank=False, null=False)
-    description = RichTextUploadingField(blank=True, null=True)
-
-    is_required = models.BooleanField(default=True, verbose_name="Is this step required?")
-    step_type = models.CharField(max_length=20, choices=STEP_TYPE_CHOICES, default="always", verbose_name="Step Type")
 
     display_in_navigation = models.BooleanField(default=True, verbose_name=_("Display in navigation"))
     editable_in_backend = models.BooleanField(
         default=True,
         verbose_name="Is this step editable in the backend?",
-    )
-    condition_name = models.CharField(
-        max_length=100,
-        blank=True,
-        null=True,
-        verbose_name="Condition Name",
-        help_text="Choose the predefined condition to determine visibility of this step.",
-    )
-    handler_class = models.CharField(
-        max_length=100,
-        blank=True,
-        null=True,
-        verbose_name="Handler Class",
-        help_text="Define the handler class to be used for this step.",
     )
 
     class Meta:
@@ -57,6 +48,10 @@ class WizardStep(TimeStampedModel):
         if not self.slug:
             self.slug = slugify(self.title)
         super().save(*args, **kwargs)
+
+    @property
+    def backend_url(self):
+        return reverse_lazy("backend:wizard-step-update", kwargs={"slug": self.slug})
 
     def url(self):
         return reverse_lazy("wizard:step", kwargs={"step_slug": self.slug})

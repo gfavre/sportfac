@@ -1,0 +1,41 @@
+{% extends "backend/base.html" %}
+{% load duration i18n sekizai_tags %}
+
+{% block title %}{% translate "Wizard steps" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "List wizard steps" %}{% endblock %}
+
+{% get_current_language as LANGUAGE_CODE %}
+
+
+
+{% block content %}
+<table class="table">
+  <thead>
+    <tr>
+      <th class="text-nowrap">{% translate "Title" %}</th>
+      <th class="text-nowrap">{% translate "URL" %}</th>
+      <th class="text-nowrap">{% translate "Actions" %}</th>
+    </tr>
+  </thead>
+  {% for step in object_list %}
+    <tr>
+      <td>
+        {{ step.title }}
+      </td>
+      <td>
+        <a href="{{ step.url }}" target="_blank">{{ step.url }}</a>
+      </td>
+      <td>
+        <ul class="list-unstyled">
+          <li class="text-nowrap">
+            <a href="{{ step.backend_url }}" class="btn btn-sm">
+              <i class="icon-check"></i>&nbsp;{% translate "Edit Step" %}</a>
+          </li>
+
+        </ul>
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock content %}
