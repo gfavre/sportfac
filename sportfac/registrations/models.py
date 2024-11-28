@@ -669,11 +669,11 @@ class ExtraInfo(TimeStampedModel):
 
     @property
     def is_true(self):
-        return self.value in ["True", "true", "1"]
+        return self.value in ["True", "true", "1", "OUI", "oui", "Oui", 1, True]
 
     @property
     def is_false(self):
-        return self.value in ["False", "false", "0"]
+        return self.value in ["False", "false", "0", "NON", "non", "Non", 0, False]
 
     @property
     def require_image(self):
