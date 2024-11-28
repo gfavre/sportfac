@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-28 11:29+0100\n"
-"PO-Revision-Date: 2024-11-28 11:30+0100\n"
+"POT-Creation-Date: 2024-11-28 15:27+0100\n"
+"PO-Revision-Date: 2024-11-28 15:29+0100\n"
 "Last-Translator: Gregory Favre <greg@beyondthewall.ch>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -1570,6 +1570,7 @@ msgstr "Enseignant"
 #: sportfac/backend/templates/backend/user/list.html:236
 #: sportfac/backend/templates/backend/user/manager-list.html:154
 #: sportfac/backend/templates/backend/user/restricted-admin-list.html:85
+#: sportfac/backend/templates/backend/wizard/step_list.html:18
 #: sportfac/backend/templates/backend/year/list.html:43
 #: sportfac/themes/coppet/templates/backend/registration/bill-detail.html:23
 #: sportfac/themes/montreux/templates/backend/course/list-phase1.html:58
@@ -3156,7 +3157,7 @@ msgid "Edit email"
 msgstr "Modifier l’e-mail"
 
 #: sportfac/backend/templates/backend/mail/emails_update.html:3
-#: sportfac/mailer/forms.py:108
+#: sportfac/mailer/forms.py:108 sportfac/wizard/forms.py:28
 msgid "Update email"
 msgstr "Enregistrer"
 
@@ -3388,12 +3389,16 @@ msgstr "Textes des pages"
 msgid "Generic emails"
 msgstr "Emails génériques"
 
-#: sportfac/backend/templates/backend/navbar.html:272
+#: sportfac/backend/templates/backend/navbar.html:271
+msgid "Manage registration steps"
+msgstr "Gérer les étapes d'inscription"
+
+#: sportfac/backend/templates/backend/navbar.html:282
 #: sportfac/themes/nyon_prangins/templates/backend/navbar.html:172
 msgid "Manage appointment slots"
 msgstr "Gérer les créneaux de rendez-vous"
 
-#: sportfac/backend/templates/backend/navbar.html:279
+#: sportfac/backend/templates/backend/navbar.html:289
 #: sportfac/themes/nyon_prangins/templates/backend/navbar.html:179
 msgid "Review appointments"
 msgstr "Révision des rendez-vous"
@@ -4544,6 +4549,31 @@ msgstr ""
 msgid "Add to waiting list"
 msgstr "Ajouter à la liste d'attente"
 
+#: sportfac/backend/templates/backend/wizard/step_list.html:4
+msgid "Wizard steps"
+msgstr "Étapes de l'inscription"
+
+#: sportfac/backend/templates/backend/wizard/step_list.html:6
+msgid "List wizard steps"
+msgstr "Étapes de l'inscription"
+
+#: sportfac/backend/templates/backend/wizard/step_list.html:16
+msgid "Title"
+msgstr "Titre"
+
+#: sportfac/backend/templates/backend/wizard/step_list.html:17
+msgid "URL"
+msgstr "URL"
+
+#: sportfac/backend/templates/backend/wizard/step_list.html:33
+msgid "Edit Step"
+msgstr "Modifier l'étape"
+
+#: sportfac/backend/templates/backend/wizard/step_update.html:3
+#: sportfac/backend/templates/backend/wizard/step_update.html:5
+msgid "Update Step"
+msgstr "Mettre à jour l'étape"
+
 #: sportfac/backend/templates/backend/year/change.html:4
 #: sportfac/backend/templates/backend/year/change.html:6
 msgid "Change period of activity"
@@ -4825,10 +4855,8 @@ msgid "invoices.xlsx"
 msgstr "factures.xlsx"
 
 #: sportfac/backend/views/registration_views.py:512
-#, fuzzy
-#| msgid "Invoices"
 msgid "invoices"
-msgstr "Factures"
+msgstr "factures"
 
 #: sportfac/backend/views/registration_views.py:547
 msgid "Bill has been updated."
@@ -4846,19 +4874,19 @@ msgstr "Le transport a été mis à jour."
 msgid "Transport has been deleted."
 msgstr "Le transport a été supprimé."
 
-#: sportfac/backend/views/site_views.py:48
+#: sportfac/backend/views/site_views.py:50
 msgid "Appointment has been updated."
 msgstr "Le rendez-vous a été mis à jour."
 
-#: sportfac/backend/views/site_views.py:56
+#: sportfac/backend/views/site_views.py:58
 msgid "Appointment has been canceled."
 msgstr "Le rendez-vous a été annulé."
 
-#: sportfac/backend/views/site_views.py:61
+#: sportfac/backend/views/site_views.py:63
 msgid "appointments"
 msgstr "rendez-vous"
 
-#: sportfac/backend/views/site_views.py:80
+#: sportfac/backend/views/site_views.py:82
 #, python-format
 msgid ""
 "<a href=\"%(url)s\" class=\"alert-link\">Page \"%(title)s\"</a> has been "
@@ -4867,7 +4895,7 @@ msgstr ""
 "La <a href=\"%(url)s\" class=\"alert-link\">page \"%(title)s\"</a> a été "
 "mise à jour."
 
-#: sportfac/backend/views/site_views.py:96
+#: sportfac/backend/views/site_views.py:98
 msgid "Generic email has been saved"
 msgstr "L'email générique a été sauvegardé"
 
@@ -6042,7 +6070,7 @@ msgstr "Date d'émission"
 
 #: sportfac/registrations/resources.py:251
 msgid "Lines"
-msgstr ""
+msgstr "Lignes"
 
 #: sportfac/registrations/templates/registrations/billing.html:11
 msgid "Billing Date"
@@ -6512,7 +6540,34 @@ msgstr "Administration du site"
 msgid "This child is already on the waiting list for this course."
 msgstr "Cet enfant est déjà sur la liste d'attente pour ce cours."
 
+#: sportfac/wizard/models.py:15
+msgid "The title is used in navigation and on top of the page"
+msgstr "Le titre est utilisé dans la navigation et en haut de la page"
+
+#: sportfac/wizard/models.py:19
+msgid ""
+"Displayed next to the title, in smaller caps. Not visible in navigation."
+msgstr ""
+"Affiché à côté du titre, en petites capitales. Non visible dans la "
+"navigation."
+
+#: sportfac/wizard/models.py:21
+msgid "Big text displayed below the title."
+msgstr "Texte en gros caractères affiché sous le titre."
+
+#: sportfac/wizard/models.py:24
+msgid "Free form description, with images if necessary"
+msgstr "Description en forme libre, avec des images si nécessaire"
+
 #: sportfac/wizard/models.py:32
+msgid ""
+"Part of the url. Must be unique, and not contain spaces, accentuated letters "
+"or special characters."
+msgstr ""
+"Partie de l'url. Elle doit être unique et ne pas contenir d'espaces, de "
+"lettres accentuées ou de caractères spéciaux."
+
+#: sportfac/wizard/models.py:37
 msgid "Display in navigation"
 msgstr "Affichage dans la navigation"
 
