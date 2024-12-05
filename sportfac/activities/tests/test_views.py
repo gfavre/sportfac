@@ -1,25 +1,21 @@
 import json
+from unittest import mock
 
-from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.test import RequestFactory
 from django.urls import reverse
 
 import faker
-import mock
+
 from mailer.models import MailArchive
 from mailer.tests.factories import MailArchiveFactory
 from profiles.tests.factories import DEFAULT_PASS, FamilyUserFactory, SchoolYearFactory
-from registrations.tests.factories import BillFactory, ChildFactory, RegistrationFactory
-
+from registrations.tests.factories import ChildFactory, RegistrationFactory
 from sportfac.utils import TenantTestCase as TestCase
 from sportfac.utils import process_request_for_middleware
-
 from ..views import (
-    ActivityListView,
     CustomMailPreview,
     CustomParticipantsCustomMailView,
     MailCourseInstructorsView,
@@ -35,7 +31,7 @@ fake = faker.Factory.create()
 
 class ActivityDetailViewsTests(TestCase):
     def setUp(self):
-        super(ActivityDetailViewsTests, self).setUp()
+        super().setUp()
         self.activity = ActivityFactory()
         self.user = FamilyUserFactory()
 
@@ -56,7 +52,7 @@ class ActivityDetailViewsTests(TestCase):
 
 class CourseViewsTests(TestCase):
     def setUp(self):
-        super(CourseViewsTests, self).setUp()
+        super().setUp()
         self.instructor = FamilyUserFactory()
         self.course = CourseFactory(instructors=(self.instructor,))
         self.family = FamilyUserFactory()
@@ -170,7 +166,7 @@ class CourseViewsTests(TestCase):
 
 class MailUsersViewTest(TestCase):
     def setUp(self):
-        super(MailUsersViewTest, self).setUp()
+        super().setUp()
         self.factory = RequestFactory()
         self.instructor = FamilyUserFactory()
         self.course = CourseFactory(instructors=(self.instructor,))
@@ -199,15 +195,13 @@ class MailUsersViewTest(TestCase):
 
 class CustomParticipantsCustomMailViewTest(TestCase):
     def setUp(self):
-        super(CustomParticipantsCustomMailViewTest, self).setUp()
+        super().setUp()
         self.factory = RequestFactory()
         self.instructors = FamilyUserFactory.create_batch(3)
         self.instructor = self.instructors[0]
         self.other_users = FamilyUserFactory.create_batch(4)
         self.course = CourseFactory(instructors=self.instructors)
-        self.url = reverse(
-            "activities:mail-custom-participants-custom", kwargs={"course": self.course.pk}
-        )
+        self.url = reverse("activities:mail-custom-participants-custom", kwargs={"course": self.course.pk})
 
     def test_not_instructor_user(self):
         request = self.factory.get(self.url, data={})
@@ -244,9 +238,7 @@ class CustomParticipantsCustomMailViewTest(TestCase):
         request.session.save()
         response = CustomParticipantsCustomMailView.as_view()(request, course=self.course.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            response.url, reverse("activities:mail-preview", kwargs={"course": self.course.pk})
-        )
+        self.assertEqual(response.url, reverse("activities:mail-preview", kwargs={"course": self.course.pk}))
 
     def test_archive_saving(self):
         data = {"subject": fake.sentence(), "message": fake.paragraph()}
@@ -306,7 +298,7 @@ class CustomParticipantsCustomMailViewTest(TestCase):
 
 class CustomMailPreviewTest(TestCase):
     def setUp(self):
-        super(CustomMailPreviewTest, self).setUp()
+        super().setUp()
         self.factory = RequestFactory()
         self.instructors = FamilyUserFactory.create_batch(2)
         self.instructor = self.instructors[0]
@@ -368,13 +360,13 @@ class CustomMailPreviewTest(TestCase):
         request.session.save()
         response = CustomMailPreview.as_view()(request, course=self.course.pk)
         self.assertEqual(response.status_code, 302)
-        for (args, kwargs) in sendmail_method.call_args_list:
+        for _args, kwargs in sendmail_method.call_args_list:
             self.assertIn(self.instructor.email, kwargs["reply_to"][0])
 
 
 class MailCourseInstructorsViewTest(TestCase):
     def setUp(self):
-        super(MailCourseInstructorsViewTest, self).setUp()
+        super().setUp()
         self.factory = RequestFactory()
         self.instructors = FamilyUserFactory.create_batch(2)
         self.instructor = self.instructors[0]
@@ -424,48 +416,9 @@ class MailCourseInstructorsViewTest(TestCase):
         self.assertEqual(sendmail_method.call_count, self.course.instructors.count())
 
 
-class ActivityListViewTest(TestCase):
-    def setUp(self):
-        self.factory = RequestFactory()
-        self.view = ActivityListView.as_view()
-        self.url = reverse("wizard_activities")
-        self.user = FamilyUserFactory()
-        self.child = ChildFactory(family=self.user)
-        self.request = self.factory.get(self.url)
-        self.request.user = self.user
-        self.request.REGISTRATION_OPENED = True
-
-    def test_access_forbidden_if_registration_closed(self):
-        self.request.REGISTRATION_OPENED = False
-        with self.assertRaises(PermissionDenied):
-            self.view(self.request)
-
-    def test_access_forbidden_if_not_logged_in(self):
-        self.request.user = AnonymousUser()
-        response = self.view(self.request)
-        response.client = self.client
-        self.assertRedirects(response, reverse("profiles:auth_login") + "?next=" + self.url)
-
-    def test_redirects_to_wizard_children_if_no_children_defined(self):
-        self.child.delete()
-        response = self.view(self.request)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, reverse("wizard_children"))
-
-    def test_redirects_to_billing_if_open_cc_payment(self):
-        BillFactory(family=self.user, status="waiting", payment_method="datatrans")
-        response = self.view(self.request)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, reverse("wizard_billing"))
-
-    def test_get(self):
-        response = self.view(self.request)
-        self.assertEqual(response.status_code, 200)
-
-
 class MyCoursesListViewTest(TestCase):
     def setUp(self):
-        super(MyCoursesListViewTest, self).setUp()
+        super().setUp()
         self.factory = RequestFactory()
         self.instructor = FamilyUserFactory()
         self.course = CourseFactory(instructors=[self.instructor])
@@ -491,7 +444,7 @@ class MyCoursesListViewTest(TestCase):
 
 class MyCourseDetailViewTest(TestCase):
     def setUp(self):
-        super(MyCourseDetailViewTest, self).setUp()
+        super().setUp()
         self.factory = RequestFactory()
         self.instructor = FamilyUserFactory()
         self.course = CourseFactory(instructors=[self.instructor])

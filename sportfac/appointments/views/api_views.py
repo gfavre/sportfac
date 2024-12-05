@@ -73,7 +73,7 @@ class RegisterSlot(generics.GenericAPIView):
         else:
             user = None
             data["url"] = reverse("appointments:success")
-        if not serializer.validated_data["url"].endswith(reverse("wizard_appointments")):
+        if not serializer.validated_data["url"].endswith(reverse("wizard:step", kwargs={"step_slug": "equipment"})):
             # appointment info is included in wizard's end email
             try:
                 tenant_pk = connection.tenant.pk

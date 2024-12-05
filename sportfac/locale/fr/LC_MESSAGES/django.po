@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-28 15:27+0100\n"
-"PO-Revision-Date: 2024-11-28 15:29+0100\n"
+"POT-Creation-Date: 2024-12-05 18:06+0100\n"
+"PO-Revision-Date: 2024-12-05 18:07+0100\n"
 "Last-Translator: Gregory Favre <greg@beyondthewall.ch>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -59,7 +59,6 @@ msgstr "Date"
 #: sportfac/themes/montreux/templates/backend/course/list.html:84
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:36
 #: sportfac/themes/montreux_ski/templates/registrations/registration_list_back.html:36
-#: sportfac/themes/vevey/templates/registrations/wizard_billing.html:17
 msgid "Activity"
 msgstr "Activité"
 
@@ -310,7 +309,6 @@ msgstr "Export en PDF"
 #: sportfac/themes/coppet/templates/registrations/bill-detail.html:19
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:35
 #: sportfac/themes/montreux_ski/templates/registrations/registration_list_back.html:35
-#: sportfac/themes/vevey/templates/registrations/wizard_billing.html:16
 msgid "Name"
 msgstr "Nom"
 
@@ -415,7 +413,6 @@ msgstr "Moniteurs"
 #: sportfac/themes/montreux/templates/backend/course/list.html:85
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:39
 #: sportfac/themes/montreux_ski/templates/registrations/registration_list_back.html:39
-#: sportfac/themes/vevey/templates/registrations/wizard_billing.html:20
 msgid "Place"
 msgstr "Lieu"
 
@@ -450,7 +447,6 @@ msgstr "Nombre de sessions"
 #: sportfac/themes/coppet/templates/registrations/bill-detail.html:23
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:41
 #: sportfac/themes/montreux_ski/templates/registrations/registration_list_back.html:41
-#: sportfac/themes/vevey/templates/registrations/wizard_billing.html:21
 msgid "Price"
 msgstr "Prix"
 
@@ -1657,7 +1653,7 @@ msgstr "Merci de vérifier l'email"
 #: sportfac/activities/templates/activities/wizard_activities.html:9
 #: sportfac/backend/templates/backend/navbar.html:23
 #: sportfac/backend/templates/backend/user/restricted-admin-list.html:84
-#: sportfac/sportfac/settings/base.py:662
+#: sportfac/sportfac/settings/base.py:661
 #: sportfac/themes/nyon_prangins/templates/backend/navbar.html:23
 msgid "Activities"
 msgstr "Activités"
@@ -1673,7 +1669,6 @@ msgstr "Activités"
 #: sportfac/profiles/templates/profiles/registration_list.html:118
 #: sportfac/registrations/forms.py:492
 #: sportfac/registrations/templates/registrations/registration_list.html:230
-#: sportfac/registrations/templates/registrations/wizard_children.html:25
 #: sportfac/templates/wizard.html:35
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:204
 #: sportfac/themes/montreux_ski/templates/registrations/registration_list_back.html:207
@@ -1954,7 +1949,6 @@ msgstr "Rendez-vous"
 
 #: sportfac/appointments/models.py:145
 #: sportfac/registrations/templates/registrations/invoice-recap.html:80
-#: sportfac/sportfac/context_processors.py:77
 msgid "Appointments"
 msgstr "Rendez-vous"
 
@@ -1993,7 +1987,6 @@ msgstr "Nom"
 #: sportfac/themes/montreux/templates/backend/course/list-phase1.html:55
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:38
 #: sportfac/themes/montreux_ski/templates/registrations/registration_list_back.html:38
-#: sportfac/themes/vevey/templates/registrations/wizard_billing.html:19
 msgid "Time"
 msgstr "Heure"
 
@@ -2261,7 +2254,6 @@ msgstr "Statut"
 
 #: sportfac/backend/forms.py:300
 #: sportfac/backend/templates/backend/registration/detail.html:45
-#: sportfac/payments/templates/payments/failure.html:13
 msgid "Payment"
 msgstr "Paiement"
 
@@ -2303,7 +2295,6 @@ msgstr "Format: JJ.MM.AAAA"
 #: sportfac/themes/coppet/templates/registrations/bill-detail.html:21
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:37
 #: sportfac/themes/montreux_ski/templates/registrations/registration_list_back.html:37
-#: sportfac/themes/vevey/templates/registrations/wizard_billing.html:18
 msgid "Period"
 msgstr "Période"
 
@@ -2697,7 +2688,6 @@ msgstr "Transaction"
 #: sportfac/themes/monthey/templates/registrations/bill-partial.html:30
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:63
 #: sportfac/themes/montreux_ski/templates/registrations/registration_list_back.html:63
-#: sportfac/themes/vevey/templates/registrations/wizard_billing.html:28
 msgid "Total"
 msgstr "Total"
 
@@ -3873,7 +3863,6 @@ msgstr "Info"
 #: sportfac/registrations/templates/registrations/summary.html:72
 #: sportfac/templates/print-button.html:5
 #: sportfac/themes/coppet/templates/registrations/bill-detail.html:108
-#: sportfac/themes/vevey/templates/registrations/wizard_billing.html:63
 msgid "Print"
 msgstr "Imprimer"
 
@@ -4667,10 +4656,6 @@ msgstr "{minutes} minutes"
 #: sportfac/backend/tests/test_views/test_registrations.py:58
 #: sportfac/backend/views/registration_views.py:176
 #: sportfac/backend/views/registration_views.py:179
-#: sportfac/registrations/templates/registrations/wizard_billing.html:5
-#: sportfac/registrations/templates/registrations/wizard_billing.html:13
-#: sportfac/sportfac/context_processors.py:86
-#: sportfac/themes/vevey/templates/registrations/wizard_billing.html:5
 msgid "Billing"
 msgstr "Paiement"
 
@@ -4833,7 +4818,7 @@ msgid "A registration for %(child)s to %(course)s already exists."
 msgstr "Une inscription pour %(child)s au cours %(course)s existe déjà."
 
 #: sportfac/backend/views/registration_views.py:256
-#: sportfac/registrations/views/user.py:216
+#: sportfac/registrations/views/user.py:108
 msgid "Registration has been canceled."
 msgstr "L'inscription a été annulée."
 
@@ -5305,42 +5290,7 @@ msgstr ""
 msgid "Pay"
 msgstr "Payer"
 
-#: sportfac/payments/templates/payments/failure.html:4
-msgid "Payment failure"
-msgstr "Échec du paiement"
-
-#: sportfac/payments/templates/payments/failure.html:6
-msgid "Payment failed"
-msgstr "Échec de paiement"
-
-#: sportfac/payments/templates/payments/failure.html:10
-msgid "The payment has not been made."
-msgstr "Le paiement n'a pas été effectué."
-
-#: sportfac/payments/templates/payments/failure.html:12
-#: sportfac/payments/templates/payments/success.html:12
-#: sportfac/profiles/templates/profiles/baseprofile.html:50
-#: sportfac/templates/flatpages/home.html:12 sportfac/templates/navbar.html:105
-#: sportfac/themes/latourdepeilz/templates/navbar.html:95
-#: sportfac/themes/montreux_ski/templates/navbar.html:116
-msgid "My registered activities"
-msgstr "Mes inscriptions pour cette année"
-
-#: sportfac/payments/templates/payments/failure.html:14
-#: sportfac/payments/templates/payments/success.html:13
-msgid "My invoices"
-msgstr "Mes factures"
-
-#: sportfac/payments/templates/payments/success.html:4
-#: sportfac/payments/templates/payments/success.html:6
-msgid "Payment successful"
-msgstr "Paiement Réussi"
-
-#: sportfac/payments/templates/payments/success.html:10
-msgid "The payment was successful."
-msgstr "Le paiement a été un succès."
-
-#: sportfac/payments/views.py:52 sportfac/payments/views.py:115
+#: sportfac/payments/views.py:51 sportfac/payments/views.py:106
 msgid "Payment was rejected either by you or the bank"
 msgstr "Le paiement a été rejeté soit par vous, soit par la banque"
 
@@ -5709,6 +5659,14 @@ msgstr "Mon compte"
 msgid "Family settings"
 msgstr "Ma famille"
 
+#: sportfac/profiles/templates/profiles/baseprofile.html:50
+#: sportfac/templates/flatpages/home.html:12 sportfac/templates/navbar.html:105
+#: sportfac/themes/latourdepeilz/templates/navbar.html:95
+#: sportfac/themes/montreux_ski/templates/navbar.html:116
+#: sportfac/wizard/templates/wizard/payment-success.html:12
+msgid "My registered activities"
+msgstr "Mes inscriptions pour cette année"
+
 #: sportfac/profiles/templates/profiles/baseprofile.html:58
 #: sportfac/registrations/templates/registrations/billing.html:3
 #: sportfac/templates/navbar.html:108
@@ -5736,7 +5694,6 @@ msgstr "Inscription"
 #: sportfac/profiles/templates/profiles/registration_list.html:5
 #: sportfac/registrations/templates/registrations/registration_list.html:5
 #: sportfac/registrations/templates/registrations/registration_list.html:11
-#: sportfac/sportfac/context_processors.py:69
 #: sportfac/themes/montreux/templates/registrations/registration_list.html:5
 #: sportfac/themes/montreux_ski/templates/registrations/registration_list_back.html:5
 msgid "Confirmation"
@@ -5817,7 +5774,7 @@ msgstr "Confirmer et passer au paiement"
 msgid "Save and continue"
 msgstr "Enregistrer et continuer"
 
-#: sportfac/profiles/views.py:66
+#: sportfac/profiles/views.py:62
 msgid "Your contact informations have been saved."
 msgstr "Vos informations de contact ont été mises à jour."
 
@@ -6076,19 +6033,12 @@ msgstr "Lignes"
 msgid "Billing Date"
 msgstr "Date de facturation"
 
-#: sportfac/registrations/templates/registrations/billing_cancel.html:4
-msgid "Cancel payment and remove all registrations"
-msgstr "Annuler le paiement et supprimer toutes les inscriptions"
-
 #: sportfac/registrations/templates/registrations/children.html:4
 #: sportfac/registrations/templates/registrations/children_app.html:37
-#: sportfac/registrations/templates/registrations/wizard_children.html:4
-#: sportfac/sportfac/context_processors.py:57
 msgid "Your children"
 msgstr "Vos enfants"
 
 #: sportfac/registrations/templates/registrations/children.html:6
-#: sportfac/registrations/templates/registrations/wizard_children.html:10
 msgid "About your children"
 msgstr "À propos de vos enfants"
 
@@ -6163,32 +6113,6 @@ msgstr "Inscriptions pour cette année"
 msgid "Register new activities"
 msgstr "S'inscrire à de nouvelles activités"
 
-#: sportfac/registrations/templates/registrations/wizard-complete.html:3
-#, python-format
-msgid ""
-"\n"
-"The following registrations have been validated. You can find the full "
-"summary of your registrations <a href=\"%(account_url)s\">in your account</"
-"a> at any time.\n"
-msgstr ""
-"\n"
-"Les inscriptions suivantes ont été enregistrées. Vous pouvez en tous temps "
-"accéder à <a href=\"%(account_url)s\">la liste de vos inscriptions</a> dans "
-"votre compte.\n"
-
-#: sportfac/registrations/templates/registrations/wizard_billing.html:6
-#: sportfac/registrations/templates/registrations/wizard_billing.html:14
-#: sportfac/themes/vevey/templates/registrations/wizard_billing.html:5
-msgid "Registrations validated"
-msgstr "Inscriptions enregistrées"
-
-#: sportfac/registrations/templates/registrations/wizard_children.html:18
-#: sportfac/registrations/templates/registrations/wizard_children.html:28
-#: sportfac/sportfac/context_processors.py:63
-#: sportfac/templates/flatpages/home.html:14
-msgid "Register activities"
-msgstr "Inscription aux activités"
-
 #: sportfac/registrations/utils.py:155
 #, python-brace-format
 msgid "Missing mandatory field: {field}"
@@ -6198,10 +6122,6 @@ msgstr "Champ obligatoire manquant : {field}"
 #: sportfac/schools/utils.py:32
 msgid "File format is unreadable"
 msgstr "Le fichier n'a pas pu être lu: mauvais format"
-
-#: sportfac/registrations/views/user.py:119
-msgid "Your registrations have been recorded, thank you!"
-msgstr "Vos inscriptions ont bien été enregistrées, merci beaucoup!"
 
 #: sportfac/registrations/views/wizard.py:80
 msgid "Vous devez cocher cette case pour continuer."
@@ -6243,10 +6163,6 @@ msgstr "bâtiments"
 #, python-format
 msgid "All these fields are mandatory: %s"
 msgstr "Tous ces champs sont obligatoires: %s"
-
-#: sportfac/sportfac/context_processors.py:51
-msgid "About you"
-msgstr "À propos de vous"
 
 #: sportfac/templates/403.html:4
 msgid "403 Forbidden"
@@ -6312,6 +6228,10 @@ msgstr "Changer"
 #: sportfac/templates/admin/index.html:47
 msgid "You don't have permission to edit anything."
 msgstr "Vous n'êtes pas autorisé à modifier quelque chose."
+
+#: sportfac/templates/flatpages/home.html:14
+msgid "Register activities"
+msgstr "Inscription aux activités"
 
 #: sportfac/templates/flatpages/home.html:29
 msgid "Create an account"
@@ -6631,6 +6551,35 @@ msgstr "Prendre un rendez-vous pour les enfants suivants"
 msgid "already has appointment scheduled at another time"
 msgstr "a déjà un rendez-vous prévu à un autre moment"
 
+#: sportfac/wizard/templates/wizard/payment-failure.html:4
+msgid "Payment failure"
+msgstr "Échec du paiement"
+
+#: sportfac/wizard/templates/wizard/payment-failure.html:6
+msgid "Payment failed"
+msgstr "Échec de paiement"
+
+#: sportfac/wizard/templates/wizard/payment-failure.html:10
+msgid "The payment has not been made."
+msgstr "Le paiement n'a pas été effectué."
+
+#: sportfac/wizard/templates/wizard/payment-failure.html:12
+msgid "Back to payment"
+msgstr "Retour au paiement"
+
+#: sportfac/wizard/templates/wizard/payment-success.html:4
+#: sportfac/wizard/templates/wizard/payment-success.html:6
+msgid "Payment successful"
+msgstr "Paiement Réussi"
+
+#: sportfac/wizard/templates/wizard/payment-success.html:10
+msgid "The payment was successful."
+msgstr "Le paiement a été un succès."
+
+#: sportfac/wizard/templates/wizard/payment-success.html:13
+msgid "My invoices"
+msgstr "Mes factures"
+
 #: sportfac/wizard/templates/wizard/payment.html:27
 #: sportfac/wizard/templates/wizard/payment.html:39
 msgid "Important notice"
@@ -6659,6 +6608,30 @@ msgstr "Erreur"
 msgid "There are errors in the form. Please fix them before proceeding."
 msgstr ""
 "Le formulaire contient des erreurs. Veuillez les corriger avant de continuer."
+
+#~ msgid "Cancel payment and remove all registrations"
+#~ msgstr "Annuler le paiement et supprimer toutes les inscriptions"
+
+#, python-format
+#~ msgid ""
+#~ "\n"
+#~ "The following registrations have been validated. You can find the full "
+#~ "summary of your registrations <a href=\"%(account_url)s\">in your "
+#~ "account</a> at any time.\n"
+#~ msgstr ""
+#~ "\n"
+#~ "Les inscriptions suivantes ont été enregistrées. Vous pouvez en tous "
+#~ "temps accéder à <a href=\"%(account_url)s\">la liste de vos inscriptions</"
+#~ "a> dans votre compte.\n"
+
+#~ msgid "Registrations validated"
+#~ msgstr "Inscriptions enregistrées"
+
+#~ msgid "Your registrations have been recorded, thank you!"
+#~ msgstr "Vos inscriptions ont bien été enregistrées, merci beaucoup!"
+
+#~ msgid "About you"
+#~ msgstr "À propos de vous"
 
 #, python-format
 #~ msgid ""

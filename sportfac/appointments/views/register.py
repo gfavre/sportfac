@@ -5,8 +5,8 @@ from django.views.generic import TemplateView
 
 from braces.views import LoginRequiredMixin
 
+from profiles.models import FamilyUser
 from registrations.models import Child
-from sportfac.views import NotReachableException, WizardMixin
 from wizard.views import StaticStepView
 from ..forms import RentalSelectionForm
 from ..models import Appointment, AppointmentSlot, AppointmentType, Rental
@@ -17,16 +17,17 @@ class SlotsBaseView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        user: FamilyUser = self.request.user
         qs = AppointmentSlot.objects.filter(start__gte=now())
         context["types"] = AppointmentType.objects.all()
         if qs.exists():
             context["start"] = qs.first().start.date().isoformat()
         else:
             context["start"] = now().date().isoformat()
-        context["missing_appointments"] = self.request.user.montreux_missing_appointments
+        context["missing_appointments"] = user.montreux_missing_appointments
         context["appointments"] = (
-            self.request.user.is_authenticated
-            and Appointment.objects.filter(family=self.request.user, slot__in=qs)
+            user.is_authenticated
+            and Appointment.objects.filter(family=user, slot__in=qs)
             or Appointment.objects.none()
         )
         available_dates = []
@@ -61,17 +62,6 @@ class SlotsView(SlotsBaseView):
         if not settings.KEPCHUP_APPOINTMENTS_WITHOUT_WIZARD:
             raise Http404()
         return super().get(request, *args, **kwargs)
-
-
-class WizardSlotsView(LoginRequiredMixin, WizardMixin, SlotsBaseView):
-    template_name = "appointments/wizard_register.html"
-
-    @staticmethod
-    def check_initial_condition(request):
-        if not request.user.is_authenticated:
-            raise NotReachableException("No account created")
-        if not request.user.montreux_missing_appointments:
-            raise NotReachableException("No appointment expected")
 
 
 class WizardRentalStepView(LoginRequiredMixin, StaticStepView):

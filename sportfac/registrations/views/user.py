@@ -6,17 +6,12 @@ from django.contrib import messages
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
-from django.views.generic import DeleteView, DetailView, FormView, ListView, TemplateView
+from django.views.generic import DeleteView, DetailView, ListView, TemplateView
 
 from braces.views import LoginRequiredMixin, UserPassesTestMixin
 
-from appointments.models import Appointment
-from profiles.forms import AcceptTermsForm
 from profiles.models import School
-from sportfac.views import NotReachableException, WizardMixin
-from ..forms import EmptyForm
 from ..models import Bill, Child, Registration
 from .utils import BillMixin, PaymentMixin
 
@@ -91,110 +86,6 @@ class InstructorMixin(UserPassesTestMixin, LoginRequiredMixin):
         return user.is_active and user.is_instructor
 
 
-class RegisteredActivitiesListView(LoginRequiredMixin, WizardMixin, FormView):
-    """
-    This view is used after the course selection in the wizard. The user has selected all his courses
-    and now has to confirm his registrations.
-    When this step is completed, we create the invoice
-    """
-
-    model = Registration
-    form_class = AcceptTermsForm
-    success_url = reverse_lazy("wizard_billing")
-    template_name = "registrations/registration_list.html"
-
-    @staticmethod
-    def check_initial_condition(request):
-        if not request.user.is_authenticated:
-            raise NotReachableException("No account created")
-        # noinspection PyUnresolvedReferences
-        if not Registration.waiting.filter(child__family=request.user).exists():
-            raise NotReachableException("No waiting Registration available")
-
-    def get_success_url(self):
-        if settings.KEPCHUP_USE_APPOINTMENTS:
-            if self.request.user.montreux_needs_appointment:
-                return reverse_lazy("wizard_appointments")
-        if self.bill and self.bill.is_paid:
-            messages.success(self.request, _("Your registrations have been recorded, thank you!"))
-            return reverse_lazy("registrations:registrations_registered_activities")
-
-        return self.success_url  # reverse_lazy("wizard_billing")
-
-    def get_queryset(self):
-        # noinspection PyUnresolvedReferences
-        return (
-            Registration.waiting.select_related("child", "course", "course__activity")
-            .prefetch_related("extra_infos")
-            .filter(child__in=self.request.user.children.all())
-        )
-
-    def set_price_modifiers(self, registrations, context):
-        price_modifiers = {}
-        for registration in registrations:
-            for extra in registration.course.extra.all():
-                price_modifiers[extra.id] = extra.price_dict
-        context["price_modifiers"] = price_modifiers
-        for registration in registrations:
-            for extra in registration.extra_infos.all():
-                if extra.key.id in price_modifiers:
-                    price_modif = price_modifiers[extra.key.id].get(extra.value, 0)
-                    if price_modif:
-                        context["applied_price_modifications"][extra.key.id] = price_modif
-
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super().get_context_data(**kwargs)
-        registrations = self.get_queryset()
-        context["registered_list"] = registrations
-        registrations = registrations.order_by("course__start_date", "course__end_date")
-        context["applied_price_modifications"] = {}
-        self.set_price_modifiers(registrations, context)
-
-        context["has_price_modification"] = len(context["applied_price_modifications"]) != 0
-        if settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
-            context["subtotal"] = sum([registration.get_price_category()[0] or 0 for registration in registrations])
-        else:
-            context["subtotal"] = sum([registration.get_price() or 0 for registration in registrations])
-        context["total_price"] = context["subtotal"] + sum(context["applied_price_modifications"].values())
-        context["overlaps"] = []
-        context["overlapped"] = set()
-        if settings.KEPCHUP_DISPLAY_OVERLAP_HELP:
-            for idx, registration in list(enumerate(registrations))[:-1]:
-                for registration2 in registrations[idx + 1 :]:  # noqa: E203
-                    if registration.overlap(registration2):
-                        context["overlaps"].append((registration, registration2))
-                        context["overlapped"].add(registration.id)
-                        context["overlapped"].add(registration2.id)
-        return context
-
-    def form_valid(self, form):
-        self.bill = Bill.objects.create(
-            status=Bill.STATUS.just_created,
-            family=self.request.user,
-            payment_method=settings.KEPCHUP_PAYMENT_METHOD,
-        )
-        for registration in self.get_queryset().all():
-            registration.set_valid()
-            # FIXME: here we are computing the prices a second time, this is dangerous.
-            registration.price = registration.get_price()
-            if registration.price == 0:
-                registration.paid = True
-            registration.bill = self.bill
-            registration.save()
-
-        self.bill.save()  # => bill status become paid if all registrations are paid
-        if self.bill.total == 0:
-            self.bill.status = Bill.STATUS.paid
-            self.bill.save()
-        if not (settings.KEPCHUP_USE_APPOINTMENTS or settings.KEPCHUP_PAYMENT_METHOD in ["datatrans", "postfinance"]):
-            # FIXME: si la facture est à 0: aucun paiement
-            # Ceci est le "s'il n'y a pas d'autre étape, envoie la confirmation par email"
-            self.bill.send_confirmation()
-
-        return super().form_valid(form)
-
-
 class RegistrationDeleteView(InstructorMixin, DeleteView):
     model = Registration
     template_name = "registrations/confirm_cancel.html"
@@ -224,89 +115,3 @@ class SummaryView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context["registered_list"] = self.request.user.get_registrations()
         return context
-
-
-class WizardBillingView(LoginRequiredMixin, BillMixin, PaymentMixin, WizardMixin, TemplateView):
-    """
-    Display the bill: wizard final step view with pay button
-    """
-
-    template_name = "registrations/wizard_billing.html"
-
-    @staticmethod
-    def check_initial_condition(request):
-        if not request.user.is_authenticated:
-            raise NotReachableException("No account created")
-        if request.user.montreux_needs_appointment and request.user.montreux_missing_appointments:
-            raise NotReachableException("No Appointment taken")
-
-        if not Bill.objects.filter(
-            status__in=(Bill.STATUS.just_created, Bill.STATUS.waiting), family=request.user, total__gt=0
-        ).exists():
-            raise NotReachableException("No Bill available")
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["bill"] = Bill.objects.filter(family=self.request.user, total__gt=0).order_by("created").last()
-
-        context["include_calendar"] = False
-
-        if settings.KEPCHUP_USE_APPOINTMENTS:
-            context["include_calendar"] = True
-            context["appointments"] = Appointment.objects.filter(family=self.request.user)
-
-        context["transaction"] = self.get_transaction(context["bill"])
-        return context
-
-    def get(self, request, *args, **kwargs):
-        response = super().get(request, *args, **kwargs)
-        for bill in Bill.objects.filter(status=Bill.STATUS.just_created, family=self.request.user):
-            bill.status = Bill.STATUS.waiting
-            bill.save()
-            if settings.KEPCHUP_USE_APPOINTMENTS and bill.is_wire_transfer:
-                # Are we last step? If so, send confirmation
-                bill.send_confirmation()
-        return response  # noqa: R504
-
-
-class WizardCancelRegistrationView(LoginRequiredMixin, WizardMixin, FormView):
-    success_url = reverse_lazy("wizard:entry_point")
-    form_class = EmptyForm
-
-    @staticmethod
-    def check_initial_condition(request):
-        if not request.user.is_authenticated:
-            raise NotReachableException("No account created")
-
-        if not Bill.objects.filter(
-            status__in=(Bill.STATUS.just_created, Bill.STATUS.waiting), family=request.user
-        ).exists():
-            raise NotReachableException("No Bill available")
-
-    def form_valid(self, form):
-        for bill in Bill.objects.filter(
-            status__in=(Bill.STATUS.just_created, Bill.STATUS.waiting), family=self.request.user
-        ):
-            for reg in bill.registrations.all():
-                reg.extra_infos.all().delete()
-            bill.registrations.all().delete()
-            bill.rentals.all().delete()
-
-            bill.delete()
-        return super().form_valid(form)
-
-
-class WizardChildrenListView(WizardMixin, ChildrenListView):
-    template_name = "registrations/wizard_children.html"
-
-    @staticmethod
-    def check_initial_condition(request):
-        if not request.user.is_authenticated:
-            raise NotReachableException("No account created")
-        if Bill.objects.filter(
-            family=request.user,
-            status=Bill.STATUS.waiting,
-            total__gt=0,
-            payment_method__in=(Bill.METHODS.datatrans, Bill.METHODS.postfinance),
-        ).exists():
-            raise NotReachableException("Payment expected first")

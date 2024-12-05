@@ -45,9 +45,13 @@ def invoice_to_transaction(request, invoice):
     if request.get_full_path().startswith(reverse("backend:bill-list")):
         success_url = "https://{}{}".format(request.get_host(), reverse("backend:bill-list"))
         fail_url = f"https://{request.get_host()}{invoice.get_pay_url()}"
-    elif request.get_full_path().startswith(reverse("wizard_billing")):
-        success_url = "https://{}{}".format(request.get_host(), reverse("wizard_payment_success"))
-        fail_url = "https://{}{}".format(request.get_host(), reverse("wizard_payment_failure"))
+    elif request.get_full_path().startswith(reverse("wizard:entry_point")):
+        success_url = "https://{}{}".format(
+            request.get_host(), reverse("wizard:step", kwargs={"step_slug": "payment-success"})
+        )
+        fail_url = "https://{}{}".format(
+            request.get_host(), reverse("wizard:step", kwargs={"step_slug": "payment-failure"})
+        )
     elif request.get_full_path().startswith(reverse("wizard:step", kwargs={"step_slug": "payment"})):
         success_url = "https://{}{}".format(
             request.get_host(), reverse("registrations:registrations_registered_activities")

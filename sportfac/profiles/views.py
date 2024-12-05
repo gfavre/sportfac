@@ -4,15 +4,13 @@ from django.contrib.auth import authenticate, login
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views.generic import FormView, RedirectView, UpdateView
 
 from braces.views import LoginRequiredMixin
 from registration import signals
 
-from registrations.models import Bill
-from sportfac.views import NotReachableException, WizardMixin
 from wizard.views import BaseWizardStepView
 from .forms import InstructorForm, RegistrationForm, UserForm
 from .models import FamilyUser
@@ -20,8 +18,6 @@ from .models import FamilyUser
 
 __all__ = (
     "AccountView",
-    "WizardAccountView",
-    "WizardRegistrationView",
     "WizardFamilyUserCreateView",
     "WizardFamilyUserUpdateView",
     "AccountRedirectView",
@@ -64,25 +60,6 @@ class AccountView(SuccessMessageMixin, _BaseAccount):
 
     def get_success_message(self, form):
         return _("Your contact informations have been saved.")
-
-
-class WizardAccountView(WizardMixin, _BaseAccount):
-    template_name = "profiles/wizard_account.html"
-    success_url = reverse_lazy("wizard_children")
-
-    @staticmethod
-    def check_initial_condition(request):
-        # Condition is to be logged in => _BaseAccount requires login.
-        if (
-            request.user.is_authenticated
-            and Bill.objects.filter(
-                family=request.user,
-                status=Bill.STATUS.waiting,
-                total__gt=0,
-                payment_method__in=(Bill.METHODS.datatrans, Bill.METHODS.postfinance),
-            ).exists()
-        ):
-            raise NotReachableException("Payment expected first")
 
 
 class RegistrationBaseView(FormView):
@@ -145,25 +122,6 @@ class RegistrationView(RegistrationBaseView):  # deprecated
         if settings.KEPCHUP_REGISTER_ACCOUNTS_AT_ANY_TIME or request.REGISTRATION_OPENED:
             return super().dispatch(request, *args, **kwargs)
         raise PermissionDenied
-
-
-class WizardRegistrationView(WizardMixin, RegistrationBaseView):  # deprecated
-    """
-    A registration backend which implements the simplest possible
-    workflow: a user supplies a username, email address and password
-    (the bare minimum for a useful account), and is immediately signed
-    up and logged in).
-    """
-
-    form_class = RegistrationForm
-    template_name = "profiles/wizard_registration_form.html"
-
-    @staticmethod
-    def check_initial_condition(request):
-        return
-
-    def get_success_url(self):
-        return reverse("wizard_children")
 
 
 class WizardFamilyUserCreateView(BaseWizardStepView, RegistrationBaseView):
