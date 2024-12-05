@@ -41,16 +41,6 @@ class MailPreview(BackendMixin, ArchivedMailMixin, mailer_views.MailPreviewView)
     def get_cancel_url(self):
         return self.request.GET.get("prev", None)
 
-    def get_context_data(self, **kwargs):
-        kwargs["url"] = "".join(
-            (
-                settings.DEBUG and "http://" or "https://",
-                get_current_site(self.request).domain,
-                reverse("wizard_confirm"),
-            )
-        )
-        return super().get_context_data(**kwargs)
-
 
 class ParticipantsMailCreateView(BackendMixin, mailer_views.ParticipantsMailCreateView):
     """Send email to all participants of a course - form"""
