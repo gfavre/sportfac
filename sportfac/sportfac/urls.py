@@ -7,13 +7,13 @@ from django.urls import include, path
 from django.views.generic import RedirectView, TemplateView
 from django.views.static import serve
 
+from ckeditor_uploader import views as ckeditor_views
+from impersonate import views as impersonate_views
+
 from activities.urls import sitemap as activity_sitemap
 from backend.utils import manager_required
-from ckeditor_uploader import views as ckeditor_views
 from contact.urls import Sitemap as ContactSitemap
-from impersonate import views as impersonate_views
 from payments.views import DatatransWebhookView, PostfinanceWebhookView
-
 from .views import impersonate as impersonate_view
 
 
@@ -77,23 +77,20 @@ urlpatterns += [
     path("activities/", include("activities.urls", namespace="activities")),
     path("account/", include("profiles.urls")),
     path("backend/", include("backend.urls", namespace="backend")),
-    path("contact/", include("contact.urls")),
-    path("registrations/", include("registrations.urls")),
-    path("sitemap.xml", sitemapviews.sitemap, {"sitemaps": sitemaps}),
-    path("robots.txt", TextPlainView.as_view(template_name="robots.txt")),
-    path("humans.txt", TextPlainView.as_view(template_name="humans.txt")),
-    path("favicon.ico", RedirectView.as_view(url=settings.STATIC_URL + "img/favicon.ico")),
-    path("wizard/", include("sportfac.wizardurls")),
-    path("wizard2/", include("wizard.urls")),
-    path("404", TemplateView.as_view(template_name="404.html")),
-    path("500", TemplateView.as_view(template_name="500.html")),
     path("ckeditor/upload/", manager_required(ckeditor_views.upload), name="ckeditor_upload"),
     path("ckeditor/browse/", manager_required(ckeditor_views.browse), name="ckeditor_browse"),
+    path("contact/", include("contact.urls")),
     path("datatrans/", DatatransWebhookView.as_view(), name="datatrans_webhook"),
-    path("postfinance/", PostfinanceWebhookView.as_view(), name="postfinance_webhook"),
-    path("select2/", include("django_select2.urls")),
+    path("favicon.ico", RedirectView.as_view(url=settings.STATIC_URL + "img/favicon.ico")),
+    path("humans.txt", TextPlainView.as_view(template_name="humans.txt")),
     path("impersonate/<path:uid>/", impersonate_view, name="impersonate-start"),
     path("impersonate-stop/", impersonate_views.stop_impersonate, name="impersonate-stop"),
+    path("postfinance/", PostfinanceWebhookView.as_view(), name="postfinance_webhook"),
+    path("registrations/", include("registrations.urls")),
+    path("robots.txt", TextPlainView.as_view(template_name="robots.txt")),
+    path("select2/", include("django_select2.urls")),
+    path("sitemap.xml", sitemapviews.sitemap, {"sitemaps": sitemaps}),
+    path("wizard/", include("wizard.urls")),
     path(settings.ADMIN_URL, admin.site.urls),
 ]
 
@@ -108,5 +105,7 @@ if settings.DEBUG:
 
     urlpatterns += [
         path("__debug__/", include(debug_toolbar.urls)),
+        path("404", TemplateView.as_view(template_name="404.html")),
+        path("500", TemplateView.as_view(template_name="500.html")),
         path("media/<path:path>", serve, {"document_root": settings.MEDIA_ROOT}),
     ]

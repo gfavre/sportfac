@@ -196,6 +196,8 @@ def get_step_handler(step, registration_context):
         "equipment-need-return": EquipmentEntryPointHandler,
         "confirmation": ConfirmationStepHandler,
         "payment": PaymentStepHandler,
+        "payment-failure": PaymentStepHandler,
+        "payment-success": PaymentStepHandler,
     }
     handler_class = handler_mapping.get(step.slug, QuestionStepHandler)
     return handler_class(step, registration_context)

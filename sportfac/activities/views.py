@@ -2,7 +2,6 @@ import json
 import urllib.parse
 
 from django.conf import settings
-from django.db.models import Max, Min
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
@@ -16,7 +15,6 @@ import mailer.views as mailer_views
 from mailer.forms import CourseMailForm, InstructorCopiesForm
 from mailer.mixins import ArchivedMailMixin
 from registrations.models import Registration
-from sportfac.views import NotReachableException, WizardMixin
 from wizard.views import StaticStepView
 from .models import Activity, Course, PaySlip
 
@@ -24,7 +22,6 @@ from .models import Activity, Course, PaySlip
 __all__ = (
     "InstructorMixin",
     "ActivityDetailView",
-    "ActivityListView",
     "CustomParticipantsCustomMailView",
     "MyCoursesListView",
     "MyCourseDetailView",
@@ -93,44 +90,6 @@ class ActivityDetailView(DetailView):
                     break
 
         context["registrations"] = registrations
-        return context
-
-
-class ActivityListView(LoginRequiredMixin, WizardMixin, ListView):
-    model = Activity
-    template_name = "activities/wizard_activities.html"
-
-    @staticmethod
-    def check_initial_condition(request):
-        if not (hasattr(request.user, "children") and request.user.children.exists()):
-            raise NotReachableException("No children available")
-        from registrations.models import Bill
-
-        if Bill.objects.filter(
-            family=request.user,
-            status=Bill.STATUS.waiting,
-            total__gt=0,
-            payment_method__in=(Bill.METHODS.datatrans, Bill.METHODS.postfinance),
-        ).exists():
-            raise NotReachableException("Payment expected first")
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        from backend.dynamic_preferences_registry import global_preferences_registry
-
-        context["MAX_REGISTRATIONS"] = global_preferences_registry.manager()["MAX_REGISTRATIONS"]
-        times = Course.objects.visible().aggregate(Max("end_time"), Min("start_time"))
-        start_time = times["start_time__min"]
-        end_time = times["end_time__max"]
-        context["START_HOUR"] = start_time and start_time.hour - 1 or 8
-
-        if end_time:
-            if end_time.minute == 0:
-                context["END_HOUR"] = end_time.hour
-            else:
-                context["END_HOUR"] = (end_time.hour + 1) % 24
-        else:
-            context["END_HOUR"] = 19
         return context
 
 

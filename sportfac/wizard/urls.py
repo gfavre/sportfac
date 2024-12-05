@@ -2,6 +2,7 @@ from django.urls import path
 
 from activities.views import WizardQuestionsStepView
 from appointments.views.register import WizardRentalStepView, WizardReturnStepView
+from payments.views import WizardPaymentFailureView, WizardPaymentSuccessView
 from profiles.views import WizardFamilyUserCreateView, WizardFamilyUserUpdateView
 from registrations.views.wizard import WizardConfirmationStepView, WizardPaymentStepView
 from .views import ActivitiesStepView, ChildrenStepView, EntryPointView, EquipmentStepView, QuestionsStepView
@@ -19,6 +20,8 @@ step_view_mapping = {
     "equipment-return": WizardReturnStepView,
     "confirmation": WizardConfirmationStepView,
     "payment": WizardPaymentStepView,
+    "payment-failure": WizardPaymentFailureView,
+    "payment-success": WizardPaymentSuccessView,
 }
 
 

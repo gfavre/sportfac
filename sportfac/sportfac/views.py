@@ -4,9 +4,7 @@ from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
 from django.utils import timezone
-from django.views.generic.base import RedirectView
 
 from braces.views import LoginRequiredMixin
 from impersonate.decorators import allowed_user_required
@@ -50,37 +48,6 @@ class PhaseForbiddenMixin(LoginRequiredMixin):
                 raise PermissionDenied  # Return a 403
             return redirect_to_login(request.get_full_path(), self.get_login_url(), self.get_redirect_field_name())
         return super().dispatch(request, *args, **kwargs)
-
-
-class NotReachableException(Exception):
-    pass
-
-
-class WizardMixin(OpenedPeriodMixin):
-    @staticmethod
-    def check_initial_condition(request):
-        raise NotImplementedError
-
-    def get(self, request, *args, **kwargs):
-        """If wizard is finished, go straight to last page."""
-        return redirect(reverse("wizard:entry_point"))
-        # try:
-        #    self.check_initial_condition(request)
-        # except NotReachableException:
-        #     context = wizard_context(request)
-        #     return redirect(context["max_step"])
-        # return super().get(request, *args, **kwargs)
-
-
-class WizardView(WizardMixin, RedirectView):
-    @staticmethod
-    def check_initial_condition(request):
-        return
-
-    def get_redirect_url(self, *args, **kwargs):
-        return reverse("wizard:entry_point")
-        # context = wizard_context(self.request)
-        # return context.get("max_step")
 
 
 class CSVMixin:
