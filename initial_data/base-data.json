@@ -1,228 +1,398 @@
 [
-{
-  "model": "dbtemplates.template",
-  "pk": 1,
-  "fields": {
-    "name": "mailer/absence_notification_subject.txt",
-    "content": "Absence de {{ child.first_name }} lors du cours {{ course.short_name }} - {{ site_name }}",
-    "creation_date": "2023-07-11T07:53:29Z",
-    "last_changed": "2023-07-11T07:53:48.881Z",
-    "sites": []
+  {
+    "model": "dbtemplates.template",
+    "pk": 1,
+    "fields": {
+      "name": "mailer/absence_notification_subject.txt",
+      "content": "Absence de {{ child.first_name }} lors du cours {{ course.short_name }} - {{ site_name }}",
+      "creation_date": "2023-07-11T07:53:29Z",
+      "last_changed": "2023-07-11T07:53:48.881Z",
+      "sites": []
+    }
+  },
+  {
+    "model": "dbtemplates.template",
+    "pk": 2,
+    "fields": {
+      "name": "mailer/absence_notification.txt",
+      "content": "{% load duration mail_tags %}\r\nMadame, Monsieur,\r\n\r\nVotre enfant, {{ child }}, était absent lors du cours {{ course.short_name }} du {{ session.date|date:\"j F Y\" }} :\r\n\r\nNous vous remercions, à l'avenir de transmettre une excuse par SMS au moniteur:\r\n{% for instructor in course.instructors.all %}\r\n* {{ instructor.full_name }}: {{ instructor.best_phone }}\r\n{% endfor%}\r\n\r\nEn restant à votre disposition pour tout complément d'information, nous vous adressons, Madame, Monsieur, nos cordiaux messages.\r\n\r\n{{ signature }}",
+      "creation_date": "2023-07-11T07:53:51Z",
+      "last_changed": "2023-07-11T07:54:11.819Z",
+      "sites": []
+    }
+  },
+  {
+    "model": "dbtemplates.template",
+    "pk": 3,
+    "fields": {
+      "name": "mailer/course_begin_subject.txt",
+      "content": "{{ site_name }} - convocation pour le cours {{ course.short_name }}",
+      "creation_date": "2023-07-11T07:54:21Z",
+      "last_changed": "2023-07-11T07:54:30.925Z",
+      "sites": []
+    }
+  },
+  {
+    "model": "dbtemplates.template",
+    "pk": 4,
+    "fields": {
+      "name": "mailer/course_begin.txt",
+      "content": "{% load duration mail_tags %}\r\nMadame, Monsieur,\r\n\r\nNous avons le plaisir d'inviter votre enfant {{ child }} à la première séance du cours suivant :\r\n\r\n{{ course.short_name }}\r\nMoniteur{{ course.instructors.count|pluralize:\"s\" }} : {% for instructor in course.instructors.all %}{{ instructor.full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}\r\nJour : {{ course.day_name }} de {{ course.start_time|time:\"H:i\" }} à {{ course.end_time|time:\"H:i\" }}\r\nDate 1ère séance : {{ course.start_date | date:\"j F Y\" }}\r\nNombre de séances : {{ course.number_of_sessions }}\r\nRendez-vous/lieu du cours : {{ course.place }}\r\n{% if course.activity.informations %}\r\nInformations:\r\n{{ course.activity.informations|striptags|unescape }}\r\nVous pouvez retrouver ces informations sur: {{ site_url }}{% url \"registrations:registrations_registered_activities\" %}\r\n{% endif %}\r\n\r\nLa monitrice/le moniteur vous donnera toutes les informations en lien avec son cours lors de la 1ère séance.\r\n\r\nEn restant à votre disposition pour tout complément d'information, nous vous adressons, Madame, Monsieur, nos cordiaux messages.\r\n\r\n{{ signature }}",
+      "creation_date": "2023-07-11T07:54:41Z",
+      "last_changed": "2023-07-11T07:54:53.006Z",
+      "sites": []
+    }
+  },
+  {
+    "model": "dbtemplates.template",
+    "pk": 5,
+    "fields": {
+      "name": "mailer/instructor_subject.txt",
+      "content": "{{ site_name }} - documents monitrice/moniteur cours: {{ course.number }} - {{ course.activity.name }}",
+      "creation_date": "2023-07-11T07:54:55Z",
+      "last_changed": "2023-07-11T07:55:16.889Z",
+      "sites": []
+    }
+  },
+  {
+    "model": "dbtemplates.template",
+    "pk": 6,
+    "fields": {
+      "name": "mailer/instructor.txt",
+      "content": "Chère monitrice, cher moniteur,\r\n\r\nNous te remercions de t'engager dans l'animation d'une activité du sport scolaire facultatif primaire au sein de notre région et ainsi contribuer à promouvoir la pratique sportive auprès de nos élèves.\r\nTu trouveras en pièce jointe tous les documents relatifs au cours dont tu as la charge et qui débute prochainement :\r\n\r\n• liste de tous les cours organisés, avec les informations détaillées de lieux, dates et heures\r\n• liste des participants avec les n° en cas d'urgence\r\n• liste de présence à retourner dès la fin du cours\r\n• feuille de décompte monitrice/moniteur, à retourner dès la fin du cours également\r\n\r\nTu as la responsabilité de prendre toutes les mesures nécessaires lors d'une absence éventuelle à l'une ou l'autre de tes leçons, soit :\r\n\r\n• dans toute la mesure du possible, te faire remplacer par une personne compétente\r\n• dans l'impossibilité de te faire remplacer, prévenir tous les participants afin d'éviter le déplacement inutile de ces derniers sur le lieu du cours\r\n• communiquer ton absence au secrétariat primaire (022-557.58.58)\r\n\r\nAfin que nous puissions te régler dans les meilleurs délais, nous te prions de nous retourner, dès la fin d'un cours, mais au plus tard à fin juin, les documents suivants, dûment complétés :\r\n\r\n• feuille de décompte, à compléter à l'écran, imprimer et signer - 1 feuille par cours et par monitrice/moniteur\r\n• liste de présence\r\n\r\nNous restons à ta disposition pour tout complément d'information, te souhaitons bonne réception de ce courriel et plein succès dans ces activités.\r\n\r\nMeilleurs messages,\r\n\r\n{{ signature }}",
+      "creation_date": "2023-07-11T07:55:30Z",
+      "last_changed": "2023-07-11T07:55:39.519Z",
+      "sites": []
+    }
+  },
+  {
+    "model": "dbtemplates.template",
+    "pk": 7,
+    "fields": {
+      "name": "mailer/need_confirmation_subject.txt",
+      "content": "Inscriptions au sport scolaire facultatif non confirmées - action requise",
+      "creation_date": "2023-07-11T07:55:48Z",
+      "last_changed": "2023-07-11T07:55:55.629Z",
+      "sites": []
+    }
+  },
+  {
+    "model": "dbtemplates.template",
+    "pk": 8,
+    "fields": {
+      "name": "mailer/need_confirmation.txt",
+      "content": "Madame, Monsieur,\r\n\r\nEn passant en revue les inscriptions aux sports scolaires facultatifs, nous constatons que les inscriptions pour votre/vos enfant/s ne sont à ce jour pas encore confirmées.\r\n\r\nNous vous serions reconnaissants de bien vouloir contrôler les inscriptions que vous avez saisies, de les modifier si nécessaire et de confirmer d'ici à demain soir afin que nous puissions terminer le processus d'inscription.\r\n\r\nLe site des inscriptions: {{ url }}\r\n\r\nEn vous remerciant de votre collaboration, nous vous adressons nos cordiaux messages.\r\n\r\n\r\n{{ signature }}",
+      "creation_date": "2023-07-11T07:56:13Z",
+      "last_changed": "2023-07-11T07:56:23.247Z",
+      "sites": []
+    }
+  },
+  {
+    "model": "dbtemplates.template",
+    "pk": 9,
+    "fields": {
+      "name": "mailer/notpaid_subject.txt",
+      "content": "Inscription au sport scolaire facultatif - rappel",
+      "creation_date": "2023-07-11T07:56:32Z",
+      "last_changed": "2023-07-11T07:56:40.279Z",
+      "sites": []
+    }
+  },
+  {
+    "model": "dbtemplates.template",
+    "pk": 10,
+    "fields": {
+      "name": "mailer/notpaid.txt",
+      "content": "{% load i18n l10n humanize sekizai_tags switzerland %}Madame, Monsieur,\r\n\r\nÀ ce jour jour et sauf erreur de notre part, nous n’avons pas reçu vo{{ recipient.bills.waiting.count | pluralize:\"tre,s\" }} paiement{{ recipient.bills.waiting.count | pluralize }} pour les activités facultatives de votre-vos enfant-s.\r\nNous vous saurions gré d’effectuer vo{{ recipient.bills.waiting.count | pluralize:\"tre,s\" }} versement{{ recipient.bills.waiting.count | pluralize }}:\r\n\r\n{% for bill in recipient.bills.waiting %}\r\nIdentifiant: {{ bill.billing_identifier }}\r\nTotal dû: {{ bill.total|money }}\r\n{% if recipient.bills.waiting.count > 1 and not forloop.last %}\r\n---------------------------\r\n{% endif %}\r\n{% endfor %}\r\n\r\nsur le compte :\r\nIBAN {{ iban }}\r\n\r\nbénéficiaire (titulaire du compte) :\r\n{{ address }}\r\n\r\nEn vous remerciant d’ores et déjà de votre prompte réaction, nous vous adressons nos cordiaux messages.\r\n\r\n{{ signature }}",
+      "creation_date": "2023-07-11T07:56:51Z",
+      "last_changed": "2023-07-11T07:57:00.471Z",
+      "sites": []
+    }
+  },
+  {
+    "model": "dbtemplates.template",
+    "pk": 11,
+    "fields": {
+      "name": "registrations/billing_partial.html",
+      "content": "{% load i18n l10n humanize sekizai_tags switzerland %}\r\n\r\n<p>Les inscriptions seront définitivement validées à la suite du règlement de la finance de participation pour les cours choisis.</p>\r\n<p>Le montant total pour vos inscriptions s'élève à : <strong>{{ bill.total|money }}</strong></p>\r\n<p>L'identifiant pour votre transaction est le suivant : <strong>{{ bill.billing_identifier }}</strong></p>\r\n<p>Nous vous remercions de verser cette somme d’ici au <strong>{{ delay|date:\"j F Y\" }}</strong> en privilégiant le virement bancaire sur le compte : </p>\r\n<div class=\"well\">\r\n  <dl class=\"dl-horizontal\">\r\n    <dt>Montant</dt><dd>{{ bill.total|money }}</dd>\r\n    <dt>Identifiant</dt><dd>{{ bill.billing_identifier }}</dd>\r\n    <dt>IBAN</dt><dd>{{ iban }}</dd>\r\n    <dt>Adresse</dt><dd>{{ address|linebreaksbr }}</dd>\r\n  </dl>\r\n</div>\r\n<p>en indiquant, sous communications ou motif, votre identifiant de transaction.</p>\r\n\r\n<p>Si nécessaire, il est également possible de déposer cette somme au secrétariat des écoles, Chemin du Chaucey 7, 1296 Coppet, en se munissant du présent récapitulatif.</p>\r\n<p><strong>Aucun remboursement ne pourra être demandé en cas de désistement.</strong></p>",
+      "creation_date": "2023-07-11T07:57:09Z",
+      "last_changed": "2023-07-11T07:57:16.777Z",
+      "sites": []
+    }
+  },
+  {
+    "model": "mailer.genericemail",
+    "pk": 1,
+    "fields": {
+      "created": "2023-07-11T14:52:47.052Z",
+      "modified": "2023-07-11T14:52:47.052Z",
+      "subject": "Rappel de paiement",
+      "subject_template": 9,
+      "body_template": 10,
+      "help_text": "<p>{{ site_name }}: Nom du site</p>\r\n\r\n<p>{{ site_url }}: Adresse du site</p>\r\n\r\n<p>{{ delay }}: D&eacute;lai de paiement (jours)</p>\r\n\r\n<p>{{ iban&nbsp;}}: Compte bancaire</p>\r\n\r\n<p>{{ address }}: Adresse de paiement</p>\r\n\r\n<p>{{ place&nbsp;}}: NPA / ville de paiement</p>"
+    }
+  },
+  {
+    "model": "mailer.genericemail",
+    "pk": 2,
+    "fields": {
+      "created": "2023-07-11T14:53:12.347Z",
+      "modified": "2023-07-11T14:53:12.347Z",
+      "subject": "Validation des inscriptions",
+      "subject_template": 7,
+      "body_template": 8,
+      "help_text": "<p>Le parent n&#39;a pas encore valid&eacute; ses inscriptions, ce mail lui est envoy&eacute; (lien&nbsp;<a href=\"https://coppet.kepchup.ch/backend/mail/need-confirmation\">email de rappel</a>&nbsp;depuis la page d&#39;accueil).</p>\r\n\r\n<p>{{ url }} : Lien vers la page o&ugrave; le parent peut valider son inscription</p>\r\n\r\n<p>{{ signature }}: Signature de bas de mail</p>"
+    }
+  },
+  {
+    "model": "mailer.genericemail",
+    "pk": 3,
+    "fields": {
+      "created": "2023-07-11T14:53:38.104Z",
+      "modified": "2023-07-11T14:53:38.104Z",
+      "subject": "Données du moniteur",
+      "subject_template": 5,
+      "body_template": 6,
+      "help_text": "<p>Cet email est envoy&eacute; via le lien &quot;Envoyer les infos du cours au moniteur&quot;.</p>\r\n\r\n<p>{{ site_name }}: Nom du site (Sports scolaires facultatifs des villes de Nyon et Prangins)</p>\r\n\r\n<p>{{ site_url }}: Adresse du site</p>\r\n\r\n<p>{{ signature }}: Signature de bas de mail</p>\r\n\r\n<p>{{ course.short_name&nbsp;}}: Nom du cours sous la forme Activit&eacute; (num&eacute;ro du cours)</p>\r\n\r\n<p>{{ course.long_name }}: Nom du cours court + champ &quot;Nom affich&eacute;&quot;</p>\r\n\r\n<p>{{ course.number }}: Num&eacute;ro du cours</p>\r\n\r\n<p>{{ course.activity }}: Nom de l&#39;activit&eacute;</p>\r\n\r\n<p>{{ course.number_of_sessions }}: Nombre de sessions du cours</p>\r\n\r\n<p>{{ course.start_date&nbsp;}}: Date de d&eacute;but&nbsp;</p>\r\n\r\n<p>{{ course.end_date&nbsp;}}: Date de fin&nbsp;</p>\r\n\r\n<p>{{ course.start_time }}: Heure de d&eacute;but&nbsp;</p>\r\n\r\n<p>{{ course.end_date&nbsp;}}: Heure de fin</p>\r\n\r\n<p>{{ course.place }}: lieu du cours</p>"
+    }
+  },
+  {
+    "model": "mailer.genericemail",
+    "pk": 4,
+    "fields": {
+      "created": "2023-07-11T14:54:00.888Z",
+      "modified": "2023-07-11T14:54:00.888Z",
+      "subject": "Convocation du cours",
+      "subject_template": 3,
+      "body_template": 4,
+      "help_text": "<p>Cet email est envoy&eacute; via le lien &quot;Envoyer l&#39;email de convocation&quot;.</p>\r\n\r\n<p><strong>Site</strong></p>\r\n\r\n<p>{{ site_name }}: Nom du site (Sports scolaires facultatifs des villes de Nyon et Prangins)</p>\r\n\r\n<p>{{ site_url }}: Adresse du site</p>\r\n\r\n<p>{{ signature }}: Signature de bas de mail</p>\r\n\r\n<p><strong>Cours</strong></p>\r\n\r\n<p>{{ course.short_name&nbsp;}}: Nom du cours sous la forme Activit&eacute; (num&eacute;ro du cours)</p>\r\n\r\n<p>{{ course.long_name }}: Nom du cours court + champ &quot;Nom affich&eacute;&quot;</p>\r\n\r\n<p>{{ course.number }}: Num&eacute;ro du cours</p>\r\n\r\n<p>{{ course.activity }}: Nom de l&#39;activit&eacute;</p>\r\n\r\n<p>{{ course.number_of_sessions }}: Nombre de sessions du cours</p>\r\n\r\n<p>{{ course.day_name }}:&nbsp;Jour de la semaine o&ugrave; a lieu le cours</p>\r\n\r\n<p>{{ course.start_date&nbsp;}}: Date de d&eacute;but&nbsp;</p>\r\n\r\n<p>{{ course.end_date&nbsp;}}: Date de fin&nbsp;</p>\r\n\r\n<p>{{ course.start_time }}: Heure de d&eacute;but&nbsp;</p>\r\n\r\n<p>{{ course.end_date&nbsp;}}: Heure de fin</p>\r\n\r\n<p>{{ course.place }}: lieu du cours</p>\r\n\r\n<p><strong>Enfant</strong></p>\r\n\r\n<p>{{ child }}: nom de l&#39;enfant</p>"
+    }
+  },
+  {
+    "model": "mailer.genericemail",
+    "pk": 5,
+    "fields": {
+      "created": "2023-07-11T14:54:25.376Z",
+      "modified": "2023-07-11T14:54:25.376Z",
+      "subject": "Notification d'absence",
+      "subject_template": 1,
+      "body_template": 2,
+      "help_text": "<p>Les mails d&#39;absence peuvent &ecirc;tre&nbsp;envoy&eacute;s automatiquement 24h apr&egrave;s l&#39;entr&eacute;e d&#39;une absence non justifi&eacute;e. Le syst&egrave;me n&#39;est pas activ&eacute; pour Coppet (mais peut l&#39;&ecirc;tre en quelques minutes au besoin).</p>\r\n\r\n<p><strong>Site</strong></p>\r\n\r\n<p>{{ site_name }}: Nom du site</p>\r\n\r\n<p>{{ site_url }}: Adresse du site</p>\r\n\r\n<p>{{ signature }}: Signature de bas de mail</p>\r\n\r\n<p><strong>Cours</strong></p>\r\n\r\n<p>{{ course.short_name&nbsp;}}: Nom du cours sous la forme Activit&eacute; (num&eacute;ro du cours)</p>\r\n\r\n<p>{{ course.long_name }}: Nom du cours court + champ &quot;Nom affich&eacute;&quot;</p>\r\n\r\n<p>{{ course.number }}: Num&eacute;ro du cours</p>\r\n\r\n<p>{{ course.activity }}: Nom de l&#39;activit&eacute;</p>\r\n\r\n<p>{{ course.number_of_sessions }}: Nombre de sessions du cours</p>\r\n\r\n<p>{{ course.day_name }}:&nbsp;Jour de la semaine o&ugrave; a lieu le cours</p>\r\n\r\n<p>{{ course.start_date&nbsp;}}: Date de d&eacute;but&nbsp;</p>\r\n\r\n<p>{{ course.end_date&nbsp;}}: Date de fin&nbsp;</p>\r\n\r\n<p>{{ course.start_time }}: Heure de d&eacute;but&nbsp;</p>\r\n\r\n<p>{{ course.end_date&nbsp;}}: Heure de fin</p>\r\n\r\n<p>{{ course.place }}: lieu du cours</p>\r\n\r\n<p><strong>Enfant</strong></p>\r\n\r\n<p>{{ child }}: nom de l&#39;enfant</p>\r\n\r\n<p><strong>Absence</strong></p>\r\n\r\n<p>{{ session.date }}: date de l&#39;absence</p>"
+    }
+  },
+  {
+    "model": "flatpages.flatpage",
+    "pk": 1,
+    "fields": {
+      "url": "/",
+      "title": "Sport scolaire facultatif - EP Monthey",
+      "content": "<p>Le programme du sport scolaire facultatif s&rsquo;adresse aux élèves des Ecoles primaires de Monthey</p>\r\n\r\n<p>Il propose une série d&rsquo;activités en rapport avec le sport et se fixe pour objectifs : * de faire découvrir de nouvelles disciplines sportives ou artistiques :&nbsp;</p>\r\n\r\n<ul>\r\n\t<li>d&rsquo;encourager une pratique physique régulière</li>\r\n\t<li>de développer des valeurs éducatives fondamentales</li>\r\n</ul>\r\n\r\n<p>En règle générale, les élèves choisissent des activités nouvelles qu&rsquo;ils/qu&rsquo;elles ne pratiquent pas habituellement, dans le but, en cas d&rsquo;intérêt marqué, de rejoindre les rangs d&rsquo;un club local.</p>\r\n\r\n<p>En participant, chaque enfant s&rsquo;<strong>engage à respecter les conditions de participation et, par son attitude, à faire en sorte que l&rsquo;activité soit bénéfique tant pour lui-même que pour l&rsquo;ensemble de ses camarades.</strong></p>\r\n\r\n<p>Nous souhaitons à toutes et tous beaucoup de plaisir dans la pratique des activités de ce programme que nous espérons varié et attrayant.</p>",
+      "enable_comments": false,
+      "template_name": "flatpages/home.html",
+      "registration_required": false,
+      "sites": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "flatpages.flatpage",
+    "pk": 2,
+    "fields": {
+      "url": "/protection-des-donnees/",
+      "title": "Protection des données",
+      "content": "<h2>1. G&eacute;n&eacute;ralit&eacute;s</h2>\r\n\r\n<p>Notre objectif est de fournir &agrave; vos enfants un acc&egrave;s &agrave; des activit&eacute;s extrascolaires. Dans ce cadre, nous avons besoin de certaines donn&eacute;es personnelles qui nous en permettent l&#39;organisation.<br />\r\nNous garantissons de traiter toutes les donn&eacute;es personnelles qui nous sont confi&eacute;es dans le respect de votre confiance et vous assurons que ces donn&eacute;es sont saisies avec le plus grand soin, trait&eacute;es de mani&egrave;re strictement confidentielle et utilis&eacute;es aux fins pour lesquelles elles ont &eacute;t&eacute; r&eacute;colt&eacute;es. Dans ce cadre, nous respectons les dispositions l&eacute;gales applicables et les principes &eacute;nonc&eacute;s ci-apr&egrave;s. En saisissant vos donn&eacute;es personnelles sur ces pages, vous d&eacute;clarez express&eacute;ment accepter que celles-ci soient trait&eacute;es selon ces principes.</p>\r\n\r\n<h2>2. Donn&eacute;es r&eacute;colt&eacute;es directement</h2>\r\n\r\n<p>Lors de votre inscription, nous recueillons aupr&egrave;s de vous les informations suivantes:</p>\r\n\r\n<h4>&Agrave; propos de vous, responsable l&eacute;gal de votre (vos) enfant(s)</h4>\r\n\r\n<ul>\r\n\t<li>Pr&eacute;nom</li>\r\n\t<li>Nom</li>\r\n\t<li>Email (utilis&eacute;e pour la correspondance au sujet des cours)</li>\r\n\t<li>Adresse postale</li>\r\n\t<li>Num&eacute;ro(s) de t&eacute;l&eacute;phone</li>\r\n</ul>\r\n\r\n<h4>&Agrave; propos de chaque enfant inscrit</h4>\r\n\r\n<ul>\r\n\t<li>Pr&eacute;nom</li>\r\n\t<li>Nom</li>\r\n\t<li>Sexe</li>\r\n\t<li>Date de naissance</li>\r\n\t<li>Nationalit&eacute; (CH, LI ou autre)</li>\r\n\t<li>Langue</li>\r\n\t<li>Informations scolaires (enseignant principal, &eacute;tablissement).</li>\r\n</ul>\r\n\r\n<p>&nbsp;</p>\r\n\r\n<h2>3. Enregistrement des donn&eacute;es d&#39;acc&egrave;s</h2>\r\n\r\n<h3>Cookies</h3>\r\n\r\n<p>Sur notre site, nous utilisons des cookies. Il s&rsquo;agit de petits fichiers qui sont enregistr&eacute;s dans votre ordinateur ou votre appareil mobile lorsque vous visitez notre site Internet.</p>\r\n\r\n<p>Les cookies que nous utilisons sont effac&eacute;s automatiquement de votre ordinateur ou de votre appareil mobile &agrave; la fin de la session de navigation (il s&rsquo;agit des cookies de session). Nous recourons par exemple &agrave; des cookies de session pour vous reconna&icirc;tre en tant qu&#39;utilisateur l&eacute;gitime de vos propres donn&eacute;es.</p>\r\n\r\n<h3>Fichier log</h3>\r\n\r\n<p>Lors de l&rsquo;acc&egrave;s &agrave; nos pages web, des donn&eacute;es g&eacute;n&eacute;rales sont enregistr&eacute;es dans un fichier log &agrave; des fins de statistiques. Cela concerne notamment:</p>\r\n\r\n<ul>\r\n\t<li>adresse IP</li>\r\n\t<li>date et heure de l&rsquo;acc&egrave;s</li>\r\n\t<li>nom du fichier requis</li>\r\n\t<li>&eacute;tat d&rsquo;acc&egrave;s (ok, contenu partiel, document introuvable, etc.)</li>\r\n\t<li>page depuis laquelle l&rsquo;acc&egrave;s a eu lieu</li>\r\n\t<li>domaine de premier niveau (*.ch, *.fr, *.com, etc.)</li>\r\n\t<li>navigateur web utilis&eacute;</li>\r\n\t<li>syst&egrave;me d&rsquo;exploitation utilis&eacute;</li>\r\n</ul>\r\n\r\n<p>Nous traitons ces donn&eacute;es sous forme anonyme, par exemple pour &eacute;tablir quels jours les acc&egrave;s sont les plus nombreux. Il n&rsquo;y a aucun examen des donn&eacute;es personnelles des fichiers log.</p>\r\n\r\n<h3>Outils de suivi et d&rsquo;analyse</h3>\r\n\r\n<p>Afin de mesurer et d&rsquo;&eacute;valuer l&rsquo;utilisation de nos services, nous utilisons diff&eacute;rents syst&egrave;mes techniques de suivi et d&rsquo;analyse. Ces mesures peuvent s&rsquo;effectuer de mani&egrave;re anonyme ou en fonction de la personne. Il se peut que les donn&eacute;es r&eacute;colt&eacute;es soient transmises par nos soins ou par les tiers fournissant ces syst&egrave;mes techniques &agrave; d&rsquo;autres tiers &agrave; des fins de traitement.</p>\r\n\r\n<p>L&rsquo;outil d&rsquo;analyse utilis&eacute; est Google Analytics, un service propos&eacute; par Google Inc. Par cons&eacute;quent, les donn&eacute;es saisies sont en g&eacute;n&eacute;ral transmises &agrave; un serveur de Google aux &Eacute;tats-Unis ou dans un autre pays tiers, les adresses IP &eacute;tant rendues anonymes de mani&egrave;re &agrave; ne plus pouvoir les associer &agrave; un appareil. L&rsquo;adresse IP transmise par votre navigateur dans le cadre de Google Analytics n&rsquo;est pas combin&eacute;e avec d&rsquo;autres donn&eacute;es de Google. Vous pouvez bloquer la collecte et le traitement de ces donn&eacute;es par Google Analytics en activant un cookie opt-out qui emp&ecirc;che toute saisie future de vos donn&eacute;es lorsque vous consultez ce site web. Vous trouverez des informations d&eacute;taill&eacute;es &agrave; ce sujet &agrave; l&rsquo;adresse: <a href=\"https://tools.google.com/dlpage/gaoptout?hl=fr\">https://tools.google.com/dlpage/gaoptout?hl=fr</a>.</p>\r\n\r\n<h2>4. Autres fins d&#39;utilisation</h2>\r\n\r\n<p>Outre la gestion de base des activit&eacute;s, nous traitons vos donn&eacute;es aux fins suivantes:</p>\r\n\r\n<h4>Communication g&eacute;n&eacute;rale</h4>\r\n\r\n<p>Nous nous r&eacute;servons le droit d&#39;utiliser vos donn&eacute;es afin de vous communiquer des informations g&eacute;n&eacute;rales (date d&#39;inscription de l&#39;ann&eacute;e suivante, &eacute;v&eacute;nement sp&eacute;cial...)</p>\r\n\r\n<h4>Gestion de chaque cours</h4>\r\n\r\n<p>Nous vous communiquons des informations sp&eacute;cifiques concernant les cours auxquels vos enfants sont inscrits (annulation, besoin de mat&eacute;riel sp&eacute;cial...).</p>\r\n\r\n<h2>5. S&eacute;curit&eacute; des donn&eacute;es</h2>\r\n\r\n<p><a href=\"https://beyondthewall.ch\">Beyond the Wall s&agrave;rl</a> est l&#39;entreprise en charge du d&eacute;veloppement et de la maintenance de notre plateforme. Cette entreprise recourt &agrave; des mesures de s&eacute;curit&eacute; techniques et organisationnelles afin de prot&eacute;ger les donn&eacute;es g&eacute;r&eacute;es contre toute manipulation, perte, destruction accidentelles ou intentionnelles ou contre un acc&egrave;s par des personnes non autoris&eacute;es selon l&rsquo;&eacute;tat actuel de la technique. Les mesures de s&eacute;curit&eacute; sont continuellement am&eacute;lior&eacute;es afin de r&eacute;pondre &agrave; l&rsquo;&eacute;volution technologique.</p>\r\n\r\n<p>Ni l&#39;organisateur des cours ni Beyond the Wall n&rsquo;endosse toutefois de responsabilit&eacute; pour la perte de donn&eacute;es ou leur prise de connaissance et utilisation par des personnes non autoris&eacute;es.</p>\r\n\r\n<h2>6. Transfert de vos donn&eacute;es personnelles &agrave; des tiers</h2>\r\n\r\n<p>De mani&egrave;re g&eacute;n&eacute;rale, nous ne transmettons &agrave; aucun tiers vos donn&eacute;es personnelles &agrave; l&#39;exception du cas suivant:</p>\r\n\r\n<p>&Agrave; des fins organisationnelles et statistiques, nous pouvons ponctuellement envoyer des donn&eacute;es sur certains de nos cours &agrave; <a href=\"http://www.jugendundsport.ch/fr/home.html\">Jeunesse+Sport</a>, le programme d&#39;encouragement du sport de la Conf&eacute;d&eacute;ration Suisse. Les donn&eacute;es envoy&eacute;es sont les suivantes:</p>\r\n\r\n<ul>\r\n\t<li>Nom du cours</li>\r\n\t<li>Nom de l&#39;enfant</li>\r\n\t<li>Pr&eacute;nom de l&#39;enfant</li>\r\n\t<li>Date de naissance de l&#39;enfant</li>\r\n\t<li>Adresse postale de l&#39;enfant</li>\r\n\t<li>Nationalit&eacute; de l&#39;enfant</li>\r\n\t<li>Langue de l&#39;enfant</li>\r\n</ul>\r\n\r\n<p>&nbsp;</p>\r\n\r\n<h2>7. Visibilit&eacute; de vos donn&eacute;es personnelles</h2>\r\n\r\n<p>Nous d&eacute;finissons quatre niveaux d&#39;acc&egrave;s aux donn&eacute;es: public, personnes inscrites au cours, moniteurs du cours et administrateurs des activit&eacute;s. Chaque niveau a acc&egrave;s aux informations suivantes:</p>\r\n\r\n<h3>Public</h3>\r\n\r\n<p>Nombre d&#39;inscrits par activit&eacute;.</p>\r\n\r\n<h3>Personnes inscrites au cours</h3>\r\n\r\n<p>Afin de permettre une meilleure organisation des d&eacute;placements entre parents, nous affichons quelques informations personnelles sur les autres inscrits de chaque cours. Un parent ne peut afficher ces informations que pour les cours auxquels l&#39;un de ses enfants est inscrit:</p>\r\n\r\n<ul>\r\n\t<li>Nom et pr&eacute;nom</li>\r\n\t<li>Informations scolaires</li>\r\n\t<li>Adresse email des parents</li>\r\n</ul>\r\n\r\n<p>&nbsp;</p>\r\n\r\n<h3>Moniteurs du cours</h3>\r\n\r\n<p>Afin d&#39;assurer notamment la s&eacute;curit&eacute; de chaque cours, les moniteurs ont acc&egrave;s aux informations suivantes sur les enfants inscrits:</p>\r\n\r\n<ul>\r\n\t<li>Nom et pr&eacute;nom de chaque enfant inscrit</li>\r\n\t<li>Informations scolaires</li>\r\n\t<li>Date de naissance</li>\r\n\t<li>Num&eacute;ros de t&eacute;l&eacute;phone des parents</li>\r\n\t<li>Adresse email des parents</li>\r\n</ul>\r\n\r\n<h3>Administrateurs</h3>\r\n\r\n<p>Toutes les informations personnelles.</p>\r\n\r\n<h2>8. Modification et suppression des donn&eacute;es</h2>\r\n\r\n<p>Chaque parent peut acc&eacute;der &agrave; et modifier en tout temps ses informations personnelles ainsi qu&#39;&agrave; celles de ses enfants. Il peut en outre demander la suppression de son compte via le <a href=\"/contact/\">formulaire de contact</a>.</p>\r\n\r\n<h2>9. Droit d&#39;acc&egrave;s</h2>\r\n\r\n<p>Chaque personne a le droit de demander &agrave; savoir si des donn&eacute;es lui concernant sont enregistr&eacute;es sur ce site, et lesquelles. Les requ&ecirc;tes correspondantes doivent &ecirc;tre adress&eacute;es via le <a href=\"/contact/\">formulaire de contact</a>. Toute autre question concernant les pr&eacute;sentes dispositions sur la protection des donn&eacute;es doit &eacute;galement &ecirc;tre envoy&eacute;e ce biais. Nous nous effor&ccedil;ons de r&eacute;pondre aux demandes le plus rapidement possible.</p>\r\n\r\n<h2>10. Modification des pr&eacute;sentes dispositions sur la protection des donn&eacute;es</h2>\r\n\r\n<p>Nous nous r&eacute;servons le droit de modifier &agrave; tout moment les pr&eacute;sentes dispositions sur la protection des donn&eacute;es. Toute modification sera publi&eacute;e sur les pages web de ce site.</p>",
+      "enable_comments": false,
+      "template_name": "",
+      "registration_required": false,
+      "sites": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "flatpages.flatpage",
+    "pk": 3,
+    "fields": {
+      "url": "/reglement/",
+      "title": "Règlement de participation",
+      "content": "<p><span style=\"color:#000099\"><strong>1. PRINCIPE</strong></span><br />\r\nL&rsquo;objectif principal des Activit&eacute;s Scolaires Facultatives (ASF) est de proposer la d&eacute;couverte d&rsquo;activit&eacute;s nouvelles et par l&agrave;, de donner aux enfants le go&ucirc;t des loisirs sociaux. Il n&rsquo;est donc, en principe, pas souhaitable que l&rsquo;&eacute;l&egrave;ve s&rsquo;inscrive &agrave; une activit&eacute; d&eacute;j&agrave; pratiqu&eacute;e sur une base r&eacute;guli&egrave;re ou par le pass&eacute;.</p>\r\n\r\n<hr />\r\n<p><span style=\"color:#000099\"><strong>2. INSCRIPTION</strong></span><br />\r\nLes inscriptions sont ouvertes du&nbsp;&nbsp;... au ....&nbsp;<em>Le</em>&nbsp;<em>syst&egrave;me</em>&nbsp;<em>accepte</em>&nbsp;<em>toutes</em>&nbsp;<em>les</em>&nbsp;<em>modifications</em>&nbsp;<em>jusqu&#39;&agrave; cette date.</em><br />\r\n<strong>Au pr&eacute;alable, il est possible de consulter le programme des cours &agrave; partir du .... et de mettre &agrave; jour ou cr&eacute;er son compte d&egrave;s ce moment.</strong><br />\r\n<span style=\"color:#e74c3c\"><strong><em>ATTENTION - lorsque l&#39;utilisateur est pass&eacute; &agrave; l&#39;&eacute;tape du paiement, il n&#39;est plus possible de supprimer une inscription. Les nouvelles inscriptions sont toujours possibles (sur toute la dur&eacute;e de la p&eacute;riode d&#39;inscription) et g&eacute;n&egrave;rent simplement une nouvelle facture.</em></strong></span></p>\r\n\r\n<hr />\r\n<p><span style=\"color:#000099\"><strong>3. CONVOCATION</strong></span><br />\r\nTous les cours ne d&eacute;butant pas simultan&eacute;ment, chaque enfant est convoqu&eacute; par courriel avant le d&eacute;but de chaque cours.<br />\r\nLes documents sont envoy&eacute;s &agrave; l&rsquo;adresse de courriel communiqu&eacute;e lors de la cr&eacute;ation du compte de la famille.</p>\r\n\r\n<p><span style=\"color:#000099\"><strong>4. FINANCE D&#39;INSCRIPTION</strong></span><br />\r\nUne modeste finance d&#39;inscription est per&ccedil;ue pour chaque cours et permet de couvrir les frais administratifs, d&#39;organisation et de gestion.<br />\r\nElle est vers&eacute;e &agrave; la suite de l&rsquo;inscription en ligne et valide l&rsquo;inscription.<br />\r\n<strong><em>Aucun remboursement ne pourra &ecirc;tre demand&eacute;&nbsp;en cas de d&eacute;sistement.</em></strong></p>\r\n\r\n<hr />\r\n<p><span style=\"color:#000099\"><strong>5. CONDITIONS DE PARTICIPATION</strong></span><br />\r\nEn s&rsquo;inscrivant &agrave; un cours, l&rsquo;enfant s&rsquo;engage &agrave; le suivre r&eacute;guli&egrave;rement et, par son comportement, &agrave; en assurer le bon d&eacute;roulement. L&rsquo;organisateur se r&eacute;serve le droit, en cas d&rsquo;indiscipline grave ou r&eacute;p&eacute;t&eacute;e, d&rsquo;exclure un enfant d&rsquo;un ou plusieurs cours.<br />\r\nEn cas d&rsquo;absence, un message d&#39;information (courriel/SMS) sera adress&eacute; au moniteur ou &agrave; la monitrice du cours concern&eacute;.</p>\r\n\r\n<hr />\r\n<p><span style=\"color:#000099\"><strong>6. TRANSPORT</strong></span><br />\r\nLe transport des &eacute;l&egrave;ves sur le lieu de l&rsquo;activit&eacute; est &agrave; la charge et sous la responsabilit&eacute; des parents/du r&eacute;pondant l&eacute;gal.<br />\r\nPour les activit&eacute;s de ski de fond, le transport est organis&eacute; et pris en charge par l&rsquo;organisateur.</p>\r\n\r\n<hr />\r\n<p><span style=\"color:#000099\"><strong>7. ASSURANCE</strong></span><br />\r\nLes &eacute;l&egrave;ves sont assur&eacute;s contre les accidents &agrave; titre priv&eacute;. Tout accident est annonc&eacute; &agrave; la Direction des &eacute;coles dans les meilleurs d&eacute;lais.</p>",
+      "enable_comments": false,
+      "template_name": "",
+      "registration_required": false,
+      "sites": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "wizard.wizardstep",
+    "pk": 1,
+    "fields": {
+      "created": "2024-10-03T16:28:13.380Z",
+      "modified": "2024-10-03T16:29:03.723Z",
+      "title": "Compte",
+      "subtitle": "",
+      "lead": "",
+      "link_display": "",
+      "description": "",
+      "slug": "user-create",
+      "position": 1,
+      "display_in_navigation": true,
+      "editable_in_backend": false
+    }
+  },
+  {
+    "model": "wizard.wizardstep",
+    "pk": 2,
+    "fields": {
+      "created": "2024-10-01T16:05:38.268Z",
+      "modified": "2024-10-07T15:56:11.112Z",
+      "title": "Compte",
+      "subtitle": "",
+      "lead": "",
+      "link_display": "",
+      "description": "Veuillez vérifier vos informations",
+      "slug": "user-update",
+      "position": 2,
+      "display_in_navigation": true,
+      "editable_in_backend": true
+    }
+  },
+  {
+    "model": "wizard.wizardstep",
+    "pk": 3,
+    "fields": {
+      "created": "2024-10-01T16:05:49.750Z",
+      "modified": "2024-10-29T16:45:24.154Z",
+      "title": "Enfants",
+      "subtitle": "",
+      "lead": "",
+      "link_display": "Enfants",
+      "description": "Veuillez ajouter tous vos enfants pour poursuivre l'inscription.",
+      "slug": "children",
+      "position": 3,
+      "display_in_navigation": true,
+      "editable_in_backend": true
+    }
+  },
+  {
+    "model": "wizard.wizardstep",
+    "pk": 4,
+    "fields": {
+      "created": "2024-10-01T16:06:04.289Z",
+      "modified": "2024-10-08T14:40:45.193Z",
+      "title": "Activités",
+      "subtitle": "",
+      "lead": "",
+      "link_display": "Inscription aux activités",
+      "description": "",
+      "slug": "activities",
+      "position": 4,
+      "display_in_navigation": true,
+      "editable_in_backend": true
+    }
+  },
+  {
+    "model": "wizard.wizardstep",
+    "pk": 5,
+    "fields": {
+      "created": "2024-10-30T10:58:14.983Z",
+      "modified": "2024-10-30T16:25:15.150Z",
+      "title": "Questions",
+      "subtitle": "",
+      "lead": "",
+      "link_display": "",
+      "description": "",
+      "slug": "questions",
+      "position": 5,
+      "display_in_navigation": false,
+      "editable_in_backend": false
+    }
+  },
+  {
+    "model": "wizard.wizardstep",
+    "pk": 6,
+    "fields": {
+      "created": "2024-10-09T09:28:51.633Z",
+      "modified": "2024-10-29T17:13:48.394Z",
+      "title": "Questions additionnelles",
+      "subtitle": "",
+      "lead": "",
+      "link_display": "",
+      "description": "",
+      "slug": "additional-questions",
+      "position": 6,
+      "display_in_navigation": true,
+      "editable_in_backend": true
+    }
+  },
+  {
+    "model": "wizard.wizardstep",
+    "pk": 7,
+    "fields": {
+      "created": "2024-10-08T16:23:57.633Z",
+      "modified": "2024-10-29T16:35:51.818Z",
+      "title": "Contrôle",
+      "subtitle": "",
+      "lead": "",
+      "link_display": "",
+      "description": "Veuillez vérifier les informations ci-dessous avant de confirmer vos inscriptions.",
+      "slug": "confirmation",
+      "position": 7,
+      "display_in_navigation": true,
+      "editable_in_backend": false
+    }
+  },
+  {
+    "model": "wizard.wizardstep",
+    "pk": 8,
+    "fields": {
+      "created": "2024-10-09T09:29:45.656Z",
+      "modified": "2024-10-29T15:34:48.872Z",
+      "title": "Paiement",
+      "subtitle": "",
+      "lead": "",
+      "link_display": "",
+      "description": "",
+      "slug": "payment",
+      "position": 8,
+      "display_in_navigation": true,
+      "editable_in_backend": false
+    }
+  },
+  {
+    "model": "wizard.wizardstep",
+    "pk": 9,
+    "fields": {
+      "created": "2024-12-05T10:54:00.208Z",
+      "modified": "2024-12-05T17:01:15.961Z",
+      "title": "Échec du paiement",
+      "subtitle": "",
+      "lead": "",
+      "link_display": "",
+      "description": "",
+      "slug": "payment-failure",
+      "position": 9,
+      "display_in_navigation": false,
+      "editable_in_backend": false
+    }
+  },
+  {
+    "model": "wizard.wizardstep",
+    "pk": 10,
+    "fields": {
+      "created": "2024-12-05T16:47:53.699Z",
+      "modified": "2024-12-05T17:01:20.605Z",
+      "title": "Paiement réussi",
+      "subtitle": "",
+      "lead": "",
+      "link_display": "",
+      "description": "",
+      "slug": "payment-success",
+      "position": 10,
+      "display_in_navigation": false,
+      "editable_in_backend": false
+    }
   }
-},
-{
-  "model": "dbtemplates.template",
-  "pk": 2,
-  "fields": {
-    "name": "mailer/absence_notification.txt",
-    "content": "{% load duration mail_tags %}\r\nMadame, Monsieur,\r\n\r\nVotre enfant, {{ child }}, était absent lors du cours {{ course.short_name }} du {{ session.date|date:\"j F Y\" }} :\r\n\r\nNous vous remercions, à l'avenir de transmettre une excuse par SMS au moniteur:\r\n{% for instructor in course.instructors.all %}\r\n* {{ instructor.full_name }}: {{ instructor.best_phone }}\r\n{% endfor%}\r\n\r\nEn restant à votre disposition pour tout complément d'information, nous vous adressons, Madame, Monsieur, nos cordiaux messages.\r\n\r\n{{ signature }}",
-    "creation_date": "2023-07-11T07:53:51Z",
-    "last_changed": "2023-07-11T07:54:11.819Z",
-    "sites": []
-  }
-},
-{
-  "model": "dbtemplates.template",
-  "pk": 3,
-  "fields": {
-    "name": "mailer/course_begin_subject.txt",
-    "content": "{{ site_name }} - convocation pour le cours {{ course.short_name }}",
-    "creation_date": "2023-07-11T07:54:21Z",
-    "last_changed": "2023-07-11T07:54:30.925Z",
-    "sites": []
-  }
-},
-{
-  "model": "dbtemplates.template",
-  "pk": 4,
-  "fields": {
-    "name": "mailer/course_begin.txt",
-    "content": "{% load duration mail_tags %}\r\nMadame, Monsieur,\r\n\r\nNous avons le plaisir d'inviter votre enfant {{ child }} à la première séance du cours suivant :\r\n\r\n{{ course.short_name }}\r\nMoniteur{{ course.instructors.count|pluralize:\"s\" }} : {% for instructor in course.instructors.all %}{{ instructor.full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}\r\nJour : {{ course.day_name }} de {{ course.start_time|time:\"H:i\" }} à {{ course.end_time|time:\"H:i\" }}\r\nDate 1ère séance : {{ course.start_date | date:\"j F Y\" }}\r\nNombre de séances : {{ course.number_of_sessions }}\r\nRendez-vous/lieu du cours : {{ course.place }}\r\n{% if course.activity.informations %}\r\nInformations:\r\n{{ course.activity.informations|striptags|unescape }}\r\nVous pouvez retrouver ces informations sur: {{ site_url }}{% url \"registrations:registrations_registered_activities\" %}\r\n{% endif %}\r\n\r\nLa monitrice/le moniteur vous donnera toutes les informations en lien avec son cours lors de la 1ère séance.\r\n\r\nEn restant à votre disposition pour tout complément d'information, nous vous adressons, Madame, Monsieur, nos cordiaux messages.\r\n\r\n{{ signature }}",
-    "creation_date": "2023-07-11T07:54:41Z",
-    "last_changed": "2023-07-11T07:54:53.006Z",
-    "sites": []
-  }
-},
-{
-  "model": "dbtemplates.template",
-  "pk": 5,
-  "fields": {
-    "name": "mailer/instructor_subject.txt",
-    "content": "{{ site_name }} - documents monitrice/moniteur cours: {{ course.number }} - {{ course.activity.name }}",
-    "creation_date": "2023-07-11T07:54:55Z",
-    "last_changed": "2023-07-11T07:55:16.889Z",
-    "sites": []
-  }
-},
-{
-  "model": "dbtemplates.template",
-  "pk": 6,
-  "fields": {
-    "name": "mailer/instructor.txt",
-    "content": "Chère monitrice, cher moniteur,\r\n\r\nNous te remercions de t'engager dans l'animation d'une activité du sport scolaire facultatif primaire au sein de notre région et ainsi contribuer à promouvoir la pratique sportive auprès de nos élèves.\r\nTu trouveras en pièce jointe tous les documents relatifs au cours dont tu as la charge et qui débute prochainement :\r\n\r\n• liste de tous les cours organisés, avec les informations détaillées de lieux, dates et heures\r\n• liste des participants avec les n° en cas d'urgence\r\n• liste de présence à retourner dès la fin du cours\r\n• feuille de décompte monitrice/moniteur, à retourner dès la fin du cours également\r\n\r\nTu as la responsabilité de prendre toutes les mesures nécessaires lors d'une absence éventuelle à l'une ou l'autre de tes leçons, soit :\r\n\r\n• dans toute la mesure du possible, te faire remplacer par une personne compétente\r\n• dans l'impossibilité de te faire remplacer, prévenir tous les participants afin d'éviter le déplacement inutile de ces derniers sur le lieu du cours\r\n• communiquer ton absence au secrétariat primaire (022-557.58.58)\r\n\r\nAfin que nous puissions te régler dans les meilleurs délais, nous te prions de nous retourner, dès la fin d'un cours, mais au plus tard à fin juin, les documents suivants, dûment complétés :\r\n\r\n• feuille de décompte, à compléter à l'écran, imprimer et signer - 1 feuille par cours et par monitrice/moniteur\r\n• liste de présence\r\n\r\nNous restons à ta disposition pour tout complément d'information, te souhaitons bonne réception de ce courriel et plein succès dans ces activités.\r\n\r\nMeilleurs messages,\r\n\r\n{{ signature }}",
-    "creation_date": "2023-07-11T07:55:30Z",
-    "last_changed": "2023-07-11T07:55:39.519Z",
-    "sites": []
-  }
-},
-{
-  "model": "dbtemplates.template",
-  "pk": 7,
-  "fields": {
-    "name": "mailer/need_confirmation_subject.txt",
-    "content": "Inscriptions au sport scolaire facultatif non confirmées - action requise",
-    "creation_date": "2023-07-11T07:55:48Z",
-    "last_changed": "2023-07-11T07:55:55.629Z",
-    "sites": []
-  }
-},
-{
-  "model": "dbtemplates.template",
-  "pk": 8,
-  "fields": {
-    "name": "mailer/need_confirmation.txt",
-    "content": "Madame, Monsieur,\r\n\r\nEn passant en revue les inscriptions aux sports scolaires facultatifs, nous constatons que les inscriptions pour votre/vos enfant/s ne sont à ce jour pas encore confirmées.\r\n\r\nNous vous serions reconnaissants de bien vouloir contrôler les inscriptions que vous avez saisies, de les modifier si nécessaire et de confirmer d'ici à demain soir afin que nous puissions terminer le processus d'inscription.\r\n\r\nLe site des inscriptions: {{ url }}\r\n\r\nEn vous remerciant de votre collaboration, nous vous adressons nos cordiaux messages.\r\n\r\n\r\n{{ signature }}",
-    "creation_date": "2023-07-11T07:56:13Z",
-    "last_changed": "2023-07-11T07:56:23.247Z",
-    "sites": []
-  }
-},
-{
-  "model": "dbtemplates.template",
-  "pk": 9,
-  "fields": {
-    "name": "mailer/notpaid_subject.txt",
-    "content": "Inscription au sport scolaire facultatif - rappel",
-    "creation_date": "2023-07-11T07:56:32Z",
-    "last_changed": "2023-07-11T07:56:40.279Z",
-    "sites": []
-  }
-},
-{
-  "model": "dbtemplates.template",
-  "pk": 10,
-  "fields": {
-    "name": "mailer/notpaid.txt",
-    "content": "{% load i18n l10n humanize sekizai_tags switzerland %}Madame, Monsieur,\r\n\r\nÀ ce jour jour et sauf erreur de notre part, nous n’avons pas reçu vo{{ recipient.bills.waiting.count | pluralize:\"tre,s\" }} paiement{{ recipient.bills.waiting.count | pluralize }} pour les activités facultatives de votre-vos enfant-s.\r\nNous vous saurions gré d’effectuer vo{{ recipient.bills.waiting.count | pluralize:\"tre,s\" }} versement{{ recipient.bills.waiting.count | pluralize }}:\r\n\r\n{% for bill in recipient.bills.waiting %}\r\nIdentifiant: {{ bill.billing_identifier }}\r\nTotal dû: {{ bill.total|money }}\r\n{% if recipient.bills.waiting.count > 1 and not forloop.last %}\r\n---------------------------\r\n{% endif %}\r\n{% endfor %}\r\n\r\nsur le compte :\r\nIBAN {{ iban }}\r\n\r\nbénéficiaire (titulaire du compte) :\r\n{{ address }}\r\n\r\nEn vous remerciant d’ores et déjà de votre prompte réaction, nous vous adressons nos cordiaux messages.\r\n\r\n{{ signature }}",
-    "creation_date": "2023-07-11T07:56:51Z",
-    "last_changed": "2023-07-11T07:57:00.471Z",
-    "sites": []
-  }
-},
-{
-  "model": "dbtemplates.template",
-  "pk": 11,
-  "fields": {
-    "name": "registrations/billing_partial.html",
-    "content": "{% load i18n l10n humanize sekizai_tags switzerland %}\r\n\r\n<p>Les inscriptions seront définitivement validées à la suite du règlement de la finance de participation pour les cours choisis.</p>\r\n<p>Le montant total pour vos inscriptions s'élève à : <strong>{{ bill.total|money }}</strong></p>\r\n<p>L'identifiant pour votre transaction est le suivant : <strong>{{ bill.billing_identifier }}</strong></p>\r\n<p>Nous vous remercions de verser cette somme d’ici au <strong>{{ delay|date:\"j F Y\" }}</strong> en privilégiant le virement bancaire sur le compte : </p>\r\n<div class=\"well\">\r\n  <dl class=\"dl-horizontal\">\r\n    <dt>Montant</dt><dd>{{ bill.total|money }}</dd>\r\n    <dt>Identifiant</dt><dd>{{ bill.billing_identifier }}</dd>\r\n    <dt>IBAN</dt><dd>{{ iban }}</dd>\r\n    <dt>Adresse</dt><dd>{{ address|linebreaksbr }}</dd>\r\n  </dl>\r\n</div>\r\n<p>en indiquant, sous communications ou motif, votre identifiant de transaction.</p>\r\n\r\n<p>Si nécessaire, il est également possible de déposer cette somme au secrétariat des écoles, Chemin du Chaucey 7, 1296 Coppet, en se munissant du présent récapitulatif.</p>\r\n<p><strong>Aucun remboursement ne pourra être demandé en cas de désistement.</strong></p>",
-    "creation_date": "2023-07-11T07:57:09Z",
-    "last_changed": "2023-07-11T07:57:16.777Z",
-    "sites": []
-  }
-},
-{
-  "model": "mailer.genericemail",
-  "pk": 1,
-  "fields": {
-    "created": "2023-07-11T14:52:47.052Z",
-    "modified": "2023-07-11T14:52:47.052Z",
-    "subject": "Rappel de paiement",
-    "subject_template": 9,
-    "body_template": 10,
-    "help_text": "<p>{{ site_name }}: Nom du site</p>\r\n\r\n<p>{{ site_url }}: Adresse du site</p>\r\n\r\n<p>{{ delay }}: D&eacute;lai de paiement (jours)</p>\r\n\r\n<p>{{ iban&nbsp;}}: Compte bancaire</p>\r\n\r\n<p>{{ address }}: Adresse de paiement</p>\r\n\r\n<p>{{ place&nbsp;}}: NPA / ville de paiement</p>"
-  }
-},
-{
-  "model": "mailer.genericemail",
-  "pk": 2,
-  "fields": {
-    "created": "2023-07-11T14:53:12.347Z",
-    "modified": "2023-07-11T14:53:12.347Z",
-    "subject": "Validation des inscriptions",
-    "subject_template": 7,
-    "body_template": 8,
-    "help_text": "<p>Le parent n&#39;a pas encore valid&eacute; ses inscriptions, ce mail lui est envoy&eacute; (lien&nbsp;<a href=\"https://coppet.kepchup.ch/backend/mail/need-confirmation\">email de rappel</a>&nbsp;depuis la page d&#39;accueil).</p>\r\n\r\n<p>{{ url }} : Lien vers la page o&ugrave; le parent peut valider son inscription</p>\r\n\r\n<p>{{ signature }}: Signature de bas de mail</p>"
-  }
-},
-{
-  "model": "mailer.genericemail",
-  "pk": 3,
-  "fields": {
-    "created": "2023-07-11T14:53:38.104Z",
-    "modified": "2023-07-11T14:53:38.104Z",
-    "subject": "Données du moniteur",
-    "subject_template": 5,
-    "body_template": 6,
-    "help_text": "<p>Cet email est envoy&eacute; via le lien &quot;Envoyer les infos du cours au moniteur&quot;.</p>\r\n\r\n<p>{{ site_name }}: Nom du site (Sports scolaires facultatifs des villes de Nyon et Prangins)</p>\r\n\r\n<p>{{ site_url }}: Adresse du site</p>\r\n\r\n<p>{{ signature }}: Signature de bas de mail</p>\r\n\r\n<p>{{ course.short_name&nbsp;}}: Nom du cours sous la forme Activit&eacute; (num&eacute;ro du cours)</p>\r\n\r\n<p>{{ course.long_name }}: Nom du cours court + champ &quot;Nom affich&eacute;&quot;</p>\r\n\r\n<p>{{ course.number }}: Num&eacute;ro du cours</p>\r\n\r\n<p>{{ course.activity }}: Nom de l&#39;activit&eacute;</p>\r\n\r\n<p>{{ course.number_of_sessions }}: Nombre de sessions du cours</p>\r\n\r\n<p>{{ course.start_date&nbsp;}}: Date de d&eacute;but&nbsp;</p>\r\n\r\n<p>{{ course.end_date&nbsp;}}: Date de fin&nbsp;</p>\r\n\r\n<p>{{ course.start_time }}: Heure de d&eacute;but&nbsp;</p>\r\n\r\n<p>{{ course.end_date&nbsp;}}: Heure de fin</p>\r\n\r\n<p>{{ course.place }}: lieu du cours</p>"
-  }
-},
-{
-  "model": "mailer.genericemail",
-  "pk": 4,
-  "fields": {
-    "created": "2023-07-11T14:54:00.888Z",
-    "modified": "2023-07-11T14:54:00.888Z",
-    "subject": "Convocation du cours",
-    "subject_template": 3,
-    "body_template": 4,
-    "help_text": "<p>Cet email est envoy&eacute; via le lien &quot;Envoyer l&#39;email de convocation&quot;.</p>\r\n\r\n<p><strong>Site</strong></p>\r\n\r\n<p>{{ site_name }}: Nom du site (Sports scolaires facultatifs des villes de Nyon et Prangins)</p>\r\n\r\n<p>{{ site_url }}: Adresse du site</p>\r\n\r\n<p>{{ signature }}: Signature de bas de mail</p>\r\n\r\n<p><strong>Cours</strong></p>\r\n\r\n<p>{{ course.short_name&nbsp;}}: Nom du cours sous la forme Activit&eacute; (num&eacute;ro du cours)</p>\r\n\r\n<p>{{ course.long_name }}: Nom du cours court + champ &quot;Nom affich&eacute;&quot;</p>\r\n\r\n<p>{{ course.number }}: Num&eacute;ro du cours</p>\r\n\r\n<p>{{ course.activity }}: Nom de l&#39;activit&eacute;</p>\r\n\r\n<p>{{ course.number_of_sessions }}: Nombre de sessions du cours</p>\r\n\r\n<p>{{ course.day_name }}:&nbsp;Jour de la semaine o&ugrave; a lieu le cours</p>\r\n\r\n<p>{{ course.start_date&nbsp;}}: Date de d&eacute;but&nbsp;</p>\r\n\r\n<p>{{ course.end_date&nbsp;}}: Date de fin&nbsp;</p>\r\n\r\n<p>{{ course.start_time }}: Heure de d&eacute;but&nbsp;</p>\r\n\r\n<p>{{ course.end_date&nbsp;}}: Heure de fin</p>\r\n\r\n<p>{{ course.place }}: lieu du cours</p>\r\n\r\n<p><strong>Enfant</strong></p>\r\n\r\n<p>{{ child }}: nom de l&#39;enfant</p>"
-  }
-},
-{
-  "model": "mailer.genericemail",
-  "pk": 5,
-  "fields": {
-    "created": "2023-07-11T14:54:25.376Z",
-    "modified": "2023-07-11T14:54:25.376Z",
-    "subject": "Notification d'absence",
-    "subject_template": 1,
-    "body_template": 2,
-    "help_text": "<p>Les mails d&#39;absence peuvent &ecirc;tre&nbsp;envoy&eacute;s automatiquement 24h apr&egrave;s l&#39;entr&eacute;e d&#39;une absence non justifi&eacute;e. Le syst&egrave;me n&#39;est pas activ&eacute; pour Coppet (mais peut l&#39;&ecirc;tre en quelques minutes au besoin).</p>\r\n\r\n<p><strong>Site</strong></p>\r\n\r\n<p>{{ site_name }}: Nom du site</p>\r\n\r\n<p>{{ site_url }}: Adresse du site</p>\r\n\r\n<p>{{ signature }}: Signature de bas de mail</p>\r\n\r\n<p><strong>Cours</strong></p>\r\n\r\n<p>{{ course.short_name&nbsp;}}: Nom du cours sous la forme Activit&eacute; (num&eacute;ro du cours)</p>\r\n\r\n<p>{{ course.long_name }}: Nom du cours court + champ &quot;Nom affich&eacute;&quot;</p>\r\n\r\n<p>{{ course.number }}: Num&eacute;ro du cours</p>\r\n\r\n<p>{{ course.activity }}: Nom de l&#39;activit&eacute;</p>\r\n\r\n<p>{{ course.number_of_sessions }}: Nombre de sessions du cours</p>\r\n\r\n<p>{{ course.day_name }}:&nbsp;Jour de la semaine o&ugrave; a lieu le cours</p>\r\n\r\n<p>{{ course.start_date&nbsp;}}: Date de d&eacute;but&nbsp;</p>\r\n\r\n<p>{{ course.end_date&nbsp;}}: Date de fin&nbsp;</p>\r\n\r\n<p>{{ course.start_time }}: Heure de d&eacute;but&nbsp;</p>\r\n\r\n<p>{{ course.end_date&nbsp;}}: Heure de fin</p>\r\n\r\n<p>{{ course.place }}: lieu du cours</p>\r\n\r\n<p><strong>Enfant</strong></p>\r\n\r\n<p>{{ child }}: nom de l&#39;enfant</p>\r\n\r\n<p><strong>Absence</strong></p>\r\n\r\n<p>{{ session.date }}: date de l&#39;absence</p>"
-  }
-},
-{
-  "model": "flatpages.flatpage",
-  "pk": 1,
-  "fields": {
-    "url": "/",
-    "title": "Sport scolaire facultatif - EP Monthey",
-    "content": "<p>Le programme du sport scolaire facultatif s&rsquo;adresse aux élèves des Ecoles primaires de Monthey</p>\r\n\r\n<p>Il propose une série d&rsquo;activités en rapport avec le sport et se fixe pour objectifs : * de faire découvrir de nouvelles disciplines sportives ou artistiques :&nbsp;</p>\r\n\r\n<ul>\r\n\t<li>d&rsquo;encourager une pratique physique régulière</li>\r\n\t<li>de développer des valeurs éducatives fondamentales</li>\r\n</ul>\r\n\r\n<p>En règle générale, les élèves choisissent des activités nouvelles qu&rsquo;ils/qu&rsquo;elles ne pratiquent pas habituellement, dans le but, en cas d&rsquo;intérêt marqué, de rejoindre les rangs d&rsquo;un club local.</p>\r\n\r\n<p>En participant, chaque enfant s&rsquo;<strong>engage à respecter les conditions de participation et, par son attitude, à faire en sorte que l&rsquo;activité soit bénéfique tant pour lui-même que pour l&rsquo;ensemble de ses camarades.</strong></p>\r\n\r\n<p>Nous souhaitons à toutes et tous beaucoup de plaisir dans la pratique des activités de ce programme que nous espérons varié et attrayant.</p>",
-    "enable_comments": false,
-    "template_name": "flatpages/home.html",
-    "registration_required": false,
-    "sites": [
-      1
-    ]
-  }
-},
-{
-  "model": "flatpages.flatpage",
-  "pk": 2,
-  "fields": {
-    "url": "/protection-des-donnees/",
-    "title": "Protection des données",
-    "content": "<h2>1. G&eacute;n&eacute;ralit&eacute;s</h2>\r\n\r\n<p>Notre objectif est de fournir &agrave; vos enfants un acc&egrave;s &agrave; des activit&eacute;s extrascolaires. Dans ce cadre, nous avons besoin de certaines donn&eacute;es personnelles qui nous en permettent l&#39;organisation.<br />\r\nNous garantissons de traiter toutes les donn&eacute;es personnelles qui nous sont confi&eacute;es dans le respect de votre confiance et vous assurons que ces donn&eacute;es sont saisies avec le plus grand soin, trait&eacute;es de mani&egrave;re strictement confidentielle et utilis&eacute;es aux fins pour lesquelles elles ont &eacute;t&eacute; r&eacute;colt&eacute;es. Dans ce cadre, nous respectons les dispositions l&eacute;gales applicables et les principes &eacute;nonc&eacute;s ci-apr&egrave;s. En saisissant vos donn&eacute;es personnelles sur ces pages, vous d&eacute;clarez express&eacute;ment accepter que celles-ci soient trait&eacute;es selon ces principes.</p>\r\n\r\n<h2>2. Donn&eacute;es r&eacute;colt&eacute;es directement</h2>\r\n\r\n<p>Lors de votre inscription, nous recueillons aupr&egrave;s de vous les informations suivantes:</p>\r\n\r\n<h4>&Agrave; propos de vous, responsable l&eacute;gal de votre (vos) enfant(s)</h4>\r\n\r\n<ul>\r\n\t<li>Pr&eacute;nom</li>\r\n\t<li>Nom</li>\r\n\t<li>Email (utilis&eacute;e pour la correspondance au sujet des cours)</li>\r\n\t<li>Adresse postale</li>\r\n\t<li>Num&eacute;ro(s) de t&eacute;l&eacute;phone</li>\r\n</ul>\r\n\r\n<h4>&Agrave; propos de chaque enfant inscrit</h4>\r\n\r\n<ul>\r\n\t<li>Pr&eacute;nom</li>\r\n\t<li>Nom</li>\r\n\t<li>Sexe</li>\r\n\t<li>Date de naissance</li>\r\n\t<li>Nationalit&eacute; (CH, LI ou autre)</li>\r\n\t<li>Langue</li>\r\n\t<li>Informations scolaires (enseignant principal, &eacute;tablissement).</li>\r\n</ul>\r\n\r\n<p>&nbsp;</p>\r\n\r\n<h2>3. Enregistrement des donn&eacute;es d&#39;acc&egrave;s</h2>\r\n\r\n<h3>Cookies</h3>\r\n\r\n<p>Sur notre site, nous utilisons des cookies. Il s&rsquo;agit de petits fichiers qui sont enregistr&eacute;s dans votre ordinateur ou votre appareil mobile lorsque vous visitez notre site Internet.</p>\r\n\r\n<p>Les cookies que nous utilisons sont effac&eacute;s automatiquement de votre ordinateur ou de votre appareil mobile &agrave; la fin de la session de navigation (il s&rsquo;agit des cookies de session). Nous recourons par exemple &agrave; des cookies de session pour vous reconna&icirc;tre en tant qu&#39;utilisateur l&eacute;gitime de vos propres donn&eacute;es.</p>\r\n\r\n<h3>Fichier log</h3>\r\n\r\n<p>Lors de l&rsquo;acc&egrave;s &agrave; nos pages web, des donn&eacute;es g&eacute;n&eacute;rales sont enregistr&eacute;es dans un fichier log &agrave; des fins de statistiques. Cela concerne notamment:</p>\r\n\r\n<ul>\r\n\t<li>adresse IP</li>\r\n\t<li>date et heure de l&rsquo;acc&egrave;s</li>\r\n\t<li>nom du fichier requis</li>\r\n\t<li>&eacute;tat d&rsquo;acc&egrave;s (ok, contenu partiel, document introuvable, etc.)</li>\r\n\t<li>page depuis laquelle l&rsquo;acc&egrave;s a eu lieu</li>\r\n\t<li>domaine de premier niveau (*.ch, *.fr, *.com, etc.)</li>\r\n\t<li>navigateur web utilis&eacute;</li>\r\n\t<li>syst&egrave;me d&rsquo;exploitation utilis&eacute;</li>\r\n</ul>\r\n\r\n<p>Nous traitons ces donn&eacute;es sous forme anonyme, par exemple pour &eacute;tablir quels jours les acc&egrave;s sont les plus nombreux. Il n&rsquo;y a aucun examen des donn&eacute;es personnelles des fichiers log.</p>\r\n\r\n<h3>Outils de suivi et d&rsquo;analyse</h3>\r\n\r\n<p>Afin de mesurer et d&rsquo;&eacute;valuer l&rsquo;utilisation de nos services, nous utilisons diff&eacute;rents syst&egrave;mes techniques de suivi et d&rsquo;analyse. Ces mesures peuvent s&rsquo;effectuer de mani&egrave;re anonyme ou en fonction de la personne. Il se peut que les donn&eacute;es r&eacute;colt&eacute;es soient transmises par nos soins ou par les tiers fournissant ces syst&egrave;mes techniques &agrave; d&rsquo;autres tiers &agrave; des fins de traitement.</p>\r\n\r\n<p>L&rsquo;outil d&rsquo;analyse utilis&eacute; est Google Analytics, un service propos&eacute; par Google Inc. Par cons&eacute;quent, les donn&eacute;es saisies sont en g&eacute;n&eacute;ral transmises &agrave; un serveur de Google aux &Eacute;tats-Unis ou dans un autre pays tiers, les adresses IP &eacute;tant rendues anonymes de mani&egrave;re &agrave; ne plus pouvoir les associer &agrave; un appareil. L&rsquo;adresse IP transmise par votre navigateur dans le cadre de Google Analytics n&rsquo;est pas combin&eacute;e avec d&rsquo;autres donn&eacute;es de Google. Vous pouvez bloquer la collecte et le traitement de ces donn&eacute;es par Google Analytics en activant un cookie opt-out qui emp&ecirc;che toute saisie future de vos donn&eacute;es lorsque vous consultez ce site web. Vous trouverez des informations d&eacute;taill&eacute;es &agrave; ce sujet &agrave; l&rsquo;adresse: <a href=\"https://tools.google.com/dlpage/gaoptout?hl=fr\">https://tools.google.com/dlpage/gaoptout?hl=fr</a>.</p>\r\n\r\n<h2>4. Autres fins d&#39;utilisation</h2>\r\n\r\n<p>Outre la gestion de base des activit&eacute;s, nous traitons vos donn&eacute;es aux fins suivantes:</p>\r\n\r\n<h4>Communication g&eacute;n&eacute;rale</h4>\r\n\r\n<p>Nous nous r&eacute;servons le droit d&#39;utiliser vos donn&eacute;es afin de vous communiquer des informations g&eacute;n&eacute;rales (date d&#39;inscription de l&#39;ann&eacute;e suivante, &eacute;v&eacute;nement sp&eacute;cial...)</p>\r\n\r\n<h4>Gestion de chaque cours</h4>\r\n\r\n<p>Nous vous communiquons des informations sp&eacute;cifiques concernant les cours auxquels vos enfants sont inscrits (annulation, besoin de mat&eacute;riel sp&eacute;cial...).</p>\r\n\r\n<h2>5. S&eacute;curit&eacute; des donn&eacute;es</h2>\r\n\r\n<p><a href=\"https://beyondthewall.ch\">Beyond the Wall s&agrave;rl</a> est l&#39;entreprise en charge du d&eacute;veloppement et de la maintenance de notre plateforme. Cette entreprise recourt &agrave; des mesures de s&eacute;curit&eacute; techniques et organisationnelles afin de prot&eacute;ger les donn&eacute;es g&eacute;r&eacute;es contre toute manipulation, perte, destruction accidentelles ou intentionnelles ou contre un acc&egrave;s par des personnes non autoris&eacute;es selon l&rsquo;&eacute;tat actuel de la technique. Les mesures de s&eacute;curit&eacute; sont continuellement am&eacute;lior&eacute;es afin de r&eacute;pondre &agrave; l&rsquo;&eacute;volution technologique.</p>\r\n\r\n<p>Ni l&#39;organisateur des cours ni Beyond the Wall n&rsquo;endosse toutefois de responsabilit&eacute; pour la perte de donn&eacute;es ou leur prise de connaissance et utilisation par des personnes non autoris&eacute;es.</p>\r\n\r\n<h2>6. Transfert de vos donn&eacute;es personnelles &agrave; des tiers</h2>\r\n\r\n<p>De mani&egrave;re g&eacute;n&eacute;rale, nous ne transmettons &agrave; aucun tiers vos donn&eacute;es personnelles &agrave; l&#39;exception du cas suivant:</p>\r\n\r\n<p>&Agrave; des fins organisationnelles et statistiques, nous pouvons ponctuellement envoyer des donn&eacute;es sur certains de nos cours &agrave; <a href=\"http://www.jugendundsport.ch/fr/home.html\">Jeunesse+Sport</a>, le programme d&#39;encouragement du sport de la Conf&eacute;d&eacute;ration Suisse. Les donn&eacute;es envoy&eacute;es sont les suivantes:</p>\r\n\r\n<ul>\r\n\t<li>Nom du cours</li>\r\n\t<li>Nom de l&#39;enfant</li>\r\n\t<li>Pr&eacute;nom de l&#39;enfant</li>\r\n\t<li>Date de naissance de l&#39;enfant</li>\r\n\t<li>Adresse postale de l&#39;enfant</li>\r\n\t<li>Nationalit&eacute; de l&#39;enfant</li>\r\n\t<li>Langue de l&#39;enfant</li>\r\n</ul>\r\n\r\n<p>&nbsp;</p>\r\n\r\n<h2>7. Visibilit&eacute; de vos donn&eacute;es personnelles</h2>\r\n\r\n<p>Nous d&eacute;finissons quatre niveaux d&#39;acc&egrave;s aux donn&eacute;es: public, personnes inscrites au cours, moniteurs du cours et administrateurs des activit&eacute;s. Chaque niveau a acc&egrave;s aux informations suivantes:</p>\r\n\r\n<h3>Public</h3>\r\n\r\n<p>Nombre d&#39;inscrits par activit&eacute;.</p>\r\n\r\n<h3>Personnes inscrites au cours</h3>\r\n\r\n<p>Afin de permettre une meilleure organisation des d&eacute;placements entre parents, nous affichons quelques informations personnelles sur les autres inscrits de chaque cours. Un parent ne peut afficher ces informations que pour les cours auxquels l&#39;un de ses enfants est inscrit:</p>\r\n\r\n<ul>\r\n\t<li>Nom et pr&eacute;nom</li>\r\n\t<li>Informations scolaires</li>\r\n\t<li>Adresse email des parents</li>\r\n</ul>\r\n\r\n<p>&nbsp;</p>\r\n\r\n<h3>Moniteurs du cours</h3>\r\n\r\n<p>Afin d&#39;assurer notamment la s&eacute;curit&eacute; de chaque cours, les moniteurs ont acc&egrave;s aux informations suivantes sur les enfants inscrits:</p>\r\n\r\n<ul>\r\n\t<li>Nom et pr&eacute;nom de chaque enfant inscrit</li>\r\n\t<li>Informations scolaires</li>\r\n\t<li>Date de naissance</li>\r\n\t<li>Num&eacute;ros de t&eacute;l&eacute;phone des parents</li>\r\n\t<li>Adresse email des parents</li>\r\n</ul>\r\n\r\n<h3>Administrateurs</h3>\r\n\r\n<p>Toutes les informations personnelles.</p>\r\n\r\n<h2>8. Modification et suppression des donn&eacute;es</h2>\r\n\r\n<p>Chaque parent peut acc&eacute;der &agrave; et modifier en tout temps ses informations personnelles ainsi qu&#39;&agrave; celles de ses enfants. Il peut en outre demander la suppression de son compte via le <a href=\"/contact/\">formulaire de contact</a>.</p>\r\n\r\n<h2>9. Droit d&#39;acc&egrave;s</h2>\r\n\r\n<p>Chaque personne a le droit de demander &agrave; savoir si des donn&eacute;es lui concernant sont enregistr&eacute;es sur ce site, et lesquelles. Les requ&ecirc;tes correspondantes doivent &ecirc;tre adress&eacute;es via le <a href=\"/contact/\">formulaire de contact</a>. Toute autre question concernant les pr&eacute;sentes dispositions sur la protection des donn&eacute;es doit &eacute;galement &ecirc;tre envoy&eacute;e ce biais. Nous nous effor&ccedil;ons de r&eacute;pondre aux demandes le plus rapidement possible.</p>\r\n\r\n<h2>10. Modification des pr&eacute;sentes dispositions sur la protection des donn&eacute;es</h2>\r\n\r\n<p>Nous nous r&eacute;servons le droit de modifier &agrave; tout moment les pr&eacute;sentes dispositions sur la protection des donn&eacute;es. Toute modification sera publi&eacute;e sur les pages web de ce site.</p>",
-    "enable_comments": false,
-    "template_name": "",
-    "registration_required": false,
-    "sites": [
-      1
-    ]
-  }
-},
-{
-  "model": "flatpages.flatpage",
-  "pk": 3,
-  "fields": {
-    "url": "/reglement/",
-    "title": "Règlement de participation",
-    "content": "<p><span style=\"color:#000099\"><strong>1. PRINCIPE</strong></span><br />\r\nL&rsquo;objectif principal des Activit&eacute;s Scolaires Facultatives (ASF) est de proposer la d&eacute;couverte d&rsquo;activit&eacute;s nouvelles et par l&agrave;, de donner aux enfants le go&ucirc;t des loisirs sociaux. Il n&rsquo;est donc, en principe, pas souhaitable que l&rsquo;&eacute;l&egrave;ve s&rsquo;inscrive &agrave; une activit&eacute; d&eacute;j&agrave; pratiqu&eacute;e sur une base r&eacute;guli&egrave;re ou par le pass&eacute;.</p>\r\n\r\n<hr />\r\n<p><span style=\"color:#000099\"><strong>2. INSCRIPTION</strong></span><br />\r\nLes inscriptions sont ouvertes du&nbsp;&nbsp;... au ....&nbsp;<em>Le</em>&nbsp;<em>syst&egrave;me</em>&nbsp;<em>accepte</em>&nbsp;<em>toutes</em>&nbsp;<em>les</em>&nbsp;<em>modifications</em>&nbsp;<em>jusqu&#39;&agrave; cette date.</em><br />\r\n<strong>Au pr&eacute;alable, il est possible de consulter le programme des cours &agrave; partir du .... et de mettre &agrave; jour ou cr&eacute;er son compte d&egrave;s ce moment.</strong><br />\r\n<span style=\"color:#e74c3c\"><strong><em>ATTENTION - lorsque l&#39;utilisateur est pass&eacute; &agrave; l&#39;&eacute;tape du paiement, il n&#39;est plus possible de supprimer une inscription. Les nouvelles inscriptions sont toujours possibles (sur toute la dur&eacute;e de la p&eacute;riode d&#39;inscription) et g&eacute;n&egrave;rent simplement une nouvelle facture.</em></strong></span></p>\r\n\r\n<hr />\r\n<p><span style=\"color:#000099\"><strong>3. CONVOCATION</strong></span><br />\r\nTous les cours ne d&eacute;butant pas simultan&eacute;ment, chaque enfant est convoqu&eacute; par courriel avant le d&eacute;but de chaque cours.<br />\r\nLes documents sont envoy&eacute;s &agrave; l&rsquo;adresse de courriel communiqu&eacute;e lors de la cr&eacute;ation du compte de la famille.</p>\r\n\r\n<p><span style=\"color:#000099\"><strong>4. FINANCE D&#39;INSCRIPTION</strong></span><br />\r\nUne modeste finance d&#39;inscription est per&ccedil;ue pour chaque cours et permet de couvrir les frais administratifs, d&#39;organisation et de gestion.<br />\r\nElle est vers&eacute;e &agrave; la suite de l&rsquo;inscription en ligne et valide l&rsquo;inscription.<br />\r\n<strong><em>Aucun remboursement ne pourra &ecirc;tre demand&eacute;&nbsp;en cas de d&eacute;sistement.</em></strong></p>\r\n\r\n<hr />\r\n<p><span style=\"color:#000099\"><strong>5. CONDITIONS DE PARTICIPATION</strong></span><br />\r\nEn s&rsquo;inscrivant &agrave; un cours, l&rsquo;enfant s&rsquo;engage &agrave; le suivre r&eacute;guli&egrave;rement et, par son comportement, &agrave; en assurer le bon d&eacute;roulement. L&rsquo;organisateur se r&eacute;serve le droit, en cas d&rsquo;indiscipline grave ou r&eacute;p&eacute;t&eacute;e, d&rsquo;exclure un enfant d&rsquo;un ou plusieurs cours.<br />\r\nEn cas d&rsquo;absence, un message d&#39;information (courriel/SMS) sera adress&eacute; au moniteur ou &agrave; la monitrice du cours concern&eacute;.</p>\r\n\r\n<hr />\r\n<p><span style=\"color:#000099\"><strong>6. TRANSPORT</strong></span><br />\r\nLe transport des &eacute;l&egrave;ves sur le lieu de l&rsquo;activit&eacute; est &agrave; la charge et sous la responsabilit&eacute; des parents/du r&eacute;pondant l&eacute;gal.<br />\r\nPour les activit&eacute;s de ski de fond, le transport est organis&eacute; et pris en charge par l&rsquo;organisateur.</p>\r\n\r\n<hr />\r\n<p><span style=\"color:#000099\"><strong>7. ASSURANCE</strong></span><br />\r\nLes &eacute;l&egrave;ves sont assur&eacute;s contre les accidents &agrave; titre priv&eacute;. Tout accident est annonc&eacute; &agrave; la Direction des &eacute;coles dans les meilleurs d&eacute;lais.</p>",
-    "enable_comments": false,
-    "template_name": "",
-    "registration_required": false,
-    "sites": [
-      1
-    ]
-  }
-}
 ]

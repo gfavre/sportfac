@@ -1,0 +1,172 @@
+[
+  {
+    "model": "wizard.wizardstep",
+    "pk": 1,
+    "fields": {
+      "created": "2024-10-03T16:28:13.380Z",
+      "modified": "2024-10-03T16:29:03.723Z",
+      "title": "Compte",
+      "subtitle": "",
+      "lead": "",
+      "link_display": "",
+      "description": "",
+      "slug": "user-create",
+      "position": 1,
+      "display_in_navigation": true,
+      "editable_in_backend": false
+    }
+  },
+  {
+    "model": "wizard.wizardstep",
+    "pk": 2,
+    "fields": {
+      "created": "2024-10-01T16:05:38.268Z",
+      "modified": "2024-10-07T15:56:11.112Z",
+      "title": "Compte",
+      "subtitle": "",
+      "lead": "",
+      "link_display": "",
+      "description": "Veuillez vérifier vos informations",
+      "slug": "user-update",
+      "position": 2,
+      "display_in_navigation": true,
+      "editable_in_backend": true
+    }
+  },
+  {
+    "model": "wizard.wizardstep",
+    "pk": 3,
+    "fields": {
+      "created": "2024-10-01T16:05:49.750Z",
+      "modified": "2024-10-29T16:45:24.154Z",
+      "title": "Enfants",
+      "subtitle": "",
+      "lead": "",
+      "link_display": "Enfants",
+      "description": "Veuillez ajouter tous vos enfants pour poursuivre l'inscription.",
+      "slug": "children",
+      "position": 3,
+      "display_in_navigation": true,
+      "editable_in_backend": true
+    }
+  },
+  {
+    "model": "wizard.wizardstep",
+    "pk": 4,
+    "fields": {
+      "created": "2024-10-01T16:06:04.289Z",
+      "modified": "2024-10-08T14:40:45.193Z",
+      "title": "Activités",
+      "subtitle": "",
+      "lead": "",
+      "link_display": "Inscription aux activités",
+      "description": "",
+      "slug": "activities",
+      "position": 4,
+      "display_in_navigation": true,
+      "editable_in_backend": true
+    }
+  },
+  {
+    "model": "wizard.wizardstep",
+    "pk": 5,
+    "fields": {
+      "created": "2024-10-30T10:58:14.983Z",
+      "modified": "2024-10-30T16:25:15.150Z",
+      "title": "Questions",
+      "subtitle": "",
+      "lead": "",
+      "link_display": "",
+      "description": "",
+      "slug": "questions",
+      "position": 5,
+      "display_in_navigation": false,
+      "editable_in_backend": false
+    }
+  },
+  {
+    "model": "wizard.wizardstep",
+    "pk": 6,
+    "fields": {
+      "created": "2024-10-09T09:28:51.633Z",
+      "modified": "2024-10-29T17:13:48.394Z",
+      "title": "Questions additionnelles",
+      "subtitle": "",
+      "lead": "",
+      "link_display": "",
+      "description": "",
+      "slug": "additional-questions",
+      "position": 6,
+      "display_in_navigation": true,
+      "editable_in_backend": true
+    }
+  },
+  {
+    "model": "wizard.wizardstep",
+    "pk": 7,
+    "fields": {
+      "created": "2024-10-08T16:23:57.633Z",
+      "modified": "2024-10-29T16:35:51.818Z",
+      "title": "Contrôle",
+      "subtitle": "",
+      "lead": "",
+      "link_display": "",
+      "description": "Veuillez vérifier les informations ci-dessous avant de confirmer vos inscriptions.",
+      "slug": "confirmation",
+      "position": 7,
+      "display_in_navigation": true,
+      "editable_in_backend": false
+    }
+  },
+  {
+    "model": "wizard.wizardstep",
+    "pk": 8,
+    "fields": {
+      "created": "2024-10-09T09:29:45.656Z",
+      "modified": "2024-10-29T15:34:48.872Z",
+      "title": "Paiement",
+      "subtitle": "",
+      "lead": "",
+      "link_display": "",
+      "description": "",
+      "slug": "payment",
+      "position": 8,
+      "display_in_navigation": true,
+      "editable_in_backend": false
+    }
+  },
+  {
+    "model": "wizard.wizardstep",
+    "pk": 9,
+    "fields": {
+      "created": "2024-12-05T10:54:00.208Z",
+      "modified": "2024-12-05T17:01:15.961Z",
+      "title": "Échec du paiement",
+      "subtitle": "",
+      "lead": "",
+      "link_display": "",
+      "description": "",
+      "slug": "payment-failure",
+      "position": 9,
+      "display_in_navigation": false,
+      "editable_in_backend": false
+    }
+  },
+  {
+    "model": "wizard.wizardstep",
+    "pk": 10,
+    "fields": {
+      "created": "2024-12-05T16:47:53.699Z",
+      "modified": "2024-12-05T17:01:20.605Z",
+      "title": "Paiement réussi",
+      "subtitle": "",
+      "lead": "",
+      "link_display": "",
+      "description": "",
+      "slug": "payment-success",
+      "position": 10,
+      "display_in_navigation": false,
+      "editable_in_backend": false
+    }
+  }
+]
