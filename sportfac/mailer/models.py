@@ -23,7 +23,7 @@ class SentMailManager(models.Manager):
 
 class DraftMailManager(models.Manager):
     def get_queryset(self):
-        return super(SentMailManager, self).get_queryset().filter(status=MailArchive.STATUS.draft)
+        return super().get_queryset().filter(status=MailArchive.STATUS.draft)
 
 
 class MailArchive(TimeStampedModel, StatusModel):
@@ -62,6 +62,10 @@ class MailArchive(TimeStampedModel, StatusModel):
 
     admin_message.allow_tags = True
 
+    def __str__(self):
+        formatted_date = self.created.strftime("%Y-%m-%d %H:%M")
+        return f"{self.subject} ({formatted_date})"
+
 
 def attachment_path(instance, filename):
     return os.path.join("attachments", str(instance.mail.pk), filename)
@@ -70,6 +74,9 @@ def attachment_path(instance, filename):
 class Attachment(TimeStampedModel):
     mail = models.ForeignKey("MailArchive", on_delete=models.CASCADE, related_name="attachments")
     file = models.FileField(upload_to=attachment_path)
+
+    def __str__(self):
+        return os.path.basename(self.file.name)
 
 
 class GenericEmail(TimeStampedModel):
