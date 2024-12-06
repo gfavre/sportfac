@@ -31,6 +31,11 @@ class AttachmentAdmin(admin.ModelAdmin):
         return obj.mail.subject
 
 
+class AttachmentInline(admin.TabularInline):  # or admin.StackedInline
+    model = Attachment
+    extra = 0  # No extra empty forms
+
+
 @admin.register(MailArchive)
 class MailArchiveAdmin(SportfacModelAdmin):
     date_hierarchy = "created"
@@ -41,6 +46,7 @@ class MailArchiveAdmin(SportfacModelAdmin):
         "template",
     )
     list_filter = ("created", "status")
+    inlines = [AttachmentInline]  # Add the inline here
 
 
 @admin.register(GenericEmail)
