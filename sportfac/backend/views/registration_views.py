@@ -580,7 +580,7 @@ class TransportDetailView(FullBackendMixin, DetailView):
             courses = {
                 absence.session.course
                 for child in children
-                for absence in child.absence_set.select_related("session__course", "session__course__activity")
+                for absence in child.absences.select_related("session__course", "session__course__activity")
             }
         else:
             courses = {registration.course for registration in self.object.participants.all()}
