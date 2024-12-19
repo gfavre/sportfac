@@ -1,7 +1,64 @@
-from activities.models import ExtraNeed
+import pandas as pd
 from import_export.formats.base_formats import XLSX
+
+from activities.models import ExtraNeed
 from registrations.models import ChildActivityLevel, ExtraInfo, Registration, Transport
 
+
+# """
+# hiver 2025:
+# id	Activité	Cours	Prénom	Nom	Identifiant de l'enfant	Date de naissance	Année scolaire	École
+# Numéro d'urgence	E-mail	Arrêt de train	Arrêt de bus	Dossards	Transport	Niveau avant le cours 2025
+# Niveau annoncé
+file_path = "/home/greg/temp/montreux-hiver-2025.xlsx"
+data = pd.read_excel(file_path)
+level_extra_key = "Niveau de ski/snowboard"
+question = ExtraNeed.objects.get(question_label=level_extra_key)
+
+for _index, row in data.iterrows():
+    registration_id = row["id"]
+    id_lagapeo = str(row["Identifiant de l'enfant"]) if pd.notna(row["Identifiant de l'enfant"]) else ""
+    bib_number = str(int(row["Dossards"])) if pd.notna(row["Dossards"]) else ""
+    transport_name = str(int(row["Transport"])) if pd.notna(row["Transport"]) else ""
+    old_level = str(row["Niveau avant le cours 2025"]) if pd.notna(row["Niveau avant le cours 2025"]) else ""
+    announced_level = str(row["Niveau annoncé"]) if pd.notna(row["Niveau annoncé"]) else ""
+    try:
+        registration = Registration.objects.get(pk=registration_id)
+    except Registration.DoesNotExist:
+        print(f"Missing registration: {registration_id}")
+        continue
+    if str(registration.child.id_lagapeo) != id_lagapeo:
+        print(f"id_lagapeo coherence: {registration.child.id_lagapeo}/{id_lagapeo}")
+        continue
+    if transport_name:
+        transport, created = Transport.objects.get_or_create(name=transport_name)
+        if created:
+            print(f"Created transport {transport_name}")
+        registration.transport = transport
+        registration.save()
+    if pd.notna(bib_number):
+        registration.child.bib_number = bib_number
+        registration.child.save()
+    if pd.notna(announced_level):
+        try:
+            answer = registration.extra_infos.get(key=question)
+        except ExtraInfo.DoesNotExist:
+            answer = ExtraInfo.objects.create(key=question, registration=registration)
+        if answer.value != announced_level:
+            answer.value = announced_level
+            answer.save()
+        level, created = ChildActivityLevel.objects.get_or_create(
+            activity=registration.course.activity, child=registration.child
+        )
+        if created:
+            print(f"Created level for child {registration.child}")
+            if pd.notna(old_level):
+                if old_level.startswith("A ") or old_level.startswith("S "):
+                    old_level = " ".join(old_level.split(" ")[1:])
+                if level.before_level != old_level:
+                    print("update level")
+                    level.before_level = old_level
+                    level.save()
 
 # """
 # hiver 2024

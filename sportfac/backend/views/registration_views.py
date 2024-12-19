@@ -571,7 +571,7 @@ class TransportDetailView(FullBackendMixin, DetailView):
         "participants",
         "participants__child",
         "participants__course",
-        "participants__child__absence_set",
+        "participants__child__absences",
     )
 
     def get_context_data(self, **kwargs):
