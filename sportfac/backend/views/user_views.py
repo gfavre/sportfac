@@ -166,7 +166,7 @@ class InstructorCreateView(UserCreateView):
 
     def form_valid(self, form):
         self.object = form.save()
-        self.object.is_manager = form.cleaned_data["is_manager"]
+        self.object.is_manager = form.cleaned_data["is_manager"] if "is_manager" in form.cleaned_data else False
         return super().form_valid(form)
 
     def get_success_message(self, cleaned_data):
