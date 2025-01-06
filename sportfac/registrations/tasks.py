@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMessage
 from django.db import connection
+from django.db.utils import IntegrityError
 from django.template.loader import render_to_string
 from django.utils import translation
 from django.utils.timezone import now
@@ -213,8 +214,12 @@ def cancel_expired_registrations():
         modified__lte=(now() - timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES)),
     ):
         courses_set.add(registration.course)
-        registration.cancel(reason=Registration.REASON.expired)
-        registration.save()
+        try:
+            registration.cancel(reason=Registration.REASON.expired)
+            registration.save()
+        except IntegrityError:
+            # There is an anlready existing cancellation for this person and course.
+            registration.delete()
     if settings.KEPCHUP_ENABLE_WAITING_LISTS:
         for course in courses_set:
             course.send_places_available_reminder()
