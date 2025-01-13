@@ -3,8 +3,8 @@
 -r base.txt
 
 gunicorn == 23.0.0
-redis == 5.0.8
+redis == 5.2.1
 pymemcache==4.0.0
-psycopg2-binary == 2.9.9
+psycopg2-binary == 2.9.10
 ipython == 8.12.3
-sentry-sdk[django] ==2.14.0
+sentry-sdk[django] ==2.19.2
