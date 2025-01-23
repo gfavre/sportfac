@@ -123,16 +123,17 @@
             <div class="pricing-header">
               <h3 class="pricing-plan-title">Printemps / Automne</h3>
             </div>
+
             <a href="{% if registration_opened %}/wizard/{% else %}{% url 'registrations:registrations_registered_activities' %}{% endif %}">
-              <img src="https://ssfmontreux.ch/static/img/vignette_automne_2024.jpg" class="img-responsive"
+              <img src="https://ssfmontreux.ch/static/img/vignette_printemps_2025.png" class="img-responsive"
                    style="margin-bottom:15px">
             </a>
 
             <p class="text-center">
               {% if request.PHASE == 1 %}
                 <p>
-                  {% blocktrans with registration_start=registration_start|date:"j F Y" registration_end=registration_end|date:"j F Y" %}
-                    Registrations from {{ registration_start }} to {{ registration_end }}.{% endblocktrans %}</p>
+                  {% blocktranslate with registration_start=registration_start|date:"j F Y" registration_end=registration_end|date:"j F Y" %}
+                    Registrations from {{ registration_start }} to {{ registration_end }}.{% endblocktranslate %}</p>
                 {% countdown registration_start %}
 
               {% endif %}
@@ -142,13 +143,13 @@
             </a>
             <div class="row">
               <div class="col-xs-6  text-left">
-                <a href="https://ssfmontreux.ch/static/pdf/SSF_Automne_2024_A5_RV.pdf" class="btn btn-secondary"
+                <a href="https://ssfmontreux.ch/static/pdf/SSF_PRINTEMPS_2025_A5_RV.pdf" class="btn btn-secondary"
                    target="_blank">
                   <i class="icon-file-pdf"></i> Flyer
                 </a>
               </div>
               <div class="col-xs-6  text-right">
-                <a href="https://ssfmontreux.ch/static/pdf/Activites_automne24.pdf"
+                <a href="https://ssfmontreux.ch/static/pdf/Planning_P25.pdf"
                    class="btn btn-secondary" target="_blank">
                   <i class="icon-file-pdf"></i> Planning
                 </a>
