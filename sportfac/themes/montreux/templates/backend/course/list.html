@@ -26,43 +26,52 @@
               "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
             },
           {% endif %}
-          {% if USE_ABSENCES %}
-            /*dom: 'T<"clear">Blfrtip',*/
-            select: {
-              style: 'multi'
-            },
-          {% endif %}
-          "aoColumnDefs": [
+          select: {
+            style: 'multi'
+          },
+          aoColumnDefs: [
             {'bSortable': false, 'bSearchable': false, 'aTargets': [-1]}
           ],
-          "paging": false
+          paging: false
         });
         table.on('select', function () {
           $('.needs-select').removeClass('disabled');
         });
         table.on('deselect', function () {
-          if (table.rows({selected: true}).count() == 0) {
+          if (table.rows({selected: true}).count() === 0) {
             $('.needs-select').addClass('disabled');
           }
         });
 
+        let createHiddenIDInputs = function($form) {
+          table.rows({selected: true}).nodes().each(function(row) {
+            let id = $(row).data('courseid');
+            $form.append(`<input name="c" value="${id}" type="hidden">`);
+          });
+        };
+
         {% if USE_ABSENCES %}
-          $('form.absences').submit(function (event) {
-            var ids = table.rows({selected: true}).nodes().map(function (elem) {
-              return $(elem).data('courseid');
-            });
-            for (var i = 0; i < ids.length; i++) {
-              $(this).append($('<input name="c" value="' + ids[i] + '" type="hidden">'))
-            }
+          $('form.absences').submit(function() {
+            createHiddenIDInputs($(this));
           });
         {% endif %}
+        $('form.convocations').submit(function() {
+            createHiddenIDInputs($(this));
+        });
+
+        $('form.instructors').submit(function() {
+          createHiddenIDInputs($(this));
+        });
+
+        $('form.visibility').submit(function() {
+            createHiddenIDInputs($(this));
+        });
       });
-
-
     </script>
   {% endaddtoblock %}
 
-  <a href="{% url 'backend:course-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New course" %}
+  <a href="{% url 'backend:course-create' %}" class="btn btn-success">
+    <i class="icon-plus"></i> {% trans "New course" %}
   </a>
   <hr>
 
@@ -74,6 +83,33 @@
       </form>
     </div>
   {% endif %}
+
+  <div class="btn-group">
+    <form class="convocations" method="GET"
+          action="{% url 'backend:courses-mail-confirmation' %}">
+      <button type="submit" class="btn btn-secondary needs-select disabled">
+        <i class="icon-mail"></i>&nbsp;{% trans "Convocation email" %}
+      </button>
+    </form>
+  </div>
+
+  <div class="btn-group">
+    <form class="instructors" method="GET"
+          action="{% url 'backend:courses-mail-instructors' %}">
+      <button type="submit" class="btn btn-secondary needs-select disabled">
+        <i class="icon-tasks"></i>&nbsp;{% trans "Infos to instructors" %}
+      </button>
+    </form>
+  </div>
+
+  <div class="btn-group">
+    <form class="visibility" method="POST"
+          action="{% url 'backend:courses-toggle-visibility' %}">{% csrf_token %}
+      <button type="submit" class="btn btn-secondary needs-select disabled">
+        <i class="icon-eye-off"></i>&nbsp;{% trans "Toggle visibility" %}
+      </button>
+    </form>
+  </div>
 
 
   <table class="table">
@@ -144,27 +180,37 @@
             </strong>
           {% else %}
             {{ course.count_participants }}&nbsp;/&nbsp;{{ course.max_participants }}
-
           {% endif %}
+          {% if not course.allow_new_participants %}<br><i class="icon icon-minus-circled text-danger"></i> <small>{% trans "Registrations not allowed "%}</small>{% endif %}
         </td>
         <td>
           <ul class="list-unstyled">
             <li class="text-nowrap"><a href="{{ course.get_backend_url }}" class="btn btn-sm"><i class="icon-check"></i>&nbsp;{% trans "Check registrations" %}
             </a></li>
             {% if USE_ABSENCES %}
-              <li class="text-nowrap"><a href="{{ course.get_backend_absences_url }}" class="btn btn-sm"><i
-                  class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}</a></li>
+              <li class="text-nowrap">
+                <a href="{{ course.get_backend_absences_url }}" class="btn btn-sm">
+                  <i class="icon-calendar"></i>&nbsp;{% trans "Manage absences" %}
+                </a>
+              </li>
             {% endif %}
-            <li class="text-nowrap"><a href="{{ course.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update course" %}
-            </a></li>
+            <li class="text-nowrap">
+              <a href="{{ course.get_update_url }}" class="btn btn-sm">
+                <i class="icon-edit"></i>&nbsp;{% trans "Update course" %}
+              </a>
+            </li>
             {% if not course.is_camp %}
-              <li class="text-nowrap"><a href="{{ course.get_js_export_url }}" class="btn btn-sm"><i
-                  class="icon-doc"></i>&nbsp;{% trans "Get BDNS: J+S export file" %}</a></li>
+              <li class="text-nowrap">
+                <a href="{{ course.get_js_export_url }}" class="btn btn-sm">
+                  <i class="icon-doc"></i>&nbsp;{% trans "Get BDNS: J+S export file" %}
+                </a>
+              </li>
             {% endif %}
-            <li class="text-nowrap"><a href="{{ course.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete course" %}
-            </a></li>
-
-
+            <li class="text-nowrap">
+              <a href="{{ course.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;
+                {% trans "Delete course" %}
+              </a>
+            </li>
           </ul>
         </td>
       </tr>
