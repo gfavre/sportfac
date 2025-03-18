@@ -250,7 +250,7 @@ class NeedConfirmationView(BackendMixin, TemplatedEmailMixin, mailer_views.Brows
             (
                 settings.DEBUG and "http://" or "https://",
                 get_current_site(self.request).domain,
-                reverse("wizard_confirm"),
+                reverse("wizard:step", kwargs={"step_slug": "confirmation"}),
             )
         )
         return super().get_context_data(**kwargs)

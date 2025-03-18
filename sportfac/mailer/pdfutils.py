@@ -10,9 +10,9 @@ from django.utils.translation import activate
 
 import pypdftk
 import requests
-from backend.dynamic_preferences_registry import global_preferences_registry
 from sekizai.context import SekizaiContext
 
+from backend.dynamic_preferences_registry import global_preferences_registry
 from sportfac.context_processors import kepchup_context
 
 
@@ -172,5 +172,5 @@ class MyCourses(PDFRenderer):
 
 
 class InvoiceRenderer(PDFRenderer):
-    message_template = "registrations/bill-detail.html"
+    message_template = "registrations/invoice-detail.html"
     is_landscape = False
