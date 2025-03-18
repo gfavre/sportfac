@@ -1,9 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n %}
-{% load floppyforms %}
+{% load floppyforms i18n %}
 
-{% block title %}{% trans "Change opening and closing dates" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "Change opening and closing dates" %}{% endblock %}
+{% block title %}{% translate "Change opening and closing dates" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Change opening and closing dates" %}{% endblock %}
 
 {% block content %}
 
@@ -13,16 +13,17 @@
   {% block errors %}{% endblock %}
   {% formrow form.opening_date %}
   {% formrow form.closing_date %}
-  
+
   <div class="row">
     <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-success btn-large">{% trans "Save" %}</button>
+      <button type="submit" class="btn btn-success btn-large">{% translate "Save" %}</button>
     </div>
   </div>
 </form>
 {% endform %}
 
 {% endblock content %}
+
 {% block extra_js %}
 {{ block.super }}
 <script src="{{ STATIC_URL }}js/vendor/moment-with-locales.min.js"></script>
@@ -31,9 +32,9 @@
   $(function () {
     $('.datetimepicker').datetimepicker({
         language: '{{ LANGUAGE_CODE }}',
-        icons: {time: 'icon-clock', 
-                date: 'icon-calendar', 
-                up: 'icon-up-open', 
+        icons: {time: 'icon-clock',
+                date: 'icon-calendar',
+                up: 'icon-up-open',
                 down: 'icon-down-open'}
         });
   });

@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n floppyforms sekizai_tags %}
+{% load floppyforms i18n sekizai_tags %}
 
-{% block title %}{% trans "Create a new building" %} - {{ block.super }}{% endblock %}
-{% block page_title %}<i class="icon-location"></i>&nbsp;&nbsp;{% trans "Create a new building" %}{% endblock %}
+{% block title %}{% translate "Create a new building" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}<i class="icon-location"></i>&nbsp;&nbsp;{% translate "Create a new building" %}{% endblock %}
 
 {% block content %}
 
@@ -14,7 +15,7 @@
   {% include "backend/building/form.html" %}
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-success btn-large"><i class="icon-plus"></i>&nbsp;{% trans 'Create building' %}</button>
+      <button type="submit" class="btn btn-success btn-large"><i class="icon-plus"></i>&nbsp;{% translate 'Create building' %}</button>
     </div>
   </div>
 </form>

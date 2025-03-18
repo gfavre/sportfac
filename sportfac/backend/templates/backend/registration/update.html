@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags crispy_forms_tags %}
+{% load crispy_forms_tags i18n sekizai_tags %}
 
-{% block title %}{% trans "Update registration" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "Update registration" %}{% endblock %}
+{% block title %}{% translate "Update registration" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Update registration" %}{% endblock %}
 
 {% block content %}
 {% addtoblock "js" %}
@@ -16,19 +17,19 @@
 <form action="" method="post" class="form-horizontal">
   {% crispy form %}
 
-{{ extrainfo_form.management_form | crispy}}
+{{ extrainfo_form.management_form|crispy }}
 {% if need_extra %}
     <fieldset>
-      <legend>{% trans "Extra questions" %}</legend>
+      <legend>{% translate "Extra questions" %}</legend>
       {% crispy extrainfo_form %}
     </fieldset>
 
 {% endif %}
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-success btn-large">{% trans "Update" %}</button>
+      <button type="submit" class="btn btn-success btn-large">{% translate "Update" %}</button>
       &nbsp;
-      <a href="{% url 'backend:registration-list' %}" class="btn btn-default">{% trans 'Cancel' %}</a>
+      <a href="{% url 'backend:registration-list' %}" class="btn btn-default">{% translate 'Cancel' %}</a>
 
     </div>
   </div>

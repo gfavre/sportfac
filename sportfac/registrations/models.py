@@ -1,6 +1,6 @@
 import os
 import re
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from tempfile import mkdtemp
 
 from django.conf import settings
@@ -447,7 +447,7 @@ class Bill(TimeStampedModel, StatusModel):
 
     @property
     def is_paid(self):
-        return self.status in (self.STATUS.paid, self.STATUS.canceled)
+        return self.status == self.STATUS.paid
 
     @property
     def is_wire_transfer(self):
@@ -457,12 +457,21 @@ class Bill(TimeStampedModel, StatusModel):
     def pay_url(self):
         return self.get_pay_url()
 
+    @property
+    def registrations_valid_to(self):
+        if not settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES:
+            return None
+        return self.modified + timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES)
+
     @transaction.atomic
     def close(self):
         self.status = self.STATUS.paid
         for registration in self.registrations.filter(status=Registration.STATUS.valid):
             registration.paid = True
             registration.save()
+        for rental in self.rentals.all():
+            rental.paid = True
+            rental.save()
 
     def generate_pdf(self):
         from mailer.pdfutils import InvoiceRenderer
@@ -581,6 +590,11 @@ class Bill(TimeStampedModel, StatusModel):
     def set_paid(self):
         self.status = self.STATUS.paid
         self.payment_date = now()
+        for registration in self.registrations.all():
+            registration.set_paid()
+        for rental in self.rentals.all():
+            rental.paid = True
+            rental.save(update_fields=("paid",))
         self.save()
 
     def set_waiting(self):
@@ -594,10 +608,10 @@ class Bill(TimeStampedModel, StatusModel):
                 registration.save()
             except IntegrityError:
                 registration.delete()
-        # FIXME: datatrans???
-        if hasattr(self, "postfinance_transactions") and self.postfinance_transactions.exists():
-            for pf_transaction in self.postfinance_transactions.all():
-                pf_transaction.void()
+        if self.rentals:
+            for rental in self.rentals.all():
+                rental.delete()
+
         self.status = self.STATUS.canceled
         self.save(force_status=True)
 
@@ -617,7 +631,15 @@ class Bill(TimeStampedModel, StatusModel):
             super().save()
 
     def update_total(self):
-        self.total = sum([registration.price for registration in self.registrations.all() if registration.price])
+        registrations_price = sum(
+            [registration.price for registration in self.registrations.all() if registration.price]
+        )
+        extra_price = sum(
+            sum(extra_infos.price_modifier for extra_infos in reg.extra_infos.all())
+            for reg in self.registrations.all()
+        )
+        rental_price = sum([rental.amount for rental in self.rentals.all()])
+        self.total = registrations_price + extra_price + rental_price
 
     def update_status(self):
         if (
@@ -631,9 +653,12 @@ class Bill(TimeStampedModel, StatusModel):
         return self.billing_identifier
 
 
-class ExtraInfo(models.Model):
+class ExtraInfo(TimeStampedModel):
     registration = models.ForeignKey(
-        "registrations.Registration", related_name="extra_infos", on_delete=models.CASCADE
+        "registrations.Registration",
+        related_name="extra_infos",
+        on_delete=models.CASCADE,
+        verbose_name=_("Registration"),
     )
     key = models.ForeignKey("activities.ExtraNeed", on_delete=models.CASCADE)
     value = models.CharField(max_length=255, blank=True)
@@ -644,10 +669,15 @@ class ExtraInfo(models.Model):
 
     @property
     def is_true(self):
-        return self.value in ["True", "true", "1"]
+        return self.value in ["True", "true", "1", "OUI", "oui", "Oui", 1, True]
 
+    @property
     def is_false(self):
-        return self.value in ["False", "false", "0"]
+        return self.value in ["False", "false", "0", "NON", "non", "Non", 0, False]
+
+    @property
+    def require_image(self):
+        return self.key.is_image and self.is_true
 
     @property
     def price_modifier(self):
@@ -864,6 +894,11 @@ class Child(TimeStampedModel, StatusModel):
     def get_update_url(self):
         return reverse("backend:child-update", kwargs={"child": self.pk})
 
+    def save(self, *args, **kwargs):
+        if settings.KEPCHUP_EMERGENCY_NUMBER_ON_PARENT and self.family:
+            self.emergency_number = self.family.best_phone
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.get_full_name()
 
@@ -878,8 +913,8 @@ class ChildActivityLevel(TimeStampedModel):
         ("NPC", "NPC"),
         ("A 1A", "A 1A"),
         ("A 1B", "A 1B"),
-        ("A 1C", "1C"),
-        ("A 2A", "2A"),
+        ("A 1C", "A 1C"),
+        ("A 2A", "A 2A"),
         ("A 2B", "A 2B"),
         ("A 2C", "A 2C"),
         ("A 3A", "A 3A"),
@@ -944,6 +979,17 @@ class ChildActivityLevel(TimeStampedModel):
 
     def get_api_url(self):
         return reverse("api:level-detail", kwargs={"pk": self.pk})
+
+
+class RegistrationValidation(TimeStampedModel):
+    user = models.ForeignKey("profiles.FamilyUser", related_name="validations", null=True, on_delete=models.SET_NULL)
+    invoice = models.OneToOneField(
+        "registrations.Bill", related_name="validation", null=True, blank=True, on_delete=models.CASCADE
+    )
+    consent_given = models.BooleanField(_("Consent given"), default=False)
+
+    def __str__(self):
+        return f"Validation for {self.user}"
 
 
 class RegistrationsProfile(TimeStampedModel):

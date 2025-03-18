@@ -6,9 +6,18 @@ from django.utils.translation import gettext_lazy as _
 from import_export import fields, resources
 from import_export.admin import ImportExportModelAdmin
 
+from appointments.models import Rental
 from sportfac.admin_utils import SportfacAdminMixin, SportfacModelAdmin
-
-from .models import Bill, Child, ChildActivityLevel, ExtraInfo, Registration, RegistrationsProfile, Transport
+from .models import (
+    Bill,
+    Child,
+    ChildActivityLevel,
+    ExtraInfo,
+    Registration,
+    RegistrationsProfile,
+    RegistrationValidation,
+    Transport,
+)
 
 
 class RegistrationResource(resources.ModelResource):
@@ -51,7 +60,7 @@ class RegistrationResource(resources.ModelResource):
 
 @admin.register(ExtraInfo)
 class ExtraInfoAdmin(SportfacModelAdmin):
-    list_display = ("registration", "key", "value")
+    list_display = ("registration", "key", "value", "created")
     search_fields = (
         "registration__child__first_name",
         "registration__child__last_name",
@@ -146,6 +155,12 @@ class RegistrationInline(admin.StackedInline):
     extra = 0
 
 
+class RentalsInline(admin.StackedInline):
+    model = Rental
+    raw_id_fields = ("child", "pickup_appointment", "return_appointment")
+    extra = 0
+
+
 @admin.register(Bill)
 class BillAdmin(SportfacModelAdmin):
     list_display = (
@@ -162,7 +177,7 @@ class BillAdmin(SportfacModelAdmin):
     date_hierarchy = "created"
     search_fields = ("billing_identifier", "family__first_name", "family__last_name")
 
-    inlines = [RegistrationInline]
+    inlines = [RegistrationInline, RentalsInline]
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related("family")
@@ -191,4 +206,14 @@ class ChildActivityLevelAdmin(SportfacModelAdmin):
         "child__first_name",
         "child__last_name",
         "activity__name",
+    )
+
+
+@admin.register(RegistrationValidation)
+class RegistrationValidationAdmin(SportfacModelAdmin):
+    list_display = ("user", "consent_given", "modified")
+    raw_id_fields = ("user",)
+    search_fields = (
+        "user__first_name",
+        "user__last_name",
     )

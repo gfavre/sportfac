@@ -6,7 +6,7 @@ Sphinx == 7.1.2
 django_extensions == 3.2.1
 psycopg2-binary == 2.9.10
 django-debug-toolbar == 4.1.0
-
+pandas == 2.2.3
 # Code quality
 # ------------------------------------------------------------------------------
 flake8==6.0.0  # https://github.com/PyCQA/flake8

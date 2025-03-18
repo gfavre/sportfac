@@ -1,0 +1,30 @@
+{% extends "wizard.html" %}
+{% load i18n sekizai_tags %}
+
+
+{% block page_title %}
+  {% if ALTERNATIVE_ACTIVITIES_LABEL %}
+    {{ ALTERNATIVE_ACTIVITIES_LABEL }}
+  {% else %}
+    {% translate "Activities" %}
+  {% endif %}
+{% endblock page_title %}
+
+{% block content %}
+{% include "activities/activities_app.html" %}
+
+{% endblock content %}
+
+{% block page_footer %}
+<nav>
+  <ul class="pager">
+    <li class="previous">
+      <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span> {% block previous_label %}{% translate "Previous" %}{% endblock %}</a>
+    </li>
+    <li class="next" ng-class="{disabled: registrations.length === 0}">
+      <a href="{{ next_step.url }}" ><b>{% translate "Next" %} <span aria-hidden="true">&rarr;</span></b></a>
+    </li>
+  </ul>
+</nav>
+
+{% endblock page_footer %}

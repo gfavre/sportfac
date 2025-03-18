@@ -155,7 +155,6 @@ TEMPLATES = [
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
                 "django.template.context_processors.request",
-                "sportfac.context_processors.wizard_context",
                 "sportfac.context_processors.registration_opened_context",
                 "sportfac.context_processors.activities_context",
                 "sportfac.context_processors.tenants_context",
@@ -217,6 +216,7 @@ SHARED_APPS = (
     "django.contrib.flatpages",
     "django.contrib.sitemaps",
     # third party apps
+    "adminsortable2",  # admin sortable
     "anymail",  # send mail
     "bootstrap_datepicker_plus",
     "captcha",  # recaptcha
@@ -238,6 +238,7 @@ SHARED_APPS = (
     "contact",
     "mailer",
     "profiles",
+    "wizard",
     # last apps
     "django.contrib.admin",
     "django_select2",  # select2 form input
@@ -586,7 +587,9 @@ KEPCHUP_ALTERNATIVE_APPOINTMENTS_LABEL = None
 
 # Children
 #
+KEPCHUP_CHILDREN_EDITABLE = True
 KEPCHUP_ID_LAGAPEO_ALTERNATIVE_LABEL = None
+KEPCHUP_CHILDREN_POPUP = False
 # Children have a bib number (n° dossard)
 KEPCHUP_BIB_NUMBERS = False
 # Ask for school of the child
@@ -612,6 +615,7 @@ KEPCHUP_CHILDREN_MANDATORY_FIELDS = [
 KEPCHUP_DISPLAY_NUMBER_OF_SESSIONS = True
 # make emergency number mandatory on children
 KEPCHUP_EMERGENCY_NUMBER_MANDATORY = True
+KEPCHUP_EMERGENCY_NUMBER_ON_PARENT = False
 # Import children lists from lagapeo
 KEPCHUP_IMPORT_CHILDREN = False
 # School years are related to main teacher of the child
@@ -645,6 +649,7 @@ KEPCHUP_YEAR_NAMES = {
 
 # In Coppet-Rojalets children can register Poterie at different periods of the year.
 KEPCHUP_ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE = False
+KEPCHUP_ACTIVITIES_POPUP = False
 KEPCHUP_CALENDAR_DISPLAY_DATES = True
 KEPCHUP_CALENDAR_DISPLAY_COURSE_NAMES = False
 KEPCHUP_CALENDAR_HIDDEN_DAYS = [0]

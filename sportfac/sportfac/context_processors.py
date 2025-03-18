@@ -1,124 +1,13 @@
 from django.conf import settings
 from django.db import connection
-from django.urls import resolve, reverse
 from django.utils import timezone
 from django.utils.timezone import get_default_timezone, make_aware, now
-from django.utils.translation import gettext as _
+
+from dynamic_preferences.registries import global_preferences_registry
 
 from activities.models import Activity
 from backend.models import YearTenant
-from dynamic_preferences.registries import global_preferences_registry
-
 from . import __version__ as kepchup_version
-
-
-class Step:
-    def __init__(self, request, identifier, title, urlname):
-        self.id = identifier
-        self.title = title
-        self.url = reverse(urlname)
-        self.current = request.path == self.url
-        self.request = request
-        self.activable = False
-
-    def __str__(self):
-        return self.id
-
-    def ensure_activable(self):
-        # Resolve returns a resolver_match that can be used to get view class and then call static method
-        from sportfac.views import NotReachableException
-
-        url = self.url
-        if settings.FORCE_SCRIPT_NAME:
-            # URL = /hiver/wizard => ça ne résout pas. à cause du /hiver
-            url = url.replace(settings.FORCE_SCRIPT_NAME, "")
-        try:
-            resolve(url).func.view_class.check_initial_condition(self.request)
-            self.activable = True
-        except NotReachableException:
-            self.activable = False
-        return self.activable
-
-
-def wizard_context(request):
-    if "/wizard/" not in request.path:
-        return {}
-    # 1. list the possible steps given the configuration
-    # 2. for each step, ensure it is reachable
-    about = Step(
-        request,
-        "about-step",
-        settings.KEPCHUP_ALTERNATIVE_ABOUT_LABEL or _("About you"),
-        "wizard_account",
-    )
-    children = Step(
-        request,
-        "children-step",
-        settings.KEPCHUP_ALTERNATIVE_CHILDREN_LABEL or _("Your children"),
-        "wizard_children",
-    )
-    activities = Step(
-        request,
-        "activities-step",
-        settings.KEPCHUP_ALTERNATIVE_ACTIVITIES_LABEL or _("Register activities"),
-        "wizard_activities",
-    )
-    confirmation = Step(
-        request,
-        "confirm-step",
-        settings.KEPCHUP_ALTERNATIVE_CONFIRM_LABEL or _("Confirmation"),
-        "wizard_confirm",
-    )
-    all_steps = [about, children, activities, confirmation]
-    if settings.KEPCHUP_USE_APPOINTMENTS:
-        appointment_step = Step(
-            request,
-            "appointment-step",
-            settings.KEPCHUP_ALTERNATIVE_APPOINTMENTS_LABEL or _("Appointments"),
-            "wizard_appointments",
-        )
-        all_steps += [appointment_step]
-
-    if not settings.KEPCHUP_NO_PAYMENT:
-        billing_step = Step(
-            request,
-            "billing-step",
-            settings.KEPCHUP_ALTERNATIVE_BILLING_LABEL or _("Billing"),
-            "wizard_billing",
-        )
-        all_steps += [billing_step]
-
-    for step in all_steps:
-        step.ensure_activable()
-        # if not step.ensure_activable():
-        #    # If a step is not activable, there is no need to check activability of the next ones.
-        #    # (activable is False unless ensured...)
-        #    break
-
-        #    # TODO ERREUR: le paiement est accessible ssi bill ouverte, même si confirmation
-
-    current = 0
-    for idx, step in enumerate(all_steps):
-        if step.current:
-            current = idx
-            break
-    previous_step = next_step = None
-    if current != 0:
-        previous_step = all_steps[current - 1]
-
-    if current != len(all_steps) - 1:
-        next_step = all_steps[current + 1]
-    try:
-        max_step = [step.url for step in all_steps if step.activable][-1]
-    except IndexError:
-        max_step = all_steps[current].url
-    return {
-        "previous_step": previous_step,
-        "next_step": next_step,
-        "steps": all_steps,
-        "current_step": all_steps[current],
-        "max_step": max_step,
-    }
 
 
 def registration_opened_context(request):
@@ -174,6 +63,8 @@ def tenants_context(request):
 def kepchup_context(request):
     return {
         "VERSION": kepchup_version,
+        "CHILDREN_EDITABLE": settings.KEPCHUP_CHILDREN_EDITABLE,
+        "CHILDREN_POPUP": settings.KEPCHUP_CHILDREN_POPUP,
         "AVS_HIDDEN": "avs" in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
         "BIB_NUMBER_HIDDEN": "bib_number" in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
         "BIRTH_DATE_HIDDEN": "birth_date" in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
@@ -194,6 +85,7 @@ def kepchup_context(request):
         "BUILDING_EDITABLE": "building" not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
         "EMERGENCY_NUMBER_EDITABLE": "emergency_number" not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
         "EMERGENCY_NUMBER_MANDATORY": settings.KEPCHUP_EMERGENCY_NUMBER_MANDATORY,
+        "EMERGENCY_NUMBER_ON_PARENT": settings.KEPCHUP_EMERGENCY_NUMBER_ON_PARENT,
         "FIRST_NAME_EDITABLE": "first_name" not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
         "ID_LAGAPEO_EDITABLE": "id_lagapeo" not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
         "LANGUAGE_EDITABLE": "language" not in settings.KEPCHUP_CHILDREN_UNEDITABLE_FIELDS,
@@ -234,6 +126,7 @@ def kepchup_context(request):
         "DISPLAY_PUBLICLY_SUPERVISOR_PHONE": settings.KEPCHUP_DISPLAY_PUBLICLY_SUPERVISOR_PHONE,
         "DISPLAY_PUBLICLY_SUPERVISOR_EMAIL": settings.KEPCHUP_DISPLAY_PUBLICLY_SUPERVISOR_EMAIL,
         "ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE": settings.KEPCHUP_ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE,
+        "ACTIVITIES_POPUP": settings.KEPCHUP_ACTIVITIES_POPUP,
         "BIB_NUMBERS": settings.KEPCHUP_BIB_NUMBERS,
         "FICHE_SALAIRE_MONTREUX": settings.KEPCHUP_FICHE_SALAIRE_MONTREUX,
         "REGISTRATION_LEVELS": settings.KEPCHUP_REGISTRATION_LEVELS,

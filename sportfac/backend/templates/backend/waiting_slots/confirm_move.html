@@ -1,13 +1,14 @@
 {% extends "backend/base.html" %}
-{% load i18n crispy_forms_tags %}
+{% load crispy_forms_tags i18n %}
 
 
-{% block title %}{% trans "Transform waiting slot" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "Please confirm" %}{% endblock %}
+{% block title %}{% translate "Transform waiting slot" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Please confirm" %}{% endblock %}
 
 {% block content %}
 <form action="" method="post">{% csrf_token %}
-  <p class="lead">{% blocktrans with child=object.child.full_name course=object.course.short_name %}Are you sure you want to add {{ child }} to the participants of the course {{ course }}?{% endblocktrans %}</p>
+  <p class="lead">{% blocktranslate with child=object.child.full_name course=object.course.short_name %}Are you sure you want to add {{ child }} to the participants of the course {{ course }}?{% endblocktranslate %}</p>
   {% crispy form %}
 
 </form>

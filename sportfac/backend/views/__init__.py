@@ -41,6 +41,7 @@ from .payroll_views import FunctionUpdateView  # noqa F401
 from .payroll_views import PayrollReportView  # noqa F401
 from .payroll_views import SupervisorRolesList  # noqa F401
 from .registration_views import BillDetailView  # noqa F401
+from .registration_views import BillExportView  # noqa F401
 from .registration_views import BillListView  # noqa F401
 from .registration_views import BillUpdateView  # noqa F401
 from .registration_views import RegistrationCreateView  # noqa F401
@@ -61,10 +62,13 @@ from .site_views import AppointmentDeleteView  # noqa F401
 from .site_views import AppointmentsExportView  # noqa F401
 from .site_views import AppointmentsListView  # noqa F401
 from .site_views import AppointmentsManagementView  # noqa F401
+from .site_views import AppointmentUpdateView  # noqa F401
 from .site_views import FlatPageListView  # noqa F401
 from .site_views import FlatPageUpdateView  # noqa F401
 from .site_views import GenericEmailListView  # noqa F401
 from .site_views import GenericEmailUpdateView  # noqa F401
+from .site_views import WizardStepListView  # noqa F401
+from .site_views import WizardStepUpdateView  # noqa F401
 from .teacher_views import BuildingCreateView  # noqa F401
 from .teacher_views import BuildingDeleteView  # noqa F401
 from .teacher_views import BuildingDetailView  # noqa F401

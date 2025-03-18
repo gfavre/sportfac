@@ -1,0 +1,518 @@
+{% extends "wizard/base.html" %}
+{% load crispy_forms_tags humanize i18n sekizai_tags static %}
+
+
+{% block wizard_content %}
+  <div {% if appointment_type != "pickup" %}style="display:none"{% endif %}>
+    <form id="rent-equipment-form">
+      <div class="form-group">
+        <input type="radio" id="rent-yes" name="rent_equipment" value="yes" {% if rentals %}checked{% endif %}>
+        <label for="rent-yes">{% translate "Yes" %}</label>
+        <input type="radio" id="rent-no" name="rent_equipment" value="no" {% if not rentals %}checked{% endif %}>
+        <label for="rent-no">{% translate "No" %}</label>
+      </div>
+    </form>
+  </div>
+  {% crispy form %}
+
+  {% if appointments %}
+    <section class="portlet">
+      <h3 class="content-title"><u>{% translate "Your appointments" %}</u></h3>
+      <ul>
+        {% for appointment in appointments %}
+          <li>
+            {% if appointment.appointment_type %}{{ appointment.appointment_type }}: {% endif %}
+            {{ appointment.child }}: {{ appointment.slot.start|date:"l d F Y, H:i" }}
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+
+  <section class="portlet" id="dates-selection">
+    <h3 class="content-title">
+      <u>{% translate "Available dates" %}</u>
+    </h3>
+    <ul class="list-inline" style="margin-bottom: 2em">
+      {% for date in available_dates %}
+        <li style="margin-right:3em">
+          <a class="calendar-change" data-date="{{ date|date:'c' }}" href="#calendar">{{ date|date:'d.m.Y' }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+    <div id="calendar"></div>
+  </section>
+
+  <!-- Modal Structure for Bootstrap 3 -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+        </div>
+        <form data-appointment-type="{{ appointment_type }}">
+
+          <div class="modal-body">
+            <p><strong>{% translate "Register an appointment for these children" %}:</strong></p>
+            <div class="children">
+
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">{% translate "Close" %}</button>
+            <button type="button" class="btn btn-primary" id="modal-save-btn">{% translate "Save" %}</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <nav class="hidden-print" style="margin-top: 1.5em;">
+    <ul class="pager" style="font-size: 1.25em">
+      {% if previous_step %}
+        <li class="previous">
+          <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span>
+            {% block previous_label %}{% translate "Previous" %}{% endblock %}</a>
+        </li>
+      {% endif %}
+      {% if next_step %}
+        <li class="next">
+          <button class="btn btn-primary {% if not appointments %}disabled{% endif %}"
+                  id="next-step-btn"
+                  data-url="{{ next_step.url }}">
+            <strong>{% block next_label %}{% translate "Next" %}{% endblock %} <span
+                aria-hidden="true">&rarr;</span></strong></button>
+        </li>
+
+      {% endif %}
+    </ul>
+  </nav>
+
+
+
+  {% addtoblock "css" %}
+    <link href="{% static 'js/vendor/fullcalendar-5/lib/main.css' %}" rel="stylesheet"/>
+    <style>
+      .fc .fc-button {
+        padding: 0 0.6em;
+      }
+    </style>
+  {% endaddtoblock %}
+
+  {% addtoblock "js" %}
+    <script src="{% static 'js/vendor/js.cookie.js' %}"></script>
+    <script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
+    <script src="{% static 'js/vendor/handlebars.min.js' %}"></script>
+    <script src="{% static 'js/vendor/fullcalendar-5/lib/main.js' %}"></script>
+    <script src="{% static 'js/vendor/fullcalendar-5/lib/locales/fr-ch.js' %}"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        moment.locale('fr-ch');
+
+        // DOM Elements
+        const rentYes = document.getElementById("rent-yes");
+        const rentNo = document.getElementById("rent-no");
+
+        const childSelectionForm = document.getElementById('rental-form');
+        const datesSection = document.getElementById('dates-selection');
+        const calendarEl = document.getElementById('calendar');
+        const modalTitle = $('#myModalLabel');
+        const modalBody = $('#myModal .modal-body .children');
+        const formAction = $('#myModal form');
+        const nextButton = document.getElementById('next-step-btn');
+
+        // Rental Map Initialization
+        const rentalMap = {};
+        const initialRentals = {{ rentals_json|safe }}; // List of existing rentals loaded on page load
+        initialRentals.forEach(rental => {
+          rentalMap[rental.child] = rental;
+        });
+
+        // Function to check if rentalMap is empty
+        function isRentalMapEmpty() {
+          return Object.keys(rentalMap).length === 0;
+        }
+
+
+        // -------------------------
+        // Helper Functions
+        // -------------------------
+
+        function toggleFormAndButton() {
+          if (rentYes.checked) {
+            childSelectionForm.style.display = "";
+          } else if (rentNo.checked) {
+            childSelectionForm.style.display = "none";
+          }
+          toggleDatesSection();
+          toggleNextButton();
+        }
+
+        // Show or Hide Dates Section Based on Checkbox Selection
+        function toggleDatesSection() {
+          const anyChecked = Array.from(childSelectionForm.querySelectorAll('input[name="children"]')).some(checkbox => checkbox.checked);
+          datesSection.style.display = anyChecked ? 'block' : 'none';
+          rentYes.disabled = anyChecked;
+          rentNo.disabled = anyChecked;
+          if (anyChecked) {
+            calendar.render();
+          }
+        }
+
+        // Update Checkmarks for Existing Rentals
+        function updateCheckmarks() {
+          Object.values(rentalMap).forEach(rental => {
+            const checkbox = childSelectionForm.querySelector(`input[type="checkbox"][value="${rental.child}"]`);
+            if (checkbox) {
+              const childLabel = checkbox.closest('label');
+              const checkmark = childLabel.querySelector('.badge-success');
+
+              // Check if the child has any appointments (pickup or return)
+              if (rental.{{ appointment_type }}_appointment) {
+                if (!checkmark) {
+                  const checkmarkElement = document.createElement('span');
+                  checkmarkElement.className = 'badge badge-success';
+                  checkmarkElement.textContent = '✔';
+                  childLabel.appendChild(checkmarkElement);
+                }
+              } else {
+                if (checkmark) {
+                  checkmark.remove();
+                }
+              }
+            }
+          });
+        }
+
+
+        // Update Modal Checkboxes Based on Calendar Event
+        function updateModalCheckboxes(slotId) {
+          const selectedCheckboxes = childSelectionForm.querySelectorAll('input[name="children"]:checked');
+          modalBody.empty(); // Clear previous content
+
+          selectedCheckboxes.forEach(checkbox => {
+              const childId = checkbox.value;
+              const label = checkbox.closest('label');
+
+              // Use `childNodes` to get only the text content and ignore the <span>
+              let childLabel = '';
+              label.childNodes.forEach(node => {
+                if (node.nodeType === Node.TEXT_NODE) {
+                  childLabel += node.textContent.trim();
+                }
+              });
+              const rental = rentalMap[childId];
+              // Skip if child is already registered for a different event
+              const checkboxWrapper = document.createElement('div');
+              checkboxWrapper.className = 'checkbox';
+
+              const modalCheckbox = document.createElement('input');
+              modalCheckbox.type = 'checkbox';
+              modalCheckbox.className = 'form-check-input';
+              modalCheckbox.value = childId;
+              modalCheckbox.id = `modal-child-${childId}`;
+
+              if (rental && rental.{{ appointment_type }}_appointment) {
+                if (parseInt(rental.{{ appointment_type }}_appointment) === slotId) {
+                  // Child is already registered for this event slot, pre-check but keep enabled
+                  modalCheckbox.checked = true;
+                } else {
+                  // Child is registered for a different slot, disable and show note
+                  modalCheckbox.checked = true;
+                  modalCheckbox.disabled = true;
+
+                  const appointmentInfo = document.createElement('small');
+                  appointmentInfo.className = 'text-muted';
+                  appointmentInfo.textContent = " ({% translate "already has appointment scheduled at another time" %})";
+
+                  const modalLabel = document.createElement('label');
+                  modalLabel.htmlFor = `modal-child-${childId}`;
+                  modalLabel.appendChild(modalCheckbox);
+                  modalLabel.append(childLabel);
+                  modalLabel.appendChild(appointmentInfo); // Add appointment info after child name
+
+                  checkboxWrapper.appendChild(modalLabel);
+                  modalBody.append(checkboxWrapper);
+                  return; // Skip to the next child since this one is already registered
+                }
+              }
+              // Child is not registered for any conflicting slot, so add a standard checkbox
+              const modalLabel = document.createElement('label');
+              modalLabel.htmlFor = `modal-child-${childId}`;
+              modalLabel.appendChild(modalCheckbox);
+              modalLabel.append(childLabel);
+
+              checkboxWrapper.appendChild(modalLabel);
+              modalBody.append(checkboxWrapper);
+
+            }
+          );
+        }
+
+
+        // Show Bootstrap Modal
+        function showModal() {
+          $('#myModal').modal('show');
+        }
+
+        function allRentalsFilled() {
+          return Object.values(rentalMap).every(rental => rental.{{ appointment_type }}_appointment && rental.pickup_appointment !== "");
+        }
+
+        function toggleNextButton() {
+          // we can always go on if we decide not to rent material
+          if (rentNo.checked) {
+            nextButton.classList.remove('disabled');
+            return;
+          }
+
+          if (allRentalsFilled() && !isRentalMapEmpty()) {
+            nextButton.classList.remove('disabled');
+          } else {
+            nextButton.classList.add('disabled');
+          }
+        }
+
+
+        // -------------------------
+        // Rental Management Functions
+        // -------------------------
+
+        function createRental(childId) {
+          fetch(`{% url "api:rental-list" %}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            },
+            body: JSON.stringify({child: childId})
+          })
+            .then(response => response.json().then(data => ({status: response.status, data})))
+            .then(({status, data}) => {
+              if (status === 201) {
+                rentalMap[childId] = {id: data.id, child: childId, pickup_appointment: "", return_appointment: ""};
+                updateCheckmarks();
+                toggleNextButton();
+              } else if (status === 400) {
+                console.error("Could not create rental: " + JSON.stringify(data));
+              }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+
+        function deleteRental(childId) {
+          fetch("{% url "api:rental-list" %}" + childId + "/", {
+            method: 'DELETE',
+            headers: {
+              'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            }
+          })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                delete rentalMap[childId];
+                toggleNextButton();
+              } else {
+                console.error("Could not delete rental: " + data.message);
+              }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+
+        function registerChildren(childIds, slotId, appointmentType) {
+          const payload = {
+            children: childIds,
+            slot: slotId,
+            appointment_type: appointmentType
+          };
+
+          return fetch("{% url "api:all_rentals" %}" + slotId + "/", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            },
+            body: JSON.stringify(payload),
+            credentials: 'include'
+          })
+            .then(response => response.json().then(data => ({status: response.status, data})))
+            .then(({status, data}) => {
+              if (status === 201) {
+                // Update rentalMap with returned rentals
+                data.rentals.forEach(rental => {
+                  rentalMap[rental.child] = rental;
+                });
+                updateCheckmarks();
+                toggleNextButton();
+              } else if (status === 400) {
+                console.warn("Could not register or update rentals: " + JSON.stringify(data));
+              }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+
+        // Function to remove child associations from a slot
+        function unregisterChildren(childIds, slotId, appointmentType) {
+          const payload = {
+            children: childIds,
+            slot: slotId,
+            appointment_type: appointmentType
+          };
+
+          return fetch("{% url "api:all_rentals" %}" + slotId + "/", {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            },
+            body: JSON.stringify(payload)
+          })
+            .then(response => response.json().then(data => ({status: response.status, data})))
+            .then(({status, data}) => {
+              if (status === 200) {
+                // Update rentalMap with new or updated rentals
+                data.rentals.forEach(rental => {
+                  rentalMap[rental.child] = rental;
+                });
+                updateCheckmarks();
+                toggleNextButton();
+              }
+              if (status === 400) {
+                console.warn("Could not remove rentals: " + JSON.stringify(data));
+              }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+
+
+        // -------------------------
+        // Event Listeners
+        // -------------------------
+
+        // Event listeners for the radio buttons
+        if (rentYes && rentNo) {
+          rentYes.addEventListener("change", toggleFormAndButton);
+          rentNo.addEventListener("change", toggleFormAndButton);
+        }
+
+        // Listen for changes on the rental form checkboxes
+        childSelectionForm.addEventListener('change', function (e) {
+          if (e.target.tagName === 'INPUT' && e.target.type === 'checkbox') {
+            const childId = e.target.value;
+            const checked = e.target.checked;
+
+            // Decide if we are creating or deleting the rental
+            if (checked) {
+              createRental(childId);
+            } else {
+              const rental = rentalMap[childId];
+              if (rental && (rental.{{ appointment_type }}_appointment)) {
+                console.warn("Cannot delete rental with existing appointments.");
+                e.target.checked = true;
+              } else {
+                deleteRental(childId);
+
+              }
+            }
+          }
+          toggleDatesSection();
+        });
+
+        const dateLinks = document.querySelectorAll(".calendar-change");
+        dateLinks.forEach(link => {
+          link.addEventListener("click", function (event) {
+            event.preventDefault();
+            // Get the date from the 'data-date' attribute
+            const selectedDate = this.getAttribute("data-date");
+            calendar.gotoDate(selectedDate);
+          });
+        });
+
+        document.getElementById('modal-save-btn').addEventListener('click', function (e) {
+          e.preventDefault();
+
+          const selectedChildren = [];
+          const unselectedChildren = [];
+          const slotId = formAction.data('slot-id'); // Assume the slot ID is set as a data attribute
+          const appointmentType = formAction.data('appointment-type'); // "pickup" or "return"
+          const modalCheckboxes = modalBody.find('input[type="checkbox"]');
+
+          // Collect selected and unselected child IDs
+          modalCheckboxes.each(function () {
+            const childId = parseInt(this.value);
+            if (this.checked) {
+              selectedChildren.push(childId);
+            } else {
+              unselectedChildren.push(childId);
+            }
+          });
+
+          // Send requests to add and remove associations based on the current state
+          const promises = [];
+          if (selectedChildren.length > 0) {
+            promises.push(registerChildren(selectedChildren, slotId, appointmentType));
+          }
+
+          if (unselectedChildren.length > 0) {
+            promises.push(unregisterChildren(unselectedChildren, slotId, appointmentType));
+          }
+
+          Promise.all(promises).then(() => {
+            $('#myModal').modal('hide'); // Close the modal
+            calendar.refetchEvents();
+          }).catch(error => {
+            console.error("Error:", error);
+          });
+
+        });
+        document.getElementById('next-step-btn').addEventListener('click', function (event) {
+          // Check if the button has the 'disabled' class
+          if (!this.classList.contains('disabled')) {
+            // Retrieve the URL from the 'data-url' attribute
+            const url = this.getAttribute('data-url');
+            // Navigate to the URL
+            window.location.href = url;
+          } else {
+            // Prevent any default action if the button is disabled
+            event.preventDefault();
+          }
+        });
+
+        // Initialize FullCalendar and its Event Listener
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+          allDaySlot: false,
+          events: '{% url "api:all_slots" %}',
+          initialView: 'timeGridWeek',
+          locale: 'fr-ch',
+          slotDuration: '00:15:00',
+          slotMinTime: '07:00',
+          slotMaxTime: '20:00',
+          eventClick: (info) => {
+            info.jsEvent.preventDefault();
+            if (info.event.extendedProps.available_places > 0) {
+              modalTitle.text(`${moment(info.event.start).format('dddd Do MMM YYYY, h:mm')} - ${moment(info.event.end).format('h:mm')}`);
+              modalBody.text(info.event.extendedProps.description);
+              formAction.attr('action', info.event.extendedProps.url);
+              formAction.data('slot-id', parseInt(info.event.id));
+              updateModalCheckboxes(parseInt(info.event.id));
+              showModal();
+            }
+          }
+        });
+        calendar.gotoDate("{{ start }}");
+
+        // -------------------------
+        // Initialization
+        // -------------------------
+        updateCheckmarks();
+        toggleFormAndButton();
+
+        }
+      );
+    </script>
+  {% endaddtoblock "js" %}
+
+{% endblock wizard_content %}

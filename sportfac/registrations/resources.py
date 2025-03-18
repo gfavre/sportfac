@@ -5,12 +5,12 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 import tablib
-from activities.models import ExtraNeed
-from backend.templatetags.switzerland import phone
 from import_export import fields, resources, widgets
 from openpyxl import load_workbook
 from openpyxl.workbook.workbook import Workbook
 
+from activities.models import ExtraNeed
+from backend.templatetags.switzerland import phone
 from .models import Bill, ChildActivityLevel, Registration
 
 
@@ -18,13 +18,18 @@ class ExtraNeedField(fields.Field):
     def __init__(self, *args, **kwargs):
         self.extra_need = kwargs.pop("extra_need")
         kwargs["column_name"] = kwargs.pop("column_name", self.extra_need.question_label)
+        if self.extra_need.is_boolean or self.extra_need.is_image:
+            kwargs["widget"] = widgets.BooleanWidget()
         super().__init__(*args, **kwargs)
 
     def get_value(self, obj):
         value = None
-        for question in obj.extra_infos.all():
-            if question.key == self.extra_need:
-                value = question.value
+        for response in obj.extra_infos.all():
+            if response.key == self.extra_need:
+                if response.key.is_boolean or response.key.is_image:
+                    value = response.is_true
+                else:
+                    value = response.value
         return value
 
 
@@ -45,6 +50,7 @@ class RegistrationResource(resources.ModelResource):
     parent_first_name = fields.Field(attribute="child__family__first_name", column_name=_("Parent's first name"))
     parent_last_name = fields.Field(attribute="child__family__last_name", column_name=_("Parent's last name"))
     parent_email = fields.Field(attribute="child__family__email", column_name=_("Email"))
+
     parent_address = fields.Field(attribute="child__family__address", column_name=_("Address"))
     parent_zipcode = fields.Field(attribute="child__family__zipcode", column_name=_("NPA"))
     parent_city = fields.Field(attribute="child__family__city", column_name=_("City"))
@@ -53,6 +59,8 @@ class RegistrationResource(resources.ModelResource):
     before_level = fields.Field(attribute="child", column_name=_("Level -1"))
     after_level = fields.Field(attribute="child", column_name=_("Level 0"))
     paid = fields.Field(attribute="paid", column_name=_("Paid"), widget=widgets.BooleanWidget())
+
+    rental = fields.Field(attribute="child", column_name=_("Rental"), widget=widgets.BooleanWidget())
 
     class Meta:
         model = Registration
@@ -82,6 +90,7 @@ class RegistrationResource(resources.ModelResource):
             "parent_country",
             "before_level",
             "after_level",
+            "rental",
         )
         export_order = fields
 
@@ -111,6 +120,8 @@ class RegistrationResource(resources.ModelResource):
             del self.fields["paid"]
             del self.fields["payment_method"]
             del self.fields["invoice_identifier"]
+        if not settings.KEPCHUP_USE_APPOINTMENTS:
+            del self.fields["rental"]
 
     def dehydrate_child_id(self, obj):
         if settings.KEPCHUP_IMPORT_CHILDREN:
@@ -168,11 +179,11 @@ class RegistrationResource(resources.ModelResource):
         except ChildActivityLevel.DoesNotExist:
             return ""
 
-    def export(self, queryset=None, *args, **kwargs):
-        """
-        Exports a resource.
-        """
+    def dehydrate_rental(self, obj):
+        child = obj.child
+        return child.rentals.exists()
 
+    def export(self, queryset=None, *args, **kwargs):
         self.before_export(queryset, *args, **kwargs)
 
         if queryset is None:
@@ -236,16 +247,31 @@ class BillResource(resources.ModelResource):
     payment_date = fields.Field(
         attribute="payment_date", column_name=_("Payment date"), widget=widgets.DateWidget(format="%d.%m.%Y")
     )
+    payment_method = fields.Field(attribute="payment_method", column_name=_("Payment method"))
     parent = fields.Field(attribute="family", column_name=_("Parent"))
-    children = fields.Field(attribute="registrations", column_name=_("Children"))
+    lines = fields.Field(attribute="total", column_name=_("Lines"))
 
     class Meta:
         model = Bill
-        fields = ("billing_identifier", "amount", "date", "due_date", "paid", "payment_date", "parent", "children")
+        fields = (
+            "billing_identifier",
+            "amount",
+            "date",
+            "due_date",
+            "payment_method",
+            "paid",
+            "payment_date",
+            "parent",
+            "lines",
+        )
         export_order = fields
 
-    def dehydrate_children(self, obj):
-        return ", ".join([registration.child.full_name for registration in obj.registrations.all()])
+    def dehydrate_lines(self, obj):
+        lines = [f"{line.child} ⇒ {line.course.short_name}) (CHF {line.price})" for line in obj.registrations.all()]
+        if settings.KEPCHUP_USE_APPOINTMENTS:
+            label = _("Rental")
+            lines += [f"{label}: {line.child.full_name} (CHF {line.amount})" for line in obj.rentals.all()]
+        return "; ".join(lines)
 
     def dehydrate_parent(self, obj):
         return obj.family.full_name
@@ -256,21 +282,14 @@ class BillResource(resources.ModelResource):
         return ""
 
     def export(self, queryset=None, *args, **kwargs):
-        """
-        Exports a resource.
-        """
-
         self.before_export(queryset, *args, **kwargs)
-
         if queryset is None:
             queryset = self.get_queryset()
         headers = self.get_export_headers()
         data = tablib.Dataset(headers=headers)
         for obj in queryset:
             data.append(self.export_resource(obj))
-
         self.after_export(queryset, data, *args, **kwargs)
-
         return data
 
 

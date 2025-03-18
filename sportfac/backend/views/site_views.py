@@ -1,4 +1,4 @@
-from datetime import timedelta
+# from datetime import timedelta
 
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.messages.views import SuccessMessageMixin
@@ -8,11 +8,13 @@ from django.utils.timezone import now
 from django.utils.translation import gettext as _
 from django.views.generic import DeleteView, ListView, TemplateView, UpdateView, View
 
+from appointments.forms import AppointmentForm
 from appointments.models import Appointment, AppointmentSlot
 from appointments.resources import AppointmentResource
 from mailer.forms import GenericEmailForm
 from mailer.models import GenericEmail
-
+from wizard.forms import WizardStepForm
+from wizard.models import WizardStep
 from ..forms import FlatPageForm
 from .mixins import ExcelResponseMixin, FullBackendMixin
 
@@ -33,11 +35,20 @@ class AppointmentsListView(FullBackendMixin, ListView):
     model = AppointmentSlot
     template_name = "appointments/backend/list.html"
 
-    def get_queryset(self):
-        min_date = now() - timedelta(hours=4)
-        return AppointmentSlot.objects.filter(start__gte=min_date).prefetch_related(
-            "appointments", "appointments__child"
-        )
+    # def get_queryset(self):
+    #    min_date = now() - timedelta(hours=4)
+    #    return AppointmentSlot.objects.filter(start__gte=min_date).prefetch_related(
+    #        "appointments", "appointments__child"
+    #    )
+
+
+class AppointmentUpdateView(SuccessMessageMixin, FullBackendMixin, UpdateView):
+    form_class = AppointmentForm
+    model = Appointment
+    pk_url_kwarg = "appointment"
+    success_url = reverse_lazy("backend:appointments-list")
+    success_message = _("Appointment has been updated.")
+    template_name = "appointments/backend/update.html"
 
 
 class AppointmentDeleteView(SuccessMessageMixin, FullBackendMixin, DeleteView):
@@ -100,3 +111,18 @@ class GenericEmailUpdateView(SuccessMessageMixin, FullBackendMixin, UpdateView):
             self.object.body_template.content = message_body
         self.object.body_template.save()
         return super().form_valid(form)
+
+
+class WizardStepListView(FullBackendMixin, ListView):
+    model = WizardStep
+    template_name = "backend/wizard/step_list.html"
+
+    def get_queryset(self):
+        return super().get_queryset().filter(editable_in_backend=True)
+
+
+class WizardStepUpdateView(FullBackendMixin, UpdateView):
+    model = WizardStep
+    form_class = WizardStepForm
+    template_name = "backend/wizard/step_update.html"
+    success_url = reverse_lazy("backend:wizard-steps")

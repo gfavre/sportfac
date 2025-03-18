@@ -1,7 +1,7 @@
-{% load i18n sekizai_tags static humanize l10n countdowntimer %}<!DOCTYPE html>
+{% load countdowntimer humanize i18n l10n sekizai_tags static %}<!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
-  <title>{% block title %}Sport scolaire facultatif – Montreux{% endblock title %}</title>
+  <title>{% block title %}Sport scolaire facultatif – Montreux{% endblock %}</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
@@ -98,7 +98,7 @@
   </style>
 
 
-  {% block extra_css %}{% endblock extra_css %}
+  {% block extra_css %}{% endblock %}
   {% render_block "css" %}
 
   <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -115,7 +115,7 @@
       <h1>Sport Scolaire Facultatif - Commune de Montreux</h1>
       {% block content %}
         {{ flatpage.content }}
-      {% endblock %}
+      {% endblock content %}
 
       <div class="row" style="margin-top: 3em;">
         <div class="col-sm-6 col-md-4 col-md-offset-1">
@@ -163,20 +163,20 @@
             <div class="pricing-header">
               <h3 class="pricing-plan-title">Hiver</h3>
             </div>
-            <a href="{% if other_instance_started_registrations %}/hiver/wizard/{% else %}/hiver/registrations/summary/{% endif %}">
+            <a href="{% if other_instance_started_registrations %}/hiver/wizard2/{% else %}/hiver/registrations/summary/{% endif %}">
               <img src="https://ssfmontreux.ch/static/img/vignette_hiver_2024-2025.jpg" class="img-responsive"
                    style="margin-bottom:15px">
             </a>
             <p class="text-center">
             {% if other_instance_phase == 1 %}
                 <p>
-                  {% blocktrans with registration_start=preference_other_instance_start_registration|date:"j.m.Y" registration_end=preference_other_instance_end_registration|date:"j.m.Y" %}
-                    Registrations from {{ registration_start }} to {{ registration_end }}.{% endblocktrans %}</p>
+                  {% blocktranslate with registration_start=preference_other_instance_start_registration|date:"j.m.Y" registration_end=preference_other_instance_end_registration|date:"j.m.Y" %}
+                    Registrations from {{ registration_start }} to {{ registration_end }}.{% endblocktranslate %}</p>
                 {% countdown preference_other_instance_start_registration %}
 
               {% endif %}
 
-              <a href="{% if other_instance_started_registrations %}/hiver/wizard/{% else %}/hiver/registrations/summary/{% endif %}"
+              <a href="{% if other_instance_started_registrations %}/hiver/wizard2/{% else %}/hiver/registrations/summary/{% endif %}"
                  class="btn btn-primary">
                 Entrer
               </a>
@@ -237,7 +237,7 @@
   ga('send', 'pageview');
 </script>
 
-{% block extra_js %}{% endblock extra_js %}
+{% block extra_js %}{% endblock %}
 {% render_block "js" %}
 </body>
 </html>

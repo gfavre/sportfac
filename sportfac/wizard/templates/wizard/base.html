@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% load i18n sekizai_tags %}
+
+{% block page_header %}
+  {% comment %}
+      <div class="progress mb-4" style="height: 30px;">
+        <div class="progress-bar bg-success progress-bar-striped progress-bar-animated"
+             role="progressbar"
+             style="width: {{ progress_percent }}%;"
+             aria-valuenow="{{ progress_percent }}" aria-valuemin="0" aria-valuemax="100">
+          {% blocktranslate with current_index=current_index total_steps=total_steps progress_percent=progress_percent|floatformat:0 %}
+            Step {{ current_index }} of {{ total_steps }} ({{ progress_percent }}%)
+          {% endblocktranslate %}
+        </div>
+      </div>
+    {% else %}
+      <p class="text-danger">No steps available. Please check the configuration.</p>
+    {% endif %}
+  </div>
+{% endcomment %}
+{% endblock page_header %}
+
+{% block content %}
+
+  <div class="container-fluid">
+    <div class="row">
+      <nav id="sidebar" class="col-sm-3 col-md-2 sidebar bg-light">
+        <ul class="nav nav-pills nav-stacked step-indicator">
+          {% for step in steps %}
+            {% if step.display_in_navigation %}
+              <li class="nav-item step {% if step.slug == current_step_slug %}current{% elif step.is_complete %}completed{% endif %}">
+                {% if step.is_ready %}
+                  <a href="{% url 'wizard:step' step.slug %}" class="nav-link">
+                    <span class="circle">
+                      {% if step.is_complete %}✔{% else %}{{ forloop.counter }}{% endif %}
+                    </span>
+                    <span class="nav-label">{{ step.title }}</span>
+                  </a>
+                {% else %}
+                  <span class="circle {% if step.slug == current_step_slug %}current{% endif %}">
+                   {% if step.is_complete %}✔{% else %}{{ forloop.counter }}{% endif %}
+                  </span>
+                  <span class="nav-label">{{ step.title }}</span>
+                {% endif %}
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </nav>
+
+      <main role="main" class="col-sm-9 col-md-10 main-content">
+        <div class="card">
+          <div class="card-body">
+            <div class=" page-header">
+              <h1>{% block page_title %}{{ current_step.title }}
+                {% if current_step.subtitle %}<small>- {{ current_step.subtitle }}</small>{% endif %}{% endblock page_title %}
+              </h1>
+            </div>
+          </div>
+          {% if current_step.lead %}<p class="lead">{{ current_step.lead }}</p>{% endif %}
+          {{ current_step.description|safe }}
+          {% block wizard_content %}{% endblock %}
+        </div>
+      </main>
+    </div>
+  </div>
+
+
+  {% addtoblock "css" %}
+    <style>
+      .sidebar {
+        min-height: 100vh;
+        padding: 20px;
+        transition: width 0.3s ease;
+        background: #f8f9fa;
+      }
+
+      .sidebar .nav-pills.nav-stacked > li {
+        margin-bottom: 20px;
+        padding: 0;
+      }
+
+      .sidebar .nav-pills.nav-stacked > li > a {
+        color: #333;
+        background-color: transparent;
+        padding: 0;
+        display: flex;
+        align-items: center;
+      }
+
+      .sidebar .nav-pills.nav-stacked > li > a:hover {
+        background-color: #eee;
+      }
+
+      .sidebar .nav-pills.nav-stacked > li > a .icon {
+        margin-right: 8px;
+        font-size: 18px;
+      }
+
+      .sidebar.collapsed {
+        width: 60px; /* Adjust the width for collapsed state */
+      }
+
+      .sidebar.collapsed .nav-pills > li > a {
+        text-align: center;
+        justify-content: center;
+        padding: 10px 5px;
+      }
+
+      .sidebar.collapsed .nav-pills > li > a .icon {
+        margin: 0;
+      }
+
+      .sidebar.collapsed .nav-pills > li > a span:not(.icon) {
+        display: none; /* Hide text in collapsed state */
+      }
+
+      .circle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        font-size: 16px;
+        font-weight: bold;
+        margin-right: 10px;
+        border: 1px solid #6c757d;
+      }
+
+      .step.completed .circle {
+        background-color: #28a745; /* Green for completed */
+        border-color: #28a745;
+        color: white;
+      }
+
+      .step.current .circle {
+        background-color: #6f42c1; /* Purple for current step */
+        border-color: #6f42c1;
+        color: white;
+      }
+
+      .step .circle.future {
+        background-color: #ddd; /* Grey for future steps */
+        color: #6c757d; /* Darker grey text color */
+      }
+
+      .nav-label {
+        font-weight: 500;
+        color: #333;
+      }
+
+      .step.current .nav-label {
+        font-weight: bold;
+      }
+
+      .pager .btn {
+        font-size: 1.25em;
+      }
+
+    </style>
+  {% endaddtoblock %}
+  {% addtoblock "js" %}
+    {% if REGISTRATION_EXPIRE_MINUTES %}
+      <script type="text/javascript">
+        // Get the expiration time in minutes from Django context, converting to milliseconds
+        const expireMinutes = {{ REGISTRATION_EXPIRE_MINUTES|default:0 }};
+        const expireMilliseconds = expireMinutes * 60 * 1000;
+
+        let inactivityTimer;
+
+        // Function to reset the timer
+        function resetInactivityTimer() {
+          clearTimeout(inactivityTimer);
+          if (expireMilliseconds > 0) { // Only set the timer if the expiration is defined and greater than zero
+            inactivityTimer = setTimeout(() => {
+              location.reload();  // Reloads the page after specified inactivity period
+            }, expireMilliseconds);
+          }
+        }
+
+        // Reset inactivity timer on user activity
+        window.addEventListener("mousemove", resetInactivityTimer);
+        window.addEventListener("keydown", resetInactivityTimer);
+        window.addEventListener("scroll", resetInactivityTimer);
+        window.addEventListener("click", resetInactivityTimer);
+
+        // Initialize the timer for the first time
+        resetInactivityTimer();
+      </script>
+    {% endif %}
+  {% endaddtoblock %}
+{% endblock content %}

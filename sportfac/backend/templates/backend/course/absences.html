@@ -1,29 +1,30 @@
 {% extends "backend/base.html" %}
-{% load i18n duration switzerland sekizai_tags floppyforms crispy_forms_tags %}
+{% load crispy_forms_tags duration floppyforms i18n sekizai_tags switzerland %}
 
 {% block title %}{{ course.activity.name }} - Absences - {{ block.super }}{% endblock %}
-{% block page_title %}{{ course.activity.name }} - {% blocktrans with identifier=course.number %}course #{{ identifier }}{% endblocktrans %} - {% trans "Absences" %}{% endblock %}
+
+{% block page_title %}{{ course.activity.name }} - {% blocktranslate with identifier=course.number %}course #{{ identifier }}{% endblocktranslate %} - {% translate "Absences" %}{% endblock %}
 
 {% block content %}
 <section class="portlet hidden-print">
   <div class="pricing-plan">
     <header class="pricing-header hidden-print">
-      <p class="pricing-plan-label">{{ course.start_date | date:"j F Y" }} – {{ course.end_date | date:'j F Y'  }}</p>
+      <p class="pricing-plan-label">{{ course.start_date|date:"j F Y" }} – {{ course.end_date|date:'j F Y' }}</p>
       <p class="lead">Chaque {{ course.day_name|lower }} de {{ course.start_time|time:"H:i" }} à {{ course.end_time|time:"H:i" }} ({{ course.duration|duration }})</p>
     </header>
     <dl class="dl-horizontal hidden-print">
-      <dt class="hidden-print">{% trans "Activity number" %}</dt>
+      <dt class="hidden-print">{% translate "Activity number" %}</dt>
       <dd class="hidden-print"><a href="{{ course.activity.get_backend_url }}">{{ course.activity.number }}</a></dd>
-      <dt>{% trans "Instructors" %}</dt>
+      <dt>{% translate "Instructors" %}</dt>
       <dd>
         <ul class="list-unstyled">
         {% for instructor in course.instructors.all %}
           <li>
-            <a href="{{ instructor.get_backend_url }}">{{ instructor.full_name  }}</a>
+            <a href="{{ instructor.get_backend_url }}">{{ instructor.full_name }}</a>
             {% if FICHE_SALAIRE_MONTREUX %}
             <span class="hidden-print">
               <a href="{% url 'backend:pay-slip-montreux' course=course.pk instructor=instructor.pk %}">
-                <i class="icon-doc-text"></i> {% trans "Create pay slip" %}
+                <i class="icon-doc-text"></i> {% translate "Create pay slip" %}
               </a>
             </span>
             {% endif %}
@@ -31,38 +32,38 @@
         {% endfor %}
         </ul>
       </dd>
-      <dt class="hidden-print">{% trans "Place" %}</dt>
-      <dd class="hidden-print">{{ course.place  }}</dd>
-      <dt class="hidden-print">{% trans "Number of sessions" %}</dt>
+      <dt class="hidden-print">{% translate "Place" %}</dt>
+      <dd class="hidden-print">{{ course.place }}</dd>
+      <dt class="hidden-print">{% translate "Number of sessions" %}</dt>
       <dd class="hidden-print">{{ course.number_of_sessions }} cours</dd>
-      <dt class="hidden-print">{% trans "Price" %}</dt>
+      <dt class="hidden-print">{% translate "Price" %}</dt>
       <dd class="hidden-print">{{ course.price|money }}</dd>
-      <dt class="hidden-print">{% trans "School years" %}</dt>
-      <dd class="hidden-print">{% for year in course.school_years %}{{year}}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
+      <dt class="hidden-print">{% translate "School years" %}</dt>
+      <dd class="hidden-print">{% for year in course.school_years %}{{ year }}P{% if not forloop.last %} - {% endif %} {% endfor %}</dd>
     </dl>
     <div class="hidden-print">
-      <p class="text-center hidden-print" ><a href="{{ course.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% trans "Edit" %}</a> </p>
-      <h4 class="content-title"><u>{% trans "Management"%}</u></h4>
+      <p class="text-center hidden-print" ><a href="{{ course.get_update_url }}" class="btn btn-default"><i class="icon-edit"></i>&nbsp;{% translate "Edit" %}</a> </p>
+      <h4 class="content-title"><u>{% translate "Management" %}</u></h4>
 
       <a href="{{ course.get_backend_url }}" class="btn btn-sm">
-          <i class="icon-check"></i>&nbsp;{% trans "Check registrations" %}
+          <i class="icon-check"></i>&nbsp;{% translate "Check registrations" %}
       </a> &nbsp;
 
       <a href="{{ course.get_custom_mail_url }}" class="btn btn-sm">
-          <i class="icon-mail"></i>&nbsp;{% trans "Mail all participants" %}
+          <i class="icon-mail"></i>&nbsp;{% translate "Mail all participants" %}
       </a> &nbsp;
 
       <a href="{{ course.get_mail_instructors_url }}" class="btn btn-sm">
-          <i class="icon-tasks"></i>&nbsp;{% trans "Send infos to instructors" %}
+          <i class="icon-tasks"></i>&nbsp;{% translate "Send infos to instructors" %}
       </a> &nbsp;
       {% if not course.is_camp %}
       <a href="{{ course.get_js_export_url }}" class="btn btn-sm">
-          <i class="icon-doc"></i>&nbsp;{% trans "Get BDNS: J+S export file" %}
+          <i class="icon-doc"></i>&nbsp;{% translate "Get BDNS: J+S export file" %}
       </a> &nbsp;
       {% endif %}
 
       <a href="{{ course.get_mail_confirmation_url }}" class="btn btn-sm">
-          <i class="icon-mail"></i>&nbsp;{% trans "Send confirmation email" %}
+          <i class="icon-mail"></i>&nbsp;{% translate "Send confirmation email" %}
       </a> &nbsp;
     </div>
   </div>
@@ -80,7 +81,7 @@
 
 {% if courses_list.count > 1 %}
 <div class="form-group hidden-print">
-  <label for="select-course">{% trans "Manage absences for" %}:</label>
+  <label for="select-course">{% translate "Manage absences for" %}:</label>
   <select class="form-control" id="select-course">
     {% for c in courses_list %}
       <option{% if course == c %} selected{% endif %} value="{{ c.get_backend_absences_url }}">{{ c.short_name }}</option>

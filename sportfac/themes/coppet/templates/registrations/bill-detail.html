@@ -1,10 +1,9 @@
 {% extends "base.html" %}
 {% load i18n sekizai_tags switzerland %}
 
-{% block title %}{% trans "Bill detail" %}{% endblock %}
+{% block title %}{% translate "Bill detail" %}{% endblock %}
+
 {% block page_title %}{% endblock %}
-
-
 
 {% block extra_body %}class="bill"{% endblock %}
 
@@ -13,20 +12,20 @@
 {% include "registrations/bill-partial.html" %}
 
 <section>
-  <h3>{% trans "Registrations" %}</h3>
+  <h3>{% translate "Registrations" %}</h3>
   <table class=" table table-striped">
     <thead>
       <tr>
-        <th>{% trans "Name" %}</th>
-        <th>{% trans "Activity" %}</th>
-        <th>{% trans "Period" %}</th>
-        <th>{% trans "Time" %}</th>
-        <th class="nowrap text-right">{% trans "Price" %}</th>
+        <th>{% translate "Name" %}</th>
+        <th>{% translate "Activity" %}</th>
+        <th>{% translate "Period" %}</th>
+        <th>{% translate "Time" %}</th>
+        <th class="nowrap text-right">{% translate "Price" %}</th>
       </tr>
     </thead>
     <tfoot>
       <tr>
-        <th colspan="4" class="nowrap" style="text-align: right">{% trans "Total" %}</th>
+        <th colspan="4" class="nowrap" style="text-align: right">{% translate "Total" %}</th>
         <th class="nowrap text-right">{{ bill.total|money }}</th>
         <th class="hidden-print"></th>
       </tr>
@@ -45,28 +44,28 @@
         </td>
         <td>
           {% if registration.course.is_course %}
-          {{ registration.course.day_name }} / <span class="nowrap">{{ registration.course.start_time|time:"H:i"}} - {{ registration.course.end_time|time:"H:i" }}</span>
+          {{ registration.course.day_name }} / <span class="nowrap">{{ registration.course.start_time|time:"H:i" }} - {{ registration.course.end_time|time:"H:i" }}</span>
           {% elif registration.course.is_multi_course %}
           {% if registration.course.start_time_mon %}
-              {% blocktrans with start_time=registration.course.start_time_mon|time:"H:i" end_time=registration.course.end_time_mon|time:"H:i" %}Mondays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+              {% blocktranslate with start_time=registration.course.start_time_mon|time:"H:i" end_time=registration.course.end_time_mon|time:"H:i" %}Mondays, from {{ start_time }} to {{ end_time }}{% endblocktranslate %}<br>
             {% endif %}
             {% if registration.course.start_time_tue %}
-              {% blocktrans with start_time=registration.course.start_time_tue|time:"H:i" end_time=registration.course.end_time_tue|time:"H:i" %}Tuesdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+              {% blocktranslate with start_time=registration.course.start_time_tue|time:"H:i" end_time=registration.course.end_time_tue|time:"H:i" %}Tuesdays, from {{ start_time }} to {{ end_time }}{% endblocktranslate %}<br>
             {% endif %}
             {% if registration.course.start_time_wed %}
-              {% blocktrans with start_time=registration.course.start_time_wed|time:"H:i" end_time=registration.course.end_time_wed|time:"H:i" %}Wednesdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+              {% blocktranslate with start_time=registration.course.start_time_wed|time:"H:i" end_time=registration.course.end_time_wed|time:"H:i" %}Wednesdays, from {{ start_time }} to {{ end_time }}{% endblocktranslate %}<br>
             {% endif %}
             {% if registration.course.start_time_thu %}
-              {% blocktrans with start_time=registration.course.start_time_thu|time:"H:i" end_time=registration.course.end_time_thu|time:"H:i" %}Thursdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+              {% blocktranslate with start_time=registration.course.start_time_thu|time:"H:i" end_time=registration.course.end_time_thu|time:"H:i" %}Thursdays, from {{ start_time }} to {{ end_time }}{% endblocktranslate %}<br>
             {% endif %}
             {% if registration.course.start_time_fri %}
-              {% blocktrans with start_time=registration.course.start_time_fri|time:"H:i" end_time=registration.course.end_time_fri|time:"H:i" %}Fridays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+              {% blocktranslate with start_time=registration.course.start_time_fri|time:"H:i" end_time=registration.course.end_time_fri|time:"H:i" %}Fridays, from {{ start_time }} to {{ end_time }}{% endblocktranslate %}<br>
             {% endif %}
             {% if registration.course.start_time_sat %}
-              {% blocktrans with start_time=registration.course.start_time_sat|time:"H:i" end_time=registration.course.end_time_sat|time:"H:i" %}Saturdays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+              {% blocktranslate with start_time=registration.course.start_time_sat|time:"H:i" end_time=registration.course.end_time_sat|time:"H:i" %}Saturdays, from {{ start_time }} to {{ end_time }}{% endblocktranslate %}<br>
             {% endif %}
             {% if registration.course.start_time_sun %}
-              {% blocktrans with start_time=registration.course.start_time_sun|time:"H:i" end_time=registration.course.end_time_sun|time:"H:i" %}Sundays, from {{ start_time }} to {{ end_time }}{% endblocktrans %}<br>
+              {% blocktranslate with start_time=registration.course.start_time_sun|time:"H:i" end_time=registration.course.end_time_sun|time:"H:i" %}Sundays, from {{ start_time }} to {{ end_time }}{% endblocktranslate %}<br>
             {% endif %}
           {% endif %}
         </td>
@@ -106,7 +105,7 @@
   <p class="hidden-print text-center">
 
     <button class="btn btn-secondary btn-large print-button">
-      <i class="icon icon-print"></i> {% trans "Print" %}
+      <i class="icon icon-print"></i> {% translate "Print" %}
     </button>
   </p>
 </section>
@@ -117,6 +116,3 @@
 </script>
 {% endaddtoblock %}
 {% endblock content %}
-
-
-

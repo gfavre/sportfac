@@ -1,0 +1,51 @@
+{% extends "wizard/base.html" %}
+{% load crispy_forms_tags i18n sekizai_tags %}
+
+
+{% block wizard_content %}
+  {% include "registrations/children_app.html" %}
+  {% if CHILDREN_POPUP %}
+  <div id="confirmModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="confirmModalLabel">{% translate "Confirm step" %}</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="{% translate "Close" %}"
+                  style="margin-top: -25px;">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>{% blocktranslate %}Have you registered <strong>all</strong> your children?{% endblocktranslate %}</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn" data-dismiss="modal" id="modalNo">
+            {% translate "No" %}
+          </button>
+          <button type="button" class="btn btn-primary" ng-click="navigateToNextStep()" id="modalYes">
+            {% translate "Yes" %}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+<nav style="margin-top: 1.5em;">
+  <ul class="pager" style="font-size: 1.25em;">
+    <li class="previous">
+      <a href="{{ previous_step.url }}" >
+        <span aria-hidden="true">&larr;</span> {% block previous_label %}{% translate "Previous" %}{% endblock %}
+      </a>
+    </li>
+    <li class="next" >
+      {% translate "Next" as default_next %}
+       <button data-url="{{ success_url }}" class="btn btn-primary"
+               {% if CHILDREN_POPUP %}ng-click="confirmNavigation($event)"{% endif %}
+               ng-class="{disabled: userChildren.length === 0}">
+         <strong>{{ next_step.link_display|default:default_next }} <span aria-hidden="true">&rarr;</span></strong>
+       </button>
+    </li>
+  </ul>
+</nav>
+{% endblock wizard_content %}

@@ -1,15 +1,18 @@
 import logging
 
-from profiles.models import SchoolYear
-from registrations.models import ExtraInfo, Registration
+from django.http import QueryDict
+
 from rest_framework import status, viewsets
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
-from schools.models import Building, Teacher
 
-from ..permissions import ChildOrAdminPermission, RegistrationOwnerAdminPermission
+from profiles.models import SchoolYear
+from registrations.models import ExtraInfo, Registration
+from schools.models import Building, Teacher
+from ..permissions import ChildOrAdminPermission, IsAuthenticated, RegistrationOwnerAdminPermission
 from ..serializers import (
     BuildingSerializer,
+    ExtraInfoSerializer,
     ExtraSerializer,
     RegistrationSerializer,
     TeacherSerializer,
@@ -26,7 +29,8 @@ class BuildingViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Building.objects.all()
 
 
-class ExtraInfoViewSet(viewsets.ModelViewSet):
+class OldExtraInfoViewSet(viewsets.ModelViewSet):
+    # DEPRECATED
     authentication_classes = (SessionAuthentication,)
     permission_classes = (RegistrationOwnerAdminPermission,)
     serializer_class = ExtraSerializer
@@ -58,6 +62,68 @@ class ExtraInfoViewSet(viewsets.ModelViewSet):
                     continue
 
         return Response(output, status=status.HTTP_201_CREATED)
+
+
+class ExtraInfoViewSet(viewsets.ModelViewSet):
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAuthenticated,)  # Ensure only authenticated users can access
+
+    queryset = ExtraInfo.objects.all()
+    serializer_class = ExtraInfoSerializer
+
+    def get_queryset(self):
+        """Limit queryset to ExtraInfo objects owned by the logged-in user."""
+        user = self.request.user
+        if user.is_authenticated:
+            return ExtraInfo.objects.filter(registration__child__family=user)
+        return ExtraInfo.objects.none()  # Return an empty queryset if user is not authenticated
+
+    def create(self, request, *args, **kwargs):
+        """Handle create requests."""
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"success": True, "extra_info_id": serializer.instance.pk, "message": "Created successfully."},
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(
+            {"success": False, "errors": serializer.errors, "message": "Validation failed."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    def update(self, request, *args, **kwargs):
+        """Handle update requests."""
+        instance = self.get_object()
+        logger.info(instance.registration.child.family, request.user)
+        if instance.registration.child.family != request.user:
+            return Response(
+                {"success": False, "message": "You do not have permission to update this resource."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        if isinstance(request.data, QueryDict):
+            data = request.data.dict()  # Convert QueryDict to a regular dictionary
+        else:
+            data = dict(request.data)  # Create a new dictionary if it's already a dict-like object
+        if not data.get("image", None):
+            if "image" not in request.FILES and instance.image:
+                data["image"] = instance.image
+            else:
+                data["image"] = None
+
+        serializer = self.get_serializer(instance, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"success": True, "extra_info_id": serializer.instance.pk, "message": "Updated successfully."},
+                status=status.HTTP_200_OK,
+            )
+
+        return Response(
+            {"success": False, "errors": serializer.errors, "message": "Update failed."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
 
 class RegistrationViewSet(viewsets.ModelViewSet):

@@ -10,15 +10,15 @@ from django.forms.widgets import TextInput
 from django.utils.html import mark_safe
 from django.utils.translation import gettext as _
 
-from activities.models import Course, ExtraNeed
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Fieldset, Layout, Submit
 from django_select2 import forms as s2forms
+
+from activities.models import Course, ExtraNeed
 from registrations.models import Child, ExtraInfo, Registration
 from registrations.utils import check_children_load_format
-
 from .models import YearTenant
 
 
@@ -307,8 +307,14 @@ class RegistrationForm(CourseSelectMixin, forms.ModelForm):
 
 class PlainTextWidget(forms.Widget):
     def render(self, name, value, attrs=None, renderer=None):
+        if hasattr(self, "form_field") and getattr(self.form_field, "queryset", None):
+            try:
+                value = self.form_field.queryset.get(pk=value)
+            except self.form_field.queryset.model.DoesNotExist:
+                pass
         if isinstance(value, datetime.date):
             value = value.strftime("%d-%m-%Y")
+
         markup = '<p class="form-control-static">{}</p>'
 
         return mark_safe(markup.format(value))

@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n crispy_forms_tags  %}
+{% load crispy_forms_tags i18n %}
 
-{% block title %}{% trans "Update allocation account" %} - {{ block.super }}{% endblock %}
-{% block page_title %}<i class="icon-money"></i>&nbsp;&nbsp;{% trans "Update allocation account" %}{% endblock %}
+{% block title %}{% translate "Update allocation account" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}<i class="icon-money"></i>&nbsp;&nbsp;{% translate "Update allocation account" %}{% endblock %}
 
 {% block content %}
 
@@ -11,9 +12,9 @@
   <div class=" form-group">
     <div class="col-sm-offset-2 col-sm-10">
 
-      <button type="submit" class="btn btn-success ">{% trans 'Update account' %}</button>
+      <button type="submit" class="btn btn-success ">{% translate 'Update account' %}</button>
       &nbsp;
-      <a href="{% url 'backend:allocation-list' %}" class="btn  btn-default">{% trans 'Cancel' %}</a>
+      <a href="{% url 'backend:allocation-list' %}" class="btn  btn-default">{% translate 'Cancel' %}</a>
     </div>
   </div>
 

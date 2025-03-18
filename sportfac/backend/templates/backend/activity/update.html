@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n crispy_forms_tags sekizai_tags %}
+{% load crispy_forms_tags i18n sekizai_tags %}
 
-{% block title %}{% trans "Update activity" %} - {{ block.super }}{% endblock %}
-{% block page_title %}<i class="icon-soccer-ball"></i>&nbsp;&nbsp;{% trans "Update activity" %}{% endblock %}
+{% block title %}{% translate "Update activity" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}<i class="icon-soccer-ball"></i>&nbsp;&nbsp;{% translate "Update activity" %}{% endblock %}
 
 {% block content %}
 {% addtoblock "css" %}
@@ -19,9 +20,9 @@
   <div class=" form-group">
     <div class="col-sm-offset-2 col-sm-10">
 
-      <button type="submit" class="btn btn-success ">{% trans 'Update activity' %}</button>
+      <button type="submit" class="btn btn-success ">{% translate 'Update activity' %}</button>
       &nbsp;
-      <a href="{% url 'backend:activity-list' %}" class="btn  btn-default">{% trans 'Cancel' %}</a>
+      <a href="{% url 'backend:activity-list' %}" class="btn  btn-default">{% translate 'Cancel' %}</a>
     </div>
   </div>
 

@@ -5,18 +5,17 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
 from django.views.generic import TemplateView
 
-from api.permissions import PostfinanceIPFilterPermission
-from appointments.models import Appointment
 from async_messages import message_user
 from braces.views import LoginRequiredMixin
-from registrations.models import Bill
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from sportfac.views import WizardMixin
-
+from api.permissions import PostfinanceIPFilterPermission
+from appointments.models import Appointment
+from registrations.models import Bill
+from wizard.views import BaseWizardStepView
 from .models import DatatransTransaction, PostfinanceTransaction
 
 
@@ -55,13 +54,9 @@ class DatatransWebhookView(APIView):
         return Response("Webhook accepted")
 
 
-class PaymentSuccessView(LoginRequiredMixin, WizardMixin, TemplateView):
-    template_name = "payments/success.html"
-
-    @staticmethod
-    def check_initial_condition(request):
-        # Condition verified externally, payment provider redirects us here.
-        pass
+class WizardPaymentSuccessView(LoginRequiredMixin, BaseWizardStepView, TemplateView):
+    step_slug = "payment-success"
+    template_name = "wizard/payment-success.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -72,13 +67,9 @@ class PaymentSuccessView(LoginRequiredMixin, WizardMixin, TemplateView):
         return context
 
 
-class PaymentFailureView(LoginRequiredMixin, WizardMixin, TemplateView):
-    template_name = "payments/failure.html"
-
-    @staticmethod
-    def check_initial_condition(request):
-        # Condition verified externally, payment provider redirects us here.
-        pass
+class WizardPaymentFailureView(LoginRequiredMixin, BaseWizardStepView, TemplateView):
+    step_slug = "payment-failure"
+    template_name = "wizard/payment-failure.html"
 
 
 class PostfinanceWebhookView(APIView):

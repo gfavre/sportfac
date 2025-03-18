@@ -1,0 +1,44 @@
+{% extends "wizard/base.html" %}
+{% load crispy_forms_tags i18n sekizai_tags %}
+
+
+{% block wizard_content %}
+  <div id="alert-container" style="display: none">
+    <div class="alert alert-danger" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="{% translate 'Close' %}">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <strong>{% translate "Error" %}</strong>
+      {% blocktranslate %}There are errors in the form. Please fix them before proceeding.{% endblocktranslate %}
+    </div>
+  </div>
+  <div class="form-wrapper">
+    {% for form in forms %}
+      {% crispy form %}
+      {% if not forloop.last %}<hr>{% endif %}
+    {% endfor %}
+  </div>
+  {% addtoblock "css" %}
+    {{ forms.0.media.css }}
+  {% endaddtoblock %}
+  {% addtoblock "js" %}
+    {{ forms.0.media.js }}
+  {% endaddtoblock %}
+
+  <nav style="margin-top: 1.5em;">
+    <ul class="pager" style="font-size: 1.25em;">
+      <li class="previous">
+        <a href="{{ previous_step.url }}?direction=previous">
+          <span aria-hidden="true">&larr;</span> {% block previous_label %}{% translate "Previous" %}{% endblock %}
+        </a>
+      </li>
+      <li class="next">
+        {% translate "Next" as default_next %}
+        <button id="save-next-button" class="btn btn-primary" data-url="{{ success_url }}">
+          <strong>{{ next_step.link_display|default:default_next }} <span aria-hidden="true">&rarr;</span></strong>
+        </button>
+      </li>
+    </ul>
+  </nav>
+
+{% endblock wizard_content %}

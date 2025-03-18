@@ -1,4 +1,4 @@
-{% load i18n switzerland static  %}
+{% load i18n static switzerland %}
 
 
 
@@ -22,12 +22,12 @@
       </p>
     </div>
   </div>
-  <h2>{% trans "Bill detail" %}</h2>
+  <h2>{% translate "Bill detail" %}</h2>
 
   <dl class="dl-horizontal">
 
-      <dt>{% trans "Billing identifier" %}</dt><dd>{{ bill.billing_identifier }}</dd>
-      <dt>{% trans "Total" %}</dt><dd>{{ bill.total|money }}</dd>
+      <dt>{% translate "Billing identifier" %}</dt><dd>{{ bill.billing_identifier }}</dd>
+      <dt>{% translate "Total" %}</dt><dd>{{ bill.total|money }}</dd>
 
   </dl>
     {% if bill.is_wire_transfer %}

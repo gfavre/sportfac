@@ -1,19 +1,20 @@
 {% extends "backend/base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Validate registrations" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "Validate registrations" %}{% endblock %}
+{% block title %}{% translate "Validate registrations" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Validate registrations" %}{% endblock %}
 
 {% block content %}
   <form action="" method="post">{% csrf_token %}
-    <p>{% blocktrans %}Are you sure you want to validate these registrations?{% endblocktrans %}</p>
+    <p>{% blocktranslate %}Are you sure you want to validate these registrations?{% endblocktranslate %}</p>
     <ul>
       {% for reg in registrations %}
         <li>{{ reg }}</li>
       {% endfor %}
     </ul>
     <div class="form-group">
-      <button type="submit" class="btn btn-success"><i class="icon icon-check"></i>&nbsp;{% trans 'confirm' %}</button>
+      <button type="submit" class="btn btn-success"><i class="icon icon-check"></i>&nbsp;{% translate 'confirm' %}</button>
     </div>
   </form>
 

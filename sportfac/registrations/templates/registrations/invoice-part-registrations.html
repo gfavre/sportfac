@@ -1,0 +1,111 @@
+{% load i18n switzerland %}
+<h3 class="content-title"><u>{% translate "Registrations" %}</u></h3>
+<table class=" table table-hover ">
+  <thead>
+  <tr>
+    <th class="text-center">{% translate "Name" %}</th>
+    <th class="text-center">{% translate "Activity" %}</th>
+    <th class="text-center">{% translate "Period" %}</th>
+    <th class="text-center">{% translate "Time" %}</th>
+    <th class="text-center">{% translate "Place" %}</th>
+    {% if not NO_PAYMENT %}
+      <th class="text-center">{% translate "Price" %}</th>
+    {% endif %}
+  </tr>
+  </thead>
+  <tbody>
+  {% for registration in registrations %}
+    <tr id="{{ registration.id }}" {% if registration.id in overlapped %}class="warning"{% endif %}>
+      <td rowspan="{{ registration.row_span }}" class="text-nowrap">
+        <strong>{{ registration.child.full_name }}</strong>
+         {% if DISPLAY_LAGAPEO %}<br><small>{{ registration.child.id_lagapeo }}</small>{% endif %}
+      </td>
+      <td>
+        <strong>{{ registration.course.activity.name }}</strong>
+      </td>
+      <td class="text-center">
+        <span class="nowrap">{{ registration.course.start_date }}</span><br>
+        <span class="icon-down-1" aria-hidden="true"></span><br>
+        <span class="nowrap">{{ registration.course.end_date }}</span>
+      </td>
+      <td class="text-center">
+        {{ registration.course.day_name }} <br/> <span
+          class="nowrap">{{ registration.course.start_time|time:"H:i" }} - {{ registration.course.end_time|time:"H:i" }}</span>
+      </td>
+      <td>{{ registration.course.place }}</td>
+
+      {% if not NO_PAYMENT %}
+        <td class="nowrap text-right invoice-item" data-value="{{ registration.price }}">
+          {% if registration.price %}
+            {% with price_category=registration.get_price_category %}
+              <strong>{{ price_category.0|money }}</strong>
+              {% if price_category.1 %}<br>
+                <small>{{ price_category.1 }}</small>
+              {% endif %}
+            {% endwith %}
+          {% else %}
+            <strong>{{ registration.price|money }}</strong>
+          {% endif %}
+        </td>
+      {% endif %}
+    </tr>
+    {% for answer in registration.extra_infos.all %}
+      <tr>
+        <td colspan="4">
+          {{ answer.key.question_label }} –
+          {% if answer.key.is_boolean or answer.key.is_image %}
+            <strong><i class="icon-{% if answer.is_true %}ok{% else %}cancel{% endif %}-circled"></i></strong>
+          {% else %}
+            <strong>{{ answer.value }}</strong>
+          {% endif %}
+        </td>
+        {% if not NO_PAYMENT %}
+          <td class="nowrap text-right invoice-item">
+            {% if answer.price_modifier %}<strong>{{ answer.price_modifier|money }}</strong>{% endif %}
+          </td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+  {% endfor %}
+  </tbody>
+</table>
+
+{% if rentals %}
+  <h3 class="content-title"><u>{% translate "Rental" %}</u></h3>
+  <table class=" table table-hover ">
+    <thead>
+    <tr>
+      <th class="text-center">{% translate "Name" %}</th>
+      <th class="text-center">{% translate "Pickup" %}</th>
+      <th class="text-center">{% translate "Return" %}</th>
+      {% if not NO_PAYMENT %}
+        <th class="text-center">{% translate "Price" %}</th>
+      {% endif %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for rental in rentals %}
+      <tr>
+        <td><strong>{{ rental.child.full_name }}</strong></td>
+        <td class="text-center">{{ rental.pickup_appointment.slot.start }}</td>
+        <td class="text-center">{{ rental.return_appointment.slot.start }}</td>
+        {% if not NO_PAYMENT %}
+          <td class="text-right"><strong>{{ rental.amount|money }}</strong></td>
+        {% endif %}
+
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+
+{% if not NO_PAYMENT %}
+  <table class=" table table-hover " style="margin-top: 3em">
+    <tfoot>
+    <tr>
+      <th colspan="4" class="text-right">{% translate "Total" %}</th>
+      <th class="text-right">{{ total_amount|money_html }}</th>
+    </tr>
+    </tfoot>
+  </table>
+{% endif %}

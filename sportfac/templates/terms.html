@@ -1,10 +1,8 @@
 {% extends "base.html" %}
-{% load i18n %}
-{% load floppyforms %}
-{% block title %}Règlement de participation{% endblock title %}
+{% load floppyforms i18n %}
+{% block title %}Règlement de participation{% endblock %}
 
-{% block page_title %}Règlement de participation{% endblock page_title %}
-
+{% block page_title %}Règlement de participation{% endblock %}
 
 {% block content %}
 <h2>1. Principe</h2>
@@ -37,5 +35,4 @@ Pour les activités de ski de fond, le transport est organisé et pris en charge
 
 <h2>7. Assurance</h2>
 <p>Les élèves sont assurés contre les accidents à titre privé. Tout accident est annoncé à la <a href="{% url 'contact:contact' %}">Direction des écoles</a> dans les meilleurs délais.</p>
-{% endblock %}
-
+{% endblock content %}

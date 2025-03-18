@@ -14,7 +14,7 @@
           {% else %}
             <a href="{{ step.url }}">{{ step.title }}</a>
           {% endif %}
-          
+
           <span class="chevron"></span>
         </li>
       {% endfor %}
@@ -22,7 +22,7 @@
   </div>
 </div>
 <div class=" page-header">
-  <h1>{% block page_title %}{% endblock page_title %}</h1>
+  <h1>{% block page_title %}{% endblock %}</h1>
 </div>
 </div>
 {% endblock page_header %}
@@ -32,12 +32,12 @@
   <ul class="pager">
   {% if previous_step %}
     <li class="previous">
-      <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span> {% block previous_label %}{% trans "Previous"%}{% endblock %}</a>
+      <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span> {% block previous_label %}{% translate "Previous" %}{% endblock %}</a>
     </li>
   {% endif %}
   {% if next_step %}
     <li class="next">
-      <a href="{{ next_step.url }}">{% block next_label %}{% trans "Next"%}{% endblock %}<span aria-hidden="true">&rarr;</span></a>
+      <a href="{{ next_step.url }}">{% block next_label %}{% translate "Next" %}{% endblock %}<span aria-hidden="true">&rarr;</span></a>
     </li>
 
   {% endif %}

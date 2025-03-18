@@ -1,18 +1,20 @@
 from django import forms
 from django.conf import settings
+from django.forms import widgets
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from activities.models import Course
-from backend.forms import BuildingWidget, CourseWidget, FamilyUserWidget, TeacherWidget, TransportWidget
 from bootstrap_datepicker_plus.widgets import DatePickerInput
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import HTML, ButtonHolder, Div, Fieldset, Layout
+from crispy_forms.layout import HTML, ButtonHolder, Div, Field, Fieldset, Layout
+
+from activities.models import Course
+from backend.forms import BuildingWidget, CourseWidget, FamilyUserWidget, TeacherWidget, TransportWidget
 from profiles.models import FamilyUser, School, SchoolYear
 from schools.models import Building, Teacher
-
-from .models import Bill, Child, Registration, Transport
+from .models import Bill, Child, ExtraInfo, Registration, RegistrationValidation, Transport
 
 
 AVAILABLE_PAYMENT_METHODS = [
@@ -20,6 +22,32 @@ AVAILABLE_PAYMENT_METHODS = [
     for (method, label) in Bill.METHODS
     if method in settings.KEPCHUP_ALTERNATIVE_PAYMENT_METHODS_FROM_BACKEND or method == settings.KEPCHUP_PAYMENT_METHOD
 ]
+
+
+class StaticTextWidget(widgets.Widget):
+    """
+    A custom widget to display static text in a form, styled using Bootstrap's 'form-control-plaintext'.
+    """
+
+    def __init__(self, text=None, attrs=None):
+        super().__init__(attrs)
+        self.text = text
+
+    def render(self, name, value, attrs=None, renderer=None):
+        # Build the final attributes using the provided attributes
+        final_attrs = self.build_attrs(attrs, extra_attrs={"class": "form-control-static"})
+        display_text = self.text if self.text else value
+        return f"<p {self._flat_attrs(final_attrs)}>{display_text}</p>"
+
+    def value_from_datadict(self, data, files, name):
+        # Returning None to ensure this widget does not alter form data
+        return None
+
+    def _flat_attrs(self, attrs):
+        """
+        Converts dictionary of attributes into a single string.
+        """
+        return "".join([f' {key}="{value}"' for key, value in attrs.items() if value is not None])
 
 
 class EmptyForm(forms.Form):
@@ -298,3 +326,217 @@ class BillExportForm(forms.Form):
                 ),
             ),
         )
+
+
+class ExtraInfoForm(forms.ModelForm):
+    id = forms.CharField(required=False, widget=forms.HiddenInput())
+
+    class Media:
+        js = ("js/extra/extra.js",)  # Include the JS file in form's media
+        css = {
+            "all": ["css/extra/extra.css"],
+        }  # Include the JS file in form's media
+
+    class Meta:
+        model = ExtraInfo
+        fields = ("id", "registration", "key", "value", "image")
+        widgets = {
+            "registration": StaticTextWidget(),
+            "key": forms.HiddenInput(),
+            "image": forms.FileInput(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        instance = kwargs.get("instance")
+        super().__init__(*args, **kwargs)
+
+        if instance and instance.key:
+            question = instance.key
+            self._handle_initial_value(instance, question)
+            self._handle_base_fields(instance, question)
+            self._handle_choices(question)
+            self._handle_image_field(instance, question)
+            if instance.pk:
+                self.fields["id"].initial = instance.pk  # Set the initial value of the hidden ID field
+
+        # Initialize the form layout with Crispy Forms
+        self._initialize_helper()
+
+    def _handle_initial_value(self, instance, question):
+        if not (question.is_choices or question.is_image):
+            return
+        truthy_values = ["True", "true", "YES", "Yes", "yes", "OUI", "Oui", "oui", "1"]
+        falsy_values = ["False", "false", "NO", "No", "no", "NON", "Non", "non", "0"]
+
+        # Set the initial value for the `value` field
+        if instance.value == "0":
+            self.initial["value"] = next((choice for choice in instance.key.choices if choice in falsy_values), "0")
+        elif instance.value == "1":
+            self.initial["value"] = next((choice for choice in instance.key.choices if choice in truthy_values), "1")
+
+    def _handle_base_fields(self, instance, question):
+        self.fields["registration"].label = ""  # No label for the registration field
+        self.fields["registration"].widget = StaticTextWidget(text=str(instance.registration))  # Static text widget
+        self.fields["registration"].required = False  # Make the field not required since it's static
+        self.fields["value"].label = question.question_label
+
+    def _handle_choices(self, question):
+        # Set up choices if the question involves choices
+        if question.is_choices:
+            choices = question.choices
+            if isinstance(choices, list) and all(isinstance(choice, str) for choice in choices):
+                choices = [(choice, choice) for choice in choices]  # Convert to (value, label) tuples
+            choices.insert(0, ("", _("Please choose")))  # Add a default "please choose" option
+            self.fields["value"].widget = forms.widgets.Select(choices=choices)
+            self.fields["value"].required = True
+
+    def _handle_image_field(self, instance, question):
+        # Set up image field handling
+        unique_identifier = f"q-{question.pk}-reg-{instance.registration.pk}"
+        if question.is_image:
+            self.fields["value"].widget.attrs.update({"data-value-field": unique_identifier})
+            if question.image_label:
+                self.fields["image"].label = question.image_label
+            self.fields["image"].widget.attrs.update({"data-image-field": unique_identifier})
+            self.fields["image"].required = True
+            if instance.image:
+                image_url = instance.image.url
+                self.image_div = self._build_image_field_with_preview(unique_identifier, image_url)
+            else:
+                self.image_div = self._build_image_field(unique_identifier)
+        else:
+            self.fields.pop("image")  # Remove the image field if it's not needed
+
+    def _build_image_field(self, unique_identifier):
+        # Build the image input field layout using Crispy Forms
+        drag_and_drop_label = _("Drag & drop or click to upload an image")
+        help_text_label = _("Supported formats: JPG, PNG, GIF, WebP")
+        return Div(
+            Field(
+                "image",
+                css_class="file-input",
+                style="display:none;",
+                **{"data-file-input": unique_identifier},
+            ),
+            Div(
+                HTML(
+                    f"""
+                    <div class="drop-area" data-drop-area="{unique_identifier}">
+                        {drag_and_drop_label}
+                        <img data-image-preview="{unique_identifier}" class="image-preview"
+                            style="display:none;" alt="Image Preview">
+                    </div>
+                    <div class="help-block">{help_text_label}</div>
+                    """
+                ),
+                css_class="form-group",
+            ),
+            css_class="form-group image-drop-container",
+        )
+
+    def _build_image_field_with_preview(self, unique_identifier, image_url):
+        # Display the drop area and show the existing image with a preview
+        label = _("Drag & drop or click to upload and modify current image")
+        help_text_label = _("Supported formats: JPG, PNG, GIF, WebP")
+        return Div(
+            Field(
+                "image",
+                css_class="file-input",
+                style="display:none;",
+                **{"data-file-input": unique_identifier},
+            ),
+            Div(
+                HTML(
+                    f"""
+                       <div class="drop-area" data-drop-area="{unique_identifier}">
+                           {label}
+                           <img src="{image_url}" data-image-preview="{unique_identifier}" class="image-preview"
+                               style="display:block;" alt="Image Preview">
+                       </div>
+                       <div class="help-block">{help_text_label}</div>
+                       """
+                ),
+                css_class="form-group",
+            ),
+            css_class="form-group image-drop-container",
+        )
+
+    def _initialize_helper(self):
+        self.helper = FormHelper()
+        self.helper.form_tag = True
+        self.helper.include_media = False
+        api_url = reverse("api:api-extra-infos-list")
+        self.helper.attrs = {"data-api-url": api_url}
+        # Layout includes the dynamic image div if it's set
+        self.helper.layout = Layout(
+            "id",
+            "registration",
+            "key",
+            "value",
+            getattr(self, "image_div", HTML("")),  # Add the image div only if it's been set
+        )
+
+
+class RegistrationValidationBaseForm(forms.ModelForm):
+    class Media:
+        js = ("js/registration-validation-form.js",)
+        css = {"all": ("css/registration-validation-form.css",)}
+
+    class Meta:
+        model = RegistrationValidation
+        fields = ["consent_given"]
+
+    def __init__(self, *args, **kwargs):
+        tooltip_message = kwargs.pop("tooltip_message", _("You must tick this box to continue."))
+        previous_url = kwargs.pop("previous_url", "#")
+        previous_label = kwargs.pop("previous_label", _("Previous"))
+        next_url = kwargs.pop("next_url", ".")
+        next_label = kwargs.pop("next_label", _("Next"))
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_action = next_url
+        self.helper.attrs = {
+            "id": "registration-validation-form",
+            "data-tooltip-message": tooltip_message,  # Set the tooltip message as a data attribute
+        }
+        self.helper.include_media = False
+        self.helper.layout = Layout(
+            "consent_given",
+            HTML(
+                f"""
+                           <nav style="margin-top: 1.5em;">
+                             <ul class="pager" style="font-size: 1.25em;">
+                               <li class="previous">
+                                 <a href="{previous_url}">
+                                   <span aria-hidden="true">←</span> {previous_label}
+                                 </a>
+                               </li>
+                               <li class="next">
+                                 <button type="submit" class="btn btn-primary" style="font-size: 1.25em;">
+                                   <strong>{next_label} <span aria-hidden="true">→</span></strong>
+                                 </button>
+                               </li>
+                             </ul>
+                           </nav>
+                           """
+            ),
+        )
+
+
+class RegistrationValidationFreeForm(RegistrationValidationBaseForm):
+    class Meta:
+        model = RegistrationValidation
+        fields = ["consent_given"]
+        labels = {"consent_given": _("I consent to these registrations and to the terms and conditions.")}
+
+
+class RegistrationValidationForm(RegistrationValidationBaseForm):
+    class Meta:
+        model = RegistrationValidation
+        fields = ["consent_given"]
+        labels = {
+            "consent_given": _(
+                "I consent to these registrations and agree to pay the indicated amount "
+                "for these registrations to become effective."
+            )
+        }

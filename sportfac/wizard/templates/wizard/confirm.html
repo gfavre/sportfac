@@ -1,0 +1,93 @@
+{% extends "wizard/base.html" %}
+{% load crispy_forms_tags duration humanize i18n sekizai_tags switzerland %}
+
+
+{% block wizard_content %}
+  {% if REGISTRATION_EXPIRE_MINUTES %}
+    <div class="alert alert-info alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert">
+        <span aria-hidden="true">&times;</span><span class="sr-only">{% translate "Close" %}</span>
+      </button>
+      <p><strong><i class="icon-exclamation"></i></strong>
+        {% if REGISTRATION_EXPIRE_MINUTES == 60 %}
+          {% blocktranslate %}The following registrations are reserved for the next hour.{% endblocktranslate %}
+        {% else %}
+          {% blocktranslate with duration=REGISTRATION_EXPIRE_MINUTES|minutes_duration %}
+            The following registrations are reserved for the next {{ duration }}.
+          {% endblocktranslate %}
+        {% endif %}
+      </p>
+    </div>
+  {% endif %}
+
+  {% if overlaps %}
+    <div class="alert alert-warning alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert">
+        <span aria-hidden="true">&times;</span><span class="sr-only">{% translate "Close" %}</span>
+      </button>
+      <strong><i class="icon-warning"></i>&nbsp;{% translate "Warning!" %}</strong>
+      <p>
+        {% if user.children.count > 1 %}
+          {% translate "The following courses occur at the same or close times. It may be difficult to bring your children." %}
+        {% else %}
+          {% translate "The following courses occur at the same or close times. It may be difficult to bring your child." %}
+        {% endif %}
+      <ul>
+        {% for overlap in overlaps %}
+          <li>
+            <span class="highlight"
+                  rel="{{ overlap.0.id }}">{{ overlap.0.child.first_name }} - {{ overlap.0.course.activity.name }}</span>
+            /
+            <span class="highlight"
+                  rel="{{ overlap.1.id }}">{{ overlap.1.child.first_name }} - {{ overlap.1.course.activity.name }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+      </p>
+    </div>
+  {% endif %}
+
+ {% include "registrations/invoice-part-registrations.html" %}
+
+  {% if consent_already_given %}
+    <div>
+      <label for="consent_given">Consentement donné :</label>
+      <input type="checkbox" id="consent_given" name="consent_given" checked disabled>
+      <p>Date de l'acceptation : {{ validation_date|naturaltime }}</p>
+    </div>
+
+
+  {% else %}
+
+    {% crispy form %}
+    {% addtoblock "js" %}
+      {{ form.media.js }}
+    {% endaddtoblock %}
+    {% addtoblock "css" %}
+      {{ form.media.css }}
+    {% endaddtoblock %}
+  {% endif %}
+{% endblock wizard_content %}
+
+{% block page_footer %}
+  {% if consent_already_given %}
+    <nav class="hidden-print" style="margin-top: 1.5em;">
+      <ul class="pager" style="font-size: 1.25em">
+        {% if previous_step %}
+          <li class="previous">
+            <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span>
+              {% block previous_label %}{% translate "Previous" %}{% endblock %}</a>
+          </li>
+        {% endif %}
+        {% if next_step %}
+          <li class="next">
+            <a href="{{ next_step.url }}" id="next-step-btn">
+              <strong>{% block next_label %}{% translate "Next" %}{% endblock %} <span
+                  aria-hidden="true">&rarr;</span></strong></a>
+          </li>
+
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+{% endblock page_footer %}

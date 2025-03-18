@@ -17,6 +17,8 @@ from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, TemplateView, UpdateView, View
 
+from formtools.wizard.views import SessionWizardView
+
 from absences.models import Absence
 from activities.models import Activity, Course, ExtraNeed
 from backend.forms import (
@@ -27,13 +29,11 @@ from backend.forms import (
     RegistrationForm,
     SendConfirmationForm,
 )
-from formtools.wizard.views import SessionWizardView
 from profiles.models import FamilyUser as User
 from registrations.forms import BillExportForm, BillForm, MoveRegistrationsForm, MoveTransportForm, TransportForm
 from registrations.models import Bill, ExtraInfo, Registration, Transport
 from registrations.resources import BillResource, RegistrationResource, enhance_invoices_xls
-from registrations.views import BillMixin, PaymentMixin
-
+from registrations.views.utils import BillMixin, PaymentMixin
 from .mixins import BackendMixin, ExcelResponseMixin, FullBackendMixin
 
 
@@ -508,19 +508,35 @@ class BillListView(FullBackendMixin, ListView):
         return self._generate_export_response(qs, filename)
 
 
+class BillExportView(FullBackendMixin, ExcelResponseMixin, View):
+    filename = _("invoices")
+
+    def get_resource(self):
+        return BillResource()
+
+    def get(self, request, *args, **kwargs):
+        return self.render_to_response()
+
+
 class BillDetailView(FullBackendMixin, BillMixin, PaymentMixin, DetailView):
     """
     Display the bill: admin view
     """
 
+    context_object_name = "invoice"
     model = Bill
-    template_name = "backend/registration/bill-detail.html"
+    template_name = "backend/registration/invoice-detail.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.object.is_paid:
-            return context
-        context["transaction"] = self.get_transaction(self.object)
+        invoice = self.object
+        context["registrations"] = invoice.registrations.all()
+        for reg in context["registrations"]:
+            reg.row_span = 1 + reg.extra_infos.count()
+        context["rentals"] = invoice.rentals.all()
+        if not invoice.is_paid:
+            context["transaction"] = self.get_transaction(invoice)
+        context["total_amount"] = invoice.total
         return context
 
 
@@ -555,7 +571,7 @@ class TransportDetailView(FullBackendMixin, DetailView):
         "participants",
         "participants__child",
         "participants__course",
-        "participants__child__absence_set",
+        "participants__child__absences",
     )
 
     def get_context_data(self, **kwargs):
@@ -564,7 +580,7 @@ class TransportDetailView(FullBackendMixin, DetailView):
             courses = {
                 absence.session.course
                 for child in children
-                for absence in child.absence_set.select_related("session__course", "session__course__activity")
+                for absence in child.absences.select_related("session__course", "session__course__activity")
             }
         else:
             courses = {registration.course for registration in self.object.participants.all()}
