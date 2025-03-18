@@ -100,12 +100,12 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 # END EMAIL CONFIGURATION
 
 TEMPLATES[0]["DIRS"] = [  # noqa: F405
-    normpath(join(SITE_ROOT, "themes", "jorat", "templates")),  # noqa: F405
+    normpath(join(SITE_ROOT, "themes", "montreux_passvac", "templates")),  # noqa: F405
     normpath(join(SITE_ROOT, "templates")),  # noqa: F405
 ]
 
 STATICFILES_DIRS = (
-    normpath(join(SITE_ROOT, "themes", "jorat", "static")),  # noqa: F405
+    normpath(join(SITE_ROOT, "themes", "montreux_passvac", "static")),  # noqa: F405
     normpath(join(SITE_ROOT, "static")),  # noqa: F405
 )
 COMPRESS_ENABLED = True

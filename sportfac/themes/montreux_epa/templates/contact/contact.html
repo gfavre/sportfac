@@ -1,0 +1,19 @@
+{% extends "contact/contact.html" %}
+
+{% block addresses %}
+  <section style="padding-top: 0">
+      <h4 >Espace Plein Air de la Foge</h4>
+
+      <address itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+        <span itemprop="streetAddress">Z.I. de la Foge</span><br />
+        <abbr itemprop="addressCountry" title="Switzerland">CH</abbr>-<span itemprop="postalCode">1816</span>
+        <span itemprop="addressLocality">Chailly</span>
+      </address>
+      <p>
+        Téléphone: <a itemprop="telephone" href="tel:+41219627874">021 962 78 74</a><br />
+        Email: <a itemprop="email" href="mailto:epa@montreux.ch">epa@montreux.ch</a>
+      </p>
+    </section>
+
+
+{% endblock addresses %}

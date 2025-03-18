@@ -1,0 +1,20 @@
+{% load flatpages i18n static %}
+<footer id="footer">
+  <div class="container">
+    <div>
+      {% include "address.html" %}
+      {% get_flatpages as flatpages %}
+      <ul class="footer-links hidden-print">
+        <li><a href="{% url 'contact:contact' %}">{% translate "Contact" %}</a></li>
+        <li class="muted">·</li>
+        {% for page in flatpages %}
+          {% if page.url != '/' and page.url != '/accueil/' and page.url != '/splash/' %}
+           <li><a href="{{ page.url }}">{{ page.title }}</a></li>
+           {% if not forloop.last %}<li class="muted">·</li>{% endif %}
+          {% endif %}
+        {% endfor %}
+      </ul>
+      <small class="hidden-print"><a href="https://www.beyondthewall.ch">Développé par Beyond the Wall, Genolier</a></small>
+    </div>
+  </div>
+</footer>
