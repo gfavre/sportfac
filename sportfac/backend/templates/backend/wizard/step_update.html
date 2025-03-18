@@ -1,0 +1,21 @@
+{% extends "backend/base.html" %}
+{% load crispy_forms_tags i18n sekizai_tags static %}
+{% block title %}{% translate "Update Step" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Update Step" %}{% endblock %}
+
+{% block content %}
+  {% crispy form %}
+
+
+  {% addtoblock "js" %}
+    {{ form.media.js }}
+    <script>
+     CKEDITOR.config.contentsCss = '/static/css/style.css' ;
+    </script>
+  {% endaddtoblock %}
+  {% addtoblock "css" %}
+    {{ form.media.css }}
+  {% endaddtoblock %}
+
+{% endblock content %}

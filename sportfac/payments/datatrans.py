@@ -27,9 +27,15 @@ def invoice_to_meta_data(request, invoice):
         "language": get_language(),
         "paymentMethods": settings.DATATRANS_PAYMENT_METHODS,
         "redirect": {
-            "successUrl": "https://{}{}".format(request.get_host(), reverse("wizard_payment_success")),
-            "cancelUrl": "https://{}{}".format(request.get_host(), reverse("wizard_billing")),
-            "errorUrl": "https://{}{}".format(request.get_host(), reverse("wizard_billing")),
+            "cancelUrl": "https://{}{}".format(
+                request.get_host(), reverse("wizard:step", kwargs={"step_slug": "payment"})
+            ),
+            "errorUrl": "https://{}{}".format(
+                request.get_host(), reverse("wizard:step", kwargs={"step_slug": "payment-failure"})
+            ),
+            "successUrl": "https://{}{}".format(
+                request.get_host(), reverse("wizard:step", kwargs={"step_slug": "payment-success"})
+            ),
         },
         "refno": invoice.billing_identifier,
     }

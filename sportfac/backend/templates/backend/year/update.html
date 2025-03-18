@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n floppyforms sekizai_tags crispy_forms_tags %}
+{% load crispy_forms_tags floppyforms i18n sekizai_tags %}
 
-{% block title %}{% trans "Update period" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "Update period" %}{% endblock %}
+{% block title %}{% translate "Update period" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Update period" %}{% endblock %}
 
 {% block content %}
 
@@ -15,9 +16,9 @@
   <div class=" form-group">
     <div class="col-sm-offset-2 col-sm-10">
 
-      <button type="submit" class="btn btn-success ">{% trans 'Update period' %}</button>
+      <button type="submit" class="btn btn-success ">{% translate 'Update period' %}</button>
       &nbsp;
-      <a href="{% url 'backend:year-list' %}" class="btn  btn-default">{% trans 'Cancel' %}</a>
+      <a href="{% url 'backend:year-list' %}" class="btn  btn-default">{% translate 'Cancel' %}</a>
     </div>
   </div>
 
@@ -32,14 +33,14 @@
   $(function () {
     var dt_settings = {
         language: '{{ LANGUAGE_CODE }}',
-        icons: {time: 'icon-clock', 
-                date: 'icon-calendar', 
-                up: 'icon-up-open', 
+        icons: {time: 'icon-clock',
+                date: 'icon-calendar',
+                up: 'icon-up-open',
                 down: 'icon-down-open'}
     };
     $('#dt-start_date').datetimepicker(dt_settings);
     $('#dt-end_date').datetimepicker(dt_settings);
-    
+
     $('#dt-start_date').on('dp.change', function(event){
         if (!$('#id_end_date').val()){
             var start_date = $('#dt-start_date').data("DateTimePicker").getDate();

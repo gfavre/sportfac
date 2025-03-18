@@ -1,0 +1,19 @@
+{% extends "backend/base.html" %}
+{% load i18n sekizai_tags static switzerland %}
+
+{% block title %}{% translate "Bill detail" %}{% endblock %}
+
+{% block page_title %}{% endblock %}
+
+{% block extra_body %}class="bill"{% endblock %}
+
+{% block content %}
+  <article class="invoice">
+  {% include "registrations/invoice-part-heading.html" %}
+  {% include "registrations/invoice-part-registrations.html" %}
+  {% if transaction %}
+    {% include "registrations/billing_partial.html" %}
+  {% endif %}
+  {% include "print-button.html" %}
+  </article>
+{% endblock content %}

@@ -16,57 +16,57 @@
     <nav class=" mainnav-collapse" id="mainnav-collapse" role="navigation">
       <ul class="mainnav-menu">
         <li {% if request.get_full_path == home_url %}class="active"{% endif %}>
-          <a href="{{ home_url }}">{% trans "Dashboard" %}</a>
+          <a href="{{ home_url }}">{% translate "Dashboard" %}</a>
         </li>
         <li class="dropdown{% if request.get_full_path == activities_url %} active{% endif %}">
           <a href="{{ activities_url }}" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
-            {% trans "Activities" %}
+            {% translate "Activities" %}
             <i class="icon-down-open"></i>
           </a>
 
           <ul class="dropdown-menu" role="menu">
             <li>
               <a href="{% url 'backend:activity-list' %}">
-                <i class="icon-soccer-ball"></i>&nbsp;&nbsp;{% trans "All activities" %}
+                <i class="icon-soccer-ball"></i>&nbsp;&nbsp;{% translate "All activities" %}
               </a>
             </li>
             <li>
               <a href="{% url 'backend:activity-create' %}">
-                <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New activity" %}
+                <i class="icon-plus"></i>&nbsp;&nbsp;{% translate "New activity" %}
               </a>
             </li>
             <li class="divider"></li>
             <li>
               <a href="{% url 'backend:course-list' %}">
-                <i class="icon-graduation-cap"></i>&nbsp;&nbsp;{% trans "All courses" %}
+                <i class="icon-graduation-cap"></i>&nbsp;&nbsp;{% translate "All courses" %}
               </a>
             </li>
             <li>
               <a href="{% url 'backend:course-create' %}">
-                <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New course" %}
+                <i class="icon-plus"></i>&nbsp;&nbsp;{% translate "New course" %}
               </a>
             </li>
             <li>
               <a href="{% url 'backend:courses-export' %}">
                 <i class="icon-file-excel"></i>
-                &nbsp;&nbsp;{% trans "Export courses" %}
+                &nbsp;&nbsp;{% translate "Export courses" %}
               </a>
             </li>
             {% if ENABLE_PAYROLLS and user.is_full_manager %}
               <li class="divider"></li>
               <li>
                 <a href="{% url 'backend:function-list' %}">
-                  <i class="icon-list-bullet"></i>&nbsp;&nbsp;{% trans "All functions" %}
+                  <i class="icon-list-bullet"></i>&nbsp;&nbsp;{% translate "All functions" %}
                 </a>
               </li>
               <li>
                 <a href="{% url 'backend:roles-list' %}">
-                  <i class="icon-adult"></i>&nbsp;&nbsp;{% trans "All instructors functions" %}
+                  <i class="icon-adult"></i>&nbsp;&nbsp;{% translate "All instructors functions" %}
                 </a>
               </li>
               <li>
                 <a href="{% url 'backend:payroll-report' %}">
-                  <i class="icon-money"></i>&nbsp;&nbsp;{% trans "Payroll report" %}
+                  <i class="icon-money"></i>&nbsp;&nbsp;{% translate "Payroll report" %}
                 </a>
               </li>
             {% endif %}
@@ -76,7 +76,7 @@
         <li class="dropdown">
           <a href="{% url 'backend:registration-list' %}" class="dropdown-toggle"
              data-toggle="dropdown" data-hover="dropdown">
-            {% trans "Registrations" %}
+            {% translate "Registrations" %}
             <i class="icon-down-open"></i>
           </a>
 
@@ -84,38 +84,44 @@
             <li>
               <a href="{% url 'backend:registration-list' %}">
                 <i class="icon-group"></i>
-                &nbsp;&nbsp;{% trans "All registrations" %}
+                &nbsp;&nbsp;{% translate "All registrations" %}
               </a>
             </li>
             <li>
               <a href="{% url 'backend:registration-export' %}">
                 <i class="icon-file-excel"></i>
-                &nbsp;&nbsp;{% trans "Export registrations" %}
+                &nbsp;&nbsp;{% translate "Export registrations" %}
               </a>
             <li>
               <a href="{% url 'backend:registration-create' %}">
-                <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New registration" %}
+                <i class="icon-plus"></i>&nbsp;&nbsp;{% translate "New registration" %}
               </a>
             </li>
-            {% if not NO_PAYMENT and user.is_full_manager%}
+            {% if not NO_PAYMENT and user.is_full_manager %}
               <li class="divider"></li>
               <li>
                 <a href="{% url 'backend:bill-list' %}">
-                  <i class="icon-credit-card-1"></i>&nbsp;&nbsp;{% trans "All bills" %}
+                  <i class="icon-credit-card-1"></i>&nbsp;&nbsp;{% translate "All bills" %}
                 </a>
               </li>
+               <li>
+              <a href="{% url 'backend:bill-export' %}">
+                <i class="icon-file-excel"></i>
+                &nbsp;&nbsp;{% translate "Export all invoices" %}
+              </a>
+            <li>
             {% endif %}
 
             {% if ENABLE_ALLOCATION_ACCOUNTS and user.is_full_manager %}
               <li class="divider"></li>
               <li>
                 <a href="{% url 'backend:allocation-list' %}">
-                  <i class="icon-list-bullet"></i>&nbsp;&nbsp;{% trans "All allocation accounts" %}
+                  <i class="icon-list-bullet"></i>&nbsp;&nbsp;{% translate "All allocation accounts" %}
                 </a>
               </li>
               <li>
                 <a href="{% url 'backend:allocation-report' %}">
-                  <i class="icon-money"></i>&nbsp;&nbsp;{% trans "Allocations report" %}
+                  <i class="icon-money"></i>&nbsp;&nbsp;{% translate "Allocations report" %}
                 </a>
               </li>
 
@@ -124,12 +130,12 @@
               <li class="divider"></li>
               <li>
                 <a href="{% url 'backend:transport-list' %}">
-                  <i class="icon-bus"></i>&nbsp;&nbsp;{% trans "All transports" %}
+                  <i class="icon-bus"></i>&nbsp;&nbsp;{% translate "All transports" %}
                 </a>
               </li>
               <li>
                 <a href="{% url 'backend:transport-create' %}">
-                  <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "Create transport" %}
+                  <i class="icon-plus"></i>&nbsp;&nbsp;{% translate "Create transport" %}
                 </a>
               </li>
             {% endif %}
@@ -139,40 +145,40 @@
 
         <li class="dropdown">
           <a href="" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
-            {% trans "Users" %}
+            {% translate "Users" %}
             <i class="icon-down-open"></i>
           </a>
           <ul class="dropdown-menu" role="menu">
             <li>
               <a href="{% url 'backend:user-list' %}">
                 <i class="icon-group"></i>
-                {% trans "All users" %}
+                {% translate "All users" %}
               </a>
             </li>
 
             <li>
               <a href="{% url 'backend:instructor-list' %}">
                 <i class="icon-star"></i>
-                &nbsp;&nbsp;{% trans "All instructors" %}
+                &nbsp;&nbsp;{% translate "All instructors" %}
               </a>
             </li>
             {% if user.is_full_manager %}
             <li>
               <a href="{% url 'backend:manager-list' %}">
                 <i class="icon-hammer"></i>
-                &nbsp;&nbsp;{% trans "All managers" %}
+                &nbsp;&nbsp;{% translate "All managers" %}
               </a>
             </li>
             <li>
               <a href="{% url 'backend:restricted-admin-list' %}">
                 <i class="icon-rebel"></i>
-                &nbsp;&nbsp;{% trans "All restricted administrators" %}
+                &nbsp;&nbsp;{% translate "All restricted administrators" %}
               </a>
             </li>
             <li class="divider"></li>
             <li>
               <a href="{% url 'backend:user-create' %}">
-                <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New user" %}
+                <i class="icon-plus"></i>&nbsp;&nbsp;{% translate "New user" %}
               </a>
             </li>
             {% endif %}
@@ -181,7 +187,7 @@
         </li>
         <li class="dropdown">
           <a href="" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
-            {% trans "School" %}
+            {% translate "School" %}
             <i class="icon-down-open"></i>
           </a>
           <ul class="dropdown-menu" role="menu">
@@ -189,17 +195,17 @@
               <li>
                 <a href="{% url 'backend:teacher-list' %}">
                   <i class="icon-adult"></i>
-                  &nbsp;&nbsp;{% trans "All teachers" %}
+                  &nbsp;&nbsp;{% translate "All teachers" %}
                 </a>
               </li>
               <li>
                 <a href="{% url 'backend:teacher-create' %}">
-                  <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New teacher" %}
+                  <i class="icon-plus"></i>&nbsp;&nbsp;{% translate "New teacher" %}
                 </a>
               </li>
               <li>
                 <a href="{% url 'backend:teacher-import' %}">
-                  <i class="icon-doc-new"></i>&nbsp;&nbsp;{% trans "Import teachers" %}
+                  <i class="icon-doc-new"></i>&nbsp;&nbsp;{% translate "Import teachers" %}
                 </a>
               </li>
               <li class="divider"></li>
@@ -207,19 +213,19 @@
             <li>
               <a href="{% url 'backend:child-list' %}">
                 <i class="icon-child"></i>
-                &nbsp;&nbsp;{% trans "All students" %}
+                &nbsp;&nbsp;{% translate "All students" %}
               </a>
             </li>
             <li>
               <a href="{% url 'backend:child-new' %}">
                 <i class="icon-plus"></i>
-                &nbsp;&nbsp;{% trans "New student" %}
+                &nbsp;&nbsp;{% translate "New student" %}
               </a>
             </li>
             {% if IMPORT_CHILDREN and user.is_full_manager %}
               <li>
                 <a href="{% url 'backend:child-import' %}">
-                  <i class="icon-doc-new"></i>&nbsp;&nbsp;{% trans "Import students" %}
+                  <i class="icon-doc-new"></i>&nbsp;&nbsp;{% translate "Import students" %}
                 </a>
               </li>
             {% endif %}
@@ -228,12 +234,12 @@
               <li>
                 <a href="{% url 'backend:building-list' %}">
                   <i class="icon-location"></i>
-                  &nbsp;&nbsp;{% trans "All buildings" %}
+                  &nbsp;&nbsp;{% translate "All buildings" %}
                 </a>
               </li>
               <li>
                 <a href="{% url 'backend:building-create' %}">
-                  <i class="icon-plus"></i>&nbsp;&nbsp;{% trans "New building" %}
+                  <i class="icon-plus"></i>&nbsp;&nbsp;{% translate "New building" %}
                 </a>
               </li>
             {% endif %}
@@ -242,35 +248,45 @@
         {% if user.is_full_manager %}
         <li class="dropdown">
           <a href="" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
-            {% trans "Site" %}
+            {% translate "Site" %}
             <i class="icon-down-open"></i>
           </a>
           <ul class="dropdown-menu" role="menu">
             <li>
               <a href="{% url 'backend:flatpages-list' %}">
                 <i class="icon-file-code"></i>
-                &nbsp;&nbsp;{% trans "Pages texts" %}
+                &nbsp;&nbsp;{% translate "Pages texts" %}
               </a>
             </li>
             <li>
               <a href="{% url 'backend:emails-list' %}">
                 <i class="icon-mail"></i>
-                &nbsp;&nbsp;{% trans "Generic emails" %}
+                &nbsp;&nbsp;{% translate "Generic emails" %}
               </a>
             </li>
+            <li class="divider"></li>
+          <li>
+                <a href="{% url 'backend:wizard-steps' %}">
+                  <i class="icon-server"></i>
+                  &nbsp;&nbsp;{% translate "Manage registration steps" %}
+                </a>
+              </li>
+
+
+
             {% if USE_APPOINTMENTS %}
               <li class="divider"></li>
               <li>
                 <a href="{% url 'backend:appointments-manage' %}">
                   <i class="icon-calendar-plus-o"></i>
-                  &nbsp;&nbsp;{% trans "Manage appointment slots" %}
+                  &nbsp;&nbsp;{% translate "Manage appointment slots" %}
                 </a>
               </li>
 
               <li>
                 <a href="{% url 'backend:appointments-list' %}">
                   <i class="icon-calendar-check-o"></i>
-                  &nbsp;&nbsp;{% trans "Review appointments" %}
+                  &nbsp;&nbsp;{% translate "Review appointments" %}
                 </a>
               </li>
 

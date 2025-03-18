@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
 {% load i18n sekizai_tags switzerland %}
 
-{% block title %}{% trans "Functions" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "List functions" %}{% endblock %}
+{% block title %}{% translate "Functions" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "List functions" %}{% endblock %}
 
 {% get_current_language as LANGUAGE_CODE %}
 
@@ -10,7 +11,7 @@
 
 {% block content %}
 
-{% addtoblock  "js" %}
+{% addtoblock "js" %}
 <script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
 <script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
 <script>
@@ -29,16 +30,16 @@ $(function () {
 </script>
 {% endaddtoblock %}
 
-<a href="{% url 'backend:function-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New function" %}</a> &nbsp;
+<a href="{% url 'backend:function-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% translate "New function" %}</a> &nbsp;
 <hr>
 <table class="table">
   <thead>
     <tr>
-      <th class="text-nowrap">{% trans "Code" %}</th>
-      <th class="text-nowrap">{% trans "Name" %}</th>
-      <th class="text-nowrap">{% trans "Rate" %}</th>
-      <th class="text-nowrap">{% trans "Rate mode" %}</th>
-      <th class="text-nowrap">{% trans "Actions" %}</th>
+      <th class="text-nowrap">{% translate "Code" %}</th>
+      <th class="text-nowrap">{% translate "Name" %}</th>
+      <th class="text-nowrap">{% translate "Rate" %}</th>
+      <th class="text-nowrap">{% translate "Rate mode" %}</th>
+      <th class="text-nowrap">{% translate "Actions" %}</th>
     </tr>
   </thead>
   {% for function in object_list %}
@@ -50,15 +51,15 @@ $(function () {
         {{ function.name }}
       </td>
       <td data-order="{{ function.rate }}">
-        {{ function.rate | money }}
+        {{ function.rate|money }}
       </td>
       <td>
         {{ function.get_rate_mode_display }}
       </td>
       <td>
         <ul class="list-unstyled">
-          <li class="text-nowrap"><a href="{{ function.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update function" %}</a></li>
-          <li class="text-nowrap"><a href="{{ function.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete function" %}</a></li>
+          <li class="text-nowrap"><a href="{{ function.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% translate "Update function" %}</a></li>
+          <li class="text-nowrap"><a href="{{ function.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% translate "Delete function" %}</a></li>
         </ul>
       </td>
     </tr>

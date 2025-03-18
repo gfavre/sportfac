@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
-{% load i18n crispy_forms_tags sekizai_tags %}
+{% load crispy_forms_tags i18n sekizai_tags %}
 
-{% block title %}{% trans "Change opening and closing dates" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "Change opening and closing dates" %}{% endblock %}
+{% block title %}{% translate "Change opening and closing dates" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Change opening and closing dates" %}{% endblock %}
 
 {% block content %}
 
@@ -18,7 +19,7 @@
   {% crispy form %}
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-primary btn-large">{% trans "Save" %}</button>
+      <button type="submit" class="btn btn-primary btn-large">{% translate "Save" %}</button>
     </div>
   </div>
 </form>

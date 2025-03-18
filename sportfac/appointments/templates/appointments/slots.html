@@ -1,19 +1,20 @@
 {% extends "base.html" %}
-{% load i18n sekizai_tags static humanize %}
+{% load humanize i18n sekizai_tags static %}
 
 
-{% block title %}{% trans "Register an appointment" %}{% endblock %}
-{% block page_title %}{% trans "Register an appointment" %}{% endblock %}
+{% block title %}{% translate "Register an appointment" %}{% endblock %}
+
+{% block page_title %}{% translate "Register an appointment" %}{% endblock %}
 
 {% block content %}
   {% if appointments %}
     <section class="portlet">
-      <h3 class="content-title"><u>{% trans "Your appointments" %}</u></h3>
+      <h3 class="content-title"><u>{% translate "Your appointments" %}</u></h3>
       <ul>
         {% for appointment in appointments %}
           <li>
             {% if appointment.appointment_type %}{{ appointment.appointment_type }}: {% endif %}
-            {{ appointment.child }}: {{ appointment.slot.start | date:"l d F Y, H:i" }}
+            {{ appointment.child }}: {{ appointment.slot.start|date:"l d F Y, H:i" }}
           </li>
         {% endfor %}
       </ul>
@@ -23,8 +24,8 @@
 
   <section class="portlet">
     <h3 class="content-title">
-      <u>{% trans "Available dates" %}</u>
+      <u>{% translate "Available dates" %}</u>
     </h3>
     {% include "appointments/register.html" %}
   </section>
-{% endblock %}
+{% endblock content %}

@@ -1,7 +1,8 @@
 {% extends "backend/base.html" %}
-{% load i18n crispy_forms_tags static sekizai_tags %}
-{% block title %}{% trans "Update page" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "Update page" %}{% endblock %}
+{% load crispy_forms_tags i18n sekizai_tags static %}
+{% block title %}{% translate "Update page" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Update page" %}{% endblock %}
 
 {% block content %}
   <form action="" method="post" class="form-horizontal">{% csrf_token %}
@@ -9,9 +10,9 @@
 
     <div class=" form-group">
       <div class="col-sm-offset-2 col-sm-10">
-        <button type="submit" class="btn btn-success ">{% trans 'Update page' %}</button>
+        <button type="submit" class="btn btn-success ">{% translate 'Update page' %}</button>
         &nbsp;
-        <a href="{% url 'backend:flatpages-list' %}" class="btn  btn-default">{% trans 'Cancel' %}</a>
+        <a href="{% url 'backend:flatpages-list' %}" class="btn  btn-default">{% translate 'Cancel' %}</a>
       </div>
     </div>
   </form>

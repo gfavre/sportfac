@@ -5,9 +5,11 @@ from django.views.generic import TemplateView
 
 from braces.views import LoginRequiredMixin
 
-from sportfac.views import NotReachableException, WizardMixin
-
-from ..models import Appointment, AppointmentSlot, AppointmentType
+from profiles.models import FamilyUser
+from registrations.models import Child
+from wizard.views import StaticStepView
+from ..forms import RentalSelectionForm
+from ..models import Appointment, AppointmentSlot, AppointmentType, Rental
 
 
 class SlotsBaseView(TemplateView):
@@ -15,16 +17,17 @@ class SlotsBaseView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        user: FamilyUser = self.request.user
         qs = AppointmentSlot.objects.filter(start__gte=now())
         context["types"] = AppointmentType.objects.all()
         if qs.exists():
             context["start"] = qs.first().start.date().isoformat()
         else:
             context["start"] = now().date().isoformat()
-        context["missing_appointments"] = self.request.user.montreux_missing_appointments
+        context["missing_appointments"] = user.montreux_missing_appointments
         context["appointments"] = (
-            self.request.user.is_authenticated
-            and Appointment.objects.filter(family=self.request.user, slot__in=qs)
+            user.is_authenticated
+            and Appointment.objects.filter(family=user, slot__in=qs)
             or Appointment.objects.none()
         )
         available_dates = []
@@ -61,12 +64,51 @@ class SlotsView(SlotsBaseView):
         return super().get(request, *args, **kwargs)
 
 
-class WizardSlotsView(LoginRequiredMixin, WizardMixin, SlotsBaseView):
-    template_name = "appointments/wizard_register.html"
+class WizardRentalStepView(LoginRequiredMixin, StaticStepView):
+    template_name = "wizard/equipment.html"
+    requires_completion = True
+    step_slug = "equipment"
+    appointment_type = "pickup"
 
-    @staticmethod
-    def check_initial_condition(request):
-        if not request.user.is_authenticated:
-            raise NotReachableException("No account created")
-        if not request.user.montreux_missing_appointments:
-            raise NotReachableException("No appointment expected")
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+
+        disabled_children = Child.objects.filter(rentals__isnull=False, rentals__paid=True, family=user)
+        children_with_rentals = Child.objects.filter(rentals__isnull=False, rentals__paid=False, family=user)
+
+        context["appointment_type"] = self.appointment_type
+        context["rentals"] = Rental.objects.filter(child__family=user, paid=False)
+        context["rentals_json"] = [
+            {
+                "id": rental.id,
+                "child": rental.child.id,
+                "pickup_appointment": rental.pickup_appointment.slot.id if rental.pickup_appointment else "",
+                "return_appointment": rental.return_appointment.slot.id if rental.return_appointment else "",
+            }
+            for rental in context["rentals"]
+        ]
+
+        context["form"] = RentalSelectionForm(
+            user=user,
+            initial_children=children_with_rentals,
+            disabled_children_initial=disabled_children,
+            disabled=self.appointment_type != "pickup",
+        )
+        qs = AppointmentSlot.objects.filter(start__gte=now(), appointment_type=self.appointment_type)
+        if qs.exists():
+            context["start"] = qs.first().start.date().isoformat()
+        else:
+            context["start"] = now().date().isoformat()
+        context["available_dates"] = sorted({slot.start.date() for slot in qs if slot.start.date() >= now().date()})
+        return context
+
+    # def get_success_url(self):
+    #    return self.get_next_step_url()
+
+
+class WizardReturnStepView(WizardRentalStepView):
+    template_name = "wizard/equipment.html"
+    requires_completion = True
+    step_slug = "equipment-return"
+    appointment_type = "return"

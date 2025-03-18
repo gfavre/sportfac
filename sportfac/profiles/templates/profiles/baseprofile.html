@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% block title %}{% trans "My account" %}{% endblock title %}
-{% block page_title %}{% trans "My account" %} <small>- responsable légal</small>{% endblock page_title %}
+{% block title %}{% translate "My account" %}{% endblock %}
 
+{% block page_title %}{% translate "My account" %} <small>- responsable légal</small>{% endblock %}
 
 {% block main-content %}
 
@@ -24,20 +24,20 @@
         <li {% if request.get_full_path == profiles_url %}class="active"{% endif %}>
           <a href="{{ profiles_url }}">
           <i class="icon-user"></i>
-          &nbsp;&nbsp;{% trans "Profile Settings" %}
+          &nbsp;&nbsp;{% translate "Profile Settings" %}
           </a>
         </li>
 
         <li {% if request.get_full_path == password_change_url %}class="active"{% endif %}>
           <a href="{{ password_change_url }}" >
           <i class="{% if request.get_full_path != password_change_url %}icon-lock{% else %}icon-lock-open{% endif %}"></i>
-          &nbsp;&nbsp;{% trans "Change password" %}
+          &nbsp;&nbsp;{% translate "Change password" %}
           </a>
         </li>
 
         <li {% if request.get_full_path == children_url %}class="active"{% endif %}>
           <a href="{{ children_url }}">
-            <i class="icon-group"></i>&nbsp;&nbsp;{% trans "Family settings" %}
+            <i class="icon-group"></i>&nbsp;&nbsp;{% translate "Family settings" %}
             {% if request.user.updatable_children %}
               <span class="badge-danger badge">{{ request.user.updatable_children }}</span>
             {% endif %}
@@ -47,7 +47,7 @@
         <li {% if request.get_full_path == activities_url %}class="active"{% endif %}>
           <a href="{{ activities_url }}">
             <i class="icon-calendar"></i>
-            &nbsp;&nbsp;{% trans "My registered activities" %}
+            &nbsp;&nbsp;{% translate "My registered activities" %}
           </a>
         </li>
         {% endif %}
@@ -55,7 +55,7 @@
         <li {% if request.get_full_path == billing_url %}class="active"{% endif %}>
           <a href="{{ billing_url }}">
             <i class="icon-credit-card-1"></i>
-            &nbsp;&nbsp;{% trans "My bills" %}
+            &nbsp;&nbsp;{% translate "My bills" %}
           </a>
         </li>
         {% endif %}
@@ -64,7 +64,7 @@
         <li {% if request.get_full_path == appointments_url %}class="active"{% endif %}>
           <a href="{{ appointments_url }}">
             <i class="icon-calendar-1"></i>
-            &nbsp;&nbsp;{% trans "My appointments" %}
+            &nbsp;&nbsp;{% translate "My appointments" %}
           </a>
         </li>
         {% endif %}
@@ -75,7 +75,7 @@
     <div class="col-md-9 col-sm-8 col-print-12 layout-main">
       <div class="tab-content stacked-content">
         {% include "messages.html" %}
-        {% block content %}{% endblock content %}
+        {% block content %}{% endblock %}
       </div><!-- end tab-content -->
     </div><!-- end layout-main -->
   </div><!-- end layout -->

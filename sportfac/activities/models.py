@@ -20,7 +20,6 @@ from dateutil.relativedelta import relativedelta
 from model_utils import Choices
 
 from sportfac.models import TimeStampedModel
-
 from .utils import course_to_js_csv
 
 
@@ -727,6 +726,9 @@ class ExtraNeed(TimeStampedModel):
     courses = models.ManyToManyField("Course", related_name="extra", blank=True)
 
     question_label = models.CharField(max_length=255, verbose_name=_("Question"), help_text=_("e.g. Shoes size?"))
+    image_label = models.CharField(
+        max_length=255, verbose_name=_("Image label"), help_text=_("if type is image"), blank=True
+    )
     extra_info = models.TextField(blank=True)
     mandatory = models.BooleanField(default=True)
     type = models.CharField(verbose_name=_("Type of answer"), choices=EXTRA_TYPES, default="C", max_length=2)
@@ -743,6 +745,14 @@ class ExtraNeed(TimeStampedModel):
         blank=True,
         null=True,
     )
+    step = models.ForeignKey(
+        "wizard.WizardStep",
+        verbose_name=_("Wizard step"),
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="questions",
+    )
     default = models.CharField(verbose_name=_("Default value"), default="", blank=True, max_length=255)
 
     class Meta:
@@ -756,6 +766,10 @@ class ExtraNeed(TimeStampedModel):
     @property
     def is_characters(self):
         return self.type == "C"
+
+    @property
+    def is_choices(self):
+        return len(self.choices) > 0
 
     @property
     def is_integer(self):

@@ -1,16 +1,16 @@
 {% load i18n sekizai_tags switzerland %}
 <section class="portlet">
-  <h3 class="content-title"><u>{% trans "Registrations" %}</u></h3>
+  <h3 class="content-title"><u>{% translate "Registrations" %}</u></h3>
   <table class="table table-striped">
     <thead>
     <tr>
-      <th>{% trans "Name" %}</th>
-      <th>{% trans "Activity" %}</th>
-      <th>{% trans "Period" %}</th>
-      <th>{% trans "Time" %}</th>
-      <th>{% trans "Place" %}</th>
+      <th>{% translate "Name" %}</th>
+      <th>{% translate "Activity" %}</th>
+      <th>{% translate "Period" %}</th>
+      <th>{% translate "Time" %}</th>
+      <th>{% translate "Place" %}</th>
       {% if not NO_PAYMENT %}
-        <th>{% trans "Price" %}</th>
+        <th>{% translate "Price" %}</th>
       {% endif %}
     </tr>
     </thead>
@@ -18,7 +18,7 @@
     {% if not NO_PAYMENT %}
       <tfoot>
       <tr>
-        <th colspan="5" style="text-align: right">{% trans "Total" %}</th>
+        <th colspan="5" style="text-align: right">{% translate "Total" %}</th>
         <th class="nowrap">{{ bill.total|money_html }}</th>
       </tr>
       </tfoot>
@@ -77,7 +77,7 @@
   </table>
 </section>
 {% if USE_APPOINTMENTS and appointments %}
-  <h3>{% trans "Appointments" %}</h3>
+  <h3>{% translate "Appointments" %}</h3>
   <ul>
     {% for appointment in appointments %}
       <li>{% if appointment.appointment_type %}{{ appointment.appointment_type }}
@@ -87,7 +87,7 @@
 {% endif %}
 
 <p class="hidden-print text-center">
-  <button class="btn btn-secondary btn-large print-button"><i class="icon icon-print"></i> {% trans "Print" %}
+  <button class="btn btn-secondary btn-large print-button"><i class="icon icon-print"></i> {% translate "Print" %}
   </button>
 </p>
 
@@ -109,4 +109,4 @@
       margin-right: 30px;
     }
   </style>
-{% endblock %}
+{% endblock extra_css %}

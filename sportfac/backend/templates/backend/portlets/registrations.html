@@ -2,17 +2,17 @@
 
 <section class="portlet">
   <h4 class="portlet-title">
-    <u><i class="icon-check"></i>&nbsp;&nbsp;{% trans "Registrations per day" %}</u>
+    <u><i class="icon-check"></i>&nbsp;&nbsp;{% translate "Registrations per day" %}</u>
   </h4>
   <div class="portlet-body">
     <div id="line-chart-registrations" class="chart-holder-300"></div>
     <p class="text-center">
-        [&nbsp;<a href="{% url 'backend:registration-list' %}"><i class="icon-check"></i>&nbsp;{% trans "List registrations" %}</a>&nbsp;]
+        [&nbsp;<a href="{% url 'backend:registration-list' %}"><i class="icon-check"></i>&nbsp;{% translate "List registrations" %}</a>&nbsp;]
     </p>
   </div> <!-- /.portlet-body -->
 </section>
 
-{% addtoblock  "js" %}    
+{% addtoblock "js" %}
 <script>
 $(function () {
   var data, placeholder;
@@ -23,7 +23,7 @@ $(function () {
 			minTickSize: [1, "day"],
 			series: {
                 lines: {
-                    show: true, 
+                    show: true,
                     fill: false,
                     lineWidth: 3
                 },
@@ -37,7 +37,7 @@ $(function () {
             },
 			tooltip: true,
             tooltipOpts: {
-                content: function(label, xval, yval, flotItem){ 
+                content: function(label, xval, yval, flotItem){
                     var d = new Date(xval);
                     var s = d.getDate() + '.' + d.getMonth() + '.' + d.getFullYear();
                     return s + ': ' + yval.toString(); }

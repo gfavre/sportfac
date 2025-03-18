@@ -1,17 +1,18 @@
 {% extends "backend/base.html" %}
-{% load i18n humanize %}
+{% load humanize i18n %}
 
 
-{% block title %}{% trans "Administration" %} - {{ block.super }}{% endblock %}
+{% block title %}{% translate "Administration" %} - {{ block.super }}{% endblock %}
 
 {% block page_header %}
   <div class="container">
     <div class="page-header">
-      <h3 class="content-title"><u>{% trans "Administration" %} <small>- {% trans "registrations phase" %}</small></u>
+      <h3 class="content-title"><u>{% translate "Administration" %} <small>- {% translate "registrations phase" %}</small></u>
       </h3>
     </div>
   </div>
-{% endblock %}
+{% endblock page_header %}
+
 {% block content %}
 
   <div class="row">

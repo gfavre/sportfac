@@ -1,4 +1,4 @@
-{% load switzerland i18n %}
+{% load i18n switzerland %}
 Bonjour,
 
 Une nouvelle facture a été créée dans le cadre du {{ site_name }}. Vous la trouverez en pièce jointe.

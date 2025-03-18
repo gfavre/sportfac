@@ -1,8 +1,9 @@
 {% extends "profiles/baseprofile.html" %}
-{% load i18n floppyforms sekizai_tags %}
+{% load floppyforms i18n sekizai_tags %}
 
-{% block title %}{% trans "My account" %}{% endblock title %}
-{% block page_title %}{% trans "My account" %} <small>- responsable légal</small>{% endblock page_title %}
+{% block title %}{% translate "My account" %}{% endblock %}
+
+{% block page_title %}{% translate "My account" %} <small>- responsable légal</small>{% endblock %}
 
 {% block content %}
 {% addtoblock "js" %}
@@ -25,13 +26,13 @@
 {% endaddtoblock %}
 
 <h3 class="content-title">
-  <u>{% trans "Edit profile" %}</u>
+  <u>{% translate "Edit profile" %}</u>
 </h3>
 <form action="." method="post" class="form-horizontal" role="form">
   {% include "profiles/account_form.html" %}
   <div class="form-group">
     <div class="col-sm-offset-3 col-sm-9">
-      <button type="submit" class="btn btn-success btn-large">{% trans "Save" %}</button>
+      <button type="submit" class="btn btn-success btn-large">{% translate "Save" %}</button>
     </div>
   </div>
 </form>

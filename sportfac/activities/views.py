@@ -2,28 +2,26 @@ import json
 import urllib.parse
 
 from django.conf import settings
-from django.db.models import Max, Min
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.views.generic import DetailView, ListView, View
 
-import mailer.views as mailer_views
 import requests
 from braces.views import LoginRequiredMixin, UserPassesTestMixin
+
+import mailer.views as mailer_views
 from mailer.forms import CourseMailForm, InstructorCopiesForm
 from mailer.mixins import ArchivedMailMixin
-
-from sportfac.views import NotReachableException, WizardMixin
-
+from registrations.models import Registration
+from wizard.views import StaticStepView
 from .models import Activity, Course, PaySlip
 
 
 __all__ = (
     "InstructorMixin",
     "ActivityDetailView",
-    "ActivityListView",
     "CustomParticipantsCustomMailView",
     "MyCoursesListView",
     "MyCourseDetailView",
@@ -31,6 +29,7 @@ __all__ = (
     "CustomMailPreview",
     "MailCourseInstructorsView",
     "PaySlipDetailView",
+    "WizardQuestionsStepView",
 )
 
 
@@ -91,43 +90,6 @@ class ActivityDetailView(DetailView):
                     break
 
         context["registrations"] = registrations
-        return context
-
-
-class ActivityListView(LoginRequiredMixin, WizardMixin, ListView):
-    model = Activity
-
-    @staticmethod
-    def check_initial_condition(request):
-        if not (hasattr(request.user, "children") and request.user.children.exists()):
-            raise NotReachableException("No children available")
-        from registrations.models import Bill
-
-        if Bill.objects.filter(
-            family=request.user,
-            status=Bill.STATUS.waiting,
-            total__gt=0,
-            payment_method__in=(Bill.METHODS.datatrans, Bill.METHODS.postfinance),
-        ).exists():
-            raise NotReachableException("Payment expected first")
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        from backend.dynamic_preferences_registry import global_preferences_registry
-
-        context["MAX_REGISTRATIONS"] = global_preferences_registry.manager()["MAX_REGISTRATIONS"]
-        times = Course.objects.visible().aggregate(Max("end_time"), Min("start_time"))
-        start_time = times["start_time__min"]
-        end_time = times["end_time__max"]
-        context["START_HOUR"] = start_time and start_time.hour - 1 or 8
-
-        if end_time:
-            if end_time.minute == 0:
-                context["END_HOUR"] = end_time.hour
-            else:
-                context["END_HOUR"] = (end_time.hour + 1) % 24
-        else:
-            context["END_HOUR"] = 19
         return context
 
 
@@ -256,3 +218,44 @@ class PaySlipDetailView(DetailView):
         response = HttpResponse(pdf.content, content_type="application/pdf")
         response["Content-Disposition"] = "attachment; filename=%s.pdf" % self.object.pk
         return response
+
+
+class WizardQuestionsStepView(LoginRequiredMixin, StaticStepView):
+    template_name = "wizard/questions.html"
+
+    def get_step_slug(self):
+        return self.kwargs["step_slug"]
+
+    def get_context_data(self, **kwargs):
+        from registrations.forms import ExtraInfoForm
+        from registrations.models import ExtraInfo
+
+        context = super().get_context_data(**kwargs)
+        questions = self.get_step().questions.all()
+        context["questions"] = questions
+        questions_registrations = {}
+        # Iterate through each ExtraNeed
+        context["forms"] = []
+        for extra_need in questions:
+            # Find all children who are registered in the course related to this ExtraNeed
+            registrations = Registration.waiting.filter(
+                course__in=extra_need.courses.all(), child__family=self.request.user
+            )
+
+            if registrations:
+                # Store the registrations (children) for this extra need
+                questions_registrations[extra_need] = [registration.child for registration in registrations]
+            for registration in registrations:
+                # Try to retrieve an existing ExtraInfo object for this registration and extra_need
+                answer, _created = ExtraInfo.objects.get_or_create(
+                    key=extra_need,
+                    registration=registration,
+                    defaults={"key": extra_need, "registration": registration},
+                )
+
+                # Create a unique form prefix using `extra_need.pk` and `registration.pk`
+                form_prefix = f"question-{extra_need.pk}-reg-{registration.pk}"
+                form = ExtraInfoForm(prefix=form_prefix, instance=answer)
+                context["forms"].append(form)
+        context["questions_registrations"] = questions_registrations
+        return context

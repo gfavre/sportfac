@@ -1,0 +1,18 @@
+{% extends "wizard/base.html" %}
+{% load duration i18n switzerland %}
+
+{% block title %}{% translate "Payment successful" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Payment successful" %} {% endblock %}
+
+{% block wizard_content %}
+  <div class="portlet hidden-print">
+    <p class="lead">{% translate "The payment was successful." %}</p>
+    <p>
+      <a href="{% url 'registrations:registrations_registered_activities' %}"><i class="icon-calendar"></i> {% translate "My registered activities" %}</a>&nbsp; &mdash;&nbsp;
+      <a href="{% url 'registrations:registrations_billing' %}"><i class="icon-credit-card-1"></i> {% translate "My invoices" %}</a>
+  </p>
+  </div>
+ {% include "registrations/invoice-part-registrations.html" %}
+
+{% endblock wizard_content %}

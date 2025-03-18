@@ -1,12 +1,11 @@
 {% extends "backend/base.html" %}
-{% load i18n static sekizai_tags matrix status switzerland %}
+{% load i18n matrix sekizai_tags static status switzerland %}
 
 
-{% block title %}{% trans "Transport detail" %}{% endblock %}
-{% block page_title %}<i class="icon-bus"></i>&nbsp;{% blocktrans with name=transport.name %}Transport details:
-  {{ name }}{% endblocktrans %}{% endblock %}
+{% block title %}{% translate "Transport detail" %}{% endblock %}
 
-
+{% block page_title %}<i class="icon-bus"></i>&nbsp;{% blocktranslate with name=transport.name %}Transport details:
+  {{ name }}{% endblocktranslate %}{% endblock page_title %}
 
 {% block extra_body %}class="transport"{% endblock %}
 
@@ -162,13 +161,13 @@
     <tr>
       {% if BIB_NUMBERS %}
         <th class="all rotated-heading bibnumber">
-          <div><span>{% trans "Bib number" %}</span></div>
+          <div><span>{% translate "Bib number" %}</span></div>
         </th>
       {% endif %}
-      <th class="all child-name">{% trans "Name" %}</th>
-      <th class="all phone">{% trans "Phone" %}</th>
-      <th class="all course-col">{% trans "Course" %}</th>
-      <th class="all transport-col">{% trans "Info" %}</th>
+      <th class="all child-name">{% translate "Name" %}</th>
+      <th class="all phone">{% translate "Phone" %}</th>
+      <th class="all course-col">{% translate "Course" %}</th>
+      <th class="all transport-col">{% translate "Info" %}</th>
       {% for session_date in all_dates %}
         <th class="rotated-heading session-col date {% if forloop.first %} all{% else %} min-tablet-p{% endif %}"
             data-session="{{ session.id }}">
@@ -197,7 +196,7 @@
         <td class="course-col"
             data-order="{{ participant.latest_course.number }}">
           <span class="nowrap hidden-print"><a
-              href="{{ course.backend_url }}">{{ participant.latest_course.short_name }}</a></span>
+              href="{{ participant.latest_course.backend_url }}">{{ participant.latest_course.short_name }}</a></span>
           <span class="visible-print-inline-block">{{ participant.latest_course.number }}</span>
         </td>
         <td class="transport-col"
@@ -228,7 +227,7 @@
     </tbody>
   </table>
   <p class="hidden-print text-center">
-    <button class="btn btn-secondary btn-large print-button"><i class="icon icon-print"></i> {% trans "Print" %}</button>
+    <button class="btn btn-secondary btn-large print-button"><i class="icon icon-print"></i> {% translate "Print" %}</button>
   </p>
 
   {% addtoblock "js" %}
@@ -236,27 +235,27 @@
       <form>
         <div class="radio">
           <label>
-            <input type="radio" name="status" id="present" value="present">{% trans "Present" %}
+            <input type="radio" name="status" id="present" value="present">{% translate "Present" %}
           </label>
         </div>
         <div class="radio">
           <label>
-            <input type="radio" name="status" id="absent" value="absent">{% trans "Absent" %}
+            <input type="radio" name="status" id="absent" value="absent">{% translate "Absent" %}
           </label>
         </div>
         <div class="radio">
           <label>
-            <input type="radio" name="status" id="excused" value="excused">{% trans "Excused" %}
+            <input type="radio" name="status" id="excused" value="excused">{% translate "Excused" %}
           </label>
         </div>
         <div class="radio">
           <label>
-            <input type="radio" name="status" id="medical" value="medical">{% trans "Medical certificate" %}
+            <input type="radio" name="status" id="medical" value="medical">{% translate "Medical certificate" %}
           </label>
         </div>
         <div class="radio">
           <label>
-            <input type="radio" name="status" id="late" value="late">{% trans "Late" %}
+            <input type="radio" name="status" id="late" value="late">{% translate "Late" %}
           </label>
         </div>
       </form>
@@ -297,15 +296,15 @@
           buttons: [
             {
               extend: 'selectAll',
-              text: "{% trans "Select all" %}"
+              text: "{% translate "Select all" %}"
             },
             {
               extend: 'selectNone',
-              text: "{% trans "Deselect all" %}"
+              text: "{% translate "Deselect all" %}"
             },
             {
               extend: 'selected',
-              text: '<i class="icon-loop-alt"></i>&nbsp;&nbsp;{% trans "Move to another transport..." %}',
+              text: '<i class="icon-loop-alt"></i>&nbsp;&nbsp;{% translate "Move to another transport..." %}',
               action: function () {
                 moveRegistrations();
               }
@@ -334,23 +333,23 @@
               var classes = '';
               switch (response.status) {
                 case 'present':
-                  label = "{% trans 'P' %}";
+                  label = "{% translate 'P' %}";
                   classes = "success present";
                   break;
                 case 'absent':
-                  label = "{% trans 'A' %}";
+                  label = "{% translate 'A' %}";
                   classes = "danger absent";
                   break;
                 case 'excused':
-                  label = "{% trans 'E' %}";
+                  label = "{% translate 'E' %}";
                   classes = "warning excused";
                   break;
                 case 'medical':
-                  label = "{% trans 'MC' %}";
+                  label = "{% translate 'MC' %}";
                   classes = "danger medical";
                   break;
                 case 'late':
-                  label = "{% trans 'LA' %}";
+                  label = "{% translate 'LA' %}";
                   classes = "info late";
                   break;
               }

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Bill detail" %}{% endblock %}
+
+{% block page_title %}{% endblock %}
+
+{% block extra_body %}class="bill"{% endblock %}
+
+{% block content %}
+{% include "registrations/invoice-part-heading.html" %}
+{% include "registrations/invoice-part-registrations.html" %}
+
+{% if transaction %}
+    {% include "registrations/billing_partial.html" %}
+ {% endif %}
+
+{% include "print-button.html" %}
+
+
+{% endblock content %}

@@ -1,17 +1,18 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags crispy_forms_tags %}
+{% load crispy_forms_tags i18n sekizai_tags %}
 
-{% block title %}{% trans "Create a new registration" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "Create a new registration" %}{% endblock %}
+{% block title %}{% translate "Create a new registration" %} - {{ block.super }}{% endblock %}
 
-{% addtoblock  "css" %}
+{% block page_title %}{% translate "Create a new registration" %}{% endblock %}
+
+{% addtoblock "css" %}
 {{ wizard.form.media.css }}
-{% endaddtoblock %} 
+{% endaddtoblock %}
 
 
 
 {% block content %}
-  {% addtoblock  "js" %}
+  {% addtoblock "js" %}
 {{ wizard.form.media.js }}
 {% endaddtoblock %}
 <form action="" method="post">{% csrf_token %}
@@ -38,28 +39,28 @@
     <div class="col-md-9 col-sm-7">
 
         <div class="form-group">
-          <button type="submit" class="btn btn-success btn-large" style="margin-top: 2em;">{% trans "Save" %}</button>
+          <button type="submit" class="btn btn-success btn-large" style="margin-top: 2em;">{% translate "Save" %}</button>
         </div>
     </div>
 
     </div>
 
   </div>
-  
+
   <footer>
     <nav>
       <ul class="pager">
       {% if wizard.steps.prev %}
         <li class="previous">
           <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">
-            <span aria-hidden="true">&larr;</span> {% trans "Previous"%}
+            <span aria-hidden="true">&larr;</span> {% translate "Previous" %}
           </button>
         </li>
       {% endif %}
       {% if wizard.steps.next %}
         <li class="next">
           <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.next }}">
-            {% trans "Next"%} <span aria-hidden="true">&rarr;</span>
+            {% translate "Next" %} <span aria-hidden="true">&rarr;</span>
           </button>
         </li>
       {% endif %}
@@ -68,4 +69,4 @@
   </footer>
 </form>
 
-{% endblock %}
+{% endblock content %}

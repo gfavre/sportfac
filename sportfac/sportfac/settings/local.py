@@ -46,17 +46,17 @@ ALLOWED_HOSTS = ("127.0.0.1", "localhost", "test.com", "tenant.test.com", "tests
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
     # 'other': env.db('DATABASE_URL', default='postgres:///sportfac'),
-    "master_users": env.db("MASTER_DATABASE_URL", default="postgres:///kepchup_users"),  # noqa: F405
+    # "master_users": env.db("MASTER_DATABASE_URL", default="postgres:///kepchup_users"),  # noqa: F405
     "default": env.db("OTHER_DB", "postgres:///sportfac_montreux"),  # noqa: F405
 }
 DATABASES["default"]["ENGINE"] = "django_tenants.postgresql_backend"
 
 DATABASE_ROUTERS = [
     "django_tenants.routers.TenantSyncRouter",
-    "sportfac.database_router.MasterRouter",
+    # "sportfac.database_router.MasterRouter",
 ]
 AUTHENTICATION_BACKENDS = (
-    "sportfac.authentication_backends.MasterUserBackend",
+    # "sportfac.authentication_backends.MasterUserBackend",
     "django.contrib.auth.backends.ModelBackend",
 )
 SESSION_COOKIE_NAME = "sportfac"
@@ -118,7 +118,7 @@ KEPCHUP_USE_ABSENCES = True
 KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES = False
 KEPCHUP_ABSENCES_ORDER_ASC = True
 
-KEPCHUP_USE_APPOINTMENTS = False
+KEPCHUP_USE_APPOINTMENTS = True
 KEPCHUP_USE_BUILDINGS = False
 KEPCHUP_SEND_PRESENCE_LIST = True
 KEPCHUP_SEND_COPY_CONTACT_MAIL_TO_ADMIN = True
@@ -134,6 +134,8 @@ KEPCHUP_CALENDAR_HIDDEN_DAYS = [
     0,
 ]
 KEPCHUP_BIB_NUMBERS = True
+KEPCHUP_CHILDREN_EDITABLE = False
+KEPCHUP_CHILDREN_POPUP = True
 KEPCHUP_CHILDREN_HIDDEN_FIELDS = []
 KEPCHUP_FICHE_SALAIRE_MONTREUX = True
 KEPCHUP_DISPLAY_CAR_NUMBER = True
@@ -143,6 +145,7 @@ KEPCHUP_DISPLAY_PUBLICLY_SUPERVISOR_PHONE = True
 KEPCHUP_DISPLAY_PUBLICLY_SUPERVISOR_EMAIL = True
 KEPCHUP_REGISTRATION_LEVELS = True
 KEPCHUP_ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE = True
+KEPCHUP_ACTIVITIES_POPUP = True
 KEPCHUP_DISPLAY_COURSE_NUMBER_INSTEAD_OF_ACTIVITY = True
 KEPCHUP_NO_SSF = True
 KEPCHUP_IMPORT_CHILDREN = True
@@ -232,7 +235,7 @@ KEPCHUP_REGISTRATION_EXPIRE_REMINDER_MINUTES = 30
 KEPCHUP_INSTRUCTORS_DISPLAY_EXTERNAL_ID = True
 KEPCHUP_INSTRUCTORS_CAN_EDIT_EXTERNAL_ID = True
 KEPCHUP_ENABLE_WAITING_LISTS = True
-
+KEPCHUP_EMERGENCY_NUMBER_ON_PARENT = True
 
 # Registration steps
 #

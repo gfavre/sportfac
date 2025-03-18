@@ -1,11 +1,10 @@
-
 {% comment %}
 <div class="input-group date datetimepicker">
 xy<x<yx<yxy<<yyyy
-  <input type='text' name="{{ name }}"{% if value %} 
-         value="{{ value }}"{% endif %}{% if required %} required{% endif %}{% include "floppyforms/attrs.html" %}        
-         class="form-control" 
-         data-date-useCurrent="false" data-date-useSeconds="false" 
+  <input type='text' name="{{ name }}"{% if value %}
+         value="{{ value }}"{% endif %}{% if required %} required{% endif %}{% include "floppyforms/attrs.html" %}
+         class="form-control"
+         data-date-useCurrent="false" data-date-useSeconds="false"
          data-date-pickDate="false" />
   <span class="input-group-addon"><span class="icon-clock"></span></span>
 </div>
@@ -25,4 +24,4 @@ xy<x<yx<yxy<<yyyy
 >
     <span class="input-group-addon"><span class="icon-clock"></span></span>
 
-{% endblock %}
+{% endblock input %}

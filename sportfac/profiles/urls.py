@@ -4,13 +4,7 @@ from django.urls import path, re_path, reverse_lazy
 from django.views.generic.base import RedirectView
 
 from .forms import AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
-from .views import (
-    AccountRedirectView,
-    AccountView,
-    LogoutView,
-    RegistrationView,
-    WizardRegistrationView,
-)
+from .views import AccountRedirectView, AccountView, LogoutView, RegistrationView
 
 
 app_name = "profiles"
@@ -18,7 +12,6 @@ app_name = "profiles"
 urlpatterns = [
     path("", AccountView.as_view(), name="profiles_account"),
     path("new", RegistrationView.as_view(), name="anytime_registeraccount"),
-    path("register", WizardRegistrationView.as_view(), name="registeraccount"),
     path("logout", LogoutView.as_view(), name="auth_logout"),
     path("redirect", AccountRedirectView.as_view(), name="authenticated-home"),
 ]

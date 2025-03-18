@@ -4,24 +4,22 @@ from django.contrib.auth import authenticate, login
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views.generic import FormView, RedirectView, UpdateView
 
 from braces.views import LoginRequiredMixin
 from registration import signals
-from registrations.models import Bill
 
-from sportfac.views import NotReachableException, WizardMixin
-
+from wizard.views import BaseWizardStepView
 from .forms import InstructorForm, RegistrationForm, UserForm
 from .models import FamilyUser
 
 
 __all__ = (
     "AccountView",
-    "WizardAccountView",
-    "WizardRegistrationView",
+    "WizardFamilyUserCreateView",
+    "WizardFamilyUserUpdateView",
     "AccountRedirectView",
 )
 
@@ -62,25 +60,6 @@ class AccountView(SuccessMessageMixin, _BaseAccount):
 
     def get_success_message(self, form):
         return _("Your contact informations have been saved.")
-
-
-class WizardAccountView(WizardMixin, _BaseAccount):
-    template_name = "profiles/wizard_account.html"
-    success_url = reverse_lazy("wizard_children")
-
-    @staticmethod
-    def check_initial_condition(request):
-        # Condition is to be logged in => _BaseAccount requires login.
-        if (
-            request.user.is_authenticated
-            and Bill.objects.filter(
-                family=request.user,
-                status=Bill.STATUS.waiting,
-                total__gt=0,
-                payment_method__in=(Bill.METHODS.datatrans, Bill.METHODS.postfinance),
-            ).exists()
-        ):
-            raise NotReachableException("Payment expected first")
 
 
 class RegistrationBaseView(FormView):
@@ -132,7 +111,7 @@ class RegistrationBaseView(FormView):
         return user
 
 
-class RegistrationView(RegistrationBaseView):
+class RegistrationView(RegistrationBaseView):  # deprecated
     template_name = "profiles/registration_form.html"
 
     def get_success_url(self):
@@ -145,23 +124,59 @@ class RegistrationView(RegistrationBaseView):
         raise PermissionDenied
 
 
-class WizardRegistrationView(WizardMixin, RegistrationBaseView):
-    """
-    A registration backend which implements the simplest possible
-    workflow: a user supplies a username, email address and password
-    (the bare minimum for a useful account), and is immediately signed
-    up and logged in).
-    """
-
+class WizardFamilyUserCreateView(BaseWizardStepView, RegistrationBaseView):
     form_class = RegistrationForm
-    template_name = "profiles/wizard_registration_form.html"
+    template_name = "wizard/account-create.html"
+    step_slug = "user-create"
 
-    @staticmethod
-    def check_initial_condition(request):
-        return
+    def get_context_data(self, **kwargs):
+        """Merge the UpdateView context with the BaseWizardStepView context."""
+        context = super().get_context_data(**kwargs)
+        context["LOGIN_URL"] = settings.LOGIN_URL if settings.KEPCHUP_USE_SSO else reverse(settings.LOGIN_URL)
+        form_context = RegistrationBaseView.get_context_data(self, **kwargs)
+        context.update(form_context)
+        return context
 
     def get_success_url(self):
-        return reverse("wizard_children")
+        """Determine the next step based on the workflow."""
+        return reverse("wizard:step", kwargs={"step_slug": "children"})
+
+    def get(self, request, *args, **kwargs):
+        """Handle GET requests: instantiate a blank version of the form."""
+        user: FamilyUser = request.user  # noqa
+        if user.is_authenticated:
+            return redirect(reverse("wizard:step", kwargs={"step_slug": "user-update"}))
+        return super().get(request, *args, **kwargs)
+
+
+class WizardFamilyUserUpdateView(LoginRequiredMixin, BaseWizardStepView, UpdateView):
+    model = FamilyUser
+    template_name = "wizard/account.html"
+    step_name = "update_family_user"
+    step_slug = "user-update"
+
+    def get_form_class(self):
+        user: FamilyUser = self.request.user  # type: ignore
+        if user.is_instructor:
+            return InstructorForm
+        return UserForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        user: FamilyUser = self.request.user  # type: ignore
+        if user.is_instructor:
+            kwargs["user"] = user
+        return kwargs
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def get_context_data(self, **kwargs):
+        """Merge the UpdateView context with the BaseWizardStepView context."""
+        context = super().get_context_data(**kwargs)
+        form_context = UpdateView.get_context_data(self, **kwargs)
+        context.update(form_context)
+        return context
 
 
 class LogoutView(auth_views.LogoutView):

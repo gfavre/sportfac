@@ -1,8 +1,9 @@
 {% extends "backend/base.html" %}
 {% load i18n sekizai_tags %}
 
-{% block title %}{% trans "View building" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "List building" %}{% endblock %}
+{% block title %}{% translate "View building" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "List building" %}{% endblock %}
 
 {% get_current_language as LANGUAGE_CODE %}
 
@@ -10,7 +11,7 @@
 
 {% block content %}
 
-{% addtoblock  "js" %}
+{% addtoblock "js" %}
 <script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
 <script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
 <script>
@@ -29,15 +30,15 @@ $(function () {
 </script>
 {% endaddtoblock %}
 
-<a href="{% url 'backend:building-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New building" %}</a>
+<a href="{% url 'backend:building-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% translate "New building" %}</a>
 <hr>
 <table class="table">
   <thead>
     <tr>
-      <th class="text-nowrap">{% trans "Name" %}</th>
-      <th class="text-nowrap">{% trans "City" %}</th>
-      <th class="text-nowrap">{% trans "Teachers" %}</th>
-      <th class="text-nowrap">{% trans "Actions" %}</th>
+      <th class="text-nowrap">{% translate "Name" %}</th>
+      <th class="text-nowrap">{% translate "City" %}</th>
+      <th class="text-nowrap">{% translate "Teachers" %}</th>
+      <th class="text-nowrap">{% translate "Actions" %}</th>
     </tr>
   </thead>
   {% for building in object_list %}
@@ -49,9 +50,9 @@ $(function () {
       </td>
       <td>
         <ul class="list-unstyled">
-          <li class="text-nowrap"><a href="{{ building.get_backend_url }}" class="btn btn-sm"><i class="icon-check"></i>&nbsp;{% trans "Check teachers" %}</a></li>
-          <li class="text-nowrap"><a href="{{ building.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update building" %}</a></li>
-          <li class="text-nowrap"><a href="{{ building.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% trans "Delete building" %}</a></li>
+          <li class="text-nowrap"><a href="{{ building.get_backend_url }}" class="btn btn-sm"><i class="icon-check"></i>&nbsp;{% translate "Check teachers" %}</a></li>
+          <li class="text-nowrap"><a href="{{ building.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% translate "Update building" %}</a></li>
+          <li class="text-nowrap"><a href="{{ building.get_delete_url }}" class="btn btn-sm"><i class="icon-trash"></i>&nbsp;{% translate "Delete building" %}</a></li>
         </ul>
       </td>
     </tr>

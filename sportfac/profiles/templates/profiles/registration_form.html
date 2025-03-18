@@ -1,8 +1,9 @@
 {% extends "base.html" %}
-{% load i18n crispy_forms_tags %}
+{% load crispy_forms_tags i18n %}
 
-{% block title %}{% trans "Inscription" %}{% endblock title %}
-{% block page_title %}{% trans "Inscription" %}
+{% block title %}{% translate "Inscription" %}{% endblock %}
+
+{% block page_title %}{% translate "Inscription" %}
   <small>- responsable légal</small>{% endblock page_title %}
 
 {% block content %}
@@ -10,14 +11,14 @@
     {% crispy form %}
     <div class="form-group">
       <div class="col-sm-offset-2 col-sm-10">
-        <button type="submit" class="btn btn-primary btn-large">{% trans "Save" %}</button>
+        <button type="submit" class="btn btn-primary btn-large">{% translate "Save" %}</button>
       </div>
     </div>
   </form>
 
-{% endblock %}
+{% endblock content %}
 
-{% block page_footer %}{% endblock page_footer %}
+{% block page_footer %}{% endblock %}
 
 {% block extra_js %}
   <script>
@@ -33,4 +34,4 @@
     });
     $('#id_username').focus();
   </script>
-{% endblock %}
+{% endblock extra_js %}

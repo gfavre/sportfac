@@ -1,0 +1,15 @@
+{% extends "wizard/base.html" %}
+{% load duration i18n switzerland %}
+
+{% block title %}{% translate "Payment failure" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Payment failed" %} {% endblock %}
+
+{% block wizard_content %}
+  <div class="portlet ">
+    <p class="lead">{% translate "The payment has not been made." %}</p>
+    <p>
+      <a href="{% url "wizard:step" step_slug="payment" %}"> {% translate "Back to payment" %}</a>
+    </p>
+  </div>
+{% endblock wizard_content %}

@@ -1,1 +1,1 @@
-coverage run --source 'sportfac' sportfac/manage.py test --keepdb --settings=sportfac.settings.test absences activities api backend contact mailer payments profiles registrations
+coverage run --source 'sportfac' sportfac/manage.py test --keepdb --settings=sportfac.settings.test absences activities api appointments backend contact mailer payments payroll profiles registrations schools waiting_slots wizard

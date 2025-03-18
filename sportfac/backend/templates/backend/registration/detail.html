@@ -1,33 +1,34 @@
 {% extends "backend/base.html" %}
-{% load i18n switzerland extra %}
+{% load extra i18n switzerland %}
 
-{% block title %}{% trans "Registration details" %}{% endblock %}
-{% block page_title %}{% trans "Registration details" %}{% endblock %}
+{% block title %}{% translate "Registration details" %}{% endblock %}
+
+{% block page_title %}{% translate "Registration details" %}{% endblock %}
 
 {% block content %}
 
   <section class="portlet">
     <dl class="dl-horizontal">
-      <dt>{% trans "Child" %}</dt>
+      <dt>{% translate "Child" %}</dt>
       <dd><a href="{{ registration.child.get_backend_url }}">{{ registration.child }}</a></dd>
-      <dt>{% trans "Course" %}</dt>
+      <dt>{% translate "Course" %}</dt>
       <dd><a href="{{ registration.course.get_backend_url }}">{{ registration.course.short_name }}</a></dd>
-      <dt>{% trans "Status" %}</dt>
+      <dt>{% translate "Status" %}</dt>
       <dd>{{ registration.get_status_display }}</dd>
-      <dt>{% trans "Creation" %}</dt>
+      <dt>{% translate "Creation" %}</dt>
       <dd>{{ registration.created|date:"SHORT_DATETIME_FORMAT" }}</dd>
-      <dt>{% trans "Last modification" %}</dt>
+      <dt>{% translate "Last modification" %}</dt>
       <dd>{{ registration.modified|date:"SHORT_DATETIME_FORMAT" }}</dd>
-      <dt>{% trans "Confirmation mail sent on" %}</dt>
+      <dt>{% translate "Confirmation mail sent on" %}</dt>
       <dd>{{ registration.confirmation_sent_on|date:"SHORT_DATE_FORMAT"|default:"n/a" }}</dd>
     </dl>
   </section>
 
 {% if DISPLAY_CAR_NUMBER %}
   <section class="portlet">
-    <h4 class="portlet-title">{% trans "Transport" %}</h4>
+    <h4 class="portlet-title">{% translate "Transport" %}</h4>
     <dl class="dl-horizontal">
-      <dt>{% trans "Transport number" %}</dt>
+      <dt>{% translate "Transport number" %}</dt>
       <dd>
         {% if registration.transport %}
           <a href="{{ registration.transport.backend_url }}">{{ registration.transport }}</a>
@@ -41,17 +42,17 @@
 
 {% if not KEPCHUP_NO_PAYMENT %}
   <section class="portlet">
-    <h4 class="portlet-title">{% trans "Payment" %}</h4>
+    <h4 class="portlet-title">{% translate "Payment" %}</h4>
     <dl class="dl-horizontal">
-      <dt>{% trans "Invoice" %}</dt>
+      <dt>{% translate "Invoice" %}</dt>
       <dd>
         {% if registration.bill %}
           <a href="{{ registration.bill.backend_url }}">{{ registration.bill.billing_identifier }}</a>
         {% else %}n/a{% endif %}
       </dd>
-      <dt>{% trans "Price" %}</dt>
+      <dt>{% translate "Price" %}</dt>
       <dd>{{ registration.price|money }}</dd>
-      <dt>{% trans "Is paid" %}</dt>
+      <dt>{% translate "Is paid" %}</dt>
       <dd>
           <span class="label {{ registration.paid|yesno:"label-success,label-danger" }}">
             <i class="icon-{{ registration.paid|yesno:'ok,cancel' }}"></i>
@@ -64,7 +65,7 @@
 
 {% if registration.extra_infos.exists %}
   <section class="portlet">
-    <h4 class="portlet-title">{% trans "Additional questions" %}</h4>
+    <h4 class="portlet-title">{% translate "Additional questions" %}</h4>
     <dl class="dl-horizontal">
       {% for extra in registration.extra_infos.all %}
         <dt>{{ extra.key.question_label }}</dt>
@@ -82,7 +83,7 @@
               {% if extra.image.url|is_image %}
                 <img src="{{ extra.image.url }}" class="img-responsive">
               {% else %}
-                <a href="{{ extra.image.url }}" download>{% trans "download" %}</a>
+                <a href="{{ extra.image.url }}" download>{% translate "download" %}</a>
               {% endif %}
               </div>
             {% endif %}

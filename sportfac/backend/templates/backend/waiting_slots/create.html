@@ -1,9 +1,10 @@
 {% extends "backend/base.html" %}
-{% load i18n crispy_forms_tags sekizai_tags%}
+{% load crispy_forms_tags i18n sekizai_tags %}
 
 
-{% block title %}{% trans "Add to waiting list" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "Add to waiting list" %}{% endblock %}
+{% block title %}{% translate "Add to waiting list" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Add to waiting list" %}{% endblock %}
 
 {% block content %}
   {% crispy form %}

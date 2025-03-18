@@ -7,13 +7,12 @@ from django.forms.models import model_to_dict
 from django.test import RequestFactory, override_settings
 from django.urls import reverse
 
-from activities.tests.factories import CourseFactory
 from faker import Faker
 
+from activities.tests.factories import CourseFactory
 from sportfac.utils import TenantTestCase as TestCase
-
 from ..models import FamilyUser
-from ..views import AccountView, RegistrationView, WizardRegistrationView
+from ..views import AccountView, RegistrationView
 from .factories import FamilyUserFactory
 
 
@@ -55,20 +54,6 @@ class UserDataTestCaseMixin:
         request.REGISTRATION_OPENED = True
         self.view(request)
         self.assertTrue(faked_login.called)
-
-
-class WizardRegistrationViewTests(UserDataTestCaseMixin, TestCase):
-    def setUp(self):
-        super().setUp()
-        self.view = WizardRegistrationView.as_view()
-        self.url = reverse("wizard_register")
-
-    def test_account_creation_forbidden_if_registration_closed(self):
-        request = self.factory.get(self.url)
-        request.user = AnonymousUser()
-        request.REGISTRATION_OPENED = False
-        with self.assertRaises(PermissionDenied):
-            self.view(request)
 
 
 class RegistrationViewTests(UserDataTestCaseMixin, TestCase):

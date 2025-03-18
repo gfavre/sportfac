@@ -1,10 +1,11 @@
 {% extends "backend/base.html" %}
-{% load i18n humanize %}
+{% load humanize i18n %}
 
-{% block title %}{% trans "Administration" %} - {{ block.super }}{% endblock %}
+{% block title %}{% translate "Administration" %} - {{ block.super }}{% endblock %}
 
 {% block page_header %}{% endblock %}
-{% block page_title %}{% trans "Administration" %}{% endblock %}
+
+{% block page_title %}{% translate "Administration" %}{% endblock %}
 
 {% block content %}
 
@@ -12,26 +13,26 @@
 <section class="col-md-12">
   <div class="portlet">
     <h4 class="portlet-title">
-      <u><i class="icon-hourglass"></i>{% trans "Opening & closing" %}</u>
+      <u><i class="icon-hourglass"></i>{% translate "Opening & closing" %}</u>
     </h4>
     {% if config.CURRENT_PHASE == 1 %}
-    
+
     {% if registration_past %}
     Registrations are past
-    
+
     {% elif registration_opened %}
     {% widthratio minutes_spent minutes_total 100|add:"0" as percentage %}
-  
+
     <div class="progress-stat">
-      <div class="progress-stat-label">{% trans "Registrations open"%}</div>
-      <div class="progress-stat-value">{% blocktrans with time=registration_end|timeuntil %}{{ time }} remaining{% endblocktrans %}</div>
+      <div class="progress-stat-label">{% translate "Registrations open" %}</div>
+      <div class="progress-stat-value">{% blocktranslate with time=registration_end|timeuntil %}{{ time }} remaining{% endblocktranslate %}</div>
       <div class="progress progress-sm">
         {% with pp=percentage|add:"0" %}
-        <div class="progress-bar {% if pp < 50 %}progress-bar-success{% elif pp < 80 %}progress-bar-warning{% else %}progress-bar-danger{% endif %}" role="progressbar" 
-             aria-valuenow="{{ minutes_spent }}" aria-valuemin="0" 
-             aria-valuemax="{{ minutes_total }}" 
+        <div class="progress-bar {% if pp < 50 %}progress-bar-success{% elif pp < 80 %}progress-bar-warning{% else %}progress-bar-danger{% endif %}" role="progressbar"
+             aria-valuenow="{{ minutes_spent }}" aria-valuemin="0"
+             aria-valuemax="{{ minutes_total }}"
              style="width: {{ percentage }}%">
-          <span class="sr-only">{% blocktrans with time=registration_start|timesince %}{{ time }} since opening of registrations{% endblocktrans %}</span>
+          <span class="sr-only">{% blocktranslate with time=registration_start|timesince %}{{ time }} since opening of registrations{% endblocktranslate %}</span>
         </div>
         {% endwith %}
       </div>
@@ -45,10 +46,10 @@
     {% endif %}
     {% endif %}
     <dl class="dl-horizontal">
-      <dt>{% trans "Opening date"%}</dt><dd>{{ registration_start|date:"l j E Y, H:i" }}</dd>
-      <dt>{% trans "Closing date"%}</dt><dd>{{ registration_end|date:"l j E Y, H:i" }}</dd>
+      <dt>{% translate "Opening date" %}</dt><dd>{{ registration_start|date:"l j E Y, H:i" }}</dd>
+      <dt>{% translate "Closing date" %}</dt><dd>{{ registration_end|date:"l j E Y, H:i" }}</dd>
     </dl>
-    [ <a href="{% url 'backend:dates' %}">{% trans "Change dates"%}</a> ]
+    [ <a href="{% url 'backend:dates' %}">{% translate "Change dates" %}</a> ]
 
   </div>
 </section>
@@ -56,21 +57,21 @@
 
 <div class="row">
   <div class="col-sm-6 col-md-4">
-    {% include 'backend/portlets/paid.html'%}
+    {% include 'backend/portlets/paid.html' %}
   </div>
    <div class="col-sm-6 col-md-4">
-    {% include 'backend/portlets/teachers.html'%}
+    {% include 'backend/portlets/teachers.html' %}
   </div>
   <div class="col-sm-6 col-md-8">
-    {% include 'backend/portlets/registrations.html'%}
+    {% include 'backend/portlets/registrations.html' %}
   </div>
 </div>
 
 <section>
   <ul>
-    <li><a href="{% url 'backend:activity-list' %}">{% trans "Manage activities" %}</a></li>
-    <li><a href="{% url 'backend:course-list' %}">{% trans "Manage courses" %}</a></li>
-    <li><a href="{% url 'backend:instructor-list' %}">{% trans "Manage instructors" %}</a></li>
+    <li><a href="{% url 'backend:activity-list' %}">{% translate "Manage activities" %}</a></li>
+    <li><a href="{% url 'backend:course-list' %}">{% translate "Manage courses" %}</a></li>
+    <li><a href="{% url 'backend:instructor-list' %}">{% translate "Manage instructors" %}</a></li>
 
   </ul>
 </section>

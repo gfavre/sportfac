@@ -14,8 +14,7 @@ from mailer.models import MailArchive
 from mailer.tasks import send_mail
 from profiles.models import FamilyUser
 from registrations.models import Bill, Registration
-from registrations.views import BillMixin
-
+from registrations.views.utils import BillMixin
 from .mixins import BackendMixin
 
 
@@ -41,16 +40,6 @@ class MailPreview(BackendMixin, ArchivedMailMixin, mailer_views.MailPreviewView)
 
     def get_cancel_url(self):
         return self.request.GET.get("prev", None)
-
-    def get_context_data(self, **kwargs):
-        kwargs["url"] = "".join(
-            (
-                settings.DEBUG and "http://" or "https://",
-                get_current_site(self.request).domain,
-                reverse("wizard_confirm"),
-            )
-        )
-        return super().get_context_data(**kwargs)
 
 
 class ParticipantsMailCreateView(BackendMixin, mailer_views.ParticipantsMailCreateView):
@@ -261,7 +250,7 @@ class NeedConfirmationView(BackendMixin, TemplatedEmailMixin, mailer_views.Brows
             (
                 settings.DEBUG and "http://" or "https://",
                 get_current_site(self.request).domain,
-                reverse("wizard_confirm"),
+                reverse("wizard:step", kwargs={"step_slug": "confirmation"}),
             )
         )
         return super().get_context_data(**kwargs)

@@ -1,27 +1,27 @@
 {% extends "wizard.html" %}
-{% load i18n l10n humanize switzerland json_tags html_utils %}
+{% load html_utils humanize i18n json_tags l10n switzerland %}
 
 
-{% block page_title %}{% trans "Confirmation" %}{% endblock page_title%}
+{% block page_title %}{% translate "Confirmation" %}{% endblock %}
 
 {% block content %}
 {% if overlaps %}
 <div class="alert alert-warning alert-dismissible" role="alert">
   <button type="button" class="close" data-dismiss="alert">
-    <span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span>
+    <span aria-hidden="true">&times;</span><span class="sr-only">{% translate "Close" %}</span>
   </button>
-  <strong><i class="icon-warning"></i>&nbsp;{% trans "Warning!" %}</strong>
+  <strong><i class="icon-warning"></i>&nbsp;{% translate "Warning!" %}</strong>
   <p>
     {% if user.children.count > 1 %}
-    {% trans "The following courses occur at the same or close times. It may be difficult to bring your children." %}
+    {% translate "The following courses occur at the same or close times. It may be difficult to bring your children." %}
     {% else %}
-    {% trans "The following courses occur at the same or close times. It may be difficult to bring your child." %}
+    {% translate "The following courses occur at the same or close times. It may be difficult to bring your child." %}
     {% endif %}
     <ul>
     {% for overlap in overlaps %}
       <li>
-        <span class="highlight" rel="{{ overlap.0.id}}">{{ overlap.0.child.first_name }} - {{ overlap.0.course.activity.name }}</span> /
-        <span class="highlight" rel="{{ overlap.1.id}}">{{ overlap.1.child.first_name }} - {{ overlap.1.course.activity.name }}</span>
+        <span class="highlight" rel="{{ overlap.0.id }}">{{ overlap.0.child.first_name }} - {{ overlap.0.course.activity.name }}</span> /
+        <span class="highlight" rel="{{ overlap.1.id }}">{{ overlap.1.child.first_name }} - {{ overlap.1.course.activity.name }}</span>
       </li>
     {% endfor %}
     </ul>
@@ -32,25 +32,25 @@
 <table class=" table table-hover">
   <thead>
     <tr>
-      <th class="text-center">{% trans "Name" %}</th>
-      <th class="text-center">{% trans "Activity" %}</th>
-      <th class="text-center">{% trans "Period" %}</th>
-      <th class="text-center">{% trans "Time" %}</th>
-      <th class="text-center">{% trans "Place" %}</th>
-{% if not NO_PAYMENT  %}
-      <th class="text-center">{% trans "Price" %}</th>
+      <th class="text-center">{% translate "Name" %}</th>
+      <th class="text-center">{% translate "Activity" %}</th>
+      <th class="text-center">{% translate "Period" %}</th>
+      <th class="text-center">{% translate "Time" %}</th>
+      <th class="text-center">{% translate "Place" %}</th>
+{% if not NO_PAYMENT %}
+      <th class="text-center">{% translate "Price" %}</th>
 {% endif %}
     </tr>
   </thead>
 
-{% if not NO_PAYMENT  %}
+{% if not NO_PAYMENT %}
   <tfoot>
     <tr id="subtotal" {% if not has_reductions %} style="display:none"{% endif %}>
-      <th colspan="5" class="text-right">{% trans "Subtotal" %}</th>
+      <th colspan="5" class="text-right">{% translate "Subtotal" %}</th>
       <th class="nowrap">{{ subtotal|money_html }}</th>
     </tr>
     <tr id="reductions"{% if not has_reductions %} style="display:none"{% endif %}>
-      <th colspan="5" class="text-right">{% trans "Reductions" %}</th>
+      <th colspan="5" class="text-right">{% translate "Reductions" %}</th>
       <th class="nowrap">
         <ul class="list-unstyled">
           {% for key, reduction in applied_reductions.items %}
@@ -60,7 +60,7 @@
       </th>
     </tr>
     <tr>
-      <th colspan="5" class="text-right">{% trans "Total" %}</th>
+      <th colspan="5" class="text-right">{% translate "Total" %}</th>
       <th class="nowrap" id="total-price">{{ total_price|money_html }}</th>
     </tr>
     <tr>
@@ -82,11 +82,11 @@
         <span class="nowrap">{{ registered.course.start_date }}</span><br><span class="icon-down-1" aria-hidden="true"></span><br><span class="nowrap">{{ registered.course.end_date }}</span>
       </td>
       <td class="text-center">
-        {{ registered.course.day_name }} <br /> <span class="nowrap">{{ registered.course.start_time|time:"H:i"}} - {{ registered.course.end_time|time:"H:i" }}</span>
+        {{ registered.course.day_name }} <br /> <span class="nowrap">{{ registered.course.start_time|time:"H:i" }} - {{ registered.course.end_time|time:"H:i" }}</span>
       </td>
       <td>{{ registered.course.place }}</td>
 
-{% if not NO_PAYMENT  %}
+{% if not NO_PAYMENT %}
       <td class="nowrap" rowspan="2">{{ registered.price|money_html }}</td>
 {% endif %}
     </tr>
@@ -96,7 +96,7 @@
         <form class="extra-info form-horizontal" method="post"
               data-toggle="validator" role="form">{% csrf_token %}
           <div class="alert alert-danger form-error" style="display: none">
-            <i class="icon-warning icon-large"></i> {% trans "Please submit this form." %}</span>
+            <i class="icon-warning icon-large"></i> {% translate "Please submit this form." %}</span>
           </div>
           <input type="hidden" name="registration" value="{{ registered.id }}" />
           {% for extra in registered.extra_needs %}
@@ -110,7 +110,7 @@
                   {% if not extra.mandatory %}
                       <option></option>
                   {% endif %}
-                  {% for choice in extra.choices  %}
+                  {% for choice in extra.choices %}
                   <option value="{{ choice }}"
                           {% if choice == extra.default %}checked{% endif %}>{{ choice }}</option>
                   {% endfor %}
@@ -118,23 +118,23 @@
                 {% else %}
                   {% if extra.type == 'C' %}
                   <input type="text" name="extra-{{ extra.id }}" class="form-control"
-                         value="{{ extra.default|default:""}}"
+                         value="{{ extra.default|default:"" }}"
                          id="{{ registered.id }}-extra-{{ extra.id }}"
                          {% if extra.mandatory %}required{% endif %} />
                   {% elif extra.type == 'I' %}
                   <input type="number" name="extra-{{ extra.id }}" class="form-control"
-                         value="{{ extra.default|default:""}}"
+                         value="{{ extra.default|default:"" }}"
                          id="{{ registered.id }}-extra-{{ extra.id }}"
                          {% if extra.mandatory %}required{% endif %} />
                   {% else %}
                   <label class="radio-inline">
                     <input type="radio" name="extra-{{ extra.id }}" value="1"
                            {% if extra.default == "1" %}checked{% endif %}
-                           {% if extra.mandatory %}required{% endif %} /> {% trans "yes" %}
+                           {% if extra.mandatory %}required{% endif %} /> {% translate "yes" %}
                   </label>
                   <label class="radio-inline">
                     <input type="radio" name="extra-{{ extra.id }}" value="0"
-                           {% if extra.default == "0" %}checked{% endif %}> {% trans "no" %}
+                           {% if extra.default == "0" %}checked{% endif %}> {% translate "no" %}
                   </label>
                   {% endif %}
                 {% endif %}
@@ -144,7 +144,7 @@
           {% endfor %}
           <div class="form-group">
             <div class="col-sm-offset-3 col-sm-9">
-              <button type="submit" class="btn btn-success" >{% trans "Save" %}</button>
+              <button type="submit" class="btn btn-success" >{% translate "Save" %}</button>
             </div>
           </div>
         </form>
@@ -159,10 +159,10 @@
 
 
         <p class="alert alert-info hide" role="alert">
-          <i class="icon-refresh icon-spin"></i> {% trans "Sending info..." %}
+          <i class="icon-refresh icon-spin"></i> {% translate "Sending info..." %}
         </p>
         <div class="alert alert-success hide" role="alert">
-          <i class="icon-ok"></i> {% trans "Extra infos saved" %}
+          <i class="icon-ok"></i> {% translate "Extra infos saved" %}
           <dl  class="dl-horizontal">
           {% for extra in registered.extra_needs %}
              <dt>{{ extra.question_label }}</dt><dd class="value-{{ extra.id }}"></dd>
@@ -170,7 +170,7 @@
           </dl>
         </div>
         <p class="alert alert-cancel hide" role="alert">
-          <i class="icon-cross"></i> {% trans "An error has occurred. Please contact us." %}</span>
+          <i class="icon-cross"></i> {% translate "An error has occurred. Please contact us." %}</span>
         </p>
       </td>
     </tr>
@@ -180,8 +180,6 @@
 
 </table>
 {% endblock content %}
-
-
 
 {% block page_footer %}
 <hr />
@@ -200,17 +198,17 @@
     </label>
   </div>
   {% endif %}
-  <small ><i class="icon-warning"></i>{% trans "Confirmation is definitive. You will not be able to change your registrations again." %}</small>
+  <small ><i class="icon-warning"></i>{% translate "Confirmation is definitive. You will not be able to change your registrations again." %}</small>
   </div>
 
 <nav >
   <ul class="pager">
     <li class="previous">
-      <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span> {% trans "Previous"%}</a>
+      <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span> {% translate "Previous" %}</a>
     </li>
     <li class="next">
       <button type="submit" class="btn btn-primary btn-large btn-next pull-right">
-      {% if NO_PAYMENT %}{% trans "Confirm" %}{% else %}{% trans "Confirm and proceed to checkout" %}{% endif %}
+      {% if NO_PAYMENT %}{% translate "Confirm" %}{% else %}{% translate "Confirm and proceed to checkout" %}{% endif %}
       </button>
     </li>
   </ul>

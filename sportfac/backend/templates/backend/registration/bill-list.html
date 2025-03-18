@@ -1,10 +1,10 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags switzerland static crispy_forms_tags %}
+{% load crispy_forms_tags i18n sekizai_tags static switzerland %}
 
 
-{% block title %}{% trans "List bills" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "List bills" %}{% endblock %}
+{% block title %}{% translate "List bills" %} - {{ block.super }}{% endblock %}
 
+{% block page_title %}{% translate "List bills" %}{% endblock %}
 
 {% block content %}
   {% addtoblock "css" %}
@@ -18,26 +18,26 @@
     <!-- Filter Panel -->
     <div class="filter-panel row">
       <div class="col-md-4">
-        <label for="reportrange">{% trans "Date Range" %}</label>
+        <label for="reportrange">{% translate "Date Range" %}</label>
         <div id="reportrange" class="form-control">
           <i class="icon-calendar"></i>&nbsp;
           <span></span> <i class="fa fa-caret-down"></i>
         </div>
       </div>
       <div class="col-md-4">
-        <label for="statusFilter">{% trans "Payment status" %}</label>
+        <label for="statusFilter">{% translate "Payment status" %}</label>
         <select id="statusFilter" class="form-control">
-          <option value="all">{% trans "All" %}</option>
-          <option value="paid">{% trans "Paid" %}</option>
-          <option value="waiting">{% trans "Open" %}</option>
+          <option value="all">{% translate "All" %}</option>
+          <option value="paid">{% translate "Paid" %}</option>
+          <option value="waiting">{% translate "Open" %}</option>
         </select>
       </div>
       <div class="col-md-4">
-        <label for="amountFilter">{% trans "Amount" %}</label>
+        <label for="amountFilter">{% translate "Amount" %}</label>
         <select id="amountFilter" class="form-control">
-          <option value="all">{% trans "All" %}</option>
-          <option value="positive">{% trans "Amounts > 0" %}</option>
-          <option value="zero">{% trans "Amounts = 0" %}</option>
+          <option value="all">{% translate "All" %}</option>
+          <option value="positive">{% translate "Amounts > 0" %}</option>
+          <option value="zero">{% translate "Amounts = 0" %}</option>
         </select>
       </div>
     </div>
@@ -46,12 +46,12 @@
   <table class="table">
     <thead>
     <tr>
-      <th class="text-nowrap">{% trans "Billing identifier" %}</th>
-      <th class="text-nowrap">{% trans "Date" %}</th>
-      <th class="text-nowrap">{% trans "User" %}</th>
-      <th class="text-nowrap">{% trans "Total" %}</th>
-      <th class="text-nowrap">{% trans "Paid" %}</th>
-      <th class="text-nowrap">{% trans "Action" %}</th>
+      <th class="text-nowrap">{% translate "Billing identifier" %}</th>
+      <th class="text-nowrap">{% translate "Date" %}</th>
+      <th class="text-nowrap">{% translate "User" %}</th>
+      <th class="text-nowrap">{% translate "Total" %}</th>
+      <th class="text-nowrap">{% translate "Paid" %}</th>
+      <th class="text-nowrap">{% translate "Action" %}</th>
     </tr>
     </thead>
     {% for bill in bill_list %}
@@ -62,7 +62,7 @@
             href="{{ family.get_backend_url }}">{{ bill.family.full_name }}</a></td>
         <td data-order="{{ bill.total }}" data-amount="{{ bill.total }}">{{ bill.total|money }}</td>
         <td data-order="{{ bill.is_ok }}"
-            data-search="{% if bill.is_ok %}{% trans 'paid' %}{% endif %} {{ bill.get_payment_method_display }}"
+            data-search="{% if bill.is_ok %}{% translate 'paid' %}{% endif %} {{ bill.get_payment_method_display }}"
             data-status="{{ bill.status }}"
         >
           {% if bill.is_ok %}
@@ -78,9 +78,9 @@
         </td>
         <td>
           <ul class="list-unstyled">
-            <li class="text-nowrap"><a href="{{ bill.get_backend_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Review bill" %}
+            <li class="text-nowrap"><a href="{{ bill.get_backend_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% translate "Review bill" %}
             </a></li>
-            <li class="text-nowrap"><a href="{{ bill.pay_url }}" class="btn btn-sm"><i class="icon-credit-card-1"></i>&nbsp;{% trans "Update payment information" %}
+            <li class="text-nowrap"><a href="{{ bill.pay_url }}" class="btn btn-sm"><i class="icon-credit-card-1"></i>&nbsp;{% translate "Update payment information" %}
             </a></li>
           </ul>
         </td>
@@ -104,8 +104,8 @@
           months: 'janvier_février_mars_avril_mai_juin_juillet_août_septembre_octobre_novembre_décembre'.split('_'),
         });
         moment.locale('fr');
-        const start = moment("{{ start | date:'c' }}");
-        const end = moment("{{ end | date:'c' }}");
+        const start = moment("{{ start|date:'c' }}");
+        const end = moment("{{ end|date:'c' }}");
 
         $('#reportrange').daterangepicker({
           autoUpdateInput: false,
@@ -116,38 +116,38 @@
             "format": "DD.MM.YYYY",
             "firstDay": 1,
             "daysOfWeek": [
-              "{% trans "Sun" %}",
-              "{% trans "Mon" %}",
-              "{% trans "Tue" %}",
-              "{% trans "Wed" %}",
-              "{% trans "Thu" %}",
-              "{% trans "Fri" %}",
-              "{% trans "Sat" %}"],
+              "{% translate "Sun" %}",
+              "{% translate "Mon" %}",
+              "{% translate "Tue" %}",
+              "{% translate "Wed" %}",
+              "{% translate "Thu" %}",
+              "{% translate "Fri" %}",
+              "{% translate "Sat" %}"],
             "monthNames": [
-              "{% trans "January" %}",
-              "{% trans "February" %}",
-              "{% trans "March" %}",
-              "{% trans "April" %}",
-              "{% trans "May" %}",
-              "{% trans "June" %}",
-              "{% trans "July" %}",
-              "{% trans "August" %}",
-              "{% trans "September" %}",
-              "{% trans "October" %}",
-              "{% trans "November" %}",
-              "{% trans "December" %}"
+              "{% translate "January" %}",
+              "{% translate "February" %}",
+              "{% translate "March" %}",
+              "{% translate "April" %}",
+              "{% translate "May" %}",
+              "{% translate "June" %}",
+              "{% translate "July" %}",
+              "{% translate "August" %}",
+              "{% translate "September" %}",
+              "{% translate "October" %}",
+              "{% translate "November" %}",
+              "{% translate "December" %}"
             ],
-            "applyLabel": "{% trans "Apply" %}",
-            "cancelLabel": "{% trans "Cancel" %}",
-            "customRangeLabel": "{% trans "Custom range" %}",
+            "applyLabel": "{% translate "Apply" %}",
+            "cancelLabel": "{% translate "Cancel" %}",
+            "customRangeLabel": "{% translate "Custom range" %}",
           },
           ranges: {
-            '{% trans "Today" %}': [moment(), moment()],
-            '{% trans "Yesterday" %}': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-            '{% trans "Last 7 days" %}': [moment().subtract(6, 'days'), moment()],
-            '{% trans "Last 30 days" %}': [moment().subtract(29, 'days'), moment()],
-            '{% trans "This month" %}': [moment().startOf('month'), moment().endOf('month')],
-            '{% trans "Last month" %}': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            '{% translate "Today" %}': [moment(), moment()],
+            '{% translate "Yesterday" %}': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            '{% translate "Last 7 days" %}': [moment().subtract(6, 'days'), moment()],
+            '{% translate "Last 30 days" %}': [moment().subtract(29, 'days'), moment()],
+            '{% translate "This month" %}': [moment().startOf('month'), moment().endOf('month')],
+            '{% translate "Last month" %}': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
           }
         }, function(start, end, label) {
           $('#reportrange span').html(start.format('DD.MM.YYYY') + ' - ' + end.format('DD.MM.YYYY'));
@@ -166,7 +166,7 @@
             {'bSortable': false, 'bSearchable': false, 'aTargets': [5]}
           ],
           "order": [[1, "desc"]],
-          "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "{% trans 'All bills' %}"]],
+          "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "{% translate 'All bills' %}"]],
           pageLength: 50,
         });
 

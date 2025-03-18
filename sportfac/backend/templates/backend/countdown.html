@@ -86,19 +86,19 @@ initializeClock('clockdiv', deadline);
 <div id="clockdiv">
    <div {% if remaining_days == 0 %}class="hidden"{% endif %}>
     <span class="days"></span>
-    <small>{% trans "Days" %}</small>
+    <small>{% translate "Days" %}</small>
   </div>
   <div>
     <span class="hours"></span>
-    <small>{% trans "Hours" %}</small>
+    <small>{% translate "Hours" %}</small>
   </div>
   <div>
     <span class="minutes"></span>
-    <small>{% trans "Minutes" %}</small>
+    <small>{% translate "Minutes" %}</small>
   </div>
   <div>
     <span class="seconds"></span>
-    <small>{% trans "Seconds" %}</small>
+    <small>{% translate "Seconds" %}</small>
   </div>
 </div>
 {% endif %}

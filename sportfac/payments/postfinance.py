@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django.urls import reverse
 
@@ -16,21 +18,21 @@ CURR_CHF = "CHF"
 DEFAULT_TIMEOUT = 5
 DEFAULT_LANGUAGE = "fr"
 
+logger = logging.getLogger(__name__)
+
 
 def invoice_to_transaction(request, invoice):
     lines = []
-    for registration in invoice.registrations.all():
-        if registration.price == 0:
-            continue
-        lines.append(
-            LineItem(
-                name=f"{ registration.course.activity.name } - {registration.child.full_name}",
-                unique_id=str(registration.id),
-                quantity=1,
-                amount_including_tax=registration.price,
-                type=LineItemType.PRODUCT,
-            )
+    lines.append(
+        LineItem(
+            name="Inscriptions",
+            unique_id=str(invoice.id),
+            quantity=1,
+            amount_including_tax=invoice.total,
+            type=LineItemType.PRODUCT,
         )
+    )
+
     billing_address = AddressCreate(
         city=invoice.family.city,
         country=invoice.family.country_iso_3166,
@@ -43,9 +45,18 @@ def invoice_to_transaction(request, invoice):
     if request.get_full_path().startswith(reverse("backend:bill-list")):
         success_url = "https://{}{}".format(request.get_host(), reverse("backend:bill-list"))
         fail_url = f"https://{request.get_host()}{invoice.get_pay_url()}"
-    elif request.get_full_path().startswith(reverse("wizard_billing")):
-        success_url = "https://{}{}".format(request.get_host(), reverse("wizard_payment_success"))
-        fail_url = "https://{}{}".format(request.get_host(), reverse("wizard_payment_failure"))
+    elif request.get_full_path().startswith(reverse("wizard:entry_point")):
+        success_url = "https://{}{}".format(
+            request.get_host(), reverse("wizard:step", kwargs={"step_slug": "payment-success"})
+        )
+        fail_url = "https://{}{}".format(
+            request.get_host(), reverse("wizard:step", kwargs={"step_slug": "payment-failure"})
+        )
+    elif request.get_full_path().startswith(reverse("wizard:step", kwargs={"step_slug": "payment"})):
+        success_url = "https://{}{}".format(
+            request.get_host(), reverse("registrations:registrations_registered_activities")
+        )
+        fail_url = "https://{}{}".format(request.get_host(), reverse("wizard:step", kwargs={"step_slug": "payment"}))
     else:
         success_url = "https://{}{}".format(request.get_host(), reverse("registrations:registrations_billing"))
         fail_url = f"https://{request.get_host()}{request.get_full_path()}"
@@ -73,6 +84,7 @@ def get_transaction(request, invoice):
     # transaction_page_service = TransactionPaymentPageServiceApi(config)
     transaction_lightbox_service = TransactionLightboxServiceApi(config)
     transaction = invoice_to_transaction(request, invoice)
+    logger.info("Transaction: %s", transaction)
     transaction_create = transaction_service.create(space_id=settings.POSTFINANCE_SPACE_ID, transaction=transaction)
     # payment_page_url = transaction_page_service.payment_page_url(
     #    space_id=settings.POSTFINANCE_SPACE_ID, id=transaction_create.id

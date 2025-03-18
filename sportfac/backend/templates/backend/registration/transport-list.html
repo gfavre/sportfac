@@ -1,12 +1,13 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags switzerland static %}
+{% load i18n sekizai_tags static switzerland %}
 
 
-{% block title %}{% trans "List transports" %} - {{ block.super }}{% endblock %}
-{% block page_title %}{% trans "List transports" %}{% endblock %}
+{% block title %}{% translate "List transports" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "List transports" %}{% endblock %}
 
 {% block content %}
-{% addtoblock  "js" %}
+{% addtoblock "js" %}
 <script src="{% static 'js/vendor/datatables/jquery.dataTables.min.js' %}"></script>
 <script src="{% static 'js/vendor/datatables/dataTables.bootstrap.js' %}"></script>
 <script>
@@ -20,22 +21,22 @@ $(function () {
       "aoColumnDefs": [
           { 'bSortable': false, 'bSearchable': false, 'aTargets': [ -1 ] }
       ],
-      "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "{% trans 'All transports' %}"] ],
+      "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "{% translate 'All transports' %}"] ],
       pageLength: 50,
 
   });
 });
 </script>
 {% endaddtoblock %}
-<a href="{% url 'backend:transport-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% trans "New transport" %}</a>
+<a href="{% url 'backend:transport-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% translate "New transport" %}</a>
 <hr>
 
 <table class="table">
   <thead>
     <tr>
-      <th class="text-nowrap">{% trans "Name" %}</th>
-      <th class="text-nowrap">{% trans "Registrations" %}</th>
-      <th class="text-nowrap">{% trans "Actions" %}</th>
+      <th class="text-nowrap">{% translate "Name" %}</th>
+      <th class="text-nowrap">{% translate "Registrations" %}</th>
+      <th class="text-nowrap">{% translate "Actions" %}</th>
     </tr>
   </thead>
   {% for transport in transport_list %}
@@ -44,9 +45,9 @@ $(function () {
       <td>{{ transport.participants.count }}</td>
       <td>
         <ul class="list-unstyled">
-          <li class="text-nowrap"><a href="{{ transport.backend_url }}" class="btn btn-sm"><i class="icon-bus"></i> {% trans "Details" %}</a></li>
-          <li class="text-nowrap"><a href="{{ transport.update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% trans "Update transport" %}</a></li>
-          <li class="text-nowrap"><a href="{{ transport.delete_url }}" class="btn btn-sm"><i class="icon-trash"></i> {% trans "Delete transport" %}</a></li>
+          <li class="text-nowrap"><a href="{{ transport.backend_url }}" class="btn btn-sm"><i class="icon-bus"></i> {% translate "Details" %}</a></li>
+          <li class="text-nowrap"><a href="{{ transport.update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% translate "Update transport" %}</a></li>
+          <li class="text-nowrap"><a href="{{ transport.delete_url }}" class="btn btn-sm"><i class="icon-trash"></i> {% translate "Delete transport" %}</a></li>
         </ul>
       </td>
     </tr>

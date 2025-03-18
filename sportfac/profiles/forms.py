@@ -6,17 +6,17 @@ from django.urls import reverse
 from django.utils.html import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from activities.models import Activity
-from backend.forms import ActivityMultipleWidget
 from bootstrap_datepicker_plus.widgets import DatePickerInput
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import HTML, Field, Fieldset, Layout, Submit
+from crispy_forms.layout import HTML, Fieldset, Layout, Submit
 
 # noinspection PyPackageRequirements
 from localflavor.generic.forms import IBANFormField
 from phonenumber_field.formfields import PhoneNumberField
 from phonenumber_field.widgets import RegionalPhoneNumberWidget
 
+from activities.models import Activity
+from backend.forms import ActivityMultipleWidget
 from .models import FamilyUser
 
 
@@ -198,7 +198,9 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
         if settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES:
             self.fields["private_phone"].required = True
             self.fields["private_phone"].label = _("Mobile phone")
-
+        if settings.KEPCHUP_EMERGENCY_NUMBER_ON_PARENT:
+            self.fields["private_phone"].required = True
+            self.fields["private_phone"].label = _("Emergency phone")
         self.helper.layout.append(
             Fieldset(
                 _("Contact informations"),
@@ -215,7 +217,66 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
         )
 
 
-class ManagerForm(UserForm):
+class InstructorForm(UserForm):
+    iban = IBANFormField(label=_("IBAN"), widget=forms.TextInput(attrs={"placeholder": "CH37..."}), required=False)
+    birth_date = forms.DateTimeField(
+        label=_("Birth date"),
+        widget=DatePickerInput(format="%d.%m.%Y"),
+        help_text=_("Format: 31.12.2012"),
+        required=False,
+    )
+
+    class Meta:
+        model = get_user_model()
+        fields = (
+            "email",
+            "first_name",
+            "last_name",
+            "address",
+            "zipcode",
+            "city",
+            "country",
+            "private_phone",
+            "private_phone2",
+            "private_phone3",
+            "birth_date",
+            "iban",
+            "bank_name",
+            "ahv",
+            "js_identifier",
+            "is_mep",
+            "is_teacher",
+            "external_identifier",
+            "gender",
+            "nationality",
+            "permit_type",
+        )
+        widgets = {
+            "ahv": forms.TextInput(attrs={"placeholder": "756.1234.5678.95"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user", None)
+        super().__init__(*args, **kwargs)
+        self.helper.layout.append(
+            Fieldset(
+                _("Instructor informations"),
+                settings.KEPCHUP_INSTRUCTORS_DISPLAY_EXTERNAL_ID and "external_identifier" or HTML(""),
+                "ahv",
+                "gender",
+                "birth_date",
+                "nationality",
+                "permit_type",
+                "iban",
+                "bank_name",
+                "js_identifier",
+                "is_mep",
+                "is_teacher",
+            )
+        )
+
+
+class ManagerForm(InstructorForm):
     managed_activities = forms.ModelMultipleChoiceField(
         label=_("Rights on activities"),
         queryset=Activity.objects.all(),
@@ -258,9 +319,8 @@ class ManagerForm(UserForm):
         return instance
 
     def __init__(self, *args, **kwargs):
-        user: FamilyUser = kwargs.pop("user")
         super().__init__(*args, **kwargs)
-        if not user.is_full_manager:
+        if not self.user.is_full_manager:
             return
         instance = kwargs["instance"]
         if instance:
@@ -274,64 +334,6 @@ class ManagerForm(UserForm):
                 HTML("<hr>"),
                 "is_restricted_manager",
                 "managed_activities",
-            )
-        )
-
-
-class InstructorForm(ManagerForm):
-    iban = IBANFormField(label=_("IBAN"), widget=forms.TextInput(attrs={"placeholder": "CH37..."}), required=False)
-    birth_date = forms.DateTimeField(
-        label=_("Birth date"),
-        widget=DatePickerInput(format="%d.%m.%Y"),
-        help_text=_("Format: 31.12.2012"),
-        required=False,
-    )
-
-    class Meta:
-        model = get_user_model()
-        fields = (
-            "email",
-            "first_name",
-            "last_name",
-            "address",
-            "zipcode",
-            "city",
-            "country",
-            "private_phone",
-            "private_phone2",
-            "private_phone3",
-            "birth_date",
-            "iban",
-            "bank_name",
-            "ahv",
-            "js_identifier",
-            "is_mep",
-            "is_teacher",
-            "external_identifier",
-            "gender",
-            "nationality",
-            "permit_type",
-        )
-        widgets = {
-            "ahv": forms.TextInput(attrs={"placeholder": "756.1234.5678.95"}),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper.layout.append(
-            Fieldset(
-                _("Instructor informations"),
-                settings.KEPCHUP_INSTRUCTORS_DISPLAY_EXTERNAL_ID and "external_identifier" or HTML(""),
-                "ahv",
-                "gender",
-                "birth_date",
-                "nationality",
-                "permit_type",
-                "iban",
-                "bank_name",
-                "js_identifier",
-                "is_mep",
-                "is_teacher",
             )
         )
 
@@ -375,7 +377,7 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
         required=True,
         widget=forms.TextInput(attrs={"placeholder": _("City")}),
     )
-    country = forms.ChoiceField(label=_("Country"), choices=FamilyUser.COUNTRY)
+    country = forms.ChoiceField(label=_("Country"), choices=FamilyUser.COUNTRY, required=True, initial="CH")
 
     private_phone = PhoneNumberField(
         label=_("Home phone"),
@@ -407,9 +409,14 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
         existing = get_user_model().objects.filter(email__iexact=self.cleaned_data["email"])
         if existing.exists():
             message = _("A user with that username already exists.")
+            if settings.KEPCHUP_USE_SSO:
+                login_url = settings.LOGIN_URL
+            else:
+                login_url = reverse("profiles:auth_login")
+
             message += (
                 ' <a href="%s" class="btn-link" style="margin-right:1em"><i class="icon-lock-open"></i>%s</a>'
-                % (reverse("profiles:auth_login"), _("Login"))
+                % (login_url, _("Login"))
             )
             message += ' <a href="#" class="new-mail btn-link"><i class="icon-cancel-circled"></i>%s</a>' % _(
                 "Use another email address"
@@ -444,6 +451,18 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
         self.helper.form_group_wrapper_class = "row"
         self.helper.label_class = "col-sm-2"
         self.helper.field_class = "col-sm-10"
+        self.fields["country"].initial = FamilyUser.COUNTRY.CH
+
+        if settings.KEPCHUP_REGISTRATION_HIDE_COUNTRY:
+            self.fields["country"].widget = forms.HiddenInput()
+
+        if settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES:
+            self.fields["private_phone"].required = True
+            self.fields["private_phone"].label = _("Mobile phone")
+        if settings.KEPCHUP_EMERGENCY_NUMBER_ON_PARENT:
+            self.fields["private_phone"].required = True
+            self.fields["private_phone"].label = _("Emergency phone")
+
         self.helper.layout = Layout(
             Fieldset(
                 _("Contact informations"),
@@ -452,12 +471,10 @@ class RegistrationForm(PhoneRequiredMixin, forms.Form):
                 "address",
                 "zipcode",
                 "city",
-                not settings.KEPCHUP_REGISTRATION_HIDE_COUNTRY and "country",
-                settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES
-                and Field("private_phone", label=_("Mobile phone"))
-                or Field("private_phone"),
-                not settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES and "private_phone2",
-                not settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES and "private_phone3",
+                "country",
+                "private_phone",
+                not settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES and "private_phone2" or HTML(""),
+                not settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES and "private_phone3" or HTML(""),
             ),
             Fieldset(
                 _("Login informations"),
