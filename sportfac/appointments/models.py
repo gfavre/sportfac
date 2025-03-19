@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -5,7 +7,6 @@ from django.utils.translation import gettext_lazy as _
 
 from model_utils.models import TimeStampedModel
 from phonenumber_field.modelfields import PhoneNumberField
-from pydantic.json import Decimal
 
 
 class AppointmentType(TimeStampedModel):
