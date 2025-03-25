@@ -13,7 +13,7 @@ STATICFILES_DIRS = (
 )
 
 MASTER_DB = "master_users"
-DATABASES[MASTER_DB] = env.db("MASTER_DATABASE_URL", default="postgres:///kepchup_users")  # noqa: F405
+DATABASES[MASTER_DB] = env.db("MASTER_DATABASE_URL", default="postgres:///sportfac_montreux_users")  # noqa: F405
 OTHER_DB = "other"
 DATABASES[OTHER_DB] = env.db("OTHER_DATABASE_URL", default="postgres:///kepchup_montreux_passvac")  # noqa: F405
 
@@ -72,6 +72,7 @@ KEPCHUP_ENABLE_PAYROLLS = True
 KEPCHUP_ENABLE_WAITING_LISTS = False
 KEPCHUP_REGISTRATION_HIDE_COUNTRY = True
 KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES = True
+KEPCHUP_REGISTER_ACCOUNTS_AT_ANY_TIME = True
 
 # Registration steps
 #########################################

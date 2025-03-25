@@ -20,7 +20,7 @@ STATICFILES_DIRS = (
 # EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
 
 MASTER_DB = "master_users"
-DATABASES[MASTER_DB] = env.db("MASTER_DATABASE_URL", default="postgres:///kepchup_users")  # noqa: F405
+DATABASES[MASTER_DB] = env.db("MASTER_DATABASE_URL", default="postgres:///sportfac_montreux_users")  # noqa: F405
 DATABASES["default"]["ENGINE"] = "django_tenants.postgresql_backend"  # noqa: F405
 DATABASE_ROUTERS = [
     "django_tenants.routers.TenantSyncRouter",

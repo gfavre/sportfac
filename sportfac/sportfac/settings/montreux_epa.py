@@ -13,7 +13,7 @@ STATICFILES_DIRS = (
 )
 
 MASTER_DB = "master_users"
-DATABASES[MASTER_DB] = env.db("MASTER_DATABASE_URL", default="postgres:///kepchup_users")  # noqa: F405
+DATABASES[MASTER_DB] = env.db("MASTER_DATABASE_URL", default="postgres:///sportfac_montreux_users")  # noqa: F405
 OTHER_DB = "other"
 DATABASES[OTHER_DB] = env.db("OTHER_DATABASE_URL", default="postgres:///kepchup_montreux_epa")  # noqa: F405
 
@@ -36,7 +36,7 @@ KEPCHUP_SEND_COPY_CONTACT_MAIL_TO_ADMIN = True
 KEPCHUP_NO_PAYMENT = False
 KEPCHUP_PAYMENT_METHOD = "postfinance"
 KEPCHUP_ALTERNATIVE_PAYMENT_METHODS_FROM_BACKEND = ["external"]
-
+KEPCHUP_REGISTER_ACCOUNTS_AT_ANY_TIME = True
 KEPCHUP_NO_TERMS = False
 KEPCHUP_CHILD_SCHOOL = True
 KEPCHUP_FICHE_SALAIRE_MONTREUX = True
