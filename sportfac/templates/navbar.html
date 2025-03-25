@@ -144,11 +144,19 @@ jQuery(function($){
             </ul>
           </li>
         {% else %}
-            <li>
+         {% if USE_SSO %}
+           <li>
+            <a href="{% url 'simple-sso-login' %}?next={% url 'profiles:authenticated-home' %}">
+              <i class="icon-user icon-white"></i> {% translate "login" %}
+            </a>
+           </li>
+           {% else %}
+           <li>
               <a href="{% url 'profiles:auth_login' %}?next={% url 'profiles:authenticated-home' %}">
                 <i class="icon-user icon-white"></i> {% translate "login" %}
               </a>
             </li>
+          {% endif %}
         {% endif %}
       </ul>
     </nav>
