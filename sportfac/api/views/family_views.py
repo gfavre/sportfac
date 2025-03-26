@@ -1,14 +1,15 @@
+from django.conf import settings
 from django.db import IntegrityError
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
-from registrations.models import Child, ChildActivityLevel
 from rest_framework import filters, generics, mixins, status, viewsets
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.throttling import UserRateThrottle
 
+from registrations.models import Child, ChildActivityLevel
 from ..permissions import FamilyPermission, InstructorPermission, IsAuthenticated, ManagerPermission
 from ..serializers import ChildActivityLevelSerializer, ChildrenSerializer, SimpleChildrenSerializer
 
@@ -95,11 +96,33 @@ class ChildrenViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["get"], throttle_classes=[SearchChildThrottle])
     def fetch_ext_id(self, request, *args, **kwargs):
         queryset = Child.objects.none()
-        ext_id = self.request.query_params.get("ext", None)
-        if ext_id is not None:
+        params = {}
+        if settings.KEPCHUP_LOOKUP_LAGAPEO:
+            ext_id = self.request.query_params.get("ext", None)
+            if ext_id is not None:
+                try:
+                    params["id_lagapeo"] = int(ext_id)
+                except ValueError:
+                    pass
+        elif settings.KEPCHUP_LOOKUP_AVS:
+            ext_id = self.request.query_params.get("avs", None)
+            if ext_id is not None:
+                params["avs"] = ext_id
+
+        if params:
+            params["is_blacklisted"] = False
+            queryset = Child.objects.filter(**params)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=["get"], throttle_classes=[SearchChildThrottle])
+    def fetch_avs(self, request, *args, **kwargs):
+        queryset = Child.objects.none()
+        avs = self.request.query_params.get("avs", None)
+        if avs is not None:
             try:
-                ext_id = int(ext_id)
-                queryset = Child.objects.filter(id_lagapeo=ext_id, is_blacklisted=False)
+                queryset = Child.objects.filter(avs=avs, is_blacklisted=False)
             except ValueError:
                 queryset = queryset.none()
 
