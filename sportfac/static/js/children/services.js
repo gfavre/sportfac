@@ -95,8 +95,17 @@ angular.module('sportfacChildren.services', [])
             return new Child(response.data);
           });
         },
-        lookup: function(url, extId, errors){
+        lookupLagapeo: function(url, extId, errors){
             return $http.get(url + '?ext=' + extId).then(function(response){
+                if (response.data.length === 1){
+                    errors.notfound = false;
+                    return new Child(response.data[0]);
+                }
+                errors.notfound = true;
+            });
+        },
+        lookupAVS: function(url, extId, errors){
+            return $http.get(url + '?avs=' + extId).then(function(response){
                 if (response.data.length === 1){
                     errors.notfound = false;
                     return new Child(response.data[0]);

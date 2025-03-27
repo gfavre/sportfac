@@ -4,31 +4,43 @@
 <h3 ng-show="userChildren.length > 0">Ajout d'un autre enfant</h3>
 <br/>
 <form name="childform" class="form-horizontal" role="form">
-<p ng-repeat="(name, errs) in errors" class="alert alert-danger" ng-show="errors.length > 0">
+  <p ng-repeat="(name, errs) in errors" class="alert alert-danger" ng-show="errors.length > 0">
     {[{ errs.join(', ') }]}
   </p>
 
   <div class="form-group" ng-class="{'has-warning': errors.notfound }"
        ng-show="{[{ useExternalIdentifiers }]}">
-    <label class="col-sm-4 control-label" for="ext_id">
-      {% if ID_LAGAPEO_ALTERNATIVE_LABEL %}
-        {{ ID_LAGAPEO_ALTERNATIVE_LABEL }}
-      {% else %}
-        Identifiant (n° SSF)
-      {% endif %}<span class="required" ng-show="{[{ useExternalIdentifiers }]}"> *</span>
-    </label>
-    <div class="col-sm-8">
-      <input id="ext_id" ng-model="detailedChild.ext_id"
-             type="number" class="form-control"
-             max="100000000"
-             ng-blur="lookupChild()" ng-required="{[{ useExternalIdentifiers }]}"/>
-      {% if not ID_LAGAPEO_ALTERNATIVE_LABEL %}
-      <p class="help-block">
-        Voir sur la <a href="{% static 'img/noSSF.jpg' %}" class="image-popover" target="_blank">carte d'écolier</a>
-      </p>
-      {% endif %}
-      <span class="help-block" ng-show="errors.notfound">L'identifiant est inconnu / invalide.</span>
-      <span ng-show="childform.ext_id.$error.required">Ce champ est obligatoire</span>
+    <div ng-show="{[{ useLagapeo }]}">
+      <label class="col-sm-4 control-label" for="ext_id">
+        {% if ID_LAGAPEO_ALTERNATIVE_LABEL %}
+          {{ ID_LAGAPEO_ALTERNATIVE_LABEL }}
+        {% else %}
+          Identifiant (n° SSF)
+        {% endif %}<span class="required"> *</span>
+      </label>
+      <div class="col-sm-8">
+        <input id="ext_id" ng-model="detailedChild.ext_id"
+               type="number" class="form-control"
+               max="100000000"
+               ng-blur="lookupChild('lagapeo')" ng-required="{[{ useExternalIdentifiers }]}"/>
+        {% if not ID_LAGAPEO_ALTERNATIVE_LABEL %}
+          <p class="help-block">
+            Voir sur la <a href="{% static 'img/noSSF.jpg' %}" class="image-popover" target="_blank">carte d'écolier</a>
+          </p>
+        {% endif %}
+        <span class="help-block" ng-show="errors.notfound">L'identifiant est inconnu / invalide.</span>
+        <span ng-show="childform.ext_id.$error.required">Ce champ est obligatoire</span>
+      </div>
+    </div>
+    <div ng-show="{[{ useAVS }]}">
+      <label class="col-sm-4 control-label" for="ext_id">
+        N° AVS <span class="required"> *</span>
+      </label>
+      <div class="col-sm-8">
+        <input type="text" ng-model="detailedChild.avs" id="inputAVS" class="form-control"  ng-blur="lookupChild('avs')"/>
+        <span class="help-block" ng-show="errors.notfound">L'identifiant est inconnu / invalide.</span>
+        <span ng-show="childform.avs.$error.required">Ce champ est obligatoire</span>
+      </div>
     </div>
     <hr/>
   </div>
@@ -86,7 +98,7 @@
     </label>
     <div class="col-sm-5">
       <input type="text" ng-model="detailedChild.birth_date" id="inputBirthDate" class="form-control"
-          {% if "birth_date" in CHILDREN_MANDATORY_FIELDS %}required{% endif %}
+             {% if "birth_date" in CHILDREN_MANDATORY_FIELDS %}required{% endif %}
           {% if BIRTH_DATE_EDITABLE %}
              placeholder="31.7.2008" data-language="fr" data-trigger="focus"
              data-start-week="1" bs-datepicker
@@ -99,7 +111,7 @@
     <p class="col-sm-8 col-sm-offset-4" ng-show="childform.inputBirthDate.$error.required">Ce champ est obligatoire</p>
   </div>
 
-  <div class="form-group{% if AVS_HIDDEN %} hidden{% endif %}">
+  <div class="form-group{% if AVS_HIDDEN %} hidden{% endif %}" ng-show="{[{ !(useExternalIdentifiers && useAVS) }]}">
     <label class="col-sm-4 control-label" for="inputAVS">
       N° AVS{% if "avs" in CHILDREN_MANDATORY_FIELDS %}<span class="required"> *</span>{% endif %}
     </label>
@@ -164,39 +176,41 @@
   {% endif %}
   <div ng-show="prefillTeachers">
     <div class="form-group {% if TEACHER_HIDDEN %} hidden{% endif %}">
-      <label class="col-sm-4 control-label" for="inputTeacher">Enseignant principal<span class="required"> *</span></label>
+      <label class="col-sm-4 control-label" for="inputTeacher">Enseignant principal<span
+          class="required"> *</span></label>
       <div class="col-sm-5">
         <select id="inputTeacher" class="form-control" ng-model="detailedChild.teacher"
                 ng-options="teacher.last_name + ' ' + teacher.first_name for teacher in {% if USE_BUILDINGS %}availableTeachers{% else %}teachers{% endif %}"
                 ng-change="updateSchoolYear()" ng-required="prefillTeachers"
-                 {% if not TEACHER_EDITABLE %}ng-disabled="detailedChild.teacher"{% endif %}
+                {% if not TEACHER_EDITABLE %}ng-disabled="detailedChild.teacher"{% endif %}
         ></select>
       </div>
     </div>
 
-    <div class="form-group {% if SCHOOL_YEAR_HIDDEN %} hidden{% endif %}" ng-switch on="detailedChild.teacher.years.length">
+    <div class="form-group {% if SCHOOL_YEAR_HIDDEN %} hidden{% endif %}" ng-switch
+         on="detailedChild.teacher.years.length">
       <label class="col-sm-4 control-label" for="inputYear" ng-show="detailedChild.teacher.years.length > 1">
         Année{% if SCHOOL_YEAR_MANDATORY %}<span class="required"> *</span>{% endif %}</label>
       {% if SCHOOL_YEAR_EDITABLE %}
-      <div class="col-sm-8" ng-switch-when="undefined">
-        <input type="hidden" ng-model="detailedChild.school_year" />
-      </div>
-      <div class="col-sm-8" ng-switch-when="1">
-        <input type="hidden" ng-model="detailedChild.school_year" />
-      </div>
-      <div class="col-sm-5" ng-switch-default>
-        <select id="inputYear" class="form-control" ng-model="detailedChild.school_year"
-                ng-disabled="detailedChild.teacher.years.length == 1"
-                ng-options="year + '' for year in detailedChild.teacher.years"
-                {% if SCHOOL_YEAR_MANDATORY %}required{% endif %}></select>
+        <div class="col-sm-8" ng-switch-when="undefined">
+          <input type="hidden" ng-model="detailedChild.school_year"/>
+        </div>
+        <div class="col-sm-8" ng-switch-when="1">
+          <input type="hidden" ng-model="detailedChild.school_year"/>
+        </div>
+        <div class="col-sm-5" ng-switch-default>
+          <select id="inputYear" class="form-control" ng-model="detailedChild.school_year"
+                  ng-disabled="detailedChild.teacher.years.length == 1"
+                  ng-options="year + '' for year in detailedChild.teacher.years"
+                  {% if SCHOOL_YEAR_MANDATORY %}required{% endif %}></select>
 
-        <span ng-show="childform.inputYear.$error.required">Ce champ est obligatoire</span>
-      </div>
-      <div class="clearfix"></div>
+          <span ng-show="childform.inputYear.$error.required">Ce champ est obligatoire</span>
+        </div>
+        <div class="clearfix"></div>
       {% else %}
-      <div class="col-sm-8" ng-show="detailedChild.teacher.years.length > 1">
-        <input type="text" class="form-control" ng-model="detailedChild.school_year" readonly />
-      </div>
+        <div class="col-sm-8" ng-show="detailedChild.teacher.years.length > 1">
+          <input type="text" class="form-control" ng-model="detailedChild.school_year" readonly/>
+        </div>
       {% endif %}
     </div>
   </div>
@@ -210,7 +224,9 @@
                 {% if "school_year" in CHILDREN_MANDATORY_FIELDS %}required{% endif %}
                 {% if not SCHOOL_YEAR_EDITABLE %}ng-disabled="detailedChild.school_year"{% endif %}
         >
-          <option ng-repeat="year in years" value="{[{ year.year }]}" ng-selected="year.year === detailedChild.school_year">{[{ year.label }]}</option>
+          <option ng-repeat="year in years" value="{[{ year.year }]}"
+                  ng-selected="year.year === detailedChild.school_year">{[{ year.label }]}
+          </option>
         </select>
         <span ng-show="childform.name.$error.required">Ce champ est obligatoire</span>
       </div>
@@ -245,21 +261,22 @@
   {% endif %}
 
   {% if not EMERGENCY_NUMBER_ON_PARENT %}
-  <div class="form-group {% if EMERGENCY_NUMBER_HIDDEN %} hidden{% endif %}"
-       ng-class="{ 'has-error': errors.hasOwnProperty('emergency_number') }">
-    <label class="col-sm-4 control-label" for="emergency_number">
-      Numéro d'urgence{% if "emergency_number" in CHILDREN_MANDATORY_FIELDS %}<span class="required"> *</span>{% endif %}
-    </label>
-    <div class="col-sm-8">
-      <input id="emergency_number" ng-model="detailedChild.emergency_number" type="text" class="form-control"
-             {% if not EMERGENCY_NUMBER_EDITABLE %}readonly{% endif %}
-             {% if "emergency_number" in CHILDREN_MANDATORY_FIELDS %}required{% endif %}
-      />
-      <span ng-show="childform.emergency_number.$error.required">Ce champ est obligatoire</span>
-      <span ng-show="errors.emergency_number" class="help-block">{[{ errors.emergency_number[0] }]}</span>
+    <div class="form-group {% if EMERGENCY_NUMBER_HIDDEN %} hidden{% endif %}"
+         ng-class="{ 'has-error': errors.hasOwnProperty('emergency_number') }">
+      <label class="col-sm-4 control-label" for="emergency_number">
+        Numéro d'urgence{% if "emergency_number" in CHILDREN_MANDATORY_FIELDS %}
+        <span class="required"> *</span>{% endif %}
+      </label>
+      <div class="col-sm-8">
+        <input id="emergency_number" ng-model="detailedChild.emergency_number" type="text" class="form-control"
+               {% if not EMERGENCY_NUMBER_EDITABLE %}readonly{% endif %}
+               {% if "emergency_number" in CHILDREN_MANDATORY_FIELDS %}required{% endif %}
+        />
+        <span ng-show="childform.emergency_number.$error.required">Ce champ est obligatoire</span>
+        <span ng-show="errors.emergency_number" class="help-block">{[{ errors.emergency_number[0] }]}</span>
+      </div>
     </div>
-  </div>
-{% endif %}
+  {% endif %}
 
   <div>
     <div class="col-sm-4 col-xs-4">
