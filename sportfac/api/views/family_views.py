@@ -116,32 +116,28 @@ class ChildrenViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    @action(detail=False, methods=["get"], throttle_classes=[SearchChildThrottle])
-    def fetch_avs(self, request, *args, **kwargs):
-        queryset = Child.objects.none()
-        avs = self.request.query_params.get("avs", None)
-        if avs is not None:
-            try:
-                queryset = Child.objects.filter(avs=avs, is_blacklisted=False)
-            except ValueError:
-                queryset = queryset.none()
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-        ext_id = self.request.query_params.get("ext", None)
-        if ext_id is not None:
-            try:
-                ext_id = int(ext_id)
-                queryset = queryset.filter(id_lagapeo=ext_id, is_blacklisted=False)
-            except ValueError:
-                queryset = queryset.none()
+        params = {}
+        if settings.KEPCHUP_LOOKUP_LAGAPEO:
+            ext_id = self.request.query_params.get("ext", None)
+            if ext_id is not None:
+                try:
+                    params["id_lagapeo"] = int(ext_id)
+                except ValueError:
+                    pass
+        elif settings.KEPCHUP_LOOKUP_AVS:
+            ext_id = self.request.query_params.get("avs", None)
+            if ext_id is not None:
+                params["avs"] = ext_id
+
+        if params:
+            params["is_blacklisted"] = False
+            queryset = Child.objects.filter(**params)
         else:
             queryset = queryset.filter(family=request.user)
-        queryset = self.filter_queryset(queryset)
 
+        queryset = self.filter_queryset(queryset)
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)

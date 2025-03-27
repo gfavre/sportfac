@@ -7,6 +7,10 @@ function($scope, $attrs, $routeParams, $http, $window, $document, ChildrenServic
   $scope.prefillTeachers = $attrs.prefill === 'true';
   if (!$attrs.external) throw new Error("No external option set");
   $scope.useExternalIdentifiers = $attrs.external === 'true';
+  if (!$attrs.avs) throw new Error("No avs option set");
+  $scope.useAVS = $attrs.avs === 'true';
+    if (!$attrs.lagapeo) throw new Error("No lagapeo option set");
+  $scope.useLagapeo = $attrs.lagapeo === 'true';
   if (!$attrs.buildings) throw new Error("No building option set");
   $scope.useBuildings = $attrs.buildings === 'true';
   if (!$attrs.schools){
@@ -187,23 +191,27 @@ function($scope, $location, ChildrenService) {
     $scope.detailedChild.school_year = $scope.detailedChild.teacher.years[0];
   };
 
-  $scope.lookupChild = function(){
-    ChildrenService.lookup($scope.urls.child, $scope.detailedChild.ext_id, $scope.errors).then(function(child){
+  $scope.lookupChild = (fieldName) => {
+    const lookupMap = {
+      lagapeo: () => ChildrenService.lookupLagapeo($scope.urls.child, $scope.detailedChild.ext_id, $scope.errors),
+      avs: () => ChildrenService.lookupAVS($scope.urls.child, $scope.detailedChild.avs, $scope.errors),
+      default: () => ChildrenService.lookupLagapeo($scope.urls.child, $scope.detailedChild.ext_id, $scope.errors)
+    };
+
+    const lookupFn = lookupMap[fieldName] || lookupMap.default;
+
+    lookupFn().then((child) => {
       if (child !== undefined) {
-        for (var i=0; i< $scope.teachers.length; i++){
-          var teacher = $scope.teachers[i];
-          if (teacher.id === child.teacher){
-            child.teacher = teacher;
-            break;
-          }
+        const matchingTeacher = $scope.teachers.find(t => t.id === child.teacher);
+        if (matchingTeacher) {
+          child.teacher = matchingTeacher;
         }
         $scope.detailedChild = child;
       } else {
         $scope.detailedChild.ext_id = '';
       }
-
     });
-  };
+};
 
   $scope.saveChild = function(){
     ChildrenService.save($scope.urls.child, $scope.detailedChild, $scope.errors).then(function(){
