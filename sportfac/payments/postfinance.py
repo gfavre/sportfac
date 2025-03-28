@@ -10,6 +10,7 @@ from postfinancecheckout.api import (  # TransactionPaymentPageServiceApi,
     TransactionVoidServiceApi,
 )
 from postfinancecheckout.models import AddressCreate, LineItem, LineItemType, TransactionCreate
+from postfinancecheckout.rest import ApiException
 
 from .models import PostfinanceTransaction
 
@@ -125,5 +126,9 @@ def void_transaction(transaction_id):
         request_timeout=DEFAULT_TIMEOUT,
     )
     transaction_service = TransactionVoidServiceApi(config)
-    transaction_void = transaction_service.void_offline(space_id=settings.POSTFINANCE_SPACE_ID, id=transaction_id)
+    try:
+        transaction_void = transaction_service.void_offline(space_id=settings.POSTFINANCE_SPACE_ID, id=transaction_id)
+    except ApiException as e:
+        logger.error("Exception when calling TransactionVoidServiceApi->void_offline: %s\n", e)
+        return "FAILED"
     return transaction_void.state.value

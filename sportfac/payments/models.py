@@ -144,7 +144,8 @@ class PostfinanceTransaction(TimeStampedModel, StatusModel):
         from .postfinance import void_transaction
 
         void_status = void_transaction(self.transaction_id)
-        if void_status == "SUCCESSFUL":
+        if void_status in ("SUCCESSFUL", "FAILED"):
+            # the failed status can happen if the transaction is already voided
             self.status = self.STATUS.VOIDED
             self.save(update_fields=("status",))
             self.update_invoice()
