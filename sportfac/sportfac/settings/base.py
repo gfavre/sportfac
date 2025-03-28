@@ -624,6 +624,10 @@ KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = False
 KEPCHUP_USE_BUILDINGS = False
 # Display ID Lagapeo
 KEPCHUP_DISPLAY_LAGAPEO = False
+# Possibility to prefill by lagapeo id
+KEPCHUP_LOOKUP_LAGAPEO = False
+# Possibility to prefill by avs
+KEPCHUP_LOOKUP_AVS = False
 # Ability to remove child
 KEPCHUP_CAN_DELETE_CHILD = True
 # Blacklist to block children from registering
