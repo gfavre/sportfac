@@ -14,8 +14,8 @@ from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 
 from dbtemplates.models import Template
-from profiles.models import FamilyUser
 
+from profiles.models import FamilyUser
 from . import tasks
 from .forms import CopiesForm, CourseMailForm, MailForm
 from .mixins import CancelableMixin, EditableMixin, ParticipantsBaseMixin, ParticipantsMixin, TemplatedEmailMixin
@@ -117,7 +117,8 @@ class MailCreateView(FormView):
             )
 
         for attachment in form.cleaned_data["attachments"]:
-            Attachment.objects.create(file=attachment, mail=archive)
+            if not isinstance(attachment, Attachment):
+                Attachment.objects.create(file=attachment, mail=archive)
 
         template.content = form.cleaned_data["message"]
         template.save()
