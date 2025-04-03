@@ -6,7 +6,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Div, Layout, Submit
 from multiupload.fields import MultiFileField
 
-from mailer.models import GenericEmail
+from mailer.models import GenericEmail, MailArchive
 
 
 class MailForm(forms.Form):
@@ -16,6 +16,7 @@ class MailForm(forms.Form):
     send_copy = forms.BooleanField(label=_("Send me a copy"), initial=True, required=False)
 
     def __init__(self, *args, **kwargs):
+        self.archive: MailArchive = kwargs.pop("archive", None)
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
@@ -25,6 +26,17 @@ class MailForm(forms.Form):
             "attachments",
             "send_copy",
         )
+        self.attachment_pairs = []
+
+        # For each existing attachment, add a checkbox
+        if self.archive and self.archive.attachments.exists():
+            for att in self.archive.attachments.all():
+                field_name = f"delete_attachment_{att.pk}"
+                self.fields[field_name] = forms.BooleanField(label=_("Remove ?"), required=False)
+                # Create a BoundField for that checkbox
+                bound_field = self[field_name]
+                # Store them together in a list
+                self.attachment_pairs.append((att, bound_field))
 
 
 class CopiesForm(forms.Form):
@@ -41,13 +53,13 @@ class CopiesForm(forms.Form):
         )
 
 
-class InstructorCopiesForm(forms.Form):
+class InstructorCopiesForm(MailForm):
     copy_all_instructors = forms.BooleanField(
         label=_("Send a copy to all other instructors"), initial=False, required=False
     )
 
     def __init__(self, *args, **kwargs):
-        super(MailForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
@@ -65,7 +77,7 @@ class CourseMailForm(MailForm):
     )
 
     def __init__(self, *args, **kwargs):
-        super(MailForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.layout = Layout(

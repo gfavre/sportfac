@@ -11,8 +11,8 @@
 
     {% if recipients %}
       <div class="form-group">
-        <label class="control-label col-sm-2" for="id_recipients">{% translate "To" %}</label>
-        <div class=" field-recipient col-sm-10">
+        <label class="control-label" for="id_recipients">{% translate "To" %}</label>
+        <div class=" field-recipient">
           <p class="form-control-static">
             {% for recipient in recipients %}
               <span class="label label-primary">{{ recipient }}</span>
@@ -26,31 +26,36 @@
 
     {{ form.subject|as_crispy_field }}
     {{ form.message|as_crispy_field }}
+  <hr>
     {{ form.attachments|as_crispy_field }}
 
     {% if archive and archive.attachments.count %}
       <div class="form-group">
-        <div class="col-sm-10 col-sm-offset-2">
           <ul>
-            {% for attachment in archive.attachments.all %}
-              <li>{{ attachment|filename }}</li>
+            {% for att, bound_field in form.attachment_pairs %}
+              <li >
+                <a href="{{ att.file.url }}" target="_blank" style="margin-right: 1em;">
+                {{ att|filename }}
+              </a>
+             {{ bound_field.label_tag }} <!-- Renders the label -->
+                {{ bound_field }}         <!-- Renders the checkbox input itself -->
+              </li>
             {% endfor %}
           </ul>
-        </div>
       </div>
     {% endif %}
+  <hr>
+
     {{ form.send_copy|as_crispy_field }}
     {{ form.copy_all_instructors|as_crispy_field }}
 
     <div class="form-group">
-      <div class="col-sm-offset-2">
         <button type="submit" class="btn btn-success btn-large">
           <i class="icon-check"></i>&nbsp;{% translate 'Save and preview' %}
         </button>
         {% if prev %}&nbsp;
           <a href="{{ prev }}" class="btn btn-default">{% translate 'Cancel' %}</a>
         {% endif %}
-      </div>
     </div>
   </form>
 {% endblock content %}

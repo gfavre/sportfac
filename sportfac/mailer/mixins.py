@@ -115,7 +115,11 @@ class ArchivedMailMixin(BaseEmailMixin):
     archive = None
     edit_url = None
 
-    def set_archive(self, archive):
+    def dispatch(self, request, *args, **kwargs):
+        self.set_archive()
+        return super().dispatch(request, *args, **kwargs)
+
+    def set_archive(self):
         try:
             self.archive = self.get_mail_archive()
         except MailArchive.DoesNotExist:
@@ -136,7 +140,6 @@ class ArchivedMailMixin(BaseEmailMixin):
         return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        self.archive = self.get_mail_archive()
         return super().post(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

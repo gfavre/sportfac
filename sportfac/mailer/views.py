@@ -71,6 +71,13 @@ class MailCreateView(FormView):
             del self.request.session["mail"]
             return None
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        archive = self.get_archive_from_session()
+        if archive:
+            kwargs["archive"] = archive
+        return kwargs
+
     def get_initial(self):
         archive = self.get_archive_from_session()
         if archive:
@@ -115,6 +122,10 @@ class MailCreateView(FormView):
                 messages=[],
                 template=template.name,
             )
+
+        for attachment, bound_field in form.attachment_pairs:
+            if form.cleaned_data.get(bound_field.name):
+                attachment.delete()
 
         for attachment in form.cleaned_data["attachments"]:
             if not isinstance(attachment, Attachment):
