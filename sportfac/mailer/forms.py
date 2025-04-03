@@ -4,27 +4,35 @@ from django.utils.translation import gettext as _
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Div, Layout, Submit
-from mailer.models import GenericEmail
 from multiupload.fields import MultiFileField
+
+from mailer.models import GenericEmail
 
 
 class MailForm(forms.Form):
     subject = forms.CharField(label=_("Subject"), max_length=255)
     message = forms.CharField(label=_("Message"), widget=forms.Textarea)
-    attachments = MultiFileField(
-        label=_("Attachments"), min_num=0, max_file_size=1024 * 1024 * 5, required=False
-    )
+    attachments = MultiFileField(label=_("Attachments"), min_num=0, max_file_size=1024 * 1024 * 5, required=False)
     send_copy = forms.BooleanField(label=_("Send me a copy"), initial=True, required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            "subject",
+            "message",
+            "attachments",
+            "send_copy",
+        )
 
 
 class CopiesForm(forms.Form):
     send_copy = forms.BooleanField(label=_("Send me a copy"), initial=True, required=False)
-    copy_all_admins = forms.BooleanField(
-        label=_("Send a copy to all other administrators"), required=False
-    )
+    copy_all_admins = forms.BooleanField(label=_("Send a copy to all other administrators"), required=False)
 
     def __init__(self, *args, **kwargs):
-        super(CopiesForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
@@ -38,17 +46,47 @@ class InstructorCopiesForm(forms.Form):
         label=_("Send a copy to all other instructors"), initial=False, required=False
     )
 
+    def __init__(self, *args, **kwargs):
+        super(MailForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            "subject",
+            "message",
+            "attachments",
+            "send_copy",
+            "copy_all_instructors",
+        )
+
 
 class CourseMailForm(MailForm):
     copy_all_instructors = forms.BooleanField(
         label=_("Send a copy to all other instructors"), initial=True, required=False
     )
 
+    def __init__(self, *args, **kwargs):
+        super(MailForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            "subject",
+            "message",
+            "attachments",
+            "send_copy",
+            "copy_all_instructors",
+        )
+
 
 class AdminMailForm(MailForm):
     copy_all_admins = forms.BooleanField(
         label=_("Send a copy to all other administrators"), initial=False, required=False
     )
+
+    def __init__(self, *args, **kwargs):
+        super(MailForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout("subject", "message", "attachments", "send_copy", "copy_all_admins")
 
 
 class PreviewForm(forms.Form):
@@ -57,9 +95,7 @@ class PreviewForm(forms.Form):
 
 class GenericEmailForm(django_forms.ModelForm):
     subject_text = forms.CharField(label=_("Subject"), max_length=255)
-    body_text = forms.CharField(
-        label=_("Message"), widget=django_forms.Textarea(attrs={"rows": 10})
-    )
+    body_text = forms.CharField(label=_("Message"), widget=django_forms.Textarea(attrs={"rows": 10}))
 
     class Meta:
         model = GenericEmail
@@ -89,11 +125,10 @@ class GenericEmailForm(django_forms.ModelForm):
 
     def get_initial_for_field(self, field, field_name):
         if field_name == "subject_text":
-            return (
-                self.instance and self.cleanup_tmpl(self.instance.subject_template.content) or ""
-            )
-        elif field_name == "body_text":
+            return self.instance and self.cleanup_tmpl(self.instance.subject_template.content) or ""
+        if field_name == "body_text":
             return self.instance and self.cleanup_tmpl(self.instance.body_template.content) or ""
+        return super().get_initial_for_field(field, field_name)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
