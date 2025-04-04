@@ -14,8 +14,8 @@ from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 
 from dbtemplates.models import Template
-from profiles.models import FamilyUser
 
+from profiles.models import FamilyUser
 from . import tasks
 from .forms import CopiesForm, CourseMailForm, MailForm
 from .mixins import CancelableMixin, EditableMixin, ParticipantsBaseMixin, ParticipantsMixin, TemplatedEmailMixin
@@ -63,6 +63,10 @@ class MailCreateView(FormView):
         return list(bcc_recipients)
 
     def get_archive_from_session(self):
+        if "reset" in self.request.GET:
+            self.request.session.pop("mail", None)
+            return None
+
         if "mail" not in self.request.session:
             return None
         try:
@@ -70,6 +74,13 @@ class MailCreateView(FormView):
         except MailArchive.DoesNotExist:
             del self.request.session["mail"]
             return None
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        archive = self.get_archive_from_session()
+        if archive:
+            kwargs["archive"] = archive
+        return kwargs
 
     def get_initial(self):
         archive = self.get_archive_from_session()
@@ -87,6 +98,7 @@ class MailCreateView(FormView):
         kwargs["prev"] = self.request.GET.get("prev", None)
         kwargs["archive"] = self.get_archive_from_session()
         kwargs["recipients"] = self.get_recipients_email()
+        kwargs["prev"]
         return super().get_context_data(**kwargs)
 
     @transaction.atomic
@@ -116,8 +128,13 @@ class MailCreateView(FormView):
                 template=template.name,
             )
 
+        for attachment, bound_field in form.attachment_pairs:
+            if form.cleaned_data.get(bound_field.name):
+                attachment.delete()
+
         for attachment in form.cleaned_data["attachments"]:
-            Attachment.objects.create(file=attachment, mail=archive)
+            if not isinstance(attachment, Attachment):
+                Attachment.objects.create(file=attachment, mail=archive)
 
         template.content = form.cleaned_data["message"]
         template.save()

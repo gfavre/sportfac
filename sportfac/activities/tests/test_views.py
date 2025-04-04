@@ -3,7 +3,6 @@ from unittest import mock
 
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.http import Http404
 from django.test import RequestFactory
 from django.urls import reverse
 
@@ -26,7 +25,7 @@ from ..views import (
 from .factories import ActivityFactory, CourseFactory
 
 
-fake = faker.Factory.create()
+fake = faker.Faker()
 
 
 class ActivityDetailViewsTests(TestCase):
@@ -322,8 +321,11 @@ class CustomMailPreviewTest(TestCase):
         request = self.factory.get(self.url)
         request.user = self.instructor
         process_request_for_middleware(request, SessionMiddleware)
-        with self.assertRaises(Http404):
-            CustomMailPreview.as_view()(request, course=self.course.pk)
+        response = CustomMailPreview.as_view()(request, course=self.course.pk)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url, reverse("activities:mail-participants-custom", kwargs={"course": self.course.pk})
+        )
 
     def test_get(self):
         request = self.factory.get(self.url)
@@ -371,6 +373,7 @@ class MailCourseInstructorsViewTest(TestCase):
         self.instructors = FamilyUserFactory.create_batch(2)
         self.instructor = self.instructors[0]
         self.course = CourseFactory(instructors=self.instructors)
+        self.data = {"subject": fake.sentence(), "message": fake.paragraph()}
         self.url = reverse("activities:mail-instructors", kwargs={"course": self.course.pk})
 
     def test_not_instructor_user(self):
@@ -389,8 +392,8 @@ class MailCourseInstructorsViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     @mock.patch("mailer.tasks.send_instructors_email.delay")
-    def test_post(self, sendmail_method):
-        request = self.factory.post(self.url, data={})
+    def test_post(self, _sendmail_method):
+        request = self.factory.post(self.url, data=self.data)
         request.user = self.instructor
         process_request_for_middleware(request, SessionMiddleware)
         process_request_for_middleware(request, MessageMiddleware)
@@ -399,7 +402,7 @@ class MailCourseInstructorsViewTest(TestCase):
 
     @mock.patch("mailer.tasks.send_instructors_email.delay")
     def test_send_mail(self, sendmail_method):
-        request = self.factory.post(self.url, data={})
+        request = self.factory.post(self.url, data=self.data)
         request.user = self.instructor
         process_request_for_middleware(request, SessionMiddleware)
         process_request_for_middleware(request, MessageMiddleware)
@@ -408,7 +411,9 @@ class MailCourseInstructorsViewTest(TestCase):
 
     @mock.patch("mailer.tasks.send_instructors_email.delay")
     def test_send_mail_copy(self, sendmail_method):
-        request = self.factory.post(self.url, data={"copy_all_instructors": "1"})
+        data = self.data.copy()
+        data["copy_all_instructors"] = "1"
+        request = self.factory.post(self.url, data=data)
         request.user = self.instructor
         process_request_for_middleware(request, SessionMiddleware)
         process_request_for_middleware(request, MessageMiddleware)

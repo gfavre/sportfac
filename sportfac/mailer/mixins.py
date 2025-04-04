@@ -9,7 +9,6 @@ from activities.models import Course, TemplatedEmailReceipt
 from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser
 from registrations.models import Registration
-
 from . import tasks
 from .models import MailArchive
 
@@ -114,17 +113,33 @@ class EditableMixin:
 
 class ArchivedMailMixin(BaseEmailMixin):
     archive = None
+    edit_url = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.set_archive()
+        return super().dispatch(request, *args, **kwargs)
+
+    def set_archive(self):
+        try:
+            self.archive = self.get_mail_archive()
+        except MailArchive.DoesNotExist:
+            self.archive = None
 
     def get_mail_archive(self):
         mail_pk = self.request.session.get("mail", None)
-        return get_object_or_404(MailArchive, pk=mail_pk)
+        return MailArchive.objects.get(pk=mail_pk)
+
+    def get_edit_url(self):
+        if not self.edit_url:
+            raise NotImplementedError("Add a edit_url attribute")
+        return force_str(self.edit_url)
 
     def get(self, request, *args, **kwargs):
-        self.archive = self.get_mail_archive()
+        if not self.archive:
+            return HttpResponseRedirect(self.get_edit_url())
         return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        self.archive = self.get_mail_archive()
         return super().post(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -204,6 +219,13 @@ class ParticipantsBaseMixin:
 
 
 class ParticipantsMixin(ParticipantsBaseMixin, BaseEmailMixin):
+    def setup_course(self):
+        self.course = get_object_or_404(Course, pk=self.kwargs["course"])
+
+    def dispatch(self, request, *args, **kwargs):
+        self.setup_course()
+        return super().dispatch(request, *args, **kwargs)
+
     def add_nth_mail_context(self, context, nth):
         try:
             context["registration"] = self.course.participants.all()[nth]
@@ -237,12 +259,7 @@ class ParticipantsMixin(ParticipantsBaseMixin, BaseEmailMixin):
             self.create_receipt()
         return message
 
-    def get(self, request, *args, **kwargs):
-        self.course = get_object_or_404(Course, pk=self.kwargs["course"])
-        return super().get(request, *args, **kwargs)
-
     def post(self, request, *args, **kwargs):
-        self.course = get_object_or_404(Course, pk=self.kwargs["course"])
         context = self.get_context_data()
         if self.group_mails:
             all_recipients = self.get_recipients() + self.get_bcc_recipients()

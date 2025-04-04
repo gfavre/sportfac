@@ -136,6 +136,8 @@ class CustomMailPreview(InstructorMixin, ArchivedMailMixin, mailer_views.Partici
     edit_url = reverse_lazy("activities:mail-participants-custom")
 
     def get_edit_url(self):
+        if not self.course:
+            self.course = self.kwargs["course"]
         return self.course.get_custom_mail_instructors_url()
 
     def get_success_url(self):

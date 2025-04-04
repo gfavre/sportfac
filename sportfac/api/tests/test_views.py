@@ -6,15 +6,14 @@ from django.test import override_settings
 from django.urls import reverse
 
 import faker
+
 from activities.tests.factories import CourseFactory
 from api.serializers import ChildrenSerializer
 from profiles.tests.factories import FamilyUserFactory, SchoolYearFactory
 from registrations.models import Child
 from registrations.tests.factories import ChildFactory, RegistrationFactory
 from schools.tests.factories import TeacherFactory
-
 from sportfac.utils import TenantTestCase
-
 from .utils import UserMixin
 
 
@@ -227,7 +226,10 @@ class RegistrationAPITests(UserMixin, TenantTestCase):
     def _test_create(self, user):
         url = reverse("api:registration-list")
         self.login(user)
-        course2 = CourseFactory(schoolyear_min=self.year.year, schoolyear_max=self.year.year)
+        course2 = CourseFactory(
+            schoolyear_min=self.year.year,
+            schoolyear_max=self.year.year,
+        )
         response = self.tenant_client.post(url, {"child": self.child1.pk, "course": course2.pk})
         self.assertEqual(response.status_code, 201)
         response = self.tenant_client.post(url, {"child": self.child1.pk, "course": course2.pk})
