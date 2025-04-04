@@ -57,6 +57,9 @@ class ParticipantsMailPreview(BackendMixin, ArchivedMailMixin, mailer_views.Part
     template_name = "backend/mail/preview.html"
     group_mails = True
 
+    def get_edit_url(self):
+        return reverse("backend:mail-participants-custom", kwargs={"course": self.course.pk})
+
     def get_success_url(self):
         return reverse("backend:course-detail", kwargs=self.kwargs)
 
