@@ -63,6 +63,10 @@ class MailCreateView(FormView):
         return list(bcc_recipients)
 
     def get_archive_from_session(self):
+        if "reset" in self.request.GET:
+            self.request.session.pop("mail", None)
+            return None
+
         if "mail" not in self.request.session:
             return None
         try:
@@ -94,6 +98,7 @@ class MailCreateView(FormView):
         kwargs["prev"] = self.request.GET.get("prev", None)
         kwargs["archive"] = self.get_archive_from_session()
         kwargs["recipients"] = self.get_recipients_email()
+        kwargs["prev"]
         return super().get_context_data(**kwargs)
 
     @transaction.atomic

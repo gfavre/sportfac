@@ -64,6 +64,8 @@
       </button>
       {% if prev %}&nbsp;
         <a href="{{ prev }}" class="btn btn-default">{% translate 'Cancel' %}</a>
+      {% else %}
+        <a href="?reset" class="btn btn-default"><i class="icon-trash"></i> {% translate 'Reset' %}</a>
       {% endif %}
     </div>
   </form>

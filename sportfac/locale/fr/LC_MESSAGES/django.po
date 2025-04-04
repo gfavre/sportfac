@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-03 18:29+0200\n"
-"PO-Revision-Date: 2025-04-03 18:31+0200\n"
+"POT-Creation-Date: 2025-04-04 07:00+0200\n"
+"PO-Revision-Date: 2025-04-04 07:01+0200\n"
 "Last-Translator: Gregory Favre <greg@beyondthewall.ch>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Poedit 3.6\n"
 
 #: sportfac/absences/admin.py:26 sportfac/activities/admin.py:71
 #: sportfac/activities/admin.py:172 sportfac/activities/models.py:329
@@ -1301,7 +1301,7 @@ msgstr "Envoyer l'email"
 #: sportfac/backend/templates/backend/course/confirm_send.html:27
 #: sportfac/backend/templates/backend/course/pay-slip-montreux-form.html:52
 #: sportfac/backend/templates/backend/course/update.html:12
-#: sportfac/backend/templates/backend/mail/create.html:58
+#: sportfac/backend/templates/backend/mail/create.html:66
 #: sportfac/backend/templates/backend/mail/preview-editlink.html:36
 #: sportfac/backend/templates/backend/payroll/function_update.html:21
 #: sportfac/backend/templates/backend/payroll/payroll_report.html:76
@@ -1632,16 +1632,20 @@ msgid "New email"
 msgstr "Nouvel email"
 
 #: sportfac/activities/templates/activities/mail-create.html:14
-#: sportfac/backend/templates/backend/mail/create.html:13
+#: sportfac/backend/templates/backend/mail/create.html:14
 #: sportfac/backend/templates/backend/mail/preview-editlink.html:22
 #: sportfac/mailer/templates/mailer/preview.html:9
 msgid "To"
 msgstr "À"
 
 #: sportfac/activities/templates/activities/mail-create.html:54
-#: sportfac/backend/templates/backend/mail/create.html:56
+#: sportfac/backend/templates/backend/mail/create.html:63
 msgid "Save and preview"
 msgstr "Enregistrer et prévisualiser"
+
+#: sportfac/activities/templates/activities/mail-create.html:59
+msgid "Reset"
+msgstr "Effacer"
 
 #: sportfac/activities/templates/activities/mail-preview-editlink.html:6
 #: sportfac/backend/templates/backend/mail/preview-browse.html:6
@@ -3121,10 +3125,6 @@ msgstr "Gestion des cours"
 msgid "Manage instructors"
 msgstr "Gestion des moniteurs"
 
-#: sportfac/backend/templates/backend/mail/create.html:20
-msgid "recipients"
-msgstr "destinataires"
-
 #: sportfac/backend/templates/backend/mail/emails_list.html:4
 msgid "View emails"
 msgstr "Afficher les emails"
@@ -3136,8 +3136,8 @@ msgstr "Emails génériques"
 #: sportfac/backend/templates/backend/mail/emails_list.html:16
 #: sportfac/backend/templates/backend/mail/list.html:34
 #: sportfac/backend/templates/backend/mail/preview-editlink.html:23
-#: sportfac/contact/forms.py:23 sportfac/mailer/forms.py:15
-#: sportfac/mailer/forms.py:115 sportfac/mailer/models.py:35
+#: sportfac/contact/forms.py:23 sportfac/mailer/forms.py:13
+#: sportfac/mailer/forms.py:103 sportfac/mailer/models.py:35
 #: sportfac/mailer/templates/mailer/preview.html:24
 msgid "Subject"
 msgstr "Sujet"
@@ -3152,7 +3152,7 @@ msgid "Edit email"
 msgstr "Modifier l’e-mail"
 
 #: sportfac/backend/templates/backend/mail/emails_update.html:3
-#: sportfac/mailer/forms.py:161 sportfac/wizard/forms.py:28
+#: sportfac/mailer/forms.py:149 sportfac/wizard/forms.py:28
 msgid "Update email"
 msgstr "Enregistrer"
 
@@ -3170,8 +3170,8 @@ msgid "Recipient"
 msgstr "Destinataire"
 
 #: sportfac/backend/templates/backend/mail/list.html:36
-#: sportfac/contact/forms.py:25 sportfac/mailer/forms.py:16
-#: sportfac/mailer/forms.py:116 sportfac/mailer/models.py:38
+#: sportfac/contact/forms.py:25 sportfac/mailer/forms.py:14
+#: sportfac/mailer/forms.py:104 sportfac/mailer/models.py:38
 msgid "Message"
 msgstr "Message"
 
@@ -4778,7 +4778,7 @@ msgid "An error was found in form %s"
 msgstr "Une erreur a été trouvée dans le formulaire %s"
 
 #: sportfac/backend/views/mail_views.py:204 sportfac/mailer/mixins.py:30
-#: sportfac/mailer/views.py:298
+#: sportfac/mailer/views.py:303
 #, python-format
 msgid "Your email is being sent to %(number)s recipients."
 msgstr "Votre email est en cours d'envoi chez %(number)s destinataires."
@@ -5167,23 +5167,23 @@ msgstr "Le fichier %(uploaded_file_name)s dépasse la taille maximum d'envoi."
 msgid "Invalid media_type. Valid types are: %(valid_types)s"
 msgstr "Mauvais type de fichier. Les types valides sont: %(valid_types)s"
 
-#: sportfac/mailer/forms.py:17 sportfac/mailer/templates/mailer/preview.html:26
+#: sportfac/mailer/forms.py:15 sportfac/mailer/templates/mailer/preview.html:26
 msgid "Attachments"
 msgstr "Pièces jointes"
 
-#: sportfac/mailer/forms.py:18 sportfac/mailer/forms.py:49
+#: sportfac/mailer/forms.py:16 sportfac/mailer/forms.py:43
 msgid "Send me a copy"
 msgstr "M'envoyer une copie"
 
-#: sportfac/mailer/forms.py:38
+#: sportfac/mailer/forms.py:35
 msgid "Remove ?"
 msgstr "Supprimer ?"
 
-#: sportfac/mailer/forms.py:50 sportfac/mailer/forms.py:100
+#: sportfac/mailer/forms.py:44 sportfac/mailer/forms.py:94
 msgid "Send a copy to all other administrators"
 msgstr "Envoyer une copie aux autres administrateurs"
 
-#: sportfac/mailer/forms.py:64 sportfac/mailer/forms.py:82
+#: sportfac/mailer/forms.py:58 sportfac/mailer/forms.py:76
 msgid "Send a copy to all other instructors"
 msgstr "Envoyer une copie aux autres moniteurs"
 
@@ -6634,6 +6634,9 @@ msgstr "Erreur"
 msgid "There are errors in the form. Please fix them before proceeding."
 msgstr ""
 "Le formulaire contient des erreurs. Veuillez les corriger avant de continuer."
+
+#~ msgid "recipients"
+#~ msgstr "destinataires"
 
 #~ msgid "Cancel payment and remove all registrations"
 #~ msgstr "Annuler le paiement et supprimer toutes les inscriptions"
