@@ -94,12 +94,6 @@ class AdminMailForm(MailForm):
         label=_("Send a copy to all other administrators"), initial=False, required=False
     )
 
-    def __init__(self, *args, **kwargs):
-        super(MailForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_tag = False
-        self.helper.layout = Layout("subject", "message", "attachments", "send_copy", "copy_all_admins")
-
 
 class PreviewForm(forms.Form):
     pass
