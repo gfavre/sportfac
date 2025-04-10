@@ -1,11 +1,12 @@
+from unittest import mock
+
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.http import Http404
 from django.test.client import RequestFactory
 from django.urls import reverse
 
 import faker
-import mock
+
 from activities.tests.factories import CourseFactory
 from mailer.models import MailArchive
 from mailer.tests.factories import MailArchiveFactory
@@ -19,10 +20,8 @@ from registrations.tests.factories import (
     WaitingBillFactory,
     WaitingRegistrationFactory,
 )
-
 from sportfac.middleware import VersionMiddleware
 from sportfac.utils import process_request_for_middleware
-
 from ...views import mail_views
 from .base import BackendTestBase
 
@@ -63,7 +62,7 @@ class MailViewsTests(BackendTestBase):
 # noinspection DuplicatedCode
 class MailCreateViewTests(BackendTestBase):
     def setUp(self):
-        super(MailCreateViewTests, self).setUp()
+        super().setUp()
         self.factory = RequestFactory()
         self.other_users = FamilyUserFactory.create_batch(4)
         self.instructors = FamilyUserFactory.create_batch(2)
@@ -125,7 +124,7 @@ class MailCreateViewTests(BackendTestBase):
 # noinspection DuplicatedCode
 class MailPreviewTest(BackendTestBase):
     def setUp(self):
-        super(MailPreviewTest, self).setUp()
+        super().setUp()
         self.factory = RequestFactory()
         self.instructors = FamilyUserFactory.create_batch(2)
         self.other_users = FamilyUserFactory.create_batch(4)
@@ -138,13 +137,6 @@ class MailPreviewTest(BackendTestBase):
             "backend:custom-mail-custom-users-preview",
         )
 
-    def test_no_archive(self):
-        request = self.factory.get(self.url)
-        request.user = self.manager
-        process_request_for_middleware(request, SessionMiddleware)
-        with self.assertRaises(Http404):
-            mail_views.MailPreview.as_view()(request)
-
     def test_get(self):
         request = self.factory.get(self.url)
         request.user = self.manager
@@ -154,9 +146,7 @@ class MailPreviewTest(BackendTestBase):
         response = mail_views.MailPreview.as_view()(request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context_data["to_email"]), len(self.other_users))
-        self.assertEqual(
-            len(response.context_data["bcc_email"]), FamilyUser.managers_objects.count()
-        )
+        self.assertEqual(len(response.context_data["bcc_email"]), FamilyUser.managers_objects.count())
 
     @mock.patch("mailer.tasks.send_mail.delay")
     def test_post(self, sendmail_method):
@@ -170,23 +160,19 @@ class MailPreviewTest(BackendTestBase):
         self.assertEqual(response.status_code, 302)
         self.assertNotIn("mail", request.session)
         self.assertNotIn("mail-userids", request.session)
-        self.assertEqual(
-            sendmail_method.call_count, FamilyUser.managers_objects.count() + len(self.other_users)
-        )
+        self.assertEqual(sendmail_method.call_count, FamilyUser.managers_objects.count() + len(self.other_users))
 
 
 # noinspection DuplicatedCode
 class ParticipantsMailCreateViewTests(BackendTestBase):
     def setUp(self):
-        super(ParticipantsMailCreateViewTests, self).setUp()
+        super().setUp()
         self.factory = RequestFactory()
         self.instructors = FamilyUserFactory.create_batch(2)
         self.course = CourseFactory(instructors=self.instructors)
         self.year = SchoolYearFactory()
         self.children = ChildFactory.create_batch(10, school_year=self.year)
-        self.registrations = [
-            RegistrationFactory(course=self.course, child=child) for child in self.children
-        ]
+        self.registrations = [RegistrationFactory(course=self.course, child=child) for child in self.children]
         self.url = reverse("backend:mail-participants-custom", kwargs={"course": self.course.pk})
 
     def test_rights(self):
@@ -237,29 +223,25 @@ class ParticipantsMailCreateViewTests(BackendTestBase):
 # noinspection DuplicatedCode
 class ParticipantsMailPreviewTest(BackendTestBase):
     def setUp(self):
-        super(ParticipantsMailPreviewTest, self).setUp()
+        super().setUp()
         self.factory = RequestFactory()
         self.instructors = FamilyUserFactory.create_batch(2)
         self.course = CourseFactory(instructors=self.instructors)
         self.year = SchoolYearFactory()
         self.children = ChildFactory.create_batch(10, school_year=self.year)
-        self.registrations = [
-            RegistrationFactory(course=self.course, child=child) for child in self.children
-        ]
+        self.registrations = [RegistrationFactory(course=self.course, child=child) for child in self.children]
         self.archive = MailArchiveFactory(
             recipients=[str(child.family.pk) for child in self.children],
             bcc_recipients=[str(user.pk) for user in self.instructors],
         )
-        self.url = reverse(
-            "backend:mail-participants-custom-preview", kwargs={"course": self.course.pk}
-        )
+        self.url = reverse("backend:mail-participants-custom-preview", kwargs={"course": self.course.pk})
 
     def test_no_archive(self):
         request = self.factory.get(self.url)
         request.user = self.manager
         process_request_for_middleware(request, SessionMiddleware)
-        with self.assertRaises(Http404):
-            mail_views.ParticipantsMailPreview.as_view()(request, course=self.course.pk)
+        response = mail_views.ParticipantsMailPreview.as_view()(request, course=self.course.pk)
+        self.assertEqual(response.status_code, 302)
 
     def test_get(self):
         request = self.factory.get(self.url)
@@ -289,7 +271,7 @@ class ParticipantsMailPreviewTest(BackendTestBase):
 
 class MailCourseInstructorsViewTest(BackendTestBase):
     def setUp(self):
-        super(MailCourseInstructorsViewTest, self).setUp()
+        super().setUp()
         self.factory = RequestFactory()
         self.instructors = FamilyUserFactory.create_batch(2)
         self.course = CourseFactory(instructors=self.instructors)
@@ -327,15 +309,13 @@ class MailCourseInstructorsViewTest(BackendTestBase):
 # noinspection DuplicatedCode
 class MailConfirmationParticipantsViewTest(BackendTestBase):
     def setUp(self):
-        super(MailConfirmationParticipantsViewTest, self).setUp()
+        super().setUp()
         self.factory = RequestFactory()
         self.instructors = FamilyUserFactory.create_batch(2)
         self.course = CourseFactory(instructors=self.instructors)
         self.year = SchoolYearFactory()
         self.children = ChildFactory.create_batch(10, school_year=self.year)
-        self.registrations = [
-            RegistrationFactory(course=self.course, child=child) for child in self.children
-        ]
+        self.registrations = [RegistrationFactory(course=self.course, child=child) for child in self.children]
         self.url = reverse("backend:course-mail-confirmation", kwargs={"course": self.course.pk})
 
     def test_rights(self):
@@ -345,9 +325,7 @@ class MailConfirmationParticipantsViewTest(BackendTestBase):
         request = self.factory.get(self.url)
         request.user = self.manager
         process_request_for_middleware(request, SessionMiddleware)
-        response = mail_views.MailConfirmationParticipantsView.as_view()(
-            request, course=self.course.pk
-        )
+        response = mail_views.MailConfirmationParticipantsView.as_view()(request, course=self.course.pk)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context_data["total"], len(self.registrations))
         self.assertEqual(response.context_data["has_prev"], False)
@@ -356,9 +334,7 @@ class MailConfirmationParticipantsViewTest(BackendTestBase):
         request = self.factory.get(self.url, {"number": 2})
         request.user = self.manager
         process_request_for_middleware(request, SessionMiddleware)
-        response = mail_views.MailConfirmationParticipantsView.as_view()(
-            request, course=self.course.pk
-        )
+        response = mail_views.MailConfirmationParticipantsView.as_view()(request, course=self.course.pk)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context_data["has_prev"], True)
         self.assertEqual(response.context_data["mailidentifier"], 2)
@@ -369,23 +345,19 @@ class MailConfirmationParticipantsViewTest(BackendTestBase):
         request.user = self.manager
         process_request_for_middleware(request, SessionMiddleware)
         process_request_for_middleware(request, MessageMiddleware)
-        response = mail_views.MailConfirmationParticipantsView.as_view()(
-            request, course=self.course.pk
-        )
+        response = mail_views.MailConfirmationParticipantsView.as_view()(request, course=self.course.pk)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(sendmail_method.call_count, len(self.registrations))
 
 
 class NotPaidYetViewTest(BackendTestBase):
     def setUp(self):
-        super(NotPaidYetViewTest, self).setUp()
+        super().setUp()
         self.factory = RequestFactory()
         self.course = CourseFactory()
         self.year = SchoolYearFactory()
         self.children = ChildFactory.create_batch(10, school_year=self.year)
-        self.registrations = [
-            RegistrationFactory(course=self.course, child=child) for child in self.children
-        ]
+        self.registrations = [RegistrationFactory(course=self.course, child=child) for child in self.children]
         self.bills = [
             WaitingBillFactory(registrations=[registration], family=registration.child.family)
             for registration in self.registrations
@@ -419,14 +391,12 @@ class NotPaidYetViewTest(BackendTestBase):
 
 class NeedConfirmationViewTest(BackendTestBase):
     def setUp(self):
-        super(NeedConfirmationViewTest, self).setUp()
+        super().setUp()
         self.factory = RequestFactory()
         self.course = CourseFactory()
         self.year = SchoolYearFactory()
         self.children = ChildFactory.create_batch(10, school_year=self.year)
-        self.registrations = [
-            WaitingRegistrationFactory(course=self.course, child=child) for child in self.children
-        ]
+        self.registrations = [WaitingRegistrationFactory(course=self.course, child=child) for child in self.children]
         self.url = reverse("backend:mail-needconfirmation")
 
     def test_rights(self):

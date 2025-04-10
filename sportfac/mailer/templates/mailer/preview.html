@@ -25,9 +25,9 @@
     {% if attachments %}
       <dt>{% translate "Attachments" %}</dt>
       <dd>
-        <ul class="list-horizontal">
+        <ul class="list-unstyled">
           {% for attachment in attachments %}
-            <li><a href="{{ attachment|fileurl }}"><i class="icon {{ attachment|fileicon }}"></i>&nbsp;{{ attachment|filename }}</a></li>
+            <li class="no-"><a href="{{ attachment|fileurl }}"><i class="icon {{ attachment|fileicon }}"></i>&nbsp;{{ attachment|filename }}</a></li>
           {% endfor %}
         </ul>
       </dd>
@@ -40,10 +40,12 @@
   <form action="" method="post">{% csrf_token %}
     <p>
       {% blocktranslate %}Are you sure you want to send this mail ?{% endblocktranslate %}
-      {% if edit_url %}<a href="{{ edit_url }}"><i class="icon icon-edit"></i> {% translate "Modify mail" %}</a>{% endif %}
+
     </p>
 
     <div class="form-group">
+      {% if edit_url %}<a href="{{ edit_url }}" class="btn btn-default"><i class="icon icon-edit"></i> {% translate "Modify" %}</a>{% endif %}
+
       <button type="submit" class="btn btn-success"><i class="icon icon-mail"></i>&nbsp;{% translate 'Send all emails' %}</button>
       {% if cancel_url %}&nbsp;
         <a href="{{ cancel_url }}" class="btn btn-default">{% translate 'Cancel' %}</a>
