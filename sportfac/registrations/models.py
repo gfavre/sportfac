@@ -115,6 +115,8 @@ class Registration(TimeStampedModel, StatusModel):
 
     @property
     def is_local_pricing(self):
+        if self.child.marked_up_price:
+            return False
         if self.course.local_city_override.exists():
             local_zipcodes = self.course.local_city_override.values_list("zipcode", flat=True)
         else:
@@ -762,6 +764,7 @@ class Child(TimeStampedModel, StatusModel):
     other_school = models.CharField(_("Other school"), blank=True, max_length=50)
     bib_number = models.CharField(_("Bib number"), blank=True, max_length=20)
     is_blacklisted = models.BooleanField(_("Is blacklisted"), default=False, db_index=True)
+    marked_up_price = models.BooleanField(_("Price should be raised"), default=False)
 
     class Meta:
         ordering = (

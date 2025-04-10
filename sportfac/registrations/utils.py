@@ -2,19 +2,25 @@ import logging
 import re
 from datetime import datetime
 
+from django.conf import settings
 from django.utils.translation import gettext as _
 
 from openpyxl import load_workbook
 from openpyxl.utils.datetime import from_excel
+
 from profiles.models import School, SchoolYear
 from registrations.models import Child
 
 
 logger = logging.getLogger(__name__)
 
+id_field = "id_lagapeo"
+if settings.KEPCHUP_LOOKUP_AVS:
+    id_field = "avs"
+
 
 CHILD_MANDATORY_FIELDS = (
-    "id_lagapeo",
+    id_field,
     "first_name",
     "last_name",
     "sex",
@@ -31,7 +37,8 @@ CORRESPONDANCE_DICT = {
     "nationality": ["Nationalité"],
     "language": ["Langue maternelle", "LANGUE MATERNELLE"],
     "school": ["Etablissement", "ETABLISSEMENT", "ETABLISSEMENT_NOM"],
-    "is_blacklisted": ["Blacklist", "BLACKLIST"],
+    "is_blacklisted": ["Blacklist", "BLACKLIST", "Balcklist"],
+    "marked_up_price": ["Prix majoré"],
 }
 
 col_name_to_field = {}
@@ -55,6 +62,7 @@ class ChildParser:
             "school_year": self.parse_school_year,
             "school": self.parse_school,
             "is_blacklisted": self.parse_blacklist,
+            "marked_up_price": self.parse_marked_up_price,
             "avs": lambda avs: avs,
         }
 
@@ -67,9 +75,15 @@ class ChildParser:
 
     @staticmethod
     def parse_blacklist(value):
-        if not value or value in (0, "0", "FALSE"):
+        if not value or value in (0, "0", "FALSE", "Non", "NON"):
             return False
         return True
+
+    @staticmethod
+    def parse_marked_up_price(value):
+        if value and value in (1, "1", "TRUE", "Oui", "OUI"):
+            return True
+        return False
 
     @staticmethod
     def parse_sex(value):
@@ -181,13 +195,14 @@ def load_children(filelike):
             logger.warning(f"{exc}: Could not parse row={real_row_number}, values={values}")
             continue
         logger.debug(real_row_number, parsed)
-        if not parsed.get("id_lagapeo"):
+        if not parsed.get(id_field):
             continue
-        id_lagapeo = parsed.pop("id_lagapeo")
+        id_value = parsed.pop(id_field)
         if not parsed.get("birth_date"):
-            logger.warning(f"{id_lagapeo}: Could not add, missing birth date")
+            logger.warning(f"{id_value}: Could not add, missing birth date")
             continue
-        child, created = Child.objects.update_or_create(id_lagapeo=id_lagapeo, defaults=parsed)
+        attrs = {id_field: id_value, "defaults": parsed}
+        child, created = Child.objects.update_or_create(**attrs)
         if created:
             nb_created += 1
         else:
