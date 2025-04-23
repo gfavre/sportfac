@@ -1,4 +1,5 @@
 import os
+import socket
 from datetime import datetime
 from tempfile import NamedTemporaryFile
 
@@ -8,15 +9,14 @@ from django.core.management import call_command
 from django.db import connection, transaction
 from django.utils import timezone
 
-from activities.models import Course
 from celery import shared_task
 from celery.utils.log import get_task_logger
+
+from activities.models import Course
 from profiles.models import FamilyUser
 from registrations.models import Child
 from registrations.utils import load_children
-
 from sportfac.decorators import respects_language
-
 from .models import Domain, YearTenant
 
 
@@ -235,3 +235,8 @@ def import_children(filepath, tenant_id, user_id=None):
     #     # message_user(user, message, status)
     # except FamilyUser.DoesNotExist:
     #     pass
+
+
+@shared_task
+def celery_health_check():
+    return {"hostname": socket.gethostname(), "pid": os.getpid(), "status": "ok"}
