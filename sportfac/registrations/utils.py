@@ -202,7 +202,11 @@ def load_children(filelike):
             logger.warning(f"{id_value}: Could not add, missing birth date")
             continue
         attrs = {id_field: id_value, "defaults": parsed}
-        child, created = Child.objects.update_or_create(**attrs)
+        try:
+            child, created = Child.objects.update_or_create(**attrs)
+        except Child.MultipleObjectsReturned as exc:
+            logger.warning(f"{id_value}: Could not add, multiple objects returned: {exc}")
+            continue
         if created:
             nb_created += 1
         else:
