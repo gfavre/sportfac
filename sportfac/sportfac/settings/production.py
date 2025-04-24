@@ -81,6 +81,7 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")  # noqa: F405
 BROKER_URL = env("BROKER_URL")  # noqa: F405
 CELERY_RESULT_BACKEND = env("RESULT_URL", default=env("BROKER_URL"))  # noqa: F405
 CELERY_RESULT_EXPIRES = 60 * 15  # 15 minutes
+CELERY_TASK_DEFAULT_QUEUE = env("CELERY_TASK_DEFAULT_QUEUE", default="sportfac")  # noqa: F405
 
 
 # Sentry
