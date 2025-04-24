@@ -11,9 +11,9 @@ app = CeleryApp("sportfac")
 # Set the key prefix for Redis
 key_prefix = settings.CELERY_PREFIX
 
-app.conf.task_default_queue = key_prefix + "default"
-app.conf.task_default_exchange = key_prefix + "default"
-app.conf.task_default_routing_key = key_prefix + "default"
+app.conf.task_default_queue = key_prefix + "_default"
+app.conf.task_default_exchange = key_prefix + "_default"
+app.conf.task_default_routing_key = key_prefix + "_default"
 
 # Using a string here means the worker will not have to
 # pickle the object when using Windows.
