@@ -11,13 +11,16 @@ app = CeleryApp("sportfac")
 # Set the key prefix for Redis
 key_prefix = settings.CELERY_PREFIX
 
+app.conf.task_default_queue = key_prefix + "default"
+app.conf.task_default_exchange = key_prefix + "default"
+app.conf.task_default_routing_key = key_prefix + "default"
 
 # Using a string here means the worker will not have to
 # pickle the object when using Windows.
 app.config_from_object("django.conf:settings")
 app.conf.broker_transport_options = {
     "queue_options": {
-        "bindings": [Queue(key_prefix + "default")],
+        "bindings": [Queue(key_prefix + "_default")],
     },
     "key_prefix": key_prefix,
 }
