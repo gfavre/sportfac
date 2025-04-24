@@ -7,13 +7,12 @@ from django.conf import settings
 from django.core.mail import EmailMessage
 from django.utils import timezone
 
-from activities.models import Course
 from anymail.exceptions import AnymailRecipientsRefused
 from celery.utils.log import get_task_logger
+
+from activities.models import Course
 from profiles.models import FamilyUser
-
 from sportfac.celery import app
-
 from .models import Attachment
 from .pdfutils import CourseParticipants, CourseParticipantsPresence, MyCourses, get_ssf_decompte_heures
 
@@ -34,6 +33,8 @@ def send_mail(
     update_bills=False,
     recipient_pk=None,
 ):
+    logger.warning("LEVEL is %s", logger.getEffectiveLevel())
+    logger.debug("Forging email to %s" % recipients)
     if bcc is None:
         bcc = []
     if attachments is None:
