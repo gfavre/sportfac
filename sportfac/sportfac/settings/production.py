@@ -79,6 +79,8 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")  # noqa: F405
 # Asynchrnous tasks.
 # See http://celery.readthedocs.org/en/latest/configuration.html
 BROKER_URL = env("BROKER_URL")  # noqa: F405
+CELERY_RESULT_BACKEND = env("RESULT_URL", default=env("BROKER_URL"))  # noqa: F405
+CELERY_RESULT_EXPIRES = 60 * 15  # 15 minutes
 
 
 # Sentry

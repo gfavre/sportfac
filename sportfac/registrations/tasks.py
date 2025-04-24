@@ -152,7 +152,7 @@ def send_reminders(language=settings.LANGUAGE_CODE):
         translation.activate(cur_lang)
 
 
-@shared_task()
+@shared_task
 def send_confirm_from_waiting_list(registration_pk, language=settings.LANGUAGE_CODE):
     try:
         registration = Registration.objects.get(pk=registration_pk)

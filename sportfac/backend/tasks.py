@@ -216,6 +216,7 @@ def update_current_tenant():
 @shared_task
 @respects_language
 def import_children(filepath, tenant_id, user_id=None):
+    get_task_logger(__name__).info("Importing children from %s", filepath)
     tenant = YearTenant.objects.get(pk=tenant_id)
     connection.set_tenant(tenant)
     with open(filepath, "rb") as filelike:

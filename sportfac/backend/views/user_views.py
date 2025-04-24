@@ -18,7 +18,6 @@ from profiles.models import FamilyUser
 from profiles.resources import InstructorResource, UserResource
 from registrations.forms import ChildForm, ChildUpdateForm
 from registrations.models import Bill, Child, ChildActivityLevel, Registration
-
 from ..forms import ChildImportForm
 from ..tasks import import_children
 from .mixins import BackendMixin, ExcelResponseMixin, FullBackendMixin
@@ -393,5 +392,6 @@ class ChildImportView(FullBackendMixin, SuccessMessageMixin, FormView):
         for chunk in self.request.FILES["thefile"].chunks():
             temp_file.write(chunk)
         temp_file.close()
+
         import_children.delay(temp_file.name, tenant_id=self.request.tenant.pk, user_id=str(self.request.user.pk))
         return super().form_valid(form)

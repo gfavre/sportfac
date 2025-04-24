@@ -467,6 +467,7 @@ CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_PREFIX = ""
+CELERY_TASK_TRACK_STARTED = True
 CELERYBEAT_SCHEDULE = {
     "update-periods": {
         "task": "backend.tasks.update_current_tenant",
