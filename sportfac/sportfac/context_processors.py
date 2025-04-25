@@ -1,6 +1,8 @@
+import logging
+
 from django.conf import settings
 from django.core.cache import cache
-from django.db import connection
+from django.db import DatabaseError, connection
 from django.utils import timezone
 from django.utils.timezone import get_default_timezone, make_aware, now
 
@@ -9,6 +11,9 @@ from dynamic_preferences.registries import global_preferences_registry
 from activities.models import Activity
 from backend.models import YearTenant
 from . import __version__ as kepchup_version
+
+
+logger = logging.getLogger(__name__)
 
 
 def registration_opened_context(request):
@@ -45,23 +50,37 @@ def activities_context(request):
 def tenants_context(request):
     user = request.user
 
-    if user.is_authenticated and user.is_manager or user.is_superuser or user.is_staff:
-        return {"tenants": YearTenant.objects.all()}
-    if user.is_authenticated and user.is_kepchup_staff:
-        tenants = []
-        with connection.cursor() as cursor:
-            for tenant in YearTenant.objects.all():
-                cursor.execute(
-                    "SELECT id FROM {}.activities_coursesinstructors WHERE instructor_id=%s".format(
-                        tenant.schema_name
-                    ),
-                    [user.id],
-                )
-                row = cursor.fetchone()
-                if row:
-                    tenants.append(tenant)
+    if not user.is_authenticated:
+        return {}
+
+    cache_key = f"tenants_context_user_{user.id}"
+    tenants = cache.get(cache_key)
+    if tenants is not None:
         return {"tenants": tenants}
-    return {}
+
+    if user.is_manager or user.is_superuser or user.is_staff:
+        tenants = list(YearTenant.objects.all())
+
+    elif user.is_kepchup_staff:
+        tenants = []
+        for tenant in YearTenant.objects.all():
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        f"SELECT 1 FROM {tenant.schema_name}.activities_coursesinstructors "
+                        "WHERE instructor_id = %s LIMIT 1",
+                        [user.id],
+                    )
+                    if cursor.fetchone():
+                        tenants.append(tenant)
+            except DatabaseError as e:
+                logger.warning("Failed to query schema '%s': %s", tenant.schema_name, str(e))
+                continue
+    else:
+        tenants = []
+
+    cache.set(cache_key, tenants, timeout=300)  # Cache for 5 minutes
+    return {"tenants": tenants}
 
 
 def kepchup_context(request):
