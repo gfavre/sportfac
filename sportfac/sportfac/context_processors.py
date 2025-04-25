@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.cache import cache
 from django.db import connection
 from django.utils import timezone
 from django.utils.timezone import get_default_timezone, make_aware, now
@@ -32,9 +33,12 @@ def registration_opened_context(request):
 
 
 def activities_context(request):
-    activities = []
-    for slug, label in settings.KEPCHUP_ACTIVITY_TYPES:
-        activities.append((label, Activity.objects.visible().filter(type=slug).order_by("name")))
+    activities = cache.get("activities_context_data")
+    if activities is None:
+        activities = []
+        for slug, label in settings.KEPCHUP_ACTIVITY_TYPES:
+            activities.append((label, Activity.objects.visible().filter(type=slug).order_by("name")))
+        cache.set("activities_context_data", activities, timeout=None)  # we invalidate cache at Course level
     return {"activities_types": activities}
 
 
