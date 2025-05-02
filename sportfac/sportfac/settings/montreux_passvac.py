@@ -90,6 +90,7 @@ KEPCHUP_ALTERNATIVE_BILLING_LABEL = "Paiement"
 KEPCHUP_USE_SSO = True
 LOGIN_URL = "/client/"
 
+CELERY_TASK_DEFAULT_QUEUE = "montreux_passvac_queue"  # noqa: F405
 
 CELERYBEAT_SCHEDULE["notify-absences"] = {  # noqa: F405
     "task": "absences.tasks.notify_absences",

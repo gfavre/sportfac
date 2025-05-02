@@ -2,7 +2,6 @@
 <footer id="footer">
   <div class="container">
     <div>
-      {% include "address.html" %}
       {% get_flatpages as flatpages %}
       <ul class="footer-links hidden-print">
         <li><a href="{% url 'contact:contact' %}">{% translate "Contact" %}</a></li>
