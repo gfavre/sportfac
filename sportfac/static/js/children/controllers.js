@@ -106,7 +106,11 @@ function($scope, $attrs, $routeParams, $http, $window, $document, ChildrenServic
   };
 
   // Function to navigate to the next step if confirmed
-  $scope.navigateToNextStep = function() {
+  $scope.navigateToNextStep = function(event) {
+    if (!$scope.nextStepUrl) {
+      $scope.nextStepUrl = event.currentTarget.getAttribute('data-url');
+      event.preventDefault(); // Prevent default link behavior
+    }
     $('#confirmModal').modal('hide'); // Hide the modal popup
     $window.location.href = $scope.nextStepUrl;
   };
