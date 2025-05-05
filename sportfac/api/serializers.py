@@ -337,14 +337,17 @@ class ExtraInfoSerializer(serializers.ModelSerializer):
         return instance
 
     def validate_value(self, value):
-        if not value:
+        question: ExtraNeed = self.instance.key
+        if (question.mandatory or question.is_choices) and not value:
             raise serializers.ValidationError(_("This field cannot be left blank."))
-        truthy_values = ["true", "yes", "oui", "1"]
-        falsy_values = ["false", "no", "non", "0"]
-        if value.lower() in truthy_values:
-            return "1"  # Save "1" for any truthy value
-        if value.lower() in falsy_values:
-            return "0"
+
+        if question.is_boolean or question.is_image:
+            truthy_values = ["True", "true", "1", "OUI", "oui", "Oui", 1, True]
+            falsy_values = ["False", "false", "0", "NON", "non", "Non", 0, False]
+            if value.lower() in truthy_values:
+                return "1"  # Save "1" for any truthy value
+            if value.lower() in falsy_values:
+                return "0"
 
         return value
 

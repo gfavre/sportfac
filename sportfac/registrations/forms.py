@@ -10,7 +10,7 @@ from bootstrap_datepicker_plus.widgets import DatePickerInput
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, ButtonHolder, Div, Field, Fieldset, Layout
 
-from activities.models import Course
+from activities.models import Course, ExtraNeed
 from backend.forms import BuildingWidget, CourseWidget, FamilyUserWidget, TeacherWidget, TransportWidget
 from profiles.models import FamilyUser, School, SchoolYear
 from schools.models import Building, Teacher
@@ -351,8 +351,9 @@ class ExtraInfoForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         if instance and instance.key:
-            question = instance.key
+            question: ExtraNeed = instance.key
             self._handle_initial_value(instance, question)
+            self._handle_default(instance, question)
             self._handle_base_fields(instance, question)
             self._handle_choices(question)
             self._handle_image_field(instance, question)
@@ -362,7 +363,7 @@ class ExtraInfoForm(forms.ModelForm):
         # Initialize the form layout with Crispy Forms
         self._initialize_helper()
 
-    def _handle_initial_value(self, instance, question):
+    def _handle_initial_value(self, instance: ExtraInfo, question: ExtraNeed):
         if not (question.is_choices or question.is_image):
             return
         truthy_values = ["True", "true", "YES", "Yes", "yes", "OUI", "Oui", "oui", "1"]
@@ -374,13 +375,25 @@ class ExtraInfoForm(forms.ModelForm):
         elif instance.value == "1":
             self.initial["value"] = next((choice for choice in instance.key.choices if choice in truthy_values), "1")
 
-    def _handle_base_fields(self, instance, question):
+    def _handle_base_fields(self, instance: ExtraInfo, question: ExtraNeed):
         self.fields["registration"].label = ""  # No label for the registration field
         self.fields["registration"].widget = StaticTextWidget(text=str(instance.registration))  # Static text widget
         self.fields["registration"].required = False  # Make the field not required since it's static
-        self.fields["value"].label = question.question_label
+        self.fields["value"].label = mark_safe(question.question_label)
+        if question.mandatory:
+            self.fields["value"].required = True
+        else:
+            self.fields["value"].required = False
 
-    def _handle_choices(self, question):
+    def _handle_default(self, instance: ExtraInfo, question: ExtraNeed):
+        # Handle the case where the field is a character field
+        if not (question.is_characters or question.is_integer or question.is_boolean):
+            return
+
+        if not instance.value and question.default:
+            self.initial["value"] = question.default
+
+    def _handle_choices(self, question: ExtraNeed):
         # Set up choices if the question involves choices
         if question.is_choices:
             choices = question.choices
@@ -388,7 +401,6 @@ class ExtraInfoForm(forms.ModelForm):
                 choices = [(choice, choice) for choice in choices]  # Convert to (value, label) tuples
             choices.insert(0, ("", _("Please choose")))  # Add a default "please choose" option
             self.fields["value"].widget = forms.widgets.Select(choices=choices)
-            self.fields["value"].required = True
 
     def _handle_image_field(self, instance, question):
         # Set up image field handling

@@ -113,7 +113,11 @@ class BaseWizardStepView(View):
                 course_questions = registration.course.extra.all()
                 all_questions.update(set(course_questions))
                 # Retrieve extra infos related to this registration only once
-                answered_questions = {answer.key for answer in registration.extra_infos.all() if len(answer.value)}
+                answered_questions = {
+                    answer.key
+                    for answer in registration.extra_infos.all()
+                    if len(answer.value) or not answer.key.mandatory
+                }
                 # Check for missing questions
                 missing_questions = [question for question in course_questions if question not in answered_questions]
                 questions_not_answered.update(set(missing_questions))
