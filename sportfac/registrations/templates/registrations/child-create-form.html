@@ -4,6 +4,35 @@
 <h3 ng-show="userChildren.length > 0">Ajout d'un autre enfant</h3>
 <br/>
 <form name="childform" class="form-horizontal" role="form">
+  <div ng-show="debugMode" class="well well-sm text-danger" id="form-debug">
+    <strong>Erreurs détectées :</strong>
+    <ul>
+      <li ng-if="childform.first_name.$error.required">Prénom manquant</li>
+      <li ng-if="childform.last_name.$error.required">Nom manquant</li>
+      <li ng-if="childform.sex.$error.required">Genre manquant</li>
+      <li ng-if="childform.inputBirthDate.$error.required">Date de naissance manquante</li>
+      <li ng-if="childform.inputAVS && childform.inputAVS.$error.required">N° AVS manquant</li>
+      <li ng-if="childform.nationality.$error.required">Nationalité manquante</li>
+      <li ng-if="childform.language.$error.required">Langue manquante</li>
+      <li ng-if="childform.inputYear && childform.inputYear.$error.required">Année manquante</li>
+      <li ng-if="childform.school && childform.school.$error.required">École manquante</li>
+      <li ng-if="childform.emergency_number && childform.emergency_number.$error.required">Numéro d'urgence manquant</li>
+    </ul>
+    <div ng-show="childform.$invalid" class="alert alert-warning">
+  <strong>Form is invalid. Fields with issues:</strong>
+  <ul>
+    <li ng-repeat="(name, field) in childform" ng-if="field.$invalid && field.$name">
+      {[{ field.$name }]} –
+      <span ng-repeat="(errType, active) in field.$error" ng-if="active">
+        {{ errType }}
+      </span>
+    </li>
+  </ul>
+</div>
+  </p>
+  </div>
+
+
   <p ng-repeat="(name, errs) in errors" class="alert alert-danger" ng-show="errors.length > 0">
     {[{ errs.join(', ') }]}
   </p>
