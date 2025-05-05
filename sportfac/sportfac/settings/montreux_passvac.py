@@ -28,7 +28,24 @@ AUTHENTICATION_BACKENDS = (
 )
 SESSION_COOKIE_NAME = "montreux_epa"
 
+CELERY_TASK_DEFAULT_QUEUE = "montreux_passvac_queue"  # noqa: F405
+
+CELERYBEAT_SCHEDULE["notify-absences"] = {  # noqa: F405
+    "task": "absences.tasks.notify_absences",
+    "schedule": crontab(hour=19, minute=0),  # noqa: F405
+}
+CELERYBEAT_SCHEDULE["sync_from_master"] = {  # noqa: F405
+    "task": "profiles.tasks.sync_from_master",
+    "schedule": crontab(minute="*/10"),  # noqa: F405
+}
+CELERYBEAT_SCHEDULE["cancel-expired-registrations"] = {  # noqa: F405
+    "task": "registrations.tasks.cancel_expired_registrations",
+    "schedule": crontab(minute="*/5"),  # noqa: F405
+}
+
+
 KEPCHUP_USE_ABSENCES = True
+KEPCHUP_USE_APPOINTMENTS = False
 KEPCHUP_IMPORT_CHILDREN = True
 KEPCHUP_PREFILL_YEARS_WITH_TEACHERS = False
 KEPCHUP_SEND_PRESENCE_LIST = True
@@ -89,22 +106,6 @@ KEPCHUP_ALTERNATIVE_BILLING_LABEL = "Paiement"
 #########################################
 KEPCHUP_USE_SSO = True
 LOGIN_URL = "/client/"
-
-CELERY_TASK_DEFAULT_QUEUE = "montreux_passvac_queue"  # noqa: F405
-
-CELERYBEAT_SCHEDULE["notify-absences"] = {  # noqa: F405
-    "task": "absences.tasks.notify_absences",
-    "schedule": crontab(hour=19, minute=0),  # noqa: F405
-}
-CELERYBEAT_SCHEDULE["sync_from_master"] = {  # noqa: F405
-    "task": "profiles.tasks.sync_from_master",
-    "schedule": crontab(minute="*/10"),  # noqa: F405
-}
-CELERYBEAT_SCHEDULE["cancel-expired-registrations"] = {  # noqa: F405
-    "task": "registrations.tasks.cancel_expired_registrations",
-    "schedule": crontab(minute="*/5"),  # noqa: F405
-}
-KEPCHUP_USE_APPOINTMENTS = True
 
 
 # Dashboard

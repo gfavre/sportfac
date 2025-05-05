@@ -17,6 +17,7 @@ DATABASES[MASTER_DB] = env.db("MASTER_DATABASE_URL", default="postgres:///sportf
 OTHER_DB = "other"
 DATABASES[OTHER_DB] = env.db("OTHER_DATABASE_URL", default="postgres:///kepchup_montreux_epa")  # noqa: F405
 
+
 DATABASES["default"]["ENGINE"] = "django_tenants.postgresql_backend"  # noqa: F405
 DATABASE_ROUTERS = [
     "django_tenants.routers.TenantSyncRouter",
@@ -27,6 +28,25 @@ AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
 )
 SESSION_COOKIE_NAME = "montreux_epa"
+
+
+CELERY_TASK_DEFAULT_QUEUE = "montreux_epa_queue"  # noqa: F405
+CELERYBEAT_SCHEDULE["notify-absences"] = {  # noqa: F405
+    "task": "absences.tasks.notify_absences",
+    "schedule": crontab(hour=19, minute=0),  # noqa: F405
+}
+CELERYBEAT_SCHEDULE["sync_from_master"] = {  # noqa: F405
+    "task": "profiles.tasks.sync_from_master",
+    "schedule": crontab(minute="*/10"),  # noqa: F405
+}
+CELERYBEAT_SCHEDULE["cancel-expired-registrations"] = {  # noqa: F405
+    "task": "registrations.tasks.cancel_expired_registrations",
+    "schedule": crontab(minute="*/5"),  # noqa: F405
+}
+
+
+LOGGING["loggers"]["celery"]["level"] = "DEBUG"  # noqa: F405
+
 
 KEPCHUP_USE_ABSENCES = True
 KEPCHUP_IMPORT_CHILDREN = True
@@ -81,6 +101,7 @@ KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES = True
 KEPCHUP_ALTERNATIVE_ACTIVITIES_LABEL = "Inscription"
 KEPCHUP_ALTERNATIVE_CONFIRM_LABEL = "Résumé"
 KEPCHUP_ALTERNATIVE_BILLING_LABEL = "Paiement"
+KEPCHUP_USE_APPOINTMENTS = False
 
 
 # Single Sign On
@@ -88,27 +109,9 @@ KEPCHUP_ALTERNATIVE_BILLING_LABEL = "Paiement"
 KEPCHUP_USE_SSO = True
 LOGIN_URL = "/client/"
 
-CELERY_TASK_DEFAULT_QUEUE = "montreux_epa_queue"  # noqa: F405
-CELERYBEAT_SCHEDULE["notify-absences"] = {  # noqa: F405
-    "task": "absences.tasks.notify_absences",
-    "schedule": crontab(hour=19, minute=0),  # noqa: F405
-}
-CELERYBEAT_SCHEDULE["sync_from_master"] = {  # noqa: F405
-    "task": "profiles.tasks.sync_from_master",
-    "schedule": crontab(minute="*/10"),  # noqa: F405
-}
-CELERYBEAT_SCHEDULE["cancel-expired-registrations"] = {  # noqa: F405
-    "task": "registrations.tasks.cancel_expired_registrations",
-    "schedule": crontab(minute="*/5"),  # noqa: F405
-}
-KEPCHUP_USE_APPOINTMENTS = True
-
 
 # Dashboard
 ############################################
 KEPCHUP_DASHBOARD_SHOW_CHILDREN_STATS = True
 KEPCHUP_DASHBOARD_SHOW_FAMILY_STATS = False
 KEPCHUP_REGISTRATION_EXPIRE_MINUTES = 60
-
-
-LOGGING["loggers"]["celery"]["level"] = "DEBUG"  # noqa: F405
