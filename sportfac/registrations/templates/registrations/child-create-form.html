@@ -39,7 +39,7 @@
   <div class="form-group" ng-class="{'has-warning': errors.notfound }"
        ng-show="{[{ useExternalIdentifiers }]}">
     <div ng-show="{[{ useLagapeo }]}">
-      <label class="col-sm-4 control-label" for="ext_id">
+      <label class="col-sm-4 control-label" for="ext_id_lagapeo">
         {% if ID_LAGAPEO_ALTERNATIVE_LABEL %}
           {{ ID_LAGAPEO_ALTERNATIVE_LABEL }}
         {% else %}
@@ -47,7 +47,7 @@
         {% endif %}<span class="required"> *</span>
       </label>
       <div class="col-sm-8">
-        <input id="ext_id" ng-model="detailedChild.ext_id" name="ext_id"
+        <input id="ext_id_lagapeo" ng-model="detailedChild.ext_id" name="ext_id_lagapeo"
                type="number" class="form-control"
                max="100000000"
                ng-blur="lookupChild('lagapeo')" ng-required="{[{ useExternalIdentifiers }]}"/>
@@ -61,11 +61,12 @@
       </div>
     </div>
     <div ng-show="{[{ useAVS }]}">
-      <label class="col-sm-4 control-label" for="ext_id">
+      <label class="col-sm-4 control-label" for="ext_id_avs">
         N° AVS <span class="required"> *</span>
       </label>
       <div class="col-sm-8">
-        <input type="text" ng-model="detailedChild.avs" id="inputAVS" name="avs"
+        <input type="text" ng-model="detailedChild.avs" id="inputAVS" name="ext_id_avs"
+               id="ext_id_avs"
                class="form-control"  ng-blur="lookupChild('avs')"/>
         <span class="help-block" ng-show="errors.notfound">L'identifiant est inconnu / invalide.</span>
         <span ng-show="childform.avs.$error.required">Ce champ est obligatoire</span>
