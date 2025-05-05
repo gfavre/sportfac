@@ -38,7 +38,7 @@
 
   <div class="form-group" ng-class="{'has-warning': errors.notfound }"
        ng-show="{[{ useExternalIdentifiers }]}">
-    <div ng-show="{[{ useLagapeo }]}">
+    <div ng-if="useLagapeo">
       <label class="col-sm-4 control-label" for="ext_id_lagapeo">
         {% if ID_LAGAPEO_ALTERNATIVE_LABEL %}
           {{ ID_LAGAPEO_ALTERNATIVE_LABEL }}
@@ -60,7 +60,7 @@
         <span ng-show="childform.ext_id.$error.required">Ce champ est obligatoire</span>
       </div>
     </div>
-    <div ng-show="{[{ useAVS }]}">
+    <div ng-if="useAVS">
       <label class="col-sm-4 control-label" for="ext_id_avs">
         N° AVS <span class="required"> *</span>
       </label>
