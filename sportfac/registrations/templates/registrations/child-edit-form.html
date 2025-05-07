@@ -6,16 +6,27 @@
   </p>
 
   <div class="form-group{% if ID_LAGAPEO_HIDDEN %} hidden{% endif %}" ng-show="{[{ useExternalIdentifiers }]}">
-    <label class="col-sm-4 control-label" for="ext_id">
-      {% if ID_LAGAPEO_ALTERNATIVE_LABEL %}
-        {{ ID_LAGAPEO_ALTERNATIVE_LABEL }}
-      {% else %}
-        Identifiant (n° SSF)
-      {% endif %}
-    </label>
-    <div class="col-sm-8">
-      <p class="form-control-static">{[{ detailedChild.ext_id || "n/a" }]}</p>
+    <div ng-if="useLagapeo">
+      <label class="col-sm-4 control-label" for="ext_id_lagapeo">
+        {% if ID_LAGAPEO_ALTERNATIVE_LABEL %}
+          {{ ID_LAGAPEO_ALTERNATIVE_LABEL }}
+        {% else %}
+          Identifiant (n° SSF)
+        {% endif %}<span class="required"> *</span>
+      </label>
+      <div class="col-sm-8">
+        <p class="form-control-static">{[{ detailedChild.ext_id || "n/a" }]}</p>
+      </div>
     </div>
+    <div ng-if="useAVS">
+      <label class="col-sm-4 control-label" for="ext_id_avs">
+        N° AVS <span class="required"> *</span>
+      </label>
+      <div class="col-sm-8">
+        <p class="form-control-static">{[{ detailedChild.avs || "n/a" }]}</p>
+      </div>
+    </div>
+    <hr/>
   </div>
 
   <div class="form-group{% if FIRST_NAME_HIDDEN %} hidden{% endif %}" ng-class="{'has-error': !detailedChild.first_name}">
@@ -93,7 +104,7 @@
     <p class="col-sm-8 col-sm-offset-4" ng-show="childform.inputBirthDate.$error.required">Ce champ est obligatoire</p>
     {% endif %}
   </div>
-  <div class="form-group{% if AVS_HIDDEN %} hidden{% endif %}">
+  <div class="form-group{% if AVS_HIDDEN %} hidden{% endif %}" ng-show="{[{ !(useExternalIdentifiers && useAVS) }]}">
     <label class="col-sm-4 control-label" for="inputAVS">
       N° AVS{% if "avs" in CHILDREN_MANDATORY_FIELDS %}<span class="required"> *</span>{% endif %}
     </label>
@@ -103,8 +114,8 @@
              ng-model="detailedChild.avs"
              {% if "avs" in CHILDREN_MANDATORY_FIELDS %}required{% endif %}
       />
-      <p class="help-block col-sm-8 col-sm-offset-4">Format: 756.XXXX.XXXX.XX</p>
-      <p class="col-sm-8 col-sm-offset-4" ng-show="childform.inputAVS.$error.required">Ce champ est obligatoire</p>
+      <p class="help-block">Format: 756.XXXX.XXXX.XX</p>
+      <p ng-show="childform.inputAVS.$error.required">Ce champ est obligatoire</p>
       {% else %}
       <p class="form-control-static">{[{ detailedChild.avs }]}</p>
       {% endif %}

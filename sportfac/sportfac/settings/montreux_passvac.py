@@ -78,7 +78,10 @@ KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = [
 KEPCHUP_CHILDREN_MANDATORY_FIELDS = [
     "sex",
 ]
+# KEPCHUP_CHILDREN_HIDDEN_FIELDS = ["language", "nationality"]
+# FIXME: no way to fill in school, rest returns a primary key, not a name
 KEPCHUP_CHILDREN_HIDDEN_FIELDS = ["language", "nationality", "school", "other_school"]
+
 KEPCHUP_EXPLICIT_SESSION_DATES = True
 SCHOOL_YEAR_EDITABLE = False
 KEPCHUP_DISPLAY_LAGAPEO = False
