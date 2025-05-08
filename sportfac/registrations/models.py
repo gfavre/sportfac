@@ -115,8 +115,8 @@ class Registration(TimeStampedModel, StatusModel):
 
     @property
     def is_local_pricing(self):
-        if self.child.marked_up_price:
-            return False
+        if settings.KEPCHUP_RELY_ON_CHILD_MARKED_UP_PRICE:
+            return not self.child.marked_up_price
         if self.course.local_city_override.exists():
             local_zipcodes = self.course.local_city_override.values_list("zipcode", flat=True)
         else:
