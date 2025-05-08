@@ -229,6 +229,15 @@ class Registration(TimeStampedModel, StatusModel):
         if settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
             from activities.models import Course
 
+            if settings.KEPCHUP_RELY_ON_CHILD_MARKED_UP_PRICE:
+                if self.is_local_pricing:
+                    # tarif indigène
+                    return (
+                        self.course.price_local,
+                        Course._meta.get_field("price_local").verbose_name,
+                    )
+                return self.course.price, _("Price for external people")
+
             # what are the registrations to the same activities already made in same family?
             same_family_regs = Registration.objects.filter(
                 child__family=self.child.family, course__activity=self.course.activity
