@@ -1,12 +1,16 @@
 {% extends "base.html" %}
-{% load floppyforms i18n %}
+{% load crispy_forms_tags floppyforms i18n %}
 
 {% block title %}{% translate "Confirm sending" %} - {{ block.super }}{% endblock %}
 
 {% block page_title %}{% translate "Confirm sending" %}{% endblock %}
 
 {% block content %}
-<form action="" method="post">{% csrf_token %}
+{% comment %}{% crispy form %}{% endcomment %}
+
+<hr>
+  <form action="" method="post">{% csrf_token %}
+
 {% form form using %}
   {% formconfig row using "floppyforms/rows/bootstrap-sm-6.html" %}
   {% formrow form.copy_all_instructors %}

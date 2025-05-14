@@ -549,6 +549,7 @@ class RegistrationValidationForm(RegistrationValidationBaseForm):
         labels = {
             "consent_given": _(
                 "I consent to these registrations and agree to pay the indicated amount "
-                "for these registrations to become effective."
+                "for these registrations to become effective. I confirm that I have read and understood "
+                "the terms and conditions."
             )
         }

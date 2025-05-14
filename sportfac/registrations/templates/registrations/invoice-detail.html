@@ -10,10 +10,9 @@
 {% block content %}
 {% include "registrations/invoice-part-heading.html" %}
 {% include "registrations/invoice-part-registrations.html" %}
-
 {% if transaction %}
     {% include "registrations/billing_partial.html" %}
- {% endif %}
+{% endif %}
 
 {% include "print-button.html" %}
 
