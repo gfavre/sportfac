@@ -134,7 +134,10 @@ class RegistrationResource(resources.ModelResource):
         return obj.child.other_school
 
     def dehydrate_emergency_number(self, obj):
-        value = obj.child.emergency_number
+        if settings.KEPCHUP_EMERGENCY_NUMBER_ON_PARENT:
+            value = obj.child.family.private_phone
+        else:
+            value = obj.child.emergency_number
         return phone(value)
 
     def dehydrate_birth_date(self, obj):
