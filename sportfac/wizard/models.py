@@ -53,8 +53,11 @@ class WizardStep(TimeStampedModel):
     def backend_url(self):
         return reverse_lazy("backend:wizard-step-update", kwargs={"slug": self.slug})
 
-    def url(self):
+    def get_absolute_url(self):
         return reverse_lazy("wizard:step", kwargs={"step_slug": self.slug})
+
+    def url(self):
+        return self.get_absolute_url()
 
     def __str__(self):
         return self.title
