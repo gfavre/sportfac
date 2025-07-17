@@ -241,3 +241,17 @@ def import_children(filepath, tenant_id, user_id=None):
 @shared_task
 def celery_health_check():
     return {"hostname": socket.gethostname(), "pid": os.getpid(), "status": "ok"}
+
+
+@shared_task
+def log_everyone_out(exceptions=None):
+    """
+    Log out all users by deleting all sessions.
+    This is useful when switching tenants or for maintenance tasks.
+    """
+    queryset = Session.objects.all()
+    if exceptions:
+        logger.info("Logging out all users except those in exceptions: %s", exceptions)
+        queryset = queryset.exclude(session_key__in=exceptions)
+    queryset.delete()
+    logger.info("All users have been logged out.")
