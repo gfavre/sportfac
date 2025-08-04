@@ -428,6 +428,7 @@ class Bill(TimeStampedModel, StatusModel):
     pdf = models.FileField(_("PDF"), null=True, blank=True)
 
     payment_date = models.DateTimeField(_("Payment date"), null=True, blank=True)
+    do_not_expire = models.BooleanField(_("Do not expire"), default=False)
 
     objects = BillManager()
 

@@ -172,7 +172,7 @@ class BillAdmin(SportfacModelAdmin):
         "reminder_sent",
         "payment_method",
     )
-    list_filter = ("status", "payment_method")
+    list_filter = ("status", "payment_method", "do_not_expire")
     raw_id_fields = ("family",)
     date_hierarchy = "created"
     search_fields = ("billing_identifier", "family__first_name", "family__last_name")

@@ -364,8 +364,8 @@ KEPCHUP_ALTERNATIVE_BILLING_LABEL = "Paiement"
 
 # Single Sign On
 #########################################
-KEPCHUP_USE_SSO = True
-LOGIN_URL = "/client/"
+KEPCHUP_USE_SSO = False
+# LOGIN_URL = "/client/"
 
 CELERY_TASK_DEFAULT_QUEUE = "montreux_epa_queue"  # noqa: F405
 CELERYBEAT_SCHEDULE["notify-absences"] = {  # noqa: F405

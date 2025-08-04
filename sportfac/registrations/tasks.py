@@ -202,7 +202,7 @@ def cancel_expired_registrations():
     expired_invoices = Bill.objects.filter(
         status=Bill.STATUS.waiting,
         modified__lte=expiration_cutoff,
-    )
+    ).exclude(do_not_expire=True)
     courses_set = set()
 
     with transaction.atomic():

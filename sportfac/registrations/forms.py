@@ -60,6 +60,11 @@ class BillForm(forms.ModelForm):
     payment_date = forms.DateTimeField(
         widget=DatePickerInput(format="%d.%m.%Y"), label=_("Payment date"), required=False
     )
+    do_not_expire = forms.BooleanField(
+        label=_("Do not expire this invoice"),
+        required=False,
+        help_text=_("If checked, this bill will not be automatically expired, even if it is not paid."),
+    )
 
     class Meta:
         model = Bill
