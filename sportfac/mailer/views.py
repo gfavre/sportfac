@@ -15,6 +15,7 @@ from django.views.generic.edit import FormView
 
 from dbtemplates.models import Template
 
+from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser
 from . import tasks
 from .forms import CopiesForm, CourseMailForm, MailForm
@@ -55,8 +56,12 @@ class MailCreateView(FormView):
         if form.cleaned_data.get("send_copy", False):
             bcc_recipients.add(str(self.request.user.pk))
         if form.cleaned_data.get("copy_all_admins", False):
-            for admin in FamilyUser.managers_objects.all():
-                bcc_recipients.add(str(admin.pk))
+            admin_email = global_preferences_registry.manager()["email__ADMIN_ARCHIVE_MAIL"]
+            if admin_email:
+                bcc_recipients.add(admin_email)
+            else:
+                for admin in FamilyUser.managers_objects.all():
+                    bcc_recipients.add(str(admin.pk))
         if form.cleaned_data.get("copy_all_instructors", False) and self.course:
             for instructor in self.course.instructors.all():
                 bcc_recipients.add(str(instructor.pk))
@@ -268,13 +273,17 @@ class MailCourseInstructorsView(ParticipantsBaseMixin, TemplatedEmailMixin, Canc
         if not bcc_list:
             bcc_list = []
         current_site = get_current_site(self.request)
+
         return {
             "site_name": current_site.name,
             "site_url": settings.DEBUG and "http://" + current_site.domain or "https://" + current_site.domain,
             "signature": self.global_preferences["email__SIGNATURE"],
             "from_email": self.get_from_address(),
             "to_email": recipient.get_email_string(),
-            "bcc_email": [bcc_user.get_email_string() for bcc_user in bcc_list],
+            "bcc_email": [
+                bcc_user.get_email_string() if hasattr(bcc_user, "get_email_string") else bcc_user
+                for bcc_user in bcc_list
+            ],
             "recipient": recipient,
             "course": self.course,
         }
@@ -284,6 +293,12 @@ class MailCourseInstructorsView(ParticipantsBaseMixin, TemplatedEmailMixin, Canc
         if form.cleaned_data.get("send_copy", False):
             bcc_list.add(self.request.user)
         if form.cleaned_data.get("copy_all_admins", False):
+            admin_email = global_preferences_registry.manager()["email__ADMIN_ARCHIVE_MAIL"]
+            if admin_email:
+                bcc_list.add(admin_email)
+            else:
+                for admin in FamilyUser.managers_objects.all():
+                    bcc_list.add(str(admin.pk))
             for manager in FamilyUser.managers_objects.exclude(pk=str(self.request.user.pk)):
                 bcc_list.add(manager)
         return bcc_list
@@ -315,5 +330,8 @@ class MailCourseInstructorsView(ParticipantsBaseMixin, TemplatedEmailMixin, Canc
             message=self.get_mail_body(context),
             from_email=self.get_from_address(),
             reply_to=[self.get_reply_to_address()],
-            bcc=[bcc_user.get_email_string() for bcc_user in bcc_list],
+            bcc=[
+                bcc_user.get_email_string() if hasattr(bcc_user, "get_email_string") else bcc_user
+                for bcc_user in bcc_list
+            ],
         )

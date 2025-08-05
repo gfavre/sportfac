@@ -103,6 +103,14 @@ class AccountantMail(StringPreference):
 
 
 @global_preferences_registry.register
+class AdminArchiveMailMail(StringPreference):
+    section = email
+    name = "ADMIN_ARCHIVE_MAIL"
+    default = ""
+    help_text = _("Email address of the administrators where outgoing emails will be BCCed for archive purposes")
+
+
+@global_preferences_registry.register
 class SchoolName(StringPreference):
     section = email
     name = "SCHOOL_NAME"

@@ -75,9 +75,15 @@ class CourseMailForm(MailForm):
     copy_all_instructors = forms.BooleanField(
         label=_("Send a copy to all other instructors"), initial=True, required=False
     )
+    copy_all_admins = forms.BooleanField(
+        label=_("Send a copy to administrators"), initial=True, required=False, disabled=True
+    )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, enable_copy_all_admins=False, **kwargs):
         super().__init__(*args, **kwargs)
+        if enable_copy_all_admins:
+            self.fields["copy_all_admins"].disabled = False
+            self.fields["copy_all_admins"].initial = False
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
@@ -86,6 +92,7 @@ class CourseMailForm(MailForm):
             "attachments",
             "send_copy",
             "copy_all_instructors",
+            "copy_all_admins",
         )
 
 

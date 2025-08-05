@@ -164,6 +164,12 @@ class CustomParticipantsCustomMailView(InstructorMixin, mailer_views.MailCreateV
     def get_success_url(self):
         return reverse("activities:mail-preview", kwargs={"course": self.course.pk})
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if len(self.get_recipients()) == 1:
+            kwargs["enable_copy_all_admins"] = True
+        return kwargs
+
 
 class MailCourseInstructorsView(InstructorMixin, mailer_views.MailCourseInstructorsView):
     template_name = "activities/confirm_send.html"

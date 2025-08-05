@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -46,7 +48,7 @@ class BaseEmailMixin(GlobalPreferencesMixin):
         if not bcc_list:
             bcc_list = []
         context["recipient"] = recipient
-        context["to_email"] = recipient.get_email_string()
+        context["to_email"] = recipient.get_email_string() if hasattr(recipient, "get_email_string") else recipient
         context["bcc"] = bcc_list
         return context
 
@@ -70,10 +72,16 @@ class BaseEmailMixin(GlobalPreferencesMixin):
         return self.global_preferences["email__REPLY_TO_MAIL"]
 
     def get_recipient_addresses(self):
-        return [recipient.get_email_string() for recipient in self.get_recipients()]
+        return [
+            recipient.get_email_string() if hasattr(recipient, "get_email_string") else recipient
+            for recipient in self.get_recipients()
+        ]
 
     def get_bcc_addresses(self):
-        return [recipient.get_email_string() for recipient in self.get_bcc_recipients()]
+        return [
+            recipient.get_email_string() if hasattr(recipient, "get_email_string") else recipient
+            for recipient in self.get_bcc_recipients()
+        ]
 
     def get_subject(self, context):
         if not self.subject:
@@ -147,10 +155,16 @@ class ArchivedMailMixin(BaseEmailMixin):
         return super().get_context_data(**kwargs)
 
     def get_recipients(self):
-        return list(FamilyUser.objects.filter(pk__in=self.archive.recipients))
+        user_ids = []
+        email_strings = []
+        for val in self.archive.bcc_recipients:
+            try:
+                user_ids.append(UUID(str(val)))
+            except (ValueError, TypeError):
+                email_strings.append(str(val))
 
-    def get_bcc_recipients(self):
-        return list(FamilyUser.objects.filter(pk__in=self.archive.bcc_recipients))
+        users = list(FamilyUser.objects.filter(pk__in=user_ids))
+        return users + email_strings
 
     def get_subject(self, context):
         return self.archive.subject
@@ -250,7 +264,7 @@ class ParticipantsMixin(ParticipantsBaseMixin, BaseEmailMixin):
             subject=self.get_subject(mail_context),
             message=message,
             from_email=self.get_from_address(),
-            recipients=[recipient.get_email_string()],
+            recipients=[recipient.get_email_string() if hasattr(recipient, "get_email_string") else recipient],
             reply_to=[self.get_reply_to_address()],
             bcc=[user.get_email_string() for user in bcc_recipients],
             attachments=[attachment.pk for attachment in self.get_attachments(mail_context)],

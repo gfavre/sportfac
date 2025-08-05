@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-04 14:35+0200\n"
-"PO-Revision-Date: 2025-08-04 14:37+0200\n"
+"POT-Creation-Date: 2025-08-05 07:38+0200\n"
+"PO-Revision-Date: 2025-08-05 07:39+0200\n"
 "Last-Translator: Gregory Favre <greg@beyondthewall.ch>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -1293,7 +1293,7 @@ msgid "Send email"
 msgstr "Envoyer l'email"
 
 #: sportfac/activities/templates/activities/confirm_send.html:22
-#: sportfac/activities/templates/activities/mail-create.html:57
+#: sportfac/activities/templates/activities/mail-create.html:58
 #: sportfac/backend/templates/backend/activity/update.html:25
 #: sportfac/backend/templates/backend/allocations/report.html:67
 #: sportfac/backend/templates/backend/allocations/update.html:17
@@ -1639,12 +1639,12 @@ msgstr "Nouvel email"
 msgid "To"
 msgstr "À"
 
-#: sportfac/activities/templates/activities/mail-create.html:54
+#: sportfac/activities/templates/activities/mail-create.html:55
 #: sportfac/backend/templates/backend/mail/create.html:63
 msgid "Save and preview"
 msgstr "Enregistrer et prévisualiser"
 
-#: sportfac/activities/templates/activities/mail-create.html:59
+#: sportfac/activities/templates/activities/mail-create.html:60
 #: sportfac/backend/templates/backend/mail/create.html:68
 msgid "Reset"
 msgstr "Effacer"
@@ -2182,22 +2182,30 @@ msgstr ""
 "virgule"
 
 #: sportfac/backend/dynamic_preferences_registry.py:110
+msgid ""
+"Email address of the administrators where outgoing emails will be BCCed for "
+"archive purposes"
+msgstr ""
+"Adresse électronique des administrateurs où les courriels sortants seront "
+"mis en BCC à des fins d'archivage"
+
+#: sportfac/backend/dynamic_preferences_registry.py:118
 msgid "School name"
 msgstr "Nom de l'école"
 
-#: sportfac/backend/dynamic_preferences_registry.py:120
+#: sportfac/backend/dynamic_preferences_registry.py:128
 msgid "Signature used at the bottom of emails"
 msgstr "Signature en bas des emails"
 
-#: sportfac/backend/dynamic_preferences_registry.py:168
+#: sportfac/backend/dynamic_preferences_registry.py:176
 msgid "Maximum number of registrations per child"
 msgstr "Nombre maximum d' atteint'inscriptions par enfant"
 
-#: sportfac/backend/dynamic_preferences_registry.py:178
+#: sportfac/backend/dynamic_preferences_registry.py:186
 msgid "Days between end of registrations and payment"
 msgstr "Jours entre la fin des inscriptions et le paiement"
 
-#: sportfac/backend/dynamic_preferences_registry.py:188
+#: sportfac/backend/dynamic_preferences_registry.py:196
 #: sportfac/backend/templates/backend/user/detail-instructor.html:49
 #: sportfac/profiles/forms.py:221 sportfac/profiles/resources.py:61
 #: sportfac/registrations/templates/registrations/invoice-part-heading.html:67
@@ -2205,19 +2213,19 @@ msgstr "Jours entre la fin des inscriptions et le paiement"
 msgid "IBAN"
 msgstr "IBAN"
 
-#: sportfac/backend/dynamic_preferences_registry.py:198
+#: sportfac/backend/dynamic_preferences_registry.py:206
 msgid "Bill creation place"
 msgstr "Lieu de création de la facture"
 
-#: sportfac/backend/dynamic_preferences_registry.py:209
+#: sportfac/backend/dynamic_preferences_registry.py:217
 msgid "Payment address"
 msgstr "Adresse de paiement"
 
-#: sportfac/backend/dynamic_preferences_registry.py:218
+#: sportfac/backend/dynamic_preferences_registry.py:226
 msgid "Days between course absence and notification"
 msgstr "Jours entre l'absence et la notification"
 
-#: sportfac/backend/dynamic_preferences_registry.py:227
+#: sportfac/backend/dynamic_preferences_registry.py:235
 msgid "Name of period, can be used in templates"
 msgstr "Nom de la période, peut être utilisé dans les modèles"
 
@@ -3139,7 +3147,7 @@ msgstr "Emails génériques"
 #: sportfac/backend/templates/backend/mail/list.html:34
 #: sportfac/backend/templates/backend/mail/preview-editlink.html:23
 #: sportfac/contact/forms.py:23 sportfac/mailer/forms.py:13
-#: sportfac/mailer/forms.py:103 sportfac/mailer/models.py:35
+#: sportfac/mailer/forms.py:110 sportfac/mailer/models.py:35
 #: sportfac/mailer/templates/mailer/preview.html:24
 msgid "Subject"
 msgstr "Sujet"
@@ -3154,7 +3162,7 @@ msgid "Edit email"
 msgstr "Modifier l’e-mail"
 
 #: sportfac/backend/templates/backend/mail/emails_update.html:3
-#: sportfac/mailer/forms.py:149 sportfac/wizard/forms.py:28
+#: sportfac/mailer/forms.py:156 sportfac/wizard/forms.py:28
 msgid "Update email"
 msgstr "Enregistrer"
 
@@ -3173,7 +3181,7 @@ msgstr "Destinataire"
 
 #: sportfac/backend/templates/backend/mail/list.html:36
 #: sportfac/contact/forms.py:25 sportfac/mailer/forms.py:14
-#: sportfac/mailer/forms.py:104 sportfac/mailer/models.py:38
+#: sportfac/mailer/forms.py:111 sportfac/mailer/models.py:38
 msgid "Message"
 msgstr "Message"
 
@@ -4779,8 +4787,8 @@ msgstr "Les dates d'ouverture et de fermeture ont été mises à jour"
 msgid "An error was found in form %s"
 msgstr "Une erreur a été trouvée dans le formulaire %s"
 
-#: sportfac/backend/views/mail_views.py:207 sportfac/mailer/mixins.py:30
-#: sportfac/mailer/views.py:303
+#: sportfac/backend/views/mail_views.py:207 sportfac/mailer/mixins.py:32
+#: sportfac/mailer/views.py:315
 #, python-format
 msgid "Your email is being sent to %(number)s recipients."
 msgstr "Votre email est en cours d'envoi chez %(number)s destinataires."
@@ -5181,13 +5189,17 @@ msgstr "M'envoyer une copie"
 msgid "Remove ?"
 msgstr "Supprimer ?"
 
-#: sportfac/mailer/forms.py:44 sportfac/mailer/forms.py:94
+#: sportfac/mailer/forms.py:44 sportfac/mailer/forms.py:101
 msgid "Send a copy to all other administrators"
 msgstr "Envoyer une copie aux autres administrateurs"
 
 #: sportfac/mailer/forms.py:58 sportfac/mailer/forms.py:76
 msgid "Send a copy to all other instructors"
 msgstr "Envoyer une copie aux autres moniteurs"
+
+#: sportfac/mailer/forms.py:79
+msgid "Send a copy to administrators"
+msgstr "Envoyer une copie aux administrateurs"
 
 #: sportfac/mailer/models.py:31
 msgid "sent"
