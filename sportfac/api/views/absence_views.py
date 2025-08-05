@@ -1,26 +1,22 @@
-# -*- coding: utf-8 -*-
 from django.conf import settings
 
-from absences.models import Absence, Session
-from registrations.models import Child
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from absences.models import Absence, Session
+from registrations.models import Child
 from ..permissions import InstructorPermission
-from ..serializers import (
-    AbsenceSerializer,
-    SessionSerializer,
-    SessionUpdateSerializer,
-    SetAbsenceSerializer,
-)
+from ..serializers import AbsenceSerializer, SessionSerializer, SessionUpdateSerializer, SetAbsenceSerializer
 
 
 class AbsenceViewSet(viewsets.ModelViewSet):
     model = Absence
-    queryset = Absence.objects.all()
     permission_classes = (InstructorPermission,)
     serializer_class = AbsenceSerializer
+
+    def get_queryset(self):
+        return Absence.objects.all()
 
     @action(detail=False, methods=["post"])
     def set(self, request):
@@ -33,8 +29,7 @@ class AbsenceViewSet(viewsets.ModelViewSet):
                 defaults={"status": res_status},
             )
             return Response({"status": res_status})
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class SessionViewSet(viewsets.ModelViewSet):

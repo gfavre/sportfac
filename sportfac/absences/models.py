@@ -28,9 +28,7 @@ class Absence(StatusModel, TimeStampedModel):
         unique_together = ("child", "session")
 
     def __str__(self):
-        return "{} - {} - {} - {}".format(
-            self.child, self.session.course.short_name, self.session.date.isoformat(), self.status
-        )
+        return self.status
 
 
 class Session(TimeStampedModel):
@@ -79,4 +77,4 @@ class Session(TimeStampedModel):
                 self.course.update_dates_from_sessions()
 
     def __str__(self):
-        return f"{self.course.short_name} - {self.date}"
+        return f"{self.course_id} - {self.date}"

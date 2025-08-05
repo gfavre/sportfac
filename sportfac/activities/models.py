@@ -199,13 +199,14 @@ class Course(TimeStampedModel):
 
     TYPE = Choices(
         ("course", _("Course (single day per week)")),
+        ("unregistered_course", _("Unregistered course (single day per week)")),
         ("multicourse", _("Course (multiple days per week)")),
         ("camp", _("Camp")),
     )
     activity = models.ForeignKey(
         "Activity", related_name="courses", verbose_name=_("Activity"), on_delete=models.CASCADE
     )
-    course_type = models.CharField(_("Course type"), max_length=16, choices=TYPE, default=TYPE.course)
+    course_type = models.CharField(_("Course type"), max_length=30, choices=TYPE, default=TYPE.course)
     number = models.CharField(
         max_length=30,
         db_index=True,
@@ -349,7 +350,9 @@ class Course(TimeStampedModel):
     @property
     def all_dates(self):
         if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
-            return [session.date for session in self.sessions.all().order_by("date")]
+            sessions = list(self.sessions.all())  # use prefetched
+            sessions.sort(key=lambda s: s.date)
+            return [session.date for session in sessions]
         return [
             self.start_date + timedelta(days=i)
             for i in range(0, (self.end_date - self.start_date).days + 1, 7)
