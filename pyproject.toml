@@ -1,0 +1,19 @@
+[tool.isort]
+profile = "black"
+force_to_top = ["typing"]
+single_line_exclusions = ["typing"]
+force_single_line = true
+known_first_party = [
+    "absences", "activities", "api", "appointments", "backend", "contact", "mailer",
+    "nyonmarens", "payments", "payroll", "profiles", "registrations", "schools",
+    "sportfac", "waiting_slots", "wizard"
+]
+known_third_party = [
+    "django", "django_countries", "localflavor", "model_utils", "phonenumber_field"
+]
+sections = [
+    "FUTURE", "STDLIB", "DJANGO", "THIRDPARTY", "FIRSTPARTY", "TYPING", "LOCALFOLDER"
+]
+import_heading_typing = "TYPING"
+lines_after_imports = 2
+line_length = 119

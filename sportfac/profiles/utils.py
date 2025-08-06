@@ -1,7 +1,7 @@
 import re
+from typing import TYPE_CHECKING, Any
 from collections.abc import Callable
 from functools import wraps
-from typing import TYPE_CHECKING, Any
 
 from django.core.cache import cache
 
