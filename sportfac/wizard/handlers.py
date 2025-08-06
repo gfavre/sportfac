@@ -135,7 +135,9 @@ class QuestionStepHandler(StepHandler):
 
     def __init__(self, step, registration_context):
         super().__init__(step, registration_context)
-        self.questions = [question for question in registration_context["all_questions"] if question.step == step]
+        self.questions = [
+            question for question in registration_context["all_questions"] if question.step_id == step.id
+        ]
 
     def is_visible(self):
         if not self.registration_context["registrations"]:

@@ -10,15 +10,15 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from activities.models import SCHOOL_YEARS
 from django_countries.fields import CountryField
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 from localflavor.generic.models import IBANField
 from model_utils import Choices
 from model_utils.fields import AutoCreatedField, AutoLastModifiedField
 from phonenumber_field.modelfields import PhoneNumberField
-from registrations.models import Bill, Registration
 
+from activities.models import SCHOOL_YEARS
+from registrations.models import Bill, Registration
 from .ahv import AHVField
 from .utils import get_street_and_number
 
@@ -241,8 +241,10 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         return self.is_manager or self.is_superuser
 
     @property
-    def is_instructor(self):
-        return self.coursesinstructors_set.exists()
+    def is_instructor(self) -> bool:
+        from .utils import is_instructor
+
+        return is_instructor(self)
 
     @property
     def last_registration(self):
@@ -293,10 +295,10 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
         return get_street_and_number(self.address)
 
     @property
-    def updatable_children(self):
-        from registrations.models import Child
+    def updatable_children(self) -> int:
+        from profiles.utils import updatable_children_count
 
-        return self.children.filter(status=Child.STATUS.imported).count()
+        return updatable_children_count(self)
 
     def get_absolute_url(self):
         return reverse("profiles:profiles_account")

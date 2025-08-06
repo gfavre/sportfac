@@ -115,7 +115,7 @@ class BaseWizardStepView(View):
                 # Retrieve extra infos related to this registration only once
                 answered_questions = {
                     answer.key
-                    for answer in registration.extra_infos.all()
+                    for answer in registration.extra_infos.select_related("key")
                     if len(answer.value) or not answer.key.mandatory
                 }
                 # Check for missing questions

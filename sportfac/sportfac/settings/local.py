@@ -63,6 +63,13 @@ SESSION_COOKIE_NAME = "sportfac"
 # END DATABASE CONFIGURATION
 
 
+REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = (  # noqa: F405
+    "rest_framework.renderers.JSONRenderer",
+    "rest_framework.renderers.BrowsableAPIRenderer",
+    "rest_framework_datatables.renderers.DatatablesRenderer",
+)
+
+
 # TOOLBAR CONFIGURATION
 # See: https://github.com/django-debug-toolbar/django-debug-toolbar#installation
 

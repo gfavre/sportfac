@@ -1,4 +1,62 @@
 import re
+from collections.abc import Callable
+from functools import wraps
+from typing import TYPE_CHECKING, Any
+
+from django.core.cache import cache
+
+
+if TYPE_CHECKING:
+    from .models import FamilyUser  # only used for type hints
+
+IS_INSTRUCTOR_CACHE_TTL = 7200  # 2h
+UPDATABLE_CHILDREN_CACHE_TTL = 3600  # 1h
+
+
+def cached_user_property(name: str, ttl: int = 3600) -> Callable:
+    """
+    Decorator to cache a per-user property with a TTL.
+
+    Args:
+        name: Unique key name (e.g. 'is_instructor').
+        ttl: Time to live in seconds.
+
+    Usage:
+        @cached_user_property("is_instructor", ttl=600)
+        def is_instructor(user):
+            ...
+    """
+
+    def decorator(func: Callable[["FamilyUser"], Any]) -> Callable[["FamilyUser"], Any]:
+        @wraps(func)
+        def wrapper(user: "FamilyUser") -> Any:
+            cache_key = f"user:{user.pk}:{name}"
+            if (val := cache.get(cache_key)) is not None:
+                return val
+            val = func(user)
+            cache.set(cache_key, val, ttl)
+            return val
+
+        return wrapper
+
+    return decorator
+
+
+def invalidate_user_cache(user_id: int, *keys: str) -> None:
+    for key in keys:
+        cache.delete(f"user:{user_id}:{key}")
+
+
+@cached_user_property("is_instructor", ttl=7200)
+def is_instructor(user: "FamilyUser") -> bool:
+    return user.coursesinstructors_set.exists()
+
+
+@cached_user_property("updatable_children", ttl=3600)
+def updatable_children_count(user: "FamilyUser") -> int:
+    from registrations.models import Child
+
+    return user.children.filter(status=Child.STATUS.imported).count()
 
 
 def get_street_and_number(address: str) -> (str, str):
