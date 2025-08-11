@@ -167,9 +167,15 @@
             <dd>{{ course.get_age_min_display }} - {{ course.get_age_max_display }}</dd>
             {% endif %}
           </dl>
+
+
           <h4 class="content-title">
             <u>{% translate "Availability" %}</u>
           </h4>
+
+          {% if course.is_unregistered_course %}
+                          {% translate "Course without registration" %}
+          {% else %}
 
           <p>
             {% if course.full or not course.allow_new_participants %}
@@ -198,6 +204,8 @@
               </a>
             </p>
           {% endif %}
+
+        {% endif %}
         </div>
       </section>
     {% endfor %}

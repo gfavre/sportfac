@@ -696,7 +696,7 @@ class Course(TimeStampedModel):
         # Registration has a custom manager that only displays non canceled registrations.
         # Therefore, those only appear in admin, but not anywhere else.
         self.nb_participants = self.participants.count()
-        if self.nb_participants >= self.max_participants:
+        if self.nb_participants >= self.max_participants or self.is_unregistered_course:
             self.allow_new_participants = False
 
     def update_registrations(self, last_registration):
