@@ -123,6 +123,7 @@
         {% endif %}
       </dl>
 
+    {% if not course.is_unregistered_course %}
       <h4 class="content-title"><u>{% translate "Availability" %}</u></h4>
       <p>
         {% if course.full %}
@@ -145,7 +146,7 @@
       </div>
       <p class="text-right"><small>{{ course.min_participants }} participants requis pour que l'activité ait
         lieu</small></p>
-
+{% endif %}
       {% if user in course.instructors.all %}
         <h4 class="content-title"><u>{% translate "Management" %}</u></h4>
         {% if USE_ABSENCES %}

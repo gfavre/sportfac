@@ -496,6 +496,10 @@ class Course(TimeStampedModel):
         return self.course_type == self.TYPE.multicourse
 
     @property
+    def is_unregistered_course(self):
+        return self.course_type == self.TYPE.unregistered_course
+
+    @property
     def last_convocation_email(self):
         receipt = self.email_receipts.filter(type=TemplatedEmailReceipt.TYPE.convocation).order_by("modified").last()
         if receipt:
