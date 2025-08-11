@@ -1,20 +1,23 @@
 from django.conf import settings
 from django.core.cache import cache
 from django.http import Http404
-
-from activities.models import Activity, Course, CoursesInstructors
-from registrations.models import Registration
-from rest_framework import mixins, status, views, viewsets
+from rest_framework import mixins
+from rest_framework import status
+from rest_framework import views
+from rest_framework import viewsets
 from rest_framework.response import Response
 
+from activities.models import Activity
+from activities.models import Course
+from activities.models import CoursesInstructors
+from registrations.models import Registration
+
 from ..permissions import ManagerPermission
-from ..serializers import (
-    ActivityDetailedSerializer,
-    ChangeCourseSerializer,
-    CourseChangedSerializer,
-    CourseSerializer,
-    CoursesInstructorsRoleSerializer,
-)
+from ..serializers import ActivityDetailedSerializer
+from ..serializers import ChangeCourseSerializer
+from ..serializers import CourseChangedSerializer
+from ..serializers import CourseSerializer
+from ..serializers import CoursesInstructorsRoleSerializer
 
 
 class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
@@ -27,21 +30,29 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
             school_year = self.request.query_params.get("year")
             if school_year is not None:
                 try:
-                    queryset = queryset.filter(
-                        courses__schoolyear_min__lte=int(school_year),
-                        courses__schoolyear_max__gte=int(school_year),
-                        courses__visible=True,
-                    ).distinct()
+                    queryset = (
+                        queryset.exclude(courses__type=Course.TYPE.unregistered_course)
+                        .filter(
+                            courses__schoolyear_min__lte=int(school_year),
+                            courses__schoolyear_max__gte=int(school_year),
+                            courses__visible=True,
+                        )
+                        .distinct()
+                    )
                 except ValueError:
                     pass
         else:
             birth_date = self.request.query_params.get("birth_date")
             if birth_date is not None:
-                return queryset.filter(
-                    courses__min_birth_date__gte=birth_date,
-                    courses__max_birth_date__lte=birth_date,
-                    courses__visible=True,
-                ).distinct()
+                return (
+                    queryset.exclude(courses__type=Course.TYPE.unregistered_course)
+                    .filter(
+                        courses__min_birth_date__gte=birth_date,
+                        courses__max_birth_date__lte=birth_date,
+                        courses__visible=True,
+                    )
+                    .distinct()
+                )
 
         return queryset
 
@@ -51,7 +62,7 @@ class CourseViewSet(viewsets.ReadOnlyModelViewSet):
     model = Course
 
     def get_queryset(self):
-        return Course.objects.visible().select_related("activity").prefetch_related("instructors", "sessions")
+        return Course.objects.registerable().select_related("activity").prefetch_related("instructors", "sessions")
 
     def retrieve(self, request, pk=None):
         tenant_pk = request.tenant.pk

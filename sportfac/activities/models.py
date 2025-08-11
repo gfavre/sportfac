@@ -1,25 +1,31 @@
 import uuid
-from datetime import date, datetime, time, timedelta
+from datetime import date
+from datetime import datetime
+from datetime import time
+from datetime import timedelta
 from decimal import Decimal
 
+from autoslug import AutoSlugField
+from ckeditor_uploader.fields import RichTextUploadingField
+from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.core.cache import cache
-from django.db import connection, models
-from django.db.models.aggregates import Count, Sum
-from django.db.models.signals import post_delete, post_save
+from django.db import connection
+from django.db import models
+from django.db.models.aggregates import Count
+from django.db.models.aggregates import Sum
+from django.db.models.signals import post_delete
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.defaultfilters import date as _date
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-
-from autoslug import AutoSlugField
-from ckeditor_uploader.fields import RichTextUploadingField
-from dateutil.relativedelta import relativedelta
 from model_utils import Choices
 
 from sportfac.models import TimeStampedModel
+
 from .utils import course_to_js_csv
 
 
@@ -190,6 +196,9 @@ class CourseManager(models.Manager):
     def visible(self):
         return self.get_queryset().filter(visible=True)
 
+    def registerable(self):
+        return self.get_queryset().exclude(course_type=Course.TYPE.unregistered_course).filter(visible=True)
+
     def camps(self):
         return self.get_queryset().filter(type=Course.TYPE.camp)
 
@@ -206,7 +215,7 @@ class Course(TimeStampedModel):
     activity = models.ForeignKey(
         "Activity", related_name="courses", verbose_name=_("Activity"), on_delete=models.CASCADE
     )
-    course_type = models.CharField(_("Course type"), max_length=30, choices=TYPE, default=TYPE.course)
+    course_type = models.CharField(_("Course type"), max_length=30, choices=TYPE, default=TYPE.course, db_index=True)
     number = models.CharField(
         max_length=30,
         db_index=True,
@@ -219,7 +228,7 @@ class Course(TimeStampedModel):
     comments = RichTextUploadingField(verbose_name=_("Comments"), blank=True)
 
     uptodate = models.BooleanField(verbose_name=_("Course up to date"), default=True)
-    visible = models.BooleanField(verbose_name=_("Course visible"), default=True)
+    visible = models.BooleanField(verbose_name=_("Course visible"), default=True, db_index=True)
 
     instructors = models.ManyToManyField(
         "profiles.FamilyUser",
