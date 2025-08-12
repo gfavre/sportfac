@@ -1,23 +1,25 @@
+from __future__ import annotations
+
 import os
 import socket
 from datetime import datetime
-from tempfile import NamedTemporaryFile
-
-from django.conf import settings
-from django.contrib.sessions.models import Session
-from django.core.management import call_command
-from django.db import connection, transaction
-from django.utils import timezone
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
+from django.conf import settings
+from django.contrib.sessions.models import Session
+from django.db import connection
+from django.db import transaction
+from django.utils import timezone
 
-from activities.models import Course
-from profiles.models import FamilyUser
-from registrations.models import Child
 from registrations.utils import load_children
 from sportfac.decorators import respects_language
-from .models import Domain, YearTenant
+
+from .models import Domain
+from .models import YearTenant
+from .tenant_utils import copy_activities
+from .tenant_utils import copy_children
+from .tenant_utils import copy_payroll_functions
 
 
 logger = get_task_logger(__name__)
@@ -25,157 +27,67 @@ logger = get_task_logger(__name__)
 
 @shared_task
 @respects_language
-def create_tenant(start, end, copy_activities_from_id=None, copy_children_from_id=None, user_id=None):
-    start = datetime.strptime(start, "%Y-%m-%d").date()
-    end = datetime.strptime(end, "%Y-%m-%d").date()
+def create_tenant(
+    start: str,
+    end: str,
+    copy_activities_from_id: int | None = None,
+    copy_children_from_id: int | None = None,
+    user_id: int | None = None,
+) -> None:
+    """
+    Create a new tenant for the given period and optionally copy data from others.
+
+    Args:
+        start: Start date (YYYY-MM-DD).
+        end: End date (YYYY-MM-DD).
+        copy_activities_from_id: YearTenant id to copy activities from.
+        copy_children_from_id: YearTenant id to copy children/schools from.
+        user_id: Optional user id for logging/audit.
+    """
+    if user_id:
+        logger.debug(f"User {user_id} is logged in")
+    start_dt = datetime.strptime(start, "%Y-%m-%d").date()
+    end_dt = datetime.strptime(end, "%Y-%m-%d").date()
+
     connection.set_schema_to_public()
     with transaction.atomic():
-        destination_tenant, created = YearTenant.objects.get_or_create(
-            schema_name="period_{}_{}".format(start.strftime("%Y%m%d"), end.strftime("%Y%m%d")),
-            defaults={"start_date": start, "end_date": end, "status": YearTenant.STATUS.creating},
+        destination, _ = YearTenant.objects.get_or_create(
+            schema_name=f"period_{start_dt:%Y%m%d}_{end_dt:%Y%m%d}",
+            defaults={"start_date": start_dt, "end_date": end_dt, "status": YearTenant.STATUS.creating},
         )
+        destination.create_schema(check_if_exists=True)
+        Domain.objects.get_or_create(tenant=destination, domain=f"{start_dt:%Y%m%d}-{end_dt:%Y%m%d}")
 
-        destination_tenant.create_schema(check_if_exists=True)
-        logger.info(
-            "Created schema for period %s-%s"
-            % (destination_tenant.start_date.isoformat(), destination_tenant.end_date.isoformat())
-        )
-        Domain.objects.get_or_create(
-            tenant=destination_tenant,
-            domain="{}-{}".format(start.strftime("%Y%m%d"), end.strftime("%Y%m%d")),
-        )
-    try:
-        user = FamilyUser.objects.get(pk=user_id)
-        logger.info(
-            "New tenant {}, copy activities from {}, copy children from {}, user={}".format(
-                destination_tenant.schema_name,
-                copy_activities_from_id,
-                copy_children_from_id,
-                user,
-            )
-        )
-    except FamilyUser.DoesNotExist:
-        user = None
-        logger.info(
-            "New tenant {}, copy activities from {}, copy children from {}".format(
-                destination_tenant.schema_name, copy_activities_from_id, copy_children_from_id
-            )
-        )
-
+    # Copy activities
     if copy_activities_from_id:
-        logger.info("Beginning copy of activities")
         try:
-            copy_from = YearTenant.objects.get(id=copy_activities_from_id)
-            destination_tenant.status = YearTenant.STATUS.copying
-            destination_tenant.save()
-
-            connection.set_tenant(copy_from)
-            f = NamedTemporaryFile(suffix=".json", delete=False)
-            call_command("dumpdata", "activities", "payroll.Function", output=f.name)
-            f.close()
-            logger.debug("Dumped activities from source")
-
-            connection.set_tenant(destination_tenant)
-            call_command("loaddata", f.name)
-            os.remove(f.name)
-            logger.info(
-                "Populated activities for period {}-{}".format(
-                    destination_tenant.start_date.isoformat(),
-                    destination_tenant.end_date.isoformat(),
-                )
-            )
-
-            Course.objects.all().update(uptodate=False, nb_participants=0)
-            logger.debug("Set all courses to not up-to-date in destination")
-
+            source = YearTenant.objects.get(pk=copy_activities_from_id)
+            destination.status = YearTenant.STATUS.copying
+            destination.save(update_fields=["status"])
+            copy_activities(source, destination, logger=logger)
         except YearTenant.DoesNotExist:
-            logger.warning(f"Year tenant {copy_activities_from_id} (source) does not exist")
+            logger.warning("YearTenant %s not found for activities copy", copy_activities_from_id)
 
+    # Copy children
     if copy_children_from_id:
-        logger.info("Beginning copy of children")
         try:
-            copy_from = YearTenant.objects.get(id=copy_children_from_id)
-            destination_tenant.status = YearTenant.STATUS.copying
-            destination_tenant.save()
-
-            connection.set_tenant(copy_from)
-            f = NamedTemporaryFile(suffix=".json", delete=False)
-            call_command("dumpdata", "schools", output=f.name)
-            f.close()
-            logger.debug("Dumped schools from source")
-
-            connection.set_tenant(destination_tenant)
-            call_command("loaddata", f.name)
-            os.remove(f.name)
-            logger.info(
-                "Populated schools for period {}-{}".format(
-                    destination_tenant.start_date.isoformat(),
-                    destination_tenant.end_date.isoformat(),
-                )
-            )
-
-            connection.set_tenant(copy_from)
-            f = NamedTemporaryFile(suffix=".json", delete=False)
-            call_command("dumpdata", "registrations.Child", output=f.name)
-            f.close()
-            logger.debug(f"Dumped children from source: {f.name}")
-
-            connection.set_tenant(destination_tenant)
-            call_command("loaddata", f.name)
-            os.remove(f.name)
-            logger.debug(
-                "Populated children for period {}-{}".format(
-                    destination_tenant.start_date.isoformat(),
-                    destination_tenant.end_date.isoformat(),
-                )
-            )
-
-            Child.objects.all().update(status=Child.STATUS.imported)
-            logger.debug("Set all children to not up-to-date in destination")
-
+            source = YearTenant.objects.get(pk=copy_children_from_id)
+            destination.status = YearTenant.STATUS.copying
+            destination.save(update_fields=["status"])
+            copy_children(source, destination, logger=logger)
         except YearTenant.DoesNotExist:
-            logger.warning(f"Year tenant {copy_children_from_id} (source) does not exist")
+            logger.warning("YearTenant %s not found for children copy", copy_children_from_id)
 
-    if settings.KEPCHUP_ENABLE_PAYROLLS:
+    # Optional payroll copy
+    if settings.KEPCHUP_ENABLE_PAYROLLS and copy_activities_from_id:
         try:
-            copy_from = YearTenant.objects.get(id=copy_activities_from_id)
-            destination_tenant.status = YearTenant.STATUS.copying
-            destination_tenant.save()
-
-            connection.set_tenant(copy_from)
-            f = NamedTemporaryFile(suffix=".json", delete=False)
-            call_command("dumpdata", "payroll.Function", output=f.name)
-            f.close()
-            connection.set_tenant(destination_tenant)
-            call_command("loaddata", f.name)
-            os.remove(f.name)
-            logger.debug(
-                "Populated functions for period {}-{}".format(
-                    destination_tenant.start_date.isoformat(),
-                    destination_tenant.end_date.isoformat(),
-                )
-            )
+            source = YearTenant.objects.get(pk=copy_activities_from_id)
+            copy_payroll_functions(source, destination, logger=logger)
         except YearTenant.DoesNotExist:
-            logger.warning(f"Year tenant {copy_activities_from_id} (source) does not exist")
+            logger.warning("YearTenant %s not found for payroll copy", copy_activities_from_id)
 
-    destination_tenant.status = YearTenant.STATUS.ready
-    destination_tenant.save()
-    logger.info(
-        "Created / populated period {}-{}".format(
-            destination_tenant.start_date.isoformat(), destination_tenant.end_date.isoformat()
-        )
-    )
-    # if user:
-    #     msg = _(
-    #         "The period %(start)s-%(end)s is ready to be used. "
-    #         "You can preview it at the %(link_start)speriod management interface%(link_end)s."
-    #     )
-    #     params = {
-    #         "start": destination_tenant.start_date.isoformat(),
-    #         "end": destination_tenant.end_date.isoformat(),
-    #         "link_start": format_html('<a href="{}">', reverse("backend:year-list")),
-    #         "link_end": format_html("</a>"),
-    #     }
+    destination.status = YearTenant.STATUS.ready
+    destination.save(update_fields=["status"])
 
 
 @shared_task
