@@ -42,7 +42,7 @@ def invalidate_is_instructor_cache(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=Course, dispatch_uid="course_details_post_save")
-def course_post_save_invalidate_cache(sender: type[Course], instance: Course, **kwargs: Any) -> None:
+def course_post_save_invalidate_cache(sender, instance, **kwargs: Any) -> None:
     """
     Invalidate cache when a Course is created/updated.
 
@@ -55,7 +55,7 @@ def course_post_save_invalidate_cache(sender: type[Course], instance: Course, **
 
 
 @receiver(post_delete, sender=Course, dispatch_uid="course_details_post_delete")
-def course_post_delete_invalidate_cache(sender: type[Course], instance: Course, **kwargs: Any) -> None:
+def course_post_delete_invalidate_cache(sender, instance, **kwargs: Any) -> None:
     """
     Invalidate cache when a Course is deleted.
 
