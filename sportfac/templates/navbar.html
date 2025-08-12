@@ -99,7 +99,7 @@ jQuery(function($){
                     <span class="badge badge-danger">{{ user.updatable_children }}</span>{% endif %}</a>
               </li>
 
-              {% if user.has_registrations %}
+              {% comment %}{% if user.has_registrations %}{% endcomment %}
                 <li>
                   <a href="{% url 'registrations:registrations_registered_activities' %}"> <i
                       class="icon-calendar"></i> {% translate "My registered activities" %}</a>
@@ -108,7 +108,7 @@ jQuery(function($){
                   <a href="{% url 'registrations:registrations_billing' %}"> <i class="icon-credit-card-1"></i> {% translate "My bills" %}
                   </a>
                 </li>
-              {% endif %}
+              {% comment %}{% endif %}{% endcomment %}
 
             {% if USE_APPOINTMENTS and request.PHASE > 1 %}
               <li>

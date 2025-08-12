@@ -1,7 +1,8 @@
-{% load flatpages i18n static %}
+{% load cache flatpages i18n static %}
 <footer id="footer">
   <div class="container">
     <div>
+      {% cache 3600 "footer" %}
       {% get_flatpages as flatpages %}
       <ul class="footer-links hidden-print">
         <li><a href="{% url 'contact:contact' %}">{% translate "Contact" %}</a></li>
@@ -14,6 +15,7 @@
         {% endfor %}
       </ul>
       <small class="hidden-print"><a href="https://www.beyondthewall.ch">Développé par Beyond the Wall, Genolier</a></small>
+      {% endcache %}
     </div>
   </div>
 </footer>

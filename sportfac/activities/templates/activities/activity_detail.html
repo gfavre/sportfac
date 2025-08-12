@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load activities duration i18n switzerland %}
+{% load activities cache duration i18n switzerland %}
 
 {% block title %}{{ activity.name }} - {{ block.super }}{% endblock %}
 
@@ -23,7 +23,10 @@
     {% for course in activity.courses.visible %}
       <section class="col-sm-6 topped">
         <div class="pricing-plan">
+          {% comment %}21600 seconds = 6 hours{% endcomment %}
+          {% cache 21600 "course_details" course.id %}
           <header class="pricing-header">
+
             <p class="pricing-plan-label">
               {{ course|course_number_display }}
               {% if CALENDAR_DISPLAY_COURSE_NAMES and course.name %}- {{ course.name }}{% endif %}
@@ -168,13 +171,13 @@
             {% endif %}
           </dl>
 
-
+          {% endcache %}
           <h4 class="content-title">
             <u>{% translate "Availability" %}</u>
           </h4>
 
           {% if course.is_unregistered_course %}
-                          {% translate "Course without registration" %}
+              {% translate "Course without registration" %}
           {% else %}
 
           <p>

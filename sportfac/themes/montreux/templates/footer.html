@@ -1,7 +1,8 @@
-{% load flatpages i18n static %}
+{% load cache flatpages i18n static %}
 <footer id="footer">
   <div class="container">
     <div>
+      {% cache 3600 "footer" %}
       {% include "address.html" %}
       <img src="{{ STATIC_URL }}img/logo.png" class="hidden-xs hidden-sm hidden-print"/>
       {% get_flatpages as flatpages %}
@@ -17,5 +18,6 @@
       </ul>
       <small class="hidden-print"><a href="https://www.beyondthewall.ch">Développé par Beyond the Wall, Genolier</a></small>
     </div>
+    {% endcache %}
   </div>
 </footer>
