@@ -4,23 +4,42 @@ import tempfile
 
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.db.models import Case, Count, When
+from django.db.models import Case
+from django.db.models import Count
+from django.db.models import When
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import urlencode
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
+from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
-from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, UpdateView, View
+from django.views.generic import CreateView
+from django.views.generic import DeleteView
+from django.views.generic import DetailView
+from django.views.generic import FormView
+from django.views.generic import ListView
+from django.views.generic import UpdateView
+from django.views.generic import View
 
 from absences.models import Absence
-from profiles.forms import InstructorForm, ManagerForm, SetPasswordForm
+from profiles.forms import InstructorForm
+from profiles.forms import ManagerForm
+from profiles.forms import SetPasswordForm
 from profiles.models import FamilyUser
-from profiles.resources import InstructorResource, UserResource
-from registrations.forms import ChildForm, ChildUpdateForm
-from registrations.models import Bill, Child, ChildActivityLevel, Registration
+from profiles.resources import InstructorResource
+from profiles.resources import UserResource
+from registrations.forms import ChildForm
+from registrations.forms import ChildUpdateForm
+from registrations.models import Bill
+from registrations.models import Child
+from registrations.models import ChildActivityLevel
+from registrations.models import Registration
+
 from ..forms import ChildImportForm
 from ..tasks import import_children
-from .mixins import BackendMixin, ExcelResponseMixin, FullBackendMixin
+from .mixins import BackendMixin
+from .mixins import ExcelResponseMixin
+from .mixins import FullBackendMixin
 
 
 class MailUsersView(BackendMixin, View):
@@ -122,7 +141,7 @@ class UserCreateView(FullBackendMixin, SuccessMessageMixin, CreateView):
         self.object = form.save()
         self.object.set_password(form.cleaned_data["password1"])
         self.object.save()
-        self.object.is_manager = form.cleaned_data["is_manager"]
+        self.object.is_manager = form.cleaned_data.get("is_manager", False)
         return super().form_valid(form)
 
     def get_success_message(self, cleaned_data):
