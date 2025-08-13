@@ -50,7 +50,7 @@ DATABASES["default"]["PASSWORD"] = env("DB_PASSWORD")  # noqa: F405
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": env.BROKER_URL,  # noqa: F405
+        "LOCATION": env("BROKER_URL"),  # noqa: F405
         "KEY_PREFIX": env("CACHE_KEY_PREFIX"),  # noqa: F405
         "KEY_FUNCTION": "django_tenants.cache.make_key",
         "REVERSE_KEY_FUNCTION": "django_tenants.cache.reverse_key",
