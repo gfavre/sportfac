@@ -332,7 +332,7 @@ KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS = [
     "pdf/infos-moniteurs-2024.pdf",
     "pdf/GMS_2024_2025.pdf",
 ]
-KEPCHUP_SPLASH_PAGE = True
+KEPCHUP_SPLASH_PAGE = False
 KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = [
     "first_name",
     "last_name",

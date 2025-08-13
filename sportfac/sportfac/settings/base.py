@@ -1,13 +1,16 @@
 """Common settings and globals."""
 import warnings
-from os.path import abspath, basename, dirname, join, normpath
+from os.path import abspath
+from os.path import basename
+from os.path import dirname
+from os.path import join
+from os.path import normpath
 from sys import path
-
-from django.contrib.messages import constants as messages
-from django.utils.translation import gettext_lazy as _
 
 import environ
 from celery.schedules import crontab
+from django.contrib.messages import constants as messages
+from django.utils.translation import gettext_lazy as _
 
 
 env = environ.Env()
@@ -453,6 +456,8 @@ CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
         "LOCATION": "sportfac-local",
+        "KEY_FUNCTION": "django_tenants.cache.make_key",
+        "REVERSE_KEY_FUNCTION": "django_tenants.cache.reverse_key",
     }
 }
 
