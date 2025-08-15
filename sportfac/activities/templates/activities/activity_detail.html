@@ -24,7 +24,7 @@
       <section class="col-sm-6 topped">
         <div class="pricing-plan">
           {% comment %}21600 seconds = 6 hours{% endcomment %}
-          {% cache 21600 "course_details" course.id %}
+          {% cache 21600 course_details course.id %}
           <header class="pricing-header">
 
             <p class="pricing-plan-label">
