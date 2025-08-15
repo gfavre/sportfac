@@ -1,24 +1,33 @@
 import datetime
 
+from bootstrap_datepicker_plus.widgets import DatePickerInput
+from bootstrap_datepicker_plus.widgets import TimePickerInput
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import HTML
+from crispy_forms.layout import Div
+from crispy_forms.layout import Fieldset
+from crispy_forms.layout import Layout
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.forms.widgets import TextInput
 from django.utils.translation import gettext as _
 
-from backend.forms import (
-    ActivityWidget,
-    CityMultipleWidget,
-    ExtraNeedMultipleWidget,
-    FamilyUserMultipleWidget,
-    MultiDateInput,
-)
-from bootstrap_datepicker_plus.widgets import DatePickerInput, TimePickerInput
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import HTML, Div, Fieldset, Layout
-from profiles.models import City, FamilyUser
+from activities.signals import invalidate_course_fragment
+from backend.forms import ActivityWidget
+from backend.forms import CityMultipleWidget
+from backend.forms import ExtraNeedMultipleWidget
+from backend.forms import FamilyUserMultipleWidget
+from backend.forms import MultiDateInput
+from profiles.models import City
+from profiles.models import FamilyUser
 
-from .models import Activity, AllocationAccount, Course, CoursesInstructors, ExtraNeed, PaySlip
+from .models import Activity
+from .models import AllocationAccount
+from .models import Course
+from .models import CoursesInstructors
+from .models import ExtraNeed
+from .models import PaySlip
 
 
 class CourseForm(forms.ModelForm):
@@ -477,6 +486,9 @@ class ExplicitDatesCourseForm(CourseForm):
                 session.delete()
         for date in dates:
             instance.add_session(date=date)
+        if commit:
+            instance.save()
+            invalidate_course_fragment(instance.pk)
         return instance
 
 
