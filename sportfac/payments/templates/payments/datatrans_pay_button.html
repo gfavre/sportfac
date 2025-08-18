@@ -3,7 +3,6 @@
 <script src="{{ transaction.script_url }}"></script>
 <script>
    jQuery(document).ready(function ($) {
-    const csrftoken = getCookie('csrftoken');
     $.ajaxSetup({
       headers: { "X-CSRFToken": Cookies.get("csrftoken") }
     });
