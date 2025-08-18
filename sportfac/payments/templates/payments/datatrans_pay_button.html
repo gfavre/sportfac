@@ -1,6 +1,7 @@
-{% load countdowntimer humanize i18n l10n sekizai_tags switzerland %}
+{% load countdowntimer humanize i18n l10n sekizai_tags static switzerland %}
   {% addtoblock "js" %}
-<script src="{{ transaction.script_url }}"></script>
+<script src="{% static 'js/vendor/js.cookie.js' %}"></script>
+<script src="https://pay.datatrans.com/upp/payment/js/datatrans-2.0.0.js"></script>
 <script>
    jQuery(document).ready(function ($) {
     $.ajaxSetup({
