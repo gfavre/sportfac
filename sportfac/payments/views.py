@@ -73,6 +73,7 @@ class NewDatatransTransactionView(APIView):
             family=request.user,
         )
         transaction = get_datatrans_transaction(request, invoice)
+        logger.info("New Datatrans transaction %s for invoice %s", transaction.transaction_id, invoice.id)
         return Response({"transactionId": transaction.transaction_id})
 
 

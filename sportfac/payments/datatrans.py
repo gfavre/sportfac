@@ -1,3 +1,5 @@
+import logging
+
 import requests
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
@@ -12,6 +14,8 @@ from .models import DatatransTransaction
 INITIALIZE_TRANSACTION_ENDPOINT = f"{settings.DATATRANS_API_URL.geturl()}v1/transactions"
 DEFAULT_CURRENCY = "CHF"
 DATATRANS_TIMEOUT_SECONDS = 5
+
+logger = logging.getLogger(__name__)
 
 
 class DataTransException(Exception):
@@ -52,11 +56,15 @@ def get_transaction(request, invoice):
         auth=HTTPBasicAuth(username, password),
         timeout=DATATRANS_TIMEOUT_SECONDS,
     )
+    logger.info("Datatrans API response: %s", response.json())
+
     response.raise_for_status()
     transaction_id = response.json().get("transactionId")
 
-    return DatatransTransaction.objects.create(
+    trx = DatatransTransaction.objects.create(
         transaction_id=int(transaction_id),
         expiration=now() + relativedelta(minutes=30),
         invoice=invoice,
     )
+    logger.info("Created DatatransTransaction pk=%s, transactionId=%s", trx.pk, trx.transaction_id)
+    return trx
