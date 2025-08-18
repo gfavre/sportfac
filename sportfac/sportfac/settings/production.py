@@ -131,9 +131,7 @@ REST_FRAMEWORK = {
 }
 
 
-LOGGING["root"] = (  # noqa: F405
-    {
-        "handlers": ["console"],
-        "level": "DEBUG",
-    },
-)
+LOGGING["root"] = {  # noqa: F405
+    "handlers": ["console"],
+    "level": "DEBUG",
+}
