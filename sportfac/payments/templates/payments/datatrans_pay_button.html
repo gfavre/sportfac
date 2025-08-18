@@ -2,12 +2,20 @@
   {% addtoblock "js" %}
 <script src="{{ transaction.script_url }}"></script>
 <script>
-  $(function() {
+   jQuery(document).ready(function ($) {
+    const csrftoken = getCookie('csrftoken');
+    $.ajaxSetup({
+      headers: { "X-CSRFToken": Cookies.get("csrftoken") }
+    });
     $('#pay-button').click(function(){
-      Datatrans.startPayment({
-        transactionId:  "{{ transaction.transaction_id }}"
-      });
-    })
+      $.post("{% url 'datatrans-new-transaction' invoice.id %}")
+        .done(function(data){
+          Datatrans.startPayment({ transactionId: data.transactionId });
+        })
+        .fail(function(){
+          alert("Could not create transaction");
+        });
+    });
   });
 </script>
 {% endaddtoblock %}

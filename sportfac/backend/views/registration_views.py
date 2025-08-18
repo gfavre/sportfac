@@ -6,35 +6,57 @@ from io import BytesIO
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.db import IntegrityError, connection, transaction
+from django.db import IntegrityError
+from django.db import connection
+from django.db import transaction
 from django.db.models import Count
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.utils.timezone import now
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, TemplateView, UpdateView, View
-
+from django.views.generic import CreateView
+from django.views.generic import DeleteView
+from django.views.generic import DetailView
+from django.views.generic import FormView
+from django.views.generic import ListView
+from django.views.generic import TemplateView
+from django.views.generic import UpdateView
+from django.views.generic import View
 from formtools.wizard.views import SessionWizardView
 
 from absences.models import Absence
-from activities.models import Activity, Course, ExtraNeed
-from backend.forms import (
-    BillingForm,
-    ChildSelectForm,
-    CourseSelectForm,
-    ExtraInfoFormSet,
-    RegistrationForm,
-    SendConfirmationForm,
-)
+from activities.models import Activity
+from activities.models import Course
+from activities.models import ExtraNeed
+from backend.forms import BillingForm
+from backend.forms import ChildSelectForm
+from backend.forms import CourseSelectForm
+from backend.forms import ExtraInfoFormSet
+from backend.forms import RegistrationForm
+from backend.forms import SendConfirmationForm
 from profiles.models import FamilyUser as User
-from registrations.forms import BillExportForm, BillForm, MoveRegistrationsForm, MoveTransportForm, TransportForm
-from registrations.models import Bill, ExtraInfo, Registration, Transport
-from registrations.resources import BillResource, RegistrationResource, enhance_invoices_xls
-from registrations.views.utils import BillMixin, PaymentMixin
-from .mixins import BackendMixin, ExcelResponseMixin, FullBackendMixin
+from registrations.forms import BillExportForm
+from registrations.forms import BillForm
+from registrations.forms import MoveRegistrationsForm
+from registrations.forms import MoveTransportForm
+from registrations.forms import TransportForm
+from registrations.models import Bill
+from registrations.models import ExtraInfo
+from registrations.models import Registration
+from registrations.models import Transport
+from registrations.resources import BillResource
+from registrations.resources import RegistrationResource
+from registrations.resources import enhance_invoices_xls
+from registrations.views.utils import BillMixin
+from registrations.views.utils import PaymentMixin
+
+from .mixins import BackendMixin
+from .mixins import ExcelResponseMixin
+from .mixins import FullBackendMixin
 
 
 logger = logging.getLogger(__name__)
@@ -534,8 +556,6 @@ class BillDetailView(FullBackendMixin, BillMixin, PaymentMixin, DetailView):
         for reg in context["registrations"]:
             reg.row_span = 1 + reg.extra_infos.count()
         context["rentals"] = invoice.rentals.all()
-        if not invoice.is_paid:
-            context["transaction"] = self.get_transaction(invoice)
         context["total_amount"] = invoice.total
         return context
 

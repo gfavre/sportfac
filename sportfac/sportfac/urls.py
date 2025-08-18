@@ -1,19 +1,24 @@
+from ckeditor_uploader import views as ckeditor_views
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.flatpages import views as flatviews
 from django.contrib.flatpages.sitemaps import FlatPageSitemap
 from django.contrib.sitemaps import views as sitemapviews
-from django.urls import include, path
-from django.views.generic import RedirectView, TemplateView
+from django.urls import include
+from django.urls import path
+from django.views.generic import RedirectView
+from django.views.generic import TemplateView
 from django.views.static import serve
-
-from ckeditor_uploader import views as ckeditor_views
 from impersonate import views as impersonate_views
 
 from activities.urls import sitemap as activity_sitemap
 from backend.utils import manager_required
 from contact.urls import Sitemap as ContactSitemap
-from payments.views import DatatransWebhookView, PostfinanceWebhookView
+from payments.views import DatatransWebhookView
+from payments.views import NewDatatransTransactionView
+from payments.views import NewPostfinanceTransactionView
+from payments.views import PostfinanceWebhookView
+
 from .views import impersonate as impersonate_view
 
 
@@ -80,11 +85,21 @@ urlpatterns += [
     path("ckeditor/upload/", manager_required(ckeditor_views.upload), name="ckeditor_upload"),
     path("ckeditor/browse/", manager_required(ckeditor_views.browse), name="ckeditor_browse"),
     path("contact/", include("contact.urls")),
+    path(
+        "datatrans/new-transaction/<int:invoice_id>/",
+        NewDatatransTransactionView.as_view(),
+        name="datatrans-new-transaction",
+    ),
     path("datatrans/", DatatransWebhookView.as_view(), name="datatrans_webhook"),
     path("favicon.ico", RedirectView.as_view(url=settings.STATIC_URL + "img/favicon.ico")),
     path("humans.txt", TextPlainView.as_view(template_name="humans.txt")),
     path("impersonate/<path:uid>/", impersonate_view, name="impersonate-start"),
     path("impersonate-stop/", impersonate_views.stop_impersonate, name="impersonate-stop"),
+    path(
+        "postfinance/new-transaction/<int:invoice_id>/",
+        NewPostfinanceTransactionView.as_view(),
+        name="postfinance-new-transaction",
+    ),
     path("postfinance/", PostfinanceWebhookView.as_view(), name="postfinance_webhook"),
     path("registrations/", include("registrations.urls")),
     path("robots.txt", TextPlainView.as_view(template_name="robots.txt")),

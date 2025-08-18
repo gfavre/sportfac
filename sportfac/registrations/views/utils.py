@@ -1,14 +1,9 @@
 import datetime
 import logging
 
-from django.conf import settings
 from django.utils.decorators import method_decorator
 from django.utils.timezone import now
 from django.views.decorators.cache import never_cache
-
-import requests
-from postfinancecheckout.rest import ApiException
-from sentry_sdk import capture_exception
 
 from backend.dynamic_preferences_registry import global_preferences_registry
 
@@ -37,30 +32,5 @@ class BillMixin:
 
 @method_decorator(never_cache, name="dispatch")
 class PaymentMixin:
-    def get_transaction(self, invoice):
-        if settings.KEPCHUP_PAYMENT_METHOD == "datatrans":
-            from payments.datatrans import get_transaction
-
-            try:
-                transaction = get_transaction(self.request, invoice)  # noqa
-            except requests.exceptions.RequestException:
-                transaction = None
-            return transaction
-
-        if settings.KEPCHUP_PAYMENT_METHOD == "postfinance":
-            from payments.postfinance import get_transaction
-
-            try:
-                transaction = get_transaction(self.request, invoice)  # noqa
-            except requests.exceptions.RequestException:
-                transaction = None
-            except ApiException as exc:
-                capture_exception(exc)
-                logger.error("Postfinance API error: %s", exc)
-                logger.error(exc.reason)
-                transaction = None
-            return transaction
-        return None
-
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)  # noqa

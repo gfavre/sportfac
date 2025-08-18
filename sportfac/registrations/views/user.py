@@ -1,19 +1,26 @@
 import json
 import logging
 
+from braces.views import LoginRequiredMixin
+from braces.views import UserPassesTestMixin
 from django.conf import settings
 from django.contrib import messages
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
-from django.views.generic import DeleteView, DetailView, ListView, TemplateView
-
-from braces.views import LoginRequiredMixin, UserPassesTestMixin
+from django.views.generic import DeleteView
+from django.views.generic import DetailView
+from django.views.generic import ListView
+from django.views.generic import TemplateView
 
 from profiles.models import School
-from ..models import Bill, Child, Registration
-from .utils import BillMixin, PaymentMixin
+
+from ..models import Bill
+from ..models import Child
+from ..models import Registration
+from .utils import BillMixin
+from .utils import PaymentMixin
 
 
 logger = logging.getLogger(__name__)
@@ -46,8 +53,6 @@ class BillDetailView(LoginRequiredMixin, PaymentMixin, BillMixin, DetailView):
         for reg in context["registrations"]:
             reg.row_span = 1 + reg.extra_infos.count()
         context["rentals"] = invoice.rentals.all()
-        if not invoice.is_paid:
-            context["transaction"] = self.get_transaction(invoice)
         context["total_amount"] = invoice.total
         return context
 

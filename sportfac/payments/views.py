@@ -1,14 +1,14 @@
 import logging
 
+from async_messages import message_user
+from braces.views import LoginRequiredMixin
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
 from django.views.generic import TemplateView
-
-from async_messages import message_user
-from braces.views import LoginRequiredMixin
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -16,7 +16,11 @@ from api.permissions import PostfinanceIPFilterPermission
 from appointments.models import Appointment
 from registrations.models import Bill
 from wizard.views import BaseWizardStepView
-from .models import DatatransTransaction, PostfinanceTransaction
+
+from .datatrans import get_transaction as get_datatrans_transaction
+from .models import DatatransTransaction
+from .models import PostfinanceTransaction
+from .postfinance import get_transaction as get_postfinance_transaction
 
 
 logger = logging.getLogger(__name__)
@@ -52,6 +56,43 @@ class DatatransWebhookView(APIView):
                 "warning",
             )
         return Response("Webhook accepted")
+
+
+class NewDatatransTransactionView(APIView):
+    """
+    Create a new Datatrans transaction for the given invoice.
+    Returns a fresh transactionId to be used by the frontend.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, invoice_id: int, *args, **kwargs):
+        invoice = get_object_or_404(
+            Bill,
+            pk=invoice_id,
+            family=request.user,
+        )
+        transaction = get_datatrans_transaction(request, invoice)
+        return Response({"transactionId": transaction.transaction_id})
+
+
+class NewPostfinanceTransactionView(APIView):
+    """
+    Always create a new PostFinance transaction for the given invoice
+    and return its payment page URL.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, invoice_id: int, *args, **kwargs):
+        invoice = get_object_or_404(
+            Bill,
+            pk=invoice_id,
+            family=request.user,
+        )
+
+        transaction = get_postfinance_transaction(request, invoice)
+        return Response({"paymentPageUrl": transaction.payment_page_url})
 
 
 class WizardPaymentSuccessView(LoginRequiredMixin, BaseWizardStepView, TemplateView):

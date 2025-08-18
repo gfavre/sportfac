@@ -1,16 +1,28 @@
-{% load i18n sekizai_tags %}
+{% load i18n sekizai_tags static %}
 
 {% addtoblock "js" %}
-  <script src="{{ transaction.payment_page_url }}" type="text/javascript"></script>
+  <script src="{% static 'js/vendor/js.cookie.js' %}"></script>
   <script type="text/javascript">
-    jQuery(document).ready(function ($) {
-      let paymentMethodConfigurationId = null;
-      $('#pay-button').on('click', function (evt) {
-        evt.preventDefault();
-        window.LightboxCheckoutHandler.startPayment();
-      });
-    })
+  // Function to get the CSRF token from cookies
 
+  jQuery(document).ready(function ($) {
+    $.ajaxSetup({
+      headers: { "X-CSRFToken": Cookies.get("csrftoken") }
+    });
+    $('#pay-button').on('click', function (evt) {
+      evt.preventDefault();
+      $.post("{% url 'postfinance-new-transaction' invoice.id %}")
+        .done(function(data){
+          const script = document.createElement("script");
+          script.src = data.paymentPageUrl;
+          script.onload = () => window.LightboxCheckoutHandler.startPayment();
+          document.body.appendChild(script);
+        })
+        .fail(function(){
+          alert("Could not create PostFinance transaction");
+        });
+    });
+  });
   </script>
 {% endaddtoblock %}
 

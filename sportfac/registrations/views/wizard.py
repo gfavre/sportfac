@@ -1,18 +1,21 @@
+from braces.views import LoginRequiredMixin
 from django.conf import settings
 from django.db import transaction
 from django.shortcuts import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import FormView, TemplateView
-
-from braces.views import LoginRequiredMixin
+from django.views.generic import FormView
+from django.views.generic import TemplateView
 
 from appointments.models import Rental
 from profiles.models import FamilyUser
 from wizard.views import BaseWizardStepView
-from ..forms import RegistrationValidationForm, RegistrationValidationFreeForm
+
+from ..forms import RegistrationValidationForm
+from ..forms import RegistrationValidationFreeForm
 from ..models import Bill as Invoice
-from ..models import Registration, RegistrationValidation
+from ..models import Registration
+from ..models import RegistrationValidation
 from .user import ChildrenListView
 from .utils import PaymentMixin
 
@@ -145,5 +148,4 @@ class WizardPaymentStepView(LoginRequiredMixin, PaymentMixin, BaseWizardStepView
         )
 
         context["bill"] = context["invoice"]
-        context["transaction"] = self.get_transaction(context["invoice"])
         return context
