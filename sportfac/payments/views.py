@@ -37,7 +37,7 @@ class DatatransWebhookView(APIView):
             raise ValidationError("missing parameters")
         invoice = get_object_or_404(Bill, billing_identifier=data.get("refno"))
         transaction = get_object_or_404(
-            DatatransTransaction, transaction_id=data.get("transactionId"), invoice=invoice
+            DatatransTransaction, transaction_id=str(data.get("transactionId")), invoice=invoice
         )
         if "status" in data:
             transaction.status = data.get("status")

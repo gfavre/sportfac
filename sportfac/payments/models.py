@@ -5,10 +5,10 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.db.models import JSONField
 from django.utils.translation import gettext_lazy as _
-
 from model_utils import Choices
 from model_utils.managers import QueryManager
-from model_utils.models import StatusModel, TimeStampedModel
+from model_utils.models import StatusModel
+from model_utils.models import TimeStampedModel
 
 
 class DatatransTransaction(TimeStampedModel, StatusModel):
@@ -46,7 +46,7 @@ class DatatransTransaction(TimeStampedModel, StatusModel):
     id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
     invoice = models.ForeignKey("registrations.Bill", related_name="datatrans_transactions", on_delete=models.CASCADE)
     payment_method = models.CharField(max_length=4, choices=METHODS, default=METHODS.TWI)
-    transaction_id = models.BigIntegerField(db_index=True)
+    transaction_id = models.CharField(max_length=32, unique=True)
     webhook = JSONField(null=True, blank=True)
 
     objects = models.Manager()
