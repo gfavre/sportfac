@@ -129,3 +129,11 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024  # 50 MB
 REST_FRAMEWORK = {
     "DATA_UPLOAD_MAX_MEMORY_SIZE": 50 * 1024 * 1024,  # 50 MB
 }
+
+
+LOGGING["root"] = (  # noqa: F405
+    {
+        "handlers": ["console"],
+        "level": "DEBUG",
+    },
+)
