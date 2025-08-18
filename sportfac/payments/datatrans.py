@@ -1,10 +1,9 @@
+import requests
+from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import get_language
-
-import requests
-from dateutil.relativedelta import relativedelta
 from requests.auth import HTTPBasicAuth
 
 from .models import DatatransTransaction
@@ -44,12 +43,7 @@ def invoice_to_meta_data(request, invoice):
 def get_transaction(request, invoice):
     if not invoice:
         return None
-    # check if a non-expired transaction exists and return it
-    non_expired_transactions = invoice.datatrans_transactions.filter(
-        expiration__gte=now(), status=DatatransTransaction.STATUS.initialized
-    )
-    if non_expired_transactions.exists():
-        return non_expired_transactions.first()
+
     username = int(settings.DATATRANS_USER)
     password = settings.DATATRANS_PASSWORD
     response = requests.post(
