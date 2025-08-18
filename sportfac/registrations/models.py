@@ -1,26 +1,34 @@
+import logging
 import os
 import re
-from datetime import date, datetime, timedelta
+from datetime import date
+from datetime import datetime
+from datetime import timedelta
 from tempfile import mkdtemp
 
+from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.files import File
-from django.db import IntegrityError, connection, models, transaction
+from django.db import IntegrityError
+from django.db import connection
+from django.db import models
+from django.db import transaction
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
-
-from dateutil.relativedelta import relativedelta
 from dynamic_preferences.registries import global_preferences_registry
 from model_utils import Choices
 from model_utils.models import StatusModel
 from phonenumber_field.modelfields import PhoneNumberField
 
 from sportfac.models import TimeStampedModel
+
+
+logger = logging.getLogger(__name__)
 
 
 class RegistrationManager(models.Manager):
@@ -121,6 +129,10 @@ class Registration(TimeStampedModel, StatusModel):
             local_zipcodes = self.course.local_city_override.values_list("zipcode", flat=True)
         else:
             local_zipcodes = settings.KEPCHUP_LOCAL_ZIPCODES
+        if not self.child.family:
+            message = f"Registration {self.pk} ({self.course}) for child {self.child} ({self.child.pk}) without family"
+            logger.error(message)
+            return False
         return self.child.family.zipcode in local_zipcodes
 
     @property
