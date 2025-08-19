@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.core.cache import cache
+from django.db.models import Prefetch
 from django.http import Http404
 from rest_framework import mixins
 from rest_framework import status
@@ -25,36 +26,37 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
     model = Activity
 
     def get_queryset(self):
-        queryset = Activity.objects.prefetch_related("courses", "courses__instructors", "courses__sessions")
+        queryset = Activity.objects.all()
+
+        # filtre de base sur les cours
+        valid_courses = Course.objects.exclude(course_type=Course.TYPE.unregistered_course).filter(visible=True)
+
         if settings.KEPCHUP_LIMIT_BY_SCHOOL_YEAR:
             school_year = self.request.query_params.get("year")
             if school_year is not None:
                 try:
-                    queryset = (
-                        queryset.exclude(courses__course_type=Course.TYPE.unregistered_course)
-                        .filter(
-                            courses__schoolyear_min__lte=int(school_year),
-                            courses__schoolyear_max__gte=int(school_year),
-                            courses__visible=True,
-                        )
-                        .distinct()
+                    school_year = int(school_year)
+                    valid_courses = valid_courses.filter(
+                        schoolyear_min__lte=school_year,
+                        schoolyear_max__gte=school_year,
                     )
                 except ValueError:
                     pass
         else:
             birth_date = self.request.query_params.get("birth_date")
             if birth_date is not None:
-                return (
-                    queryset.exclude(courses__course_type=Course.TYPE.unregistered_course)
-                    .filter(
-                        courses__min_birth_date__gte=birth_date,
-                        courses__max_birth_date__lte=birth_date,
-                        courses__visible=True,
-                    )
-                    .distinct()
+                valid_courses = valid_courses.filter(
+                    min_birth_date__gte=birth_date,
+                    max_birth_date__lte=birth_date,
                 )
 
-        return queryset
+        # Préfetch uniquement ces cours filtrés
+        prefetch_courses = Prefetch(
+            "courses",
+            queryset=valid_courses.prefetch_related("instructors", "sessions"),
+        )
+
+        return queryset.prefetch_related(prefetch_courses).distinct()
 
 
 class CourseViewSet(viewsets.ReadOnlyModelViewSet):
