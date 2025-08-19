@@ -40,7 +40,7 @@ angular.module('sportfacCalendar.controllers', [])
       };
 
       $scope.loadWaitingSlots = () => {
-        WaitingSlotService.all($scope.urls.waitingslots).then(slots => {
+        WaitingSlotService.all($scope.urls.waitingSlots).then(slots => {
           $scope.waitingSlots = slots;
         });
       };
@@ -69,7 +69,7 @@ angular.module('sportfacCalendar.controllers', [])
       // Add a child to the waiting list for a course
       $scope.addToWaitingList = (course, child) => {
         const slot = {child: child.id, course: course.id};
-        WaitingSlotService.create($scope.urls.waitingslots, slot).then(() => {
+        WaitingSlotService.create($scope.urls.waitingSlots, slot).then(() => {
           $scope.waitingSlots.push(slot);
         });
       };
@@ -83,7 +83,7 @@ angular.module('sportfacCalendar.controllers', [])
       $scope.removeFromWaitingList = (course, child) => {
         const slot = $scope.waitingSlots.find(slot => slot.child === child.id && slot.course === course.id);
         if (slot) {
-          WaitingSlotService.del($scope.urls.waitingslots, slot);
+          WaitingSlotService.del($scope.urls.waitingSlots, slot);
           $scope.waitingSlots = $scope.waitingSlots.filter(s => s !== slot);
         }
       };
