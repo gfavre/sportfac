@@ -31,7 +31,7 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
             if school_year is not None:
                 try:
                     queryset = (
-                        queryset.exclude(courses__type=Course.TYPE.unregistered_course)
+                        queryset.exclude(courses__course_type=Course.TYPE.unregistered_course)
                         .filter(
                             courses__schoolyear_min__lte=int(school_year),
                             courses__schoolyear_max__gte=int(school_year),
