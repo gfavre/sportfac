@@ -26,9 +26,6 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
     model = Activity
 
     def get_queryset(self):
-        queryset = Activity.objects.all()
-
-        # filtre de base sur les cours
         valid_courses = Course.objects.exclude(course_type=Course.TYPE.unregistered_course).filter(visible=True)
 
         if settings.KEPCHUP_LIMIT_BY_SCHOOL_YEAR:
@@ -50,13 +47,19 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
                     max_birth_date__lte=birth_date,
                 )
 
-        # Préfetch uniquement ces cours filtrés
-        prefetch_courses = Prefetch(
-            "courses",
-            queryset=valid_courses.prefetch_related("instructors", "sessions"),
+        # 🔑 On sélectionne uniquement les activités qui ont AU MOINS un cours valide
+        queryset = (
+            Activity.objects.filter(courses__in=valid_courses)
+            .distinct()
+            .prefetch_related(
+                Prefetch(
+                    "courses",
+                    queryset=valid_courses.prefetch_related("instructors", "sessions"),
+                )
+            )
         )
 
-        return queryset.prefetch_related(prefetch_courses).distinct()
+        return queryset  # noqa: R504
 
 
 class CourseViewSet(viewsets.ReadOnlyModelViewSet):
