@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.cache import cache
-from django.db.models import Max, Min
+from django.db.models import Max
+from django.db.models import Min
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views import View
@@ -12,6 +13,7 @@ from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser
 from registrations.models import Bill as Invoice
 from registrations.models import Registration
+
 from .handlers import get_step_handler
 from .models import WizardStep
 from .workflow import WizardWorkflow
@@ -66,7 +68,12 @@ class BaseWizardStepView(View):
         step = cache.get(cache_key)
         if step is None:
             # Cache miss, so we query the database
-            step = WizardStep.objects.get(slug=slug)
+            try:
+                step = WizardStep.objects.get(slug=slug)
+            except WizardStep.DoesNotExist:
+                from django.http import Http404
+
+                raise Http404("Step does not exist.")
             # Store in cache (None = no expiration unless invalidated)
             cache.set(cache_key, step, None)
         self._step = step
