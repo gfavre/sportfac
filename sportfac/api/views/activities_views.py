@@ -31,7 +31,7 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
             if school_year is not None:
                 try:
                     queryset = (
-                        queryset.exclude(courses__course_type=Course.TYPE.unregistered_course, visible=False)
+                        queryset.exclude(courses__course_type=Course.TYPE.unregistered_course, courses__visible=False)
                         .filter(
                             courses__schoolyear_min__lte=int(school_year),
                             courses__schoolyear_max__gte=int(school_year),
@@ -45,7 +45,7 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
             birth_date = self.request.query_params.get("birth_date")
             if birth_date is not None:
                 return (
-                    queryset.exclude(courses__course_type=Course.TYPE.unregistered_course, visible=False)
+                    queryset.exclude(courses__course_type=Course.TYPE.unregistered_course, courses__visible=False)
                     .filter(
                         courses__min_birth_date__gte=birth_date,
                         courses__max_birth_date__lte=birth_date,
