@@ -14,7 +14,7 @@ class WizardWorkflow:
         if wizard_steps is None:
             # Cache miss, so we query the database
             wizard_steps = list(WizardStep.objects.all())
-            cache.set("all_wizard_steps", wizard_steps, None)
+            cache.set("all_wizard_steps", wizard_steps, 60 * 60)  # Cache for 1 hour
         self.steps = wizard_steps
 
     def get_visible_steps(self):
