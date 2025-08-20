@@ -1,9 +1,9 @@
-from django.db import IntegrityError
-
 from celery import shared_task
 from celery.utils.log import get_task_logger
+from django.db import IntegrityError
 
-from sportfac.database_router import LOCAL_DB, MASTER_DB
+from sportfac.database_router import LOCAL_DB
+from sportfac.database_router import MASTER_DB
 
 from .models import FamilyUser
 
@@ -37,7 +37,11 @@ def sync_from_master():
             # The user exists on master (created on other instance) but not locally
             user.is_admin = False
             user.is_manager = False
-        user.save(using=LOCAL_DB, sync=False)
+        try:
+            user.save(using=LOCAL_DB, sync=False)
+        except IntegrityError:
+            logger.info("User with same email already exists in local DB")
+            continue
 
 
 # TODO: script d'import initial intelligent
