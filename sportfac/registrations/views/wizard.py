@@ -107,9 +107,9 @@ class WizardConfirmationStepView(LoginRequiredMixin, BaseWizardStepView, FormVie
         for reg in registrations:
             reg.row_span = 1 + reg.extra_infos.count()
 
-        total_amount = sum(reg.price for reg in registrations)
+        total_amount = sum(reg.price or 0 for reg in registrations)
         total_amount += sum(
-            sum(extra_infos.price_modifier for extra_infos in reg.extra_infos.all()) for reg in registrations
+            sum(extra_infos.price_modifier or 0 for extra_infos in reg.extra_infos.all()) for reg in registrations
         )
         rentals = None
         if settings.KEPCHUP_USE_APPOINTMENTS:

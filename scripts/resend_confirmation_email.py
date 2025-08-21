@@ -1,12 +1,9 @@
-from __future__ import absolute_import, print_function
-
 from django.core.mail import EmailMessage
 from django.template import loader
 
 from activities.models import Course
 from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser
-from six.moves import input
 
 
 course_emails = {
@@ -89,12 +86,12 @@ sent = set()
 
 
 for course_nb, emails in course_emails.items():
-    course = Course.objects.get(number__startswith="{} -".format(course_nb))
+    course = Course.objects.get(number__startswith=f"{course_nb} -")
     for email in emails:
         try:
             user = users[email]
         except KeyError:
-            print(("{} - {}".format(course_nb, email)))
+            print(f"{course_nb} - {email}")
             continue
 
         registrations = course.participants.filter(course=course, child__family=user)
@@ -248,7 +245,46 @@ for registration in registrations:
     body = msg_tmpl.render(context)
     subject = subj_tmpl.render(context)
     if not registration in sent:
-        print((registration.child.family.get_email_string()))
+        print(registration.child.family.get_email_string())
         print(subject)
         input(body)
         sent.add(registration)
+
+
+from backend.dynamic_preferences_registry import global_preferences_registry
+from mailer.tasks import send_mail
+from profiles.tasks import FamilyUser
+from registrations.tasks import send_confirmation
+
+
+subject = "Correctif - Vos inscriptions au sport scolaire facultatif"
+body = """
+ERRATUM - Ce mail annule le précédent qui était vide par erreur.
+Madame, Monsieur,
+
+Nous avons bien reçu vos inscriptions pour les cours suivants:
+
+"""
+
+global_preferences = global_preferences_registry.manager()
+
+for user in FamilyUser.objects.exclude(validations__isnull=True):
+    if not user.has_registrations:
+        continue
+    registration_lines = []
+    for invoice in user.bills.all():
+        for registration in invoice.registrations.all():
+            registration_lines.append(f"• {registration.child.full_name} - {registration.course.short_name}")
+    if not registration_lines:
+        continue
+    mail_body = (
+        body + "\n".join(registration_lines) + "\n\nMerci de votre confiance.\n\nCordialement,\nL'équipe SSF Montreux"
+    )
+    print(f"Sending email to {user.get_email_string()}")
+    send_mail.delay(
+        subject=subject,
+        message=mail_body,
+        from_email=global_preferences["email__FROM_MAIL"],
+        recipients=[user.get_email_string()],
+        reply_to=[global_preferences["email__REPLY_TO_MAIL"]],
+    )
