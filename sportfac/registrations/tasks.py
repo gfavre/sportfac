@@ -1,23 +1,28 @@
 from datetime import timedelta
 
+from anymail.exceptions import AnymailRecipientsRefused
+from celery import shared_task
+from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMessage
-from django.db import IntegrityError, connection, transaction
+from django.db import IntegrityError
+from django.db import connection
+from django.db import transaction
 from django.template.loader import render_to_string
 from django.utils import translation
 from django.utils.timezone import now
 
-from anymail.exceptions import AnymailRecipientsRefused
-from celery import shared_task
-from celery.utils.log import get_task_logger
-
-from appointments.models import Appointment, Rental
+from appointments.models import Appointment
+from appointments.models import Rental
 from backend.dynamic_preferences_registry import global_preferences_registry
-from backend.models import Domain, YearTenant
+from backend.models import Domain
+from backend.models import YearTenant
 from mailer.tasks import send_mail
 from profiles.models import FamilyUser
-from .models import Bill, Registration
+
+from .models import Bill
+from .models import Registration
 
 
 logger = get_task_logger(__name__)
@@ -63,7 +68,7 @@ def send_bill_confirmation(user_pk, bill_pk, tenant_pk=None, language=settings.L
         body = render_to_string("registrations/confirmation_bill_mail.txt", context=context)
 
         send_mail.delay(
-            subject=subject,
+            subject=subject.strip(),
             message=body,
             from_email=global_preferences["email__FROM_MAIL"],
             recipients=[user.get_email_string()],
@@ -105,11 +110,11 @@ def send_confirmation(user_pk, tenant_pk=None, language=settings.LANGUAGE_CODE):
             "site_url": settings.DEBUG and "http://" + current_site.domain or "https://" + current_site.domain,
         }
 
-        subject = render_to_string("registrations/confirmation_mail_subject.txt", context=context)
+        subject = render_to_string("registrations/confirmation_mail_subject.txt", context=context).strip()
 
         body = render_to_string("registrations/confirmation_mail.txt", context=context)
         send_mail.delay(
-            subject=subject,
+            subject=subject.strip(),
             message=body,
             from_email=global_preferences["email__FROM_MAIL"],
             recipients=[user.get_email_string()],

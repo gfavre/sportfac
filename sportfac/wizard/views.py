@@ -263,3 +263,50 @@ class ActivitiesStepView(StaticStepView):
         else:
             context["END_HOUR"] = 19
         return context
+
+
+class SuccessStepView(StaticStepView):
+    template_name = "wizard/success.html"
+    step_slug = "success"
+
+    def get_registration_context(self):
+        """Return the registration context for evaluating the workflow."""
+        # Implement context gathering logic based on user state
+        user: FamilyUser = self.request.user  # noqa
+        all_questions = set()
+        questions_not_answered = set()
+        invoice = Invoice.objects.none()
+        registrations = Registration.objects.none()
+        rentals = Rental.objects.none()
+
+        if user.is_authenticated:
+            registrations = (
+                Registration.objects.validated()
+                .filter(child__family=user)
+                .select_related("course")
+                .prefetch_related("course__extra", "extra_infos")
+            )
+            for registration in registrations:
+                # Get all questions linked to the course extras in one query (thanks to prefetch)
+                course_questions = registration.course.extra.all()
+                all_questions.update(set(course_questions))
+                # Retrieve extra infos related to this registration only once
+
+            if settings.KEPCHUP_USE_APPOINTMENTS:
+                rentals = Rental.objects.filter(child__family=user, paid=True)
+        has_children = user.is_authenticated and user.children.exists()
+
+        self._registration_context = {
+            "user": user,
+            "user_registered": user.is_authenticated,
+            "has_children": has_children,
+            "has_registrations": len(registrations) > 0,
+            "registrations": registrations,
+            "children_with_registrations": has_children
+            and user.children.filter(registrations__isnull=False).distinct(),
+            "all_questions": all_questions,
+            "questions_not_answered": questions_not_answered,
+            "invoice": invoice,
+            "rentals": rentals,
+        }
+        return self._registration_context

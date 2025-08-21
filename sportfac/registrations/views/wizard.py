@@ -1,14 +1,17 @@
 from braces.views import LoginRequiredMixin
 from django.conf import settings
+from django.db import connection
 from django.db import transaction
 from django.shortcuts import HttpResponseRedirect
 from django.urls import reverse_lazy
+from django.utils import translation
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView
 from django.views.generic import TemplateView
 
 from appointments.models import Rental
 from profiles.models import FamilyUser
+from registrations.tasks import send_confirmation as send_confirmation_task
 from wizard.views import BaseWizardStepView
 
 from ..forms import RegistrationValidationForm
@@ -48,18 +51,33 @@ class WizardConfirmationStepView(LoginRequiredMixin, BaseWizardStepView, FormVie
         if settings.KEPCHUP_USE_APPOINTMENTS:
             Rental.objects.filter(child__family=user, paid=False).update(invoice=invoice)
 
-        invoice.save()  # => bill status become paid if all registrations are paid
-        if invoice.total == 0:
-            invoice.status = Invoice.STATUS.paid
-            invoice.save()
         # Create validation entry if consent is given
         RegistrationValidation.objects.create(
             user=user,
             invoice=invoice,
             consent_given=True,
         )
-        # TODO Redirect to success or to payment depending on the invoice amount
-        return HttpResponseRedirect(self.get_success_url())
+        success_url = self.get_success_url()
+        invoice.save()  # => bill status become paid if all registrations are paid
+        if invoice.total == 0:
+            # Let bypass the end of process if the invoice is free
+            # Set the invoice status to paid
+            invoice.status = Invoice.STATUS.paid
+            invoice.save()
+            # Send confirmation
+            try:
+                tenant_pk = connection.tenant.pk
+            except AttributeError:
+                tenant_pk = None
+            transaction.on_commit(
+                lambda: send_confirmation_task.delay(
+                    user_pk=str(user.pk),  # noqa: B023
+                    tenant_pk=tenant_pk,  # noqa: B023
+                    language=translation.get_language(),
+                )
+            )
+            success_url = reverse_lazy("wizard:step", kwargs={"step_slug": "success"})
+        return HttpResponseRedirect(success_url)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -158,6 +158,11 @@ class PaymentStepHandler(StepHandler):
         return bool(self.registration_context.get("invoice"))
 
 
+class SuccessStepHandler(StepHandler):
+    def is_ready(self):
+        return True
+
+
 class ConfirmationStepHandler(StepHandler):
     def is_ready(self):
         if self.registration_context["questions_not_answered"]:
@@ -200,6 +205,7 @@ def get_step_handler(step, registration_context):
         "payment": PaymentStepHandler,
         "payment-failure": PaymentStepHandler,
         "payment-success": PaymentStepHandler,
+        "success": SuccessStepHandler,  # Placeholder for success step, can be customized later
     }
     handler_class = handler_mapping.get(step.slug, QuestionStepHandler)
     return handler_class(step, registration_context)
