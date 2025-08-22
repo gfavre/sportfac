@@ -2,8 +2,11 @@ from django.conf import settings
 from django.core.cache import cache
 from django.db.models import Max
 from django.db.models import Min
+from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.generic import TemplateView
 
@@ -19,6 +22,16 @@ from .models import WizardStep
 from .workflow import WizardWorkflow
 
 
+def registration_open_required(view_func):
+    def _wrapped_view(request, *args, **kwargs):
+        if not getattr(request, "REGISTRATION_OPENED", False):
+            return HttpResponseForbidden(_("Registrations are currently closed."))
+        return view_func(request, *args, **kwargs)
+
+    return _wrapped_view
+
+
+@method_decorator(registration_open_required, name="dispatch")
 class BaseWizardStepView(View):
     """Base class for handling each step of the registration process."""
 
@@ -193,6 +206,7 @@ class StaticStepView(BaseWizardStepView, TemplateView):
         return redirect("registration_complete")
 
 
+@method_decorator(registration_open_required, name="dispatch")
 class EntryPointView(View):
     """
     Entry point for multi-step forms. Redirects based on user authentication status.
@@ -205,6 +219,7 @@ class EntryPointView(View):
         return redirect("wizard:step", step_slug="user-create")
 
 
+@method_decorator(registration_open_required, name="dispatch")
 class QuestionsStepView(BaseWizardStepView):
     """
     This class is only used to navigate between questions, no need to deep analyze ready steps as it only
@@ -220,6 +235,7 @@ class QuestionsStepView(BaseWizardStepView):
         return redirect(self.get_next_step().url())
 
 
+@method_decorator(registration_open_required, name="dispatch")
 class EquipmentStepView(BaseWizardStepView):
     """
     This class is only used to navigate between if rental exists or not, no need to deep analyze ready steps as it only

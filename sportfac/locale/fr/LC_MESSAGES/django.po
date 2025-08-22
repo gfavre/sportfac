@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-21 07:09+0200\n"
-"PO-Revision-Date: 2025-08-21 07:11+0200\n"
+"POT-Creation-Date: 2025-08-22 18:16+0200\n"
+"PO-Revision-Date: 2025-08-22 18:16+0200\n"
 "Last-Translator: Gregory Favre <greg@beyondthewall.ch>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -4863,7 +4863,7 @@ msgstr "Les dates d'ouverture et de fermeture ont été mises à jour"
 msgid "An error was found in form %s"
 msgstr "Une erreur a été trouvée dans le formulaire %s"
 
-#: sportfac/backend/views/mail_views.py:207 sportfac/mailer/mixins.py:32
+#: sportfac/backend/views/mail_views.py:212 sportfac/mailer/mixins.py:32
 #: sportfac/mailer/views.py:318
 #, python-format
 msgid "Your email is being sent to %(number)s recipients."
@@ -6753,6 +6753,10 @@ msgstr "Inscription réussie"
 #: sportfac/wizard/templates/wizard/success.html:10
 msgid "All your registrations are saved"
 msgstr "Toutes vos inscriptions sont sauvegardées"
+
+#: sportfac/wizard/views.py:28
+msgid "Registrations are currently closed."
+msgstr "Les inscriptions sont actuellement closes."
 
 #~ msgid "recipients"
 #~ msgstr "destinataires"
