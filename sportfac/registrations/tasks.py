@@ -94,8 +94,11 @@ def send_confirmation(user_pk, tenant_pk=None, language=settings.LANGUAGE_CODE):
             connection.set_tenant(current_domain.tenant)
 
         global_preferences = global_preferences_registry.manager()
-
-        user = FamilyUser.objects.get(pk=user_pk)
+        try:
+            user = FamilyUser.objects.get(pk=user_pk)
+        except FamilyUser.DoesNotExist:
+            logger.warning("Could not send confirmation email: user %s does not exist", user_pk)
+            return
         registrations = Registration.objects.filter(child__family=user, confirmation_sent_on__isnull=True)
         waiting_slots = WaitingSlot.objects.filter(child__family=user)
 
