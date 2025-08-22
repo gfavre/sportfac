@@ -2,19 +2,24 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponseRedirect
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
+from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
 from django.views.generic import ListView
 
 import mailer.views as mailer_views
 from activities.models import Course
 from mailer.forms import AdminMailForm
-from mailer.mixins import ArchivedMailMixin, ParticipantsMixin, TemplatedEmailMixin
+from mailer.mixins import ArchivedMailMixin
+from mailer.mixins import ParticipantsMixin
+from mailer.mixins import TemplatedEmailMixin
 from mailer.models import MailArchive
 from mailer.tasks import send_mail
 from profiles.models import FamilyUser
-from registrations.models import Bill, Registration
+from registrations.models import Bill
+from registrations.models import Registration
 from registrations.views.utils import BillMixin
+
 from .mixins import BackendMixin
 
 
@@ -246,7 +251,7 @@ class NeedConfirmationView(BackendMixin, TemplatedEmailMixin, mailer_views.Brows
     mail_type = "need_confirmation"
 
     def get_recipients(self):
-        return list({reg.child.family for reg in Registration.objects.waiting()})
+        return list({reg.child.family for reg in Registration.objects.waiting() if reg.child.family is not None})
 
     def get_context_data(self, **kwargs):
         kwargs["url"] = "".join(
