@@ -142,7 +142,7 @@ class QuestionStepHandler(StepHandler):
     def is_visible(self):
         if not self.registration_context["registrations"]:
             return False
-        return True  # any(question in self.registration_context["all_questions"] for question in self.questions)
+        return any(question in self.registration_context["all_questions"] for question in self.questions)
 
     def is_ready(self):
         registrations = self.registration_context.get("registrations")
