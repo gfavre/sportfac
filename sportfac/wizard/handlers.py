@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.shortcuts import redirect
 
 
 class StepHandler:
@@ -30,15 +29,7 @@ class EntryPointStepHandler(StepHandler):
     Custom handler for the entry point that decides the next view.
     """
 
-    def handle_step(self, request):
-        """
-        Custom logic to route the user based on their authentication status.
-        """
-        if request.user.is_authenticated:
-            # Redirect to the next step for authenticated users
-            return redirect("wizard:user-update")
-        # Redirect to the form view for unauthenticated users
-        return redirect("wizard:user-create")
+    pass
 
 
 class ProfileCreationStepHandler(StepHandler):

@@ -1,22 +1,30 @@
 import json
 import urllib.parse
 
+import requests
+from braces.views import LoginRequiredMixin
+from braces.views import UserPassesTestMixin
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
-from django.urls import reverse, reverse_lazy
-from django.views.generic import DetailView, ListView, View
-
-import requests
-from braces.views import LoginRequiredMixin, UserPassesTestMixin
+from django.urls import reverse
+from django.urls import reverse_lazy
+from django.views.generic import DetailView
+from django.views.generic import ListView
+from django.views.generic import View
 
 import mailer.views as mailer_views
-from mailer.forms import CourseMailForm, InstructorCopiesForm
+from mailer.forms import CourseMailForm
+from mailer.forms import InstructorCopiesForm
 from mailer.mixins import ArchivedMailMixin
 from registrations.models import Registration
 from wizard.views import StaticStepView
-from .models import Activity, Course, PaySlip
+
+from .models import Activity
+from .models import Course
+from .models import PaySlip
 
 
 __all__ = (
@@ -233,6 +241,14 @@ class WizardQuestionsStepView(LoginRequiredMixin, StaticStepView):
 
     def get_step_slug(self):
         return self.kwargs["step_slug"]
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        if not context.get("questions"):
+            next_step = self.get_next_step()
+            if next_step:
+                return HttpResponseRedirect(next_step.get_absolute_url())
+        return self.render_to_response(context)
 
     def get_context_data(self, **kwargs):
         from registrations.forms import ExtraInfoForm
