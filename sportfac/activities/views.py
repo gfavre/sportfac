@@ -244,7 +244,7 @@ class WizardQuestionsStepView(LoginRequiredMixin, StaticStepView):
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        if not context.get("questions"):
+        if not context.get("questions_registrations"):
             next_step = self.get_next_step()
             if next_step:
                 return HttpResponseRedirect(next_step.get_absolute_url())
