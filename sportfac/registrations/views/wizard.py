@@ -11,6 +11,7 @@ from django.views.generic import TemplateView
 
 from appointments.models import Rental
 from profiles.models import FamilyUser
+from registrations.tasks import send_bill_confirmation as send_bill_confirmation_task
 from registrations.tasks import send_confirmation as send_confirmation_task
 from wizard.views import BaseWizardStepView
 
@@ -41,9 +42,29 @@ class WizardConfirmationStepView(LoginRequiredMixin, BaseWizardStepView, FormVie
             return RegistrationValidationForm
         return RegistrationValidationFreeForm
 
+    def get_registrations(self, user):
+        waiting_registrations = (
+            Registration.waiting.filter(child__family=user)
+            .select_related("course")
+            .prefetch_related("course__extra", "extra_infos")
+        )
+        if settings.KEPCHUP_PAYMENT_METHOD in ("postfinance", "datatrans"):
+            # With immediate payment methods, we are block registration process while invoice is not paid.
+            # In this case we can redisplay step with the existing invoice registrations and a note
+            # "you validated this step on DATE"
+            if waiting_registrations.exists():
+                return waiting_registrations, None
+            invoice = Invoice.objects.filter(family=user, status=Invoice.STATUS.waiting).first()
+            return (
+                invoice.registrations.select_related("course").prefetch_related("course__extra", "extra_infos"),
+                invoice,
+            )
+        return waiting_registrations, None
+
     @transaction.atomic
     def form_valid(self, form):
         user: FamilyUser = self.request.user  # noqa
+
         invoice = Invoice.objects.create(
             status=Invoice.STATUS.waiting, family=user, payment_method=settings.KEPCHUP_PAYMENT_METHOD
         )
@@ -77,6 +98,19 @@ class WizardConfirmationStepView(LoginRequiredMixin, BaseWizardStepView, FormVie
                 )
             )
             success_url = reverse_lazy("wizard:step", kwargs={"step_slug": "success"})
+        if settings.KEPCHUP_PAYMENT_METHOD == "iban":
+            try:
+                tenant_pk = connection.tenant.pk
+            except AttributeError:
+                tenant_pk = None
+            transaction.on_commit(
+                lambda: send_bill_confirmation_task.delay(
+                    user_pk=str(user.pk),  # noqa: B023
+                    bill_pk=str(invoice.pk),  # noqa: B023
+                    tenant_pk=tenant_pk,  # noqa: B023
+                    language=translation.get_language(),
+                )
+            )
         return HttpResponseRedirect(success_url)
 
     def get_context_data(self, **kwargs):
@@ -139,6 +173,10 @@ class WizardPaymentStepView(LoginRequiredMixin, PaymentMixin, BaseWizardStepView
     step_slug = "payment"
     template_name = "wizard/payment.html"
     success_url = reverse_lazy("wizard:confirmation")
+
+    def get_registrations(self, user):
+        invoice = Invoice.objects.filter(family=user, status=Invoice.STATUS.waiting).first()
+        return invoice.registrations.select_related("course").prefetch_related("course__extra", "extra_infos"), invoice
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

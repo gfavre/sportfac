@@ -92,6 +92,17 @@ class BaseWizardStepView(View):
         self._step = step
         return self._step
 
+    def get_registrations(self, user):
+        registrations = (
+            Registration.waiting.filter(child__family=user)
+            .select_related("course")
+            .prefetch_related("course__extra", "extra_infos")
+        )
+        invoice = None
+        if registrations and hasattr(registrations[0], "invoice"):
+            invoice = registrations[0].invoice
+        return registrations, invoice
+
     def get_workflow(self, registration_context=None):
         """Return the registration workflow for the current user."""
         if self._workflow:
@@ -115,19 +126,7 @@ class BaseWizardStepView(View):
         rentals = Rental.objects.none()
 
         if user.is_authenticated:
-            invoice = (
-                Invoice.objects.filter(family=user, status=Invoice.STATUS.waiting).select_related("validation").first()
-            )
-            if invoice:
-                registrations = invoice.registrations.select_related("course").prefetch_related(
-                    "course__extra", "extra_infos"
-                )
-            else:
-                registrations = (
-                    Registration.waiting.filter(child__family=user)
-                    .select_related("course")
-                    .prefetch_related("course__extra", "extra_infos")
-                )
+            registrations, invoice = self.get_registrations(user)
             for registration in registrations:
                 # Get all questions linked to the course extras in one query (thanks to prefetch)
                 course_questions = registration.course.extra.all()
@@ -145,8 +144,13 @@ class BaseWizardStepView(View):
                 rentals = Rental.objects.filter(child__family=user, paid=False)
         has_children = user.is_authenticated and user.children.exists()
         validation = None
+        blocking_payment = False
         if invoice and hasattr(invoice, "validation"):
             validation = invoice.validation
+            if settings.KEPCHUP_PAYMENT_METHOD in ("postfinance", "datatrans"):
+                # With immediate payment methods, we block registration process while invoice is not paid.
+                blocking_payment = True
+
         self._registration_context = {
             "user": user,
             "user_registered": user.is_authenticated,
@@ -158,6 +162,7 @@ class BaseWizardStepView(View):
             "all_questions": all_questions,
             "questions_not_answered": questions_not_answered,
             "invoice": invoice,
+            "blocking_payment": blocking_payment,
             "rentals": rentals,
             "validation": validation,
         }
@@ -291,7 +296,8 @@ class SuccessStepView(StaticStepView):
         user: FamilyUser = self.request.user  # noqa
         all_questions = set()
         questions_not_answered = set()
-        invoice = Invoice.objects.none()
+        invoice = Invoice.objects.filter(family=user, status=Invoice.STATUS.paid).select_related("validation").first()
+
         registrations = Registration.objects.none()
         rentals = Rental.objects.none()
 

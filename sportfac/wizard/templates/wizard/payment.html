@@ -52,4 +52,10 @@
 
  {% include "registrations/invoice-part-registrations.html" %}
 
+  {% if PAYMENT_METHOD == 'iban' or PAYMENT_METHOD == 'external' %}
+<p class="text-center hidden-print" style="margin-bottom: 2em;">
+      <a href="{% url 'wizard:entry_point' %}" class="btn btn-large btn-primary"><i
+          class="icon-calendar"></i> {% translate "Register new activities" %}</a>
+    </p>{% endif %}
+
 {% endblock wizard_content %}

@@ -466,12 +466,24 @@ class Bill(TimeStampedModel, StatusModel):
         return PostfinanceTransaction.successful.filter(invoice=self).last()
 
     @property
+    def is_canceled(self):
+        return self.status == self.STATUS.canceled
+
+    @property
     def is_ok(self):
         return self.status != self.STATUS.waiting
 
     @property
     def is_paid(self):
         return self.status == self.STATUS.paid
+
+    @property
+    def is_blocking_wizard(self):
+        if settings.KEPCHUP_PAYMENT_METHOD == "iban":
+            return False
+        if self.is_ok:
+            return False
+        return True
 
     @property
     def is_wire_transfer(self):

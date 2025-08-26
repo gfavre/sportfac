@@ -56,14 +56,18 @@ class ProfileUpdateStepHandler(StepHandler):
         return self.registration_context["user_registered"]
 
     def is_ready(self):
-        return not self.registration_context.get("invoice")
+        # If payment is required and an invoice exists, the profile update step is blocked until payment is done.
+        return not self.registration_context.get("blocking_payment")
 
 
 class ChildInformationStepHandler(StepHandler):
     """Handler for child information step."""
 
     def is_ready(self):
-        return self.registration_context["user_registered"] and not self.registration_context.get("invoice")
+        if not self.registration_context["user_registered"]:
+            return False
+        # If payment is required and an invoice exists, the children update step is blocked until payment is done.
+        return not self.registration_context.get("blocking_payment")
 
     def is_complete(self):
         """Complete if all required fields for children are filled."""
@@ -74,7 +78,10 @@ class ActivitiesStepHandler(StepHandler):
     """Handler for child information step."""
 
     def is_ready(self):
-        return self.registration_context["has_children"] and not self.registration_context.get("invoice")
+        if not self.registration_context["has_children"]:
+            return False
+        # If payment is required and an invoice exists, the activities step is blocked until payment is done.
+        return not self.registration_context.get("blocking_payment")
 
     def is_visible(self):
         """Visible if the user has children linked to their profile."""
@@ -92,9 +99,9 @@ class EquipmentPickupStepHandler(StepHandler):
         return settings.KEPCHUP_USE_APPOINTMENTS
 
     def is_ready(self):
-        return self.registration_context["children_with_registrations"] and not self.registration_context.get(
-            "invoice"
-        )
+        if not self.registration_context["children_with_registrations"]:
+            return False
+        return not self.registration_context.get("blocking_payment")
 
     def is_complete(self):
         # Complete if a pickup appointment has been scheduled
@@ -112,7 +119,9 @@ class EquipmentReturnStepHandler(StepHandler):
         return settings.KEPCHUP_USE_APPOINTMENTS and self.registration_context.get("rentals")
 
     def is_ready(self):
-        return self.registration_context.get("rentals") and not self.registration_context.get("invoice")
+        if not self.registration_context.get("rentals"):
+            return False
+        return not self.registration_context.get("blocking_payment")
 
     def is_complete(self):
         # Complete if a pickup appointment has been scheduled
@@ -136,9 +145,9 @@ class QuestionStepHandler(StepHandler):
         return any(question in self.registration_context["all_questions"] for question in self.questions)
 
     def is_ready(self):
-        registrations = self.registration_context.get("registrations")
-        invoice = self.registration_context.get("invoice")
-        return registrations and not invoice
+        if not self.registration_context.get("registrations"):
+            return False
+        return not self.registration_context.get("blocking_payment")
 
     def is_complete(self):
         return not any(question in self.registration_context["questions_not_answered"] for question in self.questions)
@@ -146,7 +155,10 @@ class QuestionStepHandler(StepHandler):
 
 class PaymentStepHandler(StepHandler):
     def is_ready(self):
-        return bool(self.registration_context.get("invoice"))
+        return bool(self.registration_context["invoice"])
+
+    def is_complete(self):
+        return self.registration_context["invoice"] and self.registration_context["invoice"].is_paid
 
 
 class SuccessStepHandler(StepHandler):
@@ -158,14 +170,13 @@ class ConfirmationStepHandler(StepHandler):
     def is_ready(self):
         if self.registration_context["questions_not_answered"]:
             return False
-        if not self.registration_context.get("registrations") and not self.registration_context.get("rentals"):
+        if not self.registration_context.get("registrations"):
             return False
         if self.registration_context.get("rentals"):
             return all(
                 rental.return_appointment and rental.pickup_appointment
                 for rental in self.registration_context.get("rentals")
             )
-
         return True
 
     def is_complete(self):
