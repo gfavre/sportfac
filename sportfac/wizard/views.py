@@ -329,6 +329,7 @@ class SuccessStepView(StaticStepView):
             "all_questions": all_questions,
             "questions_not_answered": questions_not_answered,
             "invoice": invoice,
+            "validation": invoice.validation if invoice else None,
             "rentals": rentals,
         }
         return self._registration_context
