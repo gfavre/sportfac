@@ -1,3 +1,5 @@
+import datetime
+
 from braces.views import LoginRequiredMixin
 from django.conf import settings
 from django.db import connection
@@ -10,6 +12,7 @@ from django.views.generic import FormView
 from django.views.generic import TemplateView
 
 from appointments.models import Rental
+from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser
 from registrations.tasks import send_bill_confirmation as send_bill_confirmation_task
 from registrations.tasks import send_confirmation as send_confirmation_task
@@ -186,10 +189,10 @@ class WizardPaymentStepView(LoginRequiredMixin, PaymentMixin, BaseWizardStepView
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user: FamilyUser = self.request.user  # noqa
-        context["invoice"] = Invoice.objects.filter(
+        invoice = Invoice.objects.filter(
             family=user, status__in=(Invoice.STATUS.waiting, Invoice.STATUS.just_created)
         ).first()
-        registrations = context["invoice"].registrations.all()
+        registrations = invoice.registrations.all()
         for reg in registrations:
             reg.row_span = 1 + reg.extra_infos.count()
         total_amount = sum(reg.price for reg in registrations)
@@ -200,11 +203,20 @@ class WizardPaymentStepView(LoginRequiredMixin, PaymentMixin, BaseWizardStepView
         if settings.KEPCHUP_USE_APPOINTMENTS:
             rentals = Rental.objects.filter(child__family=user, paid=False)
             total_amount += sum(rental.amount for rental in rentals)
+        preferences = global_preferences_registry.manager()
+        offset_days = preferences["payment__DELAY_DAYS"]
+        base_date = invoice.created  # self.request.REGISTRATION_END
+
         context.update(
             {
                 "registrations": registrations,
                 "rentals": rentals,
                 "total_amount": total_amount,
+                "invoice": invoice,
+                "delay": base_date + datetime.timedelta(days=offset_days),
+                "iban": preferences.get("payment__IBAN", ""),
+                "address": preferences.get("payment__ADDRESS", ""),
+                "place": preferences.get("payment__PLACE", ""),
             }
         )
 
