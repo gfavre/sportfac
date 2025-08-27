@@ -176,7 +176,12 @@ class WizardPaymentStepView(LoginRequiredMixin, PaymentMixin, BaseWizardStepView
 
     def get_registrations(self, user):
         invoice = Invoice.objects.filter(family=user, status=Invoice.STATUS.waiting).first()
-        return invoice.registrations.select_related("course").prefetch_related("course__extra", "extra_infos"), invoice
+        if invoice:
+            return (
+                invoice.registrations.select_related("course").prefetch_related("course__extra", "extra_infos"),
+                invoice,
+            )
+        return None, None
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
