@@ -92,7 +92,7 @@
           </h4>
         </header>
         <dl class="dl-horizontal">
-          <dt>{% translate "Birth date" %}</dt><dd> {{ child.birth_date|date:"j F Y" }}</dd>
+          <dt>{% translate "Birth date" %}</dt><dd> {{ child.birth_date|date:"j F Y"|lower }}</dd>
           <dt>{% translate "Sex" %}</dt><dd> {{ child.get_sex_display }}</dd>
           <dt>{% translate "Nationality" %}</dt><dd> {{ child.get_nationality_display }}</dd>
           <dt>{% translate "Language" %}</dt><dd> {{ child.get_language_display }}</dd>

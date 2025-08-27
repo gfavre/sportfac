@@ -24,7 +24,7 @@
         <dd>
           <ul class="list-unstyled">
             {% for session in registered.course.get_sessions %}
-              <li>{{ session.date|date:"l j F Y" }}</li>
+              <li>{{ session.date|date:"l j F Y"|lower }}</li>
             {% endfor %}
           </ul>
         </dd>

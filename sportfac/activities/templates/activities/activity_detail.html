@@ -116,15 +116,15 @@
                 {% if course.is_multi_course %}
                   <ul class="list-unstyled">
                     {% for session in course.get_sessions %}
-                      <li>{{ session.date|date:"j F Y" }}</li>
+                      <li>{{ session.date|date:"j F Y"|lower }}</li>
                     {% endfor %}
                   </ul>
                 {% elif course.is_camp %}
-                  {{ course.start_date|date:"j F Y" }} - {{ course.end_date|date:"j F Y" }}
+                  {{ course.start_date|date:"j F Y"|lower }} - {{ course.end_date|date:"j F Y"|lower }}
                 {% else %}
                   <ul class="list-unstyled">
                     {% for session in course.get_sessions %}
-                      <li>{{ session.date|date:"j F Y" }}</li>
+                      <li>{{ session.date|date:"j F Y"|lower }}</li>
                     {% endfor %}
                   </ul>
                 {% endif %}

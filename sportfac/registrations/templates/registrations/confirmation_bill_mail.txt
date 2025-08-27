@@ -27,7 +27,7 @@ Nous vous contacterons si une place venait à se libérer.
 {% if appointments %}
 Prise de matériel:
 {% for appointment in appointments %}
-• {{ appointment.child|safe }}: {{ appointment.slot.start|date:"l d F Y, H:i" }}
+ • {{ appointment.child|safe }}: {{ appointment.slot.start|date:"l d F Y, H:i"|lower }}
 {% endfor %}
 Le matériel est à retirer au local de Ski du Collège de Montreux-Est (Rue de la Gare 33, 1820 Montreux)
 {% endif %}

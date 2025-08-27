@@ -52,7 +52,7 @@
         {{ invoice.family.get_country_display }}
       </address>
       <p style="margin-top: 4em;">
-        {% if place %}{{ place }}, {% endif %}{{ invoice.created|date:"j F Y" }}
+        {% if place %}{{ place }}, {% endif %}{{ invoice.created|date:"j F Y"|lower }}
       </p>
     </div>
   </div>
@@ -63,7 +63,7 @@
     <dd>{{ invoice.billing_identifier }}</dd>
     {% if invoice.is_wire_transfer %}
       <dt>{% translate "Payable until" %}</dt>
-      <dd>{{ delay|date:"j F Y" }}</dd>
+      <dd>{{ delay|date:"j F Y"|lower }}</dd>
       <dt>{% translate "IBAN" %}</dt>
       <dd>{{ iban }}</dd>
       <dt>{% translate "Address" %}</dt>

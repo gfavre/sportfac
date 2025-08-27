@@ -34,9 +34,9 @@
 
     <dl class="dl-horizontal">
       <dt>{% translate "Opening date" %}</dt>
-      <dd>{{ registration_start|date:"l j E Y, H:i" }}</dd>
+      <dd>{{ registration_start|date:"l j E Y, H:i"|lower }}</dd>
       <dt>{% translate "Closing date" %}</dt>
-      <dd>{{ registration_end|date:"l j E Y, H:i" }}</dd>
+      <dd>{{ registration_end|date:"l j E Y, H:i"|lower }}</dd>
     </dl>
     {% if user.is_full_manager %}
     <p class="text-center">[ <a href="{% url 'backend:dates' %}"><i
