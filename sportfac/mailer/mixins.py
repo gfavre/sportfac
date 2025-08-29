@@ -7,10 +7,12 @@ from django.template import loader
 from django.utils.encoding import force_str
 from django.utils.translation import gettext as _
 
-from activities.models import Course, TemplatedEmailReceipt
+from activities.models import Course
+from activities.models import TemplatedEmailReceipt
 from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser
 from registrations.models import Registration
+
 from . import tasks
 from .models import MailArchive
 
@@ -234,7 +236,8 @@ class ParticipantsBaseMixin:
 
 class ParticipantsMixin(ParticipantsBaseMixin, BaseEmailMixin):
     def setup_course(self):
-        self.course = get_object_or_404(Course, pk=self.kwargs["course"])
+        if "course" in self.kwargs:
+            self.course = get_object_or_404(Course, pk=self.kwargs["course"])
 
     def dispatch(self, request, *args, **kwargs):
         self.setup_course()
