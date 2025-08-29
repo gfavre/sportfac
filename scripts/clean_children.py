@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function
-
 import unicodedata
 
 from profiles.models import FamilyUser
@@ -33,3 +30,38 @@ for f in FamilyUser.objects.all():
         if name in names:
             child.delete()
         names.append(name)
+
+
+children = {}
+for child in Child.objects.all():
+    name = child.full_name
+    if name not in children:
+        children[name] = [child]
+    else:
+        children[name].append(child)
+
+
+duplicates = {k: v for k, v in children.items() if len(v) > 1}
+count = 0
+for children_list in duplicates.values():
+    for child in children_list:
+        if not child.registrations.exists():
+            child.delete()
+            count += 1
+            print(f"Deleted {child.full_name} ({child.pk})")
+
+print(f"Deleted {count} children")
+# Deleted 172 children
+
+
+for children in duplicates.values():
+    for c in children:
+        print(
+            "\t".join(
+                (
+                    c.full_name,
+                    c.family.full_name if c.family else "",
+                    ", ".join([str(reg) for reg in c.registrations.all()]),
+                )
+            )
+        )
