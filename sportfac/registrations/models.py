@@ -334,7 +334,7 @@ class Registration(TimeStampedModel, StatusModel):
             super().save(*args, **kwargs)
             if self.bill:
                 self.bill.save()
-            else:
+            elif self.child.family:
                 profile, created = RegistrationsProfile.objects.get_or_create(user=self.child.family)
                 profile.save()
             if settings.KEPCHUP_USE_ABSENCES:
