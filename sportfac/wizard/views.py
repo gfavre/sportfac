@@ -296,12 +296,15 @@ class SuccessStepView(StaticStepView):
         user: FamilyUser = self.request.user  # noqa
         all_questions = set()
         questions_not_answered = set()
-        invoice = Invoice.objects.filter(family=user, status=Invoice.STATUS.paid).select_related("validation").first()
 
         registrations = Registration.objects.none()
         rentals = Rental.objects.none()
+        invoice = Invoice.objects.none()
 
         if user.is_authenticated:
+            invoice = (
+                Invoice.objects.filter(family=user, status=Invoice.STATUS.paid).select_related("validation").first()
+            )
             registrations = (
                 Registration.objects.validated()
                 .filter(child__family=user)
