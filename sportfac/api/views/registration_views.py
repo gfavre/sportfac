@@ -1,23 +1,26 @@
 import logging
 
 from django.http import QueryDict
-
-from rest_framework import status, viewsets
+from rest_framework import status
+from rest_framework import viewsets
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
 
 from profiles.models import SchoolYear
-from registrations.models import ExtraInfo, Registration
-from schools.models import Building, Teacher
-from ..permissions import ChildOrAdminPermission, IsAuthenticated, RegistrationOwnerAdminPermission
-from ..serializers import (
-    BuildingSerializer,
-    ExtraInfoSerializer,
-    ExtraSerializer,
-    RegistrationSerializer,
-    TeacherSerializer,
-    YearSerializer,
-)
+from registrations.models import ExtraInfo
+from registrations.models import Registration
+from schools.models import Building
+from schools.models import Teacher
+
+from ..permissions import ChildOrAdminPermission
+from ..permissions import IsAuthenticated
+from ..permissions import RegistrationOwnerAdminPermission
+from ..serializers import BuildingSerializer
+from ..serializers import ExtraInfoSerializer
+from ..serializers import ExtraSerializer
+from ..serializers import RegistrationSerializer
+from ..serializers import TeacherSerializer
+from ..serializers import YearSerializer
 
 
 logger = logging.getLogger(__name__)
@@ -142,7 +145,7 @@ class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
     model = Teacher
 
     def get_queryset(self):
-        return Teacher.objects.prefetch_related("years")
+        return Teacher.objects.prefetch_related("years", "buildings")
 
 
 class YearViewSet(viewsets.ReadOnlyModelViewSet):
