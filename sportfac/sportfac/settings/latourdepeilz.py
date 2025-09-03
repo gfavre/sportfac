@@ -40,6 +40,7 @@ KEPCHUP_CHILDREN_MANDATORY_FIELDS = [
     "language",
     "school_year",
     "emergency_number",
+    "avs",
 ]
 # Email
 #########################################
