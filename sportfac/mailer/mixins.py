@@ -156,7 +156,7 @@ class ArchivedMailMixin(BaseEmailMixin):
         kwargs["mail_archive"] = self.archive
         return super().get_context_data(**kwargs)
 
-    def get_recipients(self):
+    def get_bcc_recipients(self):
         user_ids = []
         email_strings = []
         for val in self.archive.bcc_recipients:
@@ -164,7 +164,17 @@ class ArchivedMailMixin(BaseEmailMixin):
                 user_ids.append(UUID(str(val)))
             except (ValueError, TypeError):
                 email_strings.append(str(val))
+        users = list(FamilyUser.objects.filter(pk__in=user_ids))
+        return users + email_strings
 
+    def get_recipients(self):
+        user_ids = []
+        email_strings = []
+        for val in self.archive.recipients:
+            try:
+                user_ids.append(UUID(str(val)))
+            except (ValueError, TypeError):
+                email_strings.append(str(val))
         users = list(FamilyUser.objects.filter(pk__in=user_ids))
         return users + email_strings
 

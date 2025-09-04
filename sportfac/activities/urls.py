@@ -20,14 +20,19 @@ urlpatterns = [
         name="course-detail",
     ),
     path(
-        "courses/<int:course>/mail",
-        view=views.CustomMailCreateView.as_view(),
-        name="mail-participants-custom",
-    ),
-    path(
         "courses/<int:course>/mail/select",
         view=views.MailUsersView.as_view(),
         name="select-participants",
+    ),
+    path(
+        "courses/<int:course>/mail/preview",
+        view=views.CustomMailPreview.as_view(),
+        name="mail-preview",
+    ),
+    path(
+        "courses/<int:course>/mail",
+        view=views.CustomMailCreateView.as_view(),
+        name="mail-participants-custom",
     ),
     path(
         "courses/<int:course>/mail/custom",
@@ -38,11 +43,6 @@ urlpatterns = [
         "courses/<int:course>/send-infos",
         view=views.MailCourseInstructorsView.as_view(),
         name="mail-instructors",
-    ),
-    path(
-        "courses/<int:course>/mail/preview",
-        view=views.CustomMailPreview.as_view(),
-        name="mail-preview",
     ),
     path(
         "courses/<int:course>/absences/",
