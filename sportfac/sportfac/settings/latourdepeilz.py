@@ -25,7 +25,7 @@ KEPCHUP_ACTIVITY_TYPES = [
     ("activity", "Prestations"),
     ("sportfac", "Sports scolaires facultatifs"),
 ]
-
+KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = []
 
 # Accounts
 KEPCHUP_REGISTER_ACCOUNTS_AT_ANY_TIME = True

@@ -1,17 +1,21 @@
 from io import BytesIO
 
+import tablib
 from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-
-import tablib
-from import_export import fields, resources, widgets
+from import_export import fields
+from import_export import resources
+from import_export import widgets
 from openpyxl import load_workbook
 from openpyxl.workbook.workbook import Workbook
 
 from activities.models import ExtraNeed
 from backend.templatetags.switzerland import phone
-from .models import Bill, ChildActivityLevel, Registration
+
+from .models import Bill
+from .models import ChildActivityLevel
+from .models import Registration
 
 
 class ExtraNeedField(fields.Field):
@@ -40,6 +44,7 @@ class RegistrationResource(resources.ModelResource):
     payment_method = fields.Field(attribute="bill__payment_method", column_name=_("Payment method"))
     first_name = fields.Field(attribute="child__first_name", column_name=_("First name"))
     last_name = fields.Field(attribute="child__last_name", column_name=_("Last name"))
+    avs = fields.Field(attribute="child__avs", column_name=_("AVS"))
     child_id = fields.Field(attribute="child", column_name=_("Child identifier"))
     invoice_identifier = fields.Field(attribute="bill__billing_identifier", column_name=_("Billing identifier"))
     bib_number = fields.Field(attribute="child__bib_number", column_name=_("Bib number"))
@@ -76,6 +81,7 @@ class RegistrationResource(resources.ModelResource):
             "transport",
             "first_name",
             "last_name",
+            "avs",
             "child_id",
             "birth_date",
             "school_year",
