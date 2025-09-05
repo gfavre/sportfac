@@ -109,7 +109,7 @@
       N° AVS{% if "avs" in CHILDREN_MANDATORY_FIELDS %}<span class="required"> *</span>{% endif %}
     </label>
     <div class="col-sm-5">
-      {% if not AVS_EDITABLE and CHILDREN_EDITABLE %}
+      {% if AVS_EDITABLE and CHILDREN_EDITABLE %}
       <input type="text" id="inputAVS" class="form-control"
              ng-model="detailedChild.avs"
              {% if "avs" in CHILDREN_MANDATORY_FIELDS %}required{% endif %}
