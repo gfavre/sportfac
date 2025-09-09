@@ -1,18 +1,24 @@
 import django.contrib.auth.views as auth_views
+from braces.views import LoginRequiredMixin
+from django import forms
 from django.conf import settings
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate
+from django.contrib.auth import login
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.translation import gettext as _
-from django.views.generic import FormView, RedirectView, UpdateView
-
-from braces.views import LoginRequiredMixin
+from django.views.generic import FormView
+from django.views.generic import RedirectView
+from django.views.generic import UpdateView
 from registration import signals
 
 from wizard.views import BaseWizardStepView
-from .forms import InstructorForm, RegistrationForm, UserForm
+
+from .forms import InstructorForm
+from .forms import RegistrationForm
+from .forms import UserForm
 from .models import FamilyUser
 
 
@@ -106,6 +112,9 @@ class RegistrationBaseView(FormView):
             private_phone3=private_phone3,
         )
         user = authenticate(email=email, password=password)
+        if not user:
+            msg = _("A user with that username already exists.")
+            raise forms.ValidationError(msg)
         login(self.request, user)
         signals.user_registered.send(sender=self.__class__, user=user, request=self.request)
         return user
