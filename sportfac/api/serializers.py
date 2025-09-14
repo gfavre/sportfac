@@ -2,16 +2,25 @@ from django.conf import settings
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-
 from rest_framework import serializers
 
-from absences.models import Absence, Session
-from activities.models import Activity, Course, CoursesInstructors, ExtraNeed
+from absences.models import Absence
+from absences.models import Session
+from activities.models import Activity
+from activities.models import Course
+from activities.models import CoursesInstructors
+from activities.models import ExtraNeed
 from backend.dynamic_preferences_registry import global_preferences_registry
 from payroll.models import Function
-from profiles.models import FamilyUser, School, SchoolYear
-from registrations.models import Child, ChildActivityLevel, ExtraInfo, Registration
-from schools.models import Building, Teacher
+from profiles.models import FamilyUser
+from profiles.models import School
+from profiles.models import SchoolYear
+from registrations.models import Child
+from registrations.models import ChildActivityLevel
+from registrations.models import ExtraInfo
+from registrations.models import Registration
+from schools.models import Building
+from schools.models import Teacher
 from waiting_slots.models import WaitingSlot
 
 
@@ -144,7 +153,6 @@ class CourseSerializer(serializers.ModelSerializer):
             "end_time",
             "place",
             "accepts_registrations",
-            "allow_new_participants",
             "min_participants",
             "max_participants",
             "count_participants",
