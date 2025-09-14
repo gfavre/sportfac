@@ -1,3 +1,11 @@
+from bootstrap_datepicker_plus.widgets import DatePickerInput
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import HTML
+from crispy_forms.layout import ButtonHolder
+from crispy_forms.layout import Div
+from crispy_forms.layout import Field
+from crispy_forms.layout import Fieldset
+from crispy_forms.layout import Layout
 from django import forms
 from django.conf import settings
 from django.forms import widgets
@@ -6,15 +14,25 @@ from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from bootstrap_datepicker_plus.widgets import DatePickerInput
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import HTML, ButtonHolder, Div, Field, Fieldset, Layout
+from activities.models import Course
+from activities.models import ExtraNeed
+from backend.forms import BuildingWidget
+from backend.forms import CourseWidget
+from backend.forms import FamilyUserWidget
+from backend.forms import TeacherWidget
+from backend.forms import TransportWidget
+from profiles.models import FamilyUser
+from profiles.models import School
+from profiles.models import SchoolYear
+from schools.models import Building
+from schools.models import Teacher
 
-from activities.models import Course, ExtraNeed
-from backend.forms import BuildingWidget, CourseWidget, FamilyUserWidget, TeacherWidget, TransportWidget
-from profiles.models import FamilyUser, School, SchoolYear
-from schools.models import Building, Teacher
-from .models import Bill, Child, ExtraInfo, Registration, RegistrationValidation, Transport
+from .models import Bill
+from .models import Child
+from .models import ExtraInfo
+from .models import Registration
+from .models import RegistrationValidation
+from .models import Transport
 
 
 AVAILABLE_PAYMENT_METHODS = [
@@ -68,7 +86,12 @@ class BillForm(forms.ModelForm):
 
     class Meta:
         model = Bill
-        fields = ("status", "payment_method")
+        fields = (
+            "status",
+            "payment_method",
+            "payment_date",
+            "do_not_expire",
+        )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
