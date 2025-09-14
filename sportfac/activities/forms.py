@@ -13,6 +13,7 @@ from django.core.exceptions import ValidationError
 from django.forms.widgets import TextInput
 from django.utils.translation import gettext as _
 
+from activities.signals import invalidate_course_data
 from activities.signals import invalidate_course_fragment
 from backend.forms import ActivityWidget
 from backend.forms import CityMultipleWidget
@@ -479,16 +480,17 @@ class ExplicitDatesCourseForm(CourseForm):
 
     def save(self, commit=True):
         instance = super().save(commit=False)
-
         dates = self.cleaned_data["session_dates"]
         for session in instance.get_sessions():
             if session.date not in dates:
                 session.delete()
         for date in dates:
             instance.add_session(date=date)
+
         if commit:
             instance.save()
             invalidate_course_fragment(instance.pk)
+            invalidate_course_data(instance.pk)
         return instance
 
 

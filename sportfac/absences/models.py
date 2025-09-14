@@ -2,7 +2,6 @@ from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-
 from model_utils import Choices
 from model_utils.models import StatusModel
 
@@ -68,13 +67,23 @@ class Session(TimeStampedModel):
     def presentees_nb(self):
         return self.absences.filter(status__in=(Absence.STATUS.present, Absence.STATUS.late)).count()
 
-    def update_courses_dates(self):
-        if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
-            if settings.KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES and self.activity:
-                for course in self.activity.courses.all():
-                    course.update_dates_from_sessions()
-            else:
-                self.course.update_dates_from_sessions()
+    def update_courses_dates(self, update_cache=True):
+        if not settings.KEPCHUP_EXPLICIT_SESSION_DATES:
+            return
+
+        if settings.KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES and self.activity:
+            courses = list(self.activity.courses.all())
+        else:
+            courses = [self.course]
+
+        for course in courses:
+            course.update_dates_from_sessions(commit=True)
+            if update_cache:
+                from activities.signals import invalidate_course_data
+                from activities.signals import invalidate_course_fragment
+
+                invalidate_course_fragment(course.pk)
+                invalidate_course_data(course.pk)
 
     def __str__(self):
         return f"{self.course_id} - {self.date}"

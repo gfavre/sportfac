@@ -7,6 +7,7 @@ from django.db.models.signals import post_delete
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from absences.models import Session
 from profiles.utils import invalidate_user_cache
 
 from .models import Activity
@@ -17,21 +18,10 @@ from .models import CoursesInstructors
 FRAGMENT_NAME_COURSE_DETAILS = "course_details"
 
 
-def _invalidate_course_data(pk):
+def invalidate_course_data(pk):
     tenant_pk = connection.get_tenant().pk
     cache_key = f"tenant_{tenant_pk}_course_{pk}"
     cache.delete(cache_key)
-
-
-@receiver(post_save, sender=Course, dispatch_uid="invalidate_course_data")
-def course_post_save_handler(sender, instance, created, **kwargs):
-    if not created:
-        _invalidate_course_data(instance.id)
-
-
-@receiver(post_delete, sender=Course, dispatch_uid="invalidate_course_data")
-def course_post_delete_handler(sender, instance, **kwargs):
-    _invalidate_course_data(instance.id)
 
 
 def invalidate_course_fragment(course_id: int) -> None:
@@ -70,6 +60,7 @@ def course_post_save_invalidate_cache(sender, instance, **kwargs: Any) -> None:
         **kwargs: Extra signal arguments.
     """
     invalidate_course_fragment(instance.pk)
+    invalidate_course_data(instance.id)
 
 
 @receiver(post_delete, sender=Course, dispatch_uid="course_details_post_delete")
@@ -83,3 +74,12 @@ def course_post_delete_invalidate_cache(sender, instance, **kwargs: Any) -> None
         **kwargs: Extra signal arguments.
     """
     invalidate_course_fragment(instance.pk)
+    invalidate_course_data(instance.id)
+
+
+@receiver([post_save, post_delete], sender=Session)
+def invalidate_course_on_session_change(sender, instance, **kwargs):
+    """Invalidate course cache whenever a Session changes."""
+    if instance.course_id:
+        invalidate_course_fragment(instance.course_id)
+        invalidate_course_data(instance.course_id)

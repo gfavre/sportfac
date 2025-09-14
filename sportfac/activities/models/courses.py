@@ -391,7 +391,7 @@ class Course(TimeStampedModel):
     def update_url(self):
         return self.get_update_url()
 
-    def add_session(self, date, instructor=None):
+    def add_session(self, date, instructor=None, update_cache=True):
         from absences.models import Session
 
         if settings.KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES:
@@ -405,7 +405,7 @@ class Course(TimeStampedModel):
                 course=self, date=date, defaults={"instructor": instructor}
             )
         session.fill_absences()
-        session.update_courses_dates()
+        session.update_courses_dates(update_cache=update_cache)
         return session
 
     def detailed_label(self):

@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Checking "not not expire" on invoices wasn't saving.
 - Accept new registrations is only set manually by admin, not automatically. We only check for course participants
   number
+- Update of course cache when session dates are modified was not done.
 
 
 ## 4.0.10 - 2025-08-29
