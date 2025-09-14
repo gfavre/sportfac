@@ -2,6 +2,7 @@ from typing import Any
 
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
+from django.db import connection
 from django.db.models.signals import post_delete
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -14,6 +15,23 @@ from .models import CoursesInstructors
 
 
 FRAGMENT_NAME_COURSE_DETAILS = "course_details"
+
+
+def _invalidate_course_data(pk):
+    tenant_pk = connection.get_tenant().pk
+    cache_key = f"tenant_{tenant_pk}_course_{pk}"
+    cache.delete(cache_key)
+
+
+@receiver(post_save, sender=Course, dispatch_uid="invalidate_course_data")
+def course_post_save_handler(sender, instance, created, **kwargs):
+    if not created:
+        _invalidate_course_data(instance.id)
+
+
+@receiver(post_delete, sender=Course, dispatch_uid="invalidate_course_data")
+def course_post_delete_handler(sender, instance, **kwargs):
+    _invalidate_course_data(instance.id)
 
 
 def invalidate_course_fragment(course_id: int) -> None:

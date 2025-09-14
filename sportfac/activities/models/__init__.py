@@ -1,0 +1,9 @@
+from .activities import Activity  # noqa: F401
+from .courses import SCHOOL_YEARS  # noqa: F401
+from .courses import Course  # noqa: F401
+from .courses import CoursesInstructors  # noqa: F401
+from .courses import TemplatedEmailReceipt  # noqa: F401
+from .extra import ExtraNeed  # noqa: F401
+from .finance import RATE_MODES  # noqa: F401
+from .finance import AllocationAccount  # noqa: F401
+from .finance import PaySlip  # noqa: F401

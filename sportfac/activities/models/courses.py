@@ -1,23 +1,12 @@
-import uuid
 from datetime import date
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
-from decimal import Decimal
 
-from autoslug import AutoSlugField
 from ckeditor_uploader.fields import RichTextUploadingField
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
-from django.contrib.postgres.fields import ArrayField
-from django.core.cache import cache
-from django.db import connection
 from django.db import models
-from django.db.models.aggregates import Count
-from django.db.models.aggregates import Sum
-from django.db.models.signals import post_delete
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.template.defaultfilters import date as _date
 from django.urls import reverse
 from django.utils import timezone
@@ -26,7 +15,7 @@ from model_utils import Choices
 
 from sportfac.models import TimeStampedModel
 
-from .utils import course_to_js_csv
+from ..utils import course_to_js_csv
 
 
 DAYS_OF_WEEK = (
@@ -42,154 +31,6 @@ DAYS_OF_WEEK = (
 SCHOOL_YEARS = settings.KEPCHUP_YEAR_NAMES.items()
 
 AGES = Choices(*[(age, f"a{age}", _("%i years old") % age) for age in settings.KEPCHUP_AGES])
-
-
-class ActivityManager(models.Manager):
-    def visible(self):
-        return self.get_queryset().filter(courses__visible=True).annotate(count=Count("courses")).filter(count__gt=0)
-
-
-class Activity(TimeStampedModel):
-    """
-    An activity
-    """
-
-    name = models.CharField(max_length=50, db_index=True, unique=True, verbose_name=_("Name"))
-    type = models.CharField(
-        max_length=50,
-        db_index=True,
-        verbose_name=_("Type"),
-        choices=settings.KEPCHUP_ACTIVITY_TYPES,
-        default=settings.KEPCHUP_ACTIVITY_TYPES[0][0],
-    )
-    number = models.CharField(
-        max_length=30,
-        db_index=True,
-        unique=True,
-        null=True,
-        blank=True,
-        verbose_name=_("Identifier"),
-    )
-    slug = AutoSlugField(
-        populate_from="name",
-        max_length=50,
-        db_index=True,
-        unique=True,
-        help_text=_("Part of the url. Cannot contain punctuation, spaces or accentuated letters"),
-    )
-    informations = RichTextUploadingField(
-        verbose_name=_("Informations"),
-        blank=True,
-        help_text=_("Specific informations like outfit."),
-    )
-    description = RichTextUploadingField(verbose_name=_("Description"), blank=True)
-    allocation_account = models.ForeignKey(
-        "AllocationAccount",
-        null=True,
-        blank=True,
-        related_name="activities",
-        verbose_name=_("Allocation account"),
-        on_delete=models.SET_NULL,
-    )
-
-    managers = models.ManyToManyField(
-        "profiles.FamilyUser",
-        verbose_name=_("Managers"),
-        related_name="managed_activities",
-        blank=True,
-    )
-
-    objects = ActivityManager()
-
-    class Meta:
-        ordering = ["name"]
-        verbose_name = _("activity")
-        verbose_name_plural = _("activities")
-
-    @property
-    def backend_absences_url(self):
-        return reverse("backend:activity-absences", kwargs={"activity": self.slug})
-
-    @property
-    def backend_url(self):
-        return self.get_backend_url()
-
-    @property
-    def delete_url(self):
-        return self.get_delete_url()
-
-    @property
-    def participants(self):
-        from registrations.models import Registration
-
-        return Registration.objects.filter(course__in=self.courses.all())
-
-    @property
-    def update_url(self):
-        return self.get_update_url()
-
-    def get_absolute_url(self):
-        return reverse("activities:activity-detail", kwargs={"slug": self.slug})
-
-    def get_backend_url(self):
-        return reverse("backend:activity-detail", kwargs={"activity": self.slug})
-
-    def get_delete_url(self):
-        return reverse("backend:activity-delete", kwargs={"activity": self.slug})
-
-    def get_update_url(self):
-        return reverse("backend:activity-update", kwargs={"activity": self.slug})
-
-    def __str__(self):
-        return self.name
-
-
-class AllocationAccount(TimeStampedModel):
-    account = models.CharField(
-        max_length=50,
-        verbose_name=_("Account"),
-        help_text=_("e.g. 154.4652.00"),
-        unique=True,
-    )
-    name = models.CharField(
-        max_length=50,
-        verbose_name=_("Name"),
-        blank=True,
-        help_text=_("Some text to help humans filter account numbers"),
-    )
-
-    class Meta:
-        ordering = ["account"]
-        verbose_name = _("Allocation account")
-        verbose_name_plural = _("Allocation accounts")
-
-    def __str__(self):
-        if self.name:
-            return f"{self.account} {self.name}"
-        return self.account
-
-    def get_backend_url(self):
-        return reverse("backend:allocation-update", kwargs={"pk": self.pk})
-
-    def get_update_url(self):
-        return reverse("backend:allocation-update", kwargs={"pk": self.pk})
-
-    def get_delete_url(self):
-        return reverse("backend:allocation-delete", kwargs={"pk": self.pk})
-
-    def get_registrations(self, start=None, end=None, **kwargs):
-        if start:
-            kwargs["created__gte"] = start
-        if end:
-            kwargs["created__lte"] = datetime.combine(end, time.max)
-        return (
-            (self.registrations.filter(**kwargs).prefetch_related("bill__datatrans_transactions"))
-            .select_related("course", "course__activity", "bill")
-            .order_by("created")
-        )
-
-    def get_total_transactions(self, period_start=None, period_end=None):
-        return self.registrations.all().aggregate(Sum("price"))["price__sum"]
 
 
 class CourseManager(models.Manager):
@@ -658,7 +499,7 @@ class Course(TimeStampedModel):
         super().save(*args, **kwargs)
 
     def send_places_available_reminder(self):
-        from .tasks import send_places_available_reminder as send_places_available_reminder_task
+        from ..tasks import send_places_available_reminder as send_places_available_reminder_task
 
         if not settings.KEPCHUP_ENABLE_WAITING_LISTS:
             # Feature needs to be activated to send a reminder
@@ -735,127 +576,6 @@ class CoursesInstructors(models.Model):
         unique_together = ("course", "instructor")
 
 
-EXTRA_TYPES = (("B", _("Boolean")), ("C", _("Characters")), ("I", _("Integer")), ("IM", _("Image")))
-
-
-class ExtraNeed(TimeStampedModel):
-    courses = models.ManyToManyField("Course", related_name="extra", blank=True)
-
-    question_label = models.CharField(max_length=255, verbose_name=_("Question"), help_text=_("e.g. Shoes size?"))
-    image_label = models.CharField(
-        max_length=255, verbose_name=_("Image label"), help_text=_("if type is image"), blank=True
-    )
-    extra_info = models.TextField(blank=True)
-    mandatory = models.BooleanField(default=True)
-    type = models.CharField(verbose_name=_("Type of answer"), choices=EXTRA_TYPES, default="C", max_length=2)
-    choices = ArrayField(
-        verbose_name=_("Limit to values (internal name, display name),(internal name 2, display name 2)"),
-        base_field=models.CharField(max_length=255),
-        blank=True,
-        null=True,
-    )
-    price_modifier = ArrayField(
-        verbose_name=_("Modify price by xx francs if this value is selected"),
-        help_text=_("List of positive/negative values, if boolean: False value then True"),
-        base_field=models.IntegerField(),
-        blank=True,
-        null=True,
-    )
-    step = models.ForeignKey(
-        "wizard.WizardStep",
-        verbose_name=_("Wizard step"),
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="questions",
-    )
-    default = models.CharField(verbose_name=_("Default value"), default="", blank=True, max_length=255)
-
-    class Meta:
-        verbose_name = _("extra question")
-        verbose_name_plural = _("extra questions")
-
-    @property
-    def is_boolean(self):
-        return self.type == "B"
-
-    @property
-    def is_characters(self):
-        return self.type == "C"
-
-    @property
-    def is_choices(self):
-        return len(self.choices) > 0
-
-    @property
-    def is_integer(self):
-        return self.type == "I"
-
-    @property
-    def is_image(self):
-        return self.type == "IM"
-
-    @property
-    def price_dict(self):
-        if not self.price_modifier:
-            return {}
-        if self.is_image or self.is_boolean:
-            return dict(zip(("0", "1"), self.price_modifier))
-        return dict(zip(self.choices, self.price_modifier))
-
-    def __str__(self):
-        if self.choices:
-            out = "{} ({})".format(self.question_label, ", ".join(self.choices))
-            if self.price_modifier:
-                out += " - (" + ", ".join([str(price) for price in self.price_modifier]) + ")"
-            return out
-        return self.question_label
-
-
-RATE_MODES = Choices(("day", _("Daily")), ("hour", _("Hourly")))
-
-
-class PaySlip(TimeStampedModel):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    instructor = models.ForeignKey("profiles.FamilyUser", verbose_name=_("Instructor"), on_delete=models.CASCADE)
-    course = models.ForeignKey("Course", verbose_name=_("Course"), on_delete=models.CASCADE)
-    rate = models.DecimalField(_("Rate"), max_digits=6, decimal_places=2)
-    rate_mode = models.CharField(_("Rate mode"), max_length=10, choices=RATE_MODES, default=RATE_MODES.hour)
-    start_date = models.DateField(_("Start date"))
-    end_date = models.DateField(_("End date"))
-    function = models.CharField(_("Function"), max_length=255)
-
-    class Meta:
-        # Let's see this another time and save too often...
-        # unique_together = ('instructor', 'course')
-        ordering = ("-created",)
-
-    @property
-    def amount(self):
-        if self.rate_mode == RATE_MODES.hour:
-            duration = self.course.duration
-            hours = Decimal(duration.seconds / 3600.0 + duration.days * 24)
-            return Decimal(self.rate) * Decimal(self.sessions.count()) * hours
-        return Decimal(self.sessions.count()) * self.rate
-
-    @property
-    def average_presentees(self):
-        return round(float(self.total_presentees) / max(len(self.sessions), 1), 1)
-
-    @property
-    def sessions(self):
-        return self.course.sessions.filter(
-            instructor=self.instructor, date__gte=self.start_date, date__lte=self.end_date
-        )
-
-    @property
-    def total_presentees(self):
-        return sum([session.presentees_nb() for session in self.sessions])
-
-    def get_absolute_url(self):
-        return reverse("activities:payslip-detail", kwargs={"pk": self.pk})
-
-
 class TemplatedEmailReceipt(TimeStampedModel):
     TYPE = Choices(
         ("convocation", _("Convocation to the course")),
@@ -870,20 +590,3 @@ class TemplatedEmailReceipt(TimeStampedModel):
 
     class Meta:
         ordering = ("-created",)
-
-
-def _invalidate_course_data(pk):
-    tenant_pk = connection.get_tenant().pk
-    cache_key = f"tenant_{tenant_pk}_course_{pk}"
-    cache.delete(cache_key)
-
-
-@receiver(post_save, sender=Course, dispatch_uid="invalidate_course_data")
-def course_post_save_handler(sender, instance, created, **kwargs):
-    if not created:
-        _invalidate_course_data(instance.id)
-
-
-@receiver(post_delete, sender=Course, dispatch_uid="invalidate_course_data")
-def course_post_delete_handler(sender, instance, **kwargs):
-    _invalidate_course_data(instance.id)
