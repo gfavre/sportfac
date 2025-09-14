@@ -9,6 +9,7 @@ from django.dispatch import receiver
 
 from absences.models import Session
 from profiles.utils import invalidate_user_cache
+from waiting_slots.models import WaitingSlot
 
 from .models import Activity
 from .models import Course
@@ -83,3 +84,12 @@ def invalidate_course_on_session_change(sender, instance, **kwargs):
     if instance.course_id:
         invalidate_course_fragment(instance.course_id)
         invalidate_course_data(instance.course_id)
+
+
+@receiver([post_save, post_delete], sender=WaitingSlot)
+def update_course_waiting_list_flag(sender, instance, **kwargs):
+    course = instance.course
+    has_waiting = course.waiting_slots.exists()
+    if course.has_waiting_list != has_waiting:
+        course.has_waiting_list = has_waiting
+        course.save(update_fields=["has_waiting_list"])

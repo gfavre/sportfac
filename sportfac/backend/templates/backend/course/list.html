@@ -211,7 +211,11 @@
           {% else %}
             {{ course.count_participants }}&nbsp;/&nbsp;{{ course.max_participants }}
           {% endif %}
-          {% if not course.allow_new_participants %}<br><i class="icon icon-minus-circled text-danger"></i> <small>{% translate "Registrations not allowed " %}</small>{% endif %}
+        {% if course.has_waiting_list %}
+        <br><i class="icon icon-clock text-warning"></i>
+        <small>{% translate "Waiting list" %}</small>
+        {% endif %}
+        {% if not course.allow_new_participants %}<br><i class="icon icon-minus-circled text-danger"></i> <small>{% translate "Registrations not allowed " %}</small>{% endif %}
         </td>
         <td data-order="{{ course.announced_js }}"
             data-search="{{ course.announced_js|yesno:"true,false" }}">

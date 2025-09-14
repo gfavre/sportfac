@@ -130,7 +130,6 @@ class Course(TimeStampedModel):
     end_time_sun = models.TimeField(verbose_name=_("End time, sundays"), null=True, blank=True)
 
     place = models.TextField(verbose_name=_("Place"))
-    nb_participants = models.SmallIntegerField(verbose_name=_("Current nb of participants"), default=0)
     min_participants = models.PositiveSmallIntegerField(verbose_name=_("Minimal number of participants"))
     max_participants = models.PositiveSmallIntegerField(verbose_name=_("Maximal number of participants"))
     allow_new_participants = models.BooleanField(
@@ -170,6 +169,10 @@ class Course(TimeStampedModel):
 
     announced_js = models.BooleanField(_("Course announced to J+S"), default=False)
 
+    # DENORMALIZED FIELDS
+    has_waiting_list = models.BooleanField(default=False, editable=False)
+    nb_participants = models.SmallIntegerField(verbose_name=_("Current nb of participants"), default=0)
+
     objects = CourseManager()
 
     class Meta:
@@ -182,7 +185,14 @@ class Course(TimeStampedModel):
 
     @property
     def accepts_registrations(self):
-        return self.allow_new_participants and not self.full
+        # Admin has manually blocked registrations
+        if not self.allow_new_participants:
+            return False
+        if self.full:
+            return False
+        if self.has_waiting_list:
+            return False
+        return True
 
     @property
     def ages(self):

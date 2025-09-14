@@ -1,11 +1,14 @@
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import HTML
+from crispy_forms.layout import ButtonHolder
+from crispy_forms.layout import Layout
+from crispy_forms.layout import Submit
 from django import forms
 from django.core.exceptions import NON_FIELD_ERRORS
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from backend.forms import ChildWidget
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import HTML, ButtonHolder, Layout, Submit
 from registrations.models import Child
 
 from .models import WaitingSlot
@@ -59,5 +62,6 @@ class WaitingSlotTransformForm(forms.ModelForm):
                     '<a href="%s" class="btn btn-default">%s</a>'
                     % (self.instance.course.get_backend_url(), _("Cancel"))
                 ),
+                css_class="form-group",
             ),
         )
