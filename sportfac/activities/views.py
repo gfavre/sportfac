@@ -5,6 +5,7 @@ import requests
 from braces.views import LoginRequiredMixin
 from braces.views import UserPassesTestMixin
 from django.conf import settings
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -115,6 +116,16 @@ class MyCourseDetailView(CourseAccessMixin, DetailView):
     queryset = Course.objects.select_related("activity").prefetch_related(
         "participants__child__school_year", "participants__child__family", "instructors"
     )
+
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Ensure access is forbidden if course details
+        should not be displayed.
+        """
+        if not getattr(settings, "KEPCHUP_DISPLAY_COURSE_DETAILS", True):
+            if not request.user.is_instructor_of(self.get_object()):
+                raise PermissionDenied("Course details are disabled.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class MailUsersView(CourseAccessMixin, View):

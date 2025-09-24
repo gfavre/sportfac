@@ -2,14 +2,17 @@ import logging
 
 from django.conf import settings
 from django.core.cache import cache
-from django.db import DatabaseError, connection
+from django.db import DatabaseError
+from django.db import connection
 from django.utils import timezone
-from django.utils.timezone import get_default_timezone, make_aware, now
-
+from django.utils.timezone import get_default_timezone
+from django.utils.timezone import make_aware
+from django.utils.timezone import now
 from dynamic_preferences.registries import global_preferences_registry
 
 from activities.models import Activity
 from backend.models import YearTenant
+
 from . import __version__ as kepchup_version
 
 
@@ -185,6 +188,7 @@ def kepchup_context(request):
         "ALTERNATIVE_CONFIRM_LABEL": settings.KEPCHUP_ALTERNATIVE_CONFIRM_LABEL,
         "ALTERNATIVE_BILLING_LABEL": settings.KEPCHUP_ALTERNATIVE_BILLING_LABEL,
         "YEAR_NAMES": settings.KEPCHUP_YEAR_NAMES,
+        "DISPLAY_COURSE_DETAILS": settings.KEPCHUP_DISPLAY_COURSE_DETAILS,
     }
 
 
