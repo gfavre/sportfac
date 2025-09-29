@@ -126,8 +126,8 @@ class Command(BaseCommand):
             copy_children(src_children, dest, logger=logger)
 
         if do_activities and src_activities:
-            copy_activities(src_activities, dest, logger=logger)
             if do_payroll:
                 copy_payroll_functions(src_activities, dest, logger=logger)
+            copy_activities(src_activities, dest, logger=logger)
 
         self.stdout.write(self.style.SUCCESS(_("Done.")))
