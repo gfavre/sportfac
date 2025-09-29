@@ -58,6 +58,14 @@ def create_tenant(
         destination.create_schema(check_if_exists=True)
         Domain.objects.get_or_create(tenant=destination, domain=f"{start_dt:%Y%m%d}-{end_dt:%Y%m%d}")
 
+    # Optional payroll copy. Must be before activities
+    if settings.KEPCHUP_ENABLE_PAYROLLS and copy_activities_from_id:
+        try:
+            source = YearTenant.objects.get(pk=copy_activities_from_id)
+            copy_payroll_functions(source, destination, logger=logger)
+        except YearTenant.DoesNotExist:
+            logger.warning("YearTenant %s not found for payroll copy", copy_activities_from_id)
+
     # Copy activities
     if copy_activities_from_id:
         try:
@@ -77,14 +85,6 @@ def create_tenant(
             copy_children(source, destination, logger=logger)
         except YearTenant.DoesNotExist:
             logger.warning("YearTenant %s not found for children copy", copy_children_from_id)
-
-    # Optional payroll copy
-    if settings.KEPCHUP_ENABLE_PAYROLLS and copy_activities_from_id:
-        try:
-            source = YearTenant.objects.get(pk=copy_activities_from_id)
-            copy_payroll_functions(source, destination, logger=logger)
-        except YearTenant.DoesNotExist:
-            logger.warning("YearTenant %s not found for payroll copy", copy_activities_from_id)
 
     destination.status = YearTenant.STATUS.ready
     destination.save(update_fields=["status"])
