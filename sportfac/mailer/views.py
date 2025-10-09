@@ -1,6 +1,7 @@
 import itertools
 import time
 
+from dbtemplates.models import Template
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
@@ -13,14 +14,20 @@ from django.utils.translation import gettext as _
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 
-from dbtemplates.models import Template
-
 from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser
+
 from . import tasks
-from .forms import CopiesForm, CourseMailForm, MailForm
-from .mixins import CancelableMixin, EditableMixin, ParticipantsBaseMixin, ParticipantsMixin, TemplatedEmailMixin
-from .models import Attachment, MailArchive
+from .forms import CopiesForm
+from .forms import CourseMailForm
+from .forms import MailForm
+from .mixins import CancelableMixin
+from .mixins import EditableMixin
+from .mixins import ParticipantsBaseMixin
+from .mixins import ParticipantsMixin
+from .mixins import TemplatedEmailMixin
+from .models import Attachment
+from .models import MailArchive
 
 
 class MailCreateView(FormView):
@@ -186,16 +193,17 @@ class MailPreviewView(CancelableMixin, EditableMixin, TemplateView):
     def send_mail(self, recipient, bcc_recipients, base_context):
         mail_context = self.get_mail_context(base_context, recipient, bcc_recipients)
         message = self.get_mail_body(mail_context)
+        recipient_address = recipient.get_email_string() if hasattr(recipient, "get_email_string") else recipient
         tasks.send_mail.delay(
             subject=self.get_subject(mail_context),
             message=message,
             from_email=self.get_from_address(),
-            recipients=[recipient.get_email_string()],
+            recipients=[recipient_address],
             reply_to=[self.get_reply_to_address()],
             bcc=[user.get_email_string() for user in bcc_recipients],
             attachments=[attachment.pk for attachment in self.get_attachments(mail_context)],
             update_bills=True,
-            recipient_pk=str(recipient.pk),
+            recipient_pk=str(recipient.pk) if hasattr(recipient, "pk") else None,
         )
         if hasattr(self, "create_receipt"):
             self.create_receipt()
