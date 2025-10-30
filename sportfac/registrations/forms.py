@@ -441,16 +441,18 @@ class ExtraInfoForm(forms.ModelForm):
             self.fields["image"].required = True
             if instance.image:
                 image_url = instance.image.url
-                self.image_div = self._build_image_field_with_preview(unique_identifier, image_url)
+                self.image_div = self._build_image_field_with_preview(unique_identifier, image_url, question)
             else:
-                self.image_div = self._build_image_field(unique_identifier)
+                self.image_div = self._build_image_field(unique_identifier, question)
         else:
             self.fields.pop("image")  # Remove the image field if it's not needed
 
-    def _build_image_field(self, unique_identifier):
+    def _build_image_field(self, unique_identifier, question):
         # Build the image input field layout using Crispy Forms
         drag_and_drop_label = _("Drag & drop or click to upload an image")
         help_text_label = _("Supported formats: JPG, PNG, GIF, WebP")
+        if question and question.extra_info:
+            help_text_label += f"\n<br>{question.extra_info}"
         return Div(
             Field(
                 "image",
@@ -474,10 +476,12 @@ class ExtraInfoForm(forms.ModelForm):
             css_class="form-group image-drop-container",
         )
 
-    def _build_image_field_with_preview(self, unique_identifier, image_url):
+    def _build_image_field_with_preview(self, unique_identifier, image_url, question):
         # Display the drop area and show the existing image with a preview
         label = _("Drag & drop or click to upload and modify current image")
         help_text_label = _("Supported formats: JPG, PNG, GIF, WebP")
+        if question and question.extra_info:
+            help_text_label += f"\n<br>{question.extra_info}"
         return Div(
             Field(
                 "image",

@@ -51,11 +51,15 @@
                type="number" class="form-control"
                max="100000000"
                ng-blur="lookupChild('lagapeo')" ng-required="{[{ useExternalIdentifiers && useLagapeo }]}"/>
+        {% comment %}
+        <!-- removed 2025-10-28, Montreux was the only one using it -->
         {% if not ID_LAGAPEO_ALTERNATIVE_LABEL %}
           <p class="help-block">
             Voir sur la <a href="{% static 'img/noSSF.jpg' %}" class="image-popover" target="_blank">carte d'écolier</a>
           </p>
         {% endif %}
+        {% endcomment %}
+
         <span class="help-block" ng-show="errors.notfound">L'identifiant est inconnu / invalide.</span>
         <span ng-show="childform.ext_id.$error.required">Ce champ est obligatoire</span>
       </div>

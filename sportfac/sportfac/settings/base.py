@@ -409,6 +409,7 @@ CKEDITOR_CONFIGS = {
     "default": {
         "alignment": {"options": ["left", "right"]},
         "contentCss": "/static/css/style.css",
+        "extraAllowedContent": "iframe[*]",
         "extraPlugins": ",".join(["emojione"]),
         "stylesSet": [
             {"name": "sans", "element": "p", "attributes": {"class": "empty-kepchup"}},
