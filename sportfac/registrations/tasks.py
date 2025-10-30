@@ -12,6 +12,7 @@ from django.db import transaction
 from django.template.loader import render_to_string
 from django.utils import translation
 from django.utils.timezone import now
+from django_tenants.utils import tenant_context
 
 from appointments.models import Appointment
 from appointments.models import Rental
@@ -37,44 +38,44 @@ def send_bill_confirmation(user_pk, bill_pk, tenant_pk=None, language=settings.L
         translation.activate(language)
         if tenant_pk:
             tenant = YearTenant.objects.get(pk=tenant_pk)
-            connection.set_tenant(tenant)
         else:
             current_domain = Domain.objects.filter(is_current=True).first()
-            connection.set_tenant(current_domain.tenant)
+            tenant = current_domain.tenant
 
-        global_preferences = global_preferences_registry.manager()
+        with tenant_context(tenant):
+            global_preferences = global_preferences_registry.manager()
 
-        user = FamilyUser.objects.get(pk=user_pk)
-        bill = Bill.objects.get(pk=bill_pk)
-        registrations = bill.registrations.all()
-        waiting_slots = WaitingSlot.objects.filter(child__family=user)
-        current_site = Site.objects.get_current()
-        context = {
-            "appointments": None,
-            "user": user,
-            "registrations": registrations,
-            "waiting_slots": waiting_slots,
-            "bill": bill,
-            "iban": global_preferences["payment__IBAN"],
-            "signature": global_preferences["email__SIGNATURE"],
-            "payment": not settings.KEPCHUP_NO_PAYMENT,
-            "site_name": current_site.name,
-            "site_url": settings.DEBUG and "http://" + current_site.domain or "https://" + current_site.domain,
-        }
-        if settings.KEPCHUP_USE_APPOINTMENTS:
-            context["appointments"] = Appointment.objects.filter(family=user)
+            user = FamilyUser.objects.get(pk=user_pk)
+            bill = Bill.objects.get(pk=bill_pk)
+            registrations = bill.registrations.all()
+            waiting_slots = WaitingSlot.objects.filter(child__family=user)
+            current_site = Site.objects.get_current()
+            context = {
+                "appointments": None,
+                "user": user,
+                "registrations": registrations,
+                "waiting_slots": waiting_slots,
+                "bill": bill,
+                "iban": global_preferences["payment__IBAN"],
+                "signature": global_preferences["email__SIGNATURE"],
+                "payment": not settings.KEPCHUP_NO_PAYMENT,
+                "site_name": current_site.name,
+                "site_url": settings.DEBUG and "http://" + current_site.domain or "https://" + current_site.domain,
+            }
+            if settings.KEPCHUP_USE_APPOINTMENTS:
+                context["appointments"] = Appointment.objects.filter(family=user)
 
-        subject = render_to_string("registrations/confirmation_bill_mail_subject.txt", context=context)
-        body = render_to_string("registrations/confirmation_bill_mail.txt", context=context)
+            subject = render_to_string("registrations/confirmation_bill_mail_subject.txt", context=context)
+            body = render_to_string("registrations/confirmation_bill_mail.txt", context=context)
 
-        send_mail.delay(
-            subject=subject.strip(),
-            message=body,
-            from_email=global_preferences["email__FROM_MAIL"],
-            recipients=[user.get_email_string()],
-            reply_to=[global_preferences["email__REPLY_TO_MAIL"]],
-        )
-        registrations.update(confirmation_sent_on=now())
+            send_mail.delay(
+                subject=subject.strip(),
+                message=body,
+                from_email=global_preferences["email__FROM_MAIL"],
+                recipients=[user.get_email_string()],
+                reply_to=[global_preferences["email__REPLY_TO_MAIL"]],
+            )
+            registrations.update(confirmation_sent_on=now())
     finally:
         translation.activate(cur_lang)
 
@@ -88,42 +89,42 @@ def send_confirmation(user_pk, tenant_pk=None, language=settings.LANGUAGE_CODE):
         translation.activate(language)
         if tenant_pk:
             tenant = YearTenant.objects.get(pk=tenant_pk)
-            connection.set_tenant(tenant)
         else:
             current_domain = Domain.objects.filter(is_current=True).first()
-            connection.set_tenant(current_domain.tenant)
+            tenant = current_domain.tenant
 
-        global_preferences = global_preferences_registry.manager()
-        try:
-            user = FamilyUser.objects.get(pk=user_pk)
-        except FamilyUser.DoesNotExist:
-            logger.warning("Could not send confirmation email: user %s does not exist", user_pk)
-            return
-        registrations = Registration.objects.filter(child__family=user, confirmation_sent_on__isnull=True)
-        waiting_slots = WaitingSlot.objects.filter(child__family=user)
+        with tenant_context(tenant):
+            global_preferences = global_preferences_registry.manager()
+            try:
+                user = FamilyUser.objects.get(pk=user_pk)
+            except FamilyUser.DoesNotExist:
+                logger.warning("Could not send confirmation email: user %s does not exist", user_pk)
+                return
+            registrations = Registration.objects.filter(child__family=user, confirmation_sent_on__isnull=True)
+            waiting_slots = WaitingSlot.objects.filter(child__family=user)
 
-        current_site = Site.objects.get_current()
-        context = {
-            "appointments": None,
-            "user": user,
-            "registrations": registrations,
-            "waiting_slots": waiting_slots,
-            "signature": global_preferences["email__SIGNATURE"],
-            "site_name": current_site.name,
-            "site_url": settings.DEBUG and "http://" + current_site.domain or "https://" + current_site.domain,
-        }
+            current_site = Site.objects.get_current()
+            context = {
+                "appointments": None,
+                "user": user,
+                "registrations": registrations,
+                "waiting_slots": waiting_slots,
+                "signature": global_preferences["email__SIGNATURE"],
+                "site_name": current_site.name,
+                "site_url": settings.DEBUG and "http://" + current_site.domain or "https://" + current_site.domain,
+            }
 
-        subject = render_to_string("registrations/confirmation_mail_subject.txt", context=context).strip()
+            subject = render_to_string("registrations/confirmation_mail_subject.txt", context=context).strip()
 
-        body = render_to_string("registrations/confirmation_mail.txt", context=context)
-        send_mail.delay(
-            subject=subject.strip(),
-            message=body,
-            from_email=global_preferences["email__FROM_MAIL"],
-            recipients=[user.get_email_string()],
-            reply_to=[global_preferences["email__REPLY_TO_MAIL"]],
-        )
-        registrations.update(confirmation_sent_on=now())
+            body = render_to_string("registrations/confirmation_mail.txt", context=context)
+            send_mail.delay(
+                subject=subject.strip(),
+                message=body,
+                from_email=global_preferences["email__FROM_MAIL"],
+                recipients=[user.get_email_string()],
+                reply_to=[global_preferences["email__REPLY_TO_MAIL"]],
+            )
+            registrations.update(confirmation_sent_on=now())
     finally:
         translation.activate(cur_lang)
 

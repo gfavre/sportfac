@@ -1,5 +1,4 @@
 from django.conf import settings
-
 from kombu import Queue
 from tenant_schemas_celery.app import CeleryApp
 
@@ -25,6 +24,13 @@ app.conf.broker_transport_options = {
     "key_prefix": key_prefix,
 }
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
+
+
+@app.on_after_configure.connect
+def disable_dbtemplates_cache(sender, **kwargs):
+    from dbtemplates.conf import settings as dbt_settings
+
+    dbt_settings.DBTEMPLATES_USE_CACHE = False
 
 
 @app.task(bind=True)
