@@ -318,13 +318,13 @@
 
   <div>
     <div class="col-sm-4 col-xs-4">
-      <button ng-click="saveChild()" ng-disabled="childform.$invalid" class="btn btn-right btn-success"><i
-          class="icon-ok-sign icon-white"></i> Enregistrer mon enfant
+      <button type="button" ng-click="resetForm()" ng-disabled="hasNotChanged()" class="btn btn-small">
+        <i class="icon-remove-sign"></i> Annuler
       </button>
     </div>
     <div class="col-xs-8 col-sm-8 text-right">
-      <button type="button" ng-click="resetForm()" ng-disabled="hasNotChanged()" class="btn btn-small">
-        <i class="icon-remove-sign"></i> Annuler
+      <button ng-click="saveChild()" ng-disabled="childform.$invalid" class="btn btn-right btn-success"><i
+          class="icon-ok-sign icon-white"></i> Enregistrer mon enfant
       </button>
     </div>
   </div>
