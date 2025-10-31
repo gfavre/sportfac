@@ -5,10 +5,24 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.utils.translation import gettext_lazy as _
 
 from registrations.models import Child
+from registrations.tasks import send_confirmation
+from sportfac.admin_utils import SportfacAdminMixin
+from sportfac.admin_utils import SportfacModelAdmin
 
-from sportfac.admin_utils import SportfacAdminMixin, SportfacModelAdmin
+from .models import City
+from .models import FamilyUser
+from .models import School
+from .models import SchoolYear
 
-from .models import City, FamilyUser, School, SchoolYear
+
+@admin.action(description="Envoyer confirmation (Celery)")
+def send_confirmation_action(modeladmin, request, queryset):
+    from backend.models import Domain
+
+    domain = Domain.objects.filter(is_current=True).first()
+    tenant = domain.tenant if domain else None
+    for user in queryset:
+        send_confirmation.delay(user.pk, tenant.pk)
 
 
 class FamilyCreationForm(forms.ModelForm):
@@ -211,6 +225,7 @@ class FamilyAdmin(SportfacAdminMixin, UserAdmin):
         "first_name",
     )
     ordering = ("last_name", "first_name")
+    actions = ["send_confirmation_email"]
     # inlines = [ChildInline]
 
 
