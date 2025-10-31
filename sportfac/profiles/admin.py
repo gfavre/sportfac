@@ -225,7 +225,9 @@ class FamilyAdmin(SportfacAdminMixin, UserAdmin):
         "first_name",
     )
     ordering = ("last_name", "first_name")
-    actions = ["send_confirmation_email"]
+    actions = [
+        send_confirmation_action,
+    ]
     # inlines = [ChildInline]
 
 
