@@ -4,8 +4,10 @@ from django.contrib import admin
 from django.contrib.flatpages import views as flatviews
 from django.contrib.flatpages.sitemaps import FlatPageSitemap
 from django.contrib.sitemaps import views as sitemapviews
+from django.http import HttpResponsePermanentRedirect
 from django.urls import include
 from django.urls import path
+from django.urls import re_path
 from django.views.generic import RedirectView
 from django.views.generic import TemplateView
 from django.views.static import serve
@@ -105,6 +107,11 @@ urlpatterns += [
     path("robots.txt", TextPlainView.as_view(template_name="robots.txt")),
     path("select2/", include("django_select2.urls")),
     path("sitemap.xml", sitemapviews.sitemap, {"sitemaps": sitemaps}),
+    re_path(
+        r"^wizard2/(?P<path>.*)$",
+        lambda request, path="": HttpResponsePermanentRedirect(f"/wizard/{path}"),
+        name="redirect-wizard2",
+    ),
     path("wizard/", include("wizard.urls")),
     path(settings.ADMIN_URL, admin.site.urls),
 ]
