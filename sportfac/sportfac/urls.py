@@ -33,6 +33,18 @@ sitemaps = {
 }
 
 
+def redirect_wizard2(request, path: str = ""):
+    """
+    Redirect /wizard2/* → /wizard/*, preserving any URL prefix such as /hiver/.
+    """
+    prefix = ""
+    # Exemple: path_info = "/wizard2/test/" ou "/hiver/wizard2/test/"
+    if request.path.startswith(settings.FORCE_SCRIPT_NAME):
+        prefix = settings.FORCE_SCRIPT_NAME
+
+    return HttpResponsePermanentRedirect(f"{prefix}/wizard/{path}")
+
+
 class TextPlainView(TemplateView):
     def render_to_response(self, context, **kwargs):
         return super().render_to_response(context, content_type="text/plain", **kwargs)
@@ -107,11 +119,7 @@ urlpatterns += [
     path("robots.txt", TextPlainView.as_view(template_name="robots.txt")),
     path("select2/", include("django_select2.urls")),
     path("sitemap.xml", sitemapviews.sitemap, {"sitemaps": sitemaps}),
-    re_path(
-        r"^wizard2/(?P<path>.*)$",
-        lambda request, path="": HttpResponsePermanentRedirect(f"/wizard/{path}"),
-        name="redirect-wizard2",
-    ),
+    re_path(r"^wizard2/(?P<path>.*)$", redirect_wizard2, name="redirect-wizard2"),
     path("wizard/", include("wizard.urls")),
     path(settings.ADMIN_URL, admin.site.urls),
 ]
