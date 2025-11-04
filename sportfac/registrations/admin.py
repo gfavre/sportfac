@@ -2,22 +2,34 @@ from django.contrib import admin
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
-
-from import_export import fields, resources
+from import_export import fields
+from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
 from appointments.models import Rental
-from sportfac.admin_utils import SportfacAdminMixin, SportfacModelAdmin
-from .models import (
-    Bill,
-    Child,
-    ChildActivityLevel,
-    ExtraInfo,
-    Registration,
-    RegistrationsProfile,
-    RegistrationValidation,
-    Transport,
-)
+from sportfac.admin_utils import SportfacAdminMixin
+from sportfac.admin_utils import SportfacModelAdmin
+
+from .models import Bill
+from .models import Child
+from .models import ChildActivityLevel
+from .models import ExtraInfo
+from .models import Registration
+from .models import RegistrationsProfile
+from .models import RegistrationValidation
+from .models import Transport
+from .tasks import send_bill_confirmation
+
+
+@admin.action(description="Envoyer confirmation des factures(Celery)")
+def send_confirmation_action(modeladmin, request, queryset):
+    from backend.models import Domain
+
+    domain = Domain.objects.filter(is_current=True).first()
+    tenant = domain.tenant if domain else None
+    for invoice in queryset:
+        user = invoice.family
+        send_bill_confirmation.delay(user.pk, invoice.pk, tenant.pk)
 
 
 class RegistrationResource(resources.ModelResource):
@@ -176,8 +188,10 @@ class BillAdmin(SportfacModelAdmin):
     raw_id_fields = ("family",)
     date_hierarchy = "created"
     search_fields = ("billing_identifier", "family__first_name", "family__last_name")
-
     inlines = [RegistrationInline, RentalsInline]
+    actions = [
+        send_confirmation_action,
+    ]
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related("family")
