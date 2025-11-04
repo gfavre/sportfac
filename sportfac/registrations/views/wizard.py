@@ -101,7 +101,7 @@ class WizardConfirmationStepView(LoginRequiredMixin, BaseWizardStepView, FormVie
                 )
             )
             success_url = reverse_lazy("wizard:step", kwargs={"step_slug": "success"})
-        if settings.KEPCHUP_PAYMENT_METHOD == "iban":
+        elif settings.KEPCHUP_PAYMENT_METHOD == "iban":
             try:
                 tenant_pk = connection.tenant.pk
             except AttributeError:

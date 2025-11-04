@@ -1,17 +1,20 @@
 {% load i18n switzerland %}
 Madame, Monsieur,
 
-Nous avons bien reçu vos inscriptions pour les cours suivants:
-{% for registration in registrations %}
-• {{ registration.child.full_name|safe }} - {{ registration.course.short_name|safe }}{% if payment %} - {{ registration.price|money }}{% endif %}
+Nous avons bien reçu vos inscriptions pour les cours suivants:{% for registration in registrations %}
+• {{ registration.child.full_name|safe }} - {{ registration.course.short_name|safe }}
 {% endfor %}
-
 {% if waiting_slots %}
-Vous êtes inscrits sur la liste d'attente de ces cours actuellement complets:
-{% for waiting_slot in waiting_slots %}
+Vous êtes inscrits sur la liste d'attente de ces cours actuellement complets:{% for waiting_slot in waiting_slots %}
 • {{ waiting_slot.child.full_name|safe }} - {{ waiting_slot.course.short_name|safe }}
 {% endfor %}
 Nous vous contacterons si une place venait à se libérer.
 {% endif %}
+{% if appointments %}Prise de matériel:{% for appointment in appointments %}
+• {{ appointment.child|safe }}: {{ appointment.slot.start|date:"l d F Y, H:i" }}
+{% endfor %}
+Le matériel est à retirer au local de Ski du Collège de Montreux-Est (Rue de la Gare 33, 1820 Montreux)
+{% endif %}
+Vous pouvez retrouver vos factures en tous temps sur {{ site_url }}{% url "registrations:registrations_billing" %}
 
 {{ signature }}
