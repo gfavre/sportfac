@@ -39,7 +39,8 @@ def redirect_wizard2(request, path: str = ""):
     """
     prefix = ""
     # Exemple: path_info = "/wizard2/test/" ou "/hiver/wizard2/test/"
-    if request.path.startswith(settings.FORCE_SCRIPT_NAME):
+
+    if settings.FORCE_SCRIPT_NAME and request.path.startswith(settings.FORCE_SCRIPT_NAME):
         prefix = settings.FORCE_SCRIPT_NAME
 
     return HttpResponsePermanentRedirect(f"{prefix}/wizard/{path}")
