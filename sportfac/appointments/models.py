@@ -4,7 +4,6 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-
 from model_utils.models import TimeStampedModel
 from phonenumber_field.modelfields import PhoneNumberField
 
@@ -110,9 +109,9 @@ class Rental(TimeStampedModel):
         ordering = ("child",)
 
     def delete(self, using=None, keep_parents=False):
-        if self.pickup_appointment:
+        if hasattr(self, "pickup_appointment") and self.pickup_appointment:
             self.pickup_appointment.delete()
-        if self.return_appointment:
+        if hasattr(self, "return_appointment") and self.return_appointment:
             self.return_appointment.delete()
         super().delete(using, keep_parents)
 
