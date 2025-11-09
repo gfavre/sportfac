@@ -109,10 +109,16 @@ class Rental(TimeStampedModel):
         ordering = ("child",)
 
     def delete(self, using=None, keep_parents=False):
-        if hasattr(self, "pickup_appointment") and self.pickup_appointment:
-            self.pickup_appointment.delete()
-        if hasattr(self, "return_appointment") and self.return_appointment:
-            self.return_appointment.delete()
+        try:
+            if hasattr(self, "pickup_appointment") and self.pickup_appointment:
+                self.pickup_appointment.delete()
+        except (KeyError, Appointment.DoesNotExist):
+            pass
+        try:
+            if hasattr(self, "return_appointment") and self.return_appointment:
+                self.return_appointment.delete()
+        except (KeyError, Appointment.DoesNotExist):
+            pass
         super().delete(using, keep_parents)
 
     def __str__(self):
