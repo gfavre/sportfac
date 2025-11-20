@@ -1,29 +1,29 @@
 import json
 import os
 
+import pypdftk
+import requests
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.exceptions import ImproperlyConfigured
 from django.template import loader
 from django.utils.encoding import smart_str
 from django.utils.translation import activate
-
-import pypdftk
-import requests
 from sekizai.context import SekizaiContext
 
 from backend.dynamic_preferences_registry import global_preferences_registry
+from profiles.models import FamilyUser
 from sportfac.context_processors import kepchup_context
 
 
 global_preferences = global_preferences_registry.manager()
 
 
-def get_ssf_decompte_heures(course, instructor):
+def get_ssf_decompte_heures(course, instructor: FamilyUser):
     """
     pdftk sportfac/static/pdf/SSF_decompte_moniteur.pdf dump_data_fields
     """
-    pdf_file = os.path.join(settings.STATIC_ROOT, "pdf", "SSF_decompte_moniteur.pdf")
+    pdf_file = os.path.join(settings.STATIC_ROOT, "pdf", "SSF_decompte_heures moniteur_version 04.2024.pdf")
 
     fields = {
         "Escol": global_preferences["email__SCHOOL_NAME"],
@@ -42,12 +42,24 @@ def get_ssf_decompte_heures(course, instructor):
         "Formation  MEP diplômé": instructor.is_mep and "On",
         "Instituteur  Maître généraliste": instructor.is_teacher and "On",
         "Moniteur JS": (not instructor.is_teacher and not instructor.is_mep) and "On",
-        "Sexe  F": instructor.gender == "f" and "On",
-        "H": instructor.gender == "m" and "On",
+        "genre": instructor.gender == "f" and "F" or "M",
         "Nationalité": instructor.get_nationality_display(),
         "Type permis": instructor.permit_type,
         "AVS": instructor.ahv,
+        "email": instructor.email,
     }
+    total = 0
+    for idx, session in enumerate(course.sessions.order_by("date"), start=1):
+        fields[f"date_{idx}"] = session.date.strftime(settings.SWISS_DATE_SHORT)
+        fields[f"start_time_{idx}"] = course.start_time.strftime("%H:%M")
+        fields[f"end_time_{idx}"] = course.end_time.strftime("%H:%M")
+        fields[f"duration_{idx}"] = str(course.duration.seconds // 60) + " min"
+        total_session = session.presentees_nb()
+        fields[f"total_{idx}"] = str(total_session)
+        total += total_session
+    avg = total / len(course.sessions.all())
+    fields["total"] = f"{total} (moy. {avg}"
+
     # noinspection PyBroadException
     try:
         return pypdftk.fill_form(pdf_path=pdf_file, datas=fields, flatten=False)
