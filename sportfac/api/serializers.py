@@ -547,11 +547,13 @@ class InstructorSerializer(FamilySerializer):
 class CoursesInstructorsRoleSerializer(serializers.ModelSerializer):
     course = serializers.SerializerMethodField()
     instructor = serializers.SerializerMethodField()
-    function = serializers.SlugRelatedField(slug_field="name", queryset=Function.objects.all())
+    function = serializers.SlugRelatedField(
+        slug_field="name", queryset=Function.objects.all(), required=False, allow_null=True
+    )
 
     class Meta:
         model = CoursesInstructors
-        fields = ("id", "course", "instructor", "function")
+        fields = ("id", "course", "instructor", "function", "contract_number")
 
     def get_course(self, obj):
         return obj.course.short_name

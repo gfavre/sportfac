@@ -573,9 +573,25 @@ class CoursesInstructors(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     instructor = models.ForeignKey("profiles.FamilyUser", on_delete=models.CASCADE)
     function = models.ForeignKey("payroll.Function", on_delete=models.SET_NULL, null=True, blank=True)
+    contract_number = models.CharField(
+        _("Contract number"),
+        max_length=30,
+        unique=True,
+        blank=True,
+        null=True,
+        default=None,
+    )
 
     class Meta:
         unique_together = ("course", "instructor")
+
+    def save(self, *args, **kwargs):
+        # We don't want to store empty strings, for Postgres NULL != NULL
+        # => we can have multiple NULL values but not
+        # multiple empty string values.
+        if self.contract_number == "":
+            self.contract_number = None
+        super().save(*args, **kwargs)
 
 
 class TemplatedEmailReceipt(TimeStampedModel):
