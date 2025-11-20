@@ -23,7 +23,7 @@ def get_ssf_decompte_heures(course, instructor: FamilyUser):
     """
     pdftk sportfac/static/pdf/SSF_decompte_moniteur.pdf dump_data_fields
     """
-    pdf_file = os.path.join(settings.STATIC_ROOT, "pdf", "SSF_decompte_heures moniteur_version 04.2024.pdf")
+    pdf_file = os.path.join(settings.STATIC_ROOT, "pdf", "SSF_decompte_heures_moniteur_version_04.2024.pdf")
 
     fields = {
         "Escol": global_preferences["email__SCHOOL_NAME"],
