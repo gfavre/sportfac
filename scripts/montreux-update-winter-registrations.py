@@ -2,7 +2,75 @@ import pandas as pd
 from import_export.formats.base_formats import XLSX
 
 from activities.models import ExtraNeed
-from registrations.models import ChildActivityLevel, ExtraInfo, Registration, Transport
+from registrations.models import Child
+from registrations.models import ChildActivityLevel
+from registrations.models import ExtraInfo
+from registrations.models import Registration
+from registrations.models import Transport
+
+
+# Hiver 2026, partie 1:
+# id	Prénom	Nom	Identifiant de l'enfant	Date de naissance	Niveau après le cours
+# id c'est pas registration_id!! je sais pas doû ça vient => id de l'0année passée!!!! wtf!
+file_path = "/home/greg/temp/montreux-hiver-2026.xlsx"
+data = pd.read_excel(file_path)
+level_extra_key = "Niveau de ski/snowboard"
+question = ExtraNeed.objects.get(question_label=level_extra_key)
+
+for _index, row in data.iterrows():
+    # registration_id = row["id"]
+    id_lagapeo = str(row["Identifiant de l'enfant"]) if pd.notna(row["Identifiant de l'enfant"]) else ""
+    bib_number = str(int(row["Dossards"])) if row.get("Dossards") and pd.notna(row["Dossards"]) else ""
+    transport_name = str(int(row["Transport"])) if row.get("Transport") and pd.notna(row["Transport"]) else ""
+    old_level = str(row["Niveau après le cours"]) if pd.notna(row["Niveau après le cours"]) else ""
+    announced_level = (
+        str(row["Niveau annoncé"]) if row.get("Niveau annoncé") and pd.notna(row["Niveau annoncé"]) else ""
+    )
+
+    try:
+        child = Child.objects.get(id_lagapeo=id_lagapeo)
+        registrations = child.registrations.all()
+        if not registrations.exists():
+            print("child has no registrations, skipping")
+            continue
+        assert registrations.count() == 1
+        registration = child.registrations.first()
+        # registration = Registration.objects.get(pk=registration_id)
+    except Child.DoesNotExist:
+        print(f"Missing Child: {id_lagapeo}, {row['Prénom']} {row['Nom']}")
+        continue
+    if str(registration.child.id_lagapeo) != id_lagapeo:
+        print(f"id_lagapeo coherence: {registration.child.id_lagapeo}/{id_lagapeo}")
+        continue
+
+    if transport_name:
+        transport, created = Transport.objects.get_or_create(name=transport_name)
+        if created:
+            print(f"Created transport {transport_name}")
+        registration.transport = transport
+        registration.save()
+    if pd.notna(bib_number):
+        registration.child.bib_number = bib_number
+        registration.child.save()
+    if pd.notna(announced_level):
+        try:
+            answer = registration.extra_infos.get(key=question)
+        except ExtraInfo.DoesNotExist:
+            answer = ExtraInfo.objects.create(key=question, registration=registration)
+        if answer.value != announced_level:
+            answer.value = announced_level
+            answer.save()
+    if pd.notna(old_level):
+        try:
+            answer = registration.extra_infos.get(key=question)
+        except ExtraInfo.DoesNotExist:
+            answer = ExtraInfo.objects.create(key=question, registration=registration)
+        if answer.value != announced_level:
+            answer.value = announced_level
+            answer.save()
+        level, created = ChildActivityLevel.objects.update_or_create(
+            activity=registration.course.activity, child=registration.child, defaults={"before_level": old_level}
+        )
 
 
 # """
