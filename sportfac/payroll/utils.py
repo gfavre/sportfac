@@ -64,7 +64,7 @@ def get_payroll_csv(payroll_obj, filelike):
             course_instructor.instructor.external_identifier,
             course_instructor.function.code,
             str(course_instructor.contract_number),
-            round(nb_hours, 2),
+            nb_hours,
             payroll_obj.start.strftime(settings.SWISS_DATE_SHORT),
             payroll_obj.end.strftime(settings.SWISS_DATE_SHORT),
         ]
