@@ -5,7 +5,6 @@ from django.utils.timezone import now
 
 from absences.models import Session
 from activities.models import CoursesInstructors
-
 from sportfac.utils import ExcelWriter
 
 
@@ -24,6 +23,7 @@ def get_payroll_csv(payroll_obj, filelike):
         heading = [
             "Identifiant moniteur",
             "Code de fonction",
+            "Numéro de contrat",
             "Nombre d'heures",
             "Date de début",
             "Date de fin",
@@ -56,6 +56,7 @@ def get_payroll_csv(payroll_obj, filelike):
         line = [
             course_instructor.instructor.external_identifier,
             course_instructor.function.code,
+            str(course_instructor.contract_number),
             round(nb_hours, 2),
             payroll_obj.start.strftime(settings.SWISS_DATE_SHORT),
             payroll_obj.end.strftime(settings.SWISS_DATE_SHORT),
