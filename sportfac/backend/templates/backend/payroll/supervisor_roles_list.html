@@ -13,37 +13,75 @@
     <script src="{% static 'js/vendor/datatables/jquery.dataTables.min.js' %}"></script>
     <script src="{% static 'js/vendor/datatables/dataTables.bootstrap.js' %}"></script>
     <script>
-      $(function () {
+  $(function () {
+    // CSRF setup
+    $.ajaxSetup({
+      headers: { "X-CSRFToken": Cookies.get("csrftoken") }
+    });
+    let contractTimers = {};   // per-row debounce timers
+    let contractLocks = {};    // per-row request locks
+    // Datatables init
+    $(".table").dataTable({
+      {% if LANGUAGE_CODE == 'fr' %}
+      language: { url: "{{ STATIC_URL }}js/vendor/datatables/French.json" },
+      {% endif %}
+      lengthMenu: [25, 100, -1]
+    });
 
-        $.ajaxSetup({
-          headers: {"X-CSRFToken": Cookies.get("csrftoken")}
-        });
-
-        $(".table").dataTable({
-          {% if LANGUAGE_CODE == 'fr' %}
-            "language": {
-              "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
-            },
-          {% endif %}
-          lengthMenu: [25, 100, -1]
-        });
+    const updateInstructor = function (id, payload, onSuccess) {
+      $.ajax({
+        url: "{% url 'api:course-instructors-list' %}" + id + "/",
+        type: "PATCH",
+        data: payload,
+        success: onSuccess
       });
+    };
 
-      $('select.function').on('change', function () {
-        let id = $(this).parents('tr').data('id');
-        let $success = $(this).siblings('.success')
-        $.ajax({
-          url: '{% url "api:course-instructors-list" %}' + id + '/',
-          type: 'PUT',
-          data: {
-            function: $(this).val()
-          },
-          success: function (data) {
-            $success.show().fadeOut(2500);
-          }
-        });
+    $(".table").on("change", "select.function", function () {
+      const $row = $(this).closest("tr");
+      const id = $row.data("id");
+      const value = $(this).val() || null; // empty → null
+      const $success = $(this).siblings(".success");
+      updateInstructor(id, { function: value }, function () {
+        $success.show().fadeOut(2500);
       });
-    </script>
+    });
+
+    let contractTimer = null;
+
+    $(".table").on("input", "input.contract-number", function () {
+      const $input = $(this);
+      const $row = $input.closest("tr");
+      const id = $row.data("id");
+      const rawValue = $input.val();
+      const value = rawValue.trim() === "" ? null : rawValue.trim();
+      const $success = $input.siblings(".success");
+
+      // Clear previous timer
+      clearTimeout(contractTimers[id]);
+
+      // Debounce 500ms
+      contractTimers[id] = setTimeout(function () {
+        // If a request is already running for this row → delay
+        if (contractLocks[id]) {
+          // retry in 300 ms
+          contractTimers[id] = setTimeout(() => $input.trigger("input"), 300);
+          return;
+        }
+
+        // Lock this row
+        contractLocks[id] = true;
+
+        updateInstructor(id, { contract_number: value }, function () {
+          contractLocks[id] = false;
+          $success.show().fadeOut(2000);
+        });
+      }, 500);
+    });
+  });
+</script>
+
+
   {% endaddtoblock %}
 
   <table class="table">
@@ -52,6 +90,7 @@
       <th class="text-nowrap">{% translate "Course" %}</th>
       <th class="text-nowrap">{% translate "Supervisor" %}</th>
       <th class="text-nowrap">{% translate "Role" %}</th>
+      <th class="text-nowrap">{% translate "Contract #" %}</th>
       {% if FICHE_SALAIRE_MONTREUX %}
         <th class="text-nowrap">{% translate "Actions" %}</th>
       {% endif %}
@@ -70,7 +109,7 @@
           </a>
         </td>
         <td>
-          <select class="function">
+          <select class="function form-control">
             {% if not course_instructor.function %}
               <option value="">---</option>
             {% endif %}
@@ -81,6 +120,11 @@
             {% endfor %}
           </select>
           <i class="icon-ok success" style="display: none"></i>
+        </td>
+        <td>
+          <input type="text" class="contract-number form-control" value="{{ course_instructor.contract_number|default:"" }}"/>
+                    <i class="icon-ok success" style="display: none"></i>
+
         </td>
         {% if FICHE_SALAIRE_MONTREUX %}
           <td>

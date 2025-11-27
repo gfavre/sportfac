@@ -110,3 +110,11 @@ class CourseInstructorsViewSet(
     permission_classes = (ManagerPermission,)
     queryset = CoursesInstructors.objects.all()
     serializer_class = CoursesInstructorsRoleSerializer
+
+    def partial_update(self, request, *args, **kwargs):
+        """
+        Allow partial updates of course instructor fields.
+        Only provided fields are validated and updated.
+        """
+        kwargs["partial"] = True
+        return super().update(request, *args, **kwargs)
