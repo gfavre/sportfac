@@ -74,31 +74,30 @@
         contractLocks[id] = true;
 
         updateInstructor(
-      id,
-      { contract_number: value },
-      function (data) {
-        // SUCCESS → update last known value
-        $input.data("last-value", rawValue);
-        $error.hide();
-        $success.show().fadeOut(2000);
-        contractLocks[id] = false;
-      }
-    ).fail(function (xhr) {
-      // ---- ERROR ----
-      contractLocks[id] = false;
+          id,
+          { contract_number: value },
+          function (data) {
+            // SUCCESS → update last known value
+            $input.data("last-value", rawValue);
+            $error.hide();
+            $success.show().fadeOut(2000);
+            contractLocks[id] = false;
+          }).fail(function (xhr) {
+            // ---- ERROR ----
+            contractLocks[id] = false;
 
-      // rollback to last good value
-      const rollback = $input.data("last-value") || "";
-      $input.val(rollback);
+            // rollback to last good value
+            const rollback = $input.data("last-value") || "";
+            $input.val(rollback);
 
-      // show error
-      let msg = "Error";
-      if (xhr.responseJSON && xhr.responseJSON.contract_number) {
-        msg = xhr.responseJSON.contract_number.join(" ");
-      }
-      $error.text(msg).show().fadeOut(3000);
-    });
-  }, 500);
+            // show error
+            let msg = "Error";
+            if (xhr.responseJSON && xhr.responseJSON.contract_number) {
+              msg = xhr.responseJSON.contract_number.join(" ");
+            }
+            $error.text(msg).show().fadeOut(5000);
+          });
+        }, 500);
     });
   });
 </script>
