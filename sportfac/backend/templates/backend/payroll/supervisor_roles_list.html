@@ -29,7 +29,7 @@
     });
 
     const updateInstructor = function (id, payload, onSuccess) {
-      $.ajax({
+      return $.ajax({
         url: "{% url 'api:course-instructors-list' %}" + id + "/",
         type: "PATCH",
         data: payload,
@@ -56,6 +56,7 @@
       const rawValue = $input.val();
       const value = rawValue.trim() === "" ? null : rawValue.trim();
       const $success = $input.siblings(".success");
+      const $error = $input.siblings(".error-msg");
 
       // Clear previous timer
       clearTimeout(contractTimers[id]);
@@ -72,11 +73,32 @@
         // Lock this row
         contractLocks[id] = true;
 
-        updateInstructor(id, { contract_number: value }, function () {
-          contractLocks[id] = false;
-          $success.show().fadeOut(2000);
-        });
-      }, 500);
+        updateInstructor(
+      id,
+      { contract_number: value },
+      function (data) {
+        // SUCCESS → update last known value
+        $input.data("last-value", rawValue);
+        $error.hide();
+        $success.show().fadeOut(2000);
+        contractLocks[id] = false;
+      }
+    ).fail(function (xhr) {
+      // ---- ERROR ----
+      contractLocks[id] = false;
+
+      // rollback to last good value
+      const rollback = $input.data("last-value") || "";
+      $input.val(rollback);
+
+      // show error
+      let msg = "Error";
+      if (xhr.responseJSON && xhr.responseJSON.contract_number) {
+        msg = xhr.responseJSON.contract_number.join(" ");
+      }
+      $error.text(msg).show().fadeOut(3000);
+    });
+  }, 500);
     });
   });
 </script>
@@ -122,8 +144,13 @@
           <i class="icon-ok success" style="display: none"></i>
         </td>
         <td>
-          <input type="text" class="contract-number form-control" value="{{ course_instructor.contract_number|default:"" }}"/>
+          <input type="text" class="contract-number form-control"
+                 value="{{ course_instructor.contract_number|default:"" }}"
+                 data-last-value="{{ course_instructor.contract_number|default:"" }}"
+          />
                     <i class="icon-ok success" style="display: none"></i>
+          <span class="error-msg text-danger" style="display:none"></span>
+
 
         </td>
         {% if FICHE_SALAIRE_MONTREUX %}

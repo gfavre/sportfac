@@ -8,6 +8,10 @@ from activities.models import CoursesInstructors
 from sportfac.utils import ExcelWriter
 
 
+HOURS_IN_DAY = Decimal("24")
+SECONDS_IN_HOUR = Decimal("3600")
+
+
 def get_payroll_csv(payroll_obj, filelike):
     qs_kwargs = {"date__gte": payroll_obj.start, "date__lte": payroll_obj.end}
     if not payroll_obj.include_already_exported:
@@ -47,7 +51,10 @@ def get_payroll_csv(payroll_obj, filelike):
         course_instructor.exported_count = nb_rate
         if course_instructor.function.is_hourly:
             duration = course_instructor.course.duration
-            nb_hours = Decimal(duration.seconds / 3600.0 + duration.days * 24) * course_instructor.exported_count
+            hours_days = Decimal(duration.days) * HOURS_IN_DAY
+            hours_seconds = Decimal(duration.seconds) / SECONDS_IN_HOUR
+            nb_hours = (hours_days + hours_seconds) * Decimal(course_instructor.exported_count)
+            nb_hours = nb_hours.quantize(Decimal("0.00"))
         elif course_instructor.function.is_daily:
             nb_hours = course_instructor.exported_count
         else:
