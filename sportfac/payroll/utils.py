@@ -1,3 +1,4 @@
+from decimal import ROUND_HALF_UP
 from decimal import Decimal
 
 from django.conf import settings
@@ -10,6 +11,7 @@ from sportfac.utils import ExcelWriter
 
 HOURS_IN_DAY = Decimal("24")
 SECONDS_IN_HOUR = Decimal("3600")
+DECIMAL_TWO_PLACES = Decimal("0.00")
 
 
 def get_payroll_csv(payroll_obj, filelike):
@@ -54,11 +56,9 @@ def get_payroll_csv(payroll_obj, filelike):
             hours_days = Decimal(duration.days) * HOURS_IN_DAY
             hours_seconds = Decimal(duration.seconds) / SECONDS_IN_HOUR
             nb_hours = (hours_days + hours_seconds) * Decimal(course_instructor.exported_count)
-            nb_hours = nb_hours.quantize(Decimal("0.00"))
-        elif course_instructor.function.is_daily:
-            nb_hours = course_instructor.exported_count
+            nb_hours = nb_hours.quantize(DECIMAL_TWO_PLACES, rounding=ROUND_HALF_UP)
         else:
-            nb_hours = course_instructor.exported_count
+            nb_hours = Decimal(course_instructor.exported_count).quantize(DECIMAL_TWO_PLACES, rounding=ROUND_HALF_UP)
 
         line = [
             course_instructor.instructor.external_identifier,
