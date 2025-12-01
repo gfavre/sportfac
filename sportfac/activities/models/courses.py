@@ -589,12 +589,6 @@ class CoursesInstructors(models.Model):
                 fields=["course", "instructor"],
                 name="unique_course_instructor",
             ),
-            # 2. Contract number unique per instructor + function
-            models.UniqueConstraint(
-                fields=["instructor", "function"],
-                name="unique_instructor_function_single_contract_number",
-                condition=~models.Q(contract_number__isnull=True),
-            ),
         ]
 
     def save(self, *args, **kwargs):

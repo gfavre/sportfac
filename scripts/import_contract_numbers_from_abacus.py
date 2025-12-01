@@ -31,14 +31,14 @@ def load_dataframe(path: str) -> pd.DataFrame:
     return pd.read_excel(path)
 
 
-def get_family_user(external_id: str) -> FamilyUser | None:
+def get_family_user(external_id: str):
     try:
         return FamilyUser.objects.get(external_identifier=external_id)
     except FamilyUser.DoesNotExist:
         return None
 
 
-def get_function_by_name(name: str) -> Function | None:
+def get_function_by_name(name: str):
     name = FUNCTION_SYNONYMS.get(name, name)
     try:
         return Function.objects.get(name=name)
@@ -49,7 +49,7 @@ def get_function_by_name(name: str) -> Function | None:
         return None
 
 
-def get_family_user_from_external_id_and_function(external_id: str, function: Function) -> FamilyUser | None:
+def get_family_user_from_external_id_and_function(external_id: str, function: Function):
     """
     Return the FamilyUser that is linked to the given function via CoursesInstructors.
     Avoids MultipleObjectsReturned errors.
@@ -69,7 +69,7 @@ def get_family_user_from_external_id_and_function(external_id: str, function: Fu
     return None
 
 
-def process_row(row: pd.Series) -> None:
+def process_row(row: pd.Series):
     """
     Process a single row: validate and update CoursesInstructors.
 
@@ -112,7 +112,7 @@ def process_row(row: pd.Series) -> None:
 
 
 # @transaction.atomic
-def import_contracts(path: str) -> None:
+def import_contracts(path: str):
     """
     Main import function. Loads the file, iterates rows, updates CoursesInstructors.
 
