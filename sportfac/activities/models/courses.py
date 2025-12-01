@@ -591,8 +591,8 @@ class CoursesInstructors(models.Model):
             ),
             # 2. Contract number unique per instructor + function
             models.UniqueConstraint(
-                fields=["instructor", "function", "contract_number"],
-                name="unique_contract_per_instructor_function",
+                fields=["instructor", "function"],
+                name="unique_instructor_function_single_contract_number",
                 condition=~models.Q(contract_number__isnull=True),
             ),
         ]
