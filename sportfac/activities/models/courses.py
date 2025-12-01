@@ -576,14 +576,26 @@ class CoursesInstructors(models.Model):
     contract_number = models.CharField(
         _("Contract number"),
         max_length=30,
-        unique=True,
+        unique=False,
         blank=True,
         null=True,
         default=None,
     )
 
     class Meta:
-        unique_together = ("course", "instructor")
+        constraints = [
+            # 1. Instructor cannot appear twice in the same course
+            models.UniqueConstraint(
+                fields=["course", "instructor"],
+                name="unique_course_instructor",
+            ),
+            # 2. Contract number unique per instructor + function
+            models.UniqueConstraint(
+                fields=["instructor", "function", "contract_number"],
+                name="unique_contract_per_instructor_function",
+                condition=~models.Q(contract_number__isnull=True),
+            ),
+        ]
 
     def save(self, *args, **kwargs):
         # We don't want to store empty strings, for Postgres NULL != NULL
