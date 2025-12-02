@@ -63,7 +63,7 @@ def get_payroll_csv(payroll_obj, filelike):
         line = [
             course_instructor.instructor.external_identifier,
             course_instructor.function.code,
-            str(course_instructor.contract_number),
+            course_instructor.contract_number or 0,
             nb_hours,
             payroll_obj.start.strftime(settings.SWISS_DATE_SHORT),
             payroll_obj.end.strftime(settings.SWISS_DATE_SHORT),
