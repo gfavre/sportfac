@@ -57,7 +57,10 @@ def get_ssf_decompte_heures(course, instructor: FamilyUser):
         total_session = session.presentees_nb()
         fields[f"total_{idx}"] = str(total_session)
         total += total_session
-    avg = total / len(course.sessions.all())
+    if course.sessions.count():
+        avg = total / len(course.sessions.all())
+    else:
+        avg = total / course.number_of_sessions
     fields["total"] = f"{total} (moy. {avg}"
 
     # noinspection PyBroadException

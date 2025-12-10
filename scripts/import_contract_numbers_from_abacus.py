@@ -36,6 +36,8 @@ def get_family_user(external_id: str):
         return FamilyUser.objects.get(external_identifier=external_id)
     except FamilyUser.DoesNotExist:
         return None
+    except MultipleObjectsReturned:
+        print(f"Multiple FamilyUser entries match the name: {external_id}")
 
 
 def get_function_by_name(name: str):
