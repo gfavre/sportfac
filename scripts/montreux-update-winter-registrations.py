@@ -9,6 +9,44 @@ from registrations.models import Registration
 from registrations.models import Transport
 
 
+################################
+# hiver 2026 - part 2 - dossards
+# id	Cours	Prénom	Nom	AVS	Identifiant de l'enfant	Arrêt de bus	Base_niveaux.N°car	Base_niveaux.N° Dossard
+
+file_path = "/home/greg/temp/20251207_Dossards_transports.xlsx"
+file_path = "/home/greg/temp/Inscriptions Les Mosses 2026.xlsx"
+data = pd.read_excel(file_path)
+for _index, row in data.iterrows():
+    registration_id = row["id"]
+    try:
+        registration = Registration.objects.get(pk=registration_id)
+    except Registration.DoesNotExist:
+        print(f"Missing registration: {registration_id}")
+        continue
+    bib_number = str(row["Base_niveaux.N° Dossard"]) if pd.notna(row["Base_niveaux.N° Dossard"]) else ""
+    first_name = row["Prénom"]
+    if first_name != registration.child.first_name:
+        print(f"child mismatch first name: {first_name} / registration_child_name: {registration.child.first_name}")
+        continue
+    registration.child.bib_number = bib_number
+    registration.child.save(update_fields=["bib_number"])
+    transport_name = str(row["Base_niveaux.N°car"]) if pd.notna(row["Base_niveaux.N°car"]) else ""
+    if transport_name:
+        transport, created = Transport.objects.get_or_create(name=transport_name)
+        if created:
+            print(f"Created transport {transport_name}")
+        registration.transport = transport
+        registration.save(update_fields=["transport"])
+    old_level = str(row["Niveau avant le cours"]) if pd.notna(row["Niveau avant le cours"]) else ""
+    if old_level:
+        level, created = ChildActivityLevel.objects.get_or_create(
+            activity=registration.course.activity, child=registration.child
+        )
+        if old_level.startswith("A ") or old_level.startswith("S "):
+            old_level = " ".join(old_level.split(" ")[1:])
+        level.before_level = old_level
+        level.save(update_fields=["before_level"])
+
 # Hiver 2026, partie 1:
 # id	Prénom	Nom	Identifiant de l'enfant	Date de naissance	Niveau après le cours
 # id c'est pas registration_id!! je sais pas doû ça vient => id de l'0année passée!!!! wtf!

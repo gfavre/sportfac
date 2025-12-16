@@ -609,7 +609,7 @@ class TransportDetailView(FullBackendMixin, DetailView):
             questions = ExtraNeed.objects.filter(question_label__startswith="Arr")
             all_extras = {
                 extra.registration.child: extra.value
-                for extra in ExtraInfo.objects.filter(
+                for extra in ExtraInfo.objects.exclude(registration__status=Registration.STATUS.canceled).filter(
                     registration__child__in=children,
                     registration__course__in=courses,
                     key__in=questions,
