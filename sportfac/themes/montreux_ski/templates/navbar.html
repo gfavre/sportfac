@@ -40,18 +40,18 @@ jQuery(function($){
             </li>
           {% endif %}
         {% endfor %}
-<!--
+
           <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                  aria-expanded="false">Circulaires<span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
-                <li><a href="{% static "pdf/Circulaire-200-Rochers_de_Naye_2025.pdf" %}" target="_blank">Rochers-de-Naye 3-6P</a></li>
-                <li><a href="{% static "pdf/Circulaire-210-Rochers_de_Naye_2025.pdf" %}" target="_blank">Rochers-de-Naye 5P-12S</a></li>
-                <li><a href="{% static "pdf/Circulaire-250_281_Les Mosses_2025.pdf" %}" target="_blank">Les Mosses</a></li>
-                <li><a href="{% static "pdf/Circulaire-260_270_280_Les Diablerets_2025.pdf" %}" target="_blank">Les Diablerets</a></li>
+                <li><a href="{% static "pdf/Circulaire-200-Rochers-de-Naye-2026.pdf" %}" target="_blank">Rochers-de-Naye 3-6P</a></li>
+                <li><a href="{% static "pdf/Circulaire-210-Rochers-de-Naye-2026" %}" target="_blank">Rochers-de-Naye 5P-12S</a></li>
+                <li><a href="{% static "pdf/Circulaire-250-Les-Mosses-2026.pdf" %}" target="_blank">Les Mosses</a></li>
+                <li><a href="{% static "pdf/Circulaire-260-270-280-Les-Diablerets-2026.pdf" %}" target="_blank">Les Diablerets</a></li>
               </ul>
           </li>
--->
+
       </ul>
       <ul class="nav navbar-nav navbar-right">
         {% if user.is_authenticated and user.is_kepchup_staff %}

@@ -606,6 +606,7 @@ class TransportDetailView(FullBackendMixin, DetailView):
             courses = {registration.course for registration in self.object.participants.all()}
 
         try:
+            # FIXME: this is a despicable hack where I hope the question name is 'Arrêt...'
             questions = ExtraNeed.objects.filter(question_label__startswith="Arr")
             all_extras = {
                 extra.registration.child: extra.value
