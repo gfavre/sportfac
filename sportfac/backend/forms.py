@@ -1,6 +1,13 @@
 import datetime
 from zipfile import BadZipfile
 
+from bootstrap_datepicker_plus.widgets import DateTimePickerInput
+from ckeditor_uploader.widgets import CKEditorUploadingWidget
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import HTML
+from crispy_forms.layout import Fieldset
+from crispy_forms.layout import Layout
+from crispy_forms.layout import Submit
 from django import forms
 from django.conf import settings
 from django.contrib.flatpages.models import FlatPage
@@ -9,16 +16,15 @@ from django.forms.models import BaseInlineFormSet
 from django.forms.widgets import TextInput
 from django.utils.html import mark_safe
 from django.utils.translation import gettext as _
-
-from bootstrap_datepicker_plus.widgets import DateTimePickerInput
-from ckeditor_uploader.widgets import CKEditorUploadingWidget
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import HTML, Fieldset, Layout, Submit
 from django_select2 import forms as s2forms
 
-from activities.models import Course, ExtraNeed
-from registrations.models import Child, ExtraInfo, Registration
+from activities.models import Course
+from activities.models import ExtraNeed
+from registrations.models import Child
+from registrations.models import ExtraInfo
+from registrations.models import Registration
 from registrations.utils import check_children_load_format
+
 from .models import YearTenant
 
 
@@ -351,7 +357,7 @@ class ExtraInfoForm(forms.ModelForm):
         self.helper.form_group_wrapper_class = "row"
         self.helper.label_class = "col-sm-2"
         self.helper.field_class = "col-sm-10"
-        if self.instance:
+        if self.instance and self.instance.key:
             if self.instance.key.choices:
                 self.fields["value"] = forms.ChoiceField(
                     choices=[("", "----")] + list(zip(self.instance.key.choices, self.instance.key.choices)),

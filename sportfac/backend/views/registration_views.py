@@ -317,6 +317,7 @@ class RegistrationUpdateView(SuccessMessageMixin, RegistrationMixin, UpdateView)
                 self.object.extra_infos.get(key=question)
             except ExtraInfo.DoesNotExist:
                 ExtraInfo.objects.create(registration=self.object, key=question, value=question.default)
+                self.object.refresh_from_db()
         extrainfo_form = ExtraInfoFormSet(instance=self.object)
         return self.render_to_response(self.get_context_data(form=form, extrainfo_form=extrainfo_form))
 
