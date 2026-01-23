@@ -65,10 +65,6 @@ class InstructorCopiesForm(forms.Form):
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            "subject",
-            "message",
-            "attachments",
-            "send_copy",
             "copy_all_instructors",
         )
 
