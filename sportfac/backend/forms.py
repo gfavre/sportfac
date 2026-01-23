@@ -357,7 +357,7 @@ class ExtraInfoForm(forms.ModelForm):
         self.helper.form_group_wrapper_class = "row"
         self.helper.label_class = "col-sm-2"
         self.helper.field_class = "col-sm-10"
-        if self.instance and self.instance.key:
+        if self.instance.pk and self.instance.key:
             if self.instance.key.choices:
                 self.fields["value"] = forms.ChoiceField(
                     choices=[("", "----")] + list(zip(self.instance.key.choices, self.instance.key.choices)),

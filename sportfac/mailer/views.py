@@ -8,6 +8,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ImproperlyConfigured
 from django.db import transaction
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import urlencode
 from django.utils.encoding import force_str
 from django.utils.translation import gettext as _
@@ -345,6 +346,9 @@ class MailCourseInstructorsView(ParticipantsBaseMixin, TemplatedEmailMixin, Canc
         )
 
     def post(self, request, *args, **kwargs):
+        from activities.models import Course
+
+        self.course = get_object_or_404(Course, pk=self.kwargs["course"])
         form = self.get_form()
         if form.is_valid():
             return self.form_valid(form)

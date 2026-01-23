@@ -1,12 +1,14 @@
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Div
+from crispy_forms.layout import Layout
+from crispy_forms.layout import Submit
 from django import forms
 from django import forms as django_forms
 from django.utils.translation import gettext as _
-
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Div, Layout, Submit
 from multiupload.fields import MultiFileField
 
-from mailer.models import GenericEmail, MailArchive
+from mailer.models import GenericEmail
+from mailer.models import MailArchive
 
 
 class MailForm(forms.Form):
@@ -53,7 +55,7 @@ class CopiesForm(forms.Form):
         )
 
 
-class InstructorCopiesForm(MailForm):
+class InstructorCopiesForm(forms.Form):
     copy_all_instructors = forms.BooleanField(
         label=_("Send a copy to all other instructors"), initial=False, required=False
     )
