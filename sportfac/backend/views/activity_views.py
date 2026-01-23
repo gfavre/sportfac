@@ -1,4 +1,5 @@
 import collections
+import json
 import os
 from tempfile import mkdtemp
 
@@ -6,19 +7,28 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db import transaction
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 from django.utils.translation import gettext as _
-from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView
+from django.views.generic import DeleteView
+from django.views.generic import DetailView
+from django.views.generic import ListView
+from django.views.generic import UpdateView
 
-from absences.models import Absence, Session
+from absences.models import Absence
+from absences.models import Session
 from absences.utils import closest_session
 from activities.forms import ActivityForm
-from activities.models import Activity, Course, ExtraNeed
+from activities.models import Activity
+from activities.models import Course
+from activities.models import ExtraNeed
 from profiles.models import FamilyUser as User
-from registrations.models import ChildActivityLevel, ExtraInfo
+from registrations.models import ChildActivityLevel
+from registrations.models import ExtraInfo
 
 from ..forms import SessionForm
 from ..utils import AbsencePDFRenderer
@@ -72,6 +82,52 @@ class ActivityAbsenceView(BackendMixin, ActivityMixin, DetailView):
     slug_field = "slug"
     slug_url_kwarg = "activity"
 
+    # ------------------------------------------------------------------
+    # Ordering helpers
+    # ------------------------------------------------------------------
+
+    def _parse_order_from_request(self):
+        order_param = self.request.GET.get("order")
+        if not order_param:
+            return []
+
+        try:
+            parsed = json.loads(order_param)
+        except ValueError:
+            return []
+
+        allowed = {
+            "child.last_name",
+            "child.first_name",
+            "child.bib_number",
+            "child.announced_level",
+            "child.before_level",
+            "child.after_level",
+        }
+
+        clean = []
+        for column, direction in parsed:
+            if column in allowed and direction in ("asc", "desc"):
+                clean.append((column, direction))
+        return clean
+
+    def _sort_registrations(self, registrations, ordering):
+        if not ordering:
+            return registrations
+
+        def sort_key(reg):
+            values = []
+            for attr_path, _junk in ordering:
+                obj = reg
+                for attr in attr_path.split("."):
+                    obj = getattr(obj, attr, "")
+                values.append(obj)
+            return tuple(values)
+
+        reverse = ordering[0][1] == "desc"
+        registrations.sort(key=sort_key, reverse=reverse)
+        return registrations
+
     def post(self, *args, **kwargs):
         activity = self.get_object()
         form = SessionForm(data=self.request.POST)
@@ -97,77 +153,81 @@ class ActivityAbsenceView(BackendMixin, ActivityMixin, DetailView):
         return HttpResponseRedirect(activity.backend_absences_url)
 
     def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        ordering = self._parse_order_from_request()
+
         qs = Absence.objects.select_related(
             "child",
             "session",
             "session__course",
         ).filter(session__activity=self.object)
         all_registrations = self.object.participants.select_related("child")
+
         if "c" in self.request.GET:
             courses_ids = [int(pk) for pk in self.request.GET.getlist("c") if pk.isdigit()]
             if len(courses_ids) == 1:
                 try:
-                    kwargs["course"] = Course.objects.get(pk=courses_ids[0])
+                    context["course"] = Course.objects.get(pk=courses_ids[0])
                 except Course.DoesNotExist:
                     pass
             all_registrations = all_registrations.filter(course_id__in=courses_ids)
         elif self.object.courses.count() == 1:
-            kwargs["course"] = self.object.courses.first()
+            context["course"] = self.object.courses.first()
+
         if settings.KEPCHUP_BIB_NUMBERS:
             qs = qs.order_by("child__bib_number", "child__last_name", "child__first_name")
         else:
             qs = qs.order_by("child__last_name", "child__first_name")
 
-        if "course" in kwargs:
-            sessions = kwargs["course"].sessions.all()
+        if "course" in context:
+            sessions = context["course"].sessions.all()
         else:
             sessions = self.object.sessions.all()
-        kwargs["sessions"] = {session.date: session for session in sessions}
-        kwargs["closest_session"] = closest_session(sessions)
-        # kwargs['sessions'] = dict([(absence.session.date, absence.session) for absence in qs])
-        kwargs["all_dates"] = sorted(kwargs["sessions"].keys(), reverse=True)
 
-        registrations = {registration.child: registration for registration in all_registrations}
-        child_absences = collections.OrderedDict()
-        for child, registration in sorted(registrations.items(), key=lambda x: x[0].ordering_name):
-            child_absences[(child, registration)] = {}
+        context["sessions"] = {s.date: s for s in sessions}
+        context["closest_session"] = closest_session(sessions)
+        kwargs["all_dates"] = (
+            sorted(
+                (s.date for s in sessions),
+                reverse=not settings.KEPCHUP_ABSENCES_ORDER_ASC,
+            ),
+        )
+
+        registrations = list(all_registrations)
+        registrations = self._sort_registrations(registrations, ordering)
+        registrations_by_child = {reg.child: reg for reg in registrations}
+
+        child_absences = collections.OrderedDict(((reg.child, reg), {}) for reg in registrations)
+
         for absence in qs:
             child = absence.child
-            if child not in registrations:
-                # happens if child was previously attending this course but is no longer
+            if child not in registrations_by_child:
                 continue
-            registration = registrations[child]
+            reg = registrations_by_child[child]
+            child_absences[(child, reg)][absence.session.date] = absence
 
-            the_tuple = (child, registration)
-            if the_tuple in child_absences:
-                child_absences[the_tuple][absence.session.date] = absence
-            else:
-                child_absences[the_tuple] = {absence.session.date: absence}
-        kwargs["session_form"] = SessionForm()
-        kwargs["child_absences"] = child_absences
-        # kwargs['courses_list'] = Course.objects.select_related('activity')
+        context["session_form"] = SessionForm()
+        context["child_absences"] = child_absences
+
         if settings.KEPCHUP_REGISTRATION_LEVELS:
-            kwargs["levels"] = ChildActivityLevel.LEVELS
-            kwargs["child_levels"] = {
+            context["levels"] = ChildActivityLevel.LEVELS
+            context["child_levels"] = {
                 lvl.child: lvl
                 for lvl in ChildActivityLevel.objects.filter(activity=self.object).select_related("child")
             }
-            try:
-                questions = ExtraNeed.objects.filter(question_label__startswith="Niveau")
-                all_extras = {
-                    extra.registration.child: extra.value
-                    for extra in ExtraInfo.objects.filter(
-                        registration__course__activity=self.object, key__in=questions
-                    ).select_related("registration__child")
-                }
-            except ExtraNeed.DoesNotExist:
-                all_extras = {}
-            kwargs["extras"] = all_extras
-        return super().get_context_data(**kwargs)
+
+            questions = ExtraNeed.objects.filter(question_label__startswith="Niveau")
+            context["extras"] = {
+                extra.registration.child: extra.value
+                for extra in ExtraInfo.objects.filter(
+                    registration__course__activity=self.object, key__in=questions
+                ).select_related("registration__child")
+            }
+        return context
 
     def get(self, request, *args, **kwargs):
         if "pdf" in self.request.GET:
-            self.object = self.get_object()
+            self.object: Activity = self.get_object()
             context = self.get_context_data(object=self.object)
             renderer = AbsencePDFRenderer(context, self.request)
             tempdir = mkdtemp()
@@ -177,6 +237,8 @@ class ActivityAbsenceView(BackendMixin, ActivityMixin, DetailView):
             with open(filepath, "rb") as f:
                 response = HttpResponse(f.read(), content_type="application/pdf")
             response["Content-Disposition"] = f'attachment; filename="{filename}"'
+            response["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+            response["Pragma"] = "no-cache"
             return response
         return super().get(request, *args, **kwargs)
 
