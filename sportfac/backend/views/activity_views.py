@@ -186,12 +186,7 @@ class ActivityAbsenceView(BackendMixin, ActivityMixin, DetailView):
 
         context["sessions"] = {s.date: s for s in sessions}
         context["closest_session"] = closest_session(sessions)
-        kwargs["all_dates"] = (
-            sorted(
-                (s.date for s in sessions),
-                reverse=not settings.KEPCHUP_ABSENCES_ORDER_ASC,
-            ),
-        )
+        kwargs["all_dates"] = (sorted((s.date for s in sessions), reverse=not settings.KEPCHUP_ABSENCES_ORDER_ASC),)
 
         registrations = list(all_registrations)
         registrations = self._sort_registrations(registrations, ordering)
