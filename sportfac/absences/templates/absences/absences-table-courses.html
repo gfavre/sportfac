@@ -94,15 +94,15 @@ table.dataTable tbody td.selected .popover {
   <table class="table table-bordered table-hover table-condensed absences table-fixed responsive">
     <thead>
       <tr>
-        <th class="all child-col">{% translate "Child" %}</th>
+        <th class="all child-col" data-column-order="child.ordering_name">{% translate "Child" %}</th>
         {% if BIB_NUMBERS %}
-        <th class="rotated-heading all bib-number-col"><div><span>{% translate "Bib number" %}</span></div></th>
+        <th class="rotated-heading all bib-number-col" data-column-order="child.bib_number"><div><span>{% translate "Bib number" %}</span></div></th>
         {% endif %}
-        <th class="min-mobile-l course-col">{% translate "Course" %}</th>
+        <th class="min-mobile-l course-col" data-column-order="course.number">{% translate "Course" %}</th>
         {% if REGISTRATION_LEVELS %}
-          <th class="min-desktop rotated-heading level-col"><div><span>{% translate "Announced level" %}</span></div></th>
-          <th class="min-tablet-l rotated-heading level-col"><div><span>{% translate "level -1" %}</span></div></th>
-          <th class="min-tablet-l rotated-heading level-col"><div><span>{% translate "level 0" %}</span></div></th>
+          <th class="min-desktop rotated-heading level-col" data-column-order="child.announced_level"><div><span>{% translate "Announced level" %}</span></div></th>
+          <th class="min-tablet-l rotated-heading level-col" data-column-order="child.before_level"><div><span>{% translate "level -1" %}</span></div></th>
+          <th class="min-tablet-l rotated-heading level-col" data-column-order="child.after_level"><div><span>{% translate "level 0" %}</span></div></th>
         {% endif %}
         {% if DISPLAY_REGISTRATION_NOTE %}
         <th class="min-desktop note note-col">
