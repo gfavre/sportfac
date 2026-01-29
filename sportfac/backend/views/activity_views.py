@@ -1,4 +1,5 @@
 import collections
+import functools
 import json
 import os
 from tempfile import mkdtemp
@@ -115,22 +116,27 @@ class ActivityAbsenceView(BackendMixin, ActivityMixin, DetailView):
         if not ordering:
             return registrations
 
-        def sort_key(reg):
-            values = []
-            for attr_path, _direction in ordering:
-                obj = reg
-                for attr in attr_path.split("."):
-                    obj = getattr(obj, attr, "")
-                if attr_path == "child.bib_number":
-                    try:
-                        obj = int(obj)
-                    except (TypeError, ValueError):
-                        obj = float("inf")  # push empty / invalid to the end
-                values.append(obj)
-            return tuple(values)
+        def cast_value(attr_path: str, value):
+            if attr_path == "child.bib_number":
+                try:
+                    return int(value)
+                except (TypeError, ValueError):
+                    return float("inf")
+            return value or ""
 
-        reverse = ordering[0][1] == "desc"
-        registrations.sort(key=sort_key, reverse=reverse)
+        for attr_path, direction in reversed(ordering):
+            registrations.sort(
+                key=lambda reg: cast_value(
+                    attr_path,
+                    functools.reduce(
+                        lambda obj, attr: getattr(obj, attr, ""),
+                        attr_path.split("."),
+                        reg,
+                    ),
+                ),
+                reverse=(direction == "desc"),
+            )
+
         return registrations
 
     def post(self, *args, **kwargs):
@@ -179,10 +185,7 @@ class ActivityAbsenceView(BackendMixin, ActivityMixin, DetailView):
         elif self.object.courses.count() == 1:
             context["course"] = self.object.courses.first()
 
-        if settings.KEPCHUP_BIB_NUMBERS:
-            qs = qs.order_by("child__bib_number", "child__last_name", "child__first_name")
-        else:
-            qs = qs.order_by("child__last_name", "child__first_name")
+        qs = qs.order_by("child__last_name", "child__first_name")
 
         if "course" in context:
             sessions = context["course"].sessions.all()
