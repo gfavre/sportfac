@@ -72,6 +72,11 @@ class CourseAbsenceView(DetailView):
                 obj = reg
                 for attr in attr_path.split("."):
                     obj = getattr(obj, attr, "")
+                if attr_path == "child.bib_number":
+                    try:
+                        obj = int(obj)
+                    except (TypeError, ValueError):
+                        obj = float("inf")  # push empty / invalid to the end
                 values.append(obj)
             return tuple(values)
 
