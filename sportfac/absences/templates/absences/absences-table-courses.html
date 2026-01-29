@@ -224,7 +224,7 @@ table.dataTable tbody td.selected .popover {
   </table>
 
 <p class="hidden-print text-center">
-  <a class="btn btn-success btn-large" href="{{ request.get_full_path }}&pdf=1"><i class="icon icon-file-pdf"></i> {% translate "Export to PDF" %}</a>
+  <a class="btn btn-success btn-large" href="{{ request.get_full_path }}&pdf=1" id="generate-pdf"><i class="icon icon-file-pdf"></i> {% translate "Export to PDF" %}</a>
 </p>
 
 {% addtoblock "js" %}
@@ -489,6 +489,33 @@ jQuery(function($){
     });
   });
 
+  $('#generate-pdf').on('click', () => {
+      const table = $('.table').DataTable();
+      const currentOrder = table.order();
+
+      const columnNameOrder = currentOrder.map(order => {
+        const columnIndex = order[0];
+        const direction = order[1];
+        const columnName = $(table.column(columnIndex).header()).data('column-order');
+        return [columnName, direction];
+      });
+      // Construct the query parameters for the order
+      const orderParam = $.param({ 'order': JSON.stringify(columnNameOrder) });
+      // Get the current URL
+      const currentUrl = window.location.href;
+      let newUrl;
+      // Check if the URL already has query parameters
+      if (currentUrl.includes('?')) {
+          // URL already has parameters, append ours with '&'
+          newUrl = `${currentUrl}&pdf=1&${orderParam}`;
+      } else {
+          // URL has no parameters, add ours with '?'
+          newUrl = `${currentUrl}?pdf=1&${orderParam}`;
+      }
+      // Redirect to the new URL
+      window.location.href = newUrl;
+    });
+
   $('html').on('click', function(e){
     if (typeof $(e.target).data('original-title') == 'undefined' && !$(e.target).parents().is('.popover.in')) {
       // close popovers when click is outside
@@ -499,6 +526,8 @@ jQuery(function($){
       $('[data-original-title]').not(e.target).popover('hide');
     }
   });
+
+
   /*
   window.addEventListener("resize", function() {
     // Get screen size (inner/outerWidth, inner/outerHeight)
