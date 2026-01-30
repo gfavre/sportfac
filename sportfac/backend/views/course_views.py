@@ -1,5 +1,8 @@
 import collections
+import functools
+import json
 import os
+import re
 from tempfile import mkdtemp
 
 from django.conf import settings
@@ -7,31 +10,58 @@ from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db import transaction
 from django.forms.models import model_to_dict
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
+from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 from django.utils.translation import gettext as _
-from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView, View
+from django.views.generic import CreateView
+from django.views.generic import DeleteView
+from django.views.generic import DetailView
+from django.views.generic import ListView
+from django.views.generic import UpdateView
+from django.views.generic import View
 from django.views.generic.detail import SingleObjectMixin
 
-from absences.models import Absence, Session
+from absences.models import Absence
+from absences.models import Session
 from absences.utils import closest_session
 from absences.views import CourseAbsenceView
-from activities.forms import CourseForm, ExplicitDatesCourseForm, PaySlipForm
-from activities.models import Activity, Course, ExtraNeed
+from activities.forms import CourseForm
+from activities.forms import ExplicitDatesCourseForm
+from activities.forms import PaySlipForm
+from activities.models import Activity
+from activities.models import Course
+from activities.models import ExtraNeed
 from activities.resources import CourseResource
 from profiles.models import FamilyUser
-from registrations.models import ChildActivityLevel, ExtraInfo
+from registrations.models import ChildActivityLevel
+from registrations.models import ExtraInfo
+from registrations.models import Registration
 from registrations.resources import RegistrationResource
-from waiting_slots.forms import WaitingSlotForm
-
 from sportfac.views import CSVMixin
+from waiting_slots.forms import WaitingSlotForm
 
 from ..forms import SessionForm
 from ..utils import AbsencesPDFRenderer
-from .mixins import BackendMixin, ExcelResponseMixin
+from .mixins import BackendMixin
+from .mixins import ExcelResponseMixin
+
+
+LEVEL_RE = re.compile(r"^(\d+)([A-Za-z]*)$")
+
+
+def parse_level(value: str):
+    if not value:
+        return (float("inf"), "")
+    match = LEVEL_RE.match(value)
+    if not match:
+        return (float("inf"), value)
+    number, suffix = match.groups()
+    return int(number), suffix
 
 
 class CourseMixin(BackendMixin):
@@ -229,109 +259,188 @@ class BackendCourseAbsenceView(CourseMixin, CourseAbsenceView):
 class CoursesAbsenceView(CourseMixin, ListView):
     template_name = "backend/course/multiple-absences.html"
 
+    # ------------------------------------------------------------
+    # Ordering helpers
+    # ------------------------------------------------------------
+
+    def _parse_order_from_request(self):
+        order_param = self.request.GET.get("order")
+        if not order_param:
+            return []
+
+        try:
+            parsed = json.loads(order_param)
+        except ValueError:
+            return []
+
+        allowed = {
+            "child.last_name",
+            "child.first_name",
+            "child.ordering_name",
+            "child.bib_number",
+            "child.before_level",
+            "child.after_level",
+            "child.announced_level",
+        }
+
+        clean = []
+        for column, direction in parsed:
+            if column in allowed and direction in ("asc", "desc"):
+                clean.append((column, direction))
+        return clean
+
+    def _sort_registrations(self, registrations, ordering):
+        if not ordering:
+            return registrations
+
+        def cast_value(attr_path: str, reg):
+            # Special case: numeric sort for bib_number
+            if attr_path == "child.bib_number":
+                try:
+                    return int(reg.child.bib_number)
+                except (TypeError, ValueError):
+                    return float("inf")
+
+            # Default: resolve attribute path dynamically
+            return (
+                functools.reduce(
+                    lambda obj, attr: getattr(obj, attr, ""),
+                    attr_path.split("."),
+                    reg,
+                )
+                or ""
+            )
+
+        # Apply stable multi-column sort (rightmost key first)
+        for attr_path, direction in reversed(ordering):
+            registrations.sort(
+                key=lambda reg: cast_value(attr_path, reg),
+                reverse=(direction == "desc"),
+            )
+
+        return registrations
+
+    # ------------------------------------------------------------
+    # Data loading helpers
+    # ------------------------------------------------------------
+
     def get_queryset(self):
         courses_pk = [int(pk) for pk in self.request.GET.getlist("c") if pk.isdigit()]
         return super().get_queryset().filter(pk__in=courses_pk)
 
-    def sort_registrations(self, registrations_list):
-        pass
-
-    def get_unsorted_registrations(self):
-        # 1. find all registrations that will be displayed
-        from registrations.models import Registration
-
-        registrations = Registration.objects.filter(course__in=self.get_queryset())
-        # 2. Get all extra_infos for the courses
-        announced_levels = ExtraInfo.objects.filter(
-            key__question_label__startswith="Niveau", registration__course__in=self.get_queryset()
+    def _get_registrations(self):
+        return list(
+            Registration.objects.filter(course__in=self.get_queryset())
+            .select_related("child", "course")
+            .order_by("id")  # ← ordre neutre et déterministe
         )
-        levels = {level.child: level for level in ChildActivityLevel.objects.filter(activity=self.object.activity)}
-        return registrations, announced_levels, levels
+
+    def _inject_levels(self, registrations):
+        if not settings.KEPCHUP_REGISTRATION_LEVELS:
+            return
+
+        # announced_level (ExtraInfo)
+        extras = ExtraInfo.objects.select_related("registration", "key").filter(
+            registration__course__in=self.get_queryset(),
+            key__question_label__startswith="Niveau",
+        )
+
+        announced_levels = {extra.registration.child: extra.value for extra in extras}
+
+        # before / after level (ChildActivityLevel)
+        levels = ChildActivityLevel.objects.select_related("child").filter(
+            activity__in={reg.course.activity for reg in registrations}
+        )
+
+        child_levels = {level.child: level for level in levels}
+
+        for reg in registrations:
+            child = reg.child
+            child.announced_level = announced_levels.get(child, "")
+            level = child_levels.get(child)
+            child.before_level = getattr(level, "before_level", "")
+            child.after_level = getattr(level, "after_level", "")
+
+    def _get_absences_index(self):
+        absences = Absence.objects.filter(session__course__in=self.get_queryset()).select_related(
+            "child",
+            "session",
+            "session__course",
+        )
+
+        index = collections.defaultdict(dict)
+
+        for absence in absences:
+            key = (absence.child_id, absence.session.course_id)
+            index[key][absence.session.date] = absence
+
+        return index
+
+    # ------------------------------------------------------------
+    # Context
+    # ------------------------------------------------------------
 
     def get_context_data(self, **kwargs):
-        qs = Absence.objects.filter(session__course__in=self.get_queryset()).select_related(
-            "session", "child", "session__course", "session__course__activity"
-        )
+        context = super().get_context_data(**kwargs)
 
-        if settings.KEPCHUP_BIB_NUMBERS:
-            qs = qs.order_by("child__bib_number", "child__last_name", "child__first_name")
-        else:
-            qs = qs.order_by("child__last_name", "child__first_name")
-        sessions = Session.objects.filter(course__in=self.get_queryset())
-        kwargs["all_dates"] = list(set(sessions.values_list("date", flat=True)))
-        kwargs["all_dates"].sort(reverse=not settings.KEPCHUP_ABSENCES_ORDER_ASC)
-        kwargs["closest_session"] = closest_session(sessions)
-        if settings.KEPCHUP_REGISTRATION_LEVELS:
-            extras = ExtraInfo.objects.select_related("registration", "key").filter(
-                registration__course__in=self.get_queryset(),
-                key__question_label="Niveau de ski/snowboard",
-            )
-            child_announced_levels = {extra.registration.child: extra.value for extra in extras}
-            levels = ChildActivityLevel.objects.select_related("child").filter(
-                activity__in={absence.session.course.activity for absence in qs}
-            )
-            child_levels = {level.child: level for level in levels}
+        ordering = self._parse_order_from_request()
 
-        course_children = {course: [reg.child for reg in course.participants.all()] for course in self.get_queryset()}
+        registrations = self._get_registrations()
+        self._inject_levels(registrations)
+        registrations = self._sort_registrations(registrations, ordering)
+
+        absences_index = self._get_absences_index()
+
         course_absences = collections.OrderedDict()
+        for reg in registrations:
+            lookup_key = (reg.child_id, reg.course_id)
+            display_key = (reg.child, reg.course)
+            course_absences[display_key] = absences_index.get(lookup_key, {})
 
-        for absence in qs:
-            # here we set the ordering!
-            if settings.KEPCHUP_REGISTRATION_LEVELS:
-                absence.child.announced_level = child_announced_levels.get(absence.child, "")
-                absence.child.level = child_levels.get(absence.child, "")
-            if absence.child not in course_children[absence.session.course]:
-                continue
-            the_tuple = (absence.child, absence.session.course)
-            if the_tuple in course_absences:
-                course_absences[the_tuple][absence.session.date] = absence
-            else:
-                course_absences[the_tuple] = {absence.session.date: absence}
-        kwargs["course_absences"] = course_absences
-        kwargs["levels"] = ChildActivityLevel.LEVELS
-        kwargs["session_form"] = SessionForm()
+        sessions = Session.objects.filter(course__in=self.get_queryset())
 
-        return super().get_context_data(**kwargs)
+        context["all_dates"] = sorted(
+            set(sessions.values_list("date", flat=True)),
+            reverse=not settings.KEPCHUP_ABSENCES_ORDER_ASC,
+        )
+        context["closest_session"] = closest_session(sessions)
+        context["course_absences"] = course_absences
+        context["levels"] = ChildActivityLevel.LEVELS
+        context["session_form"] = SessionForm()
 
-    def post(self, *args, **kwargs):
-        pks = self.request.GET.getlist("c")
-        courses = Course.objects.filter(pk__in=pks)
-        form = SessionForm(data=self.request.POST)
-        if form.is_valid():
-            for course in courses:
-                session, created = Session.objects.get_or_create(
-                    course=course, activity=course.activity, date=form.cleaned_data["date"]
-                )
-                if not created:
-                    continue
-                session.fill_absences()
-                if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
-                    session.update_courses_dates()
-                if created:
-                    messages.success(
-                        self.request,
-                        _("Session %s has been added.") % session.date.strftime("%d.%m.%Y"),
-                    )
-        params = "&".join([f"c={course.id}" for course in courses])
-        return HttpResponseRedirect(reverse("backend:courses-absence") + "?" + params)
+        return context
+
+    # ------------------------------------------------------------
+    # PDF
+    # ------------------------------------------------------------
 
     def get(self, request, *args, **kwargs):
         if "pdf" in self.request.GET:
             self.object_list = self.get_queryset()
             context = self.get_context_data()
+
             renderer = AbsencesPDFRenderer(context, self.request)
             tempdir = mkdtemp()
+
             filename = "absences-{}.pdf".format(
-                "-".join([slugify(nb) for nb in self.object_list.values_list("number", flat=True)])
+                "-".join(slugify(nb) for nb in self.object_list.values_list("number", flat=True))
             )
             if len(filename) > 100:
                 filename = "absences.pdf"
+
             filepath = os.path.join(tempdir, filename)
+
             renderer.render_to_pdf(filepath)
+
             with open(filepath, "rb") as f:
-                response = HttpResponse(f.read(), content_type="application/pdf")
+                response = HttpResponse(
+                    f.read(),
+                    content_type="application/pdf",
+                )
+
             response["Content-Disposition"] = f'attachment; filename="{filename}"'
             return response
+
         return super().get(request, *args, **kwargs)
 
 
