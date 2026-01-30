@@ -330,10 +330,9 @@ class CoursesAbsenceView(CourseMixin, ListView):
 
     def _get_registrations(self):
         return list(
-            Registration.objects.filter(course__in=self.get_queryset()).select_related(
-                "child",
-                "course",
-            )
+            Registration.objects.filter(course__in=self.get_queryset())
+            .select_related("child", "course")
+            .order_by("id")  # ← ordre neutre et déterministe
         )
 
     def _inject_levels(self, registrations):
