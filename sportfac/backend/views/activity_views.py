@@ -1,6 +1,7 @@
 import collections
 import functools
 import json
+import logging
 import os
 from tempfile import mkdtemp
 
@@ -34,6 +35,9 @@ from registrations.models import ExtraInfo
 from ..forms import SessionForm
 from ..utils import AbsencePDFRenderer
 from .mixins import BackendMixin
+
+
+logger = logging.getLogger(__name__)
 
 
 class ActivityMixin:
@@ -108,6 +112,8 @@ class ActivityAbsenceView(BackendMixin, ActivityMixin, DetailView):
         }
 
         clean = []
+        if not clean and parsed:
+            logger.warning("Ignored ordering keys: %s", parsed)
         for column, direction in parsed:
             if column in allowed and direction in ("asc", "desc"):
                 clean.append((column, direction))
