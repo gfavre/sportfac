@@ -293,28 +293,28 @@ class CoursesAbsenceView(CourseMixin, ListView):
         if not ordering:
             return registrations
 
-        def cast_value(attr_path: str, value):
+        def cast_value(attr_path: str, reg):
+            # Special case: numeric sort for bib_number
             if attr_path == "child.bib_number":
                 try:
-                    return int(value)
+                    return int(reg.child.bib_number)
                 except (TypeError, ValueError):
                     return float("inf")
 
-            if attr_path in {"child.before_level", "child.after_level"}:
-                return parse_level(value)
+            # Default: resolve attribute path dynamically
+            return (
+                functools.reduce(
+                    lambda obj, attr: getattr(obj, attr, ""),
+                    attr_path.split("."),
+                    reg,
+                )
+                or ""
+            )
 
-            return value or ""
-
+        # Apply stable multi-column sort (rightmost key first)
         for attr_path, direction in reversed(ordering):
             registrations.sort(
-                key=lambda reg: cast_value(
-                    attr_path,
-                    functools.reduce(
-                        lambda obj, attr: getattr(obj, attr, ""),
-                        attr_path.split("."),
-                        reg,
-                    ),
-                ),
+                key=lambda reg: cast_value(attr_path, reg),
                 reverse=(direction == "desc"),
             )
 
