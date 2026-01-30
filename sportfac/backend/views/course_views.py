@@ -54,7 +54,7 @@ from .mixins import ExcelResponseMixin
 LEVEL_RE = re.compile(r"^(\d+)([A-Za-z]*)$")
 
 
-def parse_level(value: str) -> tuple[int, str]:
+def parse_level(value: str):
     if not value:
         return (float("inf"), "")
     match = LEVEL_RE.match(value)
