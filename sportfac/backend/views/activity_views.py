@@ -100,6 +100,7 @@ class ActivityAbsenceView(BackendMixin, ActivityMixin, DetailView):
         allowed = {
             "child.last_name",
             "child.first_name",
+            "child.ordering_name",
             "child.bib_number",
             "child.announced_level",
             "child.before_level",
@@ -165,15 +166,23 @@ class ActivityAbsenceView(BackendMixin, ActivityMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # ------------------------------------------------------------
+        # 1. Parse ordering coming from DataTables
+        # ------------------------------------------------------------
         ordering = self._parse_order_from_request()
-
+        # ------------------------------------------------------------
+        # 2. Base querysets
+        #    IMPORTANT: qs MUST NOT define display order
+        # ------------------------------------------------------------
         qs = Absence.objects.select_related(
             "child",
             "session",
             "session__course",
         ).filter(session__activity=self.object)
         all_registrations = self.object.participants.select_related("child")
-
+        # ------------------------------------------------------------
+        # 3. Course filtering (affects registrations, not order logic)
+        # ------------------------------------------------------------
         if "c" in self.request.GET:
             courses_ids = [int(pk) for pk in self.request.GET.getlist("c") if pk.isdigit()]
             if len(courses_ids) == 1:
@@ -181,12 +190,20 @@ class ActivityAbsenceView(BackendMixin, ActivityMixin, DetailView):
                     context["course"] = Course.objects.get(pk=courses_ids[0])
                 except Course.DoesNotExist:
                     pass
+
             all_registrations = all_registrations.filter(course_id__in=courses_ids)
+
         elif self.object.courses.count() == 1:
             context["course"] = self.object.courses.first()
-
+        # ------------------------------------------------------------
+        # 4. qs ordering
+        #    This ordering is ONLY for deterministic iteration,
+        #    NOT for display ordering.
+        # ------------------------------------------------------------
         qs = qs.order_by("child__last_name", "child__first_name")
-
+        # ------------------------------------------------------------
+        # 5. Sessions context
+        # ------------------------------------------------------------
         if "course" in context:
             sessions = context["course"].sessions.all()
         else:
@@ -194,38 +211,60 @@ class ActivityAbsenceView(BackendMixin, ActivityMixin, DetailView):
 
         context["sessions"] = {s.date: s for s in sessions}
         context["closest_session"] = closest_session(sessions)
-        context["all_dates"] = sorted((s.date for s in sessions), reverse=not settings.KEPCHUP_ABSENCES_ORDER_ASC)
+        context["all_dates"] = sorted(
+            (s.date for s in sessions),
+            reverse=not settings.KEPCHUP_ABSENCES_ORDER_ASC,
+        )
 
+        # ------------------------------------------------------------
+        # 6. Registrations ordering (THIS is the display order)
+        # ------------------------------------------------------------
         registrations = list(all_registrations)
         registrations = self._sort_registrations(registrations, ordering)
-        registrations_by_child = {reg.child: reg for reg in registrations}
 
-        child_absences = collections.OrderedDict(((reg.child, reg), {}) for reg in registrations)
+        # ------------------------------------------------------------
+        # 7. Index absences by child + date
+        #    NO ordering logic here, pure lookup structure
+        # ------------------------------------------------------------
+        absences_by_child = collections.defaultdict(dict)
 
         for absence in qs:
-            child = absence.child
-            if child not in registrations_by_child:
-                continue
-            reg = registrations_by_child[child]
-            child_absences[(child, reg)][absence.session.date] = absence
+            absences_by_child[absence.child][absence.session.date] = absence
 
+        # ------------------------------------------------------------
+        # 8. Build final OrderedDict following registrations order
+        #    THIS is where order must be preserved
+        # ------------------------------------------------------------
+        child_absences = collections.OrderedDict()
+
+        for reg in registrations:
+            child = reg.child
+            child_absences[(child, reg)] = absences_by_child.get(child, {})
+
+        # ------------------------------------------------------------
+        # 9. Remaining context
+        # ------------------------------------------------------------
         context["session_form"] = SessionForm()
         context["child_absences"] = child_absences
 
         if settings.KEPCHUP_REGISTRATION_LEVELS:
             context["levels"] = ChildActivityLevel.LEVELS
+
             context["child_levels"] = {
                 lvl.child: lvl
                 for lvl in ChildActivityLevel.objects.filter(activity=self.object).select_related("child")
             }
 
             questions = ExtraNeed.objects.filter(question_label__startswith="Niveau")
+
             context["extras"] = {
                 extra.registration.child: extra.value
                 for extra in ExtraInfo.objects.filter(
-                    registration__course__activity=self.object, key__in=questions
+                    registration__course__activity=self.object,
+                    key__in=questions,
                 ).select_related("registration__child")
             }
+
         return context
 
     def get(self, request, *args, **kwargs):
