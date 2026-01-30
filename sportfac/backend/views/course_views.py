@@ -394,7 +394,7 @@ class CoursesAbsenceView(CourseMixin, ListView):
 
         course_absences = collections.OrderedDict()
         for reg in registrations:
-            key = (reg.child, reg.course)
+            key = (reg.child_id, reg.course)
             course_absences[key] = absences_index.get(key, {})
 
         sessions = Session.objects.filter(course__in=self.get_queryset())
