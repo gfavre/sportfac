@@ -1,5 +1,7 @@
 import datetime
 
+from celery import shared_task
+from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.db import connection
@@ -8,10 +10,7 @@ from django.utils import timezone
 
 from backend.dynamic_preferences_registry import global_preferences_registry
 from backend.models import Domain
-from celery import shared_task
-from celery.utils.log import get_task_logger
 from mailer.tasks import send_mail
-
 from sportfac.decorators import respects_language
 
 from .models import Absence
@@ -45,13 +44,20 @@ def notify_absences():
     reply_to = [preferences["email__REPLY_TO_MAIL"]]
 
     for absence in absences:
+        try:
+            email = absence.child.family.get_email_string()
+        except AttributeError:
+            # no family linked to this child
+            absence.notification_sent = True
+            absence.save()
+            continue
         context = base_context.copy()
         context["child"] = absence.child
         context["course"] = absence.session.course
         context["session"] = absence.session
         subject = subject_tmpl.render(context)
         body = body_tmpl.render(context)
-        recipients = [absence.child.family.get_email_string()]
+        recipients = [email]
         logger.debug("Forging email")
         logger.debug("Subject: " + subject)
         logger.debug("Body: " + body)

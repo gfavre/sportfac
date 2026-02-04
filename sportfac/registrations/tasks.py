@@ -100,7 +100,7 @@ def send_confirmation(user_pk, tenant_pk=None, language=settings.LANGUAGE_CODE):
             except FamilyUser.DoesNotExist:
                 logger.warning("Could not send confirmation email: user %s does not exist", user_pk)
                 return
-            registrations = Registration.objects.filter(child__family=user, confirmation_sent_on__isnull=True)
+            registrations = Registration.validated.filter(child__family=user, confirmation_sent_on__isnull=True)
             waiting_slots = WaitingSlot.objects.filter(child__family=user)
 
             current_site = Site.objects.get_current()
