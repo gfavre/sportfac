@@ -361,7 +361,17 @@ class CoursesAbsenceView(CourseMixin, ListView):
 
         registrations = self._get_registrations()
         if settings.KEPCHUP_REGISTRATION_LEVELS:
-            # ---- announced level (ExtraInfo)
+            activity_ids = {reg.course.activity_id for reg in registrations}
+            child_ids = {reg.child_id for reg in registrations}
+
+            levels = ChildActivityLevel.objects.filter(
+                activity_id__in=activity_ids,
+                child_id__in=child_ids,
+            )
+
+            levels_index = {(level.child_id, level.activity_id): level for level in levels}
+
+            # announced level (ExtraInfo)
             questions = ExtraNeed.objects.filter(question_label__startswith="Niveau")
 
             extras = ExtraInfo.objects.filter(
@@ -369,29 +379,17 @@ class CoursesAbsenceView(CourseMixin, ListView):
                 key__in=questions,
             ).select_related("registration__child")
 
-            context["extras"] = {extra.registration.child: extra.value for extra in extras}
-
-            # ---- before / after level (ChildActivityLevel)
-            # activity_ids = {reg.course.activity_id for reg in registrations}
-            child_ids = {reg.child_id for reg in registrations}
-
-            levels = ChildActivityLevel.objects.filter(
-                child_id__in=child_ids,
-            )
-
-            # index par (child_id, activity_id)
-            levels_index = {(level.child_id, level.activity_id): level for level in levels}
-
-            child_levels = {}
+            extras_index = {extra.registration.child_id: extra.value for extra in extras}
 
             for reg in registrations:
-                key = (reg.child_id, reg.course.activity_id)
-                level = levels_index.get(key)
-                if level:
-                    # ⚠️ on remappe avec l'instance child venant de registrations
-                    child_levels[reg.child] = level
+                child = reg.child
+                activity_id = reg.course.activity_id
 
-            context["child_levels"] = child_levels
+                # inject announced level
+                child.announced_level = extras_index.get(child.id, "")
+
+                # inject level object
+                child.level = levels_index.get((child.id, activity_id))
 
         registrations = self._sort_registrations(registrations, ordering)
 
