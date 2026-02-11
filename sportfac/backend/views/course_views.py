@@ -335,40 +335,6 @@ class CoursesAbsenceView(CourseMixin, ListView):
             .order_by("id")  # ← ordre neutre et déterministe
         )
 
-    def _inject_levels(self, registrations):
-        if not settings.KEPCHUP_REGISTRATION_LEVELS:
-            return
-
-        # announced_level (ExtraInfo)
-        extras = ExtraInfo.objects.select_related("registration", "key").filter(
-            registration__course__in=self.get_queryset(),
-            key__question_label__startswith="Niveau",
-        )
-
-        announced_levels = {extra.registration.child: extra.value for extra in extras}
-
-        # before / after level (ChildActivityLevel)
-        activity_ids = {reg.course.activity_id for reg in registrations}
-        child_ids = {reg.child_id for reg in registrations}
-
-        levels = ChildActivityLevel.objects.select_related("child").filter(
-            activity_id__in=activity_ids,
-            child_id__in=child_ids,
-        )
-        # clé = (child_id, activity_id)
-        levels_index = {(level.child_id, level.activity_id): level for level in levels}
-
-        # child_levels = {level.child: level for level in levels}
-
-        for reg in registrations:
-            child = reg.child
-            activity_id = reg.course.activity_id
-
-            child.announced_level = announced_levels.get(child, "")
-            level = levels_index.get((child.id, activity_id))
-            child.before_level = getattr(level, "before_level", "")
-            child.after_level = getattr(level, "after_level", "")
-
     def _get_absences_index(self):
         absences = Absence.objects.filter(session__course__in=self.get_queryset()).select_related(
             "child",
@@ -394,7 +360,28 @@ class CoursesAbsenceView(CourseMixin, ListView):
         ordering = self._parse_order_from_request()
 
         registrations = self._get_registrations()
-        self._inject_levels(registrations)
+        if settings.KEPCHUP_REGISTRATION_LEVELS:
+            # ---- announced level (ExtraInfo)
+            questions = ExtraNeed.objects.filter(question_label__startswith="Niveau")
+
+            extras = ExtraInfo.objects.filter(
+                registration__course__in=self.get_queryset(),
+                key__in=questions,
+            ).select_related("registration__child")
+
+            context["extras"] = {extra.registration.child: extra.value for extra in extras}
+
+            # ---- before / after level (ChildActivityLevel)
+            activity_ids = {reg.course.activity_id for reg in registrations}
+            child_ids = {reg.child_id for reg in registrations}
+
+            levels = ChildActivityLevel.objects.select_related("child").filter(
+                activity_id__in=activity_ids,
+                child_id__in=child_ids,
+            )
+
+            context["child_levels"] = {level.child: level for level in levels}
+
         registrations = self._sort_registrations(registrations, ordering)
 
         absences_index = self._get_absences_index()
