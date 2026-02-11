@@ -372,11 +372,10 @@ class CoursesAbsenceView(CourseMixin, ListView):
             context["extras"] = {extra.registration.child: extra.value for extra in extras}
 
             # ---- before / after level (ChildActivityLevel)
-            activity_ids = {reg.course.activity_id for reg in registrations}
+            # activity_ids = {reg.course.activity_id for reg in registrations}
             child_ids = {reg.child_id for reg in registrations}
 
             levels = ChildActivityLevel.objects.filter(
-                activity_id__in=activity_ids,
                 child_id__in=child_ids,
             )
 
