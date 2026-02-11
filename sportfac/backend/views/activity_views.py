@@ -171,6 +171,7 @@ class ActivityAbsenceView(BackendMixin, ActivityMixin, DetailView):
         return HttpResponseRedirect(activity.backend_absences_url)
 
     def get_context_data(self, **kwargs):
+        self.object = Activity.objects.prefetch_related("courses__instructors").get(pk=self.object.pk)
         context = super().get_context_data(**kwargs)
         # ------------------------------------------------------------
         # 1. Parse ordering coming from DataTables
@@ -185,7 +186,13 @@ class ActivityAbsenceView(BackendMixin, ActivityMixin, DetailView):
             "session",
             "session__course",
         ).filter(session__activity=self.object)
-        all_registrations = self.object.participants.select_related("child")
+
+        all_registrations = self.object.participants.select_related(
+            "child",
+            "course",
+            "course__activity",
+            "transport",
+        )
         # ------------------------------------------------------------
         # 3. Course filtering (affects registrations, not order logic)
         # ------------------------------------------------------------
@@ -214,6 +221,7 @@ class ActivityAbsenceView(BackendMixin, ActivityMixin, DetailView):
             sessions = context["course"].sessions.all()
         else:
             sessions = self.object.sessions.all()
+        sessions = sessions.select_related("course", "instructor").prefetch_related("course__instructors")
 
         context["sessions"] = {s.date: s for s in sessions}
         context["closest_session"] = closest_session(sessions)
