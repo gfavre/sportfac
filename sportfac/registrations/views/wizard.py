@@ -58,6 +58,8 @@ class WizardConfirmationStepView(LoginRequiredMixin, BaseWizardStepView, FormVie
             if waiting_registrations.exists():
                 return waiting_registrations, None
             invoice = Invoice.objects.filter(family=user, status=Invoice.STATUS.waiting).first()
+            if not invoice:
+                return waiting_registrations, None
             return (
                 invoice.registrations.select_related("course").prefetch_related("course__extra", "extra_infos"),
                 invoice,
