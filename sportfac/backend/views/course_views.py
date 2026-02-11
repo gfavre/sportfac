@@ -348,16 +348,24 @@ class CoursesAbsenceView(CourseMixin, ListView):
         announced_levels = {extra.registration.child: extra.value for extra in extras}
 
         # before / after level (ChildActivityLevel)
-        levels = ChildActivityLevel.objects.select_related("child").filter(
-            activity__in={reg.course.activity for reg in registrations}
-        )
+        activity_ids = {reg.course.activity_id for reg in registrations}
+        child_ids = {reg.child_id for reg in registrations}
 
-        child_levels = {level.child: level for level in levels}
+        levels = ChildActivityLevel.objects.select_related("child").filter(
+            activity_id__in=activity_ids,
+            child_id__in=child_ids,
+        )
+        # clé = (child_id, activity_id)
+        levels_index = {(level.child_id, level.activity_id): level for level in levels}
+
+        # child_levels = {level.child: level for level in levels}
 
         for reg in registrations:
             child = reg.child
+            activity_id = reg.course.activity_id
+
             child.announced_level = announced_levels.get(child, "")
-            level = child_levels.get(child)
+            level = levels_index.get((child.id, activity_id))
             child.before_level = getattr(level, "before_level", "")
             child.after_level = getattr(level, "after_level", "")
 
