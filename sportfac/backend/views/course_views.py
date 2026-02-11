@@ -375,12 +375,24 @@ class CoursesAbsenceView(CourseMixin, ListView):
             activity_ids = {reg.course.activity_id for reg in registrations}
             child_ids = {reg.child_id for reg in registrations}
 
-            levels = ChildActivityLevel.objects.select_related("child").filter(
+            levels = ChildActivityLevel.objects.filter(
                 activity_id__in=activity_ids,
                 child_id__in=child_ids,
             )
 
-            context["child_levels"] = {level.child: level for level in levels}
+            # index par (child_id, activity_id)
+            levels_index = {(level.child_id, level.activity_id): level for level in levels}
+
+            child_levels = {}
+
+            for reg in registrations:
+                key = (reg.child_id, reg.course.activity_id)
+                level = levels_index.get(key)
+                if level:
+                    # ⚠️ on remappe avec l'instance child venant de registrations
+                    child_levels[reg.child] = level
+
+            context["child_levels"] = child_levels
 
         registrations = self._sort_registrations(registrations, ordering)
 
