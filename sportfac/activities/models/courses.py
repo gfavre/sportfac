@@ -576,7 +576,6 @@ class CoursesInstructors(models.Model):
     contract_number = models.CharField(
         _("Contract number"),
         max_length=30,
-        unique=False,
         blank=True,
         null=True,
         default=None,

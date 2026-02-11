@@ -632,7 +632,7 @@ class TransportDetailView(FullBackendMixin, DetailView):
 
         all_dates = set(qs.values_list("session__date", flat=True))
         kwargs["all_dates"] = list(all_dates)
-        kwargs["all_dates"].sort(reverse=True)
+        kwargs["all_dates"].sort(reverse=not settings.KEPCHUP_ABSENCES_ORDER_ASC)
 
         for registration in self.object.participants.all():
             child_absences = {absence.session.date: absence for absence in qs if absence.child == registration.child}
