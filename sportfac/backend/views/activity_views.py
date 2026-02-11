@@ -218,17 +218,28 @@ class ActivityAbsenceView(BackendMixin, ActivityMixin, DetailView):
         # 5. Sessions context
         # ------------------------------------------------------------
         if "course" in context:
-            sessions = context["course"].sessions.all()
+            sessions_qs = context["course"].sessions.all()
         else:
-            sessions = self.object.sessions.all()
-        sessions = sessions.select_related("course", "instructor").prefetch_related("course__instructors")
+            sessions_qs = self.object.sessions.all()
 
-        context["sessions"] = {s.date: s for s in sessions}
-        context["closest_session"] = closest_session(sessions)
-        context["all_dates"] = sorted(
-            (s.date for s in sessions),
+        sessions_qs = sessions_qs.select_related(
+            "course",
+            "instructor",
+        ).order_by("date", "course__pk")
+
+        # agrégation par date
+        sessions_by_date = {}
+        for s in sessions_qs:
+            if s.date not in sessions_by_date:
+                sessions_by_date[s.date] = s
+        # tri respectant le setting
+        all_dates = sorted(
+            sessions_by_date.keys(),
             reverse=not settings.KEPCHUP_ABSENCES_ORDER_ASC,
         )
+        context["sessions"] = sessions_by_date
+        context["all_dates"] = all_dates
+        context["closest_session"] = closest_session(list(sessions_by_date.values()))
 
         # ------------------------------------------------------------
         # 6. Registrations ordering (THIS is the display order)
