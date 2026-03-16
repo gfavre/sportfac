@@ -91,6 +91,7 @@ def kepchup_context(request):
         "VERSION": kepchup_version,
         "CHILDREN_EDITABLE": settings.KEPCHUP_CHILDREN_EDITABLE,
         "CHILDREN_POPUP": settings.KEPCHUP_CHILDREN_POPUP,
+        "CHILDREN_TERMS": settings.KEPCHUP_CHILDREN_TERMS,
         "AVS_HIDDEN": "avs" in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
         "BIB_NUMBER_HIDDEN": "bib_number" in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,
         "BIRTH_DATE_HIDDEN": "birth_date" in settings.KEPCHUP_CHILDREN_HIDDEN_FIELDS,

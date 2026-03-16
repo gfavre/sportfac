@@ -33,6 +33,14 @@ KEPCHUP_DISPLAY_COURSE_DETAILS = False
 
 
 # Children
+KEPCHUP_CHILDREN_TERMS = {
+    "about_children": "À propos de votre famille",
+    "add_child": "Ajouter un participant",
+    "add_other_child": "Ajouter un autre participant",
+    "edit_children_data": "Éditer les données de ma famille",
+    "save_child": "Enregister le participant",
+    "your_children": "Votre famille",
+}
 KEPCHUP_CHILDREN_MANDATORY_FIELDS = [
     "first_name",
     "last_name",

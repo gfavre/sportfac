@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-23 10:00+0100\n"
-"PO-Revision-Date: 2026-01-23 10:01+0100\n"
+"POT-Creation-Date: 2026-03-16 15:03+0100\n"
+"PO-Revision-Date: 2026-03-13 11:04+0100\n"
 "Last-Translator: Gregory Favre <greg@beyondthewall.ch>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 3.8\n"
+"X-Generator: Poedit 3.9\n"
 
 #: sportfac/absences/admin.py:26 sportfac/activities/admin.py:71
 #: sportfac/activities/admin.py:172 sportfac/activities/models/courses.py:183
@@ -534,7 +534,7 @@ msgstr "Limitations"
 #: sportfac/activities/models/courses.py:184
 #: sportfac/backend/templates/backend/portlets/courses.html:9
 #: sportfac/backend/templates/backend/portlets/registration_courses_phase3.html:9
-#: sportfac/backend/views/course_views.py:364
+#: sportfac/backend/views/course_views.py:477
 msgid "courses"
 msgstr "cours"
 
@@ -1023,23 +1023,23 @@ msgstr "Invisible"
 msgid "Contract number"
 msgstr "Numéro du contrat"
 
-#: sportfac/activities/models/courses.py:605
+#: sportfac/activities/models/courses.py:604
 msgid "Convocation to the course"
 msgstr "Convocation au cours"
 
-#: sportfac/activities/models/courses.py:606
+#: sportfac/activities/models/courses.py:605
 msgid "Need parent confirmation"
 msgstr "Besoin d'une confirmation des parents"
 
-#: sportfac/activities/models/courses.py:607
+#: sportfac/activities/models/courses.py:606
 msgid "Payment reminder"
 msgstr "Rappel de paiement"
 
-#: sportfac/activities/models/courses.py:608
+#: sportfac/activities/models/courses.py:607
 msgid "Documents for course instructor"
 msgstr "Documents pour l'instructeur du cours"
 
-#: sportfac/activities/models/courses.py:610
+#: sportfac/activities/models/courses.py:609
 msgid "Email type"
 msgstr "Type d'email"
 
@@ -1696,7 +1696,7 @@ msgstr "Merci de vérifier l'email"
 #: sportfac/activities/templates/activities/wizard_activities.html:9
 #: sportfac/backend/templates/backend/navbar.html:23
 #: sportfac/backend/templates/backend/user/restricted-admin-list.html:84
-#: sportfac/sportfac/settings/base.py:678
+#: sportfac/sportfac/settings/base.py:686
 #: sportfac/themes/nyon_prangins/templates/backend/navbar.html:23
 msgid "Activities"
 msgstr "Activités"
@@ -2155,7 +2155,6 @@ msgstr "Veuillez sélectionner au moins un enfant"
 #: sportfac/appointments/templates/appointments/register.html:166
 #: sportfac/backend/templates/backend/user/detail-instructor.html:127
 #: sportfac/backend/templates/backend/user/detail.html:139
-#: sportfac/registrations/templates/registrations/children_app.html:42
 msgid "Add child"
 msgstr "Ajouter un enfant"
 
@@ -4783,7 +4782,7 @@ msgstr "{minutes} minutes"
 msgid "Billing"
 msgstr "Paiement"
 
-#: sportfac/backend/views/activity_views.py:53
+#: sportfac/backend/views/activity_views.py:68
 #, python-format
 msgid ""
 "<a href=\"%(url)s\" class=\"alert-link\">Activity (%(number)s)</a> has been "
@@ -4792,12 +4791,12 @@ msgstr ""
 "<a href=\"%(url)s\" class=\"alert-link\">L'activité (%(number)s)</a> a été "
 "créée."
 
-#: sportfac/backend/views/activity_views.py:92
+#: sportfac/backend/views/activity_views.py:166
 #, python-format
 msgid "Session of %(date)s for %(course)s has been added."
 msgstr "Une session pour le cours %(course)s a été créée le %(date)s."
 
-#: sportfac/backend/views/activity_views.py:190
+#: sportfac/backend/views/activity_views.py:319
 #, python-format
 msgid ""
 "<a href=\"%(url)s\" class=\"alert-link\">Activity (%(number)s)</a> has been "
@@ -4806,11 +4805,11 @@ msgstr ""
 "<a href=\"%(url)s\" class=\"alert-link\">L'activité (%(number)s)</a> a été "
 "mise à jour."
 
-#: sportfac/backend/views/activity_views.py:202
+#: sportfac/backend/views/activity_views.py:331
 msgid "Activity has been deleted."
 msgstr "L'activité a été supprimée."
 
-#: sportfac/backend/views/activity_views.py:212
+#: sportfac/backend/views/activity_views.py:341
 #, python-format
 msgid "Activity %(identifier)s has been deleted."
 msgstr "L'activité #%(identifier)s a été supprimée."
@@ -4846,7 +4845,7 @@ msgstr "Le compte a été supprimé."
 msgid "Allocation account %(identifier)s has been deleted."
 msgstr "Le compte d'imputation %(identifier)s a été supprimé."
 
-#: sportfac/backend/views/course_views.py:51
+#: sportfac/backend/views/course_views.py:81
 #, python-format
 msgid ""
 "<a href=\"%(url)s\" class=\"alert-link\">Course (%(number)s)</a> has been "
@@ -4855,16 +4854,16 @@ msgstr ""
 "<a href=\"%(url)s\" class=\"alert-link\">Le cours (%(number)s)</a> a été "
 "créé."
 
-#: sportfac/backend/views/course_views.py:102
+#: sportfac/backend/views/course_views.py:132
 msgid "Course has been deleted."
 msgstr "Le cours a été supprimé."
 
-#: sportfac/backend/views/course_views.py:107
+#: sportfac/backend/views/course_views.py:137
 #, python-format
 msgid "Course %(identifier)s has been deleted."
 msgstr "Le cours %(identifier)s a bien été supprimé."
 
-#: sportfac/backend/views/course_views.py:139
+#: sportfac/backend/views/course_views.py:169
 #, python-format
 msgid ""
 "<a href=\"%(url)s\" class=\"alert-link\">Course (%(number)s)</a> has been "
@@ -4873,13 +4872,12 @@ msgstr ""
 "<a href=\"%(url)s\" class=\"alert-link\">Le cours (%(number)s)</a> a été mis "
 "à jour."
 
-#: sportfac/backend/views/course_views.py:193
+#: sportfac/backend/views/course_views.py:223
 #, python-format
 msgid "Courses visibility has been toggled, %s courses changed."
 msgstr "La visibilité des cours a été modifiée, %s cours ont été modifiés."
 
-#: sportfac/backend/views/course_views.py:223
-#: sportfac/backend/views/course_views.py:313
+#: sportfac/backend/views/course_views.py:253
 #, python-format
 msgid "Session %s has been added."
 msgstr "La session du %s a été créée."
@@ -6200,17 +6198,14 @@ msgid "Billing Date"
 msgstr "Date de facturation"
 
 #: sportfac/registrations/templates/registrations/children.html:4
-#: sportfac/registrations/templates/registrations/children_app.html:39
+#: sportfac/sportfac/settings/base.py:609
 msgid "Your children"
 msgstr "Vos enfants"
 
 #: sportfac/registrations/templates/registrations/children.html:6
+#: sportfac/sportfac/settings/base.py:604
 msgid "About your children"
 msgstr "À propos de vos enfants"
-
-#: sportfac/registrations/templates/registrations/children_app.html:37
-msgid "Edit my children data"
-msgstr "Éditer les données de mes enfants"
 
 #: sportfac/registrations/templates/registrations/invoice-part-heading.html:7
 #, python-format
@@ -6290,7 +6285,7 @@ msgstr "Champ obligatoire manquant : {field}"
 msgid "File format is unreadable"
 msgstr "Le fichier n'a pas pu être lu: mauvais format"
 
-#: sportfac/registrations/views/wizard.py:138
+#: sportfac/registrations/views/wizard.py:140
 msgid "Vous devez cocher cette case pour continuer."
 msgstr "Vous devez cocher cette case pour continuer."
 
@@ -6330,6 +6325,22 @@ msgstr "bâtiments"
 #, python-format
 msgid "All these fields are mandatory: %s"
 msgstr "Tous ces champs sont obligatoires: %s"
+
+#: sportfac/sportfac/settings/base.py:605
+msgid "Add a child"
+msgstr "Ajouter un enfant"
+
+#: sportfac/sportfac/settings/base.py:606
+msgid "Add another child"
+msgstr "Ajouter un autre enfant"
+
+#: sportfac/sportfac/settings/base.py:607
+msgid "Edit my children data"
+msgstr "Éditer les données de mes enfants"
+
+#: sportfac/sportfac/settings/base.py:608
+msgid "Save child"
+msgstr "Enregistrer l'enfant"
 
 #: sportfac/templates/403.html:4
 msgid "403 Forbidden"
@@ -6446,14 +6457,14 @@ msgstr "Ma famille"
 #: sportfac/themes/latourdepeilz/templates/navbar.html:133
 #: sportfac/themes/montreux_ski/templates/navbar.html:153
 msgid "logout"
-msgstr "Déconnexion"
+msgstr "déconnexion"
 
 #: sportfac/templates/navbar.html:152 sportfac/templates/navbar.html:158
 #: sportfac/themes/latourdepeilz/templates/navbar.html:141
 #: sportfac/themes/montreux_ski/templates/navbar.html:161
 #: sportfac/wizard/templates/wizard/account-create.html:8
 msgid "login"
-msgstr "Connexion"
+msgstr "connexion"
 
 #: sportfac/templates/registration/login.html:12
 #: sportfac/templates/registration/login.html:18

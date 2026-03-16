@@ -1,11 +1,11 @@
 {% load i18n static %}
 
-<h3 ng-hide="userChildren.length > 0">Ajout d'un enfant</h3>
-<h3 ng-show="userChildren.length > 0">Ajout d'un autre enfant</h3>
+<h3 ng-hide="userChildren.length > 0">{{ CHILDREN_TERMS.add_child }}</h3>
+<h3 ng-show="userChildren.length > 0">{{ CHILDREN_TERMS.add_other_child }}</h3>
 <br/>
 <form name="childform" class="form-horizontal" role="form">
   <div ng-show="debugMode" class="well well-sm text-danger" id="form-debug">
-    <strong>Erreurs détectées :</strong>
+    <strong>Erreurs détectées:</strong>
     <ul>
       <li ng-if="childform.first_name.$error.required">Prénom manquant</li>
       <li ng-if="childform.last_name.$error.required">Nom manquant</li>
@@ -30,8 +30,6 @@
       </ul>
     </div>
   </div>
-
-
   <p ng-repeat="(name, errs) in errors" class="alert alert-danger" ng-show="errors.length > 0">
     {[{ errs.join(', ') }]}
   </p>
@@ -324,7 +322,7 @@
     </div>
     <div class="col-xs-8 col-sm-8 text-right">
       <button ng-click="saveChild()" ng-disabled="childform.$invalid" class="btn btn-right btn-success"><i
-          class="icon-ok-sign icon-white"></i> Enregistrer mon enfant
+          class="icon-ok-sign icon-white"></i> {{ CHILDREN_TERMS.save_child }}
       </button>
     </div>
   </div>

@@ -600,6 +600,14 @@ KEPCHUP_ALTERNATIVE_APPOINTMENTS_LABEL = None
 
 # Children
 #
+KEPCHUP_CHILDREN_TERMS = {
+    "about_children": _("About your children"),
+    "add_child": _("Add a child"),
+    "add_other_child": _("Add another child"),
+    "edit_children_data": _("Edit my children data"),
+    "save_child": _("Save child"),
+    "your_children": _("Your children"),
+}
 KEPCHUP_CHILDREN_EDITABLE = True
 KEPCHUP_ID_LAGAPEO_ALTERNATIVE_LABEL = None
 KEPCHUP_CHILDREN_POPUP = False

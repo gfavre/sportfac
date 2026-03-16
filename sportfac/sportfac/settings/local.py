@@ -399,3 +399,12 @@ KEPCHUP_REGISTRATION_EXPIRE_MINUTES = 60
 KEPCHUP_DISPLAY_COURSE_DETAILS = True
 KEPCHUP_BIB_NUMBERS = True
 KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES = True
+
+KEPCHUP_CHILDREN_TERMS = {
+    "about_children": "À propos de votre famille",
+    "add_child": "Ajouter un participant",
+    "add_other_child": "Ajouter un autre participant",
+    "edit_children_data": "Éditer les données de ma famille",
+    "save_child": "Enregister le participant",
+    "your_children": "Votre famille",
+}
