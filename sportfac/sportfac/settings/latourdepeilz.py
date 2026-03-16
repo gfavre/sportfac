@@ -13,6 +13,22 @@ STATICFILES_DIRS = (
     normpath(join(SITE_ROOT, "static")),  # noqa: F405
 )
 
+KEPCHUP_YEAR_NAMES = {
+    1: "1P",
+    2: "2P",
+    3: "3P",
+    4: "4P",
+    5: "5P",
+    6: "6P",
+    7: "7P",
+    8: "8P",
+    9: "9S",
+    10: "10S",
+    11: "11S",
+    12: "12R",
+    99: "Autre",
+}
+
 # Absences
 KEPCHUP_USE_ABSENCES = True
 KEPCHUP_EXPLICIT_SESSION_DATES = True
