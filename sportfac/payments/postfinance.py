@@ -2,21 +2,21 @@ import logging
 
 from django.conf import settings
 from django.urls import reverse
-
 from postfinancecheckout import Configuration
-from postfinancecheckout.api import (  # TransactionPaymentPageServiceApi,
-    TransactionLightboxServiceApi,
-    TransactionServiceApi,
-    TransactionVoidServiceApi,
-)
-from postfinancecheckout.models import AddressCreate, LineItem, LineItemType, TransactionCreate
+from postfinancecheckout.api import TransactionLightboxServiceApi  # TransactionPaymentPageServiceApi,
+from postfinancecheckout.api import TransactionServiceApi
+from postfinancecheckout.api import TransactionVoidServiceApi
+from postfinancecheckout.models import AddressCreate
+from postfinancecheckout.models import LineItem
+from postfinancecheckout.models import LineItemType
+from postfinancecheckout.models import TransactionCreate
 from postfinancecheckout.rest import ApiException
 
 from .models import PostfinanceTransaction
 
 
 CURR_CHF = "CHF"
-DEFAULT_TIMEOUT = 5
+DEFAULT_TIMEOUT = 7
 DEFAULT_LANGUAGE = "fr"
 
 logger = logging.getLogger(__name__)
