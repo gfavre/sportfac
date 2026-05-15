@@ -99,8 +99,15 @@ class BaseWizardStepView(View):
             .prefetch_related("course__extra", "extra_infos")
         )
         invoice = None
-        if registrations and hasattr(registrations[0], "invoice"):
-            invoice = registrations[0].invoice
+        if not registrations:
+            # No waiting registrations: may be after a payment timeout (registrations moved to valid
+            # when invoice was created). Retrieve the pending invoice and its registrations so the
+            # rest of the wizard context (blocking_payment, is_ready checks) behaves correctly.
+            invoice = Invoice.objects.filter(family=user, status=Invoice.STATUS.waiting).first()
+            if invoice:
+                registrations = invoice.registrations.select_related("course").prefetch_related(
+                    "course__extra", "extra_infos"
+                )
         return registrations, invoice
 
     def get_workflow(self, registration_context=None):
