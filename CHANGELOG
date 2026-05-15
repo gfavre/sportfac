@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 4.2.0 - 2026-05-15
+### Fixed
+- Wizard: après un timeout de paiement PostFinance/Datatrans, l'utilisateur était bloqué en boucle sur l'étape activités. La méthode `get_registrations` cherche désormais une facture en attente quand aucune inscription en statut `waiting` n'est trouvée.
+- Wizard: les questions sans étape wizard assignée (`step=NULL`) ne bloquent plus la confirmation.
+
 ## 4.1.5 - 2026-03-13
 ### Added
 - Labels in children forms
