@@ -4,11 +4,11 @@ from datetime import datetime
 
 from django.conf import settings
 from django.utils.translation import gettext as _
-
 from openpyxl import load_workbook
 from openpyxl.utils.datetime import from_excel
 
-from profiles.models import School, SchoolYear
+from profiles.models import School
+from profiles.models import SchoolYear
 from registrations.models import Child
 
 
@@ -33,7 +33,7 @@ CORRESPONDANCE_DICT = {
     "birth_date": ["Date de naissance", "ELEVE_DATE_NAISS", "DAT_NAISSANCE"],
     "sex": ["Genre", "ELEVE_GENRE", "SEXE"],
     "avs": ["AVS", "N_AVS"],
-    "school_year": ["Année", "ANNEE", "ELEVE_ANNEE_SCOL", "Année2"],
+    "school_year": ["Année", "ANNEE", "ELEVE_ANNEE_SCOL", "Année2", "CLASSE_GROUPE"],
     "nationality": ["Nationalité"],
     "language": ["Langue maternelle", "LANGUE MATERNELLE"],
     "school": ["Etablissement", "ETABLISSEMENT", "ETABLISSEMENT_NOM"],

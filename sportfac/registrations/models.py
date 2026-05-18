@@ -28,6 +28,27 @@ from phonenumber_field.modelfields import PhoneNumberField
 from sportfac.models import TimeStampedModel
 
 
+def _family_matches_local_zipcodes(family, local_zipcodes):
+    """
+    Check whether a family's address falls within the local zone.
+
+    Each entry in local_zipcodes can be:
+      - a plain string "1814"  → match by zipcode only
+      - a tuple ("1820", "Montreux") → match by zipcode AND city name (case-insensitive contains)
+    """
+    family_zipcode = family.zipcode
+    family_city = (family.city or "").strip().lower()
+    for entry in local_zipcodes:
+        if isinstance(entry, (list, tuple)):
+            zipcode, city = entry
+            if family_zipcode == zipcode and city.strip().lower() in family_city:
+                return True
+        else:
+            if family_zipcode == entry:
+                return True
+    return False
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -133,7 +154,7 @@ class Registration(TimeStampedModel, StatusModel):
             message = f"Registration {self.pk} ({self.course}) for child {self.child} ({self.child.pk}) without family"
             logger.error(message)
             return False
-        return self.child.family.zipcode in local_zipcodes
+        return _family_matches_local_zipcodes(self.child.family, local_zipcodes)
 
     @property
     def is_canceled(self):

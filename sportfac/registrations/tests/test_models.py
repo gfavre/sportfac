@@ -1,15 +1,17 @@
-# -*- coding: utf-8 -*-
 from datetime import time
 
 from django.test import override_settings
-
-from activities.tests.factories import AllocationAccountFactory, CourseFactory
 from faker import Faker
-from profiles.tests.factories import CityFactory, FamilyUserFactory
 
+from activities.tests.factories import AllocationAccountFactory
+from activities.tests.factories import CourseFactory
+from profiles.tests.factories import CityFactory
+from profiles.tests.factories import FamilyUserFactory
 from sportfac.utils import TenantTestCase
 
-from .factories import BillFactory, ChildFactory, RegistrationFactory
+from .factories import BillFactory
+from .factories import ChildFactory
+from .factories import RegistrationFactory
 
 
 fake = Faker(locale="fr_CH")
@@ -17,7 +19,7 @@ fake = Faker(locale="fr_CH")
 
 class RegistrationTestCase(TenantTestCase):
     def setUp(self):
-        super(RegistrationTestCase, self).setUp()
+        super().setUp()
         self.user = FamilyUserFactory()
         self.child1 = ChildFactory(family=self.user)
         self.child2 = ChildFactory(family=self.user)
@@ -30,15 +32,9 @@ class RegistrationTestCase(TenantTestCase):
         """
         Tests overlapping detection
         """
-        course1 = CourseFactory(
-            day=1, start_time=time(hour=12, minute=0), end_time=time(hour=13, minute=0)
-        )
-        same_hour = CourseFactory(
-            day=1, start_time=time(hour=12, minute=0), end_time=time(hour=13, minute=0)
-        )
-        quarter_later = CourseFactory(
-            day=1, start_time=time(hour=12, minute=15), end_time=time(hour=13, minute=0)
-        )
+        course1 = CourseFactory(day=1, start_time=time(hour=12, minute=0), end_time=time(hour=13, minute=0))
+        # same_hour = CourseFactory(day=1, start_time=time(hour=12, minute=0), end_time=time(hour=13, minute=0))
+        # quarter_later = CourseFactory(day=1, start_time=time(hour=12, minute=15), end_time=time(hour=13, minute=0))
 
         registration1 = RegistrationFactory(course=course1, child=self.child1)
         registration2 = RegistrationFactory(course=course1, child=self.child2)
@@ -55,7 +51,7 @@ class RegistrationTestCase(TenantTestCase):
         self.user.zipcode = "1272"
         course1 = CourseFactory()
         course2 = CourseFactory(activity=course1.activity)
-        registration1 = RegistrationFactory(course=course1, child=self.child1)
+        RegistrationFactory(course=course1, child=self.child1)
         registration2 = RegistrationFactory(course=course2, child=self.child2)
         price, label = registration2.get_price_category()
         self.assertEqual(price, course2.price)
@@ -140,6 +136,93 @@ class RegistrationTestCase(TenantTestCase):
         self.assertEqual(registration1.price, self.price_local)
         self.assertEqual(registration2.price, self.price_local_family)
 
+    @override_settings(KEPCHUP_USE_DIFFERENTIATED_PRICES=True, KEPCHUP_LOCAL_ZIPCODES=[("1820", "Montreux")])
+    def test_price_category_for_local_zipcode_city_tuple_match(self):
+        self.user.zipcode = "1820"
+        self.user.city = "Montreux"
+        course = CourseFactory(
+            price=self.price,
+            price_local=self.price_local,
+            price_family=self.price_family,
+            price_local_family=self.price_local_family,
+        )
+        registration = RegistrationFactory(course=course, child=self.child1)
+        self.assertEqual(registration.price, self.price_local)
+
+    @override_settings(KEPCHUP_USE_DIFFERENTIATED_PRICES=True, KEPCHUP_LOCAL_ZIPCODES=[("1820", "Montreux")])
+    def test_price_category_for_non_local_same_zipcode_different_city(self):
+        self.user.zipcode = "1820"
+        self.user.city = "Veytaux"
+        course = CourseFactory(
+            price=self.price,
+            price_local=self.price_local,
+            price_family=self.price_family,
+            price_local_family=self.price_local_family,
+        )
+        registration = RegistrationFactory(course=course, child=self.child1)
+        self.assertEqual(registration.price, self.price)
+
+    @override_settings(KEPCHUP_USE_DIFFERENTIATED_PRICES=True, KEPCHUP_LOCAL_ZIPCODES=[("1820", "Montreux")])
+    def test_price_category_for_local_city_case_insensitive(self):
+        self.user.zipcode = "1820"
+        self.user.city = "MONTREUX"
+        course = CourseFactory(
+            price=self.price,
+            price_local=self.price_local,
+            price_family=self.price_family,
+            price_local_family=self.price_local_family,
+        )
+        registration = RegistrationFactory(course=course, child=self.child1)
+        self.assertEqual(registration.price, self.price_local)
+
+    @override_settings(
+        KEPCHUP_USE_DIFFERENTIATED_PRICES=True,
+        KEPCHUP_LOCAL_ZIPCODES=["1814", ("1820", "Montreux"), ("1820", "Territet")],
+    )
+    def test_price_category_mixed_format_plain_zipcode(self):
+        self.user.zipcode = "1814"
+        self.user.city = "La Tour-de-Peilz"
+        course = CourseFactory(
+            price=self.price,
+            price_local=self.price_local,
+            price_family=self.price_family,
+            price_local_family=self.price_local_family,
+        )
+        registration = RegistrationFactory(course=course, child=self.child1)
+        self.assertEqual(registration.price, self.price_local)
+
+    @override_settings(
+        KEPCHUP_USE_DIFFERENTIATED_PRICES=True,
+        KEPCHUP_LOCAL_ZIPCODES=["1814", ("1820", "Montreux"), ("1820", "Territet")],
+    )
+    def test_price_category_mixed_format_tuple_match(self):
+        self.user.zipcode = "1820"
+        self.user.city = "Territet"
+        course = CourseFactory(
+            price=self.price,
+            price_local=self.price_local,
+            price_family=self.price_family,
+            price_local_family=self.price_local_family,
+        )
+        registration = RegistrationFactory(course=course, child=self.child1)
+        self.assertEqual(registration.price, self.price_local)
+
+    @override_settings(
+        KEPCHUP_USE_DIFFERENTIATED_PRICES=True,
+        KEPCHUP_LOCAL_ZIPCODES=["1814", ("1820", "Montreux"), ("1820", "Territet")],
+    )
+    def test_price_category_mixed_format_non_local(self):
+        self.user.zipcode = "1820"
+        self.user.city = "Veytaux"
+        course = CourseFactory(
+            price=self.price,
+            price_local=self.price_local,
+            price_family=self.price_family,
+            price_local_family=self.price_local_family,
+        )
+        registration = RegistrationFactory(course=course, child=self.child1)
+        self.assertEqual(registration.price, self.price)
+
     @override_settings(KEPCHUP_ENABLE_ALLOCATION_ACCOUNTS=True)
     def test_save_sets_allocation_account(self):
         account = AllocationAccountFactory()
@@ -176,9 +259,10 @@ class BillTestCase(TenantTestCase):
         self.assertIn(self.bill.family.last_name.lower()[10], self.bill.billing_identifier)
 
     def test_code_for_secable_long_names(self):
-        self.bill.family.last_name = "Diego José Francisco de Paula Juan Nepomuceno María de los Remedios Cipriano de la Santísima Trinidad Ruiz y Picasso"
+        self.bill.family.last_name = (
+            "Diego José Francisco de Paula Juan Nepomuceno María de "
+            "los Remedios Cipriano de la Santísima Trinidad Ruiz y Picasso"
+        )
         self.bill.update_billing_identifier()
         self.assertTrue(len(self.bill.billing_identifier) <= 20)
-        self.assertIn(
-            self.bill.family.last_name.split(" ")[0].lower(), self.bill.billing_identifier
-        )
+        self.assertIn(self.bill.family.last_name.split(" ")[0].lower(), self.bill.billing_identifier)

@@ -584,7 +584,12 @@ KEPCHUP_DISPLAY_FREE_WHEN_PRICE_IS_0 = False
 # external, iban, datatrans or none
 KEPCHUP_PAYMENT_METHOD = "iban"
 KEPCHUP_USE_DIFFERENTIATED_PRICES = False
+
 KEPCHUP_RELY_ON_CHILD_MARKED_UP_PRICE = False
+# List of local NPA entries for differentiated pricing.
+# Each entry is either a plain zipcode string ("1814") matching all families with that NPA,
+# or a (zipcode, city) tuple ("1820", "Montreux") matching only families whose city contains
+# that string (case-insensitive). Mixing both formats in the same list is supported.
 KEPCHUP_LOCAL_ZIPCODES = []
 KEPCHUP_SEND_BILL_TO_ACCOUNTANT = False
 KEPCHUP_ALTERNATIVE_PAYMENT_METHODS_FROM_BACKEND = ["on-site"]
