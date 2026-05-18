@@ -98,7 +98,14 @@ KEPCHUP_CHILDREN_UNEDITABLE_FIELDS = [
 KEPCHUP_CHILDREN_MANDATORY_FIELDS = [
     "sex",
 ]
-KEPCHUP_CHILDREN_HIDDEN_FIELDS = ["language", "nationality", "school", "other_school", "emergency_number"]
+KEPCHUP_CHILDREN_HIDDEN_FIELDS = [
+    "language",
+    "nationality",
+    "school",
+    "other_school",
+    "emergency_number",
+    "school_year",
+]
 KEPCHUP_EXPLICIT_SESSION_DATES = True
 SCHOOL_YEAR_EDITABLE = False
 KEPCHUP_DISPLAY_LAGAPEO = False
