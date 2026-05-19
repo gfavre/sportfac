@@ -92,7 +92,8 @@ class NewPostfinanceTransactionView(APIView):
             family=request.user,
         )
 
-        transaction = get_postfinance_transaction(request, invoice)
+        fail_url = request.data.get("fail_url")
+        transaction = get_postfinance_transaction(request, invoice, fail_url=fail_url)
         return Response({"paymentPageUrl": transaction.payment_page_url})
 
 

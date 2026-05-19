@@ -11,14 +11,12 @@
       evt.preventDefault();
       $('#pay-button').hide();
       $('#pay-loading').show();
-      $.post("{% url 'postfinance-new-transaction' invoice.id %}")
+      $.post("{% url 'postfinance-new-transaction' invoice.id %}", {fail_url: window.location.href})
         .done(function(data){
           const script = document.createElement("script");
           script.src = data.paymentPageUrl;
           script.onload = function() {
             window.LightboxCheckoutHandler.startPayment();
-            $('#pay-loading').hide();
-            $('#pay-button').show();
           };
           document.body.appendChild(script);
         })

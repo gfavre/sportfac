@@ -22,7 +22,7 @@ DEFAULT_LANGUAGE = "fr"
 logger = logging.getLogger(__name__)
 
 
-def invoice_to_transaction(request, invoice):
+def invoice_to_transaction(request, invoice, fail_url=None):
     lines = []
     lines.append(
         LineItem(
@@ -60,7 +60,7 @@ def invoice_to_transaction(request, invoice):
         fail_url = "https://{}{}".format(request.get_host(), reverse("wizard:step", kwargs={"step_slug": "payment"}))
     else:
         success_url = "https://{}{}".format(request.get_host(), reverse("registrations:registrations_billing"))
-        fail_url = f"https://{request.get_host()}{request.get_full_path()}"
+        fail_url = fail_url or f"https://{request.get_host()}{request.get_full_path()}"
 
     return TransactionCreate(
         billing_address=billing_address,
@@ -75,7 +75,7 @@ def invoice_to_transaction(request, invoice):
     )
 
 
-def get_transaction(request, invoice):
+def get_transaction(request, invoice, fail_url=None):
     config = Configuration(
         user_id=settings.POSTFINANCE_USER_ID,
         api_secret=settings.POSTFINANCE_API_SECRET,
@@ -84,7 +84,7 @@ def get_transaction(request, invoice):
     transaction_service = TransactionServiceApi(config)
     # transaction_page_service = TransactionPaymentPageServiceApi(config)
     transaction_lightbox_service = TransactionLightboxServiceApi(config)
-    transaction = invoice_to_transaction(request, invoice)
+    transaction = invoice_to_transaction(request, invoice, fail_url=fail_url)
     logger.info("Transaction: %s", transaction)
     transaction_create = transaction_service.create(space_id=settings.POSTFINANCE_SPACE_ID, transaction=transaction)
     # payment_page_url = transaction_page_service.payment_page_url(
