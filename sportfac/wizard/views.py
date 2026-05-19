@@ -134,7 +134,7 @@ class BaseWizardStepView(View):
 
         if user.is_authenticated:
             registrations, invoice = self.get_registrations(user)
-            for registration in registrations:
+            for registration in registrations or []:
                 # Get all questions linked to the course extras in one query (thanks to prefetch)
                 course_questions = registration.course.extra.all()
                 all_questions.update(set(course_questions))
@@ -203,6 +203,7 @@ class BaseWizardStepView(View):
             for step in reversed(visible_steps):
                 if get_step_handler(step, self.get_registration_context()).is_ready():
                     return redirect(step.url())
+            return redirect(reverse("wizard:entry_point"))
         return super().dispatch(request, *args, **kwargs)
 
 
