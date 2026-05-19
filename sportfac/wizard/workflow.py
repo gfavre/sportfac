@@ -1,4 +1,5 @@
 from django.core.cache import cache
+from django.db import connection
 
 from .handlers import get_step_handler
 from .models import WizardStep
@@ -10,11 +11,12 @@ class WizardWorkflow:
     def __init__(self, user, registration_context):
         self.user = user
         self.registration_context = registration_context
-        wizard_steps = cache.get("all_wizard_steps")
+        cache_key = f"all_wizard_steps_{connection.schema_name}"
+        wizard_steps = cache.get(cache_key)
         if wizard_steps is None:
             # Cache miss, so we query the database
             wizard_steps = list(WizardStep.objects.all())
-            cache.set("all_wizard_steps", wizard_steps, 60 * 60)  # Cache for 1 hour
+            cache.set(cache_key, wizard_steps, 60 * 60)  # Cache for 1 hour
         self.steps = wizard_steps
 
     def get_visible_steps(self):
