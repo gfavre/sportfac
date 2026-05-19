@@ -11,4 +11,4 @@ class WizardStepFactory(factory.django.DjangoModelFactory):
     subtitle = factory.Faker("bs")
     lead = factory.Faker("sentence")
     description = factory.Faker("paragraph")
-    order = factory.Sequence(lambda n: n)
+    position = factory.Sequence(lambda n: n)

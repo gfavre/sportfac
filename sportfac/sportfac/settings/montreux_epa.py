@@ -58,17 +58,16 @@ KEPCHUP_USE_DIFFERENTIATED_PRICES = True
 KEPCHUP_RELY_ON_CHILD_MARKED_UP_PRICE = False
 
 KEPCHUP_LOCAL_ZIPCODES = [
-    ("1815", "Clarens"),
-    ("1816", "Chailly-Montreux"),
-    ("1817", "Brent"),
+    "1815",
+    "1816",
+    "1817",
     ("1820", "Montreux"),
     ("1820", "Territet"),
-    ("1822", "Chernex"),
-    ("1823", "Glion"),
-    ("1824", "Caux"),
-    ("1832", "Chamby"),
-    ("1832", "Villard-sur-Chamby"),
-    ("1833", "Les Avants"),
+    "1822",
+    "1823",
+    "1824",
+    "1832",
+    "1833",
 ]
 
 KEPCHUP_PAYMENT_METHOD = "postfinance"

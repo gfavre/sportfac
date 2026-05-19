@@ -108,7 +108,7 @@ class BaseWizardStepView(View):
                 registrations = invoice.registrations.select_related("course").prefetch_related(
                     "course__extra", "extra_infos"
                 )
-        return registrations, invoice
+        return registrations if registrations is not None else Registration.objects.none(), invoice
 
     def get_workflow(self, registration_context=None):
         """Return the registration workflow for the current user."""
@@ -134,7 +134,8 @@ class BaseWizardStepView(View):
 
         if user.is_authenticated:
             registrations, invoice = self.get_registrations(user)
-            for registration in registrations or []:
+            registrations = registrations if registrations is not None else Registration.objects.none()
+            for registration in registrations:
                 # Get all questions linked to the course extras in one query (thanks to prefetch)
                 course_questions = registration.course.extra.all()
                 all_questions.update(set(course_questions))
