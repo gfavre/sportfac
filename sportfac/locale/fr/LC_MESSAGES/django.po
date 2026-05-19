@@ -5434,6 +5434,9 @@ msgstr ""
 msgid "Pay"
 msgstr "Payer"
 
+msgid "Connecting to payment provider..."
+msgstr "Connexion au prestataire de paiement..."
+
 #: sportfac/payments/views.py:55 sportfac/payments/views.py:148
 msgid "Payment was rejected either by you or the bank"
 msgstr "Le paiement a été rejeté soit par vous, soit par la banque"

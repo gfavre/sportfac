@@ -3,22 +3,28 @@
 {% addtoblock "js" %}
   <script src="{% static 'js/vendor/js.cookie.js' %}"></script>
   <script type="text/javascript">
-  // Function to get the CSRF token from cookies
-
   jQuery(document).ready(function ($) {
     $.ajaxSetup({
       headers: { "X-CSRFToken": Cookies.get("csrftoken") }
     });
     $('#pay-button').on('click', function (evt) {
       evt.preventDefault();
+      $('#pay-button').hide();
+      $('#pay-loading').show();
       $.post("{% url 'postfinance-new-transaction' invoice.id %}")
         .done(function(data){
           const script = document.createElement("script");
           script.src = data.paymentPageUrl;
-          script.onload = () => window.LightboxCheckoutHandler.startPayment();
+          script.onload = function() {
+            window.LightboxCheckoutHandler.startPayment();
+            $('#pay-loading').hide();
+            $('#pay-button').show();
+          };
           document.body.appendChild(script);
         })
         .fail(function(){
+          $('#pay-loading').hide();
+          $('#pay-button').show();
           alert("Could not create PostFinance transaction");
         });
     });
@@ -32,6 +38,10 @@
       <a href="#" id="pay-button" class="btn btn-lg btn-success">
         <i class="icon-credit-card-1"></i> &nbsp;{% translate "Pay" %}
       </a>
+      <span id="pay-loading" style="display:none;">
+        <i class="icon-spin1 animate-spin"></i>
+        &nbsp;{% translate "Connecting to payment provider..." %}
+      </span>
     </div>
   </div>
 </div>
