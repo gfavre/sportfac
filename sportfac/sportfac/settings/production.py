@@ -54,7 +54,12 @@ CACHES = {
         "KEY_PREFIX": env("CACHE_KEY_PREFIX"),  # noqa: F405
         "KEY_FUNCTION": "django_tenants.cache.make_key",
         "REVERSE_KEY_FUNCTION": "django_tenants.cache.reverse_key",
-    }
+    },
+    "sessions": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": env("BROKER_URL"),  # noqa: F405
+        "KEY_PREFIX": env("CACHE_KEY_PREFIX") + "_sessions",  # noqa: F405
+    },
 }
 
 
@@ -71,6 +76,7 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_SECONDS = 3600
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "sessions"
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")  # noqa: F405
 
