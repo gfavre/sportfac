@@ -61,8 +61,8 @@
           <ul class="list-unstyled">
             {% for instructor in course.instructors.all %}
               <li>
-                {{ instructor.full_name }}<br/>
-                <a href="{{ instructor.best_phone|phone:'RFC3966' }}">{{ instructor.best_phone|phone }}</a><br/>
+                {{ instructor.full_name }}
+                {% if instructor.phone_public and instructor.best_phone %}<br/><a href="{{ instructor.best_phone|phone:'RFC3966' }}">{{ instructor.best_phone|phone }}</a>{% elif INSTRUCTOR_FALLBACK_PHONE %}<br/><a href="tel:{{ INSTRUCTOR_FALLBACK_PHONE }}">{{ INSTRUCTOR_FALLBACK_PHONE }}</a>{% endif %}<br/>
                 {{ instructor.email|urlize }}
               </li>
             {% endfor %}

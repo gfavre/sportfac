@@ -3,22 +3,27 @@ import re
 import uuid
 
 from django.conf import settings
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from django.db import models, transaction
+from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import BaseUserManager
+from django.contrib.auth.models import PermissionsMixin
+from django.db import models
+from django.db import transaction
 from django.db.models.aggregates import Count
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-
 from django_countries.fields import CountryField
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 from localflavor.generic.models import IBANField
 from model_utils import Choices
-from model_utils.fields import AutoCreatedField, AutoLastModifiedField
+from model_utils.fields import AutoCreatedField
+from model_utils.fields import AutoLastModifiedField
 from phonenumber_field.modelfields import PhoneNumberField
 
 from activities.models import SCHOOL_YEARS
-from registrations.models import Bill, Registration
+from registrations.models import Bill
+from registrations.models import Registration
+
 from .ahv import AHVField
 from .utils import get_street_and_number
 
@@ -127,6 +132,7 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     private_phone = PhoneNumberField(_("Home phone"), max_length=30, blank=True)
     private_phone2 = PhoneNumberField(_("Mobile phone"), max_length=30, blank=True)
     private_phone3 = PhoneNumberField(_("Other phone"), max_length=30, blank=True)
+    phone_public = models.BooleanField(_("Phone visible for parents"), default=False)
 
     # TODO: move me to a separate SupervisorInfo model...
     iban = IBANField(include_countries=IBAN_SEPA_COUNTRIES, blank=True)
@@ -266,7 +272,8 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
     @property
     def montreux_missing_appointments(self):
         from activities.models import ExtraNeed
-        from appointments.models import Appointment, AppointmentType
+        from appointments.models import Appointment
+        from appointments.models import AppointmentType
 
         material_needs = ExtraNeed.objects.filter(question_label__icontains="matériel")
         registrations = Registration.objects.filter(child__family=self).prefetch_related("extra_infos")
@@ -379,7 +386,8 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
                 # we are running from shell where no tenant has been selected.
                 pass
         if len(settings.DATABASES) > 1 and sync:
-            from .tasks import LOCAL_DB, save_to_master
+            from .tasks import LOCAL_DB
+            from .tasks import save_to_master
 
             transaction.on_commit(lambda: save_to_master(self.pk, kwargs.get("using", LOCAL_DB)))
 

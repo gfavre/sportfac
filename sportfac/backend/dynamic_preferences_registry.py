@@ -1,26 +1,22 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 from decimal import Decimal
 
+import dateutil.parser
 from django import forms
 from django.utils import timezone
 from django.utils.translation import gettext as _
-
-import dateutil.parser
 from dynamic_preferences.preferences import Section
-from dynamic_preferences.registries import (
-    PerInstancePreferenceRegistry,
-    global_preferences_registry,
-    preference_models,
-)
-from dynamic_preferences.types import (
-    BasePreferenceType,
-    BaseSerializer,
-    BooleanPreference,
-    DecimalPreference,
-    IntegerPreference,
-    LongStringPreference,
-    StringPreference,
-)
+from dynamic_preferences.registries import PerInstancePreferenceRegistry
+from dynamic_preferences.registries import global_preferences_registry
+from dynamic_preferences.registries import preference_models
+from dynamic_preferences.types import BasePreferenceType
+from dynamic_preferences.types import BaseSerializer
+from dynamic_preferences.types import BooleanPreference
+from dynamic_preferences.types import DecimalPreference
+from dynamic_preferences.types import IntegerPreference
+from dynamic_preferences.types import LongStringPreference
+from dynamic_preferences.types import StringPreference
 
 from .models import TenantPreferenceModel
 
@@ -233,3 +229,14 @@ class PeriodName(StringPreference):
     name = "PERIOD_NAME"
     default = ""
     help_text = _("Name of period, can be used in templates")
+
+
+@global_preferences_registry.register
+class InstructorFallbackPhone(StringPreference):
+    section = site
+    name = "INSTRUCTOR_FALLBACK_PHONE"
+    default = ""
+    help_text = _(
+        "General phone number displayed to parents when an instructor's phone is not public. "
+        "Leave empty to display nothing."
+    )

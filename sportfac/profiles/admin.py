@@ -25,6 +25,16 @@ def send_confirmation_action(modeladmin, request, queryset):
         send_confirmation.delay(user.pk, tenant.pk)
 
 
+@admin.action(description=_("Make phone visible for parents"))
+def make_phone_public_action(modeladmin, request, queryset):
+    queryset.update(phone_public=True)
+
+
+@admin.action(description=_("Hide phone from parents"))
+def make_phone_private_action(modeladmin, request, queryset):
+    queryset.update(phone_public=False)
+
+
 class FamilyCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
     fields, plus a repeated password."""
@@ -148,7 +158,7 @@ class FamilyAdmin(SportfacAdminMixin, UserAdmin):
         "is_instructor",
     )
     # change_list_filter_template = "admin/filter_listing.html"
-    list_filter = ("is_staff", "is_superuser", "is_active", "is_manager", "is_restricted_manager")
+    list_filter = ("is_staff", "is_superuser", "is_active", "is_manager", "is_restricted_manager", "phone_public")
     # filter_horizontal = ("managed_activities",)
 
     fieldsets = (
@@ -180,6 +190,7 @@ class FamilyAdmin(SportfacAdminMixin, UserAdmin):
                     "private_phone",
                     "private_phone2",
                     "private_phone3",
+                    "phone_public",
                 )
             },
         ),
@@ -227,6 +238,8 @@ class FamilyAdmin(SportfacAdminMixin, UserAdmin):
     ordering = ("last_name", "first_name")
     actions = [
         send_confirmation_action,
+        make_phone_public_action,
+        make_phone_private_action,
     ]
     # inlines = [ChildInline]
 

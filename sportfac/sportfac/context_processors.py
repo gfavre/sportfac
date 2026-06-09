@@ -223,4 +223,5 @@ def dynamic_preferences_context(request):
         "other_instance_phase": other_phase,
         "other_instance_started_registrations": other_phase == 2,
         "MAX_REGISTRATIONS_PER_CHILD": global_preferences["MAX_REGISTRATIONS"],
+        "INSTRUCTOR_FALLBACK_PHONE": global_preferences["site__INSTRUCTOR_FALLBACK_PHONE"],
     }

@@ -1,14 +1,16 @@
 import django.contrib.auth.forms as auth_forms
+from bootstrap_datepicker_plus.widgets import DatePickerInput
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import HTML
+from crispy_forms.layout import Fieldset
+from crispy_forms.layout import Layout
+from crispy_forms.layout import Submit
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils.html import mark_safe
 from django.utils.translation import gettext_lazy as _
-
-from bootstrap_datepicker_plus.widgets import DatePickerInput
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import HTML, Fieldset, Layout, Submit
 
 # noinspection PyPackageRequirements
 from localflavor.generic.forms import IBANFormField
@@ -17,6 +19,7 @@ from phonenumber_field.widgets import RegionalPhoneNumberWidget
 
 from activities.models import Activity
 from backend.forms import ActivityMultipleWidget
+
 from .models import FamilyUser
 
 
@@ -239,6 +242,7 @@ class InstructorForm(UserForm):
             "private_phone",
             "private_phone2",
             "private_phone3",
+            "phone_public",
             "birth_date",
             "iban",
             "bank_name",
@@ -272,6 +276,7 @@ class InstructorForm(UserForm):
                 "js_identifier",
                 "is_mep",
                 "is_teacher",
+                "phone_public",
             )
         )
 

@@ -69,9 +69,16 @@ class MultiCourseInlineSerializer(serializers.ModelSerializer):
 class InstructorSerializer(serializers.ModelSerializer):
     first = serializers.CharField(source="first_name")
     last = serializers.CharField(source="last_name")
-    phone = serializers.CharField(source="best_phone")
+    phone = serializers.SerializerMethodField()
     initials = serializers.CharField(source="get_initials", read_only=True)
     full_name = serializers.CharField(source="get_full_name", read_only=True)
+
+    def get_phone(self, obj):
+        if obj.phone_public and obj.best_phone:
+            return str(obj.best_phone)
+        from dynamic_preferences.registries import global_preferences_registry
+
+        return global_preferences_registry.manager().get("site__INSTRUCTOR_FALLBACK_PHONE", "")
 
     class Meta:
         model = FamilyUser
