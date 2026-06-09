@@ -197,6 +197,43 @@ class CourseForm(forms.ModelForm):
     def pop_initial(self):
         pass
 
+    def _filter_date_fields(self):
+        if settings.KEPCHUP_SESSION_DATES_OPTIONAL:
+            for field in ("start_date", "end_date"):
+                if field in self.fields:
+                    self.fields[field].required = False
+
+    def _build_pricing_layout(self):
+        if settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
+            return [
+                "local_city_override",
+                Div(
+                    Div("price", css_class="col-md-6"),
+                    Div("price_local", css_class="col-md-6"),
+                    Div("price_family", css_class="col-md-6"),
+                    Div("price_local_family", css_class="col-md-6"),
+                    css_class="row",
+                ),
+                "price_description",
+            ]
+        return ["price", "price_description"]
+
+    def _build_dates_layout(self):
+        if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
+            return ["session_dates"]
+        return [
+            Div(
+                Div("number_of_sessions", css_class="col-md-6"),
+                Div("day", css_class="col-md-6"),
+                css_class="course-visible camp-hidden multicourse-hidden row",
+            ),
+            Div(
+                Div("start_date", css_class="col-md-6"),
+                Div("end_date", css_class="col-md-6"),
+                css_class="row",
+            ),
+        ]
+
     def __init__(self, *args, **kwargs):
         user: FamilyUser = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
@@ -208,41 +245,12 @@ class CourseForm(forms.ModelForm):
             self.fields["activity"].queryset = user.managed_activities.all()
         self._filter_limitations()
         self._filter_price_field()
+        self._filter_date_fields()
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.include_media = False
-        if settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
-            pricing_section = [
-                "local_city_override",
-                Div(
-                    Div("price", css_class="col-md-6"),
-                    Div("price_local", css_class="col-md-6"),
-                    Div("price_family", css_class="col-md-6"),
-                    Div("price_local_family", css_class="col-md-6"),
-                    css_class="row",
-                ),
-                "price_description",
-            ]
-        else:
-            pricing_section = [
-                "price",
-                "price_description",
-            ]
-        if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
-            dates_section = ["session_dates"]
-        else:
-            dates_section = [
-                Div(
-                    Div("number_of_sessions", css_class="col-md-6"),
-                    Div("day", css_class="col-md-6"),
-                    css_class="course-visible camp-hidden multicourse-hidden row",
-                ),
-                Div(
-                    Div("start_date", css_class="col-md-6"),
-                    Div("end_date", css_class="col-md-6"),
-                    css_class="row",
-                ),
-            ]
+        pricing_section = self._build_pricing_layout()
+        dates_section = self._build_dates_layout()
         dates_section += [
             Div(
                 Div(
@@ -347,6 +355,8 @@ class MultipleDatesField(forms.CharField):
         return attrs
 
     def to_python(self, value):
+        if not value:
+            return []
         try:
             output = [datetime.datetime.strptime(val, self.date_format).date() for val in value.split(self.separator)]
         except (ValueError, TypeError):
@@ -434,48 +444,34 @@ class ExplicitDatesCourseForm(CourseForm):
                 [session.date.strftime("%d.%m.%Y") for session in kwargs["instance"].get_sessions()]
             )
         super().__init__(*args, **kwargs)
+        if settings.KEPCHUP_SESSION_DATES_OPTIONAL:
+            self.fields["session_dates"].required = False
 
-    def clean_session_dates(self):  # noqa: CCR001
+    # Maps isoweekday() to (start_field, end_field, day_name)
+    _DAY_TIME_FIELDS = {
+        1: ("start_time_mon", "end_time_mon", "mondays"),
+        2: ("start_time_tue", "end_time_tue", "tuesdays"),
+        3: ("start_time_wed", "end_time_wed", "wednesdays"),
+        4: ("start_time_thu", "end_time_thu", "thursdays"),
+        5: ("start_time_fri", "end_time_fri", "fridays"),
+        6: ("start_time_sat", "end_time_sat", "saturdays"),
+        7: ("start_time_sun", "end_time_sun", "sundays"),
+    }
+
+    def _check_multicourse_times(self, session_date):
+        start_field, end_field, day_name = self._DAY_TIME_FIELDS[session_date.isoweekday()]
+        if not (self.cleaned_data.get(start_field) and self.cleaned_data.get(end_field)):
+            raise ValidationError(
+                _("%s is invalid as start and end times are not set for %s")
+                % (session_date.strftime("%d.%m.%Y"), day_name)
+            )
+
+    def clean_session_dates(self):
         dates = self.cleaned_data["session_dates"]
-        if not self.cleaned_data["course_type"] == "multicourse":
+        if self.cleaned_data["course_type"] != "multicourse":
             return dates
         for session_date in dates:
-            day = session_date.isoweekday()
-            if day == 1 and not (self.cleaned_data.get("start_time_mon") and self.cleaned_data.get("end_time_mon")):
-                raise ValidationError(
-                    _("%s is invalid as start and end times are not set for mondays")
-                    % session_date.strftime("%d.%m.%Y")
-                )
-            if day == 2 and not (self.cleaned_data.get("start_time_tue") and self.cleaned_data.get("end_time_tue")):
-                raise ValidationError(
-                    _("%s is invalid as start and end times are not set for tuesdays")
-                    % session_date.strftime("%d.%m.%Y")
-                )
-            if day == 3 and not (self.cleaned_data.get("start_time_wed") and self.cleaned_data.get("end_time_wed")):
-                raise ValidationError(
-                    _("%s is invalid as start and end times are not set for wednesdays")
-                    % session_date.strftime("%d.%m.%Y")
-                )
-            if day == 4 and not (self.cleaned_data.get("start_time_thu") and self.cleaned_data.get("end_time_thu")):
-                raise ValidationError(
-                    _("%s is invalid as start and end times are not set for thursdays")
-                    % session_date.strftime("%d.%m.%Y")
-                )
-            if day == 5 and not (self.cleaned_data.get("start_time_fri") and self.cleaned_data.get("end_time_fri")):
-                raise ValidationError(
-                    _("%s is invalid as start and end times are not set for fridays")
-                    % session_date.strftime("%d.%m.%Y")
-                )
-            if day == 6 and not (self.cleaned_data.get("start_time_sat") and self.cleaned_data.get("end_time_sat")):
-                raise ValidationError(
-                    _("%s is invalid as start and end times are not set for saturdays")
-                    % session_date.strftime("%d.%m.%Y")
-                )
-            if day == 7 and not (self.cleaned_data.get("start_time_sun") and self.cleaned_data.get("end_time_sun")):
-                raise ValidationError(
-                    _("%s is invalid as start and end times are not set for sundays")
-                    % session_date.strftime("%d.%m.%Y")
-                )
+            self._check_multicourse_times(session_date)
         return dates
 
     def save(self, commit=True):
