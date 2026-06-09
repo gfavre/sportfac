@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.cache import cache
 from django.db.models import Prefetch
+from django.db.models import Q
 from django.http import Http404
 from rest_framework import mixins
 from rest_framework import status
@@ -43,8 +44,7 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
             birth_date = self.request.query_params.get("birth_date")
             if birth_date is not None:
                 valid_courses = valid_courses.filter(
-                    min_birth_date__gte=birth_date,
-                    max_birth_date__lte=birth_date,
+                    Q(min_birth_date__isnull=True) | Q(min_birth_date__gte=birth_date, max_birth_date__lte=birth_date)
                 )
 
         # 🔑 On sélectionne uniquement les activités qui ont AU MOINS un cours valide

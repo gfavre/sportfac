@@ -309,7 +309,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
                     _("This course is not opened to children of school year %(year)s") % {"year": child.school_year}
                 )
         else:
-            if not (course.max_birth_date <= child.birth_date <= course.min_birth_date):
+            if course.has_age_restriction and not (course.max_birth_date <= child.birth_date <= course.min_birth_date):
                 raise serializers.ValidationError(_("This course is not opened to children of this age"))
         if child.registrations.count() >= global_preferences_registry.manager()["MAX_REGISTRATIONS"]:
             raise serializers.ValidationError(_("Max number of registrations reached."))

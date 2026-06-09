@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `phone_public` flag on instructors: controls whether the instructor's phone number is visible to parents (default: False); bulk admin actions available to toggle visibility
 - `KEPCHUP_DECOMPTE_ONLY_VALIDATED_SESSIONS` setting: when enabled, only sessions validated by an instructor (i.e. with a linked instructor) are included in the PDF hours summary; default False, enabled for La Tour-de-Peilz
 - `KEPCHUP_SESSION_DATES_OPTIONAL` setting: when enabled, session dates are no longer required when creating or editing a course, allowing courses to be created with a description and contact info only; default False, enabled for La Tour-de-Peilz
+- `KEPCHUP_AGE_OPTIONAL` setting: when enabled, age fields are no longer required on a course; courses without defined ages accept all ages, and age is not displayed in public templates; default False, enabled for La Tour-de-Peilz
 
 ## 4.2.0 - 2026-05-15
 ### Fixed

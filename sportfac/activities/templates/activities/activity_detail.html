@@ -165,7 +165,7 @@
             <dd>{% for year in course.school_years_label %}{{ year }}{% if not forloop.last %} -
             {% endif %} {% endfor %}
             </dd>
-            {% else %}
+            {% elif course.has_age_restriction %}
             <dt>{% translate "Ages" %}</dt>
             <dd>{{ course.get_age_min_display }} - {{ course.get_age_max_display }}</dd>
             {% endif %}

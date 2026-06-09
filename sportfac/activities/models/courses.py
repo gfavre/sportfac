@@ -195,6 +195,10 @@ class Course(TimeStampedModel):
         return True
 
     @property
+    def has_age_restriction(self):
+        return self.age_min is not None or self.age_max is not None
+
+    @property
     def ages(self):
         return list(
             range(

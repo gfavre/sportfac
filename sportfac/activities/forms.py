@@ -154,8 +154,9 @@ class CourseForm(forms.ModelForm):
         else:
             self.fields.pop("schoolyear_min")
             self.fields.pop("schoolyear_max")
-            self.fields["age_min"].required = True
-            self.fields["age_max"].required = True
+            if not settings.KEPCHUP_AGE_OPTIONAL:
+                self.fields["age_min"].required = True
+                self.fields["age_max"].required = True
 
     def _filter_price_field(self):
         if settings.KEPCHUP_NO_PAYMENT:
