@@ -1,0 +1,11 @@
+.git
+.env
+__pycache__
+*.pyc
+*.pyo
+node_modules
+bower_components
+sportfac/media
+sportfac/assets
+*.log
+.DS_Store

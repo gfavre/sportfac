@@ -1,0 +1,51 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: sportfac_dev
+      POSTGRES_USER: sportfac
+      POSTGRES_PASSWORD: sportfac
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6380:6379"
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      OTHER_DB: postgres://sportfac:sportfac@db:5432/sportfac_dev
+      DJANGO_SETTINGS_MODULE: sportfac.settings.docker
+      CELERY_BROKER_URL: redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+
+  celery:
+    build: .
+    command: celery -A sportfac worker -l info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    environment:
+      OTHER_DB: postgres://sportfac:sportfac@db:5432/sportfac_dev
+      DJANGO_SETTINGS_MODULE: sportfac.settings.docker
+      CELERY_BROKER_URL: redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+
+volumes:
+  postgres_data:

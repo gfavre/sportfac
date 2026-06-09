@@ -1,5 +1,4 @@
 """Common settings and globals."""
-import warnings
 from os.path import abspath
 from os.path import basename
 from os.path import dirname
@@ -222,14 +221,14 @@ SHARED_APPS = (
     "adminsortable2",  # admin sortable
     "anymail",  # send mail
     "bootstrap_datepicker_plus",
-    "captcha",  # recaptcha
+    "django_recaptcha",  # recaptcha
     "ckeditor",  # wysiwyg editor
     "ckeditor_uploader",
     "crispy_forms",  # better forms => DRY
+    "crispy_bootstrap3",  # bootstrap3 template pack for crispy-forms 2.x
     "dbtemplates",  # store templates in db (used by mailer module)
     "django_countries",  # country field selector
     "dynamic_preferences",
-    "floppyforms",  # better forms => bootstrap components
     "import_export",
     "impersonate",  # impersonate users
     "mathfilters",
@@ -699,8 +698,6 @@ KEPCHUP_SEND_COPY_CONTACT_MAIL_TO_ADMIN = True
 KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS = []
 # If true: do not send E_SSF_decompte_heures_%s_%s.pdf to instructors
 KEPCHUP_NO_SSF = False
-
-warnings.filterwarnings("ignore", module="floppyforms", message="Unable to import floppyforms.gis.*")
 
 # Single Sign On
 # git #

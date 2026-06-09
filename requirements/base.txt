@@ -1,33 +1,33 @@
-django >=3.2.20,<4.0.0
+django >=5.2,<6.0
 djangorestframework == 3.15.1
 djangorestframework-orjson==0.1.3
 celery==5.4.0
 tenant-schemas-celery == 3.0.0
 django-tenants~=3.3  # Use multitenants - to get multiple periods of activities
 
-djangorestframework-datatables==0.5.1  # Pagination for datatables. DO NOT UPOGRADE TO 0.7.0 unless django is migrated to 4.0
+djangorestframework-datatables==0.7.2
 django-dbtemplates == 4.0  # Store overrides of templates in db, edit through admin
 django-localflavor == 3.1
-django-model-utils == 4.3.1  # Gewneral model toolkit
+django-model-utils == 4.3.1  # General model toolkit
 django-sekizai == 4.1.0  # JS and CSS as blocks
 django-countries == 7.6.1  # country field
 django-formtools == 2.5.1  # form wizard
-django-anymail ~= 11.1  # email backend. DO NOT UPDATE TO 12.0 unless django is migrated to 4.0
+django-anymail ~= 14.0  # email backend
 django-dynamic-preferences == 1.16.0  # Settings that can be edited in admin
 python-dateutil == 2.8.2  # date parsing
 django-registration-redux == 2.13  # Registration view
-django-recaptcha==3.0.0  # Recaptcha, DO NOT UPDATE TO 4.0 unless django is migrated to 4.0, and changes to settings are made
-django-crispy-forms==1.14.0  # Form rendering. DO NOT UPDATE TO 2.0 unless django is migrated to 4.0, and changes made to requirements
+django-recaptcha==4.1.0  # Recaptcha (app label changed: captcha -> django_recaptcha)
+django-crispy-forms==2.5  # Form rendering
+crispy-bootstrap3==2024.1  # Bootstrap 3 template pack for crispy-forms 2.x
 django-ckeditor==6.7.2
-django-admin-sortable2==1.0.4  # do not upgrade to 2.0° unless we are on django 4.0
+django-admin-sortable2==2.3.1
 Pillow == 10.4.0
-django-phonenumber-field == 7.0.1  # phone number field with validation; DO NOT UPDATE TO 8.0 unless django is migrated to 4.2+
+django-phonenumber-field == 8.3.0  # phone number field with validation
 phonenumbers == 8.13.52  # google's lib, needed by above lib...
 
 # Excel export
-django-import-export == 3.0.2  # XLS export. DO NOT UPDATE TO 4.0 unless django is migrated to 4.0, https://django-import-export.readthedocs.io/en/latest/release_notes.html
+django-import-export == 4.4.1
 openpyxl == 3.1.5
-django-floppyforms==1.9.0
 django-braces == 1.16.0
 django-select2 ~= 8.2.0
 django-bootstrap-datepicker-plus==5.0.5
@@ -52,4 +52,4 @@ postfinancecheckout==5.1.0
 django-impersonate==1.9.1  # Impersonate users
 
 # Montreux
-django-simple-sso==1.2.0
+django-simple-sso==1.3.0

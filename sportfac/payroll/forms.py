@@ -1,10 +1,12 @@
+from crispy_forms.bootstrap import ButtonHolder
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout
+from crispy_forms.layout import Submit
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import ButtonHolder, Layout, Submit
-
-from .models import Function, Payroll
+from .models import Function
+from .models import Payroll
 
 
 class FunctionForm(forms.ModelForm):

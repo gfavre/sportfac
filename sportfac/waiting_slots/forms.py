@@ -1,6 +1,6 @@
+from crispy_forms.bootstrap import ButtonHolder
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML
-from crispy_forms.layout import ButtonHolder
 from crispy_forms.layout import Layout
 from crispy_forms.layout import Submit
 from django import forms

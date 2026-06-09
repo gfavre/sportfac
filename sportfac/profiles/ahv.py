@@ -1,20 +1,17 @@
+from django import forms
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-import floppyforms.__future__ as forms
 
-
-class AHVValidator(object):
+class AHVValidator:
     """A validator for AHV number"""
 
     @staticmethod
     def ahv_checksum(value):
         """Calculate the EAN check digit for 13-digit numbers. The number passed
         should not have the check bit included."""
-        return str(
-            (10 - sum((3 - 2 * (i % 2)) * int(n) for i, n in enumerate(reversed(value)))) % 10
-        )
+        return str((10 - sum((3 - 2 * (i % 2)) * int(n) for i, n in enumerate(reversed(value)))) % 10)
 
     def __call__(self, value):
         """
@@ -31,6 +28,7 @@ class AHVValidator(object):
 
         if self.ahv_checksum(value[:-1]) != value[-1]:
             raise ValidationError(_("Not a valid AHV number."))
+        return value
 
 
 class AHVFormField(forms.CharField):
@@ -42,10 +40,10 @@ class AHVFormField(forms.CharField):
         kwargs.setdefault("min_length", 13)
         kwargs.setdefault("max_length", 16)
         self.default_validators = [AHVValidator()]
-        super(AHVFormField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def to_python(self, value):
-        value = super(AHVFormField, self).to_python(value)
+        value = super().to_python(value)
         return value.upper().replace(" ", "").replace(".", "")
 
     def prepare_value(self, value):
@@ -54,7 +52,7 @@ class AHVFormField(forms.CharField):
             return value
         value = value.replace(" ", "").replace(".", "")
         if value:
-            return "%s.%s.%s.%s" % (value[0:3], value[3:7], value[7:11], value[11:])
+            return f"{value[0:3]}.{value[3:7]}.{value[7:11]}.{value[11:]}"
         return value
 
 
@@ -65,11 +63,11 @@ class AHVField(models.CharField):
 
     def __init__(self, *args, **kwargs):
         kwargs.setdefault("max_length", 16)
-        super(AHVField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.validators.append(AHVValidator())
 
     def to_python(self, value):
-        value = super(AHVField, self).to_python(value)
+        value = super().to_python(value)
         if value is not None:
             return value.replace(" ", "").replace(".", "")
         return value
@@ -77,4 +75,4 @@ class AHVField(models.CharField):
     def formfield(self, **kwargs):
         defaults = {"form_class": AHVFormField}
         defaults.update(kwargs)
-        return super(AHVField, self).formfield(**defaults)
+        return super().formfield(**defaults)

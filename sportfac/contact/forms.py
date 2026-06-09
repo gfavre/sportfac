@@ -1,12 +1,11 @@
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout
 from django import forms
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.utils.translation import gettext_lazy as _
-
-from captcha.fields import ReCaptchaField
-from captcha.widgets import ReCaptchaV3
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Div, Layout
+from django_recaptcha.fields import ReCaptchaField
+from django_recaptcha.widgets import ReCaptchaV3
 from dynamic_preferences.registries import global_preferences_registry
 
 
@@ -30,7 +29,7 @@ class ContactForm(forms.Form):
 
         bcc = None
         if settings.KEPCHUP_SEND_COPY_CONTACT_MAIL_TO_ADMIN:
-            bcc = ["%s <%s>" % (mail_tuple[0], mail_tuple[1]) for mail_tuple in settings.MANAGERS]
+            bcc = [f"{mail_tuple[0]} <{mail_tuple[1]}>" for mail_tuple in settings.MANAGERS]
 
         email = EmailMessage(
             subject="%s [%s - formulaire de contact]"
@@ -47,7 +46,7 @@ class ContactForm(forms.Form):
             from_email=global_preferences["email__FROM_MAIL"],
             to=[global_preferences["email__CONTACT_MAIL"]],
             bcc=bcc,
-            reply_to=["%s <%s>" % (self.cleaned_data["name"], self.cleaned_data["email"])],
+            reply_to=["{} <{}>".format(self.cleaned_data["name"], self.cleaned_data["email"])],
         )
         email.send(fail_silently=fail_silently)
 

@@ -1,8 +1,9 @@
-from django.forms import ModelForm
-from django.utils.text import gettext_lazy as _
-
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Div, Layout, Submit
+from crispy_forms.layout import Div
+from crispy_forms.layout import Layout
+from crispy_forms.layout import Submit
+from django.forms import ModelForm
+from django.utils.translation import gettext_lazy as _
 
 from .models import WizardStep
 
