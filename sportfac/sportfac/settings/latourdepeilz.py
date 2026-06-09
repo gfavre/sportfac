@@ -101,6 +101,7 @@ KEPCHUP_LOCAL_ZIPCODES = ["1814"]
 # Misc
 KEPCHUP_IMPORT_CHILDREN = False
 KEPCHUP_ENABLE_TEACHER_MANAGEMENT = False
+KEPCHUP_DECOMPTE_ONLY_VALIDATED_SESSIONS = True
 
 CELERYBEAT_SCHEDULE["notify-absences"] = {  # noqa: F405
     "task": "absences.tasks.notify_absences",

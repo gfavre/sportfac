@@ -8,10 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 4.2.1 - 2026-06-09
 ### Fixed
 - Email sending when user has no email
+- PDF decompte heures: checkbox fields (MEP, JS, Instituteur) were not checked due to wrong export value ("On" instead of "Yes")
 
 ### Added
-- INSTRUCTOR_FALLBACK_PHONE setting.
-- New phone_public setting for each supervisor
+- INSTRUCTOR_FALLBACK_PHONE dynamic setting: a general phone number displayed to parents when an instructor's phone is not public
+- `phone_public` flag on instructors: controls whether the instructor's phone number is visible to parents (default: False); bulk admin actions available to toggle visibility
+- `KEPCHUP_DECOMPTE_ONLY_VALIDATED_SESSIONS` setting: when enabled, only sessions validated by an instructor (i.e. with a linked instructor) are included in the PDF hours summary; default False, enabled for La Tour-de-Peilz
 
 ## 4.2.0 - 2026-05-15
 ### Fixed

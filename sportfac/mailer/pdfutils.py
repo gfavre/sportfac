@@ -39,9 +39,10 @@ def get_ssf_decompte_heures(course, instructor: FamilyUser):
         "Tel portable": instructor.best_phone and instructor.best_phone.as_national or "",
         "IBAN": instructor.iban,
         "Banque/CCP": instructor.bank_name,
-        "MEP": instructor.is_mep and "On",
-        "Instituteur": instructor.is_teacher and "On",
-        "JS": (not instructor.is_teacher and not instructor.is_mep) and "On",
+        "MEP": "Yes" if instructor.is_mep else "Off",
+        "Instituteur": "Yes" if instructor.is_teacher else "Off",
+        "JS": "Yes" if (not instructor.is_teacher and not instructor.is_mep) else "Off",
+        "Autre": "Off",
         "genre": instructor.gender == "f" and "F" or "M",
         "Nationalité": instructor.get_nationality_display(),
         "Type permis": instructor.permit_type or "",
@@ -49,7 +50,10 @@ def get_ssf_decompte_heures(course, instructor: FamilyUser):
         "email": instructor.email,
     }
     total = 0
-    for idx, session in enumerate(course.sessions.order_by("date"), start=1):
+    sessions_qs = course.sessions.order_by("date")
+    if settings.KEPCHUP_DECOMPTE_ONLY_VALIDATED_SESSIONS:
+        sessions_qs = sessions_qs.filter(instructor__isnull=False)
+    for idx, session in enumerate(sessions_qs, start=1):
         fields[f"date_{idx}"] = session.date.strftime(settings.SWISS_DATE_SHORT)
         fields[f"start_time_{idx}"] = course.start_time.strftime("%H:%M")
         fields[f"end_time_{idx}"] = course.end_time.strftime("%H:%M")
