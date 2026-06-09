@@ -224,7 +224,9 @@ class ParticipantsBaseMixin:
 
     def get_recipients(self):
         qs = self.course.participants.select_related("child__family")
-        all_recipients = [registration.child.family for registration in qs.all()]
+        all_recipients = [
+            registration.child.family for registration in qs.all() if registration.child.family is not None
+        ]
         if self.group_mails:
             return list(set(all_recipients))
         return all_recipients
