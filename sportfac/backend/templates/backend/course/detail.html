@@ -155,6 +155,14 @@
         <br><small>&nbsp;</small>
       </div>
       {% endif %}
+      {% if DECOMPTE_DOWNLOAD %}
+      <div style="display: inline-block; min-height: 50px">
+        <a href="{% url 'backend:course-decompte-download' course=course.pk %}" class="btn btn-sm">
+          <i class="icon-doc"></i>&nbsp;{% translate "Download hours summary" %}
+        </a>
+        <br><small>&nbsp;</small>
+      </div>
+      {% endif %}
   <div>
 
     {% endif %}

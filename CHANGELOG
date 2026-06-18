@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 4.2.2 - 2026-06-18
+### Added
+- Direct download of instructor hours summary PDF (or ZIP for multiple instructors) from the course detail page, without sending any email; controlled by `KEPCHUP_DECOMPTE_DOWNLOAD` setting (default False, enabled for La Tour-de-Peilz)
+- `DECOMPTE_ESTABLISHMENT` dynamic preference: establishment name printed on the hours summary PDF; falls back to school name if empty
+- `KEPCHUP_DECOMPTE_SHOW_GROUP_NUMBER` setting: controls whether the course number is printed in the "Groupe d'élèves" field (default True, disabled for La Tour-de-Peilz)
+
+### Fixed
+- Production sessions now stored in a dedicated Redis cache (`sessions` alias) without tenant-aware key function, preventing login failures under multi-tenant setup
+
 ## 4.2.1 - 2026-06-09
 ### Fixed
 - Email sending when user has no email

@@ -456,6 +456,38 @@ class CourseJSCSVView(CSVMixin, CourseDetailView):
         return self.object.get_js_csv(filelike)
 
 
+class CourseDecompteDownloadView(CourseDetailView):
+    def get(self, request, *args, **kwargs):
+        import io
+        import zipfile
+
+        from mailer.pdfutils import get_ssf_decompte_heures
+
+        self.object = self.get_object()
+        course = self.object
+        instructors = list(course.instructors.all())
+
+        if len(instructors) == 1:
+            instructor = instructors[0]
+            filepath = get_ssf_decompte_heures(course, instructor)
+            filename = f"SSF_decompte_{course.number}_{slugify(instructor.last_name)}.pdf"
+            with open(filepath, "rb") as f:
+                response = HttpResponse(f.read(), content_type="application/pdf")
+            response["Content-Disposition"] = f'attachment; filename="{filename}"'
+            return response
+
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, "w") as zf:
+            for instructor in instructors:
+                filepath = get_ssf_decompte_heures(course, instructor)
+                filename = f"SSF_decompte_{course.number}_{slugify(instructor.last_name)}.pdf"
+                zf.write(filepath, filename)
+        buffer.seek(0)
+        response = HttpResponse(buffer.read(), content_type="application/zip")
+        response["Content-Disposition"] = f'attachment; filename="decomptes_{course.number}.zip"'
+        return response
+
+
 class CourseParticipantsView(CourseDetailView):
     template_name = "mailer/pdf_participants_list.html"
 

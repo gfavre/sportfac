@@ -25,10 +25,11 @@ def get_ssf_decompte_heures(course, instructor: FamilyUser):
     """
     pdf_file = os.path.join(settings.STATIC_ROOT, "pdf", "SSF_decompte_heures_moniteur_version_04.2024.pdf")
 
+    establishment = global_preferences["site__DECOMPTE_ESTABLISHMENT"] or global_preferences["email__SCHOOL_NAME"]
     fields = {
-        "Escol": global_preferences["email__SCHOOL_NAME"],
+        "Escol": establishment,
         "Discipline": course.activity.name,
-        "groupe n°": course.number,
+        "groupe n°": course.number if settings.KEPCHUP_DECOMPTE_SHOW_GROUP_NUMBER else "",
         "du": course.start_date.strftime("%d/%m/%Y"),
         "au": course.end_date.strftime("%d/%m/%Y"),
         "Nom": instructor.last_name,

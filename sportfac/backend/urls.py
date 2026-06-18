@@ -1,5 +1,6 @@
 from django.conf import settings
-from django.urls import include, path
+from django.urls import include
+from django.urls import path
 
 from . import views
 
@@ -64,6 +65,7 @@ courses_patterns = [
         name="course-absence",
     ),
     path("<slug:course>/JS", view=views.CourseJSCSVView.as_view(), name="course-js-export"),
+    path("<slug:course>/decompte", view=views.CourseDecompteDownloadView.as_view(), name="course-decompte-download"),
     path("<slug:course>/delete", view=views.CourseDeleteView.as_view(), name="course-delete"),
     path(
         "<slug:course>/mail-instructors",

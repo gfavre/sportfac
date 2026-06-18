@@ -240,3 +240,11 @@ class InstructorFallbackPhone(StringPreference):
         "General phone number displayed to parents when an instructor's phone is not public. "
         "Leave empty to display nothing."
     )
+
+
+@global_preferences_registry.register
+class DecompteEstablishment(StringPreference):
+    section = site
+    name = "DECOMPTE_ESTABLISHMENT"
+    default = ""
+    help_text = _("Establishment name printed on the hours summary PDF. Uses school name if empty.")

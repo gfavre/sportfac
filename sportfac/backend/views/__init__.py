@@ -11,6 +11,7 @@ from .allocation_views import AllocationAccountReportView  # noqa F401
 from .allocation_views import AllocationAccountUpdateView  # noqa F401
 from .course_views import BackendCourseAbsenceView  # noqa F401
 from .course_views import CourseCreateView  # noqa F401
+from .course_views import CourseDecompteDownloadView  # noqa F401
 from .course_views import CourseDeleteView  # noqa F401
 from .course_views import CourseDetailView  # noqa F401
 from .course_views import CourseJSCSVView  # noqa F401
@@ -22,7 +23,8 @@ from .course_views import CoursesExportView  # noqa F401
 from .course_views import CoursesToggleVisibilityView  # noqa F401
 from .course_views import CourseUpdateView  # noqa F401
 from .course_views import PaySlipMontreux  # noqa F401
-from .dashboard_views import HomePageView, RegistrationDatesView  # noqa F401
+from .dashboard_views import HomePageView  # noqa F401
+from .dashboard_views import RegistrationDatesView  # noqa F401
 from .mail_views import MailArchiveListView  # noqa F401
 from .mail_views import MailConfirmationCoursesView  # noqa F401
 from .mail_views import MailConfirmationParticipantsView  # noqa F401
