@@ -217,7 +217,7 @@ angular.module('sportfacCalendar.services', []).factory('Registration', function
               title: course.title,
               start: start,
               end: end,
-              allDay: course.all_day || false,
+              allDay: false,
               className: className,
               clickable: className !== 'unavailable',
               course: course,
