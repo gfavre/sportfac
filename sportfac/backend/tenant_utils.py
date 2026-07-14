@@ -146,7 +146,7 @@ def copy_activities(
 
     if reset_course_counters:
         with using_tenant(destination):
-            Course.objects.all().update(uptodate=False, nb_participants=0)
+            Course.objects.all().update(uptodate=False, nb_participants=0, has_waiting_list=False)
             log.debug("Reset course counters in %s", destination.schema_name)
 
 
