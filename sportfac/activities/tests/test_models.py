@@ -1,18 +1,19 @@
-from datetime import date, time
+from datetime import date
+from datetime import time
+from unittest.mock import patch
 
+import faker
 from django.conf import settings
 from django.test import override_settings
 
-import faker
 from absences.models import Session
 from absences.tests.factories import SessionFactory
-from mock import patch
 from registrations.tests.factories import RegistrationFactory
-
 from sportfac.utils import TenantTestCase as TestCase
 
 from ..models import Course
-from .factories import ActivityFactory, CourseFactory
+from .factories import ActivityFactory
+from .factories import CourseFactory
 
 
 fake = faker.Faker()
@@ -20,7 +21,7 @@ fake = faker.Faker()
 
 class ActivityTest(TestCase):
     def setUp(self):
-        super(ActivityTest, self).setUp()
+        super().setUp()
         self.activity = ActivityFactory()
 
     def test_backend_absences_url(self):
@@ -58,7 +59,7 @@ class ActivityTest(TestCase):
 
 class CourseTest(TestCase):
     def setUp(self):
-        super(CourseTest, self).setUp()
+        super().setUp()
         self.course = CourseFactory()
 
     def test_ages(self):
@@ -244,3 +245,85 @@ class CourseTest(TestCase):
 
     def test_str(self):
         self.assertTrue(len(str(self.course)) > 0)
+
+    # ------------------------------------------------------------------
+    # all_dates – multicourse
+    # ------------------------------------------------------------------
+
+    @override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False)
+    def test_all_dates_regular_course(self):
+        """Regular weekly course: one date per week, end date included."""
+        self.course.course_type = "course"
+        self.course.start_date = date(2025, 7, 7)  # Monday
+        self.course.end_date = date(2025, 7, 28)  # Monday, 4 weeks later
+        dates = self.course.all_dates
+        self.assertEqual(len(dates), 4)
+        self.assertEqual(dates[0], date(2025, 7, 7))
+        self.assertEqual(dates[-1], date(2025, 7, 28))
+
+    @override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False)
+    def test_all_dates_multicourse_includes_all_active_weekdays(self):
+        """Multicourse Mon–Fri: all dates in the range, not just Mondays."""
+        self.course.course_type = "multicourse"
+        self.course.start_date = date(2025, 7, 7)  # Monday
+        self.course.end_date = date(2025, 7, 25)  # Friday, 3 weeks
+        self.course.start_time_mon = time(9, 0)
+        self.course.end_time_mon = time(17, 0)
+        self.course.start_time_tue = time(9, 0)
+        self.course.end_time_tue = time(17, 0)
+        self.course.start_time_wed = time(9, 0)
+        self.course.end_time_wed = time(17, 0)
+        self.course.start_time_thu = time(9, 0)
+        self.course.end_time_thu = time(17, 0)
+        self.course.start_time_fri = time(9, 0)
+        self.course.end_time_fri = time(17, 0)
+        dates = self.course.all_dates
+        self.assertEqual(len(dates), 15)  # 3 weeks × 5 days
+        self.assertEqual(dates[0], date(2025, 7, 7))  # Mon wk1
+        self.assertEqual(dates[-1], date(2025, 7, 25))  # Fri wk3
+
+    @override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False)
+    def test_all_dates_multicourse_last_day_included_when_not_7n_days(self):
+        """Last day is included even when (end_date - start_date) is not a multiple of 7."""
+        self.course.course_type = "multicourse"
+        self.course.start_date = date(2025, 7, 7)  # Monday
+        self.course.end_date = date(2025, 8, 1)  # Friday, 25 days later (not % 7)
+        self.course.start_time_mon = time(9, 0)
+        self.course.end_time_mon = time(17, 0)
+        self.course.start_time_fri = time(9, 0)
+        self.course.end_time_fri = time(17, 0)
+        dates = self.course.all_dates
+        self.assertIn(date(2025, 8, 1), dates)  # Friday Aug 1 must be present
+
+    @override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False)
+    def test_all_dates_multicourse_partial_last_week(self):
+        """When the course ends mid-week, only days up to end_date are returned."""
+        self.course.course_type = "multicourse"
+        self.course.start_date = date(2025, 7, 7)  # Monday
+        self.course.end_date = date(2025, 7, 31)  # Thursday, week 4
+        self.course.start_time_mon = time(9, 0)
+        self.course.end_time_mon = time(17, 0)
+        self.course.start_time_thu = time(9, 0)
+        self.course.end_time_thu = time(17, 0)
+        self.course.start_time_fri = time(9, 0)
+        self.course.end_time_fri = time(17, 0)
+        dates = self.course.all_dates
+        self.assertIn(date(2025, 7, 31), dates)  # Thursday included
+        self.assertNotIn(date(2025, 8, 1), dates)  # Friday after end_date excluded
+
+    @override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False)
+    def test_all_dates_multicourse_only_active_days_returned(self):
+        """Days without start_time set are excluded."""
+        self.course.course_type = "multicourse"
+        self.course.start_date = date(2025, 7, 7)  # Monday
+        self.course.end_date = date(2025, 7, 11)  # Friday, one week
+        self.course.start_time_mon = time(9, 0)
+        self.course.end_time_mon = time(17, 0)
+        self.course.start_time_wed = time(9, 0)
+        self.course.end_time_wed = time(17, 0)
+        # Tue, Thu, Fri not set
+        dates = self.course.all_dates
+        self.assertEqual(len(dates), 2)
+        self.assertIn(date(2025, 7, 7), dates)  # Monday
+        self.assertIn(date(2025, 7, 9), dates)  # Wednesday
+        self.assertNotIn(date(2025, 7, 8), dates)  # Tuesday
