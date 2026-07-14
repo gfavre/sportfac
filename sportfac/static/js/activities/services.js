@@ -180,7 +180,8 @@ angular.module('sportfacCalendar.services', []).factory('Registration', function
               this.end_time.split(':')[0],
               this.end_time.split(':')[1]);
           } else {
-            return new Date(y, m, d + dayOffset - date.getDay() + 1);
+            const endDate = new Date(this.end_date);
+            return new Date(y, m, d + endDate.getDay() - date.getDay() + dayOffset);
           }
         },
         toEvents: function (className) {
@@ -199,6 +200,10 @@ angular.module('sportfacCalendar.services', []).factory('Registration', function
               var groupId = course.id;
             } else {
               end = course.getEndDate();
+              // FullCalendar excludes the end date for allDay events, so advance by one day
+              if (course.all_day) {
+                end.setDate(end.getDate() + 1);
+              }
               var eventId = course.id;
               var groupId = course.id;
             }
@@ -212,7 +217,7 @@ angular.module('sportfacCalendar.services', []).factory('Registration', function
               title: course.title,
               start: start,
               end: end,
-              allDay: false,
+              allDay: course.all_day || false,
               className: className,
               clickable: className !== 'unavailable',
               course: course,

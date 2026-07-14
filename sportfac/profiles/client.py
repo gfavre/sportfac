@@ -1,21 +1,27 @@
-# -*- coding: utf-8 -*-
+from django.db import transaction
 from django.utils.dateparse import parse_datetime
+from simple_sso.sso_client.client import Client
 
 from profiles.models import FamilyUser
-from simple_sso.sso_client.client import Client
 
 
 class KepchupClient(Client):
     def build_user(self, user_data):
-        try:
-            user = FamilyUser.objects.get(id=user_data["id"])
-            for key, value in user_data.items():
-                if key in ("modified", "created"):
-                    value = parse_datetime(value)
-                setattr(user, key, value)
-        except FamilyUser.DoesNotExist:
-            user = FamilyUser(**user_data)
+        parsed = {k: (parse_datetime(v) if k in ("modified", "created") else v) for k, v in user_data.items()}
 
-        # user.set_unusable_password()
-        user.save()
+        try:
+            user = FamilyUser.objects.get(id=parsed["id"])
+        except FamilyUser.DoesNotExist:
+            # The UUID is unknown locally (e.g. new period): try by email before creating,
+            # otherwise super().save() would raise IntegrityError and poison the transaction.
+            user = FamilyUser.objects.filter(email=parsed.get("email")).first()
+            if user is None:
+                user = FamilyUser(**parsed)
+                user.save()
+                return user
+
+        for key, value in parsed.items():
+            setattr(user, key, value)
+        with transaction.atomic():
+            user.save()
         return user
