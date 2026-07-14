@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 4.2.3 - 2026-07-14
+### Fixed
+- Multi-day courses (multicourse): last active day of the week was missing from the planning calendar; caused by `getStartDate()` deriving the week base from `start_date`'s day-of-week instead of the `day` field, shifting all events one day early when `start_date` was set to a Sunday
+- `all_dates` property for multicourses now returns every active session date (Mon–Fri for each week) instead of only dates spaced 7 days apart from `start_date`, fixing overlap detection between multicourses and other courses
+- When copying activities to a new period (`copy_tenant_data`), the following denormalized course flags are now reset: `has_waiting_list`, `places_available_reminder_sent_on`, `announced_js`, `allow_new_participants`; previously `has_waiting_list=True` from the old period caused spurious waiting-list warnings even when the waiting slots table was empty
+
 ## 4.2.2 - 2026-06-18
 ### Added
 - Direct download of instructor hours summary PDF (or ZIP for multiple instructors) from the course detail page, without sending any email; controlled by `KEPCHUP_DECOMPTE_DOWNLOAD` setting (default False, enabled for La Tour-de-Peilz)
