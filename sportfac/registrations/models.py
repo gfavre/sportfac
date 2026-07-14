@@ -22,6 +22,7 @@ from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 from dynamic_preferences.registries import global_preferences_registry
 from model_utils import Choices
+from model_utils.managers import QueryManager
 from model_utils.models import StatusModel
 from phonenumber_field.modelfields import PhoneNumberField
 
@@ -115,6 +116,7 @@ class Registration(TimeStampedModel, StatusModel):
 
     objects = RegistrationManager()
     all_objects = models.Manager()
+    validated = QueryManager(status__in=("valid", "confirmed"))
 
     class Meta:
         unique_together = ("course", "child", "status")
