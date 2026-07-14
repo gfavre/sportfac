@@ -217,6 +217,29 @@ class Course(TimeStampedModel):
             sessions = list(self.sessions.all())  # use prefetched
             sessions.sort(key=lambda s: s.date)
             return [session.date for session in sessions]
+        if self.is_multi_course and self.start_date and self.end_date:
+            active_isoweekdays = set()
+            if self.start_time_mon:
+                active_isoweekdays.add(1)
+            if self.start_time_tue:
+                active_isoweekdays.add(2)
+            if self.start_time_wed:
+                active_isoweekdays.add(3)
+            if self.start_time_thu:
+                active_isoweekdays.add(4)
+            if self.start_time_fri:
+                active_isoweekdays.add(5)
+            if self.start_time_sat:
+                active_isoweekdays.add(6)
+            if self.start_time_sun:
+                active_isoweekdays.add(7)
+            dates = []
+            current = self.start_date
+            while current <= self.end_date:
+                if current.isoweekday() in active_isoweekdays:
+                    dates.append(current)
+                current += timedelta(days=1)
+            return dates
         return [
             self.start_date + timedelta(days=i)
             for i in range(0, (self.end_date - self.start_date).days + 1, 7)

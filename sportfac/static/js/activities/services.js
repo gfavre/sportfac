@@ -170,8 +170,7 @@ angular.module('sportfacCalendar.services', []).factory('Registration', function
               course.start_time.split(':')[0],
               course.start_time.split(':')[1]);
           } else {
-            const startDate = new Date(course.start_date);
-            return new Date(y, m, d + startDate.getDay() - date.getDay() + dayOffset);
+            return new Date(y, m, d + dayOffset - date.getDay() + 1);
           }
         },
         getEndDate: function () {
@@ -181,8 +180,7 @@ angular.module('sportfacCalendar.services', []).factory('Registration', function
               this.end_time.split(':')[0],
               this.end_time.split(':')[1]);
           } else {
-            const endDate = new Date(this.end_date);
-            return new Date(y, m, d + endDate.getDay() - date.getDay() + dayOffset);
+            return new Date(y, m, d + dayOffset - date.getDay() + 1);
           }
         },
         toEvents: function (className) {
