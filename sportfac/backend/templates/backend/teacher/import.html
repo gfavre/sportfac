@@ -11,6 +11,27 @@
 {{ form.media }}
 {% endaddtoblock %}
 
+<div class="panel panel-info">
+  <div class="panel-heading">{% translate "About LAGAPEO file format" %}</div>
+  <div class="panel-body">
+{% blocktranslate %}
+  <p>We accept files extracted from LAGAPEO. They should be in .xlsx format and have the mandatory
+    columns named like this:</p>
+  <ul>
+    <li>"Nom": last name of the teacher</li>
+    <li>"Prénom": first name of the teacher</li>
+    <li>"Maîtrises" or "Années": classes the teacher is responsible for (e.g. "7S1,7S2"). Teachers
+      without any class in this column are skipped.</li>
+  </ul>
+  <p>Additional non-mandatory columns can be imported:</p>
+  <ul>
+    <li>"Numéro SPEV" or "ID LAGAPEO": unique ID of the teacher, used to update an existing teacher
+      on a new import. Without it, matching is done on first and last name.</li>
+    <li>"Courriel 1": email address of the teacher</li>
+  </ul>
+{% endblocktranslate %}
+  </div>
+</div>
 <form action="" method="post" class="form-horizontal" enctype="multipart/form-data">{% csrf_token %}
   {% include "backend/teacher/form.html" %}
   <div class="form-group">

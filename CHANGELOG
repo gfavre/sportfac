@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 4.2.4 - 2026-07-20
+### Fixed
+- Teacher import (LAGAPEO): mandatory columns were hardcoded to "Numéro SPEV" and "Maîtrises", rejecting real LAGAPEO exports using "Années" instead of "Maîtrises" and lacking any ID column; column matching is now flexible (accepts "Maîtrises" or "Années", "Numéro SPEV" or "ID LAGAPEO"), only first name/last name/classes are mandatory, and teachers without an ID column are matched by first and last name instead of failing
+
+### Added
+- Help panel on the teacher import page listing the accepted LAGAPEO column names, matching the one already present on the student import page
+
 ## 4.2.3 - 2026-07-14
 ### Fixed
 - Multi-day courses (multicourse): last active day of the week was missing from the planning calendar; caused by `getStartDate()` deriving the week base from `start_date`'s day-of-week instead of the `day` field, shifting all events one day early when `start_date` was set to a Sunday
