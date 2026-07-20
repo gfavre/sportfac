@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-18 10:34+0200\n"
-"PO-Revision-Date: 2026-06-18 10:34+0200\n"
+"POT-Creation-Date: 2026-07-20 12:27+0200\n"
+"PO-Revision-Date: 2026-07-20 12:36+0200\n"
 "Last-Translator: Gregory Favre <greg@beyondthewall.ch>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -78,8 +78,8 @@ msgstr "Activité"
 #: backend/tests/test_views/test_registrations.py:57
 #: backend/views/registration_views.py:196
 #: backend/views/registration_views.py:256
-#: backend/views/registration_views.py:709 registrations/models.py:86
-#: registrations/models.py:1026 registrations/resources.py:42
+#: backend/views/registration_views.py:709 registrations/models.py:87
+#: registrations/models.py:1028 registrations/resources.py:42
 msgid "Course"
 msgstr "Cours"
 
@@ -161,7 +161,7 @@ msgstr "niv. 0"
 #: absences/templates/absences/absences-table-child.html:32
 #: absences/templates/absences/absences-table-courses.html:110
 #: absences/templates/absences/absences-table.html:148
-#: registrations/models.py:1022
+#: registrations/models.py:1024
 msgid "Note"
 msgstr "Note"
 
@@ -249,7 +249,7 @@ msgstr "AT"
 #: backend/forms.py:401 backend/templates/backend/registration/detail.html:12
 #: backend/templates/backend/registration/list.html:92
 #: backend/tests/test_views/test_registrations.py:56
-#: backend/views/registration_views.py:195 registrations/models.py:830
+#: backend/views/registration_views.py:195 registrations/models.py:832
 #: waiting_slots/forms.py:19
 msgid "Child"
 msgstr "Enfant"
@@ -263,7 +263,7 @@ msgstr "Enfant"
 #: backend/templates/backend/registration/transport-detail.html:164
 #: backend/templates/backend/user/child-detail.html:13
 #: backend/templates/backend/user/child-list.html:125
-#: registrations/forms.py:145 registrations/models.py:820
+#: registrations/forms.py:145 registrations/models.py:822
 #: registrations/resources.py:50
 msgid "Bib number"
 msgstr "Dossard"
@@ -430,7 +430,7 @@ msgstr "Nombre de sessions"
 #: backend/templates/backend/registration/detail.html:53
 #: backend/templates/backend/user/detail-instructor.html:162
 #: profiles/templates/profiles/registration_list.html:40
-#: registrations/models.py:92 registrations/resources.py:43
+#: registrations/models.py:93 registrations/resources.py:43
 #: registrations/templates/registrations/invoice-part-registrations.html:12
 #: registrations/templates/registrations/invoice-part-registrations.html:82
 #: registrations/templates/registrations/invoice-recap.html:13
@@ -636,8 +636,8 @@ msgstr "Questions complémentaires"
 msgid "Local city override"
 msgstr "Redéfinir les villes indigènes"
 
-#: activities/forms.py:172 registrations/models.py:272
-#: registrations/models.py:296
+#: activities/forms.py:172 registrations/models.py:274
+#: registrations/models.py:298
 msgid "Price for external people"
 msgstr "Externe"
 
@@ -701,7 +701,7 @@ msgid "Description"
 msgstr "Description"
 
 #: activities/models/activities.py:56 activities/models/finance.py:34
-#: registrations/models.py:98
+#: registrations/models.py:99
 msgid "Allocation account"
 msgstr "Compte d'imputation"
 
@@ -929,12 +929,12 @@ msgstr "Cours annoncé à J+S"
 msgid "Current nb of participants"
 msgstr "Nombre de participants"
 
-#: activities/models/courses.py:428
+#: activities/models/courses.py:451
 #, python-format
 msgid "from %(start)s to %(end)s, every %(day)s at %(hour)s."
 msgstr "du %(start)s au %(end)s, les %(day)s à %(hour)s."
 
-#: activities/models/courses.py:562
+#: activities/models/courses.py:585
 #: activities/templates/activities/activity_detail.html:186
 #: activities/templates/activities/course_detail.html:130
 #: activities/templates/activities/course_detail.html:142
@@ -944,39 +944,39 @@ msgstr "du %(start)s au %(end)s, les %(day)s à %(hour)s."
 msgid "Course full"
 msgstr "Cours complet"
 
-#: activities/models/courses.py:564
+#: activities/models/courses.py:587
 #, python-format
 msgid "%(available)s out of %(total)s places remaining"
 msgstr "%(available)s sur %(total)s places disponibles"
 
-#: activities/models/courses.py:569
+#: activities/models/courses.py:592
 #: backend/templates/backend/course/list.html:165
 #: themes/montreux/templates/backend/course/list-phase1.html:66
 #: themes/montreux/templates/backend/course/list.html:137
 msgid "Invisible"
 msgstr "Invisible"
 
-#: activities/models/courses.py:581
+#: activities/models/courses.py:604
 msgid "Contract number"
 msgstr "Numéro du contrat"
 
-#: activities/models/courses.py:608
+#: activities/models/courses.py:631
 msgid "Convocation to the course"
 msgstr "Convocation au cours"
 
-#: activities/models/courses.py:609
+#: activities/models/courses.py:632
 msgid "Need parent confirmation"
 msgstr "Besoin d'une confirmation des parents"
 
-#: activities/models/courses.py:610
+#: activities/models/courses.py:633
 msgid "Payment reminder"
 msgstr "Rappel de paiement"
 
-#: activities/models/courses.py:611
+#: activities/models/courses.py:634
 msgid "Documents for course instructor"
 msgstr "Documents pour l'instructeur du cours"
 
-#: activities/models/courses.py:613
+#: activities/models/courses.py:636
 msgid "Email type"
 msgstr "Type d'email"
 
@@ -1221,7 +1221,7 @@ msgid "%(nb)s places"
 msgstr "%(nb)s places"
 
 #: activities/templates/activities/activity_detail.html:207
-#: registrations/models.py:121 registrations/models.py:718
+#: registrations/models.py:123 registrations/models.py:720
 #: templates/flatpages/home.html:17 templates/registration/login.html:14
 #: templates/registration/login.html:20
 msgid "Registration"
@@ -1284,7 +1284,7 @@ msgstr "Envoyer l'email"
 #: backend/templates/backend/registration/transport-update.html:21
 #: backend/templates/backend/registration/update.html:32
 #: backend/templates/backend/site/flatpage_update.html:15
-#: backend/templates/backend/teacher/import.html:20
+#: backend/templates/backend/teacher/import.html:41
 #: backend/templates/backend/teacher/update.html:22
 #: backend/templates/backend/user/confirm_delete.html:69
 #: backend/templates/backend/user/password-change.html:21
@@ -1411,7 +1411,7 @@ msgstr "Gestion des absences"
 #: backend/templates/backend/user/child-detail.html:43
 #: backend/templates/backend/user/detail-instructor.html:98
 #: backend/templates/backend/user/detail.html:110 registrations/apps.py:7
-#: registrations/models.py:122
+#: registrations/models.py:124
 #: registrations/templates/registrations/invoice-part-registrations.html:2
 #: registrations/templates/registrations/invoice-recap.html:3
 #: themes/coppet/templates/backend/registration/bill-detail.html:14
@@ -1489,7 +1489,7 @@ msgstr "Année scolaire"
 #: backend/templates/backend/user/detail-instructor.html:83
 #: backend/templates/backend/user/detail.html:95 profiles/forms.py:226
 #: profiles/models.py:139 profiles/resources.py:62 registrations/forms.py:113
-#: registrations/models.py:774 registrations/resources.py:52
+#: registrations/models.py:776 registrations/resources.py:52
 msgid "Birth date"
 msgstr "Date de naissance"
 
@@ -1497,7 +1497,7 @@ msgstr "Date de naissance"
 #: backend/templates/backend/course/detail.html:274
 #: backend/templates/backend/course/detail.html:370
 #: backend/templates/backend/user/child-list.html:131
-#: registrations/forms.py:144 registrations/models.py:811
+#: registrations/forms.py:144 registrations/models.py:813
 #: registrations/resources.py:63
 msgid "Emergency number"
 msgstr "Numéro d'urgence"
@@ -1841,7 +1841,7 @@ msgstr "Retour"
 
 #: appointments/models.py:34
 #: appointments/templates/appointments/backend/create.html:202
-#: registrations/models.py:763
+#: registrations/models.py:765
 msgid "Other"
 msgstr "Autre"
 
@@ -1926,7 +1926,7 @@ msgstr "Rendez-vous"
 #: backend/templates/backend/user/list.html:222
 #: backend/templates/backend/user/manager-list.html:151
 #: backend/templates/backend/user/manager-list.html:152 profiles/forms.py:370
-#: profiles/models.py:126 profiles/resources.py:25 registrations/models.py:771
+#: profiles/models.py:126 profiles/resources.py:25 registrations/models.py:773
 #: registrations/resources.py:45 schools/models.py:16
 msgid "First name"
 msgstr "Prénom"
@@ -1935,7 +1935,7 @@ msgstr "Prénom"
 #: backend/templates/backend/user/instructor-list.html:173
 #: backend/templates/backend/user/list.html:223
 #: backend/templates/backend/user/manager-list.html:153 profiles/forms.py:371
-#: profiles/models.py:127 profiles/resources.py:26 registrations/models.py:772
+#: profiles/models.py:127 profiles/resources.py:26 registrations/models.py:774
 #: registrations/resources.py:46 schools/models.py:17
 msgid "Last name"
 msgstr "Nom"
@@ -2328,10 +2328,12 @@ msgid "No tenants found."
 msgstr "Aucun tenant n'a été trouvé."
 
 #: backend/management/commands/copy_tenant_data.py:65
+#: backend/management/commands/reset_course_counters.py:29
 msgid "Enter number or 'q' to cancel."
 msgstr "Entrer un numéro ou 'q' pour annuler."
 
 #: backend/management/commands/copy_tenant_data.py:74
+#: backend/management/commands/reset_course_counters.py:38
 msgid "Invalid choice, try again."
 msgstr "Choix non valide, réessayez."
 
@@ -2341,6 +2343,8 @@ msgstr "Sélectionner la période de destination (tenant) :"
 
 #: backend/management/commands/copy_tenant_data.py:82
 #: backend/management/commands/copy_tenant_data.py:122
+#: backend/management/commands/reset_course_counters.py:43
+#: backend/management/commands/reset_course_counters.py:58
 msgid "Aborted."
 msgstr "Abandonné."
 
@@ -2385,6 +2389,34 @@ msgstr "Démarrer l'opération?"
 #: backend/management/commands/copy_tenant_data.py:133
 msgid "Done."
 msgstr "Terminé."
+
+#: backend/management/commands/reset_course_counters.py:14
+msgid ""
+"Reset denormalized course counters for a tenant (run after copying to a new "
+"period)."
+msgstr "Réinitialiser les compteurs de cours."
+
+#: backend/management/commands/reset_course_counters.py:19
+msgid "No YearTenant found."
+msgstr "Aucune période n'a été trouvée."
+
+#: backend/management/commands/reset_course_counters.py:23
+msgid "Select tenant:"
+msgstr "Sélectionner une période"
+
+#: backend/management/commands/reset_course_counters.py:47
+#, python-format
+msgid "Will reset on %(schema)s:"
+msgstr "La réinitialisation aura lieu à %(schema)s :"
+
+#: backend/management/commands/reset_course_counters.py:56
+msgid "Proceed? [y/N] "
+msgstr "Continuer ? [O/N] "
+
+#: backend/management/commands/reset_course_counters.py:73
+#, python-format
+msgid "%(count)d course(s) reset in %(schema)s."
+msgstr "%(count)d cours réinitialisés en %(schema)s."
 
 #: backend/models.py:13
 msgid "Creating period"
@@ -2793,7 +2825,7 @@ msgstr "Aucun enseignant importé."
 #: backend/templates/backend/portlets/teachers.html:20
 #: backend/templates/backend/teacher/import.html:4
 #: backend/templates/backend/teacher/import.html:6
-#: backend/templates/backend/teacher/import.html:18
+#: backend/templates/backend/teacher/import.html:39
 #: backend/templates/backend/teacher/list.html:33
 msgid "Import teachers"
 msgstr "Importer des enseignants"
@@ -3552,7 +3584,7 @@ msgstr "N° de contrat"
 #: backend/templates/backend/portlets/children.html:5
 #: backend/templates/backend/user/detail-instructor.html:69
 #: backend/templates/backend/user/detail.html:81
-#: backend/templates/backend/user/list.html:228 registrations/models.py:831
+#: backend/templates/backend/user/list.html:228 registrations/models.py:833
 msgid "Children"
 msgstr "Enfants"
 
@@ -3753,7 +3785,7 @@ msgid "Amounts = 0"
 msgstr "Montants = 0"
 
 #: backend/templates/backend/registration/bill-list.html:49
-#: registrations/models.py:454 registrations/resources.py:49
+#: registrations/models.py:456 registrations/resources.py:49
 #: registrations/resources.py:248
 #: registrations/templates/registrations/billing.html:10
 #: registrations/templates/registrations/invoice-part-heading.html:62
@@ -3835,12 +3867,12 @@ msgid "Creation"
 msgstr "Création"
 
 #: backend/templates/backend/registration/detail.html:22
-#: registrations/models.py:109
+#: registrations/models.py:110
 msgid "Confirmation mail sent on"
 msgstr "Confirmation envoyée le"
 
 #: backend/templates/backend/registration/detail.html:29
-#: registrations/models.py:407 registrations/resources.py:51
+#: registrations/models.py:409 registrations/resources.py:51
 msgid "Transport"
 msgstr "Transport"
 
@@ -3991,6 +4023,54 @@ msgstr "Créer un nouvel enseignant"
 msgid "Create teacher"
 msgstr "Créer un enseignant"
 
+#: backend/templates/backend/teacher/import.html:15
+#: backend/templates/backend/user/child-import.html:14
+msgid "About LAGAPEO file format"
+msgstr "À propos du format de fichier LAGAPEO"
+
+#: backend/templates/backend/teacher/import.html:17
+msgid ""
+"\n"
+"  <p>We accept files extracted from LAGAPEO. They should be in .xlsx format "
+"and have the mandatory\n"
+"    columns named like this:</p>\n"
+"  <ul>\n"
+"    <li>\"Nom\": last name of the teacher</li>\n"
+"    <li>\"Prénom\": first name of the teacher</li>\n"
+"    <li>\"Maîtrises\" or \"Années\": classes the teacher is responsible for "
+"(e.g. \"7S1,7S2\"). Teachers\n"
+"      without any class in this column are skipped.</li>\n"
+"  </ul>\n"
+"  <p>Additional non-mandatory columns can be imported:</p>\n"
+"  <ul>\n"
+"    <li>\"Numéro SPEV\" or \"ID LAGAPEO\": unique ID of the teacher, used to "
+"update an existing teacher\n"
+"      on a new import. Without it, matching is done on first and last name.</"
+"li>\n"
+"    <li>\"Courriel 1\": email address of the teacher</li>\n"
+"  </ul>\n"
+msgstr ""
+"\n"
+"  <p>Nous acceptons les fichiers extraits de LAGAPEO. Ils doivent être au "
+"format .xlsx et comporter les\n"
+"    colonnes obligatoires nommées comme suit :</p>\n"
+"  <ul>\n"
+"    <li>\"Nom\" : nom de famille de l'enseignant</li>\n"
+"    <li>\"Prénom\" : prénom de l'enseignant</li>\n"
+"    <li>\"Maîtrises\" ou \"Années\" : classes dont l'enseignant a la charge "
+"(p. ex. \"7S1,7S2\"). Les enseignants\n"
+"      sans classe dans cette colonne sont ignorés.</li>\n"
+"  </ul>\n"
+"  <p>Des colonnes supplémentaires, facultatives, peuvent être importées :</"
+"p>\n"
+"  <ul>\n"
+"    <li>\"Numéro SPEV\" ou \"ID LAGAPEO\" : identifiant unique de "
+"l'enseignant, utilisé pour mettre à jour un enseignant existant\n"
+"      lors d'un nouvel import. Sans cela, la correspondance se fait sur le "
+"nom et le prénom.</li>\n"
+"    <li>\"Courriel 1\" : adresse e-mail de l'enseignant</li>\n"
+"  </ul>\n"
+
 #: backend/templates/backend/teacher/list.html:4
 msgid "View teachers"
 msgstr "Afficher les enseignants"
@@ -4054,7 +4134,7 @@ msgstr "Parent"
 #: backend/templates/backend/user/child-detail.html:26
 #: backend/templates/backend/user/detail-instructor.html:84
 #: backend/templates/backend/user/detail.html:96 registrations/forms.py:117
-#: registrations/models.py:773
+#: registrations/models.py:775
 msgid "Sex"
 msgstr "Sexe"
 
@@ -4091,10 +4171,6 @@ msgstr "Aucune inscription pour cet enfant"
 #: backend/templates/backend/user/child-import.html:43
 msgid "Import children"
 msgstr "Importer une liste d'enfants"
-
-#: backend/templates/backend/user/child-import.html:14
-msgid "About LAGAPEO file format"
-msgstr "À propos du format de fichier LAGAPEO"
 
 #: backend/templates/backend/user/child-import.html:16
 msgid ""
@@ -5287,7 +5363,7 @@ msgstr "Autorisé"
 msgid "Settled"
 msgstr "Effectuée"
 
-#: payments/models.py:41 registrations/models.py:73
+#: payments/models.py:41 registrations/models.py:74
 msgid "Canceled"
 msgstr "Annulée"
 
@@ -5567,7 +5643,7 @@ msgstr "Les deux mots de passe ne sont pas identiques."
 msgid "Switzerland"
 msgstr "Suisse"
 
-#: profiles/models.py:105 profiles/models.py:447 registrations/models.py:762
+#: profiles/models.py:105 profiles/models.py:447 registrations/models.py:764
 #: schools/models.py:62
 msgid "Liechtenstein"
 msgstr "Liechtenstein"
@@ -5588,11 +5664,11 @@ msgstr "Italie"
 msgid "Austria"
 msgstr "Autriche"
 
-#: profiles/models.py:111 registrations/models.py:758
+#: profiles/models.py:111 registrations/models.py:760
 msgid "Female"
 msgstr "Féminin"
 
-#: profiles/models.py:111 registrations/models.py:757
+#: profiles/models.py:111 registrations/models.py:759
 msgid "Male"
 msgstr "Masculin"
 
@@ -5835,12 +5911,12 @@ msgstr "Enregistrer et continuer"
 msgid "Your contact informations have been saved."
 msgstr "Vos informations de contact ont été mises à jour."
 
-#: registrations/forms.py:77 registrations/models.py:455
+#: registrations/forms.py:77 registrations/models.py:457
 #: registrations/resources.py:44 registrations/resources.py:261
 msgid "Payment method"
 msgstr "Mode de paiement"
 
-#: registrations/forms.py:79 registrations/models.py:463
+#: registrations/forms.py:79 registrations/models.py:465
 #: registrations/resources.py:259
 msgid "Payment date"
 msgstr "Date de paiement"
@@ -5861,7 +5937,7 @@ msgstr ""
 msgid "Building"
 msgstr "Bâtiment"
 
-#: registrations/forms.py:146 registrations/models.py:810
+#: registrations/forms.py:146 registrations/models.py:812
 #: registrations/resources.py:47
 msgid "AVS"
 msgstr "AVS"
@@ -5919,168 +5995,168 @@ msgstr ""
 "pour que ces enregistrements deviennent effectifs. Je confirme que j'ai lu "
 "et compris les conditions générales."
 
-#: registrations/models.py:71
+#: registrations/models.py:72
 msgid "Waiting parent's confirmation"
 msgstr "En attente de la confirmation du parent"
 
-#: registrations/models.py:72
+#: registrations/models.py:73
 msgid "Validated by parent"
 msgstr "Validé par le parent"
 
-#: registrations/models.py:74
+#: registrations/models.py:75
 msgid "Confirmed by administrator"
 msgstr "Confirmé par l'administrateur"
 
-#: registrations/models.py:77
+#: registrations/models.py:78
 msgid "Expired"
 msgstr "Expiré"
 
-#: registrations/models.py:78
+#: registrations/models.py:79
 msgid "Manager decision"
 msgstr "Décision du gestionnaire"
 
-#: registrations/models.py:79
+#: registrations/models.py:80
 msgid "Instructor decision"
 msgstr "Décision du moniteur"
 
-#: registrations/models.py:80
+#: registrations/models.py:81
 msgid "Moved to another course"
 msgstr "Déplacé vers un autre cours"
 
-#: registrations/models.py:91
+#: registrations/models.py:92
 msgid "Has been paid"
 msgstr "A été payé"
 
-#: registrations/models.py:106
+#: registrations/models.py:107
 msgid "Transport information"
 msgstr "Informations de transport"
 
-#: registrations/models.py:112
+#: registrations/models.py:113
 msgid "Cancelation reason"
 msgstr "Motif de l'annulation"
 
-#: registrations/models.py:114
+#: registrations/models.py:115
 msgid "Cancelation date"
 msgstr "Date d'annulation"
 
-#: registrations/models.py:393
+#: registrations/models.py:395
 #, python-format
 msgid "%(child)s ⇒ course %(number)s (%(activity)s)"
 msgstr "%(child)s ⇒ cours %(number)s (%(activity)s)"
 
-#: registrations/models.py:404
+#: registrations/models.py:406
 msgid "Label"
 msgstr "Libellé"
 
-#: registrations/models.py:408
+#: registrations/models.py:410
 msgid "Transports"
 msgstr "Transports"
 
-#: registrations/models.py:442
+#: registrations/models.py:444
 msgid "Wire transfer"
 msgstr "Virement bancaire"
 
-#: registrations/models.py:443
+#: registrations/models.py:445
 msgid "Credit card (datatrans)"
 msgstr "Carte de crédit (datatrans)"
 
-#: registrations/models.py:444
+#: registrations/models.py:446
 msgid "Credit card (postfinance)"
 msgstr "Carte de crédit (postfinance)"
 
-#: registrations/models.py:445
+#: registrations/models.py:447
 msgid "On-Site payment"
 msgstr "Paiement sur place"
 
-#: registrations/models.py:446
+#: registrations/models.py:448
 msgid "External invoice"
 msgstr "Facture externe"
 
-#: registrations/models.py:449
+#: registrations/models.py:451
 msgid "Just created"
 msgstr "En cours de création"
 
-#: registrations/models.py:450
+#: registrations/models.py:452
 msgid "Waiting parent's payment"
 msgstr "En attente du paiement"
 
-#: registrations/models.py:451
+#: registrations/models.py:453
 msgid "Paid by parent"
 msgstr "Payé par le parent"
 
-#: registrations/models.py:452
+#: registrations/models.py:454
 msgid "Canceled by administrator"
 msgstr "Annulé par l'administrateur"
 
-#: registrations/models.py:457
+#: registrations/models.py:459
 msgid "Total to be paid"
 msgstr "Total à payer"
 
-#: registrations/models.py:458 registrations/resources.py:255
+#: registrations/models.py:460 registrations/resources.py:255
 msgid "Due date"
 msgstr "Date d'échéance"
 
-#: registrations/models.py:459
+#: registrations/models.py:461
 msgid "Reminder sent"
 msgstr "Rappel envoyé"
 
-#: registrations/models.py:460
+#: registrations/models.py:462
 msgid "Reminder sent date"
 msgstr "Date d'envoi du rappel"
 
-#: registrations/models.py:461
+#: registrations/models.py:463
 msgid "PDF"
 msgstr "PDF"
 
-#: registrations/models.py:464
+#: registrations/models.py:466
 msgid "Do not expire"
 msgstr "Ne pas expirer"
 
-#: registrations/models.py:469
+#: registrations/models.py:471
 msgid "Bill"
 msgstr "Facture"
 
-#: registrations/models.py:470
+#: registrations/models.py:472
 msgid "Bills"
 msgstr "Factures"
 
-#: registrations/models.py:753
+#: registrations/models.py:755
 msgid "Updated"
 msgstr "Mis à jour"
 
-#: registrations/models.py:754
+#: registrations/models.py:756
 msgid "Imported"
 msgstr "Importé"
 
-#: registrations/models.py:761
+#: registrations/models.py:763
 msgid "Swiss"
 msgstr "Suisse"
 
-#: registrations/models.py:808
+#: registrations/models.py:810
 msgid "Lagapeo Identification number"
 msgstr "Identifiant Lagapeo"
 
-#: registrations/models.py:819
+#: registrations/models.py:821
 msgid "Other school"
 msgstr "Autre école"
 
-#: registrations/models.py:821
+#: registrations/models.py:823
 msgid "Is blacklisted"
 msgstr "Est sur la liste noire"
 
-#: registrations/models.py:822
+#: registrations/models.py:824
 msgid "Price should be raised"
 msgstr "Le prix devrait être revu à la hausse"
 
-#: registrations/models.py:1019 registrations/resources.py:64
+#: registrations/models.py:1021 registrations/resources.py:64
 msgid "Level -1"
 msgstr "Niveau avant le cours"
 
-#: registrations/models.py:1021
+#: registrations/models.py:1023
 msgid "End course level"
 msgstr "Niveau après le cours"
 
-#: registrations/models.py:1047
+#: registrations/models.py:1049
 msgid "Consent given"
 msgstr "Consentement donné"
 
@@ -6195,7 +6271,7 @@ msgstr "S'inscrire à de nouvelles activités"
 msgid "Missing mandatory field: {field}"
 msgstr "Champ obligatoire manquant : {field}"
 
-#: registrations/utils.py:172 registrations/utils.py:185 schools/utils.py:32
+#: registrations/utils.py:172 registrations/utils.py:185 schools/utils.py:39
 msgid "File format is unreadable"
 msgstr "Le fichier n'a pas pu être lu: mauvais format"
 
@@ -6235,10 +6311,10 @@ msgstr "bâtiment"
 msgid "buildings"
 msgstr "bâtiments"
 
-#: schools/utils.py:30
+#: schools/utils.py:37
 #, python-format
-msgid "All these fields are mandatory: %s"
-msgstr "Tous ces champs sont obligatoires: %s"
+msgid "Missing mandatory field: %s"
+msgstr "Champ obligatoire manquant : %s"
 
 #: sportfac/settings/base.py:615
 msgid "Add a child"
@@ -6710,6 +6786,10 @@ msgstr "Toutes vos inscriptions sont sauvegardées"
 #: wizard/views.py:28
 msgid "Registrations are currently closed."
 msgstr "Les inscriptions sont actuellement closes."
+
+#, python-format
+#~ msgid "All these fields are mandatory: %s"
+#~ msgstr "Tous ces champs sont obligatoires: %s"
 
 #, python-format
 #~ msgid "%s is invalid as start and end times are not set for tuesdays"
