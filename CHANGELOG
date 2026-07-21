@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 4.3.0 - 2026-07-21
+### Added
+- 3-level sibling+local pricing mode (`KEPCHUP_PRICING_MODE = "family_local_3_levels"`): a 3rd `Course` price tier (`price_family_3rd` / `price_local_family_3rd`) applies to the 3rd and following children of the same family registered to the same activity, in addition to the existing 1st/2nd tiers; enabled for La Tour-de-Peilz
+- Sibling-only pricing mode (`KEPCHUP_PRICING_MODE = "family"`): sibling discount without any local/external distinction
+
+### Changed
+- `KEPCHUP_USE_DIFFERENTIATED_PRICES` (boolean) replaced by `KEPCHUP_PRICING_MODE`, a per-tenant setting choosing between `simple`, `family`, `family_local` (former `True` behaviour) and `family_local_3_levels`; price displays on public/backend pages now show only the tiers actually configured on each course instead of a fixed set gated by a global flag
+
 ## 4.2.4 - 2026-07-20
 ### Fixed
 - Teacher import (LAGAPEO): mandatory columns were hardcoded to "Numéro SPEV" and "Maîtrises", rejecting real LAGAPEO exports using "Années" instead of "Maîtrises" and lacking any ID column; column matching is now flexible (accepts "Maîtrises" or "Années", "Numéro SPEV" or "ID LAGAPEO"), only first name/last name/classes are mandatory, and teachers without an ID column are matched by first and last name instead of failing
