@@ -260,35 +260,28 @@ class Registration(TimeStampedModel, StatusModel):
     def get_subtotal(self):
         return self.get_price_category()[0]
 
+    def _sibling_rank(self):
+        """1-based rank of this registration among the family's registrations for the same activity,
+        ordered by creation date (1st child, 2nd child, ...)."""
+        qs = (
+            Registration.objects.filter(child__family=self.child.family, course__activity=self.course.activity)
+            .exclude(pk=self.pk)
+            .order_by("created")
+        )
+        earlier = qs.filter(created__lt=self.created).count() if self.created else qs.count()
+        return earlier + 1
+
     def get_price_category(self):
-        if settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
-            from activities.models import Course
+        from activities.models import Course
+        from activities.models.courses import PRICING_MODE_FAMILY
+        from activities.models.courses import PRICING_MODE_FAMILY_LOCAL_3_LEVELS
+        from activities.models.courses import PRICING_MODE_SIMPLE
 
-            if settings.KEPCHUP_RELY_ON_CHILD_MARKED_UP_PRICE:
-                if self.is_local_pricing:
-                    # tarif indigène
-                    return (
-                        self.course.price_local,
-                        Course._meta.get_field("price_local").verbose_name,
-                    )
-                return self.course.price, _("Price for external people")
+        mode = settings.KEPCHUP_PRICING_MODE
+        if mode == PRICING_MODE_SIMPLE:
+            return self.course.price, ""
 
-            # what are the registrations to the same activities already made in same family?
-            same_family_regs = Registration.objects.filter(
-                child__family=self.child.family, course__activity=self.course.activity
-            ).order_by("created")
-            if same_family_regs.exists() and same_family_regs.first() != self:
-                # This child has a sibling, registered to the same activity => special rate for the second child +
-                if self.is_local_pricing:
-                    # tarif indigène
-                    return (
-                        self.course.price_local_family,
-                        Course._meta.get_field("price_local_family").verbose_name,
-                    )
-                return (
-                    self.course.price_family,
-                    Course._meta.get_field("price_family").verbose_name,
-                )
+        if settings.KEPCHUP_RELY_ON_CHILD_MARKED_UP_PRICE:
             if self.is_local_pricing:
                 # tarif indigène
                 return (
@@ -296,7 +289,24 @@ class Registration(TimeStampedModel, StatusModel):
                     Course._meta.get_field("price_local").verbose_name,
                 )
             return self.course.price, _("Price for external people")
-        return self.course.price, ""
+
+        if mode == PRICING_MODE_FAMILY:
+            if self._sibling_rank() >= 2:
+                return (
+                    self.course.price_family,
+                    Course._meta.get_field("price_family").verbose_name,
+                )
+            return self.course.price, _("Price for external people")
+
+        # PRICING_MODE_FAMILY_LOCAL / PRICING_MODE_FAMILY_LOCAL_3_LEVELS
+        rank = self._sibling_rank()
+        if mode == PRICING_MODE_FAMILY_LOCAL_3_LEVELS and rank >= 3:
+            field = "price_local_family_3rd" if self.is_local_pricing else "price_family_3rd"
+        elif rank >= 2:
+            field = "price_local_family" if self.is_local_pricing else "price_family"
+        else:
+            field = "price_local" if self.is_local_pricing else "price"
+        return getattr(self.course, field), Course._meta.get_field(field).verbose_name
 
     def get_update_url(self):
         return reverse("backend:registration-update", kwargs={"pk": self.pk})

@@ -805,6 +805,26 @@ msgstr ""
 "S'applique dès le deuxième enfant inscrit à un même cours si la famille est "
 "indigène"
 
+#: activities/models/courses.py:118
+msgid "Price for family members (3rd child and following)"
+msgstr "Externe avec rabais fratrie dès le 3e enfant"
+
+#: activities/models/courses.py:119
+msgid "Applied for the third and following members registered to the same course"
+msgstr "S'applique dès le troisième enfant inscrit à un même cours"
+
+#: activities/models/courses.py:126
+msgid "Price for local family members (3rd child and following)"
+msgstr "Indigène avec rabais fratrie dès le 3e enfant"
+
+#: activities/models/courses.py:128
+msgid ""
+"Applied for the third and following members registered to the same course "
+"if the family is local"
+msgstr ""
+"S'applique dès le troisième enfant inscrit à un même cours si la famille "
+"est indigène"
+
 #: activities/models/courses.py:111 activities/resources.py:13
 #: backend/templates/backend/registration/list.html:86
 #: templates/mailer/pdf_my_courses.html:18

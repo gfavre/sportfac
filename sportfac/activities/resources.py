@@ -1,9 +1,10 @@
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
-
-from import_export import fields, resources
+from import_export import fields
+from import_export import resources
 
 from .models import Course
+from .models.courses import PRICING_MODE_SIMPLE
 
 
 class CourseResource(resources.ModelResource):
@@ -41,11 +42,19 @@ class CourseResource(resources.ModelResource):
         export_order = fields
 
     def dehydrate_price(self, course):
-        if settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
-            return (
-                f"{course.price}, {course.price_local} (local), {course.price_family}"
-                f" (famille), {course.price_local_family} (local + famille)"
-            )
+        if settings.KEPCHUP_PRICING_MODE != PRICING_MODE_SIMPLE:
+            parts = [f"{course.price}"]
+            if course.price_local:
+                parts.append(f"{course.price_local} (local)")
+            if course.price_family:
+                parts.append(f"{course.price_family} (famille)")
+            if course.price_local_family:
+                parts.append(f"{course.price_local_family} (local + famille)")
+            if course.price_family_3rd:
+                parts.append(f"{course.price_family_3rd} (famille 3e+)")
+            if course.price_local_family_3rd:
+                parts.append(f"{course.price_local_family_3rd} (local + famille 3e+)")
+            return ", ".join(parts)
         return course.price
 
     def dehydrate_instructors(self, course):

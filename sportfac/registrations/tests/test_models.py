@@ -46,7 +46,7 @@ class RegistrationTestCase(TenantTestCase):
         # same child, same course: overlap
         self.assertTrue(registration1.overlap(registration1))
 
-    @override_settings(KEPCHUP_USE_DIFFERENTIATED_PRICES=False, KEPCHUP_LOCAL_ZIPCODES=["1272"])
+    @override_settings(KEPCHUP_PRICING_MODE="simple", KEPCHUP_LOCAL_ZIPCODES=["1272"])
     def test_get_price_category_no_differentiated_prices(self):
         self.user.zipcode = "1272"
         course1 = CourseFactory()
@@ -56,7 +56,7 @@ class RegistrationTestCase(TenantTestCase):
         price, label = registration2.get_price_category()
         self.assertEqual(price, course2.price)
 
-    @override_settings(KEPCHUP_USE_DIFFERENTIATED_PRICES=True, KEPCHUP_LOCAL_ZIPCODES=["1272"])
+    @override_settings(KEPCHUP_PRICING_MODE="family_local", KEPCHUP_LOCAL_ZIPCODES=["1272"])
     def test_price_category_for_normal_people(self):
         self.user.zipcode = "1271"
         course = CourseFactory(
@@ -68,7 +68,7 @@ class RegistrationTestCase(TenantTestCase):
         registration = RegistrationFactory(course=course, child=self.child1)
         self.assertEqual(registration.price, self.price)
 
-    @override_settings(KEPCHUP_USE_DIFFERENTIATED_PRICES=True, KEPCHUP_LOCAL_ZIPCODES=["1272"])
+    @override_settings(KEPCHUP_PRICING_MODE="family_local", KEPCHUP_LOCAL_ZIPCODES=["1272"])
     def test_price_category_for_family(self):
         self.user.zipcode = "1271"
         course1 = CourseFactory(
@@ -89,7 +89,7 @@ class RegistrationTestCase(TenantTestCase):
         self.assertEqual(registration1.price, self.price)
         self.assertEqual(registration2.price, self.price_family)
 
-    @override_settings(KEPCHUP_USE_DIFFERENTIATED_PRICES=True, KEPCHUP_LOCAL_ZIPCODES=["1272"])
+    @override_settings(KEPCHUP_PRICING_MODE="family_local", KEPCHUP_LOCAL_ZIPCODES=["1272"])
     def test_price_category_for_local(self):
         self.user.zipcode = "1272"
         course = CourseFactory(
@@ -101,7 +101,7 @@ class RegistrationTestCase(TenantTestCase):
         registration = RegistrationFactory(course=course, child=self.child1)
         self.assertEqual(registration.price, self.price_local)
 
-    @override_settings(KEPCHUP_USE_DIFFERENTIATED_PRICES=True)
+    @override_settings(KEPCHUP_PRICING_MODE="family_local")
     def test_price_category_for_local_with_override(self):
         city = CityFactory()
         self.user.zipcode = city.zipcode
@@ -115,7 +115,7 @@ class RegistrationTestCase(TenantTestCase):
         registration = RegistrationFactory(course=course, child=self.child1)
         self.assertEqual(registration.price, self.price_local)
 
-    @override_settings(KEPCHUP_USE_DIFFERENTIATED_PRICES=True, KEPCHUP_LOCAL_ZIPCODES=["1272"])
+    @override_settings(KEPCHUP_PRICING_MODE="family_local", KEPCHUP_LOCAL_ZIPCODES=["1272"])
     def test_price_category_for_local_siblings(self):
         self.user.zipcode = "1272"
         course1 = CourseFactory(
@@ -136,7 +136,7 @@ class RegistrationTestCase(TenantTestCase):
         self.assertEqual(registration1.price, self.price_local)
         self.assertEqual(registration2.price, self.price_local_family)
 
-    @override_settings(KEPCHUP_USE_DIFFERENTIATED_PRICES=True, KEPCHUP_LOCAL_ZIPCODES=[("1820", "Montreux")])
+    @override_settings(KEPCHUP_PRICING_MODE="family_local", KEPCHUP_LOCAL_ZIPCODES=[("1820", "Montreux")])
     def test_price_category_for_local_zipcode_city_tuple_match(self):
         self.user.zipcode = "1820"
         self.user.city = "Montreux"
@@ -149,7 +149,7 @@ class RegistrationTestCase(TenantTestCase):
         registration = RegistrationFactory(course=course, child=self.child1)
         self.assertEqual(registration.price, self.price_local)
 
-    @override_settings(KEPCHUP_USE_DIFFERENTIATED_PRICES=True, KEPCHUP_LOCAL_ZIPCODES=[("1820", "Montreux")])
+    @override_settings(KEPCHUP_PRICING_MODE="family_local", KEPCHUP_LOCAL_ZIPCODES=[("1820", "Montreux")])
     def test_price_category_for_non_local_same_zipcode_different_city(self):
         self.user.zipcode = "1820"
         self.user.city = "Veytaux"
@@ -162,7 +162,7 @@ class RegistrationTestCase(TenantTestCase):
         registration = RegistrationFactory(course=course, child=self.child1)
         self.assertEqual(registration.price, self.price)
 
-    @override_settings(KEPCHUP_USE_DIFFERENTIATED_PRICES=True, KEPCHUP_LOCAL_ZIPCODES=[("1820", "Montreux")])
+    @override_settings(KEPCHUP_PRICING_MODE="family_local", KEPCHUP_LOCAL_ZIPCODES=[("1820", "Montreux")])
     def test_price_category_for_local_city_case_insensitive(self):
         self.user.zipcode = "1820"
         self.user.city = "MONTREUX"
@@ -176,7 +176,7 @@ class RegistrationTestCase(TenantTestCase):
         self.assertEqual(registration.price, self.price_local)
 
     @override_settings(
-        KEPCHUP_USE_DIFFERENTIATED_PRICES=True,
+        KEPCHUP_PRICING_MODE="family_local",
         KEPCHUP_LOCAL_ZIPCODES=["1814", ("1820", "Montreux"), ("1820", "Territet")],
     )
     def test_price_category_mixed_format_plain_zipcode(self):
@@ -192,7 +192,7 @@ class RegistrationTestCase(TenantTestCase):
         self.assertEqual(registration.price, self.price_local)
 
     @override_settings(
-        KEPCHUP_USE_DIFFERENTIATED_PRICES=True,
+        KEPCHUP_PRICING_MODE="family_local",
         KEPCHUP_LOCAL_ZIPCODES=["1814", ("1820", "Montreux"), ("1820", "Territet")],
     )
     def test_price_category_mixed_format_tuple_match(self):
@@ -208,7 +208,7 @@ class RegistrationTestCase(TenantTestCase):
         self.assertEqual(registration.price, self.price_local)
 
     @override_settings(
-        KEPCHUP_USE_DIFFERENTIATED_PRICES=True,
+        KEPCHUP_PRICING_MODE="family_local",
         KEPCHUP_LOCAL_ZIPCODES=["1814", ("1820", "Montreux"), ("1820", "Territet")],
     )
     def test_price_category_mixed_format_non_local(self):
@@ -222,6 +222,93 @@ class RegistrationTestCase(TenantTestCase):
         )
         registration = RegistrationFactory(course=course, child=self.child1)
         self.assertEqual(registration.price, self.price)
+
+    @override_settings(KEPCHUP_PRICING_MODE="family")
+    def test_price_category_family_mode_first_child(self):
+        course = CourseFactory(price=self.price, price_family=self.price_family)
+        registration = RegistrationFactory(course=course, child=self.child1)
+        self.assertEqual(registration.price, self.price)
+
+    @override_settings(KEPCHUP_PRICING_MODE="family")
+    def test_price_category_family_mode_second_child(self):
+        course1 = CourseFactory(price=self.price, price_family=self.price_family)
+        course2 = CourseFactory(activity=course1.activity, price=self.price, price_family=self.price_family)
+        registration1 = RegistrationFactory(course=course1, child=self.child1)
+        registration2 = RegistrationFactory(course=course2, child=self.child2)
+        self.assertEqual(registration1.price, self.price)
+        self.assertEqual(registration2.price, self.price_family)
+
+    @override_settings(KEPCHUP_PRICING_MODE="family_local_3_levels", KEPCHUP_LOCAL_ZIPCODES=["1272"])
+    def test_price_category_3_levels_external(self):
+        self.user.zipcode = "1271"
+        child3 = ChildFactory(family=self.user)
+        child4 = ChildFactory(family=self.user)
+        price_family_3rd = self.price_family - 10
+        courses = [
+            CourseFactory(
+                price=self.price,
+                price_local=self.price_local,
+                price_family=self.price_family,
+                price_local_family=self.price_local_family,
+                price_family_3rd=price_family_3rd,
+                price_local_family_3rd=price_family_3rd - 10,
+            )
+        ]
+        courses += [
+            CourseFactory(
+                activity=courses[0].activity,
+                price=self.price,
+                price_local=self.price_local,
+                price_family=self.price_family,
+                price_local_family=self.price_local_family,
+                price_family_3rd=price_family_3rd,
+                price_local_family_3rd=price_family_3rd - 10,
+            )
+            for __ in range(3)
+        ]
+        registrations = [
+            RegistrationFactory(course=course, child=child)
+            for course, child in zip(courses, [self.child1, self.child2, child3, child4])
+        ]
+        self.assertEqual(registrations[0].price, self.price)
+        self.assertEqual(registrations[1].price, self.price_family)
+        self.assertEqual(registrations[2].price, price_family_3rd)
+        self.assertEqual(registrations[3].price, price_family_3rd)
+
+    @override_settings(KEPCHUP_PRICING_MODE="family_local_3_levels", KEPCHUP_LOCAL_ZIPCODES=["1272"])
+    def test_price_category_3_levels_local(self):
+        self.user.zipcode = "1272"
+        child3 = ChildFactory(family=self.user)
+        price_local_family_3rd = self.price_local_family - 10
+        courses = [
+            CourseFactory(
+                price=self.price,
+                price_local=self.price_local,
+                price_family=self.price_family,
+                price_local_family=self.price_local_family,
+                price_family_3rd=self.price_family - 10,
+                price_local_family_3rd=price_local_family_3rd,
+            )
+        ]
+        courses += [
+            CourseFactory(
+                activity=courses[0].activity,
+                price=self.price,
+                price_local=self.price_local,
+                price_family=self.price_family,
+                price_local_family=self.price_local_family,
+                price_family_3rd=self.price_family - 10,
+                price_local_family_3rd=price_local_family_3rd,
+            )
+            for __ in range(2)
+        ]
+        registrations = [
+            RegistrationFactory(course=course, child=child)
+            for course, child in zip(courses, [self.child1, self.child2, child3])
+        ]
+        self.assertEqual(registrations[0].price, self.price_local)
+        self.assertEqual(registrations[1].price, self.price_local_family)
+        self.assertEqual(registrations[2].price, price_local_family_3rd)
 
     @override_settings(KEPCHUP_ENABLE_ALLOCATION_ACCOUNTS=True)
     def test_save_sets_allocation_account(self):

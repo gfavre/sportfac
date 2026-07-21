@@ -150,6 +150,8 @@ class CourseSerializer(serializers.ModelSerializer):
             "price_local",
             "price_family",
             "price_local_family",
+            "price_family_3rd",
+            "price_local_family_3rd",
             "number_of_sessions",
             "day",
             "start_date",

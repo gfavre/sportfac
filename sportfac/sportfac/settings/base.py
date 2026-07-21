@@ -588,7 +588,8 @@ KEPCHUP_NO_PAYMENT = False
 KEPCHUP_DISPLAY_FREE_WHEN_PRICE_IS_0 = False
 # external, iban, datatrans or none
 KEPCHUP_PAYMENT_METHOD = "iban"
-KEPCHUP_USE_DIFFERENTIATED_PRICES = False
+# simple, family, family_local or family_local_3_levels
+KEPCHUP_PRICING_MODE = "simple"
 
 KEPCHUP_RELY_ON_CHILD_MARKED_UP_PRICE = False
 # List of local NPA entries for differentiated pricing.
