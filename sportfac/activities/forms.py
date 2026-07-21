@@ -13,6 +13,9 @@ from django.core.exceptions import ValidationError
 from django.forms.widgets import TextInput
 from django.utils.translation import gettext as _
 
+from activities.models.courses import PRICING_MODE_FAMILY
+from activities.models.courses import PRICING_MODE_FAMILY_LOCAL_3_LEVELS
+from activities.models.courses import PRICING_MODE_SIMPLE
 from activities.signals import invalidate_course_data
 from activities.signals import invalidate_course_fragment
 from backend.forms import ActivityWidget
@@ -103,6 +106,8 @@ class CourseForm(forms.ModelForm):
             "price_family",
             "price_local_family",
             "price_local",
+            "price_family_3rd",
+            "price_local_family_3rd",
             "price_description",
             "number_of_sessions",
             "day",
@@ -163,16 +168,33 @@ class CourseForm(forms.ModelForm):
             self.fields.pop("price")
         else:
             self.fields["price"].required = True
-        if not settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
+
+        mode = settings.KEPCHUP_PRICING_MODE
+        if mode == PRICING_MODE_SIMPLE:
             self.fields.pop("local_city_override")
             self.fields.pop("price_family")
             self.fields.pop("price_local_family")
             self.fields.pop("price_local")
+            self.fields.pop("price_family_3rd")
+            self.fields.pop("price_local_family_3rd")
+        elif mode == PRICING_MODE_FAMILY:
+            self.fields.pop("local_city_override")
+            self.fields.pop("price_local_family")
+            self.fields.pop("price_local")
+            self.fields.pop("price_family_3rd")
+            self.fields.pop("price_local_family_3rd")
+            self.fields["price_family"].required = True
         else:
             self.fields["price"].label = _("Price for external people")
             self.fields["price_family"].required = True
             self.fields["price_local_family"].required = True
             self.fields["price_local"].required = True
+            if mode == PRICING_MODE_FAMILY_LOCAL_3_LEVELS:
+                self.fields["price_family_3rd"].required = True
+                self.fields["price_local_family_3rd"].required = True
+            else:
+                self.fields.pop("price_family_3rd")
+                self.fields.pop("price_local_family_3rd")
 
     def save(self, commit=True):
         instance = super().save(commit=False)
@@ -205,19 +227,34 @@ class CourseForm(forms.ModelForm):
                     self.fields[field].required = False
 
     def _build_pricing_layout(self):
-        if settings.KEPCHUP_USE_DIFFERENTIATED_PRICES:
+        mode = settings.KEPCHUP_PRICING_MODE
+        if mode == PRICING_MODE_SIMPLE:
+            return ["price", "price_description"]
+        if mode == PRICING_MODE_FAMILY:
             return [
-                "local_city_override",
                 Div(
                     Div("price", css_class="col-md-6"),
-                    Div("price_local", css_class="col-md-6"),
                     Div("price_family", css_class="col-md-6"),
-                    Div("price_local_family", css_class="col-md-6"),
                     css_class="row",
                 ),
                 "price_description",
             ]
-        return ["price", "price_description"]
+        price_divs = [
+            Div("price", css_class="col-md-6"),
+            Div("price_local", css_class="col-md-6"),
+            Div("price_family", css_class="col-md-6"),
+            Div("price_local_family", css_class="col-md-6"),
+        ]
+        if mode == PRICING_MODE_FAMILY_LOCAL_3_LEVELS:
+            price_divs += [
+                Div("price_family_3rd", css_class="col-md-6"),
+                Div("price_local_family_3rd", css_class="col-md-6"),
+            ]
+        return [
+            "local_city_override",
+            Div(*price_divs, css_class="row"),
+            "price_description",
+        ]
 
     def _build_dates_layout(self):
         if settings.KEPCHUP_EXPLICIT_SESSION_DATES:
@@ -384,6 +421,8 @@ class ExplicitDatesCourseForm(CourseForm):
             "price_family",
             "price_local_family",
             "price_local",
+            "price_family_3rd",
+            "price_local_family_3rd",
             "price_description",
             "start_time",
             "end_time",

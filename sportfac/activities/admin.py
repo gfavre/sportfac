@@ -1,15 +1,20 @@
+from ckeditor.widgets import CKEditorWidget
 from django.contrib import admin
 from django.contrib.flatpages.admin import FlatPageAdmin
 from django.contrib.flatpages.models import FlatPage
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
-from ckeditor.widgets import CKEditorWidget
 from import_export.admin import ImportExportModelAdmin
 
-from sportfac.admin_utils import SportfacAdminMixin, SportfacModelAdmin
+from sportfac.admin_utils import SportfacAdminMixin
+from sportfac.admin_utils import SportfacModelAdmin
 
-from .models import Activity, AllocationAccount, Course, ExtraNeed, PaySlip, TemplatedEmailReceipt
+from .models import Activity
+from .models import AllocationAccount
+from .models import Course
+from .models import ExtraNeed
+from .models import PaySlip
+from .models import TemplatedEmailReceipt
 from .resources import CourseResource
 
 
@@ -26,7 +31,19 @@ class CourseInline(admin.TabularInline):
     extra = 1
     fieldsets = (
         (None, {"fields": ("course_type", "number", "number_of_sessions", "place", "uptodate")}),
-        (_("Pricing"), {"fields": ("price", "price_local", "price_family", "price_local_family")}),
+        (
+            _("Pricing"),
+            {
+                "fields": (
+                    "price",
+                    "price_local",
+                    "price_family",
+                    "price_local_family",
+                    "price_family_3rd",
+                    "price_local_family_3rd",
+                )
+            },
+        ),
         (
             _("Dates"),
             {

@@ -28,6 +28,11 @@ DAYS_OF_WEEK = (
     (7, _("Sunday")),
 )
 
+PRICING_MODE_SIMPLE = "simple"
+PRICING_MODE_FAMILY = "family"
+PRICING_MODE_FAMILY_LOCAL = "family_local"
+PRICING_MODE_FAMILY_LOCAL_3_LEVELS = "family_local_3_levels"
+
 SCHOOL_YEARS = settings.KEPCHUP_YEAR_NAMES.items()
 
 AGES = Choices(*[(age, f"a{age}", _("%i years old") % age) for age in settings.KEPCHUP_AGES])
@@ -103,6 +108,24 @@ class Course(TimeStampedModel):
         verbose_name=_("Price for local family members"),
         help_text=_(
             "Applied for the second and following members registered to the same course if the family is local"
+        ),
+    )
+    price_family_3rd = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name=_("Price for family members (3rd child and following)"),
+        help_text=_("Applied for the third and following members registered to the same course"),
+    )
+    price_local_family_3rd = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name=_("Price for local family members (3rd child and following)"),
+        help_text=_(
+            "Applied for the third and following members registered to the same course if the family is local"
         ),
     )
     price_description = models.TextField(_("Informations about pricing"), blank=True)

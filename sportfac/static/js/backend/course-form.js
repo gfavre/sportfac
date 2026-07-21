@@ -31,6 +31,14 @@ $(function () {
     if ($id_price_local_family.val() == '') {
       $id_price_local_family.val($(this).val())
     }
+    $id_price_family_3rd = $("#id_price_family_3rd");
+    if ($id_price_family_3rd.val() == '') {
+      $id_price_family_3rd.val($(this).val())
+    }
+    $id_price_local_family_3rd = $("#id_price_local_family_3rd");
+    if ($id_price_local_family_3rd.val() == '') {
+      $id_price_local_family_3rd.val($(this).val())
+    }
   });
   $type.on('change', function () {
     updateFields();

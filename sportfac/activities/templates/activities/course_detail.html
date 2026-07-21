@@ -98,12 +98,14 @@
         {% if not NO_PAYMENT %}
           <dt>{% translate "Price" %}</dt>
           <dd>
-            {% if USE_DIFFERENTIATED_PRICES %}
+            {% if course.price_local or course.price_family %}
               <ul class="list-unstyled">
                 <li>{{ course.price|money }} (externe)</li>
-                <li>{{ course.price_local|money }} (indigène)</li>
-                <li>{{ course.price_family|money }} (externe, rabais fratrie)</li>
-                <li>{{ course.price_local_family|money }} (indigène, rabais fratrie)</li>
+                {% if course.price_local %}<li>{{ course.price_local|money }} (indigène)</li>{% endif %}
+                {% if course.price_family %}<li>{{ course.price_family|money }} (externe, rabais fratrie)</li>{% endif %}
+                {% if course.price_local_family %}<li>{{ course.price_local_family|money }} (indigène, rabais fratrie)</li>{% endif %}
+                {% if course.price_family_3rd %}<li>{{ course.price_family_3rd|money }} (externe, rabais fratrie dès le 3e enfant)</li>{% endif %}
+                {% if course.price_local_family_3rd %}<li>{{ course.price_local_family_3rd|money }} (indigène, rabais fratrie dès le 3e enfant)</li>{% endif %}
               </ul>
             {% else %}
               {{ course.price|money }}

@@ -68,13 +68,15 @@
           </dd>
           <dt>Prix</dt>
           <dd>
-            <ul ng-show="selectedCourse.price_local">
+            <ul ng-show="selectedCourse.price_local || selectedCourse.price_family">
               <li>CHF {[{ selectedCourse.price }]} (externe)</li>
-              <li>CHF {[{ selectedCourse.price_local }]} (indigène)</li>
-              <li>CHF {[{ selectedCourse.price_family }]} (externe, rabais fratrie)</li>
-              <li>CHF {[{ selectedCourse.price_local_family }]} (indigène, rabais fratrie)</li>
+              <li ng-show="selectedCourse.price_local">CHF {[{ selectedCourse.price_local }]} (indigène)</li>
+              <li ng-show="selectedCourse.price_family">CHF {[{ selectedCourse.price_family }]} (externe, rabais fratrie)</li>
+              <li ng-show="selectedCourse.price_local_family">CHF {[{ selectedCourse.price_local_family }]} (indigène, rabais fratrie)</li>
+              <li ng-show="selectedCourse.price_family_3rd">CHF {[{ selectedCourse.price_family_3rd }]} (externe, rabais fratrie dès le 3e enfant)</li>
+              <li ng-show="selectedCourse.price_local_family_3rd">CHF {[{ selectedCourse.price_local_family_3rd }]} (indigène, rabais fratrie dès le 3e enfant)</li>
             </ul>
-            <span ng-hide="selectedCourse.price_local">CHF {[{ selectedCourse.price }]}</span>
+            <span ng-hide="selectedCourse.price_local || selectedCourse.price_family">CHF {[{ selectedCourse.price }]}</span>
             <p ng-show="selectedCourse.price_description"
                ng-bind-html="selectedCourse.price_description | newlines">
             </p>
