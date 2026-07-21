@@ -99,14 +99,36 @@
           <dt>{% translate "Price" %}</dt>
           <dd>
             {% if course.price_local or course.price_family %}
-              <ul class="list-unstyled">
-                <li>{{ course.price|money }} (externe)</li>
-                {% if course.price_local %}<li>{{ course.price_local|money }} (indigène)</li>{% endif %}
-                {% if course.price_family %}<li>{{ course.price_family|money }} (externe, rabais fratrie)</li>{% endif %}
-                {% if course.price_local_family %}<li>{{ course.price_local_family|money }} (indigène, rabais fratrie)</li>{% endif %}
-                {% if course.price_family_3rd %}<li>{{ course.price_family_3rd|money }} (externe, rabais fratrie dès le 3e enfant)</li>{% endif %}
-                {% if course.price_local_family_3rd %}<li>{{ course.price_local_family_3rd|money }} (indigène, rabais fratrie dès le 3e enfant)</li>{% endif %}
-              </ul>
+              <table class="table table-condensed" style="width: auto;">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Externe</th>
+                    {% if course.price_local %}<th>Indigène</th>{% endif %}
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1er enfant</td>
+                    <td>{{ course.price|money }}</td>
+                    {% if course.price_local %}<td>{{ course.price_local|money }}</td>{% endif %}
+                  </tr>
+                  {% if course.price_family or course.price_local_family %}
+                    <tr>
+                      <td>2e enfant{% if not course.price_family_3rd and not course.price_local_family_3rd %} et suivants{% endif %}</td>
+                      <td>{{ course.price_family|money }}</td>
+                      {% if course.price_local %}<td>{{ course.price_local_family|money }}</td>{% endif %}
+                    </tr>
+                  {% endif %}
+                  {% if course.price_family_3rd or course.price_local_family_3rd %}
+                    <tr>
+                      <td>3e enfant et suivants</td>
+                      <td>{{ course.price_family_3rd|money }}</td>
+                      {% if course.price_local %}<td>{{ course.price_local_family_3rd|money }}</td>{% endif %}
+                    </tr>
+                  {% endif %}
+                </tbody>
+              </table>
             {% else %}
               {{ course.price|money }}
             {% endif %}

@@ -68,14 +68,32 @@
           </dd>
           <dt>Prix</dt>
           <dd>
-            <ul ng-show="selectedCourse.price_local || selectedCourse.price_family">
-              <li>CHF {[{ selectedCourse.price }]} (externe)</li>
-              <li ng-show="selectedCourse.price_local">CHF {[{ selectedCourse.price_local }]} (indigène)</li>
-              <li ng-show="selectedCourse.price_family">CHF {[{ selectedCourse.price_family }]} (externe, rabais fratrie)</li>
-              <li ng-show="selectedCourse.price_local_family">CHF {[{ selectedCourse.price_local_family }]} (indigène, rabais fratrie)</li>
-              <li ng-show="selectedCourse.price_family_3rd">CHF {[{ selectedCourse.price_family_3rd }]} (externe, rabais fratrie dès le 3e enfant)</li>
-              <li ng-show="selectedCourse.price_local_family_3rd">CHF {[{ selectedCourse.price_local_family_3rd }]} (indigène, rabais fratrie dès le 3e enfant)</li>
-            </ul>
+            <table class="table table-condensed" style="width: auto;" ng-show="selectedCourse.price_local || selectedCourse.price_family">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Externe</th>
+                  <th ng-show="selectedCourse.price_local">Indigène</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1er enfant</td>
+                  <td>CHF {[{ selectedCourse.price }]}</td>
+                  <td ng-show="selectedCourse.price_local">CHF {[{ selectedCourse.price_local }]}</td>
+                </tr>
+                <tr ng-show="selectedCourse.price_family || selectedCourse.price_local_family">
+                  <td>2e enfant<span ng-hide="selectedCourse.price_family_3rd || selectedCourse.price_local_family_3rd"> et suivants</span></td>
+                  <td>CHF {[{ selectedCourse.price_family }]}</td>
+                  <td ng-show="selectedCourse.price_local">CHF {[{ selectedCourse.price_local_family }]}</td>
+                </tr>
+                <tr ng-show="selectedCourse.price_family_3rd || selectedCourse.price_local_family_3rd">
+                  <td>3e enfant et suivants</td>
+                  <td>CHF {[{ selectedCourse.price_family_3rd }]}</td>
+                  <td ng-show="selectedCourse.price_local">CHF {[{ selectedCourse.price_local_family_3rd }]}</td>
+                </tr>
+              </tbody>
+            </table>
             <span ng-hide="selectedCourse.price_local || selectedCourse.price_family">CHF {[{ selectedCourse.price }]}</span>
             <p ng-show="selectedCourse.price_description"
                ng-bind-html="selectedCourse.price_description | newlines">
