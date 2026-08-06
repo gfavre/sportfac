@@ -15,6 +15,7 @@
   {% endif %}
 
 {% include "print-button.html" %}
+{% include "pdf-download-button.html" with pdf_url=invoice.get_pdf_url bill=invoice %}
 
 
 {% endblock content %}

@@ -13,6 +13,7 @@ from django.views.generic import DeleteView
 from django.views.generic import DetailView
 from django.views.generic import ListView
 from django.views.generic import TemplateView
+from django.views.generic import View
 
 from profiles.models import School
 
@@ -20,6 +21,7 @@ from ..models import Bill
 from ..models import Child
 from ..models import Registration
 from .utils import BillMixin
+from .utils import BillPdfDownloadMixin
 from .utils import PaymentMixin
 
 
@@ -55,6 +57,17 @@ class BillDetailView(LoginRequiredMixin, PaymentMixin, BillMixin, DetailView):
         context["rentals"] = invoice.rentals.all()
         context["total_amount"] = invoice.total
         return context
+
+
+class BillPdfView(LoginRequiredMixin, PaymentMixin, BillPdfDownloadMixin, View):
+    """
+    Download the bill's PDF (family user view)
+    """
+
+    def get_queryset(self):
+        if self.request.user.is_manager:
+            return Bill.objects.all()
+        return Bill.objects.filter(family=self.request.user)
 
 
 class ChildrenListView(LoginRequiredMixin, ListView):

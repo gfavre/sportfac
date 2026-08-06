@@ -4,6 +4,7 @@ from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from io import StringIO
+from uuid import uuid4
 
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
@@ -469,7 +470,7 @@ class Bill(TimeStampedModel, StatusModel):
     due_date = models.DateField(_("Due date"), null=True, blank=True)
     reminder_sent = models.BooleanField(_("Reminder sent"), default=False)
     reminder_sent_date = models.DateTimeField(_("Reminder sent date"), null=True, blank=True)
-    pdf = models.FileField(_("PDF"), null=True, blank=True)
+    pdf = models.FileField(_("PDF"), null=True, blank=True, upload_to="bills/")
 
     payment_date = models.DateTimeField(_("Payment date"), null=True, blank=True)
     do_not_expire = models.BooleanField(_("Do not expire"), default=False)
@@ -548,7 +549,13 @@ class Bill(TimeStampedModel, StatusModel):
         pdf_bytes = generate_pdf_for_bill(self)
         if pdf_bytes is None:
             return
-        filename = f"facture-{self.pk}.pdf"
+        # Storage filename is a UUID, not "facture-<pk>.pdf": bills/ is served directly
+        # and publicly by the web server (Apache Alias /media/, bypassing Django's own
+        # auth), so an unguessable name is the only thing standing between "logged in
+        # as this family" and "knows/guesses another family's sequential bill pk". The
+        # human-readable filename is still set for the download itself, in
+        # BillPdfDownloadMixin's Content-Disposition header.
+        filename = f"{uuid4()}.pdf"
         self.pdf.save(filename, ContentFile(pdf_bytes), save=True)
         self.save()
 
@@ -557,6 +564,9 @@ class Bill(TimeStampedModel, StatusModel):
 
     def get_backend_url(self):
         return reverse("backend:bill-detail", kwargs={"pk": self.pk})
+
+    def get_backend_pdf_url(self):
+        return reverse("backend:bill-pdf", kwargs={"pk": self.pk})
 
     def get_due_date(self):
         global_preferences = global_preferences_registry.manager()
@@ -567,6 +577,9 @@ class Bill(TimeStampedModel, StatusModel):
 
     def get_pay_url(self):
         return reverse("backend:bill-update", kwargs={"pk": self.pk})
+
+    def get_pdf_url(self):
+        return reverse("registrations:registrations_bill_pdf", kwargs={"pk": self.pk})
 
     def get_qr_invoice(self):
         """Build the Swiss QR-invoice payment slip for this bill.
