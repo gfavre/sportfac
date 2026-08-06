@@ -1,16 +1,14 @@
 import logging
-import os
 import re
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from io import StringIO
-from tempfile import mkdtemp
 
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib.sites.models import Site
-from django.core.files import File
+from django.core.files.base import ContentFile
 from django.db import IntegrityError
 from django.db import connection
 from django.db import models
@@ -545,15 +543,13 @@ class Bill(TimeStampedModel, StatusModel):
             rental.save()
 
     def generate_pdf(self):
-        from mailer.pdfutils import InvoiceRenderer
+        from registrations.pdf import generate_pdf_for_bill
 
-        renderer = InvoiceRenderer({"bill": self})
+        pdf_bytes = generate_pdf_for_bill(self)
+        if pdf_bytes is None:
+            return
         filename = f"facture-{self.pk}.pdf"
-        tempdir = mkdtemp()
-        filepath = os.path.join(tempdir, filename)
-        renderer.render_to_pdf(filepath)
-        with open(filepath, "rb") as pdf_file:
-            self.pdf.save(filename, File(pdf_file), save=True)
+        self.pdf.save(filename, ContentFile(pdf_bytes), save=True)
         self.save()
 
     def get_absolute_url(self):

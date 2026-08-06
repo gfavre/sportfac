@@ -1,0 +1,94 @@
+{% load i18n sekizai_tags %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+  <meta charset="utf-8">
+  <title>{% translate "Bill" %} {{ bill.billing_identifier }}</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald:400,300,700">
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400italic,400,600,700,800&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+  <link href="{{ STATIC_URL }}css/style.css" rel="stylesheet">
+  {% render_block "css" %}
+  <style>
+    html, body {
+      /* style.css sets `body { height: 100% }` for the site's sticky-footer
+         layout (navbar/footer chrome this page doesn't have). Left in place,
+         it forces body to exactly one viewport/page tall regardless of actual
+         content, and .container's margin-top then adds on top of that fixed
+         height - tipping the total a few mm past the page boundary and
+         print-splitting off an otherwise-empty trailing page. */
+      height: auto;
+      margin: 0;
+    }
+
+    /* Margin-top only, and on this inner wrapper rather than on body: a bottom
+       margin (or a margin on body itself) doesn't get "absorbed" into the last
+       page the way in-flow content does - it tips a few extra mm past the page
+       boundary, print-splitting off an otherwise-empty trailing page. The same
+       reasoning is why @page below forces margin: 0 instead of a page margin. */
+    .container {
+      width: 210mm;
+      margin-top: 15mm;
+    }
+
+    #qrbill, #qrbill svg {
+      width: 100%;
+      padding: 0;
+    }
+
+    .qrbill-marker {
+      /* Kept in normal flow, at a normal font size, so Chromium reliably paints it
+         as real, extractable PDF text (very small sizes get culled from the text
+         layer) - see pdf.py's _qrbill_offset_mm. White-on-white hides it.
+         !important: style.css forces `* { color: #000 !important; background:
+         transparent !important }` in @media print (a classic html5-boilerplate
+         print reset), which would otherwise make this marker visible. A class
+         selector still outranks that universal-selector rule among !important
+         declarations, so this wins regardless of source order. */
+      font-size: 8pt !important;
+      line-height: 8pt !important;
+      color: #fff !important;
+      background: #fff !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    @media print {
+      @page {
+        size: 210mm 297mm;
+        /* Margin is forced to 0 here and in pdf.py's page.pdf() call instead: the
+           browser doesn't apply @page margin predictably, which throws off the
+           QR-invoice pagination math below. The visual margin comes from
+           .container's own margin-top above. */
+        margin: 0;
+      }
+
+      #qrbill {
+        /* Must match the printed page width: #qrbill is full-width, so without a
+           fixed width it takes the rendering viewport's width instead of the
+           page's, and the QR-invoice SVG (fixed 210x105mm aspect ratio, width:100%,
+           height:auto below) scales its height out of proportion as a result. */
+        width: 210mm;
+        page-break-inside: avoid;
+      }
+
+      #qrbill svg {
+        display: block;
+        padding: 0;
+        height: auto;
+      }
+    }
+  </style>
+</head>
+<body class="bill">
+<div class="container">
+  {% include "registrations/invoice-part-heading.html" %}
+  {% include "registrations/invoice-part-registrations.html" %}
+  {% if not bill.is_paid %}
+    {% include "registrations/billing_partial.html" %}
+    {% if bill.qr_invoice %}
+      <div id="qrbill-marker" class="qrbill-marker">QRBILLPAGEMARKER</div>
+      <section id="qrbill">{{ bill.qr_invoice|safe }}</section>
+    {% endif %}
+  {% endif %}
+</div>
+</body>
+</html>
