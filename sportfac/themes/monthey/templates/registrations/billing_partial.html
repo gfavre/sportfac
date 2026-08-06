@@ -5,10 +5,17 @@
 
 {% if PAYMENT_METHOD == 'iban' %}
 <div class="well">
-  <dl class="dl-horizontal">
+  <div class="row">
+  <dl class="dl-horizontal col-md-6">
     <dt>Montant</dt><dd>{{ bill.total|money }}</dd>
     <dt>Identifiant</dt><dd>{{ bill.billing_identifier }}</dd>
   </dl>
+  {% if display_qr_invoice and bill.qr_invoice %}
+    <div class="col-md-6" style="max-width: 100%;">
+      {{ bill.qr_invoice|safe }}
+    </div>
+  {% endif %}
+  </div>
 </div>
 <p>La finance d'inscription devra être apportée au moniteur lors du premier cours</p>
 {% elif PAYMENT_METHOD == 'datatrans' %}

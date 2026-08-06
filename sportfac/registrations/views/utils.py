@@ -26,6 +26,7 @@ class BillMixin:
         context["iban"] = preferences["payment__IBAN"]
         context["address"] = preferences["payment__ADDRESS"]
         context["place"] = preferences["payment__PLACE"]
+        context["display_qr_invoice"] = preferences["payment__DISPLAY_QR_INVOICE"]
 
         return context
 

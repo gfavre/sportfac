@@ -14,9 +14,11 @@
     <dt>IBAN</dt><dd>{{ iban }}</dd>
     <dt>Adresse</dt><dd>{{ address|linebreaksbr }}</dd>
   </dl>
-    <div class="col-md-6">
-      <img src="{% static "img/qr-coppet.png" %}" alt="QR-bill" style="width: 46mm; margin: 0 5mm; ">
+  {% if display_qr_invoice and bill.qr_invoice %}
+    <div class="col-md-6" style="max-width: 100%;">
+      {{ bill.qr_invoice|safe }}
     </div>
+  {% endif %}
   </div>
 </div>
 <p>en indiquant, sous communications ou motif, votre identifiant de transaction.</p>

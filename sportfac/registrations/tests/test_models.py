@@ -1,6 +1,7 @@
 from datetime import time
 
 from django.test import override_settings
+from dynamic_preferences.registries import global_preferences_registry
 from faker import Faker
 
 from activities.tests.factories import AllocationAccountFactory
@@ -353,3 +354,27 @@ class BillTestCase(TenantTestCase):
         self.bill.update_billing_identifier()
         self.assertTrue(len(self.bill.billing_identifier) <= 20)
         self.assertIn(self.bill.family.last_name.split(" ")[0].lower(), self.bill.billing_identifier)
+
+    def test_qr_invoice_empty_without_payment_preferences(self):
+        preferences = global_preferences_registry.manager()
+        preferences["payment__IBAN"] = ""
+        preferences["payment__ADDRESS"] = ""
+        self.bill.payment_method = self.bill.METHODS.iban
+        self.bill.save()
+        self.assertEqual(self.bill.qr_invoice, "")
+
+    def test_qr_invoice_generated_for_wire_transfer(self):
+        preferences = global_preferences_registry.manager()
+        preferences["payment__IBAN"] = "CH9300762011623852957"
+        preferences["payment__ADDRESS"] = "Commune de Coppet\nGrand-Rue 34\n1296 Coppet"
+        self.bill.payment_method = self.bill.METHODS.iban
+        self.bill.save()
+        self.assertIn("<svg", self.bill.qr_invoice)
+
+    def test_qr_invoice_empty_for_non_wire_transfer(self):
+        preferences = global_preferences_registry.manager()
+        preferences["payment__IBAN"] = "CH9300762011623852957"
+        preferences["payment__ADDRESS"] = "Commune de Coppet\nGrand-Rue 34\n1296 Coppet"
+        self.bill.payment_method = self.bill.METHODS.datatrans
+        self.bill.save()
+        self.assertEqual(self.bill.qr_invoice, "")

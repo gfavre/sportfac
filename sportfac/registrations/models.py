@@ -4,6 +4,7 @@ import re
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
+from io import StringIO
 from tempfile import mkdtemp
 
 from dateutil.relativedelta import relativedelta
@@ -474,6 +475,7 @@ class Bill(TimeStampedModel, StatusModel):
 
     payment_date = models.DateTimeField(_("Payment date"), null=True, blank=True)
     do_not_expire = models.BooleanField(_("Do not expire"), default=False)
+    qr_invoice = models.TextField(_("QR invoice"), blank=True, default="")
 
     objects = BillManager()
 
@@ -570,8 +572,61 @@ class Bill(TimeStampedModel, StatusModel):
     def get_pay_url(self):
         return reverse("backend:bill-update", kwargs={"pk": self.pk})
 
+    def get_qr_invoice(self):
+        """Build the Swiss QR-invoice payment slip for this bill.
+
+        Raises ValueError if the creditor (IBAN, payment address) or debtor
+        (family address) data needed to build a valid QR-invoice is missing.
+        """
+        from qrbill.bill import QRBill
+
+        if not self.family:
+            raise ValueError("A QR-invoice requires a family")
+
+        global_preferences = global_preferences_registry.manager()
+        address_lines = [line.strip() for line in global_preferences["payment__ADDRESS"].splitlines() if line.strip()]
+        if len(address_lines) < 2:
+            raise ValueError("The payment address preference needs a name and at least one address line")
+        creditor_name, *rest = address_lines
+        creditor = {
+            "name": creditor_name,
+            "line1": rest[0] if len(rest) > 1 else "",
+            "line2": ", ".join(rest[1:]) if len(rest) > 1 else rest[0],
+        }
+
+        return QRBill(
+            account=global_preferences["payment__IBAN"],
+            creditor=creditor,
+            debtor={
+                "name": self.family.full_name,
+                "street": self.family.address,
+                "pcode": self.family.zipcode,
+                "city": self.family.city,
+                "country": self.family.country,
+            },
+            amount=str(self.total),
+            currency="CHF",
+            additional_information=self.billing_identifier,
+            language="fr",
+        )
+
     def get_update_url(self):
         return reverse("backend:bill-update", kwargs={"pk": self.pk})
+
+    def update_qr_invoice(self):
+        qr_invoice = ""
+        if self.is_wire_transfer:
+            try:
+                qr_bill = self.get_qr_invoice()
+            except ValueError:
+                qr_invoice = ""
+            else:
+                qr_io = StringIO()
+                qr_bill.as_svg(qr_io, full_page=False)
+                qr_invoice = qr_io.getvalue()
+        if qr_invoice != self.qr_invoice:
+            self.qr_invoice = qr_invoice
+            super().save(update_fields=["qr_invoice"])
 
     @transaction.atomic
     def save(self, force_status=False, *args, **kwargs):
@@ -587,6 +642,7 @@ class Bill(TimeStampedModel, StatusModel):
         super().save(*args, **kwargs)
         if not self.billing_identifier:
             self.update_billing_identifier()
+        self.update_qr_invoice()
         if self.family:
             self.family.save()
 
