@@ -14,9 +14,20 @@
     <dt>Adresse</dt><dd>{{ address|linebreaksbr }}</dd>
   </dl>
   {% if display_qr_invoice and invoice.qr_invoice %}
-    <div class="col-md-6" style="max-width: 100%;">
+    <div class="col-md-6 qr-invoice" style="max-width: 100%;">
       {{ invoice.qr_invoice|safe }}
     </div>
+    {% addtoblock "css" %}
+      <style>
+        /* The qrbill library sets the SVG's width/height in absolute mm, sized for
+           print - without this, the browser renders it at that literal physical
+           size (~793px), overflowing the col-md-6 column instead of fitting it. */
+        .qr-invoice svg {
+          width: 100%;
+          height: auto;
+        }
+      </style>
+    {% endaddtoblock %}
   {% endif %}
   </div>
 </div>

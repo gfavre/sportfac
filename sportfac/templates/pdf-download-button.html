@@ -14,28 +14,26 @@
       var $button = $('.pdf-download-button');
 
       function poll(url, filename) {
-        $.ajax({
-          url: url,
-          xhrFields: {responseType: 'blob'}
-        }).done(function (data, status, xhr) {
-          var contentType = xhr.getResponseHeader('Content-Type') || '';
+        fetch(url, {credentials: 'same-origin'}).then(function (response) {
+          var contentType = response.headers.get('Content-Type') || '';
           if (contentType.indexOf('application/pdf') !== -1) {
-            var blobUrl = window.URL.createObjectURL(data);
-            var link = document.createElement('a');
-            link.href = blobUrl;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(blobUrl);
-            $button.prop('disabled', false);
-            $button.find('.label').show();
-            $button.find('.loading').hide();
-          } else {
-            // Still generating (HTTP 202, JSON "pending" body) - keep polling.
-            setTimeout(function () { poll(url, filename); }, 3000);
+            return response.blob().then(function (blob) {
+              var blobUrl = window.URL.createObjectURL(blob);
+              var link = document.createElement('a');
+              link.href = blobUrl;
+              link.download = filename;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              window.URL.revokeObjectURL(blobUrl);
+              $button.prop('disabled', false);
+              $button.find('.label').show();
+              $button.find('.loading').hide();
+            });
           }
-        }).fail(function () {
+          // Still generating (HTTP 202, JSON "pending" body) - keep polling.
+          setTimeout(function () { poll(url, filename); }, 3000);
+        }).catch(function () {
           setTimeout(function () { poll(url, filename); }, 3000);
         });
       }

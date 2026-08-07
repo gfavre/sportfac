@@ -1,5 +1,6 @@
 from datetime import time
 
+from django.core.files.base import ContentFile
 from django.test import override_settings
 from dynamic_preferences.registries import global_preferences_registry
 from faker import Faker
@@ -378,3 +379,28 @@ class BillTestCase(TenantTestCase):
         self.bill.payment_method = self.bill.METHODS.datatrans
         self.bill.save()
         self.assertEqual(self.bill.qr_invoice, "")
+
+    def test_pdf_cleared_when_qr_invoice_changes(self):
+        self.assertTrue(self.bill.pdf)
+        preferences = global_preferences_registry.manager()
+        preferences["payment__IBAN"] = "CH9300762011623852957"
+        preferences["payment__ADDRESS"] = "Commune de Coppet\nGrand-Rue 34\n1296 Coppet"
+        self.bill.payment_method = self.bill.METHODS.iban
+        self.bill.save()
+        self.assertFalse(self.bill.pdf)
+
+    def test_pdf_kept_when_qr_invoice_unchanged(self):
+        # Preference state can leak between tests (dynamic_preferences caches values
+        # outside the DB transaction rollback), so force a known, empty qr_invoice
+        # baseline first rather than relying on whatever setUp's bill happened to get.
+        preferences = global_preferences_registry.manager()
+        preferences["payment__IBAN"] = ""
+        self.bill.payment_method = self.bill.METHODS.iban
+        self.bill.save()
+        self.assertEqual(self.bill.qr_invoice, "")
+
+        self.bill.pdf.save("test.pdf", ContentFile(b"%PDF-1.4 fake"), save=True)
+        self.assertTrue(self.bill.pdf)
+
+        self.bill.save()
+        self.assertTrue(self.bill.pdf)

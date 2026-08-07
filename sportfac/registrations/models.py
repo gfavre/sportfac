@@ -635,7 +635,13 @@ class Bill(TimeStampedModel, StatusModel):
                 qr_invoice = qr_io.getvalue()
         if qr_invoice != self.qr_invoice:
             self.qr_invoice = qr_invoice
-            super().save(update_fields=["qr_invoice"])
+            update_fields = ["qr_invoice"]
+            if self.pdf:
+                # The cached PDF was built from the old qr_invoice - drop it so the next
+                # download regenerates one that matches.
+                self.pdf.delete(save=False)
+                update_fields.append("pdf")
+            super().save(update_fields=update_fields)
 
     @transaction.atomic
     def save(self, force_status=False, *args, **kwargs):
