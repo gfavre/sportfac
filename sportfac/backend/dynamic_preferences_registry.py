@@ -214,6 +214,16 @@ class PaymentAddress(LongStringPreference):
 
 
 @global_preferences_registry.register
+class DisplayQrInvoice(BooleanPreference):
+    """Whether to display the Swiss QR-invoice payment slip on invoices paid by wire transfer"""
+
+    section = payment
+    name = "DISPLAY_QR_INVOICE"
+    default = True
+    help_text = _("Display the QR-invoice payment slip on invoices (wire transfer payment method)")
+
+
+@global_preferences_registry.register
 class AbsenceNotificationDelay(IntegerPreference):
     """Delay (in days) before sending notification of absence to parents"""
 

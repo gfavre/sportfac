@@ -5,8 +5,15 @@ from django.urls import reverse
 
 from profiles.tests.factories import FamilyUserFactory
 from sportfac.utils import TenantTestCase as TestCase
-from ..views.user import BillDetailView, BillingView, ChildrenListView, SummaryView
-from .factories import BillFactory, ChildFactory, RegistrationFactory
+
+from ..views.user import BillDetailView
+from ..views.user import BillingView
+from ..views.user import BillPdfView
+from ..views.user import ChildrenListView
+from ..views.user import SummaryView
+from .factories import BillFactory
+from .factories import ChildFactory
+from .factories import RegistrationFactory
 
 
 class ChildrenListViewTests(TestCase):
@@ -85,6 +92,46 @@ class BillDetailViewTests(TestCase):
         response = self.view(self.request, pk=self.invoice.pk)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context_data["object"], self.invoice)
+
+
+class BillPdfViewTests(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.view = BillPdfView.as_view()
+        self.user = FamilyUserFactory()
+        self.invoice = BillFactory(family=self.user, payment_method="external", pdf=None)
+        self.url = self.invoice.get_pdf_url()
+        self.request = self.factory.get(self.url)
+        self.request.user = self.user
+
+    def test_access_forbidden_if_not_logged_in(self):
+        self.request.user = AnonymousUser()
+        response = self.view(self.request, pk=self.invoice.pk)
+        response.client = self.client
+        self.assertRedirects(response, reverse("profiles:auth_login") + "?next=" + self.url)
+
+    def test_user_cannot_access_other_bills(self):
+        invoice_2 = BillFactory()
+        request = self.factory.get(invoice_2.get_pdf_url())
+        request.user = self.user
+        with self.assertRaises(Http404):
+            self.view(request, pk=invoice_2.pk)
+
+    def test_first_request_triggers_generation_and_returns_pending(self):
+        self.assertFalse(self.invoice.pdf)
+        response = self.view(self.request, pk=self.invoice.pk)
+        self.assertEqual(response.status_code, 202)
+        self.invoice.refresh_from_db()
+        # CELERY_ALWAYS_EAGER runs the generation task synchronously in tests.
+        self.assertTrue(self.invoice.pdf)
+
+    def test_second_request_serves_the_generated_pdf(self):
+        self.view(self.request, pk=self.invoice.pk)  # triggers (eager) generation
+        second_request = self.factory.get(self.url)
+        second_request.user = self.user
+        response = self.view(second_request, pk=self.invoice.pk)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/pdf")
 
 
 class SummaryViewTests(TestCase):

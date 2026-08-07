@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sportfac 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-20 12:27+0200\n"
-"PO-Revision-Date: 2026-07-20 12:36+0200\n"
+"POT-Creation-Date: 2026-08-07 07:30+0200\n"
+"PO-Revision-Date: 2026-08-07 07:31+0200\n"
 "Last-Translator: Gregory Favre <greg@beyondthewall.ch>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -19,8 +19,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Poedit 3.9\n"
 
-#: absences/admin.py:26 activities/admin.py:71 activities/admin.py:172
-#: activities/models/courses.py:183
+#: absences/admin.py:26 activities/admin.py:88 activities/admin.py:189
+#: activities/models/courses.py:206
 msgid "course"
 msgstr "cours"
 
@@ -40,7 +40,7 @@ msgstr "Date"
 
 #: absences/admin.py:71
 #: absences/templates/absences/absences-table-child.html:24
-#: activities/forms.py:36 activities/models/courses.py:57
+#: activities/forms.py:39 activities/models/courses.py:62
 #: activities/templates/activities/course_list.html:37
 #: backend/templates/backend/course/detail.html:49
 #: backend/templates/backend/course/list.html:147
@@ -63,7 +63,7 @@ msgstr "Activité"
 #: absences/admin.py:77
 #: absences/templates/absences/absences-table-child.html:35
 #: absences/templates/absences/absences-table-courses.html:102
-#: absences/templates/absences/absences-table.html:127 activities/admin.py:224
+#: absences/templates/absences/absences-table.html:127 activities/admin.py:241
 #: activities/models/finance.py:69 backend/forms.py:241
 #: backend/templates/backend/allocations/report.html:114
 #: backend/templates/backend/course/pay-slip-montreux-form.html:19
@@ -76,10 +76,10 @@ msgstr "Activité"
 #: backend/templates/backend/user/detail-instructor.html:102
 #: backend/templates/backend/user/detail.html:114
 #: backend/tests/test_views/test_registrations.py:57
-#: backend/views/registration_views.py:196
-#: backend/views/registration_views.py:256
-#: backend/views/registration_views.py:709 registrations/models.py:87
-#: registrations/models.py:1028 registrations/resources.py:42
+#: backend/views/registration_views.py:197
+#: backend/views/registration_views.py:257
+#: backend/views/registration_views.py:719 registrations/models.py:87
+#: registrations/models.py:1109 registrations/resources.py:42
 msgid "Course"
 msgstr "Cours"
 
@@ -87,7 +87,7 @@ msgstr "Cours"
 #: absences/templates/absences/absences-table-child.html:146
 #: absences/templates/absences/absences-table-courses.html:261
 #: absences/templates/absences/absences-table.html:400
-#: absences/templatetags/status.py:17 api/serializers.py:433
+#: absences/templatetags/status.py:17 api/serializers.py:435
 #: backend/templates/backend/registration/transport-detail.html:238
 msgid "Present"
 msgstr "Présent"
@@ -161,7 +161,7 @@ msgstr "niv. 0"
 #: absences/templates/absences/absences-table-child.html:32
 #: absences/templates/absences/absences-table-courses.html:110
 #: absences/templates/absences/absences-table.html:148
-#: registrations/models.py:1024
+#: registrations/models.py:1105
 msgid "Note"
 msgstr "Note"
 
@@ -249,21 +249,21 @@ msgstr "AT"
 #: backend/forms.py:401 backend/templates/backend/registration/detail.html:12
 #: backend/templates/backend/registration/list.html:92
 #: backend/tests/test_views/test_registrations.py:56
-#: backend/views/registration_views.py:195 registrations/models.py:832
+#: backend/views/registration_views.py:196 registrations/models.py:913
 #: waiting_slots/forms.py:19
 msgid "Child"
 msgstr "Enfant"
 
 #: absences/templates/absences/absences-table-courses.html:100
 #: absences/templates/absences/absences-table.html:122
-#: activities/templates/activities/course_detail.html:242
-#: backend/templates/backend/course/detail.html:269
-#: backend/templates/backend/course/detail.html:361
+#: activities/templates/activities/course_detail.html:266
+#: backend/templates/backend/course/detail.html:293
+#: backend/templates/backend/course/detail.html:385
 #: backend/templates/backend/registration/list.html:90
 #: backend/templates/backend/registration/transport-detail.html:164
 #: backend/templates/backend/user/child-detail.html:13
 #: backend/templates/backend/user/child-list.html:125
-#: registrations/forms.py:145 registrations/models.py:822
+#: registrations/forms.py:145 registrations/models.py:903
 #: registrations/resources.py:50
 msgid "Bib number"
 msgstr "Dossard"
@@ -280,12 +280,12 @@ msgstr "Export en PDF"
 
 #: absences/templates/absences/absences-table.html:119
 #: activities/models/activities.py:22 activities/models/finance.py:27
-#: activities/templates/activities/course_detail.html:244
+#: activities/templates/activities/course_detail.html:268
 #: backend/templates/backend/activity/list.html:39
 #: backend/templates/backend/allocations/list.html:39
 #: backend/templates/backend/building/list.html:38
-#: backend/templates/backend/course/detail.html:271
-#: backend/templates/backend/course/detail.html:363
+#: backend/templates/backend/course/detail.html:295
+#: backend/templates/backend/course/detail.html:387
 #: backend/templates/backend/payroll/function_list.html:39
 #: backend/templates/backend/registration/transport-detail.html:167
 #: backend/templates/backend/registration/transport-list.html:37
@@ -324,7 +324,7 @@ msgstr "Moniteur inconnu"
 #: backend/templates/backend/activity/detail.html:77
 #: backend/templates/backend/building/detail.html:16
 #: backend/templates/backend/course/absences.html:45
-#: backend/templates/backend/course/detail.html:108
+#: backend/templates/backend/course/detail.html:132
 #: backend/templates/backend/payroll/function_detail.html:25
 #: backend/templates/backend/teacher/detail.html:25
 #: backend/templates/backend/user/detail-instructor.html:169
@@ -356,7 +356,7 @@ msgid "Delete session"
 msgstr "Supprimer la session"
 
 #: absences/templates/absences/absences-table.html:526
-#: backend/templates/backend/course/detail.html:191
+#: backend/templates/backend/course/detail.html:215
 msgid "Move to another course..."
 msgstr "Déplacer vers un autre cours..."
 
@@ -373,8 +373,8 @@ msgstr "Absences"
 msgid "course #%(identifier)s - Absences"
 msgstr "cours #%(identifier)s - Absences"
 
-#: absences/templates/absences/absences.html:17 activities/forms.py:39
-#: activities/models/courses.py:76 activities/resources.py:16
+#: absences/templates/absences/absences.html:17 activities/forms.py:42
+#: activities/models/courses.py:81 activities/resources.py:17
 #: activities/templates/activities/activity_detail.html:89
 #: activities/templates/activities/course_detail.html:59
 #: backend/templates/backend/activity/detail.html:47
@@ -389,7 +389,7 @@ msgid "Instructors"
 msgstr "Moniteurs"
 
 #: absences/templates/absences/absences.html:27
-#: activities/models/courses.py:132 activities/resources.py:15
+#: activities/models/courses.py:155 activities/resources.py:16
 #: activities/templates/activities/activity_detail.html:101
 #: activities/templates/activities/course_detail.html:71
 #: backend/templates/backend/activity/detail.html:55
@@ -410,7 +410,7 @@ msgid "Place"
 msgstr "Lieu"
 
 #: absences/templates/absences/absences.html:28
-#: activities/models/courses.py:110
+#: activities/models/courses.py:133
 #: activities/templates/activities/activity_detail.html:110
 #: activities/templates/activities/course_detail.html:95
 #: backend/templates/backend/activity/detail.html:57
@@ -420,9 +420,9 @@ msgstr "Lieu"
 msgid "Number of sessions"
 msgstr "Nombre de sessions"
 
-#: absences/templates/absences/absences.html:29 activities/models/courses.py:82
+#: absences/templates/absences/absences.html:29 activities/models/courses.py:87
 #: activities/templates/activities/activity_detail.html:136
-#: activities/templates/activities/activity_detail.html:154
+#: activities/templates/activities/activity_detail.html:178
 #: activities/templates/activities/course_detail.html:99
 #: backend/templates/backend/activity/detail.html:61
 #: backend/templates/backend/course/absences.html:39
@@ -443,11 +443,11 @@ msgid "Price"
 msgstr "Prix"
 
 #: absences/templates/absences/absences.html:31
-#: activities/templates/activities/activity_detail.html:165
-#: activities/templates/activities/course_detail.html:117
+#: activities/templates/activities/activity_detail.html:189
+#: activities/templates/activities/course_detail.html:141
 #: backend/templates/backend/activity/detail.html:63
 #: backend/templates/backend/course/absences.html:41
-#: backend/templates/backend/course/detail.html:90
+#: backend/templates/backend/course/detail.html:114
 #: backend/templates/backend/payroll/function_detail.html:10
 #: backend/templates/backend/teacher/detail.html:10
 #: backend/templates/backend/user/detail-instructor.html:164
@@ -456,15 +456,15 @@ msgid "School years"
 msgstr "Années scolaires"
 
 #: absences/templates/absences/absences.html:36
-#: activities/templates/activities/activity_detail.html:170
-#: activities/templates/activities/course_detail.html:121
+#: activities/templates/activities/activity_detail.html:194
+#: activities/templates/activities/course_detail.html:145
 msgid "Ages"
 msgstr "Âges"
 
-#: absences/templates/absences/absences.html:41 activities/forms.py:338
-#: activities/templates/activities/course_detail.html:151
+#: absences/templates/absences/absences.html:41 activities/forms.py:375
+#: activities/templates/activities/course_detail.html:175
 #: backend/templates/backend/course/absences.html:46
-#: backend/templates/backend/course/detail.html:119
+#: backend/templates/backend/course/detail.html:143
 msgid "Management"
 msgstr "Gestion"
 
@@ -494,19 +494,19 @@ msgstr "Nouvelle session"
 msgid "Manage absences for"
 msgstr "Gérer les absences de"
 
-#: activities/admin.py:20
+#: activities/admin.py:25
 msgid "Extra need"
 msgstr "Question complémentaire"
 
-#: activities/admin.py:21
+#: activities/admin.py:26
 msgid "Extra needs"
 msgstr "Questions complémentaires"
 
-#: activities/admin.py:29 activities/forms.py:304
+#: activities/admin.py:35 activities/forms.py:341
 msgid "Pricing"
 msgstr "Prix"
 
-#: activities/admin.py:31 activities/forms.py:309
+#: activities/admin.py:48 activities/forms.py:346
 #: activities/templates/activities/activity_detail.html:115
 #: activities/templates/activities/course_detail.html:74
 #: backend/templates/backend/course/pay-slip-montreux-form.html:35
@@ -514,66 +514,66 @@ msgstr "Prix"
 msgid "Dates"
 msgstr "Dates"
 
-#: activities/admin.py:57 activities/resources.py:12
+#: activities/admin.py:74 activities/resources.py:13
 msgid "Limitations"
 msgstr "Limitations"
 
-#: activities/admin.py:72 activities/admin.py:173
-#: activities/models/courses.py:184
+#: activities/admin.py:89 activities/admin.py:190
+#: activities/models/courses.py:207
 #: backend/templates/backend/portlets/courses.html:9
 #: backend/templates/backend/portlets/registration_courses_phase3.html:9
 #: backend/views/course_views.py:509
 msgid "courses"
 msgstr "cours"
 
-#: activities/admin.py:78
+#: activities/admin.py:95
 msgid "instructor"
 msgstr "moniteur"
 
-#: activities/admin.py:79 backend/views/user_views.py:124
+#: activities/admin.py:96 backend/views/user_views.py:124
 msgid "instructors"
 msgstr "moniteurs"
 
-#: activities/admin.py:88 activities/models/activities.py:71
+#: activities/admin.py:105 activities/models/activities.py:71
 msgid "activity"
 msgstr "activité"
 
-#: activities/admin.py:89 activities/models/activities.py:72
+#: activities/admin.py:106 activities/models/activities.py:72
 #: backend/templates/backend/portlets/courses.html:9
 #: backend/templates/backend/portlets/registration_courses_phase3.html:9
 msgid "activities"
 msgstr "activités"
 
-#: activities/admin.py:107
+#: activities/admin.py:124
 msgid "number of participants"
 msgstr "nombre de participants"
 
-#: activities/admin.py:121
+#: activities/admin.py:138
 msgid "Not reached minimum participants"
 msgstr "Pas encore atteint le minimum"
 
-#: activities/admin.py:122
+#: activities/admin.py:139
 msgid "Min participants reached"
 msgstr "Nombre minimal atteint"
 
-#: activities/admin.py:123
+#: activities/admin.py:140
 msgid "Full"
 msgstr "Complet"
 
-#: activities/admin.py:191
+#: activities/admin.py:208
 msgid "Advanced options"
 msgstr "Options avancées"
 
-#: activities/forms.py:45
+#: activities/forms.py:48
 msgid "Displayed name (optional)"
 msgstr "Nom affiché (facultatif)"
 
-#: activities/forms.py:47
+#: activities/forms.py:50
 msgid "Displayed on calendar under activity name"
 msgstr "Affiché dans le calendrier sous le nom de l'activité"
 
-#: activities/forms.py:49 activities/forms.py:495
-#: activities/models/activities.py:36 activities/models/courses.py:66
+#: activities/forms.py:52 activities/forms.py:534
+#: activities/models/activities.py:36 activities/models/courses.py:71
 #: activities/templates/activities/course_list.html:36
 #: backend/templates/backend/activity/list.html:38
 #: backend/templates/backend/course/list.html:146
@@ -586,12 +586,12 @@ msgstr "Affiché dans le calendrier sous le nom de l'activité"
 msgid "Identifier"
 msgstr "Identifiant"
 
-#: activities/forms.py:52 activities/models/courses.py:108
+#: activities/forms.py:55 activities/models/courses.py:131
 msgid "Informations about pricing"
 msgstr "Informations sur le prix"
 
-#: activities/forms.py:57 activities/models/courses.py:112
-#: activities/models/finance.py:72 activities/resources.py:20
+#: activities/forms.py:60 activities/models/courses.py:135
+#: activities/models/finance.py:72 activities/resources.py:21
 #: activities/templates/activities/course_list.html:39 backend/forms.py:553
 #: backend/templates/backend/course/list.html:149
 #: backend/templates/backend/registration/list.html:87
@@ -602,71 +602,71 @@ msgstr "Informations sur le prix"
 msgid "Start date"
 msgstr "Date de début"
 
-#: activities/forms.py:60 activities/forms.py:66
+#: activities/forms.py:63 activities/forms.py:69
 msgid "format: dd.mm.yyyy, e.g. 31.07.2016"
 msgstr "format: jj.mm.aaaa, ex: 31.07.2016"
 
-#: activities/forms.py:63 activities/models/courses.py:113
-#: activities/models/finance.py:73 activities/resources.py:21
+#: activities/forms.py:66 activities/models/courses.py:136
+#: activities/models/finance.py:73 activities/resources.py:22
 #: activities/templates/activities/course_list.html:40 backend/forms.py:559
 #: backend/templates/backend/year/list.html:42 payroll/models.py:42
 #: templates/mailer/pdf_my_courses.html:20
 msgid "End date"
 msgstr "Date de fin"
 
-#: activities/forms.py:69 activities/models/courses.py:114
+#: activities/forms.py:72 activities/models/courses.py:137
 msgid "Start time"
 msgstr "Heure de début"
 
-#: activities/forms.py:72 activities/forms.py:78
+#: activities/forms.py:75 activities/forms.py:81
 msgid "format: hh:mm, e.g. 17:45"
 msgstr "format: hh:mm, ex: 17:45"
 
-#: activities/forms.py:75 activities/models/courses.py:115
+#: activities/forms.py:78 activities/models/courses.py:138
 msgid "End time"
 msgstr "Heure de fin"
 
-#: activities/forms.py:82 backend/templates/backend/activity/detail.html:65
-#: backend/templates/backend/course/detail.html:95
+#: activities/forms.py:85 backend/templates/backend/activity/detail.html:65
+#: backend/templates/backend/course/detail.html:119
 #: backend/templates/backend/registration/update.html:23
 msgid "Extra questions"
 msgstr "Questions complémentaires"
 
-#: activities/forms.py:90 activities/models/courses.py:81
+#: activities/forms.py:93 activities/models/courses.py:86
 msgid "Local city override"
 msgstr "Redéfinir les villes indigènes"
 
-#: activities/forms.py:172 registrations/models.py:274
-#: registrations/models.py:298
+#: activities/forms.py:188 registrations/models.py:291
+#: registrations/models.py:299
 msgid "Price for external people"
 msgstr "Externe"
 
-#: activities/forms.py:242
+#: activities/forms.py:279
 #, python-format
 msgid "If empty will use: %s"
 msgstr "Si laissé vide, le système utilisera: %s"
 
-#: activities/forms.py:268
+#: activities/forms.py:305
 msgid "Daily start and end times"
 msgstr "Heures de début et de fin de journée"
 
-#: activities/forms.py:315
+#: activities/forms.py:352
 msgid "Participants and limitations"
 msgstr "Participants et limitations"
 
-#: activities/forms.py:364
+#: activities/forms.py:401
 msgid "One of the dates is invalid"
 msgstr "Une des dates n'est pas valable"
 
-#: activities/forms.py:370
+#: activities/forms.py:407
 msgid "Session dates"
 msgstr "Dates des sessions"
 
-#: activities/forms.py:371
+#: activities/forms.py:408
 msgid "Separated by commas, e.g. 31.07.2019,22.08.2019"
 msgstr "Séparées par des virgules, par exemple 31.07.2019,22.08.2019"
 
-#: activities/forms.py:466
+#: activities/forms.py:505
 #, python-format
 msgid "%s is invalid as start and end times are not set for %s"
 msgstr ""
@@ -737,67 +737,67 @@ msgstr "Samedi"
 msgid "Sunday"
 msgstr "Dimanche"
 
-#: activities/models/courses.py:33
+#: activities/models/courses.py:38
 #, python-format
 msgid "%i years old"
 msgstr "%i ans"
 
-#: activities/models/courses.py:51
+#: activities/models/courses.py:56
 msgid "Course (single day per week)"
 msgstr "Cours (un seul jour par semaine)"
 
-#: activities/models/courses.py:52
+#: activities/models/courses.py:57
 msgid "Unregistered course (single day per week)"
 msgstr "Cours sans inscription (un seul jour par semaine)"
 
-#: activities/models/courses.py:53
+#: activities/models/courses.py:58
 msgid "Course (multiple days per week)"
 msgstr "Cours (plusieurs jours par semaine)"
 
-#: activities/models/courses.py:54
+#: activities/models/courses.py:59
 msgid "Camp"
 msgstr "Camp"
 
-#: activities/models/courses.py:59
+#: activities/models/courses.py:64
 msgid "Course type"
 msgstr "Type de cours"
 
-#: activities/models/courses.py:68 appointments/models.py:12
+#: activities/models/courses.py:73 appointments/models.py:12
 msgid "Displayed name"
 msgstr "Nom affiché"
 
-#: activities/models/courses.py:69
+#: activities/models/courses.py:74
 #: activities/templates/activities/activity_detail.html:105
 #: backend/templates/backend/course/detail.html:67
 msgid "Comments"
 msgstr "Remarques"
 
-#: activities/models/courses.py:71
+#: activities/models/courses.py:76
 msgid "Course up to date"
 msgstr "Cours à jour"
 
-#: activities/models/courses.py:72
+#: activities/models/courses.py:77
 msgid "Course visible"
 msgstr "Cours visible"
 
-#: activities/models/courses.py:88
+#: activities/models/courses.py:93
 msgid "Price for local people"
 msgstr "Indigène"
 
-#: activities/models/courses.py:95
+#: activities/models/courses.py:100
 msgid "Price for family members"
 msgstr "Externe avec rabais fratrie"
 
-#: activities/models/courses.py:96
+#: activities/models/courses.py:101
 msgid ""
 "Applied for the second and following members registered to the same course"
 msgstr "S'applique dès le deuxième enfant inscrit à un même cours"
 
-#: activities/models/courses.py:103
+#: activities/models/courses.py:108
 msgid "Price for local family members"
 msgstr "Indigène avec rabais fratrie"
 
-#: activities/models/courses.py:105
+#: activities/models/courses.py:110
 msgid ""
 "Applied for the second and following members registered to the same course "
 "if the family is local"
@@ -810,7 +810,8 @@ msgid "Price for family members (3rd child and following)"
 msgstr "Externe avec rabais fratrie dès le 3e enfant"
 
 #: activities/models/courses.py:119
-msgid "Applied for the third and following members registered to the same course"
+msgid ""
+"Applied for the third and following members registered to the same course"
 msgstr "S'applique dès le troisième enfant inscrit à un même cours"
 
 #: activities/models/courses.py:126
@@ -819,88 +820,88 @@ msgstr "Indigène avec rabais fratrie dès le 3e enfant"
 
 #: activities/models/courses.py:128
 msgid ""
-"Applied for the third and following members registered to the same course "
-"if the family is local"
+"Applied for the third and following members registered to the same course if "
+"the family is local"
 msgstr ""
-"S'applique dès le troisième enfant inscrit à un même cours si la famille "
-"est indigène"
+"S'applique dès le troisième enfant inscrit à un même cours si la famille est "
+"indigène"
 
-#: activities/models/courses.py:111 activities/resources.py:13
+#: activities/models/courses.py:134 activities/resources.py:14
 #: backend/templates/backend/registration/list.html:86
 #: templates/mailer/pdf_my_courses.html:18
 #: themes/montreux/templates/backend/course/list-phase1.html:53
 msgid "Day"
 msgstr "Jour"
 
-#: activities/models/courses.py:117
+#: activities/models/courses.py:140
 msgid "Start time, mondays"
 msgstr "Heure de début, lundi"
 
-#: activities/models/courses.py:118
+#: activities/models/courses.py:141
 msgid "End time, mondays"
 msgstr "Heure de fin, lundi"
 
-#: activities/models/courses.py:119
+#: activities/models/courses.py:142
 msgid "Start time, tuesdays"
 msgstr "Heure de début, mardi"
 
-#: activities/models/courses.py:120
+#: activities/models/courses.py:143
 msgid "End time, tuesdays"
 msgstr "Heure de fin, mardi"
 
-#: activities/models/courses.py:121
+#: activities/models/courses.py:144
 msgid "Start time, wednesdays"
 msgstr "Heure de début, mercredi"
 
-#: activities/models/courses.py:122
+#: activities/models/courses.py:145
 msgid "End time, wednesdays"
 msgstr "Heure de fin, mercredi"
 
-#: activities/models/courses.py:123
+#: activities/models/courses.py:146
 msgid "Start time, thursdays"
 msgstr "Heure de début, jeudi"
 
-#: activities/models/courses.py:124
+#: activities/models/courses.py:147
 msgid "End time, thursdays"
 msgstr "Heure de fin, jeudi"
 
-#: activities/models/courses.py:125
+#: activities/models/courses.py:148
 msgid "Start time, fridays"
 msgstr "Heure de début, vendredi"
 
-#: activities/models/courses.py:126
+#: activities/models/courses.py:149
 msgid "End time, fridays"
 msgstr "Heure de fin, vendredi"
 
-#: activities/models/courses.py:127
+#: activities/models/courses.py:150
 msgid "Start time, saturdays"
 msgstr "Heure de début, samedi"
 
-#: activities/models/courses.py:128
+#: activities/models/courses.py:151
 msgid "End time, saturdays"
 msgstr "Heure de fin, samedi"
 
-#: activities/models/courses.py:129
+#: activities/models/courses.py:152
 msgid "Start time, sundays"
 msgstr "Heure de début, dimanche"
 
-#: activities/models/courses.py:130
+#: activities/models/courses.py:153
 msgid "End time, sundays"
 msgstr "Heure de fin, dimanche"
 
-#: activities/models/courses.py:133
+#: activities/models/courses.py:156
 msgid "Minimal number of participants"
 msgstr "Nombre minimum de participants"
 
-#: activities/models/courses.py:134 appointments/models.py:36
+#: activities/models/courses.py:157 appointments/models.py:36
 msgid "Maximal number of participants"
 msgstr "Nombre maximum de participants"
 
-#: activities/models/courses.py:137
+#: activities/models/courses.py:160
 msgid "Allow registrations"
 msgstr "Autoriser les inscriptions"
 
-#: activities/models/courses.py:139
+#: activities/models/courses.py:162
 msgid ""
 "If unchecked, no new registration will be possible. This is more restrictive "
 "than the course being full."
@@ -909,94 +910,94 @@ msgstr ""
 "Il s'agit d'une mesure plus restrictive que le fait que le cours soit "
 "complet."
 
-#: activities/models/courses.py:143
+#: activities/models/courses.py:166
 msgid "Places available reminder sent on"
 msgstr "Places disponibles rappel envoyé le"
 
-#: activities/models/courses.py:147
+#: activities/models/courses.py:170
 msgid "Minimal school year"
 msgstr "Année scolaire minimale"
 
-#: activities/models/courses.py:150
+#: activities/models/courses.py:173
 msgid "Maximal school year"
 msgstr "Année scolaire maximale"
 
-#: activities/models/courses.py:155
+#: activities/models/courses.py:178
 msgid "Minimal age"
 msgstr "Âge minimal"
 
-#: activities/models/courses.py:156 activities/models/courses.py:163
+#: activities/models/courses.py:179 activities/models/courses.py:186
 msgid "At the beginning of course"
 msgstr "Au début du cours"
 
-#: activities/models/courses.py:162
+#: activities/models/courses.py:185
 msgid "Maximal age"
 msgstr "Âge maximal"
 
-#: activities/models/courses.py:167
+#: activities/models/courses.py:190
 msgid "Minimal birth date to register"
 msgstr "Date de naissance minimale pour s'inscrire"
 
-#: activities/models/courses.py:168
+#: activities/models/courses.py:191
 msgid "Maximal birth date to register"
 msgstr "Date de naissance maximale pour s'inscrire"
 
-#: activities/models/courses.py:170
+#: activities/models/courses.py:193
 msgid "Course announced to J+S"
 msgstr "Cours annoncé à J+S"
 
-#: activities/models/courses.py:174
+#: activities/models/courses.py:197
 msgid "Current nb of participants"
 msgstr "Nombre de participants"
 
-#: activities/models/courses.py:451
+#: activities/models/courses.py:474
 #, python-format
 msgid "from %(start)s to %(end)s, every %(day)s at %(hour)s."
 msgstr "du %(start)s au %(end)s, les %(day)s à %(hour)s."
 
-#: activities/models/courses.py:585
-#: activities/templates/activities/activity_detail.html:186
-#: activities/templates/activities/course_detail.html:130
-#: activities/templates/activities/course_detail.html:142
+#: activities/models/courses.py:608
+#: activities/templates/activities/activity_detail.html:210
+#: activities/templates/activities/course_detail.html:154
+#: activities/templates/activities/course_detail.html:166
 #: backend/templates/backend/activity/detail.html:83
-#: backend/templates/backend/course/detail.html:114
+#: backend/templates/backend/course/detail.html:138
 #: backend/templates/backend/user/detail-instructor.html:180
 msgid "Course full"
 msgstr "Cours complet"
 
-#: activities/models/courses.py:587
+#: activities/models/courses.py:610
 #, python-format
 msgid "%(available)s out of %(total)s places remaining"
 msgstr "%(available)s sur %(total)s places disponibles"
 
-#: activities/models/courses.py:592
+#: activities/models/courses.py:615
 #: backend/templates/backend/course/list.html:165
 #: themes/montreux/templates/backend/course/list-phase1.html:66
 #: themes/montreux/templates/backend/course/list.html:137
 msgid "Invisible"
 msgstr "Invisible"
 
-#: activities/models/courses.py:604
+#: activities/models/courses.py:627
 msgid "Contract number"
 msgstr "Numéro du contrat"
 
-#: activities/models/courses.py:631
+#: activities/models/courses.py:654
 msgid "Convocation to the course"
 msgstr "Convocation au cours"
 
-#: activities/models/courses.py:632
+#: activities/models/courses.py:655
 msgid "Need parent confirmation"
 msgstr "Besoin d'une confirmation des parents"
 
-#: activities/models/courses.py:633
+#: activities/models/courses.py:656
 msgid "Payment reminder"
 msgstr "Rappel de paiement"
 
-#: activities/models/courses.py:634
+#: activities/models/courses.py:657
 msgid "Documents for course instructor"
 msgstr "Documents pour l'instructeur du cours"
 
-#: activities/models/courses.py:636
+#: activities/models/courses.py:659
 msgid "Email type"
 msgstr "Type d'email"
 
@@ -1107,27 +1108,27 @@ msgstr "Type de tarification"
 msgid "Function"
 msgstr "Fonction"
 
-#: activities/resources.py:10
+#: activities/resources.py:11
 msgid "N°"
 msgstr "N°"
 
-#: activities/resources.py:11
+#: activities/resources.py:12
 msgid "Course name"
 msgstr "Nom du cours"
 
-#: activities/resources.py:14
+#: activities/resources.py:15
 msgid "Schedule"
 msgstr "Horaires"
 
-#: activities/resources.py:17
+#: activities/resources.py:18
 msgid "Instructors' phone"
 msgstr "Téléphones des instructeurs"
 
-#: activities/resources.py:18
+#: activities/resources.py:19
 msgid "Instructors' email"
 msgstr "Emails des instructeurs"
 
-#: activities/resources.py:19
+#: activities/resources.py:20
 msgid "Participants number"
 msgstr "Nombre de participants"
 
@@ -1212,36 +1213,36 @@ msgstr ""
 msgid "%(number)s courses"
 msgstr "%(number)s cours"
 
-#: activities/templates/activities/activity_detail.html:156
+#: activities/templates/activities/activity_detail.html:180
 msgid "Free"
 msgstr "Gratuit"
 
-#: activities/templates/activities/activity_detail.html:177
-#: activities/templates/activities/course_detail.html:127
+#: activities/templates/activities/activity_detail.html:201
+#: activities/templates/activities/course_detail.html:151
 #: backend/templates/backend/activity/detail.html:79
-#: backend/templates/backend/course/detail.html:111
+#: backend/templates/backend/course/detail.html:135
 #: backend/templates/backend/user/detail-instructor.html:171
 msgid "Availability"
 msgstr "Places disponibles"
 
-#: activities/templates/activities/activity_detail.html:181
+#: activities/templates/activities/activity_detail.html:205
 msgid "Course without registration"
 msgstr "Cours sans inscription"
 
-#: activities/templates/activities/activity_detail.html:188
-#: activities/templates/activities/course_detail.html:132
+#: activities/templates/activities/activity_detail.html:212
+#: activities/templates/activities/course_detail.html:156
 #, python-format
 msgid "%(nb)s participants"
 msgstr "%(nb)s participants"
 
-#: activities/templates/activities/activity_detail.html:191
-#: activities/templates/activities/course_detail.html:135
+#: activities/templates/activities/activity_detail.html:215
+#: activities/templates/activities/course_detail.html:159
 #, python-format
 msgid "%(nb)s places"
 msgstr "%(nb)s places"
 
-#: activities/templates/activities/activity_detail.html:207
-#: registrations/models.py:123 registrations/models.py:720
+#: activities/templates/activities/activity_detail.html:231
+#: registrations/models.py:123 registrations/models.py:801
 #: templates/flatpages/home.html:17 templates/registration/login.html:14
 #: templates/registration/login.html:20
 msgid "Registration"
@@ -1397,32 +1398,32 @@ msgstr ""
 "\n"
 "                Les dimanches, de %(start_time)s à %(end_time)s"
 
-#: activities/templates/activities/course_detail.html:143
+#: activities/templates/activities/course_detail.html:167
 #: backend/templates/backend/activity/detail.html:83
-#: backend/templates/backend/course/detail.html:114
+#: backend/templates/backend/course/detail.html:138
 #: backend/templates/backend/user/detail-instructor.html:181
 msgid "Minimal number of participants reached"
 msgstr "Nombre minimum de participants atteint"
 
-#: activities/templates/activities/course_detail.html:144
+#: activities/templates/activities/course_detail.html:168
 #: backend/templates/backend/activity/detail.html:83
-#: backend/templates/backend/course/detail.html:114
+#: backend/templates/backend/course/detail.html:138
 #: backend/templates/backend/user/detail-instructor.html:182
 msgid "Not enough participants"
 msgstr "Pas assez de participants"
 
-#: activities/templates/activities/course_detail.html:154
+#: activities/templates/activities/course_detail.html:178
 #: activities/templates/activities/course_list.html:88
 #: backend/templates/backend/activity/list.html:51
-#: backend/templates/backend/course/detail.html:124
+#: backend/templates/backend/course/detail.html:148
 #: backend/templates/backend/course/list.html:242
 #: themes/montreux/templates/backend/course/list.html:194
 msgid "Manage absences"
 msgstr "Gestion des absences"
 
-#: activities/templates/activities/course_detail.html:220
+#: activities/templates/activities/course_detail.html:244
 #: activities/templates/activities/course_list.html:44
-#: backend/templates/backend/course/detail.html:174
+#: backend/templates/backend/course/detail.html:198
 #: backend/templates/backend/course/list.html:153
 #: backend/templates/backend/navbar.html:79
 #: backend/templates/backend/portlets/monthly_registrations.html:5
@@ -1441,8 +1442,8 @@ msgstr "Gestion des absences"
 msgid "Registrations"
 msgstr "Inscriptions"
 
-#: activities/templates/activities/course_detail.html:223
-#: backend/templates/backend/course/detail.html:180
+#: activities/templates/activities/course_detail.html:247
+#: backend/templates/backend/course/detail.html:204
 #: backend/templates/backend/registration/transport-detail.html:299
 #: backend/templates/backend/user/instructor-list.html:33
 #: backend/templates/backend/user/list.html:38
@@ -1450,8 +1451,8 @@ msgstr "Inscriptions"
 msgid "Select all"
 msgstr "Tout sélectionner"
 
-#: activities/templates/activities/course_detail.html:224
-#: backend/templates/backend/course/detail.html:181
+#: activities/templates/activities/course_detail.html:248
+#: backend/templates/backend/course/detail.html:205
 #: backend/templates/backend/registration/transport-detail.html:303
 #: backend/templates/backend/user/instructor-list.html:43
 #: backend/templates/backend/user/list.html:48
@@ -1459,41 +1460,39 @@ msgstr "Tout sélectionner"
 msgid "Deselect all"
 msgstr "Tout désélectionner"
 
-#: activities/templates/activities/course_detail.html:231
-#: backend/templates/backend/course/detail.html:186
+#: activities/templates/activities/course_detail.html:255
+#: backend/templates/backend/course/detail.html:210
 msgid "Send email..."
 msgstr "Envoyer un email..."
 
-#: activities/templates/activities/course_detail.html:247
+#: activities/templates/activities/course_detail.html:271
 #: backend/templates/backend/building/detail.html:10
 #: backend/templates/backend/site/flatpage_list.html:17
 #: backend/templates/backend/user/detail-instructor.html:12
 #: backend/templates/backend/user/detail.html:12 profiles/forms.py:120
 #: profiles/forms.py:372 registrations/resources.py:59
-#: registrations/templates/registrations/invoice-part-heading.html:69
-#: themes/coppet/templates/registrations/bill-partial.html:35
 msgid "Address"
 msgstr "Adresse"
 
-#: activities/templates/activities/course_detail.html:250
+#: activities/templates/activities/course_detail.html:274
 #: appointments/models.py:143 appointments/resources.py:19
-#: backend/views/registration_views.py:197
-#: backend/views/registration_views.py:202 profiles/forms.py:70
+#: backend/views/registration_views.py:198
+#: backend/views/registration_views.py:203 profiles/forms.py:70
 #: registrations/resources.py:57
 msgid "Email"
 msgstr "E-mail"
 
-#: activities/templates/activities/course_detail.html:255
-#: backend/templates/backend/course/detail.html:272
-#: backend/templates/backend/course/detail.html:366
+#: activities/templates/activities/course_detail.html:279
+#: backend/templates/backend/course/detail.html:296
+#: backend/templates/backend/course/detail.html:390
 #: backend/templates/backend/user/child-list.html:129
 msgid "School infos"
 msgstr "Informations scolaires"
 
-#: activities/templates/activities/course_detail.html:255
+#: activities/templates/activities/course_detail.html:279
 #: appointments/resources.py:12
-#: backend/templates/backend/course/detail.html:272
-#: backend/templates/backend/course/detail.html:366
+#: backend/templates/backend/course/detail.html:296
+#: backend/templates/backend/course/detail.html:390
 #: backend/templates/backend/user/child-detail.html:30
 #: backend/templates/backend/user/child-list.html:129
 #: backend/templates/backend/user/detail-instructor.html:87
@@ -1503,43 +1502,43 @@ msgstr "Informations scolaires"
 msgid "School year"
 msgstr "Année scolaire"
 
-#: activities/templates/activities/course_detail.html:259
+#: activities/templates/activities/course_detail.html:283
 #: backend/templates/backend/user/child-detail.html:25
 #: backend/templates/backend/user/detail-instructor.html:38
 #: backend/templates/backend/user/detail-instructor.html:83
 #: backend/templates/backend/user/detail.html:95 profiles/forms.py:226
 #: profiles/models.py:139 profiles/resources.py:62 registrations/forms.py:113
-#: registrations/models.py:776 registrations/resources.py:52
+#: registrations/models.py:857 registrations/resources.py:52
 msgid "Birth date"
 msgstr "Date de naissance"
 
-#: activities/templates/activities/course_detail.html:261
-#: backend/templates/backend/course/detail.html:274
-#: backend/templates/backend/course/detail.html:370
+#: activities/templates/activities/course_detail.html:285
+#: backend/templates/backend/course/detail.html:298
+#: backend/templates/backend/course/detail.html:394
 #: backend/templates/backend/user/child-list.html:131
-#: registrations/forms.py:144 registrations/models.py:813
+#: registrations/forms.py:144 registrations/models.py:894
 #: registrations/resources.py:63
 msgid "Emergency number"
 msgstr "Numéro d'urgence"
 
-#: activities/templates/activities/course_detail.html:263
+#: activities/templates/activities/course_detail.html:287
 msgid "Parents phones"
 msgstr "Téléphones des parents"
 
-#: activities/templates/activities/course_detail.html:265
+#: activities/templates/activities/course_detail.html:289
 #: backend/templates/backend/user/child-detail.html:32
 #: backend/templates/backend/user/detail-instructor.html:89
 #: backend/templates/backend/user/detail.html:101 registrations/forms.py:119
 msgid "Teacher"
 msgstr "Enseignant"
 
-#: activities/templates/activities/course_detail.html:268
+#: activities/templates/activities/course_detail.html:292
 #: activities/templates/activities/course_list.html:45
 #: backend/templates/backend/activity/list.html:40
 #: backend/templates/backend/allocations/list.html:41
 #: backend/templates/backend/building/list.html:41
-#: backend/templates/backend/course/detail.html:282
-#: backend/templates/backend/course/detail.html:376
+#: backend/templates/backend/course/detail.html:306
+#: backend/templates/backend/course/detail.html:400
 #: backend/templates/backend/course/list.html:156
 #: backend/templates/backend/mail/emails_list.html:18
 #: backend/templates/backend/payroll/function_list.html:42
@@ -1563,8 +1562,8 @@ msgstr "Enseignant"
 msgid "Actions"
 msgstr "Actions"
 
-#: activities/templates/activities/course_detail.html:347
-#: backend/templates/backend/course/detail.html:343
+#: activities/templates/activities/course_detail.html:371
+#: backend/templates/backend/course/detail.html:367
 #: backend/templates/backend/registration/confirm_delete.html:4
 #: backend/templates/backend/registration/confirm_delete.html:6
 #: backend/templates/backend/registration/list.html:130
@@ -1646,7 +1645,7 @@ msgstr "Merci de vérifier l'email"
 #: activities/templates/activities/wizard_activities.html:9
 #: backend/templates/backend/navbar.html:23
 #: backend/templates/backend/user/restricted-admin-list.html:84
-#: sportfac/settings/base.py:696
+#: sportfac/settings/base.py:697
 #: themes/nyon_prangins/templates/backend/navbar.html:23
 msgid "Activities"
 msgstr "Activités"
@@ -1753,47 +1752,47 @@ msgstr "0 minute"
 msgid "24 hours"
 msgstr "24 heures"
 
-#: api/serializers.py:304
+#: api/serializers.py:306
 msgid "Course is full"
 msgstr "Cours complet"
 
-#: api/serializers.py:309
+#: api/serializers.py:311
 #, python-format
 msgid "This course is not opened to children of school year %(year)s"
 msgstr "Ce cours n'est pas ouvert aux élèves de %(year)s"
 
-#: api/serializers.py:313
+#: api/serializers.py:315
 msgid "This course is not opened to children of this age"
 msgstr "Ce cours n'est pas ouvert aux élèves de cet âge"
 
-#: api/serializers.py:315
+#: api/serializers.py:317
 msgid "Max number of registrations reached."
 msgstr "Nombre maximum de participants atteint."
 
-#: api/serializers.py:357
+#: api/serializers.py:359
 msgid "This field cannot be left blank."
 msgstr "Ce champ ne doit pas rester vide."
 
-#: api/serializers.py:375
+#: api/serializers.py:377
 msgid "Image is required"
 msgstr "L'image est requise"
 
-#: api/serializers.py:514
+#: api/serializers.py:516
 msgid "User details"
 msgstr "Détails"
 
-#: api/serializers.py:515 backend/templates/backend/user/update.html:4
+#: api/serializers.py:517 backend/templates/backend/user/update.html:4
 #: backend/templates/backend/user/update.html:6
 #: backend/templates/backend/user/update.html:13
 msgid "Update user"
 msgstr "Mettre à jour l'utilisateur"
 
-#: api/serializers.py:518
+#: api/serializers.py:520
 #: backend/templates/backend/user/restricted-admin-list.html:104
 msgid "Impersonate"
 msgstr "Se faire passer pour l'utilisateur"
 
-#: api/serializers.py:524 backend/templates/backend/user/confirm_delete.html:4
+#: api/serializers.py:526 backend/templates/backend/user/confirm_delete.html:4
 #: backend/templates/backend/user/confirm_delete.html:67
 #: backend/templates/backend/user/restricted-admin-list.html:107
 msgid "Delete user"
@@ -1861,7 +1860,7 @@ msgstr "Retour"
 
 #: appointments/models.py:34
 #: appointments/templates/appointments/backend/create.html:202
-#: registrations/models.py:765
+#: registrations/models.py:846
 msgid "Other"
 msgstr "Autre"
 
@@ -1946,7 +1945,7 @@ msgstr "Rendez-vous"
 #: backend/templates/backend/user/list.html:222
 #: backend/templates/backend/user/manager-list.html:151
 #: backend/templates/backend/user/manager-list.html:152 profiles/forms.py:370
-#: profiles/models.py:126 profiles/resources.py:25 registrations/models.py:773
+#: profiles/models.py:126 profiles/resources.py:25 registrations/models.py:854
 #: registrations/resources.py:45 schools/models.py:16
 msgid "First name"
 msgstr "Prénom"
@@ -1955,7 +1954,7 @@ msgstr "Prénom"
 #: backend/templates/backend/user/instructor-list.html:173
 #: backend/templates/backend/user/list.html:223
 #: backend/templates/backend/user/manager-list.html:153 profiles/forms.py:371
-#: profiles/models.py:127 profiles/resources.py:26 registrations/models.py:774
+#: profiles/models.py:127 profiles/resources.py:26 registrations/models.py:855
 #: registrations/resources.py:46 schools/models.py:17
 msgid "Last name"
 msgstr "Nom"
@@ -2186,8 +2185,6 @@ msgstr "Jours entre la fin des inscriptions et le paiement"
 #: backend/dynamic_preferences_registry.py:192
 #: backend/templates/backend/user/detail-instructor.html:49
 #: profiles/forms.py:224 profiles/resources.py:61
-#: registrations/templates/registrations/invoice-part-heading.html:67
-#: themes/coppet/templates/registrations/bill-partial.html:34
 msgid "IBAN"
 msgstr "IBAN"
 
@@ -2199,15 +2196,22 @@ msgstr "Lieu de création de la facture"
 msgid "Payment address"
 msgstr "Adresse de paiement"
 
-#: backend/dynamic_preferences_registry.py:222
+#: backend/dynamic_preferences_registry.py:223
+msgid ""
+"Display the QR-invoice payment slip on invoices (wire transfer payment "
+"method)"
+msgstr ""
+"Afficher le QR sur les factures (mode de paiement par virement bancaire)"
+
+#: backend/dynamic_preferences_registry.py:232
 msgid "Days between course absence and notification"
 msgstr "Jours entre l'absence et la notification"
 
-#: backend/dynamic_preferences_registry.py:231
+#: backend/dynamic_preferences_registry.py:241
 msgid "Name of period, can be used in templates"
 msgstr "Nom de la période, peut être utilisé dans les modèles"
 
-#: backend/dynamic_preferences_registry.py:240
+#: backend/dynamic_preferences_registry.py:250
 msgid ""
 "General phone number displayed to parents when an instructor's phone is not "
 "public. Leave empty to display nothing."
@@ -2216,7 +2220,7 @@ msgstr ""
 "téléphone d'un formateur n'est pas public. Laisser ce champ vide pour ne "
 "rien afficher."
 
-#: backend/dynamic_preferences_registry.py:250
+#: backend/dynamic_preferences_registry.py:260
 msgid ""
 "Establishment name printed on the hours summary PDF. Uses school name if "
 "empty."
@@ -2533,7 +2537,7 @@ msgid "Every %(day)s from %(start_time)s to %(end_time)s (%(duration)s)"
 msgstr "Chaque %(day)s de %(start_time)s à %(end_time)s (%(duration)s)"
 
 #: backend/templates/backend/activity/detail.html:71
-#: backend/templates/backend/course/detail.html:101
+#: backend/templates/backend/course/detail.html:125
 msgid "No extra question required"
 msgstr "Pas de question complémentaire définie"
 
@@ -2794,7 +2798,6 @@ msgstr "Transaction"
 #: registrations/templates/registrations/registration_list.html:90
 #: themes/coppet/templates/backend/registration/bill-detail.html:28
 #: themes/coppet/templates/registrations/bill-detail.html:28
-#: themes/coppet/templates/registrations/bill-partial.html:31
 #: themes/monthey/templates/registrations/bill-partial.html:30
 #: themes/montreux/templates/registrations/registration_list.html:63
 #: themes/montreux_ski/templates/registrations/registration_list_back.html:63
@@ -2914,12 +2917,12 @@ msgid "Create pay slip"
 msgstr "Créer une fiche de salaire"
 
 #: backend/templates/backend/course/absences.html:57
-#: backend/templates/backend/course/detail.html:132
+#: backend/templates/backend/course/detail.html:156
 msgid "Send infos to instructors"
 msgstr "Envoyer les infos du cours aux moniteurs"
 
 #: backend/templates/backend/course/absences.html:61
-#: backend/templates/backend/course/detail.html:153
+#: backend/templates/backend/course/detail.html:177
 #: backend/templates/backend/course/list.html:260
 #: themes/montreux/templates/backend/course/list.html:206
 msgid "Get BDNS: J+S export file"
@@ -3009,34 +3012,34 @@ msgstr "Les dimanches, de %(start_time)s à %(end_time)s"
 msgid "Course number"
 msgstr "Identifiant"
 
-#: backend/templates/backend/course/detail.html:136
-#: backend/templates/backend/course/detail.html:146
+#: backend/templates/backend/course/detail.html:160
+#: backend/templates/backend/course/detail.html:170
 msgid "Last email sent on:"
 msgstr "Dernier email envoyé le :"
 
-#: backend/templates/backend/course/detail.html:142
+#: backend/templates/backend/course/detail.html:166
 msgid "Send convocation email"
 msgstr "Envoyer l'e-mail de convocation"
 
-#: backend/templates/backend/course/detail.html:161
+#: backend/templates/backend/course/detail.html:185
 msgid "Download hours summary"
 msgstr "Télécharger le récapitulatif des heures"
 
-#: backend/templates/backend/course/detail.html:176
+#: backend/templates/backend/course/detail.html:200
 msgid "Export participants"
 msgstr "Exporter la liste de participants"
 
-#: backend/templates/backend/course/detail.html:276
-#: backend/templates/backend/course/detail.html:372
+#: backend/templates/backend/course/detail.html:300
+#: backend/templates/backend/course/detail.html:396
 msgid "Parents phone"
 msgstr "Téléphone des parents"
 
-#: backend/templates/backend/course/detail.html:278
-#: backend/templates/backend/course/detail.html:374
+#: backend/templates/backend/course/detail.html:302
+#: backend/templates/backend/course/detail.html:398
 msgid "Parents email"
 msgstr "Email des parents"
 
-#: backend/templates/backend/course/detail.html:342
+#: backend/templates/backend/course/detail.html:366
 #: backend/templates/backend/registration/list.html:128
 #: backend/templates/backend/registration/update.html:4
 #: backend/templates/backend/registration/update.html:6
@@ -3047,24 +3050,24 @@ msgstr "Email des parents"
 msgid "Update registration"
 msgstr "Modifier l'inscription"
 
-#: backend/templates/backend/course/detail.html:356
+#: backend/templates/backend/course/detail.html:380
 #: backend/templates/backend/course/list.html:216
 msgid "Waiting list"
 msgstr "Liste d'attente"
 
-#: backend/templates/backend/course/detail.html:375
+#: backend/templates/backend/course/detail.html:399
 msgid "Other registrations"
 msgstr "Autres inscriptions"
 
-#: backend/templates/backend/course/detail.html:444 waiting_slots/forms.py:60
+#: backend/templates/backend/course/detail.html:468 waiting_slots/forms.py:60
 msgid "Add to participants"
 msgstr "Ajouter aux participants"
 
-#: backend/templates/backend/course/detail.html:445
+#: backend/templates/backend/course/detail.html:469
 msgid "Remove from waiting list"
 msgstr "Retirer de la liste d'attente"
 
-#: backend/templates/backend/course/detail.html:456
+#: backend/templates/backend/course/detail.html:480
 msgid "No one in waiting list"
 msgstr "Personne sur liste d'attente"
 
@@ -3604,7 +3607,7 @@ msgstr "N° de contrat"
 #: backend/templates/backend/portlets/children.html:5
 #: backend/templates/backend/user/detail-instructor.html:69
 #: backend/templates/backend/user/detail.html:81
-#: backend/templates/backend/user/list.html:228 registrations/models.py:833
+#: backend/templates/backend/user/list.html:228 registrations/models.py:914
 msgid "Children"
 msgstr "Enfants"
 
@@ -3805,11 +3808,10 @@ msgid "Amounts = 0"
 msgstr "Montants = 0"
 
 #: backend/templates/backend/registration/bill-list.html:49
-#: registrations/models.py:456 registrations/resources.py:49
+#: registrations/models.py:466 registrations/resources.py:49
 #: registrations/resources.py:248
 #: registrations/templates/registrations/billing.html:10
-#: registrations/templates/registrations/invoice-part-heading.html:62
-#: themes/coppet/templates/registrations/bill-partial.html:30
+#: registrations/templates/registrations/invoice-part-heading.html:69
 #: themes/monthey/templates/registrations/bill-partial.html:29
 msgid "Billing identifier"
 msgstr "Identifiant de paiement"
@@ -3892,7 +3894,7 @@ msgid "Confirmation mail sent on"
 msgstr "Confirmation envoyée le"
 
 #: backend/templates/backend/registration/detail.html:29
-#: registrations/models.py:409 registrations/resources.py:51
+#: registrations/models.py:419 registrations/resources.py:51
 msgid "Transport"
 msgstr "Transport"
 
@@ -3916,7 +3918,6 @@ msgstr "téléchargement"
 #: registrations/templates/registrations/invoice-detail.html:4
 #: themes/coppet/templates/backend/registration/bill-detail.html:4
 #: themes/coppet/templates/registrations/bill-detail.html:4
-#: themes/coppet/templates/registrations/bill-partial.html:25
 #: themes/monthey/templates/registrations/bill-partial.html:25
 msgid "Bill detail"
 msgstr "Facture"
@@ -4154,7 +4155,7 @@ msgstr "Parent"
 #: backend/templates/backend/user/child-detail.html:26
 #: backend/templates/backend/user/detail-instructor.html:84
 #: backend/templates/backend/user/detail.html:96 registrations/forms.py:117
-#: registrations/models.py:775
+#: registrations/models.py:856
 msgid "Sex"
 msgstr "Sexe"
 
@@ -4792,8 +4793,8 @@ msgid "{minutes} minutes"
 msgstr "{minutes} minutes"
 
 #: backend/tests/test_views/test_registrations.py:58
-#: backend/views/registration_views.py:198
-#: backend/views/registration_views.py:201
+#: backend/views/registration_views.py:199
+#: backend/views/registration_views.py:202
 msgid "Billing"
 msgstr "Paiement"
 
@@ -4924,22 +4925,22 @@ msgstr "La fonction %(name)s a été créée."
 msgid "Function has been updated."
 msgstr "La fonction a été mise à jour."
 
-#: backend/views/registration_views.py:83
+#: backend/views/registration_views.py:84
 msgid "registrations"
 msgstr "inscriptions"
 
-#: backend/views/registration_views.py:166
-#: backend/views/registration_views.py:686
+#: backend/views/registration_views.py:167
+#: backend/views/registration_views.py:696
 #, python-format
 msgid "Registrations of %(nb)s children have been moved."
 msgstr "Les inscriptions de %(nb)s enfants ont été déplacées."
 
-#: backend/views/registration_views.py:217
+#: backend/views/registration_views.py:218
 #, python-format
 msgid "Registration for %(child)s to %(course)s has been validated."
 msgstr "L'inscription pour %(child)s au cours %(course)s a été validée."
 
-#: backend/views/registration_views.py:237
+#: backend/views/registration_views.py:238
 #, python-format
 msgid ""
 "The bill %(identifier)s has been created. <a href=\"%(url)s\">Please review "
@@ -4948,49 +4949,49 @@ msgstr ""
 "La facture %(identifier)s a été créée. <a href=\"%(url)s\">Vous pouvez la "
 "traiter ici.</a>"
 
-#: backend/views/registration_views.py:244
+#: backend/views/registration_views.py:245
 #, python-format
 msgid "A registration for %(child)s to %(course)s already exists."
 msgstr "Une inscription pour %(child)s au cours %(course)s existe déjà."
 
-#: backend/views/registration_views.py:278 registrations/views/user.py:112
+#: backend/views/registration_views.py:279 registrations/views/user.py:125
 msgid "Registration has been canceled."
 msgstr "L'inscription a été annulée."
 
-#: backend/views/registration_views.py:286
+#: backend/views/registration_views.py:287
 msgid "Registration has been updated."
 msgstr "L'inscription a été mise à jour."
 
-#: backend/views/registration_views.py:397
+#: backend/views/registration_views.py:398
 #, python-format
 msgid "%d registrations have been confirmed"
 msgstr "%d inscriptions ont été confirmées"
 
-#: backend/views/registration_views.py:504
+#: backend/views/registration_views.py:505
 msgid "invoices-{}-{}.xlsx"
 msgstr "invoices-{}-{}.xlsx"
 
-#: backend/views/registration_views.py:505
+#: backend/views/registration_views.py:506
 msgid "invoices.xlsx"
 msgstr "factures.xlsx"
 
-#: backend/views/registration_views.py:535
+#: backend/views/registration_views.py:536
 msgid "invoices"
 msgstr "factures"
 
-#: backend/views/registration_views.py:568
+#: backend/views/registration_views.py:578
 msgid "Bill has been updated."
 msgstr "La facture a été mise à jour."
 
-#: backend/views/registration_views.py:658
+#: backend/views/registration_views.py:668
 msgid "Transport has been created."
 msgstr "Le transport a été créé."
 
-#: backend/views/registration_views.py:665
+#: backend/views/registration_views.py:675
 msgid "Transport has been updated."
 msgstr "Le transport a été mis à jour."
 
-#: backend/views/registration_views.py:673
+#: backend/views/registration_views.py:683
 msgid "Transport has been deleted."
 msgstr "Le transport a été supprimé."
 
@@ -5663,7 +5664,7 @@ msgstr "Les deux mots de passe ne sont pas identiques."
 msgid "Switzerland"
 msgstr "Suisse"
 
-#: profiles/models.py:105 profiles/models.py:447 registrations/models.py:764
+#: profiles/models.py:105 profiles/models.py:447 registrations/models.py:845
 #: schools/models.py:62
 msgid "Liechtenstein"
 msgstr "Liechtenstein"
@@ -5684,11 +5685,11 @@ msgstr "Italie"
 msgid "Austria"
 msgstr "Autriche"
 
-#: profiles/models.py:111 registrations/models.py:760
+#: profiles/models.py:111 registrations/models.py:841
 msgid "Female"
 msgstr "Féminin"
 
-#: profiles/models.py:111 registrations/models.py:759
+#: profiles/models.py:111 registrations/models.py:840
 msgid "Male"
 msgstr "Masculin"
 
@@ -5931,12 +5932,12 @@ msgstr "Enregistrer et continuer"
 msgid "Your contact informations have been saved."
 msgstr "Vos informations de contact ont été mises à jour."
 
-#: registrations/forms.py:77 registrations/models.py:457
+#: registrations/forms.py:77 registrations/models.py:467
 #: registrations/resources.py:44 registrations/resources.py:261
 msgid "Payment method"
 msgstr "Mode de paiement"
 
-#: registrations/forms.py:79 registrations/models.py:465
+#: registrations/forms.py:79 registrations/models.py:475
 #: registrations/resources.py:259
 msgid "Payment date"
 msgstr "Date de paiement"
@@ -5957,7 +5958,7 @@ msgstr ""
 msgid "Building"
 msgstr "Bâtiment"
 
-#: registrations/forms.py:146 registrations/models.py:812
+#: registrations/forms.py:146 registrations/models.py:893
 #: registrations/resources.py:47
 msgid "AVS"
 msgstr "AVS"
@@ -6059,124 +6060,129 @@ msgstr "Motif de l'annulation"
 msgid "Cancelation date"
 msgstr "Date d'annulation"
 
-#: registrations/models.py:395
+#: registrations/models.py:405
 #, python-format
 msgid "%(child)s ⇒ course %(number)s (%(activity)s)"
 msgstr "%(child)s ⇒ cours %(number)s (%(activity)s)"
 
-#: registrations/models.py:406
+#: registrations/models.py:416
 msgid "Label"
 msgstr "Libellé"
 
-#: registrations/models.py:410
+#: registrations/models.py:420
 msgid "Transports"
 msgstr "Transports"
 
-#: registrations/models.py:444
+#: registrations/models.py:454
 msgid "Wire transfer"
 msgstr "Virement bancaire"
 
-#: registrations/models.py:445
+#: registrations/models.py:455
 msgid "Credit card (datatrans)"
 msgstr "Carte de crédit (datatrans)"
 
-#: registrations/models.py:446
+#: registrations/models.py:456
 msgid "Credit card (postfinance)"
 msgstr "Carte de crédit (postfinance)"
 
-#: registrations/models.py:447
+#: registrations/models.py:457
 msgid "On-Site payment"
 msgstr "Paiement sur place"
 
-#: registrations/models.py:448
+#: registrations/models.py:458
 msgid "External invoice"
 msgstr "Facture externe"
 
-#: registrations/models.py:451
+#: registrations/models.py:461
 msgid "Just created"
 msgstr "En cours de création"
 
-#: registrations/models.py:452
+#: registrations/models.py:462
 msgid "Waiting parent's payment"
 msgstr "En attente du paiement"
 
-#: registrations/models.py:453
+#: registrations/models.py:463
 msgid "Paid by parent"
 msgstr "Payé par le parent"
 
-#: registrations/models.py:454
+#: registrations/models.py:464
 msgid "Canceled by administrator"
 msgstr "Annulé par l'administrateur"
 
-#: registrations/models.py:459
+#: registrations/models.py:469
 msgid "Total to be paid"
 msgstr "Total à payer"
 
-#: registrations/models.py:460 registrations/resources.py:255
+#: registrations/models.py:470 registrations/resources.py:255
 msgid "Due date"
 msgstr "Date d'échéance"
 
-#: registrations/models.py:461
+#: registrations/models.py:471
 msgid "Reminder sent"
 msgstr "Rappel envoyé"
 
-#: registrations/models.py:462
+#: registrations/models.py:472
 msgid "Reminder sent date"
 msgstr "Date d'envoi du rappel"
 
-#: registrations/models.py:463
+#: registrations/models.py:473
 msgid "PDF"
 msgstr "PDF"
 
-#: registrations/models.py:466
+#: registrations/models.py:476
 msgid "Do not expire"
 msgstr "Ne pas expirer"
 
-#: registrations/models.py:471
+#: registrations/models.py:477
+msgid "QR invoice"
+msgstr "Facture QR"
+
+#: registrations/models.py:482
+#: registrations/templates/registrations/bill-pdf.html:5
 msgid "Bill"
 msgstr "Facture"
 
-#: registrations/models.py:472
+#: registrations/models.py:483
 msgid "Bills"
 msgstr "Factures"
 
-#: registrations/models.py:755
+#: registrations/models.py:836
 msgid "Updated"
 msgstr "Mis à jour"
 
-#: registrations/models.py:756
+#: registrations/models.py:837
 msgid "Imported"
 msgstr "Importé"
 
-#: registrations/models.py:763
+#: registrations/models.py:844
 msgid "Swiss"
 msgstr "Suisse"
 
-#: registrations/models.py:810
+#: registrations/models.py:891
 msgid "Lagapeo Identification number"
 msgstr "Identifiant Lagapeo"
 
-#: registrations/models.py:821
+#: registrations/models.py:902
 msgid "Other school"
 msgstr "Autre école"
 
-#: registrations/models.py:823
+#: registrations/models.py:904
 msgid "Is blacklisted"
 msgstr "Est sur la liste noire"
 
-#: registrations/models.py:824
+#: registrations/models.py:905
 msgid "Price should be raised"
 msgstr "Le prix devrait être revu à la hausse"
 
-#: registrations/models.py:1021 registrations/resources.py:64
+#: registrations/models.py:1102 registrations/resources.py:64
 msgid "Level -1"
 msgstr "Niveau avant le cours"
 
-#: registrations/models.py:1023
+#: registrations/models.py:1104
 msgid "End course level"
 msgstr "Niveau après le cours"
 
-#: registrations/models.py:1049
+#: registrations/models.py:1130
 msgid "Consent given"
 msgstr "Consentement donné"
 
@@ -6209,12 +6215,12 @@ msgid "Billing Date"
 msgstr "Date de facturation"
 
 #: registrations/templates/registrations/children.html:4
-#: sportfac/settings/base.py:619
+#: sportfac/settings/base.py:620
 msgid "Your children"
 msgstr "Vos enfants"
 
 #: registrations/templates/registrations/children.html:6
-#: sportfac/settings/base.py:614
+#: sportfac/settings/base.py:615
 msgid "About your children"
 msgstr "À propos de vos enfants"
 
@@ -6226,11 +6232,6 @@ msgid ""
 msgstr ""
 "Payé le\n"
 "          %(payment_date)s"
-
-#: registrations/templates/registrations/invoice-part-heading.html:65
-#: themes/coppet/templates/registrations/bill-partial.html:33
-msgid "Payable until"
-msgstr "Payable jusqu'au"
 
 #: registrations/templates/registrations/pay-bill.html:16
 #: wizard/templates/wizard/children.html:26
@@ -6336,19 +6337,19 @@ msgstr "bâtiments"
 msgid "Missing mandatory field: %s"
 msgstr "Champ obligatoire manquant : %s"
 
-#: sportfac/settings/base.py:615
+#: sportfac/settings/base.py:616
 msgid "Add a child"
 msgstr "Ajouter un enfant"
 
-#: sportfac/settings/base.py:616
+#: sportfac/settings/base.py:617
 msgid "Add another child"
 msgstr "Ajouter un autre enfant"
 
-#: sportfac/settings/base.py:617
+#: sportfac/settings/base.py:618
 msgid "Edit my children data"
 msgstr "Éditer les données de mes enfants"
 
-#: sportfac/settings/base.py:618
+#: sportfac/settings/base.py:619
 msgid "Save child"
 msgstr "Enregistrer l'enfant"
 
@@ -6470,6 +6471,14 @@ msgstr "déconnexion"
 #: wizard/templates/wizard/account-create.html:8
 msgid "login"
 msgstr "connexion"
+
+#: templates/pdf-download-button.html:6
+msgid "Download PDF"
+msgstr "Télécharger le PDF"
+
+#: templates/pdf-download-button.html:7
+msgid "Generating PDF…"
+msgstr "Génération du fichier PDF…"
 
 #: templates/registration/login.html:12 templates/registration/login.html:18
 msgid "You don't have an account?"
@@ -6806,6 +6815,9 @@ msgstr "Toutes vos inscriptions sont sauvegardées"
 #: wizard/views.py:28
 msgid "Registrations are currently closed."
 msgstr "Les inscriptions sont actuellement closes."
+
+#~ msgid "Payable until"
+#~ msgstr "Payable jusqu'au"
 
 #, python-format
 #~ msgid "All these fields are mandatory: %s"

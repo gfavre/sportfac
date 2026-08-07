@@ -40,6 +40,10 @@ logutils==0.3.5
 # addtoblock template tag (js embedding)
 # xlrd == 1.1.0
 pypdftk==0.5
+qrbill==1.2.0  # Swiss QR-invoice payment slip generation
+playwright==1.47.0  # local Chromium rendering, used to position the QR-invoice at the bottom of the bill PDF
+pypdf==5.0.1  # PDF page composition (merging the QR-invoice onto the bill PDF)
+pymupdf==1.24.11  # searching rendered PDF text (locating the QR-invoice marker)
 django-mathfilters==0.4.0
 django-async-messages == 0.3.1
 django-cors-headers == 3.13.0

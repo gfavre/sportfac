@@ -52,6 +52,7 @@ from registrations.resources import BillResource
 from registrations.resources import RegistrationResource
 from registrations.resources import enhance_invoices_xls
 from registrations.views.utils import BillMixin
+from registrations.views.utils import BillPdfDownloadMixin
 from registrations.views.utils import PaymentMixin
 
 from .mixins import BackendMixin
@@ -559,6 +560,15 @@ class BillDetailView(FullBackendMixin, BillMixin, PaymentMixin, DetailView):
         context["rentals"] = invoice.rentals.all()
         context["total_amount"] = invoice.total
         return context
+
+
+class BillPdfView(FullBackendMixin, BillPdfDownloadMixin, View):
+    """
+    Download the bill's PDF (admin view)
+    """
+
+    def get_queryset(self):
+        return Bill.objects.all()
 
 
 class BillUpdateView(SuccessMessageMixin, FullBackendMixin, UpdateView):

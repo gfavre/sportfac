@@ -1,15 +1,15 @@
 import logging
-import os
 import re
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
-from tempfile import mkdtemp
+from io import StringIO
+from uuid import uuid4
 
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib.sites.models import Site
-from django.core.files import File
+from django.core.files.base import ContentFile
 from django.db import IntegrityError
 from django.db import connection
 from django.db import models
@@ -470,10 +470,11 @@ class Bill(TimeStampedModel, StatusModel):
     due_date = models.DateField(_("Due date"), null=True, blank=True)
     reminder_sent = models.BooleanField(_("Reminder sent"), default=False)
     reminder_sent_date = models.DateTimeField(_("Reminder sent date"), null=True, blank=True)
-    pdf = models.FileField(_("PDF"), null=True, blank=True)
+    pdf = models.FileField(_("PDF"), null=True, blank=True, upload_to="bills/")
 
     payment_date = models.DateTimeField(_("Payment date"), null=True, blank=True)
     do_not_expire = models.BooleanField(_("Do not expire"), default=False)
+    qr_invoice = models.TextField(_("QR invoice"), blank=True, default="")
 
     objects = BillManager()
 
@@ -543,15 +544,19 @@ class Bill(TimeStampedModel, StatusModel):
             rental.save()
 
     def generate_pdf(self):
-        from mailer.pdfutils import InvoiceRenderer
+        from registrations.pdf import generate_pdf_for_bill
 
-        renderer = InvoiceRenderer({"bill": self})
-        filename = f"facture-{self.pk}.pdf"
-        tempdir = mkdtemp()
-        filepath = os.path.join(tempdir, filename)
-        renderer.render_to_pdf(filepath)
-        with open(filepath, "rb") as pdf_file:
-            self.pdf.save(filename, File(pdf_file), save=True)
+        pdf_bytes = generate_pdf_for_bill(self)
+        if pdf_bytes is None:
+            return
+        # Storage filename is a UUID, not "facture-<pk>.pdf": bills/ is served directly
+        # and publicly by the web server (Apache Alias /media/, bypassing Django's own
+        # auth), so an unguessable name is the only thing standing between "logged in
+        # as this family" and "knows/guesses another family's sequential bill pk". The
+        # human-readable filename is still set for the download itself, in
+        # BillPdfDownloadMixin's Content-Disposition header.
+        filename = f"{uuid4()}.pdf"
+        self.pdf.save(filename, ContentFile(pdf_bytes), save=True)
         self.save()
 
     def get_absolute_url(self):
@@ -559,6 +564,9 @@ class Bill(TimeStampedModel, StatusModel):
 
     def get_backend_url(self):
         return reverse("backend:bill-detail", kwargs={"pk": self.pk})
+
+    def get_backend_pdf_url(self):
+        return reverse("backend:bill-pdf", kwargs={"pk": self.pk})
 
     def get_due_date(self):
         global_preferences = global_preferences_registry.manager()
@@ -570,8 +578,70 @@ class Bill(TimeStampedModel, StatusModel):
     def get_pay_url(self):
         return reverse("backend:bill-update", kwargs={"pk": self.pk})
 
+    def get_pdf_url(self):
+        return reverse("registrations:registrations_bill_pdf", kwargs={"pk": self.pk})
+
+    def get_qr_invoice(self):
+        """Build the Swiss QR-invoice payment slip for this bill.
+
+        Raises ValueError if the creditor (IBAN, payment address) or debtor
+        (family address) data needed to build a valid QR-invoice is missing.
+        """
+        from qrbill.bill import QRBill
+
+        if not self.family:
+            raise ValueError("A QR-invoice requires a family")
+
+        global_preferences = global_preferences_registry.manager()
+        address_lines = [line.strip() for line in global_preferences["payment__ADDRESS"].splitlines() if line.strip()]
+        if len(address_lines) < 2:
+            raise ValueError("The payment address preference needs a name and at least one address line")
+        creditor_name, *rest = address_lines
+        creditor = {
+            "name": creditor_name,
+            "line1": rest[0] if len(rest) > 1 else "",
+            "line2": ", ".join(rest[1:]) if len(rest) > 1 else rest[0],
+        }
+
+        return QRBill(
+            account=global_preferences["payment__IBAN"],
+            creditor=creditor,
+            debtor={
+                "name": self.family.full_name,
+                "street": self.family.address,
+                "pcode": self.family.zipcode,
+                "city": self.family.city,
+                "country": self.family.country,
+            },
+            amount=str(self.total),
+            currency="CHF",
+            additional_information=self.billing_identifier,
+            language="fr",
+        )
+
     def get_update_url(self):
         return reverse("backend:bill-update", kwargs={"pk": self.pk})
+
+    def update_qr_invoice(self):
+        qr_invoice = ""
+        if self.is_wire_transfer:
+            try:
+                qr_bill = self.get_qr_invoice()
+            except ValueError:
+                qr_invoice = ""
+            else:
+                qr_io = StringIO()
+                qr_bill.as_svg(qr_io, full_page=False)
+                qr_invoice = qr_io.getvalue()
+        if qr_invoice != self.qr_invoice:
+            self.qr_invoice = qr_invoice
+            update_fields = ["qr_invoice"]
+            if self.pdf:
+                # The cached PDF was built from the old qr_invoice - drop it so the next
+                # download regenerates one that matches.
+                self.pdf.delete(save=False)
+                update_fields.append("pdf")
+            super().save(update_fields=update_fields)
 
     @transaction.atomic
     def save(self, force_status=False, *args, **kwargs):
@@ -587,6 +657,7 @@ class Bill(TimeStampedModel, StatusModel):
         super().save(*args, **kwargs)
         if not self.billing_identifier:
             self.update_billing_identifier()
+        self.update_qr_invoice()
         if self.family:
             self.family.save()
 

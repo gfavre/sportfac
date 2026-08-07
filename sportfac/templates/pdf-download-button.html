@@ -1,0 +1,49 @@
+{% load i18n sekizai_tags %}
+
+<p class="hidden-print text-center">
+  <button class="btn btn-secondary btn-large pdf-download-button" data-url="{{ pdf_url }}" data-filename="facture-{{ bill.billing_identifier }}.pdf">
+    <i class="icon-file-pdf"></i>&nbsp;
+    <span class="label">{% translate "Download PDF" %}</span>
+    <span class="loading" style="display: none;">{% translate "Generating PDF…" %}</span>
+  </button>
+</p>
+
+{% addtoblock "js" %}
+  <script>
+    (function () {
+      var $button = $('.pdf-download-button');
+
+      function poll(url, filename) {
+        fetch(url, {credentials: 'same-origin'}).then(function (response) {
+          var contentType = response.headers.get('Content-Type') || '';
+          if (contentType.indexOf('application/pdf') !== -1) {
+            return response.blob().then(function (blob) {
+              var blobUrl = window.URL.createObjectURL(blob);
+              var link = document.createElement('a');
+              link.href = blobUrl;
+              link.download = filename;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              window.URL.revokeObjectURL(blobUrl);
+              $button.prop('disabled', false);
+              $button.find('.label').show();
+              $button.find('.loading').hide();
+            });
+          }
+          // Still generating (HTTP 202, JSON "pending" body) - keep polling.
+          setTimeout(function () { poll(url, filename); }, 3000);
+        }).catch(function () {
+          setTimeout(function () { poll(url, filename); }, 3000);
+        });
+      }
+
+      $button.click(function () {
+        $button.prop('disabled', true);
+        $button.find('.label').hide();
+        $button.find('.loading').show();
+        poll($button.data('url'), $button.data('filename'));
+      });
+    })();
+  </script>
+{% endaddtoblock %}
