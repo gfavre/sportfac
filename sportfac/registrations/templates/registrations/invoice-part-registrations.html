@@ -1,5 +1,7 @@
 {% load i18n switzerland %}
-<h3 class="content-title"><u>{% translate "Registrations" %}</u></h3>
+{% if not hide_registrations_title %}
+  <h3 class="content-title"><u>{% translate "Registrations" %}</u></h3>
+{% endif %}
 <table class=" table table-hover ">
   <thead>
   <tr>

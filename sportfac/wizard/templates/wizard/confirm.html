@@ -47,7 +47,7 @@
     </div>
   {% endif %}
 
- {% include "registrations/invoice-part-registrations.html" %}
+ {% include "registrations/invoice-part-registrations.html" with hide_registrations_title=True %}
 
   {% if consent_already_given %}
     <div>
