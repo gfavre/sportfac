@@ -106,6 +106,9 @@ class PostfinanceTransaction(TimeStampedModel, StatusModel):
     payment_method = models.CharField(max_length=255, blank=True, default="")
     webhook = JSONField(null=True, blank=True, encoder=DjangoJSONEncoder)
 
+    objects = models.Manager()
+    successful = QueryManager(status__in=("AUTHORIZED", "COMPLETED", "FULFILL"))
+
     @property
     def is_pending(self):
         return self.status in (self.STATUS.PENDING, self.STATUS.CONFIRMED, self.STATUS.PROCESSING)

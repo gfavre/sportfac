@@ -6769,6 +6769,10 @@ msgstr "Paiement Réussi"
 msgid "The payment was successful."
 msgstr "Le paiement a été un succès."
 
+#: wizard/templates/wizard/payment-success.html:12
+msgid "We are confirming your payment. This may take a few moments; you will receive a confirmation email as soon as it's done."
+msgstr "Nous confirmons votre paiement. Cela peut prendre quelques instants ; vous recevrez un e-mail de confirmation dès que ce sera fait."
+
 #: wizard/templates/wizard/payment-success.html:13
 #: wizard/templates/wizard/success.html:13
 msgid "My invoices"
@@ -6811,6 +6815,10 @@ msgstr "Inscription réussie"
 #: wizard/templates/wizard/success.html:10
 msgid "All your registrations are saved"
 msgstr "Toutes vos inscriptions sont sauvegardées"
+
+#: wizard/templates/wizard/success.html:12
+msgid "End of registration"
+msgstr "Fin de l'inscription"
 
 #: wizard/views.py:28
 msgid "Registrations are currently closed."

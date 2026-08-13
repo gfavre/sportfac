@@ -33,7 +33,7 @@ class DatatransWebhookView(APIView):
     def post(self, request, *args, **kwargs):
         data = request.data
         logger.info("webhook received: %s", data)
-        if "transactionId" and "refno" not in data:
+        if "transactionId" not in data or "refno" not in data:
             raise ValidationError("missing parameters")
         invoice = get_object_or_404(Bill, billing_identifier=data.get("refno"))
         transaction = get_object_or_404(
@@ -103,7 +103,14 @@ class WizardPaymentSuccessView(LoginRequiredMixin, BaseWizardStepView, TemplateV
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["bill"] = self.request.user.bills.order_by("-created").first()
+        bill = self.request.user.bills.order_by("-created").first()
+        context["bill"] = bill
+        # The browser lands here as soon as PostFinance/Datatrans's own checkout widget
+        # decides the payment step is done - that's real, but it races the asynchronous
+        # webhook that's the only thing actually flipping Bill.status to paid. If the
+        # webhook hasn't landed yet, say so instead of asserting a success we can't yet
+        # confirm on our side.
+        context["payment_confirmed"] = bool(bill and bill.is_paid)
         if settings.KEPCHUP_USE_APPOINTMENTS:
             context["include_calendar"] = True
             context["appointments"] = Appointment.objects.filter(family=self.request.user)
@@ -121,7 +128,7 @@ class PostfinanceWebhookView(APIView):
     # noinspection PyMethodMayBeStatic
     def post(self, request, *args, **kwargs):
         data = request.data
-        if "entityId" and "spaceId" not in data:
+        if "entityId" not in data or "spaceId" not in data:
             raise ValidationError("missing parameters")
         if data["spaceId"] != settings.POSTFINANCE_SPACE_ID:
             raise ValidationError("invalid spaceId")

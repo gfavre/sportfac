@@ -178,7 +178,7 @@ class Registration(TimeStampedModel, StatusModel):
             if self.bill and self.bill.datatrans_successful_transaction:
                 return self.bill.datatrans_successful_transaction.payment_method
             return "cash"
-        if settings.KETCHUP_PAYMENT_METHOD == "postfinance":
+        if settings.KEPCHUP_PAYMENT_METHOD == "postfinance":
             if self.bill and self.bill.postfinance_successful_transaction:
                 return self.bill.postfinance_successful_transaction.payment_method
             return "cash"

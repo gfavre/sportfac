@@ -7,7 +7,11 @@
 
 {% block wizard_content %}
   <div class="portlet hidden-print">
-    <p class="lead">{% translate "The payment was successful." %}</p>
+    {% if payment_confirmed %}
+      <p class="lead">{% translate "The payment was successful." %}</p>
+    {% else %}
+      <p class="lead">{% translate "We are confirming your payment. This may take a few moments; you will receive a confirmation email as soon as it's done." %}</p>
+    {% endif %}
     <p>
       <a href="{% url 'registrations:registrations_registered_activities' %}"><i class="icon-calendar"></i> {% translate "My registered activities" %}</a>&nbsp; &mdash;&nbsp;
       <a href="{% url 'registrations:registrations_billing' %}"><i class="icon-credit-card-1"></i> {% translate "My invoices" %}</a>
