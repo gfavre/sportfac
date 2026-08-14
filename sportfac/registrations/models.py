@@ -555,12 +555,9 @@ class Bill(TimeStampedModel, StatusModel):
     @transaction.atomic
     def close(self):
         self.status = self.STATUS.paid
-        for registration in self.registrations.filter(status=Registration.STATUS.valid):
-            registration.paid = True
-            registration.save()
-        for rental in self.rentals.all():
-            rental.paid = True
-            rental.save()
+        # Same fix as set_paid(): bulk update instead of a per-registration save() cascade.
+        self.registrations.filter(status=Registration.STATUS.valid).update(paid=True)
+        self.rentals.update(paid=True)
 
     def generate_pdf(self):
         from registrations.pdf import generate_pdf_for_bill
@@ -746,14 +743,19 @@ class Bill(TimeStampedModel, StatusModel):
             )
         )
 
+    @transaction.atomic
     def set_paid(self):
         self.status = self.STATUS.paid
         self.payment_date = now()
-        for registration in self.registrations.all():
-            registration.set_paid()
-        for rental in self.rentals.all():
-            rental.paid = True
-            rental.save(update_fields=("paid",))
+        # Looping through Registration.set_paid()/save() here used to cascade into a full
+        # Bill.save() (update_total, QR-invoice SVG regeneration, ...) for every single
+        # registration - O(N) redundant cascades for an N-registration bill, on the payment
+        # webhook's request path. paid doesn't affect course.update_registrations()'s count
+        # (it counts all registrations regardless of paid status) and absence creation was
+        # already dispatched when each registration was created, so a bulk update is safe and
+        # the one self.save() below is enough to recompute the bill once.
+        self.registrations.update(paid=True)
+        self.rentals.update(paid=True)
         self.save()
 
     def set_waiting(self):
@@ -790,12 +792,14 @@ class Bill(TimeStampedModel, StatusModel):
             super().save()
 
     def update_total(self):
-        registrations_price = sum(
-            [registration.price for registration in self.registrations.all() if registration.price]
-        )
+        # A single fetch (with extra_infos prefetched) instead of querying self.registrations
+        # twice and hitting extra_infos once per registration.
+        registrations = list(self.registrations.prefetch_related("extra_infos").all())
+        registrations_price = sum(registration.price for registration in registrations if registration.price)
         extra_price = sum(
-            sum(extra_infos.price_modifier for extra_infos in reg.extra_infos.all())
-            for reg in self.registrations.all()
+            extra_info.price_modifier
+            for registration in registrations
+            for extra_info in registration.extra_infos.all()
         )
         rental_price = sum([rental.amount for rental in self.rentals.all()])
         self.total = registrations_price + extra_price + rental_price

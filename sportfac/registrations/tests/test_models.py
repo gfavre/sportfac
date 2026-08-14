@@ -3,7 +3,9 @@ from datetime import timedelta
 from unittest import mock
 
 from django.core.files.base import ContentFile
+from django.db import connection
 from django.test import override_settings
+from django.test.utils import CaptureQueriesContext
 from django.utils.timezone import now
 from dynamic_preferences.registries import global_preferences_registry
 from faker import Faker
@@ -16,6 +18,8 @@ from profiles.tests.factories import CityFactory
 from profiles.tests.factories import FamilyUserFactory
 from sportfac.utils import TenantTestCase
 
+from ..models import Bill
+from ..models import Registration
 from .factories import BillFactory
 from .factories import ChildFactory
 from .factories import RegistrationFactory
@@ -547,6 +551,65 @@ class BillTestCase(TenantTestCase):
 
         self.bill.pdf.save("test.pdf", ContentFile(b"%PDF-1.4 fake"), save=True)
         self.assertTrue(self.bill.pdf)
+
+
+class BillSetPaidTestCase(TenantTestCase):
+    def setUp(self):
+        self.bill = BillFactory()
+        self.registrations = [
+            RegistrationFactory(bill=self.bill, price=100, status=Registration.STATUS.confirmed) for _ in range(3)
+        ]
+
+    def test_marks_all_registrations_and_rentals_as_paid(self):
+        self.bill.set_paid()
+
+        for registration in self.registrations:
+            registration.refresh_from_db()
+            self.assertTrue(registration.paid)
+        self.bill.refresh_from_db()
+        self.assertEqual(self.bill.status, Bill.STATUS.paid)
+        self.assertIsNotNone(self.bill.payment_date)
+
+    def test_query_count_does_not_scale_with_number_of_registrations(self):
+        # Regression test: set_paid() used to loop through Registration.save(), each of which
+        # cascaded into a full Bill.save() - O(N) queries for an N-registration bill. A bill
+        # with 3 registrations (setUp) and one with 12 must now cost the same number of queries.
+        big_bill = BillFactory()
+        for _ in range(12):
+            RegistrationFactory(bill=big_bill, price=100, status=Registration.STATUS.confirmed)
+
+        with CaptureQueriesContext(connection) as small_queries:
+            self.bill.set_paid()
+        with CaptureQueriesContext(connection) as big_queries:
+            big_bill.set_paid()
+
+        self.assertEqual(len(small_queries.captured_queries), len(big_queries.captured_queries))
+
+    def test_does_not_change_course_participant_count(self):
+        course = self.registrations[0].course
+        course.refresh_from_db()
+        nb_participants_before = course.nb_participants
+
+        self.bill.set_paid()
+
+        course.refresh_from_db()
+        self.assertEqual(course.nb_participants, nb_participants_before)
+
+
+class BillCloseTestCase(TenantTestCase):
+    def setUp(self):
+        self.bill = BillFactory()
+
+    def test_marks_valid_registrations_as_paid(self):
+        valid_registration = RegistrationFactory(bill=self.bill, price=100, status=Registration.STATUS.valid)
+        waiting_registration = RegistrationFactory(bill=self.bill, price=100, status=Registration.STATUS.waiting)
+
+        self.bill.close()
+
+        valid_registration.refresh_from_db()
+        waiting_registration.refresh_from_db()
+        self.assertTrue(valid_registration.paid)
+        self.assertFalse(waiting_registration.paid)
 
         self.bill.save()
         self.assertTrue(self.bill.pdf)
