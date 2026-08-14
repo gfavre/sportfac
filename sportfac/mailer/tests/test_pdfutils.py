@@ -28,11 +28,15 @@ class GetSSFDecompteHeuresTests(TenantTestCase):
             is_mep=False,
             is_teacher=False,
         )
-        self.course = CourseFactory(
-            start_date=datetime.date(2024, 9, 1),
-            end_date=datetime.date(2024, 12, 15),
-            instructors=[self.instructor],
-        )
+        # Course.save() derives start_date/end_date from sessions when
+        # KEPCHUP_EXPLICIT_SESSION_DATES is on, wiping out the dates given below since
+        # this course has no sessions - force it off just for creation.
+        with override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False):
+            self.course = CourseFactory(
+                start_date=datetime.date(2024, 9, 1),
+                end_date=datetime.date(2024, 12, 15),
+                instructors=[self.instructor],
+            )
 
     @patch("pypdftk.fill_form", side_effect=_fake_fill_form)
     def test_returns_a_file_path(self, _mock):

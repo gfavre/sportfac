@@ -30,6 +30,7 @@ class RegistrationTestCase(TenantTestCase):
         self.price_family = self.price_local
         self.price_local_family = self.price_local - 10
 
+    @override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False)
     def test_overlap(self):
         """
         Tests overlapping detection

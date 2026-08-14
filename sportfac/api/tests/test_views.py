@@ -2,18 +2,20 @@ import datetime
 import json
 import logging
 
+import faker
 from django.test import override_settings
 from django.urls import reverse
 
-import faker
-
 from activities.tests.factories import CourseFactory
 from api.serializers import ChildrenSerializer
-from profiles.tests.factories import FamilyUserFactory, SchoolYearFactory
+from profiles.tests.factories import FamilyUserFactory
+from profiles.tests.factories import SchoolYearFactory
 from registrations.models import Child
-from registrations.tests.factories import ChildFactory, RegistrationFactory
+from registrations.tests.factories import ChildFactory
+from registrations.tests.factories import RegistrationFactory
 from schools.tests.factories import TeacherFactory
 from sportfac.utils import TenantTestCase
+
 from .utils import UserMixin
 
 
@@ -29,13 +31,17 @@ class ActivityAPITests(TenantTestCase):
         self.school_year = 3
         self.birth_date = fake.date_between(start_date="-10y", end_date="-5y")
         self.age = datetime.date.today().year - self.birth_date.year
-        self.course = CourseFactory(
-            schoolyear_min=self.school_year,
-            schoolyear_max=self.school_year,
-            age_min=self.age,
-            age_max=self.age,
-            start_date=datetime.date.today(),
-        )
+        # Course.save() derives start_date (and min/max_birth_date) from sessions when
+        # KEPCHUP_EXPLICIT_SESSION_DATES is on, wiping the date given below since this
+        # course has no sessions - force it off just for creation.
+        with override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False):
+            self.course = CourseFactory(
+                schoolyear_min=self.school_year,
+                schoolyear_max=self.school_year,
+                age_min=self.age,
+                age_max=self.age,
+                start_date=datetime.date.today(),
+            )
 
     def test_list(self):
         url = reverse("api:activity-list")
@@ -51,7 +57,7 @@ class ActivityAPITests(TenantTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 2)
 
-    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False)
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False, KEPCHUP_EXPLICIT_SESSION_DATES=False)
     def test_filter_by_age(self):
         CourseFactory(
             age_min=self.age + 1,
@@ -178,7 +184,11 @@ class RegistrationAPITests(UserMixin, TenantTestCase):
     def setUp(self):
         super().setUp()
         self.year = SchoolYearFactory()
-        self.course = CourseFactory(schoolyear_min=self.year.year, schoolyear_max=self.year.year)
+        # Course.save() derives start_date (and min/max_birth_date) from sessions when
+        # KEPCHUP_EXPLICIT_SESSION_DATES is on, wiping them since this course has no
+        # sessions - force it off just for creation.
+        with override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False):
+            self.course = CourseFactory(schoolyear_min=self.year.year, schoolyear_max=self.year.year)
         self.child1 = ChildFactory(school_year=self.year)
         self.child2 = ChildFactory(school_year=self.year)
         self.reg1 = RegistrationFactory(course=self.course, child=self.child1)
@@ -226,10 +236,11 @@ class RegistrationAPITests(UserMixin, TenantTestCase):
     def _test_create(self, user):
         url = reverse("api:registration-list")
         self.login(user)
-        course2 = CourseFactory(
-            schoolyear_min=self.year.year,
-            schoolyear_max=self.year.year,
-        )
+        with override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False):
+            course2 = CourseFactory(
+                schoolyear_min=self.year.year,
+                schoolyear_max=self.year.year,
+            )
         response = self.tenant_client.post(url, {"child": self.child1.pk, "course": course2.pk})
         self.assertEqual(response.status_code, 201)
         response = self.tenant_client.post(url, {"child": self.child1.pk, "course": course2.pk})

@@ -74,7 +74,7 @@ class CourseMailForm(MailForm):
         label=_("Send a copy to all other instructors"), initial=True, required=False
     )
     copy_all_admins = forms.BooleanField(
-        label=_("Send a copy to administrators"), initial=True, required=False, disabled=True
+        label=_("Send a copy to administrators"), initial=False, required=False, disabled=True
     )
 
     def __init__(self, *args, enable_copy_all_admins=False, **kwargs):

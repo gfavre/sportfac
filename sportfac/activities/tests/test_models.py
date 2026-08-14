@@ -60,7 +60,12 @@ class ActivityTest(TestCase):
 class CourseTest(TestCase):
     def setUp(self):
         super().setUp()
-        self.course = CourseFactory()
+        # Course.save() derives start_date/end_date from sessions when
+        # KEPCHUP_EXPLICIT_SESSION_DATES is on, wiping out the dates CourseFactory sets
+        # since this course has no sessions - force it off just for creation so tests
+        # relying on those dates aren't at the mercy of whatever settings module is active.
+        with override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False):
+            self.course = CourseFactory()
 
     def test_ages(self):
         ages = self.course.ages
@@ -229,6 +234,7 @@ class CourseTest(TestCase):
             self.course.save()
             mock_update_dates_from_sessions.assert_called_once()
 
+    @override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False)
     def test_save_updates_min_birth_date(self):
         self.course.age_min = 5
         self.course.start_date = date(2022, 1, 1)
@@ -236,6 +242,7 @@ class CourseTest(TestCase):
         self.course.save()
         self.assertEqual(self.course.min_birth_date, date(2017, 1, 1))
 
+    @override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False)
     def test_save_updates_max_birth_date(self):
         self.course.age_max = 10
         self.course.start_date = date(2022, 1, 1)

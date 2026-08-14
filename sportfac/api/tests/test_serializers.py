@@ -1,17 +1,17 @@
 import random
-from datetime import date, timedelta
+from datetime import date
+from datetime import timedelta
 from unittest import mock
 
-from django.conf import settings
-
-from activities.tests.factories import CourseFactory
+from django.test import override_settings
 from dynamic_preferences.registries import global_preferences_registry
-from profiles.tests.factories import SchoolYearFactory
-from registrations.models import Registration
-from registrations.tests.factories import ChildFactory
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
+from activities.tests.factories import CourseFactory
+from profiles.tests.factories import SchoolYearFactory
+from registrations.models import Registration
+from registrations.tests.factories import ChildFactory
 from sportfac.utils import TenantTestCase
 
 from ..serializers import RegistrationSerializer
@@ -25,12 +25,16 @@ class RegistrationSerializerTest(TenantTestCase):
         self.age_min = random.randint(6, 12)
         self.age_max = self.age_min + 1
 
-        self.course = CourseFactory(
-            schoolyear_min=self.school_year.year,
-            schoolyear_max=self.school_year.year,
-            age_min=self.age_min,
-            age_max=self.age_max,
-        )
+        # Course.save() derives start_date/end_date (and thus min/max_birth_date) from
+        # sessions when KEPCHUP_EXPLICIT_SESSION_DATES is on, wiping them since this
+        # course has no sessions - force it off just for creation.
+        with override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False):
+            self.course = CourseFactory(
+                schoolyear_min=self.school_year.year,
+                schoolyear_max=self.school_year.year,
+                age_min=self.age_min,
+                age_max=self.age_max,
+            )
         self.factory = APIRequestFactory()
 
     def test_successful_registration(self):
@@ -75,9 +79,9 @@ class RegistrationSerializerTest(TenantTestCase):
             serializer.is_valid(raise_exception=True)
         self.assertIn("Cours complet", str(exc.exception))
 
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=True)
     def test_registration_out_of_school_year(self):
         """Test if the child's school year is not allowed in the course"""
-        settings.KEPCHUP_LIMIT_BY_SCHOOL_YEAR = True
         self.child.school_year = SchoolYearFactory(year=self.school_year.year + 1)
         self.child.save()
 
@@ -91,10 +95,9 @@ class RegistrationSerializerTest(TenantTestCase):
             serializer.is_valid(raise_exception=True)
         self.assertIn("Ce cours n'est pas ouvert aux élèves de", str(exc.exception))
 
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False)
     def test_registration_age_too_young(self):
         """Test if the child's birth date is outside the allowed range"""
-        settings.KEPCHUP_LIMIT_BY_SCHOOL_YEAR = False
-
         too_young_birth_date = date.today() - timedelta(days=365 * (self.age_min - 1))
         self.child.birth_date = too_young_birth_date
         self.child.save()
@@ -109,10 +112,9 @@ class RegistrationSerializerTest(TenantTestCase):
             serializer.is_valid(raise_exception=True)
         self.assertIn("Ce cours n'est pas ouvert aux élèves de cet âge", str(exc.exception))
 
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False)
     def test_registration_age_too_old(self):
         """Test if the child's birth date is outside the allowed range"""
-        settings.KEPCHUP_LIMIT_BY_SCHOOL_YEAR = False
-
         too_old_birth_date = date.today() - timedelta(days=365 * (self.age_max + 1))  # One year older than the max age
         self.child.birth_date = too_old_birth_date
         self.child.save()
@@ -129,7 +131,12 @@ class RegistrationSerializerTest(TenantTestCase):
 
     def test_max_registrations_reached(self):
         """Test if the child has already reached the max number of registrations"""
-        global_preferences_registry.manager()["MAX_REGISTRATIONS"] = 1
+        preferences = global_preferences_registry.manager()
+        original_max_registrations = preferences["MAX_REGISTRATIONS"]
+        # dynamic_preferences caches values outside the DB transaction rollback, so this
+        # would otherwise leak into every later test in the same process - restore it.
+        self.addCleanup(lambda: preferences.__setitem__("MAX_REGISTRATIONS", original_max_registrations))
+        preferences["MAX_REGISTRATIONS"] = 1
         Registration.objects.create(
             child=self.child,
             course=CourseFactory(),

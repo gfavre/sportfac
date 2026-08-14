@@ -4,15 +4,17 @@ from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import model_to_dict
-from django.test import RequestFactory, override_settings
+from django.test import RequestFactory
+from django.test import override_settings
 from django.urls import reverse
-
 from faker import Faker
 
 from activities.tests.factories import CourseFactory
 from sportfac.utils import TenantTestCase as TestCase
+
 from ..models import FamilyUser
-from ..views import AccountView, RegistrationView
+from ..views import AccountView
+from ..views import RegistrationView
 from .factories import FamilyUserFactory
 
 
@@ -63,6 +65,7 @@ class RegistrationViewTests(UserDataTestCaseMixin, TestCase):
         self.view = RegistrationView.as_view()
         self.url = reverse("profiles:anytime_registeraccount")
 
+    @override_settings(KEPCHUP_REGISTER_ACCOUNTS_AT_ANY_TIME=False)
     def test_account_creation_forbidden_if_registration_closed(self):
         request = self.factory.get(self.url)
         request.user = AnonymousUser()

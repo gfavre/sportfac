@@ -1,10 +1,15 @@
 import datetime
 
-from django.conf import settings
-
 import factory.fuzzy
-from activities.models import SCHOOL_YEARS, Activity, AllocationAccount, Course, CoursesInstructors, ExtraNeed
+from django.conf import settings
 from faker import Faker
+
+from activities.models import SCHOOL_YEARS
+from activities.models import Activity
+from activities.models import AllocationAccount
+from activities.models import Course
+from activities.models import CoursesInstructors
+from activities.models import ExtraNeed
 from profiles.tests.factories import FamilyUserFactory
 
 
@@ -54,6 +59,8 @@ class CourseFactory(factory.django.DjangoModelFactory):
     price_local = factory.LazyAttribute(lambda c: c.price - 10)
     price_family = factory.LazyAttribute(lambda c: c.price - 5)
     price_local_family = factory.LazyAttribute(lambda c: c.price - 15)
+    price_family_3rd = factory.LazyAttribute(lambda c: c.price - 20)
+    price_local_family_3rd = factory.LazyAttribute(lambda c: c.price - 25)
     price_description = factory.Faker("text")
     age_min = factory.fuzzy.FuzzyInteger(settings.KEPCHUP_AGES[0], settings.KEPCHUP_AGES[-1] - 1)
     age_max = factory.LazyAttribute(lambda o: o.age_min + 1)

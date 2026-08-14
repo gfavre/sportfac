@@ -46,7 +46,7 @@ class CourseDecompteDownloadViewTests(TenantTestCase):
         response = self._get(user=FamilyUserFactory(is_manager=False))
         self.assertEqual(response.status_code, 302)
 
-    @patch("backend.views.course_views.get_ssf_decompte_heures", side_effect=_fake_decompte)
+    @patch("mailer.pdfutils.get_ssf_decompte_heures", side_effect=_fake_decompte)
     def test_single_instructor_returns_pdf(self, mock_decompte):
         response = self._get()
         self.assertEqual(response.status_code, 200)
@@ -55,7 +55,7 @@ class CourseDecompteDownloadViewTests(TenantTestCase):
         self.assertIn(".pdf", response["Content-Disposition"])
         mock_decompte.assert_called_once_with(self.course, self.instructor)
 
-    @patch("backend.views.course_views.get_ssf_decompte_heures", side_effect=_fake_decompte)
+    @patch("mailer.pdfutils.get_ssf_decompte_heures", side_effect=_fake_decompte)
     def test_multiple_instructors_returns_zip(self, mock_decompte):
         second = FamilyUserFactory()
         CoursesInstructorsFactory(course=self.course, instructor=second)
@@ -65,7 +65,7 @@ class CourseDecompteDownloadViewTests(TenantTestCase):
         self.assertIn(".zip", response["Content-Disposition"])
         self.assertEqual(mock_decompte.call_count, 2)
 
-    @patch("backend.views.course_views.get_ssf_decompte_heures", side_effect=_fake_decompte)
+    @patch("mailer.pdfutils.get_ssf_decompte_heures", side_effect=_fake_decompte)
     def test_zip_contains_one_pdf_per_instructor(self, _mock):
         second = FamilyUserFactory()
         CoursesInstructorsFactory(course=self.course, instructor=second)

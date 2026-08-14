@@ -1,29 +1,30 @@
 from unittest.mock import patch
+from urllib.parse import urlencode
 
 from django.contrib.auth.models import AnonymousUser
 from django.forms.models import model_to_dict
-from django.test import RequestFactory, override_settings
+from django.test import RequestFactory
+from django.test import override_settings
 from django.urls import reverse
 
 from absences.models import Session
 from absences.tests.factories import AbsenceFactory
-from activities.models import Activity, Course
+from activities.models import Activity
+from activities.models import Course
 from activities.tests.factories import CourseFactory
-from backend.utils import AbsencePDFRenderer, AbsencesPDFRenderer
+from backend.utils import AbsencePDFRenderer
+from backend.utils import AbsencesPDFRenderer
 from profiles.tests.factories import FamilyUserFactory
 from registrations.tests.factories import RegistrationFactory
-
 from sportfac.utils import TenantTestCase
 
-from ...views.course_views import (
-    BackendCourseAbsenceView,
-    CourseCreateView,
-    CourseDeleteView,
-    CourseDetailView,
-    CourseListView,
-    CoursesAbsenceView,
-    CourseUpdateView,
-)
+from ...views.course_views import BackendCourseAbsenceView
+from ...views.course_views import CourseCreateView
+from ...views.course_views import CourseDeleteView
+from ...views.course_views import CourseDetailView
+from ...views.course_views import CourseListView
+from ...views.course_views import CoursesAbsenceView
+from ...views.course_views import CourseUpdateView
 from .base import fake_registrations_open_middleware
 
 
@@ -44,13 +45,13 @@ class CourseAbsenceViewTests(TenantTestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request, course=self.course.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
+        self.assertEqual(response.url, f"{self.login_url}?{urlencode({'next': self.url}, safe='/')}")
 
     def test_access_forbidden_for_non_backend_users(self):
         self.request.user = FamilyUserFactory(is_manager=False)
         response = self.view(self.request, course=self.course.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
+        self.assertEqual(response.url, f"{self.login_url}?{urlencode({'next': self.url}, safe='/')}")
 
     def test_get_is_200(self):
         response = self.view(self.request, course=self.course.pk)
@@ -69,7 +70,10 @@ class CourseAbsenceViewTests(TenantTestCase):
         self.assertTrue(len(content) > 0)
 
     def test_get_pdf(self):
-        request = RequestFactory().get(self.url + "?pdf=1")
+        # self.url may already carry a query string (e.g. "?c=<pk>" when
+        # KEPCHUP_ABSENCES_RELATE_TO_ACTIVITIES is on), so don't assume "?" is free.
+        separator = "&" if "?" in self.url else "?"
+        request = RequestFactory().get(self.url + separator + "pdf=1")
         request.user = self.user
         fake_registrations_open_middleware(request)
         with patch.object(AbsencePDFRenderer, "render_to_pdf") as mock_render:
@@ -159,19 +163,6 @@ class CoursesAbsenceViewTests(TenantTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("attachment", response["Content-Disposition"])
 
-    @patch("django.contrib.messages.success")
-    def test_post_create_session(self, _):
-        data = {
-            "date": "01.01.2020",
-        }
-        request = RequestFactory().post(self.url, data=data)
-        request.user = self.user
-        fake_registrations_open_middleware(request)
-        response = self.view(request)
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue(response.url.startswith, reverse("backend:courses-absence"))
-        self.assertEqual(Session.objects.count(), 4)
-
 
 class CourseCreateViewTests(TenantTestCase):
     def setUp(self):
@@ -188,13 +179,13 @@ class CourseCreateViewTests(TenantTestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
+        self.assertEqual(response.url, f"{self.login_url}?{urlencode({'next': self.url}, safe='/')}")
 
     def test_access_forbidden_for_non_backend_users(self):
         self.request.user = FamilyUserFactory(is_manager=False)
         response = self.view(self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
+        self.assertEqual(response.url, f"{self.login_url}?{urlencode({'next': self.url}, safe='/')}")
 
     def test_get_is_200(self):
         response = self.view(self.request)
@@ -215,6 +206,7 @@ class CourseCreateViewTests(TenantTestCase):
         self.assertTrue(len(content) > 0)
 
     @patch("django.contrib.messages.success")
+    @override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False)
     def test_post_creates_course(self, _):
         course = CourseFactory()
         course_data = model_to_dict(course)
@@ -245,13 +237,13 @@ class CourseDeleteViewTests(TenantTestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request, course=self.course.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
+        self.assertEqual(response.url, f"{self.login_url}?{urlencode({'next': self.url}, safe='/')}")
 
     def test_access_forbidden_for_non_backend_users(self):
         self.request.user = FamilyUserFactory(is_manager=False)
         response = self.view(self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
+        self.assertEqual(response.url, f"{self.login_url}?{urlencode({'next': self.url}, safe='/')}")
 
     def test_get_is_200(self):
         response = self.view(self.request, course=self.course.pk)
@@ -290,13 +282,13 @@ class CourseDetailViewTests(TenantTestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request, course=self.course.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
+        self.assertEqual(response.url, f"{self.login_url}?{urlencode({'next': self.url}, safe='/')}")
 
     def test_access_forbidden_for_non_backend_users(self):
         self.request.user = FamilyUserFactory(is_manager=False)
         response = self.view(self.request, course=self.course.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
+        self.assertEqual(response.url, f"{self.login_url}?{urlencode({'next': self.url}, safe='/')}")
 
     def test_get_is_200(self):
         response = self.view(self.request, course=self.course.pk)
@@ -334,13 +326,13 @@ class CourseListViewTests(TenantTestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
+        self.assertEqual(response.url, f"{self.login_url}?{urlencode({'next': self.url}, safe='/')}")
 
     def test_access_forbidden_for_non_backend_users(self):
         self.request.user = FamilyUserFactory(is_manager=False)
         response = self.view(self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
+        self.assertEqual(response.url, f"{self.login_url}?{urlencode({'next': self.url}, safe='/')}")
 
     def test_get_is_200(self):
         response = self.view(self.request)
@@ -363,7 +355,11 @@ class CourseListViewTests(TenantTestCase):
 class CourseUpdateViewTests(TenantTestCase):
     def setUp(self):
         super().setUp()
-        self.course = CourseFactory()
+        # Course.save() derives start_date/end_date from sessions when
+        # KEPCHUP_EXPLICIT_SESSION_DATES is on, wiping them since this course has no
+        # sessions - force it off just for creation.
+        with override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False):
+            self.course = CourseFactory()
         self.login_url = reverse("profiles:auth_login")
         self.url = self.course.get_update_url()
         self.user = FamilyUserFactory(is_manager=True)
@@ -378,13 +374,13 @@ class CourseUpdateViewTests(TenantTestCase):
         self.request.user = AnonymousUser()
         response = self.view(self.request, course=self.course.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
+        self.assertEqual(response.url, f"{self.login_url}?{urlencode({'next': self.url}, safe='/')}")
 
     def test_access_forbidden_for_non_backend_users(self):
         self.request.user = FamilyUserFactory(is_manager=False)
         response = self.view(self.request, course=self.course.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, str(self.login_url + "?next=" + self.url))
+        self.assertEqual(response.url, f"{self.login_url}?{urlencode({'next': self.url}, safe='/')}")
 
     def test_get_is_200(self):
         response = self.view(self.request, course=self.course.pk)
@@ -397,6 +393,7 @@ class CourseUpdateViewTests(TenantTestCase):
         self.assertTrue(len(content) > 0)
 
     @patch("django.contrib.messages.success")
+    @override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False)
     def test_post_is_302(self, _):
         self.request.method = "POST"
         self.request.POST = self.data

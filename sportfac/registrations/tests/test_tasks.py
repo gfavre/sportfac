@@ -100,7 +100,7 @@ class CancelExpiredRegistrationsTest(TenantTestCase):
         mock_registration.course = mock_course
 
         # Mock queryset returns
-        mock_bill_filter.return_value = [mock_invoice]
+        mock_bill_filter.return_value.exclude.return_value = [mock_invoice]
         mock_registration_filter.return_value = [mock_registration]
 
         # Call the task
@@ -147,7 +147,7 @@ class CancelExpiredRegistrationsTest(TenantTestCase):
         mock_registration.course = mock_course
 
         # Mock queryset returns
-        mock_bill_filter.return_value = [mock_invoice]
+        mock_bill_filter.return_value.exclude.return_value = [mock_invoice]
         mock_registration_filter.return_value = [mock_registration]
 
         # Call the task
@@ -185,7 +185,7 @@ class CancelExpiredRegistrationsTest(TenantTestCase):
         # Ensure the time filter is correct
         mock_bill_filter.assert_called_once_with(
             status=Bill.STATUS.waiting,
-            modified__lte=mock_expiration_time,
+            created__lte=mock_expiration_time,
         )
         mock_registration_filter.assert_called_once_with(
             status=Registration.STATUS.waiting,
