@@ -18,6 +18,7 @@ from ..models import Registration
 from ..tasks import cancel_expired_registrations
 from ..tasks import create_future_absences_for_registration
 from ..tasks import send_bill_confirmation
+from ..tasks import send_bill_pdf_email
 from ..tasks import send_invoice_pdf
 from .factories import BillFactory
 from .factories import RegistrationFactory
@@ -30,43 +31,86 @@ class SendBillConfirmationTests(TenantTestCase):
     def setUp(self):
         self.bill = BillFactory()
         global_preferences = global_preferences_registry.manager()
+        # dynamic_preferences caches values outside the DB transaction rollback, so this would
+        # otherwise leak into every later test in the same process - restore it.
+        original_iban = global_preferences["payment__IBAN"]
+        original_address = global_preferences["payment__ADDRESS"]
+        self.addCleanup(lambda: global_preferences.__setitem__("payment__IBAN", original_iban))
+        self.addCleanup(lambda: global_preferences.__setitem__("payment__ADDRESS", original_address))
         global_preferences["payment__IBAN"] = "CH9300762011623852957"
         global_preferences["payment__ADDRESS"] = "Commune de Coppet\nGrand-Rue 34\n1296 Coppet"
 
     @override_settings(KEPCHUP_PAYMENT_METHOD="iban")
-    def test_iban_details_included_for_wire_transfer(self):
-        # Regression test: the IBAN block used to silently never render, because
-        # PAYMENT_METHOD (from sportfac.context_processors.kepchup_context) wasn't
-        # available to this template outside of an HTTP request - see mailer.utils.
+    @mock.patch("registrations.tasks.send_bill_pdf_email.delay")
+    def test_announces_a_separate_invoice_email_for_wire_transfer(self, _mock_delay):
+        # The actual invoice (with IBAN/QR details and the PDF) is sent separately by
+        # send_bill_pdf_email - this immediate confirmation just announces it, so it never
+        # has to wait behind that rate-limited task. send_bill_pdf_email is mocked here so
+        # this test stays about the announcement text, not a real PDF generation.
         send_bill_confirmation(user_pk=str(self.bill.family.pk), bill_pk=self.bill.pk, tenant_pk=self.tenant.id)
         self.assertEqual(len(mail.outbox), 1)
-        body = mail.outbox[0].body
-        self.assertIn("IBAN: CH9300762011623852957", body)
-        self.assertIn(self.bill.billing_identifier, body)
-
-    @override_settings(KEPCHUP_PAYMENT_METHOD="datatrans")
-    def test_iban_details_not_included_for_other_payment_methods(self):
-        send_bill_confirmation(user_pk=str(self.bill.family.pk), bill_pk=self.bill.pk, tenant_pk=self.tenant.id)
-        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("email séparé", mail.outbox[0].body)
         self.assertNotIn("IBAN", mail.outbox[0].body)
 
-    def test_pdf_attached_for_wire_transfer(self):
+    @override_settings(KEPCHUP_PAYMENT_METHOD="datatrans")
+    @mock.patch("registrations.tasks.send_bill_pdf_email.delay")
+    def test_no_separate_invoice_email_announced_for_other_payment_methods(self, _mock_delay):
+        send_bill_confirmation(user_pk=str(self.bill.family.pk), bill_pk=self.bill.pk, tenant_pk=self.tenant.id)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertNotIn("email séparé", mail.outbox[0].body)
+
+    @mock.patch("registrations.tasks.send_bill_pdf_email.delay")
+    def test_dispatches_the_pdf_email_for_wire_transfer(self, mock_delay):
         self.bill.payment_method = self.bill.METHODS.iban
         self.bill.save()
 
         send_bill_confirmation(user_pk=str(self.bill.family.pk), bill_pk=self.bill.pk, tenant_pk=self.tenant.id)
 
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(len(mail.outbox[0].attachments), 1)
+        mock_delay.assert_called_once_with(bill_pk=self.bill.pk, tenant_pk=self.tenant.id, language=mock.ANY)
 
-    def test_pdf_not_attached_for_other_payment_methods(self):
+    @mock.patch("registrations.tasks.send_bill_pdf_email.delay")
+    def test_does_not_dispatch_the_pdf_email_for_other_payment_methods(self, mock_delay):
         self.bill.payment_method = self.bill.METHODS.datatrans
         self.bill.save()
 
         send_bill_confirmation(user_pk=str(self.bill.family.pk), bill_pk=self.bill.pk, tenant_pk=self.tenant.id)
 
+        mock_delay.assert_not_called()
+
+
+class SendBillPdfEmailTests(TenantTestCase):
+    def setUp(self):
+        self.bill = BillFactory()
+        global_preferences = global_preferences_registry.manager()
+        original_iban = global_preferences["payment__IBAN"]
+        original_address = global_preferences["payment__ADDRESS"]
+        self.addCleanup(lambda: global_preferences.__setitem__("payment__IBAN", original_iban))
+        self.addCleanup(lambda: global_preferences.__setitem__("payment__ADDRESS", original_address))
+        global_preferences["payment__IBAN"] = "CH9300762011623852957"
+        global_preferences["payment__ADDRESS"] = "Commune de Coppet\nGrand-Rue 34\n1296 Coppet"
+
+    def test_pdf_attached_and_iban_details_included_for_wire_transfer(self):
+        self.bill.payment_method = self.bill.METHODS.iban
+        self.bill.save()
+
+        send_bill_pdf_email(bill_pk=self.bill.pk, tenant_pk=self.tenant.id)
+
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(len(mail.outbox[0].attachments), 0)
+        self.assertEqual(len(mail.outbox[0].attachments), 1)
+        self.assertIn("IBAN: CH9300762011623852957", mail.outbox[0].body)
+        self.assertIn(self.bill.billing_identifier, mail.outbox[0].body)
+
+    def test_noop_for_other_payment_methods(self):
+        self.bill.payment_method = self.bill.METHODS.datatrans
+        self.bill.save()
+
+        send_bill_pdf_email(bill_pk=self.bill.pk, tenant_pk=self.tenant.id)
+
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_unknown_bill_is_a_noop(self):
+        send_bill_pdf_email(bill_pk=self.bill.pk + 1000000, tenant_pk=self.tenant.id)
+        self.assertEqual(len(mail.outbox), 0)
 
 
 class CreateFutureAbsencesForRegistrationTaskTests(TenantTestCase):

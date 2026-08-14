@@ -1,0 +1,11 @@
+{% load i18n switzerland %}
+Madame, Monsieur,
+
+Voici votre facture, également disponible en pièce jointe de cet email:
+Identifiant de paiement: {{ bill.billing_identifier }}
+Total: {{ bill.total|money }}
+IBAN: {{ iban }}
+
+Vous pouvez également la retrouver en tous temps sur {{ site_url }}{{ bill.get_absolute_url }}
+
+{{ signature }}

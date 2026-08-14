@@ -6,10 +6,7 @@ Nous avons bien reçu vos inscriptions pour les cours suivants:
 • {{ registration.child.full_name|safe }} - {{ registration.course.short_name|safe }}
 {% endfor %}
 {% if payment and PAYMENT_METHOD == 'iban' %}
-Paiement:
-Identifiant de paiement: {{ bill.billing_identifier }}
-Total: {{ bill.total|money }}
-IBAN: {{ iban }}
+Vous recevrez votre facture, avec les détails de paiement, par un email séparé d'ici quelques minutes.
 {% elif payment and PAYMENT_METHOD == 'external' %}
 La facture de {{ bill.total|money }} vous sera envoyée par courrier.
 {% endif %}

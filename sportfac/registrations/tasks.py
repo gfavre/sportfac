@@ -29,13 +29,8 @@ from .models import Registration
 logger = get_task_logger(__name__)
 
 
-@shared_task(rate_limit="12/m")
+@shared_task
 def send_bill_confirmation(user_pk, bill_pk, tenant_pk=None, language=settings.LANGUAGE_CODE):
-    # PDF generation (Playwright) is real CPU/memory cost, and the Celery worker runs on the
-    # same box as the web server with concurrency=1 - during a registration rush, hundreds of
-    # these can pile up at once. rate_limit throttles execution regardless of how long the
-    # rush lasts, instead of guessing a fixed delay - no download for anyone if we spike the
-    # box, but everyone eventually gets their email once the backlog drains.
     from waiting_slots.models import WaitingSlot
 
     cur_lang = translation.get_language()
@@ -73,26 +68,79 @@ def send_bill_confirmation(user_pk, bill_pk, tenant_pk=None, language=settings.L
             subject = render_email_content("registrations/confirmation_bill_mail_subject.txt", extra_context=context)
             body = render_email_content("registrations/confirmation_bill_mail.txt", extra_context=context)
 
+            send_mail.delay(
+                subject=subject.strip(),
+                message=body,
+                from_email=global_preferences["email__FROM_MAIL"],
+                recipients=[user.get_email_string()],
+                reply_to=[global_preferences["email__REPLY_TO_MAIL"]],
+            )
+            registrations.update(confirmation_sent_on=now())
+
+            if bill.is_wire_transfer:
+                # The actual invoice (PDF, with the QR payment slip) is heavier to produce
+                # (Chromium launch) - send it in a separate, rate-limited email so this
+                # immediate confirmation never waits behind that queue.
+                send_bill_pdf_email.delay(bill_pk=bill.pk, tenant_pk=tenant.pk, language=language)
+    finally:
+        translation.activate(cur_lang)
+
+
+@shared_task(rate_limit="12/m")
+def send_bill_pdf_email(bill_pk, tenant_pk=None, language=settings.LANGUAGE_CODE):
+    # PDF generation (Playwright) is real CPU/memory cost, and the Celery worker runs on the
+    # same box as the web server with concurrency=1 - during a registration rush, hundreds of
+    # these can pile up at once. rate_limit throttles execution regardless of how long the
+    # rush lasts, instead of guessing a fixed delay - everyone still gets their invoice once
+    # the backlog drains, without spiking the box in the meantime.
+    cur_lang = translation.get_language()
+    try:
+        translation.activate(language)
+        if tenant_pk:
+            tenant = YearTenant.objects.get(pk=tenant_pk)
+        else:
+            current_domain = Domain.objects.filter(is_current=True).first()
+            tenant = current_domain.tenant
+
+        with tenant_context(tenant):
+            try:
+                bill = Bill.objects.get(pk=bill_pk)
+            except Bill.DoesNotExist:
+                return
+            if not bill.is_wire_transfer:
+                return
+
+            global_preferences = global_preferences_registry.manager()
+            current_site = Site.objects.get_current()
+            context = {
+                "bill": bill,
+                "iban": global_preferences["payment__IBAN"],
+                "signature": global_preferences["email__SIGNATURE"],
+                "site_name": current_site.name,
+                "site_url": settings.DEBUG and "http://" + current_site.domain or "https://" + current_site.domain,
+            }
+            subject = render_email_content("registrations/bill_pdf_mail_subject.txt", extra_context=context)
+            body = render_email_content("registrations/bill_pdf_mail.txt", extra_context=context)
+
+            # total/billing_identifier/qr_invoice are already computed by the time this runs
+            # (Bill.save(), before dispatch) - the actual PDF just needs generating.
+            if not bill.pdf:
+                bill.generate_pdf()
+                bill.refresh_from_db()
+
             email = EmailMessage(
                 subject=subject.strip(),
                 body=body,
                 from_email=global_preferences["email__FROM_MAIL"],
-                to=[user.get_email_string()],
+                to=[bill.family.get_email_string()],
                 reply_to=[global_preferences["email__REPLY_TO_MAIL"]],
             )
-            if bill.is_wire_transfer:
-                # total/billing_identifier/qr_invoice are already computed by the time this
-                # runs (Bill.save(), before dispatch) - the actual PDF just needs generating.
-                if not bill.pdf:
-                    bill.generate_pdf()
-                    bill.refresh_from_db()
-                if bill.pdf:
-                    try:
-                        email.attach_file(bill.pdf.path)
-                    except ValueError:
-                        logger.exception("Could not attach pdf to bill confirmation email")
+            if bill.pdf:
+                try:
+                    email.attach_file(bill.pdf.path)
+                except ValueError:
+                    logger.exception("Could not attach pdf to bill email")
             email.send()
-            registrations.update(confirmation_sent_on=now())
     finally:
         translation.activate(cur_lang)
 

@@ -21,6 +21,7 @@ from sportfac.utils import TenantTestCase
 from ..models import Bill
 from ..models import Registration
 from ..tasks import send_bill_confirmation
+from ..tasks import send_bill_pdf_email
 from .factories import BillFactory
 from .factories import ChildFactory
 from .factories import RegistrationFactory
@@ -565,13 +566,15 @@ class BillTestCase(TenantTestCase):
             language=mock.ANY,
         )
 
-    def test_send_bill_confirmation_is_rate_limited(self):
-        # Regression test: PDF generation (Playwright) is real CPU/memory cost, and it now
-        # happens inside this task for wire-transfer bills. During a registration rush,
-        # hundreds of these can be dispatched at once on a box that also runs the web
-        # server - rate_limit throttles execution instead of guessing a fixed delay, which
-        # wouldn't adapt to how long the rush actually lasts.
-        self.assertEqual(send_bill_confirmation.rate_limit, "12/m")
+    def test_send_bill_pdf_email_is_rate_limited(self):
+        # Regression test: PDF generation (Playwright) is real CPU/memory cost. During a
+        # registration rush, hundreds of these can be dispatched at once on a box that also
+        # runs the web server - rate_limit throttles execution instead of guessing a fixed
+        # delay, which wouldn't adapt to how long the rush actually lasts. Kept on a
+        # dedicated task (send_bill_pdf_email) so the immediate confirmation email isn't
+        # throttled along with it.
+        self.assertEqual(send_bill_pdf_email.rate_limit, "12/m")
+        self.assertIsNone(send_bill_confirmation.rate_limit)
 
 
 class BillSetPaidTestCase(TenantTestCase):
