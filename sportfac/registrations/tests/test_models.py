@@ -20,6 +20,7 @@ from sportfac.utils import TenantTestCase
 
 from ..models import Bill
 from ..models import Registration
+from ..tasks import send_bill_confirmation
 from .factories import BillFactory
 from .factories import ChildFactory
 from .factories import RegistrationFactory
@@ -551,6 +552,26 @@ class BillTestCase(TenantTestCase):
 
         self.bill.pdf.save("test.pdf", ContentFile(b"%PDF-1.4 fake"), save=True)
         self.assertTrue(self.bill.pdf)
+
+    @mock.patch("registrations.tasks.send_bill_confirmation.delay")
+    def test_send_confirmation_dispatches_the_task(self, mock_delay):
+        with self.captureOnCommitCallbacks(execute=True):
+            self.bill.send_confirmation()
+
+        mock_delay.assert_called_once_with(
+            user_pk=str(self.bill.family.pk),
+            bill_pk=self.bill.pk,
+            tenant_pk=mock.ANY,
+            language=mock.ANY,
+        )
+
+    def test_send_bill_confirmation_is_rate_limited(self):
+        # Regression test: PDF generation (Playwright) is real CPU/memory cost, and it now
+        # happens inside this task for wire-transfer bills. During a registration rush,
+        # hundreds of these can be dispatched at once on a box that also runs the web
+        # server - rate_limit throttles execution instead of guessing a fixed delay, which
+        # wouldn't adapt to how long the rush actually lasts.
+        self.assertEqual(send_bill_confirmation.rate_limit, "12/m")
 
 
 class BillSetPaidTestCase(TenantTestCase):

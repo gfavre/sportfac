@@ -50,6 +50,24 @@ class SendBillConfirmationTests(TenantTestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertNotIn("IBAN", mail.outbox[0].body)
 
+    def test_pdf_attached_for_wire_transfer(self):
+        self.bill.payment_method = self.bill.METHODS.iban
+        self.bill.save()
+
+        send_bill_confirmation(user_pk=str(self.bill.family.pk), bill_pk=self.bill.pk, tenant_pk=self.tenant.id)
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(len(mail.outbox[0].attachments), 1)
+
+    def test_pdf_not_attached_for_other_payment_methods(self):
+        self.bill.payment_method = self.bill.METHODS.datatrans
+        self.bill.save()
+
+        send_bill_confirmation(user_pk=str(self.bill.family.pk), bill_pk=self.bill.pk, tenant_pk=self.tenant.id)
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(len(mail.outbox[0].attachments), 0)
+
 
 class CreateFutureAbsencesForRegistrationTaskTests(TenantTestCase):
     def setUp(self):

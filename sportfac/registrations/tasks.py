@@ -29,8 +29,13 @@ from .models import Registration
 logger = get_task_logger(__name__)
 
 
-@shared_task
+@shared_task(rate_limit="12/m")
 def send_bill_confirmation(user_pk, bill_pk, tenant_pk=None, language=settings.LANGUAGE_CODE):
+    # PDF generation (Playwright) is real CPU/memory cost, and the Celery worker runs on the
+    # same box as the web server with concurrency=1 - during a registration rush, hundreds of
+    # these can pile up at once. rate_limit throttles execution regardless of how long the
+    # rush lasts, instead of guessing a fixed delay - no download for anyone if we spike the
+    # box, but everyone eventually gets their email once the backlog drains.
     from waiting_slots.models import WaitingSlot
 
     cur_lang = translation.get_language()
@@ -68,13 +73,25 @@ def send_bill_confirmation(user_pk, bill_pk, tenant_pk=None, language=settings.L
             subject = render_email_content("registrations/confirmation_bill_mail_subject.txt", extra_context=context)
             body = render_email_content("registrations/confirmation_bill_mail.txt", extra_context=context)
 
-            send_mail.delay(
+            email = EmailMessage(
                 subject=subject.strip(),
-                message=body,
+                body=body,
                 from_email=global_preferences["email__FROM_MAIL"],
-                recipients=[user.get_email_string()],
+                to=[user.get_email_string()],
                 reply_to=[global_preferences["email__REPLY_TO_MAIL"]],
             )
+            if bill.is_wire_transfer:
+                # total/billing_identifier/qr_invoice are already computed by the time this
+                # runs (Bill.save(), before dispatch) - the actual PDF just needs generating.
+                if not bill.pdf:
+                    bill.generate_pdf()
+                    bill.refresh_from_db()
+                if bill.pdf:
+                    try:
+                        email.attach_file(bill.pdf.path)
+                    except ValueError:
+                        logger.exception("Could not attach pdf to bill confirmation email")
+            email.send()
             registrations.update(confirmation_sent_on=now())
     finally:
         translation.activate(cur_lang)
