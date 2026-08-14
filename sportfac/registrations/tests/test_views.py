@@ -1,18 +1,25 @@
+from unittest import mock
+
 from django.contrib.auth.models import AnonymousUser
+from django.db import connection
 from django.http import Http404
 from django.test import RequestFactory
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 
 from profiles.tests.factories import FamilyUserFactory
 from sportfac.utils import TenantTestCase as TestCase
 
+from ..models import Registration
 from ..views.user import BillDetailView
 from ..views.user import BillingView
 from ..views.user import BillPdfView
 from ..views.user import ChildrenListView
 from ..views.user import SummaryView
+from ..views.wizard import WizardConfirmationStepView
 from .factories import BillFactory
 from .factories import ChildFactory
+from .factories import ExtraInfoFactory
 from .factories import RegistrationFactory
 
 
@@ -159,3 +166,47 @@ class SummaryViewTests(TestCase):
         qs = response.context_data["registered_list"]
         self.assertEqual(qs.count(), 1)
         self.assertEqual(qs.first(), self.registration)
+
+
+class WizardConfirmationStepViewRowSpanTests(TestCase):
+    # Regression test: row_span used to call reg.extra_infos.count(), bypassing the
+    # extra_infos prefetch already done by get_registrations() and issuing one query per
+    # registration on every load of the wizard's confirmation page.
+    def setUp(self):
+        super().setUp()
+        self.user = FamilyUserFactory()
+        self.child = ChildFactory(family=self.user)
+        request = RequestFactory().get("/")
+        request.user = self.user
+        self.view = WizardConfirmationStepView()
+        self.view.request = request
+        self.view.kwargs = {}
+        self.view.args = []
+        # Only the workflow/step bookkeeping (irrelevant here) is stubbed out - the
+        # registration/extra_infos fetching (what we're testing) runs for real.
+        self.view.get_step = mock.MagicMock()
+        self.view.get_workflow = mock.MagicMock()
+        self.view.get_workflow.return_value.get_visible_steps.return_value = []
+        self.view.get_next_step = mock.MagicMock(return_value=None)
+        self.view.get_previous_step = mock.MagicMock(return_value=None)
+        self.view.get_success_url = mock.MagicMock(return_value="/")
+
+    def test_row_span_counts_extra_infos_without_extra_queries(self):
+        # Registration count is kept constant across both measurements so the comparison
+        # isolates the extra_infos count specifically, rather than an unrelated, pre-existing
+        # per-registration query in BaseWizardStepView.get_registration_context().
+        registration = RegistrationFactory(child=self.child, status=Registration.STATUS.waiting, price=10)
+        ExtraInfoFactory.create_batch(3, registration=registration)
+
+        with CaptureQueriesContext(connection) as few_queries:
+            context = self.view.get_context_data()
+        self.assertEqual(context["registrations"][0].row_span, 4)
+
+        ExtraInfoFactory.create_batch(7, registration=registration)
+        self.view._registration_context = None  # bust BaseWizardStepView's memoized context
+
+        with CaptureQueriesContext(connection) as many_queries:
+            context = self.view.get_context_data()
+        self.assertEqual(context["registrations"][0].row_span, 11)
+
+        self.assertEqual(len(few_queries.captured_queries), len(many_queries.captured_queries))

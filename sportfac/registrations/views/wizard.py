@@ -46,10 +46,12 @@ class WizardConfirmationStepView(LoginRequiredMixin, BaseWizardStepView, FormVie
         return RegistrationValidationFreeForm
 
     def get_registrations(self, user):
+        # extra_infos__key (not just extra_infos): ExtraInfo.price_modifier reads self.key -
+        # without key prefetched, computing total_amount below issues one query per extra info.
         waiting_registrations = (
             Registration.waiting.filter(child__family=user)
             .select_related("course")
-            .prefetch_related("course__extra", "extra_infos")
+            .prefetch_related("course__extra", "extra_infos__key")
         )
         if settings.KEPCHUP_PAYMENT_METHOD in ("postfinance", "datatrans"):
             # With immediate payment methods, we are block registration process while invoice is not paid.
@@ -61,7 +63,7 @@ class WizardConfirmationStepView(LoginRequiredMixin, BaseWizardStepView, FormVie
             if not invoice:
                 return waiting_registrations, None
             return (
-                invoice.registrations.select_related("course").prefetch_related("course__extra", "extra_infos"),
+                invoice.registrations.select_related("course").prefetch_related("course__extra", "extra_infos__key"),
                 invoice,
             )
         return waiting_registrations, None
@@ -144,7 +146,9 @@ class WizardConfirmationStepView(LoginRequiredMixin, BaseWizardStepView, FormVie
 
         registrations = context["registrations"]  # Registration.waiting.filter(child__in=user.children.all())
         for reg in registrations:
-            reg.row_span = 1 + reg.extra_infos.count()
+            # extra_infos is already prefetched (get_registrations()) - .count() would bypass
+            # that cache and issue one query per registration.
+            reg.row_span = 1 + len(reg.extra_infos.all())
 
         total_amount = sum(reg.price or 0 for reg in registrations)
         total_amount += sum(
@@ -183,7 +187,7 @@ class WizardPaymentStepView(LoginRequiredMixin, PaymentMixin, BaseWizardStepView
         invoice = Invoice.objects.filter(family=user, status=Invoice.STATUS.waiting).first()
         if invoice:
             return (
-                invoice.registrations.select_related("course").prefetch_related("course__extra", "extra_infos"),
+                invoice.registrations.select_related("course").prefetch_related("course__extra", "extra_infos__key"),
                 invoice,
             )
         return None, None
@@ -194,9 +198,9 @@ class WizardPaymentStepView(LoginRequiredMixin, PaymentMixin, BaseWizardStepView
         invoice = Invoice.objects.filter(
             family=user, status__in=(Invoice.STATUS.waiting, Invoice.STATUS.just_created)
         ).first()
-        registrations = invoice.registrations.all()
+        registrations = invoice.registrations.prefetch_related("extra_infos__key").all()
         for reg in registrations:
-            reg.row_span = 1 + reg.extra_infos.count()
+            reg.row_span = 1 + len(reg.extra_infos.all())
         total_amount = sum(reg.price for reg in registrations)
         total_amount += sum(
             sum(extra_infos.price_modifier for extra_infos in reg.extra_infos.all()) for reg in registrations
