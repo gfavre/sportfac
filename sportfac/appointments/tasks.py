@@ -1,15 +1,15 @@
-# -*- coding: utf-8 -*-
 import logging
 
+from celery import shared_task
 from django.conf import settings
 from django.db import connection
-from django.template.loader import render_to_string
 from django.utils import translation
 
 from backend.dynamic_preferences_registry import global_preferences_registry
-from backend.models import Domain, YearTenant
-from celery import shared_task
+from backend.models import Domain
+from backend.models import YearTenant
 from mailer.tasks import send_mail
+from mailer.utils import render_email_content
 
 from .models import Appointment
 
@@ -19,9 +19,7 @@ logger = logging.getLogger()
 
 
 @shared_task
-def send_confirmation_mail(
-    appointment_pks, tenant_pk=None, user=None, language=settings.LANGUAGE_CODE
-):
+def send_confirmation_mail(appointment_pks, tenant_pk=None, user=None, language=settings.LANGUAGE_CODE):
     cur_lang = translation.get_language()
     try:
         translation.activate(language)
@@ -39,11 +37,11 @@ def send_confirmation_mail(
             "signature": global_preferences["email__SIGNATURE"],
             "user": user,
         }
-        subject = render_to_string("appointments/confirmation_mail_subject.txt", context=context)
-        body = render_to_string("appointments/confirmation_mail.txt", context=context)
-        recipients = list(set(appointment.email for appointment in appointments))
+        subject = render_email_content("appointments/confirmation_mail_subject.txt", extra_context=context)
+        body = render_email_content("appointments/confirmation_mail.txt", extra_context=context)
+        recipients = list({appointment.email for appointment in appointments})
 
-        logger.info("Send appointment confirmation to: {}".format(recipients))
+        logger.info(f"Send appointment confirmation to: {recipients}")
         send_mail.delay(
             subject=subject,
             message=body,

@@ -4,19 +4,47 @@ from unittest import mock
 from django.conf import settings
 from django.core import mail
 from django.core.mail import EmailMessage
+from django.test import override_settings
 from django.utils.timezone import now
-
-from backend.dynamic_preferences_registry import global_preferences_registry
 from faker import Faker
 
+from backend.dynamic_preferences_registry import global_preferences_registry
 from sportfac.utils import TenantTestCase
 
-from ..models import Bill, Registration
-from ..tasks import cancel_expired_registrations, send_invoice_pdf
+from ..models import Bill
+from ..models import Registration
+from ..tasks import cancel_expired_registrations
+from ..tasks import send_bill_confirmation
+from ..tasks import send_invoice_pdf
 from .factories import BillFactory
 
 
 fake = Faker(locale="fr_CH")
+
+
+class SendBillConfirmationTests(TenantTestCase):
+    def setUp(self):
+        self.bill = BillFactory()
+        global_preferences = global_preferences_registry.manager()
+        global_preferences["payment__IBAN"] = "CH9300762011623852957"
+        global_preferences["payment__ADDRESS"] = "Commune de Coppet\nGrand-Rue 34\n1296 Coppet"
+
+    @override_settings(KEPCHUP_PAYMENT_METHOD="iban")
+    def test_iban_details_included_for_wire_transfer(self):
+        # Regression test: the IBAN block used to silently never render, because
+        # PAYMENT_METHOD (from sportfac.context_processors.kepchup_context) wasn't
+        # available to this template outside of an HTTP request - see mailer.utils.
+        send_bill_confirmation(user_pk=str(self.bill.family.pk), bill_pk=self.bill.pk, tenant_pk=self.tenant.id)
+        self.assertEqual(len(mail.outbox), 1)
+        body = mail.outbox[0].body
+        self.assertIn("IBAN: CH9300762011623852957", body)
+        self.assertIn(self.bill.billing_identifier, body)
+
+    @override_settings(KEPCHUP_PAYMENT_METHOD="datatrans")
+    def test_iban_details_not_included_for_other_payment_methods(self):
+        send_bill_confirmation(user_pk=str(self.bill.family.pk), bill_pk=self.bill.pk, tenant_pk=self.tenant.id)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertNotIn("IBAN", mail.outbox[0].body)
 
 
 class SendInvoicePDFTests(TenantTestCase):

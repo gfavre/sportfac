@@ -9,7 +9,6 @@ from django.core.mail import EmailMessage
 from django.db import IntegrityError
 from django.db import connection
 from django.db import transaction
-from django.template.loader import render_to_string
 from django.utils import translation
 from django.utils.timezone import now
 from django_tenants.utils import tenant_context
@@ -20,6 +19,7 @@ from backend.dynamic_preferences_registry import global_preferences_registry
 from backend.models import Domain
 from backend.models import YearTenant
 from mailer.tasks import send_mail
+from mailer.utils import render_email_content
 from profiles.models import FamilyUser
 
 from .models import Bill
@@ -65,8 +65,8 @@ def send_bill_confirmation(user_pk, bill_pk, tenant_pk=None, language=settings.L
             if settings.KEPCHUP_USE_APPOINTMENTS:
                 context["appointments"] = Appointment.objects.filter(family=user)
 
-            subject = render_to_string("registrations/confirmation_bill_mail_subject.txt", context=context)
-            body = render_to_string("registrations/confirmation_bill_mail.txt", context=context)
+            subject = render_email_content("registrations/confirmation_bill_mail_subject.txt", extra_context=context)
+            body = render_email_content("registrations/confirmation_bill_mail.txt", extra_context=context)
 
             send_mail.delay(
                 subject=subject.strip(),
@@ -114,9 +114,11 @@ def send_confirmation(user_pk, tenant_pk=None, language=settings.LANGUAGE_CODE):
                 "site_url": settings.DEBUG and "http://" + current_site.domain or "https://" + current_site.domain,
             }
 
-            subject = render_to_string("registrations/confirmation_mail_subject.txt", context=context).strip()
+            subject = render_email_content(
+                "registrations/confirmation_mail_subject.txt", extra_context=context
+            ).strip()
 
-            body = render_to_string("registrations/confirmation_mail.txt", context=context)
+            body = render_email_content("registrations/confirmation_mail.txt", extra_context=context)
             send_mail.delay(
                 subject=subject.strip(),
                 message=body,
@@ -186,9 +188,11 @@ def send_confirm_from_waiting_list(registration_pk, language=settings.LANGUAGE_C
             "site_url": settings.DEBUG and "http://" + current_site.domain or "https://" + current_site.domain,
         }
 
-        subject = render_to_string("waiting_slots/confirm_from_waiting_list_mail_subject.txt", context=context)
+        subject = render_email_content(
+            "waiting_slots/confirm_from_waiting_list_mail_subject.txt", extra_context=context
+        )
 
-        body = render_to_string("waiting_slots/confirm_from_waiting_list_mail_body.txt", context=context)
+        body = render_email_content("waiting_slots/confirm_from_waiting_list_mail_body.txt", extra_context=context)
         send_mail.delay(
             subject=subject,
             message=body,
@@ -281,9 +285,11 @@ def send_invoice_pdf(bill_pk, tenant_pk=None):
         "site_url": settings.DEBUG and "http://" + current_site.domain or "https://" + current_site.domain,
     }
     subject = (
-        render_to_string("registrations/accountant_bill_mail_subject.txt", context=context).replace("\n", "").strip()
+        render_email_content("registrations/accountant_bill_mail_subject.txt", extra_context=context)
+        .replace("\n", "")
+        .strip()
     )
-    body = render_to_string("registrations/accountant_bill_mail.txt", context=context)
+    body = render_email_content("registrations/accountant_bill_mail.txt", extra_context=context)
 
     email = EmailMessage(
         subject=subject,

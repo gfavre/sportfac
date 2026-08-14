@@ -1,16 +1,18 @@
 from functools import wraps
 
+from celery import shared_task
+from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.db import connection
-from django.template.loader import render_to_string
-from django.utils import timezone, translation
+from django.utils import timezone
+from django.utils import translation
 
 from backend.dynamic_preferences_registry import global_preferences_registry
-from backend.models import Domain, YearTenant
-from celery import shared_task
-from celery.utils.log import get_task_logger
+from backend.models import Domain
+from backend.models import YearTenant
 from mailer.tasks import send_mail
+from mailer.utils import render_email_content
 
 from .models import Course
 
@@ -67,8 +69,8 @@ def send_places_available_reminder(course_pk, tenant_pk=None, language=settings.
         "site_name": global_preferences["site__SITE_NAME"],
         "site_url": settings.DEBUG and "http://" + current_site.domain or "https://" + current_site.domain,
     }
-    subject = render_to_string("activities/places-available-reminder_subject.txt", context=context)
-    body = render_to_string("activities/places-available-reminder.txt", context=context)
+    subject = render_email_content("activities/places-available-reminder_subject.txt", extra_context=context)
+    body = render_email_content("activities/places-available-reminder.txt", extra_context=context)
     send_mail.delay(
         subject=subject,
         message=body,
