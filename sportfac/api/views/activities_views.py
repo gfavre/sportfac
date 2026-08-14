@@ -9,6 +9,7 @@ from rest_framework import views
 from rest_framework import viewsets
 from rest_framework.response import Response
 
+from activities.cache import get_structural_activities_cache_key
 from activities.models import Activity
 from activities.models import Course
 from activities.models import CoursesInstructors
@@ -20,6 +21,12 @@ from ..serializers import ChangeCourseSerializer
 from ..serializers import CourseChangedSerializer
 from ..serializers import CourseSerializer
 from ..serializers import CoursesInstructorsRoleSerializer
+
+
+# Safety net only: real edits invalidate this cache immediately via
+# activities.signals, this timeout just bounds the damage from any edit path that
+# doesn't go through Model.save() (bulk_update, raw SQL, admin bulk actions...).
+ACTIVITIES_STRUCTURAL_CACHE_TIMEOUT = 120  # seconds
 
 
 class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
@@ -60,6 +67,81 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
         )
 
         return queryset  # noqa: R504
+
+    def _get_structural_activities(self):
+        """All visible, registerable activities/courses, unfiltered by any family's eligibility.
+
+        This payload is identical for every family regardless of which child they're looking at,
+        so it's cached per-tenant (not per query param) and shared across every concurrent
+        request - unlike a cache keyed by (year, birth_date), which would essentially never hit
+        since each child has a different birth date. Eligibility filtering happens afterwards, in
+        Python, against this shared cache (see list()).
+
+        Deliberately contains no participant-count/fullness data (CourseInlineSerializer doesn't
+        expose it - that only shows up in the per-course detail modal, via CourseViewSet.retrieve,
+        which is already cached and already correctly invalidated on every registration). So this
+        cache never needs to react to registrations, which is what makes a shared cache safe here
+        during a rush: only real course/activity edits invalidate it, via
+        activities.signals.invalidate_activities_structural_cache (which explicitly ignores
+        nb_participants-only saves so registrations don't churn it).
+        """
+        tenant_pk = self.request.tenant.pk
+        cache_key = get_structural_activities_cache_key(tenant_pk)
+        data = cache.get(cache_key)
+        if data is None:
+            valid_courses = Course.objects.exclude(course_type=Course.TYPE.unregistered_course).filter(visible=True)
+            queryset = (
+                Activity.objects.filter(courses__in=valid_courses)
+                .distinct()
+                .prefetch_related(
+                    Prefetch("courses", queryset=valid_courses.prefetch_related("instructors", "sessions"))
+                )
+            )
+            data = ActivityDetailedSerializer(queryset, many=True).data
+            cache.set(cache_key, data, ACTIVITIES_STRUCTURAL_CACHE_TIMEOUT)
+        return data
+
+    @staticmethod
+    def _course_matches_school_year(course, school_year):
+        return course["schoolyear_min"] <= school_year <= course["schoolyear_max"]
+
+    @staticmethod
+    def _course_matches_birth_date(course, birth_date):
+        if course["min_birth_date"] is None:
+            return True
+        return course["min_birth_date"] >= birth_date and course["max_birth_date"] <= birth_date
+
+    @staticmethod
+    def _filter_activities(activities, course_matches):
+        filtered = []
+        for activity in activities:
+            courses = [course for course in activity["courses"] if course_matches(course)]
+            if courses:
+                filtered.append({**activity, "courses": courses})
+        return filtered
+
+    def list(self, request, *args, **kwargs):
+        activities = self._get_structural_activities()
+
+        if settings.KEPCHUP_LIMIT_BY_SCHOOL_YEAR:
+            school_year = request.query_params.get("year")
+            if school_year is not None:
+                try:
+                    school_year = int(school_year)
+                except ValueError:
+                    school_year = None
+                if school_year is not None:
+                    activities = self._filter_activities(
+                        activities, lambda course: self._course_matches_school_year(course, school_year)
+                    )
+        else:
+            birth_date = request.query_params.get("birth_date")
+            if birth_date is not None:
+                activities = self._filter_activities(
+                    activities, lambda course: self._course_matches_birth_date(course, birth_date)
+                )
+
+        return Response(activities)
 
 
 class CourseViewSet(viewsets.ReadOnlyModelViewSet):

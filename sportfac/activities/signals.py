@@ -11,12 +11,19 @@ from absences.models import Session
 from profiles.utils import invalidate_user_cache
 from waiting_slots.models import WaitingSlot
 
+from .cache import get_structural_activities_cache_key
 from .models import Activity
 from .models import Course
 from .models import CoursesInstructors
 
 
 FRAGMENT_NAME_COURSE_DETAILS = "course_details"
+
+# Fields that change on every registration/waiting-slot action but aren't part of what
+# ActivityViewSet's structural cache serves (see api.views.activities_views and
+# CourseInlineSerializer) - a save touching only these must not invalidate that cache, or it
+# would get busted on nearly every write during a registration rush, defeating its purpose.
+NON_STRUCTURAL_COURSE_FIELDS = frozenset({"nb_participants", "has_waiting_list", "places_available_reminder_sent_on"})
 
 
 def invalidate_course_data(pk):
@@ -40,6 +47,37 @@ def invalidate_course_fragment(course_id: int) -> None:
 @receiver([post_save, post_delete], sender=Activity)
 def clear_activities_cache(sender, **kwargs):
     cache.delete("activities_context_data")
+
+
+def invalidate_activities_structural_cache():
+    tenant_pk = connection.get_tenant().pk
+    cache.delete(get_structural_activities_cache_key(tenant_pk))
+
+
+@receiver(post_save, sender=Course, dispatch_uid="invalidate_activities_structural_cache_on_course_save")
+def invalidate_structural_cache_on_course_save(sender, instance, update_fields, **kwargs):
+    if update_fields is not None and set(update_fields) <= NON_STRUCTURAL_COURSE_FIELDS:
+        return
+    invalidate_activities_structural_cache()
+
+
+@receiver(post_delete, sender=Course, dispatch_uid="invalidate_activities_structural_cache_on_course_delete")
+def invalidate_structural_cache_on_course_delete(sender, instance, **kwargs):
+    invalidate_activities_structural_cache()
+
+
+@receiver(
+    [post_save, post_delete], sender=Activity, dispatch_uid="invalidate_activities_structural_cache_on_activity_change"
+)
+def invalidate_structural_cache_on_activity_change(sender, instance, **kwargs):
+    invalidate_activities_structural_cache()
+
+
+@receiver(
+    [post_save, post_delete], sender=Session, dispatch_uid="invalidate_activities_structural_cache_on_session_change"
+)
+def invalidate_structural_cache_on_session_change(sender, instance, **kwargs):
+    invalidate_activities_structural_cache()
 
 
 @receiver([post_save, post_delete], sender=CoursesInstructors)

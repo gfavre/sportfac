@@ -1,8 +1,8 @@
 import random
 from datetime import date
-from datetime import timedelta
 from unittest import mock
 
+from dateutil.relativedelta import relativedelta
 from django.test import override_settings
 from dynamic_preferences.registries import global_preferences_registry
 from rest_framework.exceptions import ValidationError
@@ -27,13 +27,17 @@ class RegistrationSerializerTest(TenantTestCase):
 
         # Course.save() derives start_date/end_date (and thus min/max_birth_date) from
         # sessions when KEPCHUP_EXPLICIT_SESSION_DATES is on, wiping them since this
-        # course has no sessions - force it off just for creation.
+        # course has no sessions - force it off just for creation. start_date is pinned to
+        # today (CourseFactory's default is a random date over the last decade) so
+        # min_birth_date/max_birth_date are computed relative to the same "today" the
+        # age-boundary tests below use to build their too-young/too-old birth dates.
         with override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False):
             self.course = CourseFactory(
                 schoolyear_min=self.school_year.year,
                 schoolyear_max=self.school_year.year,
                 age_min=self.age_min,
                 age_max=self.age_max,
+                start_date=date.today(),
             )
         self.factory = APIRequestFactory()
 
@@ -98,7 +102,7 @@ class RegistrationSerializerTest(TenantTestCase):
     @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False)
     def test_registration_age_too_young(self):
         """Test if the child's birth date is outside the allowed range"""
-        too_young_birth_date = date.today() - timedelta(days=365 * (self.age_min - 1))
+        too_young_birth_date = date.today() - relativedelta(years=self.age_min - 1)
         self.child.birth_date = too_young_birth_date
         self.child.save()
 
@@ -115,7 +119,10 @@ class RegistrationSerializerTest(TenantTestCase):
     @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False)
     def test_registration_age_too_old(self):
         """Test if the child's birth date is outside the allowed range"""
-        too_old_birth_date = date.today() - timedelta(days=365 * (self.age_max + 1))  # One year older than the max age
+        # course.max_birth_date is itself an inclusive boundary (Course.save() adds +1 to
+        # age_max so a child on their (age_max+1)th birthday is still accepted) - go one
+        # day further to land unambiguously outside the valid range.
+        too_old_birth_date = self.course.max_birth_date - relativedelta(days=1)
         self.child.birth_date = too_old_birth_date
         self.child.save()
 

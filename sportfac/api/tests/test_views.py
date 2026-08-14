@@ -3,9 +3,12 @@ import json
 import logging
 
 import faker
+from dateutil.relativedelta import relativedelta
+from django.core.cache import cache
 from django.test import override_settings
 from django.urls import reverse
 
+from activities.cache import get_structural_activities_cache_key
 from activities.tests.factories import CourseFactory
 from api.serializers import ChildrenSerializer
 from profiles.tests.factories import FamilyUserFactory
@@ -30,7 +33,10 @@ class ActivityAPITests(TenantTestCase):
         super().setUp()
         self.school_year = 3
         self.birth_date = fake.date_between(start_date="-10y", end_date="-5y")
-        self.age = datetime.date.today().year - self.birth_date.year
+        # A plain year subtraction over/under-counts by one whenever the birthday hasn't
+        # happened yet this year - relativedelta accounts for month/day, matching how
+        # Course.save() itself derives min_birth_date/max_birth_date from age_min/age_max.
+        self.age = relativedelta(datetime.date.today(), self.birth_date).years
         # Course.save() derives start_date (and min/max_birth_date) from sessions when
         # KEPCHUP_EXPLICIT_SESSION_DATES is on, wiping the date given below since this
         # course has no sessions - force it off just for creation.
@@ -73,6 +79,153 @@ class ActivityAPITests(TenantTestCase):
         response = self.tenant_client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
+
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False, KEPCHUP_EXPLICIT_SESSION_DATES=False)
+    def test_filter_by_age_boundary_dates(self):
+        # self.course has age_min == age_max == self.age, so min/max_birth_date form an
+        # exact 1-year window. Both edges are inclusive (matches the original
+        # min_birth_date__gte / max_birth_date__lte DB filter) - this pins the Python
+        # reimplementation of that filter (ActivityViewSet._course_matches_birth_date)
+        # against the same boundary semantics.
+        min_birth_date = self.course.min_birth_date
+        max_birth_date = self.course.max_birth_date
+        url = reverse("api:activity-list")
+
+        cases = [
+            ("exact upper bound", min_birth_date, True),
+            ("exact lower bound", max_birth_date, True),
+            ("one day too young", min_birth_date + datetime.timedelta(days=1), False),
+            ("one day too old", max_birth_date - datetime.timedelta(days=1), False),
+        ]
+        for label, birth_date, expect_match in cases:
+            response = self.tenant_client.get(url + f"?birth_date={birth_date.isoformat()}")
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.data), 1 if expect_match else 0, label)
+
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False, KEPCHUP_EXPLICIT_SESSION_DATES=False)
+    def test_filter_by_age_unrestricted_course_always_matches(self):
+        CourseFactory(activity=self.course.activity, age_min=None, age_max=None, start_date=datetime.date.today())
+        url = reverse("api:activity-list") + "?birth_date=1900-01-01"
+        response = self.tenant_client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        # self.course (age-restricted) doesn't match a 1900 birth_date - only the
+        # unrestricted course should remain under this activity.
+        self.assertEqual(len(response.data[0]["courses"]), 1)
+
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False, KEPCHUP_EXPLICIT_SESSION_DATES=False)
+    def test_filter_by_age_excludes_activities_with_no_matching_course(self):
+        CourseFactory(age_min=self.age + 5, age_max=self.age + 6, start_date=datetime.date.today())
+        url = reverse("api:activity-list") + f"?birth_date={self.birth_date.isoformat()}"
+        response = self.tenant_client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # the new course's own activity has zero matching courses, so it must not appear
+        self.assertEqual(len(response.data), 1)
+
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False, KEPCHUP_EXPLICIT_SESSION_DATES=False)
+    def test_filter_by_age_partial_match_within_activity(self):
+        CourseFactory(
+            activity=self.course.activity,
+            age_min=self.age + 5,
+            age_max=self.age + 6,
+            start_date=datetime.date.today(),
+        )
+        url = reverse("api:activity-list") + f"?birth_date={self.birth_date.isoformat()}"
+        response = self.tenant_client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data[0]["courses"]), 1)
+        self.assertEqual(response.data[0]["courses"][0]["id"], self.course.id)
+
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=True)
+    def test_filter_by_school_year_boundary(self):
+        url = reverse("api:activity-list")
+        for year, expect_match in [
+            (self.school_year, True),
+            (self.school_year - 1, False),
+            (self.school_year + 1, False),
+        ]:
+            response = self.tenant_client.get(url + f"?year={year}")
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.data), 1 if expect_match else 0, f"year={year}")
+
+
+class ActivityViewSetCachingTests(TenantTestCase):
+    """Covers the shared structural cache backing ActivityViewSet.list() and its
+    invalidation via activities.signals - see api/views/activities_views.py and
+    activities/signals.py."""
+
+    def setUp(self):
+        super().setUp()
+        self.course = CourseFactory(visible=True)
+        self.cache_key = get_structural_activities_cache_key(self.tenant.id)
+        cache.delete(self.cache_key)
+        self.url = reverse("api:activity-list")
+
+    def tearDown(self):
+        cache.delete(self.cache_key)
+        super().tearDown()
+
+    def test_list_populates_the_structural_cache(self):
+        self.assertIsNone(cache.get(self.cache_key))
+        response = self.tenant_client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(cache.get(self.cache_key))
+
+    def test_list_reuses_the_cache_for_different_children(self):
+        self.tenant_client.get(self.url + "?birth_date=2015-01-01")
+        cached_after_first = cache.get(self.cache_key)
+        self.assertIsNotNone(cached_after_first)
+        # A completely different child (different birth_date) must still hit the same
+        # cached structural payload - eligibility filtering happens in Python afterwards,
+        # not by varying the cache key per child.
+        self.tenant_client.get(self.url + "?birth_date=2010-01-01")
+        self.assertEqual(cache.get(self.cache_key), cached_after_first)
+
+    def test_creating_a_course_invalidates_the_cache(self):
+        self.tenant_client.get(self.url)
+        self.assertIsNotNone(cache.get(self.cache_key))
+        CourseFactory(visible=True)
+        self.assertIsNone(cache.get(self.cache_key))
+
+    def test_deleting_a_course_invalidates_the_cache(self):
+        self.tenant_client.get(self.url)
+        self.assertIsNotNone(cache.get(self.cache_key))
+        self.course.delete()
+        self.assertIsNone(cache.get(self.cache_key))
+
+    def test_editing_an_activity_invalidates_the_cache(self):
+        self.tenant_client.get(self.url)
+        self.assertIsNotNone(cache.get(self.cache_key))
+        self.course.activity.name = "Nouveau nom"
+        self.course.activity.save()
+        self.assertIsNone(cache.get(self.cache_key))
+
+    def test_editing_a_session_invalidates_the_cache(self):
+        from absences.tests.factories import SessionFactory
+
+        self.tenant_client.get(self.url)
+        self.assertIsNotNone(cache.get(self.cache_key))
+        SessionFactory(course=self.course)
+        self.assertIsNone(cache.get(self.cache_key))
+
+    def test_registration_does_not_invalidate_the_cache(self):
+        # A registration only ever touches Course.nb_participants (via
+        # Course.update_registrations(), save(update_fields=["nb_participants"])) - that
+        # field isn't part of the cached structural payload, so it must not bust this
+        # cache, or it would get invalidated on nearly every write during a rush.
+        self.tenant_client.get(self.url)
+        self.assertIsNotNone(cache.get(self.cache_key))
+        self.course.nb_participants += 1
+        self.course.save(update_fields=["nb_participants"])
+        self.assertIsNotNone(cache.get(self.cache_key))
+
+    def test_unrelated_course_field_change_invalidates_the_cache(self):
+        self.tenant_client.get(self.url)
+        self.assertIsNotNone(cache.get(self.cache_key))
+        self.course.name = "Nouveau nom de cours"
+        self.course.save(update_fields=["name"])
+        self.assertIsNone(cache.get(self.cache_key))
 
 
 class CoursesAPITests(TenantTestCase):
