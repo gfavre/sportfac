@@ -1,11 +1,15 @@
 import logging
 
+from django.db import transaction
 from django.http import QueryDict
+from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.authentication import SessionAuthentication
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
+from activities.models import Course
 from profiles.models import SchoolYear
 from registrations.models import ExtraInfo
 from registrations.models import Registration
@@ -138,6 +142,19 @@ class RegistrationViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         return Registration.objects.filter(child__in=user.children.all())
+
+    def perform_create(self, serializer):
+        # RegistrationSerializer.validate() already rejected obviously-full courses, but that
+        # read is an unlocked SELECT - two near-simultaneous requests for the last seat can both
+        # pass it. Locking the course row here serializes them: whichever request commits first
+        # updates nb_participants (in Registration.save()) before the row lock is released, so
+        # the second request's re-check below sees the up-to-date count.
+        course = serializer.validated_data["course"]
+        with transaction.atomic():
+            locked_course = Course.objects.select_for_update().get(pk=course.pk)
+            if not locked_course.allow_new_participants or locked_course.full:
+                raise ValidationError(_("Course is full"))
+            serializer.save()
 
 
 class TeacherViewSet(viewsets.ReadOnlyModelViewSet):

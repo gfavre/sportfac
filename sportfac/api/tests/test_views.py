@@ -5,7 +5,9 @@ import logging
 import faker
 from dateutil.relativedelta import relativedelta
 from django.core.cache import cache
+from django.db import connection
 from django.test import override_settings
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 
 from activities.cache import get_structural_activities_cache_key
@@ -410,6 +412,42 @@ class RegistrationAPITests(UserMixin, TenantTestCase):
         self.login(self.child1.family)
         response = self.tenant_client.get(url)
         self.assertEqual(response.status_code, 200)
+
+    def test_create_is_rejected_once_course_is_full(self):
+        # course starts with 1 free spot (2 participants for 3 places)
+        with override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False):
+            course = CourseFactory(schoolyear_min=self.year.year, schoolyear_max=self.year.year, max_participants=3)
+        RegistrationFactory(course=course, child=ChildFactory(school_year=self.year))
+        RegistrationFactory(course=course, child=ChildFactory(school_year=self.year))
+        self.assertFalse(course.full)
+
+        url = reverse("api:registration-list")
+        self.login(self.child1.family)
+        # takes the last spot
+        response = self.tenant_client.post(url, {"child": self.child1.pk, "course": course.pk})
+        self.assertEqual(response.status_code, 201)
+
+        # course is now full - a second child must be rejected, not oversold
+        response = self.tenant_client.post(url, {"child": self.child2.pk, "course": course.pk})
+        self.assertEqual(response.status_code, 400)
+        course.refresh_from_db()
+        self.assertEqual(course.nb_participants, 3)
+
+    def test_create_locks_the_course_row(self):
+        # Regression test for the overselling race: two near-simultaneous requests for the
+        # same course must be serialized on the course row, not just checked against a
+        # possibly-stale in-memory value. Asserts the locking SELECT is actually issued.
+        with override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False):
+            course = CourseFactory(schoolyear_min=self.year.year, schoolyear_max=self.year.year)
+        url = reverse("api:registration-list")
+        self.login(self.child1.family)
+        with CaptureQueriesContext(connection) as queries:
+            response = self.tenant_client.post(url, {"child": self.child1.pk, "course": course.pk})
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(
+            any("FOR UPDATE" in query["sql"] for query in queries.captured_queries),
+            "Course row was not locked with SELECT ... FOR UPDATE during registration creation",
+        )
 
 
 class TeacherAPITests(UserMixin, TenantTestCase):
