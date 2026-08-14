@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 4.5.0 - 2026-08-14
+### Fixed
+- Overselling: two near-simultaneous registrations for a course's last spot could both succeed, since the "is it full" check read the course row without locking it; the course row is now locked (`SELECT ... FOR UPDATE`) and re-checked for fullness right before creating the registration
+- Canceling a registration deleted its future absences, but the same save() also (re)scheduled the async absence-creation task regardless of status, which could silently recreate them moments later; that task is now a no-op for canceled registrations
+- `Registration.delete_future_absences()` issued one `DELETE` per future session instead of a single bulk query - same anti-pattern as `create_future_absences()` before it was fixed
+
+### Changed
+- `Registration.create_future_absences()` moved off the registration request path onto an async Celery task (dispatched after commit), and switched from one `get_or_create()` per session to a single `bulk_create()`
+- `Bill.set_paid()` / `Bill.close()` no longer loop through `Registration.save()` per registration - each iteration cascaded into a full `Bill.save()` (total recompute, QR-invoice regeneration), making an N-registration bill cost roughly O(N²) queries; registrations and rentals are now updated in bulk
+- `Bill.update_total()` fetches its registrations once (with `extra_infos` prefetched) instead of querying them twice and hitting `extra_infos` once per registration
+- Activities list (`ActivityViewSet`) is now cached per tenant instead of re-serialized on every request, with per-child/school-year filtering done in Python and cache invalidation wired to the Course/Activity/Session changes that actually affect it; course fullness stays live (not part of the cached payload)
+- Wizard confirmation/payment pages: extra-info row counts and price-modifier lookups now reuse the existing prefetch instead of issuing one query per registration/extra info
+
+### Added
+- Bill confirmation email for wire-transfer (IBAN) payments is now split in two: an immediate, unthrottled confirmation, and a separate email carrying the actual invoice PDF, rate-limited to 12/minute so PDF generation (headless Chromium) can't spike the server during a registration rush
+- `mailer.utils.render_email_content()`: renders an email template with the site's base context (`sportfac.context_processors`) always available, including outside an HTTP request, where it previously silently went missing (e.g. IBAN details missing from confirmation emails)
+
 ## 4.4.0 - 2026-08-07
 ### Changed
 - Price display (public activity/course pages, backend course detail, wizard course modal) now uses a 2-column table (Externe / Indigène) with one row per sibling tier instead of a flat bullet list, making the family_local_3_levels pricing easier to read
