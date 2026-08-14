@@ -8,15 +8,19 @@ from django.test import override_settings
 from django.utils.timezone import now
 from faker import Faker
 
+from absences.models import Absence
+from absences.tests.factories import SessionFactory
 from backend.dynamic_preferences_registry import global_preferences_registry
 from sportfac.utils import TenantTestCase
 
 from ..models import Bill
 from ..models import Registration
 from ..tasks import cancel_expired_registrations
+from ..tasks import create_future_absences_for_registration
 from ..tasks import send_bill_confirmation
 from ..tasks import send_invoice_pdf
 from .factories import BillFactory
+from .factories import RegistrationFactory
 
 
 fake = Faker(locale="fr_CH")
@@ -45,6 +49,21 @@ class SendBillConfirmationTests(TenantTestCase):
         send_bill_confirmation(user_pk=str(self.bill.family.pk), bill_pk=self.bill.pk, tenant_pk=self.tenant.id)
         self.assertEqual(len(mail.outbox), 1)
         self.assertNotIn("IBAN", mail.outbox[0].body)
+
+
+class CreateFutureAbsencesForRegistrationTaskTests(TenantTestCase):
+    def setUp(self):
+        self.registration = RegistrationFactory()
+        self.future_session = SessionFactory(course=self.registration.course, date=now().date() + timedelta(days=7))
+
+    def test_creates_absences_for_the_registration(self):
+        create_future_absences_for_registration(self.registration.pk)
+        self.assertTrue(Absence.objects.filter(child=self.registration.child, session=self.future_session).exists())
+
+    def test_unknown_registration_is_a_noop(self):
+        # The task can run after the registration was deleted in the meantime - shouldn't raise.
+        create_future_absences_for_registration(self.registration.pk + 1000000)
+        self.assertFalse(Absence.objects.exists())
 
 
 class SendInvoicePDFTests(TenantTestCase):

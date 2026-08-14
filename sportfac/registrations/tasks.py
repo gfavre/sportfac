@@ -260,6 +260,15 @@ def generate_invoice_pdf(bill_id):
 
 
 @shared_task
+def create_future_absences_for_registration(registration_pk):
+    try:
+        registration = Registration.objects.get(pk=registration_pk)
+    except Registration.DoesNotExist:
+        return
+    registration.create_future_absences()
+
+
+@shared_task
 def send_invoice_pdf(bill_pk, tenant_pk=None):
     if tenant_pk:
         tenant = YearTenant.objects.get(pk=tenant_pk)

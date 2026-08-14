@@ -203,12 +203,26 @@ class Registration(TimeStampedModel, StatusModel):
         # move between courses:
         from absences.models import Absence
 
-        for future_session in self.course.sessions.filter(date__gte=now()):
-            Absence.objects.get_or_create(
-                child=self.child,
-                session=future_session,
-                defaults={"status": Absence.STATUS.present},
-            )
+        if self.status == self.STATUS.canceled:
+            # save() unconditionally schedules this (now async) after every save, including
+            # the one that persists a cancelation - without this guard, a canceled
+            # registration's absences deleted by cancel() would get silently recreated here.
+            return
+
+        future_sessions = self.course.sessions.filter(date__gte=now())
+        # A get_or_create() per session is 1-2 queries each - for a full school year of
+        # weekly sessions that's 60+ queries for a single registration. bulk_create() with
+        # ignore_conflicts collapses it to one INSERT ... ON CONFLICT DO NOTHING, relying on
+        # the (child, session) unique_together as the dedup/race-safety net.
+        # bulk_create() skips model-utils' pre_save signal that would normally stamp
+        # status_changed via MonitorField, so it's set explicitly here.
+        Absence.objects.bulk_create(
+            [
+                Absence(child=self.child, session=session, status=Absence.STATUS.present, status_changed=now())
+                for session in future_sessions
+            ],
+            ignore_conflicts=True,
+        )
 
     def delete(self, *args, **kwargs):
         with transaction.atomic():
@@ -230,11 +244,10 @@ class Registration(TimeStampedModel, StatusModel):
         # move between courses:
         from absences.models import Absence
 
-        for future_session in self.course.sessions.filter(date__gte=now()):
-            Absence.objects.filter(
-                child=self.child,
-                session=future_session,
-            ).delete()
+        # One DELETE per future session was the same anti-pattern as the old
+        # create_future_absences() - a single bulk delete replaces the whole loop.
+        future_sessions = self.course.sessions.filter(date__gte=now())
+        Absence.objects.filter(child=self.child, session__in=future_sessions).delete()
 
     def get_backend_url(self):
         return reverse("backend:registration-detail", kwargs={"pk": self.pk})
@@ -371,7 +384,13 @@ class Registration(TimeStampedModel, StatusModel):
                 profile, created = RegistrationsProfile.objects.get_or_create(user=self.child.family)
                 profile.save()
             if settings.KEPCHUP_USE_ABSENCES:
-                self.create_future_absences()
+                from .tasks import create_future_absences_for_registration
+
+                # Nothing in the immediate registration/confirmation/bill flow reads
+                # Absence rows, so this can safely run after the request instead of
+                # blocking it - on_commit so the task doesn't race this transaction.
+                # tenant_schemas_celery propagates the current tenant to the task itself.
+                transaction.on_commit(lambda: create_future_absences_for_registration.delay(self.pk))
             self.course.update_registrations(self)
 
     def set_confirmed(self, send_confirmation=False):

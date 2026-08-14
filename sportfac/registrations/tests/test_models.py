@@ -1,10 +1,15 @@
 from datetime import time
+from datetime import timedelta
+from unittest import mock
 
 from django.core.files.base import ContentFile
 from django.test import override_settings
+from django.utils.timezone import now
 from dynamic_preferences.registries import global_preferences_registry
 from faker import Faker
 
+from absences.models import Absence
+from absences.tests.factories import SessionFactory
 from activities.tests.factories import AllocationAccountFactory
 from activities.tests.factories import CourseFactory
 from profiles.tests.factories import CityFactory
@@ -330,6 +335,146 @@ class RegistrationTestCase(TenantTestCase):
         registration.save()
         registration.refresh_from_db()
         self.assertEqual(registration.price, registration.course.price)
+
+    @override_settings(KEPCHUP_USE_ABSENCES=True)
+    @mock.patch("registrations.tasks.create_future_absences_for_registration.delay")
+    def test_save_defers_absence_creation_to_a_task(self, mock_delay):
+        # save() schedules the task via transaction.on_commit(), which TestCase's own
+        # wrapping transaction never actually fires on its own - capture it explicitly.
+        with self.captureOnCommitCallbacks(execute=True):
+            registration = RegistrationFactory()
+        mock_delay.assert_called_once_with(registration.pk)
+        # nothing in the immediate request/response path needs Absence rows to exist yet
+        self.assertEqual(Absence.objects.count(), 0)
+
+
+class CreateFutureAbsencesTestCase(TenantTestCase):
+    def setUp(self):
+        self.registration = RegistrationFactory()
+        self.past_session = SessionFactory(course=self.registration.course, date=now().date() - timedelta(days=7))
+        self.future_session1 = SessionFactory(course=self.registration.course, date=now().date() + timedelta(days=7))
+        self.future_session2 = SessionFactory(course=self.registration.course, date=now().date() + timedelta(days=14))
+
+    def test_creates_absences_for_future_sessions_only(self):
+        self.registration.create_future_absences()
+        sessions_with_absence = set(
+            Absence.objects.filter(child=self.registration.child).values_list("session_id", flat=True)
+        )
+        self.assertEqual(sessions_with_absence, {self.future_session1.id, self.future_session2.id})
+
+    def test_created_absences_default_to_present(self):
+        self.registration.create_future_absences()
+        absence = Absence.objects.get(child=self.registration.child, session=self.future_session1)
+        self.assertEqual(absence.status, Absence.STATUS.present)
+        self.assertIsNotNone(absence.status_changed)
+
+    def test_is_idempotent_and_does_not_touch_existing_absences(self):
+        self.registration.create_future_absences()
+        absence = Absence.objects.get(child=self.registration.child, session=self.future_session1)
+        absence.status = Absence.STATUS.absent
+        absence.save()
+
+        self.registration.create_future_absences()
+
+        self.assertEqual(Absence.objects.filter(child=self.registration.child).count(), 2)
+        absence.refresh_from_db()
+        self.assertEqual(absence.status, Absence.STATUS.absent)
+
+    def test_is_a_noop_for_canceled_registrations(self):
+        # Regression test: create_future_absences_for_registration's task re-reads the
+        # registration from the DB and runs after cancel()'s delete_future_absences() has
+        # already run - without this guard it would silently resurrect the absences.
+        self.registration.status = self.registration.STATUS.canceled
+
+        self.registration.create_future_absences()
+
+        self.assertEqual(Absence.objects.filter(child=self.registration.child).count(), 0)
+
+
+class DeleteFutureAbsencesTestCase(TenantTestCase):
+    def setUp(self):
+        self.registration = RegistrationFactory()
+        self.past_session = SessionFactory(course=self.registration.course, date=now().date() - timedelta(days=7))
+        self.future_session1 = SessionFactory(course=self.registration.course, date=now().date() + timedelta(days=7))
+        self.future_session2 = SessionFactory(course=self.registration.course, date=now().date() + timedelta(days=14))
+        self.registration.create_future_absences()
+
+    def test_deletes_future_absences_only(self):
+        past_absence = Absence.objects.create(child=self.registration.child, session=self.past_session)
+
+        self.registration.delete_future_absences()
+
+        self.assertFalse(
+            Absence.objects.filter(
+                child=self.registration.child, session__in=[self.future_session1, self.future_session2]
+            ).exists()
+        )
+        self.assertTrue(Absence.objects.filter(pk=past_absence.pk).exists())
+
+    def test_does_not_touch_other_childrens_absences(self):
+        other_registration = RegistrationFactory(course=self.registration.course)
+        other_registration.create_future_absences()
+
+        self.registration.delete_future_absences()
+
+        self.assertTrue(Absence.objects.filter(child=other_registration.child, session=self.future_session1).exists())
+
+    def test_query_count_does_not_scale_with_number_of_sessions(self):
+        # Regression test for the old per-session loop: the query count must stay constant
+        # no matter how many future sessions exist, instead of growing with each one.
+        for i in range(10):
+            SessionFactory(course=self.registration.course, date=now().date() + timedelta(days=21 + i))
+        self.registration.create_future_absences()
+
+        with self.assertNumQueries(4):
+            self.registration.delete_future_absences()
+
+
+class CancelTestCase(TenantTestCase):
+    @override_settings(KEPCHUP_USE_ABSENCES=True)
+    def test_cancel_deletes_future_absences(self):
+        registration = RegistrationFactory()
+        future_session = SessionFactory(course=registration.course, date=now().date() + timedelta(days=7))
+        registration.create_future_absences()
+        self.assertTrue(Absence.objects.filter(child=registration.child, session=future_session).exists())
+
+        registration.cancel()
+
+        self.assertFalse(Absence.objects.filter(child=registration.child, session=future_session).exists())
+
+    @override_settings(KEPCHUP_USE_ABSENCES=False)
+    def test_cancel_does_not_touch_absences_when_feature_disabled(self):
+        registration = RegistrationFactory()
+        future_session = SessionFactory(course=registration.course, date=now().date() + timedelta(days=7))
+        Absence.objects.create(child=registration.child, session=future_session)
+
+        registration.cancel()
+
+        self.assertTrue(Absence.objects.filter(child=registration.child, session=future_session).exists())
+
+    @override_settings(KEPCHUP_USE_ABSENCES=True)
+    def test_cancel_then_save_does_not_resurrect_absences_via_the_async_task(self):
+        # End-to-end regression test: cancel() deletes future absences synchronously, but the
+        # save() that persists the cancelation also schedules create_future_absences_for_registration
+        # (async, via on_commit). Without the status guard in create_future_absences(), that
+        # task would recreate the absences it should have skipped.
+        from ..tasks import create_future_absences_for_registration
+
+        registration = RegistrationFactory()
+        future_session = SessionFactory(course=registration.course, date=now().date() + timedelta(days=7))
+        registration.create_future_absences()
+        self.assertTrue(Absence.objects.filter(child=registration.child, session=future_session).exists())
+
+        with self.captureOnCommitCallbacks(execute=False) as callbacks:
+            registration.cancel()
+            registration.save()
+        self.assertFalse(Absence.objects.filter(child=registration.child, session=future_session).exists())
+
+        # Simulate the Celery worker picking up the scheduled task after commit.
+        create_future_absences_for_registration(registration.pk)
+
+        self.assertFalse(Absence.objects.filter(child=registration.child, session=future_session).exists())
+        self.assertTrue(callbacks)
 
 
 class BillTestCase(TenantTestCase):
