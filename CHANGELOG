@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 4.5.3 - 2026-08-17
+### Fixed
+- With `KEPCHUP_LIMIT_BY_SCHOOL_YEAR` on (e.g. La Tour-de-Peilz), a course with no school-year restriction (`schoolyear_min`/`schoolyear_max` both unset) crashed the whole activities-list request (`None <= year` raises `TypeError` in Python), hiding not just that course but everything else in the response too - such courses are now correctly treated as open to every school year, matching the equivalent birth-date check
+
 ## 4.5.2 - 2026-08-17
 ### Fixed
 - Registration wizard's weekly calendar started the week on Sunday (`firstDay: 0` in the fullcalendar config) instead of Monday - wrong for every tenant, not just the one where it got reported

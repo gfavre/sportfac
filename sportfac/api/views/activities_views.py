@@ -42,8 +42,8 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
                 try:
                     school_year = int(school_year)
                     valid_courses = valid_courses.filter(
-                        schoolyear_min__lte=school_year,
-                        schoolyear_max__gte=school_year,
+                        Q(schoolyear_min__isnull=True)
+                        | Q(schoolyear_min__lte=school_year, schoolyear_max__gte=school_year)
                     )
                 except ValueError:
                     pass
@@ -103,6 +103,12 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
 
     @staticmethod
     def _course_matches_school_year(course, school_year):
+        if course["schoolyear_min"] is None:
+            # No school-year restriction on this course (mirrors _course_matches_birth_date) -
+            # without this check, comparing None to an int raises TypeError in Python, which
+            # crashed this whole request and silently hid every course from the activity, not
+            # just the unrestricted one.
+            return True
         return course["schoolyear_min"] <= school_year <= course["schoolyear_max"]
 
     @staticmethod

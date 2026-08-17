@@ -140,6 +140,17 @@ class ActivityAPITests(TenantTestCase):
         self.assertEqual(response.data[0]["courses"][0]["id"], self.course.id)
 
     @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=True)
+    def test_filter_by_school_year_unrestricted_course_always_matches(self):
+        # Before the fix, comparing None to an int (course.schoolyear_min <= year) raised
+        # TypeError in Python, crashing the whole request - not just hiding this course.
+        CourseFactory(activity=self.course.activity, schoolyear_min=None, schoolyear_max=None)
+        url = reverse("api:activity-list") + f"?year={self.school_year}"
+        response = self.tenant_client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data[0]["courses"]), 2)
+
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=True)
     def test_filter_by_school_year_boundary(self):
         url = reverse("api:activity-list")
         for year, expect_match in [
