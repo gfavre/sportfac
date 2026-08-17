@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 4.5.1 - 2026-08-17
+### Fixed
+- Invoice line-item price was recomputed live at render time (`registration.get_price_category()`) instead of showing the stored, already-billed price - could silently disagree with `Bill.total` (which sums the stored price) if a course's prices or the family's sibling order changed after the registration was created
+- Registration wizard's activity/course picker (`Course.toEvents` availability check) treated a course with no age restriction as available to nobody, since comparing `null` to a birth date coerces to `NaN` in JavaScript; such courses now correctly show as available to everyone, matching the backend's own eligibility check
+- `Registration.overlap()` crashed (`TypeError: unsupported operand type(s) for -: 'datetime.date' and 'NoneType'`) when comparing two same-day registrations where at least one course has no sessions yet (`KEPCHUP_EXPLICIT_SESSION_DATES` clears a course's dates to `None` until sessions are added) - now treated as no overlap instead
+
+### Changed
+- Jorat: enabled LAGAPEO-based child lookup/prefill (`KEPCHUP_DISPLAY_LAGAPEO`, `KEPCHUP_LOOKUP_LAGAPEO`), previously left at their off-by-default value
+
 ## 4.5.0 - 2026-08-14
 ### Fixed
 - Overselling: two near-simultaneous registrations for a course's last spot could both succeed, since the "is it full" check read the course row without locking it; the course row is now locked (`SELECT ... FOR UPDATE`) and re-checked for fullness right before creating the registration
