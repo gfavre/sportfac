@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 4.5.2 - 2026-08-17
+### Fixed
+- Registration wizard's weekly calendar started the week on Sunday (`firstDay: 0` in the fullcalendar config) instead of Monday - wrong for every tenant, not just the one where it got reported
+
 ## 4.5.1 - 2026-08-17
 ### Fixed
 - Invoice line-item price was recomputed live at render time (`registration.get_price_category()`) instead of showing the stored, already-billed price - could silently disagree with `Bill.total` (which sums the stored price) if a course's prices or the family's sibling order changed after the registration was created

@@ -445,7 +445,7 @@ angular.module('sportfacCalendar.controllers', [])
           year: year, month: month, date: day,
           initialDate: startOfWeek.toISOString().split('T')[0], // Use Monday as initial date
 
-          defaultView: 'agendaWeek', weekends: true, firstDay: 0, allDaySlot: false,
+          defaultView: 'agendaWeek', weekends: true, firstDay: 1, allDaySlot: false,
           hiddenDays: $scope.hiddenDays,
           slotMinutes: $scope.slotMinutes, maxTime: $scope.endHour, minTime: $scope.startHour,
           axisFormat: 'H:mm', columnFormat: 'dddd',
