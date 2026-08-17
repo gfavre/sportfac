@@ -38,11 +38,13 @@
 
       {% if not NO_PAYMENT %}
         <td class="nowrap text-right invoice-item" data-value="{{ registration.price }}">
-          {# Always show the stored, already-billed price - not a live recompute, which can
-             drift from what was actually charged if course prices or sibling order change
-             after this registration was created (and would then silently disagree with
-             Bill.total, which sums the stored price too). The live get_price_category() is
-             only used for its descriptive label, never for the amount. #}
+          {% comment %}
+            Always show the stored, already-billed price - not a live recompute, which can
+            drift from what was actually charged if course prices or sibling order change
+            after this registration was created (and would then silently disagree with
+            Bill.total, which sums the stored price too). The live get_price_category() is
+            only used for its descriptive label, never for the amount.
+          {% endcomment %}
           <strong>{{ registration.price|money }}</strong>
           {% with price_category=registration.get_price_category %}
             {% if price_category.1 %}<br>
