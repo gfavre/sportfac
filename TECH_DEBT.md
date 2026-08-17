@@ -109,42 +109,25 @@ scratch each time. Update in place as items are resolved or new ones are found.
   effort mitigation: document the "always invoke from repo root" convention
   explicitly (e.g. a root-level Makefile target) rather than restructuring.
 
-## Django 3.2 (past EOL)
+## Django 3.2 + Python 3.9 (both past EOL)
 
-- Pinned in `requirements/base.txt`: `django >=3.2.20,<4.0.0`.
-- Django 3.2 is the last LTS before the current one; its security support window
-  has closed. Running an unsupported major version with no further security
-  patches from upstream.
-- Several third-party packages are **deliberately pinned below their latest
-  release**, with explicit comments in `requirements/base.txt` tying the pin to
-  this Django version. These are the concrete blockers/prerequisites for a
-  Django 4.0+ upgrade, already identified by whoever pinned them:
-  - `djangorestframework-datatables==0.5.1` (not 0.7.0)
-  - `django-anymail~=11.1` (not 12.0)
-  - `django-recaptcha==3.0.0` (not 4.0 — also needs settings changes)
-  - `django-crispy-forms==1.14.0` (not 2.0 — also needs requirements changes)
-  - `django-admin-sortable2==1.0.4` (not 2.0)
-  - `django-import-export==3.0.2` (not 4.0)
-  - `django-phonenumber-field==7.0.1` (needs Django 4.2+ specifically, not just 4.0)
-- Not yet audited for this list: `django-tenants~=3.3` (multi-tenancy, the most
-  structurally load-bearing dependency in the project — compatibility here is
-  probably the real gating factor for the whole upgrade), `tenant_schemas_celery`,
-  `django-ckeditor`, `django-select2`, `django-floppyforms`, `django-sekizai`,
-  `django-dbtemplates`, `django-localflavor`. Check each against the target
-  Django version before starting.
-- **Before scoping the upgrade**: check django-tenants' own supported Django
-  range first — it likely determines which Django version is even reachable in
-  one hop (3.2 → 4.2 LTS is probably the sane target, not 3.2 → 5.x directly).
-
-## Python 3.9 (past EOL)
-
-- Local dev venv and (per `kepchup_*` supervisor configs) production both run
-  Python 3.9 (`/home/greg/.virtualenvs/kepchup_*`, `/Users/grfavre/.pyenv/versions/3.9.1`).
-  Python 3.9's security support window has also closed.
-- Tied to the Django upgrade in practice: bumping Python is low-risk on its own,
-  but the real motivation to do it now is doing both together (a Django 4.2
-  upgrade needs Python 3.10+ anyway), rather than two separate migration/testing
-  cycles.
+- Pinned in `requirements/base.txt`: `django >=3.2.20,<4.0.0`. Local/prod both
+  run Python 3.9. Both are past their security-support window — the one item
+  in this whole file where time passing actively makes things worse (see the
+  2026-08-17 discussion below), not just "annoying to work with."
+- **Active research and planning has started** — see
+  [`DJANGO_LTS_MIGRATION.md`](DJANGO_LTS_MIGRATION.md) for the up-to-date
+  findings (target versions, per-package Django 5.2 compatibility research,
+  the multi-tenant migration mechanics, and the current open questions/next
+  steps). Don't duplicate that detail here — this entry is just the pointer.
+- Gravity assessment (2026-08-17): 12 tenants share one VM and one codebase —
+  a Django/Python CVE isn't 12 independent risks, it's one risk with a 12x
+  (or more, given other unrelated apps share the same box) blast radius. The
+  system handles real family/payment data (IBAN, addresses, children's birth
+  dates), raising the stakes of any compromise. Not "actively being
+  exploited" — no evidence of that — but the risk compounds with time in a
+  way the other items in this file don't, hence prioritizing it over the
+  others.
 
 ## CKEditor 4 (EOL, `ckeditor.W001` system check warning)
 
