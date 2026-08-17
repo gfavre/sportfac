@@ -4,9 +4,11 @@ from django.contrib.auth.models import AnonymousUser
 from django.db import connection
 from django.http import Http404
 from django.test import RequestFactory
+from django.test import override_settings
 from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 
+from activities.tests.factories import CourseFactory
 from profiles.tests.factories import FamilyUserFactory
 from sportfac.utils import TenantTestCase as TestCase
 
@@ -99,6 +101,27 @@ class BillDetailViewTests(TestCase):
         response = self.view(self.request, pk=self.invoice.pk)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context_data["object"], self.invoice)
+
+    @override_settings(KEPCHUP_PRICING_MODE="simple", KEPCHUP_NO_PAYMENT=False)
+    def test_shows_the_stored_price_not_a_live_recomputation(self):
+        # Regression test: the price cell used to call registration.get_price_category()
+        # live at render time instead of trusting the stored, already-billed price - so an
+        # invoice could silently display a different amount than what was actually charged
+        # (and than Bill.total, which sums the stored price), if the course's prices or the
+        # family's sibling order changed after the registration was created.
+        with override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False):
+            course = CourseFactory(price=180)
+        child = ChildFactory(family=self.user)
+        registration = RegistrationFactory(course=course, child=child, price=250)
+        invoice = BillFactory(family=self.user, registrations=[registration])
+
+        request = self.factory.get(invoice.get_absolute_url())
+        request.user = self.user
+        response = self.view(request, pk=invoice.pk)
+        response.render()
+
+        self.assertIn(b"CHF 250.-", response.content)
+        self.assertNotIn(b"CHF 180.-", response.content)
 
 
 class BillPdfViewTests(TestCase):
