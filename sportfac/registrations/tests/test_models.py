@@ -60,6 +60,26 @@ class RegistrationTestCase(TenantTestCase):
         # same child, same course: overlap
         self.assertTrue(registration1.overlap(registration1))
 
+    @override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=True)
+    def test_overlap_does_not_crash_for_course_without_sessions(self):
+        # Regression test: with KEPCHUP_EXPLICIT_SESSION_DATES on, a course's start_date/
+        # end_date are derived from its sessions and cleared to None when it has none yet
+        # (Course.update_dates_from_sessions()) - day/start_time/end_time can still be set.
+        # overlap() used to subtract these dates unconditionally and crash with a TypeError
+        # (date - None) for two same-day registrations where at least one course had no
+        # sessions - this only reaches that branch since both courses share the same day
+        # (an earlier check already returns False for different days).
+        course1 = CourseFactory(day=1, start_time=time(hour=12, minute=0), end_time=time(hour=13, minute=0))
+        course2 = CourseFactory(day=1, start_time=time(hour=14, minute=0), end_time=time(hour=15, minute=0))
+        self.assertIsNone(course1.start_date)
+        self.assertIsNone(course2.start_date)
+
+        registration1 = RegistrationFactory(course=course1, child=self.child1)
+        registration2 = RegistrationFactory(course=course2, child=self.child1)
+
+        self.assertFalse(registration1.overlap(registration2))
+        self.assertFalse(registration2.overlap(registration1))
+
     @override_settings(KEPCHUP_PRICING_MODE="simple", KEPCHUP_LOCAL_ZIPCODES=["1272"])
     def test_get_price_category_no_differentiated_prices(self):
         self.user.zipcode = "1272"

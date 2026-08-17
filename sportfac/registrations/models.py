@@ -329,6 +329,10 @@ class Registration(TimeStampedModel, StatusModel):
 
     def overlap(self, r2):
         """Test if another registration object overlaps with this one."""
+        if None in (self.course.start_date, self.course.end_date, r2.course.start_date, r2.course.end_date):
+            # A course with no sessions yet (KEPCHUP_EXPLICIT_SESSION_DATES derives dates from
+            # sessions and clears them to None when there aren't any) has nothing to overlap.
+            return False
         if self.course.is_camp or r2.course.is_camp:
             # overlap if other dates are between this.start_date and this.end_date
             latest_start = max(self.course.start_date, r2.course.start_date)
