@@ -37,3 +37,22 @@ class GeneratePdfForBillTestCase(TenantTestCase):
             self.assertGreaterEqual(doc.page_count, 1)
             last_page_text = doc[-1].get_text()
             self.assertIn("Section paiement", last_page_text)  # QR-bill "Payment part" label, in French
+
+    def test_paid_bill_still_shows_the_qr_invoice_plus_a_paid_stamp(self):
+        # Regression test: the QR-bill must stay on the invoice regardless of paid
+        # status (it's kept for reference/reconciliation even once settled) - only a
+        # "Payé le ..." stamp gets added above it, never a replacement.
+        bill = BillFactory(payment_method="iban")
+        bill.save()
+        bill.close()
+        bill.payment_date = bill.created
+        bill.save(update_fields=["payment_date"])
+        self.assertIn("<svg", bill.qr_invoice)
+
+        pdf_bytes = generate_pdf_for_bill(bill)
+
+        self.assertIsNotNone(pdf_bytes)
+        with fitz.open(stream=pdf_bytes, filetype="pdf") as doc:
+            full_text = "".join(page.get_text() for page in doc)
+            self.assertIn("Payé le", full_text)
+            self.assertIn("Section paiement", full_text)

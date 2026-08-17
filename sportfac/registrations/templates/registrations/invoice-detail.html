@@ -10,9 +10,7 @@
 {% block content %}
 {% include "registrations/invoice-part-heading.html" %}
 {% include "registrations/invoice-part-registrations.html" %}
-  {% if not invoice.is_paid %}
   {% include "registrations/billing_partial.html" %}
-  {% endif %}
 
 {% include "print-button.html" %}
 {% include "pdf-download-button.html" with pdf_url=invoice.get_pdf_url bill=invoice %}

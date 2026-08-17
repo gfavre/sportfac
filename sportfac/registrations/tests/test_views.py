@@ -123,6 +123,26 @@ class BillDetailViewTests(TestCase):
         self.assertIn(b"CHF 250.-", response.content)
         self.assertNotIn(b"CHF 180.-", response.content)
 
+    @override_settings(KEPCHUP_PRICING_MODE="simple", KEPCHUP_NO_PAYMENT=False)
+    def test_paid_bill_still_shows_the_total_amount(self):
+        # Regression test: billing_partial.html (which carries the total-amount line)
+        # used to be skipped entirely once a bill was marked paid - so a paid invoice's
+        # detail page/PDF showed the list of registrations but never the total that was
+        # actually billed.
+        with override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False):
+            course = CourseFactory(price=250)
+        child = ChildFactory(family=self.user)
+        registration = RegistrationFactory(course=course, child=child, price=250)
+        invoice = BillFactory(family=self.user, registrations=[registration], payment_method="iban")
+        invoice.close()
+
+        request = self.factory.get(invoice.get_absolute_url())
+        request.user = self.user
+        response = self.view(request, pk=invoice.pk)
+        response.render()
+
+        self.assertIn(b"CHF 250.-", response.content)
+
 
 class BillPdfViewTests(TestCase):
     def setUp(self):

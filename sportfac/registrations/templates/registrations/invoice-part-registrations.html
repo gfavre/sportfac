@@ -27,7 +27,13 @@
       </td>
       <td class="text-center">
         <span class="nowrap">{{ registration.course.start_date }}</span><br>
-        <span class="icon-down-1" aria-hidden="true"></span><br>
+        {% comment %}
+          Plain Unicode arrow, not the icon-down-1 webfont glyph: that font is fetched
+          on demand and isn't reliably loaded in time in the PDF's headless-rendering
+          context (page.set_content(), not a real navigation), and unlike a normal page
+          load, there's no second chance to render if it's missed.
+        {% endcomment %}
+        <span aria-hidden="true">↓</span><br>
         <span class="nowrap">{{ registration.course.end_date }}</span>
       </td>
       <td class="text-center">

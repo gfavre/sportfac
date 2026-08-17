@@ -1,9 +1,12 @@
 {% load humanize i18n l10n sekizai_tags switzerland %}
 
+{% if not invoice.is_paid %}
 <p>Les inscriptions seront définitivement validées à la suite du règlement de la finance de participation pour les cours choisis.</p>
+{% endif %}
 <p>Le montant total pour vos inscriptions s'élève à : <strong>{{ invoice.total|money }}</strong></p>
 {% if PAYMENT_METHOD == 'iban' %}
 <p>L'identifiant pour votre transaction est le suivant : <strong>{{ invoice.billing_identifier }}</strong></p>
+{% if not invoice.is_paid %}
 <p>Nous vous remercions de verser cette somme d’ici au  <strong>{{ delay|date:"j F Y"|lower }}</strong> en privilégiant le virement bancaire sur le compte : </p>
 <div class="well">
   <div class="row">
@@ -32,14 +35,21 @@
   </div>
 </div>
 <p>en indiquant, sous communications ou motif, votre identifiant de transaction.</p>
+{% endif %}
 
 {% elif PAYMENT_METHOD == 'datatrans' %}
+  {% if not invoice.is_paid %}
   <p>Le paiement peut se faire via Twint (débit direct) ou Mastercard et Visa (cartes de crédit).</p>
   {% include 'payments/datatrans_pay_button.html' %}
+  {% endif %}
 {% elif PAYMENT_METHOD == 'postfinance' %}
+  {% if not invoice.is_paid %}
   {% include 'payments/postfinance_pay_button.html' %}
+  {% endif %}
 {% elif PAYMENT_METHOD == 'external' %}
+  {% if not invoice.is_paid %}
   <p>La facture vous sera envoyée par courrier.</p>
+  {% endif %}
 {% endif %}
 
 <p><strong>Aucun remboursement ne pourra être demandé en cas de désistement.</strong></p>

@@ -18,6 +18,7 @@ from .models import Registration
 from .models import RegistrationsProfile
 from .models import RegistrationValidation
 from .models import Transport
+from .tasks import generate_invoice_pdf
 from .tasks import send_bill_confirmation
 
 
@@ -30,6 +31,25 @@ def send_confirmation_action(modeladmin, request, queryset):
     for invoice in queryset:
         user = invoice.family
         send_bill_confirmation.delay(user.pk, invoice.pk, tenant.pk)
+
+
+@admin.action(description="Régénérer le PDF de la facture (Celery)")
+def regenerate_pdf_action(modeladmin, request, queryset):
+    # Bill.generate_pdf() only ever runs once per bill: BillPdfDownloadMixin serves
+    # bill.pdf straight from cache once it's set and never regenerates it on its own
+    # (see registrations/views/utils.py). Clearing the cached file (and the field
+    # itself, via a bulk update - same pattern as Bill.update_qr_invoice()) before
+    # dispatching the task is what actually forces a fresh render; queuing the task
+    # first and clearing the field after would risk wiping out the newly generated
+    # PDF if the task finishes before this admin request does.
+    bills = list(queryset)
+    for bill in bills:
+        if bill.pdf:
+            bill.pdf.delete(save=False)
+    queryset.update(pdf="")
+    for bill in bills:
+        generate_invoice_pdf.delay(bill_id=bill.pk)
+    modeladmin.message_user(request, f"Régénération lancée pour {len(bills)} facture(s).")
 
 
 class RegistrationResource(resources.ModelResource):
@@ -191,6 +211,7 @@ class BillAdmin(SportfacModelAdmin):
     inlines = [RegistrationInline, RentalsInline]
     actions = [
         send_confirmation_action,
+        regenerate_pdf_action,
     ]
 
     def get_queryset(self, request):

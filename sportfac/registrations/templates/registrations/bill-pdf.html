@@ -82,12 +82,13 @@
 <div class="container">
   {% include "registrations/invoice-part-heading.html" %}
   {% include "registrations/invoice-part-registrations.html" %}
-  {% if not bill.is_paid %}
-    {% include "registrations/billing_partial.html" %}
-    {% if bill.qr_invoice %}
-      <div id="qrbill-marker" class="qrbill-marker">QRBILLPAGEMARKER</div>
-      <section id="qrbill">{{ bill.qr_invoice|safe }}</section>
+  {% include "registrations/billing_partial.html" %}
+  {% if bill.qr_invoice %}
+    {% if bill.is_paid %}
+      <p>Payé le {{ bill.payment_date|date:"d.m.Y" }}</p>
     {% endif %}
+    <div id="qrbill-marker" class="qrbill-marker">QRBILLPAGEMARKER</div>
+    <section id="qrbill">{{ bill.qr_invoice|safe }}</section>
   {% endif %}
 </div>
 </body>

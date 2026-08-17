@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 4.5.5 - 2026-08-17
+### Fixed
+- A paid bill's detail page and PDF (`billing_partial.html`, included from `bill-pdf.html` and the family invoice-detail page) skipped the total-amount line entirely along with the payment instructions, so a paid invoice showed the list of registrations but never what was actually billed - the total (and, for wire transfers, the billing identifier the heading's own comment assumed was still shown here) now always renders; only the "please pay" instructions, bank-details box, QR-bill and pay buttons stay conditional on the bill still being unpaid
+
+### Added
+- Bill PDF: a paid bill now prints "Payé le JJ.MM.AAAA" just above the QR-invoice slip (which stays on the invoice regardless of paid status, kept for reference/reconciliation), so a printed/downloaded paid invoice carries an explicit paid marker even though the on-screen "Paid" ribbon (`invoice-part-heading.html`) is deliberately hidden in print
+- Backend admin: "Régénérer le PDF de la facture" action on the Bill list, to force a fresh PDF (queued via Celery) instead of the manual delete-field-then-wait dance - clears the cached file and field for the selected bills before dispatching regeneration, to avoid a race where a fast-finishing task's fresh PDF gets wiped by the field-clearing step
+- Invoice "Period" column's separator arrow used a custom webfont glyph (`icon-down-1`) that isn't reliably loaded in time in the PDF's headless-rendering context (`page.set_content()`, not a real navigation) - replaced with a plain Unicode arrow, same approach already used elsewhere on the same invoice (the "3P➜8P" activity-name arrow), which does render correctly
+
 ## 4.5.4 - 2026-08-17
 ### Fixed
 - Invoice line items (wizard confirm/payment/success pages, backend/family invoice detail, bill PDF) showed a raw, unrendered Django template comment instead of - or mangling the layout in front of - the registration price: `{# ... #}` comments cannot span multiple lines in Django, so the multi-line explanatory comment added in 4.5.1's price-display fix was output as literal text instead of being stripped, on every invoice - regression from 4.5.1, introduced the same day it shipped
