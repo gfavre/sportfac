@@ -50,6 +50,8 @@ KEPCHUP_CHILDREN_MANDATORY_FIELDS = [
 ]
 KEPCHUP_CHILDREN_HIDDEN_FIELDS = ["language", "nationality", "avs", "other_school"]
 KEPCHUP_ID_LAGAPEO_ALTERNATIVE_LABEL = "Identifiant pour cours facultatif"
+KEPCHUP_DISPLAY_LAGAPEO = True
+KEPCHUP_LOOKUP_LAGAPEO = True
 
 CELERYBEAT_SCHEDULE["notify-absences"] = {  # noqa: F405
     "task": "absences.tasks.notify_absences",
