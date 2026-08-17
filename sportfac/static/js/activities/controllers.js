@@ -346,6 +346,12 @@ angular.module('sportfacCalendar.controllers', [])
           if ($scope.limitbyschoolyear) {
             available = course.schoolyear_min <= $scope.selectedChild.school_year &&
               course.schoolyear_max >= $scope.selectedChild.school_year;
+          } else if (course.min_birth_date == null) {
+            // No age restriction on this course (mirrors the backend's has_age_restriction) -
+            // without this check, comparing null to a date string coerces null to 0 and the
+            // date to NaN, so the comparison below is always false and the course silently
+            // never appears as available to anyone.
+            available = true;
           } else {
             available = course.min_birth_date >= $scope.selectedChild.birth_date &&
               course.max_birth_date <= $scope.selectedChild.birth_date;
