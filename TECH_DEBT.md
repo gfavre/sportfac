@@ -359,6 +359,42 @@ No decisions made yet on any of these; recorded here so the next person
 tackling "site slow during registration rush" (see performance work below)
 doesn't have to re-derive them from the raw log.
 
+## `tenants_context()` fan-out for instructor/restricted-manager logins
+
+Not from the log above — found 2026-08-18 in a follow-up discussion about
+where to look next, and **fixed the same day**. `tenants_context()`
+(`sportfac/context_processors.py`) runs on every authenticated page in the
+whole app (not just backend) via `TEMPLATES`. `YearTenant` is one Postgres
+schema per **school year within a single instance** (confirmed against
+`backend/models.py` — `start_date`/`end_date`, not one per municipality;
+each `kepchup_*` instance is fully separate: own Python process, own DB,
+nothing shared at request time). For managers/superuser/staff this context
+processor is cheap (`YearTenant.objects.all()`, cached 5 min). But
+`is_kepchup_staff` (`profiles/models.py` — `is_manager or
+is_restricted_manager or is_superuser or is_instructor`) is a **broader**
+gate than the name suggests: any plain activity instructor who isn't also a
+full manager falls into this branch too, not just platform operators. That
+branch, on a cache-cold request, looped over every `YearTenant` and ran a
+raw cross-schema SQL round-trip per tenant (`SELECT 1 FROM
+{schema}.activities_coursesinstructors WHERE instructor_id = %s`) —
+sequential, each also paying django-tenants' per-request `SET search_path`
+cost. Unbounded over time: one new schema per school year, and the coppet
+instance already has 12.
+
+**Fixed**: `_kepchup_staff_tenants()` now builds a single `UNION ALL` query
+across every **`status="ready"`** tenant (`YearTenant.STATUS` includes
+`creating`/`copying` — a mid-creation schema may not have its tables yet;
+excluding those upfront replaces the old per-tenant `try/except
+DatabaseError` fault isolation, since one bad schema in a single `UNION
+ALL` fails the whole query, not just that branch) and does the same
+`instructor_id` membership check in one round-trip instead of N. Verified
+with `CaptureQueriesContext` against a real tenant schema: exactly one query
+touches `activities_coursesinstructors` regardless of how many tenants
+exist, a non-ready tenant is excluded from the query text entirely (not
+just filtered from the result — its nonexistent tables are never touched),
+correct results for both an instructor and a non-instructor user, and no
+crash with zero tenants. Full suite (410 tests) passes.
+
 ## Local `TenantTestCase` suite is currently broken (`cache.delete_pattern`)
 
 Found 2026-08-18 while writing/running the session-replay tests above.

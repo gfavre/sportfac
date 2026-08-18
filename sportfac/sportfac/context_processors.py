@@ -50,6 +50,40 @@ def activities_context(request):
     return {"activities_types": activities}
 
 
+def _kepchup_staff_tenants(user):
+    """Which YearTenant schemas `user` is a course instructor in.
+
+    Was one query per tenant (each also paying django-tenants' SET search_path cost),
+    sequentially - fine at a handful of tenants, but this instance's tenant count only
+    grows (one new schema per school year), so it was an unbounded, ever-slower fan-out.
+    A single UNION ALL query gets the same answer in one round-trip. Restricted to
+    "ready" tenants: a tenant mid-creation/copy (see YearTenant.STATUS) may not have its
+    tables yet, and unlike the old per-tenant try/except, one bad schema in a UNION ALL
+    fails the whole query rather than just that tenant - excluding not-ready tenants
+    upfront avoids that without needing per-schema fault isolation.
+    """
+    tenants = list(YearTenant.objects.filter(status=YearTenant.STATUS.ready))
+    if not tenants:
+        return []
+
+    query = " UNION ALL ".join(
+        f"SELECT %s AS schema_name WHERE EXISTS ("
+        f"SELECT 1 FROM {tenant.schema_name}.activities_coursesinstructors WHERE instructor_id = %s)"
+        for tenant in tenants
+    )
+    params = [param for tenant in tenants for param in (tenant.schema_name, user.id)]
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(query, params)
+            found_schemas = {row[0] for row in cursor.fetchall()}
+    except DatabaseError as e:
+        logger.warning("Failed to query tenant schemas for kepchup staff tenant list: %s", str(e))
+        return []
+
+    return [tenant for tenant in tenants if tenant.schema_name in found_schemas]
+
+
 def tenants_context(request):
     user = request.user
 
@@ -65,20 +99,7 @@ def tenants_context(request):
         tenants = list(YearTenant.objects.all())
 
     elif user.is_kepchup_staff:
-        tenants = []
-        for tenant in YearTenant.objects.all():
-            try:
-                with connection.cursor() as cursor:
-                    cursor.execute(
-                        f"SELECT 1 FROM {tenant.schema_name}.activities_coursesinstructors "
-                        "WHERE instructor_id = %s LIMIT 1",
-                        [user.id],
-                    )
-                    if cursor.fetchone():
-                        tenants.append(tenant)
-            except DatabaseError as e:
-                logger.warning("Failed to query schema '%s': %s", tenant.schema_name, str(e))
-                continue
+        tenants = _kepchup_staff_tenants(user)
     else:
         tenants = []
 
