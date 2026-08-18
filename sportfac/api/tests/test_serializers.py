@@ -118,6 +118,25 @@ class RegistrationSerializerTest(TenantTestCase):
         serializer = RegistrationSerializer(data=data)
         self.assertTrue(serializer.is_valid(), serializer.errors)
 
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=True, KEPCHUP_EXPLICIT_SESSION_DATES=True)
+    def test_registration_accepted_for_school_year_unrestricted_course_with_explicit_session_dates(self):
+        # Coverage gap found 2026-08-18 auditing Montreux's real settings combo (school
+        # year + explicit session dates together, never combined in a test before) - a
+        # real Session, not a passed-in start_date (which KEPCHUP_EXPLICIT_SESSION_DATES
+        # wipes on save() anyway), is what an actual open-for-registration course has.
+        self.child.school_year = self.school_year
+        self.child.save()
+        unrestricted_course = CourseFactory(schoolyear_min=None, schoolyear_max=None)
+        unrestricted_course.add_session(date.today())
+        data = {
+            "child": self.child.id,
+            "course": unrestricted_course.id,
+        }
+
+        serializer = RegistrationSerializer(data=data)
+
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+
     @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False)
     def test_registration_age_too_young(self):
         """Test if the child's birth date is outside the allowed range"""

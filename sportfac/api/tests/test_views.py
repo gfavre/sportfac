@@ -176,6 +176,26 @@ class ActivityAPITests(TenantTestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(len(response.data[0]["courses"]), 2)
 
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=True, KEPCHUP_EXPLICIT_SESSION_DATES=True)
+    def test_filter_by_school_year_unrestricted_course_with_explicit_session_dates(self):
+        # Coverage gap found 2026-08-18 while auditing Montreux's real settings combo
+        # (KEPCHUP_LIMIT_BY_SCHOOL_YEAR + KEPCHUP_EXPLICIT_SESSION_DATES together) - every
+        # other unrestricted-course test in this file explicitly turns
+        # KEPCHUP_EXPLICIT_SESSION_DATES off during course creation to sidestep
+        # Course.save()'s session-derived dates, which never actually exercised this
+        # combination. A real Session (not a passed-in start_date, which
+        # KEPCHUP_EXPLICIT_SESSION_DATES would wipe on save() anyway) is what a Montreux
+        # course actually has once it's open for registration.
+        course = CourseFactory(activity=self.course.activity, schoolyear_min=None, schoolyear_max=None)
+        course.add_session(datetime.date.today())
+        url = reverse("api:activity-list") + f"?year={self.school_year}"
+
+        response = self.tenant_client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data[0]["courses"]), 2)
+
     @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=True)
     def test_filter_by_school_year_boundary(self):
         url = reverse("api:activity-list")
