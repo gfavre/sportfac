@@ -43,6 +43,22 @@ scratch each time. Update in place as items are resolved or new ones are found.
 - No work started yet. This entry exists to record the direction/priority
   order (children first, activities+extra after, backend jQuery untouched) so
   it doesn't need re-deciding later.
+- Concrete cost of the duplication, observed 2026-08-17/18: whether a course is
+  open to "any age"/"any school year" (i.e. `age_min`/`age_max` or
+  `schoolyear_min`/`schoolyear_max` all unset) is a single business rule, but
+  it was independently reimplemented in **four** places - the wizard's
+  AngularJS calendar (`activities/controllers.js`), its separate click-time
+  gate (`activities/services.js`'s `Child.canRegister()`), the API's
+  `RegistrationSerializer.validate()`, and the backend admin's own course
+  dropdown (`backend/forms.py`'s `CourseSelectMixin`). All four had the same
+  "unrestricted means null, and null compares false/excludes-via-SQL-NULL
+  instead of meaning open to everyone" bug, found and fixed one at a time over
+  two days because no existing test anywhere covered the *unrestricted* case -
+  only the "has a restriction, is the child in/out of range" case was tested,
+  in each of the four places separately. This is the concrete failure mode a
+  single source of truth (backend-only eligibility, with the frontend just
+  rendering/consuming it) would have prevented: one bug, one fix, one test,
+  instead of four of each.
 
 ## `Bill` → `Invoice` rename, half-done
 

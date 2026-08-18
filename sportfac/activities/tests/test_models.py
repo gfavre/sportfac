@@ -250,6 +250,32 @@ class CourseTest(TestCase):
         self.course.save()
         self.assertEqual(self.course.max_birth_date, date(2011, 1, 1))
 
+    @override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False)
+    def test_save_clears_min_birth_date_when_age_min_is_cleared(self):
+        # Regression test: a course originally created with an age restriction, then
+        # edited to remove it (age_min cleared in the admin), used to keep the stale
+        # min_birth_date computed from the old age_min - still silently restricting
+        # registration even though the form showed no age restriction at all.
+        self.course.age_min = 5
+        self.course.start_date = date(2022, 1, 1)
+        self.course.save()
+        self.assertIsNotNone(self.course.min_birth_date)
+
+        self.course.age_min = None
+        self.course.save()
+        self.assertIsNone(self.course.min_birth_date)
+
+    @override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False)
+    def test_save_clears_max_birth_date_when_age_max_is_cleared(self):
+        self.course.age_max = 10
+        self.course.start_date = date(2022, 1, 1)
+        self.course.save()
+        self.assertIsNotNone(self.course.max_birth_date)
+
+        self.course.age_max = None
+        self.course.save()
+        self.assertIsNone(self.course.max_birth_date)
+
     def test_str(self):
         self.assertTrue(len(str(self.course)) > 0)
 

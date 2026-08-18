@@ -79,9 +79,13 @@ class CourseResource(resources.ModelResource):
 
     def dehydrate_limitations(self, course):
         if settings.KEPCHUP_LIMIT_BY_SCHOOL_YEAR:
+            if not course.has_school_year_restriction:
+                return ""
             school_year_min = settings.KEPCHUP_YEAR_NAMES[course.schoolyear_min]
             school_year_max = settings.KEPCHUP_YEAR_NAMES[course.schoolyear_max]
             return f"{school_year_min} - {school_year_max}"
+        if not course.has_age_restriction:
+            return ""
         return f"{course.age_min} - {course.age_max} ans"
 
     def dehydrate_start_date(self, course):

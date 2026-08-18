@@ -556,9 +556,17 @@ class Course(TimeStampedModel):
             self.update_dates_from_sessions(commit=False)
         if self.age_min and self.start_date:
             self.min_birth_date = self.start_date - relativedelta(years=self.age_min)
+        else:
+            # Clearing age_min (or start_date going missing) must clear the derived date
+            # too - otherwise it's left stale at whatever it was last computed to, still
+            # silently restricting registration even though the form now shows no age
+            # restriction at all.
+            self.min_birth_date = None
         if self.age_max and self.start_date:
             # if we say up to 6 years old, we want to include children of 6 1/2 years old, hence the +1
             self.max_birth_date = self.start_date - relativedelta(years=self.age_max + 1)
+        else:
+            self.max_birth_date = None
         self.update_nb_participants()  # useful if max participants number has been changed
         super().save(*args, **kwargs)
 
