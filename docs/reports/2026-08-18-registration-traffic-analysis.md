@@ -221,14 +221,33 @@ affichée).
 > journée y compris en creux de trafic, confirmant que c'est le bug
 > structurel séparé déjà corrigé plus haut, pas de la mise en attente.)
 
-**Fix suggéré** : un endpoint batché dont l'implémentation continue à faire N
-lectures de cache individuelles (mêmes clés `tenant_{pk}_course_{id}`,
-`cache.get_many`/`cache.set`) et renvoie juste tout en une seule réponse
-HTTP — même granularité et même invalidation de cache qu'aujourd'hui, mais
+> **Corrigé le 2026-08-18.** Backend : action `CourseViewSet.batch`
+> (`api/views/activities_views.py`, `GET /api/courses/batch/?ids=1,2,3`) —
+> fait N lectures `cache.get_many`/`cache.set` sur les mêmes clés
+> `tenant_{pk}_course_{id}` que `retrieve()`, renvoyées en une seule
+> réponse. Vérifié contre une vraie base : ordre correct, cache partagé
+> entre `retrieve()`/`batch()`, invalidation sur `Course.save()`, ids
+> absents/invalides gérés sans 500. Frontend : les trois boucles de
+> `ActivityTimelineCtrl` (`static/js/activities/controllers.js`) qui
+> faisaient un appel par cours/inscription appellent maintenant une seule
+> fois `CoursesService.getMany()` (nouveau, dans
+> `static/js/activities/services.js`) ; la logique de répartition
+> (disponible/indisponible, valide/en attente, quel enfant) est inchangée,
+> juste résolue depuis la réponse groupée au lieu de N promesses
+> indépendantes. `app.min.js` reconstruit avec la commande exacte
+> documentée dans le commentaire de `activities_app.html`. Vérifié : suite
+> Python complète (397 tests), syntaxe JS (`node -c`) sur les sources et le
+> bundle reconstruit, endpoint batch de bout en bout contre une vraie base.
+> **Non vérifié** : le rendu réel dans un navigateur (aucun navigateur
+> disponible dans la session qui a fait ce changement) — un smoke test
+> manuel de l'étape activités du wizard (changer d'activité, s'inscrire,
+> vérifier que le calendrier hebdomadaire s'affiche et colore les cours
+> correctement) reste dû avant de faire confiance à ce correctif sous charge
+> réelle.
+
 ~1 requête au lieu de ~4-5 par utilisateur actif à chaque tick, sur les 16
-places disponibles. Pas encore
-implémenté. Plus gros gain total possible, car ça touche le tunnel principal
-(86% du trafic) et c'est potentiellement le mécanisme réel derrière
+places disponibles. Plus gros gain total possible, car ça touche le tunnel
+principal (86% du trafic) et c'est potentiellement le mécanisme réel derrière
 l'effondrement à ~400 utilisateurs.
 
 ### 3. `GET /api/dashboard/users/` — 482ms en moyenne, et rafales de 5 appels identiques en moins d'une seconde côté admin

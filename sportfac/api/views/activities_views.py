@@ -7,6 +7,7 @@ from rest_framework import mixins
 from rest_framework import status
 from rest_framework import views
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from activities.cache import get_structural_activities_cache_key
@@ -177,6 +178,45 @@ class CourseViewSet(viewsets.ReadOnlyModelViewSet):
         response = super().retrieve(request, pk=pk)
         cache.set(cache_key, response.data)
         return response
+
+    MAX_BATCH_IDS = 200
+
+    @action(detail=False, methods=["get"])
+    def batch(self, request):
+        """Same per-course cache as retrieve(), fetched for several ids in one request -
+        lets the activities-step SPA replace its one-request-per-visible-course polling
+        with a single call without losing per-course cache granularity/invalidation."""
+        try:
+            ids = [int(i) for i in request.query_params.get("ids", "").split(",") if i]
+        except ValueError:
+            return Response({"ids": "Must be a comma-separated list of integers."}, status=status.HTTP_400_BAD_REQUEST)
+        if not ids:
+            return Response([])
+        if len(ids) > self.MAX_BATCH_IDS:
+            return Response(
+                {"ids": f"Too many ids: {len(ids)} (max {self.MAX_BATCH_IDS})."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        tenant_pk = request.tenant.pk
+        cache_keys_by_id = {course_id: f"tenant_{tenant_pk}_course_{course_id}" for course_id in ids}
+        cached = cache.get_many(cache_keys_by_id.values())
+
+        data_by_id = {
+            course_id: cached[cache_key] for course_id, cache_key in cache_keys_by_id.items() if cache_key in cached
+        }
+        missing_ids = [course_id for course_id in ids if course_id not in data_by_id]
+        if missing_ids:
+            serializer = self.get_serializer(self.get_queryset().filter(id__in=missing_ids), many=True)
+            to_cache = {}
+            for item in serializer.data:
+                data_by_id[item["id"]] = item
+                to_cache[cache_keys_by_id[item["id"]]] = item
+            cache.set_many(to_cache)
+
+        # ids without a match (deleted, or no longer registerable) are silently dropped,
+        # same as a 404 would be for a single retrieve() of a stale id.
+        return Response([data_by_id[course_id] for course_id in ids if course_id in data_by_id])
 
 
 class ChangeCourse(views.APIView):

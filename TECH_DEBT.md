@@ -272,12 +272,33 @@ thousands of times can outweigh a rare slow one.
   worker cost, and `/backend/child/`'s 4-6s is flat at every hour of the
   day including quiet periods, confirming it's the separate structural bug
   above, not queueing.)
-  **Correct fix**: a batch endpoint whose *implementation* still does N
-  individual per-course cache lookups (`cache.get_many`/`cache.set` against
-  the same `tenant_{pk}_course_{id}` keys) and just returns them combined in
-  one HTTP response — same cache granularity and invalidation as today,
-  collapsing the ~4-5 concurrent worker-slots each active user occupies per
-  poll down to ~1 out of the 16 available. Not yet implemented.
+  **Fixed 2026-08-18.** Backend: `CourseViewSet.batch` action
+  (`api/views/activities_views.py`, `GET /api/courses/batch/?ids=1,2,3`) does
+  N individual `cache.get_many`/`cache.set` lookups against the same
+  `tenant_{pk}_course_{id}` keys `retrieve()` already uses, and returns them
+  combined in one response — same cache granularity/invalidation as today.
+  Verified against a real DB: correct ordering, cache reused across
+  `retrieve()`/`batch()`, invalidated on `Course.save()`, missing/malformed
+  ids handled without a 500. Frontend: `ActivityTimelineCtrl`'s three
+  per-course-request loops (`static/js/activities/controllers.js`,
+  `updateAvailableEvents`/`updateRegisteredEvents`/`updateOthersEvents`) now
+  collect the ids they need and call one new `CoursesService.getMany()`
+  (`static/js/activities/services.js`) instead of firing `CoursesService.get()`
+  once per course/registration; dispatch logic (available vs unavailable,
+  valid vs waiting, which child) is unchanged, just resolved from the batched
+  response instead of N independent promises. `app.min.js` rebuilt with the
+  exact command documented in `activities_app.html`'s comment. Verified:
+  Python side (397 tests, full suite), JS syntax (`node -c`) on both source
+  files and the rebuilt bundle, and the new batch endpoint end-to-end via a
+  real DB-backed request. **Not verified**: actual rendering in a browser
+  (no browser available in the session that made this change) — the
+  `activityRegistered`/`overlapping` classification in `updateAvailableEvents`
+  has a pre-existing iteration-order dependency that was deliberately
+  preserved as-is (computed synchronously before the batched fetch, same as
+  before), but a manual smoke test of the wizard's activities step (switch
+  between activities, register, confirm the weekly calendar still renders
+  and colors courses correctly) is still owed before trusting this fully
+  under live load.
 - **`/api/dashboard/users/` fired 5× with identical params within about one
   second** in one admin session trace (08:54:55-56) — looks like a
   duplicated client-side fetch (e.g. an effect re-running) rather than a

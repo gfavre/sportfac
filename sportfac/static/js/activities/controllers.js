@@ -228,8 +228,10 @@ angular.module('sportfacCalendar.controllers', [])
         // Check if there are any common dates
         let commonDates = [...set1].filter(date => set2.has(date));
         if (commonDates.length > 0) {
-          if (event1.all_day || event2.all_day) {
-            // common dates. if a single lasts all day, overlap is certain
+          if (event1.all_day || event2.all_day || !event1.start_time || !event1.end_time ||
+            !event2.start_time || !event2.end_time) {
+            // common dates, and either side lasts all day or has no specific time of day
+            // (e.g. a multi-course event) - overlap is certain
             return true;
           }
           // There are common dates, now check if times overlap
@@ -293,14 +295,30 @@ angular.module('sportfacCalendar.controllers', [])
             $scope.registeredEvents.push(event);
           });
         };
+        let courseIds = [];
+        let registrationsByCourseId = {};
         angular.forEach($scope.getRegistrations($scope.selectedChild), function (registration) {
           $scope.registeredEventsToFetch += 1;
-          if (registration.status === 'valid') {
-            CoursesService.get($scope.urls.course, registration.course).then(addToValidated);
-          } else {
-            CoursesService.get($scope.urls.course, registration.course).then(addToRegistered);
+          if (!registrationsByCourseId[registration.course]) {
+            registrationsByCourseId[registration.course] = [];
+            courseIds.push(registration.course);
           }
-
+          registrationsByCourseId[registration.course].push(registration);
+        });
+        // One batched fetch instead of one request per registration - dispatch decision
+        // (valid vs not) still follows each individual registration's own status, a
+        // course can appear under several registrations (e.g. re-registered after a
+        // cancellation).
+        CoursesService.getMany($scope.urls.course, courseIds).then(function (courses) {
+          angular.forEach(courses, function (course) {
+            angular.forEach(registrationsByCourseId[course.id] || [], function (registration) {
+              if (registration.status === 'valid') {
+                addToValidated(course);
+              } else {
+                addToRegistered(course);
+              }
+            });
+          });
         });
       };
 
@@ -310,19 +328,32 @@ angular.module('sportfacCalendar.controllers', [])
         }
 
         $scope.othersRegisteredEvents.length = 0;
+        let courseIds = [];
+        let childrenByCourseId = {};
         angular.forEach($scope.userChildren, function (child) {
           if (child !== $scope.selectedChild) {
             angular.forEach($scope.getRegistrations(child), function (registration) {
               $scope.othersRegisteredEventsToFetch += 1;
-              CoursesService.get($scope.urls.course, registration.course).then(function (course) {
-                var events = course.toEvents("unavailable");
-                angular.forEach(events, function (event) {
-                  event.registeredChild = child;
-                })
-                $scope.othersRegisteredEvents.push.apply($scope.othersRegisteredEvents, events);
-              });
+              if (!childrenByCourseId[registration.course]) {
+                childrenByCourseId[registration.course] = [];
+                courseIds.push(registration.course);
+              }
+              childrenByCourseId[registration.course].push(child);
             });
           }
+        });
+        // One batched fetch instead of one request per registration - a course shared by
+        // several of the user's other children is fetched once and dispatched to each.
+        CoursesService.getMany($scope.urls.course, courseIds).then(function (courses) {
+          angular.forEach(courses, function (course) {
+            angular.forEach(childrenByCourseId[course.id] || [], function (child) {
+              var events = course.toEvents("unavailable");
+              angular.forEach(events, function (event) {
+                event.registeredChild = child;
+              })
+              $scope.othersRegisteredEvents.push.apply($scope.othersRegisteredEvents, events);
+            });
+          });
         });
       };
 
@@ -337,6 +368,8 @@ angular.module('sportfacCalendar.controllers', [])
         }
 
         let activityRegistered = false;
+        let courseIds = [];
+        let targetByCourseId = {};
         angular.forEach($scope.selectedActivity.courses, function (course) {
 
           if ((registeredCourses.indexOf(course.id) !== -1) && !$scope.canregistersameactivity) {
@@ -381,14 +414,24 @@ angular.module('sportfacCalendar.controllers', [])
           }, false);
           if (!registered && available) {
             $scope.availableEventsToFetch += 1;
-            if (activityRegistered || overlapping) {
-              CoursesService.get($scope.urls.course, course.id).then(addUnavailableCourse);
-              //addUnavailableCourse(course);
-            } else {
-              CoursesService.get($scope.urls.course, course.id).then(addAvailableCourse);
-              //addAvailableCourse(course);
-            }
+            courseIds.push(course.id);
+            targetByCourseId[course.id] = (activityRegistered || overlapping) ? 'unavailable' : 'available';
           }
+        });
+
+        // The available/unavailable classification above only reads fields already on
+        // $scope.selectedActivity.courses (plus the activityRegistered/overlapping state
+        // computed synchronously in that same loop) - it doesn't depend on the fetched
+        // course detail, so batching the fetch here doesn't change which courses land in
+        // which bucket, only that it's one request instead of one per course.
+        CoursesService.getMany($scope.urls.course, courseIds).then(function (courses) {
+          angular.forEach(courses, function (course) {
+            if (targetByCourseId[course.id] === 'unavailable') {
+              addUnavailableCourse(course);
+            } else {
+              addAvailableCourse(course);
+            }
+          });
         });
       };
 
