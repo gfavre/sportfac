@@ -226,14 +226,58 @@ thousands of times can outweigh a rare slow one.
   `GET /backend/registrations/` (1.1s avg, 21 hits) looks like the same
   symptom family and hasn't been touched — worth checking with the same lens.
 - **`/api/courses/<id>/` is the single biggest total-server-time consumer**:
-  331.6s cumulative across 6,409 calls, ~52ms each — cheap per call, but the
-  wizard's activities-step SPA polls course availability **one course at a
-  time** rather than batching. Session traces show a single browser firing
-  20-50 individual `/api/courses/<id>/` requests within a few minutes while
-  the visible course cards refresh. Batching into one endpoint
-  (`/api/courses/?ids=...`) or replacing the poll with a push mechanism for
-  slot-availability would cut a meaningful share of total wizard server time,
-  since this sits in the 86% of traffic that is the registration tunnel.
+  331.6s cumulative across 6,409 calls, ~52ms each. This is *not* an
+  uncached-endpoint problem — `CourseViewSet.retrieve()`
+  (`api/views/activities_views.py:171-179`) already caches each course by
+  its own key (`tenant_{pk}_course_{id}`), correctly invalidated on write
+  by `activities/signals.py` (`course_post_save_invalidate_cache` etc.,
+  including on the `nb_participants` update a new registration triggers —
+  not filtered out the way the separate structural-activities cache
+  deliberately is). So a naive fix — collapsing calls into
+  `/api/courses/?ids=1,2,3,...` and caching *that* combined response as one
+  blob — would be a regression: it replaces one stable cache entry per
+  course with one entry per distinct ID-combination a client happens to
+  request, which is a near-certain cache-miss generator.
+  **The actual problem is request *count* under concurrency, not per-request
+  cost.** Production runs `gunicorn --workers=8 --worker-class=gthread
+  --threads=2 --timeout=30` (per the montreux instance's launch command;
+  `config/gunicorn.conf`'s generic template was missing `--worker-class`
+  entirely — fixed 2026-08-18, template now carries `--worker-class=gthread
+  --threads=2 --timeout=30 --max-requests=500 --max-requests-jitter=50` to
+  match, `--workers` stays the existing per-instance `%(nb_web_workers)s`
+  var) — a **hard ceiling of 8×2=16 concurrent in-flight requests,
+  site-wide**, since each
+  worker/thread blocks for a request's whole lifecycle (django-tenants
+  schema resolution + middleware + view + response) regardless of how cheap
+  the underlying cache hit is. Checked directly against this log: one
+  single second (06:00:29, i.e. 08:00:29 local, right at the registration
+  opening) had **47 requests arrive** — nearly 3× capacity — and 237
+  separate one-second windows that day saw ≥16 simultaneous arrivals. Session
+  traces show the wizard's activities-step SPA firing **4-5 parallel**
+  `/api/courses/<id>/` requests per polling tick per active user (e.g. 4 in
+  the same second at 10:39:54 in one trace), so N concurrently-registering
+  users generate roughly 4-5×N simultaneous in-flight requests against a
+  16-slot ceiling — consistent with the reported "fine at 250 concurrent
+  registrants, collapses around 400" behavior (a fixed-capacity ceiling
+  degrades flat-then-cliff as utilization→1, not gradually like a
+  saturating CPU/DB resource). Caveat: this log only shows 8 scattered `502`s
+  that day (not a sustained storm), so it corroborates the mechanism without
+  proving a full collapse happened on 2026-08-18 specifically — the
+  6:00:29-adjacent latency spikes on otherwise-fast endpoints (`/client/`
+  max 4896ms vs 171ms avg, `/api/family/` max 2890ms vs 58ms avg, `/api/
+  activities/` max 2801ms vs 61ms avg) are consistent with brief queueing
+  against that ceiling. (Ruled out as a competing explanation: the absolute
+  worst latencies in the raw log, 60-73s, turned out to be a large static
+  PDF brochure — slow client downloads nginx serves directly, not a gunicorn
+  worker cost, and `/backend/child/`'s 4-6s is flat at every hour of the
+  day including quiet periods, confirming it's the separate structural bug
+  above, not queueing.)
+  **Correct fix**: a batch endpoint whose *implementation* still does N
+  individual per-course cache lookups (`cache.get_many`/`cache.set` against
+  the same `tenant_{pk}_course_{id}` keys) and just returns them combined in
+  one HTTP response — same cache granularity and invalidation as today,
+  collapsing the ~4-5 concurrent worker-slots each active user occupies per
+  poll down to ~1 out of the 16 available. Not yet implemented.
 - **`/api/dashboard/users/` fired 5× with identical params within about one
   second** in one admin session trace (08:54:55-56) — looks like a
   duplicated client-side fetch (e.g. an effect re-running) rather than a

@@ -169,14 +169,67 @@ même vérification.
 ### 2. `GET /api/courses/<id>/` — 331.6s de temps serveur cumulé, 6 409 appels (le plus gros poste toutes URLs confondues)
 
 Chaque appel est rapide (52ms en moyenne) mais le SPA du wizard interroge les
-cours **un par un** : les traces de session montrent un même utilisateur
-déclenchant 20 à 50 requêtes individuelles en quelques minutes en scrollant
-la liste d'activités (polling de disponibilité par carte de cours affichée).
+cours **un par un** : les traces de session montrent un même navigateur
+déclenchant 4 à 5 requêtes individuelles en parallèle à chaque tick de
+polling (ex. 4 appels dans la même seconde à 10:39:54 dans une trace), en
+scrollant la liste d'activités (polling de disponibilité par carte de cours
+affichée).
 
-**Fix suggéré** : grouper en un seul appel batché (`/api/courses/?ids=...`)
-ou pousser les places disponibles via un mécanisme push plutôt qu'un polling
-par carte visible. Plus gros gain total possible, car ça touche le tunnel
-principal (86% du trafic).
+> **Correction (2026-08-18, après relecture)** : ce n'est **pas** un problème
+> d'endpoint non caché. `CourseViewSet.retrieve()`
+> (`api/views/activities_views.py:171-179`) met déjà chaque cours en cache
+> individuellement (clé `tenant_{pk}_course_{id}`), correctement invalidée à
+> l'écriture par `activities/signals.py` — y compris sur le champ
+> `nb_participants` qu'une inscription modifie. Grouper naïvement en
+> `/api/courses/?ids=1,2,3,...` et mettre **cette réponse combinée** en cache
+> serait une régression : ça remplace une entrée de cache stable par cours
+> par une entrée par combinaison d'IDs demandée, ce qui génère quasi
+> systématiquement des cache-miss.
+>
+> **Le vrai problème est le nombre de requêtes concurrentes, pas leur coût
+> individuel.** La commande de lancement réelle en production est
+> `gunicorn --workers=8 --worker-class=gthread --threads=2 --timeout=30`
+> (le modèle générique de `config/gunicorn.conf` n'avait pas de
+> `--worker-class` — corrigé le 2026-08-18, le template porte maintenant
+> `--worker-class=gthread --threads=2 --timeout=30 --max-requests=500
+> --max-requests-jitter=50` en plus de `--workers=%(nb_web_workers)s`,
+> déjà variabilisé par instance) — soit un **plafond dur de 8×2=16
+> requêtes simultanées, pour tout le site**, puisque chaque worker/thread
+> bloque pour toute la durée d'une requête (résolution de schéma
+> django-tenants + middleware + vue + réponse) quel que soit le coût réel du
+> hit de cache. Vérifié directement contre ce journal : une seule seconde
+> (06:00:29, soit 08:00:29 heure locale, juste à l'ouverture) a vu **47
+> requêtes arriver simultanément** — près de 3× la capacité — et 237
+> secondes distinctes ce jour-là ont vu ≥16 arrivées simultanées. Avec 4-5
+> requêtes parallèles par utilisateur actif à chaque tick de polling, N
+> utilisateurs qui s'inscrivent en même temps génèrent environ 4-5×N
+> requêtes simultanées contre un plafond de 16 — cohérent avec le
+> comportement observé en production : stable jusqu'à ~250 inscripteurs
+> simultanés, effondrement vers ~400 (la signature typique d'un plafond de
+> concurrence fixe : plat, puis effondrement non linéaire quand
+> l'utilisation approche 100%, différent d'une ressource CPU/DB qui se
+> dégraderait progressivement). Réserve : ce journal ne montre que 8 `502`
+> isolés ce jour-là (pas de rafale soutenue), donc il corrobore le mécanisme
+> sans prouver un effondrement complet le 2026-08-18 précisément — les pics
+> de latence autour de 06:00:29 sur des endpoints normalement rapides
+> (`/client/` max 4896ms vs 171ms en moyenne, `/api/family/` max 2890ms vs
+> 58ms, `/api/activities/` max 2801ms vs 61ms) sont cohérents avec une mise
+> en attente brève contre ce plafond. (Écarté comme explication concurrente :
+> les pires latences brutes du journal, 60-73s, sont en fait un gros PDF
+> statique — téléchargement lent côté client, servi directement par nginx,
+> sans coût gunicorn — et `/backend/child/` reste à 4-6s à toute heure de la
+> journée y compris en creux de trafic, confirmant que c'est le bug
+> structurel séparé déjà corrigé plus haut, pas de la mise en attente.)
+
+**Fix suggéré** : un endpoint batché dont l'implémentation continue à faire N
+lectures de cache individuelles (mêmes clés `tenant_{pk}_course_{id}`,
+`cache.get_many`/`cache.set`) et renvoie juste tout en une seule réponse
+HTTP — même granularité et même invalidation de cache qu'aujourd'hui, mais
+~1 requête au lieu de ~4-5 par utilisateur actif à chaque tick, sur les 16
+places disponibles. Pas encore
+implémenté. Plus gros gain total possible, car ça touche le tunnel principal
+(86% du trafic) et c'est potentiellement le mécanisme réel derrière
+l'effondrement à ~400 utilisateurs.
 
 ### 3. `GET /api/dashboard/users/` — 482ms en moyenne, et rafales de 5 appels identiques en moins d'une seconde côté admin
 
