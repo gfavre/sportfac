@@ -188,6 +188,86 @@ scratch each time. Update in place as items are resolved or new ones are found.
   - No decision made yet; leaning toward deferring (option 1) until there's
     spare capacity, given the low actual exposure.
 
+## Registration-opening traffic analysis (2026-08-18) — performance backlog
+
+Found by analyzing the production access log for the 2026-08-18 Montreux
+registration opening (44,180 requests, 8am rush). Full breakdown (traffic
+share by flow, session types, ranked-by-total-server-time chart) published as
+an artifact; this entry keeps the actionable findings in the repo so they
+don't only live in a chat log. Ranked by total-server-time impact
+(volume × latency), not raw latency alone — a cheap endpoint called
+thousands of times can outweigh a rare slow one.
+
+- **`ChildListView` (`backend/views/user_views.py:309`), served at
+  `/backend/child/`, took 4.2-5.9s on every single one of 21 sampled loads**
+  (flat regardless of time of day/load — not a concurrency artifact,
+  structural). Two compounding causes: the queryset had no `paginate_by` and
+  no scoping (full manager sees every `Child` row ever created), and the
+  template called `reverse()` up to 5× per row to build the action buttons —
+  DataTables only paginated client-side, so the full HTML table was built
+  server-side before any paging happened.
+  **Fixed 2026-08-18**: converted to the same server-side DataTables pattern
+  already used for the user list (`UserListView`/`DashboardFamilyView`) —
+  `ChildListView` now renders an empty table shell
+  (`get_queryset` returns `Child.objects.none()`), and rows are loaded via a
+  new `ChildDatatableSerializer` + `DashboardChildrenView`
+  (`api/views/dashboard_views.py`, `api:all_children`) using
+  `DatatablesPageNumberPagination`/`DatatablesFilterandPanesBackend` for
+  real pagination, sorting and search (including a search pane on
+  `is_blacklisted`). Also fixed a latent bug found while rewriting the
+  template: the emergency-number `tel:` link referenced
+  `registration.child.emergency_number` (undefined in this list context, so
+  the link was always empty) instead of the row's own `child`. Verified with
+  a real DB-backed request (paginated JSON shape, dotted `name` → ORM
+  `__` lookup resolution, actions gating by `is_full_manager`) — not yet
+  eyeballed in an actual browser, so a manual smoke test of `/backend/child/`
+  (sorting, search, search pane, blacklisted row styling) is still worth
+  doing before considering this fully closed.
+  `GET /backend/registrations/` (1.1s avg, 21 hits) looks like the same
+  symptom family and hasn't been touched — worth checking with the same lens.
+- **`/api/courses/<id>/` is the single biggest total-server-time consumer**:
+  331.6s cumulative across 6,409 calls, ~52ms each — cheap per call, but the
+  wizard's activities-step SPA polls course availability **one course at a
+  time** rather than batching. Session traces show a single browser firing
+  20-50 individual `/api/courses/<id>/` requests within a few minutes while
+  the visible course cards refresh. Batching into one endpoint
+  (`/api/courses/?ids=...`) or replacing the poll with a push mechanism for
+  slot-availability would cut a meaningful share of total wizard server time,
+  since this sits in the 86% of traffic that is the registration tunnel.
+- **`/api/dashboard/users/` fired 5× with identical params within about one
+  second** in one admin session trace (08:54:55-56) — looks like a
+  duplicated client-side fetch (e.g. an effect re-running) rather than a
+  real need to refresh 5×. Avg latency 482ms × the 5x multiplier makes this
+  worth deduplicating (stable query key / request dedup) before touching the
+  endpoint itself.
+- **`/activities/courses/<id>/` averages 438ms on a public, anonymous,
+  effectively-static page** (265 hits that day). Good candidate for HTTP/page
+  caching (`cache_page` or equivalent) — content doesn't change per-request,
+  and this is public-facing traffic with no reason to wait ~440ms.
+
+No decisions made yet on any of these; recorded here so the next person
+tackling "site slow during registration rush" (see performance work below)
+doesn't have to re-derive them from the raw log.
+
+## Local `TenantTestCase` suite is currently broken (`cache.delete_pattern`)
+
+Found 2026-08-18 while writing/running the session-replay tests above.
+`backend/signals.py:11`'s `clear_tenant_cache()` (wired to `YearTenant`'s
+`post_save`/`post_delete`, so it fires on every `TenantTestCase` tenant
+setup) calls `cache.delete_pattern("tenants_context_user_*")` — a
+`django-redis`-only method, already flagged as such by an existing comment
+on that line (`# ⚠️ selon backend, si Redis -> tu peux utiliser
+cache.delete_pattern`). `sportfac/settings/test.py:41` configures
+`django.core.cache.backends.locmem.LocMemCache`, which has no
+`delete_pattern` — so `setUpClass` raises for **every** `TenantTestCase` in
+the repo, confirmed by running the pre-existing `wizard/tests/test_views.py`
+and `test_workflow.py`, not just new tests. Also needs `DB_NAME=kepchup`
+set locally (peer-auth Postgres) to get past the settings import at all.
+Not yet fixed — either switch `CACHES["default"]` in `settings/test.py` to
+`django-redis` (if a local Redis is an acceptable test dependency) or guard
+`_invalidate_all_tenant_caches()` to no-op / fall back to `cache.clear()`
+when the configured backend doesn't support `delete_pattern`.
+
 ## Performance work already done (2026-08, for reference — not debt)
 
 Not tech debt, but context for anyone reading this file wondering what's already
