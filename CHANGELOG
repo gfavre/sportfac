@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+### Fixed
+- Wizard step cache invalidation (`wizard/models.py`'s `clear_wizard_step_cache`, triggered by `WizardStep`'s `post_save`/`post_delete` signals) deleted a cache key (`"all_wizard_steps"`) that was never the one actually set - `WizardWorkflow` reads/writes `"all_wizard_steps_<schema>"` (`wizard/workflow.py`). Adding, editing, reordering, or removing a wizard step while the 1-hour cache was warm silently kept serving the stale step list to every family already in the registration flow, with no error anywhere. Low urgency in practice (only matters if wizard step config changes while registrations are live), but a real, confirmed bug - reproduced with a failing test before the fix (new step added, still invisible after the signal fired), passing after
+- Added test coverage for `wizard/handlers.py` and `wizard/workflow.py` (previously 48%/22%, now 100%/100%) - these are the wizard's entire step-gating logic (`is_ready`/`is_complete`/`is_visible` per step, next/previous navigation), directly controlling whether a family can access or is blocked from a given registration step
+
 ## 4.5.6 - 2026-08-18
 ### Fixed
 - Registration wizard, `KEPCHUP_LIMIT_BY_SCHOOL_YEAR` tenants (the default for every tenant except La Tour-de-Peilz, which is the one tenant running `KEPCHUP_LIMIT_BY_AGE` instead - e.g. Coppet, Vevey, the Montreux variants, Nyon, Rojalets...): a course with no school-year restriction still didn't show as available in the calendar even after 4.5.3's backend fix, because the AngularJS controller's own client-side eligibility check (`updateAvailableEvents`, mirroring the backend's) had the exact same unguarded `null` comparison, never patched
