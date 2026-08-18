@@ -305,10 +305,55 @@ thousands of times can outweigh a rare slow one.
   real need to refresh 5×. Avg latency 482ms × the 5x multiplier makes this
   worth deduplicating (stable query key / request dedup) before touching the
   endpoint itself.
-- **`/activities/courses/<id>/` averages 438ms on a public, anonymous,
-  effectively-static page** (265 hits that day). Good candidate for HTTP/page
-  caching (`cache_page` or equivalent) — content doesn't change per-request,
-  and this is public-facing traffic with no reason to wait ~440ms.
+- **`/activities/courses/<id>/` averaged 438ms** (265 hits that day).
+  **Correction**: this was originally mischaracterized above as "public,
+  anonymous, effectively-static" — it's actually `MyCourseDetailView`
+  (`activities/views.py`), login-required and per-user (visible to a
+  course's instructors, or a family with a child registered to it), so
+  `cache_page` was never the right fix. **Fixed 2026-08-18** — the real
+  cause, found by checking every relation the template
+  (`activities/templates/activities/course_detail.html`) touches against
+  what was actually prefetched:
+  - `CourseAccessMixin.get_object()` (`activities/views.py`) did a bare
+    `get_object_or_404(Course, pk=pk)` with no `select_related`/
+    `prefetch_related` at all — which **completely overrode**
+    `MyCourseDetailView.queryset`'s carefully-set-up prefetching, since
+    `UserPassesTestMixin`'s permission check (`test_func`) and the view's
+    own render path both call `get_object()`, and this override shadowed
+    the subclass's queryset entirely. The intended prefetching was dead
+    code; every relation in the template hit the DB fresh, and the course
+    was fetched from scratch **twice** per request (once for the
+    permission check, once for rendering).
+  - `test_func()` itself did `user in [p.child.family for p in
+    course.participants.all()]` — fetching every participant (unprefetched)
+    then `.child` and `.child.family` per participant in Python: 1+2N
+    queries just to decide access, on **every** request, N+1 by
+    construction.
+  - The template also reads `registration.child.teacher.full_name` (shown
+    to non-instructor viewers specifically, i.e. exactly the families this
+    access check was already expensive for) and, when `CHILD_SCHOOL` is on,
+    `registration.child.school_name` (reads `.school`) — neither was in the
+    prefetch list, two more per-participant N+1s.
+  Fix: `get_object()` now caches the fetched object on `self` and sources it
+  from `self.get_queryset()` when the subclass defines one (falls back to
+  `Course.objects.all()` for non-`DetailView` subclasses like
+  `MailUsersView`), so the course is fetched once, through whatever
+  optimized queryset the subclass declares. `test_func()`'s membership
+  check is now `course.participants.filter(child__family=user).exists()` —
+  one query regardless of participant count. `MyCourseDetailView.queryset`
+  gained `participants__child__teacher`, `participants__child__school`, and
+  `sessions` to the existing prefetch list. Verified with a real query-count
+  test (`activities/tests/test_views.py::test_query_count_does_not_scale_with_participants`,
+  added as a permanent regression test): **0 extra queries between 2 and 25
+  participants** on a warmed-up run (both landed at 42; an unwarmed first
+  call pays ~120 queries of one-time tenant/preferences/db-template
+  bootstrap cost, unrelated to this view — worth knowing if this pattern
+  gets reused as a template for measuring other views). Full `api`/
+  `activities`/`wizard`/`backend` suite passes (399 tests).
+  **Not fixed, same bug shape, out of scope for now**: `InstructorMixin`
+  (`activities/views.py`, used by `MailCourseInstructorsView` and others)
+  has the identical bare unoptimized/double-fetching `get_object()` pattern
+  — worth the same treatment if those views show up slow.
 
 No decisions made yet on any of these; recorded here so the next person
 tackling "site slow during registration rush" (see performance work below)

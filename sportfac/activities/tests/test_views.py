@@ -1,28 +1,30 @@
 import json
 from unittest import mock
 
+import faker
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import RequestFactory
 from django.urls import reverse
 
-import faker
-
 from mailer.models import MailArchive
 from mailer.tests.factories import MailArchiveFactory
-from profiles.tests.factories import DEFAULT_PASS, FamilyUserFactory, SchoolYearFactory
-from registrations.tests.factories import ChildFactory, RegistrationFactory
+from profiles.tests.factories import DEFAULT_PASS
+from profiles.tests.factories import FamilyUserFactory
+from profiles.tests.factories import SchoolYearFactory
+from registrations.tests.factories import ChildFactory
+from registrations.tests.factories import RegistrationFactory
 from sportfac.utils import TenantTestCase as TestCase
 from sportfac.utils import process_request_for_middleware
-from ..views import (
-    CustomMailPreview,
-    CustomParticipantsCustomMailView,
-    MailCourseInstructorsView,
-    MailUsersView,
-    MyCourseDetailView,
-    MyCoursesListView,
-)
-from .factories import ActivityFactory, CourseFactory
+
+from ..views import CustomMailPreview
+from ..views import CustomParticipantsCustomMailView
+from ..views import MailCourseInstructorsView
+from ..views import MailUsersView
+from ..views import MyCourseDetailView
+from ..views import MyCoursesListView
+from .factories import ActivityFactory
+from .factories import CourseFactory
 
 
 fake = faker.Faker()
@@ -481,3 +483,54 @@ class MyCourseDetailViewTest(TestCase):
         self.client.force_login(user=self.instructor)
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "activities/course_detail.html")
+
+    def test_access_granted_for_family_with_registered_child(self):
+        family = FamilyUserFactory()
+        child = ChildFactory(family=family)
+        RegistrationFactory(child=child, course=self.course)
+        self.client.force_login(user=family)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_query_count_does_not_scale_with_participants(self):
+        """Regression test for the N+1 fixed 2026-08-18: CourseAccessMixin.get_object()
+        used to bypass MyCourseDetailView.queryset's select_related/prefetch_related
+        entirely (and fetch the course twice), and test_func() fetched every
+        participant's child and family in Python instead of a single EXISTS query."""
+        from schools.tests.factories import TeacherFactory
+
+        def build_course(n_participants):
+            course = CourseFactory(instructors=[self.instructor])
+            registered_family = None
+            for i in range(n_participants):
+                family = FamilyUserFactory()
+                child = ChildFactory(family=family, teacher=TeacherFactory())
+                RegistrationFactory(child=child, course=course)
+                if i == 0:
+                    registered_family = family
+            return course, registered_family
+
+        # warm-up call to pay one-time tenant/preferences/template bootstrap cost outside
+        # of what's being measured below
+        warmup_course, warmup_family = build_course(1)
+        self.client.force_login(user=warmup_family)
+        self.client.get(reverse("activities:course-detail", kwargs={"course": warmup_course.pk}))
+
+        from django.db import connection
+        from django.test.utils import CaptureQueriesContext
+
+        small_course, small_family = build_course(2)
+        self.client.force_login(user=small_family)
+        with CaptureQueriesContext(connection) as small_ctx:
+            self.client.get(reverse("activities:course-detail", kwargs={"course": small_course.pk}))
+
+        large_course, large_family = build_course(25)
+        self.client.force_login(user=large_family)
+        with CaptureQueriesContext(connection) as large_ctx:
+            self.client.get(reverse("activities:course-detail", kwargs={"course": large_course.pk}))
+
+        self.assertLessEqual(
+            len(large_ctx) - len(small_ctx),
+            3,
+            f"query count scales with participant count: {len(small_ctx)} -> {len(large_ctx)}",
+        )

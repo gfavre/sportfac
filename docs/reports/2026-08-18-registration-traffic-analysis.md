@@ -260,13 +260,41 @@ vrai besoin de rafraîchir 5×.
 **Fix suggéré** : dédupliquer côté client (ex. SWR/React Query avec clé
 stable) avant d'optimiser la requête elle-même.
 
-### 4. `GET /activities/courses/<id>/` — 438ms en moyenne sur une page publique et anonyme (265 appels)
+### 4. `GET /activities/courses/<id>/` — 438ms en moyenne (265 appels)
 
-Page de détail de cours, consultable sans compte, contenu qui ne change pas
-à la seconde. Bonne candidate pour un cache HTTP (`cache_page` ou
-équivalent) — le gain profiterait directement au 11.5% de trafic
-"activités" qui n'a aucune raison d'attendre 440ms pour du contenu
-quasi-statique.
+> **Correction** : contrairement à ce qui était écrit initialement, cette
+> page n'est **pas** publique/anonyme — c'est `MyCourseDetailView`, réservée
+> aux utilisateurs connectés (moniteurs du cours, ou famille avec un enfant
+> inscrit), donc `cache_page` n'était pas la bonne piste.
+>
+> **Corrigé le 2026-08-18** — cause réelle, trouvée en comparant chaque
+> relation lue par le template à ce qui était réellement préchargé :
+> `CourseAccessMixin.get_object()` (`activities/views.py`) faisait un
+> `get_object_or_404(Course, pk=pk)` nu, sans aucun `select_related`/
+> `prefetch_related` — ce qui **écrasait complètement** le `queryset` bien
+> configuré de `MyCourseDetailView`, puisque la vérification de permission
+> (`test_func`) et le rendu de la vue appellent tous les deux
+> `get_object()`. Le prefetch prévu était du code mort ; chaque relation du
+> template partait en requête fraîche, et le cours était refetché **deux
+> fois** par requête (une pour la permission, une pour le rendu). En plus :
+> `test_func()` faisait `user in [p.child.family for p in
+> course.participants.all()]` — 1+2N requêtes rien que pour décider l'accès,
+> à chaque requête ; et le template lit `registration.child.teacher` et
+> (si `CHILD_SCHOOL`) `registration.child.school_name`, ni l'un ni l'autre
+> préchargé — deux N+1 de plus.
+>
+> Fix : `get_object()` met maintenant le résultat en cache sur `self` et le
+> source depuis `self.get_queryset()` quand la sous-classe en définit un ;
+> la vérification d'accès est passée à
+> `course.participants.filter(child__family=user).exists()` (une requête,
+> quel que soit le nombre de participants) ; le `queryset` de
+> `MyCourseDetailView` précharge maintenant aussi
+> `participants__child__teacher`, `participants__child__school` et
+> `sessions`. Vérifié avec un vrai test de comptage de requêtes (nouveau
+> test permanent dans la suite) : **0 requête supplémentaire entre 2 et 25
+> participants** une fois l'environnement de test "chauffé" (42 requêtes
+> dans les deux cas). Suite complète `api`/`activities`/`wizard`/`backend`
+> verte (399 tests).
 
 ### 5. `GET /backend/registrations/` — 1.1s en moyenne (21 appels)
 
