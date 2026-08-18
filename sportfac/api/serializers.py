@@ -536,6 +536,72 @@ class FamilySerializer(serializers.ModelSerializer):
         return actions
 
 
+class ChildDatatableSerializer(serializers.ModelSerializer):
+    full_name = serializers.CharField(source="get_full_name", read_only=True)
+    url = serializers.URLField(source="get_backend_detail_url", read_only=True)
+    family = serializers.SerializerMethodField()
+    school_year = serializers.SerializerMethodField()
+    school_name = serializers.SerializerMethodField()
+    emergency_number = serializers.SerializerMethodField()
+    actions = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Child
+        fields = (
+            "id",
+            "id_lagapeo",
+            "bib_number",
+            "full_name",
+            "url",
+            "family",
+            "school_year",
+            "school_name",
+            "emergency_number",
+            "is_blacklisted",
+            "actions",
+        )
+
+    @staticmethod
+    def get_family(obj):
+        if not obj.family:
+            return None
+        return {"full_name": obj.family.get_full_name(), "url": obj.family.get_backend_url()}
+
+    @staticmethod
+    def get_school_year(obj):
+        return str(obj.school_year) if obj.school_year else None
+
+    @staticmethod
+    def get_school_name(obj):
+        return obj.school_name
+
+    @staticmethod
+    def get_emergency_number(obj):
+        if obj.emergency_number:
+            return obj.emergency_number.as_international
+        return None
+
+    # noinspection PyMethodMayBeStatic
+    def get_actions(self, obj):
+        actions = [
+            {"url": obj.get_backend_detail_url(), "label": _("Child details"), "icon_class": "icon-child"},
+            {"url": obj.get_update_url(), "label": _("Edit student"), "icon_class": "icon-edit"},
+        ]
+        if settings.KEPCHUP_USE_ABSENCES:
+            actions.append(
+                {
+                    "url": obj.get_backend_absences_url(),
+                    "label": _("Review absences"),
+                    "icon_class": "icon-calendar",
+                }
+            )
+        if self.context["request"].user.is_full_manager:
+            actions.append(
+                {"url": obj.get_delete_url(), "label": _("Delete student"), "icon_class": "icon-trash"},
+            )
+        return actions
+
+
 class InlineCourseSerializer(serializers.ModelSerializer):
     activity = serializers.StringRelatedField(read_only=True)
     url = serializers.URLField(source="get_backend_url", read_only=True)

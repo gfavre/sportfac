@@ -1,8 +1,9 @@
-from django.urls import include, path
-
+from django.urls import include
+from django.urls import path
 from rest_framework.routers import DefaultRouter
 
 from appointments.views import api_views as appointment_views
+
 from . import views
 
 
@@ -36,6 +37,11 @@ urlpatterns = [
     path("change-course/", views.ChangeCourse.as_view(), name="change-course"),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("dashboard/users/", views.DashboardFamilyView.as_view(), name="all_users"),
+    path(
+        "dashboard/children/",
+        views.DashboardChildrenView.as_view(),
+        name="all_children",
+    ),
     path(
         "dashboard/instructors/",
         views.DashboardInstructorsView.as_view(),

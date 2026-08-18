@@ -1,7 +1,17 @@
-from .absence_views import AbsenceViewSet, SessionViewSet  # noqa: F401
-from .activities_views import ActivityViewSet, ChangeCourse, CourseInstructorsViewSet, CourseViewSet  # noqa: F401
-from .dashboard_views import DashboardFamilyView, DashboardInstructorsView, DashboardManagersView  # noqa: F401
-from .family_views import ChildActivityLevelViewSet, ChildrenViewSet, FamilyView, SimpleChildrenViewSet  # noqa: F401
+from .absence_views import AbsenceViewSet  # noqa: F401
+from .absence_views import SessionViewSet  # noqa: F401
+from .activities_views import ActivityViewSet  # noqa: F401
+from .activities_views import ChangeCourse  # noqa: F401
+from .activities_views import CourseInstructorsViewSet  # noqa: F401
+from .activities_views import CourseViewSet  # noqa: F401
+from .dashboard_views import DashboardChildrenView  # noqa: F401
+from .dashboard_views import DashboardFamilyView  # noqa: F401
+from .dashboard_views import DashboardInstructorsView  # noqa: F401
+from .dashboard_views import DashboardManagersView  # noqa: F401
+from .family_views import ChildActivityLevelViewSet  # noqa: F401
+from .family_views import ChildrenViewSet  # noqa: F401
+from .family_views import FamilyView  # noqa: F401
+from .family_views import SimpleChildrenViewSet  # noqa: F401
 from .registration_views import BuildingViewSet  # noqa: F401
 from .registration_views import ExtraInfoViewSet  # noqa: F401
 from .registration_views import OldExtraInfoViewSet  # noqa: F401
