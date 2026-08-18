@@ -113,9 +113,20 @@ angular.module('sportfacCalendar.services', []).factory('Registration', function
           return this.registered.indexOf(course.id) !== -1;
         },
         canRegister: function (course, limitbyschoolyear) {
+          // Same null-safety as Activities.updateAvailableEvents (controllers.js): a
+          // course with no restriction on the relevant axis (schoolyear_min or
+          // min_birth_date both null) must be registerable by everyone - without this
+          // check, comparing null coerces to 0/NaN and the course silently rejects
+          // every registration attempt even though it appeared as available to click.
           if (limitbyschoolyear) {
+            if (course.schoolyear_min == null) {
+              return true;
+            }
             return !(this.school_year < course.schoolyear_min || this.school_year > course.schoolyear_max);
           } else {
+            if (course.min_birth_date == null) {
+              return true;
+            }
             return course.min_birth_date >= this.birth_date && course.max_birth_date <= this.birth_date;
           }
         }

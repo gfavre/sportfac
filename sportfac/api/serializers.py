@@ -306,7 +306,11 @@ class RegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(_("Course is full"))
         child = data["child"]
         if settings.KEPCHUP_LIMIT_BY_SCHOOL_YEAR:
-            if child.school_year and child.school_year.year not in course.school_years:
+            if (
+                course.has_school_year_restriction
+                and child.school_year
+                and child.school_year.year not in course.school_years
+            ):
                 raise serializers.ValidationError(
                     _("This course is not opened to children of school year %(year)s") % {"year": child.school_year}
                 )

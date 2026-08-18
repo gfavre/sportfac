@@ -344,8 +344,16 @@ angular.module('sportfacCalendar.controllers', [])
           }
           let available = false;
           if ($scope.limitbyschoolyear) {
-            available = course.schoolyear_min <= $scope.selectedChild.school_year &&
-              course.schoolyear_max >= $scope.selectedChild.school_year;
+            if (course.schoolyear_min == null) {
+              // No school-year restriction on this course (mirrors the birth_date
+              // check just below, and the backend's ActivityViewSet._course_matches_
+              // school_year) - without this check, comparing null coerces to 0 and
+              // the course silently never appears as available to anyone.
+              available = true;
+            } else {
+              available = course.schoolyear_min <= $scope.selectedChild.school_year &&
+                course.schoolyear_max >= $scope.selectedChild.school_year;
+            }
           } else if (course.min_birth_date == null) {
             // No age restriction on this course (mirrors the backend's has_age_restriction) -
             // without this check, comparing null to a date string coerces null to 0 and the

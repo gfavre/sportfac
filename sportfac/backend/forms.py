@@ -11,6 +11,7 @@ from crispy_forms.layout import Submit
 from django import forms
 from django.conf import settings
 from django.contrib.flatpages.models import FlatPage
+from django.db.models import Q
 from django.forms import inlineformset_factory
 from django.forms.models import BaseInlineFormSet
 from django.forms.widgets import TextInput
@@ -255,13 +256,15 @@ class CourseSelectMixin:
                     min_year = 99
                     max_year = 0
                 course_qs = course_qs.filter(
-                    schoolyear_min__lte=min_year,
-                    schoolyear_max__gte=max_year,
+                    Q(schoolyear_min__isnull=True) | Q(schoolyear_min__lte=min_year, schoolyear_max__gte=max_year)
                 )
             else:
                 course_qs = course_qs.filter(
-                    max_birth_date__lte=self.instance.child.birth_date,
-                    min_birth_date__gte=self.instance.child.birth_date,
+                    Q(min_birth_date__isnull=True)
+                    | Q(
+                        max_birth_date__lte=self.instance.child.birth_date,
+                        min_birth_date__gte=self.instance.child.birth_date,
+                    )
                 )
         except Child.DoesNotExist:
             pass

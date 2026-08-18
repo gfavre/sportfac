@@ -99,6 +99,25 @@ class RegistrationSerializerTest(TenantTestCase):
             serializer.is_valid(raise_exception=True)
         self.assertIn("Ce cours n'est pas ouvert aux élèves de", str(exc.exception))
 
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=True)
+    def test_registration_accepted_for_school_year_unrestricted_course(self):
+        # Regression test: course.school_years returns [] (not "every year") for a
+        # course with no school-year restriction, so `child.school_year.year not in
+        # course.school_years` used to be True for every child - rejecting every
+        # registration attempt on an unrestricted course instead of accepting all of
+        # them.
+        self.child.school_year = self.school_year
+        self.child.save()
+        with override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False):
+            unrestricted_course = CourseFactory(schoolyear_min=None, schoolyear_max=None, start_date=date.today())
+        data = {
+            "child": self.child.id,
+            "course": unrestricted_course.id,
+        }
+
+        serializer = RegistrationSerializer(data=data)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+
     @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False)
     def test_registration_age_too_young(self):
         """Test if the child's birth date is outside the allowed range"""
