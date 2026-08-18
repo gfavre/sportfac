@@ -362,7 +362,17 @@ angular.module('sportfacCalendar.controllers', [])
               course.max_birth_date <= $scope.selectedChild.birth_date;
           }
           let registered = registeredCourses.indexOf(course.id) !== -1;
-          let overlapping = $scope.registeredEvents.map(
+          let overlapping = $scope.registeredEvents.filter(
+            function (evt) {
+              // A course always "overlaps" with itself (same dates, same times) - without
+              // this filter, a course just unregistered from could still be flagged as
+              // overlapping and colored unavailable (grey) instead of available (blue),
+              // since $scope.registeredEvents is only cleared and rebuilt asynchronously
+              // (updateRegisteredEvents fetches each course over the network) and can
+              // still hold this exact course's stale event when this runs.
+              return evt.course.id !== course.id;
+            }
+          ).map(
             function (evt) {
               return $scope.overlap(evt.course, course);
             }
