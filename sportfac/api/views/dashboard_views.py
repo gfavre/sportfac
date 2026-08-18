@@ -8,10 +8,14 @@ from rest_framework_datatables.pagination import DatatablesPageNumberPagination
 from rest_framework_datatables.renderers import DatatablesRenderer
 
 from profiles.models import FamilyUser
+from registrations.models import Child
+from registrations.models import Registration
 
 from ..filters import DatatablesFilterandPanesBackend
+from ..serializers import ChildDatatableSerializer
 from ..serializers import FamilySerializer
 from ..serializers import InstructorSerializer
+from ..serializers import RegistrationDatatableSerializer
 
 
 class DashboardFamilyView(generics.ListAPIView):
@@ -95,3 +99,85 @@ class DashboardManagersView(DashboardFamilyView):
 
     class Meta:
         datatables_extra_json = ()
+
+
+class DashboardChildrenView(generics.ListAPIView):
+    filter_backends = (DatatablesFilterandPanesBackend,)
+    pagination_class = DatatablesPageNumberPagination
+    renderer_classes = (
+        BrowsableAPIRenderer,
+        DatatablesRenderer,
+    )
+    serializer_class = ChildDatatableSerializer
+
+    class Meta:
+        datatables_extra_json = ("get_search_panes",)
+
+    def get_queryset(self):
+        user: FamilyUser = self.request.user
+        qs = Child.objects.select_related("family", "school_year", "school", "building")
+        if user.is_restricted_manager:
+            registrations = Registration.objects.filter(course__activity__in=user.managed_activities.all())
+            return qs.filter(registrations__in=registrations).distinct()
+        return qs
+
+    def get_search_panes(self):
+        return "searchPanes", {
+            "options": {
+                "is_blacklisted": [
+                    {
+                        "label": _("Blacklisted"),
+                        "value": 1,
+                        "count": 0,
+                        "total": Child.objects.filter(is_blacklisted=True).count(),
+                    },
+                    {
+                        "label": _("Not blacklisted"),
+                        "value": 0,
+                        "count": 0,
+                        "total": Child.objects.filter(is_blacklisted=False).count(),
+                    },
+                ],
+            }
+        }
+
+
+class DashboardRegistrationsView(generics.ListAPIView):
+    filter_backends = (DatatablesFilterandPanesBackend,)
+    pagination_class = DatatablesPageNumberPagination
+    renderer_classes = (
+        BrowsableAPIRenderer,
+        DatatablesRenderer,
+    )
+    serializer_class = RegistrationDatatableSerializer
+
+    class Meta:
+        datatables_extra_json = ("get_search_panes",)
+
+    def get_queryset(self):
+        # Same scoping as backend.views.registration_views.RegistrationMixin -
+        # Registration.all_objects (not the default manager) so canceled registrations
+        # stay visible here, same as the page this replaces.
+        user: FamilyUser = self.request.user
+        qs = Registration.all_objects.select_related(
+            "course", "course__activity", "child", "child__family", "cancelation_person"
+        )
+        if user.is_full_manager:
+            return qs
+        return qs.filter(course__activity__in=user.managed_activities.all())
+
+    def get_search_panes(self):
+        qs = self.get_queryset()
+        return "searchPanes", {
+            "options": {
+                "status_display": [
+                    {
+                        "label": label,
+                        "value": value,
+                        "count": 0,
+                        "total": qs.filter(status=value).count(),
+                    }
+                    for value, label in Registration.STATUS
+                ],
+            }
+        }

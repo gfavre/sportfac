@@ -98,12 +98,14 @@ class RegistrationListView(RegistrationMixin, ListView):
         return Registration.all_objects.all()
 
     def get_queryset(self):
-        return (
-            super()
-            .get_queryset()
-            .select_related("course", "child", "child__family")
-            .prefetch_related("course__activity")
-        )
+        # The template renders the table shell only; rows are loaded client-side via the
+        # DataTables serverSide ajax source (api:all_registrations), same as ChildListView.
+        return Registration.all_objects.none()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["has_registrations"] = super().get_queryset().exists()
+        return context
 
 
 class RegistrationsMoveView(BackendMixin, FormView):

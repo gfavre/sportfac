@@ -536,6 +536,156 @@ class FamilySerializer(serializers.ModelSerializer):
         return actions
 
 
+class ChildDatatableSerializer(serializers.ModelSerializer):
+    full_name = serializers.CharField(source="get_full_name", read_only=True)
+    url = serializers.URLField(source="get_backend_detail_url", read_only=True)
+    family = serializers.SerializerMethodField()
+    school_year = serializers.SerializerMethodField()
+    school_name = serializers.SerializerMethodField()
+    emergency_number = serializers.SerializerMethodField()
+    actions = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Child
+        fields = (
+            "id",
+            "id_lagapeo",
+            "bib_number",
+            "full_name",
+            "url",
+            "family",
+            "school_year",
+            "school_name",
+            "emergency_number",
+            "is_blacklisted",
+            "actions",
+        )
+        # DatatablesRenderer strips any field that isn't one of the client's declared
+        # columns[i][data] - these three ride inside the full_name/school columns'
+        # render() functions rather than being their own column, so without this they'd
+        # silently vanish from every real (columns[]-bearing) request, even though
+        # ad-hoc test requests without columns[] params never trigger the pruning and
+        # would hide the bug.
+        datatables_always_serialize = ("url", "school_name", "is_blacklisted")
+
+    @staticmethod
+    def get_family(obj):
+        if not obj.family:
+            return None
+        return {"full_name": obj.family.get_full_name(), "url": obj.family.get_backend_url()}
+
+    @staticmethod
+    def get_school_year(obj):
+        return str(obj.school_year) if obj.school_year else None
+
+    @staticmethod
+    def get_school_name(obj):
+        return obj.school_name
+
+    @staticmethod
+    def get_emergency_number(obj):
+        if obj.emergency_number:
+            return obj.emergency_number.as_international
+        return None
+
+    # noinspection PyMethodMayBeStatic
+    def get_actions(self, obj):
+        actions = [
+            {"url": obj.get_backend_detail_url(), "label": _("Child details"), "icon_class": "icon-child"},
+            {"url": obj.get_update_url(), "label": _("Edit student"), "icon_class": "icon-edit"},
+        ]
+        if settings.KEPCHUP_USE_ABSENCES:
+            actions.append(
+                {
+                    "url": obj.get_backend_absences_url(),
+                    "label": _("Review absences"),
+                    "icon_class": "icon-calendar",
+                }
+            )
+        if self.context["request"].user.is_full_manager:
+            actions.append(
+                {"url": obj.get_delete_url(), "label": _("Delete student"), "icon_class": "icon-trash"},
+            )
+        return actions
+
+
+class RegistrationDatatableSerializer(serializers.ModelSerializer):
+    course = serializers.SerializerMethodField()
+    activity = serializers.SerializerMethodField()
+    day_name = serializers.CharField(source="course.day_name", read_only=True)
+    start_date = serializers.DateField(source="course.start_date", read_only=True)
+    start_time = serializers.TimeField(source="course.start_time", format="%H:%M", read_only=True)
+    bib_number = serializers.CharField(source="child.bib_number", read_only=True)
+    child = serializers.SerializerMethodField()
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
+    cancelation_reason_display = serializers.SerializerMethodField()
+    cancelation_person_name = serializers.SerializerMethodField()
+    actions = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Registration
+        fields = (
+            "id",
+            "course",
+            "activity",
+            "day_name",
+            "start_date",
+            "start_time",
+            "bib_number",
+            "child",
+            "status_display",
+            "is_canceled",
+            "cancelation_date",
+            "cancelation_reason_display",
+            "cancelation_person_name",
+            "confirmation_sent_on",
+            "actions",
+        )
+        # DatatablesRenderer strips any field that isn't one of the client's declared
+        # columns[i][data] - these all ride inside the status_display column's render()
+        # function rather than being their own column, so without this they'd silently
+        # vanish from every real request (found via a captured browser request; an
+        # ad-hoc test request without columns[] params never triggers the pruning and
+        # would hide the bug).
+        datatables_always_serialize = (
+            "is_canceled",
+            "cancelation_date",
+            "cancelation_reason_display",
+            "cancelation_person_name",
+            "confirmation_sent_on",
+        )
+
+    @staticmethod
+    def get_course(obj):
+        return {"number": obj.course.number, "url": obj.course.get_backend_url()}
+
+    @staticmethod
+    def get_activity(obj):
+        return {"name": obj.course.activity.name, "url": obj.course.activity.get_backend_url()}
+
+    @staticmethod
+    def get_child(obj):
+        return {"full_name": obj.child.get_full_name(), "url": obj.child.get_backend_url()}
+
+    @staticmethod
+    def get_cancelation_reason_display(obj):
+        return obj.get_cancelation_reason_display() if obj.cancelation_reason else None
+
+    @staticmethod
+    def get_cancelation_person_name(obj):
+        return obj.cancelation_person.get_full_name() if obj.cancelation_person else None
+
+    @staticmethod
+    def get_actions(obj):
+        if obj.is_canceled:
+            return []
+        return [
+            {"url": obj.get_details_url(), "label": _("Registration details"), "icon_class": "icon-help"},
+            {"url": obj.get_update_url(), "label": _("Update registration"), "icon_class": "icon-edit"},
+            {"url": obj.get_delete_url(), "label": _("Cancel registration"), "icon_class": "icon-cancel"},
+        ]
+
+
 class InlineCourseSerializer(serializers.ModelSerializer):
     activity = serializers.StringRelatedField(read_only=True)
     url = serializers.URLField(source="get_backend_url", read_only=True)

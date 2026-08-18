@@ -188,6 +188,45 @@ scratch each time. Update in place as items are resolved or new ones are found.
   - No decision made yet; leaning toward deferring (option 1) until there's
     spare capacity, given the low actual exposure.
 
+## Registration-opening performance backlog
+
+Found by analyzing the production access log for the 2026-08-18 Montreux
+registration opening (44,180 requests, 8am rush). Full breakdown (traffic
+share by flow, session types, ranked-by-total-server-time chart) published
+as an artifact; this entry keeps the still-open findings in the repo so
+they don't only live in a chat log. Several related items from this same
+analysis are already fixed — see the CHANGELOG's Unreleased section.
+
+- **`/api/dashboard/users/` fired 5× with identical params within about one
+  second** in one admin session trace (08:54:55-56) — looks like a
+  duplicated client-side fetch (e.g. an effect re-running) rather than a
+  real need to refresh 5×. Avg latency 482ms × the 5x multiplier makes this
+  worth deduplicating (stable query key / request dedup) before touching the
+  endpoint itself.
+- `InstructorMixin` (`activities/views.py`, used by `MailCourseInstructorsView`
+  and others) has the same bare-`get_object()`/double-fetch pattern that was
+  fixed on `CourseAccessMixin` (see CHANGELOG) — worth the same treatment if
+  those views show up slow.
+
+## Local `TenantTestCase` suite is currently broken (`cache.delete_pattern`)
+
+Found 2026-08-18 while writing/running the session-replay tests above.
+`backend/signals.py:11`'s `clear_tenant_cache()` (wired to `YearTenant`'s
+`post_save`/`post_delete`, so it fires on every `TenantTestCase` tenant
+setup) calls `cache.delete_pattern("tenants_context_user_*")` — a
+`django-redis`-only method, already flagged as such by an existing comment
+on that line (`# ⚠️ selon backend, si Redis -> tu peux utiliser
+cache.delete_pattern`). `sportfac/settings/test.py:41` configures
+`django.core.cache.backends.locmem.LocMemCache`, which has no
+`delete_pattern` — so `setUpClass` raises for **every** `TenantTestCase` in
+the repo, confirmed by running the pre-existing `wizard/tests/test_views.py`
+and `test_workflow.py`, not just new tests. Also needs `DB_NAME=kepchup`
+set locally (peer-auth Postgres) to get past the settings import at all.
+Not yet fixed — either switch `CACHES["default"]` in `settings/test.py` to
+`django-redis` (if a local Redis is an acceptable test dependency) or guard
+`_invalidate_all_tenant_caches()` to no-op / fall back to `cache.clear()`
+when the configured backend doesn't support `delete_pattern`.
+
 ## Performance work already done (2026-08, for reference — not debt)
 
 Not tech debt, but context for anyone reading this file wondering what's already

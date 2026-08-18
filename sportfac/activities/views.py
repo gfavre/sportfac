@@ -65,13 +65,26 @@ class CourseAccessMixin(UserPassesTestMixin, LoginRequiredMixin):
 
     # noinspection PyUnresolvedReferences
     def get_object(self):
-        pk = self.kwargs.get(self.pk_url_kwarg)
-        return get_object_or_404(Course, pk=pk)
+        # UserPassesTestMixin.dispatch() calls test_func() - and so this - before the
+        # view's own get()/post() runs, which calls get_object() again: without caching,
+        # the course is fetched twice per request, and a subclass's queryset (e.g.
+        # MyCourseDetailView's select_related/prefetch_related) never actually applies to
+        # either fetch, since this override replaces it with a bare, unoptimized query.
+        if not hasattr(self, "_course_object"):
+            queryset = self.get_queryset() if hasattr(self, "get_queryset") else Course.objects.all()
+            pk = self.kwargs.get(self.pk_url_kwarg)
+            self._course_object = get_object_or_404(queryset, pk=pk)
+        return self._course_object
 
     def test_func(self, user):
         course = self.get_object()
         return user.is_authenticated and (
-            user.is_instructor_of(course) or user in [p.child.family for p in course.participants.all()]
+            # A single EXISTS query instead of fetching every participant plus their
+            # child and family in Python (course.participants.all() with no
+            # select_related, then one query per .child and one per .child.family) -
+            # that was O(participants) queries just to decide access, on every request.
+            user.is_instructor_of(course)
+            or course.participants.filter(child__family=user).exists()
         )
 
 
@@ -106,7 +119,7 @@ class MyCoursesListView(InstructorMixin, ListView):
     template_name = "activities/course_list.html"
 
     def get_queryset(self):
-        return Course.objects.filter(instructors=self.request.user)
+        return Course.objects.filter(instructors=self.request.user).select_related("activity")
 
 
 class MyCourseDetailView(CourseAccessMixin, DetailView):
@@ -114,7 +127,12 @@ class MyCourseDetailView(CourseAccessMixin, DetailView):
     template_name = "activities/course_detail.html"
     pk_url_kwarg = "course"
     queryset = Course.objects.select_related("activity").prefetch_related(
-        "participants__child__school_year", "participants__child__family", "instructors"
+        "participants__child__school_year",
+        "participants__child__family",
+        "participants__child__teacher",
+        "participants__child__school",
+        "instructors",
+        "sessions",
     )
 
     def dispatch(self, request, *args, **kwargs):

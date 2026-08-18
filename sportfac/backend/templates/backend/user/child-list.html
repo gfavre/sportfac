@@ -1,5 +1,5 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags switzerland %}
+{% load i18n sekizai_tags static %}
 {% get_current_language as LANGUAGE_CODE %}
 
 {% block title %}{% translate "List students" %} - {{ block.super }}{% endblock %}
@@ -33,16 +33,27 @@
         name_column += 1;
         {% endif %}
         let table = $('#children').DataTable({
+          ajax: {
+            "url": "{% url 'api:all_children' %}",
+            "headers": {"Accept-language": "{{ request.LANGUAGE_CODE }}"},
+            "rowId": 'id'
+          },
+          columns: [
+            {% if IMPORT_CHILDREN %}{data: 'id_lagapeo', name: 'id_lagapeo'},{% endif %}
+            {% if BIB_NUMBERS %}{data: 'bib_number', name: 'bib_number'},{% endif %}
+            {data: 'full_name', name: 'first_name,last_name'},
+            {data: 'family', name: 'family.last_name,family.first_name'},
+            {data: 'school_year', name: 'school_year.year'},
+            {% if EMERGENCY_NUMBER_MANDATORY %}{data: 'emergency_number'},{% endif %}
+            {% if USE_BLACKLISTS %}{data: 'is_blacklisted', name: 'is_blacklisted'},{% endif %}
+            {data: 'actions'},
+          ],
           columnDefs: [
             {
               orderable: false,
               searchable: false,
               className: "nobr",
               targets: ['actions']
-            },
-            {
-              visible: false,
-              targets: 'blacklisted'
             },
             {
               searchPanes: {
@@ -58,12 +69,69 @@
               },
               targets: ['school', 'phone']
             },
-
-
+            {
+              render: function (data, type, row) {
+                return '<a href="' + row.url + '">' + data + '</a>';
+              },
+              targets: ['full_name']
+            },
+            {
+              render: function (data, type, row) {
+                if (!data) {
+                  return 'n/a';
+                }
+                return '<a href="' + data.url + '">' + data.full_name + '</a>';
+              },
+              targets: ['family']
+            },
+            {
+              render: function (data, type, row) {
+                {% if CHILD_SCHOOL %}
+                return (data || 'n/a') + (row.school_name ? '<br>' + row.school_name : '');
+                {% else %}
+                return data || 'n/a';
+                {% endif %}
+              },
+              targets: ['school']
+            },
+            {% if EMERGENCY_NUMBER_MANDATORY %}
+            {
+              orderable: false,
+              render: function (data, type, row) {
+                if (!data) {
+                  return '';
+                }
+                return '<a href="tel:' + data + '">' + data + '</a>';
+              },
+              targets: ['phone']
+            },
+            {% endif %}
+            {% if USE_BLACKLISTS %}
+            {
+              render: function (data, type, row) {
+                return data ? "{% translate 'yes' %}" : "{% translate 'no' %}";
+              },
+              targets: ['is_blacklisted']
+            },
+            {% endif %}
+            {
+              orderable: false,
+              searchable: false,
+              render: function (data, type, row) {
+                let actions = row['actions'].flatMap(
+                  action => '<li class="text-nowrap"><a href="' + action.url + '" class="btn btn-sm"><i class="' + action.icon_class + '"></i>&nbsp;&nbsp;' + action.label + '</a></li>'
+                ).join('');
+                return '<ul class="list-unstyled">' + actions + '</ul>';
+              },
+              className: "nobr",
+              targets: ['actions']
+            }
           ],
-        {% if USE_BLACKLISTS %}
-          dom: 'Pfrlitipl',
-        {% endif %}
+          createdRow: function (row, data, dataIndex) {
+            if (data.is_blacklisted) {
+              $(row).addClass('blacklisted');
+            }
+          },
           language: {
             info: "{% translate 'Showing _START_ to _END_ of _TOTAL_ entries' %}",
             infoEmpty: "{% translate "Showing 0 to 0 of 0 entries" %}",
@@ -77,6 +145,8 @@
             },
             search: "",
             searchPlaceholder: "{% translate 'Search' %}",
+            zeroRecords: "{% translate 'No matching records found' %}",
+            emptyTable: "{% translate 'No data available in table' %}",
             searchPanes: {
               title: {
                 _: '{% translate 'Filters selected' %} - %d',
@@ -91,14 +161,14 @@
               }
             }
           },
-          'lengthMenu': [[10, 25, 50, -1], [10, 25, 50, "{% translate 'All students' %}"] ],
+          {% if USE_BLACKLISTS %}
+          dom: 'Pfrlitipl',
+          {% endif %}
+          lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "{% translate 'All students' %}"]],
           order: [[name_column, 'asc']],
           pageLength: 50,
-          {% if USE_BLACKLISTS %}
-          searchPanes:{
-
-          }
-          {% endif %}
+          processing: true,
+          serverSide: true,
         });
       });
     </script>
@@ -124,7 +194,7 @@
       {% if BIB_NUMBERS %}
         <th class="name">{% translate "Bib number" %}</th>
       {% endif %}
-      <th>{% translate "Name" %}</th>
+      <th class="full_name">{% translate "Name" %}</th>
       <th class="family">{% translate "Family" %}</th>
       <th class="school">{% if CHILD_SCHOOL %}{% translate "School infos" %}{% else %}{% translate "School year" %}{% endif %}</th>
       {% if EMERGENCY_NUMBER_MANDATORY %}
@@ -133,68 +203,9 @@
       {% if USE_BLACKLISTS %}
         <th class="is_blacklisted">{% translate "Blacklisted" %}</th>
       {% endif %}
-      <th class="actions">{% translate "Actions" %}</th>
+      <th class="hidden-print actions">{% translate "Actions" %}</th>
     </tr>
     </thead>
-    {% for child in object_list %}
-      <tr data-userid="{{ child.id }}" class="{% if child.is_blacklisted %}blacklisted{% endif %}">
-        {% if IMPORT_CHILDREN %}
-          <td data-order="{{ child.id_lagapeo|default:"0" }}">{{ child.id_lagapeo|default:"n/a" }}</td>
-        {% endif %}
-        {% if BIB_NUMBERS %}
-          <td data-order="{{ child.bib_number|default:"0" }}">{{ child.bib_number|default:"n/a" }}</td>
-        {% endif %}
-        <td data-order="{{ child.last_name }} {{ child.first_name }}"><a
-            href="{{ child.get_backend_detail_url }}">{{ child.full_name }}</a></td>
-        <td data-order="{{ child.family.last_name }} {{ child.family.first_name }}"  data-search="{{ child.family.full_name }}">
-          {% if child.family %}
-            <a href="{{ child.family.get_backend_url }}">{{ child.family.full_name }}</a>
-          {% else %}
-            n/a
-          {% endif %}
-        </td>
-        <td>
-          {{ child.school_year|default:"n/a" }}
-          {% if CHILD_SCHOOL %}<br>
-            {{ child.school_name }}
-          {% endif %}
-        </td>
-        {% if EMERGENCY_NUMBER_MANDATORY %}
-          <td>
-            <a href="{{ registration.child.emergency_number|phone:'RFC3966' }}">
-              {{ child.emergency_number|phone }}
-            </a>
-          </td>
-        {% endif %}
-
- {% if USE_BLACKLISTS %}
-        <td>{% if child.is_blacklisted %}{% translate "yes" %}{% else %}{% translate "no" %}{% endif %}</td>
-      {% endif %}
-        <td>
-          <ul class="list-unstyled">
-            <li class="text-nowrap"><a href="{{ child.get_backend_detail_url }}" class="btn btn-sm"><i
-                class="icon-child"></i>&nbsp;&nbsp;{% translate "Child details" %}</a></li>
-            <li class="text-nowrap"><a href="{{ child.get_update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;&nbsp;{% translate "Edit student" %}
-            </a></li>
-            {% if USE_ABSENCES %}
-            <li class="text-nowrap">
-              <a href="{{ child.get_backend_absences_url }}" class="btn btn-sm">
-                <i class="icon-calendar"></i>&nbsp;{% translate "Review absences" %}
-              </a>
-            </li>
-            {% endif %}
-            {% if user.is_full_manager %}
-            <li class="text-nowrap">
-              <a href="{{ child.get_delete_url }}" class="btn btn-sm">
-                <i class="icon-trash"></i>&nbsp;&nbsp;{% translate "Delete student" %}
-              </a>
-            </li>
-            {% endif %}
-          </ul>
-        </td>
-      </tr>
-
-    {% endfor %}
   </table>
 
 {% endblock content %}

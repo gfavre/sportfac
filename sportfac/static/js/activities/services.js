@@ -177,7 +177,7 @@ angular.module('sportfacCalendar.services', []).factory('Registration', function
         getStartDate: function () {
           const course = this;
           const dayOffset = this.getOffsetFromMonday(this.day); // Offset from Monday
-          if (this.course_type === 'course') {
+          if (this.course_type === 'course' && this.start_time) {
             return new Date(y, m, d + dayOffset - date.getDay() + 1,
               course.start_time.split(':')[0],
               course.start_time.split(':')[1]);
@@ -187,7 +187,7 @@ angular.module('sportfacCalendar.services', []).factory('Registration', function
         },
         getEndDate: function () {
           const dayOffset = this.getOffsetFromMonday(this.day); // Offset from Monday
-          if (this.course_type === 'course') {
+          if (this.course_type === 'course' && this.end_time) {
             return new Date(y, m, d + dayOffset - date.getDay() + 1,
               this.end_time.split(':')[0],
               this.end_time.split(':')[1]);
@@ -271,12 +271,26 @@ angular.module('sportfacCalendar.services', []).factory('Registration', function
     return Course;
   })
 
-  .factory('CoursesService', ["$http", "$cookies", "Course", function ($http, $cookies, Course) {
+  .factory('CoursesService', ["$http", "$q", "$cookies", "Course", function ($http, $q, $cookies, Course) {
     $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
     var ModelUtils = {
       get: function (url, courseId) {
         return $http.get(url + courseId + '/').then(function (response) {
           return new Course(response.data);
+        });
+      },
+      // Fetches several courses in one request instead of one-per-id - same per-course
+      // server cache under the hood (api.views.activities_views.CourseViewSet.batch),
+      // just collapsed into a single HTTP round-trip. courseIds may contain duplicates
+      // or be empty; order of the returned array matches courseIds.
+      getMany: function (url, courseIds) {
+        if (!courseIds.length) {
+          return $q.when([]);
+        }
+        return $http.get(url + 'batch/', {params: {ids: courseIds.join(',')}}).then(function (response) {
+          return response.data.map(function (data) {
+            return new Course(data);
+          });
         });
       }
     };

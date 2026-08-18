@@ -4315,6 +4315,18 @@ msgstr "Dernier"
 msgid "Search"
 msgstr "Rechercher"
 
+#: backend/templates/backend/registration/list.html:117
+#: backend/templates/backend/user/child-list.html:148
+#: backend/templates/backend/user/list.html:163
+msgid "No matching records found"
+msgstr "Aucun élément à afficher"
+
+#: backend/templates/backend/registration/list.html:118
+#: backend/templates/backend/user/child-list.html:149
+#: backend/templates/backend/user/list.html:164
+msgid "No data available in table"
+msgstr "Aucune donnée disponible dans le tableau"
+
 #: backend/templates/backend/user/child-list.html:82
 #: backend/templates/backend/user/instructor-list.html:118
 #: backend/templates/backend/user/list.html:165

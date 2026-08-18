@@ -310,6 +310,11 @@ class ChildListView(ChildMixin, ListView):
     model = Child
     template_name = "backend/user/child-list.html"
 
+    def get_queryset(self):
+        # The template renders the table shell only; rows are loaded client-side via
+        # the DataTables serverSide ajax source (api:all_children), same as UserListView.
+        return Child.objects.none()
+
 
 class ChildCreateView(FullBackendMixin, SuccessMessageMixin, CreateView):
     model = Child
