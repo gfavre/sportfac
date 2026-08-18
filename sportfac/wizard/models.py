@@ -1,5 +1,6 @@
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.core.cache import cache
+from django.db import connection
 from django.db import models
 from django.db.models.signals import post_delete
 from django.db.models.signals import post_save
@@ -65,7 +66,11 @@ class WizardStep(TimeStampedModel):
 
 # Clear the cache for all wizard steps and individual step cache
 def clear_wizard_step_cache(instance=None):
-    cache.delete("all_wizard_steps")  # Invalidate all steps cache
+    # Must match WizardWorkflow.__init__'s cache key exactly (wizard/workflow.py) - this
+    # used to delete the unscoped "all_wizard_steps" key, which nothing ever set, so
+    # editing/adding/removing a step (including toggling display_in_navigation or
+    # reordering) silently kept serving the stale step list for up to an hour.
+    cache.delete(f"all_wizard_steps_{connection.schema_name}")
 
     if instance:
         cache_key = f"wizard_step_{instance.slug}"
