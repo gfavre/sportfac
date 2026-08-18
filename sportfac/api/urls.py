@@ -49,6 +49,11 @@ urlpatterns = [
     ),
     path("dashboard/managers/", views.DashboardManagersView.as_view(), name="all_managers"),
     path(
+        "dashboard/registrations/",
+        views.DashboardRegistrationsView.as_view(),
+        name="all_registrations",
+    ),
+    path(
         "appointments/rentals/<int:slot_id>/",
         appointment_views.AppointmentManagementView.as_view(),
         name="appointments-management",

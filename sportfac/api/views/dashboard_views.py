@@ -15,6 +15,7 @@ from ..filters import DatatablesFilterandPanesBackend
 from ..serializers import ChildDatatableSerializer
 from ..serializers import FamilySerializer
 from ..serializers import InstructorSerializer
+from ..serializers import RegistrationDatatableSerializer
 
 
 class DashboardFamilyView(generics.ListAPIView):
@@ -136,6 +137,47 @@ class DashboardChildrenView(generics.ListAPIView):
                         "count": 0,
                         "total": Child.objects.filter(is_blacklisted=False).count(),
                     },
+                ],
+            }
+        }
+
+
+class DashboardRegistrationsView(generics.ListAPIView):
+    filter_backends = (DatatablesFilterandPanesBackend,)
+    pagination_class = DatatablesPageNumberPagination
+    renderer_classes = (
+        BrowsableAPIRenderer,
+        DatatablesRenderer,
+    )
+    serializer_class = RegistrationDatatableSerializer
+
+    class Meta:
+        datatables_extra_json = ("get_search_panes",)
+
+    def get_queryset(self):
+        # Same scoping as backend.views.registration_views.RegistrationMixin -
+        # Registration.all_objects (not the default manager) so canceled registrations
+        # stay visible here, same as the page this replaces.
+        user: FamilyUser = self.request.user
+        qs = Registration.all_objects.select_related(
+            "course", "course__activity", "child", "child__family", "cancelation_person"
+        )
+        if user.is_full_manager:
+            return qs
+        return qs.filter(course__activity__in=user.managed_activities.all())
+
+    def get_search_panes(self):
+        qs = self.get_queryset()
+        return "searchPanes", {
+            "options": {
+                "status_display": [
+                    {
+                        "label": label,
+                        "value": value,
+                        "count": 0,
+                        "total": qs.filter(status=value).count(),
+                    }
+                    for value, label in Registration.STATUS
                 ],
             }
         }

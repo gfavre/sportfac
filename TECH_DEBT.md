@@ -223,8 +223,36 @@ thousands of times can outweigh a rare slow one.
   eyeballed in an actual browser, so a manual smoke test of `/backend/child/`
   (sorting, search, search pane, blacklisted row styling) is still worth
   doing before considering this fully closed.
-  `GET /backend/registrations/` (1.1s avg, 21 hits) looks like the same
-  symptom family and hasn't been touched — worth checking with the same lens.
+  `GET /backend/registrations/` — same symptom family, see below, now fixed.
+- **`GET /backend/registrations/` (1.1s avg, 21 hits) — fixed 2026-08-18.**
+  Unlike `ChildListView`, `RegistrationListView`
+  (`backend/views/registration_views.py`) already had correct
+  `select_related`/`prefetch_related` — the bug here was purely the
+  ChildListView-shaped half: a plain `ListView` with no `paginate_by`,
+  rendering the full unpaginated queryset server-side
+  (`backend/templates/backend/registration/list.html`, `{% for
+  registration in registration_list %}`), 3 `get_backend_url`/similar calls
+  per row. Converted to the same server-side DataTables pattern as
+  children/users: `RegistrationDatatableSerializer` +
+  `DashboardRegistrationsView` (`api:all_registrations`), scoped identically
+  to the page it replaces (`Registration.all_objects`, filtered by
+  `course__activity__in=user.managed_activities.all()` for restricted
+  managers, matching `RegistrationMixin.get_queryset()` exactly — verified
+  with a real request: a restricted manager only sees their activity's
+  registrations, a full manager sees all). `RegistrationListView.get_queryset()`
+  now returns `.none()` (shell only); `get_context_data()` adds
+  `has_registrations` via a cheap `.exists()` call so the "Validate all
+  registrations" button (previously gated on `registration_list.count`,
+  which would've silently broken once the queryset became `.none()`)
+  keeps working — verified via context inspection, not just a status code.
+  Canceled registrations get an empty `actions` list (matching the
+  template's `{% if not registration.is_canceled %}`), verified directly.
+  Also fixed a minor pre-existing landmine while rewriting the template's
+  JS: the old client-side DataTables searchPanes config targeted the status
+  column by **position** (`columns: [-2]`), which silently pointed at the
+  wrong column whenever `BIB_NUMBERS` was off (shifts every column index by
+  one) — the new serverSide config targets it by name instead, immune to
+  that. Full suite (410 tests) passes.
 - **`/api/courses/<id>/` is the single biggest total-server-time consumer**:
   331.6s cumulative across 6,409 calls, ~52ms each. This is *not* an
   uncached-endpoint problem — `CourseViewSet.retrieve()`
@@ -394,6 +422,77 @@ exist, a non-ready tenant is excluded from the query text entirely (not
 just filtered from the result — its nonexistent tables are never touched),
 correct results for both an instructor and a non-instructor user, and no
 crash with zero tenants. Full suite (410 tests) passes.
+
+## Two bugs found live in `/backend/registrations/`'s search panes (2026-08-18)
+
+Reported by the user clicking the "Annulée" (canceled) status filter: the
+pane showed the correct count (11) but filtering returned zero results.
+Found by getting a real captured browser request (Network tab) rather than
+guessing further — both bugs below only manifest against a real DataTables
+request; every ad-hoc test request built without a full `columns[i][...]`
+set for every column skips the code path entirely, so easy to silently
+reintroduce without a test built the same way DataTables actually queries
+(see `api/tests/test_filters.py`'s `datatables_columns_params()` helper,
+written specifically to avoid that trap).
+
+- **`api/filters.py::cleanup_value()`'s choices branch had the label/value
+  relationship backwards.** The existing comment claimed "datatables still
+  sends label rather than value" and reverse-mapped incoming values through
+  `_display_map` accordingly — true, apparently, for the SearchPanes
+  release the *original* (pre-2026-08-18) registrations template loaded
+  (`searchpanes/1.1.1`), but not for `sp-1.2.1`, the bundled version
+  everything got unified onto this session. The real captured request sent
+  `searchPanes[status_display][0]=canceled` — the raw choice key, not
+  `"Annulée"` — so `values_mapper.get("canceled")` (a dict keyed by labels)
+  found nothing and silently filtered on `None`. Every registrations status
+  pane click matched zero rows; the boolean panes (`is_blacklisted`,
+  `finished_registrations`) were unaffected because their declared "value"
+  (`1`/`0`) is already what gets sent under either interpretation, so this
+  never showed up until a choice-field pane existed to expose it. **Fixed**:
+  check whether the incoming value is already a valid choice key first, only
+  falling back to the label reverse-lookup if not — correct under both the
+  observed current behavior and the old one the comment described.
+- **`DatatablesRenderer._filter_unused_fields()` (in `rest_framework_datatables`,
+  not this codebase) strips any serializer field that isn't one of the
+  request's declared `columns[i][data]`.** Found while writing a regression
+  test for the bug above, using a *real* `columns[]` param set for the first
+  time — `RegistrationDatatableSerializer`'s `is_canceled`,
+  `cancelation_date`, `cancelation_reason_display`, `cancelation_person_name`,
+  `confirmation_sent_on` all ride inside the `status_display` cell's
+  client-side `render()` rather than being their own column, so a real
+  request silently stripped all five, and `ChildDatatableSerializer`'s `url`
+  (used by the `full_name` cell's link) and `school_name` (the `school`
+  cell's second line) had the identical problem. **Fixed**: both
+  serializers now declare `Meta.datatables_always_serialize` listing the
+  fields that must survive regardless of what the client requested — the
+  mechanism the library provides for exactly this case. `FamilySerializer`
+  (pre-existing, `list.html`) doesn't have this problem: every field its
+  templates reference is already its own declared column (some just marked
+  `visible: false`).
+- **A third bug, same shape, found right after**: reported by the user as
+  "search by name doesn't work" on `/backend/child/`. `child-list.html`'s
+  `school_year` column pointed its DataTables `name` straight at the bare
+  `school_year` FK (`{name: 'school_year'}`). The global search box's
+  `icontains` loop (`rest_framework_datatables.filters.DatatablesFilterBackend`)
+  applies to **every searchable column's `name` at once**, not just the one
+  the user is looking at — and `icontains` directly on a bare `ForeignKey`
+  raises `django.core.exceptions.FieldError: Related Field got invalid
+  lookup: icontains`. So typing *anything* into the search box 500'd the
+  whole request, regardless of which column the user meant to search —
+  exactly matching "search by name doesn't work" even though the crash had
+  nothing to do with the name column specifically. Verified `is_blacklisted`
+  (`BooleanField`) and `course.day` (`PositiveSmallIntegerField`, used by the
+  registrations page) do **not** have this problem — only a bare FK does.
+  Checked every other `name:` value across all three templates against its
+  model field; `school_year` was the only one pointing at a relation instead
+  of a leaf field. **Fixed**: `name: 'school_year.year'` (a real
+  `PositiveIntegerField` on `SchoolYear`) instead of the bare FK.
+- Added `api/tests/test_filters.py`: unit tests for `cleanup_value`'s
+  choices branch (raw value, label, unknown value), and integration tests
+  against both `all_registrations` and `all_children` using a helper that
+  builds a full, realistic `columns[]` param set — specifically so these
+  can't regress silently the way they were introduced. Full suite (417
+  tests) passes.
 
 ## Local `TenantTestCase` suite is currently broken (`cache.delete_pattern`)
 

@@ -8,6 +8,7 @@ from .dashboard_views import DashboardChildrenView  # noqa: F401
 from .dashboard_views import DashboardFamilyView  # noqa: F401
 from .dashboard_views import DashboardInstructorsView  # noqa: F401
 from .dashboard_views import DashboardManagersView  # noqa: F401
+from .dashboard_views import DashboardRegistrationsView  # noqa: F401
 from .family_views import ChildActivityLevelViewSet  # noqa: F401
 from .family_views import ChildrenViewSet  # noqa: F401
 from .family_views import FamilyView  # noqa: F401

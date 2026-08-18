@@ -43,7 +43,7 @@
             {% if BIB_NUMBERS %}{data: 'bib_number', name: 'bib_number'},{% endif %}
             {data: 'full_name', name: 'first_name,last_name'},
             {data: 'family', name: 'family.last_name,family.first_name'},
-            {data: 'school_year', name: 'school_year'},
+            {data: 'school_year', name: 'school_year.year'},
             {% if EMERGENCY_NUMBER_MANDATORY %}{data: 'emergency_number'},{% endif %}
             {% if USE_BLACKLISTS %}{data: 'is_blacklisted', name: 'is_blacklisted'},{% endif %}
             {data: 'actions'},
@@ -145,6 +145,8 @@
             },
             search: "",
             searchPlaceholder: "{% translate 'Search' %}",
+            zeroRecords: "{% translate 'No matching records found' %}",
+            emptyTable: "{% translate 'No data available in table' %}",
             searchPanes: {
               title: {
                 _: '{% translate 'Filters selected' %} - %d',
