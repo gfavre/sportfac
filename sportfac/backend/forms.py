@@ -260,7 +260,9 @@ class CourseSelectMixin:
                 )
             else:
                 course_qs = course_qs.filter(
-                    Q(min_birth_date__isnull=True)
+                    # "no restriction" comes from age_min/age_max, not min_birth_date -
+                    # that derived field can go stale independently (see Course.save()).
+                    Q(age_min__isnull=True, age_max__isnull=True)
                     | Q(
                         max_birth_date__lte=self.instance.child.birth_date,
                         min_birth_date__gte=self.instance.child.birth_date,

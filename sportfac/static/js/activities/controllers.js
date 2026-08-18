@@ -344,21 +344,18 @@ angular.module('sportfacCalendar.controllers', [])
           }
           let available = false;
           if ($scope.limitbyschoolyear) {
-            if (course.schoolyear_min == null) {
-              // No school-year restriction on this course (mirrors the birth_date
-              // check just below, and the backend's ActivityViewSet._course_matches_
-              // school_year) - without this check, comparing null coerces to 0 and
-              // the course silently never appears as available to anyone.
+            if (!course.has_school_year_restriction) {
               available = true;
             } else {
               available = course.schoolyear_min <= $scope.selectedChild.school_year &&
                 course.schoolyear_max >= $scope.selectedChild.school_year;
             }
-          } else if (course.min_birth_date == null) {
-            // No age restriction on this course (mirrors the backend's has_age_restriction) -
-            // without this check, comparing null to a date string coerces null to 0 and the
-            // date to NaN, so the comparison below is always false and the course silently
-            // never appears as available to anyone.
+          } else if (!course.has_age_restriction) {
+            // has_age_restriction (from the backend, live-computed from age_min/age_max)
+            // rather than min_birth_date == null: min_birth_date/max_birth_date are a
+            // derived cache that can go stale independently of age_min/age_max (see
+            // Course.save()), so a course edited to remove its age restriction must stop
+            // being excluded immediately, not only after its next unrelated save().
             available = true;
           } else {
             available = course.min_birth_date >= $scope.selectedChild.birth_date &&

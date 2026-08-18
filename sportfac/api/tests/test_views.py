@@ -11,6 +11,7 @@ from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 
 from activities.cache import get_structural_activities_cache_key
+from activities.models import Course
 from activities.tests.factories import CourseFactory
 from api.serializers import ChildrenSerializer
 from profiles.tests.factories import FamilyUserFactory
@@ -113,6 +114,31 @@ class ActivityAPITests(TenantTestCase):
         self.assertEqual(len(response.data), 1)
         # self.course (age-restricted) doesn't match a 1900 birth_date - only the
         # unrestricted course should remain under this activity.
+        self.assertEqual(len(response.data[0]["courses"]), 1)
+
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False, KEPCHUP_EXPLICIT_SESSION_DATES=False)
+    def test_filter_by_age_unrestricted_course_matches_even_with_stale_derived_dates(self):
+        # Regression test: min_birth_date/max_birth_date are a cache derived from
+        # age_min/age_max (Course.save() recomputes them) - a course edited long ago
+        # (before the derived-field-clearing fix) can have age_min/age_max cleared to
+        # None while min_birth_date/max_birth_date are still sitting on stale,
+        # still-restrictive values in the database, untouched since. Eligibility must
+        # come from has_age_restriction (live-computed from age_min/age_max), not from
+        # min_birth_date being None, so this stale-but-unrestricted course still has to
+        # match - bypass Course.save() with a bulk update to simulate exactly that
+        # already-corrupted-in-the-database state, not just the "freshly cleared" one.
+        unrestricted_course = CourseFactory(
+            activity=self.course.activity, age_min=None, age_max=None, start_date=datetime.date.today()
+        )
+        Course.objects.filter(pk=unrestricted_course.pk).update(
+            min_birth_date=datetime.date(2000, 1, 1), max_birth_date=datetime.date(2000, 1, 1)
+        )
+        url = reverse("api:activity-list") + "?birth_date=1900-01-01"
+
+        response = self.tenant_client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
         self.assertEqual(len(response.data[0]["courses"]), 1)
 
     @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False, KEPCHUP_EXPLICIT_SESSION_DATES=False)

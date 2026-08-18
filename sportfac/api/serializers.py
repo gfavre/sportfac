@@ -110,6 +110,8 @@ class CourseInlineSerializer(serializers.ModelSerializer):
             "schoolyear_max",
             "min_birth_date",
             "max_birth_date",
+            "has_school_year_restriction",
+            "has_age_restriction",
             "instructors",
             "multi_course",
         )
@@ -170,6 +172,8 @@ class CourseSerializer(serializers.ModelSerializer):
             "multi_course",
             "min_birth_date",
             "max_birth_date",
+            "has_school_year_restriction",
+            "has_age_restriction",
         )
         read_only_fields = fields
 

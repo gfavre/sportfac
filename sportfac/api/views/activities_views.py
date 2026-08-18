@@ -51,7 +51,13 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
             birth_date = self.request.query_params.get("birth_date")
             if birth_date is not None:
                 valid_courses = valid_courses.filter(
-                    Q(min_birth_date__isnull=True) | Q(min_birth_date__gte=birth_date, max_birth_date__lte=birth_date)
+                    # "no restriction" is decided from age_min/age_max (the field staff
+                    # actually edit) rather than min_birth_date/max_birth_date (a derived
+                    # cache that can go stale independently - see Course.save()) - once
+                    # there is a restriction, the derived dates are accurate and fine to
+                    # use for the actual range comparison below.
+                    Q(age_min__isnull=True, age_max__isnull=True)
+                    | Q(min_birth_date__gte=birth_date, max_birth_date__lte=birth_date)
                 )
 
         # 🔑 On sélectionne uniquement les activités qui ont AU MOINS un cours valide
@@ -103,7 +109,7 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
 
     @staticmethod
     def _course_matches_school_year(course, school_year):
-        if course["schoolyear_min"] is None:
+        if not course["has_school_year_restriction"]:
             # No school-year restriction on this course (mirrors _course_matches_birth_date) -
             # without this check, comparing None to an int raises TypeError in Python, which
             # crashed this whole request and silently hid every course from the activity, not
@@ -113,7 +119,12 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
 
     @staticmethod
     def _course_matches_birth_date(course, birth_date):
-        if course["min_birth_date"] is None:
+        # has_age_restriction (live-computed from age_min/age_max) rather than
+        # min_birth_date being None: min_birth_date/max_birth_date are a derived cache
+        # that can go stale independently of age_min/age_max (see Course.save()) - a
+        # course edited to remove its age restriction must stop being excluded
+        # immediately, not only after its next unrelated save().
+        if not course["has_age_restriction"]:
             return True
         return course["min_birth_date"] >= birth_date and course["max_birth_date"] <= birth_date
 

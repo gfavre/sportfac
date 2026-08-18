@@ -113,18 +113,19 @@ angular.module('sportfacCalendar.services', []).factory('Registration', function
           return this.registered.indexOf(course.id) !== -1;
         },
         canRegister: function (course, limitbyschoolyear) {
-          // Same null-safety as Activities.updateAvailableEvents (controllers.js): a
-          // course with no restriction on the relevant axis (schoolyear_min or
-          // min_birth_date both null) must be registerable by everyone - without this
-          // check, comparing null coerces to 0/NaN and the course silently rejects
-          // every registration attempt even though it appeared as available to click.
+          // Same as Activities.updateAvailableEvents (controllers.js): "is there a
+          // restriction" comes from has_school_year_restriction/has_age_restriction
+          // (live-computed backend properties), never from schoolyear_min/min_birth_date
+          // being null - those derived fields can go stale independently (see
+          // Course.save()), which used to make a course reject every registration
+          // attempt even though it appeared as available to click.
           if (limitbyschoolyear) {
-            if (course.schoolyear_min == null) {
+            if (!course.has_school_year_restriction) {
               return true;
             }
             return !(this.school_year < course.schoolyear_min || this.school_year > course.schoolyear_max);
           } else {
-            if (course.min_birth_date == null) {
+            if (!course.has_age_restriction) {
               return true;
             }
             return course.min_birth_date >= this.birth_date && course.max_birth_date <= this.birth_date;
