@@ -1,24 +1,27 @@
-# -*- coding: utf-8 -*-
+from unittest.mock import patch
+
 from django.contrib.auth.models import AnonymousUser
 from django.forms.models import model_to_dict
 from django.test import RequestFactory
+from django.test import override_settings
 from django.urls import reverse
 
-from activities.tests.factories import ActivityFactory
-from mock import patch
+from activities.tests.factories import CourseFactory
 from profiles.tests.factories import FamilyUserFactory
 from registrations.models import Bill
-from registrations.tests.factories import BillFactory, RegistrationFactory
-
+from registrations.tests.factories import BillFactory
+from registrations.tests.factories import RegistrationFactory
 from sportfac.utils import TenantTestCase
 
-from ...views.registration_views import BillDetailView, BillListView, BillUpdateView
+from ...views.registration_views import BillDetailView
+from ...views.registration_views import BillListView
+from ...views.registration_views import BillUpdateView
 from .base import fake_registrations_open_middleware
 
 
 class BillDetailViewTests(TenantTestCase):
     def setUp(self):
-        super(BillDetailViewTests, self).setUp()
+        super().setUp()
         self.bill = BillFactory()
         self.registration = RegistrationFactory(bill=self.bill)
         self.login_url = reverse("profiles:auth_login")
@@ -51,10 +54,32 @@ class BillDetailViewTests(TenantTestCase):
         content = response.render().content
         self.assertTrue(len(content) > 0)
 
+    def test_shows_the_same_billing_content_as_the_family_view(self):
+        # Regression test: the backend template gated billing_partial.html (which
+        # carries the total-amount line and payment instructions) behind
+        # `{% if transaction %}`, a context variable this view never sets - so it
+        # never rendered here, unlike the family-facing equivalent which always shows
+        # it unconditionally. Both views now share the same content partial.
+        with override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False):
+            course = CourseFactory(price=250)
+        bill = BillFactory(payment_method="iban")
+        RegistrationFactory(course=course, bill=bill, price=250)
+        request = RequestFactory().get(bill.get_backend_url())
+        fake_registrations_open_middleware(request)
+        request.user = self.user
+
+        response = self.view(request, pk=bill.pk)
+        response.render()
+
+        # This sentence only ever comes from billing_partial.html - unlike the total
+        # amount, it's not also printed by invoice-part-registrations.html, so it
+        # actually isolates whether the gated include rendered.
+        self.assertIn("Aucun remboursement ne pourra être demandé".encode(), response.content)
+
 
 class BillListViewTests(TenantTestCase):
     def setUp(self):
-        super(BillListViewTests, self).setUp()
+        super().setUp()
         self.bill = BillFactory()
         self.registration = RegistrationFactory(bill=self.bill)
         self.login_url = reverse("profiles:auth_login")
@@ -90,7 +115,7 @@ class BillListViewTests(TenantTestCase):
 
 class BillUpdateViewTests(TenantTestCase):
     def setUp(self):
-        super(BillUpdateViewTests, self).setUp()
+        super().setUp()
         self.bill = BillFactory(status=Bill.STATUS.paid)
         self.data = model_to_dict(self.bill)
         self.login_url = reverse("profiles:auth_login")

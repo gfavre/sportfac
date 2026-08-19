@@ -9,11 +9,7 @@
 
 {% block content %}
   <article class="invoice">
-  {% include "registrations/invoice-part-heading.html" %}
-  {% include "registrations/invoice-part-registrations.html" %}
-  {% if transaction %}
-    {% include "registrations/billing_partial.html" %}
-  {% endif %}
+  {% include "registrations/invoice-part-content.html" %}
   {% include "print-button.html" %}
   {% include "pdf-download-button.html" with pdf_url=invoice.get_backend_pdf_url bill=invoice %}
   </article>

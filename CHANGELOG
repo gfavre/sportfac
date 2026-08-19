@@ -5,10 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 4.6.1 - 2026-08-19
 ### Fixed
 - Family API: `ext_id` (Lagapeo ID) was writable through a child update despite being meant as read-only, and could collide with another child's ID, crashing the request with a 500. Now truly read-only, and any such DB conflict returns a clean 400 instead of crashing
 - Tenant cache invalidation signal crashed (`AttributeError`) on any non-Redis cache backend (e.g. local/test `LocMemCache`)
+- Backend bill detail page never showed the total amount / payment instructions block, unlike the family-facing one - it was gated behind a template variable that was never actually set. Both views now share the same content
+- Wire-transfer bill: the QR-invoice code sat in a half-width column next to the payment details, rendering it smaller than needed - now stacked full-width below them
+- Wire-transfer bill: the "indicate your transaction ID under communications/reason" instruction was a disconnected sentence after the payment details box - merged into the preceding sentence
 
 ## 4.6.0 - 2026-08-18
 ### Fixed

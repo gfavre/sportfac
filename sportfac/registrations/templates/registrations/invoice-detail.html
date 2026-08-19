@@ -8,9 +8,7 @@
 {% block extra_body %}class="bill"{% endblock %}
 
 {% block content %}
-{% include "registrations/invoice-part-heading.html" %}
-{% include "registrations/invoice-part-registrations.html" %}
-  {% include "registrations/billing_partial.html" %}
+{% include "registrations/invoice-part-content.html" %}
 
 {% include "print-button.html" %}
 {% include "pdf-download-button.html" with pdf_url=invoice.get_pdf_url bill=invoice %}
