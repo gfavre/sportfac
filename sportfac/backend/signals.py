@@ -7,8 +7,10 @@ from backend.models import YearTenant
 
 
 def _invalidate_all_tenant_caches():
-    # ⚠️ selon backend, si Redis -> tu peux utiliser cache.delete_pattern
-    cache.delete_pattern("tenants_context_user_*")
+    if hasattr(cache, "delete_pattern"):
+        cache.delete_pattern("tenants_context_user_*")
+    else:
+        cache.clear()
 
 
 @receiver([post_save, post_delete], sender=YearTenant)

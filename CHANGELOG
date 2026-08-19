@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+### Fixed
+- Family API: `ext_id` (Lagapeo ID) was writable through a child update despite being meant as read-only, and could collide with another child's ID, crashing the request with a 500. Now truly read-only, and any such DB conflict returns a clean 400 instead of crashing
+- Tenant cache invalidation signal crashed (`AttributeError`) on any non-Redis cache backend (e.g. local/test `LocMemCache`)
+
 ## 4.6.0 - 2026-08-18
 ### Fixed
 - Wizard step cache invalidation (`wizard/models.py`'s `clear_wizard_step_cache`, triggered by `WizardStep`'s `post_save`/`post_delete` signals) deleted a cache key (`"all_wizard_steps"`) that was never the one actually set - `WizardWorkflow` reads/writes `"all_wizard_steps_<schema>"` (`wizard/workflow.py`). Adding, editing, reordering, or removing a wizard step while the 1-hour cache was warm silently kept serving the stale step list to every family already in the registration flow, with no error anywhere. Low urgency in practice (only matters if wizard step config changes while registrations are live), but a real, confirmed bug - reproduced with a failing test before the fix (new step added, still invisible after the signal fired), passing after

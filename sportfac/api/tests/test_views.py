@@ -1,10 +1,12 @@
 import datetime
 import json
 import logging
+from unittest import mock
 
 import faker
 from dateutil.relativedelta import relativedelta
 from django.core.cache import cache
+from django.db import IntegrityError
 from django.db import connection
 from django.test import override_settings
 from django.test.utils import CaptureQueriesContext
@@ -382,6 +384,37 @@ class ChildrenAPITests(UserMixin, TenantTestCase):
         self.assertEqual(response.status_code, 200)
         child.refresh_from_db()
         self.assertEqual(child.last_name, new_name)
+
+    def test_update_cannot_change_ext_id(self):
+        """ext_id (id_lagapeo) must stay read-only: a family should never be able to
+        reassign a child's Lagapeo pairing through a PUT, even to a value already
+        used by another child."""
+        child = self.children1[0]
+        child.id_lagapeo = 111
+        child.save()
+        other_child_ext_id = 222
+        self.children1[1].id_lagapeo = other_child_ext_id
+        self.children1[1].save()
+
+        url = reverse("api:child-detail", kwargs={"pk": child.pk})
+        self.login(self.user1)
+        data = ChildrenSerializer(child).data
+        data["ext_id"] = other_child_ext_id
+        response = self.tenant_client.put(url, json.dumps(data), content_type="application/json")
+        self.assertEqual(response.status_code, 200)
+        child.refresh_from_db()
+        self.assertEqual(child.id_lagapeo, 111)
+
+    def test_update_returns_400_instead_of_crashing_on_db_conflict(self):
+        """Any unexpected IntegrityError during an update (e.g. a race condition)
+        must surface as a clean 400, not an unhandled 500."""
+        child = self.children1[0]
+        url = reverse("api:child-detail", kwargs={"pk": child.pk})
+        self.login(self.user1)
+        data = ChildrenSerializer(child).data
+        with mock.patch("registrations.models.Child.save", side_effect=IntegrityError("duplicate key")):
+            response = self.tenant_client.put(url, json.dumps(data), content_type="application/json")
+        self.assertEqual(response.status_code, 400)
 
     def test_delete(self):
         child = self.children1[0]

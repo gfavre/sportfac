@@ -2,16 +2,27 @@ from django.conf import settings
 from django.db import IntegrityError
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-
-from rest_framework import filters, generics, mixins, status, viewsets
+from rest_framework import filters
+from rest_framework import generics
+from rest_framework import mixins
+from rest_framework import status
+from rest_framework import viewsets
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.throttling import UserRateThrottle
 
-from registrations.models import Child, ChildActivityLevel
-from ..permissions import FamilyPermission, InstructorPermission, IsAuthenticated, ManagerPermission
-from ..serializers import ChildActivityLevelSerializer, ChildrenSerializer, SimpleChildrenSerializer
+from registrations.models import Child
+from registrations.models import ChildActivityLevel
+
+from ..permissions import FamilyPermission
+from ..permissions import InstructorPermission
+from ..permissions import IsAuthenticated
+from ..permissions import ManagerPermission
+from ..serializers import ChildActivityLevelSerializer
+from ..serializers import ChildrenSerializer
+from ..serializers import SimpleChildrenSerializer
 
 
 class FamilyView(mixins.ListModelMixin, generics.GenericAPIView):
@@ -167,12 +178,13 @@ class ChildrenViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         serializer.validated_data["family"] = self.request.user
-        if "ext_id" in serializer.validated_data:
-            del serializer.validated_data["ext_id"]
         if serializer.validated_data.get("school", None):
             serializer.validated_data["other_school"] = ""
         serializer.validated_data["status"] = Child.STATUS.updated
-        serializer.save()
+        try:
+            serializer.save()
+        except IntegrityError:
+            raise ValidationError("Child already exist")
 
     def perform_destroy(self, instance: Child):
         instance.family = None
