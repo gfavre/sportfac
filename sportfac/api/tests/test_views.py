@@ -144,6 +144,30 @@ class ActivityAPITests(TenantTestCase):
         self.assertEqual(len(response.data[0]["courses"]), 1)
 
     @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False, KEPCHUP_EXPLICIT_SESSION_DATES=False)
+    def test_filter_by_age_one_sided_restriction(self):
+        # Regression test: has_age_restriction is True as soon as EITHER age_min or
+        # age_max is set, but Course.save() only derives min_birth_date from age_min and
+        # max_birth_date from age_max independently - a course restricting only one of
+        # them has the other derived date as None. Comparing None to birth_date raised
+        # TypeError in production (crashing the whole /api/activities/ request), instead
+        # of just excluding/including this course on its one real bound.
+        max_only_course = CourseFactory(
+            activity=self.course.activity, age_min=None, age_max=self.age - 1, start_date=datetime.date.today()
+        )  # no minimum age, but must be younger than self.age - 1 -> self.birth_date is too old
+        min_only_course = CourseFactory(
+            activity=self.course.activity, age_min=self.age + 1, age_max=None, start_date=datetime.date.today()
+        )  # no maximum age, but must be older than self.age + 1 -> self.birth_date is too young
+        url = reverse("api:activity-list") + f"?birth_date={self.birth_date.isoformat()}"
+
+        response = self.tenant_client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        course_ids = {course["id"] for course in response.data[0]["courses"]}
+        self.assertIn(self.course.id, course_ids)
+        self.assertNotIn(max_only_course.id, course_ids)
+        self.assertNotIn(min_only_course.id, course_ids)
+
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False, KEPCHUP_EXPLICIT_SESSION_DATES=False)
     def test_filter_by_age_excludes_activities_with_no_matching_course(self):
         CourseFactory(age_min=self.age + 5, age_max=self.age + 6, start_date=datetime.date.today())
         url = reverse("api:activity-list") + f"?birth_date={self.birth_date.isoformat()}"
@@ -166,6 +190,29 @@ class ActivityAPITests(TenantTestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(len(response.data[0]["courses"]), 1)
         self.assertEqual(response.data[0]["courses"][0]["id"], self.course.id)
+
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=True)
+    def test_filter_by_school_year_one_sided_restriction(self):
+        # Regression test: has_school_year_restriction is True as soon as EITHER
+        # schoolyear_min or schoolyear_max is set, and unlike age, both are plain nullable
+        # fields with no derivation step - a course restricting only one of them has the
+        # other as None. Comparing None to school_year would raise the same TypeError as
+        # the age case above.
+        max_only_course = CourseFactory(
+            activity=self.course.activity, schoolyear_min=None, schoolyear_max=self.school_year - 1
+        )
+        min_only_course = CourseFactory(
+            activity=self.course.activity, schoolyear_min=self.school_year + 1, schoolyear_max=None
+        )
+        url = reverse("api:activity-list") + f"?year={self.school_year}"
+
+        response = self.tenant_client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        course_ids = {course["id"] for course in response.data[0]["courses"]}
+        self.assertIn(self.course.id, course_ids)
+        self.assertNotIn(max_only_course.id, course_ids)
+        self.assertNotIn(min_only_course.id, course_ids)
 
     @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=True)
     def test_filter_by_school_year_unrestricted_course_always_matches(self):

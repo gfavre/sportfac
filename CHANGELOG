@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+### Fixed
+- Activities API (`/api/activities/`), `KEPCHUP_LIMIT_BY_AGE` tenants (e.g. La Tour-de-Peilz): a course restricting only one end of the age range (only a minimum, or only a maximum, but not both) crashed the entire request with a `TypeError` (comparing `None` to the child's birth date) instead of just filtering on its one real bound. Same latent bug existed for the school-year path (`KEPCHUP_LIMIT_BY_SCHOOL_YEAR` tenants) for a course restricting only one end of the school-year range - fixed there too, before it could crash the same way
+
 ## 4.6.1 - 2026-08-19
 ### Fixed
 - Family API: `ext_id` (Lagapeo ID) was writable through a child update despite being meant as read-only, and could collide with another child's ID, crashing the request with a 500. Now truly read-only, and any such DB conflict returns a clean 400 instead of crashing

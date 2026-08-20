@@ -116,7 +116,17 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
             # crashed this whole request and silently hid every course from the activity, not
             # just the unrestricted one.
             return True
-        return course["schoolyear_min"] <= school_year <= course["schoolyear_max"]
+        # schoolyear_min/schoolyear_max are independently nullable (a course can restrict
+        # only one end, e.g. "schoolyear_max=8" with no minimum) - has_school_year_restriction
+        # is True as soon as either is set, so the other side must be treated as "no bound"
+        # rather than compared directly, or it raises the same TypeError as above.
+        schoolyear_min = course["schoolyear_min"]
+        schoolyear_max = course["schoolyear_max"]
+        if schoolyear_min is not None and school_year < schoolyear_min:
+            return False
+        if schoolyear_max is not None and school_year > schoolyear_max:
+            return False
+        return True
 
     @staticmethod
     def _course_matches_birth_date(course, birth_date):
@@ -127,7 +137,18 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
         # immediately, not only after its next unrelated save().
         if not course["has_age_restriction"]:
             return True
-        return course["min_birth_date"] >= birth_date and course["max_birth_date"] <= birth_date
+        # min_birth_date/max_birth_date are set independently in Course.save() (one requires
+        # age_min, the other age_max) - has_age_restriction is True as soon as either age_min
+        # or age_max is set, so a course restricting only one of them has the other date as
+        # None. Comparing None directly raises the TypeError seen in production, so each side
+        # must be treated as "no bound" instead.
+        min_birth_date = course["min_birth_date"]
+        max_birth_date = course["max_birth_date"]
+        if min_birth_date is not None and birth_date > min_birth_date:
+            return False
+        if max_birth_date is not None and birth_date < max_birth_date:
+            return False
+        return True
 
     @staticmethod
     def _filter_activities(activities, course_matches):
