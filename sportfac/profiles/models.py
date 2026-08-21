@@ -29,6 +29,33 @@ from .utils import get_street_and_number
 
 
 class FamilyManager(BaseUserManager):
+    def get_by_natural_key(self, username):
+        # Default BaseUserManager does an exact-case lookup, so an account created with
+        # (or ever saved with) mixed-case letters in the email's local part - the normal
+        # case, since FamilyUser.save() only started lowercasing it going forward, not
+        # retroactively - silently fails to log in when the user types it back in a
+        # different case. Login should treat email as case-insensitive throughout, same as
+        # Django's own PasswordResetForm.get_users() already does.
+        #
+        # Exact match first: pre-existing case-variant duplicate accounts are a real,
+        # confirmed occurrence here (two people, same email differing only by case, both
+        # active - almost certainly earlier victims of this very login bug re-registering
+        # instead of resetting their password). For those, __iexact alone would match both
+        # rows and raise MultipleObjectsReturned - a 500 instead of a login - for a login
+        # that used to work fine under the old exact-match lookup. Trying exact first keeps
+        # that working; the __iexact fallback only kicks in when there's truly one match.
+        try:
+            return self.get(email=username)
+        except self.model.DoesNotExist:
+            pass
+        try:
+            return self.get(email__iexact=username)
+        except self.model.MultipleObjectsReturned:
+            # Two+ accounts collide once lowercased and neither is an exact match for what
+            # was typed - no safe way to pick one, so fail closed (login denied) instead of
+            # crashing the request.
+            raise self.model.DoesNotExist(f"Ambiguous email match for {username!r}")
+
     def create_user(self, email, first_name, last_name, zipcode, city, password=None, **extra_fields):
         """
         Creates and saves a User with the given email, favorite topping, and password.
@@ -376,6 +403,15 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
 
         from registrations.models import RegistrationsProfile
 
+        # normalize_email() (BaseUserManager, used by create_user()) only lowercases the
+        # domain part, per RFC - the local part keeps whatever case the user typed at
+        # signup. That leaves login case-sensitive on an address most users think of as
+        # case-insensitive. Lowercasing here, on every save regardless of entry point
+        # (forms, admin, API, SSO sync), is the one choke point that actually closes that
+        # gap - unlike get_by_natural_key's __iexact lookup, which only prevents new
+        # mismatches from becoming an outright failure to log in, without fixing the data.
+        if self.email:
+            self.email = self.email.strip().lower()
         super().save(*args, **kwargs)
         if create_profile:
             try:

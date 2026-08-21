@@ -82,6 +82,26 @@ class RegistrationViewTests(UserDataTestCaseMixin, TestCase):
         self.assertEqual(response.status_code, 200)
 
 
+class LoginCaseInsensitivityTests(TestCase):
+    # Regression test for the actual bug report: an account created (or ever saved) with
+    # a mixed-case email must still be able to log in with a different-case version of it
+    # - e.g. after a password reset, whose own lookup (Django's PasswordResetForm.get_users)
+    # already matches case-insensitively, unlike ModelBackend's login lookup before this fix.
+    def test_login_with_different_case_email_succeeds(self):
+        password = "badbadzoot"  # noqa: S105
+        user = FamilyUserFactory(email="Some.User@Example.com")
+        user.set_password(password)
+        user.save()
+
+        response = self.tenant_client.post(
+            reverse("profiles:auth_login"),
+            data={"username": "some.user@example.com", "password": password},
+        )
+
+        self.assertTrue(response.wsgi_request.user.is_authenticated)
+        self.assertEqual(response.wsgi_request.user.pk, user.pk)
+
+
 class AccountViewTests(TestCase):
     def setUp(self):
         self.factory = RequestFactory()

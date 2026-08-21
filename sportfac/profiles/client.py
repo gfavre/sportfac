@@ -14,7 +14,7 @@ class KepchupClient(Client):
         except FamilyUser.DoesNotExist:
             # The UUID is unknown locally (e.g. new period): try by email before creating,
             # otherwise super().save() would raise IntegrityError and poison the transaction.
-            user = FamilyUser.objects.filter(email=parsed.get("email")).first()
+            user = FamilyUser.objects.filter(email__iexact=parsed.get("email")).first()
             if user is None:
                 user = FamilyUser(**parsed)
                 user.save()
