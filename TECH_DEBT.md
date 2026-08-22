@@ -227,6 +227,40 @@ Not yet fixed — either switch `CACHES["default"]` in `settings/test.py` to
 `_invalidate_all_tenant_caches()` to no-op / fall back to `cache.clear()`
 when the configured backend doesn't support `delete_pattern`.
 
+## Per-tenant behavior flags hardcoded in settings.py instead of dynamic_preferences
+
+Several `KEPCHUP_*` flags that control per-tenant *business* behavior (not
+infrastructure) live as plain Python constants in each tenant's
+`sportfac/settings/<tenant>.py`, rather than as `dynamic_preferences` entries
+(`backend/dynamic_preferences_registry.py`) editable from the backend admin at
+runtime. Concretely: only a developer can change them, and every change needs
+a code deploy - not viable for anything time-sensitive (e.g. mid-rush, as
+happened 2026-08-22 for Jorat, see below).
+
+- Prompted by `KEPCHUP_ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE`
+  (`sportfac/settings/base.py`, overridden per tenant): controls whether a
+  child can register to more than one course within the same activity
+  (enforced client-side in the wizard's calendar,
+  `assets/js/activities/controllers.js`'s `updateAvailableEvents`). Jorat asked
+  to flip it (`False` → `True`) *during* their registration opening, 2026-08-22,
+  after a course filled in 4 minutes - had to be done as an emergency settings
+  change + deploy, exactly the kind of situation this flag's home (`settings.py`
+  vs. an admin-editable preference) makes unnecessarily risky.
+- Not an isolated case - `KEPCHUP_LIMIT_BY_AGE`/`KEPCHUP_LIMIT_BY_SCHOOL_YEAR`,
+  `KEPCHUP_MAX_REGISTRATIONS`-adjacent flags, and others in
+  `sportfac/settings/base.py` follow the same pattern. `MAX_REGISTRATIONS`
+  itself is the counter-example already done right: it's a
+  `dynamic_preferences` `IntegerPreference`
+  (`backend/dynamic_preferences_registry.py`), editable per tenant from the
+  admin, no deploy needed.
+- Not yet fixed. Migrating a flag means: adding it to
+  `dynamic_preferences_registry.py`, updating every read site to go through
+  `global_preferences_registry.manager()[...]` instead of `settings.KEPCHUP_*`,
+  and deciding a sensible default per existing tenant (since the settings.py
+  values would otherwise silently reset to the new preference's default on
+  migration). Worth doing for `CAN_REGISTER_SAME_ACTIVITY_TWICE` first, given
+  it just caused a real incident.
+
 ## Performance work already done (2026-08, for reference — not debt)
 
 Not tech debt, but context for anyone reading this file wondering what's already
