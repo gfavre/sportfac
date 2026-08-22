@@ -7,6 +7,7 @@ from django.test import RequestFactory
 from django.test import override_settings
 from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
+from dynamic_preferences.registries import global_preferences_registry
 
 from activities.tests.factories import CourseFactory
 from profiles.tests.factories import FamilyUserFactory
@@ -209,6 +210,44 @@ class SummaryViewTests(TestCase):
         qs = response.context_data["registered_list"]
         self.assertEqual(qs.count(), 1)
         self.assertEqual(qs.first(), self.registration)
+
+    def test_instructor_phone_hidden_unless_marked_public(self):
+        # Regression test: phone_public gates instructor phone display on
+        # course_detail.html/activity_detail.html (added 2026-06-09, 459bbeb1) but this
+        # page was missed - it kept showing every instructor's phone unconditionally,
+        # reported by La Tour-de-Peilz (Fanny Molliet, 2026-08-22) since instructors'
+        # mobile numbers are entered here only for internal payroll purposes, not meant
+        # to be visible to parents.
+        instructor = FamilyUserFactory(private_phone="+41211234567", phone_public=False)
+        self.registration.course.instructors.add(instructor)
+
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+
+        # National-formatted rendering of +41211234567 - the raw digits alone would still
+        # not appear even in the buggy version (always rendered with separators), so this
+        # has to check the actual formatted string to mean anything.
+        self.assertNotContains(response, "021 123 45 67")
+
+    def test_instructor_phone_shown_when_marked_public(self):
+        instructor = FamilyUserFactory(private_phone="+41211234567", phone_public=True)
+        self.registration.course.instructors.add(instructor)
+
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+
+        self.assertContains(response, "021 123 45 67")
+
+    def test_fallback_phone_shown_when_instructor_phone_not_public(self):
+        global_preferences_registry.manager()["site__INSTRUCTOR_FALLBACK_PHONE"] = "+41219876543"
+        instructor = FamilyUserFactory(private_phone="+41211234567", phone_public=False)
+        self.registration.course.instructors.add(instructor)
+
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+
+        self.assertNotContains(response, "021 123 45 67")
+        self.assertContains(response, "+41219876543")
 
 
 class WizardConfirmationStepViewRowSpanTests(TestCase):
