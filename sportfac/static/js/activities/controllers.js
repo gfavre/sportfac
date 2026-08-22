@@ -221,36 +221,6 @@ angular.module('sportfacCalendar.controllers', [])
           scope: $scope,
         });
 
-      $scope.overlap = function (event1, event2) {
-        let set1 = new Set(event1.all_dates);
-        let set2 = new Set(event2.all_dates);
-
-        // Check if there are any common dates
-        let commonDates = [...set1].filter(date => set2.has(date));
-        if (commonDates.length > 0) {
-          if (event1.all_day || event2.all_day || !event1.start_time || !event1.end_time ||
-            !event2.start_time || !event2.end_time) {
-            // common dates, and either side lasts all day or has no specific time of day
-            // (e.g. a multi-course event) - overlap is certain
-            return true;
-          }
-          // There are common dates, now check if times overlap
-          // Convert times to comparable format, assuming event1.start_time, etc., are in 'HH:MM' format
-          let startTime1 = event1.start_time.split(':').map(Number);
-          let endTime1 = event1.end_time.split(':').map(Number);
-          let startTime2 = event2.start_time.split(':').map(Number);
-          let endTime2 = event2.end_time.split(':').map(Number);
-
-          // Compare times
-          let start1 = new Date(0, 0, 0, startTime1[0], startTime1[1]);
-          let end1 = new Date(0, 0, 0, endTime1[0], endTime1[1]);
-          let start2 = new Date(0, 0, 0, startTime2[0], startTime2[1]);
-          let end2 = new Date(0, 0, 0, endTime2[0], endTime2[1]);
-          return start1 <= end2 && start2 <= end1;
-        }
-        return false;
-      };
-
       $scope.$watch('registrations.length', function () {
         if (!angular.isDefined($scope.registrations)) {
           return;
@@ -419,27 +389,21 @@ angular.module('sportfacCalendar.controllers', [])
               course.max_birth_date <= $scope.selectedChild.birth_date;
           }
           let registered = registeredCourses.indexOf(course.id) !== -1;
-          let overlapping = $scope.registeredEvents.filter(
-            function (evt) {
-              // A course always "overlaps" with itself (same dates, same times) - without
-              // this filter, a course just unregistered from could still be flagged as
-              // overlapping and colored unavailable (grey) instead of available (blue),
-              // since $scope.registeredEvents is only cleared and rebuilt asynchronously
-              // (updateRegisteredEvents fetches each course over the network) and can
-              // still hold this exact course's stale event when this runs.
-              return evt.course.id !== course.id;
-            }
-          ).map(
-            function (evt) {
-              return $scope.overlap(evt.course, course);
-            }
-          ).reduce(function (overlap1, overlap2) {
-            return overlap1 || overlap2;
-          }, false);
           if (!registered && available) {
             $scope.availableEventsToFetch += 1;
             courseIds.push(course.id);
-            targetByCourseId[course.id] = (activityRegistered || overlapping) ? 'unavailable' : 'available';
+            // A schedule overlap with one of this child's own other registrations used to
+            // also land here as 'unavailable' (grey, non-clickable) - but registering a
+            // child for two courses at the same day/time is explicitly allowed (the parent
+            // just has to manage getting them to both); the warning for that case is
+            // already shown elsewhere, this calendar was never meant to enforce it.
+            // activityRegistered is different: it's the only enforcement anywhere (nothing
+            // server-side backs it) of the real per-tenant
+            // KEPCHUP_ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE setting, so it still
+            // blocks. Reported by Oron 2026-08-22 (Echecs) - a genuinely available course
+            // was greyed out and unclickable for a child solely because of an unrelated
+            // same-time registration to a different activity.
+            targetByCourseId[course.id] = activityRegistered ? 'unavailable' : 'available';
           }
         });
 

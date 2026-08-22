@@ -325,6 +325,23 @@ class RegistrationSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(_("This course is not opened to children of this age"))
         if child.registrations.count() >= global_preferences_registry.manager()["MAX_REGISTRATIONS"]:
             raise serializers.ValidationError(_("Max number of registrations reached."))
+        if not settings.KEPCHUP_ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE:
+            # The wizard's calendar already hides/greys out same-activity courses once a
+            # child holds one, but that's a client-side-only check - nothing enforced this
+            # server-side, so it was the sole thing standing between a family and a second
+            # registration in the same activity for tenants where this is meant to be
+            # forbidden (KEPCHUP_ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE=False).
+            already_in_activity = (
+                child.registrations.exclude(status=Registration.STATUS.canceled)
+                .filter(course__activity=course.activity)
+                .exclude(course=course)
+            )
+            if self.instance:
+                already_in_activity = already_in_activity.exclude(pk=self.instance.pk)
+            if already_in_activity.exists():
+                raise serializers.ValidationError(
+                    _("This child is already registered to another course of the same activity")
+                )
         return data
 
 

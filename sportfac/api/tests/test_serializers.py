@@ -196,3 +196,44 @@ class RegistrationSerializerTest(TenantTestCase):
         with self.assertRaises(ValidationError) as exc:
             serializer.is_valid(raise_exception=True)
         self.assertIn("Nombre maximum de participants atteint.", str(exc.exception))
+
+    @override_settings(KEPCHUP_ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE=False)
+    def test_registration_rejected_for_second_course_of_same_activity_when_setting_disallows(self):
+        # Regression test: the wizard's calendar already greys out/disables a second
+        # course of the same activity client-side once a child holds one, but nothing
+        # enforced this server-side - that client check was the *only* thing standing
+        # between a family and a second registration in the same activity for tenants
+        # where KEPCHUP_ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE=False is meant to
+        # forbid it.
+        with override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False):
+            other_course = CourseFactory(activity=self.course.activity, start_date=date.today())
+        Registration.objects.create(child=self.child, course=other_course)
+
+        data = {"child": self.child.id, "course": self.course.id}
+        serializer = RegistrationSerializer(data=data)
+
+        with self.assertRaises(ValidationError) as exc:
+            serializer.is_valid(raise_exception=True)
+        self.assertIn("already registered to another course of the same activity", str(exc.exception))
+
+    @override_settings(KEPCHUP_ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE=True)
+    def test_registration_accepted_for_second_course_of_same_activity_when_setting_allows(self):
+        with override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False):
+            other_course = CourseFactory(activity=self.course.activity, start_date=date.today())
+        Registration.objects.create(child=self.child, course=other_course)
+
+        data = {"child": self.child.id, "course": self.course.id}
+        serializer = RegistrationSerializer(data=data)
+
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+
+    @override_settings(KEPCHUP_ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE=False)
+    def test_registration_accepted_when_other_registration_in_activity_is_canceled(self):
+        with override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False):
+            other_course = CourseFactory(activity=self.course.activity, start_date=date.today())
+        Registration.objects.create(child=self.child, course=other_course, status=Registration.STATUS.canceled)
+
+        data = {"child": self.child.id, "course": self.course.id}
+        serializer = RegistrationSerializer(data=data)
+
+        self.assertTrue(serializer.is_valid(), serializer.errors)
