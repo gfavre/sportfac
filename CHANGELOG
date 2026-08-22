@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 4.6.2 - 2026-08-22
 ### Added
 - Two management commands to clean up the case-variant duplicate `FamilyUser` accounts described below: `lowercase_family_emails` (`--database`, `--dry-run`) normalizes existing accounts' email casing, reporting any pair that would collide instead of merging them; `merge_family_accounts` (`--database`, `--dry-run`) interactively merges such a colliding pair - suggesting whichever account logged in most recently, reassigning every relation pointing at the other one (children, bills, course-instructor assignments, managed activities, cancelation/validation records, payroll exports, appointments...) onto it, then `soft_delete()`-ing it. Run either via `tenant_command`/`all_tenants_command` to target a specific school-year tenant or sweep every one of them retroactively - each is scoped to one tenant's own business data, since a family's children/registrations live in that year's own schema
 
