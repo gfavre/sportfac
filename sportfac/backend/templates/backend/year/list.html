@@ -19,6 +19,15 @@ $(function () {
 
 
 <a href="{% url 'backend:year-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% translate "New period" %}</a>
+<form id="log-everyone-out" action="{% url 'backend:log-everyone-out' %}" method="post" style="display: inline">
+{% csrf_token %}
+  <button type="submit" class="btn btn-warning"
+          data-toggle="tooltip" data-placement="top"
+          title="{% translate 'Forces a fresh session for everyone but you - useful if some visitors might still be stuck viewing a period that is no longer in production.' %}"
+          onclick="return confirm('{% translate "This will log out every other visitor immediately. Continue?" %}');">
+    <i class="icon-warning"></i> {% translate "Log everyone out" %}
+  </button>
+</form>
 <hr />
 <form id="tenant-change" action="{% url 'backend:year-change' %}" method="post">
 {% csrf_token %}

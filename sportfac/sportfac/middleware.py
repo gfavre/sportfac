@@ -1,9 +1,9 @@
 from django.conf import settings
 from django.http import Http404
 from django.utils import timezone
+from django_tenants.middleware import TenantMainMiddleware
 
 from backend.models import Domain
-from django_tenants.middleware import TenantMainMiddleware
 
 
 class RegistrationOpenedMiddleware:
@@ -25,20 +25,28 @@ class RegistrationOpenedMiddleware:
             request.PHASE = 3
         request.REGISTRATION_START = start
         request.REGISTRATION_END = end
-        response = self.get_response(request)
-
-        return response
+        return self.get_response(request)
 
 
 class VersionMiddleware(TenantMainMiddleware):
     @staticmethod
     def hostname_from_request(request):
-        if settings.VERSION_SESSION_NAME in request.session:
-            return request.session.get(settings.VERSION_SESSION_NAME)
-        else:
-            domain = Domain.objects.filter(is_current=True).first()
-            request.session[settings.VERSION_SESSION_NAME] = domain.domain
-            return domain.domain
+        production_domain = Domain.objects.filter(is_current=True).first().domain
+        pinned_domain = request.session.get(settings.VERSION_SESSION_NAME)
+        # Only kepchup staff previewing another period may stay pinned to a non-production
+        # tenant - everyone else always resolves to the live production one, even if their
+        # session still carries a pin from a previous visit under a since-retired
+        # production period. Without this, a family who last visited during the *previous*
+        # season could keep landing on that now-closed, non-production tenant (with the
+        # staff-only "not production" banner) indefinitely: `log_everyone_out` is meant to
+        # clear that stale pin on every season switch by deleting all sessions, but
+        # silently no-ops in production, where SESSION_ENGINE is cache-backed while it
+        # deletes from the unrelated DB-backed Session model.
+        if pinned_domain and pinned_domain != production_domain and getattr(request.user, "is_kepchup_staff", False):
+            return pinned_domain
+        if pinned_domain != production_domain:
+            request.session[settings.VERSION_SESSION_NAME] = production_domain
+        return production_domain
 
     def __call__(self, request):
         response = None

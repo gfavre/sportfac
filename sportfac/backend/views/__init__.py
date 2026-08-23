@@ -112,6 +112,7 @@ from .waiting_slots_views import WaitingSlotDeleteView  # noqa F401
 from .waiting_slots_views import WaitingSlotTransformView  # noqa F401
 from .year_views import ChangeProductionYearFormView  # noqa F401
 from .year_views import ChangeYearFormView  # noqa F401
+from .year_views import LogEveryoneOutView  # noqa F401
 from .year_views import YearCreateView  # noqa F401
 from .year_views import YearDeleteView  # noqa F401
 from .year_views import YearListView  # noqa F401

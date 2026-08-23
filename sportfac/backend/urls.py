@@ -302,6 +302,7 @@ years_patterns = [
     path("new", view=views.YearCreateView.as_view(), name="year-create"),
     path("change", view=views.ChangeYearFormView.as_view(), name="year-change"),
     path("update", view=views.ChangeProductionYearFormView.as_view(), name="year-update"),
+    path("log-everyone-out", view=views.LogEveryoneOutView.as_view(), name="log-everyone-out"),
 ]
 
 waiting_slots_patterns = [

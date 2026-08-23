@@ -7,7 +7,9 @@ from datetime import datetime
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.conf import settings
+from django.contrib.sessions.backends.cache import KEY_PREFIX as CACHE_SESSION_KEY_PREFIX
 from django.contrib.sessions.models import Session
+from django.core.cache import caches
 from django.db import connection
 from django.db import transaction
 from django.utils import timezone
@@ -158,9 +160,38 @@ def celery_health_check():
 @shared_task
 def log_everyone_out(exceptions=None):
     """
-    Log out all users by deleting all sessions.
-    This is useful when switching tenants or for maintenance tasks.
+    Log out all users by clearing their sessions - either the DB-backed Session model
+    (default engine, used locally/in tests), or the cache-backed store production uses
+    (SESSION_ENGINE = "...backends.cache"), which deleting from Session never touches.
+    Useful when switching tenants or for maintenance tasks.
     """
+    if settings.SESSION_ENGINE in (
+        "django.contrib.sessions.backends.cache",
+        "django.contrib.sessions.backends.cached_db",
+    ):
+        cache_alias = getattr(settings, "SESSION_CACHE_ALIAS", "default")
+        cache = caches[cache_alias]
+        # Same cache key a SessionStore looks itself up by (see
+        # django.contrib.sessions.backends.cache.SessionStore.cache_key) - lets us spare
+        # `exceptions` (e.g. the admin who triggered this) instead of wiping the whole
+        # cache. Falls back to a full clear on any backend that doesn't support `.keys()`
+        # (django-redis, used in production, does).
+        if hasattr(cache, "keys"):
+            excepted = {CACHE_SESSION_KEY_PREFIX + key for key in (exceptions or [])}
+            to_delete = [key for key in cache.keys(f"{CACHE_SESSION_KEY_PREFIX}*") if key not in excepted]
+            if to_delete:
+                cache.delete_many(to_delete)
+            logger.info(
+                "Cleared %d cache-backed session(s) (alias '%s'), sparing %d exception(s).",
+                len(to_delete),
+                cache_alias,
+                len(excepted),
+            )
+        else:
+            cache.clear()
+            logger.info("All cache-backed sessions (alias '%s') have been cleared.", cache_alias)
+        return
+
     queryset = Session.objects.all()
     if exceptions:
         logger.info("Logging out all users except those in exceptions: %s", exceptions)

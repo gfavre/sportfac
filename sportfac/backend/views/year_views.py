@@ -1,19 +1,30 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.db import connection, transaction
+from django.db import connection
+from django.db import transaction
 from django.shortcuts import redirect
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
+from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
-from django.views.generic import DeleteView, FormView, ListView, UpdateView
+from django.views.generic import DeleteView
+from django.views.generic import FormView
+from django.views.generic import ListView
+from django.views.generic import UpdateView
+from django.views.generic import View
 
-from ..forms import YearCreateForm, YearForm, YearSelectForm
-from ..models import Domain, YearTenant
-from ..tasks import create_tenant, log_everyone_out
-from .mixins import BackendMixin, KepchupStaffMixin
+from ..forms import YearCreateForm
+from ..forms import YearForm
+from ..forms import YearSelectForm
+from ..models import Domain
+from ..models import YearTenant
+from ..tasks import create_tenant
+from ..tasks import log_everyone_out
+from .mixins import BackendMixin
+from .mixins import KepchupStaffMixin
 
 
 class ChangeYearFormView(SuccessMessageMixin, KepchupStaffMixin, FormView):
@@ -95,6 +106,19 @@ class ChangeProductionYearFormView(SuccessMessageMixin, BackendMixin, FormView):
         else:
             message = _("The period has been changed.")
         return mark_safe(message)
+
+
+class LogEveryoneOutView(BackendMixin, View):
+    """Immediately clears everyone else's session (sparing the caller's own), so anyone
+    stuck on a stale tenant pin - e.g. a visitor whose session predates the last
+    production switch - is forced to reload and get resolved to the current production
+    period. Independent of switching periods: for catching up on sessions that went stale
+    before that self-healing was in place."""
+
+    def post(self, request, *args, **kwargs):
+        log_everyone_out.delay([request.session.session_key])
+        messages.add_message(request, messages.SUCCESS, _("Everyone has been logged out (except you)."))
+        return redirect("backend:year-list")
 
 
 class YearListView(BackendMixin, ListView):

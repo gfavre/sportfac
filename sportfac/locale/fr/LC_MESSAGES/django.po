@@ -4753,6 +4753,23 @@ msgstr "Liste des périodes"
 msgid "New period"
 msgstr "Nouvelle période"
 
+#: backend/templates/backend/year/list.html:26
+msgid ""
+"Forces a fresh session for everyone but you - useful if some visitors might "
+"still be stuck viewing a period that is no longer in production."
+msgstr ""
+"Force une nouvelle session pour tout le monde sauf vous - utile si "
+"certains visiteurs sont peut-être encore bloqués sur une période qui n'est "
+"plus en production."
+
+#: backend/templates/backend/year/list.html:27
+msgid "This will log out every other visitor immediately. Continue?"
+msgstr "Ceci va déconnecter immédiatement tous les autres visiteurs. Continuer ?"
+
+#: backend/templates/backend/year/list.html:28
+msgid "Log everyone out"
+msgstr "Déconnecter tout le monde"
+
 #: backend/templates/backend/year/list.html:38
 msgid "In production"
 msgstr "En production"
@@ -5196,6 +5213,10 @@ msgstr ""
 #: backend/views/year_views.py:96
 msgid "The period has been changed."
 msgstr "La période en production a été changée."
+
+#: backend/views/year_views.py:110
+msgid "Everyone has been logged out (except you)."
+msgstr "Tout le monde a été déconnecté (sauf vous)."
 
 #: backend/views/year_views.py:109
 msgid "Period has been updated."

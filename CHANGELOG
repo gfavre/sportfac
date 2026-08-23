@@ -5,8 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## 4.6.5 - 2026-08-23
+### Added
+- Backend > Manage periods: a "Log everyone out" button, independent of switching periods, to force everyone but the clicking admin to reload and get resolved onto the current production tenant right away - for catching up on visitors whose sessions went stale before the self-healing fix below existed, without waiting for their session to expire on its own
+
 ### Fixed
+- **Security/data-integrity**: a visitor's session could stay pinned to a since-retired, non-production tenant indefinitely, showing them the staff-only "not production" banner and letting them browse/register into a closed period instead of the current one - with no admin action involved on their part. `VersionMiddleware.hostname_from_request` (`sportfac/middleware.py`) trusted whatever tenant was cached in `request.session` forever, including for anonymous/regular visitors: on their first-ever visit it correctly pinned them to whichever tenant was production *at that time*, but never re-checked that pin against reality afterwards. Once the real production tenant changed (a new school year opening), anyone whose session predated the switch (e.g. returning from a bookmark or a stale Google result) silently kept seeing the old, closed tenant. The safety net meant to prevent this - `log_everyone_out`, called on every production switch to force a fresh session for everyone - has been silently doing nothing in production: it deletes from the DB-backed `django.contrib.sessions.models.Session` model, while production's `SESSION_ENGINE` is cache-backed (Redis), so no real session was ever actually cleared. Only `kepchup_staff` explicitly previewing another period may now stay pinned to a non-production tenant; every other visitor is always resolved to the live production tenant on each request, self-healing any stale pin regardless of whether `log_everyone_out` runs. Reported 2026-08-22: an external parent found a non-production, red-bannered 2025-2026 page via a Google result. `log_everyone_out` (`backend/tasks.py`) now also actually clears production's cache-backed session store (it now checks `SESSION_ENGINE` and clears matching keys in the `SESSION_CACHE_ALIAS` cache instead of only deleting from the DB-backed `Session` model), still sparing the `exceptions` session keys (e.g. the admin who triggered the switch) rather than logging everyone including them out - belt-and-suspenders alongside the middleware self-heal above, not required for it to work
 - Registration wizard's weekly calendar: no course ever appeared on a Sunday. `Course.getStartDate()`/`getEndDate()` (`assets/js/activities/services.js`) project each course's fixed weekday onto the current real-world week using `today.getDate() - today.getDay() + 1`, which only lands on this week's Monday for `getDay()` 1-6 (Mon-Sat) - on a Sunday (`getDay() === 0`) it lands on *next* Monday instead, so every course rendered one week ahead of the calendar's visible current-week view and the grid looked empty. `controllers.js` already special-cased this same Monday/Sunday edge case for the calendar's own `initialDate`; `services.js` now uses the same corrected formula
 
 ### Changed
@@ -14,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 4.6.4 - 2026-08-23
 ### Fixed
-- Reverted: the "taken by another family member" grey hint had been made to disappear whenever the course was still open/eligible for the viewed child - this made it inconsistent (visible for some courses a sibling was registered to, silently absent for others) and is superseded by the unconditional, visually distinct fix in [Unreleased] above
+- Reverted: the "taken by another family member" grey hint had been made to disappear whenever the course was still open/eligible for the viewed child - this made it inconsistent (visible for some courses a sibling was registered to, silently absent for others) and is superseded by the unconditional, visually distinct fix in 4.6.5 above
 
 ## 4.6.3 - 2026-08-22
 ### Fixed
