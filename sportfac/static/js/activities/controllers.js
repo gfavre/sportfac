@@ -316,30 +316,14 @@ angular.module('sportfacCalendar.controllers', [])
         // several of the user's other children is fetched once and dispatched to each.
         CoursesService.getMany($scope.urls.course, courseIds).then(function (courses) {
           angular.forEach(courses, function (course) {
-            // A sibling's registration - even just "waiting" (added to the wizard but not
-            // yet confirmed/paid - not a real seat commitment) - used to always grey this
-            // course out for the selected child too, in the exact same day/time slot as
-            // their own genuinely available, clickable event. FullCalendar doesn't cleanly
-            // separate two same-time events into independent click targets, so the grey
-            // "taken by a sibling" block would visually/interactively swallow the selected
-            // child's own registerable slot, even though nothing actually stops two
-            // siblings from sharing a course - this hint is only meant to flag a scheduling
-            // overlap for the parent's own logistics, never to block anything. Reported by
-            // Oron 2026-08-22 (Echecs: one child registered, the other silently couldn't).
-            // If the selected child could still register (course open, still eligible, not
-            // already registered themselves), skip the "taken" overlay entirely and let
-            // their own available event render unobstructed.
-            var selectedChildAlreadyRegistered = $scope.getRegistrations($scope.selectedChild).some(
-              function (r) {
-                return r.course === course.id;
-              }
-            );
-            var stillOpenForSelectedChild = !selectedChildAlreadyRegistered &&
-              course.accepts_registrations &&
-              $scope.selectedChild.canRegister(course, $scope.limitbyschoolyear);
-            if (stillOpenForSelectedChild) {
-              return;
-            }
+            // Always shown, unconditionally, whenever a sibling has a registration on this
+            // course - a pure informational hint for the parent's own logistics (never a
+            // block). This is intentionally independent from updateAvailableEvents: the
+            // same course can and should carry both this grey "taken by a sibling" event
+            // and, separately, its own blue "available"/green "registered" event for the
+            // selected child at the same time (slotEventOverlap: false lays them out side
+            // by side, each independently clickable) - one is not a substitute for the
+            // other, and neither should suppress the other.
             angular.forEach(childrenByCourseId[course.id] || [], function (child) {
               var events = course.toEvents("unavailable");
               angular.forEach(events, function (event) {
