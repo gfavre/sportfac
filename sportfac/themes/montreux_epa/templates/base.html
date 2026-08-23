@@ -39,7 +39,7 @@
     <link href="{{ STATIC_URL }}css/montreux.css?v={{ VERSION }}" rel="stylesheet" media="all" />
 
     {% if not request.tenant.is_production %}
-    <link href="{{ STATIC_URL }}css/not_production.css" rel="stylesheet" media="all" />
+    <link href="{{ STATIC_URL }}css/not_production.css?v={{ VERSION }}" rel="stylesheet" media="all" />
     {% endif %}
     {% block extra_css %}{% endblock %}
     {% render_block "css" %}

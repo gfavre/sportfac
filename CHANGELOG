@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 4.6.6 - 2026-08-23
+### Fixed
+- `style.css`/`not_production.css` had no cache-busting: `{% static %}` resolves to a fixed URL (`STATICFILES_STORAGE` is plain `StaticFilesStorage`, no content hashing), and unlike `app.min.js` (already `?v={{ VERSION }}`) these two links never got a version query string, so a browser's ordinary cache kept serving the CSS from *before* a deploy until a hard reload bypassed it. Reported after deploying 4.6.5 to Oron: the new sibling hatched-green style didn't apply on a normal reload - FullCalendar's own default (pale blue) rendered instead, since the `.fc-event.sibling` rule simply didn't exist yet in the cached stylesheet. `montreux_epa`/`montreux_passvac` already carried this exact fix for `style.css` from an earlier incident, but it was never applied anywhere else. Added `?v={{ VERSION }}` to both links in the default `templates/base.html` and in all 14 theme overrides (`themes/*/templates/base.html`) - each theme keeps its own copy of this file. Per-theme CSS (`coppet.css`, `oron.css`, etc.) has the same unversioned-URL issue but wasn't touched here; worth a separate pass since it changes far less often
+
 ## 4.6.5 - 2026-08-23
 ### Added
 - Backend > Manage periods: a "Log everyone out" button, independent of switching periods, to force everyone but the clicking admin to reload and get resolved onto the current production tenant right away - for catching up on visitors whose sessions went stale before the self-healing fix below existed, without waiting for their session to expire on its own
