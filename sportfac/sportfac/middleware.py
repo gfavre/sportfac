@@ -42,7 +42,23 @@ class VersionMiddleware(TenantMainMiddleware):
         # clear that stale pin on every season switch by deleting all sessions, but
         # silently no-ops in production, where SESSION_ENGINE is cache-backed while it
         # deletes from the unrelated DB-backed Session model.
-        if pinned_domain and pinned_domain != production_domain and getattr(request.user, "is_kepchup_staff", False):
+        #
+        # Deliberately NOT using FamilyUser.is_kepchup_staff here: its is_instructor check
+        # queries `activities.CoursesInstructors`, a tenant-scoped table - but this method
+        # IS what determines which tenant's schema to switch to, so it runs before that
+        # switch happens. Querying a tenant-scoped table here hits whatever schema the DB
+        # connection was last left on (`public` on a fresh one), crashing with
+        # "relation ... does not exist" - hit in production for any logged-in, non-staff
+        # visitor (2026-08-23, e.g. a plain favicon.ico request carrying their session
+        # cookie). is_manager/is_restricted_manager/is_superuser are plain fields on
+        # FamilyUser (profiles is a SHARED_APPS model, its table exists regardless of the
+        # current schema) - safe here. An instructor-only account (no other role) will no
+        # longer stay pinned to a preview period through this middleware; ChangeYearFormView
+        # itself is unaffected, since normal views already run with the schema resolved.
+        is_privileged = request.user.is_authenticated and (
+            request.user.is_manager or request.user.is_restricted_manager or request.user.is_superuser
+        )
+        if pinned_domain and pinned_domain != production_domain and is_privileged:
             return pinned_domain
         if pinned_domain != production_domain:
             request.session[settings.VERSION_SESSION_NAME] = production_domain
