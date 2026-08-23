@@ -261,6 +261,56 @@ happened 2026-08-22 for Jorat, see below).
   migration). Worth doing for `CAN_REGISTER_SAME_ACTIVITY_TWICE` first, given
   it just caused a real incident.
 
+## Static assets have no cache-busting, and `base.html` is duplicated 15×
+
+Found 2026-08-23: after deploying 4.6.5 to Oron, a normal reload showed
+FullCalendar's own default event color instead of the new hatched-green
+"sibling" style — the new JS had loaded (its `<script>` tag is
+`app.min.js?v={{ VERSION }}`, so a version bump forces a fresh fetch) but the
+browser served its *cached* `style.css`, which has no such query string and
+therefore never changes URL between deploys (`STATICFILES_STORAGE` is plain
+`django.contrib.staticfiles.storage.StaticFilesStorage` — no content hashing).
+Fixed for `style.css`/`not_production.css` in 4.6.6 by adding `?v={{ VERSION
+}}` everywhere, but two structural issues remain:
+
+- **No systemic fix, only this one file.** `montreux_epa`/`montreux_passvac`
+  already had this exact `?v={{ VERSION }}` patch on `style.css` from an
+  earlier, unrecorded incident — it was never propagated to the other 13
+  themes (which is exactly how Oron got bitten this time). Per-theme CSS
+  (`coppet.css`, `oron.css`, `vevey.css`, ...) has the identical unversioned-URL
+  problem and hasn't been touched at all. Every future static asset added the
+  same way will have the same bug unless someone remembers to version it by
+  hand, every time, in every theme.
+- **`themes/*/templates/base.html` (14 files) and `templates/base.html` are
+  full copies, not `{% extends %}` + block overrides.** Any fix to the shared
+  layout (this cache-busting fix included) has to be hand-applied to all 15
+  files. Easy to miss one (see above) and easy for the copies to drift apart
+  over time regardless.
+
+Two independent, non-exclusive fixes discussed 2026-08-23, neither started:
+
+1. **Switch to `ManifestStaticFilesStorage`** (or equivalent hashed storage):
+   Django content-hashes every static file's URL automatically on
+   `collectstatic`, solving this for *every* asset, forever, with no
+   per-template query string to remember. Real fix, but bigger and riskier to
+   land: several of these templates use `{{ STATIC_URL }}css/style.css` (raw
+   string concatenation) rather than `{% static %}` — hashed storage only
+   rewrites URLs generated *through* `{% static %}`/`static()`, so those call
+   sites would need converting too, or they'd silently keep serving
+   unhashed/stale URLs. `ManifestStaticFilesStorage` is also strict by default
+   and can fail `collectstatic` outright on any broken asset reference (e.g. a
+   `url(...)` in a CSS file pointing at a missing file) — needs a trial
+   `collectstatic` run to find those before switching in production.
+2. **Extract the shared `<head>` static-asset block** (or more of `base.html`)
+   into one `{% include %}`d partial reused by all 15 `base.html` variants, so
+   a future fix (cache-busting or anything else) is a one-file change instead
+   of 15. Smaller, lower-risk, doesn't depend on (1) and could land first.
+
+No regression test currently guards against a theme missing the `?v=`
+query string — worth adding one (independent of which fix above is chosen)
+so a future drift is caught before deploy rather than after, the way this one
+was.
+
 ## Performance work already done (2026-08, for reference — not debt)
 
 Not tech debt, but context for anyone reading this file wondering what's already
