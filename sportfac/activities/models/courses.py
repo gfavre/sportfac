@@ -568,6 +568,16 @@ class Course(TimeStampedModel):
         else:
             self.max_birth_date = None
         self.update_nb_participants()  # useful if max participants number has been changed
+        # Self-heals on every save, the same way nb_participants does just above - the
+        # WaitingSlot post_save/post_delete signal (activities/signals.py) is still the
+        # primary way this stays in sync promptly when someone joins/leaves the waiting
+        # list (nothing else saves the Course when that happens), but relying on it alone
+        # left has_waiting_list permanently stuck if it ever drifted once (a race, a
+        # historical pre-signal state, a direct DB fix...) - reported for Oron's BOXE.2:
+        # has_waiting_list=True, 0 participants, 0 actual waiting slots, silently blocking
+        # new registrations via accepts_registrations with nothing to ever correct it.
+        if self.pk:
+            self.has_waiting_list = self.waiting_slots.exists()
         super().save(*args, **kwargs)
 
     def send_places_available_reminder(self):
