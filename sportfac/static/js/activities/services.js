@@ -165,6 +165,12 @@ angular.module('sportfacCalendar.services', []).factory('Registration', function
     const d = date.getDate();
     const m = date.getMonth();
     const y = date.getFullYear();
+    // Date-of-month of the Monday starting the current week. `d - date.getDay() + 1`
+    // only works Monday-Saturday (getDay() 1-6); on a Sunday (getDay() 0) it lands on
+    // *next* Monday instead of the one that started this week, since weeks here are
+    // Monday-first but getDay() is Sunday-first - pushing every course a week into the
+    // future on FullCalendar's current-week view whenever "today" is a Sunday.
+    const mondayOfWeek = d - date.getDay() + (date.getDay() === 0 ? -6 : 1);
 
     const Course = function (data) {
       angular.extend(this, {
@@ -178,17 +184,17 @@ angular.module('sportfacCalendar.services', []).factory('Registration', function
           const course = this;
           const dayOffset = this.getOffsetFromMonday(this.day); // Offset from Monday
           if (this.course_type === 'course' && this.start_time) {
-            return new Date(y, m, d + dayOffset - date.getDay() + 1,
+            return new Date(y, m, mondayOfWeek + dayOffset,
               course.start_time.split(':')[0],
               course.start_time.split(':')[1]);
           } else {
-            return new Date(y, m, d + dayOffset - date.getDay() + 1);
+            return new Date(y, m, mondayOfWeek + dayOffset);
           }
         },
         getEndDate: function () {
           const dayOffset = this.getOffsetFromMonday(this.day); // Offset from Monday
           if (this.course_type === 'course' && this.end_time) {
-            return new Date(y, m, d + dayOffset - date.getDay() + 1,
+            return new Date(y, m, mondayOfWeek + dayOffset,
               this.end_time.split(':')[0],
               this.end_time.split(':')[1]);
           } else {
@@ -231,7 +237,7 @@ angular.module('sportfacCalendar.services', []).factory('Registration', function
               end: end,
               allDay: false,
               className: className,
-              clickable: className !== 'unavailable',
+              clickable: className !== 'unavailable' && className !== 'sibling',
               course: course,
               activityId: course.activity.id
             };

@@ -210,6 +210,26 @@ filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 .available {color: $available;}
 .unavailable {color: $unavailable;}
 .registered {color: $registered;}
+.sibling {color: darken($registered, 15%);}
+
+.legend-swatch {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  vertical-align: middle;
+  margin-right: 2px;
+}
+.legend-swatch-sibling {
+  background-color: white;
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba($registered, .3),
+    rgba($registered, .3) 2px,
+    transparent 2px,
+    transparent 6px
+  );
+  border: 1px dashed $registered;
+}
 
 
 .fc-event{
@@ -224,6 +244,19 @@ filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
   border-color: $unavailable;
   cursor: not-allowed;
 
+}
+.fc-event.sibling {
+  background-color: white;
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba($registered, .3),
+    rgba($registered, .3) 2px,
+    transparent 2px,
+    transparent 6px
+  );
+  color: darken($registered, 15%);
+  border: 1px dashed $registered;
+  cursor: default;
 }
 .fc-event.registered {
   background-color: $registered;

@@ -5,9 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Fixed
+- Registration wizard's weekly calendar: no course ever appeared on a Sunday. `Course.getStartDate()`/`getEndDate()` (`assets/js/activities/services.js`) project each course's fixed weekday onto the current real-world week using `today.getDate() - today.getDay() + 1`, which only lands on this week's Monday for `getDay()` 1-6 (Mon-Sat) - on a Sunday (`getDay() === 0`) it lands on *next* Monday instead, so every course rendered one week ahead of the calendar's visible current-week view and the grid looked empty. `controllers.js` already special-cased this same Monday/Sunday edge case for the calendar's own `initialDate`; `services.js` now uses the same corrected formula
+
+### Changed
+- Registration wizard's weekly calendar: a course another sibling is registered to (the "taken by another family member" hint) now always renders, unconditionally, whenever that registration exists - it's purely informational (helps a parent spot that two children would need to be in two different places at the same time) and never blocks or hides the currently-viewed child's own available/registered event on that same course, which renders independently alongside it. It also now has its own distinct style - white with a pale green hatched border (`sibling` class/`.fc-event.sibling`), color echoing the "registered" green since it does represent a registration - instead of sharing the solid grey `unavailable` look with the unrelated "already registered to this activity, can't register twice" (`KEPCHUP_ACTIVITIES_CAN_REGISTER_SAME_ACTIVITY_TWICE`) state, so the two meanings are no longer visually indistinguishable. Its hover tooltip now also names which sibling it belongs to (e.g. "Athlétisme (Romain)"), needed since the event itself carries no name
+
 ## 4.6.4 - 2026-08-23
 ### Fixed
-- Reverted part of 4.6.3's calendar fix below: it made a sibling's registration stop showing as a grey "taken by another family member" hint whenever the course was still open/eligible for the child currently being viewed. That's wrong - the grey hint is unconditional, always shown whenever any sibling has a registration on a course, full stop; it was never meant to depend on whether the viewed child could also register. The two are independent facts about the same course and both must render when both apply (grey from a sibling's registration, plus separately blue/green for the viewed child's own available/registered status) - one is never a reason to hide the other. `updateOthersEvents` no longer looks at the viewed child's own eligibility at all before showing that hint
+- Reverted: the "taken by another family member" grey hint had been made to disappear whenever the course was still open/eligible for the viewed child - this made it inconsistent (visible for some courses a sibling was registered to, silently absent for others) and is superseded by the unconditional, visually distinct fix in [Unreleased] above
 
 ## 4.6.3 - 2026-08-22
 ### Fixed

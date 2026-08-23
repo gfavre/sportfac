@@ -316,16 +316,14 @@ angular.module('sportfacCalendar.controllers', [])
         // several of the user's other children is fetched once and dispatched to each.
         CoursesService.getMany($scope.urls.course, courseIds).then(function (courses) {
           angular.forEach(courses, function (course) {
-            // Always shown, unconditionally, whenever a sibling has a registration on this
-            // course - a pure informational hint for the parent's own logistics (never a
-            // block). This is intentionally independent from updateAvailableEvents: the
-            // same course can and should carry both this grey "taken by a sibling" event
-            // and, separately, its own blue "available"/green "registered" event for the
-            // selected child at the same time (slotEventOverlap: false lays them out side
-            // by side, each independently clickable) - one is not a substitute for the
-            // other, and neither should suppress the other.
+            // Purely informational: shown unconditionally whenever a sibling has a
+            // registration on this course, regardless of whether it's still open for the
+            // selected child. It never suppresses or blocks the selected child's own
+            // available/registered event on that same course (slotEventOverlap: false lays
+            // same-time events side by side) - it only helps the parent spot a scheduling
+            // conflict between children.
             angular.forEach(childrenByCourseId[course.id] || [], function (child) {
-              var events = course.toEvents("unavailable");
+              var events = course.toEvents("sibling");
               angular.forEach(events, function (event) {
                 event.registeredChild = child;
               })
@@ -490,9 +488,13 @@ angular.module('sportfacCalendar.controllers', [])
           eventMouseover: $scope.eventMouseEnter,
           eventMouseout: $scope.eventMouseLeave,
           eventRender: function (event, element) {
+            var titleText = event.title;
+            if (event.className[0] === 'sibling' && event.registeredChild) {
+              titleText += ' (' + event.registeredChild.first_name + ')';
+            }
             $(element).tooltip({
               html: true,
-              title: event.title + '<br>' + $filter('date')(event.course.start_date, 'dd.MM.yyyy') + '&nbsp;-&nbsp;' + $filter('date')(event.course.end_date, 'dd.MM.yyyy'),
+              title: titleText + '<br>' + $filter('date')(event.course.start_date, 'dd.MM.yyyy') + '&nbsp;-&nbsp;' + $filter('date')(event.course.end_date, 'dd.MM.yyyy'),
             });
           },
           slotEventOverlap: false,
