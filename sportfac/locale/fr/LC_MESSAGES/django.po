@@ -6488,6 +6488,110 @@ msgstr "Afficher la navigation"
 msgid "Manage periods"
 msgstr "Gestion des périodes"
 
+#: templates/navbar.html:141
+msgid "Server health"
+msgstr "État du serveur"
+
+#: backend/templates/backend/health.html:11
+msgid "Overall status"
+msgstr "État général"
+
+#: backend/templates/backend/health.html:20
+msgid "Component"
+msgstr "Composant"
+
+#: backend/templates/backend/health.html:22
+msgid "Detail"
+msgstr "Détail"
+
+#: backend/templates/backend/health.html:48
+msgid "Public status endpoint (ok/warning/critical only, no raw numbers)"
+msgstr "Point de terminaison public (ok/warning/critical uniquement, pas de chiffre brut)"
+
+#: backend/views/health_views.py:13
+msgid "Database"
+msgstr "Base de données"
+
+#: backend/views/health_views.py:14
+msgid "Cache"
+msgstr "Cache"
+
+#: backend/views/health_views.py:15
+msgid "Message broker"
+msgstr "File de messages (broker)"
+
+#: backend/views/health_views.py:16
+msgid "Disk"
+msgstr "Disque"
+
+#: backend/views/health_views.py:17
+msgid "Memory"
+msgstr "Mémoire"
+
+#: backend/views/health_views.py:18
+msgid "Load"
+msgstr "Charge"
+
+#: backend/views/health_views.py:22
+msgid "OK"
+msgstr "OK"
+
+#: backend/views/health_views.py:23
+msgid "Warning"
+msgstr "Avertissement"
+
+#: backend/views/health_views.py:24
+msgid "Critical"
+msgstr "Critique"
+
+#: backend/views/health_views.py:30
+msgid "Free space"
+msgstr "Espace libre"
+
+#: backend/views/health_views.py:31
+msgid "Free (GB)"
+msgstr "Libre (Go)"
+
+#: backend/views/health_views.py:32
+msgid "Total (GB)"
+msgstr "Total (Go)"
+
+#: backend/views/health_views.py:33
+msgid "Available (MB)"
+msgstr "Disponible (Mo)"
+
+#: backend/views/health_views.py:34
+msgid "Total (MB)"
+msgstr "Total (Mo)"
+
+#: backend/views/health_views.py:35
+msgid "Queue name"
+msgstr "Nom de la file"
+
+#: backend/views/health_views.py:36
+msgid "Queue length"
+msgstr "Longueur de la file"
+
+#: backend/views/health_views.py:37
+msgid "Queue length error"
+msgstr "Erreur de longueur de file"
+
+#: backend/views/health_views.py:38
+msgid "Load (1 min)"
+msgstr "Charge (1 min)"
+
+#: backend/views/health_views.py:39
+msgid "Load (5 min)"
+msgstr "Charge (5 min)"
+
+#: backend/views/health_views.py:40
+msgid "Load (15 min)"
+msgstr "Charge (15 min)"
+
+#: backend/views/health_views.py:41
+msgid "CPU count"
+msgstr "Nombre de CPU"
+
 #: templates/navbar.html:97 themes/latourdepeilz/templates/navbar.html:87
 #: themes/montreux_ski/templates/navbar.html:108
 msgid "My family"

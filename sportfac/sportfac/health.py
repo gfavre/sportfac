@@ -30,6 +30,11 @@ MEMORY_WARNING_FREE_PERCENT = 15
 MEMORY_CRITICAL_FREE_PERCENT = 5
 LOAD_WARNING_RATIO = 1.0  # load average (1 min) per CPU core
 LOAD_CRITICAL_RATIO = 2.0
+# The Celery worker here runs at concurrency=1 (see registrations/tasks.py comments on
+# why) - even a modest backlog means real delay, so these are deliberately conservative
+# compared to a typical multi-worker setup.
+QUEUE_WARNING_LENGTH = 20
+QUEUE_CRITICAL_LENGTH = 100
 
 
 def _check_database():
@@ -58,9 +63,32 @@ def _check_broker():
         import redis
 
         redis.from_url(broker_url, socket_connect_timeout=2, socket_timeout=2).ping()
-        return OK, {}
     except Exception as exc:  # noqa: BLE001
         return CRITICAL, {"error": str(exc)}
+
+    detail = {}
+    try:
+        # sportfac.celery.app is already configured with this tenant's own
+        # broker_url/key_prefix (see sportfac/celery.py) - channel._size() is the same
+        # thing kombu's own queue_declare(passive=True) reports as message_count,
+        # called directly to avoid its passive-declare erroring on a queue nothing has
+        # bound yet (shouldn't happen with a running worker, but a health check
+        # shouldn't assume that either).
+        from sportfac.celery import app as celery_app
+
+        queue_name = celery_app.conf.task_default_queue
+        with celery_app.connection_or_acquire() as conn:
+            queue_length = conn.default_channel._size(queue_name)
+        detail = {"queue": queue_name, "queue_length": queue_length}
+    except Exception as exc:  # noqa: BLE001
+        detail = {"queue_length_error": str(exc)}
+
+    queue_length = detail.get("queue_length", 0)
+    if queue_length >= QUEUE_CRITICAL_LENGTH:
+        return CRITICAL, detail
+    if queue_length >= QUEUE_WARNING_LENGTH:
+        return WARNING, detail
+    return OK, detail
 
 
 def _check_disk():

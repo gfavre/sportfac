@@ -11,7 +11,7 @@
   {% translate "Overall status" %} :
   <span class="label
     {% if overall == 'ok' %}label-success{% elif overall == 'warning' %}label-warning{% else %}label-important{% endif %}">
-    {{ overall }}
+    {{ overall_label }}
   </span>
 </p>
 
@@ -24,19 +24,19 @@
     </tr>
   </thead>
   <tbody>
-    {% for name, result in results.items %}
+    {% for check in results %}
     <tr>
-      <td>{{ name }}</td>
+      <td>{{ check.label }}</td>
       <td>
         <span class="label
-          {% if result.level == 'ok' %}label-success{% elif result.level == 'warning' %}label-warning{% else %}label-important{% endif %}">
-          {{ result.level }}
+          {% if check.level == 'ok' %}label-success{% elif check.level == 'warning' %}label-warning{% else %}label-important{% endif %}">
+          {{ check.level_label }}
         </span>
       </td>
       <td>
         <ul class="list-unstyled" style="margin-bottom: 0">
-          {% for key, value in result.detail.items %}
-          <li><strong>{{ key }}</strong>: {{ value }}</li>
+          {% for item in check.detail %}
+          <li><strong>{{ item.label }}</strong>: {{ item.value }}</li>
           {% endfor %}
         </ul>
       </td>
