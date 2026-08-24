@@ -71,7 +71,12 @@ def main():
             celery_bin = shlex.split(command)[0]
 
             for sub in ("active", "reserved", "stats"):
-                subprocess.run([celery_bin, "-A", "sportfac", "inspect", sub], cwd=directory, env=env)
+                # celery's default inspect timeout is 1s - too tight in practice, "stats"
+                # especially (it gathers more than active/reserved) can miss it even when
+                # the worker is healthy and responds fine to a longer wait.
+                subprocess.run(
+                    [celery_bin, "-A", "sportfac", "inspect", sub, "--timeout", "10"], cwd=directory, env=env
+                )
 
 
 if __name__ == "__main__":
