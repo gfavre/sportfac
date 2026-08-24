@@ -72,7 +72,13 @@
 <p class="text-center hidden-print" style="margin-bottom: 2em;">
       <a href="{% url 'wizard:entry_point' %}" class="btn btn-large btn-primary"><i
           class="icon-calendar"></i> {% translate "Register new activities" %}</a>
-      {% include "pdf-download-button.html" with pdf_url=bill.get_pdf_url bill=bill inline=True %}
+      {% if bill.pdf %}
+        {# Only offer the button once the PDF already exists - this page is reached by every
+           family right after a registration rush, all at once; letting the button itself
+           trigger generation here (even rate-limited) is exactly the burst we don't want to
+           invite. The confirmation email generates it shortly after anyway. #}
+        {% include "pdf-download-button.html" with pdf_url=bill.get_pdf_url bill=bill inline=True %}
+      {% endif %}
     </p>{% endif %}
 
 {% endblock wizard_content %}

@@ -318,8 +318,13 @@ def cancel_expired_registrations():
             course.send_places_available_reminder()
 
 
-@shared_task
+@shared_task(rate_limit="12/m")
 def generate_invoice_pdf(bill_id):
+    # Same Playwright cost, same shared single-concurrency worker as send_bill_pdf_email
+    # above - without the same rate_limit, a burst of "Download PDF" clicks (e.g. right
+    # after a registration rush, where everyone lands on the payment page at once) would
+    # queue ahead of it unthrottled and delay confirmation emails for everyone, not just
+    # whoever clicked.
     bill = Bill.objects.get(pk=bill_id)
     bill.generate_pdf()
 
