@@ -6592,6 +6592,31 @@ msgstr "Charge (15 min)"
 msgid "CPU count"
 msgstr "Nombre de CPU"
 
+#: backend/views/health_views.py:57
+msgid ""
+"Load average (1/5/15 min): how many processes wanted a CPU core, averaged "
+"over that window. A value up to the CPU count means every core is busy but "
+"nothing is queueing yet - still healthy. Only past the CPU count do "
+"processes actually wait."
+msgstr ""
+"Charge moyenne (1/5/15 min) : combien de processus ont demandé un cœur "
+"CPU, en moyenne sur cette fenêtre. Une valeur jusqu'au nombre de cœurs "
+"signifie que chaque cœur est occupé mais que rien n'attend encore - c'est "
+"sain. Ce n'est qu'au-delà du nombre de cœurs que des processus attendent "
+"réellement."
+
+#: backend/views/health_views.py:62
+msgid ""
+"Available memory: what the system could hand out right now, including "
+"memory held by cache/buffers that the kernel would reclaim if something "
+"needed it - not just literally-unused RAM, which is usually a much smaller "
+"and misleading number."
+msgstr ""
+"Mémoire disponible : ce que le système pourrait fournir immédiatement, y "
+"compris la mémoire occupée par le cache/les buffers que le noyau "
+"libérerait au besoin - pas seulement la RAM littéralement inutilisée, un "
+"chiffre bien plus petit et trompeur."
+
 #: templates/navbar.html:97 themes/latourdepeilz/templates/navbar.html:87
 #: themes/montreux_ski/templates/navbar.html:108
 msgid "My family"

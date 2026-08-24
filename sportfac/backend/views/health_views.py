@@ -42,6 +42,42 @@ DETAIL_LABELS = {
     "cpu_count": _("CPU count"),
 }
 
+# Unlike free_gb/total_gb/available_mb/total_mb (whose label already spells out the
+# unit), free_percent's label ("Free space") doesn't - "69.3" alone reads as a mystery
+# number rather than a percentage.
+DETAIL_UNITS = {"free_percent": "%"}
+
+# Keys large enough to benefit from a thousands separator (available_mb/total_mb in
+# particular: RAM in MB on any real box is a 5-6 digit number).
+DETAIL_THOUSANDS_KEYS = {"available_mb", "total_mb", "free_gb", "total_gb", "queue_length"}
+
+# Short, plain-language explanations for the two checks people most often misread at a
+# glance - shown as a note under that row rather than crammed into a label.
+CHECK_EXPLANATIONS = {
+    "load": _(
+        "Load average (1/5/15 min): how many processes wanted a CPU core, averaged over "
+        "that window. A value up to the CPU count means every core is busy but nothing is "
+        "queueing yet - still healthy. Only past the CPU count do processes actually wait."
+    ),
+    "memory": _(
+        "Available memory: what the system could hand out right now, including memory "
+        "held by cache/buffers that the kernel would reclaim if something needed it - not "
+        "just literally-unused RAM, which is usually a much smaller and misleading number."
+    ),
+}
+
+
+def _swiss_number(value):
+    """1000 -> "1'000", 460.4 -> "460.4" - Swiss-style thousands separator, keeping a
+    float's existing precision (health.py already rounds free_gb/total_gb to 1 decimal;
+    formatting those as integers would silently drop it). Falls back to the plain value
+    for anything that isn't actually numeric (e.g. an error string)."""
+    if isinstance(value, int):
+        return f"{value:,}".replace(",", "'")
+    if isinstance(value, float):
+        return f"{value:,.1f}".replace(",", "'")
+    return value
+
 
 class ServerHealthView(SuperuserRequiredMixin, TemplateView):
     """Superuser-only detail view for the public /_health-kc/ status endpoint - same
@@ -59,8 +95,16 @@ class ServerHealthView(SuperuserRequiredMixin, TemplateView):
                 "label": CHECK_LABELS.get(name, name),
                 "level": result["level"],
                 "level_label": LEVEL_LABELS.get(result["level"], result["level"]),
+                "explanation": CHECK_EXPLANATIONS.get(name),
                 "detail": [
-                    {"label": DETAIL_LABELS.get(key, key), "value": value} for key, value in result["detail"].items()
+                    {
+                        "label": DETAIL_LABELS.get(key, key),
+                        "value": (
+                            f"{_swiss_number(value) if key in DETAIL_THOUSANDS_KEYS else value}"
+                            f"{DETAIL_UNITS.get(key, '')}"
+                        ),
+                    }
+                    for key, value in result["detail"].items()
                 ],
             }
             for name, result in raw_results.items()

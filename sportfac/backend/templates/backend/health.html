@@ -39,6 +39,9 @@
           <li><strong>{{ item.label }}</strong>: {{ item.value }}</li>
           {% endfor %}
         </ul>
+        {% if check.explanation %}
+        <small class="text-muted">{{ check.explanation }}</small>
+        {% endif %}
       </td>
     </tr>
     {% endfor %}

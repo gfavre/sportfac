@@ -153,9 +153,13 @@ def _check_load():
         "load15": round(load15, 2),
         "cpu_count": cpu_count,
     }
-    if ratio >= LOAD_CRITICAL_RATIO:
+    # A load average up to the core count means the box is fully busy, not overloaded -
+    # every core has something to do, nothing is queueing yet. Queueing (processes
+    # waiting for a free core) is what actually signals trouble, and that only starts
+    # past that point - hence strict ">" rather than ">=": load == cpu_count is still ok.
+    if ratio > LOAD_CRITICAL_RATIO:
         return CRITICAL, detail
-    if ratio >= LOAD_WARNING_RATIO:
+    if ratio > LOAD_WARNING_RATIO:
         return WARNING, detail
     return OK, detail
 
