@@ -71,11 +71,15 @@ def main():
             celery_bin = shlex.split(command)[0]
 
             for sub in ("active", "reserved", "stats"):
-                # celery's default inspect timeout is 1s - too tight in practice, "stats"
-                # especially (it gathers more than active/reserved) can miss it even when
-                # the worker is healthy and responds fine to a longer wait.
+                # celery's default timeout (1s) was occasionally too tight even for a
+                # healthy worker - but `inspect` always waits out the full --timeout
+                # window regardless of how fast the reply actually arrives (it can't
+                # know in advance whether more nodes might still reply), so don't set
+                # this higher than needed: 2s is plenty once the worker can reply at
+                # all (see the broker_transport_options fix in sportfac/celery.py -
+                # before that fix, no timeout, however long, would ever have helped).
                 subprocess.run(
-                    [celery_bin, "-A", "sportfac", "inspect", sub, "--timeout", "10"], cwd=directory, env=env
+                    [celery_bin, "-A", "sportfac", "inspect", sub, "--timeout", "2"], cwd=directory, env=env
                 )
 
 
