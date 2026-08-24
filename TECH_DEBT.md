@@ -326,6 +326,43 @@ query string — worth adding one (independent of which fix above is chosen)
 so a future drift is caught before deploy rather than after, the way this one
 was.
 
+## PhantomJsCloud - external PDF rendering dependency, replace everywhere
+
+Found 2026-08-24 while auditing Celery `rate_limit` coverage after the bill-PDF
+burst issue below. `registrations/pdf.py` (bill PDFs, QR-invoice compositing)
+already generates PDFs locally via Playwright (`sync_playwright`,
+`chromium.launch()`) - but two other, older code paths still ship their HTML
+off to `PhantomJsCloud.com` (`settings.PHANTOMJSCLOUD_APIKEY`, a paid external
+API) instead:
+
+- `mailer/pdfutils.py`'s `PDFRenderer.render_to_pdf` (base class for
+  `CourseParticipants`, `CourseParticipantsPresence`, `MyCourses`,
+  `InvoiceRenderer`) - used by `mailer.tasks.send_instructors_email` (backend
+  "mail instructors" action: participants list, decompte, presence list,
+  "my courses" attachments).
+- `activities/views.py`'s `PaySlipDetailView.pdf()` (`?pdf=1` on
+  `activities:payslip-detail`, a UUID-keyed URL, presumably instructor
+  payslips reached via an emailed link) - a **synchronous, in-request** HTTP
+  call to PhantomJsCloud, not even behind Celery, so it ties up a web worker
+  for the external call's full duration too.
+
+Two separate, non-exclusive reasons to migrate both onto the same local
+Playwright approach `registrations/pdf.py` already uses: drop the external
+paid dependency, and stop maintaining two different PDF-rendering code paths
+for what's fundamentally the same problem.
+
+**Careful about CPU if/when this is done**: local Playwright is real CPU/memory
+cost on the same box as the web server (see the `rate_limit` entry right
+below - `send_bill_pdf_email`/`generate_invoice_pdf` are throttled to `12/m`
+specifically because of this). That said, this is lower urgency than the bill
+case: `send_instructors_email` is admin-triggered (one admin, one click, not
+hundreds of parents landing on the same page after a registration rush), and
+`PaySlipDetailView` is presumably one instructor at a time via their own
+emailed link - burst risk here is real but far smaller in scale. Still worth
+a `rate_limit` (or at least a look at expected concurrent volume) once this
+moves to local rendering, rather than assuming "admin-only" means "no burst
+possible."
+
 ## Performance work already done (2026-08, for reference — not debt)
 
 Not tech debt, but context for anyone reading this file wondering what's already
