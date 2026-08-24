@@ -1,12 +1,16 @@
 {% load i18n sekizai_tags %}
 
-<p class="hidden-print text-center">
+{% if not inline %}<p class="hidden-print text-center">{% endif %}
   <button class="btn btn-secondary btn-large pdf-download-button" data-url="{{ pdf_url }}" data-filename="facture-{{ bill.billing_identifier }}.pdf">
     <i class="icon-file-pdf"></i>&nbsp;
-    <span class="label">{% translate "Download PDF" %}</span>
-    <span class="loading" style="display: none;">{% translate "Generating PDF…" %}</span>
+    <!-- "pdf-btn-label", not "label": Bootstrap's own .label (small pill/badge component)
+         forces font-size: 11.844px, shrinking this text far below the button's actual
+         btn-large size - and only this span had that class, so the button visibly
+         changed size the moment it swapped to the (unaffected) "Generating..." span. -->
+    <span class="pdf-btn-label">{% translate "Download PDF" %}</span>
+    <span class="pdf-btn-loading" style="display: none;">{% translate "Generating PDF…" %}</span>
   </button>
-</p>
+{% if not inline %}</p>{% endif %}
 
 {% addtoblock "js" %}
   <script>
@@ -27,8 +31,8 @@
               document.body.removeChild(link);
               window.URL.revokeObjectURL(blobUrl);
               $button.prop('disabled', false);
-              $button.find('.label').show();
-              $button.find('.loading').hide();
+              $button.find('.pdf-btn-label').show();
+              $button.find('.pdf-btn-loading').hide();
             });
           }
           // Still generating (HTTP 202, JSON "pending" body) - keep polling.
@@ -40,8 +44,8 @@
 
       $button.click(function () {
         $button.prop('disabled', true);
-        $button.find('.label').hide();
-        $button.find('.loading').show();
+        $button.find('.pdf-btn-label').hide();
+        $button.find('.pdf-btn-loading').show();
         poll($button.data('url'), $button.data('filename'));
       });
     })();

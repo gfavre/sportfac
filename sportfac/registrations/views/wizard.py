@@ -223,6 +223,7 @@ class WizardPaymentStepView(LoginRequiredMixin, PaymentMixin, BaseWizardStepView
                 "iban": preferences.get("payment__IBAN", ""),
                 "address": preferences.get("payment__ADDRESS", ""),
                 "place": preferences.get("payment__PLACE", ""),
+                "display_qr_invoice": preferences.get("payment__DISPLAY_QR_INVOICE", False),
             }
         )
 
