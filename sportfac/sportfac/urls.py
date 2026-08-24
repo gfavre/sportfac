@@ -21,6 +21,7 @@ from payments.views import NewDatatransTransactionView
 from payments.views import NewPostfinanceTransactionView
 from payments.views import PostfinanceWebhookView
 
+from .views import health_check
 from .views import impersonate as impersonate_view
 
 
@@ -106,6 +107,10 @@ urlpatterns += [
         name="datatrans-new-transaction",
     ),
     path("datatrans/", DatatransWebhookView.as_view(), name="datatrans_webhook"),
+    # Unauthenticated on purpose (LB/uptime-monitor probes can't log in) - path is not
+    # linked from anywhere, but that's not the security boundary: the response itself
+    # never contains raw numbers or error details, see sportfac/health.py.
+    path("_health-kc/", health_check, name="health-check"),
     path("favicon.ico", RedirectView.as_view(url=settings.STATIC_URL + "img/favicon.ico")),
     path("humans.txt", TextPlainView.as_view(template_name="humans.txt")),
     path("impersonate/<path:uid>/", impersonate_view, name="impersonate-start"),

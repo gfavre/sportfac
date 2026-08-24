@@ -1,7 +1,7 @@
+from braces.views import LoginRequiredMixin
+from braces.views import UserPassesTestMixin
 from django.http import HttpResponse
 from django.utils.text import slugify
-
-from braces.views import LoginRequiredMixin, UserPassesTestMixin
 
 
 class BackendMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -23,6 +23,13 @@ class KepchupStaffMixin(LoginRequiredMixin, UserPassesTestMixin):
 
     def test_func(self, user):
         return user.is_active and user.is_kepchup_staff
+
+
+class SuperuserRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    """Mixin for backend. Ensure that the user is logged in and is a superuser."""
+
+    def test_func(self, user):
+        return user.is_active and user.is_superuser
 
 
 class ExcelResponseMixin:

@@ -332,6 +332,7 @@ urlpatterns = [
     path("child/", include(children_patterns)),
     path("course/", include(courses_patterns)),
     path("dates", views.RegistrationDatesView.as_view(), name="dates"),
+    path("health/", views.ServerHealthView.as_view(), name="health"),
     path("mail/", include(mail_patterns)),
     path("payroll/", include(payroll_patterns)),
     path("registrations/", include(registrations_patterns)),

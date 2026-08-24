@@ -11,6 +11,14 @@ class RegistrationOpenedMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        # The health check must be able to report "this tenant's data is broken"
+        # (e.g. a missing/corrupted preference) rather than crash on it before ever
+        # reaching its own try/except'd checks - see sportfac/health.py. Doesn't cover
+        # every failure mode (VersionMiddleware/TenantMainMiddleware, earlier in the
+        # chain, still needs the DB connection itself to resolve the tenant at all -
+        # a fully-down DB still surfaces as a plain 500 there, not this view's JSON).
+        if request.path == "/_health-kc/":
+            return self.get_response(request)
         preferences = request.tenant.preferences.by_name()
         start = preferences["START_REGISTRATION"]
         end = preferences["END_REGISTRATION"]

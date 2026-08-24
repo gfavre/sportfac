@@ -1,17 +1,26 @@
 from datetime import datetime
 
-from django.contrib.auth.views import redirect_to_login
-from django.core.exceptions import ImproperlyConfigured, PermissionDenied
-from django.http import Http404, HttpResponse
-from django.shortcuts import get_object_or_404, redirect, render
-from django.utils import timezone
-
 from braces.views import LoginRequiredMixin
+from django.contrib.auth.views import redirect_to_login
+from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import PermissionDenied
+from django.http import Http404
+from django.http import HttpResponse
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
+from django.shortcuts import render
+from django.utils import timezone
 from impersonate.decorators import allowed_user_required
-from impersonate.helpers import check_allow_for_user, get_redir_path
+from impersonate.helpers import check_allow_for_user
+from impersonate.helpers import get_redir_path
 from impersonate.signals import session_begin
 
 from profiles.models import FamilyUser
+
+from .health import CRITICAL
+from .health import overall_level
+from .health import run_checks
 
 
 class OpenedPeriodMixin:
@@ -68,6 +77,17 @@ class CSVMixin:
 
         self.write_csv(response)
         return response
+
+
+def health_check(request):
+    """Unauthenticated status endpoint (LB/uptime-monitor friendly) - reports ok/warning/
+    critical per component, never raw numbers (see backend's superadmin-only dashboard
+    for that). 200 unless something is actually critical, so a single "disk getting
+    full" warning doesn't pull the box out of a load balancer's rotation."""
+    results = run_checks()
+    overall = overall_level(results)
+    body = {"status": overall, "checks": {name: r["level"] for name, r in results.items()}}
+    return JsonResponse(body, status=503 if overall == CRITICAL else 200)
 
 
 # noinspection PyUnusedLocal

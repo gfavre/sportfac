@@ -1,0 +1,53 @@
+{% extends "backend/base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Server health" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Server health" %}{% endblock %}
+
+{% block content %}
+
+<p>
+  {% translate "Overall status" %} :
+  <span class="label
+    {% if overall == 'ok' %}label-success{% elif overall == 'warning' %}label-warning{% else %}label-important{% endif %}">
+    {{ overall }}
+  </span>
+</p>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>{% translate "Component" %}</th>
+      <th>{% translate "Status" %}</th>
+      <th>{% translate "Detail" %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for name, result in results.items %}
+    <tr>
+      <td>{{ name }}</td>
+      <td>
+        <span class="label
+          {% if result.level == 'ok' %}label-success{% elif result.level == 'warning' %}label-warning{% else %}label-important{% endif %}">
+          {{ result.level }}
+        </span>
+      </td>
+      <td>
+        <ul class="list-unstyled" style="margin-bottom: 0">
+          {% for key, value in result.detail.items %}
+          <li><strong>{{ key }}</strong>: {{ value }}</li>
+          {% endfor %}
+        </ul>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<p class="text-muted">
+  {% translate "Public status endpoint (ok/warning/critical only, no raw numbers)" %} :
+  <code>/_health-kc/</code>
+</p>
+
+{% endblock content %}
