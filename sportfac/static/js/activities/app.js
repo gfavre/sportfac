@@ -71,10 +71,14 @@ angular.module('sportfacCalendar', ['sportfacCalendar.filters', 'sportfacCalenda
 config(['$routeProvider', function($routeProvider) {
     'use strict';
     const basePath = window.location.pathname.split('/wizard')[0];
+    // ?v= cache-busts this static partial across deploys, like app.min.js/style.css -
+    // used to be a hand-maintained counter (?v=3) that only cache-busted when someone
+    // remembered to bump it on a template change; now automatic.
+    const templateUrl = `${basePath}/static/partials/activity-list.html?v=${window.KEPCHUP_VERSION || ''}`;
     $routeProvider.when('/child/:childId/',
-      { templateUrl: `${basePath}/static/partials/activity-list.html?v=3`, controller: 'ActivityCtrl' });
+      { templateUrl: templateUrl, controller: 'ActivityCtrl' });
     $routeProvider.otherwise(
-      {templateUrl: `${basePath}/static/partials/activity-list.html?v=3`, controller: 'ActivityCtrl'});
+      {templateUrl: templateUrl, controller: 'ActivityCtrl'});
 }]).
 
 config(["$interpolateProvider", function($interpolateProvider) {

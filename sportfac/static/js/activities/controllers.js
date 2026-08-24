@@ -211,7 +211,11 @@ angular.module('sportfacCalendar.controllers', [])
 
       var modalwindow = $modal(
         {
-          template: `${basePath}/static/partials/activity-detail.html`,
+          // ?v= cache-busts this static partial across deploys (like app.min.js/style.css
+          // already do) - without it, a browser that already has this modal cached keeps
+          // serving the stale HTML until a hard reload, even once the new JS calling it is
+          // live.
+          template: `${basePath}/static/partials/activity-detail.html?v=${window.KEPCHUP_VERSION || ''}`,
           show: false,
           backdrop: 'static',
           persist: true,

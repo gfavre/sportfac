@@ -281,6 +281,21 @@ Fixed for `style.css`/`not_production.css` in 4.6.6 by adding `?v={{ VERSION
   problem and hasn't been touched at all. Every future static asset added the
   same way will have the same bug unless someone remembers to version it by
   hand, every time, in every theme.
+- **Same bug, found again the same day, in JS-fetched HTML partials**:
+  `activities/controllers.js`'s `$modal({template: ...})` for
+  `static/partials/activity-detail.html` had no versioning at all (found by
+  personally hitting it — added a new hint below "Places disponibles",
+  invisible until a hard reload); `activities/app.js`'s `$routeProvider` for
+  `activity-list.html` had a *hand-maintained* `?v=3` counter, only
+  cache-busting when a developer remembered to bump it on a template change.
+  Both fixed 2026-08-23 by introducing `window.KEPCHUP_VERSION` (set from
+  `{{ VERSION }}` in `activities_app.html`, read by both call sites) — but
+  that's now a **third** distinct hand-rolled cache-busting mechanism in this
+  codebase (`?id={{ timestamp }}` for `DEBUG`, `?v={{ VERSION }}` in Django
+  templates, `?v=${window.KEPCHUP_VERSION}` for JS-side fetches), each
+  requiring a developer to remember to apply it to every new static
+  reference. Strengthens the case for option 1 below over option 2 - a
+  systemic fix would make all three unnecessary.
 - **`themes/*/templates/base.html` (14 files) and `templates/base.html` are
   full copies, not `{% extends %}` + block overrides.** Any fix to the shared
   layout (this cache-busting fix included) has to be hand-applied to all 15

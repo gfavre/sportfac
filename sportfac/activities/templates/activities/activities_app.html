@@ -50,6 +50,7 @@
 
 
 {% addtoblock "js" %}
+  <script>window.KEPCHUP_VERSION = "{{ VERSION }}";</script>
   {% if debug %}
     {% now "U" as timestamp %}
     <script src="{{ STATIC_URL }}js/vendor/fullcalendar.min.js"></script>

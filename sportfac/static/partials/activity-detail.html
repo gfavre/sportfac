@@ -125,6 +125,9 @@
               </div>
             </div>
             <small>{[{ selectedCourse.min_participants }]} participants requis pour que l'activité ait lieu</small>
+            <p ng-show="!canregistersameactivity" class="text-info" style="margin-top: .4em">
+              Une seule inscription par activité par enfant pour l'année scolaire
+            </p>
           </dd>
         </dl>
       </div>
