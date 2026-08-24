@@ -363,6 +363,62 @@ a `rate_limit` (or at least a look at expected concurrent volume) once this
 moves to local rendering, rather than assuming "admin-only" means "no burst
 possible."
 
+## Proposed: a data-quality dashboard for admins
+
+Not started - a project idea prompted by a real Sentry alert (SPORTFAC-Y7,
+2026-08-24, LTDP): `Registration.is_local_pricing` logs an error and silently
+falls back to non-local pricing whenever a registration's child has no
+family - which shouldn't normally be reachable (`Child.family` is
+`on_delete=CASCADE`, so a deleted family takes its children, and therefore
+their registrations, down with it too - this has to be getting created
+family-less some other way, e.g. the API's `RegistrationSerializer` has no
+equivalent of the backend forms' `Child.objects.exclude(family=None)` guard).
+That specific case already has a read-only audit script
+(`scripts/find_registrations_without_family.py`); a proper dashboard would
+generalize the pattern instead of a new one-off script every time a fresh
+Sentry alert surfaces the next variant.
+
+**Idea**: an admin-only backend page listing exactly this kind of silent,
+non-crashing data anomaly - things that never raise, never block a page from
+loading, and so never get noticed except by accident (a Sentry error log, a
+support email) or by someone thinking to write a one-off script. Candidates,
+roughly ranked by how much damage they can do before anyone notices:
+
+- **Children without a family but with active (non-canceled) registrations**
+  (the case above) - silently wrong pricing, and no clear owner/contact for
+  that registration or its bill.
+- **Non-canceled registrations with no bill** (`Registration.bill` is
+  nullable, `on_delete=SET_NULL` - a `Bill` can be deleted directly without
+  taking its registrations down, unlike the family/child chain above) - a
+  child who believes they're registered, with nothing tracking whether
+  they've paid or what for. Direct revenue risk.
+- **Bills whose `total` doesn't match the live sum of their non-canceled
+  registrations' prices** - `Bill.update_total()` recomputes this on every
+  save, so it self-heals like `nb_participants`/`has_waiting_list` now do,
+  but a bill that's stopped being saved for some reason (a code path that
+  mutates registrations without re-saving the bill) would drift silently -
+  exactly the failure mode `has_waiting_list` had.
+- **Duplicate children** (`scripts/find_duplicate_children.py`, already
+  built 2026-08-23) - risk of a family registering/paying twice for the same
+  actual child under two separate records, or an instructor's attendance
+  roster silently missing a child who's "actually" registered under their
+  other record.
+- **A `WaitingSlot` for a child already holding a live registration on that
+  exact course** - two contradictory states for the same (child, course)
+  pair; shouldn't be reachable, worth confirming nothing allows it.
+- **Denormalized flags drifting from their live source in general** -
+  `has_waiting_list` was one instance (found and fixed 2026-08-23,
+  `scripts/fix_stale_waiting_list_flags.py` for anything still stuck before
+  that fix shipped); worth treating as a category rather than one-off,
+  since the underlying failure mode (a signal-only sync with no
+  self-healing on save) could recur anywhere the same pattern gets reused.
+
+Each of these already has, or could reuse, a read-only audit query - the
+dashboard's job would mostly be surfacing what the scripts above already do
+ad hoc, on a schedule/on-demand, in the backend UI instead of a shell paste,
+so it doesn't take another Sentry alert (or another support email) to notice
+the next one.
+
 ## Performance work already done (2026-08, for reference — not debt)
 
 Not tech debt, but context for anyone reading this file wondering what's already

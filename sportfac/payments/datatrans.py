@@ -45,7 +45,6 @@ def invoice_to_meta_data(request, invoice):
 
 
 def get_transaction(request, invoice):
-    print(">>> get_transaction CALLED <<<")
     if not invoice:
         return None
 
@@ -58,7 +57,6 @@ def get_transaction(request, invoice):
         timeout=DATATRANS_TIMEOUT_SECONDS,
     )
     logger.info("Datatrans API response: %s", response.json())
-    print(response.json())
     response.raise_for_status()
     transaction_id = response.json().get("transactionId")
 
@@ -68,5 +66,4 @@ def get_transaction(request, invoice):
         invoice=invoice,
     )
     logger.info("Created DatatransTransaction pk=%s, transactionId=%s", trx.pk, trx.transaction_id)
-    print(trx.transaction_id)
     return trx
