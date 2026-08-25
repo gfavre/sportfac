@@ -19,6 +19,7 @@ from api.serializers import ChildrenSerializer
 from profiles.tests.factories import FamilyUserFactory
 from profiles.tests.factories import SchoolYearFactory
 from registrations.models import Child
+from registrations.models import Registration
 from registrations.tests.factories import ChildFactory
 from registrations.tests.factories import RegistrationFactory
 from schools.tests.factories import TeacherFactory
@@ -468,6 +469,46 @@ class ChildrenAPITests(UserMixin, TenantTestCase):
         url = reverse("api:child-detail", kwargs={"pk": child.pk})
         self.login(self.user1)
         response = self.tenant_client.delete(url)
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(self.user1.children.count(), 2)
+
+    def test_delete_refuses_when_child_has_active_registrations(self):
+        """Regression test for the 2026-08-24 Coppet incident: perform_destroy used to
+        unconditionally null out family/school_year/teacher/school, silently orphaning
+        any child that still held live (non-canceled) Registration/Bill rows - ~30-40
+        children lost their family this way during that rush while still billed for
+        real registrations. Deleting a child with an active registration must now be
+        refused outright, not silently corrupt the family link."""
+        child = self.children1[0]
+        with override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False):
+            course = CourseFactory(schoolyear_min=self.year.year, schoolyear_max=self.year.year)
+        RegistrationFactory(course=course, child=child, status=Registration.STATUS.valid)
+
+        url = reverse("api:child-detail", kwargs={"pk": child.pk})
+        self.login(self.user1)
+        response = self.tenant_client.delete(url)
+
+        self.assertEqual(response.status_code, 400)
+        # The wizard's error template does `errs.join(', ')` over each value in the
+        # response body - a bare string ({"detail": "..."}) has no .join() and would
+        # silently fail to render, so this must stay a list under "detail".
+        self.assertIsInstance(response.data["detail"], list)
+        child.refresh_from_db()
+        self.assertEqual(child.family, self.user1)
+        self.assertEqual(self.user1.children.count(), 3)
+
+    def test_delete_succeeds_when_all_registrations_are_canceled(self):
+        # Child.has_registrations excludes canceled ones - a child whose only
+        # registration was canceled must still be deletable normally.
+        child = self.children1[0]
+        with override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False):
+            course = CourseFactory(schoolyear_min=self.year.year, schoolyear_max=self.year.year)
+        RegistrationFactory(course=course, child=child, status=Registration.STATUS.canceled)
+
+        url = reverse("api:child-detail", kwargs={"pk": child.pk})
+        self.login(self.user1)
+        response = self.tenant_client.delete(url)
+
         self.assertEqual(response.status_code, 204)
         self.assertEqual(self.user1.children.count(), 2)
 

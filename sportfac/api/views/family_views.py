@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import IntegrityError
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext_lazy as _
 from rest_framework import filters
 from rest_framework import generics
 from rest_framework import mixins
@@ -188,6 +189,19 @@ class ChildrenViewSet(viewsets.ModelViewSet):
             raise ValidationError("Child already exist")
 
     def perform_destroy(self, instance: Child):
+        # This is a soft-delete (family/school/teacher stripped, row kept) reachable from
+        # the wizard's "children" step - unguarded, it used to orphan the child (family=None)
+        # even when it still carried live Registration/Bill rows, which is how ~30-40
+        # children lost their family during the 2026-08-24 Coppet rush while still holding
+        # paid/pending registrations. Refusing outright rather than auto-canceling: silently
+        # canceling someone's paid registration as a side effect of an unrelated "delete
+        # this child" click is a worse surprise than a blocked action with a clear reason.
+        if instance.has_registrations:
+            # {"detail": [...]} rather than a bare string: the wizard's error template
+            # (registrations/templates/registrations/child-edit-form.html:4-6) does
+            # `errs.join(', ')` over each value in the errors object - a plain string
+            # has no .join() and the message would silently fail to render.
+            raise ValidationError({"detail": [_("This child has active registrations and cannot be removed.")]})
         instance.family = None
         instance.emergency_number = ""
         instance.school_year = None
