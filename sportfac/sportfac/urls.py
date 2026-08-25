@@ -111,7 +111,46 @@ urlpatterns += [
     # linked from anywhere, but that's not the security boundary: the response itself
     # never contains raw numbers or error details, see sportfac/health.py.
     path("_health-kc/", health_check, name="health-check"),
-    path("favicon.ico", RedirectView.as_view(url=settings.STATIC_URL + "img/favicon.ico")),
+    # permanent=True (301): browsers probe these well-known root paths on their own,
+    # unprompted by any <link> tag, on every first visit of a session - a 301 lets the
+    # browser cache the redirect target itself and stop re-asking Django for it at all on
+    # subsequent visits, unlike the plain 302 this used to be. apple-touch-icon's sized/
+    # precomposed variants all redirect to the one icon each theme actually ships - some of
+    # these targets may 404 themselves (e.g. safari-pinned-tab.svg isn't provided by every
+    # theme), but even that 404 is now served straight off disk by Apache's /static/ Alias,
+    # not proxied through the full Django/gunicorn request cycle like it was before.
+    path(
+        "favicon.ico",
+        RedirectView.as_view(url=settings.STATIC_URL + "img/favicon.ico", permanent=True),
+    ),
+    path(
+        "apple-touch-icon.png",
+        RedirectView.as_view(url=settings.STATIC_URL + "img/apple-touch-icon.png", permanent=True),
+    ),
+    path(
+        "apple-touch-icon-precomposed.png",
+        RedirectView.as_view(url=settings.STATIC_URL + "img/apple-touch-icon.png", permanent=True),
+    ),
+    path(
+        "apple-touch-icon-120x120.png",
+        RedirectView.as_view(url=settings.STATIC_URL + "img/apple-touch-icon.png", permanent=True),
+    ),
+    path(
+        "apple-touch-icon-120x120-precomposed.png",
+        RedirectView.as_view(url=settings.STATIC_URL + "img/apple-touch-icon.png", permanent=True),
+    ),
+    path(
+        "apple-touch-icon-152x152.png",
+        RedirectView.as_view(url=settings.STATIC_URL + "img/apple-touch-icon.png", permanent=True),
+    ),
+    path(
+        "apple-touch-icon-152x152-precomposed.png",
+        RedirectView.as_view(url=settings.STATIC_URL + "img/apple-touch-icon.png", permanent=True),
+    ),
+    path(
+        "safari-pinned-tab.svg",
+        RedirectView.as_view(url=settings.STATIC_URL + "img/safari-pinned-tab.svg", permanent=True),
+    ),
     path("humans.txt", TextPlainView.as_view(template_name="humans.txt")),
     path("impersonate/<path:uid>/", impersonate_view, name="impersonate-start"),
     path("impersonate-stop/", impersonate_views.stop_impersonate, name="impersonate-stop"),

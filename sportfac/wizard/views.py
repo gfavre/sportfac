@@ -2,6 +2,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.db.models import Max
 from django.db.models import Min
+from django.db.models import Prefetch
 from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -15,6 +16,7 @@ from appointments.models import Rental
 from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser
 from registrations.models import Bill as Invoice
+from registrations.models import ExtraInfo
 from registrations.models import Registration
 
 from .handlers import get_step_handler
@@ -93,10 +95,18 @@ class BaseWizardStepView(View):
         return self._step
 
     def get_registrations(self, user):
+        # extra_infos__key is prefetched (not just extra_infos) because
+        # get_registration_context() below needs answer.key.mandatory for every extra
+        # info - without it, get_registration_context()'s `.select_related("key")` call
+        # would build a brand-new queryset instead of reusing this prefetch (only a bare
+        # `.all()` reuses a prefetch cache in Django), re-issuing one query per
+        # registration on every single wizard step that doesn't override
+        # get_registration_context, i.e. nearly the whole wizard.
+        extra_infos_prefetch = Prefetch("extra_infos", queryset=ExtraInfo.objects.select_related("key"))
         registrations = (
             Registration.waiting.filter(child__family=user)
             .select_related("course")
-            .prefetch_related("course__extra", "extra_infos")
+            .prefetch_related("course__extra", extra_infos_prefetch)
         )
         invoice = None
         if not registrations:
@@ -106,7 +116,7 @@ class BaseWizardStepView(View):
             invoice = Invoice.objects.filter(family=user, status=Invoice.STATUS.waiting).first()
             if invoice:
                 registrations = invoice.registrations.select_related("course").prefetch_related(
-                    "course__extra", "extra_infos"
+                    "course__extra", extra_infos_prefetch
                 )
         return registrations if registrations is not None else Registration.objects.none(), invoice
 
@@ -140,9 +150,12 @@ class BaseWizardStepView(View):
                 course_questions = registration.course.extra.all()
                 all_questions.update(set(course_questions))
                 # Retrieve extra infos related to this registration only once
+                # .all() (not .select_related("key") again) so this reuses the
+                # extra_infos__key prefetch from get_registrations() above instead of
+                # re-querying per registration.
                 answered_questions = {
                     answer.key
-                    for answer in registration.extra_infos.select_related("key")
+                    for answer in registration.extra_infos.all()
                     if len(answer.value) or not answer.key.mandatory
                 }
                 # Check for missing questions

@@ -1,12 +1,15 @@
 from unittest import mock
 
+from django.db import connection
 from django.test import RequestFactory
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 
 from profiles.tests.factories import FamilyUserFactory
 from registrations.models import Bill
 from registrations.models import Registration
 from registrations.tests.factories import ChildFactory
+from registrations.tests.factories import ExtraInfoFactory
 from registrations.tests.factories import RegistrationFactory
 from registrations.tests.factories import WaitingBillFactory
 from registrations.tests.factories import WaitingRegistrationFactory
@@ -115,6 +118,38 @@ class GetRegistrationContextTests(TenantTestCase):
         with mock.patch.object(self.view, "get_registrations", return_value=(None, None)):
             context = self.view.get_registration_context()
         list(context["registrations"])  # must not raise
+
+
+class GetRegistrationContextQueryCountTests(TenantTestCase):
+    """get_registration_context() (called by dispatch()/get_context_data() on nearly every
+    wizard step) used to re-query extra_infos.select_related("key") per registration
+    instead of reusing the extra_infos__key prefetch from get_registrations() - only a
+    bare .all() reuses a Django prefetch cache, any other queryset method (including
+    select_related) silently re-hits the DB. Regression test: query count for this call
+    must stay flat regardless of how many registrations/extra infos the family has."""
+
+    def setUp(self):
+        super().setUp()
+        self.user = FamilyUserFactory()
+
+    def _query_count_for(self, nb_registrations):
+        child = ChildFactory(family=self.user)
+        for _ in range(nb_registrations):
+            reg = WaitingRegistrationFactory(child=child)
+            ExtraInfoFactory(registration=reg, value="OUI")
+
+        view = _make_view(self.user)
+        with CaptureQueriesContext(connection) as ctx:
+            view.get_registration_context()
+        return len(ctx.captured_queries)
+
+    def test_query_count_does_not_grow_with_registration_count(self):
+        one_registration = self._query_count_for(1)
+
+        self.user = FamilyUserFactory()  # fresh family: isolate from the first count
+        five_registrations = self._query_count_for(5)
+
+        self.assertEqual(one_registration, five_registrations)
 
 
 class DispatchRedirectTests(TenantTestCase):

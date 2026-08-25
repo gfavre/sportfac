@@ -217,19 +217,31 @@ def kepchup_context(request):
 
 
 def dynamic_preferences_context(request):
+    # This context processor runs on every rendered page across the whole site (see
+    # TEMPLATES in sportfac/settings/base.py), so its cost is paid on every single page
+    # view, not just wizard pages. `global_preferences[key]` (Mapping.__getitem__) does
+    # its own single-key cache round trip per call - used 8 times below (two of them,
+    # OTHER_START/END_REGISTRATION, fetched twice each for no reason), that was 8 separate
+    # cache hits (or DB queries on a cold cache) per render. `.all()` fetches every
+    # registered preference in one batched cache round trip (one query on a full miss),
+    # same as PreferencesManager.by_name()/all() already does for the tenant-scoped
+    # preferences in RegistrationOpenedMiddleware.
     global_preferences = global_preferences_registry.manager()
+    preferences = global_preferences.all()
+    raw_start = preferences["phase__OTHER_START_REGISTRATION"]
+    raw_end = preferences["phase__OTHER_END_REGISTRATION"]
     try:
-        start = make_aware(global_preferences["phase__OTHER_START_REGISTRATION"], get_default_timezone())
+        start = make_aware(raw_start, get_default_timezone())
     except IndexError:
         start = None
     except ValueError:
-        start = global_preferences["phase__OTHER_START_REGISTRATION"]
+        start = raw_start
     try:
-        end = make_aware(global_preferences["phase__OTHER_END_REGISTRATION"], get_default_timezone())
+        end = make_aware(raw_end, get_default_timezone())
     except IndexError:
         end = None
     except ValueError:
-        end = global_preferences["phase__OTHER_END_REGISTRATION"]
+        end = raw_end
     if start > now():
         other_phase = 1
     elif end > now():
@@ -237,12 +249,12 @@ def dynamic_preferences_context(request):
     else:
         other_phase = 3
     return {
-        "site_name": global_preferences["site__SITE_NAME"],
-        "preferences_period_name": global_preferences["PERIOD_NAME"],
-        "preference_other_instance_start_registration": global_preferences["phase__OTHER_START_REGISTRATION"],
-        "preference_other_instance_end_registration": global_preferences["phase__OTHER_END_REGISTRATION"],
+        "site_name": preferences["site__SITE_NAME"],
+        "preferences_period_name": preferences["PERIOD_NAME"],
+        "preference_other_instance_start_registration": raw_start,
+        "preference_other_instance_end_registration": raw_end,
         "other_instance_phase": other_phase,
         "other_instance_started_registrations": other_phase == 2,
-        "MAX_REGISTRATIONS_PER_CHILD": global_preferences["MAX_REGISTRATIONS"],
-        "INSTRUCTOR_FALLBACK_PHONE": global_preferences["site__INSTRUCTOR_FALLBACK_PHONE"],
+        "MAX_REGISTRATIONS_PER_CHILD": preferences["MAX_REGISTRATIONS"],
+        "INSTRUCTOR_FALLBACK_PHONE": preferences["site__INSTRUCTOR_FALLBACK_PHONE"],
     }
