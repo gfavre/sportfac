@@ -141,7 +141,12 @@ class RegistrationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return Registration.objects.filter(child__in=user.children.all())
+        # Registration.Meta.ordering sorts by child__last_name/first_name/course__start_date,
+        # which forces a JOIN to Child and Course on every list call just to sort a payload
+        # the wizard frontend (assets/js/activities/controllers.js) already re-sorts
+        # client-side before display. Ordering by the same table's own indexed pk instead
+        # avoids that join tax without changing anything the frontend relies on.
+        return Registration.objects.filter(child__in=user.children.all()).order_by("pk")
 
     def perform_create(self, serializer):
         # RegistrationSerializer.validate() already rejected obviously-full courses, but that

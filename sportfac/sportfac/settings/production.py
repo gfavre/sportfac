@@ -140,9 +140,10 @@ DATATRANS_PAY_URL = env.url("DATATRANS_PAY_URL", default="https://pay.datatrans.
 
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024  # 50 MB
-REST_FRAMEWORK = {
-    "DATA_UPLOAD_MAX_MEMORY_SIZE": 50 * 1024 * 1024,  # 50 MB
-}
+# `DATA_UPLOAD_MAX_MEMORY_SIZE` is a top-level Django setting (above), not a DRF
+# REST_FRAMEWORK key - a `REST_FRAMEWORK = {...}` reassignment used to sit here too,
+# silently replacing (not merging with) base.py's dict and dropping the ORJSON renderer,
+# pagination, filter backends and permission classes in every production deployment.
 
 
 LOGGING["root"] = {  # noqa: F405

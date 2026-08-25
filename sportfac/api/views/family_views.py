@@ -97,10 +97,11 @@ class ChildrenViewSet(viewsets.ModelViewSet):
     model = Child
 
     def get_queryset(self):
-        return (
-            Child.objects.filter(Q(family=None) | Q(family=self.request.user))
-            .prefetch_related("school_year")
-            .select_related("teacher")
+        # school_year is a ForeignKey - select_related folds it into the main query via
+        # JOIN instead of prefetch_related's separate round trip, which used to run
+        # unconditionally on every list call regardless of how many children it returned.
+        return Child.objects.filter(Q(family=None) | Q(family=self.request.user)).select_related(
+            "teacher", "school_year"
         )
 
     # noinspection PyUnusedLocal

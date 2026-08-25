@@ -1,9 +1,47 @@
+import time
+
 from django.conf import settings
 from django.http import Http404
 from django.utils import timezone
 from django_tenants.middleware import TenantMainMiddleware
 
 from backend.models import Domain
+
+
+# Module-level (per gunicorn worker process), not django.core.cache: the "default" cache
+# backend keys everything through django_tenants.cache.make_key, which prefixes by whatever
+# schema the DB connection is CURRENTLY on - and this lookup runs before the schema switch
+# it's itself deciding (same class of ordering issue as the is_kepchup_staff fix noted
+# below), so a tenant-prefixed cache key here would just miss constantly across requests
+# landing on different current schemas instead of ever actually being shared.
+#
+# Which tenant is production changes at most a couple of times a year (backend/tasks.py's
+# update_current_tenant, or a manager triggering backend/views/year_views.py's
+# ChangeYearFormView) - both call Domain.save() on the way, which backend/signals.py hooks
+# with a post_save receiver calling invalidate_production_domain_cache() below, so the
+# worker process that actually performs the switch picks up the new value on its very next
+# request. The 24h TTL is a backstop, not the primary mechanism: a signal only fires in the
+# process that ran the save, so gunicorn's *other* worker processes won't see it - they'd
+# otherwise serve the old value until their own natural recycling (--max-requests) or the
+# next deploy. Long enough that it's essentially free the rest of the year, short enough
+# that a quiet worker that missed the signal can't drift for that long.
+_PRODUCTION_DOMAIN_CACHE_SECONDS = 24 * 60 * 60
+_production_domain_cache = {"value": None, "expires_at": 0.0}
+
+
+def _get_production_domain():
+    now = time.monotonic()
+    if now >= _production_domain_cache["expires_at"]:
+        _production_domain_cache["value"] = Domain.objects.filter(is_current=True).first().domain
+        _production_domain_cache["expires_at"] = now + _PRODUCTION_DOMAIN_CACHE_SECONDS
+    return _production_domain_cache["value"]
+
+
+def invalidate_production_domain_cache():
+    """Called by backend.signals on Domain.save()/delete() - forces the next call to
+    _get_production_domain() in this process to re-hit the DB instead of waiting out the
+    24h backstop TTL."""
+    _production_domain_cache["expires_at"] = 0.0
 
 
 class RegistrationOpenedMiddleware:
@@ -39,7 +77,7 @@ class RegistrationOpenedMiddleware:
 class VersionMiddleware(TenantMainMiddleware):
     @staticmethod
     def hostname_from_request(request):
-        production_domain = Domain.objects.filter(is_current=True).first().domain
+        production_domain = _get_production_domain()
         pinned_domain = request.session.get(settings.VERSION_SESSION_NAME)
         # Only kepchup staff previewing another period may stay pinned to a non-production
         # tenant - everyone else always resolves to the live production one, even if their
