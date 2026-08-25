@@ -5,6 +5,10 @@ also share a birth date and/or a parent home address, as a signal to help tell a
 real duplicate from a same-name coincidence. Output is Markdown, meant to be
 pasted straight into a doc/ticket.
 
+To check just one period instead of all of them, set ONLY_YEAR below to either its
+schema_name (e.g. "period_20260809_20270809") or its display string (e.g. "2025-2026",
+as shown in the backend's period switcher) - leave it None to check every ready tenant.
+
 Paste into `python manage.py shell`.
 """
 import unicodedata
@@ -16,6 +20,9 @@ from backend.models import YearTenant
 from registrations.models import Child
 
 
+ONLY_YEAR = "2026-2027"
+
+
 def normalize(text):
     text = (text or "").strip().lower()
     return unicodedata.normalize("NFD", text).encode("ascii", "ignore").decode("utf-8")
@@ -25,7 +32,13 @@ def md_cell(value):
     return str(value).replace("|", "\\|").replace("\n", " ") if value else ""
 
 
-for tenant in YearTenant.objects.filter(status=YearTenant.STATUS.ready):
+tenants = YearTenant.objects.filter(status=YearTenant.STATUS.ready)
+if ONLY_YEAR:
+    tenants = [t for t in tenants if ONLY_YEAR in (t.schema_name, str(t))]
+    if not tenants:
+        print(f"No ready tenant matches ONLY_YEAR={ONLY_YEAR!r}")
+
+for tenant in tenants:
     with tenant_context(tenant):
         groups = defaultdict(list)
         for child in Child.objects.select_related("family").all():

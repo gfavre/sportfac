@@ -20,11 +20,14 @@ from sportfac.utils import TenantTestCase
 
 from ..models import Bill
 from ..models import Registration
+from ..models import RegistrationsProfile
 from ..tasks import send_bill_confirmation
 from ..tasks import send_bill_pdf_email
 from .factories import BillFactory
 from .factories import ChildFactory
 from .factories import RegistrationFactory
+from .factories import WaitingBillFactory
+from .factories import WaitingRegistrationFactory
 
 
 fake = Faker(locale="fr_CH")
@@ -657,3 +660,88 @@ class BillCloseTestCase(TenantTestCase):
 
         self.bill.save()
         self.assertTrue(self.bill.pdf)
+
+
+class RegistrationsProfileTestCase(TenantTestCase):
+    """Covers registrations.models.RegistrationsProfile.save(): the aggregate-based
+    recompute (registrations/models.py) must land the same values a naive per-property
+    recompute would, both on first creation and whenever the underlying state actually
+    changed - and must genuinely skip the write (not just look like it did) when it didn't.
+    """
+
+    def setUp(self):
+        self.family = FamilyUserFactory()
+
+    def test_create_with_no_open_items_is_all_clear(self):
+        # FamilyUserFactory() already goes through FamilyUser.save(create_profile=True),
+        # so the profile exists before any child/registration/bill does.
+        profile = self.family.profile
+        self.assertIsNotNone(profile.pk)
+        self.assertTrue(profile.has_paid_all)
+        self.assertTrue(profile.finished_registering)
+        self.assertIsNone(profile.last_registration)
+
+    def test_create_reflects_open_bill_and_registration_and_last_validated_date(self):
+        child = ChildFactory(family=self.family)
+        valid_registration = RegistrationFactory(child=child, status=Registration.STATUS.valid)
+        WaitingRegistrationFactory(child=child)
+        WaitingBillFactory(family=self.family)
+
+        # Force a fresh get_or_create/save cycle, same path the wizard's user-update
+        # step triggers on every submission.
+        self.family.save()
+
+        profile = RegistrationsProfile.objects.get(user=self.family)
+        self.assertFalse(profile.has_paid_all)  # WaitingBillFactory left an open bill
+        self.assertFalse(profile.finished_registering)  # the WaitingRegistrationFactory one is still open
+        self.assertEqual(profile.last_registration, valid_registration.created)
+
+    def test_update_recomputes_and_persists_when_state_actually_changed(self):
+        profile = self.family.profile
+        self.assertTrue(profile.has_paid_all)
+        self.assertTrue(profile.finished_registering)
+
+        child = ChildFactory(family=self.family)
+        registration = WaitingRegistrationFactory(child=child)
+        WaitingBillFactory(family=self.family)
+
+        self.family.save()  # a "reasonable" update: real state changed since creation
+
+        profile.refresh_from_db()
+        self.assertFalse(profile.has_paid_all)
+        self.assertFalse(profile.finished_registering)
+        self.assertIsNone(profile.last_registration)  # the registration is waiting, not validated
+
+        registration.status = Registration.STATUS.valid
+        registration.save()
+        self.family.save()
+
+        profile.refresh_from_db()
+        self.assertTrue(profile.finished_registering)
+        self.assertEqual(profile.last_registration, registration.created)
+
+    def test_update_is_skipped_when_nothing_changed(self):
+        profile = self.family.profile
+        modified_after_creation = profile.modified
+
+        profile.save()  # no state change since creation - should not touch the row
+
+        profile.refresh_from_db()
+        self.assertEqual(profile.modified, modified_after_creation)
+
+    def test_update_runs_three_queries_when_state_did_change(self):
+        # Regression guard for the whole point of the optimization: the aggregate (1 query,
+        # covers finished_registering + last_registration), the bills.exists() (1 query) and
+        # the UPDATE itself - not the 4-5 separate SELECTs the naive self.user.<property>
+        # chain used to make before even reaching super().save(). django-tenants issues its
+        # own "SET search_path" ahead of each real query on this connection; that's schema
+        # bookkeeping outside what this optimization controls, so it's excluded here.
+        child = ChildFactory(family=self.family)
+        WaitingRegistrationFactory(child=child)
+        profile = self.family.profile  # resolve the reverse O2O outside the capture block
+
+        with CaptureQueriesContext(connection) as ctx:
+            profile.save()
+
+        real_queries = [q for q in ctx.captured_queries if "SET search_path" not in q["sql"]]
+        self.assertEqual(len(real_queries), 3)

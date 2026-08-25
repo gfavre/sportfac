@@ -123,6 +123,13 @@ class Registration(TimeStampedModel, StatusModel):
         verbose_name = _("Registration")
         verbose_name_plural = _("Registrations")
         ordering = ("child__last_name", "child__first_name", "course__start_date")
+        indexes = [
+            # Backs RegistrationsProfile.save()'s per-family aggregate (child__family + status
+            # filters) and the equivalent RegistrationManager.waiting()/validated() lookups -
+            # under concurrent load these were falling back to the plain child_id FK index and
+            # scanning past every status for that child.
+            models.Index(fields=["child", "status"], name="reg_child_status_idx"),
+        ]
 
     @property
     def cancel_url(self):
@@ -1172,7 +1179,31 @@ class RegistrationsProfile(TimeStampedModel):
     last_registration = models.DateTimeField(null=True, blank=True, editable=False)
 
     def save(self, *args, **kwargs):
-        self.has_paid_all = self.user.paid
-        self.finished_registering = self.user.finished_registrations
-        self.last_registration = self.user.last_registration
+        # Recomputed from scratch on every FamilyUser.save() (wizard steps, backend edits, ...),
+        # including when nothing relevant actually changed - kept to 2 queries (one aggregate
+        # covering both registration-derived fields, one for bills) instead of the 4-5 separate
+        # ones the naive self.user.<property> chain used to make, and skips the write entirely
+        # when the computed values already match what's stored, to avoid an unconditional UPDATE
+        # (and the dead tuple it leaves behind) on every wizard step submission.
+        registration_stats = Registration.objects.filter(child__family=self.user).aggregate(
+            open_count=models.Count("pk", filter=models.Q(status=Registration.STATUS.waiting)),
+            last_valid=models.Max(
+                "created", filter=models.Q(status__in=(Registration.STATUS.valid, Registration.STATUS.confirmed))
+            ),
+        )
+        has_paid_all = not self.user.bills.filter(status=Bill.STATUS.waiting).exists()
+        finished_registering = registration_stats["open_count"] == 0
+        last_registration = registration_stats["last_valid"]
+
+        if (
+            self.pk
+            and self.has_paid_all == has_paid_all
+            and self.finished_registering == finished_registering
+            and self.last_registration == last_registration
+        ):
+            return
+
+        self.has_paid_all = has_paid_all
+        self.finished_registering = finished_registering
+        self.last_registration = last_registration
         super().save(*args, **kwargs)

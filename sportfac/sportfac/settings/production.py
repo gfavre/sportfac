@@ -43,6 +43,13 @@ DATABASES["default"]["NAME"] = env("DB_NAME")  # noqa: F405
 DATABASES["default"]["USER"] = env("DB_USER")  # noqa: F405
 DATABASES["default"]["HOST"] = env("DB_HOST")  # noqa: F405
 DATABASES["default"]["PASSWORD"] = env("DB_PASSWORD")  # noqa: F405
+# Without this, Django opens/closes a fresh Postgres connection on every request (the
+# default, CONN_MAX_AGE=0) - each gunicorn thread pays full TCP+auth handshake cost per
+# request, and a burst of concurrent requests means a burst of concurrent new connections
+# on the Postgres side too. django_tenants is safe to reuse connections across requests:
+# its middleware runs `SET search_path` at the start of every request regardless of
+# whether the underlying connection is new or reused, so tenant isolation isn't affected.
+DATABASES["default"]["CONN_MAX_AGE"] = env.int("DB_CONN_MAX_AGE", default=60)  # noqa: F405
 
 
 # CACHE CONFIGURATION
