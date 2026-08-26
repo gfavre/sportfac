@@ -138,13 +138,6 @@ class EndRegistration(DateTimePreference):
     default = timezone.now() + timedelta(days=60)
 
 
-@tenant_preferences_registry.register
-class CurrentPhase(IntegerPreference):
-    section = phase
-    name = "CURRENT_PHASE"
-    default = 1
-
-
 @global_preferences_registry.register
 class OtherInstanceStartRegistration(DateTimePreference):
     section = phase

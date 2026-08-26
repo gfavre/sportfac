@@ -3,18 +3,21 @@ import shutil
 from smtplib import SMTPException
 from tempfile import mkdtemp
 
+from anymail.exceptions import AnymailRecipientsRefused
+from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.utils import timezone
 
-from anymail.exceptions import AnymailRecipientsRefused
-from celery.utils.log import get_task_logger
-
 from activities.models import Course
 from profiles.models import FamilyUser
 from sportfac.celery import app
+
 from .models import Attachment
-from .pdfutils import CourseParticipants, CourseParticipantsPresence, MyCourses, get_ssf_decompte_heures
+from .pdfutils import CourseParticipants
+from .pdfutils import CourseParticipantsPresence
+from .pdfutils import MyCourses
+from .pdfutils import get_ssf_decompte_heures
 
 
 logger = get_task_logger(__name__)
@@ -130,7 +133,27 @@ def send_instructors_email(self, course_pk, instructor_pk, subject, message, fro
 
     for additional_doc in settings.KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS:
         filepath = os.path.join(settings.STATIC_ROOT, additional_doc)
-        email.attach_file(filepath)
+        try:
+            email.attach_file(filepath)
+        except FileNotFoundError:
+            # A missing file here is a deployment/config problem (a wrong or stale
+            # KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS entry, or collectstatic not
+            # re-run after a document was added) - not a transient one, so no retry: the
+            # file won't appear on its own. We don't send a partial email either - the
+            # instructor is expecting these specific documents, not a "some attachments
+            # silently missing" surprise. logger.error -> a Sentry event (sentry_logging,
+            # settings/production.py, event_level=ERROR), so this is visible immediately
+            # instead of only showing up as "instructor says they never got the email".
+            # `manage.py check_deployment` (mailer/management/commands/check_deployment.py)
+            # catches exactly this ahead of time, before it ever reaches a real send.
+            logger.exception(
+                "Missing instructor email attachment %s (course=%s, instructor=%s) - email not sent",
+                filepath,
+                course_pk,
+                instructor_pk,
+            )
+            shutil.rmtree(tempdir)
+            return
 
     logger.debug("Email forged, sending...")
     try:

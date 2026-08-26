@@ -15,8 +15,6 @@
     <h4 class="portlet-title">
       <u><i class="icon-hourglass"></i>{% translate "Opening & closing" %}</u>
     </h4>
-    {% if config.CURRENT_PHASE == 1 %}
-
     {% if registration_past %}
     Registrations are past
 
@@ -43,7 +41,6 @@
     Registrations set in the future
     {% else %}
     Registrations are illogical
-    {% endif %}
     {% endif %}
     <dl class="dl-horizontal">
       <dt>{% translate "Opening date" %}</dt><dd>{{ registration_start|date:"l j E Y, H:i" }}</dd>
