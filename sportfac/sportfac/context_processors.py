@@ -4,6 +4,8 @@ from django.conf import settings
 from django.core.cache import cache
 from django.db import DatabaseError
 from django.db import connection
+from django.dispatch import receiver
+from django.test.signals import setting_changed
 from django.utils import timezone
 from django.utils.timezone import get_default_timezone
 from django.utils.timezone import make_aware
@@ -107,8 +109,36 @@ def tenants_context(request):
     return {"tenants": tenants}
 
 
+_kepchup_context_cache = None
+
+
+@receiver(setting_changed)
+def _clear_kepchup_context_cache(sender, **kwargs):
+    # Only fires under Django's test framework (override_settings/modify_settings) -
+    # without this, a test overriding any KEPCHUP_* setting (e.g.
+    # mailer/tests/test_utils.py's @override_settings(KEPCHUP_PAYMENT_METHOD="iban"))
+    # would either read a stale cached value or, worse, leak its override into every
+    # request for the rest of the process once the override_settings block exits.
+    global _kepchup_context_cache
+    _kepchup_context_cache = None
+
+
 def kepchup_context(request):
-    return {
+    # Every value here comes from settings.KEPCHUP_* - fixed for the entire life of a
+    # deployment (each tenant runs its own settings module in its own gunicorn process;
+    # nothing here varies per-request or per-user). Rebuilding this ~100-key dict on every
+    # single page render, site-wide, is pure CPU work with no I/O - harmless in isolation,
+    # but it holds the GIL, and under gthread that blocks other threads in the *same*
+    # worker process from making progress while it runs. Safe to compute once per process.
+    #
+    # Returns a shallow copy, not the cached dict itself: at least one caller
+    # (mailer/utils.py's render_email_content) does `context = kepchup_context(None);
+    # context.update(extra_context)`, which would otherwise permanently mutate the shared
+    # cache with whatever extra_context happened to be passed in.
+    global _kepchup_context_cache
+    if _kepchup_context_cache is not None:
+        return _kepchup_context_cache.copy()
+    _kepchup_context_cache = {
         "VERSION": kepchup_version,
         "CHILDREN_EDITABLE": settings.KEPCHUP_CHILDREN_EDITABLE,
         "CHILDREN_POPUP": settings.KEPCHUP_CHILDREN_POPUP,
@@ -214,6 +244,7 @@ def kepchup_context(request):
         "ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS": settings.KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS,
         "DECOMPTE_DOWNLOAD": settings.KEPCHUP_DECOMPTE_DOWNLOAD,
     }
+    return _kepchup_context_cache.copy()
 
 
 def dynamic_preferences_context(request):

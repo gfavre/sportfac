@@ -9,11 +9,13 @@ from datetime import timedelta
 
 from django.core.cache import cache
 from django.db import connection
+from django.test import override_settings
 from django.test.utils import CaptureQueriesContext
 from django.utils.timezone import now
 from dynamic_preferences.registries import global_preferences_registry
 
 from sportfac.context_processors import dynamic_preferences_context
+from sportfac.context_processors import kepchup_context
 from sportfac.utils import TenantTestCase
 
 
@@ -101,3 +103,31 @@ class DynamicPreferencesContextTest(TenantTestCase):
         with CaptureQueriesContext(connection) as ctx:
             dynamic_preferences_context(request=None)
         self.assertEqual(self._real_query_count(ctx), 0)
+
+
+class KepchupContextTest(TenantTestCase):
+    """kepchup_context (sportfac/context_processors.py) memoizes its ~100-key dict of
+    settings.KEPCHUP_* values once per process instead of rebuilding it on every single
+    page render, site-wide. Two ways that could go wrong, both covered here: a caller
+    mutating the dict it got back must not corrupt what the next caller sees (confirmed
+    real - mailer/utils.py's render_email_content does exactly this), and a test using
+    override_settings on a KEPCHUP_* value must still see its override, and must not
+    leak it into requests after the override_settings block exits."""
+
+    def test_returns_a_copy_not_the_shared_cache(self):
+        first = kepchup_context(None)
+        first["INJECTED_BY_A_CALLER"] = "poison"
+
+        second = kepchup_context(None)
+
+        self.assertNotIn("INJECTED_BY_A_CALLER", second)
+
+    @override_settings(KEPCHUP_PAYMENT_METHOD="totally-custom")
+    def test_override_settings_is_picked_up(self):
+        self.assertEqual(kepchup_context(None)["PAYMENT_METHOD"], "totally-custom")
+
+    def test_value_reverts_once_override_settings_block_exits(self):
+        with override_settings(KEPCHUP_PAYMENT_METHOD="temporary"):
+            self.assertEqual(kepchup_context(None)["PAYMENT_METHOD"], "temporary")
+
+        self.assertNotEqual(kepchup_context(None)["PAYMENT_METHOD"], "temporary")
