@@ -67,7 +67,29 @@ CACHES = {
         "LOCATION": env("BROKER_URL"),  # noqa: F405
         "KEY_PREFIX": env("CACHE_KEY_PREFIX") + "_sessions",  # noqa: F405
     },
+    # dynamic_preferences reads/writes to whichever alias DYNAMIC_PREFERENCES["CACHE_NAME"]
+    # names (set below) - its own preference model already connects a global post_save
+    # signal (dynamic_preferences/models.py: invalidate_cache) that re-primes this cache
+    # with the fresh value on every write, tenant- or globally-scoped, so a TTL here is not
+    # a correctness backstop, just wasted DB round trips every time it expires under load.
+    # 24h rather than never-expire: a sane guard rail against anything that changed a
+    # preference outside that signal (a raw .update() on the model, a direct DB edit) -
+    # this bounds the worst case at "stale for up to a day" instead of "stale forever"
+    # without reintroducing the every-5-minutes cost the default TTL had. It would NOT be
+    # safe to apply the same TIMEOUT to "default" above, which also holds cache entries
+    # (e.g. api/views/activities_views.py's CourseViewSet.retrieve) that haven't been
+    # audited the same way and still rely on the 5-minute expiry to self-heal.
+    "preferences": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": env("BROKER_URL"),  # noqa: F405
+        "KEY_PREFIX": env("CACHE_KEY_PREFIX") + "_preferences",  # noqa: F405
+        "KEY_FUNCTION": "django_tenants.cache.make_key",
+        "REVERSE_KEY_FUNCTION": "django_tenants.cache.reverse_key",
+        "TIMEOUT": 60 * 60 * 24,
+    },
 }
+
+DYNAMIC_PREFERENCES["CACHE_NAME"] = "preferences"  # noqa: F405
 
 
 # SECRET CONFIGURATION
