@@ -50,6 +50,43 @@ class RegistrationFormCourseQuerysetTests(TenantTestCase):
 
         self.assertIn(one_sided_course, form.fields["course"].queryset)
 
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False, KEPCHUP_EXPLICIT_SESSION_DATES=False)
+    def test_minimum_age_only_course_is_not_selectable_for_a_too_young_child(self):
+        # Same one-sided course as test_minimum_age_only_course_is_selectable_for_an_older_
+        # child (max_birth_date=None), but with a child too young this time - the
+        # min_birth_date side of the filter still has to exclude on its own, without the
+        # other, absent, side masking it.
+        one_sided_course = CourseFactory(age_min=8, age_max=None, start_date=datetime.date.today())
+        too_young_child = ChildFactory(birth_date=one_sided_course.min_birth_date + datetime.timedelta(days=1))
+
+        form = RegistrationForm(instance=Registration(child=too_young_child))
+
+        self.assertNotIn(one_sided_course, form.fields["course"].queryset)
+
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False, KEPCHUP_EXPLICIT_SESSION_DATES=False)
+    def test_maximum_age_only_course_is_selectable_for_a_young_child(self):
+        # Mirror of test_minimum_age_only_course_is_selectable_for_an_older_child for the
+        # other one-sided case: a maximum age with deliberately no minimum
+        # (min_birth_date=None) - a course open to young children with no floor.
+        one_sided_course = CourseFactory(age_min=None, age_max=8, start_date=datetime.date.today())
+        young_child = ChildFactory(birth_date=datetime.date.today())
+
+        form = RegistrationForm(instance=Registration(child=young_child))
+
+        self.assertIn(one_sided_course, form.fields["course"].queryset)
+
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False, KEPCHUP_EXPLICIT_SESSION_DATES=False)
+    def test_maximum_age_only_course_is_not_selectable_for_a_too_old_child(self):
+        # Same one-sided course as test_maximum_age_only_course_is_selectable_for_a_young_
+        # child (min_birth_date=None), but with a child too old this time - the
+        # max_birth_date side of the filter still has to exclude on its own.
+        one_sided_course = CourseFactory(age_min=None, age_max=8, start_date=datetime.date.today())
+        too_old_child = ChildFactory(birth_date=one_sided_course.max_birth_date - datetime.timedelta(days=1))
+
+        form = RegistrationForm(instance=Registration(child=too_old_child))
+
+        self.assertNotIn(one_sided_course, form.fields["course"].queryset)
+
     @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=True, KEPCHUP_EXPLICIT_SESSION_DATES=True)
     def test_school_year_unrestricted_course_is_selectable_with_explicit_session_dates(self):
         # Coverage gap found 2026-08-18 auditing Montreux's real settings combo (school

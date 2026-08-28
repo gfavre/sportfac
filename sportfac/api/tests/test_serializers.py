@@ -196,6 +196,67 @@ class RegistrationSerializerTest(TenantTestCase):
         serializer = RegistrationSerializer(data=data)
         self.assertTrue(serializer.is_valid(), serializer.errors)
 
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False)
+    def test_registration_rejected_for_minimum_age_only_course(self):
+        # Same one-sided course as test_registration_accepted_for_minimum_age_only_course
+        # (max_birth_date=None), but with a child too young this time - the min_birth_date
+        # side of the check still has to reject on its own, without the other, absent,
+        # side masking it.
+        with override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False):
+            one_sided_course = CourseFactory(age_min=self.age_min, age_max=None, start_date=date.today())
+        too_young_birth_date = one_sided_course.min_birth_date + relativedelta(days=1)
+        self.child.birth_date = too_young_birth_date
+        self.child.save()
+
+        data = {
+            "child": self.child.id,
+            "course": one_sided_course.id,
+        }
+
+        serializer = RegistrationSerializer(data=data)
+        with self.assertRaises(ValidationError) as exc:
+            serializer.is_valid(raise_exception=True)
+        self.assertIn("Ce cours n'est pas ouvert aux élèves de cet âge", str(exc.exception))
+
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False)
+    def test_registration_accepted_for_maximum_age_only_course(self):
+        # Mirror of test_registration_accepted_for_minimum_age_only_course for the other
+        # one-sided case: a maximum age with deliberately no minimum (min_birth_date=None)
+        # - a course open to young children with no floor.
+        with override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False):
+            one_sided_course = CourseFactory(age_min=None, age_max=self.age_max, start_date=date.today())
+        self.child.birth_date = date.today()
+        self.child.save()
+
+        data = {
+            "child": self.child.id,
+            "course": one_sided_course.id,
+        }
+
+        serializer = RegistrationSerializer(data=data)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False)
+    def test_registration_rejected_for_maximum_age_only_course(self):
+        # Same one-sided course as test_registration_accepted_for_maximum_age_only_course
+        # (min_birth_date=None), but with a child too old this time - the max_birth_date
+        # side of the check still has to reject on its own.
+        with override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False):
+            one_sided_course = CourseFactory(age_min=None, age_max=self.age_max, start_date=date.today())
+        too_old_birth_date = one_sided_course.max_birth_date - relativedelta(days=1)
+        self.child.birth_date = too_old_birth_date
+        self.child.save()
+
+        data = {
+            "child": self.child.id,
+            "course": one_sided_course.id,
+        }
+
+        serializer = RegistrationSerializer(data=data)
+        with self.assertRaises(ValidationError) as exc:
+            serializer.is_valid(raise_exception=True)
+        self.assertIn("Ce cours n'est pas ouvert aux élèves de cet âge", str(exc.exception))
+
     def test_max_registrations_reached(self):
         """Test if the child has already reached the max number of registrations"""
         preferences = global_preferences_registry.manager()
