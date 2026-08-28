@@ -36,6 +36,20 @@ class RegistrationFormCourseQuerysetTests(TenantTestCase):
 
         self.assertIn(unrestricted_course, form.fields["course"].queryset)
 
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False, KEPCHUP_EXPLICIT_SESSION_DATES=False)
+    def test_minimum_age_only_course_is_selectable_for_an_older_child(self):
+        # Regression test (LTDP support report, "SSF - Sauvetage - 8P-Rac12", 2026-08): a
+        # course can restrict only one side (a minimum age, deliberately no maximum) -
+        # max_birth_date is then None, and `max_birth_date__lte=...` ANDed straight into
+        # the same filter made that side's SQL comparison NULL/UNKNOWN, excluding the
+        # course from this dropdown for every child regardless of eligibility.
+        one_sided_course = CourseFactory(age_min=8, age_max=None)
+        much_older_child = ChildFactory(birth_date=datetime.date(1990, 1, 1))
+
+        form = RegistrationForm(instance=Registration(child=much_older_child))
+
+        self.assertIn(one_sided_course, form.fields["course"].queryset)
+
     @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=True, KEPCHUP_EXPLICIT_SESSION_DATES=True)
     def test_school_year_unrestricted_course_is_selectable_with_explicit_session_dates(self):
         # Coverage gap found 2026-08-18 auditing Montreux's real settings combo (school

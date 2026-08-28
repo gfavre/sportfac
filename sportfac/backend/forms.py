@@ -259,13 +259,21 @@ class CourseSelectMixin:
                     Q(schoolyear_min__isnull=True) | Q(schoolyear_min__lte=min_year, schoolyear_max__gte=max_year)
                 )
             else:
+                birth_date = self.instance.child.birth_date
                 course_qs = course_qs.filter(
                     # "no restriction" comes from age_min/age_max, not min_birth_date -
                     # that derived field can go stale independently (see Course.save()).
                     Q(age_min__isnull=True, age_max__isnull=True)
-                    | Q(
-                        max_birth_date__lte=self.instance.child.birth_date,
-                        min_birth_date__gte=self.instance.child.birth_date,
+                    # A course restricting only one side (e.g. a minimum age with
+                    # deliberately no maximum) has the other bound NULL in the DB - ANDing
+                    # a `__lte`/`__gte` straight into the same Q made that side's SQL
+                    # comparison evaluate to NULL/UNKNOWN, excluding the course from this
+                    # dropdown for every child regardless of eligibility. Each side is now
+                    # null-safe on its own, matching _course_matches_birth_date
+                    # (api/views/activities_views.py) and RegistrationSerializer.validate.
+                    | (
+                        (Q(min_birth_date__isnull=True) | Q(min_birth_date__gte=birth_date))
+                        & (Q(max_birth_date__isnull=True) | Q(max_birth_date__lte=birth_date))
                     )
                 )
         except Child.DoesNotExist:

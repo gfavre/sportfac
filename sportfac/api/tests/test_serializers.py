@@ -174,6 +174,28 @@ class RegistrationSerializerTest(TenantTestCase):
             serializer.is_valid(raise_exception=True)
         self.assertIn("Ce cours n'est pas ouvert aux élèves de cet âge", str(exc.exception))
 
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False)
+    def test_registration_accepted_for_minimum_age_only_course(self):
+        # Regression test (LTDP support report, "SSF - Sauvetage - 8P-Rac12", 2026-08):
+        # a course can restrict only one side (a minimum age with deliberately no
+        # maximum, e.g. "8P-Rac12" - open-ended toward older participants) - max_birth_date
+        # is then None. Chaining it into `max_birth_date <= birth_date <= min_birth_date`
+        # raised TypeError ('<=' not supported between NoneType and date), crashing this
+        # validation with a 500 instead of accepting an eligible - here, much older - child.
+        with override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False):
+            one_sided_course = CourseFactory(age_min=self.age_min, age_max=None, start_date=date.today())
+        much_older_birth_date = date.today() - relativedelta(years=self.age_min + 20)
+        self.child.birth_date = much_older_birth_date
+        self.child.save()
+
+        data = {
+            "child": self.child.id,
+            "course": one_sided_course.id,
+        }
+
+        serializer = RegistrationSerializer(data=data)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+
     def test_max_registrations_reached(self):
         """Test if the child has already reached the max number of registrations"""
         preferences = global_preferences_registry.manager()

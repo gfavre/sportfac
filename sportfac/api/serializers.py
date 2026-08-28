@@ -321,7 +321,14 @@ class RegistrationSerializer(serializers.ModelSerializer):
                     _("This course is not opened to children of school year %(year)s") % {"year": child.school_year}
                 )
         else:
-            if course.has_age_restriction and not (course.max_birth_date <= child.birth_date <= course.min_birth_date):
+            # A course restricting only one side (e.g. a minimum age with deliberately no
+            # maximum) has the other bound as None - chaining it into this comparison would
+            # raise TypeError ('<=' not supported between NoneType and date), crashing the
+            # registration POST with a 500 instead of validating it. Each side is None-safe
+            # on its own, matching api/views/activities_views.py's _course_matches_birth_date.
+            too_young = course.min_birth_date is not None and child.birth_date > course.min_birth_date
+            too_old = course.max_birth_date is not None and child.birth_date < course.max_birth_date
+            if course.has_age_restriction and (too_young or too_old):
                 raise serializers.ValidationError(_("This course is not opened to children of this age"))
         if child.registrations.count() >= global_preferences_registry.manager()["MAX_REGISTRATIONS"]:
             raise serializers.ValidationError(_("Max number of registrations reached."))
