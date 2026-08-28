@@ -371,8 +371,15 @@ angular.module('sportfacCalendar.controllers', [])
             // being excluded immediately, not only after its next unrelated save().
             available = true;
           } else {
-            available = course.min_birth_date >= $scope.selectedChild.birth_date &&
-              course.max_birth_date <= $scope.selectedChild.birth_date;
+            // A course restricting only one side (e.g. a minimum age with deliberately no
+            // maximum) has the other bound as null - ANDing it straight into this
+            // comparison made that side always false (null <= a date string coerces to
+            // 0 <= NaN), excluding the course from the calendar for every child regardless
+            // of eligibility. Each side is now null-safe on its own, matching
+            // _course_matches_birth_date (api/views/activities_views.py) and
+            // RegistrationSerializer.validate (api/serializers.py).
+            available = (course.min_birth_date == null || course.min_birth_date >= $scope.selectedChild.birth_date) &&
+              (course.max_birth_date == null || course.max_birth_date <= $scope.selectedChild.birth_date);
           }
           let registered = registeredCourses.indexOf(course.id) !== -1;
           if (!registered && available) {
