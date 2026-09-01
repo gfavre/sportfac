@@ -20,6 +20,7 @@ from ..tasks import create_future_absences_for_registration
 from ..tasks import send_bill_confirmation
 from ..tasks import send_bill_pdf_email
 from ..tasks import send_invoice_pdf
+from ..tasks import send_reminders
 from .factories import BillFactory
 from .factories import RegistrationFactory
 
@@ -271,4 +272,45 @@ class CancelExpiredRegistrationsTest(TenantTestCase):
         mock_registration_filter.assert_called_once_with(
             status=Registration.STATUS.waiting,
             modified__lte=mock_expiration_time,
+        )
+
+
+class SendRemindersTest(TenantTestCase):
+    def setUp(self):
+        self.tenant_mock = mock.MagicMock()
+
+    @mock.patch("registrations.tasks.now")
+    @mock.patch("registrations.tasks.Bill.objects.filter")
+    @mock.patch("registrations.tasks.connection.set_tenant")
+    @mock.patch("registrations.tasks.Domain.objects.filter")
+    def test_send_reminders_filters_on_created_not_modified(
+        self, mock_domain_filter, mock_set_tenant, mock_bill_filter, mock_now
+    ):
+        # Regression test (La Tour-de-Peilz support report, 2026-09-01): this used to
+        # filter on `modified` instead of `created`. Registration.save() calls
+        # self.bill.save() on *any* unrelated save of a registration attached to the bill
+        # (an absence, a price recalc, a backend edit, ...), bumping the bill's `modified`
+        # timestamp - which silently pushed the reminder later than its intended day-5
+        # mark while cancel_expired_registrations() stayed anchored on the fixed `created`
+        # timestamp, shrinking the 48h reminder-to-cancellation window the two
+        # KEPCHUP_REGISTRATION_EXPIRE_* settings promise (both legs are measured from
+        # "Invoice", i.e. creation, per the diagram above send_reminders()).
+        settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES = 60 * 24 * 7
+        settings.KEPCHUP_REGISTRATION_EXPIRE_REMINDER_MINUTES = 60 * 48
+        mock_current_time = now()
+        mock_now.return_value = mock_current_time
+        expected_cutoff = (
+            mock_current_time
+            - timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES)
+            + timedelta(minutes=settings.KEPCHUP_REGISTRATION_EXPIRE_REMINDER_MINUTES)
+        )
+        mock_domain_filter.return_value.first.return_value.tenant = self.tenant_mock
+        mock_bill_filter.return_value = []
+
+        send_reminders()
+
+        mock_set_tenant.assert_called_once_with(self.tenant_mock)
+        mock_bill_filter.assert_called_once_with(
+            status=Bill.STATUS.waiting,
+            created__lte=expected_cutoff,
         )

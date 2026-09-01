@@ -217,9 +217,18 @@ def send_reminders(language=settings.LANGUAGE_CODE):
         translation.activate(language)
         current_domain = Domain.objects.filter(is_current=True).first()
         connection.set_tenant(current_domain.tenant)
+        # Anchored on `created`, matching cancel_expired_registrations() below and the
+        # diagram above (both legs measured from "Invoice", i.e. creation) - not
+        # `modified`, which Registration.save() bumps on *this* bill every time any of its
+        # registrations is saved for an unrelated reason (an absence, a price recalc, a
+        # backend edit, ...). Anchoring the reminder on `modified` let it drift later than
+        # its intended day-5 mark while cancellation stayed fixed at day 7, silently
+        # shrinking the 48h reminder-to-cancellation window the two settings promise
+        # (La Tour-de-Peilz support report, 2026-09-01: both delays "felt" shorter than
+        # configured).
         expired_invoices = Bill.objects.filter(
             status=Bill.STATUS.waiting,
-            modified__lte=must_be_older_than,
+            created__lte=must_be_older_than,
         )
         for invoice in expired_invoices:
             if not invoice.reminder_sent:
