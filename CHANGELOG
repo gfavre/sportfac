@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 4.7.2 - 2026-08-31
+### Fixed
+- **Coppet, 2026-08-31 incident**: `SuccessStepView.get_registration_context` (`wizard/views.py`, the wizard's final "success" page) read `invoice.validation` directly. `RegistrationValidation.invoice` is a `null=True` `OneToOneField` onto `Bill`, so its reverse accessor (`Bill.validation`) raises `RelatedObjectDoesNotExist` rather than returning `None` whenever a paid invoice has no `RegistrationValidation` yet - the normal state right after payment, before staff validates it. Crashed the success page with a `500` for every family right after paying. Now guarded with `hasattr(invoice, "validation")`, the same pattern `BaseWizardStepView.get_registration_context` already used two methods above it for the identical field
+
 ## 4.7.1 - 2026-08-28
 ### Fixed
 - **LTDP support report ("SSF - Sauvetage - 8P-Rac12")**: a course restricting only one side of the eligible age range (e.g. a minimum age with deliberately no maximum) leaves the other bound (`min_birth_date`/`max_birth_date`) `NULL`. Two call sites chained both bounds into a single comparison instead of treating each independently, so a `NULL` on either side broke the whole check:

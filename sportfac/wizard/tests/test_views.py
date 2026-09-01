@@ -8,6 +8,7 @@ from django.urls import reverse
 from profiles.tests.factories import FamilyUserFactory
 from registrations.models import Bill
 from registrations.models import Registration
+from registrations.models import RegistrationValidation
 from registrations.tests.factories import ChildFactory
 from registrations.tests.factories import ExtraInfoFactory
 from registrations.tests.factories import RegistrationFactory
@@ -17,6 +18,7 @@ from sportfac.utils import TenantTestCase
 
 from ..tests.factories import WizardStepFactory
 from ..views import ActivitiesStepView
+from ..views import SuccessStepView
 
 
 class GetRegistrationsTests(TenantTestCase):
@@ -150,6 +152,41 @@ class GetRegistrationContextQueryCountTests(TenantTestCase):
         five_registrations = self._query_count_for(5)
 
         self.assertEqual(one_registration, five_registrations)
+
+
+class SuccessStepGetRegistrationContextTests(TenantTestCase):
+    # Regression test (Coppet, 2026-08-31): SuccessStepView.get_registration_context read
+    # `invoice.validation` directly. invoice.validation is a reverse OneToOneField accessor
+    # (RegistrationValidation.invoice, null=True) - it raises RelatedObjectDoesNotExist,
+    # not None, whenever a paid invoice has no RegistrationValidation yet (the normal state
+    # right after payment, before staff validates it), crashing the wizard's success page
+    # with a 500 for every family that had just paid.
+
+    def setUp(self):
+        super().setUp()
+        self.user = FamilyUserFactory()
+        request = RequestFactory().get("/")
+        request.user = self.user
+        request.REGISTRATION_OPENED = True
+        self.view = SuccessStepView()
+        self.view.request = request
+        self.view.kwargs = {"step_slug": "success"}
+        self.view.args = []
+
+    def test_paid_invoice_without_validation_does_not_crash(self):
+        WaitingBillFactory(family=self.user, status=Bill.STATUS.paid)
+
+        context = self.view.get_registration_context()
+
+        self.assertIsNone(context["validation"])
+
+    def test_paid_invoice_with_validation_is_returned(self):
+        invoice = WaitingBillFactory(family=self.user, status=Bill.STATUS.paid)
+        validation = RegistrationValidation.objects.create(invoice=invoice, user=self.user)
+
+        context = self.view.get_registration_context()
+
+        self.assertEqual(context["validation"], validation)
 
 
 class DispatchRedirectTests(TenantTestCase):

@@ -354,7 +354,11 @@ class SuccessStepView(StaticStepView):
             "all_questions": all_questions,
             "questions_not_answered": questions_not_answered,
             "invoice": invoice,
-            "validation": invoice.validation if invoice else None,
+            # invoice.validation is a reverse OneToOneField accessor (RegistrationValidation
+            # .invoice, null=True) - it raises RelatedObjectDoesNotExist, not None, when a
+            # paid invoice has no validation yet (Coppet, 2026-08-31). hasattr() is the
+            # same guard already used above for the same field (line 169).
+            "validation": invoice.validation if invoice and hasattr(invoice, "validation") else None,
             "rentals": rentals,
         }
         return self._registration_context
