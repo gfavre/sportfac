@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 4.7.4 - 2026-09-04
+### Fixed
+- `manage.py reset_course_counters`'s confirmation prompt (`backend/management/commands/reset_course_counters.py`) built its `[y/N]` hint through `gettext()`, so on this project's default `fr-CH` locale it displayed as `[O/N]` - but the check underneath still compared the answer against the literal English `"y"`. Typing "o" (the French "oui", exactly what the on-screen hint told the user to type) never matched, so the command silently printed "Aborted." no matter the case typed. Reworked into a `_prompt_yes_no` helper (mirroring the one already used correctly by the sibling `copy_tenant_data` command): the `[y/N]` hint is now deliberately left untranslated, and an unrecognized answer re-prompts instead of quietly aborting
+
 ## 4.7.3 - 2026-09-01
 ### Fixed
 - **La Tour-de-Peilz support report**: `send_reminders` (`registrations/tasks.py`) filtered waiting invoices on `modified__lte=...` instead of `created__lte=...`, unlike the sibling task `cancel_expired_registrations` right below it (and unlike the ASCII diagram directly above the code, which measures both legs from "Invoice", i.e. creation). `Registration.save()` calls `self.bill.save()` on *any* save of a registration attached to the bill - an absence, a price recalculation, an unrelated backend edit - which bumps the bill's `modified` timestamp regardless of payment activity. Since the reminder was scheduled off that drifting timestamp while the hard cancellation cutoff stayed anchored on the fixed `created` timestamp, the reminder could go out much later than its intended "5 days in" mark while cancellation still landed at day 7 sharp - silently shrinking the 48h reminder-to-cancellation window `KEPCHUP_REGISTRATION_EXPIRE_MINUTES`/`KEPCHUP_REGISTRATION_EXPIRE_REMINDER_MINUTES` are configured to guarantee. Now anchored on `created`, like its sibling task

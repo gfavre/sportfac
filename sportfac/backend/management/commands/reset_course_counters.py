@@ -37,6 +37,22 @@ class Command(BaseCommand):
                     return tenants[i - 1]
             self.stdout.write(self.style.WARNING(_("Invalid choice, try again.")))
 
+    def _prompt_yes_no(self, question: str) -> bool:
+        # The [y/N] hint and the "y" comparison below are deliberately left untranslated:
+        # gettext() renders the confirmation prompt in the active language (fr-CH by
+        # default here), which used to translate the hint to "[O/N]" while this check kept
+        # comparing against the English "y" - so answering "o" (the French "oui", exactly
+        # what the on-screen hint told the user to type) always read as a no and silently
+        # aborted. Re-prompts instead of aborting on an unrecognized answer, matching
+        # _prompt_yes_no in the sibling copy_tenant_data command.
+        while True:
+            answer = input(f"{question} [y/N] ").strip().lower()
+            if answer in {"y", "yes"}:
+                return True
+            if answer in {"", "n", "no"}:
+                return False
+            self.stdout.write(self.style.WARNING(_("Please answer 'y' or 'n'.")))
+
     def handle(self, *args: Any, **options: Any) -> None:
         tenant = self._select_tenant()
         if not tenant:
@@ -53,8 +69,7 @@ class Command(BaseCommand):
         self.stdout.write("  uptodate                 → False")
         self.stdout.write("")
 
-        confirm = input(_("Proceed? [y/N] ")).strip().lower()
-        if confirm != "y":
+        if not self._prompt_yes_no(_("Proceed?")):
             self.stdout.write(self.style.WARNING(_("Aborted.")))
             return
 
