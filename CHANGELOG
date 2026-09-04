@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 4.8.0 - 2026-09-04
+### Added
+- `manage.py cleanup_course_data` - a second, non-destructive counterpart to `reset_course_counters`: instead of blindly zeroing everything out, it recomputes `nb_participants` and `has_waiting_list` for a tenant's courses from actual registration/waiting-list data, by re-running `Course.save()`'s own self-healing logic (the same one added for the Oron BOXE.2 incident) rather than re-deriving the counts by hand. Deliberately leaves `allow_new_participants` untouched by default - it's a manual staff choice ("more restrictive than the course being full"), not derived data, so recomputing it silently would risk reopening courses staff had closed on purpose. `--override-openness` opts into recomputing it anyway (`True` if not full, `False` if full), explicitly trading that manual choice away
+
 ## 4.7.4 - 2026-09-04
 ### Fixed
 - `manage.py reset_course_counters`'s confirmation prompt (`backend/management/commands/reset_course_counters.py`) built its `[y/N]` hint through `gettext()`, so on this project's default `fr-CH` locale it displayed as `[O/N]` - but the check underneath still compared the answer against the literal English `"y"`. Typing "o" (the French "oui", exactly what the on-screen hint told the user to type) never matched, so the command silently printed "Aborted." no matter the case typed. Reworked into a `_prompt_yes_no` helper (mirroring the one already used correctly by the sibling `copy_tenant_data` command): the `[y/N]` hint is now deliberately left untranslated, and an unrecognized answer re-prompts instead of quietly aborting
