@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 4.8.2 - 2026-09-07
+### Fixed
+- **La Tour-de-Peilz report**: `wizard/steps/user-create/` crashed with an uncaught `IntegrityError` (`duplicate key value violates unique constraint "profiles_familyuser_email_key"`). `RegistrationForm.clean_email` checks uniqueness (`email__iexact`) before `RegistrationBaseView.register()` runs, but nothing stops two near-simultaneous submissions for the same not-yet-existing email (a double form submit, browser back + resubmit, two tabs) from both passing that check before either commits - the database's unique constraint is what actually catches the second one. `form_valid` now catches that `IntegrityError` and surfaces the same "email already in use" form error `clean_email` raises for the non-race case, instead of a 500
+
 ## 4.8.1 - 2026-09-07
 ### Fixed
 - **Data integrity, found investigating a Coppet report of registrations invisible from the creating parent's account**: `FamilyUser.soft_delete()` (`profiles/models.py`) called `child.delete()` on every child still attached to the account being deleted - a real, cascading delete (`Registration.child` is `on_delete=CASCADE`, and unlike `Registration`, `Child` has no soft-delete of its own), silently wiping out that child's entire registration history rather than just the account. `merge_family_accounts` reassigns every child to the winner before calling this on the loser, so it was never at risk there - but the backend's own "delete user" button (`UserDeleteView`, `backend/views/user_views.py`) had no such guarantee, and no guard: the same mistake `ChildrenViewSet.perform_destroy` was fixed against for the 2026-08-24 Coppet incident, at a second, until-now-unguarded entry point. Now refuses the delete (`ValidationError`, surfaced as a form error rather than a 500) whenever any of the account's children still carries a live (non-canceled) registration, mirroring `perform_destroy`'s guard exactly

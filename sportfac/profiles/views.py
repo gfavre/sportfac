@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
+from django.db import IntegrityError
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -72,7 +73,19 @@ class RegistrationBaseView(FormView):
     form_class = RegistrationForm
 
     def form_valid(self, form):
-        self.register(form)
+        try:
+            self.register(form)
+        except IntegrityError:
+            # RegistrationForm.clean_email checks uniqueness (email__iexact) before this
+            # runs, but nothing stops two near-simultaneous submissions for the same
+            # not-yet-existing email (a double form submit, browser back + resubmit, two
+            # tabs...) from both passing that check before either commits - the unique
+            # constraint on FamilyUser.email is what actually catches the second one.
+            # Reported for La Tour-de-Peilz, 2026-09: left uncaught, this crashed
+            # wizard/steps/user-create/ with a 500 instead of the normal "email already
+            # in use" form error clean_email raises for the non-race case.
+            form.add_error("email", _("A user with that username already exists."))
+            return self.form_invalid(form)
         success_url = self.get_success_url()
 
         # success_url may be a simple string, or a tuple providing the

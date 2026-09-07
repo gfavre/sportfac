@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
+from django.db import IntegrityError
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.test import RequestFactory
@@ -80,6 +81,34 @@ class RegistrationViewTests(UserDataTestCaseMixin, TestCase):
         request.REGISTRATION_OPENED = False
         response = self.view(request)
         self.assertEqual(response.status_code, 200)
+
+
+class RegistrationRaceConditionTests(UserDataTestCaseMixin, TestCase):
+    def setUp(self):
+        super().setUp()
+        self.view = RegistrationView.as_view()
+        self.url = reverse("profiles:anytime_registeraccount")
+
+    @override_settings(KEPCHUP_REGISTER_ACCOUNTS_AT_ANY_TIME=True)
+    @patch("profiles.views.FamilyUser.objects.create_user")
+    def test_integrity_error_from_a_racing_duplicate_email_is_a_form_error_not_a_500(self, mock_create_user):
+        # Regression test (La Tour-de-Peilz, 2026-09): RegistrationForm.clean_email checks
+        # uniqueness (email__iexact) before this runs, but nothing stops two
+        # near-simultaneous submissions for the same not-yet-existing email (a double
+        # form submit, browser back + resubmit, two tabs...) from both passing that check
+        # before either commits - the unique constraint on FamilyUser.email is what
+        # actually catches the second one. Left uncaught, that crashed
+        # wizard/steps/user-create/ with a 500 instead of the normal "email already in
+        # use" form error.
+        mock_create_user.side_effect = IntegrityError("duplicate key value violates unique constraint")
+        request = self.factory.post(self.url, data=self.user_data)
+        request.user = AnonymousUser()
+        request.REGISTRATION_OPENED = True
+
+        response = self.view(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(FamilyUser.objects.exists())
 
 
 class LoginCaseInsensitivityTests(TestCase):
