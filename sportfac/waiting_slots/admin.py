@@ -1,10 +1,12 @@
 from django.contrib import admin
 
+from sportfac.admin_utils import SportfacModelAdmin
+
 from .models import WaitingSlot
 
 
 @admin.register(WaitingSlot)
-class WaitingSlotAdmin(admin.ModelAdmin):
+class WaitingSlotAdmin(SportfacModelAdmin):
     date_hierarchy = "created"
     list_display = ("child", "course", "created")
     list_filter = ("course__activity", "created")

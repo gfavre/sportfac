@@ -4,6 +4,7 @@ import tempfile
 
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.exceptions import ValidationError
 from django.db.models import Case
 from django.db.models import Count
 from django.db.models import When
@@ -239,10 +240,13 @@ class UserDeleteView(FullBackendMixin, SuccessMessageMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         # noinspection PyAttributeOutsideInit
         self.object = self.get_object()
-        success_url = self.get_success_url()
-        self.object.soft_delete()
+        try:
+            self.object.soft_delete()
+        except ValidationError as exc:
+            messages.error(self.request, " ".join(exc.messages))
+            return HttpResponseRedirect(self.object.get_backend_url())
         messages.success(self.request, self.get_success_message({"user": self.object.full_name}))
-        return HttpResponseRedirect(success_url)
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class UserDetailView(BackendMixin, DetailView):

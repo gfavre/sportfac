@@ -110,11 +110,11 @@ class ActivityAdmin(SportfacModelAdmin):
     )
 
 
-admin.site.register(AllocationAccount)
+admin.site.register(AllocationAccount, SportfacModelAdmin)
 
 
 @admin.register(ExtraNeed)
-class ExtraNeedAdmin(admin.ModelAdmin):
+class ExtraNeedAdmin(SportfacModelAdmin):
     filter_horizontal = ("courses",)
 
 
@@ -195,7 +195,7 @@ class CoursesAdmin(SportfacAdminMixin, ImportExportModelAdmin):
 
 
 @admin.register(TemplatedEmailReceipt)
-class TemplatedEmailReceiptAdmin(admin.ModelAdmin):
+class TemplatedEmailReceiptAdmin(SportfacModelAdmin):
     list_display = ("type", "course")
     raw_id_fields = ("course",)
     readonly_fields = ("created", "modified")
@@ -221,7 +221,7 @@ class FlatPageCustom(SportfacAdminMixin, FlatPageAdmin):
 
 
 @admin.register(PaySlip)
-class PaySlipAdmin(admin.ModelAdmin):
+class PaySlipAdmin(SportfacModelAdmin):
     date_hierarchy = "created"
     list_display = ("instructor", "get_course", "start_date", "end_date")
     list_filter = ("function",)

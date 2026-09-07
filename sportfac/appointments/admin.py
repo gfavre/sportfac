@@ -2,11 +2,16 @@ from django.contrib import admin
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from .models import Appointment, AppointmentSlot, AppointmentType, Rental
+from sportfac.admin_utils import SportfacModelAdmin
+
+from .models import Appointment
+from .models import AppointmentSlot
+from .models import AppointmentType
+from .models import Rental
 
 
 @admin.register(AppointmentSlot)
-class AppointmentSlotAdmin(admin.ModelAdmin):
+class AppointmentSlotAdmin(SportfacModelAdmin):
     list_display = ("formatted_start", "formatted_end", "places", "appointment_type")
     ordering = ("start", "end")
 
@@ -26,7 +31,7 @@ class AppointmentSlotAdmin(admin.ModelAdmin):
 
 
 @admin.register(Appointment)
-class AppointmentAdmin(admin.ModelAdmin):
+class AppointmentAdmin(SportfacModelAdmin):
     list_display = ("slot", "child", "created", "modified")
     raw_id_fields = ("slot", "child", "family")
     search_fields = (
@@ -41,7 +46,7 @@ class AppointmentAdmin(admin.ModelAdmin):
 
 
 @admin.register(AppointmentType)
-class AppointmentTypeAdmin(admin.ModelAdmin):
+class AppointmentTypeAdmin(SportfacModelAdmin):
     list_display = ("label", "formatted_start", "formatted_end")
     ordering = ("start", "end")
 
@@ -61,7 +66,7 @@ class AppointmentTypeAdmin(admin.ModelAdmin):
 
 
 @admin.register(Rental)
-class RentalAdmin(admin.ModelAdmin):
+class RentalAdmin(SportfacModelAdmin):
     list_display = ("child", "pickup_appointment", "return_appointment", "created", "modified")
     raw_id_fields = ("child", "invoice", "pickup_appointment", "return_appointment")
     search_fields = (

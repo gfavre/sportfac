@@ -428,7 +428,28 @@ class FamilyUser(PermissionsMixin, AbstractBaseUser):
             transaction.on_commit(lambda: save_to_master(self.pk, kwargs.get("using", LOCAL_DB)))
 
     def soft_delete(self):
+        from django.core.exceptions import ValidationError
+
         from activities.models import CoursesInstructors
+        from registrations.models import Registration
+
+        # child.delete() below is a real, cascading delete (Registration.child is
+        # on_delete=CASCADE, and unlike Registration, Child has no soft-delete of its
+        # own) - so a family that still has a child carrying live (non-canceled)
+        # registrations would silently wipe out that registration history, not just the
+        # account. merge_family_accounts already reassigns every child to the winner
+        # before calling soft_delete() on the loser, so this should be a no-op there;
+        # it exists to catch the same mistake ChildrenViewSet.perform_destroy was fixed
+        # against (2026-08-24 Coppet incident) at this other entry point
+        # (UserDeleteView, backend/views/user_views.py) - deleting a user whose children
+        # were never reassigned first.
+        if Registration.objects.filter(child__family=self).exists():
+            raise ValidationError(
+                _(
+                    "This user has children with active registrations and cannot be "
+                    "removed. Reassign or cancel those registrations first."
+                )
+            )
 
         self.is_active = False
         self.email = f"deleted_{self.pk}_{self.email}"

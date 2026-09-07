@@ -1,7 +1,11 @@
+from django.core.exceptions import ValidationError
+
 from activities.tests.factories import CourseFactory
 from registrations.models import Child
+from registrations.models import Registration
 from registrations.models import RegistrationsProfile
 from registrations.tests.factories import ChildFactory
+from registrations.tests.factories import RegistrationFactory
 from sportfac.utils import TenantTestCase as TestCase
 
 from ..models import FamilyUser
@@ -42,6 +46,36 @@ class FamilyUserTests(TestCase):
     def test_soft_delete_removes_children(self):
         ChildFactory(family=self.family_user)
         self.family_user.soft_delete()
+        self.assertEqual(Child.objects.count(), 0)
+
+    def test_soft_delete_refuses_when_a_child_has_active_registrations(self):
+        # Regression test: child.delete() below is a real, cascading delete
+        # (Registration.child is on_delete=CASCADE, and unlike Registration, Child has
+        # no soft-delete of its own) - so deleting a user whose children still carry
+        # live registrations used to silently wipe out that registration history
+        # instead of just the account, reachable from the backend's "delete user"
+        # button (UserDeleteView) whenever a child wasn't reassigned first - the same
+        # mistake ChildrenViewSet.perform_destroy was fixed against for the 2026-08-24
+        # Coppet incident, at this other entry point.
+        child = ChildFactory(family=self.family_user)
+        RegistrationFactory(child=child, status=Registration.STATUS.valid)
+
+        with self.assertRaises(ValidationError):
+            self.family_user.soft_delete()
+
+        self.family_user.refresh_from_db()
+        child.refresh_from_db()
+        self.assertTrue(self.family_user.is_active)
+        self.assertEqual(child.family_id, self.family_user.pk)
+
+    def test_soft_delete_ignores_canceled_registrations(self):
+        # A canceled registration isn't "live" - it must not block the delete, matching
+        # Child.has_registrations' own definition (excludes canceled).
+        child = ChildFactory(family=self.family_user)
+        RegistrationFactory(child=child, status=Registration.STATUS.canceled)
+
+        self.family_user.soft_delete()
+
         self.assertEqual(Child.objects.count(), 0)
 
     def test_save_lowercases_email(self):

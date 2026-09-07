@@ -5,11 +5,13 @@ from django.utils.translation import gettext_lazy as _
 
 from sportfac.admin_utils import SportfacModelAdmin
 
-from .models import Attachment, GenericEmail, MailArchive
+from .models import Attachment
+from .models import GenericEmail
+from .models import MailArchive
 
 
 @admin.register(Attachment)
-class AttachmentAdmin(admin.ModelAdmin):
+class AttachmentAdmin(SportfacModelAdmin):
     date_hierarchy = "created"
     list_display = ("filename", "get_mail", "created")
     list_filter = ("created",)
