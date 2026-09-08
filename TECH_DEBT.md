@@ -191,24 +191,16 @@ analysis are already fixed — see the CHANGELOG's Unreleased section.
   fixed on `CourseAccessMixin` (see CHANGELOG) — worth the same treatment if
   those views show up slow.
 
-## Local `TenantTestCase` suite is currently broken (`cache.delete_pattern`)
+## Resolved: local `TenantTestCase` suite and `cache.delete_pattern`
 
-Found 2026-08-18 while writing/running the session-replay tests above.
-`backend/signals.py:11`'s `clear_tenant_cache()` (wired to `YearTenant`'s
-`post_save`/`post_delete`, so it fires on every `TenantTestCase` tenant
-setup) calls `cache.delete_pattern("tenants_context_user_*")` — a
-`django-redis`-only method, already flagged as such by an existing comment
-on that line (`# ⚠️ selon backend, si Redis -> tu peux utiliser
-cache.delete_pattern`). `sportfac/settings/test.py:41` configures
-`django.core.cache.backends.locmem.LocMemCache`, which has no
-`delete_pattern` — so `setUpClass` raises for **every** `TenantTestCase` in
-the repo, confirmed by running the pre-existing `wizard/tests/test_views.py`
-and `test_workflow.py`, not just new tests. Also needs `DB_NAME=kepchup`
-set locally (peer-auth Postgres) to get past the settings import at all.
-Not yet fixed — either switch `CACHES["default"]` in `settings/test.py` to
-`django-redis` (if a local Redis is an acceptable test dependency) or guard
-`_invalidate_all_tenant_caches()` to no-op / fall back to `cache.clear()`
-when the configured backend doesn't support `delete_pattern`.
+This entry is no longer active technical debt. `backend/signals.py` now guards
+the tenant-cache invalidation path: Redis backends still use
+`cache.delete_pattern("tenants_context_user_*")`, while local/test cache
+backends that do not expose `delete_pattern` fall back to `cache.clear()`.
+
+Regression coverage exists in `backend/tests/test_signals.py` for both the
+Redis-style path and the non-Redis fallback. Keep this note as context for why
+the signal does not call `delete_pattern` unconditionally.
 
 ## Per-tenant behavior flags hardcoded in settings.py instead of dynamic_preferences
 
