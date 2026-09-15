@@ -226,6 +226,7 @@ SHARED_APPS = (
     "ckeditor",  # wysiwyg editor
     "ckeditor_uploader",
     "crispy_forms",  # better forms => DRY
+    "crispy_bootstrap3",  # template pack for crispy-forms 2.x
     "dbtemplates",  # store templates in db (used by mailer module)
     "django_countries",  # country field selector
     "dynamic_preferences",

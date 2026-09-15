@@ -185,8 +185,11 @@ rather than leaping directly:
       Celery tasks against it — this is the single most load-bearing unknown.
 - [ ] Read django-tenants' CHANGELOG for the 3.3→3.14(ish) range for breaking
       changes, not just the Django-version classifier.
-- [ ] Check prod's actual Postgres version against django-tenants' PG13+
-      requirement.
+- [ ] Check prod's actual Postgres version against Django 4.2's PostgreSQL
+      12+ requirement and django-tenants' PostgreSQL 13+ requirement. Local
+      migration testing is currently blocked because the Django connection
+      reaches PostgreSQL 10.23, even though the installed `psql` client is
+      14.8.
 - [ ] Check `django-anymail`'s Django 5.2 support (not yet researched).
 - [ ] Smoke-test the 3 `djangorestframework-datatables` views
       (`DashboardFamilyView`/`Instructors`/`Managers`) during the 4.2 hop —
