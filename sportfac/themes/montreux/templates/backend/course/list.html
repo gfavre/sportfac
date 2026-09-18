@@ -1,5 +1,5 @@
 {% extends "backend/base.html" %}
-{% load duration i18n sekizai_tags %}
+{% load duration i18n sekizai_tags static %}
 
 {% block title %}{% translate "View courses" %} - {{ block.super }}{% endblock %}
 
@@ -19,9 +19,11 @@
     <script type="text/javascript"
             src="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.js"></script>
 
+    <script src="{% static 'backend/js/datatable-url-state.js' %}?v=1"></script>
+
     <script>
       $(function () {
-        var table = $('.table').DataTable({
+        var table = window.dataTableUrlState('#course-table', {
           {% if LANGUAGE_CODE == 'fr' %}
             "language": {
               "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
@@ -89,7 +91,7 @@
     <form class="convocations" method="GET"
           action="{% url 'backend:courses-mail-confirmation' %}">
       <button type="submit" class="btn btn-secondary needs-select disabled">
-        <i class="icon-mail"></i>&nbsp;{% trans "Convocation email" %}
+        <i class="icon-mail"></i>&nbsp;{% translate "Convocation email" %}
       </button>
     </form>
   </div>
@@ -98,7 +100,7 @@
     <form class="instructors" method="GET"
           action="{% url 'backend:courses-mail-instructors' %}">
       <button type="submit" class="btn btn-secondary needs-select disabled">
-        <i class="icon-tasks"></i>&nbsp;{% trans "Infos to instructors" %}
+        <i class="icon-tasks"></i>&nbsp;{% translate "Infos to instructors" %}
       </button>
     </form>
   </div>
@@ -107,13 +109,13 @@
     <form class="visibility" method="POST"
           action="{% url 'backend:courses-toggle-visibility' %}">{% csrf_token %}
       <button type="submit" class="btn btn-secondary needs-select disabled">
-        <i class="icon-eye-off"></i>&nbsp;{% trans "Toggle visibility" %}
+        <i class="icon-eye-off"></i>&nbsp;{% translate "Toggle visibility" %}
       </button>
     </form>
   </div>
 
 
-  <table class="table">
+  <table id="course-table" class="table">
     <thead>
     <tr>
       <th class="text-nowrap">{% translate "Identifier" %}</th>
@@ -182,7 +184,7 @@
           {% else %}
             {{ course.count_participants }}&nbsp;/&nbsp;{{ course.max_participants }}
           {% endif %}
-          {% if not course.allow_new_participants %}<br><i class="icon icon-minus-circled text-danger"></i> <small>{% trans "Registrations not allowed "%}</small>{% endif %}
+          {% if not course.allow_new_participants %}<br><i class="icon icon-minus-circled text-danger"></i> <small>{% translate "Registrations not allowed " %}</small>{% endif %}
         </td>
         <td>
           <ul class="list-unstyled">
@@ -196,7 +198,7 @@
               </li>
             {% endif %}
             <li class="text-nowrap">
-              <a href="{{ course.get_update_url }}" class="btn btn-sm">
+              <a href="{{ course.get_update_url }}" data-list-return class="btn btn-sm">
                 <i class="icon-edit"></i>&nbsp;{% translate "Update course" %}
               </a>
             </li>

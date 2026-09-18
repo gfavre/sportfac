@@ -1,5 +1,5 @@
 {% extends "backend/base.html" %}
-{% load duration i18n sekizai_tags %}
+{% load duration i18n sekizai_tags static %}
 
 {% block title %}{% translate "View courses" %} - {{ block.super }}{% endblock %}
 
@@ -18,9 +18,11 @@
     <script type="text/javascript"
             src="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.js"></script>
 
+    <script src="{% static 'backend/js/datatable-url-state.js' %}?v=1"></script>
+
     <script>
       $(function () {
-        let table = $('.table').DataTable({
+        let table = window.dataTableUrlState('#course-table', {
           {% if LANGUAGE_CODE == 'fr' %}
             language: {
               url: "{{ STATIC_URL }}js/vendor/datatables/French.json"
@@ -33,27 +35,16 @@
             {'bSortable': false, 'bSearchable': false, 'aTargets': [-1]}
           ],
           paging: false
-        });
+        }, [{
+          param: 'only_js', column: 8, selector: 'input[name=only_js]',
+          defaultValue: 'both', values: {both: '', announced: 'true', notannounced: 'false'}
+        }]);
         table.on('select', function () {
           $('.needs-select').removeClass('disabled');
         });
         table.on('deselect', function () {
           if (table.rows({selected: true}).count() === 0) {
             $('.needs-select').addClass('disabled');
-          }
-        });
-
-        $('input[type=radio][name="only_js"]').change(function () {
-          switch ($(this).val()) {
-            case 'announced':
-              table.columns(8).search('true').draw();
-              break;
-            case 'notannounced':
-              table.columns(8).search('false').draw();
-              break;
-            case 'both':
-              table.columns(8).search('').draw();
-              break;
           }
         });
 
@@ -140,7 +131,7 @@
       <input type="radio" name="only_js" value="both" checked="checked"> {% translate "Both" %}
     </label></div>
 
-  <table class="table">
+  <table id="course-table" class="table">
     <thead>
     <tr>
       <th class="text-nowrap">{% translate "Identifier" %}</th>
@@ -244,7 +235,7 @@
               </li>
             {% endif %}
             <li class="text-nowrap">
-              <a href="{{ course.get_update_url }}" class="btn btn-sm">
+              <a href="{{ course.get_update_url }}" data-list-return class="btn btn-sm">
                 <i class="icon-edit"></i>&nbsp;{% translate "Update course" %}
               </a>
             </li>

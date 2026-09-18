@@ -4,6 +4,7 @@ from urllib.parse import urlencode
 from django.contrib.auth.models import AnonymousUser
 from django.forms.models import model_to_dict
 from django.test import RequestFactory
+from django.test import SimpleTestCase
 from django.test import override_settings
 from django.urls import reverse
 
@@ -392,6 +393,23 @@ class CourseUpdateViewTests(TenantTestCase):
         content = response.render().content
         self.assertTrue(len(content) > 0)
 
+    def test_cancel_preserves_list_search(self):
+        self.request.GET = self.request.GET.copy()
+        self.request.GET["list_query"] = urlencode({"q": "diablerets"})
+        response = self.view(self.request, course=self.course.pk)
+        self.assertContains(response, reverse("backend:course-list") + "?q=diablerets")
+
+    @patch("django.contrib.messages.success")
+    @override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False)
+    def test_save_preserves_list_search(self, _):
+        self.request.GET = self.request.GET.copy()
+        self.request.GET["list_query"] = urlencode({"q": "diablerets"})
+        self.request.method = "POST"
+        self.request.POST = self.data
+        response = self.view(self.request, course=self.course.pk)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("backend:course-list") + "?q=diablerets")
+
     @patch("django.contrib.messages.success")
     @override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False)
     def test_post_is_302(self, _):
@@ -400,3 +418,16 @@ class CourseUpdateViewTests(TenantTestCase):
         response = self.view(self.request, course=self.course.pk)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse("backend:course-list"))
+
+
+class CourseListReturnTests(SimpleTestCase):
+    def test_return_state_is_encoded_and_destination_is_fixed(self):
+        state = {"q": "ski & été", "order": '[[1,"desc"]]', "only_js": "announced"}
+        view = CourseUpdateView()
+        view.request = RequestFactory().get("/edit/", {"list_query": urlencode(state)})
+        self.assertEqual(view.get_success_url(), reverse("backend:course-list") + "?" + urlencode(state))
+
+    def test_unrelated_parameters_cannot_change_destination(self):
+        view = CourseUpdateView()
+        view.request = RequestFactory().get("/edit/", {"list_query": "next=https://example.com"})
+        self.assertEqual(view.get_success_url(), reverse("backend:course-list"))

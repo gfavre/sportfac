@@ -4,6 +4,8 @@ import json
 import os
 import re
 from tempfile import mkdtemp
+from urllib.parse import parse_qsl
+from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib import messages
@@ -168,9 +170,22 @@ class CourseUpdateView(SuccessMessageMixin, CourseMixin, UpdateView):
     success_url = reverse_lazy("backend:course-list")
     success_message = _('<a href="%(url)s" class="alert-link">Course (%(number)s)</a> has been updated.')
 
+    def get_success_url(self):
+        # Only carry table state; never accept a caller-supplied redirect destination.
+        query = urlencode(
+            [
+                (key, value)
+                for key, value in parse_qsl(self.request.GET.get("list_query", ""))
+                if key in {"q", "order", "only_js"}
+            ]
+        )
+        url = str(self.success_url)
+        return f"{url}?{query}" if query else url
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["extra_needs"] = ExtraNeed.objects.all()
+        context["course_list_url"] = self.get_success_url()
         return context
 
     def get_form_class(self):

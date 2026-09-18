@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+### Fixed
+- Course lists retain their search, sorting and J+S filter in the URL when returning from editing a course, including after saving or cancelling. Shared URL-state handling also covers the Montreux course list.
+
 ## 4.8.2 - 2026-09-07
 ### Fixed
 - **La Tour-de-Peilz report**: `wizard/steps/user-create/` crashed with an uncaught `IntegrityError` (`duplicate key value violates unique constraint "profiles_familyuser_email_key"`). `RegistrationForm.clean_email` checks uniqueness (`email__iexact`) before `RegistrationBaseView.register()` runs, but nothing stops two near-simultaneous submissions for the same not-yet-existing email (a double form submit, browser back + resubmit, two tabs) from both passing that check before either commits - the database's unique constraint is what actually catches the second one. `form_valid` now catches that `IntegrityError` and surfaces the same "email already in use" form error `clean_email` raises for the non-race case, instead of a 500
