@@ -1,8 +1,12 @@
 from django.core.exceptions import ValidationError
+from django.db import connection
 from django.test import override_settings
+from django.test.utils import CaptureQueriesContext
 
+from activities.tests.factories import CourseFactory
 from registrations.bibs import generate_bibs
 from registrations.forms import TransportForm
+from registrations.models import Child
 from registrations.models import Registration
 from registrations.models import Transport
 from registrations.tests.factories import ChildFactory
@@ -81,3 +85,30 @@ class GenerateBibsTests(TenantTestCase):
             generate_bibs()
         children[-1].registrations.all().delete()
         self.assertEqual(generate_bibs(), 99)
+
+    def test_generating_400_bibs_uses_bounded_queries_and_one_bulk_update(self):
+        first = ChildFactory()
+        children = [first] + ChildFactory.create_batch(399, family=first.family)
+        cars = [self.car] + [
+            Transport.objects.create(name=f"Car {prefix}", bib_prefix=prefix) for prefix in range(4, 8)
+        ]
+        course = CourseFactory()
+        Registration.objects.bulk_create(
+            [
+                Registration(child=child, course=course, transport=cars[index // 80])
+                for index, child in enumerate(children)
+            ]
+        )
+
+        with CaptureQueriesContext(connection) as queries:
+            self.assertEqual(generate_bibs(), 400)
+
+        # Count data queries, excluding transaction and tenant search_path statements.
+        selects = [query for query in queries if query["sql"].lstrip().upper().startswith("SELECT ")]
+        updates = [query for query in queries if query["sql"].lstrip().upper().startswith("UPDATE ")]
+        self.assertEqual(len(selects), 4)
+        self.assertEqual(len(updates), 1)
+        self.assertEqual(
+            set(Child.objects.filter(pk__in=[child.pk for child in children]).values_list("bib_number", flat=True)),
+            {f"{car.bib_prefix}{rank:02d}" for car in cars for rank in range(1, 81)},
+        )
