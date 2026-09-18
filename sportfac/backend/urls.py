@@ -142,6 +142,7 @@ registrations_patterns = [
     path("bills/<int:pk>/pay", view=views.BillUpdateView.as_view(), name="bill-update"),
     path("bills/export", view=views.BillExportView.as_view(), name="bill-export"),
     path("transport", view=views.TransportListView.as_view(), name="transport-list"),
+    path("transport/generate-bibs/", view=views.GenerateBibsView.as_view(), name="transport-generate-bibs"),
     path("transport/<int:pk>/", view=views.TransportDetailView.as_view(), name="transport-detail"),
     path(
         "transport/<int:pk>/update",

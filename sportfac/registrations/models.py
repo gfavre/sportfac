@@ -444,6 +444,7 @@ class Registration(TimeStampedModel, StatusModel):
 
 class Transport(TimeStampedModel):
     name = models.CharField(_("Label"), max_length=60, db_index=True, blank=False)
+    bib_prefix = models.PositiveIntegerField(_("Préfixe des dossards"), null=True, blank=True, unique=True)
 
     class Meta:
         verbose_name = _("Transport")

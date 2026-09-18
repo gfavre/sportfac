@@ -6,6 +6,7 @@ from io import BytesIO
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.db import connection
 from django.db import transaction
@@ -39,8 +40,11 @@ from backend.forms import ExtraInfoFormSet
 from backend.forms import RegistrationForm
 from backend.forms import SendConfirmationForm
 from profiles.models import FamilyUser as User
+from registrations.bibs import generate_bibs
+from registrations.forms import AssignBibsTransportForm
 from registrations.forms import BillExportForm
 from registrations.forms import BillForm
+from registrations.forms import GenerateBibsForm
 from registrations.forms import MoveRegistrationsForm
 from registrations.forms import MoveTransportForm
 from registrations.forms import TransportForm
@@ -598,6 +602,94 @@ class BillUpdateView(ListReturnMixin, SuccessMessageMixin, FullBackendMixin, Upd
 class TransportListView(FullBackendMixin, ListView):
     model = Transport
     template_name = "backend/registration/transport-list.html"
+
+
+class GenerateBibsView(FullBackendMixin, FormView):
+    form_class = GenerateBibsForm
+    template_name = "backend/registration/generate-bibs.html"
+    success_url = reverse_lazy("backend:transport-list")
+
+    def get_children(self):
+        children = {}
+        for registration in Registration.objects.select_related("child", "course", "transport"):
+            entry = children.setdefault(
+                registration.child_id, {"child": registration.child, "registrations": [], "cars": set()}
+            )
+            entry["registrations"].append(registration)
+            entry["cars"].add(registration.transport_id)
+        return list(children.values())
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        children = self.get_children()
+        transports = list(Transport.objects.order_by("name", "pk"))
+        assignment_form = kwargs.get("assignment_form") or AssignBibsTransportForm(
+            children=children, transports=transports
+        )
+        pending = []
+        for entry in children:
+            entry["transport_field"] = assignment_form[f"child_{entry['child'].pk}"]
+            entry["car_ids"] = " ".join(str(car_id) if car_id is not None else "none" for car_id in entry["cars"])
+            if None in entry["cars"]:
+                entry["reason"] = _("Affectation au car incomplète")
+            elif len(entry["cars"]) > 1:
+                entry["reason"] = _("Plusieurs cars affectés au même enfant")
+            elif entry["registrations"][0].transport.bib_prefix is None:
+                entry["reason"] = _("Préfixe du car manquant")
+                entry["reason_url"] = entry["registrations"][0].transport.update_url
+            else:
+                continue
+            pending.append(entry)
+        context.update(
+            children_count=len(children),
+            ready_count=len(children) - len(pending),
+            pending_children=pending,
+            can_generate=bool(children) and not pending,
+            children=children,
+            transports=transports,
+            assignment_form=assignment_form,
+        )
+        return context
+
+    def post(self, request, *args, **kwargs):
+        if request.POST.get("action") != "assign":
+            return super().post(request, *args, **kwargs)
+        with transaction.atomic():
+            # Match the lock order used by bib generation.
+            transports = list(Transport.objects.select_for_update().order_by("pk"))
+            list(Registration.objects.select_for_update().order_by("pk").values_list("pk", flat=True))
+            form = AssignBibsTransportForm(request.POST, children=self.get_children(), transports=transports)
+            if not form.is_valid():
+                return self.render_to_response(self.get_context_data(assignment_form=form))
+            count = 0
+            for name in form.changed_data:
+                car_id = form.cleaned_data[name]
+                if car_id:
+                    # Changing only transport must not trigger billing/capacity side effects of save().
+                    Registration.objects.filter(child_id=int(name.removeprefix("child_"))).update(
+                        transport_id=int(car_id), modified=now()
+                    )
+                    count += 1
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            context = self.get_context_data()
+            # Keep the summary global, but return only rows submitted by this save.
+            context["children"] = [
+                entry for entry in context["children"] if f"child_{entry['child'].pk}" in request.POST
+            ]
+            response = self.render_to_response(context)
+            response["X-Bib-Saved"] = "true"
+            return response
+        messages.success(request, _("Affectations enregistrées pour %(count)s enfant(s).") % {"count": count})
+        return HttpResponseRedirect(reverse_lazy("backend:transport-generate-bibs"))
+
+    def form_valid(self, form):
+        try:
+            count = generate_bibs(overwrite=form.cleaned_data["overwrite"])
+        except ValidationError as error:
+            form.add_error(None, error)
+            return self.form_invalid(form)
+        messages.success(self.request, _("%(count)s dossards générés.") % {"count": count})
+        return super().form_valid(form)
 
 
 class TransportDetailView(ListReturnMixin, FullBackendMixin, DetailView):

@@ -300,10 +300,36 @@ class MoveTransportForm(forms.Form):
         self.helper.field_class = "col-sm-10"
 
 
+class AssignBibsTransportForm(forms.Form):
+    def __init__(self, *args, children, transports, **kwargs):
+        super().__init__(*args, **kwargs)
+        choices = [("", _("Choisir un car"))]
+        choices.extend((str(car.pk), car.name) for car in transports)
+        for entry in children:
+            car_id = next(iter(entry["cars"])) if len(entry["cars"]) == 1 else None
+            self.fields[f"child_{entry['child'].pk}"] = forms.ChoiceField(
+                choices=choices,
+                required=False,
+                initial=str(car_id) if car_id else "",
+                label=str(entry["child"]),
+                widget=forms.Select(attrs={"class": "form-control bib-transport"}),
+            )
+
+
+class GenerateBibsForm(forms.Form):
+    overwrite = forms.BooleanField(
+        label=_("Remplacer les dossards existants (les listes déjà imprimées devront être refaites)"), required=False
+    )
+
+
 class TransportForm(forms.ModelForm):
     class Meta:
         model = Transport
-        fields = ("name",)
+        fields = ("name", "bib_prefix")
+        help_texts = {
+            "name": _("Nom du car affiché dans les listes, les inscriptions et les documents."),
+            "bib_prefix": _("Saisissez un nombre entier : par exemple, 3 pour générer les dossards 301, 302, etc."),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

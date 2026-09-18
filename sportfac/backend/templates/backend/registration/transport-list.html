@@ -31,11 +31,15 @@ $(function () {
 {% endaddtoblock %}
 <a href="{% url 'backend:transport-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% translate "New transport" %}</a>
 <hr>
+{% if BIB_NUMBERS %}
+<a href="{% url 'backend:transport-generate-bibs' %}" class="btn btn-primary">{% translate "Générer les dossards" %}</a>
+{% endif %}
 
 <table id="list-table" class="table">
   <thead>
     <tr>
       <th class="text-nowrap">{% translate "Name" %}</th>
+      <th>{% translate "Préfixe des dossards" %}</th>
       <th class="text-nowrap">{% translate "Registrations" %}</th>
       <th class="text-nowrap">{% translate "Actions" %}</th>
     </tr>
@@ -43,6 +47,7 @@ $(function () {
   {% for transport in transport_list %}
    <tr>
       <td><a href="{{ transport.backend_url }}">{{ transport.name }}</a></td>
+      <td>{{ transport.bib_prefix|default_if_none:"—" }}</td>
       <td>{{ transport.participants.count }}</td>
       <td>
         <ul class="list-unstyled">

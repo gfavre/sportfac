@@ -1,0 +1,299 @@
+{% extends "backend/base.html" %}
+{% load i18n sekizai_tags static %}
+
+{% block title %}{% translate "Préparer les dossards" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Préparer les dossards" %}{% endblock %}
+
+{% block content %}
+<style>
+  .bib-preparation h2 { font-size: 22px; margin: 0 0 12px; }
+  .bib-preparation .bib-intro { margin-bottom: 24px; }
+  .bib-preparation .bib-bulk-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding: 12px; background: #f4f6f8; border: 1px solid #dce1e6; border-bottom: 0; }
+  .bib-preparation .bib-bulk-toolbar label { margin: 0; }
+  .bib-preparation .bib-bulk-toolbar select { width: auto; min-width: 180px; max-width: 100%; }
+  .bib-preparation #bib-children td { vertical-align: middle; }
+  .bib-preparation #bib-children th:first-child { width: 90px; }
+  .bib-preparation .bib-transport { min-width: 150px; width: 100%; }
+  .bib-preparation .assignment-status { display: block; margin-top: 4px; }
+  .bib-preparation #bib-children tr[data-pending="pending"] > td { background: #fff8e8; }
+  .bib-preparation #bib-children tr[data-pending="pending"] > td:first-child { border-left: 3px solid #c78b16; }
+  .bib-preparation .bib-state { display: inline-block; font-size: 13px; font-weight: 600; padding: 4px 8px; border-radius: 4px; }
+  .bib-preparation .bib-state-warning { color: #805600; background: #ffedbd; }
+  .bib-preparation .bib-state-ready { color: #23663b; background: #e6f4eb; }
+  .bib-preparation .bib-reason { display: block; margin-top: 6px; font-size: 13px; }
+  .bib-preparation .bib-generation { margin-top: 32px; padding: 24px; border: 1px solid #d6dde4; border-top: 3px solid #536d82; border-radius: 4px; background: #f7f9fb; }
+  .bib-preparation #bib-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 16px 0; }
+  .bib-preparation .bib-replace { display: flex; align-items: flex-start; gap: 8px; margin: 20px 0; font-weight: normal; }
+  .bib-preparation .bib-replace input { position: static; margin: 3px 0 0; flex-shrink: 0; }
+  .bib-preparation .bib-generation .form-group { margin-bottom: 0; }
+  .bib-preparation details summary { cursor: pointer; color: #526777; }
+</style>
+<div class="bib-preparation">
+<p class="bib-intro">{% translate "Complétez les affectations aux cars, puis générez les dossards pour tous les enfants." %}</p>
+{% if children %}
+<h2>{% translate "1. Répartir les enfants" %}</h2>
+<p class="text-muted">{% translate "Les changements sont enregistrés automatiquement sur toutes les inscriptions actives de l’enfant." %}</p>
+<div class="row">
+  <div class="col-sm-6 form-group">
+    <label for="filter-car">{% translate "Filtrer par car" %}</label>
+    <select id="filter-car" class="form-control">
+      <option value="">{% translate "Tous les cars" %}</option>
+      <option value="none">{% translate "Sans car" %}</option>
+      {% for transport in transports %}<option value="{{ transport.pk }}">{{ transport.name }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="col-sm-6 form-group">
+    <label for="filter-state">{% translate "État" %}</label>
+    <select id="filter-state" class="form-control">
+      <option value="pending" selected>{% translate "À compléter" %}</option>
+      <option value="all">{% translate "Tous les enfants" %}</option>
+    </select>
+  </div>
+</div>
+<form method="post" action="{% url 'backend:transport-generate-bibs' %}" id="assign-bib-transports">
+{% csrf_token %}
+<input type="hidden" name="action" value="assign">
+{{ assignment_form.non_field_errors }}
+<div id="bib-bulk-toolbar" class="bib-bulk-toolbar">
+  <label for="bulk-transport">{% translate "Affecter la sélection au car" %}</label>
+  <select id="bulk-transport" class="form-control" disabled>
+    <option value="">{% translate "Choisir un car" %}</option>
+    {% for transport in transports %}<option value="{{ transport.pk }}">{{ transport.name }}</option>{% endfor %}
+  </select>
+  <small class="text-muted">{% translate "Cochez les enfants sur cette page, puis choisissez leur car." %}</small>
+</div>
+<table id="bib-children" class="table table-striped">
+  <thead>
+    <tr>
+      <th><label><input type="checkbox" id="select-all-children" aria-label="{% translate 'Sélectionner les enfants de cette page' %}"> {% translate "Sélection" %}</label></th>
+      <th>{% translate "Enfant" %}</th>
+      <th>{% translate "Car à affecter" %}</th>
+      <th>{% translate "État" %}</th>
+      <th>{% translate "Inscriptions et cars" %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for entry in children %}
+    <tr data-child="{{ entry.child.pk }}" data-cars="{{ entry.car_ids }}" data-pending="{% if entry.reason %}pending{% endif %}">
+      <td><input type="checkbox" class="select-child" aria-label="{{ entry.child }}"></td>
+      <td><a href="{{ entry.child.backend_url }}">{{ entry.child.last_name }} {{ entry.child.first_name }}</a></td>
+      <td>
+        {{ entry.transport_field.errors }}{{ entry.transport_field }}
+        <small class="assignment-status" role="status" aria-live="polite"></small>
+      </td>
+      <td>
+        {% if entry.reason %}
+        <span class="bib-state bib-state-warning">⚠ {% translate "À compléter" %}</span>
+        <span class="bib-reason">
+        {% if entry.reason_url %}
+          <a href="{{ entry.reason_url }}">{{ entry.reason }}</a>
+        {% else %}
+          {{ entry.reason }}
+        {% endif %}
+        </span>
+        {% else %}
+        <span class="bib-state bib-state-ready">✓ {% translate "Prêt" %}</span>
+        {% endif %}
+      </td>
+      <td>
+        <details>
+        <summary>{% blocktranslate count count=entry.registrations|length %}{{ count }} inscription{% plural %}{{ count }} inscriptions{% endblocktranslate %}</summary>
+        <ul class="list-unstyled">
+          {% for registration in entry.registrations %}
+          <li>
+            <a href="{{ registration.update_url }}">{{ registration.course }}</a> —
+            {% if registration.transport %}
+              <a href="{{ registration.transport.update_url }}">{{ registration.transport }}</a>
+            {% else %}
+              <strong>{% translate "Sans car" %}</strong>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+        </details>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<noscript><div class="form-group">
+  <button type="submit" class="btn btn-primary">{% translate "Enregistrer les affectations" %}</button>
+</div></noscript>
+</form>
+{% endif %}
+<section class="bib-generation" aria-labelledby="bib-generation-title">
+<h2 id="bib-generation-title">{% translate "2. Générer les dossards" %}</h2>
+<p>{% translate "Une fois toutes les affectations complétées, les dossards sont attribués par ordre alphabétique dans chaque car : car 3 → 301, 302… (99 enfants maximum par car)." %}</p>
+<div id="bib-summary" aria-live="polite">
+  <span class="bib-state bib-state-ready">✓ {% blocktranslate count count=ready_count %}{{ count }} enfant prêt{% plural %}{{ count }} enfants prêts{% endblocktranslate %}</span>
+  {% if pending_children %}
+    <span class="bib-state bib-state-warning">⚠ {% blocktranslate count count=pending_children|length %}{{ count }} enfant à compléter{% plural %}{{ count }} enfants à compléter{% endblocktranslate %}</span>
+  {% elif not children_count %}
+    <span>{% translate "Aucun enfant avec une inscription active à numéroter." %}</span>
+  {% endif %}
+  <span class="text-muted">{% blocktranslate %}{{ children_count }} enfants au total · Tous les cars{% endblocktranslate %}</span>
+</div>
+<form method="post">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  {{ form.overwrite.errors }}
+  <label for="{{ form.overwrite.id_for_label }}" class="bib-replace">
+    {{ form.overwrite }}
+    <span>{% translate "Remplacer les dossards existants" %}<br><small class="text-muted">{% translate "Les listes déjà imprimées devront être refaites." %}</small></span>
+  </label>
+  <p class="text-muted">{% translate "La génération concerne tous les enfants, quels que soient les filtres affichés." %}</p>
+  <div class="form-group">
+    <button type="submit" id="generate-bibs" class="btn btn-primary"{% if not can_generate %} disabled{% endif %}>{% translate "Générer les dossards" %}</button>
+    <a href="{% url 'backend:transport-list' %}" class="btn btn-default">{% translate "Retour aux cars" %}</a>
+  </div>
+</form>
+</section>
+</div>
+{% addtoblock "js" %}
+<script src="{% static 'js/vendor/DataTables-2020/DataTables-1.10.24/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'js/vendor/DataTables-2020/DataTables-1.10.24/js/dataTables.bootstrap.min.js' %}"></script>
+<script src="{% static 'backend/js/datatable-url-state.js' %}?v=2"></script>
+<script>
+(function () {
+  const form = document.getElementById('assign-bib-transports');
+  if (!form) return;
+  // Enter in the table search must not submit the no-JavaScript fallback form.
+  form.addEventListener('submit', function (event) { event.preventDefault(); });
+  const generate = document.getElementById('generate-bibs');
+  const bulk = document.getElementById('bulk-transport');
+  let saving = false;
+  const carFilter = document.getElementById('filter-car');
+  const stateFilter = document.getElementById('filter-state');
+  $.fn.dataTable.ext.search.push(function (settings, data, index) {
+    if (settings.nTable.id !== 'bib-children') return true;
+    const row = settings.aoData[index].nTr;
+    return (!carFilter.value || row.dataset.cars.split(' ').includes(carFilter.value)) &&
+      (stateFilter.value !== 'pending' || row.dataset.pending === 'pending');
+  });
+  const table = window.dataTableUrlState('#bib-children', {
+    pageLength: 50, lengthMenu: [25, 50, 100], order: [[1, 'asc']],
+    columnDefs: [{targets: [0, 2, 3, 4], orderable: false, searchable: false}],
+    language: {
+      search: '{% translate "Rechercher un enfant :" %}',
+      lengthMenu: '{% translate "Afficher _MENU_ enfants" %}',
+      info: '{% translate "Enfants _START_ à _END_ sur _TOTAL_" %}',
+      infoEmpty: '{% translate "Aucun enfant" %}',
+      infoFiltered: '{% translate "(sur _MAX_ au total)" %}',
+      zeroRecords: '{% translate "Aucun enfant à afficher. Choisissez Tous les enfants pour revoir les affectations terminées." %}',
+      paginate: {previous: '{% translate "Précédent" %}', next: '{% translate "Suivant" %}'}
+    }
+  }, [
+    {selector: '#filter-car', param: 'car', defaultValue: '',
+      validate: function (value) { return Array.from(carFilter.options).some(function (option) { return option.value === value; }); }},
+    {selector: '#filter-state', param: 'state', defaultValue: 'pending', values: {all: 'all', pending: 'pending'}}
+  ]);
+  $('#bib-children').before(document.getElementById('bib-bulk-toolbar'));
+  function allSelects() {
+    return Array.from(table.rows().nodes()).map(function (row) { return row.querySelector('.bib-transport'); });
+  }
+  function clearSelection() {
+    table.rows().nodes().toArray().forEach(function (row) { row.querySelector('.select-child').checked = false; });
+    document.getElementById('select-all-children').checked = false;
+    bulk.disabled = true;
+  }
+  $('#bib-children').on('draw.dt', function () {
+    clearSelection();
+    allSelects().forEach(function (select) { select.disabled = saving; });
+    form.querySelectorAll('.select-child').forEach(function (box) { box.disabled = saving; });
+  });
+  const statusTimers = new WeakMap();
+  function showStatus(names, message, style, temporary) {
+    allSelects().forEach(function (select) {
+      if (!names.includes(select.name)) return;
+      const status = select.closest('td').querySelector('.assignment-status');
+      clearTimeout(statusTimers.get(status));
+      status.className = 'assignment-status ' + style;
+      status.textContent = message;
+      if (temporary) {
+        statusTimers.set(status, setTimeout(function () { status.textContent = ''; }, 3000));
+      }
+    });
+  }
+  function rememberValues() {
+    allSelects().forEach(function (select) { select.dataset.saved = select.value; });
+  }
+  rememberValues();
+  async function save(selects) {
+    if (saving || !selects.length) return;
+    const names = selects.map(function (select) { return select.name; });
+    const data = new FormData();
+    data.append('csrfmiddlewaretoken', form.querySelector('[name=csrfmiddlewaretoken]').value);
+    data.append('action', 'assign');
+    selects.forEach(function (select) { data.append(select.name, select.value); });
+    saving = true;
+    generate.disabled = true;
+    form.querySelectorAll('select, input[type=checkbox]').forEach(function (input) { input.disabled = true; });
+    showStatus(names, '{% translate "Enregistrement…" %}', 'text-muted', false);
+    try {
+      // The hidden field named "action" shadows form.action in browsers.
+      const response = await fetch(form.getAttribute('action'), {
+        method: 'POST', body: data, headers: {'X-Requested-With': 'XMLHttpRequest'}, credentials: 'same-origin'
+      });
+      if (!response.ok || response.headers.get('X-Bib-Saved') !== 'true') throw new Error('Save failed');
+      const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+      const updated = new Map(Array.from(page.querySelectorAll('#bib-children tbody tr')).map(function (row) {
+        return [row.dataset.child, row];
+      }));
+      table.rows().every(function () {
+        const row = this.node();
+        const replacement = updated.get(row.dataset.child);
+        if (!replacement) return;
+        row.innerHTML = replacement.innerHTML;
+        row.dataset.cars = replacement.dataset.cars;
+        row.dataset.pending = replacement.dataset.pending;
+        this.invalidate('dom');
+      });
+      table.draw(false);
+      if (table.page.info().page >= table.page.info().pages && table.page.info().pages) table.page('last').draw('page');
+      document.getElementById('bib-summary').innerHTML = page.getElementById('bib-summary').innerHTML;
+      generate.disabled = page.getElementById('generate-bibs').disabled;
+      rememberValues();
+      showStatus(names, '✓ {% translate "Enregistré" %}', 'text-success', true);
+    } catch (error) {
+      selects.forEach(function (select) { select.value = select.dataset.saved; });
+      generate.disabled = true;
+      showStatus(names, '{% translate "Enregistrement non confirmé. Rechargez la page pour vérifier les affectations avant de réessayer." %}', 'text-danger', false);
+    } finally {
+      saving = false;
+      allSelects().forEach(function (select) { select.disabled = false; });
+      form.querySelectorAll('select, input[type=checkbox]').forEach(function (input) { input.disabled = false; });
+      bulk.value = '';
+      bulk.disabled = !form.querySelector('.select-child:checked');
+      document.getElementById('select-all-children').checked = false;
+    }
+  }
+  form.addEventListener('change', function (event) {
+    if (event.target.matches('.bib-transport')) {
+      if (!event.target.value) { event.target.value = event.target.dataset.saved; return; }
+      save([event.target]);
+    }
+    bulk.disabled = saving || !form.querySelector('.select-child:checked');
+  });
+  document.getElementById('select-all-children').addEventListener('change', function () {
+    const checked = this.checked;
+    form.querySelectorAll('.select-child').forEach(function (box) { box.checked = checked; });
+  });
+  bulk.addEventListener('change', function () {
+    const car = bulk.value;
+    if (!car) return;
+    const selects = [];
+    form.querySelectorAll('.select-child:checked').forEach(function (box) {
+      const select = box.closest('tr').querySelector('.bib-transport');
+      select.value = car;
+      selects.push(select);
+    });
+    save(selects);
+  });
+  window.addEventListener('beforeunload', function (event) {
+    if (saving) { event.preventDefault(); event.returnValue = ''; }
+  });
+})();
+</script>
+{% endaddtoblock %}
+{% endblock content %}
