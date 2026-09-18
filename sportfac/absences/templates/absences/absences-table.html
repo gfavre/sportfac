@@ -227,7 +227,7 @@
           </th>
         {% endif %}
         {% if from_activity %}
-          <td data-order="{{ registration.course.pk }}">{{ registration.course.number }}</td>
+          <td data-order="{{ registration.course.pk }}">{{ registration.course.number }}{% include "activities/includes/course-group.html" with course=registration.course %}</td>
         {% endif %}
         {% if REGISTRATION_LEVELS %}
           {% with level=child_levels|get_item:child extra=extras|get_item:child %}

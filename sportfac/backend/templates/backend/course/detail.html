@@ -48,6 +48,7 @@
     <dl class="dl-horizontal">
       <dt>{% translate "Activity" %}</dt><dd><a href="{{ course.activity.get_backend_url }}">{{ course.activity }}</a></dd>
       <dt>{% translate "Course number" %}</dt><dd>{{ course.number }}</dd>
+      {% include "activities/includes/course-group.html" with group_layout="definition" %}
 
       <dt>{% translate "Instructors" %}</dt>
       <dd>

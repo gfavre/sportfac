@@ -419,6 +419,17 @@ class CourseUpdateViewTests(TenantTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse("backend:course-list"))
 
+    @patch("django.contrib.messages.success")
+    @override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False, KEPCHUP_COURSE_GROUPS=True)
+    def test_group_can_be_updated_when_enabled(self, _):
+        self.data["group_name"] = "Bleu 3"
+        self.request.method = "POST"
+        self.request.POST = self.data
+        response = self.view(self.request, course=self.course.pk)
+        self.assertEqual(response.status_code, 302)
+        self.course.refresh_from_db()
+        self.assertEqual(self.course.group_name, "Bleu 3")
+
 
 class CourseListReturnTests(SimpleTestCase):
     def test_return_state_is_encoded_and_destination_is_fixed(self):

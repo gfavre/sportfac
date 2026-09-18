@@ -137,6 +137,7 @@ table.dataTable tbody td.selected .popover {
                 data-course="{{ course.id }}">
             <a href="{{ course.get_backend_absences_url }}" class="course-link">
               {{ course.short_name }}{% if course.name %}<span class="name-extended"> - {{ course.name }}</span>{% endif %}
+              {% include "activities/includes/course-group.html" %}
             </a><br>
             <a class="course has-popover hidden-print" role="button"
                data-toggle="popover"

@@ -1,0 +1,8 @@
+{% load i18n %}
+{% if COURSE_GROUPS and course.group_name %}
+  {% if group_layout == "definition" %}
+    <dt>{% translate "Groupe" %}</dt><dd>{{ course.group_name }}</dd>
+  {% else %}
+    <div class="course-group"><strong>{% translate "Groupe" %} {{ course.group_name }}</strong></div>
+  {% endif %}
+{% endif %}

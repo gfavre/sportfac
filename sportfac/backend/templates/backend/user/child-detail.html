@@ -52,6 +52,7 @@
     <tr>
       <td>
        <a href="{{ registration.course.get_backend_url }}">{{ registration.course.short_name }}</a>
+       {% include "activities/includes/course-group.html" with course=registration.course %}
       </td>
       <td>
         <ul class="list-unstyled">

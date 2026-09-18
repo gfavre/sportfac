@@ -47,7 +47,7 @@ $(function () {
   </thead>
   {% for course in object_list %}
     <tr>
-      <td>{{ course.number }}</td>
+      <td>{{ course.number }}{% include "activities/includes/course-group.html" %}</td>
       <td>
           <a href="{{ course.activity.get_absolute_url }}">{{ course.activity.name }}</a>
           {% if CALENDAR_DISPLAY_COURSE_NAMES and course.name %}

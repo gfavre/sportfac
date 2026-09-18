@@ -205,6 +205,7 @@
           <span class="nowrap hidden-print"><a
               href="{{ participant.latest_course.backend_url }}">{{ participant.latest_course.short_name }}</a></span>
           <span class="visible-print-inline-block">{{ participant.latest_course.number }}</span>
+          {% include "activities/includes/course-group.html" with course=participant.latest_course %}
         </td>
         <td class="transport-col"
             data-order="{{ participant.child_stop|cut:" " }}">

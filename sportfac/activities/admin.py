@@ -1,4 +1,5 @@
 from ckeditor.widgets import CKEditorWidget
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.flatpages.admin import FlatPageAdmin
 from django.contrib.flatpages.models import FlatPage
@@ -162,12 +163,25 @@ class ParticipantsListFilter(admin.SimpleListFilter):
 
 @admin.register(Course)
 class CoursesAdmin(SportfacAdminMixin, ImportExportModelAdmin):
+    def get_exclude(self, request, obj=None):
+        excluded = list(super().get_exclude(request, obj) or ())
+        if not settings.KEPCHUP_COURSE_GROUPS:
+            excluded.append("group_name")
+        return excluded
+
+    def get_list_display(self, request):
+        fields = super().get_list_display(request)
+        if not settings.KEPCHUP_COURSE_GROUPS:
+            return tuple(field for field in fields if field != "group_name")
+        return fields
+
     change_list_filter_template = "admin/filter_listing.html"
     filter_horizontal = ("local_city_override",)
 
     list_display = (
         "activity",
         "number",
+        "group_name",
         "day",
         "start_date",
         "start_time",

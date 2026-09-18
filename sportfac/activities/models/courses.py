@@ -71,6 +71,15 @@ class Course(TimeStampedModel):
         verbose_name=_("Identifier"),
     )
     name = models.CharField(null=True, blank=True, max_length=50, verbose_name=_("Displayed name"))
+    group_name = models.CharField(
+        _("Groupe"),
+        max_length=30,
+        blank=True,
+        default="",
+        help_text=_(
+            "Numéro ou nom court porté par le moniteur, par exemple 3 ou Bleu. Commun à tous les inscrits du cours."
+        ),
+    )
     comments = RichTextUploadingField(verbose_name=_("Comments"), blank=True)
 
     uptodate = models.BooleanField(verbose_name=_("Course up to date"), default=True)

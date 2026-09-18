@@ -22,6 +22,7 @@
       {% endif %}
     </h4>
     <dl class="dl-horizontal">
+      {% include "activities/includes/course-group.html" with course=registered.course group_layout="definition" %}
       {% if EXPLICIT_SESSION_DATES %}
         <dt>{% translate "Dates" %}</dt>
         <dd>

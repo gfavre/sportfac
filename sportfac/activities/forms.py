@@ -100,6 +100,7 @@ class CourseForm(forms.ModelForm):
             "activity",
             "name",
             "number",
+            "group_name",
             "instructors",
             "local_city_override",
             "price",
@@ -275,6 +276,8 @@ class CourseForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user: FamilyUser = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
+        if not settings.KEPCHUP_COURSE_GROUPS:
+            self.fields.pop("group_name", None)
         self.pop_initial()
         self.fields["local_city_override"].help_text = _("If empty will use: %s") % ", ".join(
             " ".join(entry) if isinstance(entry, (list, tuple)) else entry for entry in settings.KEPCHUP_LOCAL_ZIPCODES
@@ -333,6 +336,7 @@ class CourseForm(forms.ModelForm):
                 Div("activity", css_class="col-md-6"),
                 Div("instructors", css_class="col-md-6"),
                 Div("number", css_class="col-md-6"),
+                Div("group_name", css_class="col-md-6") if "group_name" in self.fields else HTML(""),
                 settings.KEPCHUP_CALENDAR_DISPLAY_COURSE_NAMES and Div("name", css_class="col-md-6") or HTML(""),
                 css_class="row",
             ),
@@ -415,6 +419,7 @@ class ExplicitDatesCourseForm(CourseForm):
             "activity",
             "name",
             "number",
+            "group_name",
             "instructors",
             "local_city_override",
             "price",

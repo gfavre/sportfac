@@ -624,6 +624,7 @@ KEPCHUP_ID_LAGAPEO_ALTERNATIVE_LABEL = None
 KEPCHUP_CHILDREN_POPUP = False
 # Children have a bib number (n° dossard)
 KEPCHUP_BIB_NUMBERS = False
+KEPCHUP_COURSE_GROUPS = False
 # Ask for school of the child
 KEPCHUP_CHILD_SCHOOL = False
 # Teachers submenu in backend

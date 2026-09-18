@@ -636,7 +636,14 @@ class ChildDatatableSerializer(serializers.ModelSerializer):
 
 
 class RegistrationDatatableSerializer(serializers.ModelSerializer):
+    def get_fields(self):
+        fields = super().get_fields()
+        if not settings.KEPCHUP_COURSE_GROUPS:
+            fields.pop("group_name", None)
+        return fields
+
     course = serializers.SerializerMethodField()
+    group_name = serializers.CharField(source="course.group_name", read_only=True)
     activity = serializers.SerializerMethodField()
     day_name = serializers.CharField(source="course.day_name", read_only=True)
     start_date = serializers.DateField(source="course.start_date", read_only=True)
@@ -653,6 +660,7 @@ class RegistrationDatatableSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "course",
+            "group_name",
             "activity",
             "day_name",
             "start_date",

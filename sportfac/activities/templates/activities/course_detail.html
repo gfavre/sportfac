@@ -14,6 +14,7 @@
   <section class="portlet">
     <div class="pricing-plan">
       <header class="pricing-header">
+        {% include "activities/includes/course-group.html" %}
         <p class="pricing-plan-label">{{ course.start_date|date:"j F Y" }} – {{ course.end_date|date:'j F Y' }}</p>
         <p>
           {% if course.is_course %}

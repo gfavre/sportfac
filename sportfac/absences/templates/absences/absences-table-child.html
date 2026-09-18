@@ -93,6 +93,7 @@
         {% endif %}
         <th class="child-name">
           {{ course.number }}{% if course.name %} - {{ course.name }}{% endif %}
+          {% include "activities/includes/course-group.html" %}
         </th>
         {% for session_date in all_dates %}
           {% if session_date in absences %}

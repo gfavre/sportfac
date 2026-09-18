@@ -5,6 +5,7 @@ import faker
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import RequestFactory
+from django.test import override_settings
 from django.urls import reverse
 
 from mailer.models import MailArchive
@@ -100,6 +101,26 @@ class CourseViewsTests(TestCase):
         response = self.client.get(url)
         # Instructor of course can get access
         self.assertEqual(response.status_code, 200)
+
+    def test_instructor_course_group_visibility(self):
+        self.course.group_name = "Casque bleu 7"
+        self.course.save(update_fields=["group_name"])
+        self.client.login(username=self.instructor.email, password=DEFAULT_PASS)
+        urls = [
+            reverse("activities:my-courses"),
+            self.course.get_absolute_url(),
+            self.course.get_absences_url(),
+        ]
+        for enabled in (True, False):
+            with override_settings(KEPCHUP_COURSE_GROUPS=enabled):
+                for url in urls:
+                    with self.subTest(enabled=enabled, url=url):
+                        response = self.client.get(url)
+                        self.assertEqual(response.status_code, 200)
+                        if enabled:
+                            self.assertContains(response, "Groupe Casque bleu 7")
+                        else:
+                            self.assertNotContains(response, "Casque bleu 7")
 
     def test_mail_participants_access(self):
         url = self.course.get_custom_mail_instructors_url()

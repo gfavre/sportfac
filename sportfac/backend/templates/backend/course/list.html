@@ -152,6 +152,7 @@
           data-courseid="{{ course.id }}">
         <td data-order="{{ course.number }}">
           <a href="{{ course.get_backend_url }}">{{ course.number }}</a>
+          {% include "activities/includes/course-group.html" %}
           {% if not course.visible %}<br>
             <span class="text-muted"><small>{% translate "Invisible" %}</small></span>
           {% endif %}

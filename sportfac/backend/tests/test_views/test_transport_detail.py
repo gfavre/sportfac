@@ -36,6 +36,12 @@ class TransportDetailTests(TenantTestCase):
         response = self.response(FamilyUserFactory(is_manager=True))
         self.assertContains(response, "Parent non renseigné", status_code=200)
 
+    @override_settings(KEPCHUP_COURSE_GROUPS=True)
+    def test_group_is_displayed_on_driver_list(self):
+        RegistrationFactory(transport=self.transport, course__group_name="Bleu 3")
+        response = self.response(FamilyUserFactory(is_manager=True))
+        self.assertContains(response, '<div class="course-group"><strong>Groupe Bleu 3</strong></div>', html=True)
+
     def test_parent_names_are_prefetched(self):
         RegistrationFactory.create_batch(3, transport=self.transport)
         transport = TransportDetailView.queryset.get(pk=self.transport.pk)

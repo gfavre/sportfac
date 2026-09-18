@@ -26,6 +26,7 @@
           },
           columns: [
             {data: 'course', name: 'course.number'},
+            {% if COURSE_GROUPS %}{data: 'group_name', name: 'course.group_name', render: $.fn.dataTable.render.text()},{% endif %}
             {data: 'activity', name: 'course.activity.name'},
             {data: 'day_name', name: 'course.day'},
             {data: 'start_date', name: 'course.start_date'},
@@ -154,6 +155,7 @@
     <thead>
     <tr>
       <th class="text-nowrap course">{% translate "Course Identifier" %}</th>
+      {% if COURSE_GROUPS %}<th class="text-nowrap group_name">{% translate "Groupe" %}</th>{% endif %}
       <th class="text-nowrap activity">{% translate "Activity" %}</th>
       <th class="text-nowrap day_name">{% translate "Day" %}</th>
       <th class="text-nowrap start_date">{% translate "Start date" %}</th>

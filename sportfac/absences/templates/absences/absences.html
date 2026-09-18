@@ -6,6 +6,7 @@
 {% block page_title %}{{ course.activity.name }} - {% blocktranslate with identifier=course.number %}course #{{ identifier }} - Absences{% endblocktranslate %}{% endblock %}
 
 {% block content %}
+{% include "activities/includes/course-group.html" %}
 
 <section class="portlet hidden-print">
   <div class="pricing-plan hidden-print">
