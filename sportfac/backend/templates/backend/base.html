@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n sekizai_tags %}
+{% load i18n sekizai_tags static %}
 
 {% block extra_css %}{% endblock %}
 
@@ -8,6 +8,13 @@
 {% endblock localnav %}
 
 {% block main-content %}
+{% addtoblock "css" %}
+  <style>
+    .content .dtsp-panesContainer {
+      background-color: #fff;
+    }
+  </style>
+{% endaddtoblock %}
 {% addtoblock "js" %}
 
 <script src="{{ STATIC_URL }}js/vendor/mvpready-core.js"></script>
@@ -22,6 +29,13 @@
 <div class="content">
 <div class="container">
 {% include "messages.html" %}
+{% if list_return_url %}
+  {{ list_return_url|json_script:"list-return-url" }}
+  {{ list_return_paths|json_script:"list-return-paths" }}
+  {% addtoblock "js" %}
+    <script src="{% static 'backend/js/list-return.js' %}?v=1"></script>
+  {% endaddtoblock %}
+{% endif %}
 {% block content %}{% endblock %}
 </div>
 </div>

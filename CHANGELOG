@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 ### Fixed
+- Registration status filters remain visible even with few or no registrations, instead of being hidden by SearchPanes' automatic threshold. Backend SearchPanes bundles now use the existing 1.2.2 patch release to support restoring filters reliably; tests follow the page's actual library version and status-pane configuration.
+- Backend activity, payroll role, registration, invoice, transport, user/instructor/manager, teacher and child lists now keep search, sorting, pagination and SearchPanes selections in the URL. Detail/edit pages preserve the originating list on return, save or cancel; invoice dates, payment status and amount filters are restored too, with a single inclusive date filter instead of accumulating predicates.
 - Course lists retain their search, sorting and J+S filter in the URL when returning from editing a course, including after saving or cancelling. Shared URL-state handling also covers the Montreux course list.
 
 ## 4.8.2 - 2026-09-07

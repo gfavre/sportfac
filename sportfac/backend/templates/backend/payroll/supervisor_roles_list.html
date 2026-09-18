@@ -12,6 +12,7 @@
     <script src="{% static 'js/vendor/js.cookie.js' %}"></script>
     <script src="{% static 'js/vendor/datatables/jquery.dataTables.min.js' %}"></script>
     <script src="{% static 'js/vendor/datatables/dataTables.bootstrap.js' %}"></script>
+    <script src="{% static 'backend/js/datatable-url-state.js' %}?v=2"></script>
     <script>
   $(function () {
     // CSRF setup
@@ -21,7 +22,7 @@
     let contractTimers = {};   // per-row debounce timers
     let contractLocks = {};    // per-row request locks
     // Datatables init
-    $(".table").dataTable({
+    window.dataTableUrlState('#list-table', {
       {% if LANGUAGE_CODE == 'fr' %}
       language: { url: "{{ STATIC_URL }}js/vendor/datatables/French.json" },
       {% endif %}
@@ -105,7 +106,7 @@
 
   {% endaddtoblock %}
 
-  <table class="table">
+  <table id="list-table" class="table">
     <thead>
     <tr>
       <th class="text-nowrap">{% translate "Course" %}</th>

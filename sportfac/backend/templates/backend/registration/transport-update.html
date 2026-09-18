@@ -18,7 +18,7 @@
 
       <button type="submit" class="btn btn-primary ">{% translate 'Update transport' %}</button>
       &nbsp;
-      <a href="{% url 'backend:transport-list' %}" class="btn btn-default">{% translate 'Cancel' %}</a>
+      <a href="{% if list_return_url %}{{ list_return_url }}{% else %}{% url 'backend:transport-list' %}{% endif %}" data-list-back class="btn btn-default">{% translate 'Cancel' %}</a>
     </div>
   </div>
 

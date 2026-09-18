@@ -35,6 +35,7 @@ from registrations.models import ExtraInfo
 from ..forms import SessionForm
 from ..utils import AbsencePDFRenderer
 from .mixins import BackendMixin
+from .mixins import ListReturnMixin
 
 
 logger = logging.getLogger(__name__)
@@ -49,7 +50,7 @@ class ActivityMixin:
         return user.managed_activities.all()
 
 
-class ActivityDetailView(BackendMixin, ActivityMixin, DetailView):
+class ActivityDetailView(ListReturnMixin, BackendMixin, ActivityMixin, DetailView):
     model = Activity
     slug_field = "slug"
     slug_url_kwarg = "activity"
@@ -310,7 +311,7 @@ class ActivityAbsenceView(BackendMixin, ActivityMixin, DetailView):
         return super().get(request, *args, **kwargs)
 
 
-class ActivityUpdateView(SuccessMessageMixin, BackendMixin, ActivityMixin, UpdateView):
+class ActivityUpdateView(ListReturnMixin, SuccessMessageMixin, BackendMixin, ActivityMixin, UpdateView):
     model = Activity
     form_class = ActivityForm
     slug_field = "slug"

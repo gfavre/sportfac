@@ -12,7 +12,7 @@
     <div class="col-sm-offset-2 col-sm-10">
       <button type="submit" class="btn btn-primary ">{% translate 'Update user' %}</button>
       &nbsp
-      <a href="{% url 'backend:user-list' %}" class="btn  btn-default">{% translate 'Cancel' %}</a>
+      <a href="{% if list_return_url %}{{ list_return_url }}{% else %}{% url 'backend:user-list' %}{% endif %}" data-list-back class="btn  btn-default">{% translate 'Cancel' %}</a>
     </div>
   </div>
 </form>

@@ -1,7 +1,69 @@
+from urllib.parse import parse_qsl
+from urllib.parse import urlencode
+from urllib.parse import urlsplit
+
 from braces.views import LoginRequiredMixin
 from braces.views import UserPassesTestMixin
 from django.http import HttpResponse
+from django.urls import reverse
 from django.utils.text import slugify
+
+
+LIST_RETURN_NAMES = (
+    "activity-list",
+    "course-list",
+    "roles-list",
+    "registration-list",
+    "bill-list",
+    "transport-list",
+    "user-list",
+    "instructor-list",
+    "manager-list",
+    "restricted-admin-list",
+    "teacher-list",
+    "child-list",
+)
+LIST_STATE_PARAMETERS = {
+    "q",
+    "order",
+    "page",
+    "length",
+    "panes",
+    "only_js",
+    "date_from",
+    "date_to",
+    "status",
+    "amount",
+    "start",
+    "end",
+}
+
+
+class ListReturnMixin:
+    """Opt-in return to a filtered backend list, without accepting arbitrary redirects."""
+
+    def get_list_return_url(self):
+        value = self.request.GET.get("list_return", "")
+        if not value or any(ord(char) < 32 for char in value):
+            return None
+        try:
+            target = urlsplit(value)
+        except ValueError:
+            return None
+        paths = {reverse(f"backend:{name}") for name in LIST_RETURN_NAMES}
+        if target.scheme or target.netloc or target.path not in paths or value.startswith("//"):
+            return None
+        query = urlencode([(key, val) for key, val in parse_qsl(target.query) if key in LIST_STATE_PARAMETERS])
+        return target.path + (f"?{query}" if query else "")
+
+    def get_success_url(self):
+        return self.get_list_return_url() or super().get_success_url()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["list_return_url"] = self.get_list_return_url()
+        context["list_return_paths"] = [reverse(f"backend:{name}") for name in LIST_RETURN_NAMES]
+        return context
 
 
 class BackendMixin(LoginRequiredMixin, UserPassesTestMixin):

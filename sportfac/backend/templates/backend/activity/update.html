@@ -22,7 +22,7 @@
 
       <button type="submit" class="btn btn-success ">{% translate 'Update activity' %}</button>
       &nbsp;
-      <a href="{% url 'backend:activity-list' %}" class="btn  btn-default">{% translate 'Cancel' %}</a>
+      <a href="{% if list_return_url %}{{ list_return_url }}{% else %}{% url 'backend:activity-list' %}{% endif %}" data-list-back class="btn  btn-default">{% translate 'Cancel' %}</a>
     </div>
   </div>
 

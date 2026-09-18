@@ -1,5 +1,5 @@
 {% extends "backend/base.html" %}
-{% load duration i18n sekizai_tags %}
+{% load duration i18n sekizai_tags static %}
 {% get_current_language as LANGUAGE_CODE %}
 
 {% block title %}{% translate "List activities" %} - {{ block.super }}{% endblock %}
@@ -11,9 +11,10 @@
 {% addtoblock "js" %}
 <script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
 <script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
+<script src="{% static 'backend/js/datatable-url-state.js' %}?v=2"></script>
 <script>
 $(function () {
-  $(".table").dataTable({
+  window.dataTableUrlState('#list-table', {
 {% if LANGUAGE_CODE == 'fr' %}
       "language": {
             "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
@@ -32,7 +33,7 @@ $(function () {
 
 <a href="{% url 'backend:activity-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% translate "New activity" %}</a>
 <hr />
-<table class="table">
+<table id="list-table" class="table">
   <thead>
     <tr>
       <th>{% translate "Identifier" %}</th>

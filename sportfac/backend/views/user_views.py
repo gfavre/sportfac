@@ -41,6 +41,7 @@ from ..tasks import import_children
 from .mixins import BackendMixin
 from .mixins import ExcelResponseMixin
 from .mixins import FullBackendMixin
+from .mixins import ListReturnMixin
 
 
 class MailUsersView(BackendMixin, View):
@@ -193,7 +194,7 @@ class InstructorCreateView(UserCreateView):
         return _("Instructor %s has been added.") % self.object.full_name
 
 
-class UserUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
+class UserUpdateView(ListReturnMixin, BackendMixin, SuccessMessageMixin, UpdateView):
     model = FamilyUser
     template_name = "backend/user/update.html"
 
@@ -223,6 +224,8 @@ class UserUpdateView(BackendMixin, SuccessMessageMixin, UpdateView):
         return super().form_valid(form)
 
     def get_success_url(self):
+        if self.get_list_return_url():
+            return self.get_list_return_url()
         if self.object.is_instructor:
             return reverse_lazy("backend:instructor-list")
         return reverse_lazy("backend:user-list")
@@ -249,7 +252,7 @@ class UserDeleteView(FullBackendMixin, SuccessMessageMixin, DeleteView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class UserDetailView(BackendMixin, DetailView):
+class UserDetailView(ListReturnMixin, BackendMixin, DetailView):
     model = FamilyUser
 
     def get_template_names(self):
@@ -260,7 +263,7 @@ class UserDetailView(BackendMixin, DetailView):
         return template_names  # noqa: R504
 
 
-class InstructorDetailView(BackendMixin, DetailView):
+class InstructorDetailView(ListReturnMixin, BackendMixin, DetailView):
     model = FamilyUser
     template_name = "backend/user/detail-instructor.html"
 
@@ -302,7 +305,7 @@ class ChildMixin(BackendMixin):
         return qs
 
 
-class ChildDetailView(ChildMixin, DetailView):
+class ChildDetailView(ListReturnMixin, ChildMixin, DetailView):
     model = Child
     template_name = "backend/user/child-detail.html"
     pk_url_kwarg = "child"
@@ -356,7 +359,7 @@ class ChildCreateView(FullBackendMixin, SuccessMessageMixin, CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class ChildUpdateView(ChildMixin, SuccessMessageMixin, UpdateView):
+class ChildUpdateView(ListReturnMixin, ChildMixin, SuccessMessageMixin, UpdateView):
     model = Child
     form_class = ChildUpdateForm
     template_name = "backend/user/child-update.html"

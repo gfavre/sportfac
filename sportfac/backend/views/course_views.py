@@ -51,6 +51,7 @@ from ..forms import SessionForm
 from ..utils import AbsencesPDFRenderer
 from .mixins import BackendMixin
 from .mixins import ExcelResponseMixin
+from .mixins import ListReturnMixin
 
 
 LEVEL_RE = re.compile(r"^(\d+)([A-Za-z]*)$")
@@ -140,7 +141,7 @@ class CourseDeleteView(SuccessMessageMixin, CourseMixin, DeleteView):
         return super().delete(request, *args, **kwargs)
 
 
-class CourseDetailView(CourseMixin, DetailView):
+class CourseDetailView(ListReturnMixin, CourseMixin, DetailView):
     template_name = "backend/course/detail.html"
     pk_url_kwarg = "course"
     queryset = Course.objects.select_related("activity").prefetch_related(
@@ -164,13 +165,15 @@ class CourseDetailView(CourseMixin, DetailView):
         return context
 
 
-class CourseUpdateView(SuccessMessageMixin, CourseMixin, UpdateView):
+class CourseUpdateView(ListReturnMixin, SuccessMessageMixin, CourseMixin, UpdateView):
     template_name = "backend/course/update.html"
     pk_url_kwarg = "course"
     success_url = reverse_lazy("backend:course-list")
     success_message = _('<a href="%(url)s" class="alert-link">Course (%(number)s)</a> has been updated.')
 
     def get_success_url(self):
+        if self.get_list_return_url():
+            return self.get_list_return_url()
         # Only carry table state; never accept a caller-supplied redirect destination.
         query = urlencode(
             [

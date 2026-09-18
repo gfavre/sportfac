@@ -3,16 +3,25 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, UpdateView
+from django.views.generic import CreateView
+from django.views.generic import DeleteView
+from django.views.generic import DetailView
+from django.views.generic import FormView
+from django.views.generic import ListView
+from django.views.generic import UpdateView
 
 from registrations.models import Child
-from schools.forms import BuildingForm, TeacherForm, TeacherImportForm
-from schools.models import Building, Teacher
+from schools.forms import BuildingForm
+from schools.forms import TeacherForm
+from schools.forms import TeacherImportForm
+from schools.models import Building
+from schools.models import Teacher
 
 from .mixins import FullBackendMixin
+from .mixins import ListReturnMixin
 
 
-class TeacherDetailView(FullBackendMixin, DetailView):
+class TeacherDetailView(ListReturnMixin, FullBackendMixin, DetailView):
     model = Teacher
     template_name = "backend/teacher/detail.html"
 
@@ -45,7 +54,7 @@ class TeacherCreateView(FullBackendMixin, SuccessMessageMixin, CreateView):
         return mark_safe(self.success_message % {"url": url, "name": self.object.get_full_name()})
 
 
-class TeacherUpdateView(FullBackendMixin, SuccessMessageMixin, UpdateView):
+class TeacherUpdateView(ListReturnMixin, FullBackendMixin, SuccessMessageMixin, UpdateView):
     model = Teacher
     form_class = TeacherForm
     template_name = "backend/teacher/update.html"

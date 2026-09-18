@@ -1,5 +1,5 @@
 {% extends "backend/base.html" %}
-{% load crispy_forms_tags i18n sekizai_tags static switzerland %}
+{% load crispy_forms_tags i18n l10n sekizai_tags static switzerland %}
 
 
 {% block title %}{% translate "List bills" %} - {{ block.super }}{% endblock %}
@@ -43,7 +43,8 @@
     </div>
   </section>
 
-  <table class="table">
+  <input type="hidden" id="bill-date-from"><input type="hidden" id="bill-date-to">
+  <table id="list-table" class="table">
     <thead>
     <tr>
       <th class="text-nowrap">{% translate "Billing identifier" %}</th>
@@ -57,10 +58,10 @@
     {% for bill in bill_list %}
       <tr>
         <td><a href="{{ bill.backend_url }}">{{ bill.billing_identifier }}</a></td>
-        <td data-order="{{ bill.created|date:'c' }}">{{ bill.created|date:"SHORT_DATE_FORMAT" }}</td>
+        <td data-date="{{ bill.created|date:'Y-m-d' }}" data-order="{{ bill.created|date:'c' }}">{{ bill.created|date:"SHORT_DATE_FORMAT" }}</td>
         <td data-order="{{ bill.family.last_name }} {{ bill.family.first_name }}"><a
-            href="{{ family.get_backend_url }}">{{ bill.family.full_name }}</a></td>
-        <td data-order="{{ bill.total }}" data-amount="{{ bill.total }}">{{ bill.total|money }}</td>
+            href="{{ bill.family.get_backend_url }}">{{ bill.family.full_name }}</a></td>
+        <td data-order="{{ bill.total }}" data-amount="{{ bill.total|unlocalize }}">{{ bill.total|money }}</td>
         <td data-order="{{ bill.is_ok }}"
             data-search="{% if bill.is_ok %}{% translate 'paid' %}{% endif %} {{ bill.get_payment_method_display }}"
             data-status="{{ bill.status }}"
@@ -98,6 +99,8 @@
     <script src="{% static 'js/vendor/datatables/jquery.dataTables.min.js' %}"></script>
     <script src="{% static 'js/vendor/datatables/dataTables.bootstrap.js' %}"></script>
 
+    <script src="{% static 'backend/js/datatable-url-state.js' %}?v=2"></script>
+    <script src="{% static 'backend/js/bill-list-filters.js' %}?v=1"></script>
     <script>
       $(function () {
         moment.locale('fr', {
@@ -106,11 +109,28 @@
         moment.locale('fr');
         const start = moment("{{ start|date:'c' }}");
         const end = moment("{{ end|date:'c' }}");
+        const filters = [
+          {param: 'status', selector: '#statusFilter', defaultValue: 'all', values: {all: '', paid: '', waiting: ''}},
+          {param: 'amount', selector: '#amountFilter', defaultValue: 'all', values: {all: '', positive: '', zero: ''}},
+          {param: 'date_from', selector: '#bill-date-from', defaultValue: '', validate: validDate},
+          {param: 'date_to', selector: '#bill-date-to', defaultValue: '', validate: validDate}
+        ];
+        function validDate(value) {
+          return typeof value === 'string' && moment(value, 'YYYY-MM-DD', true).isValid();
+        }
+        window.dataTableUrlState.restoreFilters(filters);
+        function updateRangeLabel() {
+          const from = $('#bill-date-from').val();
+          const to = $('#bill-date-to').val();
+          $('#reportrange span').text(from && to ?
+            moment(from).format('DD.MM.YYYY') + ' - ' + moment(to).format('DD.MM.YYYY') :
+            '{% translate "All" %}');
+        }
 
         $('#reportrange').daterangepicker({
           autoUpdateInput: false,
-          startDate: start,
-          endDate: end,
+          startDate: $('#bill-date-from').val() ? moment($('#bill-date-from').val(), 'YYYY-MM-DD') : start,
+          endDate: $('#bill-date-to').val() ? moment($('#bill-date-to').val(), 'YYYY-MM-DD') : end,
           applyButtonClasses: "btn-secondary",
           locale: {
             "format": "DD.MM.YYYY",
@@ -149,14 +169,23 @@
             '{% translate "This month" %}': [moment().startOf('month'), moment().endOf('month')],
             '{% translate "Last month" %}': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
           }
-        }, function(start, end, label) {
-          $('#reportrange span').html(start.format('DD.MM.YYYY') + ' - ' + end.format('DD.MM.YYYY'));
-
         });
-        $('#reportrange span').html(start.format('DD.MM.YYYY') + ' - ' + end.format('DD.MM.YYYY'));
+        updateRangeLabel();
 
-
-        const table = $(".table").DataTable({
+        // One predicate for this table: changing the range replaces, rather than stacks, filters.
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+          if (settings.nTable.id !== 'list-table') return true;
+          const row = settings.aoData[dataIndex].nTr;
+          return window.billMatchesFilters({
+            date: row.cells[1].getAttribute('data-date'),
+            amount: Number(row.cells[3].getAttribute('data-amount')),
+            status: row.cells[4].getAttribute('data-status')
+          }, {
+            from: $('#bill-date-from').val(), to: $('#bill-date-to').val(),
+            amount: $('#amountFilter').val(), status: $('#statusFilter').val()
+          });
+        });
+        const table = window.dataTableUrlState('#list-table', {
           {% if LANGUAGE_CODE == 'fr' %}
             "language": {
               "url": "{% static 'js/vendor/datatables/French.json' %}"
@@ -168,68 +197,23 @@
           "order": [[1, "desc"]],
           "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "{% translate 'All bills' %}"]],
           pageLength: 50,
-        });
+        }, filters);
 
-        $('#reportrange').on('outsideClick.daterangepicker', (ev, picker) => {
-          //$(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
-          $.fn.dataTable.ext.search.push(
-            (settings, data, dataIndex) => {
-              const startDate = picker.startDate.format('YYYY-MM-DD');
-              const endDate = picker.endDate.format('YYYY-MM-DD');
-              const dateOrder = table.row(dataIndex).nodes().to$().find('td:eq(1)').attr('data-order');
-              return dateOrder >= startDate && dateOrder <= endDate;
-            }
-          );
+        $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
+          $('#bill-date-from').val(picker.startDate.format('YYYY-MM-DD'));
+          $('#bill-date-to').val(picker.endDate.format('YYYY-MM-DD'));
+          updateRangeLabel();
           table.draw();
         });
-
-        $('#reportrange').on('apply.daterangepicker', (ev, picker) => {
-          //$(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
-          $.fn.dataTable.ext.search.push(
-            (settings, data, dataIndex) => {
-              const startDate = picker.startDate.format('YYYY-MM-DD');
-              const endDate = picker.endDate.format('YYYY-MM-DD');
-              const dateOrder = table.row(dataIndex).nodes().to$().find('td:eq(1)').attr('data-order');
-              return dateOrder >= startDate && dateOrder <= endDate;
-            }
-          );
+        $('#reportrange').on('cancel.daterangepicker', function() {
+          $('#bill-date-from, #bill-date-to').val('');
+          updateRangeLabel();
           table.draw();
-        });
-        $('#reportrange').on('cancel.daterangepicker', (ev, picker) => {
-          $(this).val('');
-          // Remove the custom search filter for date range
-          $.fn.dataTable.ext.search.pop();
-          table.draw();
-        });
-
-
-       // Custom filter for amount and status
-        $.fn.dataTable.ext.search.push(
-            function(settings, data, dataIndex) {
-                // Amount filter logic
-                const amountFilter = $('#amountFilter').val();
-                const amount = parseFloat(table.row(dataIndex).nodes().to$().find('td:eq(3)').attr('data-amount'));
-
-                if (amountFilter === 'all' || (amountFilter === 'positive' && amount > 0) || (amountFilter === 'zero' && amount === 0)) {
-                    // Status filter logic
-                    const statusFilter = $('#statusFilter').val();
-                    const status = table.row(dataIndex).nodes().to$().find('td:eq(4)').attr('data-status');
-                    if (statusFilter === 'all' || statusFilter === status) {
-                      return true;
-                    }
-                }
-                return false;
-            }
-        );
-
-        // Event listener for amount filter change
-        $('#amountFilter, #statusFilter').on('change', () => {
-            table.draw();
         });
 
         $('.export-button').on('click', () => {
-          const startDate = $('#reportrange').data('daterangepicker').startDate.format('YYYY-MM-DD');
-          const endDate = $('#reportrange').data('daterangepicker').endDate.format('YYYY-MM-DD');
+          const startDate = $('#bill-date-from').val() || start.format('YYYY-MM-DD');
+          const endDate = $('#bill-date-to').val() || end.format('YYYY-MM-DD');
           const status = $('#statusFilter').val();
           const amount = $('#amountFilter').val();
 

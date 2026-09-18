@@ -1,5 +1,5 @@
 {% extends "backend/base.html" %}
-{% load i18n sekizai_tags %}
+{% load i18n sekizai_tags static %}
 
 {% block title %}{% translate "View teachers" %} - {{ block.super }}{% endblock %}
 
@@ -14,9 +14,10 @@
 {% addtoblock "js" %}
 <script src="{{ STATIC_URL }}js/vendor/datatables/jquery.dataTables.min.js"></script>
 <script src="{{ STATIC_URL }}js/vendor/datatables/dataTables.bootstrap.js"></script>
+<script src="{% static 'backend/js/datatable-url-state.js' %}?v=2"></script>
 <script>
 $(function () {
-  $(".table").dataTable({
+  window.dataTableUrlState('#list-table', {
 {% if LANGUAGE_CODE == 'fr' %}
       "language": {
             "url": "{{ STATIC_URL }}js/vendor/datatables/French.json"
@@ -32,7 +33,7 @@ $(function () {
 
 <a href="{% url 'backend:teacher-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% translate "New teacher" %}</a> &nbsp; <a href="{% url 'backend:teacher-import' %}" class="btn btn-default"><i class="icon-doc-new"></i> {% translate "Import teachers" %}</a>
 <hr>
-<table class="table">
+<table id="list-table" class="table">
   <thead>
     <tr>
       <th class="text-nowrap">{% translate "Name" %}</th>

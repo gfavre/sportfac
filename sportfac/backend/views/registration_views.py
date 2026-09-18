@@ -58,6 +58,7 @@ from registrations.views.utils import PaymentMixin
 from .mixins import BackendMixin
 from .mixins import ExcelResponseMixin
 from .mixins import FullBackendMixin
+from .mixins import ListReturnMixin
 
 
 logger = logging.getLogger(__name__)
@@ -75,7 +76,7 @@ class RegistrationMixin(BackendMixin):
         return queryset.filter(course__activity__in=user.managed_activities.all())
 
 
-class RegistrationDetailView(RegistrationMixin, DetailView):
+class RegistrationDetailView(ListReturnMixin, RegistrationMixin, DetailView):
     model = Registration
     template_name = "backend/registration/detail.html"
 
@@ -282,7 +283,7 @@ class RegistrationDeleteView(RegistrationMixin, DeleteView):
         return HttpResponseRedirect(success_url)
 
 
-class RegistrationUpdateView(SuccessMessageMixin, RegistrationMixin, UpdateView):
+class RegistrationUpdateView(ListReturnMixin, SuccessMessageMixin, RegistrationMixin, UpdateView):
     model = Registration
     form_class = RegistrationForm
     template_name = "backend/registration/update.html"
@@ -295,6 +296,8 @@ class RegistrationUpdateView(SuccessMessageMixin, RegistrationMixin, UpdateView)
         return kwargs
 
     def get_success_url(self):
+        if self.get_list_return_url():
+            return self.get_list_return_url()
         course = self.request.GET.get("course", None)
         if not course:
             return self.success_url
@@ -544,7 +547,7 @@ class BillExportView(FullBackendMixin, ExcelResponseMixin, View):
         return self.render_to_response()
 
 
-class BillDetailView(FullBackendMixin, BillMixin, PaymentMixin, DetailView):
+class BillDetailView(ListReturnMixin, FullBackendMixin, BillMixin, PaymentMixin, DetailView):
     """
     Display the bill: admin view
     """
@@ -573,7 +576,7 @@ class BillPdfView(FullBackendMixin, BillPdfDownloadMixin, View):
         return Bill.objects.all()
 
 
-class BillUpdateView(SuccessMessageMixin, FullBackendMixin, UpdateView):
+class BillUpdateView(ListReturnMixin, SuccessMessageMixin, FullBackendMixin, UpdateView):
     model = Bill
     form_class = BillForm
     template_name = "backend/registration/bill-update.html"
@@ -597,7 +600,7 @@ class TransportListView(FullBackendMixin, ListView):
     template_name = "backend/registration/transport-list.html"
 
 
-class TransportDetailView(FullBackendMixin, DetailView):
+class TransportDetailView(ListReturnMixin, FullBackendMixin, DetailView):
     model = Transport
     template_name = "backend/registration/transport-detail.html"
     queryset = Transport.objects.prefetch_related(
@@ -670,7 +673,7 @@ class TransportCreateView(SuccessMessageMixin, FullBackendMixin, CreateView):
     success_message = _("Transport has been created.")
 
 
-class TransportUpdateView(SuccessMessageMixin, FullBackendMixin, UpdateView):
+class TransportUpdateView(ListReturnMixin, SuccessMessageMixin, FullBackendMixin, UpdateView):
     model = Transport
     form_class = TransportForm
     template_name = "backend/registration/transport-update.html"

@@ -10,9 +10,10 @@
 {% addtoblock "js" %}
 <script src="{% static 'js/vendor/datatables/jquery.dataTables.min.js' %}"></script>
 <script src="{% static 'js/vendor/datatables/dataTables.bootstrap.js' %}"></script>
+<script src="{% static 'backend/js/datatable-url-state.js' %}?v=2"></script>
 <script>
 $(function () {
-  $(".table").dataTable({
+  window.dataTableUrlState('#list-table', {
 {% if LANGUAGE_CODE == 'fr' %}
       "language": {
             "url": "{% static 'js/vendor/datatables/French.json' %}"
@@ -31,7 +32,7 @@ $(function () {
 <a href="{% url 'backend:transport-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% translate "New transport" %}</a>
 <hr>
 
-<table class="table">
+<table id="list-table" class="table">
   <thead>
     <tr>
       <th class="text-nowrap">{% translate "Name" %}</th>

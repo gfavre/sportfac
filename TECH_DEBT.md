@@ -4,6 +4,25 @@ Living list of known technical debt for the sportfac/Kepchup project. Not a task
 tracker — just a reference so decisions and their context aren't re-derived from
 scratch each time. Update in place as items are resolved or new ones are found.
 
+## Backend DataTables versions and invoice exports
+
+- Backend lists still mix local DataTables 1.10.4 with CDN 1.10.18/1.10.24 and
+  SearchPanes 1.2.2. Shared URL-state handling now covers the main lists; see
+  [backend table navigation](docs/backend-table-navigation.md) before enabling
+  another list or upgrading those libraries. Its tests exercise both the old
+  local DataTables and the vendored 1.10.24/SearchPanes combination. Keep the
+  tested SearchPanes version in sync with the templates: 1.2.1's state restore
+  is incompatible with the compact pane state. Business filters such as
+  registration status need explicit `show: true`, otherwise automatic
+  thresholds hide them for small result sets.
+- Existing invoice export parity issues found while preserving list filters:
+  `BillListView._apply_filters()` compares a datetime to the end-date at
+  midnight (`created__lte=end`), excluding the rest of the final day. Its
+  `positive` filter excludes zero rather than requiring `total > 0`, and
+  `_apply_sorting()` maps the family column to `user__username` instead of
+  `family`. The browser date filter is inclusive. These export issues predate
+  URL persistence and need a separate export regression fix.
+
 ## AngularJS 1.x → htmx (medium-term goal)
 
 - AngularJS 1.x reached end-of-life in January 2022 (no more security patches
