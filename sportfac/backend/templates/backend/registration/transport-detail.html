@@ -86,6 +86,12 @@
         display: block;
       }
 
+      .parent-name {
+        display: block;
+        margin-bottom: 3px;
+        line-height: 1.2;
+      }
+
       @media print {
 
         table .rotated-heading {
@@ -165,7 +171,7 @@
         </th>
       {% endif %}
       <th class="all child-name">{% translate "Name" %}</th>
-      <th class="all phone">{% translate "Phone" %}</th>
+      <th class="all phone">{% translate "Parent / téléphone" %}</th>
       <th class="all course-col">{% translate "Course" %}</th>
       <th class="all transport-col">{% translate "Info" %}</th>
       {% for session_date in all_dates %}
@@ -191,6 +197,7 @@
               href="{{ participant.child.get_backend_absences_url }}">{{ participant.child.full_name }}</a></span>
         </td>
         <td data-order="{{ participant.child.emergency_number|phone:'RFC3966' }}">
+          <span class="parent-name">{{ participant.child.family.get_full_name|default:_("Parent non renseigné") }}</span>
           {{ participant.child.emergency_number|phone }}
         </td>
         <td class="course-col"

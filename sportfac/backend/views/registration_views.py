@@ -698,6 +698,7 @@ class TransportDetailView(ListReturnMixin, FullBackendMixin, DetailView):
     queryset = Transport.objects.prefetch_related(
         "participants",
         "participants__child",
+        "participants__child__family",
         "participants__course",
         "participants__child__absences",
     )

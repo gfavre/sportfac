@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 ### Added
+- Transport details and printed driver lists show the family account holder's full name alongside the child's emergency phone number.
 - Generate one bib per child from a unique car prefix and alphabetical rank, with assignment/capacity checks and explicit confirmation before replacing existing bibs.
 - Prepare car assignments individually or in groups with autosave, search and pagination. Children needing attention appear first, with clear status indicators and links to complete missing car prefixes.
 ### Fixed
