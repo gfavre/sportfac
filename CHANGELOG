@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 ### Added
-- Optional printable Excel attendance sheets for managers and instructors, with participant counts, groups, bibs, levels and configurable extra questions. Defaults to the next session, accepts a date URL parameter, and is enabled for Montreux Ski and local development.
+- Optional printable Excel attendance sheets and multicourse PDF tracking lists, with a separate sheet per course/group, participant counts, bibs, levels and configurable extra questions. Defaults to the next session, accepts a date URL parameter, and is enabled for Montreux Ski and local development.
 - Optional course groups appear in instructors' courses, registrations, attendance and transport lists. Controlled by `KEPCHUP_COURSE_GROUPS`, enabled for Montreux Ski and local development, disabled elsewhere.
 - Transport details and printed driver lists show the family account holder's full name alongside the child's emergency phone number.
 - Generate one bib per child from a unique car prefix and alphabetical rank, with assignment/capacity checks and explicit confirmation before replacing existing bibs.

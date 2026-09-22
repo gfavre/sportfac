@@ -1,0 +1,56 @@
+{% extends "backend/base.html" %}
+
+{% block title %}Préparer les fiches PDF — {{ block.super }}{% endblock %}
+
+{% block page_title %}Préparer les fiches PDF{% endblock %}
+
+{% block content %}
+  <p>Une fiche par cours/groupe, pour la prochaine séance de chaque cours ou pour la date de votre choix.</p>
+  {% if error %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endif %}
+  {% if entries %}
+    <section class="portlet">
+      <form method="get" class="form-inline">
+        <input type="hidden" name="pdf" value="1">
+        <input type="hidden" name="prepare" value="1">
+        {% for entry in entries %}<input type="hidden" name="c" value="{{ entry.course.pk }}">{% endfor %}
+        <div class="form-group">
+          <label for="attendance-date">Date des fiches</label>
+          <input class="form-control" type="date" id="attendance-date" name="date" value="{{ date_value }}" list="attendance-dates">
+          <datalist id="attendance-dates">{% for day in available_dates %}<option value="{{ day|date:'Y-m-d' }}">{% endfor %}</datalist>
+        </div>
+        <button type="submit" class="btn btn-default">Vérifier les disponibilités</button>
+        <p class="help-block">Laissez la date vide pour prendre la prochaine séance. Une date passée permet de réimprimer une fiche.</p>
+      </form>
+    </section>
+    <p><strong>{{ ready_count }} fiche{{ ready_count|pluralize }} prête{{ ready_count|pluralize }}</strong>{% if excluded_count %} · {{ excluded_count }} cours à compléter{% endif %}</p>
+    <div class="table-responsive">
+      <table class="table">
+        <thead><tr><th>Cours</th><th>Groupe</th><th>Séance</th><th>État</th><th></th></tr></thead>
+        <tbody>
+          {% for entry in entries %}
+            <tr class="{% if entry.ready %}success{% else %}warning{% endif %}">
+              <td>{{ entry.course.number }}</td>
+              <td>{{ entry.course.group_name|default:"—" }}</td>
+              <td>{% if entry.ready %}{{ entry.day|date:"d.m.Y" }}{% else %}—{% endif %}</td>
+              <td>{% if entry.ready %}<span class="text-success">✓ Prêt à exporter</span>{% elif selected_date %}Aucune séance le {{ selected_date|date:"d.m.Y" }}{% else %}Aucune séance à venir{% endif %}</td>
+              <td><a href="{{ entry.course.get_backend_absences_url }}">Gérer les séances</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if excluded_count %}<p class="text-warning">Les {{ excluded_count }} cours à compléter ne seront pas inclus dans le téléchargement.</p>{% endif %}
+  {% else %}
+    <div class="alert alert-info">Aucun cours sélectionné ou accessible. Retournez à la liste pour choisir les cours à exporter.</div>
+  {% endif %}
+  <div class="form-group" style="margin-top: 24px;">
+    <form method="get">
+      <input type="hidden" name="pdf" value="1">
+      <input type="hidden" name="available" value="1">
+      {% if selected_date %}<input type="hidden" name="date" value="{{ selected_date|date:'Y-m-d' }}">{% endif %}
+      {% for entry in entries %}<input type="hidden" name="c" value="{{ entry.course.pk }}">{% endfor %}
+      <button type="submit" class="btn btn-success"{% if not ready_count %} disabled{% endif %}><i class="icon-file-pdf"></i> {% if ready_count == 1 %}Télécharger la fiche disponible{% else %}Télécharger les {{ ready_count }} fiches disponibles{% endif %}</button>
+      <a href="{% url 'backend:course-list' %}" class="btn btn-default">Retour aux cours</a>
+    </form>
+  </div>
+{% endblock content %}

@@ -1,15 +1,18 @@
 import json
 from datetime import date
 from io import BytesIO
+from pathlib import Path
 from unittest.mock import patch
 
 from django.core.exceptions import ValidationError
+from django.template.loader import render_to_string
 from django.test import override_settings
 from django.urls import reverse
 from dynamic_preferences.models import GlobalPreferenceModel
 from dynamic_preferences.registries import global_preferences_registry
 from openpyxl import load_workbook
 
+from absences.paper_pdf import AttendancePDFRenderer
 from activities.tests.factories import CourseFactory
 from activities.tests.factories import ExtraNeedFactory
 from backend.dynamic_preferences_registry import AttendanceExtraColumnsField
@@ -45,6 +48,95 @@ class PaperAttendanceTests(TenantTestCase):
     def workbook(self, response):
         self.assertEqual(response.status_code, 200)
         return load_workbook(BytesIO(response.content)).active
+
+    def test_multicourse_pdf_uses_one_sheet_per_course_and_shared_columns(self):
+        other = CourseFactory(group_name="12")
+        other.sessions.all().delete()
+        SessionFactory(course=other, date=date(2026, 2, 14))
+        RegistrationFactory(course=other)
+        self.client.force_login(FamilyUserFactory(is_manager=True))
+        url = reverse("backend:courses-absence")
+        captured = {}
+
+        def render(renderer, path):
+            captured.update(renderer.context)
+            Path(path).write_bytes(b"%PDF-test")
+
+        with patch.object(AttendancePDFRenderer, "render_to_pdf", render):
+            response = self.client.get(url, {"c": [self.course.pk, other.pk], "pdf": "1"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/pdf")
+        sheets = captured["sheets"]
+        self.assertEqual(len(sheets), 2)
+        by_course = {sheet["course"].pk: sheet for sheet in sheets}
+        self.assertEqual(by_course[self.course.pk]["day"], date(2026, 2, 7))
+        self.assertEqual(by_course[other.pk]["day"], date(2026, 2, 14))
+        sheet = self.workbook(self.client.get(self.url))
+        self.assertEqual(by_course[self.course.pk]["headers"], [cell.value for cell in sheet[3]])
+        html = render_to_string(AttendancePDFRenderer.message_template, captured)
+        self.assertEqual(html.count('<section class="course-sheet">'), 2)
+        self.assertIn("Liste de suivi des cours", html)
+        self.assertIn("Groupe 12", html)
+        sections = html.split('<section class="course-sheet">')[1:]
+        for section, data in zip(sections, sheets):
+            self.assertIn(f'N° cours : {data["course"].number}', section)
+            self.assertIn(data["day"].strftime("%d.%m.%Y"), section)
+            self.assertIn(f'{data["count"]} inscrits', section)
+
+    @override_settings(KEPCHUP_USE_ABSENCES=True)
+    def test_tracking_pdf_button_labels(self):
+        self.client.force_login(FamilyUserFactory(is_manager=True))
+        urls = [reverse("backend:course-list"), reverse("backend:courses-absence") + f"?c={self.course.pk}"]
+        for url in urls:
+            self.assertContains(self.client.get(url), "Liste de suivi des cours (PDF)")
+            with override_settings(KEPCHUP_PAPER_ATTENDANCE=False):
+                self.assertNotContains(self.client.get(url), "Liste de suivi des cours (PDF)")
+
+    def test_multicourse_pdf_validates_dates_and_permissions(self):
+        url = reverse("backend:courses-absence")
+        self.client.force_login(FamilyUserFactory(is_manager=True))
+        for value in ("bad-date", "2026-02-08"):
+            response = self.client.get(url, {"c": self.course.pk, "pdf": "1", "date": value})
+            self.assertEqual(response.status_code, 400 if value == "bad-date" else 200)
+            self.assertContains(response, "Préparer les fiches PDF", status_code=response.status_code)
+        self.assertContains(self.client.get(url, {"pdf": "1"}), "Aucun cours sélectionné ou accessible")
+        self.client.force_login(FamilyUserFactory(is_restricted_manager=True))
+        self.assertContains(
+            self.client.get(url, {"c": self.course.pk, "pdf": "1"}), "Aucun cours sélectionné ou accessible"
+        )
+        self.client.logout()
+        self.assertEqual(self.client.get(url, {"c": self.course.pk, "pdf": "1"}).status_code, 302)
+
+    def test_prepare_pdf_and_explicitly_download_available_courses(self):
+        other = CourseFactory(number="Terminé", group_name="12")
+        other.sessions.all().delete()
+        SessionFactory(course=other, date=date(2026, 1, 31))
+        self.client.force_login(FamilyUserFactory(is_manager=True))
+        url = reverse("backend:courses-absence")
+        params = {"c": [self.course.pk, other.pk], "pdf": "1"}
+        with patch.object(AttendancePDFRenderer, "render_to_pdf") as renderer:
+            response = self.client.get(url, params)
+            renderer.assert_not_called()
+        self.assertContains(response, "Aucune séance à venir")
+        self.assertContains(response, "Télécharger la fiche disponible")
+        self.assertContains(response, other.get_backend_absences_url())
+        self.assertEqual(response.context["ready_count"], 1)
+        self.assertEqual(response.context["excluded_count"], 1)
+        captured = {}
+
+        def render(renderer, path):
+            captured.update(renderer.context)
+            Path(path).write_bytes(b"%PDF-test")
+
+        with patch.object(AttendancePDFRenderer, "render_to_pdf", render):
+            response = self.client.get(url, {**params, "available": "1"})
+        self.assertEqual(response["Content-Type"], "application/pdf")
+        self.assertEqual([sheet["course"].pk for sheet in captured["sheets"]], [self.course.pk])
+        response = self.client.get(url, {**params, "date": "2026-01-31", "prepare": "1"})
+        self.assertEqual(response.context["ready_count"], 2)
+        response = self.client.get(url, {**params, "date": "2026-01-01", "available": "1"})
+        self.assertEqual(response.context["ready_count"], 0)
+        self.assertContains(response, 'class="btn btn-success" disabled')
 
     def test_download_header_participants_and_print_settings(self):
         sheet = self.workbook(self.client.get(self.url))

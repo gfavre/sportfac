@@ -225,8 +225,9 @@ table.dataTable tbody td.selected .popover {
   </table>
 
 <p class="hidden-print text-center">
-  <a class="btn btn-success btn-large" href="#" id="generate-pdf"><i class="icon icon-file-pdf"></i> {% translate "Export to PDF" %}</a>
+  <a class="btn btn-success btn-large" href="#" id="generate-pdf"><i class="icon icon-file-pdf"></i> {% if PAPER_ATTENDANCE %}Liste de suivi des cours (PDF){% else %}{% translate "Export to PDF" %}{% endif %}</a>
 </p>
+{% if PAPER_ATTENDANCE %}<p class="help-block hidden-print text-center">Une fiche par cours/groupe, pour sa prochaine séance.</p>{% endif %}
 
 {% addtoblock "js" %}
 <script type="text/html" id="level-window">
@@ -490,7 +491,7 @@ jQuery(function($){
     });
   });
 
-  $('#generate-pdf').on('click', () => {
+  $('#generate-pdf').on('click', (event) => {
       event.preventDefault();
 
       const table = $('.table').DataTable();

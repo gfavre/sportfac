@@ -39,7 +39,7 @@ def extra_column_value(column, answers):
     return column.get("values", {}).get(stored, displayed)
 
 
-def attendance_workbook(course, day):
+def attendance_data(course, day):
     columns = parse_extra_columns(global_preferences_registry.manager()["site__ATTENDANCE_EXTRA_COLUMNS"])
     registrations = list(
         course.participants.select_related("child")
@@ -65,30 +65,11 @@ def attendance_workbook(course, day):
         "Vient de",
         "Va à",
     ]
-    last_column = len(headers)
-    workbook = Workbook()
-    sheet = workbook.active
-    sheet.title = "Absences"
-    sheet.sheet_view.showGridLines = False
-    sheet.append(
-        [
-            f"N° cours : {course.number}",
-            None,
-            len(registrations),
-            "Responsable : " + ", ".join(person.get_full_name() for person in course.instructors.all()),
-        ]
-    )
-    sheet.merge_cells("A1:B1")
-    sheet.merge_cells(start_row=1, start_column=4, end_row=1, end_column=last_column - 2)
-    date_cell = sheet.cell(1, last_column - 1, day)
-    sheet.merge_cells(start_row=1, start_column=last_column - 1, end_row=1, end_column=last_column)
-    date_cell.number_format = '"Date : "dd.mm.yyyy'
-    sheet.append([])
-    sheet.append(headers)
+    rows = []
     for registration in registrations:
         answers = registration_answers(registration)
         level = levels.get(registration.child_id)
-        sheet.append(
+        rows.append(
             [
                 "",
                 course.group_name,
@@ -103,7 +84,35 @@ def attendance_workbook(course, day):
                 "",
             ]
         )
-    format_attendance_sheet(sheet, len(columns), last_column)
+    return {
+        "course": course,
+        "day": day,
+        "headers": headers,
+        "rows": rows,
+        "count": len(registrations),
+        "extra_column_count": len(columns),
+        "instructors": ", ".join(person.get_full_name() for person in course.instructors.all()),
+    }
+
+
+def attendance_workbook(course, day):
+    data = attendance_data(course, day)
+    last_column = len(data["headers"])
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "Absences"
+    sheet.sheet_view.showGridLines = False
+    sheet.append([f"N° cours : {course.number}", None, data["count"], "Responsable : " + data["instructors"]])
+    sheet.merge_cells("A1:B1")
+    sheet.merge_cells(start_row=1, start_column=4, end_row=1, end_column=last_column - 2)
+    date_cell = sheet.cell(1, last_column - 1, day)
+    sheet.merge_cells(start_row=1, start_column=last_column - 1, end_row=1, end_column=last_column)
+    date_cell.number_format = '"Date : "dd.mm.yyyy'
+    sheet.append([])
+    sheet.append(data["headers"])
+    for row in data["rows"]:
+        sheet.append(row)
+    format_attendance_sheet(sheet, data["extra_column_count"], last_column)
     output = BytesIO()
     workbook.save(output)
     return output.getvalue()

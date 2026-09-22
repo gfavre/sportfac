@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Liste de suivi des cours</title>
+  <style>
+    @page { size: A4 landscape; margin: 10mm; }
+    body { margin: 0; font: 11px Arial, sans-serif; color: #000; }
+    * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .course-sheet + .course-sheet { break-before: page; page-break-before: always; }
+    h1 { font-size: 18px; margin: 0 0 6mm; }
+    .summary { display: flex; gap: 6mm; align-items: baseline; margin-bottom: 5mm; font-size: 13px; }
+    .responsible { flex: 1; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    thead { display: table-header-group; }
+    th, td { border: 1px solid #999; padding: 4px; overflow-wrap: anywhere; }
+    th { background: #000; color: #fff; text-align: left; }
+    td { height: 9mm; }
+    tbody tr:nth-child(odd) { background: #e8e8e8; }
+    tr { break-inside: avoid; page-break-inside: avoid; }
+  </style>
+</head>
+<body>
+{% for sheet in sheets %}
+  <section class="course-sheet">
+    <h1>Liste de suivi des cours — Groupe {{ sheet.course.group_name|default:"—" }}</h1>
+    <div class="summary">
+      <strong>N° cours : {{ sheet.course.number }}</strong>
+      <strong>{{ sheet.count }} inscrits</strong>
+      <span class="responsible">Responsable : {{ sheet.instructors }}</span>
+      <strong>Date : {{ sheet.day|date:"d.m.Y" }}</strong>
+    </div>
+    <table>
+      <thead><tr>{% for header in sheet.headers %}<th>{{ header }}</th>{% endfor %}</tr></thead>
+      <tbody>
+        {% for row in sheet.rows %}
+          <tr>{% for value in row %}<td>{{ value|default_if_none:"" }}</td>{% endfor %}</tr>
+        {% endfor %}
+        {% for unused in "123" %}<tr>{% for header in sheet.headers %}<td>&nbsp;</td>{% endfor %}</tr>{% endfor %}
+      </tbody>
+    </table>
+  </section>
+{% endfor %}
+</body>
+</html>

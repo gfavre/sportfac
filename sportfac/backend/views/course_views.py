@@ -30,6 +30,7 @@ from django.views.generic.detail import SingleObjectMixin
 
 from absences.models import Absence
 from absences.models import Session
+from absences.paper_pdf import attendance_pdf_response
 from absences.utils import closest_session
 from absences.views import CourseAbsenceView
 from activities.forms import CourseForm
@@ -438,6 +439,8 @@ class CoursesAbsenceView(CourseMixin, ListView):
 
     def get(self, request, *args, **kwargs):
         if "pdf" in self.request.GET:
+            if settings.KEPCHUP_PAPER_ATTENDANCE:
+                return attendance_pdf_response(request, self.get_queryset())
             self.object_list = self.get_queryset()
             context = self.get_context_data()
 

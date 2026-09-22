@@ -3,7 +3,10 @@
 
 {% block title %}{% translate "View courses" %} - {{ block.super }}{% endblock %}
 
-{% block page_title %}{% translate "List courses" %}{% endblock %}
+{% block page_title %}
+  {% translate "List courses" %}
+  <a href="{% url 'backend:course-create' %}" class="btn btn-success course-create-button"><i class="icon-plus"></i> {% translate "New course" %}</a>
+{% endblock page_title %}
 
 {% get_current_language as LANGUAGE_CODE %}
 
@@ -20,6 +23,7 @@
             src="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.js"></script>
 
     <script src="{% static 'backend/js/datatable-url-state.js' %}?v=2"></script>
+    <script src="{% static 'backend/js/course-actions.js' %}"></script>
 
     <script>
       $(function () {
@@ -37,83 +41,12 @@
           ],
           paging: false
         });
-        table.on('select', function () {
-          $('.needs-select').removeClass('disabled');
-        });
-        table.on('deselect', function () {
-          if (table.rows({selected: true}).count() === 0) {
-            $('.needs-select').addClass('disabled');
-          }
-        });
-
-        let createHiddenIDInputs = function($form) {
-          table.rows({selected: true}).nodes().each(function(row) {
-            let id = $(row).data('courseid');
-            $form.append(`<input name="c" value="${id}" type="hidden">`);
-          });
-        };
-
-        {% if USE_ABSENCES %}
-          $('form.absences').submit(function() {
-            createHiddenIDInputs($(this));
-          });
-        {% endif %}
-        $('form.convocations').submit(function() {
-            createHiddenIDInputs($(this));
-        });
-
-        $('form.instructors').submit(function() {
-          createHiddenIDInputs($(this));
-        });
-
-        $('form.visibility').submit(function() {
-            createHiddenIDInputs($(this));
-        });
+        window.initializeCourseActions(table);
       });
     </script>
   {% endaddtoblock %}
 
-  <a href="{% url 'backend:course-create' %}" class="btn btn-success">
-    <i class="icon-plus"></i> {% translate "New course" %}
-  </a>
-  <hr>
-
-  {% if USE_ABSENCES %}
-    <div class="btn-group">
-      <form class="absences" method="GET" action="{% url 'backend:courses-absence' %}">
-        <button type="submit" class="btn btn-secondary needs-select disabled"><i
-            class="icon-calendar"></i>&nbsp;&nbsp;{% translate "Manage multiple courses absences" %}</button>
-      </form>
-    </div>
-  {% endif %}
-
-  <div class="btn-group">
-    <form class="convocations" method="GET"
-          action="{% url 'backend:courses-mail-confirmation' %}">
-      <button type="submit" class="btn btn-secondary needs-select disabled">
-        <i class="icon-mail"></i>&nbsp;{% translate "Convocation email" %}
-      </button>
-    </form>
-  </div>
-
-  <div class="btn-group">
-    <form class="instructors" method="GET"
-          action="{% url 'backend:courses-mail-instructors' %}">
-      <button type="submit" class="btn btn-secondary needs-select disabled">
-        <i class="icon-tasks"></i>&nbsp;{% translate "Infos to instructors" %}
-      </button>
-    </form>
-  </div>
-
-  <div class="btn-group">
-    <form class="visibility" method="POST"
-          action="{% url 'backend:courses-toggle-visibility' %}">{% csrf_token %}
-      <button type="submit" class="btn btn-secondary needs-select disabled">
-        <i class="icon-eye-off"></i>&nbsp;{% translate "Toggle visibility" %}
-      </button>
-    </form>
-  </div>
-
+  {% include "backend/course/includes/selection-actions.html" %}
 
   <table id="course-table" class="table">
     <thead>

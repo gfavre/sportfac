@@ -1,0 +1,36 @@
+.course-create-button { float: right; margin: 0 0 12px 16px; }
+.course-selection-actions { clear: both; background: #f5f7f8; border: 1px solid #dde3e6; border-radius: 5px; padding: 16px 20px; margin: 0 0 24px; }
+.course-selection-heading { font-weight: 600; color: #45535d; margin-bottom: 14px; }
+.course-action-groups { display: flex; flex-wrap: wrap; gap: 16px 0; }
+.course-action-group { padding: 0 20px; border-left: 1px solid #d8dfe3; }
+.course-action-group:first-child { padding-left: 0; border-left: 0; }
+.course-action-group h3 { margin: 0 0 8px; font-family: inherit; font-weight: 600; font-size: 12px; line-height: 1.4; color: #60717d; text-transform: uppercase; letter-spacing: .04em; }
+.course-action-buttons, .course-action-group form.absences { display: flex; flex-wrap: wrap; gap: 8px; }
+.course-action-group form { margin: 0; }
+.course-selection-actions .btn-default:not(:disabled) {
+    background: #fff;
+    border-color: #7798aa;
+    color: #24566f;
+    font-weight: 600;
+    opacity: 1;
+}
+.course-selection-actions .btn-default:not(:disabled):hover,
+.course-selection-actions .btn-default:not(:disabled):focus {
+    background: #e8f2f7;
+    border-color: #24566f;
+    color: #183e52;
+}
+.course-selection-actions .btn-default:disabled {
+    background: #edf0f2;
+    border-color: #d6dde1;
+    color: #87929a;
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 1;
+}
+.course-action-group small { display: block; color: #687782; margin-top: 7px; }
+@media (max-width: 767px) {
+  .course-action-groups { display: block; }
+  .course-action-group, .course-action-group:first-child { border-left: 0; padding: 12px 0; }
+  .course-action-group + .course-action-group { border-top: 1px solid #d8dfe3; }
+}
