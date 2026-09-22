@@ -1,3 +1,4 @@
+from diplomas.models import Diploma
 from django.core.management.base import BaseCommand
 from django.db import DEFAULT_DB_ALIAS
 from django.db import transaction
@@ -27,6 +28,7 @@ from ...models import FamilyUser
 # groups/user_permissions are deliberately left out too: nothing in this app actually reads
 # them (it uses its own is_admin/is_manager/is_restricted_manager flags instead).
 REASSIGNABLE_FK_FIELDS = [
+    (Diploma, "parent"),
     (Session, "instructor"),
     (PaySlip, "instructor"),
     (Registration, "cancelation_person"),

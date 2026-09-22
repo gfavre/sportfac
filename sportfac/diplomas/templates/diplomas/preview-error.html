@@ -1,0 +1,11 @@
+{% extends "backend/base.html" %}
+
+{% block page_title %}Aperçu du diplôme{% endblock %}
+
+{% block content %}
+<p>L’aperçu n’a pas pu être généré. Aucun diplôme n’a été modifié ni envoyé.</p>
+<div class="form-group">
+  <a class="btn btn-default" href="{% url 'backend:diploma-preview' pk=diploma.pk %}">Réessayer</a>
+  <a class="btn btn-default" href="{% url 'backend:diploma-batch' pk=diploma.batch_id %}">Retour aux diplômes</a>
+</div>
+{% endblock content %}

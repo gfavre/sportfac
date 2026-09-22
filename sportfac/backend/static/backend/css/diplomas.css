@@ -1,0 +1,19 @@
+.diploma-page .diploma-section { margin: 24px 0; padding-bottom: 20px; border-bottom: 1px solid #dde3e6; }
+.diploma-page h2 { font-family: inherit; font-size: 18px; font-weight: 600; margin: 0 0 16px; }
+.diploma-page details { margin-bottom: 16px; }
+.diploma-page summary { cursor: pointer; }
+.diploma-page summary.btn { display: inline-block; margin-bottom: 12px; }
+.diploma-page details form { margin-top: 12px; }
+.diploma-page .btn:not(:disabled):not(.disabled) { cursor: pointer; }
+.diploma-page .btn:not(:disabled):not(.disabled) * { cursor: inherit; pointer-events: none; }
+.diploma-page .diploma-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.diploma-page .diploma-actions .btn { margin: 0; }
+.diploma-page .btn-primary { background: #286090; border-color: #245580; color: #fff; background-image: none; }
+.diploma-page .btn-primary:hover, .diploma-page .btn-primary:focus { background: #204d74; border-color: #163650; color: #fff; }
+.diploma-page .form-group > .btn { margin: 0 8px 8px 0; }
+.diploma-page .diploma-journal { border-top: 1px solid #dde3e6; padding-top: 16px; margin-top: 24px; }
+.diploma-page .diploma-journal > summary { font-weight: 600; margin-bottom: 12px; }
+.diploma-children th:first-child, .diploma-children td:first-child,
+.diploma-children th:nth-child(2), .diploma-children td:nth-child(2),
+.diploma-children td:last-child { white-space: nowrap; }
+.diploma-children td:last-child .btn + .btn { margin-left: 6px; }

@@ -21,6 +21,7 @@
       </div>
 
       <ul id="myTab" class="nav nav-layout-sidebar nav-stacked">
+        {% if DIPLOMAS %}<li><a href="{% url 'profiles:diplomas' %}"><i class="icon-doc-text"></i>&nbsp;&nbsp;Diplômes de mes enfants</a></li>{% endif %}
         <li {% if request.get_full_path == profiles_url %}class="active"{% endif %}>
           <a href="{{ profiles_url }}">
           <i class="icon-user"></i>

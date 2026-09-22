@@ -83,6 +83,7 @@ class FakeRequest:
 class PDFRenderer:
     message_template = None
     is_landscape = False
+    page_format = "A4"
 
     def __init__(self, context_data, request=None):
         site = Site.objects.all()[0]
@@ -150,7 +151,7 @@ class PDFRenderer:
                 "renderSettings": {
                     "emulateMedia": "print",
                     "pdfOptions": {
-                        "format": "A4",
+                        "format": self.page_format,
                         "landscape": self.is_landscape,
                         "preferCSSPageSize": False,
                         "omitBackground": False,

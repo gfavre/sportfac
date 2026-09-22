@@ -1,0 +1,10 @@
+{% extends "profiles/baseprofile.html" %}
+
+{% block page_title %}Diplômes de mes enfants{% endblock %}
+
+{% block content %}
+<h3>Diplômes de mes enfants</h3><p>Retrouvez ici les diplômes de toutes les saisons, y compris celles des années précédentes.</p>
+<table class="table"><thead><tr><th>Enfant</th><th>Saison</th><th>Activité / niveau</th><th></th></tr></thead><tbody>
+{% for diploma in diplomas %}<tr><td>{{ diploma.first_name }} {{ diploma.last_name }}</td><td>{{ diploma.batch.season }}</td><td>{{ diploma.evaluation }}</td><td><a class="btn btn-default" href="{% url 'profiles:diploma-download' pk=diploma.pk %}">Télécharger le diplôme</a></td></tr>{% empty %}<tr><td colspan="4">Aucun diplôme publié pour le moment.</td></tr>{% endfor %}
+</tbody></table>
+{% endblock content %}

@@ -1,0 +1,11 @@
+{% extends "backend/base.html" %}
+
+{% block page_title %}Diplômes{% endblock %}
+
+{% block content %}
+<a class="btn btn-success" href="{% url 'backend:diploma-create' %}">Préparer des diplômes</a>
+<p class="help-block">Archives de toutes les saisons. Les documents publiés restent disponibles pour les familles après un changement de période.</p>
+<table class="table"><thead><tr><th>Saison</th><th>Date</th><th>État</th><th></th></tr></thead><tbody>
+{% for batch in batches %}<tr><td>{{ batch.season }}</td><td>{{ batch.issued_on|date:"d.m.Y" }}</td><td>{{ batch.get_status_display }}</td><td><a href="{% url 'backend:diploma-batch' pk=batch.pk %}">Consulter</a></td></tr>{% empty %}<tr><td colspan="4">Aucun diplôme préparé.</td></tr>{% endfor %}
+</tbody></table>
+{% endblock content %}

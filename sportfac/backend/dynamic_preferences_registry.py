@@ -52,6 +52,17 @@ class AttendanceExtraColumns(LongStringPreference):
     )
 
 
+@global_preferences_registry.register
+class DiplomaLogo(StringPreference):
+    section = site
+    name = "DIPLOMA_LOGO"
+    default = ""
+    verbose_name = "Logo des diplômes"
+    help_text = (
+        "Chemin dans les fichiers statiques, par exemple img/logo.png. Vide : logo défini dans les réglages du site."
+    )
+
+
 class DateTimeSerializer(BaseSerializer):
     @classmethod
     def clean_to_db_value(cls, value):

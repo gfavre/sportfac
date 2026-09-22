@@ -241,6 +241,7 @@ SHARED_APPS = (
     "contact",
     "mailer",
     "profiles",
+    "diplomas",
     "wizard",
     # last apps
     "django.contrib.admin",
@@ -625,6 +626,8 @@ KEPCHUP_CHILDREN_POPUP = False
 # Children have a bib number (n° dossard)
 KEPCHUP_BIB_NUMBERS = False
 KEPCHUP_COURSE_GROUPS = False
+KEPCHUP_DIPLOMAS = False
+KEPCHUP_DIPLOMA_LOGO = "img/logo.png"
 KEPCHUP_PAPER_ATTENDANCE = False
 # Ask for school of the child
 KEPCHUP_CHILD_SCHOOL = False

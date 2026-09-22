@@ -68,6 +68,21 @@ about it is inherently staff-only, it's just that only staff are supposed to
 ever have a session pinned somewhere other than production. See the incident
 report for the case where that assumption didn't hold.
 
+## Diploma archives (2026-09)
+
+`diplomas` is a shared app. Diploma rows belong to the persistent parent account;
+child names, level, course, instructors, season and source schema/registration ID
+are snapshots, never foreign keys into period tables. PDFs are stored privately in
+binary fields and downloaded through authenticated owner/manager views. Regeneration
+does not mutate a published batch. `merge_family_accounts` transfers ownership of
+these archives to the retained account while preserving audit actors.
+
+Run `migrate_schemas --shared diplomas` when deploying and restart Celery workers to
+load `generate_batch` and `send_batch`. Generation, publication and sending are
+separate actions; sending is never automatic upon generation. SMTP acceptance is
+logged, not proof of delivery. A failed/interrupted send is not retried automatically
+because it may already have been accepted by the provider.
+
 ## Themes
 
 `sportfac/themes/<name>/templates/` holds each school's full override of the

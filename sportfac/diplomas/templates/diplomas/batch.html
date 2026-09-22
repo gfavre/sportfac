@@ -1,0 +1,68 @@
+{% extends "backend/base.html" %}
+{% load crispy_forms_tags sekizai_tags static %}
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'backend/css/diplomas.css' %}?v=5">
+{% endblock extra_css %}
+
+{% block page_title %}Diplômes — {{ batch.season }}{% endblock %}
+
+{% block content %}
+<div class="diploma-page">
+<p>{{ batch.issued_on|date:"d.m.Y" }} · <strong>{{ batch.get_status_display }}</strong></p>
+{% if batch.error %}<div class="alert alert-danger">{{ batch.error }}</div>{% endif %}
+{% if batch.status == "queued" or batch.status == "generating" %}<div class="alert alert-info">Préparation des diplômes en cours… Cette page se met à jour automatiquement.</div>{% endif %}
+<section class="diploma-section"><h2>Diplômes des enfants</h2>
+<div class="table-responsive"><table class="table diploma-children"><thead><tr><th>Enfant</th><th>Cours</th><th>Texte sur le diplôme</th>{% if batch.status == "ready" %}<th>Envoi aux familles</th>{% endif %}<th></th></tr></thead><tbody>
+{% for diploma in diplomas %}<tr{% if not diploma.evaluation %} class="warning"{% endif %}>
+<td>{{ diploma.first_name }} {{ diploma.last_name }}</td><td>{{ diploma.course_number }}</td>
+<td>{% if diploma.evaluation %}{{ diploma.evaluation }}{% else %}
+  <strong>Texte à renseigner</strong>
+  <div class="help-block">Renseignez le niveau obtenu après le cours pour cet enfant.
+    {% if diploma.level_child_id %}<a href="{% url 'backend:child-absences' child=diploma.level_child_id %}">Saisir le niveau après cours</a>.{% endif %}
+    Le niveau sera repris automatiquement à votre retour sur cette page. « Modifier » permet de personnaliser le texte.
+  </div>
+{% endif %}</td>
+{% if batch.status == "ready" %}<td>{{ diploma.get_mail_status_display }}{% if diploma.sent_at %} le {{ diploma.sent_at|date:"d.m.Y H:i" }}{% endif %}{% if diploma.published_at %}<br><small>Disponible sur le compte famille</small>{% endif %}</td>{% endif %}
+<td>{% if batch.status == "draft" %}<a class="btn btn-default btn-sm" href="{% url 'backend:diploma-edit' pk=diploma.pk %}"><i class="icon-pencil" aria-hidden="true"></i> Modifier</a>{% endif %} <a class="btn btn-default btn-sm" href="{% url 'backend:diploma-preview' pk=diploma.pk %}" target="_blank" rel="noopener" title="Ouvrir le PDF dans un nouvel onglet"><i class="icon-eye" aria-hidden="true"></i> Aperçu</a></td></tr>{% endfor %}
+</tbody></table></div>
+</section>
+<section class="diploma-section"><h2>Mail aux familles</h2>
+{% if batch.status == "draft" %}<details><summary class="btn btn-default"><i class="icon-pencil" aria-hidden="true"></i> Modifier le texte du mail</summary><form method="post">{% csrf_token %}<input type="hidden" name="action" value="message">{{ message_form|crispy }}<div class="form-group"><button class="btn btn-default">Enregistrer le texte</button></div></form></details>{% endif %}
+<strong>{{ batch.subject }}</strong><div class="well">{{ batch.message|linebreaksbr }}</div>
+<p>Pièces jointes : le diplôme de l’enfant{% for supplement in supplements %}, {{ supplement.name }}{% endfor %}.</p>
+</section>
+
+{% if batch.status != "queued" and batch.status != "generating" %}
+<form method="post">{% csrf_token %}
+  <div class="form-group">
+    <div class="diploma-actions">
+    {% if batch.status == "ready" %}
+      <a class="btn btn-primary" href="{% url 'backend:diploma-print' pk=batch.pk %}"><i class="icon-download" aria-hidden="true"></i> Télécharger les diplômes</a>
+    {% else %}
+      <button class="btn btn-primary" name="action" value="download"><i class="icon-download" aria-hidden="true"></i> Télécharger les diplômes</button>
+    {% endif %}
+    <button class="btn btn-primary" name="action" value="send" onclick="return confirm('Envoyer les diplômes par mail et les rendre disponibles sur les comptes des familles ?');"><i class="icon-mail" aria-hidden="true"></i> Envoyer aux familles</button>
+    </div>
+    <p class="help-block">Télécharger prépare un PDF pour l’impression. Envoyer transmet les diplômes par mail et les rend disponibles sur les comptes des familles.</p>
+  </div>
+</form>
+{% endif %}
+{% if batch.status == "queued" or batch.status == "generating" %}
+<script>window.setTimeout(function () { window.location.reload(); }, 3000);</script>
+{% elif batch.status == "ready" and request.GET.download == "1" %}
+<iframe hidden title="Téléchargement des diplômes" src="{% url 'backend:diploma-print' pk=batch.pk %}"></iframe>
+<script>window.history.replaceState(null, '', window.location.pathname);</script>
+{% endif %}
+<details class="diploma-journal"{% if request.GET.page %} open{% endif %}><summary>Historique des opérations</summary><p class="help-block">« Envoyé » signifie accepté par le serveur mail. Un envoi en échec ou interrompu n’est pas relancé automatiquement.</p>
+<table class="table"><thead><tr><th>Date</th><th>Action</th><th>Enfant</th><th>Par</th><th>Détail</th></tr></thead><tbody>
+{% for event in events %}<tr><td>{{ event.created|date:"d.m.Y H:i:s" }}</td><td>{{ event.get_action_display }}</td><td>{{ event.diploma.first_name }} {{ event.diploma.last_name }}</td><td>{{ event.actor.get_full_name|default:"Système" }}</td><td>{{ event.detail }}</td></tr>{% endfor %}
+</tbody></table>
+
+<p>Journal : page {{ events.number }} sur {{ events.paginator.num_pages }}.
+{% if events.has_previous %}<a href="?page={{ events.previous_page_number }}">Plus récent</a>{% endif %}
+{% if events.has_next %}<a href="?page={{ events.next_page_number }}">Plus ancien</a>{% endif %}</p>
+</details>
+<p><a href="{% url 'backend:diploma-list' %}">Tous les diplômes</a></p>
+</div>
+{% endblock content %}

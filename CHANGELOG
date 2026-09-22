@@ -7,12 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 ### Added
+- Persistent family diploma archives across school-year periods, with editable evaluations and two actions: download for printing or email families with automatic account publication. PDF preparation runs asynchronously, with attachments and an audit trail; enabled for Montreux Ski and local development.
 - Optional printable Excel attendance sheets and multicourse PDF tracking lists, with a separate sheet per course/group, participant counts, bibs, levels and configurable extra questions. Defaults to the next session, accepts a date URL parameter, and is enabled for Montreux Ski and local development.
 - Optional course groups appear in instructors' courses, registrations, attendance and transport lists. Controlled by `KEPCHUP_COURSE_GROUPS`, enabled for Montreux Ski and local development, disabled elsewhere.
 - Transport details and printed driver lists show the family account holder's full name alongside the child's emergency phone number.
 - Generate one bib per child from a unique car prefix and alphabetical rank, with assignment/capacity checks and explicit confirmation before replacing existing bibs.
 - Prepare car assignments individually or in groups with autosave, search and pagination. Children needing attention appear first, with clear status indicators and links to complete missing car prefixes.
 ### Fixed
+- Course action buttons keep the same font weight when enabled, preventing layout shifts when selecting courses.
 - Registration status filters remain visible even with few or no registrations, instead of being hidden by SearchPanes' automatic threshold. Backend SearchPanes bundles now use the existing 1.2.2 patch release to support restoring filters reliably; tests follow the page's actual library version and status-pane configuration.
 - Backend activity, payroll role, registration, invoice, transport, user/instructor/manager, teacher and child lists now keep search, sorting, pagination and SearchPanes selections in the URL. Detail/edit pages preserve the originating list on return, save or cancel; invoice dates, payment status and amount filters are restored too, with a single inclusive date filter instead of accumulating predicates.
 - Course lists retain their search, sorting and J+S filter in the URL when returning from editing a course, including after saving or cancelling. Shared URL-state handling also covers the Montreux course list.

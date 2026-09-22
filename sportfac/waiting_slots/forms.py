@@ -40,7 +40,10 @@ class WaitingSlotForm(forms.ModelForm):
         self.helper.layout = Layout(
             "course",
             "child",
-            Submit("add", _("Add to waiting list"), css_class="btn btn-success"),
+            ButtonHolder(
+                Submit("add", _("Add to waiting list"), css_class="btn btn-success"),
+                css_class="form-group",
+            ),
         )
 
 

@@ -1,0 +1,13 @@
+{% extends "backend/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block page_title %}Modifier le diplôme — {{ diploma.first_name }} {{ diploma.last_name }}{% endblock %}
+
+{% block content %}
+<form method="post">{% csrf_token %}{{ form|crispy }}
+  <div class="form-group">
+    <button class="btn btn-success" type="submit">Enregistrer</button>
+    <a class="btn btn-default" href="{% url 'backend:diploma-batch' pk=diploma.batch_id %}">Annuler</a>
+  </div>
+</form>
+{% endblock content %}

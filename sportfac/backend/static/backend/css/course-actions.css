@@ -7,11 +7,11 @@
 .course-action-group h3 { margin: 0 0 8px; font-family: inherit; font-weight: 600; font-size: 12px; line-height: 1.4; color: #60717d; text-transform: uppercase; letter-spacing: .04em; }
 .course-action-buttons, .course-action-group form.absences { display: flex; flex-wrap: wrap; gap: 8px; }
 .course-action-group form { margin: 0; }
+.course-selection-actions .btn-default { font-weight: 600; }
 .course-selection-actions .btn-default:not(:disabled) {
     background: #fff;
     border-color: #7798aa;
     color: #24566f;
-    font-weight: 600;
     opacity: 1;
 }
 .course-selection-actions .btn-default:not(:disabled):hover,

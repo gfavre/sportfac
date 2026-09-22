@@ -1,15 +1,27 @@
+from diplomas.views import DiplomaDownloadView
+from diplomas.views import FamilyDiplomasView
 from django.conf import settings
 from django.contrib.auth import views as auth_views
-from django.urls import path, re_path, reverse_lazy
+from django.urls import path
+from django.urls import re_path
+from django.urls import reverse_lazy
 from django.views.generic.base import RedirectView
 
-from .forms import AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
-from .views import AccountRedirectView, AccountView, LogoutView, RegistrationView
+from .forms import AuthenticationForm
+from .forms import PasswordChangeForm
+from .forms import PasswordResetForm
+from .forms import SetPasswordForm
+from .views import AccountRedirectView
+from .views import AccountView
+from .views import LogoutView
+from .views import RegistrationView
 
 
 app_name = "profiles"
 
 urlpatterns = [
+    path("diplomas/", FamilyDiplomasView.as_view(), name="diplomas"),
+    path("diplomas/<uuid:pk>/", DiplomaDownloadView.as_view(), name="diploma-download"),
     path("", AccountView.as_view(), name="profiles_account"),
     path("new", RegistrationView.as_view(), name="anytime_registeraccount"),
     path("logout", LogoutView.as_view(), name="auth_logout"),

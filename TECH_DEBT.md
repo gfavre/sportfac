@@ -438,6 +438,15 @@ ad hoc, on a schedule/on-demand, in the backend UI instead of a shell paste,
 so it doesn't take another Sentry alert (or another support email) to notice
 the next one.
 
+## Diploma task recovery
+
+Diploma mail claims deliberately remain `sending` if a worker dies after SMTP
+acceptance: automatic retries could send duplicates. There is not yet a provider
+delivery webhook/reconciliation screen. Check the provider before manually
+resetting a stalled/failed delivery; never add blanket Celery autoretry around
+`diplomas.tasks.send_one`. Likewise a crashed generation worker can leave a batch
+in `generating`; verify no task is running before resetting it for regeneration.
+
 ## Performance work already done (2026-08, for reference — not debt)
 
 Not tech debt, but context for anyone reading this file wondering what's already
