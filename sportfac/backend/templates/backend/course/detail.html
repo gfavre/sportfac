@@ -197,6 +197,7 @@
 
   <section>
     <h2>{% translate "Registrations" %}</h2>
+    {% load paper_attendance %}{% paper_attendance_button course %}
     <a href="{{ course.get_xls_export_url }}" class="btn btn-default">
       <i class="icon-file-excel"></i> {% translate "Export participants" %}
     </a>

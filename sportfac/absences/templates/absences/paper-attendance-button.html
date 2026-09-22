@@ -1,0 +1,9 @@
+{% if enabled %}
+  {% if day %}
+    <a class="btn btn-default hidden-print" href="{% url 'activities:paper-attendance' course=course.pk %}?date={{ day|date:'Y-m-d' }}">
+      <i class="icon-file-excel"></i> Fiche d’absence du {{ day|date:"d.m.Y" }} (Excel)
+    </a>
+  {% else %}
+    <span class="text-muted hidden-print">Fiche d’absence : aucune séance à venir.</span>
+  {% endif %}
+{% endif %}

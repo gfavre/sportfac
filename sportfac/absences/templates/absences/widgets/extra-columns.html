@@ -1,0 +1,32 @@
+<div class="attendance-extra-columns">
+  <textarea name="{{ widget.name }}"{% include "django/forms/widgets/attrs.html" %} data-columns-value hidden>{{ widget.value|default:"[]" }}</textarea>
+  <div data-columns-rows></div>
+  <button type="button" class="aec-button aec-button-primary" data-add-column>+ Ajouter une colonne</button>
+  <noscript>Activez JavaScript pour éditer les colonnes.</noscript>
+  <template data-column-template>
+    <fieldset class="aec-column">
+      <label>Question
+        <select data-question>
+          <option value="">Choisir une question…</option>
+          {% for question in questions %}<option value="{{ question }}">{{ question }}</option>{% endfor %}
+        </select>
+      </label>
+      <label>Libellé de colonne <input type="text" data-label></label>
+      <div data-mappings></div>
+      <button type="button" class="aec-button" data-add-mapping>+ Ajouter une correspondance</button>
+      <p>Sans correspondance : valeur habituelle de la réponse (Oui / Non pour les booléens). Une réponse absente reste vide.</p>
+      <div class="aec-actions">
+        <button type="button" class="aec-button" data-up>↑ Monter</button>
+        <button type="button" class="aec-button" data-down>↓ Descendre</button>
+        <button type="button" class="aec-button aec-button-remove" data-remove-column>Retirer la colonne</button>
+      </div>
+    </fieldset>
+  </template>
+  <template data-mapping-template>
+    <div data-mapping class="aec-mapping">
+      <label>Valeur stockée <input type="text" data-stored placeholder="True"></label>
+      → <label>Valeur affichée <input type="text" data-displayed placeholder="M"></label>
+      <button type="button" class="aec-button aec-button-remove" data-remove-mapping>Retirer</button>
+    </div>
+  </template>
+</div>

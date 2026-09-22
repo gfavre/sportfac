@@ -1,6 +1,7 @@
 from django.contrib.sitemaps import GenericSitemap
 from django.urls import path
 
+from absences.paper_views import PaperAttendanceView
 from absences.views import AbsenceCourseView
 
 from . import views
@@ -11,6 +12,7 @@ app_name = "activities"
 
 
 urlpatterns = [
+    path("courses/<int:course>/attendance.xlsx", PaperAttendanceView.as_view(), name="paper-attendance"),
     path("<int:pk>/", view=views.ActivityDetailView.as_view()),
     path("<slug:slug>/", view=views.ActivityDetailView.as_view(), name="activity-detail"),
     path("my-courses", view=views.MyCoursesListView.as_view(), name="my-courses"),

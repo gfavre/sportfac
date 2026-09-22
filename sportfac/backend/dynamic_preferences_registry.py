@@ -18,6 +18,9 @@ from dynamic_preferences.types import IntegerPreference
 from dynamic_preferences.types import LongStringPreference
 from dynamic_preferences.types import StringPreference
 
+from absences.extra_columns import AttendanceExtraColumnsField
+from absences.extra_columns import AttendanceExtraColumnsWidget
+
 from .models import TenantPreferenceModel
 
 
@@ -33,6 +36,20 @@ email = Section("email")
 payment = Section("payment")
 phase = Section("phase")
 site = Section("site")
+
+
+@global_preferences_registry.register
+class AttendanceExtraColumns(LongStringPreference):
+    section = site
+    name = "ATTENDANCE_EXTRA_COLUMNS"
+    default = "[]"
+    field_class = AttendanceExtraColumnsField
+    widget = AttendanceExtraColumnsWidget
+    verbose_name = "Questions supplémentaires dans la fiche d’absence Excel"
+    help_text = (
+        "Choisissez les questions, leurs titres et les éventuelles correspondances de valeurs. "
+        "Les colonnes seront exportées dans cet ordre."
+    )
 
 
 class DateTimeSerializer(BaseSerializer):
