@@ -2,9 +2,12 @@ from django import forms
 from django.utils import timezone
 
 from activities.models import Course
+from registrations.levels import level_menu_label
 
 from .models import Diploma
 from .models import DiplomaBatch
+from .services import EMPTY_LEVEL
+from .services import final_level_counts
 
 
 DEFAULT_MESSAGE = """Madame, Monsieur,
@@ -23,6 +26,12 @@ Rue du Temple 11
 
 class BatchForm(forms.Form):
     courses = forms.ModelMultipleChoiceField(label="Cours", queryset=Course.objects.none())
+    final_levels = forms.MultipleChoiceField(
+        label="Niveaux finaux à inclure",
+        widget=forms.CheckboxSelectMultiple,
+        help_text="Tous sont cochés par défaut. Décochez les niveaux à exclure, par exemple ABS ou Sans niveau.",
+        error_messages={"required": "Sélectionnez au moins un niveau final à inclure."},
+    )
     season = forms.CharField(label="Saison / année", max_length=100)
     issued_on = forms.DateField(
         label="Date du diplôme",
@@ -49,6 +58,25 @@ class BatchForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["courses"].queryset = Course.objects.all().order_by("number")
+        course_ids = (
+            self.data.getlist("courses")
+            if self.is_bound and hasattr(self.data, "getlist")
+            else (self.data.get("courses", []) if self.is_bound else self.initial.get("courses", []))
+        )
+        course_ids = [str(pk) for pk in course_ids if str(pk).isdigit()]
+        self.level_counts = final_level_counts(Course.objects.filter(pk__in=course_ids))
+        self.fields["final_levels"].choices = [
+            (code, f"{'Sans niveau' if code == EMPTY_LEVEL else level_menu_label(code)} ({count})")
+            for code, count in sorted(self.level_counts.items())
+        ]
+        if not self.is_bound:
+            self.initial["final_levels"] = list(self.level_counts)
+
+    def clean(self):
+        data = super().clean()
+        if data.get("courses") and not self.level_counts:
+            raise forms.ValidationError("Aucun enfant inscrit dans les cours sélectionnés.")
+        return data
 
     def clean_supplement(self):
         return validate_pdf(self.cleaned_data.get("supplement"))

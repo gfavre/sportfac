@@ -5,6 +5,8 @@ Depuis une préparation, **Tous les diplômes** permet de retrouver les diplôme
 
 1. Choisir la saison, la date, le lieu éventuel et le texte du mail. Ajouter si
    nécessaire un descriptif de niveaux en PDF (un seul document, 10 Mo max), dans ce formulaire initial.
+   Les niveaux finaux présents dans les cours sont tous présélectionnés, avec leur effectif.
+   Décocher « Sans niveau », « ABS » ou tout autre niveau pour exclure les enfants concernés.
 2. Vérifier les noms et évaluations. Le niveau enregistré est copié ; son libellé
    imprimé est modifiable. Les évaluations vides bloquent la génération.
    Les brouillons dont le texte est vide reprennent automatiquement le niveau après cours

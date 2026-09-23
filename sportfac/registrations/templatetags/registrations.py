@@ -1,10 +1,12 @@
 from django import template
 from django.utils.safestring import mark_safe
 
+from ..levels import level_menu_label
 from ..models import ExtraInfo
 
 
 register = template.Library()
+register.filter("level_menu_label", level_menu_label)
 
 
 @register.simple_tag

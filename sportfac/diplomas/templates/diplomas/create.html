@@ -1,14 +1,16 @@
 {% extends "backend/base.html" %}
-{% load crispy_forms_tags %}
+{% load crispy_forms_tags static %}
 
 {% block page_title %}Préparer les diplômes{% endblock %}
 
 {% block content %}
 <p>Les noms, niveaux et moniteurs seront copiés depuis les cours sélectionnés. Vous pourrez corriger les évaluations avant la génération. Aucun mail n’est envoyé à cette étape.</p>
-<form method="post" enctype="multipart/form-data">{% csrf_token %}{{ form|crispy }}
+<form method="post" enctype="multipart/form-data" data-diploma-create="{% url 'backend:diploma-create' %}">{% csrf_token %}{{ form|crispy }}
+  <p class="help-block" role="status" data-level-status></p>
   <div class="form-group">
     <button class="btn btn-success" type="submit">Préparer les diplômes</button>
     <a class="btn btn-default" href="{% url 'backend:diploma-list' %}">Annuler</a>
   </div>
 </form>
+<script src="{% static 'backend/js/diploma-create.js' %}?v=1" defer></script>
 {% endblock content %}

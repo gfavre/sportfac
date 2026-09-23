@@ -1,13 +1,17 @@
 import base64
 import mimetypes
+from collections import Counter
 from pathlib import Path
 
 from django.conf import settings
 from django.contrib.staticfiles import finders
 from django.db import connection
 from django.db import transaction
+from django.db.models import OuterRef
+from django.db.models import Subquery
 from dynamic_preferences.registries import global_preferences_registry
 
+from registrations.levels import diploma_evaluation
 from registrations.models import ChildActivityLevel
 from registrations.models import Registration
 
@@ -15,6 +19,21 @@ from .models import Diploma
 from .models import DiplomaBatch
 from .models import DiplomaEvent
 from .models import DiplomaSupplement
+
+
+EMPTY_LEVEL = "__empty__"
+
+
+def final_level_counts(courses):
+    levels = ChildActivityLevel.objects.filter(
+        child_id=OuterRef("child_id"), activity_id=OuterRef("course__activity_id")
+    ).values("after_level")[:1]
+    return Counter(
+        level or EMPTY_LEVEL
+        for level in Registration.objects.filter(course__in=courses)
+        .annotate(final_level=Subquery(levels))
+        .values_list("final_level", flat=True)
+    )
 
 
 def diploma_logo():
@@ -53,7 +72,7 @@ def complete_missing_levels(batch, actor=None):
         )
         if level:
             diploma.level = level
-            diploma.evaluation = f"{diploma.activity} — {level}"
+            diploma.evaluation = diploma_evaluation(diploma.activity, level)
             changed.append(diploma)
     if changed:
         Diploma.objects.bulk_update(changed, ["level", "evaluation"])
@@ -90,6 +109,8 @@ def create_batch(data, actor):
         for registration in course.participants.all():
             child = registration.child
             level = levels.get(child.pk, "")
+            if "final_levels" in data and (level or EMPTY_LEVEL) not in data["final_levels"]:
+                continue
             diplomas.append(
                 Diploma(
                     batch=batch,
@@ -100,7 +121,7 @@ def create_batch(data, actor):
                     activity=course.activity.name,
                     course_number=course.number,
                     level=level,
-                    evaluation=f"{course.activity.name} — {level}" if level else "",
+                    evaluation=diploma_evaluation(course.activity.name, level),
                     place=data["place"] or str(course.place),
                     instructors=", ".join(person.get_full_name() for person in course.instructors.all()),
                 )

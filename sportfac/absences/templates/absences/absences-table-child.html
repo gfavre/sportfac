@@ -1,4 +1,4 @@
-{% load children duration extra i18n mathfilters matrix sekizai_tags static status switzerland %}
+{% load children duration extra i18n mathfilters matrix registrations sekizai_tags static status switzerland %}
 {% addtoblock "css" %}
 <style>
 .rotated-heading {
@@ -129,7 +129,7 @@
   <form>
     <select class="form-control" name="level">
       {% for level in levels %}
-      <option value="{{ level.0 }}">{{ level.1 }}</option>
+      <option value="{{ level.0 }}">{{ level.0|level_menu_label }}</option>
       {% endfor %}
     </select>
   </form>

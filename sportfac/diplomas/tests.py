@@ -29,6 +29,36 @@ from .tasks import send_batch
 
 
 class DiplomaTests(TenantTestCase):
+    def test_creation_filters_final_levels_and_selects_all_initially(self):
+        absent = RegistrationFactory(course=self.course)
+        empty = RegistrationFactory(course=self.course)
+        ChildActivityLevel.objects.create(activity=self.course.activity, child=absent.child, after_level="ABS")
+        self.client.force_login(self.manager)
+        url = reverse("backend:diploma-create")
+        response = self.client.get(url, {"c": self.course.pk})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(set(response.context["form"].initial["final_levels"]), {"A 1A", "ABS", "__empty__"})
+        self.assertContains(response, "Sans niveau (1)")
+        data = {**self.data, "courses": [self.course.pk], "final_levels": ["A 1A"]}
+        data.pop("supplement")
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 302)
+        batch = self.client.get(response.url).context["batch"]
+        self.assertEqual(list(batch.diplomas.values_list("source_registration_id", flat=True)), [self.registration.pk])
+        data["final_levels"] = ["__empty__"]
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 302)
+        batch = self.client.get(response.url).context["batch"]
+        self.assertEqual(list(batch.diplomas.values_list("source_registration_id", flat=True)), [empty.pk])
+
+    def test_creation_requires_explicit_level_selection(self):
+        data = {**self.data, "courses": [self.course.pk], "final_levels": []}
+        form = BatchForm(data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("final_levels", form.errors)
+        data["final_levels"] = ["ABS"]
+        self.assertFalse(BatchForm(data).is_valid())
+
     def test_status_poll_permissions_and_busy_page(self):
         url = reverse("backend:diploma-status", args=[self.batch.pk])
         self.assertEqual(self.client.get(url).status_code, 302)
@@ -66,10 +96,10 @@ class DiplomaTests(TenantTestCase):
         self.client.force_login(self.manager)
         Diploma.objects.filter(pk=self.diploma.pk).update(evaluation="", level="")
         response = self.client.get(self.detail_url)
-        self.assertContains(response, "A 1A")
+        self.assertContains(response, "Ski alpin, niveau 1, à améliorer")
         self.diploma.refresh_from_db()
         self.assertEqual(self.diploma.level, "A 1A")
-        self.assertEqual(self.diploma.evaluation, f"{self.diploma.activity} — A 1A")
+        self.assertEqual(self.diploma.evaluation, "Ski alpin, niveau 1, à améliorer")
         ChildActivityLevel.objects.filter(child=self.registration.child).update(after_level="A 2A")
         self.client.get(self.detail_url)
         self.diploma.refresh_from_db()
@@ -311,7 +341,7 @@ class DiplomaTests(TenantTestCase):
 
     def test_create_form_and_uploaded_pdf_validation(self):
         self.client.force_login(self.manager)
-        data = {**self.data, "courses": [self.course.pk], "issued_on": "2026-02-07"}
+        data = {**self.data, "courses": [self.course.pk], "issued_on": "2026-02-07", "final_levels": ["A 1A"]}
         data.pop("supplement")
         response = self.client.post(reverse("backend:diploma-create"), data)
         self.assertEqual(response.status_code, 302)
@@ -326,6 +356,7 @@ class DiplomaTests(TenantTestCase):
             "courses": [self.course.pk],
             "issued_on": "2026-02-07",
             "supplement": SimpleUploadedFile("niveaux.pdf", b"%PDF-levels"),
+            "final_levels": ["A 1A"],
         }
         response = self.client.post(reverse("backend:diploma-create"), data)
         self.assertEqual(response.status_code, 302)
