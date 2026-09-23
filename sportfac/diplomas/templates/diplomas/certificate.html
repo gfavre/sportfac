@@ -15,14 +15,16 @@
   .left { left: 0; } .right { right: 0; }
   header { height: 48mm; text-align: center; position: relative; }
   header img { height: 43mm; max-width: 100mm; object-fit: contain; }
-  .year { position: absolute; top: 13mm; font: 30pt DiplomaLabels, cursive; transform: rotate(24deg); text-shadow: 1px 2px 2px rgba(170, 170, 170, 0.5); }
+  /* Opaque, unblurred shadows avoid PDF soft masks rendered as grey boxes by some viewers. */
+  .year { position: absolute; top: 13mm; font: 30pt DiplomaLabels, cursive; transform: rotate(24deg); text-shadow: 1px 2px 0 #d5d5d5; }
   .year-left { left: 3mm; } .year-right { right: 3mm; }
   table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  th, td { border: 0.3mm solid #111; padding: 1.5mm 2mm; height: 15.5mm; vertical-align: baseline; text-shadow: 1px 1.5px 1px rgba(187, 187, 187, 0.5); }
+  th, td { border: 0.3mm solid #111; padding: 1.5mm 2mm; height: 15.5mm; vertical-align: baseline; text-shadow: 1px 1.5px 0 #ddd; }
   th { width: 28%; text-align: right; font: 27pt/1.15 DiplomaLabels, cursive; white-space: nowrap; }
   td { color: #ed0000; font: 20pt DiplomaText, cursive; line-height: 1.15; overflow-wrap: anywhere; }
   td.long { font-size: 16pt; }
   td .value { position: relative; top: 0.37em; }
+  .year, th, td, td .value, footer { background-color: white; }
   footer { margin-top: 4mm; font-size: 7pt; text-align: right; }
 </style></head><body>
 {% for diploma in diplomas %}
