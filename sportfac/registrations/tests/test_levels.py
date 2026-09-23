@@ -1,6 +1,7 @@
 from django.template import Context
 from django.template import Template
 from django.test import SimpleTestCase
+from django.utils.translation import override
 
 from registrations.levels import diploma_evaluation
 from registrations.levels import level_description
@@ -8,6 +9,18 @@ from registrations.levels import level_menu_label
 
 
 class LevelDescriptionTests(SimpleTestCase):
+    def setUp(self):
+        language = override("fr")
+        language.__enter__()
+        self.addCleanup(language.__exit__, None, None, None)
+
+    def test_labels_follow_active_language(self):
+        with override("en"):
+            self.assertEqual(level_description("A 1A"), "Alpine skiing, level 1, needs improvement")
+            self.assertEqual(level_description("S 2B"), "Snowboarding, level 2, good")
+            self.assertEqual(diploma_evaluation("Ski", "A 7C"), "Alpine skiing, level 7, confirmed")
+        self.assertEqual(level_description("A 1A"), "Ski alpin, niveau 1, à améliorer")
+
     def test_all_documented_levels(self):
         for prefix, sport in (("A", "Ski alpin"), ("S", "Snowboard")):
             for number in range(1, 8):

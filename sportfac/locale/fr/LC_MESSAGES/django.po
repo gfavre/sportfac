@@ -7215,3 +7215,26 @@ msgstr "Les inscriptions sont actuellement closes."
 
 #~ msgid "announced"
 #~ msgstr "annoncé"
+
+#: registrations/levels.py
+msgid "Alpine skiing"
+msgstr "Ski alpin"
+
+#: registrations/levels.py
+msgid "Snowboarding"
+msgstr "Snowboard"
+
+#: registrations/levels.py
+#, python-format
+msgid "%(sport)s, level %(number)s, needs improvement"
+msgstr "%(sport)s, niveau %(number)s, à améliorer"
+
+#: registrations/levels.py
+#, python-format
+msgid "%(sport)s, level %(number)s, good"
+msgstr "%(sport)s, niveau %(number)s, bien"
+
+#: registrations/levels.py
+#, python-format
+msgid "%(sport)s, level %(number)s, confirmed"
+msgstr "%(sport)s, niveau %(number)s, confirmé"
