@@ -330,6 +330,7 @@ urlpatterns = [
     path("diplomas/", diploma_views.BatchListView.as_view(), name="diploma-list"),
     path("diplomas/new/", diploma_views.BatchCreateView.as_view(), name="diploma-create"),
     path("diplomas/<uuid:pk>/", diploma_views.BatchDetailView.as_view(), name="diploma-batch"),
+    path("diplomas/<uuid:pk>/status/", diploma_views.BatchStatusView.as_view(), name="diploma-status"),
     path("diplomas/<uuid:pk>/print/", diploma_views.BatchDownloadView.as_view(), name="diploma-print"),
     path("diplomas/child/<uuid:pk>/edit/", diploma_views.DiplomaEditView.as_view(), name="diploma-edit"),
     path("diplomas/child/<uuid:pk>/preview/", diploma_views.DiplomaPreviewView.as_view(), name="diploma-preview"),

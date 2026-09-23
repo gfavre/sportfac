@@ -6,6 +6,7 @@ from django.db import connection
 from django.db import transaction
 from django.http import Http404
 from django.http import HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
@@ -75,6 +76,14 @@ def queue_generation(batch, send_after=False):
     except Exception as exc:
         DiplomaBatch.objects.filter(pk=batch.pk).update(status="failed", error="Mise en file impossible : " + str(exc))
         DiplomaEvent.objects.create(batch=batch, action="queue_failed", detail=str(exc))
+
+
+class BatchStatusView(DiplomaEnabledMixin, FullBackendMixin, View):
+    def get(self, request, pk):
+        batch = get_object_or_404(DiplomaBatch.objects.only("status"), pk=pk)
+        response = JsonResponse({"status": batch.status})
+        response["Cache-Control"] = "private, no-store"
+        return response
 
 
 class BatchDetailView(DiplomaEnabledMixin, FullBackendMixin, View):

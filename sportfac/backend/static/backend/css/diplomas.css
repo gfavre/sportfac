@@ -17,3 +17,5 @@
 .diploma-children th:nth-child(2), .diploma-children td:nth-child(2),
 .diploma-children td:last-child { white-space: nowrap; }
 .diploma-children td:last-child .btn + .btn { margin-left: 6px; }
+.diploma-spinner { display: inline-block; width: 1em; height: 1em; margin-right: 6px; vertical-align: -0.1em; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: diploma-spin 1s linear infinite; }
+@keyframes diploma-spin { to { transform: rotate(360deg); } }

@@ -2,7 +2,7 @@
 {% load crispy_forms_tags sekizai_tags static %}
 {% block extra_css %}
 {{ block.super }}
-<link rel="stylesheet" href="{% static 'backend/css/diplomas.css' %}?v=5">
+<link rel="stylesheet" href="{% static 'backend/css/diplomas.css' %}?v=6">
 {% endblock extra_css %}
 
 {% block page_title %}Diplômes — {{ batch.season }}{% endblock %}
@@ -34,7 +34,7 @@
 </section>
 
 {% if batch.status != "queued" and batch.status != "generating" %}
-<form method="post">{% csrf_token %}
+<form method="post" data-diploma-actions>{% csrf_token %}
   <div class="form-group">
     <div class="diploma-actions">
     {% if batch.status == "ready" %}
@@ -49,11 +49,16 @@
 </form>
 {% endif %}
 {% if batch.status == "queued" or batch.status == "generating" %}
-<script>window.setTimeout(function () { window.location.reload(); }, 3000);</script>
+<div class="form-group" data-diploma-poll="{% url 'backend:diploma-status' pk=batch.pk %}">
+  <button class="btn btn-primary" disabled aria-busy="true"><i class="diploma-spinner" aria-hidden="true"></i> Génération des diplômes, restez sur cette page</button>
+  <p class="help-block" role="status" data-poll-message>Préparation en arrière-plan…</p>
+</div>
+<noscript><p>Actualisez cette page pour récupérer les diplômes une fois prêts.</p></noscript>
 {% elif batch.status == "ready" and request.GET.download == "1" %}
 <iframe hidden title="Téléchargement des diplômes" src="{% url 'backend:diploma-print' pk=batch.pk %}"></iframe>
 <script>window.history.replaceState(null, '', window.location.pathname);</script>
 {% endif %}
+<script src="{% static 'backend/js/diplomas.js' %}?v=1" defer></script>
 <details class="diploma-journal"{% if request.GET.page %} open{% endif %}><summary>Historique des opérations</summary><p class="help-block">« Envoyé » signifie accepté par le serveur mail. Un envoi en échec ou interrompu n’est pas relancé automatiquement.</p>
 <table class="table"><thead><tr><th>Date</th><th>Action</th><th>Enfant</th><th>Par</th><th>Détail</th></tr></thead><tbody>
 {% for event in events %}<tr><td>{{ event.created|date:"d.m.Y H:i:s" }}</td><td>{{ event.get_action_display }}</td><td>{{ event.diploma.first_name }} {{ event.diploma.last_name }}</td><td>{{ event.actor.get_full_name|default:"Système" }}</td><td>{{ event.detail }}</td></tr>{% endfor %}

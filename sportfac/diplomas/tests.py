@@ -29,6 +29,27 @@ from .tasks import send_batch
 
 
 class DiplomaTests(TenantTestCase):
+    def test_status_poll_permissions_and_busy_page(self):
+        url = reverse("backend:diploma-status", args=[self.batch.pk])
+        self.assertEqual(self.client.get(url).status_code, 302)
+        self.client.force_login(self.parent)
+        self.assertEqual(self.client.get(url).status_code, 302)
+        self.client.force_login(self.manager)
+        for status in ("queued", "generating", "ready", "failed"):
+            DiplomaBatch.objects.filter(pk=self.batch.pk).update(status=status)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.json(), {"status": status})
+            self.assertEqual(response["Cache-Control"], "private, no-store")
+        DiplomaBatch.objects.filter(pk=self.batch.pk).update(status="queued")
+        response = self.client.get(self.detail_url + "?download=1")
+        self.assertContains(response, "Génération des diplômes, restez sur cette page")
+        self.assertContains(response, url)
+        self.assertContains(response, "backend/js/diplomas.js")
+        self.assertNotContains(response, "window.location.reload()")
+        with override_settings(KEPCHUP_DIPLOMAS=False):
+            self.assertEqual(self.client.get(url).status_code, 404)
+
     def test_renderer_embeds_font_dependencies(self):
         def write_pdf(renderer, path):
             from pathlib import Path
@@ -232,7 +253,7 @@ class DiplomaTests(TenantTestCase):
         for url in urls:
             self.assertEqual(self.client.get(url).status_code, 200)
         response = self.client.get(self.detail_url)
-        self.assertContains(response, "backend/css/diplomas.css?v=5")
+        self.assertContains(response, "backend/css/diplomas.css?v=6")
         self.assertContains(response, 'class="table diploma-children"')
         response = self.client.get(urls[-1])
         self.assertNotContains(response, 'name="level"')

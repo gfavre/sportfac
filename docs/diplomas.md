@@ -19,7 +19,9 @@ Depuis une préparation, **Tous les diplômes** permet de retrouver les diplôme
    descriptif éventuel. Les archives restent accessibles même lorsqu'aucun enfant
    n'existe dans la période courante. Ces opérations s'exécutent avec Celery.
 
-La page s'actualise automatiquement pendant la préparation. Le journal conserve
+Le bouton affiche la génération en cours avec une icône animée. Un polling JSON
+toutes les trois secondes attend la fin, puis actualise la page une seule fois
+pour lancer le téléchargement. Le journal conserve
 les générations, téléchargements, publications et envois ; aucune confirmation d'impression n'est demandée.
 
 Le bouton d'envoi ignore les diplômes déjà envoyés, en cours d'envoi ou en échec.
