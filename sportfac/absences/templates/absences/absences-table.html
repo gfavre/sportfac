@@ -819,6 +819,7 @@
               $('abbr', $parent).text(response.instructor.initials).attr('title', response.instructor.full_name);
             } else {
               $parent.data('instructor', null);
+              $('abbr', $parent).text('n/a').attr('title', '{% translate "Unknown instructor" %}');
             }
             let newDate = moment(response.date, API_FMT).format(HUMAN_FMT);
             $parent.data('date', newDate);
