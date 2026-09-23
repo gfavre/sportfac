@@ -24,10 +24,23 @@ from .models import DiplomaEvent
 from .services import create_batch
 from .tasks import DiplomaRenderer
 from .tasks import generate_batch
+from .tasks import render_diplomas
 from .tasks import send_batch
 
 
 class DiplomaTests(TenantTestCase):
+    def test_renderer_embeds_font_dependencies(self):
+        def write_pdf(renderer, path):
+            from pathlib import Path
+
+            self.assertTrue(renderer.context["label_font"])
+            self.assertTrue(renderer.context["text_font"])
+            self.assertEqual(len(renderer.context["horizontal_stars"]), 65)
+            Path(path).write_bytes(b"%PDF-test")
+
+        with patch.object(DiplomaRenderer, "render_to_pdf", autospec=True, side_effect=write_pdf):
+            self.assertEqual(render_diplomas(self.batch, [self.diploma]), b"%PDF-test")
+
     def test_missing_text_picks_up_level_without_overwriting_manual_text(self):
         self.client.force_login(self.manager)
         Diploma.objects.filter(pk=self.diploma.pk).update(evaluation="", level="")
@@ -221,6 +234,9 @@ class DiplomaTests(TenantTestCase):
         response = self.client.get(self.detail_url)
         self.assertContains(response, "backend/css/diplomas.css?v=5")
         self.assertContains(response, 'class="table diploma-children"')
+        response = self.client.get(urls[-1])
+        self.assertNotContains(response, 'name="level"')
+        self.assertContains(response, 'name="evaluation"')
         response = self.client.post(
             urls[-1],
             {

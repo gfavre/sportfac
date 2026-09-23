@@ -1,3 +1,4 @@
+import base64
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -21,9 +22,20 @@ class DiplomaRenderer(PDFRenderer):
 
 
 def render_diplomas(batch, diplomas):
+    fonts = Path(__file__).parent / "static" / "diplomas" / "fonts"
+    label_font = Path(getattr(settings, "KEPCHUP_DIPLOMA_LABEL_FONT", fonts / "BrushScriptMT.ttf"))
+    text_font = Path(getattr(settings, "KEPCHUP_DIPLOMA_TEXT_FONT", fonts / "SegoeScript-Bold.ttf"))
+    context = {
+        "batch": batch,
+        "diplomas": diplomas,
+        "label_font": base64.b64encode(label_font.read_bytes()).decode("ascii"),
+        "text_font": base64.b64encode(text_font.read_bytes()).decode("ascii"),
+        "horizontal_stars": range(65),
+        "vertical_stars": range(43),
+    }
     with TemporaryDirectory() as directory:
         path = Path(directory) / "diplomas.pdf"
-        DiplomaRenderer({"batch": batch, "diplomas": diplomas}).render_to_pdf(str(path))
+        DiplomaRenderer(context).render_to_pdf(str(path))
         content = path.read_bytes()
     if not content.startswith(b"%PDF-"):
         raise ValueError("Le service PDF n’a pas retourné un document valide.")

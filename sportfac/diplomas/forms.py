@@ -65,11 +65,10 @@ def validate_pdf(upload):
 class DiplomaForm(forms.ModelForm):
     class Meta:
         model = Diploma
-        fields = ("first_name", "last_name", "level", "evaluation", "place", "instructors")
+        fields = ("first_name", "last_name", "evaluation", "place", "instructors")
         labels = {
             "first_name": "Prénom",
             "last_name": "Nom",
-            "level": "Niveau obtenu",
             "evaluation": "Texte sur le diplôme",
             "place": "Lieu",
             "instructors": "Moniteurs",
@@ -77,7 +76,8 @@ class DiplomaForm(forms.ModelForm):
         help_texts = {
             "evaluation": (
                 "Texte imprimé dans la rubrique « Évaluation » du diplôme, par exemple : "
-                "Ski alpin — niveau 1 acquis. Il est prérempli à partir du niveau obtenu, lorsqu’il est renseigné."
+                "Ski alpin — niveau 1 acquis. Prérempli à partir du niveau après cours. "
+                "Modifier ce texte ne change pas le niveau enregistré dans le suivi de l’enfant."
             ),
         }
 

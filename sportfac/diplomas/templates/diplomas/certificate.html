@@ -1,35 +1,48 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><title>Diplômes — {{ batch.season }}</title>
 <style>
+  @font-face { font-family: DiplomaLabels; src: url(data:font/ttf;base64,{{ label_font }}) format('truetype'); }
+  @font-face { font-family: DiplomaText; src: url(data:font/ttf;base64,{{ text_font }}) format('truetype'); }
   @page { size: A5 landscape; margin: 7mm; }
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: Arial, sans-serif; color: #064798; }
-  .certificate { height: 132mm; padding: 6mm; border: 2px solid #064798; }
+  body { margin: 0; color: #003b99; font-family: Arial, sans-serif; }
+  .certificate { position: relative; height: 132mm; padding: 4mm; overflow: hidden; break-inside: avoid; }
   .certificate + .certificate { page-break-before: always; }
-  header { height: 45mm; text-align: center; position: relative; }
-  header img { height: 30mm; max-width: 105mm; object-fit: contain; }
-  .year { position: absolute; right: 0; top: 4mm; font-size: 22px; font-weight: bold; }
-  h1 { margin: 2mm 0; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; }
-  table { width: 100%; border-collapse: collapse; color: #111; }
-  th, td { border: 1px solid #777; padding: 3mm; height: 14mm; }
-  th { width: 29%; color: #064798; text-align: right; font-size: 14px; }
-  td { color: #c51d22; font-size: 16px; overflow-wrap: anywhere; }
-  footer { margin-top: 3mm; font-size: 10px; text-align: right; }
+  .stars { position: absolute; display: flex; justify-content: space-between; font-size: 8pt; line-height: 1; }
+  .top, .bottom { left: 0; right: 0; height: 3mm; }
+  .top { top: 0; } .bottom { bottom: 0; }
+  .left, .right { top: 3mm; bottom: 3mm; width: 3mm; font-size: 8pt; flex-direction: column; align-items: center; }
+  .left { left: 0; } .right { right: 0; }
+  header { height: 48mm; text-align: center; position: relative; }
+  header img { height: 43mm; max-width: 100mm; object-fit: contain; }
+  .year { position: absolute; top: 13mm; font: 30pt DiplomaLabels, cursive; transform: rotate(24deg); text-shadow: 1px 2px 2px rgba(170, 170, 170, 0.5); }
+  .year-left { left: 3mm; } .year-right { right: 3mm; }
+  table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  th, td { border: 0.3mm solid #111; padding: 1.5mm 2mm; height: 15.5mm; vertical-align: baseline; text-shadow: 1px 1.5px 1px rgba(187, 187, 187, 0.5); }
+  th { width: 28%; text-align: right; font: 27pt/1.15 DiplomaLabels, cursive; white-space: nowrap; }
+  td { color: #ed0000; font: 20pt DiplomaText, cursive; line-height: 1.15; overflow-wrap: anywhere; }
+  td.long { font-size: 16pt; }
+  td .value { position: relative; top: 0.37em; }
+  footer { margin-top: 4mm; font-size: 7pt; text-align: right; }
 </style></head><body>
 {% for diploma in diplomas %}
 <section class="certificate">
+  <div class="stars top">{% for star in horizontal_stars %}<span>★</span>{% endfor %}</div>
+  <div class="stars bottom">{% for star in horizontal_stars %}<span>★</span>{% endfor %}</div>
+  <div class="stars left">{% for star in vertical_stars %}<span>★</span>{% endfor %}</div>
+  <div class="stars right">{% for star in vertical_stars %}<span>★</span>{% endfor %}</div>
   <header>
     {% if batch.logo %}<img src="{{ batch.logo }}" alt="Sport scolaire facultatif">{% endif %}
-    <span class="year">{{ batch.issued_on|date:"Y" }}</span>
-    <h1>Diplôme de participation — {{ batch.season }}</h1>
+    <span class="year year-left">{{ batch.issued_on|date:"Y" }}</span>
+    <span class="year year-right">{{ batch.issued_on|date:"Y" }}</span>
   </header>
   <table>
-    <tr><th>Lieu de cours</th><td>{{ diploma.place }}</td></tr>
-    <tr><th>Participant·e</th><td>{{ diploma.first_name }} {{ diploma.last_name }}</td></tr>
-    <tr><th>Évaluation</th><td>{{ diploma.evaluation }}</td></tr>
-    <tr><th>Moniteur·rice</th><td>{{ diploma.instructors }}</td></tr>
+    <tr><th>Lieu de cours :</th><td{% if diploma.place|length > 45 %} class="long"{% endif %}><span class="value">{{ diploma.place }}</span></td></tr>
+    <tr><th>Participant·e :</th><td{% if diploma.first_name|length > 20 or diploma.last_name|length > 20 %} class="long"{% endif %}><span class="value">{{ diploma.first_name }} {{ diploma.last_name }}</span></td></tr>
+    <tr><th>Évaluation :</th><td{% if diploma.evaluation|length > 48 %} class="long"{% endif %}><span class="value">{{ diploma.evaluation }}</span></td></tr>
+    <tr><th>Moniteur·rice :</th><td{% if diploma.instructors|length > 48 %} class="long"{% endif %}><span class="value">{{ diploma.instructors }}</span></td></tr>
   </table>
-  <footer>{{ batch.issued_on|date:"d.m.Y" }} · Cours {{ diploma.course_number }}</footer>
+  <footer>{{ batch.season }} · {{ batch.issued_on|date:"d.m.Y" }} · Cours {{ diploma.course_number }}</footer>
 </section>
 {% endfor %}
 </body></html>
