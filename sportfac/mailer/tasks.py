@@ -7,6 +7,7 @@ from anymail.exceptions import AnymailRecipientsRefused
 from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.core.mail import EmailMessage
+from django.db import transaction
 from django.utils import timezone
 
 from activities.models import Course
@@ -21,6 +22,30 @@ from .pdfutils import get_ssf_decompte_heures
 
 
 logger = get_task_logger(__name__)
+
+
+@app.task
+def send_practical_reminder(archive_id, schema, from_email, reply_to):
+    from django_tenants.utils import schema_context
+
+    from .models import MailArchive
+
+    with schema_context(schema), transaction.atomic():
+        archive = MailArchive.objects.select_for_update().get(pk=archive_id)
+        if archive.status == MailArchive.STATUS.sent:
+            return
+        email = EmailMessage(
+            subject=archive.subject,
+            body=archive.messages[0],
+            from_email=from_email,
+            to=archive.recipients,
+            reply_to=[reply_to],
+        )
+        email.content_subtype = "html"
+        if email.send() != 1:
+            raise RuntimeError("Le serveur mail n’a pas confirmé l’envoi du rappel.")
+        archive.status = MailArchive.STATUS.sent
+        archive.save(update_fields=["status", "modified"])
 
 
 @app.task(bind=True, max_retries=6)

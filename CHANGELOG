@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 ### Added
+- Optional practical reminder emails for Montreux winter and local development, using editable mail types, per-child previews, asynchronous HTML sending and archives. An installer seeds the supplied Montreux wording without overwriting edits unless explicitly requested.
 - Human-readable ski and snowboard level labels in selection menus and newly prepared diplomas, preserving stored codes and manually edited diploma text.
 - Persistent family diploma archives across school-year periods, with editable evaluations and two actions: download for printing or email families with automatic account publication. PDF preparation runs asynchronously, with attachments and an audit trail; enabled for Montreux Ski and local development.
 - Optional printable Excel attendance sheets and multicourse PDF tracking lists, with a separate sheet per course/group, participant counts, bibs, levels and configurable extra questions. Defaults to the next session, accepts a date URL parameter, and is enabled for Montreux Ski and local development.

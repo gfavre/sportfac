@@ -1,0 +1,17 @@
+<p>Madame, Monsieur,</p>
+<p>À la suite de notre première journée de ski et de snowboard du Sport Scolaire Facultatif {{ year }}, nous tenons à vous rappeler quelques informations.</p>
+<p>Votre enfant <strong>{{ child.first_name }} {{ child.last_name }}</strong> est enregistré comme suit :</p>
+<table style="border-collapse:collapse" border="1" cellpadding="6">
+<tr><td>Numéro de dossard :</td><td>{{ child.bib_number|default:"À communiquer" }}</td></tr>
+<tr><td>Groupe de ski ou de snowboard :</td><td>{{ course.group_name|default:"À communiquer" }}</td></tr>
+<tr><td>Lieu du cours :</td><td>{{ course.place }}</td></tr>
+<tr><td>N° de car / emplacement :</td><td>{{ registration.transport.name|default:"À communiquer" }}</td></tr>
+<tr><td>Heure de rendez-vous :</td><td>07h40</td></tr>
+<tr><td>Heure de départ du car :</td><td>08h00</td></tr>
+<tr><td>Heure de retour prévue du car :</td><td>≈ 15h45–16h00</td></tr>
+<tr><td>Équipement particulier :</td><td>Souliers de ski ou snowboard aux pieds pour monter dans le car</td></tr>
+<tr><td>Pique-nique :</td><td>Obligatoire dans un sac à dos portant le nom de l’enfant et le N° de dossard</td></tr>
+<tr><td>Annonce en cas d’absence :</td><td>Envoyer un SMS au responsable du cours F. Iff au 079 759 01 06 avec le nom, prénom de l’enfant et son numéro de dossard au plus tard le matin de l’activité avant 7h00.</td></tr>
+</table>
+<p style="text-align:center"><img src="{{ logo_url }}" width="200" alt="Commune de Montreux — Sport scolaire facultatif"></p>
+<p>En restant à votre disposition pour tout complément d’information, nous vous adressons, Madame, Monsieur, nos cordiaux messages.</p>

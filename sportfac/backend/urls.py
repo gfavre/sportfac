@@ -3,6 +3,8 @@ from django.conf import settings
 from django.urls import include
 from django.urls import path
 
+from mailer.practical_reminder import PracticalReminderView
+
 from . import views
 
 
@@ -327,6 +329,7 @@ wizard_steps_patterns = [
 ]
 
 urlpatterns = [
+    path("courses/practical-reminder/", PracticalReminderView.as_view(), name="courses-practical-reminder"),
     path("diplomas/", diploma_views.BatchListView.as_view(), name="diploma-list"),
     path("diplomas/new/", diploma_views.BatchCreateView.as_view(), name="diploma-create"),
     path("diplomas/<uuid:pk>/", diploma_views.BatchDetailView.as_view(), name="diploma-batch"),

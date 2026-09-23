@@ -18,6 +18,11 @@
     <div class="course-action-group">
       <h3>Communication</h3>
       <div class="course-action-buttons">
+        {% if PRACTICAL_REMINDER and user.is_full_manager %}
+          <form method="get" action="{% url 'backend:courses-practical-reminder' %}">
+            <button class="btn btn-default needs-select" disabled><i class="icon-mail"></i> Rappel pratique</button>
+          </form>
+        {% endif %}
         <form class="convocations" method="GET" action="{% url 'backend:courses-mail-confirmation' %}">
           <button type="submit" class="btn btn-default needs-select" disabled><i class="icon-mail"></i> Convocations</button>
         </form>

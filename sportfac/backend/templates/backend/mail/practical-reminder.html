@@ -1,0 +1,21 @@
+{% extends "backend/base.html" %}
+
+{% block page_title %}Rappel des informations pratiques{% endblock %}
+
+{% block content %}
+{% if not mail_type %}
+<p class="alert alert-warning">Le mail type n’est pas encore installé. Utilisez la commande install_montreux_practical_reminder.</p>
+{% elif not registration %}
+<p>Aucun enfant inscrit dans les cours sélectionnés.</p>
+{% else %}
+<p>{{ registration.child }} — cours {{ registration.course.number }} · Message {{ number }} / {{ total }}</p>
+<p><a class="btn btn-default" href="{{ mail_type.get_absolute_url }}">Modifier le mail type</a></p>
+<h3>{{ subject }}</h3>
+<div class="well">{{ body|safe }}</div>
+<p>{% if previous %}<a href="?{{ base_query }}&amp;number={{ previous }}">Précédent</a>{% endif %} {% if next %}<a href="?{{ base_query }}&amp;number={{ next }}">Suivant</a>{% endif %}</p>
+<form method="post">{% csrf_token %}<div class="form-group">
+<button class="btn btn-primary" type="submit">Envoyer les {{ total }} rappels aux familles</button>
+</div></form>
+{% endif %}
+<div class="form-group"><a class="btn btn-default" href="{% url 'backend:course-list' %}">Retour aux cours</a></div>
+{% endblock content %}
