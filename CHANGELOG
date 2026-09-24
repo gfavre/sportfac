@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 4.9.0 - 2026-09-24
 ### Added
 - Optional practical reminder emails for Montreux winter and local development, using editable mail types, per-child previews, asynchronous HTML sending and archives. An installer seeds the supplied Montreux wording without overwriting edits unless explicitly requested.
 - Human-readable ski and snowboard level labels in selection menus and newly prepared diplomas, preserving stored codes and manually edited diploma text.
