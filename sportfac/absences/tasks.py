@@ -10,6 +10,7 @@ from django.utils import timezone
 
 from backend.dynamic_preferences_registry import global_preferences_registry
 from backend.models import Domain
+from mailer.html import template_is_html
 from mailer.tasks import send_mail
 from sportfac.decorators import respects_language
 
@@ -61,6 +62,13 @@ def notify_absences():
         logger.debug("Forging email")
         logger.debug("Subject: " + subject)
         logger.debug("Body: " + body)
-        send_mail.delay(subject, body, from_email, recipients, reply_to)
+        send_mail.delay(
+            subject,
+            body,
+            from_email,
+            recipients,
+            reply_to,
+            is_html=template_is_html("mailer/absence_notification.txt"),
+        )
         absence.notification_sent = True
         absence.save()

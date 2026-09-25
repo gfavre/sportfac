@@ -5,7 +5,6 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.contrib.sites.models import Site
-from django.core.mail import EmailMessage
 from django.db import IntegrityError
 from django.db import connection
 from django.db import transaction
@@ -18,6 +17,8 @@ from appointments.models import Rental
 from backend.dynamic_preferences_registry import global_preferences_registry
 from backend.models import Domain
 from backend.models import YearTenant
+from mailer.html import make_email
+from mailer.html import template_is_html
 from mailer.tasks import send_mail
 from mailer.utils import render_email_content
 from profiles.models import FamilyUser
@@ -71,6 +72,7 @@ def send_bill_confirmation(user_pk, bill_pk, tenant_pk=None, language=settings.L
             send_mail.delay(
                 subject=subject.strip(),
                 message=body,
+                is_html=template_is_html("registrations/confirmation_bill_mail.txt"),
                 from_email=global_preferences["email__FROM_MAIL"],
                 recipients=[user.get_email_string()],
                 reply_to=[global_preferences["email__REPLY_TO_MAIL"]],
@@ -128,7 +130,8 @@ def send_bill_pdf_email(bill_pk, tenant_pk=None, language=settings.LANGUAGE_CODE
                 bill.generate_pdf()
                 bill.refresh_from_db()
 
-            email = EmailMessage(
+            email = make_email(
+                is_html=template_is_html("registrations/bill_pdf_mail.txt"),
                 subject=subject.strip(),
                 body=body,
                 from_email=global_preferences["email__FROM_MAIL"],
@@ -187,6 +190,7 @@ def send_confirmation(user_pk, tenant_pk=None, language=settings.LANGUAGE_CODE):
             send_mail.delay(
                 subject=subject.strip(),
                 message=body,
+                is_html=template_is_html("registrations/confirmation_mail.txt"),
                 from_email=global_preferences["email__FROM_MAIL"],
                 recipients=[user.get_email_string()],
                 reply_to=[global_preferences["email__REPLY_TO_MAIL"]],
@@ -270,6 +274,7 @@ def send_confirm_from_waiting_list(registration_pk, language=settings.LANGUAGE_C
         send_mail.delay(
             subject=subject,
             message=body,
+            is_html=template_is_html("waiting_slots/confirm_from_waiting_list_mail_body.txt"),
             from_email=global_preferences["email__FROM_MAIL"],
             recipients=[user.get_email_string()],
             reply_to=[global_preferences["email__REPLY_TO_MAIL"]],
@@ -379,7 +384,8 @@ def send_invoice_pdf(bill_pk, tenant_pk=None):
     )
     body = render_email_content("registrations/accountant_bill_mail.txt", extra_context=context)
 
-    email = EmailMessage(
+    email = make_email(
+        is_html=template_is_html("registrations/accountant_bill_mail.txt"),
         subject=subject,
         body=body,
         from_email=global_preferences["email__FROM_MAIL"],

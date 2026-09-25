@@ -1,0 +1,5 @@
+{% if is_html %}
+  <iframe title="Aperçu du mail" sandbox="" referrerpolicy="no-referrer" srcdoc="{{ message|force_escape }}" style="width:100%;height:650px;border:1px solid #ddd;background:white;"></iframe>
+{% else %}
+  <div class="well">{{ message|force_escape|linebreaks }}</div>
+{% endif %}

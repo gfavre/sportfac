@@ -6,17 +6,24 @@ from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.utils.timezone import now
 from django.utils.translation import gettext as _
-from django.views.generic import DeleteView, ListView, TemplateView, UpdateView, View
+from django.views.generic import DeleteView
+from django.views.generic import ListView
+from django.views.generic import TemplateView
+from django.views.generic import UpdateView
+from django.views.generic import View
 
 from appointments.forms import AppointmentForm
-from appointments.models import Appointment, AppointmentSlot
+from appointments.models import Appointment
+from appointments.models import AppointmentSlot
 from appointments.resources import AppointmentResource
 from mailer.forms import GenericEmailForm
 from mailer.models import GenericEmail
 from wizard.forms import WizardStepForm
 from wizard.models import WizardStep
+
 from ..forms import FlatPageForm
-from .mixins import ExcelResponseMixin, FullBackendMixin
+from .mixins import ExcelResponseMixin
+from .mixins import FullBackendMixin
 
 
 class AppointmentsManagementView(FullBackendMixin, TemplateView):

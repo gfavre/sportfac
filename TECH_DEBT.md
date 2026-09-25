@@ -183,6 +183,11 @@ scratch each time. Update in place as items are resolved or new ones are found.
 
 ## CKEditor 4 (EOL, `ckeditor.W001` system check warning)
 
+- 2026-09-25: generic HTML mail editing now uses locally bundled Jodit 4.15.14 (MIT).
+  `npm run build:mail-editor` refreshes its committed assets; real-editor tests verify
+  Django token visibility and round trips. This does not replace the other rich-text
+  fields below, so the Django CKEditor warning still applies to those usages.
+
 - `django-ckeditor==6.7.2` bundles CKEditor 4.22.1 by default, which is
   end-of-life with unpatched security issues (surfaces as a Django system check
   warning on every `manage.py` run).

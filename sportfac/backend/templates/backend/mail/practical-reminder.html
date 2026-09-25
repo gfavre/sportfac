@@ -1,6 +1,9 @@
 {% extends "backend/base.html" %}
+{% load i18n %}
 
-{% block page_title %}Rappel des informations pratiques{% endblock %}
+{% block title %}Rappel des informations pratiques - {{ block.super }}{% endblock %}
+
+{% block page_title %}<i class="icon icon-mail"></i>&nbsp; Rappel des informations pratiques{% endblock %}
 
 {% block content %}
 {% if not mail_type %}
@@ -8,14 +11,53 @@
 {% elif not registration %}
 <p>Aucun enfant inscrit dans les cours sélectionnés.</p>
 {% else %}
-<p>{{ registration.child }} — cours {{ registration.course.number }} · Message {{ number }} / {{ total }}</p>
-<p><a class="btn btn-default" href="{{ mail_type.get_absolute_url }}">Modifier le mail type</a></p>
-<h3>{{ subject }}</h3>
-<div class="well">{{ body|safe }}</div>
-<p>{% if previous %}<a href="?{{ base_query }}&amp;number={{ previous }}">Précédent</a>{% endif %} {% if next %}<a href="?{{ base_query }}&amp;number={{ next }}">Suivant</a>{% endif %}</p>
-<form method="post">{% csrf_token %}<div class="form-group">
-<button class="btn btn-primary" type="submit">Envoyer les {{ total }} rappels aux familles</button>
-</div></form>
+<section>
+  <h4 class="content-title"><u>{% translate "Preview" %}</u></h4>
+  <p class="text-center text-muted">
+    {% if previous %}
+      <a href="?{{ base_query }}&amp;number={{ previous }}" title="{% translate 'Previous email' %}" aria-label="{% translate 'Previous email' %}"><i class="icon-left-dir" aria-hidden="true"></i></a>
+    {% endif %}
+    Message {{ number }} / {{ total }}
+    {% if next %}
+      <a href="?{{ base_query }}&amp;number={{ next }}" title="{% translate 'Next email' %}" aria-label="{% translate 'Next email' %}"><i class="icon-right-dir" aria-hidden="true"></i></a>
+    {% endif %}
+  </p>
+  <div class="text-center form-group">
+    <h4>{{ registration.child }}</h4>
+    <p class="text-muted">
+      Cours {{ registration.course.number }} — {{ registration.course.activity.name }}
+      {% if COURSE_GROUPS and registration.course.group_name %}
+        <span class="text-nowrap">· Groupe {{ registration.course.group_name }}</span>
+      {% endif %}
+    </p>
+  </div>
+  <hr>
+  <dl class="dl-horizontal">
+    <dt>{% translate "From" %}</dt><dd>{{ from_email }}</dd>
+    <dt>{% translate "To" %}</dt><dd><span class="label label-primary">{{ registration.child.family.full_name }} &lt;{{ registration.child.family.email }}&gt;</span></dd>
+    <dt>{% translate "Subject" %}</dt><dd>{{ subject }}</dd>
+  </dl>
+  {% if is_html %}
+    <iframe title="Aperçu du rappel" sandbox="" referrerpolicy="no-referrer" srcdoc="{{ body|force_escape }}" style="width:100%; height:650px; border:1px solid #ddd; background:white;"></iframe>
+  {% else %}
+    <div class="well">{{ body|force_escape|linebreaks }}</div>
+  {% endif %}
+</section>
+<section>
+  <form method="post">
+    {% csrf_token %}
+    <p>{{ total }} rappel{{ total|pluralize }} personnalisé{{ total|pluralize }} ser{{ total|pluralize:"a,ont" }} envoyé{{ total|pluralize }} aux familles des cours sélectionnés. Chaque message est envoyé séparément.</p>
+    <div class="form-group clearfix">
+      <button class="btn btn-success" type="submit"><i class="icon icon-mail"></i> Envoyer les {{ total }} rappels aux familles</button>
+      <a class="btn btn-default" href="{{ mail_type.get_absolute_url }}"><i class="icon icon-edit"></i> Modifier le mail type</a>
+      <div class="btn-group pull-right">
+        <a class="btn btn-default" href="{% url 'backend:course-list' %}">{% translate "Cancel" %}</a>
+      </div>
+    </div>
+  </form>
+</section>
 {% endif %}
+{% if not mail_type or not registration %}
 <div class="form-group"><a class="btn btn-default" href="{% url 'backend:course-list' %}">Retour aux cours</a></div>
+{% endif %}
 {% endblock content %}

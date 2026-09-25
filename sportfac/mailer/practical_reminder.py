@@ -15,6 +15,7 @@ from backend.dynamic_preferences_registry import global_preferences_registry
 from backend.views.mixins import FullBackendMixin
 from registrations.models import Registration
 
+from .html import clean_email_html
 from .models import GenericEmail
 from .models import MailArchive
 from .tasks import send_practical_reminder
@@ -56,7 +57,8 @@ class PracticalReminderView(FullBackendMixin, View):
             }
         )
         subject = Template(mail_type.subject_template.content).render(context).strip()
-        return subject, Template(mail_type.body_template.content).render(context)
+        body = Template(mail_type.body_template.content).render(context)
+        return subject, clean_email_html(body) if mail_type.is_html else body
 
     def get(self, request):
         registrations = self.registrations(request)
@@ -77,7 +79,9 @@ class PracticalReminderView(FullBackendMixin, View):
                 "mail_type": mail_type,
                 "registration": registration,
                 "subject": subject,
+                "from_email": global_preferences_registry.manager()["email__FROM_MAIL"],
                 "body": body,
+                "is_html": mail_type.is_html if mail_type else False,
                 "total": total,
                 "number": number,
                 "base_query": params.urlencode(),
@@ -104,6 +108,7 @@ class PracticalReminderView(FullBackendMixin, View):
                     messages=[body],
                     template=BODY_TEMPLATE,
                     status=MailArchive.STATUS.draft,
+                    is_html=mail_type.is_html,
                 )
                 transaction.on_commit(
                     lambda pk=archive.pk: send_practical_reminder.delay(

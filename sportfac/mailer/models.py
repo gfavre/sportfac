@@ -1,14 +1,14 @@
 import os
 import re
 
+from ckeditor.fields import RichTextField
 from django.db import models
 from django.urls import reverse
 from django.utils.html import linebreaks
 from django.utils.translation import gettext as _
-
-from ckeditor.fields import RichTextField
 from model_utils import Choices
-from model_utils.models import StatusModel, TimeStampedModel
+from model_utils.models import StatusModel
+from model_utils.models import TimeStampedModel
 
 from sportfac.models import ListField
 
@@ -37,6 +37,7 @@ class MailArchive(TimeStampedModel, StatusModel):
     bcc_recipients = ListField(verbose_name=_("BCC recipients"), null=True)
     messages = ListField(verbose_name=_("Message"))
     template = models.CharField(max_length=255, verbose_name=_("Template"))
+    is_html = models.BooleanField(default=False, verbose_name="Mail HTML")
 
     objects = models.Manager()
     draft = DraftMailManager()
@@ -57,7 +58,17 @@ class MailArchive(TimeStampedModel, StatusModel):
 
     def admin_message(self):
         if self.messages:
-            return linebreaks(self.messages[0])
+            if self.is_html:
+                from django.utils.html import format_html
+
+                from .html import clean_email_html
+
+                return format_html(
+                    '<iframe title="Aperçu du mail" sandbox="" referrerpolicy="no-referrer" '
+                    'srcdoc="{}" style="width:100%;height:400px;border:0"></iframe>',
+                    clean_email_html(self.messages[0]),
+                )
+            return linebreaks(self.messages[0], autoescape=True)
         return ""
 
     admin_message.allow_tags = True
@@ -80,6 +91,7 @@ class Attachment(TimeStampedModel):
 
 
 class GenericEmail(TimeStampedModel):
+    is_html = models.BooleanField(default=False, verbose_name="Mail HTML")
     subject = models.CharField(blank=True, max_length=100)
     subject_template = models.ForeignKey(
         "dbtemplates.Template", related_name="email_subject", on_delete=models.CASCADE

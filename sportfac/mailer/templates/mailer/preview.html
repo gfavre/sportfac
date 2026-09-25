@@ -33,7 +33,7 @@
       </dd>
     {% endif %}
   </dl>
-  <div class="well">{{ message|linebreaks }}</div>
+  {% include "mailer/message-preview.html" %}
 </section>
 
 <section>

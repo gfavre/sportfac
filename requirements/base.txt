@@ -57,3 +57,6 @@ django-impersonate==1.9.1  # Impersonate users
 
 # Montreux
 django-simple-sso==1.2.0
+
+# Sanitize HTML mail content and inline formatting.
+bleach[css]==6.2.0

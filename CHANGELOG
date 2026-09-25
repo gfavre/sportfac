@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+### Changed
+- Generic HTML mail editing now uses locally bundled Jodit instead of CKEditor 4. Django variables remain visible while editing and survive saving, previewing and sending.
+- Generic mail types support an explicit HTML format with a visual editor, filtered HTML, isolated previews and a plain-text fallback on delivery. Queued messages retain their format; existing practical reminders are migrated to HTML, while other mail types remain plain text.
+- Practical reminder previews clarify recipient and registration details, with message navigation and grouped actions.
+
 ## 4.9.0 - 2026-09-24
 ### Added
 - Optional practical reminder emails for Montreux winter and local development, using editable mail types, per-child previews, asynchronous HTML sending and archives. An installer seeds the supplied Montreux wording without overwriting edits unless explicitly requested.

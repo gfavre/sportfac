@@ -110,7 +110,28 @@ class GenericEmailForm(django_forms.ModelForm):
 
     class Meta:
         model = GenericEmail
-        fields = ("subject_text", "body_text")
+        fields = ("subject_text", "is_html", "body_text")
+
+    def clean(self):
+        from django.template import Template
+        from django.template import TemplateSyntaxError
+
+        from .html import clean_email_template
+
+        data = super().clean()
+        for name in ("subject_text", "body_text"):
+            value = data.get(name)
+            if value is None:
+                continue
+            template = self.instance.subject_template if name == "subject_text" else self.instance.body_template
+            heading = self.get_tmpl_heading(template.content)
+            try:
+                Template(heading + "\n" + value)
+            except TemplateSyntaxError as exc:
+                self.add_error(name, str(exc))
+        if not self.errors and data.get("is_html"):
+            data["body_text"] = clean_email_template(data["body_text"])
+        return data
 
     def cleanup_tmpl(self, body):
         skip = False
@@ -149,6 +170,7 @@ class GenericEmailForm(django_forms.ModelForm):
         self.helper.field_class = "col-sm-10"
         self.helper.layout = Layout(
             "subject_text",
+            "is_html",
             "body_text",
             Div(
                 Div(Submit("save", _("Update email")), css_class="col-sm-10 col-sm-offset-2"),

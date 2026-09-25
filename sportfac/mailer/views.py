@@ -198,6 +198,7 @@ class MailPreviewView(CancelableMixin, EditableMixin, TemplateView):
         tasks.send_mail.delay(
             subject=self.get_subject(mail_context),
             message=message,
+            is_html=self.get_is_html(),
             from_email=self.get_from_address(),
             recipients=[recipient_address],
             reply_to=[self.get_reply_to_address()],
@@ -337,6 +338,7 @@ class MailCourseInstructorsView(ParticipantsBaseMixin, TemplatedEmailMixin, Canc
             instructor_pk=str(instructor.pk),
             subject=self.get_subject(context),
             message=self.get_mail_body(context),
+            is_html=self.get_is_html(),
             from_email=self.get_from_address(),
             reply_to=[self.get_reply_to_address()],
             bcc=[

@@ -42,6 +42,7 @@ class Command(BaseCommand):
             GenericEmail.objects.get_or_create(
                 body_template=templates[1],
                 defaults={
+                    "is_html": True,
                     "subject": "Rappel des informations pratiques — Montreux hiver",
                     "subject_template": templates[0],
                     "help_text": "Données disponibles : child, course, registration, year, logo_url. "

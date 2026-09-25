@@ -13,13 +13,17 @@
 </div>
   <div class="col-md-4">
     {{ object.help_text|safe }}
+    <p>Activez « Mail HTML » pour utiliser l’éditeur visuel et les tableaux. Les variables entre accolades restent visibles ici ; elles seront remplacées par les données de l’inscription dans l’aperçu et le mail envoyé.</p>
+    <p>Conservez les accolades et le contenu des variables. Le bouton « Source » permet de consulter tout le modèle, y compris les variables dans les liens et les images.</p>
   </div>
   </div>
   {% addtoblock "js" %}
     {{ form.media }}
-    <script>
-     CKEDITOR.config.contentsCss = '/static/css/style.css' ;
-    </script>
+    <script src="{% static 'backend/vendor/jodit/jodit.min.js' %}?v=4.15.14"></script>
+    <script src="{% static 'backend/js/generic-email.js' %}?v=2"></script>
+  {% endaddtoblock %}
+  {% addtoblock "css" %}
+    <link rel="stylesheet" href="{% static 'backend/vendor/jodit/jodit.min.css' %}?v=4.15.14">
   {% endaddtoblock %}
 
 {% endblock content %}
