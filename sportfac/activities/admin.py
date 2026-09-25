@@ -1,4 +1,3 @@
-from ckeditor.widgets import CKEditorWidget
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.flatpages.admin import FlatPageAdmin
@@ -9,6 +8,7 @@ from import_export.admin import ImportExportModelAdmin
 
 from sportfac.admin_utils import SportfacAdminMixin
 from sportfac.admin_utils import SportfacModelAdmin
+from sportfac.richtext import RichTextWidget
 
 from .models import Activity
 from .models import AllocationAccount
@@ -231,7 +231,7 @@ class FlatPageCustom(SportfacAdminMixin, FlatPageAdmin):
         ),
     )
 
-    formfield_overrides = {models.TextField: {"widget": CKEditorWidget}}
+    formfield_overrides = {models.TextField: {"widget": RichTextWidget}}
 
 
 @admin.register(PaySlip)

@@ -158,6 +158,7 @@ class MailConfirmationCoursesView(
         send_mail.delay(
             subject=self.get_subject(mail_context),
             message=message,
+            is_html=self.get_is_html(),
             from_email=self.get_from_address(),
             recipients=[recipient.get_email_string()],
             reply_to=[self.get_reply_to_address()],

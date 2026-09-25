@@ -1,6 +1,10 @@
 {
   "dependencies": {
+    "jodit": "4.15.14",
     "uglify-js": "^3.14.1",
     "uglifyjs": "^2.4.11"
+  },
+  "scripts": {
+    "build:mail-editor": "node scripts/build-mail-editor.js"
   }
 }

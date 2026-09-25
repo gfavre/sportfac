@@ -720,11 +720,13 @@ class Bill(TimeStampedModel, StatusModel):
         subject = render_to_string("registrations/reminder_mail_subject.txt", context=context)
         body = render_to_string("registrations/reminder_mail.txt", context=context)
         # 3. send mail
+        from mailer.html import template_is_html
         from mailer.tasks import send_mail
 
         send_mail.delay(
             subject=subject,
             message=body,
+            is_html=template_is_html("registrations/reminder_mail.txt"),
             from_email=global_preferences["email__FROM_MAIL"],
             recipients=[self.family.get_email_string()],
             reply_to=[global_preferences["email__REPLY_TO_MAIL"]],

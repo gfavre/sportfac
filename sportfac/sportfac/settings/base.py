@@ -223,8 +223,6 @@ SHARED_APPS = (
     "anymail",  # send mail
     "bootstrap_datepicker_plus",
     "captcha",  # recaptcha
-    "ckeditor",  # wysiwyg editor
-    "ckeditor_uploader",
     "crispy_forms",  # better forms => DRY
     "dbtemplates",  # store templates in db (used by mailer module)
     "django_countries",  # country field selector
@@ -405,53 +403,6 @@ GRAPPELLI_ADMIN_TITLE = "Administration du sport scolaire facultatif"
 # END PIPELINE CONFIG
 
 
-# CKEDITOR
-CKEDITOR_CONFIGS = {
-    "default": {
-        "alignment": {"options": ["left", "right"]},
-        "contentCss": "/static/css/style.css",
-        "extraAllowedContent": "iframe[*]",
-        "extraPlugins": ",".join(["emojione"]),
-        "stylesSet": [
-            {"name": "sans", "element": "p", "attributes": {"class": "empty-kepchup"}},
-            {
-                "name": "Cadre orange",
-                "element": "p",
-                "attributes": {"class": "alert-warning alert"},
-            },
-            {
-                "name": "Cadre bleu clair",
-                "element": "p",
-                "attributes": {"class": "alert-info alert"},
-            },
-            {"name": "Cadre vert", "element": "p", "attributes": {"class": "alert alert-success"}},
-            {"name": "Cadre rouge", "element": "p", "attributes": {"class": "alert alert-danger"}},
-            {"name": "Cadre gris", "element": "p", "attributes": {"class": "well"}},
-            {"name": "Bouton", "element": "a", "attributes": {"class": "btn btn-primary"}},
-            {"name": "Bouton vert", "element": "a", "attributes": {"class": "btn btn-success"}},
-            {"name": "Bouton bleu clair", "element": "a", "attributes": {"class": "btn btn-info"}},
-            {"name": "Bouton orange", "element": "a", "attributes": {"class": "btn btn-warning"}},
-            {"name": "Bouton rouge", "element": "a", "attributes": {"class": "btn btn-danger"}},
-        ],
-        "toolbar": "Custom",
-        "toolbar_Custom": [
-            ["Source", "-", "Print"],
-            ["Undo", "Redo"],
-            ["Bold", "Italic", "Subscript", "Superscript"],
-            ["Format", "TextColor"],
-            ["JustifyLeft", "JustifyCenter", "JustifyRight", "JustifyBlock"],
-            ["NumberedList", "BulletedList"],
-            ["Link", "Unlink", "Anchor"],
-            "/",
-            ["Image", "Table", "HorizontalRule"],
-            ["Styles", "SpecialChar"],
-        ],
-    }
-}
-
-CKEDITOR_UPLOAD_PATH = "uploads/"
-CKEDITOR_BROWSE_SHOW_DIRS = True
-CKEDITOR_IMAGE_BACKEND = "pillow"
 X_FRAME_OPTIONS = "SAMEORIGIN"
 
 CACHES = {

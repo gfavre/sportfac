@@ -3,7 +3,6 @@ from datetime import datetime
 from datetime import time
 from datetime import timedelta
 
-from ckeditor_uploader.fields import RichTextUploadingField
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.db import models
@@ -14,6 +13,7 @@ from django.utils.translation import gettext_lazy as _
 from model_utils import Choices
 
 from sportfac.models import TimeStampedModel
+from sportfac.richtext import RichTextField
 
 from ..utils import course_to_js_csv
 
@@ -80,7 +80,7 @@ class Course(TimeStampedModel):
             "Numéro ou nom court porté par le moniteur, par exemple 3 ou Bleu. Commun à tous les inscrits du cours."
         ),
     )
-    comments = RichTextUploadingField(verbose_name=_("Comments"), blank=True)
+    comments = RichTextField(verbose_name=_("Comments"), blank=True)
 
     uptodate = models.BooleanField(verbose_name=_("Course up to date"), default=True)
     visible = models.BooleanField(verbose_name=_("Course visible"), default=True, db_index=True)

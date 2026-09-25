@@ -6,7 +6,6 @@ from tempfile import mkdtemp
 from anymail.exceptions import AnymailRecipientsRefused
 from celery.utils.log import get_task_logger
 from django.conf import settings
-from django.core.mail import EmailMessage
 from django.db import transaction
 from django.utils import timezone
 
@@ -14,6 +13,7 @@ from activities.models import Course
 from profiles.models import FamilyUser
 from sportfac.celery import app
 
+from .html import make_email
 from .models import Attachment
 from .pdfutils import CourseParticipants
 from .pdfutils import CourseParticipantsPresence
@@ -34,14 +34,14 @@ def send_practical_reminder(archive_id, schema, from_email, reply_to):
         archive = MailArchive.objects.select_for_update().get(pk=archive_id)
         if archive.status == MailArchive.STATUS.sent:
             return
-        email = EmailMessage(
+        email = make_email(
+            is_html=archive.is_html,
             subject=archive.subject,
             body=archive.messages[0],
             from_email=from_email,
             to=archive.recipients,
             reply_to=[reply_to],
         )
-        email.content_subtype = "html"
         if email.send() != 1:
             raise RuntimeError("Le serveur mail n’a pas confirmé l’envoi du rappel.")
         archive.status = MailArchive.STATUS.sent
@@ -60,6 +60,7 @@ def send_mail(
     attachments=None,
     update_bills=False,
     recipient_pk=None,
+    is_html=False,
 ):
     logger.warning("LEVEL is %s", logger.getEffectiveLevel())
     logger.debug("Forging email to %s" % recipients)
@@ -70,7 +71,8 @@ def send_mail(
     else:
         attachments = Attachment.objects.filter(pk__in=attachments)
     logger.debug("Sending email to %s" % recipients)
-    email = EmailMessage(
+    email = make_email(
+        is_html=is_html,
         subject=subject,
         body=message,
         from_email=from_email,
@@ -103,14 +105,17 @@ def send_mail(
 
 
 @app.task(bind=True, max_retries=6)
-def send_instructors_email(self, course_pk, instructor_pk, subject, message, from_email, reply_to, bcc=None):
+def send_instructors_email(
+    self, course_pk, instructor_pk, subject, message, from_email, reply_to, bcc=None, is_html=False
+):
     logger.debug("Forging email to instructors of course #%s" % course_pk)
     if bcc is None:
         bcc = []
     course = Course.objects.get(pk=course_pk)
     instructor = FamilyUser.objects.get(pk=instructor_pk)
 
-    email = EmailMessage(
+    email = make_email(
+        is_html=is_html,
         subject=subject,
         body=message,
         from_email=from_email,

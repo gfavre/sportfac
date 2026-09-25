@@ -1,4 +1,3 @@
-from ckeditor_uploader import views as ckeditor_views
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.flatpages import views as flatviews
@@ -14,7 +13,7 @@ from django.views.static import serve
 from impersonate import views as impersonate_views
 
 from activities.urls import sitemap as activity_sitemap
-from backend.utils import manager_required
+from backend import editor as editor_views
 from contact.urls import Sitemap as ContactSitemap
 from payments.views import DatatransWebhookView
 from payments.views import NewDatatransTransactionView
@@ -98,8 +97,8 @@ urlpatterns += [
     path("activities/", include("activities.urls", namespace="activities")),
     path("account/", include("profiles.urls")),
     path("backend/", include("backend.urls", namespace="backend")),
-    path("ckeditor/upload/", manager_required(ckeditor_views.upload), name="ckeditor_upload"),
-    path("ckeditor/browse/", manager_required(ckeditor_views.browse), name="ckeditor_browse"),
+    path("editor/upload/", editor_views.upload, name="editor-upload"),
+    path("editor/browse/", editor_views.browse, name="editor-browse"),
     path("contact/", include("contact.urls")),
     path(
         "datatrans/new-transaction/<int:invoice_id>/",

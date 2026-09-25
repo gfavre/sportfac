@@ -181,31 +181,21 @@ scratch each time. Update in place as items are resolved or new ones are found.
   upgrade needs Python 3.10+ anyway), rather than two separate migration/testing
   cycles.
 
-## CKEditor 4 (EOL, `ckeditor.W001` system check warning)
+## Rich-text editor migration (resolved 2026-09-25)
 
-- `django-ckeditor==6.7.2` bundles CKEditor 4.22.1 by default, which is
-  end-of-life with unpatched security issues (surfaces as a Django system check
-  warning on every `manage.py` run).
-- Actual exposure is lower than it looks: every usage in this codebase is
-  **backend/staff-only**, never a public-facing input field. Grep for
-  `RichTextField`/`RichTextUploadingField`/`CKEditorUploadingWidget`:
-  - `activities.Activity.informations` / `.description`
-  - `activities.Course.comments`
-  - `wizard` step description
-  - `mailer` model help_text
-  - custom widget in `backend/forms.py:576`
-- Options considered (2026-08-17):
-  1. Do nothing — defensible given staff-only exposure, but the warning stays.
-  2. Silence the check (`SILENCED_SYSTEM_CHECKS`) — stops the noise, fixes nothing.
-  3. Migrate to CKEditor 5 (`django-ckeditor-5`, separately maintained package) —
-     the real fix. Real effort: touches the 4+ fields above, needs verification
-     that HTML already stored in the DB (authored with CKEditor 4) still
-     displays/edits correctly under CKEditor 5, and CKEditor 5's license terms
-     need checking for this use case before committing to it.
-  4. Buy CKEditor 4 LTS — avoids a code migration, ongoing cost for an
-     internal-only tool; rarely the right call here.
-  - No decision made yet; leaning toward deferring (option 1) until there's
-    spare capacity, given the low actual exposure.
+- All former CKEditor fields now use the shared Jodit widget in `sportfac/richtext.py`,
+  including Django admin, activities, course comments, wizard steps, flat pages and mail help.
+  The dependency, installed apps, endpoints and initialization scripts for CKEditor were removed.
+- Historical migration field references were changed to Django `TextField`: CKEditor fields
+  were stored as text already. The new runtime field deconstructs to the same type, so no
+  HTML data rewrite or database alteration is needed, and fresh installations no longer
+  need the obsolete package to load their migration history.
+- Image uploads and browsing use `backend/editor.py`, manager-only and CSRF-protected.
+  Existing `uploads/` paths remain valid. Uploads accept validated PNG/JPEG/GIF/WebP;
+  SVG and arbitrary files are excluded. Images used in emails receive absolute URLs.
+- Jodit 4.15.14 is pinned and locally bundled. Run `npm run build:mail-editor` after
+  changing its npm version, then deploy static assets. Keep the real-editor round-trip
+  tests and upload permission tests when upgrading.
 
 ## Registration-opening performance backlog
 

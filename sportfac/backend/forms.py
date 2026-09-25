@@ -2,7 +2,6 @@ import datetime
 from zipfile import BadZipfile
 
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
-from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML
 from crispy_forms.layout import Fieldset
@@ -25,6 +24,7 @@ from registrations.models import Child
 from registrations.models import ExtraInfo
 from registrations.models import Registration
 from registrations.utils import check_children_load_format
+from sportfac.richtext import RichTextWidget
 
 from .models import YearTenant
 
@@ -586,7 +586,7 @@ class PayslipMontreuxForm(forms.Form):
 class FlatPageForm(forms.ModelForm):
     content = forms.CharField(
         label=_("Content"),
-        widget=CKEditorUploadingWidget(config_name="default", extra_plugins=None, external_plugin_resources=None),
+        widget=RichTextWidget(),
     )
 
     class Meta:

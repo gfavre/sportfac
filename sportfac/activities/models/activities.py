@@ -1,5 +1,4 @@
 from autoslug import AutoSlugField
-from ckeditor_uploader.fields import RichTextUploadingField
 from django.conf import settings
 from django.db import models
 from django.db.models.aggregates import Count
@@ -7,6 +6,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from sportfac.models import TimeStampedModel
+from sportfac.richtext import RichTextField
 
 
 class ActivityManager(models.Manager):
@@ -42,12 +42,12 @@ class Activity(TimeStampedModel):
         unique=True,
         help_text=_("Part of the url. Cannot contain punctuation, spaces or accentuated letters"),
     )
-    informations = RichTextUploadingField(
+    informations = RichTextField(
         verbose_name=_("Informations"),
         blank=True,
         help_text=_("Specific informations like outfit."),
     )
-    description = RichTextUploadingField(verbose_name=_("Description"), blank=True)
+    description = RichTextField(verbose_name=_("Description"), blank=True)
     allocation_account = models.ForeignKey(
         "AllocationAccount",
         null=True,

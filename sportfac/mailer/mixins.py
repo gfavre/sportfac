@@ -24,6 +24,22 @@ class GlobalPreferencesMixin:
 
 
 class BaseEmailMixin(GlobalPreferencesMixin):
+    def get_is_html(self):
+        from .html import template_is_html
+
+        if getattr(self, "archive", None):
+            return self.archive.is_html
+        return template_is_html(getattr(self, "message_template", None))
+
+    def get_context_data(self, **kwargs):
+        kwargs["is_html"] = self.get_is_html()
+        return super().get_context_data(**kwargs)
+
+    def prepare_body(self, body):
+        from .html import clean_email_html
+
+        return clean_email_html(body) if self.get_is_html() else body
+
     from_address = None
     reply_to_address = None
     recipients = None
@@ -183,7 +199,7 @@ class ArchivedMailMixin(BaseEmailMixin):
 
     def get_mail_body(self, context):
         template = self.resolve_template(self.archive.template)
-        return template.render(context)
+        return self.prepare_body(template.render(context))
 
     def get_attachments(self, context):
         return self.archive.attachments.all()
@@ -210,7 +226,7 @@ class TemplatedEmailMixin(BaseEmailMixin):
         if not self.message_template:
             raise NotImplementedError("Add a message_template")
         template = self.resolve_template(self.message_template)
-        return template.render(context)
+        return self.prepare_body(template.render(context))
 
     def get_subject(self, context):
         if not self.subject_template:
@@ -278,6 +294,7 @@ class ParticipantsMixin(ParticipantsBaseMixin, BaseEmailMixin):
         tasks.send_mail.delay(
             subject=self.get_subject(mail_context),
             message=message,
+            is_html=self.get_is_html(),
             from_email=self.get_from_address(),
             recipients=[recipient.get_email_string() if hasattr(recipient, "get_email_string") else recipient],
             reply_to=[self.get_reply_to_address()],

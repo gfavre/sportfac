@@ -1,4 +1,3 @@
-from ckeditor_uploader.fields import RichTextUploadingField
 from django.core.cache import cache
 from django.db import connection
 from django.db import models
@@ -10,6 +9,7 @@ from django.utils.text import slugify
 from django_tenants.urlresolvers import reverse_lazy
 
 from sportfac.models import TimeStampedModel
+from sportfac.richtext import RichTextField
 
 
 class WizardStep(TimeStampedModel):
@@ -21,9 +21,7 @@ class WizardStep(TimeStampedModel):
     )
     lead = models.CharField(max_length=255, blank=True, help_text=_("Big text displayed below the title."))
     link_display = models.CharField(max_length=50, blank=True)
-    description = RichTextUploadingField(
-        blank=True, null=True, help_text=_("Free form description, with images if necessary")
-    )
+    description = RichTextField(blank=True, null=True, help_text=_("Free form description, with images if necessary"))
 
     slug = models.SlugField(
         max_length=50,

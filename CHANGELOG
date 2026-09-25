@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 4.9.1 - 2026-09-25
+### Fixed
+- Keep selected course rows readable with dark text and a selection outline, preserving visibility and participant-status colours.
+- Make practical reminders available to all backend roles when enabled, limiting previews and sends to their accessible courses.
+- Restore the rich-text editor by appending asset versions after static URL resolution, and load its assets only once on the generic email form.
+### Changed
+- Jodit replaces CKEditor 4 throughout the backend and Django admin, preserving stored HTML and visible mail variables. Managers can upload validated images and browse existing uploads; CKEditor’s dependency and initialization code are removed.
+- Generic mail types support an explicit HTML format with a visual editor, filtered HTML, isolated previews and a plain-text fallback on delivery. Queued messages retain their format; existing practical reminders are migrated to HTML, while other mail types remain plain text.
+- Practical reminder previews clarify recipient and registration details, with message navigation and grouped actions.
+
 ## 4.9.0 - 2026-09-24
 ### Added
 - Optional practical reminder emails for Montreux winter and local development, using editable mail types, per-child previews, asynchronous HTML sending and archives. An installer seeds the supplied Montreux wording without overwriting edits unless explicitly requested.

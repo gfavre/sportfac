@@ -4,7 +4,6 @@ import django.db.models.deletion
 import django.utils.timezone
 from django.db import migrations, models
 
-import ckeditor.fields
 import model_utils.fields
 
 
@@ -37,7 +36,7 @@ class Migration(migrations.Migration):
                         default=django.utils.timezone.now, editable=False, verbose_name="modified"
                     ),
                 ),
-                ("help_text", ckeditor.fields.RichTextField(blank=True)),
+                ("help_text", models.TextField(blank=True)),
                 (
                     "body_template",
                     models.ForeignKey(

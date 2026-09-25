@@ -53,4 +53,4 @@ class MailArchiveAdmin(SportfacModelAdmin):
 
 @admin.register(GenericEmail)
 class GenericEmailAdmin(SportfacModelAdmin):
-    list_display = ("subject", "subject_template", "body_template")
+    list_display = ("subject", "is_html", "subject_template", "body_template")

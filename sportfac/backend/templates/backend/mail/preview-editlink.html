@@ -22,7 +22,7 @@
     <dt>{% translate "To" %}</dt><dd>{{ to_email }}</dd>
     <dt>{% translate "Subject" %}</dt><dd>{{ subject }}</dd>
   </dl>
-  <div class="well">{{ message|linebreaks }}</div>
+  {% include "mailer/message-preview.html" %}
 
 </section>
 <section>

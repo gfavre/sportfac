@@ -18,7 +18,6 @@ python-dateutil == 2.8.2  # date parsing
 django-registration-redux == 2.13  # Registration view
 django-recaptcha==3.0.0  # Recaptcha, DO NOT UPDATE TO 4.0 unless django is migrated to 4.0, and changes to settings are made
 django-crispy-forms==1.14.0  # Form rendering. DO NOT UPDATE TO 2.0 unless django is migrated to 4.0, and changes made to requirements
-django-ckeditor==6.7.2
 django-admin-sortable2==1.0.4  # do not upgrade to 2.0° unless we are on django 4.0
 Pillow == 10.4.0
 django-phonenumber-field == 7.0.1  # phone number field with validation; DO NOT UPDATE TO 8.0 unless django is migrated to 4.2+
@@ -57,3 +56,6 @@ django-impersonate==1.9.1  # Impersonate users
 
 # Montreux
 django-simple-sso==1.2.0
+
+# Sanitize HTML mail content and inline formatting.
+bleach[css]==6.2.0

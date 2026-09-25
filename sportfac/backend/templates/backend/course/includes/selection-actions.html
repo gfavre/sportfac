@@ -1,5 +1,5 @@
 {% load i18n sekizai_tags static %}
-{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/course-actions.css' %}?v=3">{% endaddtoblock %}
+{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/course-actions.css' %}?v=4">{% endaddtoblock %}
 <section class="course-selection-actions" aria-label="Actions sur les cours sélectionnés">
   <div class="course-selection-heading" role="status" aria-live="polite">Sélectionnez des cours dans le tableau</div>
   <div class="course-action-groups">
@@ -18,7 +18,7 @@
     <div class="course-action-group">
       <h3>Communication</h3>
       <div class="course-action-buttons">
-        {% if PRACTICAL_REMINDER and user.is_full_manager %}
+        {% if PRACTICAL_REMINDER %}
           <form method="get" action="{% url 'backend:courses-practical-reminder' %}">
             <button class="btn btn-default needs-select" disabled><i class="icon-mail"></i> Rappel pratique</button>
           </form>

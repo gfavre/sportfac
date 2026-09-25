@@ -41,6 +41,36 @@ class PracticalReminderTests(TenantTestCase):
     def install(self, **kwargs):
         call_command("install_montreux_practical_reminder", schema=connection.schema_name, **kwargs)
 
+    def test_course_list_displays_reminder_when_enabled(self):
+        self.client.force_login(self.manager)
+        response = self.client.get("/backend/course/")
+        self.assertContains(response, reverse("backend:courses-practical-reminder"))
+        with override_settings(KEPCHUP_PRACTICAL_REMINDER=False):
+            self.assertNotContains(self.client.get("/backend/course/"), reverse("backend:courses-practical-reminder"))
+
+    def test_backend_roles_can_preview_and_send_only_their_courses(self):
+        self.install()
+        other = RegistrationFactory()
+        for role in ("is_staff", "is_restricted_manager"):
+            with self.subTest(role=role):
+                user = FamilyUserFactory(**{role: True})
+                user.managed_activities.add(self.course.activity)
+                self.client.force_login(user)
+                self.assertContains(self.client.get("/backend/course/"), reverse("backend:courses-practical-reminder"))
+                url = self.url + f"&c={other.course_id}"
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.context["total"], 1)
+                self.assertEqual(response.context["registration"], self.registration)
+                with patch("mailer.practical_reminder.send_practical_reminder.delay"), self.captureOnCommitCallbacks(
+                    execute=True
+                ):
+                    self.assertEqual(self.client.post(url).status_code, 302)
+                archives = MailArchive.objects.filter(template=BODY_TEMPLATE)
+                self.assertEqual(archives.count(), 1)
+                self.assertEqual(archives.get().recipients, [self.registration.child.family.email])
+                archives.delete()
+
     def test_install_preserves_edits_and_supports_replace_and_dry_run(self):
         self.install(dry_run=True)
         self.assertFalse(GenericEmail.objects.filter(body_template__name=BODY_TEMPLATE).exists())
@@ -69,6 +99,31 @@ class PracticalReminderTests(TenantTestCase):
             self.assertEqual(self.client.get(self.url).status_code, 404)
             self.assertEqual(self.client.post(self.url).status_code, 404)
 
+    def test_preview_identifies_recipient_and_preserves_selected_courses_when_browsing(self):
+        from urllib.parse import urlencode
+
+        from django.utils.html import escape
+
+        self.install()
+        other = RegistrationFactory()
+        self.client.force_login(self.manager)
+        params = [("c", str(self.course.pk)), ("c", str(other.course.pk))]
+        url = reverse("backend:courses-practical-reminder")
+        response = self.client.get(url, params)
+        self.assertEqual(response.status_code, 200)
+        registration = response.context["registration"]
+        self.assertContains(response, registration.child.family.email)
+        self.assertContains(response, escape(registration.child.family.full_name))
+        self.assertContains(response, escape(response.context["from_email"]))
+        self.assertContains(response, 'class="dl-horizontal"')
+        self.assertContains(response, "Message 1 / 2")
+        self.assertContains(response, escape("?" + urlencode(params) + "&number=2"))
+        self.assertContains(response, "Envoyer les 2 rappels aux familles")
+        second = self.client.get(url, params + [("number", "2")])
+        self.assertContains(second, "Message 2 / 2")
+        self.assertNotEqual(second.context["registration"].pk, registration.pk)
+        self.assertContains(second, escape("?" + urlencode(params) + "&number=1"))
+
     def test_send_is_queued_archived_and_html(self):
         self.install()
         self.client.force_login(self.manager)
@@ -79,10 +134,58 @@ class PracticalReminderTests(TenantTestCase):
             delay.assert_called_once()
         archive = MailArchive.objects.get(template=BODY_TEMPLATE)
         self.assertEqual(archive.status, "draft")
+        GenericEmail.objects.filter(body_template__name=BODY_TEMPLATE).update(is_html=False)
         send_practical_reminder.run(archive.pk, connection.schema_name, "sender@example.org", "reply@example.org")
         send_practical_reminder.run(archive.pk, connection.schema_name, "sender@example.org", "reply@example.org")
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].content_subtype, "html")
+        self.assertEqual(mail.outbox[0].alternatives[0][1], "text/html")
+        self.assertNotIn("{{", mail.outbox[0].alternatives[0][0])
+        self.assertIn("145", mail.outbox[0].alternatives[0][0])
+        self.assertTrue(archive.is_html)
         self.assertEqual(mail.outbox[0].to, [self.registration.child.family.email])
         archive.refresh_from_db()
         self.assertEqual(archive.status, "sent")
+
+    def test_visual_editor_keeps_variables_until_preview(self):
+        self.install()
+        self.client.force_login(self.manager)
+        mail_type = GenericEmail.objects.get(body_template__name=BODY_TEMPLATE)
+        response = self.client.get(mail_type.get_absolute_url())
+        self.assertContains(response, "backend/vendor/jodit/jodit.min.js")
+        self.assertContains(response, "backend/vendor/jodit/jodit.min.css")
+        self.assertNotContains(response, "ckeditor/ckeditor/ckeditor.js")
+        content = response.context["form"]["body_text"].value()
+        self.assertIn("{{ child.first_name }}", content)
+        self.assertIn('{{ child.bib_number|default:"À communiquer" }}', content)
+        response = self.client.post(
+            mail_type.get_absolute_url(),
+            {
+                "subject_text": "Rappel {{ year }}",
+                "body_text": content,
+                "is_html": True,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        mail_type.body_template.refresh_from_db()
+        self.assertIn("{{ child.first_name }}", mail_type.body_template.content)
+        preview = self.client.get(self.url)
+        self.assertNotIn("{{", preview.context["body"])
+        self.assertIn("145", preview.context["body"])
+
+    def test_plain_reminder_is_previewed_and_sent_as_text(self):
+        self.install()
+        GenericEmail.objects.filter(body_template__name=BODY_TEMPLATE).update(is_html=False)
+        Template.objects.filter(name=BODY_TEMPLATE).update(content="Bonjour {{ child.first_name }} <texte>")
+        self.client.force_login(self.manager)
+        response = self.client.get(self.url)
+        self.assertNotContains(response, 'title="Aperçu du rappel"')
+        self.assertContains(response, "&lt;texte&gt;")
+        with patch("mailer.practical_reminder.send_practical_reminder.delay"):
+            with self.captureOnCommitCallbacks(execute=True):
+                self.client.post(self.url)
+        archive = MailArchive.objects.get(template=BODY_TEMPLATE)
+        GenericEmail.objects.filter(body_template__name=BODY_TEMPLATE).update(is_html=True)
+        send_practical_reminder.run(archive.pk, connection.schema_name, "sender@example.org", "reply@example.org")
+        self.assertFalse(archive.is_html)
+        self.assertEqual(mail.outbox[0].alternatives, [])
+        self.assertIn("<texte>", mail.outbox[0].body)

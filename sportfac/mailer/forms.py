@@ -9,6 +9,7 @@ from multiupload.fields import MultiFileField
 
 from mailer.models import GenericEmail
 from mailer.models import MailArchive
+from sportfac.richtext import RichTextWidget
 
 
 class MailForm(forms.Form):
@@ -106,11 +107,32 @@ class PreviewForm(forms.Form):
 
 class GenericEmailForm(django_forms.ModelForm):
     subject_text = forms.CharField(label=_("Subject"), max_length=255)
-    body_text = forms.CharField(label=_("Message"), widget=django_forms.Textarea(attrs={"rows": 10}))
+    body_text = forms.CharField(label=_("Message"), widget=RichTextWidget(toggle_selector="#id_is_html"))
 
     class Meta:
         model = GenericEmail
-        fields = ("subject_text", "body_text")
+        fields = ("subject_text", "is_html", "body_text")
+
+    def clean(self):
+        from django.template import Template
+        from django.template import TemplateSyntaxError
+
+        from .html import clean_email_template
+
+        data = super().clean()
+        for name in ("subject_text", "body_text"):
+            value = data.get(name)
+            if value is None:
+                continue
+            template = self.instance.subject_template if name == "subject_text" else self.instance.body_template
+            heading = self.get_tmpl_heading(template.content)
+            try:
+                Template(heading + "\n" + value)
+            except TemplateSyntaxError as exc:
+                self.add_error(name, str(exc))
+        if not self.errors and data.get("is_html"):
+            data["body_text"] = clean_email_template(data["body_text"])
+        return data
 
     def cleanup_tmpl(self, body):
         skip = False
@@ -144,11 +166,14 @@ class GenericEmailForm(django_forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.include_media = False
         self.helper.form_group_wrapper_class = "row"
         self.helper.label_class = "col-sm-2"
         self.helper.field_class = "col-sm-10"
         self.helper.layout = Layout(
             "subject_text",
+            "is_html",
             "body_text",
             Div(
                 Div(Submit("save", _("Update email")), css_class="col-sm-10 col-sm-offset-2"),

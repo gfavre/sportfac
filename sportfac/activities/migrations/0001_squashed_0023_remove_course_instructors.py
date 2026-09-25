@@ -7,8 +7,6 @@ from django.conf import settings
 from django.db import migrations, models
 
 import autoslug.fields
-import ckeditor.fields
-import ckeditor_uploader.fields
 
 
 # Functions from the following migrations need manual copying.
@@ -94,7 +92,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "informations",
-                    ckeditor.fields.RichTextField(
+                    models.TextField(
                         blank=True,
                         help_text="Specific informations like outfit.",
                         verbose_name="Informations",
@@ -102,7 +100,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "description",
-                    ckeditor.fields.RichTextField(blank=True, verbose_name="Description"),
+                    models.TextField(blank=True, verbose_name="Description"),
                 ),
             ],
             options={
@@ -383,14 +381,14 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="activity",
             name="description",
-            field=ckeditor_uploader.fields.RichTextUploadingField(
+            field=models.TextField(
                 blank=True, verbose_name="Description"
             ),
         ),
         migrations.AlterField(
             model_name="activity",
             name="informations",
-            field=ckeditor_uploader.fields.RichTextUploadingField(
+            field=models.TextField(
                 blank=True,
                 help_text="Specific informations like outfit.",
                 verbose_name="Informations",
@@ -453,7 +451,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="course",
             name="comments",
-            field=ckeditor_uploader.fields.RichTextUploadingField(
+            field=models.TextField(
                 blank=True, verbose_name="Comments"
             ),
         ),

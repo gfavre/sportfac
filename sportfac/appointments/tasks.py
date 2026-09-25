@@ -8,6 +8,7 @@ from django.utils import translation
 from backend.dynamic_preferences_registry import global_preferences_registry
 from backend.models import Domain
 from backend.models import YearTenant
+from mailer.html import template_is_html
 from mailer.tasks import send_mail
 from mailer.utils import render_email_content
 
@@ -45,6 +46,7 @@ def send_confirmation_mail(appointment_pks, tenant_pk=None, user=None, language=
         send_mail.delay(
             subject=subject,
             message=body,
+            is_html=template_is_html("appointments/confirmation_mail.txt"),
             from_email=global_preferences["email__FROM_MAIL"],
             recipients=recipients,
             reply_to=[global_preferences["email__REPLY_TO_MAIL"]],
