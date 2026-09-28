@@ -7277,3 +7277,135 @@ msgstr "Afficher ce cours dans le catalogue destiné aux familles."
 
 msgid "Allow new registrations, subject to available places and the registration period."
 msgstr "Autoriser les nouvelles inscriptions, dans la limite des places disponibles et de la période d’inscription."
+
+msgid "Registration questions"
+msgstr "Questions d’inscription"
+
+msgid "Registration question"
+msgstr "Question d’inscription"
+
+msgid "New question"
+msgstr "Nouvelle question"
+
+msgid "Edit question"
+msgstr "Modifier la question"
+
+msgid "Duplicate question"
+msgstr "Dupliquer la question"
+
+msgid "Delete question"
+msgstr "Supprimer la question"
+
+msgid "Courses concerned"
+msgstr "Cours concernés"
+
+msgid "Answers"
+msgstr "Réponses"
+
+msgid "Duplicate"
+msgstr "Dupliquer"
+
+msgid "Price adjustment (CHF)"
+msgstr "Modification du prix (CHF)"
+
+msgid "Each answer must be unique."
+msgstr "Chaque réponse doit être unique."
+
+msgid "No — price adjustment (CHF)"
+msgstr "Non — modification du prix (CHF)"
+
+msgid "Yes — price adjustment (CHF)"
+msgstr "Oui — modification du prix (CHF)"
+
+msgid "Help text"
+msgstr "Texte d’aide"
+
+msgid "Yes / No"
+msgstr "Oui / Non"
+
+msgid "Text or list of choices"
+msgstr "Texte ou liste de choix"
+
+msgid "Number or list of numbers"
+msgstr "Nombre ou liste de nombres"
+
+msgid "Yes / No with an image"
+msgstr "Oui / Non avec une image"
+
+msgid "Additional instructions shown to families."
+msgstr "Indications complémentaires affichées aux familles."
+
+msgid "Optional. For a yes/no question, use 0 for No or 1 for Yes."
+msgstr "Facultatif. Pour une question oui/non, saisir 0 pour Non ou 1 pour Oui."
+
+msgid "These courses will offer this question during registration."
+msgstr "Ces cours proposeront cette question lors de l’inscription."
+
+msgid "Please correct the answers below."
+msgstr "Corrigez les réponses ci-dessous."
+
+msgid "All answers must be whole numbers."
+msgstr "Toutes les réponses doivent être des nombres entiers."
+
+msgid "The default must be one of the answers."
+msgstr "La valeur par défaut doit correspondre à une des réponses."
+
+msgid "Enter a whole number."
+msgstr "Saisissez un nombre entier."
+
+msgid "This question already has answers. Duplicate it to change its type, answers or prices."
+msgstr "Cette question a déjà reçu des réponses. Dupliquez-la pour changer son type, ses choix ou ses tarifs."
+
+msgid "Registration question saved."
+msgstr "La question d’inscription a été enregistrée."
+
+msgid "This question has answers and cannot be deleted."
+msgstr "Cette question a reçu des réponses et ne peut pas être supprimée."
+
+msgid "Registration question deleted."
+msgstr "La question d’inscription a été supprimée."
+
+msgid "Define questions here, then select them in each course. Price adjustments distinguish variants with the same wording."
+msgstr "Définissez les questions ici, puis sélectionnez-les dans chaque cours. Les modifications de prix permettent de distinguer les variantes ayant le même libellé."
+
+msgid "No registration questions yet."
+msgstr "Aucune question d’inscription pour le moment."
+
+msgid "This copy has no courses assigned. The original question and its answers are kept."
+msgstr "Cette copie n’est associée à aucun cours. La question d’origine et ses réponses sont conservées."
+
+msgid "This question already has answers. Its type, choices and prices must stay unchanged."
+msgstr "Cette question a déjà reçu des réponses. Son type, ses choix et ses tarifs doivent rester inchangés."
+
+msgid "Answers and prices"
+msgstr "Réponses et tarifs"
+
+msgid "Amounts are in CHF: negative for a discount, positive for a supplement, 0 for no adjustment."
+msgstr "Montants en CHF : négatifs pour une réduction, positifs pour un supplément, 0 pour aucun changement."
+
+msgid "Leave the list empty for a free answer. Otherwise, families must choose one of these answers."
+msgstr "Laissez la liste vide pour une réponse libre. Sinon, les familles devront choisir parmi ces réponses."
+
+msgid "Add answer"
+msgstr "Ajouter une réponse"
+
+msgid "Changes apply to all these courses:"
+msgstr "Les modifications s’appliquent à tous ces cours :"
+
+msgid "Unchecking a course removes the question from future registrations, without deleting existing answers."
+msgstr "Décocher un cours retire la question des futures inscriptions, sans supprimer les réponses existantes."
+
+msgid "This question will be removed from all its courses. This cannot be undone."
+msgstr "Cette question sera retirée de tous ses cours. Cette suppression est définitive."
+
+msgid "Filter courses"
+msgstr "Filtrer les cours"
+
+msgid "I confirm these changes despite their impact on existing answers and amounts."
+msgstr "Je confirme ces modifications malgré leur impact sur les réponses et les montants existants."
+
+msgid "Confirm the impact on existing answers before saving."
+msgstr "Confirmez l’impact sur les réponses existantes avant d’enregistrer."
+
+msgid "This question already has answers. Its type, choices and prices should remain unchanged. Changing them can make existing answers incompatible or change their associated amounts. Existing answers are not converted automatically. Duplicate the question to keep the original configuration."
+msgstr "Cette question a déjà reçu des réponses. Son type, ses choix et ses tarifs devraient rester inchangés. Les modifier peut rendre les réponses existantes incompatibles ou changer les montants qui leur sont associés. Les anciennes réponses ne sont pas converties automatiquement. Dupliquez la question pour conserver la configuration d’origine."

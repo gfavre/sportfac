@@ -1,0 +1,29 @@
+{% extends "backend/base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Registration questions" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Registration questions" %}{% endblock %}
+
+{% block content %}
+<p>{% translate "Define questions here, then select them in each course. Price adjustments distinguish variants with the same wording." %}</p>
+<p><a class="btn btn-primary" href="{% url 'backend:question-create' %}"><i class="icon-plus"></i> {% translate "New question" %}</a></p>
+<div class="table-responsive">
+<table class="table table-striped">
+  <thead><tr><th>{% translate "Question" %}</th><th>{% translate "Courses concerned" %}</th><th>{% translate "Answers" %}</th><th>{% translate "Actions" %}</th></tr></thead>
+  <tbody>
+  {% for question in questions %}
+    <tr>
+      <td>{{ question.summary }}</td>
+      <td>{% for course in question.courses.all %}<a href="{{ course.get_update_url }}">{{ course.number }}</a>{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}</td>
+      <td>{{ question.answer_count }}</td>
+      <td style="white-space: nowrap">
+        <a class="btn btn-default btn-sm" href="{% url 'backend:question-update' question.pk %}">{% translate "Edit" %}</a>
+        <a class="btn btn-default btn-sm" href="{% url 'backend:question-duplicate' question.pk %}">{% translate "Duplicate" %}</a>
+        {% if not question.answer_count %}<a class="btn btn-default btn-sm" href="{% url 'backend:question-delete' question.pk %}">{% translate "Delete" %}</a>{% endif %}
+      </td>
+    </tr>
+  {% empty %}<tr><td colspan="4">{% translate "No registration questions yet." %}</td></tr>{% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock content %}

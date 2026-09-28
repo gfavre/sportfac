@@ -52,6 +52,10 @@
                 &nbsp;&nbsp;{% translate "Export courses" %}
               </a>
             </li>
+            {% if user.is_full_manager or user.is_staff %}
+              <li class="divider"></li>
+              <li><a href="{% url 'backend:question-list' %}"><i class="icon-help-circled"></i>&nbsp;&nbsp;{% translate "Registration questions" %}</a></li>
+            {% endif %}
             {% if ENABLE_PAYROLLS and user.is_full_manager %}
               <li class="divider"></li>
               <li>

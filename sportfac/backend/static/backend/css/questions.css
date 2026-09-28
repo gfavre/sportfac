@@ -1,0 +1,54 @@
+#question-form fieldset {
+    margin-bottom: 28px;
+}
+
+.question-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.question-warning > .icon-warning {
+    font-size: 20px;
+}
+
+.question-warning > p {
+    flex: 1 1 280px;
+    margin: 0;
+}
+
+.question-warning > .btn {
+    flex: 0 0 auto;
+    margin-left: auto;
+    align-self: center;
+}
+
+#question-courses {
+    max-height: 320px;
+    overflow-y: auto;
+    margin: 12px 0 24px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#question-form [hidden] {
+    display: none !important;
+}
+
+/* The column headings already name these fields; retain labels for screen readers. */
+#choice-prices td .control-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+#choice-prices td .form-group {
+    margin-bottom: 0;
+}

@@ -6,6 +6,9 @@ from django.urls import path
 from mailer.practical_reminder import PracticalReminderView
 
 from . import views
+from .views.question_views import QuestionDeleteView
+from .views.question_views import QuestionEditView
+from .views.question_views import QuestionListView
 
 
 app_name = "backend"
@@ -329,6 +332,11 @@ wizard_steps_patterns = [
 ]
 
 urlpatterns = [
+    path("questions/", QuestionListView.as_view(), name="question-list"),
+    path("questions/new/", QuestionEditView.as_view(), name="question-create"),
+    path("questions/<int:pk>/edit/", QuestionEditView.as_view(), name="question-update"),
+    path("questions/<int:pk>/duplicate/", QuestionEditView.as_view(duplicate=True), name="question-duplicate"),
+    path("questions/<int:pk>/delete/", QuestionDeleteView.as_view(), name="question-delete"),
     path("courses/practical-reminder/", PracticalReminderView.as_view(), name="courses-practical-reminder"),
     path("diplomas/", diploma_views.BatchListView.as_view(), name="diploma-list"),
     path("diplomas/new/", diploma_views.BatchCreateView.as_view(), name="diploma-create"),
