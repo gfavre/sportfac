@@ -3,6 +3,7 @@ from django.db import transaction
 from django.db.models import Count
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
+from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views.generic import ListView
@@ -81,11 +82,37 @@ class QuestionEditView(FullBackendMixin, TemplateView):
     def post(self, request, *args, **kwargs):
         with transaction.atomic():
             question = self.get_question(lock=True)
-            form = self.make_form(question, request.POST)
+            summary_field = CourseQuestionsField(queryset=ExtraNeed.objects.none())
+            original_summary = summary_field.label_from_instance(question)
+            data = request.POST.copy()
+            if data.get("action") == "edit":
+                data.pop("confirm_changes", None)
+            form = self.make_form(question, data)
+            if data.get("action") == "edit":
+                form.is_valid()
+                form.errors.pop("confirm_changes", None)
+                return self.render_form(form, question)
             if form.is_valid():
                 form.save()
                 messages.success(request, _("Registration question saved."))
                 return HttpResponseRedirect(reverse("backend:question-list"))
+            if set(form.errors) == {"confirm_changes"}:
+                return TemplateResponse(
+                    request,
+                    "backend/questions/confirm.html",
+                    self.get_context_data(
+                        question=question,
+                        original_summary=original_summary,
+                        proposed_summary=summary_field.label_from_instance(form.instance),
+                        selected_courses=form.cleaned_data["courses"],
+                        submitted_fields=[
+                            (name, value)
+                            for name, values in data.lists()
+                            if name not in ("csrfmiddlewaretoken", "confirm_changes", "action")
+                            for value in values
+                        ],
+                    ),
+                )
             return self.render_form(form, question)
 
 

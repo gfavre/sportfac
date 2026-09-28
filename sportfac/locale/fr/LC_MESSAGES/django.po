@@ -7409,3 +7409,48 @@ msgstr "Confirmez l’impact sur les réponses existantes avant d’enregistrer.
 
 msgid "This question already has answers. Its type, choices and prices should remain unchanged. Changing them can make existing answers incompatible or change their associated amounts. Existing answers are not converted automatically. Duplicate the question to keep the original configuration."
 msgstr "Cette question a déjà reçu des réponses. Son type, ses choix et ses tarifs devraient rester inchangés. Les modifier peut rendre les réponses existantes incompatibles ou changer les montants qui leur sont associés. Les anciennes réponses ne sont pas converties automatiquement. Dupliquez la question pour conserver la configuration d’origine."
+
+msgid "Selected courses:"
+msgstr "Cours sélectionnés :"
+
+msgid "View selection"
+msgstr "Voir la sélection"
+
+msgid "Selected"
+msgstr "Sélectionnés"
+
+msgid "Displayed courses:"
+msgstr "Cours affichés :"
+
+msgid "Selected courses outside the filter:"
+msgstr "Cours sélectionnés hors filtre :"
+
+msgid "No courses match these filters."
+msgstr "Aucun cours ne correspond à ces filtres."
+
+msgid "Confirm question changes"
+msgstr "Confirmer les modifications de la question"
+
+msgid "Existing answers may become incompatible with the new choices or type, and their associated amounts may change. They will not be converted automatically. Nothing has been saved yet."
+msgstr "Les réponses existantes peuvent devenir incompatibles avec les nouveaux choix ou le nouveau type, et les montants associés peuvent changer. Elles ne seront pas converties automatiquement. Rien n’a encore été enregistré."
+
+msgid "Current configuration"
+msgstr "Configuration actuelle"
+
+msgid "Proposed configuration"
+msgstr "Configuration proposée"
+
+msgid "Confirm and save"
+msgstr "Confirmer et enregistrer"
+
+msgid "Back to the form"
+msgstr "Revenir au formulaire"
+
+msgid "Move answer up"
+msgstr "Monter la réponse"
+
+msgid "Move answer down"
+msgstr "Descendre la réponse"
+
+msgid "Drag to reorder"
+msgstr "Glisser pour réordonner"

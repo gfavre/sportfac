@@ -25,12 +25,27 @@
 }
 
 #question-courses {
-    max-height: 320px;
+    max-height: 420px;
     overflow-y: auto;
-    margin: 12px 0 24px;
+    margin: 12px 0 0;
     padding: 12px;
     border: 1px solid #ddd;
     border-radius: 4px;
+}
+
+.course-selection-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+
+#course-filter-status {
+    padding: 10px 12px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid #ccc;
+    background: #f5f5f5;
 }
 
 #question-form [hidden] {
@@ -51,4 +66,64 @@
 
 #choice-prices td .form-group {
     margin-bottom: 0;
+}
+
+.answer-order {
+    white-space: nowrap;
+}
+
+.answer-drag-handle {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    border-radius: 3px;
+    box-shadow: none;
+    padding: 4px 8px;
+    color: #777;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    font-size: 18px;
+}
+
+.answer-drag-handle:hover {
+    color: #333;
+}
+
+.answer-drag-handle:focus-visible {
+    outline: 2px solid #66afe9;
+    outline-offset: 2px;
+}
+
+.answer-dragging {
+    background: #e8f3fa;
+    outline: 2px dashed #66afe9;
+}
+
+.answer-dragging > td > * {
+    opacity: 0.2;
+}
+
+.answer-drag-preview {
+    position: fixed;
+    z-index: 2000;
+    pointer-events: none;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    outline: 2px solid #66afe9;
+    table-layout: fixed;
+}
+
+.answer-drag-preview .control-label {
+    display: none;
+}
+
+.answer-drag-preview .form-group {
+    margin-bottom: 0;
+}
+
+.answer-dragging .answer-drag-handle {
+    cursor: grabbing;
 }

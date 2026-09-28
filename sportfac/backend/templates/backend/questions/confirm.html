@@ -1,0 +1,24 @@
+{% extends "backend/base.html" %}
+{% load i18n %}
+{% block page_title %}{% translate "Confirm question changes" %}{% endblock %}
+
+{% block content %}
+<div class="alert alert-warning" role="alert">
+  <i class="icon-warning" aria-hidden="true"></i>
+  {% translate "Existing answers may become incompatible with the new choices or type, and their associated amounts may change. They will not be converted automatically. Nothing has been saved yet." %}
+</div>
+<div class="row">
+  <div class="col-md-6"><h3>{% translate "Current configuration" %}</h3><p>{{ original_summary }}</p></div>
+  <div class="col-md-6"><h3>{% translate "Proposed configuration" %}</h3><p>{{ proposed_summary }}</p></div>
+</div>
+<h3>{% translate "Courses concerned" %}</h3>
+<p>{% for course in selected_courses %}{{ course.number }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}</p>
+<form method="post">
+  {% csrf_token %}
+  {% for name, value in submitted_fields %}<input type="hidden" name="{{ name }}" value="{{ value }}">{% endfor %}
+  <div class="form-group clearfix">
+    <button class="btn btn-primary" type="submit" name="confirm_changes" value="on">{% translate "Confirm and save" %}</button>
+    <div class="pull-right"><button class="btn btn-default" type="submit" name="action" value="edit">{% translate "Back to the form" %}</button></div>
+  </div>
+</form>
+{% endblock content %}

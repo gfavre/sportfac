@@ -115,7 +115,7 @@ class QuestionManagementTests(TenantTestCase):
             self.question.save()
             response = QuestionEditView.as_view()(self.request("/", self.data(**changes)), pk=self.question.pk)
             self.assertEqual(response.status_code, 200)
-            self.assertIn("confirm_changes", response.context_data["form"].errors)
+            self.assertEqual(response.template_name, "backend/questions/confirm.html")
             self.assertContains(response, 'name="confirm_changes"')
             self.question.refresh_from_db()
             self.assertEqual(self.question.type, "B")
@@ -218,3 +218,38 @@ class QuestionManagementTests(TenantTestCase):
         saved = form.save()
         self.assertEqual(saved.choices, ["NON", "OUI"])
         self.assertEqual(saved.price_modifier, [0, -80])
+
+    def test_confirmation_back_keeps_edits_without_saving(self):
+        self.answer()
+        data = self.data(yes_price="-80", question_label="New wording", courses=[])
+        response = QuestionEditView.as_view()(self.request("/", data), pk=self.question.pk)
+        self.assertEqual(response.template_name, "backend/questions/confirm.html")
+        self.assertIn(("question_label", "New wording"), response.context_data["submitted_fields"])
+        data["action"] = "edit"
+        response = QuestionEditView.as_view()(self.request("/", data), pk=self.question.pk)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context_data["form"]["yes_price"].value(), "-80")
+        self.assertEqual(response.context_data["form"]["question_label"].value(), "New wording")
+        self.assertFalse(response.context_data["form"].errors)
+        self.question.refresh_from_db()
+        self.assertEqual(self.question.question_label, "Magic Pass ?")
+        self.assertEqual(self.question.price_modifier, [0, -40])
+        self.assertTrue(self.question.courses.filter(pk=self.course.pk).exists())
+
+    def test_reordered_answers_keep_their_prices(self):
+        form = QuestionForm(
+            self.choice_data(
+                **{
+                    "answers-0-value": "Grand",
+                    "answers-0-price": "30",
+                    "answers-1-value": "Petit",
+                    "answers-1-price": "-20",
+                }
+            )
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        question = form.save()
+        question.refresh_from_db()
+        self.assertEqual(question.choices, ["Grand", "Petit"])
+        self.assertEqual(question.price_modifier, [30, -20])
+        self.assertEqual(question.price_dict, {"Grand": 30, "Petit": -20})
