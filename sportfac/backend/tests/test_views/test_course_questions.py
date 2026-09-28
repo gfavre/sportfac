@@ -51,13 +51,24 @@ class CourseQuestionsTests(TenantTestCase):
                     self.assertIsNotNone(section)
                     self.assertTrue(section.select_one("legend").get_text(strip=True))
                     self.assertEqual(len(section.select('input[name="extra"]')), 2)
+                    self.assertNotIn("+0 CHF", section.get_text())
+                    for field, sibling in (
+                        ("number", "activity"),
+                        ("instructors", "place"),
+                        ("visible", "allow_new_participants"),
+                    ):
+                        group = soup.select_one(f'[name="{field}"]').find_parent("fieldset")
+                        self.assertIsNotNone(group.select_one(f'[name="{sibling}"]'))
+                    self.assertIsNone(
+                        soup.select_one('[name="visible"]').find_parent("fieldset").select_one('[name="uptodate"]')
+                    )
                     choices = soup.select('input[type="checkbox"][name="extra"]')
                     self.assertEqual({c["value"] for c in choices}, {str(q.pk) for q in self.questions})
                     self.assertEqual(
                         {c["value"] for c in choices if c.has_attr("checked")},
                         {str(self.questions[0].pk)} if editing else set(),
                     )
-                    for discount in ("-40 CHF", "-80 CHF", "+0 CHF"):
+                    for discount in ("-40 CHF", "-80 CHF"):
                         self.assertIn(discount, soup.get_text())
 
     @override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False)

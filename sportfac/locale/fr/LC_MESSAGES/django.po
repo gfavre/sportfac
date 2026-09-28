@@ -7256,3 +7256,24 @@ msgstr "Questions affichées à l’inscription"
 
 msgid "Select the questions for this course. Amounts adjust the course price: a negative amount is a discount. Existing answers are kept when a question is unchecked."
 msgstr "Cochez les questions de ce cours. Les montants modifient le prix du cours : un montant négatif correspond à une réduction. Les réponses existantes sont conservées lorsqu’une question est décochée."
+
+msgid "Course identification"
+msgstr "Identification du cours"
+
+msgid "Organisation"
+msgstr "Organisation"
+
+msgid "Publication and registrations"
+msgstr "Publication et inscriptions"
+
+msgid "Internal management"
+msgstr "Gestion interne"
+
+msgid "Shown to families on the activity page, alongside the course details."
+msgstr "Visible par les familles sur la page de l’activité, avec les informations du cours."
+
+msgid "Show this course in the catalogue for families."
+msgstr "Afficher ce cours dans le catalogue destiné aux familles."
+
+msgid "Allow new registrations, subject to available places and the registration period."
+msgstr "Autoriser les nouvelles inscriptions, dans la limite des places disponibles et de la période d’inscription."
