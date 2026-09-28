@@ -47,6 +47,10 @@ class CourseQuestionsTests(TenantTestCase):
                     response = view.as_view()(self.request(url), **({"course": self.course.pk} if editing else {}))
                     self.assertEqual(response.status_code, 200)
                     soup = BeautifulSoup(response.render().content, "html.parser")
+                    section = soup.select_one("fieldset.course-questions")
+                    self.assertIsNotNone(section)
+                    self.assertTrue(section.select_one("legend").get_text(strip=True))
+                    self.assertEqual(len(section.select('input[name="extra"]')), 2)
                     choices = soup.select('input[type="checkbox"][name="extra"]')
                     self.assertEqual({c["value"] for c in choices}, {str(q.pk) for q in self.questions})
                     self.assertEqual(

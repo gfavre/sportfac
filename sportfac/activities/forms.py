@@ -177,6 +177,7 @@ class CourseForm(forms.ModelForm):
 
     class Media:
         js = ("js/backend/course-form.js",)
+        css = {"all": ("backend/css/course-questions.css",)}
 
     def _filter_limitations(self):
         if settings.KEPCHUP_LIMIT_BY_SCHOOL_YEAR:
@@ -317,6 +318,10 @@ class CourseForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.include_media = False
+        questions_title = self.fields["extra"].label
+        questions_help = self.fields["extra"].help_text
+        self.fields["extra"].label = ""
+        self.fields["extra"].help_text = ""
         pricing_section = self._build_pricing_layout()
         dates_section = self._build_dates_layout()
         dates_section += [
@@ -401,7 +406,15 @@ class CourseForm(forms.ModelForm):
                 )
                 or HTML(""),
             ),
-            not settings.KEPCHUP_NO_EXTRAS and ExtraNeed.objects.exists() and "extra" or HTML(""),
+            not settings.KEPCHUP_NO_EXTRAS
+            and ExtraNeed.objects.exists()
+            and Fieldset(
+                questions_title,
+                HTML(format_html('<p class="course-questions-intro">{}</p>', questions_help)),
+                "extra",
+                css_class="course-questions",
+            )
+            or HTML(""),
             Fieldset(
                 _("Management"),
                 Div("announced_js", css_class="camp-hidden course-show"),

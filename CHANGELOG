@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 ### Changed
-- Course creation and editing show registration questions as checkboxes, including answer choices and price adjustments to distinguish questions with the same wording.
+- Course creation and editing show registration questions in a dedicated section with checkboxes, answer choices and price adjustments to distinguish questions with the same wording.
 
 ## 4.9.1 - 2026-09-25
 ### Fixed
