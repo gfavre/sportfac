@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+### Changed
+- Course creation and editing show registration questions as checkboxes, including answer choices and price adjustments to distinguish questions with the same wording.
+
 ## 4.9.1 - 2026-09-25
 ### Fixed
 - Keep selected course rows readable with dark text and a selection outline, preserving visibility and participant-status colours.

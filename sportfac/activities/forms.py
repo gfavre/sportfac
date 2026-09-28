@@ -11,6 +11,7 @@ from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.forms.widgets import TextInput
+from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
 from activities.models.courses import PRICING_MODE_FAMILY
@@ -20,7 +21,6 @@ from activities.signals import invalidate_course_data
 from activities.signals import invalidate_course_fragment
 from backend.forms import ActivityWidget
 from backend.forms import CityMultipleWidget
-from backend.forms import ExtraNeedMultipleWidget
 from backend.forms import FamilyUserMultipleWidget
 from backend.forms import MultiDateInput
 from profiles.models import City
@@ -32,6 +32,29 @@ from .models import Course
 from .models import CoursesInstructors
 from .models import ExtraNeed
 from .models import PaySlip
+
+
+class CourseQuestionsField(forms.ModelMultipleChoiceField):
+    def label_from_instance(self, question):
+        answers = (
+            [("0", _("No")), ("1", _("Yes"))]
+            if question.is_boolean or question.is_image
+            else [(value, value) for value in question.choices or []]
+        )
+        prices = question.price_dict
+        details = "; ".join(
+            f"{label} : {prices[value]:+d} CHF" if value in prices else str(label) for value, label in answers
+        )
+        if not prices:
+            details = " · ".join(filter(None, [details, _("No price adjustment")]))
+        return format_html(
+            '<strong>{}</strong><span class="help-block">{} · {} · {}<br>{}</span>',
+            question.question_label,
+            _("Question #%(id)s") % {"id": question.pk},
+            question.get_type_display(),
+            _("Required answer") if question.mandatory else _("Optional answer"),
+            details,
+        )
 
 
 class CourseForm(forms.ModelForm):
@@ -80,11 +103,15 @@ class CourseForm(forms.ModelForm):
         widget=TimePickerInput(format="%H:%M"),
         help_text=_("format: hh:mm, e.g. 17:45"),
     )
-    extra = forms.ModelMultipleChoiceField(
-        queryset=ExtraNeed.objects.all(),
-        label=_("Extra questions"),
+    extra = CourseQuestionsField(
+        queryset=ExtraNeed.objects.order_by("question_label", "pk"),
+        label=_("Questions shown during registration"),
         required=False,
-        widget=ExtraNeedMultipleWidget(),
+        widget=forms.CheckboxSelectMultiple,
+        help_text=_(
+            "Select the questions for this course. Amounts adjust the course price: "
+            "a negative amount is a discount. Existing answers are kept when a question is unchecked."
+        ),
     )
     local_city_override = forms.ModelMultipleChoiceField(
         queryset=City.objects.all(),

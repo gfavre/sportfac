@@ -7238,3 +7238,21 @@ msgstr "%(sport)s, niveau %(number)s, bien"
 #, python-format
 msgid "%(sport)s, level %(number)s, confirmed"
 msgstr "%(sport)s, niveau %(number)s, confirmé"
+
+msgid "No price adjustment"
+msgstr "Sans modification de prix"
+
+msgid "Question #%(id)s"
+msgstr "Question n°%(id)s"
+
+msgid "Required answer"
+msgstr "Réponse obligatoire"
+
+msgid "Optional answer"
+msgstr "Réponse facultative"
+
+msgid "Questions shown during registration"
+msgstr "Questions affichées à l’inscription"
+
+msgid "Select the questions for this course. Amounts adjust the course price: a negative amount is a discount. Existing answers are kept when a question is unchecked."
+msgstr "Cochez les questions de ce cours. Les montants modifient le prix du cours : un montant négatif correspond à une réduction. Les réponses existantes sont conservées lorsqu’une question est décochée."
