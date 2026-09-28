@@ -7,22 +7,30 @@
 {% block content %}
 <p>{% translate "Define questions here, then select them in each course. Price adjustments distinguish variants with the same wording." %}</p>
 <p><a class="btn btn-primary" href="{% url 'backend:question-create' %}"><i class="icon-plus"></i> {% translate "New question" %}</a></p>
+<form method="get" class="form-inline">
+  <div class="form-group">
+    <label for="question-search">{% translate "Search questions" %}</label>
+    <input class="form-control" type="search" id="question-search" name="q" value="{{ request.GET.q }}">
+  </div>
+  <button class="btn btn-default" type="submit">{% translate "Search" %}</button>
+  {% if request.GET.q %}<a class="btn btn-link" href="{% url 'backend:question-list' %}">{% translate "Clear search" %}</a>{% endif %}
+</form>
 <div class="table-responsive">
 <table class="table table-striped">
-  <thead><tr><th>{% translate "Question" %}</th><th>{% translate "Courses concerned" %}</th><th>{% translate "Answers" %}</th><th>{% translate "Actions" %}</th></tr></thead>
+  <thead><tr><th>{% translate "Question" %}</th><th>{% translate "Courses concerned" %}</th><th>{% translate "Answers received" %}</th><th>{% translate "Actions" %}</th></tr></thead>
   <tbody>
   {% for question in questions %}
     <tr>
       <td>{{ question.summary }}</td>
-      <td>{% for course in question.courses.all %}<a href="{{ course.get_update_url }}">{{ course.number }}</a>{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}</td>
+      <td>{% for course in question.courses.all %}<a href="{{ course.get_update_url }}">{{ course.number }}</a>{% if not forloop.last %}, {% endif %}{% empty %}{% translate "No courses assigned" %}{% endfor %}</td>
       <td>{{ question.answer_count }}</td>
       <td style="white-space: nowrap">
-        <a class="btn btn-default btn-sm" href="{% url 'backend:question-update' question.pk %}">{% translate "Edit" %}</a>
+        <a class="btn btn-primary btn-sm" href="{% url 'backend:question-update' question.pk %}">{% translate "Edit" %}</a>
         <a class="btn btn-default btn-sm" href="{% url 'backend:question-duplicate' question.pk %}">{% translate "Duplicate" %}</a>
         {% if not question.answer_count %}<a class="btn btn-default btn-sm" href="{% url 'backend:question-delete' question.pk %}">{% translate "Delete" %}</a>{% endif %}
       </td>
     </tr>
-  {% empty %}<tr><td colspan="4">{% translate "No registration questions yet." %}</td></tr>{% endfor %}
+  {% empty %}<tr><td colspan="4">{% if request.GET.q %}{% translate "No questions match your search." %}{% else %}{% translate "No registration questions yet." %}{% endif %}</td></tr>{% endfor %}
   </tbody>
 </table>
 </div>

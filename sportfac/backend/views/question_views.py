@@ -22,11 +22,13 @@ class QuestionListView(FullBackendMixin, ListView):
     context_object_name = "questions"
 
     def get_queryset(self):
-        return (
+        queryset = (
             ExtraNeed.objects.annotate(answer_count=Count("extrainfo", distinct=True))
             .prefetch_related("courses")
             .order_by("question_label", "pk")
         )
+        query = self.request.GET.get("q", "").strip()
+        return queryset.filter(question_label__icontains=query) if query else queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -82,8 +84,6 @@ class QuestionEditView(FullBackendMixin, TemplateView):
     def post(self, request, *args, **kwargs):
         with transaction.atomic():
             question = self.get_question(lock=True)
-            summary_field = CourseQuestionsField(queryset=ExtraNeed.objects.none())
-            original_summary = summary_field.label_from_instance(question)
             data = request.POST.copy()
             if data.get("action") == "edit":
                 data.pop("confirm_changes", None)
@@ -102,8 +102,8 @@ class QuestionEditView(FullBackendMixin, TemplateView):
                     "backend/questions/confirm.html",
                     self.get_context_data(
                         question=question,
-                        original_summary=original_summary,
-                        proposed_summary=summary_field.label_from_instance(form.instance),
+                        changes=form.configuration_changes(),
+                        answer_count=form.answer_count,
                         selected_courses=form.cleaned_data["courses"],
                         submitted_fields=[
                             (name, value)

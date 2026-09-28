@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Match backend dropdown height, borders and arrows to searchable selections, reserving space for the arrow.
 ### Changed
+- Clarify question response modes and defaults, show precise confirmation differences, and allow harmless answer reordering without confirmation. Add question search and clear pending-removal states.
 - Organise course forms into identification, organisation, publication and internal management sections, clarifying family-visible comments and question pricing.
 - Course creation and editing show registration questions in a dedicated section with checkboxes, answer choices and price adjustments to distinguish questions with the same wording.
 

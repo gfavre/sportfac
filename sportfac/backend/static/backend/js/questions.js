@@ -3,17 +3,49 @@
     var form = document.getElementById("question-form");
     if (!form) return;
     var type = document.getElementById("id_type");
+    var responseMode = document.getElementById("id_response_mode");
     function updateType() {
         var binary = type.value === "B" || type.value === "IM";
+        var list = !binary && responseMode.value === "list";
         document.getElementById("boolean-prices").hidden = !binary;
-        document.getElementById("choice-prices").hidden = binary;
+        document.getElementById("response-mode").hidden = binary;
+        document.getElementById("choice-prices").hidden = !list;
+        document.getElementById("price-instructions").hidden = !binary && !list;
+        document.getElementById("free-answer-help").hidden = binary || list;
         document.getElementById("image-question").hidden = type.value !== "IM";
         // Hidden answer inputs must not trigger native required validation.
         document.querySelectorAll("#choice-prices input:not([type=hidden])").forEach(function (input) {
-            input.disabled = binary;
+            input.disabled = !list;
         });
+        updateDefaultAnswer();
     }
     type.addEventListener("change", updateType);
+    responseMode.addEventListener("change", updateType);
+    function updateDefaultAnswer() {
+        var container = document.getElementById("default-answer");
+        var current = document.getElementById("id_default");
+        var binary = type.value === "B" || type.value === "IM";
+        var list = responseMode.value === "list" && !binary;
+        var replacement = document.createElement(binary || list ? "select" : "input");
+        var values = [];
+        if (binary) values = [["0", container.dataset.no], ["1", container.dataset.yes]];
+        if (list) answerRows.querySelectorAll("tr").forEach(function (row) {
+            var value = row.querySelector('input[name$="-value"]').value.trim();
+            if (value && !row.querySelector('input[name$="-DELETE"]').checked) values.push([value, value]);
+        });
+        if (binary || list) {
+            replacement.add(new Option(container.dataset.none, ""));
+            values.forEach(function (choice) { replacement.add(new Option(choice[1], choice[0])); });
+            if (current.value && !values.some(function (choice) { return choice[0] === current.value; })) {
+                replacement.add(new Option(current.value, current.value));
+            }
+        } else replacement.type = type.value === "I" ? "number" : "text";
+        Array.from(current.attributes).forEach(function (attribute) {
+            if (attribute.name !== "type") replacement.setAttribute(attribute.name, attribute.value);
+        });
+        replacement.value = current.value;
+        current.replaceWith(replacement);
+    }
     var courseSearch = document.getElementById("course-filter");
     var courseList = document.getElementById("question-courses");
     var selectedOnly = false;
@@ -58,6 +90,20 @@
     document.getElementById("course-filter-status").hidden = false;
     updateCourses();
     var answerRows = document.getElementById("answer-rows");
+    function updateAnswerStates() {
+        var active = 0;
+        answerRows.querySelectorAll("tr").forEach(function (row) {
+            var removed = row.querySelector('input[name$="-DELETE"]').checked;
+            row.classList.toggle("answer-removed", removed);
+            row.querySelector(".answer-removal-note").hidden = !removed;
+            if (!removed) active++;
+        });
+        document.getElementById("no-answer-choices").hidden = active !== 0;
+        document.getElementById("answer-table").hidden = answerRows.children.length === 0;
+        updateDefaultAnswer();
+    }
+    answerRows.addEventListener("input", updateAnswerStates);
+    answerRows.addEventListener("change", updateAnswerStates);
     var draggedAnswer = null;
     var dragPreview = null;
     var dragOffset = 0;
@@ -124,6 +170,7 @@
                 });
             });
         });
+        updateAnswerStates();
     }
     answerRows.addEventListener("keydown", function (event) {
         var button = event.target.closest(".answer-drag-handle");

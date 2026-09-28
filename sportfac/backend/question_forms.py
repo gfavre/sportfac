@@ -32,6 +32,12 @@ Answers = formset_factory(AnswerForm, formset=AnswerFormSet, extra=0, can_delete
 
 
 class QuestionForm(forms.ModelForm):
+    response_mode = forms.ChoiceField(
+        label=_("Response mode"),
+        required=False,
+        choices=(("free", _("Free answer")), ("list", _("List of answers"))),
+    )
+
     confirm_changes = forms.BooleanField(
         required=False,
         label=_("I confirm these changes despite their impact on existing answers and amounts."),
@@ -60,17 +66,19 @@ class QuestionForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["type"].choices = (
             ("B", _("Yes / No")),
-            ("C", _("Text or list of choices")),
-            ("I", _("Number or list of numbers")),
+            ("C", _("Text")),
+            ("I", _("Whole number")),
             ("IM", _("Yes / No with an image")),
         )
         self.fields["extra_info"].help_text = _("Additional instructions shown to families.")
-        self.fields["default"].help_text = _("Optional. For a yes/no question, use 0 for No or 1 for Yes.")
+        self.fields["default"].help_text = _("Optional. Leave empty to let the family answer.")
         self.fields["courses"].help_text = _("These courses will offer this question during registration.")
         self.original_type = self.instance.type
         self.original_choices = list(self.instance.choices or [])
         self.original_prices = list(self.instance.price_modifier or [])
-        self.has_answers = bool(self.instance.pk and ExtraInfo.objects.filter(key=self.instance).exists())
+        self.answer_count = ExtraInfo.objects.filter(key=self.instance).count() if self.instance.pk else 0
+        self.has_answers = self.answer_count > 0
+        self.initial["response_mode"] = "list" if self.original_choices else "free"
         if self.instance.pk and self.instance.type in ("B", "IM"):
             self.initial["no_price"] = self.instance.price_dict.get("0", 0)
             self.initial["yes_price"] = self.instance.price_dict.get("1", 0)
@@ -81,15 +89,30 @@ class QuestionForm(forms.ModelForm):
         self.answers = Answers(
             self.data if self.is_bound else None, initial=None if self.is_bound else rows, prefix="answers"
         )
+        kind = self.data.get("type") if self.is_bound else self.initial.get("type", self.instance.type)
+        mode = self.data.get("response_mode") if self.is_bound else self.initial["response_mode"]
+        if kind in ("B", "IM"):
+            self.fields["default"].widget = forms.Select(choices=[("", _("None")), ("0", _("No")), ("1", _("Yes"))])
+        elif mode == "list":
+            values = (
+                [self.data.get(f"answers-{i}-value", "") for i in range(min(self.answers.total_form_count(), 100))]
+                if self.is_bound
+                else self.original_choices
+            )
+            self.fields["default"].widget = forms.Select(choices=[("", _("None"))] + [(v, v) for v in values if v])
 
     def clean_answers(self, data):
         if data.get("type") in ("B", "IM"):
             choices = self.original_choices if data.get("type") == self.original_type else []
             return choices, [data.get("no_price") or 0, data.get("yes_price") or 0]
+        if data.get("response_mode") == "free":
+            return [], []
         if not self.answers.is_valid():
             raise forms.ValidationError(_("Please correct the answers below."))
         rows = [f.cleaned_data for f in self.answers if f.cleaned_data and not f.cleaned_data.get("DELETE")]
         choices = [row["value"] for row in rows]
+        if data.get("response_mode") == "list" and not choices:
+            raise forms.ValidationError(_("Add at least one answer, or choose Free answer."))
         if data.get("type") == "I":
             for value in choices:
                 try:
@@ -115,10 +138,39 @@ class QuestionForm(forms.ModelForm):
             2 if self.original_type in ("B", "IM") else len(self.original_choices)
         )
         self.requires_confirmation = self.has_answers and (
-            question_type != self.original_type or choices != self.original_choices or prices != original_prices
+            question_type != self.original_type
+            or set(choices) != set(self.original_choices)
+            or self.price_mapping(question_type, choices, prices)
+            != self.price_mapping(self.original_type, self.original_choices, original_prices)
         )
         if self.requires_confirmation and not data.get("confirm_changes"):
             self.add_error("confirm_changes", _("Confirm the impact on existing answers before saving."))
         self.instance.choices = choices
         self.instance.price_modifier = prices
         return data
+
+    @staticmethod
+    def price_mapping(kind, choices, prices):
+        keys = ["0", "1"] if kind in ("B", "IM") else choices
+        return {key: prices[i] if i < len(prices) else 0 for i, key in enumerate(keys)}
+
+    def configuration_changes(self):
+        kind = self.cleaned_data["type"]
+        changes = []
+        types = dict(self.fields["type"].choices)
+        if kind != self.original_type:
+            changes.append((_("Type of answer"), types[self.original_type], types[kind]))
+        before = self.price_mapping(self.original_type, self.original_choices, self.original_prices)
+        after = self.price_mapping(kind, self.instance.choices, self.instance.price_modifier)
+        for key in dict.fromkeys([*before, *after]):
+            if key in before and key in after and before[key] == after[key]:
+                continue
+            label = {"0": _("No"), "1": _("Yes")}.get(key, key) if kind in ("B", "IM") else key
+            changes.append(
+                (
+                    label,
+                    f"{before[key]:+d} CHF" if key in before else _("Not offered"),
+                    f"{after[key]:+d} CHF" if key in after else _("Removed"),
+                )
+            )
+        return changes

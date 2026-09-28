@@ -253,3 +253,54 @@ class QuestionManagementTests(TenantTestCase):
         self.assertEqual(question.choices, ["Grand", "Petit"])
         self.assertEqual(question.price_modifier, [30, -20])
         self.assertEqual(question.price_dict, {"Grand": 30, "Petit": -20})
+
+    def test_explicit_response_modes_and_default_widgets(self):
+        form = QuestionForm(instance=self.question)
+        self.assertEqual(form.fields["default"].widget.input_type, "select")
+        form = QuestionForm(self.data(type="C", response_mode="list"))
+        self.assertFalse(form.is_valid())
+        free = QuestionForm(self.choice_data(response_mode="free"))
+        self.assertTrue(free.is_valid(), free.errors)
+        self.assertEqual(free.save().choices, [])
+        listed = QuestionForm(self.choice_data(response_mode="list", default="Grand"))
+        self.assertTrue(listed.is_valid(), listed.errors)
+        self.assertEqual(listed.save().default, "Grand")
+
+    def test_reordering_used_answers_needs_no_confirmation(self):
+        self.question.type = "C"
+        self.question.choices = ["Petit", "Grand"]
+        self.question.price_modifier = [-20, 30]
+        self.question.save()
+        answer = self.answer()
+        form = QuestionForm(
+            self.choice_data(
+                response_mode="list",
+                **{
+                    "answers-0-value": "Grand",
+                    "answers-0-price": "30",
+                    "answers-1-value": "Petit",
+                    "answers-1-price": "-20",
+                }
+            ),
+            instance=self.question,
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertFalse(form.requires_confirmation)
+        saved = form.save()
+        self.assertEqual(saved.choices, ["Grand", "Petit"])
+        self.assertEqual(saved.price_dict, {"Petit": -20, "Grand": 30})
+        self.assertTrue(ExtraInfo.objects.filter(pk=answer.pk).exists())
+
+    def test_confirmation_only_lists_changed_prices(self):
+        self.answer()
+        response = QuestionEditView.as_view()(self.request("/", self.data(yes_price="-80")), pk=self.question.pk)
+        self.assertEqual(len(response.context_data["changes"]), 1)
+        self.assertEqual(response.context_data["changes"][0][1:], ("-40 CHF", "-80 CHF"))
+        self.assertEqual(response.context_data["answer_count"], 1)
+
+    def test_list_search(self):
+        ExtraNeed.objects.create(question_label="Arrêt de train", choices=[])
+        response = QuestionListView.as_view()(self.request("/?q=magic"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Magic Pass ?")
+        self.assertNotContains(response, "Arrêt de train")

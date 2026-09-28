@@ -7454,3 +7454,69 @@ msgstr "Descendre la réponse"
 
 msgid "Drag to reorder"
 msgstr "Glisser pour réordonner"
+
+msgid "Response mode"
+msgstr "Mode de réponse"
+
+msgid "Free answer"
+msgstr "Réponse libre"
+
+msgid "List of answers"
+msgstr "Liste de réponses"
+
+msgid "Text"
+msgstr "Texte"
+
+msgid "Optional. Leave empty to let the family answer."
+msgstr "Facultatif. Laissez vide pour que la famille choisisse sa réponse."
+
+msgid "Add at least one answer, or choose Free answer."
+msgstr "Ajoutez au moins une réponse ou choisissez « Réponse libre »."
+
+msgid "Not offered"
+msgstr "Non proposée"
+
+msgid "Removed"
+msgstr "Retirée"
+
+msgid "Families will choose one of these answers. Drag the handle to change their order."
+msgstr "Les familles choisiront parmi ces réponses. Glissez la poignée pour modifier leur ordre."
+
+msgid "No answers offered yet."
+msgstr "Aucune réponse proposée pour le moment."
+
+msgid "Families enter their own answer. No list of choices or price adjustment applies."
+msgstr "Les familles saisissent librement leur réponse. Aucune liste de choix ni modification de prix ne s’applique."
+
+msgid "Will be removed when saved. Uncheck to undo."
+msgstr "Sera retirée à l’enregistrement. Décochez pour annuler."
+
+msgid "Search questions"
+msgstr "Rechercher une question"
+
+msgid "Clear search"
+msgstr "Effacer la recherche"
+
+msgid "Answers received"
+msgstr "Réponses reçues"
+
+msgid "No courses assigned"
+msgstr "Aucun cours associé"
+
+msgid "No questions match your search."
+msgstr "Aucune question ne correspond à votre recherche."
+
+msgid "Answers already recorded:"
+msgstr "Réponses déjà enregistrées :"
+
+msgid "Changed element"
+msgstr "Élément modifié"
+
+msgid "Before"
+msgstr "Avant"
+
+msgid "After"
+msgstr "Après"
+
+msgid "Whole number"
+msgstr "Nombre entier"

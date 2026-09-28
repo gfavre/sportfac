@@ -7,9 +7,12 @@
   <i class="icon-warning" aria-hidden="true"></i>
   {% translate "Existing answers may become incompatible with the new choices or type, and their associated amounts may change. They will not be converted automatically. Nothing has been saved yet." %}
 </div>
-<div class="row">
-  <div class="col-md-6"><h3>{% translate "Current configuration" %}</h3><p>{{ original_summary }}</p></div>
-  <div class="col-md-6"><h3>{% translate "Proposed configuration" %}</h3><p>{{ proposed_summary }}</p></div>
+<p><strong>{{ question.question_label }}</strong> · {% translate "Answers already recorded:" %} {{ answer_count }}</p>
+<div class="table-responsive">
+<table class="table">
+  <thead><tr><th>{% translate "Changed element" %}</th><th>{% translate "Before" %}</th><th>{% translate "After" %}</th></tr></thead>
+  <tbody>{% for label, before, after in changes %}<tr><th scope="row">{{ label }}</th><td>{{ before }}</td><td>{{ after }}</td></tr>{% endfor %}</tbody>
+</table>
 </div>
 <h3>{% translate "Courses concerned" %}</h3>
 <p>{% for course in selected_courses %}{{ course.number }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}</p>
