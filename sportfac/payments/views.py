@@ -167,7 +167,11 @@ class PostfinanceWebhookView(APIView):
         if transaction.is_success and was_pending:
             # we receive at least 5 webhooks for the same transaction, so we only send the confirmation once
             transaction.invoice.send_confirmation()
-        else:
+        elif transaction.status in (
+            PostfinanceTransaction.STATUS.FAILED,
+            PostfinanceTransaction.STATUS.DECLINE,
+            PostfinanceTransaction.STATUS.VOIDED,
+        ):
             message_user(
                 transaction.invoice.family,
                 _("Payment was rejected either by you or the bank"),

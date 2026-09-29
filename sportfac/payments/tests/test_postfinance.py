@@ -213,6 +213,31 @@ class PostfinanceWebhookViewTests(TenantTestCase):
         mock_send_confirmation.assert_called_once()
 
     @override_settings(POSTFINANCE_SPACE_ID=42)
+    @mock.patch("payments.views.message_user")
+    @mock.patch("registrations.models.Bill.send_confirmation")
+    @mock.patch("payments.postfinance.get_new_status")
+    def test_success_and_pending_webhooks_never_warn_of_rejection(self, get_status, send_confirmation, message):
+        for status in ("PENDING", "CONFIRMED", "PROCESSING", "AUTHORIZED", "COMPLETED", "FULFILL", "FULFILL"):
+            with self.subTest(status=status):
+                get_status.return_value = _mock_pf_response(status)
+                response = self._post_webhook({"entityId": self.pf_transaction.transaction_id, "spaceId": 42})
+                self.assertEqual(response.status_code, 200)
+                message.assert_not_called()
+        send_confirmation.assert_called_once()
+
+    @override_settings(POSTFINANCE_SPACE_ID=42)
+    @mock.patch("payments.views.message_user")
+    @mock.patch("payments.postfinance.get_new_status")
+    def test_rejected_webhooks_still_warn_parent(self, get_status, message):
+        for status in ("FAILED", "DECLINE", "VOIDED"):
+            with self.subTest(status=status):
+                message.reset_mock()
+                get_status.return_value = _mock_pf_response(status)
+                response = self._post_webhook({"entityId": self.pf_transaction.transaction_id, "spaceId": 42})
+                self.assertEqual(response.status_code, 200)
+                message.assert_called_once_with(self.invoice.family, mock.ANY, "warning")
+
+    @override_settings(POSTFINANCE_SPACE_ID=42)
     def test_unknown_transaction_is_silently_accepted(self):
         """Montreux shares one webhook URL across two tenants - unmatched calls must not error."""
         response = self._post_webhook({"entityId": 999999999, "spaceId": 42})
