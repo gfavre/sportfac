@@ -20,7 +20,6 @@ from sportfac.utils import TenantTestCase
 from .base import fake_registrations_open_middleware
 
 
-@override_settings(KEPCHUP_NO_EXTRAS=False)
 class CourseQuestionsTests(TenantTestCase):
     def setUp(self):
         super().setUp()

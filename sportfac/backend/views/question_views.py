@@ -22,13 +22,11 @@ class QuestionListView(FullBackendMixin, ListView):
     context_object_name = "questions"
 
     def get_queryset(self):
-        queryset = (
+        return (
             ExtraNeed.objects.annotate(answer_count=Count("extrainfo", distinct=True))
             .prefetch_related("courses")
             .order_by("question_label", "pk")
         )
-        query = self.request.GET.get("q", "").strip()
-        return queryset.filter(question_label__icontains=query) if query else queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

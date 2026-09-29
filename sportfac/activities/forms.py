@@ -417,8 +417,7 @@ class CourseForm(forms.ModelForm):
                 )
                 or HTML(""),
             ),
-            not settings.KEPCHUP_NO_EXTRAS
-            and ExtraNeed.objects.exists()
+            ExtraNeed.objects.exists()
             and Fieldset(
                 questions_title,
                 HTML(format_html('<p class="course-questions-intro">{}</p>', questions_help)),

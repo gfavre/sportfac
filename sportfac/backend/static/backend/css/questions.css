@@ -139,3 +139,52 @@
 .answer-dragging .answer-drag-handle {
     cursor: grabbing;
 }
+#question-search-tools[hidden],
+#clear-question-search[hidden],
+#no-matching-questions[hidden] {
+    display: none;
+}
+
+.questions-subtitle {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #52616b;
+    max-width: 850px;
+    margin-bottom: 24px;
+}
+
+.questions-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px;
+    margin-bottom: 20px;
+    background: #f5f7f9;
+    border: 1px solid #dde3e8;
+    border-radius: 4px;
+}
+
+#question-search-tools {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 1 440px;
+    min-width: 0;
+}
+
+#question-search-tools .glyphicon {
+    color: #667783;
+}
+
+#question-search {
+    min-width: 0;
+    flex: 1;
+}
+
+#clear-question-search {
+    padding: 0 4px;
+    font-size: 22px;
+    line-height: 1;
+}

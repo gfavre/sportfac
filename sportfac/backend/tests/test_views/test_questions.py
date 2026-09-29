@@ -298,9 +298,11 @@ class QuestionManagementTests(TenantTestCase):
         self.assertEqual(response.context_data["changes"][0][1:], ("-40 CHF", "-80 CHF"))
         self.assertEqual(response.context_data["answer_count"], 1)
 
-    def test_list_search(self):
+    def test_list_keeps_all_questions_for_instant_filtering(self):
         ExtraNeed.objects.create(question_label="Arrêt de train", choices=[])
         response = QuestionListView.as_view()(self.request("/?q=magic"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Magic Pass ?")
-        self.assertNotContains(response, "Arrêt de train")
+        self.assertContains(response, "Arrêt de train")
+        self.assertContains(response, 'id="question-search" value="magic"')
+        self.assertContains(response, "backend/js/question-list.js")

@@ -7520,3 +7520,9 @@ msgstr "Après"
 
 msgid "Whole number"
 msgstr "Nombre entier"
+
+msgid "Define the additional information to ask families for, then assign these questions to the relevant courses."
+msgstr "Définissez les informations complémentaires à demander aux familles, puis associez ces questions aux cours concernés."
+
+msgid "Question, answer or course number…"
+msgstr "Question, réponse ou numéro de cours…"

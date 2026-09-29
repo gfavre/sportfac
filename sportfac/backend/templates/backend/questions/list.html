@@ -1,37 +1,46 @@
 {% extends "backend/base.html" %}
-{% load i18n %}
+{% load i18n sekizai_tags static %}
 {% block title %}{% translate "Registration questions" %} - {{ block.super }}{% endblock %}
 
-{% block page_title %}{% translate "Registration questions" %}{% endblock %}
+{% block page_title %}
+  {% translate "Registration questions" %}
+{% endblock page_title %}
 
 {% block content %}
-<p>{% translate "Define questions here, then select them in each course. Price adjustments distinguish variants with the same wording." %}</p>
-<p><a class="btn btn-primary" href="{% url 'backend:question-create' %}"><i class="icon-plus"></i> {% translate "New question" %}</a></p>
-<form method="get" class="form-inline">
-  <div class="form-group">
-    <label for="question-search">{% translate "Search questions" %}</label>
-    <input class="form-control" type="search" id="question-search" name="q" value="{{ request.GET.q }}">
+{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/questions.css' %}?v=11">{% endaddtoblock %}
+{% addtoblock "js" %}<script src="{% static 'backend/js/question-list.js' %}?v=1"></script>{% endaddtoblock %}
+<p class="questions-subtitle">{% translate "Define the additional information to ask families for, then assign these questions to the relevant courses." %}</p>
+<div class="questions-toolbar">
+  <a class="btn btn-success" href="{% url 'backend:question-create' %}"><i class="icon-plus" aria-hidden="true"></i> {% translate "New question" %}</a>
+{% if questions %}
+  <div id="question-search-tools" hidden>
+    <label class="sr-only" for="question-search">{% translate "Search questions" %}</label>
+    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+    <input class="form-control" type="search" id="question-search" value="{{ request.GET.q }}" placeholder="{% translate 'Question, answer or course number…' %}" autocomplete="off" aria-controls="question-list">
+    <button class="btn btn-link" type="button" id="clear-question-search" aria-label="{% translate 'Clear search' %}" title="{% translate 'Clear search' %}" hidden><span aria-hidden="true">×</span></button>
   </div>
-  <button class="btn btn-default" type="submit">{% translate "Search" %}</button>
-  {% if request.GET.q %}<a class="btn btn-link" href="{% url 'backend:question-list' %}">{% translate "Clear search" %}</a>{% endif %}
-</form>
+{% endif %}
+</div>
 <div class="table-responsive">
-<table class="table table-striped">
+<table class="table table-striped" id="question-list">
   <thead><tr><th>{% translate "Question" %}</th><th>{% translate "Courses concerned" %}</th><th>{% translate "Answers received" %}</th><th>{% translate "Actions" %}</th></tr></thead>
   <tbody>
   {% for question in questions %}
-    <tr>
+    <tr data-question-row>
       <td>{{ question.summary }}</td>
       <td>{% for course in question.courses.all %}<a href="{{ course.get_update_url }}">{{ course.number }}</a>{% if not forloop.last %}, {% endif %}{% empty %}{% translate "No courses assigned" %}{% endfor %}</td>
       <td>{{ question.answer_count }}</td>
-      <td style="white-space: nowrap">
-        <a class="btn btn-primary btn-sm" href="{% url 'backend:question-update' question.pk %}">{% translate "Edit" %}</a>
-        <a class="btn btn-default btn-sm" href="{% url 'backend:question-duplicate' question.pk %}">{% translate "Duplicate" %}</a>
-        {% if not question.answer_count %}<a class="btn btn-default btn-sm" href="{% url 'backend:question-delete' question.pk %}">{% translate "Delete" %}</a>{% endif %}
+      <td>
+        <ul class="list-inline">
+          <li class="text-nowrap"><a class="btn btn-sm" href="{% url 'backend:question-update' question.pk %}"><i class="icon-edit" aria-hidden="true"></i>&nbsp;{% translate "Edit" %}</a></li>
+          <li class="text-nowrap"><a class="btn btn-sm" href="{% url 'backend:question-duplicate' question.pk %}"><i class="icon-docs" aria-hidden="true"></i>&nbsp;{% translate "Duplicate" %}</a></li>
+          {% if not question.answer_count %}<li class="text-nowrap"><a class="btn btn-sm" href="{% url 'backend:question-delete' question.pk %}"><i class="icon-trash" aria-hidden="true"></i>&nbsp;{% translate "Delete" %}</a></li>{% endif %}
+        </ul>
       </td>
     </tr>
-  {% empty %}<tr><td colspan="4">{% if request.GET.q %}{% translate "No questions match your search." %}{% else %}{% translate "No registration questions yet." %}{% endif %}</td></tr>{% endfor %}
+  {% empty %}<tr><td colspan="4">{% translate "No registration questions yet." %}</td></tr>{% endfor %}
   </tbody>
 </table>
 </div>
+<p id="no-matching-questions" role="status" aria-live="polite" hidden>{% translate "No questions match your search." %}</p>
 {% endblock content %}
