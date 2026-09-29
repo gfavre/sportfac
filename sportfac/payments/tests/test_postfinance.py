@@ -322,3 +322,49 @@ class WizardPaymentSuccessViewTests(TenantTestCase):
     def test_payment_confirmed_false_without_any_bill(self):
         context = self._get_context()
         self.assertFalse(context["payment_confirmed"])
+
+
+class PostfinanceFailureLoggingTests(TenantTestCase):
+    @override_settings(POSTFINANCE_USER_ID=1, POSTFINANCE_API_SECRET="secret", POSTFINANCE_SPACE_ID=1)
+    def test_script_failure_logs_stage_and_remote_id_without_payload(self):
+        from payments.postfinance import get_transaction
+
+        invoice = BillFactory()
+        with mock.patch("payments.postfinance.invoice_to_transaction"), mock.patch(
+            "payments.postfinance.TransactionServiceApi"
+        ) as service, mock.patch("payments.postfinance.TransactionLightboxServiceApi") as lightbox:
+            service.return_value.create.return_value.id = 12345
+            lightbox.return_value.javascript_url.side_effect = RuntimeError("sensitive payload")
+            with self.assertLogs("payments.postfinance", level="ERROR") as logs, self.assertRaises(RuntimeError):
+                get_transaction(mock.Mock(), invoice)
+        output = " ".join(logs.output)
+        self.assertIn("stage=get_payment_script", output)
+        self.assertIn("remote_id=12345", output)
+        self.assertIn("invoice=%s" % invoice.pk, output)
+        self.assertNotIn("sensitive payload", output)
+
+    def test_unauthenticated_request_logs_http_status(self):
+        request = APIRequestFactory().post("/", {})
+        with self.assertLogs("payments.views", level="WARNING") as logs:
+            response = NewPostfinanceTransactionView.as_view()(request, invoice_id=123)
+        self.assertIn(response.status_code, (401, 403))
+        self.assertIn("http_status=%s" % response.status_code, " ".join(logs.output))
+        self.assertIn("invoice=123", " ".join(logs.output))
+
+    @override_settings(POSTFINANCE_USER_ID=1, POSTFINANCE_API_SECRET="secret", POSTFINANCE_SPACE_ID=1)
+    def test_long_checkout_url_is_saved_and_returned(self):
+        invoice = BillFactory()
+        url = "https://checkout.postfinance.ch/payment/lightbox.js?token=" + "a" * 2500
+        request = APIRequestFactory().post("/", {})
+        force_authenticate(request, user=invoice.family)
+        with mock.patch("payments.postfinance.TransactionServiceApi") as service, mock.patch(
+            "payments.postfinance.TransactionLightboxServiceApi"
+        ) as lightbox:
+            service.return_value.create.return_value.id = 12346
+            service.return_value.create.return_value.state.value = "PENDING"
+            lightbox.return_value.javascript_url.return_value = url
+            response = NewPostfinanceTransactionView.as_view()(request, invoice_id=invoice.pk)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["paymentPageUrl"], url)
+        saved = PostfinanceTransaction.objects.get(invoice=invoice, transaction_id=12346)
+        self.assertEqual(saved.payment_page_url, url)

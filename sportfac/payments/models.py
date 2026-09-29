@@ -2,6 +2,7 @@ import uuid
 
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
+from django.core.validators import URLValidator
 from django.db import models
 from django.db.models import JSONField
 from django.utils.translation import gettext_lazy as _
@@ -102,7 +103,8 @@ class PostfinanceTransaction(TimeStampedModel, StatusModel):
         "registrations.Bill", related_name="postfinance_transactions", on_delete=models.CASCADE
     )
     transaction_id = models.BigIntegerField(db_index=True)
-    payment_page_url = models.URLField(null=True, blank=True)
+    # Checkout script URLs can exceed URLField's default 200-character limit.
+    payment_page_url = models.TextField(null=True, blank=True, validators=[URLValidator()])
     payment_method = models.CharField(max_length=255, blank=True, default="")
     webhook = JSONField(null=True, blank=True, encoder=DjangoJSONEncoder)
 

@@ -1,6 +1,7 @@
 import logging
 
 from django.conf import settings
+from django.db import connection
 from django.urls import reverse
 from postfinancecheckout import Configuration
 from postfinancecheckout.api import TransactionLightboxServiceApi  # TransactionPaymentPageServiceApi,
@@ -76,29 +77,50 @@ def invoice_to_transaction(request, invoice, fail_url=None):
 
 
 def get_transaction(request, invoice, fail_url=None):
-    config = Configuration(
-        user_id=settings.POSTFINANCE_USER_ID,
-        api_secret=settings.POSTFINANCE_API_SECRET,
-        request_timeout=DEFAULT_TIMEOUT,
-    )
-    transaction_service = TransactionServiceApi(config)
-    # transaction_page_service = TransactionPaymentPageServiceApi(config)
-    transaction_lightbox_service = TransactionLightboxServiceApi(config)
-    transaction = invoice_to_transaction(request, invoice, fail_url=fail_url)
-    logger.info("Transaction: %s", transaction)
-    transaction_create = transaction_service.create(space_id=settings.POSTFINANCE_SPACE_ID, transaction=transaction)
-    # payment_page_url = transaction_page_service.payment_page_url(
-    #    space_id=settings.POSTFINANCE_SPACE_ID, id=transaction_create.id
-    # )
-    javascript_url = transaction_lightbox_service.javascript_url(
-        space_id=settings.POSTFINANCE_SPACE_ID, id=transaction_create.id
-    )
-    return PostfinanceTransaction.objects.create(
-        invoice=invoice,
-        transaction_id=transaction_create.id,
-        payment_page_url=javascript_url,
-        status=transaction_create.state.value,
-    )
+    stage = "prepare_transaction"
+    remote_id = None
+    try:
+        config = Configuration(
+            user_id=settings.POSTFINANCE_USER_ID,
+            api_secret=settings.POSTFINANCE_API_SECRET,
+            request_timeout=DEFAULT_TIMEOUT,
+        )
+        transaction_service = TransactionServiceApi(config)
+        # transaction_page_service = TransactionPaymentPageServiceApi(config)
+        transaction_lightbox_service = TransactionLightboxServiceApi(config)
+        transaction = invoice_to_transaction(request, invoice, fail_url=fail_url)
+        stage = "create_remote_transaction"
+        transaction_create = transaction_service.create(
+            space_id=settings.POSTFINANCE_SPACE_ID, transaction=transaction
+        )
+        # payment_page_url = transaction_page_service.payment_page_url(
+        #    space_id=settings.POSTFINANCE_SPACE_ID, id=transaction_create.id
+        # )
+        remote_id = transaction_create.id
+        stage = "get_payment_script"
+        javascript_url = transaction_lightbox_service.javascript_url(
+            space_id=settings.POSTFINANCE_SPACE_ID, id=transaction_create.id
+        )
+        stage = "save_local_transaction"
+        return PostfinanceTransaction.objects.create(
+            invoice=invoice,
+            transaction_id=transaction_create.id,
+            payment_page_url=javascript_url,
+            status=transaction_create.state.value,
+        )
+
+    except Exception as error:
+        # SDK exception strings can contain headers, secrets and customer data.
+        logger.error(
+            "PostFinance creation failed schema=%s invoice=%s stage=%s remote_id=%s error_type=%s provider_status=%s",
+            getattr(connection, "schema_name", "unknown"),
+            invoice.pk,
+            stage,
+            remote_id,
+            type(error).__name__,
+            error.status if isinstance(error, ApiException) else None,
+        )
+        raise
 
     # return PostfinanceTransaction.objects.create(
     #     invoice=invoice,

@@ -5,9 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 4.10.1 - 2026-09-29
 ### Fixed
+- Store PostFinance checkout URLs as text instead of a 200-character field, preventing local transaction creation failures after successful provider calls. Requires the payments migration in every period.
+- Log PostFinance creation failures with period, invoice, HTTP status and failed provider stage, without logging customer payloads or secrets.
 - Pin Bleach to 6.1.0 for Python 3.8 production deployments; 6.2.0 prevented dependency installation and Django startup.
+
+### Changed
+- Stack question-list actions vertically with consistent left alignment.
 
 ## 4.10.0 - 2026-09-29
 ### Added

@@ -3,6 +3,7 @@ import logging
 from async_messages import message_user
 from braces.views import LoginRequiredMixin
 from django.conf import settings
+from django.db import connection
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
 from django.views.generic import TemplateView
@@ -84,6 +85,22 @@ class NewPostfinanceTransactionView(APIView):
     """
 
     permission_classes = [IsAuthenticated]
+
+    def dispatch(self, request, *args, **kwargs):
+        context = (getattr(connection, "schema_name", "unknown"), kwargs.get("invoice_id"))
+        logger.info("PostFinance request started schema=%s invoice=%s", *context)
+        try:
+            response = super().dispatch(request, *args, **kwargs)
+        except Exception as error:
+            logger.error(
+                "PostFinance request failed schema=%s invoice=%s http_status=500 error_type=%s",
+                *context,
+                type(error).__name__,
+            )
+            raise
+        log = logger.warning if response.status_code >= 400 else logger.info
+        log("PostFinance request finished schema=%s invoice=%s http_status=%s", *context, response.status_code)
+        return response
 
     def post(self, request, invoice_id: int, *args, **kwargs):
         invoice = get_object_or_404(
