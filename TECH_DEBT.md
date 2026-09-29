@@ -4,6 +4,16 @@ Living list of known technical debt for the sportfac/Kepchup project. Not a task
 tracker — just a reference so decisions and their context aren't re-derived from
 scratch each time. Update in place as items are resolved or new ones are found.
 
+## Celery execution in registration tests
+
+- `sportfac.settings.test` does not enable eager Celery execution, but
+  `SendBillConfirmationTests` and `BillPdfViewTests` expect queued tasks to run
+  immediately. Without a broker they raise connection errors; a memory broker
+  alone still leaves email/PDF assertions failing. Configure synchronous tasks
+  explicitly for these tests (and restore the configuration afterwards), or mock
+  their dispatch. For release validation, setting `app.conf.task_always_eager`
+  in the test process avoids requiring a live worker.
+
 ## Backend DataTables versions and invoice exports
 
 - Backend lists still mix local DataTables 1.10.4 with CDN 1.10.18/1.10.24 and

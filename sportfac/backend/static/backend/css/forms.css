@@ -1,0 +1,44 @@
+/* Align single-line text and number fields with the 28px selections. */
+.content input.form-control[type="text"],
+.content input.form-control[type="tel"],
+.content input.form-control[type="number"],
+.content input.form-control:not([type]) {
+    height: 28px;
+    padding: 2px 8px;
+}
+
+/* Match django-select2's default single selection without changing native behaviour. */
+.content select.form-control:not([multiple]):not([size]),
+.content select.form-control[size="1"]:not([multiple]) {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    height: 28px;
+    padding: 2px 24px 2px 8px;
+    color: #444;
+    border-color: #aaa;
+    box-shadow: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'%3E%3Cpath d='M0 0h8L4 5z' fill='%23888'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 7px top calc(50% + 1px);
+    background-size: 8px 5px;
+}
+
+@media (forced-colors: active) {
+    .content select.form-control:not([multiple]):not([size]),
+    .content select.form-control[size="1"]:not([multiple]) {
+        appearance: auto;
+        background-image: none;
+    }
+}
+
+.content .phone-input { position: relative; }
+.content .phone-input > .icon-phone {
+    position: absolute;
+    left: 9px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #737373;
+    pointer-events: none;
+}
+.content .phone-input > input.form-control { padding-left: 32px; }

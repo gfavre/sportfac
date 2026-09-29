@@ -1,0 +1,46 @@
+{% extends "backend/base.html" %}
+{% load i18n sekizai_tags static %}
+{% block title %}{% translate "Registration questions" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}
+  {% translate "Registration questions" %}
+{% endblock page_title %}
+
+{% block content %}
+{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/questions.css' %}?v=11">{% endaddtoblock %}
+{% addtoblock "js" %}<script src="{% static 'backend/js/question-list.js' %}?v=1"></script>{% endaddtoblock %}
+<p class="questions-subtitle">{% translate "Define the additional information to ask families for, then assign these questions to the relevant courses." %}</p>
+<div class="questions-toolbar">
+  <a class="btn btn-success" href="{% url 'backend:question-create' %}"><i class="icon-plus" aria-hidden="true"></i> {% translate "New question" %}</a>
+{% if questions %}
+  <div id="question-search-tools" hidden>
+    <label class="sr-only" for="question-search">{% translate "Search questions" %}</label>
+    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+    <input class="form-control" type="search" id="question-search" value="{{ request.GET.q }}" placeholder="{% translate 'Question, answer or course number…' %}" autocomplete="off" aria-controls="question-list">
+    <button class="btn btn-link" type="button" id="clear-question-search" aria-label="{% translate 'Clear search' %}" title="{% translate 'Clear search' %}" hidden><span aria-hidden="true">×</span></button>
+  </div>
+{% endif %}
+</div>
+<div class="table-responsive">
+<table class="table table-striped" id="question-list">
+  <thead><tr><th>{% translate "Question" %}</th><th>{% translate "Courses concerned" %}</th><th>{% translate "Answers received" %}</th><th>{% translate "Actions" %}</th></tr></thead>
+  <tbody>
+  {% for question in questions %}
+    <tr data-question-row>
+      <td>{{ question.summary }}</td>
+      <td>{% for course in question.courses.all %}<a href="{{ course.get_update_url }}">{{ course.number }}</a>{% if not forloop.last %}, {% endif %}{% empty %}{% translate "No courses assigned" %}{% endfor %}</td>
+      <td>{{ question.answer_count }}</td>
+      <td>
+        <ul class="list-inline">
+          <li class="text-nowrap"><a class="btn btn-sm" href="{% url 'backend:question-update' question.pk %}"><i class="icon-edit" aria-hidden="true"></i>&nbsp;{% translate "Edit" %}</a></li>
+          <li class="text-nowrap"><a class="btn btn-sm" href="{% url 'backend:question-duplicate' question.pk %}"><i class="icon-docs" aria-hidden="true"></i>&nbsp;{% translate "Duplicate" %}</a></li>
+          {% if not question.answer_count %}<li class="text-nowrap"><a class="btn btn-sm" href="{% url 'backend:question-delete' question.pk %}"><i class="icon-trash" aria-hidden="true"></i>&nbsp;{% translate "Delete" %}</a></li>{% endif %}
+        </ul>
+      </td>
+    </tr>
+  {% empty %}<tr><td colspan="4">{% translate "No registration questions yet." %}</td></tr>{% endfor %}
+  </tbody>
+</table>
+</div>
+<p id="no-matching-questions" role="status" aria-live="polite" hidden>{% translate "No questions match your search." %}</p>
+{% endblock content %}

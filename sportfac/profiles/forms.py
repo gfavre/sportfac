@@ -2,6 +2,7 @@ import django.contrib.auth.forms as auth_forms
 from bootstrap_datepicker_plus.widgets import DatePickerInput
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML
+from crispy_forms.layout import Div
 from crispy_forms.layout import Fieldset
 from crispy_forms.layout import Layout
 from crispy_forms.layout import Submit
@@ -168,35 +169,16 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
         self.fields["zipcode"].required = True
 
         self.helper = FormHelper()
-        self.helper.form_class = "form-horizontal"
-        self.helper.form_group_wrapper_class = "row"
-        self.helper.label_class = "col-sm-2"
-        self.helper.field_class = "col-sm-10"
         self.helper.form_tag = False
         self.helper.include_media = False
-
-        self.helper.layout = Layout()
-        if self.initial:
-            password_change = reverse("backend:password-change", args=[self.instance.pk])
-            password_label = _("Change password")
-            self.helper.layout.append(
-                Fieldset(
-                    _("Login informations"),
-                    "email",
-                    HTML(f"""<p><a href="{password_change}">{password_label}</a></p>"""),
-                ),
-            )
-        else:
+        if self.instance._state.adding:
             self.fields["password1"].required = True
             self.fields["password2"].required = True
-            self.helper.layout.append(
-                Fieldset(
-                    _("Login informations"),
-                    "email",
-                    "password1",
-                    "password2",
-                )
-            )
+            password_fields = self.field_pair("password1", "password2")
+        else:
+            password_change = reverse("backend:password-change", args=[self.instance.pk])
+            password_label = _("Change password")
+            password_fields = HTML(f'<p><a href="{password_change}">{password_label}</a></p>')
 
         if settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES:
             self.fields["private_phone"].required = True
@@ -204,24 +186,41 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
         if settings.KEPCHUP_EMERGENCY_NUMBER_ON_PARENT:
             self.fields["private_phone"].required = True
             self.fields["private_phone"].label = _("Emergency phone")
-        self.helper.layout.append(
+        self.helper.layout = Layout(
+            Fieldset(_("Identity"), self.field_pair("first_name", "last_name")),
             Fieldset(
                 _("Contact informations"),
-                "first_name",
-                "last_name",
                 "address",
-                "zipcode",
-                "city",
-                not settings.KEPCHUP_REGISTRATION_HIDE_COUNTRY and "country" or HTML(""),
-                "private_phone",
-                not settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES and "private_phone2" or HTML(""),
-                not settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES and "private_phone3" or HTML(""),
-            )
+                self.field_pair("zipcode", "city"),
+                *([] if settings.KEPCHUP_REGISTRATION_HIDE_COUNTRY else [self.field_pair("country")]),
+                self.field_pair("private_phone"),
+                *(
+                    []
+                    if settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES
+                    else [self.field_pair("private_phone2", "private_phone3")]
+                ),
+            ),
+            Fieldset(
+                _("Login informations"),
+                "email",
+                password_fields,
+            ),
         )
+
+    @staticmethod
+    def field_pair(*names):
+        return Div(*(Div(name, css_class="col-sm-6") for name in names), css_class="row")
+
+
+class IBANValidationWidget(forms.TextInput):
+    class Media:
+        js = ("backend/js/iban-validation.js?v=1",)
 
 
 class InstructorForm(UserForm):
-    iban = IBANFormField(label=_("IBAN"), widget=forms.TextInput(attrs={"placeholder": "CH37..."}), required=False)
+    iban = IBANFormField(
+        label=_("IBAN"), widget=IBANValidationWidget(attrs={"placeholder": "CH37..."}), required=False
+    )
     birth_date = forms.DateTimeField(
         label=_("Birth date"),
         widget=DatePickerInput(format="%d.%m.%Y"),
@@ -262,18 +261,19 @@ class InstructorForm(UserForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
+        self.fields["iban"].widget.attrs["data-iban-validation-url"] = reverse("backend:validate-iban")
         self.helper.layout.append(
             Fieldset(
                 _("Instructor informations"),
-                settings.KEPCHUP_INSTRUCTORS_DISPLAY_EXTERNAL_ID and "external_identifier" or HTML(""),
-                "ahv",
-                "gender",
-                "birth_date",
-                "nationality",
-                "permit_type",
-                "iban",
-                "bank_name",
-                "js_identifier",
+                *(
+                    [self.field_pair("external_identifier")]
+                    if settings.KEPCHUP_INSTRUCTORS_DISPLAY_EXTERNAL_ID
+                    else []
+                ),
+                self.field_pair("birth_date", "gender"),
+                self.field_pair("nationality", "permit_type"),
+                self.field_pair("ahv", "js_identifier"),
+                self.field_pair("iban", "bank_name"),
                 "is_mep",
                 "is_teacher",
                 "phone_public",

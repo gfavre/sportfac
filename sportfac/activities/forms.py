@@ -11,6 +11,7 @@ from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.forms.widgets import TextInput
+from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
 from activities.models.courses import PRICING_MODE_FAMILY
@@ -20,7 +21,6 @@ from activities.signals import invalidate_course_data
 from activities.signals import invalidate_course_fragment
 from backend.forms import ActivityWidget
 from backend.forms import CityMultipleWidget
-from backend.forms import ExtraNeedMultipleWidget
 from backend.forms import FamilyUserMultipleWidget
 from backend.forms import MultiDateInput
 from profiles.models import City
@@ -32,6 +32,32 @@ from .models import Course
 from .models import CoursesInstructors
 from .models import ExtraNeed
 from .models import PaySlip
+
+
+class CourseQuestionsField(forms.ModelMultipleChoiceField):
+    def label_from_instance(self, question):
+        answers = (
+            [("0", _("No")), ("1", _("Yes"))]
+            if question.is_boolean or question.is_image
+            else [(value, value) for value in question.choices or []]
+        )
+        prices = question.price_dict
+        details = "; ".join(
+            (f"{label} : {prices[value]:+d} CHF" if prices[value] else f"{label} : {_('No price adjustment')}")
+            if value in prices
+            else str(label)
+            for value, label in answers
+        )
+        if not prices:
+            details = " · ".join(filter(None, [details, _("No price adjustment")]))
+        return format_html(
+            '<strong>{}</strong><span class="help-block">{}</span><small class="text-muted">{} · {} · {}</small>',
+            question.question_label,
+            details,
+            _("Question #%(id)s") % {"id": question.pk},
+            question.get_type_display(),
+            _("Required answer") if question.mandatory else _("Optional answer"),
+        )
 
 
 class CourseForm(forms.ModelForm):
@@ -49,7 +75,7 @@ class CourseForm(forms.ModelForm):
         required=False,
         help_text=_("Displayed on calendar under activity name"),
     )
-    number = forms.CharField(label=_("Identifier"), required=True)
+    number = forms.CharField(label=_("Course number"), required=True)
 
     price_description = forms.CharField(
         label=_("Informations about pricing"),
@@ -80,11 +106,15 @@ class CourseForm(forms.ModelForm):
         widget=TimePickerInput(format="%H:%M"),
         help_text=_("format: hh:mm, e.g. 17:45"),
     )
-    extra = forms.ModelMultipleChoiceField(
-        queryset=ExtraNeed.objects.all(),
-        label=_("Extra questions"),
+    extra = CourseQuestionsField(
+        queryset=ExtraNeed.objects.order_by("question_label", "pk"),
+        label=_("Questions shown during registration"),
         required=False,
-        widget=ExtraNeedMultipleWidget(),
+        widget=forms.CheckboxSelectMultiple,
+        help_text=_(
+            "Select the questions for this course. Amounts adjust the course price: "
+            "a negative amount is a discount. Existing answers are kept when a question is unchecked."
+        ),
     )
     local_city_override = forms.ModelMultipleChoiceField(
         queryset=City.objects.all(),
@@ -150,6 +180,7 @@ class CourseForm(forms.ModelForm):
 
     class Media:
         js = ("js/backend/course-form.js",)
+        css = {"all": ("backend/css/course-questions.css",)}
 
     def _filter_limitations(self):
         if settings.KEPCHUP_LIMIT_BY_SCHOOL_YEAR:
@@ -290,6 +321,15 @@ class CourseForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.include_media = False
+        questions_title = self.fields["extra"].label
+        questions_help = self.fields["extra"].help_text
+        self.fields["extra"].label = ""
+        self.fields["extra"].help_text = ""
+        self.fields["comments"].help_text = _("Shown to families on the activity page, alongside the course details.")
+        self.fields["visible"].help_text = _("Show this course in the catalogue for families.")
+        self.fields["allow_new_participants"].help_text = _(
+            "Allow new registrations, subject to available places and the registration period."
+        )
         pricing_section = self._build_pricing_layout()
         dates_section = self._build_dates_layout()
         dates_section += [
@@ -328,17 +368,19 @@ class CourseForm(forms.ModelForm):
         ]
 
         self.helper.layout = Layout(
-            Div(
-                Div("course_type", css_class="col-md-6"),
-                css_class="row",
-            ),
-            Div(
-                Div("activity", css_class="col-md-6"),
-                Div("instructors", css_class="col-md-6"),
-                Div("number", css_class="col-md-6"),
-                Div("group_name", css_class="col-md-6") if "group_name" in self.fields else HTML(""),
-                settings.KEPCHUP_CALENDAR_DISPLAY_COURSE_NAMES and Div("name", css_class="col-md-6") or HTML(""),
-                css_class="row",
+            Fieldset(
+                _("Course identification"),
+                Div(
+                    Div("course_type", css_class="col-md-6"),
+                    Div("activity", css_class="col-md-6"),
+                    css_class="row",
+                ),
+                Div(
+                    Div("number", css_class="col-md-6"),
+                    Div("group_name", css_class="col-md-6") if "group_name" in self.fields else HTML(""),
+                    settings.KEPCHUP_CALENDAR_DISPLAY_COURSE_NAMES and Div("name", css_class="col-md-6") or HTML(""),
+                    css_class="row",
+                ),
             ),
             not settings.KEPCHUP_NO_PAYMENT
             and Fieldset(
@@ -347,11 +389,12 @@ class CourseForm(forms.ModelForm):
             )
             or HTML(""),
             Fieldset(
-                _("Dates"),
+                _("Organisation"),
+                "instructors",
                 *dates_section,
+                "place",
+                "comments",
             ),
-            "place",
-            "comments",
             Fieldset(
                 _("Participants and limitations"),
                 Div(
@@ -374,14 +417,23 @@ class CourseForm(forms.ModelForm):
                 )
                 or HTML(""),
             ),
-            not settings.KEPCHUP_NO_EXTRAS and ExtraNeed.objects.exists() and "extra" or HTML(""),
+            ExtraNeed.objects.exists()
+            and Fieldset(
+                questions_title,
+                HTML(format_html('<p class="course-questions-intro">{}</p>', questions_help)),
+                "extra",
+                css_class="course-questions",
+            )
+            or HTML(""),
             Fieldset(
-                _("Management"),
-                Div("announced_js", css_class="camp-hidden course-show"),
-                "uptodate",
-                HTML("<hr>"),
+                _("Publication and registrations"),
                 "visible",
                 "allow_new_participants",
+            ),
+            Fieldset(
+                _("Internal management"),
+                Div("announced_js", css_class="camp-hidden course-show"),
+                "uptodate",
             ),
         )
 
@@ -536,7 +588,7 @@ class ExplicitDatesCourseForm(CourseForm):
 
 
 class ActivityForm(forms.ModelForm):
-    number = forms.CharField(label=_("Identifier"), required=True)
+    number = forms.CharField(label=_("Course number"), required=True)
 
     class Meta:
         model = Activity

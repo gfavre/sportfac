@@ -12,16 +12,17 @@
           href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
     <link rel="stylesheet" type="text/css"
           href="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.css"/>
+    <link rel="stylesheet" href="{% static 'backend/css/list-controls.css' %}?v=1">
     {% endaddtoblock %}
 
   <section class="portlet">
     <!-- Filter Panel -->
-    <div class="filter-panel row">
+    <div class="filter-panel bill-filters row">
       <div class="col-md-4">
         <label for="reportrange">{% translate "Date Range" %}</label>
         <div id="reportrange" class="form-control">
           <i class="icon-calendar"></i>&nbsp;
-          <span></span> <i class="fa fa-caret-down"></i>
+          <span></span> <i class="icon-down-open" aria-hidden="true"></i>
         </div>
       </div>
       <div class="col-md-4">

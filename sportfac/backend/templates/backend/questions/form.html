@@ -1,0 +1,90 @@
+{% extends "backend/base.html" %}
+{% load crispy_forms_tags i18n sekizai_tags static %}
+{% block title %}{% translate "Registration question" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}<i class="icon-help" aria-hidden="true"></i>&nbsp;&nbsp;{% if duplicate %}{% translate "Duplicate question" %}{% elif question.pk %}{% translate "Edit question" %}{% else %}{% translate "New question" %}{% endif %}{% endblock %}
+
+{% block content %}
+{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/questions.css' %}?v=8">{% endaddtoblock %}
+{% addtoblock "js" %}<script src="{% static 'backend/js/questions.js' %}?v=7"></script>{% endaddtoblock %}
+{% if duplicate %}<p class="alert alert-info">{% translate "This copy has no courses assigned. The original question and its answers are kept." %}</p>{% endif %}
+{% if form.has_answers %}
+<div class="alert alert-warning question-warning">
+  <i class="icon-warning" aria-hidden="true"></i>
+  <p>{% translate "This question already has answers. Its type, choices and prices should remain unchanged. Changing them can make existing answers incompatible or change their associated amounts. Existing answers are not converted automatically. Duplicate the question to keep the original configuration." %}</p>
+  <a class="btn btn-default" href="{% url 'backend:question-duplicate' question.pk %}">{% translate "Duplicate question" %}</a>
+</div>
+{% endif %}
+<form method="post" id="question-form">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  <fieldset>
+    <legend>{% translate "Question" %}</legend>
+    {{ form.question_label|as_crispy_field }}
+    {{ form.extra_info|as_crispy_field }}
+    <div class="row"><div class="col-md-6">{{ form.type|as_crispy_field }}</div><div class="col-md-6" id="response-mode">{{ form.response_mode|as_crispy_field }}</div></div>
+    {{ form.mandatory|as_crispy_field }}
+    <div id="image-question">{{ form.image_label|as_crispy_field }}</div>
+  </fieldset>
+  <fieldset>
+    <legend>{% translate "Answers and prices" %}</legend>
+    <p id="price-instructions" class="help-block">{% translate "Amounts are in CHF: negative for a discount, positive for a supplement, 0 for no adjustment." %}</p>
+    <div id="boolean-prices" class="row">
+      <div class="col-md-6">{{ form.no_price|as_crispy_field }}</div>
+      <div class="col-md-6">{{ form.yes_price|as_crispy_field }}</div>
+    </div>
+    <div id="choice-prices">
+      <p>{% translate "Families will choose one of these answers. Drag the handle to change their order." %}</p>
+      <p id="no-answer-choices" class="help-block" hidden>{% translate "No answers offered yet." %}</p>
+      {{ form.answers.management_form }}
+      {{ form.answers.non_form_errors }}
+      <div class="table-responsive" id="answer-table"><table class="table">
+        <thead><tr><th>{% translate "Order" %}</th><th>{% translate "Answer" %}</th><th>{% translate "Price adjustment (CHF)" %}</th><th>{% translate "Remove" %}</th></tr></thead>
+        <tbody id="answer-rows">
+        {% for answer in form.answers %}<tr>
+          {% include "backend/questions/answer_order.html" %}
+          <td>{{ answer.value|as_crispy_field }}</td>
+          <td>{{ answer.price|as_crispy_field }}</td>
+          <td>{{ answer.DELETE|as_crispy_field }}<span class="answer-removal-note" hidden>{% translate "Will be removed when saved. Uncheck to undo." %}</span></td>
+        </tr>{% endfor %}
+        </tbody>
+      </table></div>
+      <template id="answer-template"><tr>
+        {% include "backend/questions/answer_order.html" %}
+        <td>{{ form.answers.empty_form.value|as_crispy_field }}</td>
+        <td>{{ form.answers.empty_form.price|as_crispy_field }}</td>
+        <td>{{ form.answers.empty_form.DELETE|as_crispy_field }}<span class="answer-removal-note" hidden>{% translate "Will be removed when saved. Uncheck to undo." %}</span></td>
+      </tr></template>
+      <p><button class="btn btn-default" type="button" id="add-answer"><i class="icon-plus"></i> {% translate "Add answer" %}</button></p>
+    </div>
+    <p id="free-answer-help" hidden>{% translate "Families enter their own answer. No list of choices or price adjustment applies." %}</p>
+    <div id="default-answer" data-none="{% translate 'None' %}" data-no="{% translate 'No' %}" data-yes="{% translate 'Yes' %}">{{ form.default|as_crispy_field }}</div>
+  </fieldset>
+  <fieldset>
+    <legend>{% translate "Courses concerned" %}</legend>
+    <p>{% translate "Unchecking a course removes the question from future registrations, without deleting existing answers." %}</p>
+    <label for="course-filter">{% translate "Filter courses" %}</label>
+    <input type="search" id="course-filter" class="form-control" autocomplete="off">
+    <div id="course-selection-tools" hidden>
+      <div class="course-selection-summary">
+        <strong>{% translate "Selected courses:" %} <span id="selected-course-count">0</span></strong>
+        <button type="button" class="btn btn-link" id="show-course-selection">{% translate "View selection" %}</button>
+      </div>
+      <div class="btn-group" role="group" aria-label="{% translate 'Filter courses' %}">
+        <button type="button" class="btn btn-default active" id="show-all-courses" aria-pressed="true">{% translate "All courses" %}</button>
+        <button type="button" class="btn btn-default" id="show-selected-courses" aria-pressed="false">{% translate "Selected" %} (<span id="selected-filter-count">0</span>)</button>
+      </div>
+    </div>
+    <div id="question-courses">{{ form.courses|as_crispy_field }}</div>
+    <p id="course-filter-status" role="status" aria-live="polite" hidden>
+      {% translate "Displayed courses:" %} <span id="displayed-course-count">0</span>
+      <span id="hidden-course-selection"> · {% translate "Selected courses outside the filter:" %} <strong id="hidden-course-count">0</strong></span>
+      <span id="no-matching-courses" hidden> — {% translate "No courses match these filters." %}</span>
+    </p>
+  </fieldset>
+  <div class="form-group clearfix">
+    <button class="btn btn-primary" type="submit">{% translate "Save" %}</button>
+    <div class="pull-right"><a class="btn btn-default" href="{% url 'backend:question-list' %}">{% translate "Cancel" %}</a></div>
+  </div>
+</form>
+{% endblock content %}

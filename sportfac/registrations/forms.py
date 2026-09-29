@@ -141,7 +141,7 @@ class ChildForm(forms.ModelForm):
     id_lagapeo = forms.IntegerField(label=_("SSF number"), required=False)
 
     school = forms.ModelChoiceField(label=_("School"), queryset=School.objects.filter(selectable=True), required=False)
-    emergency_number = forms.CharField(label=_("Emergency number"), required=False)
+    emergency_number = forms.CharField(label=_("Emergency contact phone"), required=False)
     bib_number = forms.CharField(label=_("Bib number"), required=False)
     avs = forms.CharField(label=_("AVS"), required=False, help_text="756.XXXX.XXXX.XX")
 
@@ -192,10 +192,10 @@ class ChildForm(forms.ModelForm):
         return HTML(
             """
                     <button type="submit" class="btn btn-success btn-large" name="action" value="save">
-                      <i class="icon-plus"></i> {}
+                      {}
                     </button>
                     """.format(
-                _("Create child")
+                _("Save")
             )
         )
 
@@ -205,41 +205,48 @@ class ChildForm(forms.ModelForm):
             del self.fields["building"]
         self.helper = FormHelper()
         self.helper.include_media = False
+
+        def field_rows(names):
+            return [
+                Div(*(Div(name, css_class="col-sm-6") for name in names[index : index + 2]), css_class="row")
+                for index in range(0, len(names), 2)
+            ]
+
+        school_fields = ["school_year"]
+        if settings.KEPCHUP_USE_BUILDINGS:
+            school_fields.append("building")
+        if settings.KEPCHUP_PREFILL_YEARS_WITH_TEACHERS:
+            school_fields.append("teacher")
+        if settings.KEPCHUP_CHILD_SCHOOL:
+            school_fields.extend(["school", "other_school"])
+
+        internal_fields = []
+        if settings.KEPCHUP_IMPORT_CHILDREN:
+            internal_fields.append("id_lagapeo")
+        if settings.KEPCHUP_BIB_NUMBERS:
+            internal_fields.append("bib_number")
+
         self.helper.layout = Layout(
-            "family",
-            Div(
-                Div("first_name", css_class="col-sm-6"),
-                Div("last_name", css_class="col-sm-6"),
-                css_class="row",
-            ),
-            "sex",
-            Div(
-                Div("birth_date", css_class="col-sm-3"),
-                css_class="row",
-            ),
-            Div(
-                Div("nationality", css_class="col-sm-6"),
-                Div("language", css_class="col-sm-6"),
-                css_class="row",
-            ),
-            "avs",
-            settings.KEPCHUP_EMERGENCY_NUMBER_MANDATORY and "emergency_number" or HTML(""),
-            settings.KEPCHUP_BIB_NUMBERS and "bib_number" or HTML(""),
-            settings.KEPCHUP_USE_BLACKLISTS and "is_blacklisted" or HTML(""),
             Fieldset(
-                _("School informations"),
-                settings.KEPCHUP_IMPORT_CHILDREN and "id_lagapeo" or HTML(""),
-                Div(
-                    Div("school_year", css_class="col-sm-6"),
-                    settings.KEPCHUP_USE_BUILDINGS and Div("building", css_class="col-sm-6") or HTML(""),
-                    settings.KEPCHUP_PREFILL_YEARS_WITH_TEACHERS and Div("teacher", css_class="col-sm-6") or HTML(""),
-                    settings.KEPCHUP_CHILD_SCHOOL and Div("school", css_class="col-sm-6") or HTML(""),
-                    settings.KEPCHUP_CHILD_SCHOOL and Div("other_school", css_class="col-sm-6") or HTML(""),
-                    css_class="row",
-                ),
+                _("Child identity"),
+                *field_rows(["first_name", "last_name", "birth_date", "sex", "nationality", "language", "avs"]),
             ),
-            ButtonHolder(self.get_submit_button()),
+            Fieldset(
+                _("Family and contact"),
+                "family",
+                *field_rows(["emergency_number"] if settings.KEPCHUP_EMERGENCY_NUMBER_MANDATORY else []),
+            ),
+            Fieldset(_("School informations"), *field_rows(school_fields)),
         )
+        if internal_fields or settings.KEPCHUP_USE_BLACKLISTS:
+            self.helper.layout.append(
+                Fieldset(
+                    _("Internal management"),
+                    *field_rows(internal_fields),
+                    *(["is_blacklisted"] if settings.KEPCHUP_USE_BLACKLISTS else []),
+                )
+            )
+        self.helper.layout.append(Div(self.get_submit_button(), css_class="form-group"))
 
 
 class ChildUpdateForm(ChildForm):
@@ -250,7 +257,7 @@ class ChildUpdateForm(ChildForm):
                       {}
                     </button>
                     """.format(
-                _("Update child")
+                _("Save")
             )
         )
 

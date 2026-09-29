@@ -1,0 +1,20 @@
+{% extends "backend/base.html" %}
+{% load i18n %}
+{% block page_title %}{% translate "Delete question" %}{% endblock %}
+
+{% block content %}
+<p><strong>{{ question.question_label }}</strong></p>
+{% if has_answers %}
+<p class="alert alert-warning">{% translate "This question has answers and cannot be deleted." %}</p>
+<p><a class="btn btn-default" href="{% url 'backend:question-list' %}">{% translate "Back" %}</a></p>
+{% else %}
+<p>{% translate "This question will be removed from all its courses. This cannot be undone." %}</p>
+<ul>{% for course in question.courses.all %}<li>{{ course }}</li>{% endfor %}</ul>
+<form method="post">{% csrf_token %}
+  <div class="form-group clearfix">
+    <button class="btn btn-danger" type="submit">{% translate "Delete" %}</button>
+    <div class="pull-right"><a class="btn btn-default" href="{% url 'backend:question-list' %}">{% translate "Cancel" %}</a></div>
+  </div>
+</form>
+{% endif %}
+{% endblock content %}

@@ -1,0 +1,31 @@
+.selection-actions {
+    padding: 16px;
+    margin-bottom: 20px;
+    border: 1px solid #dde3e8;
+    border-radius: 4px;
+    background: #f8fafb;
+}
+
+.selection-controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    padding-bottom: 12px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid #dde3e8;
+    color: #45535d;
+}
+
+.selection-controls .course-selection-heading {
+    margin-bottom: 0;
+}
+
+.selection-controls .btn-link {
+    padding: 0;
+    font-weight: normal;
+}
+
+.selection-operations {
+    margin: 0;
+}

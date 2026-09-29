@@ -1,0 +1,29 @@
+.course-questions {
+    margin-top: 32px;
+    margin-bottom: 32px;
+}
+.course-questions legend {
+    margin-bottom: 12px;
+}
+.course-questions-intro {
+    color: #52616b;
+    margin-bottom: 18px;
+    max-width: 850px;
+}
+.course-questions .checkbox {
+    margin: 0;
+    padding: 12px 0;
+    border-bottom: 1px solid #e2e7ea;
+}
+.course-questions .checkbox:last-child {
+    border-bottom: 0;
+}
+.course-questions .checkbox label {
+    display: block;
+}
+.course-questions .help-block {
+    margin: 5px 0 0;
+    color: #52616b;
+    font-size: 13px;
+    line-height: 1.5;
+}

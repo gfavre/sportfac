@@ -3,36 +3,53 @@
 
 {% block title %}{% translate "Create user" %} - {{ block.super }}{% endblock %}
 
-{% block page_title %}<i class="icon-user"></i>&nbsp;&nbsp;{% if is_instructor %}{% translate "Create instructor" %}{% elif is_manager %}{% translate "Create manager" %}{% else %}{% translate "Create user" %}{% endif %}{% endblock %}
+{% block page_title %}<i class="{% if is_instructor %}icon-star{% elif is_manager %}icon-hammer{% else %}icon-group{% endif %}"></i>&nbsp;&nbsp;{% if is_instructor %}{% translate "Create instructor" %}{% elif is_manager %}{% translate "Create manager" %}{% else %}{% translate "Create user" %}{% endif %}{% endblock %}
 
 {% block content %}
 
-{% addtoblock "js" %}
-{{ form.media }}
+{% addtoblock "css" %}
+{{ form.media.css }}
 {% if is_instructor %}
-<script src="{{ STATIC_URL }}js/vendor/moment-with-locales.min.js"></script>
-<script src="{{ STATIC_URL }}js/vendor/bootstrap-datetimepicker.min.js"></script>
-<script type="text/javascript">
-  $(function () {
-    $('.datetimepicker').datetimepicker({
-        language: '{{ LANGUAGE_CODE }}',
-        icons: {time: 'icon-clock',
-                date: 'icon-calendar',
-                up:   'icon-up-open',
-                down: 'icon-down-open'}
-        });
+<style>
+  #user-create-form select.is-empty { color: #737373; }
+  #user-create-form select option { color: #333; }
+</style>
+{% endif %}
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+{{ form.media.js }}
+{% if is_instructor %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('#user-create-form select:not([multiple])').forEach(function (select) {
+      const empty = Array.from(select.options).find(option => option.value === '');
+      if (!empty) return;
+      const placeholder = new Option('{% translate "Select…" %}', '');
+      placeholder.disabled = true;
+      placeholder.hidden = true;
+      const wasEmpty = select.value === '';
+      empty.textContent = '{% translate "Not specified" %}';
+      empty.hidden = select.required;
+      empty.disabled = select.required;
+      select.prepend(placeholder);
+      if (wasEmpty) placeholder.selected = true;
+      function updateEmptyState() {
+        select.classList.toggle('is-empty', select.value === '');
+      }
+      select.addEventListener('change', updateEmptyState);
+      updateEmptyState();
+    });
   });
 </script>
 {% endif %}
 {% endaddtoblock %}
 
-<form action="" method="post" class="form-horizontal">
+<form action="" method="post" id="user-create-form">
 {% crispy form %}
 
   <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-primary btn-large"><i class="icon-plus"></i>&nbsp;{% if is_instructor %}{% translate "Create instructor" %}{% elif is_manager %}{% translate "Create manager" %}{% else %}{% translate "Create user" %}{% endif %}</button>
-    </div>
+    <button type="submit" class="btn btn-primary">{% translate "Save" %}</button>
   </div>
 </form>
 

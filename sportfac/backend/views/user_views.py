@@ -9,6 +9,7 @@ from django.db.models import Case
 from django.db.models import Count
 from django.db.models import When
 from django.http import HttpResponseRedirect
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import urlencode
 from django.urls import reverse
@@ -42,6 +43,16 @@ from .mixins import BackendMixin
 from .mixins import ExcelResponseMixin
 from .mixins import FullBackendMixin
 from .mixins import ListReturnMixin
+
+
+class ValidateIBANView(BackendMixin, View):
+    def post(self, request, *args, **kwargs):
+        field = FamilyUser._meta.get_field("iban")
+        try:
+            value = field.clean(request.POST.get("iban", ""), None)
+        except ValidationError as error:
+            return JsonResponse({"valid": False, "message": error.messages[0]})
+        return JsonResponse({"valid": True, "message": _("IBAN format is valid") if value else ""})
 
 
 class MailUsersView(BackendMixin, View):

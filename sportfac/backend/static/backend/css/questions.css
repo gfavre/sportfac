@@ -1,0 +1,190 @@
+#question-form fieldset {
+    margin-bottom: 28px;
+}
+
+.question-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.question-warning > .icon-warning {
+    font-size: 20px;
+}
+
+.question-warning > p {
+    flex: 1 1 280px;
+    margin: 0;
+}
+
+.question-warning > .btn {
+    flex: 0 0 auto;
+    margin-left: auto;
+    align-self: center;
+}
+
+#question-courses {
+    max-height: 420px;
+    overflow-y: auto;
+    margin: 12px 0 0;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.course-selection-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+
+#course-filter-status {
+    padding: 10px 12px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid #ccc;
+    background: #f5f5f5;
+}
+
+#question-form [hidden],
+.answer-drag-preview [hidden] {
+    display: none !important;
+}
+
+/* The column headings already name these fields; retain labels for screen readers. */
+#choice-prices td .control-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+#choice-prices td .form-group {
+    margin-bottom: 0;
+}
+
+.answer-order {
+    white-space: nowrap;
+}
+
+.answer-removed td:not(:last-child) {
+    opacity: 0.45;
+}
+
+.answer-removal-note {
+    display: block;
+    max-width: 200px;
+    font-size: 12px;
+    color: #765b22;
+}
+
+.answer-drag-handle {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    border-radius: 3px;
+    box-shadow: none;
+    padding: 4px 8px;
+    color: #777;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    font-size: 18px;
+}
+
+.answer-drag-handle:hover {
+    color: #333;
+}
+
+.answer-drag-handle:focus-visible {
+    outline: 2px solid #66afe9;
+    outline-offset: 2px;
+}
+
+.answer-dragging {
+    background: #e8f3fa;
+    outline: 2px dashed #66afe9;
+}
+
+.answer-dragging > td > * {
+    opacity: 0.2;
+}
+
+.answer-drag-preview {
+    position: fixed;
+    z-index: 2000;
+    pointer-events: none;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    outline: 2px solid #66afe9;
+    table-layout: fixed;
+}
+
+.answer-drag-preview .control-label {
+    display: none;
+}
+
+.answer-drag-preview .form-group {
+    margin-bottom: 0;
+}
+
+.answer-dragging .answer-drag-handle {
+    cursor: grabbing;
+}
+#question-search-tools[hidden],
+#clear-question-search[hidden],
+#no-matching-questions[hidden] {
+    display: none;
+}
+
+.questions-subtitle {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #52616b;
+    max-width: 850px;
+    margin-bottom: 24px;
+}
+
+.questions-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px;
+    margin-bottom: 20px;
+    background: #f5f7f9;
+    border: 1px solid #dde3e8;
+    border-radius: 4px;
+}
+
+#question-search-tools {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 1 440px;
+    min-width: 0;
+}
+
+#question-search-tools .glyphicon {
+    color: #667783;
+}
+
+#question-search {
+    min-width: 0;
+    flex: 1;
+}
+
+#clear-question-search {
+    padding: 0 4px;
+    font-size: 22px;
+    line-height: 1;
+}

@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 4.10.0 - 2026-09-29
+### Added
+- Manage registration questions from the Activities menu: create, duplicate, assign to courses, configure priced answers and reorder them by drag and drop. Confirm changes affecting existing answers and prevent deletion of questions already answered.
+- Show live IBAN validation on backend user forms, using local server validation and French feedback.
+### Changed
+- Group course, child and user forms into clear sections with consistent field sizes, telephone icons, save controls and navigation icons. Apply the same layout when creating or editing users and instructors.
+- Harmonise backend lists, filters and bulk actions, with selection explicitly scoped to the current user page or filtered courses.
+- Show course questions with answer choices and prices to distinguish similar labels; add instant search, selection counts and clearer question-editing feedback.
+- Standardise French labels for administrators, administrators with limited access and children.
+### Fixed
+- Remove duplicate calendar scripts from instructor creation to restore the birth-date picker.
+### Removed
+- Remove KEPCHUP_NO_EXTRAS; registration questions now depend on course assignments in every deployment.
+
 ## 4.9.1 - 2026-09-25
 ### Fixed
 - Keep selected course rows readable with dark text and a selection outline, preserving visibility and participant-status colours.

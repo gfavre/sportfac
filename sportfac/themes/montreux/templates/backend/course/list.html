@@ -5,7 +5,6 @@
 
 {% block page_title %}
   {% translate "List courses" %}
-  <a href="{% url 'backend:course-create' %}" class="btn btn-success course-create-button"><i class="icon-plus"></i> {% translate "New course" %}</a>
 {% endblock page_title %}
 
 {% get_current_language as LANGUAGE_CODE %}
@@ -13,6 +12,8 @@
 
 
 {% block content %}
+  <a href="{% url 'backend:course-create' %}" class="btn btn-success"><i class="icon-plus" aria-hidden="true"></i> {% translate "New course" %}</a>
+  <hr />
   {% addtoblock "css" %}
     <link rel="stylesheet" type="text/css"
           href="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.css"/>
@@ -23,7 +24,7 @@
             src="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.js"></script>
 
     <script src="{% static 'backend/js/datatable-url-state.js' %}?v=2"></script>
-    <script src="{% static 'backend/js/course-actions.js' %}"></script>
+    <script src="{% static 'backend/js/course-actions.js' %}?v=2"></script>
 
     <script>
       $(function () {
