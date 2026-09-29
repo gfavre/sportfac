@@ -1,0 +1,127 @@
+.list-table-controls {
+    margin-bottom: 12px;
+}
+
+.list-table-controls .dt-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    float: none;
+}
+
+.list-table-controls .dt-buttons > .btn {
+    border-radius: 4px;
+    margin-left: 0;
+}
+
+.list-table-controls .dataTables_info {
+    padding-top: 4px;
+}
+
+.bill-filters {
+    margin-bottom: 16px;
+}
+
+.bill-filters > div {
+    margin-bottom: 12px;
+}
+
+.bill-filters #reportrange {
+    display: flex;
+    align-items: center;
+    height: 28px;
+    padding: 2px 8px;
+    border-color: #aaa;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+.bill-filters #reportrange span {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+    .list-table-controls > div + div {
+        margin-top: 10px;
+    }
+}
+.content :is(#users_wrapper, #registrations_wrapper) .dtsp-searchPanes {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+/* Bootstrap's row clearfix must not occupy a cell in the filter grid. */
+.content :is(#users_wrapper, #registrations_wrapper) .dtsp-searchPanes::before,
+.content :is(#users_wrapper, #registrations_wrapper) .dtsp-searchPanes::after {
+    display: none;
+}
+
+.content :is(#users_wrapper, #registrations_wrapper) .dtsp-searchPanes > .dtsp-searchPane {
+    min-width: 0 !important;
+    max-width: none !important;
+    width: 100%;
+    padding: 0;
+    margin: 0 !important;
+}
+.content :is(#users_wrapper, #registrations_wrapper) .dtsp-searchCont input.search:disabled {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: #333;
+    cursor: default;
+    font-weight: 600;
+    font-size: 14px;
+    height: auto;
+    padding: 8px 0;
+    opacity: 1;
+}
+
+.content :is(#users_wrapper, #registrations_wrapper) .dtsp-searchCont input.search:disabled::placeholder {
+    color: #333;
+    opacity: 1;
+}
+
+.content :is(#users_wrapper, #registrations_wrapper) .dtsp-panesContainer > .row:not(.dtsp-searchPanes) {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+}
+
+.content :is(#users_wrapper, #registrations_wrapper) .dtsp-clearAll {
+    margin-left: auto;
+    margin-right: 0;
+    padding: 4px 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    color: #337ab7;
+    font-weight: normal;
+    white-space: nowrap;
+}
+
+.content :is(#users_wrapper, #registrations_wrapper) .dtsp-panesContainer > .row:not(.dtsp-searchPanes)::before,
+.content :is(#users_wrapper, #registrations_wrapper) .dtsp-panesContainer > .row:not(.dtsp-searchPanes)::after {
+    display: none;
+}
+
+.content :is(#users_wrapper, #registrations_wrapper) .dtsp-title {
+    margin: 0;
+}
+
+.content :is(#users_wrapper, #registrations_wrapper) .dtsp-clearAll:hover {
+    color: #23527c;
+    text-decoration: underline;
+}
+
+@media (max-width: 767px) {
+    .content :is(#users_wrapper, #registrations_wrapper) .dtsp-searchPanes {
+        grid-template-columns: 1fr;
+    }
+}

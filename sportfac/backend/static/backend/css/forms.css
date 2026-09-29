@@ -1,5 +1,6 @@
 /* Align single-line text and number fields with the 28px selections. */
 .content input.form-control[type="text"],
+.content input.form-control[type="tel"],
 .content input.form-control[type="number"],
 .content input.form-control:not([type]) {
     height: 28px;
@@ -30,3 +31,14 @@
         background-image: none;
     }
 }
+
+.content .phone-input { position: relative; }
+.content .phone-input > .icon-phone {
+    position: absolute;
+    left: 9px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #737373;
+    pointer-events: none;
+}
+.content .phone-input > input.form-control { padding-left: 32px; }

@@ -9,10 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Remove the setting that hid course questions in Nyon–Prangins; question availability now depends on course assignments in every deployment.
 ### Added
+- Show live IBAN validation feedback on backend user forms, reusing server-side validation without external services.
 - Manage registration questions from the backend Activities menu: create, edit, duplicate, assign courses and configure answer prices. Questions with existing answers cannot be deleted; changing their type, choices or prices requires explicit confirmation of the impact.
 ### Fixed
+- Translate IBAN validation errors into French, including country, length and checksum errors.
+- Use the same grouped user and instructor forms when editing as when creating, retaining the separate password-change action.
+- Remove obsolete duplicate calendar scripts from instructor creation, leaving date fields initialized by their widget assets.
 - Match backend dropdown height, borders and arrows to searchable selections, reserving space for the arrow.
+- Align creation form icons with their navigation entries, including questions, user roles, children, functions and agendas.
 ### Changed
+- Standardise backend telephone inputs with a decorative phone icon, an example number and the mobile telephone keyboard.
+- Group child and user creation forms into clear sections, with consistent field widths and properly spaced save controls.
+- Standardise French role labels as « administrateur » and « administrateur à accès limité », and use « enfant » consistently for child management actions.
+- Harmonise backend tables, filters and selection controls. Separate bulk actions from selection, explicitly scoped to the current user page or filtered courses.
 - Clarify question response modes and defaults, show precise confirmation differences, and allow harmless answer reordering without confirmation. Add question search and clear pending-removal states.
 - Organise course forms into identification, organisation, publication and internal management sections, clarifying family-visible comments and question pricing.
 - Course creation and editing show registration questions in a dedicated section with checkboxes, answer choices and price adjustments to distinguish questions with the same wording.

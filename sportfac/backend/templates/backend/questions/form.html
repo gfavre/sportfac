@@ -2,7 +2,7 @@
 {% load crispy_forms_tags i18n sekizai_tags static %}
 {% block title %}{% translate "Registration question" %} - {{ block.super }}{% endblock %}
 
-{% block page_title %}{% if duplicate %}{% translate "Duplicate question" %}{% elif question.pk %}{% translate "Edit question" %}{% else %}{% translate "New question" %}{% endif %}{% endblock %}
+{% block page_title %}<i class="icon-help" aria-hidden="true"></i>&nbsp;&nbsp;{% if duplicate %}{% translate "Duplicate question" %}{% elif question.pk %}{% translate "Edit question" %}{% else %}{% translate "New question" %}{% endif %}{% endblock %}
 
 {% block content %}
 {% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/questions.css' %}?v=8">{% endaddtoblock %}

@@ -9,6 +9,7 @@ from . import views
 from .views.question_views import QuestionDeleteView
 from .views.question_views import QuestionEditView
 from .views.question_views import QuestionListView
+from .views.user_views import ValidateIBANView
 
 
 app_name = "backend"
@@ -189,6 +190,7 @@ buildings_patterns = [
 
 
 users_patterns = [
+    path("validate-iban/", ValidateIBANView.as_view(), name="validate-iban"),
     path("", view=views.UserListView.as_view(), name="user-list"),
     path("mail", view=views.MailUsersView.as_view(), name="mail-users"),
     path("export", view=views.UserExportView.as_view(), name="user-export"),

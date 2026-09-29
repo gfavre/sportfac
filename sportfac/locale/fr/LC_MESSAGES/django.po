@@ -3421,7 +3421,7 @@ msgstr "Tous les administrateurs"
 
 #: backend/templates/backend/navbar.html:175
 msgid "All restricted administrators"
-msgstr "Tous les administrateurs restreints"
+msgstr "Tous les administrateurs à accès limité"
 
 #: backend/templates/backend/navbar.html:181
 #: backend/templates/backend/user/list.html:201
@@ -3451,18 +3451,18 @@ msgstr "Nouvel enseignant"
 #: backend/templates/backend/user/child-list.html:94
 #: themes/nyon_prangins/templates/backend/navbar.html:136
 msgid "All students"
-msgstr "Tous les élèves"
+msgstr "Tous les enfants"
 
 #: backend/templates/backend/navbar.html:222
 #: backend/templates/backend/user/child-list.html:113
 #: themes/nyon_prangins/templates/backend/navbar.html:142
 msgid "New student"
-msgstr "Nouvel élève"
+msgstr "Nouvel enfant"
 
 #: backend/templates/backend/navbar.html:228
 #: backend/templates/backend/user/child-list.html:110
 msgid "Import students"
-msgstr "Importer des élèves"
+msgstr "Importer des enfants"
 
 #: backend/templates/backend/navbar.html:237
 msgid "All buildings"
@@ -4135,7 +4135,7 @@ msgstr "Supprimer l'enfant"
 #: backend/templates/backend/user/child-create.html:6
 #: registrations/forms.py:198
 msgid "Create child"
-msgstr "Nouvel enfant"
+msgstr "Créer un enfant"
 
 #: backend/templates/backend/user/child-detail.html:14
 #: backend/templates/backend/user/detail-instructor.html:78
@@ -4257,7 +4257,7 @@ msgstr ""
 #: backend/templates/backend/user/child-list.html:5
 #: backend/templates/backend/user/child-list.html:7
 msgid "List students"
-msgstr "Liste des élèves"
+msgstr "Liste des enfants"
 
 #: backend/templates/backend/user/child-list.html:68
 #: backend/templates/backend/user/instructor-list.html:104
@@ -4391,11 +4391,11 @@ msgstr "non"
 
 #: backend/templates/backend/user/child-list.html:176
 msgid "Child details"
-msgstr "Détail de l'élève"
+msgstr "Détails de l’enfant"
 
 #: backend/templates/backend/user/child-list.html:177
 msgid "Edit student"
-msgstr "Mettre à jour l'élève"
+msgstr "Modifier l’enfant"
 
 #: backend/templates/backend/user/child-list.html:182
 msgid "Review absences"
@@ -4403,7 +4403,7 @@ msgstr "Gestion des absences"
 
 #: backend/templates/backend/user/child-list.html:189
 msgid "Delete student"
-msgstr "Supprimer l'élève"
+msgstr "Supprimer l’enfant"
 
 #: backend/templates/backend/user/confirm_delete.html:12
 msgid "Warning - instructor"
@@ -4470,7 +4470,7 @@ msgstr "Créer un moniteur"
 #: backend/templates/backend/user/create.html:6
 #: backend/templates/backend/user/create.html:34
 msgid "Create manager"
-msgstr "Créer un gestionnaire"
+msgstr "Créer un administrateur"
 
 #: backend/templates/backend/user/detail-instructor.html:10
 #: backend/templates/backend/user/detail.html:10 profiles/forms.py:209
@@ -4606,7 +4606,7 @@ msgstr "Tous les administrateurs"
 
 #: backend/templates/backend/user/manager-list.html:136
 msgid "New manager"
-msgstr "Nouveau gestionnaire"
+msgstr "Nouvel administrateur"
 
 #: backend/templates/backend/user/manager-list.html:139
 msgid "Export managers"
@@ -4630,11 +4630,11 @@ msgstr "Enregistrer le mot de passe"
 
 #: backend/templates/backend/user/restricted-admin-list.html:5
 msgid "List restricted admins"
-msgstr "Liste des administrateurs restreints"
+msgstr "Liste des administrateurs à accès limité"
 
 #: backend/templates/backend/user/restricted-admin-list.html:7
 msgid "Restricted admins"
-msgstr "Administrateurs restreints"
+msgstr "Administrateurs à accès limité"
 
 #: backend/templates/backend/user/restricted-admin-list.html:64
 msgid "All admins"
@@ -5637,7 +5637,7 @@ msgstr ""
 
 #: profiles/forms.py:298
 msgid "Restricted manager"
-msgstr "Administrateur restreint"
+msgstr "Administrateur à accès limité"
 
 #: profiles/forms.py:300
 msgid "Grant access for this user on specific activities"
@@ -5646,8 +5646,8 @@ msgstr "Accorder à cet utilisateur l'accès à des activités spécifiques"
 #: profiles/forms.py:310
 msgid "Managed activities must be empty if not a restricted manager."
 msgstr ""
-"Les activités gérées doivent être vides s'il ne s'agit pas d'un gestionnaire "
-"restreint."
+"Les activités gérées doivent être vides s'il ne s'agit pas d'un administrateur "
+"à accès limité."
 
 #: profiles/forms.py:337
 msgid "Management access"
@@ -5789,7 +5789,7 @@ msgstr ""
 
 #: profiles/models.py:158
 msgid "Is restricted manager"
-msgstr "Est un administrateur restreint"
+msgstr "Est un administrateur à accès limité"
 
 #: profiles/models.py:159
 msgid "Is manager"
@@ -6067,7 +6067,7 @@ msgstr "Expiré"
 
 #: registrations/models.py:79
 msgid "Manager decision"
-msgstr "Décision du gestionnaire"
+msgstr "Décision de l’administrateur"
 
 #: registrations/models.py:80
 msgid "Instructor decision"
@@ -6760,7 +6760,7 @@ msgid ""
 msgstr ""
 "\n"
 "Meilleures salutations,\n"
-"Les gestionnaires de %(site_name)s\n"
+"Les administrateurs de %(site_name)s\n"
 
 #: templates/registration/password_reset_form.html:9
 msgid ""
@@ -7526,3 +7526,61 @@ msgstr "Définissez les informations complémentaires à demander aux familles, 
 
 msgid "Question, answer or course number…"
 msgstr "Question, réponse ou numéro de cours…"
+
+msgid "Clear filters"
+msgstr "Effacer les filtres"
+
+msgid "Actions on selected users"
+msgstr "Actions sur les utilisateurs sélectionnés"
+
+msgid "Selected users:"
+msgstr "Utilisateurs sélectionnés :"
+
+msgid "Select this page"
+msgstr "Sélectionner cette page"
+
+msgid "Deselect"
+msgstr "Désélectionner"
+
+msgid "Select filtered courses"
+msgstr "Sélectionner les cours filtrés"
+
+msgid "Child identity"
+msgstr "Identité de l’enfant"
+
+msgid "Family and contact"
+msgstr "Famille et contact"
+
+msgid "Identity"
+msgstr "Identité"
+
+msgid "Select…"
+msgstr "Sélectionner…"
+
+msgid "Not specified"
+msgstr "Non renseigné"
+
+msgid "IBAN format is valid"
+msgstr "Le format de l’IBAN est valide"
+
+#, python-format
+msgid "%(character)s is not a valid character for IBAN."
+msgstr "Le caractère « %(character)s » n’est pas autorisé dans un IBAN."
+
+#, python-format
+msgid "%(country_code)s IBANs must contain %(number)s characters."
+msgstr "Un IBAN %(country_code)s doit contenir %(number)s caractères."
+
+#, python-format
+msgid "%(country_code)s is not a valid country code for IBAN."
+msgstr "Le code pays « %(country_code)s » n’est pas valide pour un IBAN."
+
+#, python-format
+msgid "%(country_code)s IBANs are not allowed in this field."
+msgstr "Les IBAN du pays %(country_code)s ne sont pas acceptés dans ce champ."
+
+msgid "Not a valid IBAN."
+msgstr "Cet IBAN n’est pas valide. Vérifiez les caractères saisis."
+
+msgid "Emergency contact phone"
+msgstr "Téléphone en cas d’urgence"

@@ -9,7 +9,7 @@
 
 {% block main-content %}
 {% addtoblock "css" %}
-  <link rel="stylesheet" href="{% static 'backend/css/forms.css' %}?v=4">
+  <link rel="stylesheet" href="{% static 'backend/css/forms.css' %}?v=5">
   <style>
     .content .dtsp-panesContainer {
       background-color: #fff;
@@ -20,6 +20,7 @@
 
 <script src="{{ STATIC_URL }}js/vendor/mvpready-core.js"></script>
 <script src="{{ STATIC_URL }}js/vendor/mvpready-admin.js"></script>
+<script src="{% static 'backend/js/phone-inputs.js' %}?v=1"></script>
 
 <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="{{ STATIC_URL }}js/vendor/excanvas.compiled.js"></script><![endif]-->
 <script src="{{ STATIC_URL }}js/vendor/flot/jquery.flot.min.js"></script>

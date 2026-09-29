@@ -7,8 +7,14 @@ window.initializeCourseActions = function (table) {
             ? count + (count === 1 ? ' cours sélectionné' : ' cours sélectionnés')
             : 'Sélectionnez des cours dans le tableau';
         toolbar.querySelectorAll('.needs-select').forEach(function (button) { button.disabled = count === 0; });
+        toolbar.querySelector('[data-deselect]').disabled = count === 0;
+        toolbar.querySelector('[data-select-filtered]').disabled = table.rows({search: 'applied'}).count() === 0;
     }
-    table.on('select deselect', updateSelection);
+    toolbar.querySelector('[data-select-filtered]').addEventListener('click', function () {
+        table.rows({search: 'applied'}).select();
+    });
+    toolbar.querySelector('[data-deselect]').addEventListener('click', function () { table.rows().deselect(); });
+    table.on('select deselect draw', updateSelection);
     updateSelection();
     $(toolbar).find('form').on('submit', function (event) {
         if (!table.rows({selected: true}).count()) { event.preventDefault(); return; }

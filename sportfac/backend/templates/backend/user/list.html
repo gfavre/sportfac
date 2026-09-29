@@ -9,15 +9,15 @@
 {% block content %}
   {% addtoblock "css" %}
     <link rel="stylesheet" type="text/css"
-          href="https://cdn.datatables.net/v/dt/dt-1.10.24/b-1.7.0/r-2.2.7/sc-2.0.3/sp-1.2.2/sl-1.3.2/datatables.min.css"/>
+          href="https://cdn.datatables.net/v/bs/dt-1.10.24/b-1.7.0/r-2.2.7/sc-2.0.3/sp-1.2.2/sl-1.3.2/datatables.min.css"/>
 
+    <link rel="stylesheet" href="{% static 'backend/css/list-controls.css' %}?v=5">
+    <link rel="stylesheet" href="{% static 'backend/css/selection-actions.css' %}?v=1">
   {% endaddtoblock %}
 
   {% addtoblock "js" %}
-    <!--<script src="{% static 'js/vendor/DataTables-2020/datatables.js' %}"></script>-->
-    <!--<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.24/b-1.7.0/r-2.2.7/sc-2.0.3/sp-1.1.1/sl-1.3.2/datatables.js"></script>-->
     <script type="text/javascript"
-            src="https://cdn.datatables.net/v/dt/dt-1.10.24/b-1.7.0/r-2.2.7/sc-2.0.3/sp-1.2.2/sl-1.3.2/datatables.js"></script>
+            src="https://cdn.datatables.net/v/bs/dt-1.10.24/b-1.7.0/r-2.2.7/sc-2.0.3/sp-1.2.2/sl-1.3.2/datatables.js"></script>
 
     <script src="{% static 'backend/js/datatable-url-state.js' %}?v=2"></script>
     <script>
@@ -28,42 +28,8 @@
             "headers": {"Accept-language": "{{ request.LANGUAGE_CODE }}"},
             "rowId": 'id'
           },
-          buttons: [
-            {
-              className: 'btn btn-default',
-              extend: 'selectAll',
-              init: function (api, node, config) {
-                $(node).removeClass('dt-button')
-              },
-              tag: 'a',
-              text: "{% translate 'Select all' %}",
-            },
-            {
-              className: 'btn btn-default',
-              enabled: false,
-              extend: 'selectNone',
-              init: function (api, node, config) {
-                $(node).removeClass('dt-button')
-              },
-              tag: 'a',
-              text: "{% translate 'Deselect all' %}",
-            },
-            {
-              action: function (e, dt, node, config) {
-                let ids = dt.rows({selected: true}).data().pluck('id').toArray();
-                $('input[name="data"]').val(JSON.stringify(ids));
-                $('form.mail').submit();
-              },
-              className: 'btn btn-secondary',
-              enabled: false,
-              init: function (api, node, config) {
-                $(node).removeClass('dt-button')
-              },
-              tag: 'a',
-              text: '<i class="icon-mail"></i>&nbsp; {% translate "Send email to selected users" %}',
-            },
-          ],
-          dom: 'PBfrlitiplB',
+          dom: 'P<"row list-table-controls"<"col-sm-6"l><"col-sm-6"f>><"user-selection-slot">rt' +
+            '<"row list-table-controls"<"col-sm-6"i><"col-sm-6"p>>',
           columns: [
             {data: "id"},
             {data: 'email'},
@@ -169,7 +135,7 @@
                 _: '{% translate 'Filters selected' %} - %d',
                 0: '{% translate "No filter selected" %}'
               },
-              clearMessage: '{% translate "Clear All" %}'
+              clearMessage: '{% translate "Clear filters" %}'
             },
             select: {
               'rows': {
@@ -188,14 +154,28 @@
           serverSide: true,
         });
 
-        table.on('select deselect', function (){
-          let selectedRows = table.rows({selected: true}).count();
-          table.button(0, 1).enable(selectedRows > 0);
-          table.button(1, 1).enable(selectedRows > 0);
-
-          table.button(0, 2).enable(selectedRows > 0);
-          table.button(1, 2).enable(selectedRows > 0);
+        const selection = document.getElementById('user-selection');
+        table.table().container().querySelector('.user-selection-slot').appendChild(selection);
+        function updateUserSelection() {
+          const count = table.rows({selected: true, page: 'current'}).count();
+          selection.querySelector('[data-selection-count]').textContent = count;
+          selection.querySelector('[data-deselect]').disabled = count === 0;
+          selection.querySelector('[type=submit]').disabled = count === 0;
+          selection.querySelector('[data-select-page]').disabled = table.rows({page: 'current'}).count() === 0;
+        }
+        selection.querySelector('[data-select-page]').addEventListener('click', function () {
+          table.rows({page: 'current'}).select();
         });
+        selection.querySelector('[data-deselect]').addEventListener('click', function () {
+          table.rows().deselect();
+        });
+        selection.querySelector('form').addEventListener('submit', function (event) {
+          const ids = table.rows({selected: true, page: 'current'}).data().pluck('id').toArray();
+          if (!ids.length) { event.preventDefault(); return; }
+          this.querySelector('[name=data]').value = JSON.stringify(ids);
+        });
+        table.on('select deselect draw', updateUserSelection);
+        updateUserSelection();
 
       });
     </script>
@@ -211,11 +191,17 @@
   {% endif %}
   <hr class="hidden-print"/>
 
-  <div class="hidden-print">
-    <form class="mail" method="post">{% csrf_token %}
-      <input type="hidden" name="data" value=''/>
+  <section id="user-selection" class="selection-actions hidden-print" aria-label="{% translate 'Actions on selected users' %}">
+    <div class="selection-controls">
+      <strong role="status" aria-live="polite">{% translate "Selected users:" %} <span data-selection-count>0</span></strong>
+      <button type="button" class="btn btn-link" data-select-page>{% translate "Select this page" %}</button>
+      <button type="button" class="btn btn-link" data-deselect disabled>{% translate "Deselect" %}</button>
+    </div>
+    <form class="mail selection-operations" method="post">{% csrf_token %}
+      <input type="hidden" name="data" value="">
+      <button class="btn btn-primary" type="submit" disabled><i class="icon-mail" aria-hidden="true"></i> {% translate "Send email to selected users" %}</button>
     </form>
-  </div>
+  </section>
 
   <table class="table" id="users">
     <thead>
