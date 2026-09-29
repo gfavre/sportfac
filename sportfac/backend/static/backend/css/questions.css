@@ -188,3 +188,22 @@
     font-size: 22px;
     line-height: 1;
 }
+
+#question-list .question-row-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    white-space: nowrap;
+}
+
+#question-list .question-row-actions .btn {
+    padding: 0;
+    border: 0;
+    font-size: inherit;
+    line-height: inherit;
+    vertical-align: baseline;
+}

@@ -7,7 +7,7 @@
 {% endblock page_title %}
 
 {% block content %}
-{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/questions.css' %}?v=11">{% endaddtoblock %}
+{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/questions.css' %}?v=13">{% endaddtoblock %}
 {% addtoblock "js" %}<script src="{% static 'backend/js/question-list.js' %}?v=1"></script>{% endaddtoblock %}
 <p class="questions-subtitle">{% translate "Define the additional information to ask families for, then assign these questions to the relevant courses." %}</p>
 <div class="questions-toolbar">
@@ -31,7 +31,7 @@
       <td>{% for course in question.courses.all %}<a href="{{ course.get_update_url }}">{{ course.number }}</a>{% if not forloop.last %}, {% endif %}{% empty %}{% translate "No courses assigned" %}{% endfor %}</td>
       <td>{{ question.answer_count }}</td>
       <td>
-        <ul class="list-inline">
+        <ul class="question-row-actions">
           <li class="text-nowrap"><a class="btn btn-sm" href="{% url 'backend:question-update' question.pk %}"><i class="icon-edit" aria-hidden="true"></i>&nbsp;{% translate "Edit" %}</a></li>
           <li class="text-nowrap"><a class="btn btn-sm" href="{% url 'backend:question-duplicate' question.pk %}"><i class="icon-docs" aria-hidden="true"></i>&nbsp;{% translate "Duplicate" %}</a></li>
           {% if not question.answer_count %}<li class="text-nowrap"><a class="btn btn-sm" href="{% url 'backend:question-delete' question.pk %}"><i class="icon-trash" aria-hidden="true"></i>&nbsp;{% translate "Delete" %}</a></li>{% endif %}
