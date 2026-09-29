@@ -58,4 +58,5 @@ django-impersonate==1.9.1  # Impersonate users
 django-simple-sso==1.2.0
 
 # Sanitize HTML mail content and inline formatting.
-bleach[css]==6.2.0
+# Production still runs Python 3.8; Bleach 6.2 requires Python >=3.9.
+bleach[css]==6.1.0

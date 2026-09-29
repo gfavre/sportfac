@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+### Fixed
+- Pin Bleach to 6.1.0 for Python 3.8 production deployments; 6.2.0 prevented dependency installation and Django startup.
+
 ## 4.10.0 - 2026-09-29
 ### Added
 - Manage registration questions from the Activities menu: create, duplicate, assign to courses, configure priced answers and reorder them by drag and drop. Confirm changes affecting existing answers and prevent deletion of questions already answered.

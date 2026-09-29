@@ -4,6 +4,15 @@ Living list of known technical debt for the sportfac/Kepchup project. Not a task
 tracker — just a reference so decisions and their context aren't re-derived from
 scratch each time. Update in place as items are resolved or new ones are found.
 
+## Production Python compatibility
+
+- Production deployments including Rojalets and Vevey run Python 3.8, while the
+  local IDE interpreter is Python 3.9. Validate dependency installation against
+  Python 3.8 before releases. Bleach 6.2.0 broke deployment because it requires
+  Python >=3.9; retain 6.1.0 until production runtimes are upgraded. Deployment
+  scripts must stop on dependency-installation errors rather than continue into
+  migrations and restart services with an incomplete environment.
+
 ## Celery execution in registration tests
 
 - `sportfac.settings.test` does not enable eager Celery execution, but
