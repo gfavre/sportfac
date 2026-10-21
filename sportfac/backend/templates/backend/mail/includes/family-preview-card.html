@@ -1,0 +1,27 @@
+{% load mail_tags %}
+<section class="instructor-mail-card">
+  <header class="instructor-mail-recipient">
+    <div><h3>{{ recipient.full_name }}</h3><span>{{ recipient.email }}</span></div>
+    <span class="instructor-mail-course">Cours {{ registration.course.number }} — {{ registration.course.activity.name }}{% if COURSE_GROUPS and registration.course.group_name %} · Groupe {{ registration.course.group_name }}{% endif %}</span>
+  </header>
+  <div class="instructor-mail-content">
+    <div class="instructor-mail-message">
+      <p class="family-mail-child">Pour {{ registration.child.full_name }}</p>
+      <div class="family-mail-envelope"><span>Expéditeur :</span> {{ from_email }}{% if bcc_email %}<br><span>Copie cachée :</span> {% for email in bcc_email %}{{ email }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}</div>
+      <span class="instructor-mail-label">Objet du mail</span>
+      <p class="instructor-mail-subject">{{ subject }}</p>
+      <details class="instructor-mail-preview" open>
+        <summary>Aperçu du mail</summary>
+        {% if is_html %}
+          <iframe title="Aperçu du mail pour {{ registration.child.full_name }}" sandbox="" referrerpolicy="no-referrer" srcdoc="{{ body|force_escape }}"></iframe>
+        {% else %}
+          <pre>{{ body|force_escape }}</pre>
+        {% endif %}
+      </details>
+    </div>
+    <aside class="instructor-mail-attachments" aria-label="Pièces jointes prévues">
+      <h4>Pièces jointes prévues</h4>
+      {% if attachments %}<ul>{% for attachment in attachments %}<li><a href="{{ attachment|fileurl }}">{{ attachment|filename }}</a></li>{% endfor %}</ul>{% else %}<p class="family-mail-empty">Aucune pièce jointe.</p>{% endif %}
+    </aside>
+  </div>
+</section>

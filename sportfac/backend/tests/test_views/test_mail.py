@@ -403,6 +403,36 @@ class MailConfirmationParticipantsViewTest(BackendTestBase):
         self.assertEqual(response.context_data["total"], len(self.registrations))
         self.assertEqual(response.context_data["has_prev"], False)
 
+    def test_confirmation_identifies_family_child_and_send_scope(self):
+        self.client.force_login(self.manager)
+        with mock.patch("mailer.tasks.send_mail.delay") as send:
+            response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        send.assert_not_called()
+        registration = response.context["registration"]
+        self.assertContains(response, registration.child.family.email)
+        self.assertContains(response, registration.child.first_name)
+        self.assertContains(response, "10 convocations prévues")
+        self.assertContains(response, "Aucune pièce jointe")
+        self.assertContains(response, "Confirmer l’envoi")
+        self.assertContains(response, "Envoyer les 10 convocations aux familles")
+
+    def test_multiple_courses_show_total_and_keep_course_navigation(self):
+        other = CourseFactory()
+        RegistrationFactory(course=other)
+        self.client.force_login(self.manager)
+        params = {"c": [self.course.pk, other.pk], "selected": other.pk}
+        response = self.client.get(reverse("backend:courses-mail-confirmation"), params)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["delivery_total"], 11)
+        self.assertEqual(response.context["total"], 1)
+        self.assertContains(response, "11 convocations prévues")
+        self.assertContains(response, "Message 1 / 1 pour ce cours")
+        self.assertContains(response, f"c={self.course.pk}")
+        self.assertContains(response, f"c={other.pk}")
+        self.assertContains(response, f"selected={self.course.pk}")
+        self.assertContains(response, "pas seulement le message affiché")
+
     def test_browse(self):
         request = self.factory.get(self.url, {"number": 2})
         request.user = self.manager

@@ -109,12 +109,28 @@ class MailCourseInstructorsView(BackendMixin, mailer_views.MailCourseInstructors
         return reverse("backend:course-detail", kwargs=self.kwargs)
 
 
+class ConvocationPreviewMixin:
+    template_name = "backend/mail/convocation-preview.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["delivery_total"] = (
+            sum(course.participants.count() for course in self.courses)
+            if hasattr(self, "courses")
+            else context["total"]
+        )
+        return context
+
+
 class MailConfirmationParticipantsView(
-    BackendMixin, ParticipantsMixin, TemplatedEmailMixin, mailer_views.BrowsableMailPreviewView
+    ConvocationPreviewMixin,
+    BackendMixin,
+    ParticipantsMixin,
+    TemplatedEmailMixin,
+    mailer_views.BrowsableMailPreviewView,
 ):
     subject_template = "mailer/course_begin_subject.txt"
     message_template = "mailer/course_begin.txt"
-    template_name = "backend/mail/preview-browse.html"
     edit_url = None
     group_mails = False
     mail_type = "convocation"
@@ -127,11 +143,14 @@ class MailConfirmationParticipantsView(
 
 
 class MailConfirmationCoursesView(
-    BackendMixin, ParticipantsMixin, TemplatedEmailMixin, mailer_views.BrowsableMailPreviewView
+    ConvocationPreviewMixin,
+    BackendMixin,
+    ParticipantsMixin,
+    TemplatedEmailMixin,
+    mailer_views.BrowsableMailPreviewView,
 ):
     subject_template = "mailer/course_begin_subject.txt"
     message_template = "mailer/course_begin.txt"
-    template_name = "backend/mail/preview-browse.html"
     edit_url = None
     group_mails = False
     mail_type = "convocation"

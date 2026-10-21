@@ -1,0 +1,38 @@
+{% extends "backend/base.html" %}
+{% load i18n sekizai_tags static %}
+{% block title %}Envoyer les convocations aux familles — {{ block.super }}{% endblock %}
+
+{% block page_title %}Envoyer les convocations aux familles{% endblock %}
+
+{% block content %}
+  {% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/instructor-mail.css' %}?v=3">{% endaddtoblock %}
+  <div class="instructor-mail">
+    <div class="instructor-mail-overview">
+      <strong>{{ delivery_total }} convocation{{ delivery_total|pluralize }} prévue{{ delivery_total|pluralize }}</strong>
+      <p>Un mail personnalisé par enfant et par cours. Parcourez les messages pour vérifier les destinataires et les informations avant l’envoi.</p>
+    </div>
+    <h2 class="instructor-mail-section-title">Destinataires et contenu</h2>
+    {% if courses %}
+      <nav class="family-mail-courses" aria-label="Cours à prévisualiser">
+        {% for tab_course in courses %}<a class="instructor-mail-course{% if tab_course == course %} family-mail-current{% endif %}"{% if tab_course == course %} aria-current="page"{% endif %} href="{{ base_url }}&amp;selected={{ tab_course.pk }}">{{ tab_course.short_name }}</a>{% endfor %}
+      </nav>
+    {% endif %}
+    {% if to_email %}
+      <nav class="family-mail-navigation" aria-label="Messages du cours">
+        {% if has_prev %}<a href="{% if base_url %}{{ base_url }}&amp;selected={{ course.pk }}&amp;{% else %}?{% endif %}number={{ prev }}">← Message précédent</a>{% endif %}
+        <span>Message {{ mailidentifier }} / {{ total }} pour ce cours</span>
+        {% if has_next %}<a href="{% if base_url %}{{ base_url }}&amp;selected={{ course.pk }}&amp;{% else %}?{% endif %}number={{ next }}">Message suivant →</a>{% endif %}
+      </nav>
+      {% include "backend/mail/includes/family-preview-card.html" with body=message %}
+    {% else %}<p class="alert alert-info">Aucun destinataire pour ce cours.</p>{% endif %}
+    <form class="instructor-mail-send" action="" method="post">{% csrf_token %}
+      <h2 class="instructor-mail-section-title">Confirmer l’envoi</h2>
+      <p>L’envoi concerne {{ delivery_total }} convocation{{ delivery_total|pluralize }} pour tous les cours sélectionnés, pas seulement le message affiché.</p>
+      <div class="form-group instructor-mail-submit">
+        <button type="submit" class="btn btn-primary"{% if not delivery_total %} disabled{% endif %}><i class="icon-mail" aria-hidden="true"></i> {% if delivery_total == 1 %}Envoyer la convocation à la famille{% else %}Envoyer les {{ delivery_total }} convocations aux familles{% endif %}</button>
+        {% if edit_url %}<a class="btn btn-default" href="{{ edit_url }}">Modifier le mail</a>{% endif %}
+        {% if cancel_url %}<a class="btn btn-default" href="{{ cancel_url }}">Annuler</a>{% endif %}
+      </div>
+    </form>
+  </div>
+{% endblock content %}
