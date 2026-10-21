@@ -1,19 +1,12 @@
-{% extends "backend/base.html" %}
-{% load crispy_forms_tags i18n sekizai_tags %}
+{% extends "backend/creation-base.html" %}
+{% load crispy_forms_tags i18n %}
 
 {% block title %}{% translate "Create child" %} - {{ block.super }}{% endblock %}
 
-{% block page_title %}<i class="icon-child"></i>&nbsp;&nbsp;{% translate "Create child" %}{% endblock %}
+{% block page_title %}<i class="icon-child" aria-hidden="true"></i>&nbsp;&nbsp;{% translate "Create child" %}{% endblock %}
 
-{% block content %}
-  {% crispy form %}
+{% block creation_fields %}{% crispy form %}{% endblock %}
 
-  {% addtoblock "js" %}
-  {{ form.media.js }}
-  {% endaddtoblock %}
+{% block creation_label %}{% translate "Créer l’enfant" %}{% endblock %}
 
-  {% addtoblock "css" %}
-  {{ form.media.css }}
-  {% endaddtoblock %}
-
-{% endblock content %}
+{% block creation_cancel_url %}{% if family %}{{ family.get_backend_url }}{% else %}{% url 'backend:child-list' %}{% endif %}{% endblock %}

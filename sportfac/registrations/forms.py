@@ -200,6 +200,7 @@ class ChildForm(forms.ModelForm):
         )
 
     def __init__(self, *args, **kwargs):
+        include_actions = kwargs.pop("include_actions", True)
         super().__init__(*args, **kwargs)
         if not settings.KEPCHUP_USE_BUILDINGS:
             del self.fields["building"]
@@ -246,7 +247,8 @@ class ChildForm(forms.ModelForm):
                     *(["is_blacklisted"] if settings.KEPCHUP_USE_BLACKLISTS else []),
                 )
             )
-        self.helper.layout.append(Div(self.get_submit_button(), css_class="form-group"))
+        if include_actions:
+            self.helper.layout.append(Div(self.get_submit_button(), css_class="form-group"))
 
 
 class ChildUpdateForm(ChildForm):

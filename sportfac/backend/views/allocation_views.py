@@ -4,6 +4,7 @@ import urllib.parse
 from collections import OrderedDict
 from tempfile import mkdtemp
 
+from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
@@ -12,13 +13,16 @@ from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.utils.timezone import now
 from django.utils.translation import gettext as _
-from django.views.generic import CreateView, DeleteView, ListView, UpdateView
+from django.views.generic import CreateView
+from django.views.generic import DeleteView
+from django.views.generic import ListView
+from django.views.generic import UpdateView
 
 from activities.forms import AllocationAccountForm
 from activities.models import AllocationAccount
-from dateutil.relativedelta import relativedelta
 from payments.models import DatatransTransaction
 
+from .mixins import CreationFormLayoutMixin
 from .mixins import FullBackendMixin
 
 
@@ -130,7 +134,7 @@ class AllocationAccountListView(FullBackendMixin, ListView):
     template_name = "backend/allocations/list.html"
 
 
-class AllocationAccountCreateView(SuccessMessageMixin, FullBackendMixin, CreateView):
+class AllocationAccountCreateView(CreationFormLayoutMixin, SuccessMessageMixin, FullBackendMixin, CreateView):
     model = AllocationAccount
     form_class = AllocationAccountForm
     success_url = reverse_lazy("backend:allocation-list")

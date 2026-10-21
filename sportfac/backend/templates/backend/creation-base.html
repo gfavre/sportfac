@@ -1,0 +1,21 @@
+{% extends "backend/base.html" %}
+{% load crispy_forms_tags i18n sekizai_tags static %}
+
+{% block content %}
+  {% addtoblock "css" %}
+    {{ form.media.css }}
+    <link rel="stylesheet" href="{% static 'backend/css/paper-prepare.css' %}?v=4">
+  {% endaddtoblock %}
+  {% addtoblock "js" %}{{ form.media.js }}{% endaddtoblock %}
+  <div class="paper-prepare">
+    {% block creation_intro %}{% endblock %}
+    <form method="post" enctype="multipart/form-data" class="paper-prepare-form" {% block creation_form_attributes %}{% endblock %}>
+      {% csrf_token %}
+      {% block creation_fields %}<div class="paper-prepare-card">{% crispy form %}</div>{% endblock %}
+      <div class="form-group paper-prepare-actions">
+        <button type="submit" class="btn btn-success"><i class="icon-ok" aria-hidden="true"></i> {% block creation_label %}{% translate "Create" %}{% endblock %}</button>
+        <a class="btn btn-default" href="{% block creation_cancel_url %}{% url 'backend:home' %}{% endblock %}">{% translate "Cancel" %}</a>
+      </div>
+    </form>
+  </div>
+{% endblock content %}

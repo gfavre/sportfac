@@ -45,7 +45,7 @@
         {{ form.send_confirmation|as_crispy_field }}
       </section>
       <div class="form-group paper-prepare-actions">
-        <button type="submit" class="btn btn-success" id="registration-submit">Créer l’inscription</button>
+        <button type="submit" class="btn btn-success" id="registration-submit"><i class="icon-ok" aria-hidden="true"></i> Créer l’inscription</button>
         <a href="{% url 'backend:registration-list' %}" class="btn btn-default">{% translate "Cancel" %}</a>
       </div>
     </form>

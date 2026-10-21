@@ -40,6 +40,7 @@ from registrations.models import Registration
 from ..forms import ChildImportForm
 from ..tasks import import_children
 from .mixins import BackendMixin
+from .mixins import CreationFormLayoutMixin
 from .mixins import ExcelResponseMixin
 from .mixins import FullBackendMixin
 from .mixins import ListReturnMixin
@@ -334,10 +335,15 @@ class ChildListView(ChildMixin, ListView):
         return Child.objects.none()
 
 
-class ChildCreateView(FullBackendMixin, SuccessMessageMixin, CreateView):
+class ChildCreateView(CreationFormLayoutMixin, FullBackendMixin, SuccessMessageMixin, CreateView):
     model = Child
     form_class = ChildForm
     template_name = "backend/user/child-create.html"
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["include_actions"] = False
+        return kwargs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -347,6 +353,7 @@ class ChildCreateView(FullBackendMixin, SuccessMessageMixin, CreateView):
 
     def get_initial(self):
         initial = super().get_initial()
+        initial["language"] = Child.LANGUAGE.F
         if "user" in self.kwargs:
             initial = initial.copy()
             initial["family"] = get_object_or_404(FamilyUser, pk=self.kwargs["user"])

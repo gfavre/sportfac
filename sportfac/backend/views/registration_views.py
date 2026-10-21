@@ -57,6 +57,7 @@ from registrations.views.utils import BillPdfDownloadMixin
 from registrations.views.utils import PaymentMixin
 
 from .mixins import BackendMixin
+from .mixins import CreationFormLayoutMixin
 from .mixins import ExcelResponseMixin
 from .mixins import FullBackendMixin
 from .mixins import ListReturnMixin
@@ -766,7 +767,7 @@ class TransportDetailView(ListReturnMixin, FullBackendMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
-class TransportCreateView(SuccessMessageMixin, FullBackendMixin, CreateView):
+class TransportCreateView(CreationFormLayoutMixin, SuccessMessageMixin, FullBackendMixin, CreateView):
     model = Transport
     form_class = TransportForm
     template_name = "backend/registration/transport-create.html"

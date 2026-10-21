@@ -1,27 +1,12 @@
-{% extends "backend/base.html" %}
-{% load crispy_forms_tags i18n sekizai_tags %}
+{% extends "backend/creation-base.html" %}
+{% load crispy_forms_tags i18n %}
 
 {% block title %}{% translate "Create a new activity" %} - {{ block.super }}{% endblock %}
 
-{% block page_title %}<i class="icon-soccer-ball"></i>&nbsp;&nbsp;{% translate "Create a new activity" %}{% endblock %}
+{% block page_title %}<i class="icon-soccer-ball" aria-hidden="true"></i>&nbsp;&nbsp;{% translate "Create a new activity" %}{% endblock %}
 
-{% block content %}
+{% block creation_fields %}{% crispy form %}{% endblock %}
 
-<form action="" method="post" class="form-horizontal">
-  {% addtoblock "css" %}
-  {{ form.media.css }}
-  {% endaddtoblock %}
+{% block creation_label %}{% translate "Create activity" %}{% endblock %}
 
-  {% addtoblock "js" %}
-  {{ form.media.js }}
-  {% endaddtoblock %}
-
-  {% crispy form %}
-  <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-success btn-large"><i class="icon-plus"></i>&nbsp;{% translate 'Create activity' %}</button>
-    </div>
-  </div>
-</form>
-
-{% endblock content %}
+{% block creation_cancel_url %}{% url 'backend:activity-list' %}{% endblock %}

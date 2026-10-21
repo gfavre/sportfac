@@ -1,19 +1,24 @@
 import datetime
 
+from dateutil.relativedelta import relativedelta
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import CreateView, DeleteView, ListView, UpdateView
+from django.views.generic import CreateView
+from django.views.generic import DeleteView
+from django.views.generic import ListView
+from django.views.generic import UpdateView
 
 from absences.models import Session
 from activities.models import CoursesInstructors
-from dateutil.relativedelta import relativedelta
-from payroll.forms import FunctionForm, PayrollExportForm
+from payroll.forms import FunctionForm
+from payroll.forms import PayrollExportForm
 from payroll.models import Function
 
+from .mixins import CreationFormLayoutMixin
 from .mixins import FullBackendMixin
 
 
@@ -25,7 +30,7 @@ class FunctionListView(FullBackendMixin, ListView):
     template_name = "backend/payroll/function_list.html"
 
 
-class FunctionCreateView(FullBackendMixin, SuccessMessageMixin, CreateView):
+class FunctionCreateView(CreationFormLayoutMixin, FullBackendMixin, SuccessMessageMixin, CreateView):
     form_class = FunctionForm
     template_name = "backend/payroll/function_create.html"
     success_url = reverse_lazy("backend:function-list")

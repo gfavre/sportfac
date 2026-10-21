@@ -5,6 +5,9 @@ import logging
 import os
 from tempfile import mkdtemp
 
+from crispy_forms.layout import Div
+from crispy_forms.layout import Fieldset
+from crispy_forms.layout import Layout
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
@@ -35,6 +38,7 @@ from registrations.models import ExtraInfo
 from ..forms import SessionForm
 from ..utils import AbsencePDFRenderer
 from .mixins import BackendMixin
+from .mixins import CreationFormLayoutMixin
 from .mixins import ListReturnMixin
 
 
@@ -62,12 +66,27 @@ class ActivityListView(BackendMixin, ActivityMixin, ListView):
     template_name = "backend/activity/list.html"
 
 
-class ActivityCreateView(SuccessMessageMixin, BackendMixin, CreateView):
+class ActivityCreateView(CreationFormLayoutMixin, SuccessMessageMixin, BackendMixin, CreateView):
     model = Activity
     form_class = ActivityForm
     success_url = reverse_lazy("backend:activity-list")
     success_message = _('<a href="%(url)s" class="alert-link">Activity (%(number)s)</a> has been created.')
     template_name = "backend/activity/create.html"
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        identification = [
+            "type",
+            Div(Div("name", css_class="col-sm-6"), Div("number", css_class="col-sm-6"), css_class="row"),
+        ]
+        if settings.KEPCHUP_ENABLE_ALLOCATION_ACCOUNTS:
+            identification.append("allocation_account")
+        form.helper.layout = Layout(
+            Fieldset(_("Identification de l’activité"), *identification),
+            Fieldset(_("Présentation aux familles"), "description"),
+            Fieldset(_("Informations complémentaires"), "informations"),
+        )
+        return form
 
     def form_valid(self, form):
         response = super().form_valid(form)

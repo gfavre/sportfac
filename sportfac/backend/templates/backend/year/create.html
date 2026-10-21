@@ -1,34 +1,18 @@
-{% extends "backend/base.html" %}
-{% load floppyforms i18n sekizai_tags %}
-
+{% extends "backend/creation-base.html" %}
+{% load crispy_forms_tags i18n %}
 {% block title %}{% translate "Configure a new period of activity" %} - {{ block.super }}{% endblock %}
 
-{% block page_title %}<i class="icon-split"></i>&nbsp;&nbsp;{% translate "Configure a new period of activity" %}{% endblock %}
+{% block page_title %}<i class="icon-split" aria-hidden="true"></i>&nbsp;&nbsp;{% translate "Configure a new period of activity" %}{% endblock %}
 
-{% block content %}
+{% block creation_fields %}
+  {{ form.non_field_errors }}
+  <fieldset><legend>Dates de la période</legend><div class="row"><div class="col-sm-6">{{ form.start_date|as_crispy_field }}</div><div class="col-sm-6">{{ form.end_date|as_crispy_field }}</div></div></fieldset>
+  <fieldset><legend>Données à reprendre</legend>{{ form.copy_activities|as_crispy_field }}{{ form.copy_children|as_crispy_field }}</fieldset>
+{% endblock creation_fields %}
 
-{% addtoblock "js" %}
-{{ form.media }}
-{% endaddtoblock %}
+{% block creation_label %}{% translate "Create period" %}{% endblock %}
 
-{% form form using %}
-{% block formconfig %}{% formconfig row using "floppyforms/rows/bootstrap-sm-3.html" %}{% endblock %}
-
-<form action="" method="post" class="form-horizontal">{% csrf_token %}
-  {% formrow form.start_date %}
-  {% formrow form.end_date %}
-  {% formrow form.copy_activities %}
-  {% formrow form.copy_children %}
-
-  <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-success btn-large"><i class="icon-plus"></i>&nbsp;{% translate 'Create period' %}</button>
-    </div>
-  </div>
-</form>
-{% endform %}
-
-{% endblock content %}
+{% block creation_cancel_url %}{% url 'backend:year-list' %}{% endblock %}
 
 {% block extra_js %}
 {{ block.super }}

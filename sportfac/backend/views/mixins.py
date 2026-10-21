@@ -66,6 +66,21 @@ class ListReturnMixin:
         return context
 
 
+class CreationFormLayoutMixin:
+    """Use labels above fields in creation templates without changing update forms."""
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        if hasattr(form, "helper"):
+            form.helper.form_tag = False
+            form.helper.form_class = ""
+            form.helper.label_class = ""
+            form.helper.field_class = ""
+            form.helper.form_group_wrapper_class = ""
+            form.helper.include_media = False
+        return form
+
+
 class BackendMixin(LoginRequiredMixin, UserPassesTestMixin):
     """Mixin for backend. Ensure that the user is logged in and is a sports manager"""
 

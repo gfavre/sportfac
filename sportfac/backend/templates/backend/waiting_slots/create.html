@@ -1,12 +1,18 @@
-{% extends "backend/base.html" %}
-{% load crispy_forms_tags i18n sekizai_tags %}
-
-
+{% extends "backend/creation-base.html" %}
+{% load crispy_forms_tags i18n %}
 {% block title %}{% translate "Add to waiting list" %} - {{ block.super }}{% endblock %}
 
-{% block page_title %}{% translate "Add to waiting list" %}{% endblock %}
+{% block page_title %}<i class="icon-hourglass" aria-hidden="true"></i>&nbsp;&nbsp;{% translate "Add to waiting list" %}{% endblock %}
 
-{% block content %}
-  {% crispy form %}
-  {% addtoblock "js" %}{{ form.media }}{% endaddtoblock %}
-{% endblock content %}
+{% block creation_fields %}
+  <div class="paper-prepare-card">
+    <h3>{{ form.initial.course.short_name }}</h3>
+    {{ form.non_field_errors }}
+    {{ form.course }}{{ form.course.errors }}
+    {{ form.child|as_crispy_field }}
+  </div>
+{% endblock creation_fields %}
+
+{% block creation_label %}{% translate "Add to waiting list" %}{% endblock %}
+
+{% block creation_cancel_url %}{{ form.initial.course.get_backend_url }}{% endblock %}

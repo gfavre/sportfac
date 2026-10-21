@@ -11,6 +11,7 @@
 
 {% block content %}
   {% addtoblock "css" %}
+    <link rel="stylesheet" href="{% static 'backend/css/paper-prepare.css' %}?v=4">
     <link href="{% static 'js/vendor/fullcalendar-5/lib/main.css' %}" rel="stylesheet"/>
     <style>
       .fc .fc-button {
@@ -96,6 +97,8 @@
 
         // Function to open the modal with event data for editing
         function openModal(event) {
+          $('#save-event-label', $modal).text('{% translate "Save" %}');
+          $('#remove-event', $modal).show();
           $('.modal-title', $modal).text(moment(event.start).format('dddd Do MMM YYYY, HH:mm') + '-' + moment(event.end).format('HH:mm'));
           $('#id_places', $modal).val(event.extendedProps.places);
           $("#id_appointment_type", $modal).val(event.extendedProps.appointment_type);
@@ -106,6 +109,8 @@
 
         // Function to open the modal for creating a new slot
         function openModalForNewSlot(info) {
+          $('#save-event-label', $modal).text('Créer le créneau');
+          $('#remove-event', $modal).hide();
           // Set the modal title to the selected start and end times
           $('.modal-title', $modal).text(moment(info.start).format('dddd Do MMM YYYY, HH:mm') + '-' + moment(info.end).format('HH:mm'));
 
@@ -183,19 +188,21 @@
             <h4 class="modal-title">{% translate "Edit slot" %}</h4>
           </div>
           <div class="modal-body">
-            <form method="post" class="form-horizontal" action="">{% csrf_token %}
+            <div class="paper-prepare">
+            <form method="post" class="paper-prepare-form" action="">{% csrf_token %}
+              <div class="paper-prepare-card">
               <div class="form-group">
-                <label class="control-label col-sm-4" for="id_places">{% translate "Number of places" %}</label>
-                <div class="col-sm-8">
+                <label class="control-label" for="id_places">{% translate "Number of places" %}</label>
+                <div>
                   <input type="number" name="places" value="" min="0"
                          required="" id="id_places" class="form-control">
                   <span id="help-places" class="help-block"></span>
                 </div>
               </div>
               <div class="form-group">
-                <label class="control-label col-sm-4"
+                <label class="control-label"
                        for="id_appointment_type">{% translate "Type of appointment" %}</label>
-                <div class="col-sm-8">
+                <div>
                   <select name="appointment_type" id="id_appointment_type" class="form-control">
                     <option value="pickup">{% translate "Pickup" %}</option>
                     <option value="return">{% translate "Return" %}</option>
@@ -205,17 +212,14 @@
                 </div>
               </div>
 
-              <div class="row">
-                <div class="col-md-6">
-                  <button type="button" class="btn btn-danger" id="remove-event" data-dismiss="modal"><i
-                      class="icon-trash"></i> {% translate "Remove slot" %}</button>
-                </div>
-                <div class="col-md-6 text-right">
-                  <button type="button" class="btn btn-default" data-dismiss="modal">{% translate "Close" %}</button>
-                  <button type="submit" class="btn btn-success" id="save-event">{% translate "Save" %}</button>
-                </div>
+              </div>
+              <div class="form-group paper-prepare-actions">
+                  <button type="submit" class="btn btn-success" id="save-event"><i class="icon-ok" aria-hidden="true"></i> <span id="save-event-label">{% translate "Save" %}</span></button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal">{% translate "Cancel" %}</button>
+                  <button type="button" class="btn btn-danger creation-delete" id="remove-event" data-dismiss="modal"><i class="icon-trash"></i> {% translate "Remove slot" %}</button>
               </div>
             </form>
+            </div>
           </div>
         </div>
       </div>

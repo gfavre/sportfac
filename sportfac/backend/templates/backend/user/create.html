@@ -1,7 +1,7 @@
 {% extends "backend/base.html" %}
-{% load crispy_forms_tags i18n sekizai_tags %}
+{% load crispy_forms_tags i18n sekizai_tags static %}
 
-{% block title %}{% translate "Create user" %} - {{ block.super }}{% endblock %}
+{% block title %}{% if is_instructor %}{% translate "Create instructor" %}{% elif is_manager %}{% translate "Create manager" %}{% else %}{% translate "Create user" %}{% endif %} - {{ block.super }}{% endblock %}
 
 {% block page_title %}<i class="{% if is_instructor %}icon-star{% elif is_manager %}icon-hammer{% else %}icon-group{% endif %}"></i>&nbsp;&nbsp;{% if is_instructor %}{% translate "Create instructor" %}{% elif is_manager %}{% translate "Create manager" %}{% else %}{% translate "Create user" %}{% endif %}{% endblock %}
 
@@ -9,6 +9,7 @@
 
 {% addtoblock "css" %}
 {{ form.media.css }}
+<link rel="stylesheet" href="{% static 'backend/css/paper-prepare.css' %}?v=4">
 {% if is_instructor %}
 <style>
   #user-create-form select.is-empty { color: #737373; }
@@ -45,12 +46,14 @@
 {% endif %}
 {% endaddtoblock %}
 
-<form action="" method="post" id="user-create-form">
-{% crispy form %}
-
-  <div class="form-group">
-    <button type="submit" class="btn btn-primary">{% translate "Save" %}</button>
+<div class="paper-prepare">
+  <form action="" method="post" id="user-create-form" class="paper-prepare-form">
+    {% crispy form %}
+    <div class="form-group paper-prepare-actions">
+      <button type="submit" class="btn btn-success"><i class="icon-ok" aria-hidden="true"></i> {% if is_instructor %}Créer le moniteur{% elif is_manager %}Créer le gestionnaire{% else %}Créer l’utilisateur{% endif %}</button>
+      <a class="btn btn-default" href="{% if is_instructor %}{% url 'backend:instructor-list' %}{% elif is_manager %}{% url 'backend:manager-list' %}{% else %}{% url 'backend:user-list' %}{% endif %}">{% translate "Cancel" %}</a>
+    </div>
+  </form>
   </div>
-</form>
 
 {% endblock content %}

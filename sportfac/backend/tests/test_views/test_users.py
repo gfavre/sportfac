@@ -40,6 +40,25 @@ class UsersViewsTests(BackendTestBase):
         url = reverse("backend:manager-create")
         self.generic_test_rights(url)
 
+    def test_creation_pages_use_consistent_sections_and_role_specific_actions(self):
+        self.tenant_client.force_login(self.manager)
+        cases = (
+            ("user-create", "user-list", "Créer l’utilisateur"),
+            ("manager-create", "manager-list", "Créer le gestionnaire"),
+            ("instructor-create", "instructor-list", "Créer le moniteur"),
+        )
+        for page, destination, label in cases:
+            with self.subTest(page=page):
+                response = self.tenant_client.get(reverse("backend:" + page))
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, 'class="paper-prepare-form"')
+                self.assertContains(response, 'class="form-group paper-prepare-actions"')
+                self.assertContains(response, "paper-prepare.css")
+                self.assertContains(response, label)
+                self.assertContains(response, 'href="' + reverse("backend:" + destination) + '"')
+                content = response.content.decode()
+                self.assertLess(content.rindex("</fieldset>"), content.index('type="submit"'))
+
     def test_create_instructor_datepicker_assets(self):
         url = reverse("backend:instructor-create")
         self.generic_test_rights(url)

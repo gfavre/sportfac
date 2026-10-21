@@ -1,20 +1,10 @@
-{% extends "backend/base.html" %}
-{% load crispy_forms_tags i18n sekizai_tags %}
+{% extends "backend/creation-base.html" %}
+{% load crispy_forms_tags i18n %}
 
 {% block title %}{% translate "Create transport" %} - {{ block.super }}{% endblock %}
 
-{% block page_title %}<i class="icon-bus"></i>&nbsp;&nbsp;{% translate "Create transport" %}{% endblock %}
+{% block page_title %}<i class="icon-bus" aria-hidden="true"></i>&nbsp;&nbsp;{% translate "Create transport" %}{% endblock %}
 
-{% block content %}
-  <form action="" method="post" class="form-horizontal">
-    {% crispy form %}
+{% block creation_label %}{% translate "Create transport" %}{% endblock %}
 
-    <div class=" form-group">
-      <div class="col-sm-offset-2 col-sm-10">
-        <button type="submit" class="btn btn-success ">{% translate 'Create transport' %}</button>
-        &nbsp;
-        <a href="{% url 'backend:transport-list' %}" class="btn btn-default">{% translate 'Cancel' %}</a>
-      </div>
-    </div>
-  </form>
-{% endblock content %}
+{% block creation_cancel_url %}{% url 'backend:transport-list' %}{% endblock %}

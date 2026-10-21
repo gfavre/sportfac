@@ -1,23 +1,12 @@
-{% extends "backend/base.html" %}
-{% load floppyforms i18n sekizai_tags %}
+{% extends "backend/creation-base.html" %}
+{% load crispy_forms_tags i18n %}
 
 {% block title %}{% translate "Create a new teacher" %} - {{ block.super }}{% endblock %}
 
-{% block page_title %}<i class="icon-adult"></i>&nbsp;&nbsp;{% translate "Create a new teacher" %}{% endblock %}
+{% block page_title %}<i class="icon-adult" aria-hidden="true"></i>&nbsp;&nbsp;{% translate "Create a new teacher" %}{% endblock %}
 
-{% block content %}
+{% block creation_fields %}<div class="paper-prepare-card">{{ form|crispy }}</div>{% endblock %}
 
-{% addtoblock "js" %}
-{{ form.media }}
-{% endaddtoblock %}
+{% block creation_label %}{% translate "Create teacher" %}{% endblock %}
 
-<form action="" method="post" class="form-horizontal">{% csrf_token %}
-  {% include "backend/teacher/form.html" %}
-  <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-success btn-large"><i class="icon-plus"></i>&nbsp;{% translate 'Create teacher' %}</button>
-    </div>
-  </div>
-</form>
-
-{% endblock content %}
+{% block creation_cancel_url %}{% url 'backend:teacher-list' %}{% endblock %}

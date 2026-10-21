@@ -1,15 +1,18 @@
 {% extends "backend/base.html" %}
-{% load crispy_forms_tags i18n mail_tags %}
+{% load crispy_forms_tags i18n mail_tags sekizai_tags static %}
 
 {% block title %}{% translate "New email" %} - {{ block.super }}{% endblock %}
 
 {% block page_title %}<i class="icon icon-mail"></i>&nbsp;&nbsp;{% translate "New email" %}{% endblock %}
 
 {% block content %}
-  <form action="" method="post" enctype="multipart/form-data">
+  {% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/paper-prepare.css' %}?v=4">{% endaddtoblock %}
+  <div class="paper-prepare">
+  <form action="" method="post" enctype="multipart/form-data" class="paper-prepare-form">
     {% csrf_token %}
 
     {% if recipients %}
+    <fieldset><legend>{% translate "To" %}</legend>
       <div class="form-group">
         <label class="control-label" for="id_recipients">{% translate "To" %}</label>
         <div class=" field-recipient">
@@ -20,13 +23,16 @@
           </p>
         </div>
       </div>
+    </fieldset>
     {% endif %}
 
     {{ form.non_field_errors }}
 
+    <fieldset><legend>Message</legend>
     {{ form.subject|as_crispy_field }}
     {{ form.message|as_crispy_field }}
-    <hr>
+    </fieldset>
+    <fieldset><legend>Pièces jointes</legend>
     {{ form.attachments|as_crispy_field }}
 
     {% if archive and archive.attachments.count %}
@@ -44,8 +50,9 @@
         </ul>
       </div>
     {% endif %}
-    <hr>
+    </fieldset>
 
+    {% if form.send_copy or form.copy_all_instructors or form.copy_all_admins %}<fieldset><legend>Copies du message</legend>{% endif %}
     {% if form.send_copy %}
       {{ form.send_copy|as_crispy_field }}
     {% endif %}
@@ -55,12 +62,13 @@
     {% if form.copy_all_admins %}
       {{ form.copy_all_admins|as_crispy_field }}
     {% endif %}
+    {% if form.send_copy or form.copy_all_instructors or form.copy_all_admins %}</fieldset>{% endif %}
 
 
 
-     <div class="form-group">
-      <button type="submit" class="btn btn-success btn-large">
-        <i class="icon-check"></i>&nbsp;{% translate 'Save and preview' %}
+     <div class="form-group paper-prepare-actions">
+      <button type="submit" class="btn btn-success">
+        <i class="icon-ok" aria-hidden="true"></i>&nbsp;{% translate 'Save and preview' %}
       </button>
       {% if prev %}&nbsp;
         <a href="{{ prev }}" class="btn btn-default">{% translate 'Cancel' %}</a>
@@ -69,4 +77,5 @@
       {% endif %}
     </div>
   </form>
+  </div>
 {% endblock content %}

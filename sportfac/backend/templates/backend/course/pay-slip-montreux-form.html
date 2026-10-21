@@ -1,58 +1,23 @@
-{% extends "backend/base.html" %}
-{% load crispy_forms_tags floppyforms i18n sekizai_tags static %}
-
+{% extends "backend/creation-base.html" %}
+{% load crispy_forms_tags i18n sekizai_tags %}
 {% block title %}{% translate "Create pay slip" %} - {{ block.super }}{% endblock %}
 
-{% block page_title %}{% translate "Create pay slip" %}{% endblock %}
+{% block page_title %}<i class="icon-money" aria-hidden="true"></i>&nbsp;&nbsp;{% translate "Create pay slip" %}{% endblock %}
 
-{% block content %}
-  <form action="" class="form-horizontal" method="post">{% csrf_token %}
-    <div class="form-group">
-      <label class="control-label col-sm-2" for="id_instructor">{% translate "Instructor" %}</label>
-      <div class=" col-sm-10">
-        <p class="form-control-static" id="id_instructor">
-          {{ instructor.full_name }}
-        </p>
-      </div>
+{% block creation_fields %}
+  {{ form.non_field_errors }}
+  <fieldset><legend>Moniteur et cours</legend>
+    <dl><dt>{% translate "Instructor" %}</dt><dd>{{ instructor.full_name }}</dd><dt>{% translate "Course" %}</dt><dd>{{ course.short_name }}</dd></dl>
+  </fieldset>
+  <fieldset><legend>Rémunération</legend>{{ form.function|as_crispy_field }}<div class="row"><div class="col-sm-6">{{ form.rate_mode|as_crispy_field }}</div><div class="col-sm-6">{{ form.rate|as_crispy_field }}</div></div></fieldset>
+  <fieldset><legend>{% translate "Dates" %}</legend>
+    <div class="input-group input-daterange" id="datepicker">
+      <input type="text" class="form-control" name="{{ form.start_date.name }}" aria-label="Date de début" value="{% if form.is_bound %}{{ form.start_date.value|default_if_none:'' }}{% else %}{{ form.start_date.value|date:'d.m.Y' }}{% endif %}">
+      <div class="input-group-addon">{% translate "to" %}</div>
+      <input type="text" class="form-control" name="{{ form.end_date.name }}" aria-label="Date de fin" value="{% if form.is_bound %}{{ form.end_date.value|default_if_none:'' }}{% else %}{{ form.end_date.value|date:'d.m.Y' }}{% endif %}">
     </div>
-    <div class="form-group">
-      <label class="control-label col-sm-2" for="id_course">{% translate "Course" %}</label>
-      <div class=" col-sm-10">
-        <p class="form-control-static" id="id_course">
-          {{ course.short_name }}
-        </p>
-      </div>
-    </div>
-    {% comment %}{{ form }}
-    {% crispy form %}{% endcomment %}
-    {{ form.function|as_crispy_field }}
-    {{ form.rate_mode|as_crispy_field }}
-
-    {{ form.rate|as_crispy_field }}
-
-    <div class="form-group">
-      <label class="control-label col-sm-2" for="id_course">{% translate "Dates" %}</label>
-      <div class=" col-sm-10">
-        <div class="input-group input-daterange" id="datepicker">
-          <input type="text" class="form-control" name="{{ form.start_date.name }}"
-                 value="{{ form.start_date.value|date:"j.m.Y" }}">
-          <div class="input-group-addon">{% translate "to" %}</div>
-          <input type="text" class="form-control" name="{{ form.end_date.name }}"
-                 value="{{ form.end_date.value|date:"j.m.Y" }}">
-        </div>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <div class="col-sm-offset-2 col-sm-10">
-        <button type="submit" class="btn btn-success btn-large"><i
-            class="icon-doc-text"></i> {% translate 'Create pay slip' %}</button>
-        &nbsp;
-        <a href="{{ course.get_backend_url }}" class="btn  btn-default">{% translate 'Cancel' %}</a>
-      </div>
-    </div>
-  </form>
-
+    {{ form.start_date.errors }}{{ form.end_date.errors }}
+  </fieldset>
   {% addtoblock "js" %}
     <script src="https://unpkg.com/bootstrap-datepicker@1.9.0/dist/js/bootstrap-datepicker.min.js"></script>
     <script src="https://unpkg.com/bootstrap-datepicker@1.9.0/dist/locales/bootstrap-datepicker.fr.min.js"
@@ -69,4 +34,9 @@
     </script>
   {% endaddtoblock %}
 
-{% endblock content %}
+
+{% endblock creation_fields %}
+
+{% block creation_label %}{% translate "Create pay slip" %}{% endblock %}
+
+{% block creation_cancel_url %}{{ course.get_backend_url }}{% endblock %}

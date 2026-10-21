@@ -6,6 +6,7 @@
 
 {% block content %}
 {% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/questions.css' %}?v=8">{% endaddtoblock %}
+{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/paper-prepare.css' %}?v=4">{% endaddtoblock %}
 {% addtoblock "js" %}<script src="{% static 'backend/js/questions.js' %}?v=7"></script>{% endaddtoblock %}
 {% if duplicate %}<p class="alert alert-info">{% translate "This copy has no courses assigned. The original question and its answers are kept." %}</p>{% endif %}
 {% if form.has_answers %}
@@ -15,7 +16,8 @@
   <a class="btn btn-default" href="{% url 'backend:question-duplicate' question.pk %}">{% translate "Duplicate question" %}</a>
 </div>
 {% endif %}
-<form method="post" id="question-form">
+<div class="paper-prepare">
+<form method="post" id="question-form" class="paper-prepare-form">
   {% csrf_token %}
   {{ form.non_field_errors }}
   <fieldset>
@@ -82,9 +84,10 @@
       <span id="no-matching-courses" hidden> — {% translate "No courses match these filters." %}</span>
     </p>
   </fieldset>
-  <div class="form-group clearfix">
-    <button class="btn btn-primary" type="submit">{% translate "Save" %}</button>
-    <div class="pull-right"><a class="btn btn-default" href="{% url 'backend:question-list' %}">{% translate "Cancel" %}</a></div>
+  <div class="form-group paper-prepare-actions">
+    <button class="btn btn-success" type="submit"><i class="icon-ok" aria-hidden="true"></i> {% if question.pk and not duplicate %}{% translate "Save" %}{% else %}Créer la question{% endif %}</button>
+    <a class="btn btn-default" href="{% url 'backend:question-list' %}">{% translate "Cancel" %}</a>
   </div>
 </form>
+</div>
 {% endblock content %}

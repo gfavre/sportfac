@@ -1,19 +1,10 @@
-{% extends "backend/base.html" %}
+{% extends "backend/creation-base.html" %}
 {% load crispy_forms_tags i18n %}
 
 {% block title %}{% translate "Create a new allocation account" %} - {{ block.super }}{% endblock %}
 
-{% block page_title %}<i class="icon-list-bullet"></i>&nbsp;&nbsp;{% translate "Create a new allocation account" %}{% endblock %}
+{% block page_title %}<i class="icon-list-bullet" aria-hidden="true"></i>&nbsp;&nbsp;{% translate "Create a new allocation account" %}{% endblock %}
 
-{% block content %}
+{% block creation_label %}{% translate "Create account" %}{% endblock %}
 
-<form action="" method="post" class="form-horizontal">{% csrf_token %}
-  {% crispy form %}
-  <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-success btn-large"><i class="icon-plus"></i>&nbsp;{% translate 'Create account' %}</button>
-    </div>
-  </div>
-</form>
-
-{% endblock content %}
+{% block creation_cancel_url %}{% url 'backend:allocation-list' %}{% endblock %}
