@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.test import RequestFactory
@@ -5,6 +7,7 @@ from django.test import override_settings
 
 from backend.views.registration_views import GenerateBibsView
 from profiles.tests.factories import FamilyUserFactory
+from registrations.forms import AssignBibsTransportForm
 from registrations.models import Transport
 from registrations.tests.factories import RegistrationFactory
 from sportfac.utils import TenantTestCase
@@ -14,6 +17,32 @@ from .base import fake_registrations_open_middleware
 
 @override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False)
 class GenerateBibsViewTests(TenantTestCase):
+    def test_assignment_supports_python38_field_names(self):
+        class Python38FieldName(str):
+            # CI uses newer Python; reproduce the missing Python 3.8 string API.
+            @property
+            def removeprefix(self):
+                raise AttributeError("'str' object has no attribute 'removeprefix'")
+
+        def assignment_form(*args, **kwargs):
+            form = AssignBibsTransportForm(*args, **kwargs)
+            form.changed_data = [Python38FieldName(name) for name in form.changed_data]
+            return form
+
+        registration = RegistrationFactory(transport=None)
+        car = Transport.objects.create(name="Bus", bib_prefix=3)
+        request = self.request(
+            FamilyUserFactory(is_manager=True),
+            "post",
+            {"action": "assign", f"child_{registration.child_id}": str(car.pk)},
+        )
+        with patch("backend.views.registration_views.AssignBibsTransportForm", side_effect=assignment_form):
+            response = GenerateBibsView.as_view()(request)
+        self.assertEqual(response.status_code, 302)
+        registration.refresh_from_db()
+        self.assertEqual(registration.transport_id, car.pk)
+        self.assertEqual(registration.child.bib_number, "")
+
     def test_ready_population_collapses_list_but_allows_review(self):
         RegistrationFactory(transport=Transport.objects.create(name="Bus", bib_prefix=3))
         response = GenerateBibsView.as_view()(self.request(FamilyUserFactory(is_manager=True)))

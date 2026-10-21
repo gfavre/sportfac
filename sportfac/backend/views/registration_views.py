@@ -675,7 +675,8 @@ class GenerateBibsView(FullBackendMixin, FormView):
                 car_id = form.cleaned_data[name]
                 if car_id:
                     # Changing only transport must not trigger billing/capacity side effects of save().
-                    Registration.objects.filter(child_id=int(name.removeprefix("child_"))).update(
+                    # Production still uses Python 3.8, which has no str.removeprefix.
+                    Registration.objects.filter(child_id=int(name[len("child_") :])).update(
                         transport_id=int(car_id), modified=now()
                     )
                     count += 1

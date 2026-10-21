@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Fixed
+- Fix car assignment on the bib preparation page under Python 3.8 by replacing the unsupported `str.removeprefix` call.
+
 ## 4.12.0 - 2026-10-21
 
 ### Changed
