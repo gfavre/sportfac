@@ -1,3 +1,5 @@
+import mimetypes
+
 from django import forms
 from django.utils import timezone
 
@@ -47,11 +49,12 @@ class BatchForm(forms.Form):
     subject = forms.CharField(label="Objet du mail", max_length=255)
     message = forms.CharField(label="Texte du mail", widget=forms.Textarea, initial=DEFAULT_MESSAGE)
     supplement = forms.FileField(
-        label="Descriptif des niveaux (PDF)",
+        label="Descriptif des niveaux (image ou PDF)",
         required=False,
+        widget=forms.ClearableFileInput(attrs={"accept": "image/*,application/pdf"}),
         help_text=(
             "Facultatif : joignez le descriptif des niveaux de ski ou de snowboard. "
-            "Il sera envoyé aux parents avec le diplôme."
+            "Image ou PDF, 10 Mo maximum. Il sera joint au mail avec le diplôme, sans conversion."
         ),
     )
 
@@ -79,14 +82,18 @@ class BatchForm(forms.Form):
         return data
 
     def clean_supplement(self):
-        return validate_pdf(self.cleaned_data.get("supplement"))
+        return validate_supplement(self.cleaned_data.get("supplement"))
 
 
-def validate_pdf(upload):
+def validate_supplement(upload):
     if upload:
-        if upload.size > 10 * 1024 * 1024 or upload.read(5) != b"%PDF-":
-            raise forms.ValidationError("Choisissez un PDF de moins de 10 Mo.")
+        if upload.size > 10 * 1024 * 1024:
+            raise forms.ValidationError("Choisissez une image ou un PDF de 10 Mo maximum.")
+        content_type = mimetypes.guess_type(upload.name)[0] or ""
+        is_pdf = upload.read(5) == b"%PDF-"
         upload.seek(0)
+        if not is_pdf and not content_type.startswith("image/"):
+            raise forms.ValidationError("Choisissez une image ou un PDF de 10 Mo maximum.")
     return upload
 
 
@@ -99,7 +106,7 @@ class DiplomaForm(forms.ModelForm):
             "last_name": "Nom",
             "evaluation": "Texte sur le diplôme",
             "place": "Lieu",
-            "instructors": "Moniteurs",
+            "instructors": "Prénom du moniteur de la dernière session",
         }
         help_texts = {
             "evaluation": (

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 ### Fixed
+- Remove the season, date and course number footer from diplomas.
+- Diploma preparation uses only the first name of the instructor assigned to the latest course session, leaving it blank if none is assigned instead of listing all course instructors.
+- Accept image files as well as PDFs for diploma level descriptions, attaching them to family emails in their original format (10 MiB maximum).
 - Clarify that course visibility controls publication in the family catalogue; hidden courses remain listed in the administration.
 - Render diplomas with local Chromium/Playwright, as already used for invoices, removing PhantomJsCloud's request size limit. Assemble print batches from the individual PDFs instead of rendering them again.
 - Instructor emails now discard invalid BCC entries with a warning instead of blocking delivery; administrator copies use email addresses rather than user UUIDs when no archive address is configured.

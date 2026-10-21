@@ -102,7 +102,9 @@ def create_batch(data, actor):
         logo=diploma_logo(),
     )
     diplomas = []
-    for course in data["courses"].select_related("activity").prefetch_related("instructors", "participants__child"):
+    for course in data["courses"].select_related("activity").prefetch_related("participants__child"):
+        last_session = course.sessions.select_related("instructor").order_by("-date").first()
+        instructor_name = last_session.instructor.first_name if last_session and last_session.instructor else ""
         levels = dict(
             ChildActivityLevel.objects.filter(activity_id=course.activity_id).values_list("child_id", "after_level")
         )
@@ -123,7 +125,7 @@ def create_batch(data, actor):
                     level=level,
                     evaluation=diploma_evaluation(course.activity.name, level),
                     place=data["place"] or str(course.place),
-                    instructors=", ".join(person.get_full_name() for person in course.instructors.all()),
+                    instructors=instructor_name,
                 )
             )
     Diploma.objects.bulk_create(diplomas)

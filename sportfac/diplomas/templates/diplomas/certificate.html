@@ -24,8 +24,7 @@
   td { color: #ed0000; font: 20pt DiplomaText, cursive; line-height: 1.15; overflow-wrap: anywhere; }
   td.long { font-size: 16pt; }
   td .value { position: relative; top: 0.37em; }
-  .year, th, td, td .value, footer { background-color: white; }
-  footer { margin-top: 4mm; font-size: 7pt; text-align: right; }
+  .year, th, td, td .value { background-color: white; }
 </style></head><body>
 {% for diploma in diplomas %}
 <section class="certificate">
@@ -44,7 +43,6 @@
     <tr><th>Évaluation :</th><td{% if diploma.evaluation|length > 48 %} class="long"{% endif %}><span class="value">{{ diploma.evaluation }}</span></td></tr>
     <tr><th>Moniteur·rice :</th><td{% if diploma.instructors|length > 48 %} class="long"{% endif %}><span class="value">{{ diploma.instructors }}</span></td></tr>
   </table>
-  <footer>{{ batch.season }} · {{ batch.issued_on|date:"d.m.Y" }} · Cours {{ diploma.course_number }}</footer>
 </section>
 {% endfor %}
 </body></html>
