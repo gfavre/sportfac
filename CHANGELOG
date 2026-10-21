@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Fixed
+- Allow backend staff to edit canceled registrations and change their status, persisting cancellation details and refreshing places and attendance. Replace the confusing status pane with an active/all/canceled selector and prevent duplicate reactivations.
 - Fix car assignment on the bib preparation page under Python 3.8 by replacing the unsupported `str.removeprefix` call.
 
 ## 4.12.0 - 2026-10-21

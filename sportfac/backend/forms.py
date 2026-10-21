@@ -328,7 +328,13 @@ class RegistrationForm(CourseSelectMixin, forms.ModelForm):
         widget=ChildWidget(),
     )
 
-    status = forms.ChoiceField(label=_("Status"), choices=Registration.STATUS)
+    status = forms.ChoiceField(
+        label=_("Status"),
+        choices=Registration.STATUS,
+        help_text=_(
+            "Confirmez une inscription annulée pour la réactiver, ou choisissez le statut annulé pour l’annuler."
+        ),
+    )
 
     class Meta:
         model = Registration
@@ -336,6 +342,12 @@ class RegistrationForm(CourseSelectMixin, forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        child_id = self.data.get("child") if self.is_bound else self.instance.child_id
+        if self.instance.course_id and str(child_id) == str(self.instance.child_id):
+            # Keep the existing course editable even if age/year eligibility changed.
+            self.fields["course"].queryset = self.fields["course"].queryset | Course.objects.filter(
+                pk=self.instance.course_id
+            )
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.form_class = "form-horizontal"
@@ -352,15 +364,18 @@ class RegistrationForm(CourseSelectMixin, forms.ModelForm):
             "child",
             "course",
             "status",
-            settings.KEPCHUP_DISPLAY_CAR_NUMBER and "transport" or "",
-            not settings.KEPCHUP_NO_PAYMENT
-            and Fieldset(
-                _("Payment"),
-                "price",
-                "paid",
-            )
-            or "",
+            *(["transport"] if settings.KEPCHUP_DISPLAY_CAR_NUMBER else []),
+            *([Fieldset(_("Payment"), "price", "paid")] if not settings.KEPCHUP_NO_PAYMENT else []),
         )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        child = cleaned_data.get("child")
+        course = cleaned_data.get("course")
+        if child and course and cleaned_data.get("status") != Registration.STATUS.canceled:
+            if Registration.objects.filter(child=child, course=course).exclude(pk=self.instance.pk).exists():
+                self.add_error("status", _("Cet enfant possède déjà une inscription active à ce cours."))
+        return cleaned_data
 
 
 class PlainTextWidget(forms.Widget):

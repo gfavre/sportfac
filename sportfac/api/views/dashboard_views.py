@@ -162,6 +162,11 @@ class DashboardRegistrationsView(generics.ListAPIView):
         qs = Registration.all_objects.select_related(
             "course", "course__activity", "child", "child__family", "cancelation_person"
         )
+        status_filter = self.request.query_params.get("status", "all")
+        if status_filter == "active":
+            qs = qs.exclude(status=Registration.STATUS.canceled)
+        elif status_filter in dict(Registration.STATUS):
+            qs = qs.filter(status=status_filter)
         if user.is_full_manager:
             return qs
         return qs.filter(course__activity__in=user.managed_activities.all())

@@ -1,4 +1,5 @@
 from datetime import date
+from datetime import timedelta
 from unittest import mock
 from unittest.mock import patch
 
@@ -9,11 +10,15 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.formsets import BaseFormSet
 from django.forms.models import BaseModelFormSet
 from django.forms.models import model_to_dict
+from django.http import Http404
 from django.test import RequestFactory
 from django.test import override_settings
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from absences.models import Absence
+from absences.tests.factories import SessionFactory
 from activities.tests.factories import CourseFactory
 from activities.tests.factories import ExtraNeedFactory
 from backend.forms import BillingForm
@@ -466,6 +471,120 @@ class RegistrationUpdateViewTests(TenantTestCase):
     def test_get_is_200(self):
         response = self.view(self.request, pk=self.registration.pk)
         self.assertEqual(response.status_code, 200)
+
+    def status_request(self, status):
+        data = {key: value for key, value in self.data.items() if value is not None}
+        request = RequestFactory().post(self.url, {**data, "status": status})
+        request.user = self.user
+        fake_registrations_open_middleware(request)
+        return request
+
+    def test_canceled_registration_can_be_viewed_and_edited(self):
+        self.registration.cancel(user=self.user)
+        self.registration.save()
+        response = self.view(self.request, pk=self.registration.pk).render()
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'value="confirmed"')
+        response = RegistrationDetailView.as_view()(self.request, pk=self.registration.pk).render()
+        self.assertEqual(response.status_code, 200)
+
+    @override_settings(KEPCHUP_NO_PAYMENT=True, KEPCHUP_USE_ABSENCES=True)
+    @patch("django.contrib.messages.success")
+    def test_status_changes_persist_cancellation_and_update_capacity_and_absences(self, _messages):
+        session = SessionFactory(course=self.registration.course, date=timezone.localdate() + timedelta(days=3))
+        self.registration.create_future_absences()
+        self.assertTrue(Absence.objects.filter(child=self.registration.child, session=session).exists())
+        response = self.view(self.status_request("canceled"), pk=self.registration.pk)
+        self.assertEqual(response.status_code, 302)
+        self.registration.refresh_from_db()
+        self.registration.course.refresh_from_db()
+        self.assertEqual(self.registration.status, "canceled")
+        self.assertEqual(self.registration.cancelation_person, self.user)
+        self.assertEqual(self.registration.cancelation_reason, Registration.REASON.admin)
+        self.assertIsNotNone(self.registration.cancelation_date)
+        self.assertEqual(self.registration.course.nb_participants, 0)
+        self.assertFalse(Absence.objects.filter(child=self.registration.child, session=session).exists())
+        with patch(
+            "registrations.tasks.create_future_absences_for_registration.delay",
+            side_effect=lambda pk: Registration.all_objects.get(pk=pk).create_future_absences(),
+        ) as task:
+            with self.captureOnCommitCallbacks(execute=True):
+                response = self.view(self.status_request("confirmed"), pk=self.registration.pk)
+            self.assertTrue(task.called)
+        self.assertEqual(response.status_code, 302)
+        self.registration.refresh_from_db()
+        self.registration.course.refresh_from_db()
+        self.assertEqual(self.registration.status, "confirmed")
+        self.assertIsNone(self.registration.cancelation_person)
+        self.assertIsNone(self.registration.cancelation_reason)
+        self.assertIsNone(self.registration.cancelation_date)
+        self.assertEqual(self.registration.course.nb_participants, 1)
+        self.assertIsNone(self.registration.bill_id)
+        self.assertTrue(Absence.objects.filter(child=self.registration.child, session=session).exists())
+
+    @patch("django.contrib.messages.success")
+    def test_reactivation_reuses_existing_invoice(self, _messages):
+        bill = Bill.objects.create(family=self.registration.child.family, status=Bill.STATUS.waiting)
+        self.registration.bill = bill
+        self.registration.cancel(user=self.user)
+        self.registration.save()
+        response = self.view(self.status_request("confirmed"), pk=self.registration.pk)
+        self.assertEqual(response.status_code, 302)
+        self.registration.refresh_from_db()
+        self.assertEqual(self.registration.bill_id, bill.pk)
+        self.assertEqual(Bill.objects.count(), 1)
+
+    def test_reactivation_cannot_create_duplicate_active_registration(self):
+        self.registration.cancel(user=self.user)
+        self.registration.save()
+        RegistrationFactory(child=self.registration.child, course=self.registration.course, status="waiting")
+        response = self.view(self.status_request("confirmed"), pk=self.registration.pk)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("status", response.context_data["form"].errors)
+        self.registration.refresh_from_db()
+        self.assertEqual(self.registration.status, "canceled")
+
+    @override_settings(KEPCHUP_NO_PAYMENT=False)
+    @patch("django.contrib.messages.success")
+    def test_reactivation_creates_only_one_invoice_when_missing(self, _messages):
+        self.registration.cancel(user=self.user)
+        self.registration.save()
+        for _attempt in range(2):
+            response = self.view(self.status_request("confirmed"), pk=self.registration.pk)
+            self.assertEqual(response.status_code, 302)
+        self.registration.refresh_from_db()
+        self.assertIsNotNone(self.registration.bill_id)
+        self.assertEqual(Bill.objects.count(), 1)
+
+    @override_settings(KEPCHUP_NO_PAYMENT=True)
+    @patch("django.contrib.messages.success")
+    def test_parent_validated_status_is_preserved(self, _messages):
+        self.registration.cancel(user=self.user)
+        self.registration.save()
+        response = self.view(self.status_request("valid"), pk=self.registration.pk)
+        self.assertEqual(response.status_code, 302)
+        self.registration.refresh_from_db()
+        self.assertEqual(self.registration.status, "valid")
+
+    @override_settings(KEPCHUP_NO_PAYMENT=True)
+    @patch("django.contrib.messages.success")
+    def test_restricted_manager_can_reactivate_registration_of_managed_activity(self, _messages):
+        self.registration.cancel(user=self.user)
+        self.registration.save()
+        self.user = FamilyUserFactory(is_restricted_manager=True)
+        self.user.managed_activities.add(self.registration.course.activity)
+        response = self.view(self.status_request("confirmed"), pk=self.registration.pk)
+        self.assertEqual(response.status_code, 302)
+        self.registration.refresh_from_db()
+        self.assertEqual(self.registration.status, "confirmed")
+
+    def test_restricted_manager_cannot_edit_canceled_registration_of_other_activity(self):
+        self.registration.cancel(user=self.user)
+        self.registration.save()
+        self.user = FamilyUserFactory(is_restricted_manager=True)
+        request = self.status_request("confirmed")
+        with self.assertRaises(Http404):
+            self.view(request, pk=self.registration.pk)
 
     def test_content_is_rendered(self):
         response = self.view(self.request, pk=self.registration.pk)

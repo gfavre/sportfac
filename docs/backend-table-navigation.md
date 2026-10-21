@@ -41,9 +41,12 @@ or clearing a range after returning from an edit.
 The helper seeds restored SearchPanes values into the **first Ajax request**:
 SearchPanes 1.2 otherwise restores the controls after fetching unfiltered rows.
 The templates use 1.2.2: 1.2.1 cannot reliably restore this compact state. Tests
-read the version and registration status-pane configuration from the template.
-Use `searchPanes.show: true` for essential filters such as registration status,
-so the automatic uniqueness threshold cannot hide them on small result sets.
+read the version and registration status selector markup from the template.
+Use `searchPanes.show: true` for essential pane filters so the automatic uniqueness
+threshold cannot hide them on small result sets. Registration status now uses an
+explicit dropdown (`registration-list.js`), defaulting to active registrations;
+`status=all` includes cancellations. It discards obsolete `panes` selections on
+that page so old canceled-only URLs cannot trap the list in that filter.
 It also disables browser storage on the internal pane tables, not just the main
 table. Preserve these behaviors when upgrading DataTables/SearchPanes.
 

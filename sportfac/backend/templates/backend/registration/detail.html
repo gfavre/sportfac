@@ -7,6 +7,11 @@
 
 {% block content %}
 
+  <div class="form-group">
+    <a href="{{ registration.get_update_url }}" class="btn btn-primary"><i class="icon-edit" aria-hidden="true"></i> {% translate "Update registration" %}</a>
+    <a href="{% if list_return_url %}{{ list_return_url }}{% else %}{% url 'backend:registration-list' %}{% endif %}" data-list-back class="btn btn-default">{% translate "List registrations" %}</a>
+  </div>
+
   <section class="portlet">
     <dl class="dl-horizontal">
       <dt>{% translate "Child" %}</dt>

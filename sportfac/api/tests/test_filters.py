@@ -72,6 +72,43 @@ class RegistrationsSearchPanesIntegrationTest(UserMixin, TenantTestCase):
         ("actions", None),
     ]
 
+    def test_explicit_status_filter_can_show_active_all_or_canceled(self):
+        self.login(self.manager)
+        params = {
+            "draw": 1,
+            "start": 0,
+            "length": 50,
+            **datatables_columns_params(self.REGISTRATIONS_COLUMNS),
+        }
+        for status_filter, count in (("active", 7), ("all", 10), ("canceled", 3), ("valid", 5)):
+            with self.subTest(status=status_filter):
+                response = self.tenant_client.get(
+                    reverse("api:all_registrations"),
+                    {**params, "status": status_filter},
+                    HTTP_ACCEPT="application/json",
+                )
+                self.assertEqual(response.status_code, 200)
+                data = response.json()
+                self.assertEqual(data["recordsFiltered"], count)
+                if status_filter == "active":
+                    self.assertTrue(all(not row["is_canceled"] for row in data["data"]))
+
+    def test_canceled_rows_keep_edit_and_details_actions(self):
+        self.login(self.manager)
+        response = self.tenant_client.get(
+            reverse("api:all_registrations"),
+            {
+                "draw": 1,
+                "start": 0,
+                "length": 50,
+                "status": "canceled",
+                **datatables_columns_params(self.REGISTRATIONS_COLUMNS),
+            },
+            HTTP_ACCEPT="application/json",
+        )
+        for row in response.json()["data"]:
+            self.assertEqual([action["icon_class"] for action in row["actions"]], ["icon-help", "icon-edit"])
+
     def test_clicking_canceled_pane_filters_to_canceled_registrations_only(self):
         self.login(self.manager)
         params = {

@@ -82,6 +82,9 @@ class RegistrationDetailView(ListReturnMixin, RegistrationMixin, DetailView):
     model = Registration
     template_name = "backend/registration/detail.html"
 
+    def get_queryset_source(self):
+        return Registration.all_objects.all()
+
 
 class RegistrationExportView(RegistrationMixin, ExcelResponseMixin, View):
     filename = _("registrations")
@@ -303,6 +306,9 @@ class RegistrationUpdateView(ListReturnMixin, SuccessMessageMixin, RegistrationM
     success_message = _("Registration has been updated.")
     success_url = reverse_lazy("backend:registration-list")
 
+    def get_queryset_source(self):
+        return Registration.all_objects.all()
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs["user"] = self.request.user
@@ -351,31 +357,48 @@ class RegistrationUpdateView(ListReturnMixin, SuccessMessageMixin, RegistrationM
 
     @transaction.atomic
     def form_valid(self, form, extrainfo_form):
-        initial_course = self.get_object().course
-        initial_status = self.get_object().status
+        original = self.get_object()
+        initial_course = original.course
+        self.object = form.save(commit=False)
+        if not self.object.is_canceled:
+            # Serialize with registration creation before reactivating a historical row.
+            Course.objects.select_for_update().get(pk=self.object.course_id)
+            if (
+                Registration.objects.filter(child=self.object.child, course=self.object.course)
+                .exclude(pk=self.object.pk)
+                .exists()
+            ):
+                form.add_error("status", _("Cet enfant possède déjà une inscription active à ce cours."))
+                return self.form_invalid(form, extrainfo_form)
 
-        if settings.KEPCHUP_USE_ABSENCES and form.cleaned_data["course"] != initial_course:
+        if settings.KEPCHUP_USE_ABSENCES and self.object.course != initial_course:
             # as we are changing course, remove the future absences
-            self.object.delete_future_absences()
+            original.delete_future_absences()
+
+        if original.status != self.object.status:
+            if self.object.is_canceled:
+                self.object.cancel(reason=Registration.REASON.admin, user=self.request.user)
+            elif original.is_canceled:
+                self.object.cancelation_person = None
+                self.object.cancelation_reason = None
+                self.object.cancelation_date = None
 
         # This will trigger the creation of future absences for the new course
-        self.object = form.save()
+        self.object.save()
+        form.save_m2m()
         if self.object.course != initial_course:
             # the course has changed, we need to update the number of participants
             initial_course.save()
         extrainfo_form.instance = self.object
         extrainfo_form.save()
 
-        if initial_status != self.object.status:
-            if self.object.is_confirmed or self.object.is_validated:
-                # Send the conformation message
-                self.object.set_confirmed()
-            elif self.object.is_canceled:
-                # Cancel and remove future absences
-                self.object.cancel(reason=Registration.REASON.admin, user=self.request.user)
-
         # Create invoice if necessary
-        if self.object.is_confirmed and not self.object.paid and not self.object.bill:
+        if (
+            not settings.KEPCHUP_NO_PAYMENT
+            and self.object.is_confirmed
+            and not self.object.paid
+            and not self.object.bill
+        ):
             status = Bill.STATUS.waiting
             if self.object.get_price() == 0:
                 status = Bill.STATUS.paid

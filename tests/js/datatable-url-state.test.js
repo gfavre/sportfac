@@ -12,7 +12,8 @@ function page(query = '', serverSide = false, filters = [], registration = false
     const rowCount = registration ? (registration.count === undefined ? 2 : registration.count) : 80;
     const rows = Array.from({length: rowCount}, (_, i) => [String(i), i % 2 ? 'ski' : 'natation',
         '<a href="/backend/activity/42/update/">Edit</a>']);
-    const dom = new JSDOM('<input type="radio" name="sport" value="both"><input type="radio" name="sport" value="ski"><input type="radio" name="sport" value="natation"><table id="courses"><thead><tr><th>ID</th><th>Sport</th><th>Actions</th></tr></thead></table>', {
+    const statusControl = registration ? registrationTemplate.match(/<select[^>]*id="registration-status-filter"[^>]*>[\s\S]*?<\/select>/)[0] : '';
+    const dom = new JSDOM(statusControl + '<input type="radio" name="sport" value="both"><input type="radio" name="sport" value="ski"><input type="radio" name="sport" value="natation"><table id="courses"><thead><tr><th>ID</th><th>Sport</th><th>Actions</th></tr></thead></table>', {
         url: 'https://example.test/backend/activity/' + query, runScripts: 'outside-only',
     });
     const window = dom.window;
@@ -22,6 +23,7 @@ function page(query = '', serverSide = false, filters = [], registration = false
         'sportfac/static/js/vendor/DataTables-2020/Select-1.3.2/js/dataTables.select.js',
         process.env.SEARCH_PANES_SCRIPT || `sportfac/static/js/vendor/DataTables-2020/SearchPanes-${searchPanesVersion}/js/dataTables.searchPanes.js`,
         'sportfac/backend/static/backend/js/datatable-url-state.js',
+        'sportfac/backend/static/backend/js/registration-list.js',
     ]) window.eval(fs.readFileSync(file, 'utf8'));
     const requests = [];
     const options = {pageLength: 10, dom: 'Pfrtip', searchPanes: {viewTotal: true, clear: false},
@@ -29,16 +31,16 @@ function page(query = '', serverSide = false, filters = [], registration = false
         columnDefs: [{targets: 1, searchPanes: {show: true}}, {targets: [0, 2], searchPanes: {show: false}}],
     };
     if (registration) {
-        // Use the page's actual status-pane settings, rather than forcing show:true in the fixture.
-        const config = registrationTemplate.match(/searchPanes:\s*(\{[^}]*\}),\s*targets: \['status_display'\]/)[1];
-        options.columnDefs[0].searchPanes = window.eval('(' + config + ')');
+        options.dom = 'frtip';
     }
-    const records = rows.map(row => ({id: row[0], sport: row[1], actions: row[2]}));
+    const records = rows.map((row, i) => ({id: row[0], sport: row[1], actions: row[2], status: i % 2 ? 'confirmed' : 'canceled'}));
     if (serverSide) {
         options.serverSide = true;
         options.ajax = (data, callback) => {
             requests.push(JSON.parse(JSON.stringify(data)));
             let filtered = records;
+            if (data.status === 'active') filtered = filtered.filter(row => row.status !== 'canceled');
+            else if (data.status && data.status !== 'all') filtered = filtered.filter(row => row.status === data.status);
             const selected = Object.values((data.searchPanes || {}).sport || {});
             if (selected.length) filtered = filtered.filter(row => selected.includes(row.sport));
             if (data.search.value) filtered = filtered.filter(row => row.sport.includes(data.search.value));
@@ -59,20 +61,38 @@ function page(query = '', serverSide = false, filters = [], registration = false
             options.ajax = {url: '/api/records/', data: {extra: 'kept'}};
         }
     } else options.data = records;
-    const table = window.dataTableUrlState('#courses', options, filters);
+    const table = registration ? window.registrationListTable('#courses', options) : window.dataTableUrlState('#courses', options, filters);
     return {window, table, requests, close: () => window.close()};
 }
 
 for (const count of [0, 2]) {
-test('registration status pane stays available with ' + count + ' registrations', async () => {
+test('registration status dropdown stays usable with ' + count + ' registrations', async () => {
     const current = page('', 'object', [], {count});
     await settle();
-    const panes = current.window.$('table').not('#courses');
-    assert.ok(panes.toArray().some(node => current.window.$.fn.dataTable.isDataTable(node)),
-        'The status pane must be built even when the automatic uniqueness threshold would hide it');
+    assert.equal(current.window.document.querySelector('#registration-status-filter').value, 'active');
+    assert.equal(current.requests[0].status, 'active');
     current.close();
 });
 }
+
+test('registration dropdown switches from canceled to active or all and clears legacy panes', async () => {
+    const legacy = encodeURIComponent(JSON.stringify([{id: 1, selected: ['canceled']} ]));
+    const current = page('?status=canceled&panes=' + legacy, 'object', [], {count: 10});
+    await settle();
+    assert.equal(current.requests[0].status, 'canceled');
+    assert.equal(new URLSearchParams(current.window.location.search).has('panes'), false);
+    assert.equal(current.table.page.info().recordsDisplay, 5);
+    current.window.$('#registration-status-filter').val('active').trigger('change');
+    await settle();
+    assert.equal(current.requests.at(-1).status, 'active');
+    assert.equal(current.table.page.info().recordsDisplay, 5);
+    current.window.$('#registration-status-filter').val('all').trigger('change');
+    await settle();
+    assert.equal(current.requests.at(-1).status, 'all');
+    assert.equal(current.table.page.info().recordsDisplay, 10);
+    assert.equal(new URLSearchParams(current.window.location.search).get('status'), 'all');
+    current.close();
+});
 
 test('column radio filter, clearing search and clean URLs do not inherit another tab state', async () => {
     const filter = {param: 'sport', selector: 'input[name=sport]', column: 1,

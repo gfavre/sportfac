@@ -711,13 +711,15 @@ class RegistrationDatatableSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_actions(obj):
-        if obj.is_canceled:
-            return []
-        return [
+        actions = [
             {"url": obj.get_details_url(), "label": _("Registration details"), "icon_class": "icon-help"},
             {"url": obj.get_update_url(), "label": _("Update registration"), "icon_class": "icon-edit"},
-            {"url": obj.get_delete_url(), "label": _("Cancel registration"), "icon_class": "icon-cancel"},
         ]
+        if not obj.is_canceled:
+            actions.append(
+                {"url": obj.get_delete_url(), "label": _("Cancel registration"), "icon_class": "icon-cancel"}
+            )
+        return actions
 
 
 class InlineCourseSerializer(serializers.ModelSerializer):

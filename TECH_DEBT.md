@@ -4,6 +4,14 @@ Living list of known technical debt for the sportfac/Kepchup project. Not a task
 tracker — just a reference so decisions and their context aren't re-derived from
 scratch each time. Update in place as items are resolved or new ones are found.
 
+## Frontend test fixtures for course actions and bib assignments
+
+- Four existing tests in `tests/js/bib-autosave.test.js` and
+  `tests/js/course-actions.test.js` fail before exercising their assertions:
+  their hand-written DOM fixtures omit controls now required by the production
+  scripts (`bib-toggle-assignments`, `data-select-filtered`). Update the fixtures
+  against the current templates; registration-list and URL-return tests pass.
+
 ## Legacy Floppyforms rendering
 
 - Some school update/import forms still use Floppyforms and its own template tags.
