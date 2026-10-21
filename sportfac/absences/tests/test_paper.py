@@ -12,6 +12,8 @@ from dynamic_preferences.models import GlobalPreferenceModel
 from dynamic_preferences.registries import global_preferences_registry
 from openpyxl import load_workbook
 
+from absences.models import Absence
+from absences.paper import attendance_data
 from absences.paper_pdf import AttendancePDFRenderer
 from activities.tests.factories import CourseFactory
 from activities.tests.factories import ExtraNeedFactory
@@ -26,6 +28,40 @@ from .factories import SessionFactory
 
 
 class PaperAttendanceTests(TenantTestCase):
+    def test_responsible_is_only_instructor_of_selected_session(self):
+        other = FamilyUserFactory(first_name="François", last_name="Iff")
+        self.course.sessions.filter(date=date(2026, 2, 7)).update(instructor=other)
+        self.course.sessions.filter(date=date(2026, 1, 31)).update(instructor=self.instructor)
+        self.course.sessions.filter(date=date(2026, 2, 14)).update(instructor=None)
+        data = attendance_data(self.course, date(2026, 2, 7))
+        self.assertEqual(data["instructors"], other.get_full_name())
+        self.assertEqual(attendance_data(self.course, date(2026, 2, 14))["instructors"], "")
+        self.assertEqual(attendance_data(self.course, date(2026, 3, 1))["instructors"], "")
+
+    def test_absences_use_selected_session_and_keep_present_cells_blank(self):
+        selected = self.course.sessions.get(date=date(2026, 2, 7))
+        older = self.course.sessions.get(date=date(2026, 1, 31))
+        Absence.objects.update_or_create(session=older, child=self.registration.child, defaults={"status": "absent"})
+        for status, label in (
+            ("excused", "Excusé"),
+            ("medical", "Certificat médical"),
+            ("absent", "Absent"),
+            ("late", "Retard"),
+            ("canceled", "Cours annulé"),
+            ("present", ""),
+            ("na", ""),
+        ):
+            with self.subTest(status=status):
+                Absence.objects.update_or_create(
+                    session=selected, child=self.registration.child, defaults={"status": status}
+                )
+                data = attendance_data(self.course, selected.date)
+                self.assertEqual(data["rows"][0][0], label)
+                sheet = self.workbook(self.client.get(self.url, {"date": "2026-02-07"}))
+                self.assertEqual(sheet["A4"].value, label or None)
+        selected.absences.all().delete()
+        self.assertEqual(attendance_data(self.course, selected.date)["rows"][0][0], "")
+
     def setUp(self):
         super().setUp()
         self.settings_override = override_settings(KEPCHUP_PAPER_ATTENDANCE=True, KEPCHUP_EXPLICIT_SESSION_DATES=True)
@@ -38,7 +74,7 @@ class PaperAttendanceTests(TenantTestCase):
         self.course = CourseFactory(number="262.6", group_name="9", instructors=[self.instructor])
         self.course.sessions.all().delete()
         for day in (date(2026, 1, 31), date(2026, 2, 7), date(2026, 2, 14)):
-            SessionFactory(course=self.course, date=day)
+            SessionFactory(course=self.course, date=day, instructor=self.instructor)
         self.registration = RegistrationFactory(course=self.course, child__first_name="=Alfred")
         self.url = reverse("activities:paper-attendance", kwargs={"course": self.course.pk})
         self.client.force_login(self.instructor)
@@ -63,7 +99,7 @@ class PaperAttendanceTests(TenantTestCase):
             Path(path).write_bytes(b"%PDF-test")
 
         with patch.object(AttendancePDFRenderer, "render_to_pdf", render):
-            response = self.client.get(url, {"c": [self.course.pk, other.pk], "pdf": "1"})
+            response = self.client.get(url, {"c": [self.course.pk, other.pk], "pdf": "1", "available": "1"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "application/pdf")
         sheets = captured["sheets"]
@@ -136,7 +172,25 @@ class PaperAttendanceTests(TenantTestCase):
         self.assertEqual(response.context["ready_count"], 2)
         response = self.client.get(url, {**params, "date": "2026-01-01", "available": "1"})
         self.assertEqual(response.context["ready_count"], 0)
-        self.assertContains(response, 'class="btn btn-success" disabled')
+        self.assertContains(response, 'class="btn btn-primary" disabled')
+
+    def test_ready_courses_always_show_preparation_before_download(self):
+        self.client.force_login(FamilyUserFactory(is_manager=True))
+        url = reverse("backend:courses-absence")
+        params = {"c": self.course.pk, "pdf": "1"}
+        with patch.object(AttendancePDFRenderer, "render_to_pdf") as renderer:
+            response = self.client.get(url, params)
+        self.assertEqual(response.status_code, 200)
+        renderer.assert_not_called()
+        self.assertEqual(response.context["ready_count"], 1)
+        self.assertContains(response, "1. Choisir les séances")
+        self.assertContains(response, "2. Vérifier et télécharger")
+        self.assertContains(response, "paper-prepare.css")
+        self.assertContains(response, 'name="available" value="1"')
+        response = self.client.get(url, {**params, "date": "2026-01-31", "prepare": "1"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["selected_date"], date(2026, 1, 31))
+        self.assertContains(response, 'value="2026-01-31" selected')
 
     def test_download_header_participants_and_print_settings(self):
         sheet = self.workbook(self.client.get(self.url))

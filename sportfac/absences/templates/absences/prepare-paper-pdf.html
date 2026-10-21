@@ -1,56 +1,76 @@
 {% extends "backend/base.html" %}
+{% load sekizai_tags static %}
 
 {% block title %}Préparer les fiches PDF — {{ block.super }}{% endblock %}
 
 {% block page_title %}Préparer les fiches PDF{% endblock %}
 
 {% block content %}
-  <p>Une fiche par cours/groupe, pour la prochaine séance de chaque cours ou pour la date de votre choix.</p>
-  {% if error %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endif %}
-  {% if entries %}
-    <section class="portlet">
-      <form method="get" class="form-inline">
-        <input type="hidden" name="pdf" value="1">
-        <input type="hidden" name="prepare" value="1">
-        {% for entry in entries %}<input type="hidden" name="c" value="{{ entry.course.pk }}">{% endfor %}
-        <div class="form-group">
-          <label for="attendance-date">Date des fiches</label>
-          <input class="form-control" type="date" id="attendance-date" name="date" value="{{ date_value }}" list="attendance-dates">
-          <datalist id="attendance-dates">{% for day in available_dates %}<option value="{{ day|date:'Y-m-d' }}">{% endfor %}</datalist>
+  {% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/paper-prepare.css' %}?v=2">{% endaddtoblock %}
+  <div class="paper-prepare">
+    <header class="paper-prepare-overview">
+      <span class="paper-prepare-label">Liste de suivi des cours</span>
+      <h2>{{ entries|length }} cours sélectionné{{ entries|length|pluralize }}</h2>
+      <p>Une fiche par cours et par groupe, avec le moniteur de la séance et les absences déjà annoncées.</p>
+    </header>
+    {% if error %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endif %}
+    {% if entries %}
+      <section class="paper-prepare-card">
+        <h3>1. Choisir les séances</h3>
+        <form method="get">
+          <input type="hidden" name="pdf" value="1">
+          <input type="hidden" name="prepare" value="1">
+          {% for entry in entries %}<input type="hidden" name="c" value="{{ entry.course.pk }}">{% endfor %}
+          <div class="paper-prepare-date">
+            <div class="form-group">
+              <label for="attendance-date">Date des fiches</label>
+              <select class="form-control" id="attendance-date" name="date">
+                <option value="">Prochaine séance de chaque cours</option>
+                {% for day in available_dates %}<option value="{{ day|date:'Y-m-d' }}"{% if day == selected_date %} selected{% endif %}>{{ day|date:"l j F Y" }}</option>{% endfor %}
+              </select>
+            </div>
+            <div class="form-group"><button type="submit" class="btn btn-default">Vérifier les disponibilités</button></div>
+          </div>
+          <p class="help-block">Choisissez une date commune ou la prochaine séance de chaque cours. Une date passée permet de réimprimer les fiches.</p>
+        </form>
+      </section>
+      <section class="paper-prepare-card">
+        <h3>2. Vérifier et télécharger</h3>
+        <div class="paper-prepare-result">
+          <strong>{{ ready_count }} fiche{{ ready_count|pluralize }} prête{{ ready_count|pluralize }}</strong>
+          {% if excluded_count %}<span>{{ excluded_count }} cours sans séance disponible</span>{% endif %}
         </div>
-        <button type="submit" class="btn btn-default">Vérifier les disponibilités</button>
-        <p class="help-block">Laissez la date vide pour prendre la prochaine séance. Une date passée permet de réimprimer une fiche.</p>
-      </form>
-    </section>
-    <p><strong>{{ ready_count }} fiche{{ ready_count|pluralize }} prête{{ ready_count|pluralize }}</strong>{% if excluded_count %} · {{ excluded_count }} cours à compléter{% endif %}</p>
-    <div class="table-responsive">
-      <table class="table">
-        <thead><tr><th>Cours</th><th>Groupe</th><th>Séance</th><th>État</th><th></th></tr></thead>
-        <tbody>
-          {% for entry in entries %}
-            <tr class="{% if entry.ready %}success{% else %}warning{% endif %}">
-              <td>{{ entry.course.number }}</td>
-              <td>{{ entry.course.group_name|default:"—" }}</td>
-              <td>{% if entry.ready %}{{ entry.day|date:"d.m.Y" }}{% else %}—{% endif %}</td>
-              <td>{% if entry.ready %}<span class="text-success">✓ Prêt à exporter</span>{% elif selected_date %}Aucune séance le {{ selected_date|date:"d.m.Y" }}{% else %}Aucune séance à venir{% endif %}</td>
-              <td><a href="{{ entry.course.get_backend_absences_url }}">Gérer les séances</a></td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    {% if excluded_count %}<p class="text-warning">Les {{ excluded_count }} cours à compléter ne seront pas inclus dans le téléchargement.</p>{% endif %}
-  {% else %}
-    <div class="alert alert-info">Aucun cours sélectionné ou accessible. Retournez à la liste pour choisir les cours à exporter.</div>
-  {% endif %}
-  <div class="form-group" style="margin-top: 24px;">
-    <form method="get">
-      <input type="hidden" name="pdf" value="1">
-      <input type="hidden" name="available" value="1">
-      {% if selected_date %}<input type="hidden" name="date" value="{{ selected_date|date:'Y-m-d' }}">{% endif %}
-      {% for entry in entries %}<input type="hidden" name="c" value="{{ entry.course.pk }}">{% endfor %}
-      <button type="submit" class="btn btn-success"{% if not ready_count %} disabled{% endif %}><i class="icon-file-pdf"></i> {% if ready_count == 1 %}Télécharger la fiche disponible{% else %}Télécharger les {{ ready_count }} fiches disponibles{% endif %}</button>
-      <a href="{% url 'backend:course-list' %}" class="btn btn-default">Retour aux cours</a>
-    </form>
+        <div class="table-responsive paper-prepare-table">
+          <table class="table">
+            <thead><tr><th>Cours</th><th>Groupe</th><th>Séance</th><th>État</th><th></th></tr></thead>
+            <tbody>
+              {% for entry in entries %}
+                <tr>
+                  <td><strong>{{ entry.course.number }}</strong><br><small>{{ entry.course.activity.name }}</small></td>
+                  <td>{{ entry.course.group_name|default:"—" }}</td>
+                  <td>{% if entry.ready %}{{ entry.day|date:"d.m.Y" }}{% else %}—{% endif %}</td>
+                  <td>{% if entry.ready %}<span class="text-success">✓ Prêt à exporter</span>{% elif selected_date %}<span class="text-warning">Aucune séance le {{ selected_date|date:"d.m.Y" }}</span>{% else %}<span class="text-warning">Aucune séance à venir</span>{% endif %}</td>
+                  <td><a href="{{ entry.course.get_backend_absences_url }}">Gérer les séances</a></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% if excluded_count %}<p class="paper-prepare-note">Les {{ excluded_count }} cours sans séance disponible ne seront pas inclus dans le téléchargement.</p>{% endif %}
+        <form method="get">
+          <input type="hidden" name="pdf" value="1">
+          <input type="hidden" name="available" value="1">
+          {% if selected_date %}<input type="hidden" name="date" value="{{ selected_date|date:'Y-m-d' }}">{% endif %}
+          {% for entry in entries %}<input type="hidden" name="c" value="{{ entry.course.pk }}">{% endfor %}
+          <div class="form-group paper-prepare-actions">
+            <button type="submit" class="btn btn-primary"{% if not ready_count %} disabled{% endif %}><i class="icon-file-pdf" aria-hidden="true"></i> {% if ready_count == 1 %}Télécharger la fiche disponible{% else %}Télécharger les {{ ready_count }} fiches disponibles{% endif %}</button>
+            <a href="{% url 'backend:course-list' %}" class="btn btn-default">Retour aux cours</a>
+          </div>
+        </form>
+      </section>
+    {% else %}
+      <div class="alert alert-info">Aucun cours sélectionné ou accessible. Retournez à la liste pour choisir les cours à exporter.</div>
+      <div class="form-group"><a href="{% url 'backend:course-list' %}" class="btn btn-default">Retour aux cours</a></div>
+    {% endif %}
   </div>
 {% endblock content %}

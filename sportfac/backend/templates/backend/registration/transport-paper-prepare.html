@@ -1,0 +1,55 @@
+{% extends "backend/base.html" %}
+{% load sekizai_tags static %}
+
+{% block title %}Préparer la fiche car — {{ block.super }}{% endblock %}
+
+{% block page_title %}Préparer la fiche car{% endblock %}
+
+{% block content %}
+  {% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/paper-prepare.css' %}?v=2">{% endaddtoblock %}
+  <div class="paper-prepare">
+    <header class="paper-prepare-overview">
+      <span class="paper-prepare-label">Transport sélectionné</span>
+      <h2><i class="icon-bus" aria-hidden="true"></i> {{ transport_label }}</h2>
+      <p>Une fiche pour la date choisie, avec les groupes et les absences déjà annoncées.</p>
+    </header>
+    {% if error %}<p class="alert alert-danger" role="alert">{{ error }}</p>{% endif %}
+    {% if available_dates %}
+      <section class="paper-prepare-card">
+        <h3>1. Choisir la séance</h3>
+        <form method="get">
+          <div class="paper-prepare-date">
+            <div class="form-group">
+              <label for="transport-date">Date du cours</label>
+              <select class="form-control" id="transport-date" name="date" required>
+                <option value="">Choisir une date</option>
+                {% for day in available_dates %}<option value="{{ day|date:'Y-m-d' }}"{% if day == selected_date %} selected{% endif %}>{{ day|date:"l j F Y" }}</option>{% endfor %}
+              </select>
+            </div>
+            <div class="form-group"><button type="submit" class="btn btn-default">Vérifier la liste</button></div>
+          </div>
+          <p class="help-block">Après un changement de date, vérifiez la liste pour actualiser l’effectif ci-dessous.</p>
+        </form>
+      </section>
+      {% if selected_date and not error %}
+        <section class="paper-prepare-card">
+          <h3>2. Télécharger la fiche</h3>
+          <div class="paper-prepare-result">
+            <strong>{{ count }} élève{{ count|pluralize }} inscrit{{ count|pluralize }}</strong>
+            <span>Séance du {{ selected_date|date:"d.m.Y" }}</span>
+          </div>
+          <p class="paper-prepare-note">Les élèves excusés sont inclus et signalés. Un élève inscrit à plusieurs cours est compté une seule fois.</p>
+          <form method="get">
+            <input type="hidden" name="date" value="{{ selected_date|date:'Y-m-d' }}">
+            <input type="hidden" name="download" value="1">
+            <div class="form-group paper-prepare-actions">
+              <button type="submit" class="btn btn-primary"{% if not count %} disabled{% endif %}><i class="icon-file-pdf" aria-hidden="true"></i> Télécharger la fiche car PDF</button>
+              <a href="{{ transport.backend_url }}" class="btn btn-default">Retour au transport</a>
+            </div>
+          </form>
+        </section>
+      {% endif %}
+    {% else %}<p class="alert alert-info">Aucune séance disponible pour les élèves de ce transport.</p>{% endif %}
+    {% if not selected_date or error %}<div class="form-group"><a href="{{ transport.backend_url }}" class="btn btn-default">Retour au transport</a></div>{% endif %}
+  </div>
+{% endblock content %}

@@ -11,9 +11,10 @@
 <script src="{% static 'js/vendor/datatables/jquery.dataTables.min.js' %}"></script>
 <script src="{% static 'js/vendor/datatables/dataTables.bootstrap.js' %}"></script>
 <script src="{% static 'backend/js/datatable-url-state.js' %}?v=2"></script>
+<script src="{% static 'backend/js/transport-selection.js' %}?v=2"></script>
 <script>
 $(function () {
-  window.dataTableUrlState('#list-table', {
+  const table = window.dataTableUrlState('#list-table', {
 {% if LANGUAGE_CODE == 'fr' %}
       "language": {
             "url": "{% static 'js/vendor/datatables/French.json' %}"
@@ -26,15 +27,38 @@ $(function () {
       pageLength: 50,
 
   });
+  window.initializeTransportSelection(table);
 });
 </script>
 {% endaddtoblock %}
 <a href="{% url 'backend:transport-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% translate "New transport" %}</a>
 <hr>
-{% if BIB_NUMBERS %}
-<a href="{% url 'backend:transport-generate-bibs' %}" class="btn btn-primary">{% translate "Générer les dossards" %}</a>
-{% endif %}
-
+{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/selection-actions.css' %}?v=1">{% endaddtoblock %}
+{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/course-actions.css' %}?v=7">{% endaddtoblock %}
+{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/transport-actions.css' %}?v=2">{% endaddtoblock %}
+<section class="selection-actions course-selection-actions" aria-label="Actions sur les cars">
+  <div class="selection-controls">
+    <strong data-transport-selection-count role="status" aria-live="polite">Sélectionnez les cars dans le tableau</strong>
+    <button type="button" class="btn btn-link" data-select-transports>Sélectionner les cars filtrés</button>
+    <button type="button" class="btn btn-link" data-deselect-transports disabled>Désélectionner</button>
+  </div>
+  <div class="course-action-groups">
+    {% if BIB_NUMBERS %}
+      <div class="course-action-group">
+        <h3>Tous les cars</h3>
+        <a href="{% url 'backend:transport-generate-bibs' %}" class="btn btn-default"><i class="icon-sort-numeric" aria-hidden="true"></i> {% translate "Générer les dossards" %}</a>
+        <small>Concerne tous les cars, quelle que soit la sélection.</small>
+      </div>
+    {% endif %}
+    <div class="course-action-group">
+      <h3>Cars sélectionnés</h3>
+      <form id="transport-sheets-form" method="get" action="{% url 'backend:transports-print' %}">
+        <button class="btn btn-default" type="submit" disabled><i class="icon-file-pdf" aria-hidden="true"></i> Préparer les fiches cars PDF</button>
+      </form>
+      <small>Un PDF commun, avec une fiche par car à la date choisie.</small>
+    </div>
+  </div>
+</section>
 <table id="list-table" class="table">
   <thead>
     <tr>
@@ -46,12 +70,13 @@ $(function () {
   </thead>
   {% for transport in transport_list %}
    <tr>
-      <td><a href="{{ transport.backend_url }}">{{ transport.name }}</a></td>
+      <td><input type="checkbox" class="transport-select" value="{{ transport.pk }}" aria-label="Sélectionner le car {{ transport.name }}"> <a href="{{ transport.backend_url }}">{{ transport.name }}</a></td>
       <td>{{ transport.bib_prefix|default_if_none:"—" }}</td>
       <td>{{ transport.participants.count }}</td>
       <td>
         <ul class="list-unstyled">
           <li class="text-nowrap"><a href="{{ transport.backend_url }}" class="btn btn-sm"><i class="icon-bus"></i> {% translate "Details" %}</a></li>
+          <li class="text-nowrap"><a href="{% url 'backend:transport-print' pk=transport.pk %}" class="btn btn-sm"><i class="icon-file-pdf" aria-hidden="true"></i> Fiche car PDF</a></li>
           <li class="text-nowrap"><a href="{{ transport.update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% translate "Update transport" %}</a></li>
           <li class="text-nowrap"><a href="{{ transport.delete_url }}" class="btn btn-sm"><i class="icon-trash"></i> {% translate "Delete transport" %}</a></li>
         </ul>

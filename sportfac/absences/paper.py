@@ -40,6 +40,19 @@ def extra_column_value(column, answers):
 
 
 def attendance_data(course, day):
+    session = course.sessions.select_related("instructor").filter(date=day).first()
+    absence_labels = {
+        "absent": "Absent",
+        "excused": "Excusé",
+        "medical": "Certificat médical",
+        "late": "Retard",
+        "canceled": "Cours annulé",
+    }
+    absences = (
+        {absence.child_id: absence_labels.get(absence.status, "") for absence in session.absences.all()}
+        if session
+        else {}
+    )
     columns = parse_extra_columns(global_preferences_registry.manager()["site__ATTENDANCE_EXTRA_COLUMNS"])
     registrations = list(
         course.participants.select_related("child")
@@ -71,7 +84,7 @@ def attendance_data(course, day):
         level = levels.get(registration.child_id)
         rows.append(
             [
-                "",
+                absences.get(registration.child_id, ""),
                 course.group_name,
                 registration.child.bib_number,
                 *(extra_column_value(column, answers) for column in columns),
@@ -91,7 +104,7 @@ def attendance_data(course, day):
         "rows": rows,
         "count": len(registrations),
         "extra_column_count": len(columns),
-        "instructors": ", ".join(person.get_full_name() for person in course.instructors.all()),
+        "instructors": session.instructor.get_full_name() if session and session.instructor else "",
     }
 
 
@@ -138,7 +151,7 @@ def format_attendance_sheet(sheet, extra_column_count, last_column):
     for cell in sheet[3]:
         cell.fill = PatternFill("solid", fgColor="000000")
         cell.font = Font(name="Arial", size=11, bold=True, color="FFFFFF")
-    widths = [12, 7, 9, *([12] * extra_column_count), 12, 20, 24, 10, 10, 14, 14]
+    widths = [9, 5, 6, *([12] * extra_column_count), 12, 20, 24, 10, 10, 14, 14]
     for index, width in enumerate(widths, 1):
         sheet.column_dimensions[get_column_letter(index)].width = width
     sheet.row_dimensions[1].height = 45

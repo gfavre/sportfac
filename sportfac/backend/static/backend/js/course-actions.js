@@ -1,3 +1,37 @@
+function setCourseHelpVisibility(bubble, visible) {
+    bubble.querySelector('small').hidden = !visible;
+    bubble.querySelector('.course-help-toggle').setAttribute('aria-expanded', String(visible));
+}
+
+document.addEventListener('mouseover', function (event) {
+    const button = event.target.closest('.course-action-with-help .needs-select');
+    if (!button || button.disabled || button.contains(event.relatedTarget)) return;
+    const activeBubble = button.closest('.course-action-with-help').querySelector('.course-action-help');
+    document.querySelectorAll('.course-action-help').forEach(function (bubble) {
+        setCourseHelpVisibility(bubble, bubble === activeBubble);
+    });
+});
+
+document.addEventListener('mouseout', function (event) {
+    const action = event.target.closest('.course-action-with-help');
+    if (!action || action.contains(event.relatedTarget)) return;
+    setCourseHelpVisibility(action.querySelector('.course-action-help'), false);
+});
+
+document.addEventListener('click', function (event) {
+    const toggle = event.target.closest('.course-help-toggle');
+    document.querySelectorAll('.course-action-help').forEach(function (bubble) {
+        const button = bubble.querySelector('.course-help-toggle');
+        const panel = bubble.querySelector('small');
+        if (button === toggle) {
+            panel.hidden = !panel.hidden;
+        } else if (!bubble.contains(event.target)) {
+            panel.hidden = true;
+        }
+        setCourseHelpVisibility(bubble, !panel.hidden);
+    });
+});
+
 window.initializeCourseActions = function (table) {
     const toolbar = document.querySelector('.course-selection-actions');
     if (!toolbar) return;

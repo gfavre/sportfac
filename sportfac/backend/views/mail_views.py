@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
@@ -71,6 +73,37 @@ class ParticipantsMailPreview(BackendMixin, ArchivedMailMixin, mailer_views.Part
 
 class MailCourseInstructorsView(BackendMixin, mailer_views.MailCourseInstructorsView):
     template_name = "backend/course/confirm_send.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        previews = []
+        original_course = self.course
+        try:
+            for course in getattr(self, "courses", [self.course]):
+                self.course = course
+                for instructor in course.instructors.all():
+                    mail_context = self.get_instructor_context(instructor)
+                    attachments = [f"{course.number}-participants.pdf", "mes_cours.pdf"]
+                    if not (settings.KEPCHUP_NO_SSF or settings.KEPCHUP_FICHE_SALAIRE_MONTREUX):
+                        attachments.append(f"SSF_decompte_moniteur_{instructor.first_name}_{instructor.last_name}.pdf")
+                    if settings.KEPCHUP_SEND_PRESENCE_LIST:
+                        attachments.append(f"{course.number}-presences.pdf")
+                    attachments.extend(
+                        Path(name).name for name in settings.KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS
+                    )
+                    previews.append(
+                        {
+                            "course": course,
+                            "recipient": instructor,
+                            "subject": self.get_subject(mail_context),
+                            "body": self.get_mail_body(mail_context),
+                            "attachments": attachments,
+                        }
+                    )
+        finally:
+            self.course = original_course
+        context["instructor_previews"] = previews
+        return context
 
     def get_success_url(self):
         return reverse("backend:course-detail", kwargs=self.kwargs)

@@ -12,6 +12,7 @@ from django_tenants.utils import schema_context
 from pypdf import PdfReader
 from pypdf import PdfWriter
 
+from absences.tests.factories import SessionFactory
 from activities.tests.factories import CourseFactory
 from mailer.pdfutils import PDFRenderer
 from profiles.management.commands.merge_family_accounts import Command as MergeAccounts
@@ -21,6 +22,7 @@ from registrations.tests.factories import RegistrationFactory
 from sportfac.utils import TenantTestCase
 
 from .forms import BatchForm
+from .forms import validate_supplement
 from .models import Diploma
 from .models import DiplomaBatch
 from .models import DiplomaEvent
@@ -40,6 +42,32 @@ def sample_pdf(width=595):
 
 
 class DiplomaTests(TenantTestCase):
+    def test_instructor_is_only_first_name_from_latest_session(self):
+        self.course.sessions.all().delete()
+        previous = FamilyUserFactory(first_name="Ancien", last_name="Moniteur")
+        latest = FamilyUserFactory(first_name="François", last_name="Iff")
+        self.course.instructors.add(previous)
+        # Create the older session last to verify ordering by date, not creation.
+        SessionFactory(course=self.course, date=date(2026, 2, 7), instructor=latest)
+        SessionFactory(course=self.course, date=date(2026, 1, 31), instructor=previous)
+        batch = create_batch(self.data, self.manager)
+        self.assertEqual(batch.diplomas.get().instructors, "François")
+
+    def test_no_fallback_when_latest_session_has_no_instructor(self):
+        self.course.sessions.all().delete()
+        previous = FamilyUserFactory(first_name="Ancien")
+        self.course.instructors.add(previous)
+        SessionFactory(course=self.course, date=date(2026, 1, 31), instructor=previous)
+        SessionFactory(course=self.course, date=date(2026, 2, 7), instructor=None)
+        batch = create_batch(self.data, self.manager)
+        self.assertEqual(batch.diplomas.get().instructors, "")
+
+    def test_no_instructor_when_course_has_no_sessions(self):
+        self.course.sessions.all().delete()
+        self.course.instructors.add(FamilyUserFactory())
+        batch = create_batch(self.data, self.manager)
+        self.assertEqual(batch.diplomas.get().instructors, "")
+
     def test_creation_filters_final_levels_and_selects_all_initially(self):
         absent = RegistrationFactory(course=self.course)
         empty = RegistrationFactory(course=self.course)
@@ -300,6 +328,52 @@ class DiplomaTests(TenantTestCase):
         self.assertEqual(self.diploma.mail_status, "sent")
         self.assertEqual(self.diploma.recipient, self.parent.email)
         self.assertEqual(self.diploma.events.filter(action="mail_sent").count(), 1)
+
+    def test_image_supplement_is_sent_unchanged_with_its_mime_type(self):
+        self.ready()
+        content = b"\xff\xd8\xff\xe0image attachment"
+        self.batch.supplements.create(name="niveaux.jpeg", content=content)
+        send_batch.run(str(self.batch.pk))
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn(("niveaux.jpeg", content, "image/jpeg"), mail.outbox[0].attachments)
+        attachment = mail.outbox[0].message().get_payload()[-1]
+        self.assertEqual(attachment.get_content_type(), "image/jpeg")
+        self.assertEqual(attachment.get_payload(decode=True), content)
+
+    def test_image_supplement_upload_creates_batch(self):
+        self.client.force_login(self.manager)
+        data = {
+            **self.data,
+            "courses": [self.course.pk],
+            "issued_on": "2026-02-07",
+            "final_levels": ["A 1A"],
+            "supplement": SimpleUploadedFile("niveaux.jpg", b"\xff\xd8\xff\xe0image"),
+        }
+        response = self.client.post(reverse("backend:diploma-create"), data)
+        self.assertEqual(response.status_code, 302)
+        response = self.client.get(response.url)
+        self.assertEqual(response.status_code, 200)
+        supplement = response.context["batch"].supplements.get()
+        self.assertEqual(supplement.name, "niveaux.jpg")
+        self.assertEqual(bytes(supplement.content), b"\xff\xd8\xff\xe0image")
+
+    def test_supplement_accepts_image_formats_and_rewinds_upload(self):
+        for extension in ("jpg", "jpeg", "png", "gif", "webp", "tiff", "svg", "bmp"):
+            with self.subTest(extension=extension):
+                upload = SimpleUploadedFile(f"niveaux.{extension}", b"image attachment")
+                self.assertIs(validate_supplement(upload), upload)
+                self.assertEqual(upload.read(), b"image attachment")
+
+    def test_supplement_rejects_other_files_and_oversized_images(self):
+        from django.core.exceptions import ValidationError
+
+        for upload in (
+            SimpleUploadedFile("niveaux.txt", b"text"),
+            SimpleUploadedFile("niveaux.pdf", b"not a PDF"),
+            SimpleUploadedFile("niveaux.jpg", b"x" * (10 * 1024 * 1024 + 1)),
+        ):
+            with self.subTest(name=upload.name), self.assertRaises(ValidationError):
+                validate_supplement(upload)
 
     def test_send_failure_is_not_automatically_retried(self):
         self.ready()

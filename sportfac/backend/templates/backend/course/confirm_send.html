@@ -1,32 +1,55 @@
 {% extends "backend/base.html" %}
-{% load crispy_forms_tags i18n %}
+{% load crispy_forms_tags i18n sekizai_tags static %}
 
-{% block title %}{% translate "Confirm sending" %} - {{ block.super }}{% endblock %}
+{% block title %}Envoyer les documents aux moniteurs - {{ block.super }}{% endblock %}
 
-{% block page_title %}{% translate "Confirm sending" %}{% endblock %}
+{% block page_title %}Envoyer les documents aux moniteurs{% endblock %}
 
 {% block content %}
-  {% if courses %}
-    <h4>{% translate "Courses" %}</h4>
-    <ul>
-      {% for course in courses %}
-        <li>{{ course.short_name }}</li>{% endfor %}
-    </ul>
-  {% endif %}
-
-  <p>{% blocktranslate %}Are you sure you want to send confirmation email to each instructor ?{% endblocktranslate %}</p>
-
-  <form action="" method="post">{% csrf_token %}
-    {% crispy form %}
-    <div class="clearfix"></div>
-    <div class="form-group">
-      <button type="submit" class="btn btn-danger"><i class="icon icon-mail"></i>&nbsp;{% translate 'Send email' %}</button>
-      &nbsp;&nbsp;
-      <a href="{% if cancel_url %}{{ cancel_url }}{% else %}{{ course.get_backend_url }}{% endif %}"
-         class="btn btn-default">
-        <i class="icon icon-cancel"></i> {% translate "Cancel" %}
-      </a>
+  {% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/instructor-mail.css' %}?v=2">{% endaddtoblock %}
+  <div class="instructor-mail">
+    <div class="instructor-mail-overview">
+      <strong>{{ instructor_previews|length }} mail{{ instructor_previews|length|pluralize }} prévu{{ instructor_previews|length|pluralize }}</strong>
+      <p>Un mail par moniteur et par cours. Vérifiez les destinataires, le message et les documents avant l’envoi.</p>
+      {% if courses %}<div class="instructor-mail-courses"><span>Cours sélectionnés :</span> {% for course in courses %}<span class="instructor-mail-course">{{ course.short_name }}</span>{% endfor %}</div>{% endif %}
     </div>
-  </form>
-
+    <h2 class="instructor-mail-section-title">Destinataires et contenu</h2>
+    {% for preview in instructor_previews %}
+      <section class="instructor-mail-card">
+        <header class="instructor-mail-recipient">
+          <div><h3>{{ preview.recipient.full_name }}</h3><span>{{ preview.recipient.email }}</span></div>
+          <span class="instructor-mail-course">{{ preview.course.short_name }}</span>
+        </header>
+        <div class="instructor-mail-content">
+          <div class="instructor-mail-message">
+            <span class="instructor-mail-label">Objet du mail</span>
+            <p class="instructor-mail-subject">{{ preview.subject }}</p>
+            <details class="instructor-mail-preview">
+              <summary>Aperçu du mail</summary>
+              {% if is_html %}
+                <iframe title="Aperçu du mail à {{ preview.recipient.full_name }}" sandbox="" srcdoc="{{ preview.body }}"></iframe>
+              {% else %}
+                <pre>{{ preview.body }}</pre>
+              {% endif %}
+            </details>
+          </div>
+          <aside class="instructor-mail-attachments" aria-label="Pièces jointes prévues">
+            <h4>{{ preview.attachments|length }} pièce{{ preview.attachments|length|pluralize }} jointe{{ preview.attachments|length|pluralize }} prévue{{ preview.attachments|length|pluralize }}</h4>
+            <ul>{% for name in preview.attachments %}<li><i class="icon-doc-text" aria-hidden="true"></i> {{ name }}</li>{% endfor %}</ul>
+          </aside>
+        </div>
+      </section>
+    {% empty %}
+      <p class="alert alert-warning">Aucun moniteur n’est associé aux cours sélectionnés. Aucun mail ne sera envoyé.</p>
+    {% endfor %}
+    <form class="instructor-mail-send" action="" method="post">{% csrf_token %}
+      <h2 class="instructor-mail-section-title">Options d’envoi</h2>
+      {% crispy form %}
+      <div class="clearfix"></div>
+      <div class="form-group instructor-mail-submit">
+        <button type="submit" class="btn btn-primary"{% if not instructor_previews %} disabled{% endif %}><i class="icon icon-mail" aria-hidden="true"></i> Envoyer les documents</button>
+        <a href="{% if cancel_url %}{{ cancel_url }}{% else %}{{ course.get_backend_url }}{% endif %}" class="btn btn-default">{% translate "Cancel" %}</a>
+      </div>
+    </form>
+  </div>
 {% endblock content %}

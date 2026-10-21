@@ -157,6 +157,9 @@
     </style>
   {% endaddtoblock %}
 
+  <div class="form-group hidden-print">
+    <a class="btn btn-primary" href="{% url 'backend:transport-print' pk=transport.pk %}"><i class="icon-file-pdf" aria-hidden="true"></i> Fiche car PDF</a>
+  </div>
   <div class="btn-group hidden-print">
     <form class="move" method="post"
           action="{% url 'backend:transport-move' %}?prev={{ transport.id }}">{% csrf_token %}

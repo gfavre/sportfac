@@ -26,15 +26,14 @@ def attendance_pdf_response(request, courses):
             error = "Indiquez une date au format AAAA-MM-JJ."
     entries = []
     available_dates = set()
-    courses = list(courses.prefetch_related("sessions", "instructors").order_by("number", "pk"))
+    courses = list(courses.select_related("activity").prefetch_related("sessions").order_by("number", "pk"))
     for course in courses:
         available_dates.update(course.all_dates)
         day = selected_date or next_attendance_date(course)
         ready = not error and day is not None and day in course.all_dates
         entries.append({"course": course, "day": day, "ready": ready})
     ready_entries = [entry for entry in entries if entry["ready"]]
-    incomplete = len(ready_entries) != len(entries)
-    if error or not ready_entries or "prepare" in request.GET or (incomplete and request.GET.get("available") != "1"):
+    if error or not ready_entries or "prepare" in request.GET or request.GET.get("available") != "1":
         return render(
             request,
             "absences/prepare-paper-pdf.html",

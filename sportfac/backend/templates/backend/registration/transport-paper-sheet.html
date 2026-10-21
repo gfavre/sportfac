@@ -1,0 +1,11 @@
+{% load switzerland %}
+  <h1>{{ transport_label }}</h1>
+  <div class="summary"><strong>Date du cours : {{ selected_date|date:"d.m.Y" }}</strong><strong>Total : {{ count }} élève{{ count|pluralize }}</strong></div>
+  <table>
+    <colgroup><col style="width:10mm"><col style="width:10mm"><col style="width:15mm"><col style="width:22mm"><col style="width:27mm"><col style="width:25mm"><col><col style="width:21mm"><col style="width:20mm"></colgroup>
+    <thead><tr><th>Dossard</th><th>Gp</th><th>N° cours</th><th>Prénom</th><th>Nom</th><th>N° urgence</th><th>Parent</th><th>Arrêt</th><th>{{ selected_date|date:"d.m.Y" }}</th></tr></thead>
+    <tbody>{% for row in rows %}
+      <tr><td>{{ row.child.bib_number|default_if_none:"" }}</td><td>{{ row.groups }}</td><td>{{ row.courses }}</td><td>{{ row.child.first_name }}</td><td>{{ row.child.last_name }}</td><td>{{ row.child.emergency_number|phone }}</td><td>{{ row.child.family.get_full_name|default:"—" }}</td><td>{{ row.stops }}</td><td>{{ row.absences }}</td></tr>
+    {% endfor %}</tbody>
+  </table>
+  <p class="legend">La dernière colonne reprend les absences annoncées pour cette date. Les cases vides servent au pointage à la montée dans le car.</p>

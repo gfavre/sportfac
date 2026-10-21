@@ -1,0 +1,58 @@
+{% extends "backend/base.html" %}
+{% load sekizai_tags static %}
+{% block title %}Préparer les fiches cars — {{ block.super }}{% endblock %}
+
+{% block page_title %}Préparer les fiches cars{% endblock %}
+
+{% block content %}
+  {% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/paper-prepare.css' %}?v=2">{% endaddtoblock %}
+  <div class="paper-prepare">
+    <header class="paper-prepare-overview">
+      <span class="paper-prepare-label">Listes de suivi des cars</span>
+      <h2>{{ sheets|length }} car{{ sheets|length|pluralize }} sélectionné{{ sheets|length|pluralize }}</h2>
+      <p>Un seul PDF pour la date choisie. Chaque car commence sur une nouvelle page, avec ses groupes et les absences annoncées.</p>
+    </header>
+    {% if error %}<p class="alert alert-danger" role="alert">{{ error }}</p>{% endif %}
+    {% if sheets %}
+      <section class="paper-prepare-card">
+        <h3>1. Choisir la séance</h3>
+        <form method="get">
+          {% for sheet in sheets %}<input type="hidden" name="t" value="{{ sheet.transport.pk }}">{% endfor %}
+          <div class="paper-prepare-date">
+            <div class="form-group"><label for="transport-date">Date du cours</label>
+              <select class="form-control" name="date" id="transport-date" required>
+                <option value="">Choisir une date</option>
+                {% for day in available_dates %}<option value="{{ day|date:'Y-m-d' }}"{% if day == selected_date %} selected{% endif %}>{{ day|date:"l j F Y" }}</option>{% endfor %}
+              </select>
+            </div>
+            <div class="form-group"><button type="submit" class="btn btn-default">Vérifier les disponibilités</button></div>
+          </div>
+          <p class="help-block">Après un changement de date, vérifiez les disponibilités avant de télécharger.</p>
+        </form>
+      </section>
+      <section class="paper-prepare-card">
+        <h3>2. Vérifier et télécharger</h3>
+        <div class="paper-prepare-result"><strong>{{ ready_count }} fiche{{ ready_count|pluralize }} prête{{ ready_count|pluralize }}</strong>{% if selected_date %}<span>Séance du {{ selected_date|date:"d.m.Y" }}</span>{% endif %}</div>
+        <div class="table-responsive paper-prepare-table">
+          <table class="table"><thead><tr><th>Car</th><th>Élèves inscrits</th><th>État</th></tr></thead>
+            <tbody>{% for sheet in sheets %}<tr><td><strong>{{ sheet.transport_label }}</strong></td><td>{{ sheet.count }}</td><td>{% if sheet.count %}<span class="text-success">✓ Prêt à exporter</span>{% else %}<span class="text-warning">Aucun élève avec une séance à cette date</span>{% endif %}</td></tr>{% endfor %}</tbody>
+          </table>
+        </div>
+        {% if excluded_count %}<p class="paper-prepare-note">{{ excluded_count }} car{{ excluded_count|pluralize }} sans élève à cette date ne ser{{ excluded_count|pluralize:"a,ont" }} pas inclus dans le PDF.</p>{% endif %}
+        <p class="paper-prepare-note">Les élèves excusés sont inclus et signalés sur chaque fiche.</p>
+        <form method="get">
+          {% for sheet in sheets %}<input type="hidden" name="t" value="{{ sheet.transport.pk }}">{% endfor %}
+          {% if selected_date %}<input type="hidden" name="date" value="{{ selected_date|date:'Y-m-d' }}">{% endif %}
+          <input type="hidden" name="download" value="1"><input type="hidden" name="available" value="1">
+          <div class="form-group paper-prepare-actions">
+            <button class="btn btn-primary" type="submit"{% if not ready_count %} disabled{% endif %}><i class="icon-file-pdf" aria-hidden="true"></i> Télécharger les fiches dans un PDF</button>
+            <a class="btn btn-default" href="{% url 'backend:transport-list' %}">Retour aux cars</a>
+          </div>
+        </form>
+      </section>
+    {% else %}
+      <p class="alert alert-info">Aucun car sélectionné. Retournez à la liste pour choisir les cars à exporter.</p>
+      <div class="form-group"><a class="btn btn-default" href="{% url 'backend:transport-list' %}">Retour aux cars</a></div>
+    {% endif %}
+  </div>
+{% endblock content %}

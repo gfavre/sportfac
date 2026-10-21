@@ -1,0 +1,7 @@
+#list-table .transport-select { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
+#list-table tbody tr:focus-within { outline: 2px solid #52798f; outline-offset: -2px; }
+#list-table tbody tr { cursor: pointer; }
+#list-table tbody tr.selected { background: #e8f2f7; color: #333; }
+#list-table tbody tr.selected > td { box-shadow: inset 0 1px #7798aa, inset 0 -1px #7798aa; }
+#list-table tbody tr.selected > td:first-child { box-shadow: inset 4px 0 #52798f, inset 0 1px #7798aa, inset 0 -1px #7798aa; }
+#list-table tbody tr.selected a { color: #24566f; }

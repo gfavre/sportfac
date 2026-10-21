@@ -1,4 +1,5 @@
 import base64
+import mimetypes
 from io import BytesIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -105,7 +106,13 @@ def send_one(diploma, batch, supplements):
         )
         email.attach(f"diplome-{diploma.pk}.pdf", bytes(diploma.pdf), "application/pdf")
         for supplement in supplements:
-            email.attach(supplement.name, bytes(supplement.content), "application/pdf")
+            content = bytes(supplement.content)
+            content_type = (
+                "application/pdf"
+                if content.startswith(b"%PDF-")
+                else mimetypes.guess_type(supplement.name)[0] or "application/octet-stream"
+            )
+            email.attach(supplement.name, content, content_type)
         if email.send() != 1:
             raise RuntimeError("Le serveur mail n’a pas confirmé l’envoi.")
         Diploma.objects.filter(pk=diploma.pk).update(mail_status="sent", sent_at=timezone.now())

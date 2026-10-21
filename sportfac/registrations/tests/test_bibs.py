@@ -35,15 +35,78 @@ class GenerateBibsTests(TenantTestCase):
             child.refresh_from_db()
             self.assertEqual(child.bib_number, expected)
 
-    def test_existing_bibs_require_explicit_replacement(self):
+    def test_existing_bibs_are_preserved_unless_replacement_is_requested(self):
         child = self.register(child__bib_number="42")
-        with self.assertRaises(ValidationError):
-            generate_bibs()
+        self.assertEqual(generate_bibs(), 0)
         child.refresh_from_db()
         self.assertEqual(child.bib_number, "42")
         generate_bibs(overwrite=True)
         child.refresh_from_db()
         self.assertEqual(child.bib_number, "301")
+
+    def test_later_registrations_do_not_renumber_existing_children(self):
+        first = self.register(child__last_name="Zulu")
+        self.assertEqual(generate_bibs(), 1)
+        first.refresh_from_db()
+        original_modified = first.modified
+        newcomer = self.register(child__last_name="Alpha")
+        self.assertEqual(generate_bibs(), 1)
+        first.refresh_from_db()
+        newcomer.refresh_from_db()
+        self.assertEqual(first.bib_number, "301")
+        self.assertEqual(first.modified, original_modified)
+        self.assertEqual(newcomer.bib_number, "302")
+        self.assertEqual(generate_bibs(), 0)
+
+    def test_incremental_assignment_reserves_distributed_and_canceled_bibs(self):
+        ChildFactory(bib_number="301")
+        self.register(child__bib_number="302", status=Registration.STATUS.canceled)
+        existing = self.register(child__bib_number="304")
+        first = self.register(child__last_name="Alpha")
+        second = self.register(child__last_name="Zulu")
+        self.assertEqual(generate_bibs(), 2)
+        for child, expected in ((first, "303"), (existing, "304"), (second, "305")):
+            child.refresh_from_db()
+            self.assertEqual(child.bib_number, expected)
+
+    def test_duplicate_existing_bibs_block_incremental_assignment(self):
+        first = self.register(child__bib_number="301")
+        second = self.register(child__bib_number="301")
+        newcomer = self.register()
+        with self.assertRaises(ValidationError):
+            generate_bibs()
+        for child, expected in ((first, "301"), (second, "301"), (newcomer, "")):
+            child.refresh_from_db()
+            self.assertEqual(child.bib_number, expected)
+
+    def test_existing_bib_colliding_with_child_outside_population_is_rejected(self):
+        ChildFactory(bib_number="301")
+        self.register(child__bib_number="301")
+        with self.assertRaises(ValidationError):
+            generate_bibs()
+
+    def test_exhausted_number_range_leaves_every_car_unchanged(self):
+        first = self.register()
+        other_car = Transport.objects.create(name="Autre", bib_prefix=4)
+        second = RegistrationFactory(transport=other_car).child
+        reserved = ChildFactory.create_batch(99, family=first.family)
+        for rank, child in enumerate(reserved, 1):
+            child.bib_number = f"4{rank:02d}"
+        Child.objects.bulk_update(reserved, ["bib_number"])
+        with self.assertRaises(ValidationError):
+            generate_bibs()
+        for child in (first, second):
+            child.refresh_from_db()
+            self.assertEqual(child.bib_number, "")
+
+    def test_explicit_replacement_reorders_the_whole_car(self):
+        existing = self.register(child__last_name="Zulu", child__bib_number="301")
+        newcomer = self.register(child__last_name="Alpha")
+        self.assertEqual(generate_bibs(overwrite=True), 2)
+        existing.refresh_from_db()
+        newcomer.refresh_from_db()
+        self.assertEqual(existing.bib_number, "302")
+        self.assertEqual(newcomer.bib_number, "301")
 
     def test_missing_or_conflicting_transport_is_rejected(self):
         child = self.register()

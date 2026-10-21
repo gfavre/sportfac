@@ -1,0 +1,30 @@
+.instructor-mail { color: #33434e; }
+.instructor-mail-overview { margin: 0 0 28px; padding: 16px 20px; background: #eef4f7; border-left: 4px solid #52798f; border-radius: 3px; }
+.instructor-mail-overview > strong { display: block; font-size: 18px; color: #28495d; margin-bottom: 5px; }
+.instructor-mail-overview p { margin: 0; }
+.instructor-mail-courses { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: 12px; font-size: 12px; }
+.instructor-mail-course { display: inline-block; background: #edf1f4; border: 1px solid #dce3e8; border-radius: 3px; padding: 4px 8px; font-size: 12px; color: #4f626e; }
+.instructor-mail .instructor-mail-section-title { font: 600 16px/1.4 Arial, sans-serif; color: #33434e; margin: 0 0 12px; }
+.instructor-mail-card { padding: 0; margin-bottom: 18px; background: #fff; border: 1px solid #dce3e8; border-radius: 5px; overflow: hidden; }
+.instructor-mail-recipient { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; border-bottom: 1px solid #e4e9ec; }
+.instructor-mail-recipient h3 { font: 600 18px/1.4 Arial, sans-serif; margin: 0 0 3px; color: #253f50; }
+.instructor-mail-recipient div > span { font-size: 13px; color: #647580; overflow-wrap: anywhere; }
+.instructor-mail-content { display: grid; grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr); }
+.instructor-mail-message { min-width: 0; padding: 20px; }
+.instructor-mail-label { font-size: 12px; color: #697b86; }
+.instructor-mail-subject { margin: 5px 0 18px; font-weight: 600; }
+.instructor-mail-preview summary { cursor: pointer; color: #245f80; font-weight: 600; padding: 10px 12px; background: #f1f6f9; border: 1px solid #d9e5ec; border-radius: 3px; }
+.instructor-mail-preview summary:focus-visible { outline: 2px solid #245f80; outline-offset: 2px; }
+.instructor-mail-preview pre { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; line-height: 1.6; margin: 12px 0 0; padding: 16px; background: #fff; }
+.instructor-mail-preview iframe { width: 100%; height: 400px; border: 1px solid #ddd; margin-top: 12px; }
+.instructor-mail-attachments { padding: 20px; background: #f7f9fa; border-left: 1px solid #e4e9ec; }
+.instructor-mail-attachments h4 { font: 600 13px/1.5 Arial, sans-serif; margin: 0 0 10px; color: #536773; }
+.instructor-mail-attachments ul { list-style: none; padding: 0; margin: 0; }
+.instructor-mail-attachments li { margin: 0 0 7px; font-size: 12px; overflow-wrap: anywhere; color: #647580; }
+.instructor-mail-send { margin-top: 28px; padding-top: 20px; border-top: 1px solid #dce3e8; }
+.instructor-mail-send .form-group { margin-bottom: 12px; }
+.instructor-mail-submit { display: flex; gap: 10px; margin: 12px 0 15px; }
+@media (max-width: 767px) {
+    .instructor-mail-content { grid-template-columns: minmax(0, 1fr); }
+    .instructor-mail-attachments { border-left: 0; border-top: 1px solid #e4e9ec; }
+}

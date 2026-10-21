@@ -1,5 +1,5 @@
 {% load i18n sekizai_tags static %}
-{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/course-actions.css' %}?v=4">{% endaddtoblock %}
+{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/course-actions.css' %}?v=7">{% endaddtoblock %}
 {% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/selection-actions.css' %}?v=1">{% endaddtoblock %}
 <section class="course-selection-actions" aria-label="Actions sur les cours sélectionnés">
   <div class="selection-controls">
@@ -25,14 +25,14 @@
       <div class="course-action-buttons">
         {% if PRACTICAL_REMINDER %}
           <form method="get" action="{% url 'backend:courses-practical-reminder' %}">
-            <button class="btn btn-default needs-select" disabled><i class="icon-mail"></i> Rappel pratique</button>
+            <button class="btn btn-default needs-select" disabled title="Envoyer le rappel pratique aux familles"><i class="icon-mail"></i> Rappel</button>
           </form>
         {% endif %}
         <form class="convocations" method="GET" action="{% url 'backend:courses-mail-confirmation' %}">
           <button type="submit" class="btn btn-default needs-select" disabled><i class="icon-mail"></i> Convocations</button>
         </form>
         <form class="instructors" method="GET" action="{% url 'backend:courses-mail-instructors' %}">
-          <button type="submit" class="btn btn-default needs-select" disabled><i class="icon-tasks"></i> Infos aux moniteurs</button>
+          <button type="submit" class="btn btn-default needs-select" disabled title="Envoyer les documents aux moniteurs"><i class="icon-tasks"></i> Documents moniteurs</button>
         </form>
       </div>
     </div>
@@ -40,10 +40,20 @@
       <h3>Gestion</h3>
       <div class="course-action-buttons">
         {% if DIPLOMAS and user.is_full_manager %}
-          <form method="get" action="{% url 'backend:diploma-create' %}"><button class="btn btn-default needs-select" disabled><i class="icon-doc-text"></i> Diplômes</button></form>
+          <form class="course-action-with-help" method="get" action="{% url 'backend:diploma-create' %}">
+            <button class="btn btn-default needs-select" disabled><i class="icon-doc-text"></i> Diplômes</button>
+            <div class="course-action-help">
+              <button type="button" class="course-help-toggle" aria-label="À propos des diplômes" aria-expanded="false">ⓘ</button>
+              <small hidden>Prépare les diplômes des participants aux cours sélectionnés, pour les imprimer ou les envoyer aux familles.</small>
+            </div>
+          </form>
         {% endif %}
-        <form class="visibility" method="POST" action="{% url 'backend:courses-toggle-visibility' %}">{% csrf_token %}
+        <form class="visibility course-action-with-help" method="POST" action="{% url 'backend:courses-toggle-visibility' %}">{% csrf_token %}
           <button type="submit" class="btn btn-default needs-select" disabled><i class="icon-eye-off"></i> Visibilité</button>
+          <div class="course-action-help">
+            <button type="button" class="course-help-toggle" aria-label="À propos de la visibilité" aria-expanded="false">ⓘ</button>
+            <small hidden>Inverse la visibilité des cours sélectionnés dans le catalogue des familles : les cours visibles deviennent masqués, et inversement. Ils restent affichés dans l’administration.</small>
+          </div>
         </form>
       </div>
     </div>

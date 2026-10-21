@@ -6,7 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+
+## 4.11.0 - 2026-10-21
+
+### Added
+- Assign free bib numbers to newly registered children while preserving existing numbers by default. Full alphabetical renumbering remains an explicit replacement option; previously distributed numbers stay reserved.
+- Select multiple cars and download their dated attendance sheets in one PDF, with one car starting on each new page and an availability review before download.
+- Add car attendance PDFs with a course-date selector, one dated attendance column including announced absences, a separate group column after the bib number, and a distinct pupil count.
+- Accept image files as well as PDFs for diploma level descriptions, attaching them to family emails in their original format (10 MiB maximum).
+
+### Changed
+- Clarify bib preparation with a global readiness summary and automatically collapse the assignment list once all children are ready, while allowing staff to reopen it.
+- Always prepare course attendance PDFs through a date and availability review screen, styled consistently with car sheet preparation.
+
 ### Fixed
+- Clarify instructor document emails with a confirmation showing each recipient, message preview and configured attachment filenames before sending.
+- Course attendance sheets show only the selected session's instructor and include recorded absences (including excused absences and medical certificates). Narrow the absence, group and bib-number columns in PDF and Excel exports.
+- Remove the season, date and course number footer from diplomas.
+- Diploma preparation uses only the first name of the instructor assigned to the latest course session, leaving it blank if none is assigned instead of listing all course instructors.
+- Clarify that course visibility controls publication in the family catalogue; hidden courses remain listed in the administration.
 - Render diplomas with local Chromium/Playwright, as already used for invoices, removing PhantomJsCloud's request size limit. Assemble print batches from the individual PDFs instead of rendering them again.
 - Instructor emails now discard invalid BCC entries with a warning instead of blocking delivery; administrator copies use email addresses rather than user UUIDs when no archive address is configured.
 - Only show PostFinance rejection messages for failed, declined or voided transactions; pending and repeated successful webhooks no longer warn parents of a rejected payment.

@@ -1,0 +1,29 @@
+{% load switzerland %}
+<!doctype html>
+<html lang="fr">
+<head><meta charset="utf-8"><title>{% if sheets %}Fiches cars{% else %}Fiche car — {{ transport_label }}{% endif %}</title>
+<style>
+  @page { size: A4 portrait; margin: 8mm; }
+  * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { margin: 0; font: 8px Arial, sans-serif; color: #000; }
+  h1 { font-size: 16px; margin: 0 0 3mm; }
+  .summary { display: flex; justify-content: space-between; margin-bottom: 4mm; font-size: 11px; }
+  table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  th, td { border: 1px solid #888; padding: 2px; overflow-wrap: anywhere; }
+  th { background: #000; color: #fff; text-align: left; }
+  td { height: 3.5mm; }
+  tbody tr:nth-child(odd) { background: #e8e8e8; }
+  thead { display: table-header-group; }
+  tr { break-inside: avoid; page-break-inside: avoid; }
+  .legend { margin: 3mm 0 0; font-size: 9px; }
+  .transport-sheet + .transport-sheet { break-before: page; page-break-before: always; }
+</style></head>
+<body>
+  {% if sheets %}
+    {% for sheet in sheets %}
+      <section class="transport-sheet">{% include "backend/registration/transport-paper-sheet.html" with transport_label=sheet.transport_label rows=sheet.rows count=sheet.count %}</section>
+    {% endfor %}
+  {% else %}
+    {% include "backend/registration/transport-paper-sheet.html" %}
+  {% endif %}
+</body></html>

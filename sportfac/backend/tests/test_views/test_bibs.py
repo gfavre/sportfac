@@ -14,6 +14,36 @@ from .base import fake_registrations_open_middleware
 
 @override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False)
 class GenerateBibsViewTests(TenantTestCase):
+    def test_ready_population_collapses_list_but_allows_review(self):
+        RegistrationFactory(transport=Transport.objects.create(name="Bus", bib_prefix=3))
+        response = GenerateBibsView.as_view()(self.request(FamilyUserFactory(is_manager=True)))
+        self.assertContains(response, 'id="bib-assignment-panel" hidden', status_code=200)
+        self.assertContains(response, "Revoir les affectations")
+        self.assertContains(response, 'data-pending-count="0"')
+        self.assertTrue(response.context_data["can_generate"])
+
+    def test_pending_population_keeps_assignment_list_visible(self):
+        RegistrationFactory(transport=None)
+        response = GenerateBibsView.as_view()(self.request(FamilyUserFactory(is_manager=True)))
+        self.assertContains(response, '<div id="bib-assignment-panel">', status_code=200)
+        self.assertContains(response, "Masquer la liste")
+        self.assertContains(response, 'data-pending-count="1"')
+        self.assertFalse(response.context_data["can_generate"])
+
+    def test_last_autosave_returns_collapsed_state_and_updated_rows(self):
+        registration = RegistrationFactory(transport=None)
+        car = Transport.objects.create(name="Bus", bib_prefix=3)
+        request = self.request(
+            FamilyUserFactory(is_manager=True), "post", {"action": "assign", f"child_{registration.child_id}": car.pk}
+        )
+        request.META["HTTP_X_REQUESTED_WITH"] = "XMLHttpRequest"
+        response = GenerateBibsView.as_view()(request)
+        self.assertEqual(response["X-Bib-Saved"], "true")
+        self.assertContains(response, 'data-pending-count="0"', status_code=200)
+        self.assertContains(response, 'id="bib-assignment-panel" hidden')
+        self.assertContains(response, f'data-child="{registration.child_id}"')
+        self.assertTrue(response.context_data["can_generate"])
+
     def test_autosave_returns_updated_readiness_without_changing_other_children(self):
         first = RegistrationFactory(transport=None)
         other = RegistrationFactory(transport=None)
@@ -66,8 +96,9 @@ class GenerateBibsViewTests(TenantTestCase):
         child.refresh_from_db()
         self.assertEqual(child.bib_number, "301")
         response = GenerateBibsView.as_view()(self.request(manager, "post"))
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.context_data["form"].non_field_errors())
+        self.assertEqual(response.status_code, 302)
+        child.refresh_from_db()
+        self.assertEqual(child.bib_number, "301")
         response = GenerateBibsView.as_view()(self.request(manager, "post", {"overwrite": "on"}))
         self.assertEqual(response.status_code, 302)
 

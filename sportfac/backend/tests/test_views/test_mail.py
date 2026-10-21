@@ -3,6 +3,7 @@ from unittest import mock
 import faker
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sessions.middleware import SessionMiddleware
+from django.test import override_settings
 from django.test.client import RequestFactory
 from django.urls import reverse
 
@@ -301,6 +302,63 @@ class MailCourseInstructorsViewTest(BackendTestBase):
         process_request_for_middleware(request, SessionMiddleware)
         response = mail_views.MailCourseInstructorsView.as_view()(request, course=self.course.pk)
         self.assertEqual(response.status_code, 200)
+
+    @override_settings(
+        KEPCHUP_NO_SSF=True,
+        KEPCHUP_SEND_PRESENCE_LIST=True,
+        KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS=["pdf/consignes.pdf"],
+    )
+    def test_confirmation_previews_recipients_messages_and_attachments(self):
+        self.client.force_login(self.manager)
+        with mock.patch("mailer.tasks.send_instructors_email.delay") as send:
+            response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        send.assert_not_called()
+        previews = response.context["instructor_previews"]
+        self.assertEqual(len(previews), 2)
+        for preview in previews:
+            self.assertContains(response, preview["recipient"].email)
+            self.assertTrue(preview["body"])
+            self.assertTrue(preview["subject"])
+            self.assertEqual(
+                preview["attachments"],
+                [
+                    f"{self.course.number}-participants.pdf",
+                    "mes_cours.pdf",
+                    f"{self.course.number}-presences.pdf",
+                    "consignes.pdf",
+                ],
+            )
+        self.assertContains(response, "Aperçu du mail", count=2)
+
+    @override_settings(
+        KEPCHUP_NO_SSF=False,
+        KEPCHUP_FICHE_SALAIRE_MONTREUX=False,
+        KEPCHUP_SEND_PRESENCE_LIST=False,
+        KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS=[],
+    )
+    def test_multicourse_confirmation_includes_each_course_and_instructor(self):
+        other = CourseFactory(instructors=[self.instructors[0]])
+        self.client.force_login(self.manager)
+        response = self.client.get(reverse("backend:courses-mail-instructors"), {"c": [self.course.pk, other.pk]})
+        self.assertEqual(response.status_code, 200)
+        previews = response.context["instructor_previews"]
+        self.assertEqual(len(previews), 3)
+        self.assertEqual({preview["course"].pk for preview in previews}, {self.course.pk, other.pk})
+        for preview in previews:
+            instructor = preview["recipient"]
+            self.assertIn(
+                f"SSF_decompte_moniteur_{instructor.first_name}_{instructor.last_name}.pdf", preview["attachments"]
+            )
+            self.assertFalse(any(name.endswith("-presences.pdf") for name in preview["attachments"]))
+
+    def test_confirmation_without_instructors_disables_sending(self):
+        self.course.instructors.clear()
+        self.client.force_login(self.manager)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["instructor_previews"], [])
+        self.assertContains(response, "Aucun mail ne sera envoyé")
 
     @mock.patch("mailer.tasks.send_instructors_email.delay")
     def test_post(self, _):
