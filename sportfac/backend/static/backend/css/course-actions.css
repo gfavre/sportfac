@@ -16,12 +16,12 @@
 .course-selection-actions { clear: both; background: #f5f7f8; border: 1px solid #dde3e6; border-radius: 5px; padding: 16px 20px; margin: 0 0 24px; }
 .course-selection-heading { font-weight: 600; color: #45535d; margin-bottom: 14px; }
 .course-action-groups { display: flex; flex-wrap: wrap; gap: 16px 0; }
-.course-action-group { padding: 0 20px; border-left: 1px solid #d8dfe3; }
+.course-action-group { padding: 0 12px; border-left: 1px solid #d8dfe3; }
 .course-action-group:first-child { padding-left: 0; border-left: 0; }
 .course-action-group h3 { margin: 0 0 8px; font-family: inherit; font-weight: 600; font-size: 12px; line-height: 1.4; color: #60717d; text-transform: uppercase; letter-spacing: .04em; }
-.course-action-buttons, .course-action-group form.absences { display: flex; flex-wrap: wrap; gap: 8px; }
+.course-action-buttons, .course-action-group form.absences { display: flex; flex-wrap: wrap; gap: 6px; }
 .course-action-group form { margin: 0; }
-.course-selection-actions .btn-default { font-weight: 600; }
+.course-selection-actions .btn-default { font-weight: 600; font-size: 13px; padding: 6px 9px; }
 .course-selection-actions .btn-default:not(:disabled) {
     background: #fff;
     border-color: #7798aa;
@@ -43,6 +43,26 @@
     opacity: 1;
 }
 .course-action-group small { display: block; color: #687782; margin-top: 7px; }
+.course-action-with-help { display: flex; align-items: center; gap: 5px; }
+.course-action-help { position: relative; }
+.course-help-toggle { cursor: pointer; color: #24566f; padding: 4px; background: transparent; border: 0; font: inherit; }
+.course-help-toggle:focus-visible { outline: 2px solid #24566f; outline-offset: 2px; }
+.course-action-help small[hidden] { display: none; }
+.course-action-help small {
+    position: absolute;
+    z-index: 10;
+    top: 100%;
+    right: 0;
+    width: 260px;
+    max-width: 75vw;
+    padding: 12px;
+    margin-top: 5px;
+    background: #fff;
+    border: 1px solid #b8c7cf;
+    border-radius: 4px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .15);
+    line-height: 1.5;
+}
 @media (max-width: 767px) {
   .course-action-groups { display: block; }
   .course-action-group, .course-action-group:first-child { border-left: 0; padding: 12px 0; }
