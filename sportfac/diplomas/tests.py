@@ -1,4 +1,5 @@
 from datetime import date
+from io import BytesIO
 from unittest.mock import patch
 
 from django.core import mail
@@ -8,6 +9,8 @@ from django.test import override_settings
 from django.urls import reverse
 from django.utils import timezone
 from django_tenants.utils import schema_context
+from pypdf import PdfReader
+from pypdf import PdfWriter
 
 from activities.tests.factories import CourseFactory
 from mailer.pdfutils import PDFRenderer
@@ -26,6 +29,14 @@ from .tasks import DiplomaRenderer
 from .tasks import generate_batch
 from .tasks import render_diplomas
 from .tasks import send_batch
+
+
+def sample_pdf(width=595):
+    with PdfWriter() as writer:
+        writer.add_blank_page(width=width, height=420)
+        output = BytesIO()
+        writer.write_stream(output)
+        return output.getvalue()
 
 
 class DiplomaTests(TenantTestCase):
@@ -91,6 +102,38 @@ class DiplomaTests(TenantTestCase):
 
         with patch.object(DiplomaRenderer, "render_to_pdf", autospec=True, side_effect=write_pdf):
             self.assertEqual(render_diplomas(self.batch, [self.diploma]), b"%PDF-test")
+
+    @patch("diplomas.tasks.sync_playwright")
+    @patch("diplomas.tasks.DiplomaRenderer.get_content", return_value="<html>Diplôme</html>")
+    def test_renderer_uses_local_chromium(self, get_content, playwright):
+        renderer = DiplomaRenderer({})
+        browser = playwright.return_value.__enter__.return_value.chromium.launch.return_value
+        page = browser.new_page.return_value
+        renderer.render_to_pdf("diplomas.pdf")
+        page.set_content.assert_called_once_with(get_content.return_value, wait_until="networkidle")
+        page.evaluate.assert_called_once_with("document.fonts.ready")
+        page.pdf.assert_called_once_with(path="diplomas.pdf", print_background=True, prefer_css_page_size=True)
+        browser.close.assert_called_once()
+
+    def test_generation_merges_individual_pages_in_diploma_order(self):
+        second = Diploma.objects.get(pk=self.diploma.pk)
+        second.pk = None
+        second.source_registration_id += 100000
+        second.last_name = "ZZZ"
+        second.save()
+        ordered = list(self.batch.diplomas.all())
+        contents = [sample_pdf(400), sample_pdf(600)]
+        DiplomaBatch.objects.filter(pk=self.batch.pk).update(status="queued")
+        with patch("diplomas.tasks.render_diplomas", side_effect=contents) as renderer:
+            generate_batch.run(str(self.batch.pk))
+        self.assertEqual(renderer.call_count, 2)
+        for call, diploma, content in zip(renderer.call_args_list, ordered, contents):
+            self.assertEqual(call.args[1], [diploma])
+            diploma.refresh_from_db()
+            self.assertEqual(bytes(diploma.pdf), content)
+        self.batch.refresh_from_db()
+        pages = PdfReader(BytesIO(bytes(self.batch.print_pdf))).pages
+        self.assertEqual([float(page.mediabox.width) for page in pages], [400, 600])
 
     def test_missing_text_picks_up_level_without_overwriting_manual_text(self):
         self.client.force_login(self.manager)
@@ -203,14 +246,16 @@ class DiplomaTests(TenantTestCase):
 
     def test_generation_is_idempotent_and_logged(self):
         DiplomaBatch.objects.filter(pk=self.batch.pk).update(status="queued")
-        with patch("diplomas.tasks.render_diplomas", return_value=b"%PDF-generated") as renderer:
+        content = sample_pdf()
+        with patch("diplomas.tasks.render_diplomas", return_value=content) as renderer:
             generate_batch.run(str(self.batch.pk))
             generate_batch.run(str(self.batch.pk))
-        self.assertEqual(renderer.call_count, 2)
+        self.assertEqual(renderer.call_count, 1)
         self.batch.refresh_from_db()
         self.diploma.refresh_from_db()
         self.assertEqual(self.batch.status, "ready")
-        self.assertEqual(bytes(self.diploma.pdf), b"%PDF-generated")
+        self.assertEqual(bytes(self.diploma.pdf), content)
+        self.assertEqual(len(PdfReader(BytesIO(bytes(self.batch.print_pdf))).pages), 1)
         self.assertIsNone(self.diploma.published_at)
         self.assertTrue(self.batch.events.filter(action="generated", diploma=self.diploma).exists())
 
@@ -315,7 +360,7 @@ class DiplomaTests(TenantTestCase):
                 response = self.client.post(self.detail_url, {"action": "download"})
             generate.assert_called_once_with(str(self.batch.pk), send_after=False)
         self.assertEqual(response.url, self.detail_url + "?download=1")
-        with patch("diplomas.tasks.render_diplomas", return_value=b"%PDF-test"):
+        with patch("diplomas.tasks.render_diplomas", return_value=sample_pdf()):
             generate_batch.run(str(self.batch.pk))
         self.diploma.refresh_from_db()
         self.assertIsNone(self.diploma.published_at)
@@ -332,7 +377,7 @@ class DiplomaTests(TenantTestCase):
             with self.captureOnCommitCallbacks(execute=True):
                 self.client.post(self.detail_url, {"action": "send"})
             generate.assert_called_once_with(str(self.batch.pk), send_after=True)
-        with patch("diplomas.tasks.render_diplomas", return_value=b"%PDF-test"):
+        with patch("diplomas.tasks.render_diplomas", return_value=sample_pdf()):
             generate_batch.run(str(self.batch.pk), send_after=True)
         self.diploma.refresh_from_db()
         self.assertIsNotNone(self.diploma.published_at)

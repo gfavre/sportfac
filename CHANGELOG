@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 ### Fixed
+- Render diplomas with local Chromium/Playwright, as already used for invoices, removing PhantomJsCloud's request size limit. Assemble print batches from the individual PDFs instead of rendering them again.
 - Instructor emails now discard invalid BCC entries with a warning instead of blocking delivery; administrator copies use email addresses rather than user UUIDs when no archive address is configured.
 - Only show PostFinance rejection messages for failed, declined or voided transactions; pending and repeated successful webhooks no longer warn parents of a rejected payment.
 

@@ -356,6 +356,11 @@ was.
 
 ## PhantomJsCloud - external PDF rendering dependency, replace everywhere
 
+Diplomas now override the legacy renderer with local Chromium/Playwright after
+an embedded-font/logo request exceeded PhantomJsCloud's 1 MiB input limit.
+Print batches merge the individual PDFs locally with pypdf. The legacy mailer
+renderer below still uses the external service.
+
 Found 2026-08-24 while auditing Celery `rate_limit` coverage after the bill-PDF
 burst issue below. `registrations/pdf.py` (bill PDFs, QR-invoice compositing)
 already generates PDFs locally via Playwright (`sync_playwright`,

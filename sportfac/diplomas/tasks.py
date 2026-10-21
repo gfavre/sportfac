@@ -1,4 +1,5 @@
 import base64
+from io import BytesIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -6,6 +7,8 @@ from django.conf import settings
 from django.core.mail import EmailMessage
 from django.utils import timezone
 from dynamic_preferences.registries import global_preferences_registry
+from playwright.sync_api import sync_playwright
+from pypdf import PdfWriter
 
 from mailer.pdfutils import PDFRenderer
 from sportfac.celery import app
@@ -19,6 +22,19 @@ class DiplomaRenderer(PDFRenderer):
     message_template = "diplomas/certificate.html"
     is_landscape = True
     page_format = "A5"
+
+    def render_to_pdf(self, output):
+        content = self.get_content(self.get_message_template())
+        with sync_playwright() as playwright:
+            browser = playwright.chromium.launch()
+            try:
+                page = browser.new_page()
+                page.emulate_media(media="print")
+                page.set_content(content, wait_until="networkidle")
+                page.evaluate("document.fonts.ready")
+                page.pdf(path=output, print_background=True, prefer_css_page_size=True)
+            finally:
+                browser.close()
 
 
 def render_diplomas(batch, diplomas):
@@ -38,7 +54,7 @@ def render_diplomas(batch, diplomas):
         DiplomaRenderer(context).render_to_pdf(str(path))
         content = path.read_bytes()
     if not content.startswith(b"%PDF-"):
-        raise ValueError("Le service PDF n’a pas retourné un document valide.")
+        raise ValueError("Le moteur PDF n’a pas retourné un document valide.")
     return content
 
 
@@ -49,11 +65,17 @@ def generate_batch(batch_id, send_after=False):
     batch = DiplomaBatch.objects.get(pk=batch_id)
     DiplomaEvent.objects.create(batch=batch, action="generation_started")
     try:
-        for diploma in batch.diplomas.defer("pdf").all():
-            content = render_diplomas(batch, [diploma])
-            Diploma.objects.filter(pk=diploma.pk).update(pdf=content)
-            DiplomaEvent.objects.create(batch=batch, diploma=diploma, action="generated")
-        content = render_diplomas(batch, batch.diplomas.defer("pdf").all())
+        # Merge the individual PDFs locally: re-rendering the entire batch repeats
+        # embedded logos and exceeds the remote service's request size limit.
+        with PdfWriter() as writer:
+            for diploma in batch.diplomas.defer("pdf").all():
+                content = render_diplomas(batch, [diploma])
+                writer.append(BytesIO(content))
+                Diploma.objects.filter(pk=diploma.pk).update(pdf=content)
+                DiplomaEvent.objects.create(batch=batch, diploma=diploma, action="generated")
+            output = BytesIO()
+            writer.write_stream(output)
+            content = output.getvalue()
         DiplomaBatch.objects.filter(pk=batch.pk).update(print_pdf=content, status="ready", error="")
         DiplomaEvent.objects.create(batch=batch, action="generation_completed")
     except Exception as exc:
