@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 ### Changed
+- Translate and organize the registration step editor into page content, navigation and advanced settings, with consistent icons and save/cancel actions below the form.
 - Create backend registrations on a single page, updating eligible courses when the child changes and keeping payment and confirmation options alongside the selection.
 - Align family convocation and practical reminder previews with instructor document emails, showing send totals, recipient and child details, attachments and a clear final confirmation.
 

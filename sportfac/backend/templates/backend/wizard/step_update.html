@@ -1,18 +1,51 @@
 {% extends "backend/base.html" %}
 {% load crispy_forms_tags i18n sekizai_tags static %}
-{% block title %}{% translate "Update Step" %} - {{ block.super }}{% endblock %}
+{% block title %}Modifier une étape — {{ object.title }} - {{ block.super }}{% endblock %}
 
-{% block page_title %}{% translate "Update Step" %}{% endblock %}
+{% block page_title %}<i class="icon-server" aria-hidden="true"></i>&nbsp;&nbsp;Modifier une étape{% endblock %}
 
 {% block content %}
-  {% crispy form %}
-
-
   {% addtoblock "js" %}
     {{ form.media.js }}
   {% endaddtoblock %}
   {% addtoblock "css" %}
     {{ form.media.css }}
+    <link rel="stylesheet" href="{% static 'backend/css/paper-prepare.css' %}?v=2">
   {% endaddtoblock %}
-
+  <div class="paper-prepare">
+    <header class="paper-prepare-overview">
+      <span class="paper-prepare-label">Parcours d’inscription des familles</span>
+      <h2>{{ object.title }}</h2>
+      <p>Personnalisez les textes affichés aux familles à cette étape du parcours.</p>
+    </header>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      <section class="paper-prepare-card">
+        <h3><i class="icon-pencil" aria-hidden="true"></i> Titre et introduction</h3>
+        <div class="row">
+          <div class="col-md-6">{{ form.title|as_crispy_field }}</div>
+          <div class="col-md-6">{{ form.subtitle|as_crispy_field }}</div>
+        </div>
+        {{ form.lead|as_crispy_field }}
+      </section>
+      <section class="paper-prepare-card">
+        <h3><i class="icon-doc-text" aria-hidden="true"></i> Contenu de la page</h3>
+        {{ form.description|as_crispy_field }}
+      </section>
+      <section class="paper-prepare-card">
+        <h3><i class="icon-right" aria-hidden="true"></i> Navigation entre les étapes</h3>
+        {{ form.link_display|as_crispy_field }}
+      </section>
+      <details class="paper-prepare-card"{% if form.slug.errors %} open{% endif %}>
+        <summary><strong><i class="icon-cog" aria-hidden="true"></i> Paramètres avancés</strong></summary>
+        <p class="paper-prepare-note">L’identifiant relie cette page au parcours d’inscription.</p>
+        {{ form.slug|as_crispy_field }}
+      </details>
+      <div class="form-group paper-prepare-actions">
+        <button type="submit" class="btn btn-success"><i class="icon-ok" aria-hidden="true"></i> Enregistrer les modifications</button>
+        <a href="{% url 'backend:wizard-steps' %}" class="btn btn-default">Annuler</a>
+      </div>
+    </form>
+  </div>
 {% endblock content %}
