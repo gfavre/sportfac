@@ -152,6 +152,9 @@ def format_attendance_sheet(sheet, extra_column_count, last_column):
         cell.fill = PatternFill("solid", fgColor="000000")
         cell.font = Font(name="Arial", size=11, bold=True, color="FFFFFF")
     widths = [9, 5, 6, *([12] * extra_column_count), 12, 20, 24, 10, 10, 14, 14]
+    for index in range(3, 3 + extra_column_count):
+        if sheet.cell(3, index + 1).value == "Abo":
+            widths[index] = 5
     for index, width in enumerate(widths, 1):
         sheet.column_dimensions[get_column_letter(index)].width = width
     sheet.row_dimensions[1].height = 45

@@ -45,7 +45,7 @@ class AttendanceExtraColumns(LongStringPreference):
     default = "[]"
     field_class = AttendanceExtraColumnsField
     widget = AttendanceExtraColumnsWidget
-    verbose_name = "Questions supplémentaires dans la fiche d’absence Excel"
+    verbose_name = "Colonnes supplémentaires des listes de suivi (PDF et Excel)"
     help_text = (
         "Choisissez les questions, leurs titres et les éventuelles correspondances de valeurs. "
         "Les colonnes seront exportées dans cet ordre."

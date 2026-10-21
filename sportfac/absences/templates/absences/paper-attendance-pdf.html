@@ -35,7 +35,7 @@
         <col style="width: 18mm">
         <col style="width: 10mm">
         <col style="width: 12mm">
-        {% for header in sheet.headers|slice:"3:" %}<col>{% endfor %}
+        {% for header in sheet.headers|slice:"3:" %}<col{% if header == "Abo" %} style="width: 9mm"{% endif %}>{% endfor %}
       </colgroup>
       <thead><tr>{% for header in sheet.headers %}<th>{{ header }}</th>{% endfor %}</tr></thead>
       <tbody>

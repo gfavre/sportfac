@@ -317,6 +317,30 @@ class PaperAttendanceTests(TenantTestCase):
         ExtraInfo.objects.filter(registration=self.registration).delete()
         self.assertIsNone(self.workbook(self.client.get(self.url))["D4"].value)
 
+    def test_magicpass_image_question_displays_m_in_pdf_and_excel(self):
+        question = ExtraNeedFactory(
+            question_label="Votre enfant aura-t-il un abonnement MagicPass?", type="IM", choices=["NON", "OUI"]
+        )
+        columns = [{"question": question.question_label, "label": "Abo", "values": {"OUI": "M", "NON": ""}}]
+        self.preferences["site__ATTENDANCE_EXTRA_COLUMNS"] = json.dumps(columns)
+        extra = ExtraInfo.objects.create(registration=self.registration, key=question, value="OUI")
+        data = attendance_data(self.course, date(2026, 2, 7))
+        html = render_to_string("absences/paper-attendance-pdf.html", {"sheets": [data]})
+        self.assertIn("<th>Abo</th>", html)
+        self.assertIn('<col style="width: 9mm">', html)
+        self.assertIn("<td>M</td>", html)
+        sheet = self.workbook(self.client.get(self.url))
+        self.assertEqual(sheet["D4"].value, "M")
+        self.assertEqual(sheet.column_dimensions["D"].width, 5)
+        extra.value = "NON"
+        extra.save()
+        data = attendance_data(self.course, date(2026, 2, 7))
+        self.assertEqual(data["rows"][0][data["headers"].index("Abo")], "")
+        self.assertIsNone(self.workbook(self.client.get(self.url))["D4"].value)
+        extra.delete()
+        data = attendance_data(self.course, date(2026, 2, 7))
+        self.assertEqual(data["rows"][0][data["headers"].index("Abo")], "")
+
     def test_preference_admin_editor_and_save(self):
         question = ExtraNeedFactory(question_label="Magic Pass <test> ?")
         pref = GlobalPreferenceModel.objects.get(section="site", name="ATTENDANCE_EXTRA_COLUMNS")

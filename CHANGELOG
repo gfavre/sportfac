@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Fixed
+- Narrow the Abo column in PDF and Excel attendance sheets to leave more room for pupil details.
+- Clarify that additional attendance columns apply to both PDF and Excel exports; cover MagicPass OUI/NON answers with a regression test.
 - Cap registration charges at zero after discounts when recalculating invoices, preventing negative totals during backend edits without applying excess discounts to other courses or rentals.
 - Accept negative answers to backend yes/no questions and store them as canonical 0/1 values so associated price adjustments remain correct.
 - Allow backend staff to edit canceled registrations and change their status, persisting cancellation details and refreshing places and attendance. Replace the confusing status pane with an active/all/canceled selector and prevent duplicate reactivations.
