@@ -1,33 +1,32 @@
-# -*- coding: utf-8 -*-
+from unittest.mock import patch
+
 from django.contrib.auth.models import AnonymousUser
 from django.forms.models import model_to_dict
-from django.test import RequestFactory, override_settings
+from django.test import RequestFactory
+from django.test import override_settings
 from django.urls import reverse
 
 from absences.models import Session
 from absences.tests.factories import AbsenceFactory
 from activities.models import Activity
-from activities.tests.factories import ActivityFactory, CourseFactory
+from activities.tests.factories import ActivityFactory
+from activities.tests.factories import CourseFactory
 from backend.utils import AbsencePDFRenderer
-from mock import patch
 from profiles.tests.factories import FamilyUserFactory
-
 from sportfac.utils import TenantTestCase
 
-from ...views.activity_views import (
-    ActivityAbsenceView,
-    ActivityCreateView,
-    ActivityDeleteView,
-    ActivityDetailView,
-    ActivityListView,
-    ActivityUpdateView,
-)
+from ...views.activity_views import ActivityAbsenceView
+from ...views.activity_views import ActivityCreateView
+from ...views.activity_views import ActivityDeleteView
+from ...views.activity_views import ActivityDetailView
+from ...views.activity_views import ActivityListView
+from ...views.activity_views import ActivityUpdateView
 from .base import fake_registrations_open_middleware
 
 
 class ActivityAbsenceViewTests(TenantTestCase):
     def setUp(self):
-        super(ActivityAbsenceViewTests, self).setUp()
+        super().setUp()
         self.activity = ActivityFactory()
         self.course = CourseFactory(activity=self.activity)
         self.absence = AbsenceFactory(session__course=self.course, session__activity=self.activity)
@@ -55,8 +54,17 @@ class ActivityAbsenceViewTests(TenantTestCase):
         response = self.view(self.request, pk=self.activity.pk)
         self.assertEqual(response.status_code, 200)
 
+    @override_settings(KEPCHUP_PAPER_ATTENDANCE=True)
+    def test_activity_absences_render_without_course_attendance_button(self):
+        CourseFactory(activity=self.activity)
+        response = self.view(self.request, activity=self.activity.slug)
+        response.render()
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="generate-pdf"')
+        self.assertNotContains(response, "Fiche d’absence")
+
     def test_c_param(self):
-        request = RequestFactory().get(self.url + "?c={}&c=9999".format(self.course.pk))
+        request = RequestFactory().get(self.url + f"?c={self.course.pk}&c=9999")
         request.user = self.user
         response = self.view(request, pk=self.activity.pk)
         self.assertEqual(response.status_code, 200)
@@ -103,7 +111,7 @@ class ActivityAbsenceViewTests(TenantTestCase):
 
 class ActivityCreateViewTests(TenantTestCase):
     def setUp(self):
-        super(ActivityCreateViewTests, self).setUp()
+        super().setUp()
         self.login_url = reverse("profiles:auth_login")
         self.url = reverse("backend:activity-create")
         self.user = FamilyUserFactory(is_manager=True)
@@ -194,7 +202,7 @@ class ActivityDeleteViewTests(TenantTestCase):
 
 class ActivityDetailViewTests(TenantTestCase):
     def setUp(self):
-        super(ActivityDetailViewTests, self).setUp()
+        super().setUp()
         self.activity = ActivityFactory()
         self.course = CourseFactory(activity=self.activity)
         self.login_url = reverse("profiles:auth_login")
@@ -230,7 +238,7 @@ class ActivityDetailViewTests(TenantTestCase):
 
 class ActivityListViewTests(TenantTestCase):
     def setUp(self):
-        super(ActivityListViewTests, self).setUp()
+        super().setUp()
         self.activity = ActivityFactory()
         self.login_url = reverse("profiles:auth_login")
         self.url = reverse("backend:activity-list")
@@ -265,7 +273,7 @@ class ActivityListViewTests(TenantTestCase):
 
 class ActivityUpdateViewTests(TenantTestCase):
     def setUp(self):
-        super(ActivityUpdateViewTests, self).setUp()
+        super().setUp()
         self.activity = ActivityFactory()
         self.data = model_to_dict(self.activity)
         self.login_url = reverse("profiles:auth_login")

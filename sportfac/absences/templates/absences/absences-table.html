@@ -326,7 +326,7 @@
   <button class="btn btn-success btn-large" id="generate-pdf">
     <i class="icon icon-file-pdf"></i> {% translate "Export to PDF" %}
   </button>
-  {% paper_attendance_button course %}
+  {% if course %}{% paper_attendance_button course %}{% endif %}
 </p>
 
 <div class="modal fade" id="remove-session-confirm-window" tabindex="-1" role="dialog">

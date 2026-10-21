@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Fixed
+- Fix the activity absence page crashing when paper attendance is enabled and multiple courses are displayed without a single selected course.
+
 ### Changed
 - Align family convocation and practical reminder previews with instructor document emails, showing send totals, recipient and child details, attachments and a clear final confirmation.
 
