@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+
+## 4.12.0 - 2026-10-21
+
 ### Changed
 - Default the child creation form to French while preserving any other language selected by staff.
 - Harmonize backend creation pages with consistent section styling, labels above fields, heading icons and explicit create/cancel actions; preserve the specialized preview and scheduling workflows.
@@ -14,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Align family convocation and practical reminder previews with instructor document emails, showing send totals, recipient and child details, attachments and a clear final confirmation.
 
 ### Fixed
+- Restore styled fields and multiple school-year/building selection in teacher creation after the layout update; use compatible Django widgets for teacher and building creation.
 - Fix the activity absence page crashing when paper attendance is enabled and multiple courses are displayed without a single selected course.
 
 ## 4.11.0 - 2026-10-21

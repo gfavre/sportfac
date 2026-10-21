@@ -4,6 +4,14 @@ Living list of known technical debt for the sportfac/Kepchup project. Not a task
 tracker — just a reference so decisions and their context aren't re-derived from
 scratch each time. Update in place as items are resolved or new ones are found.
 
+## Legacy Floppyforms rendering
+
+- Some school update/import forms still use Floppyforms and its own template tags.
+  Passing those widgets through Crispy loses styling attributes and can strip
+  `multiple` from selectors. Teacher and building creation now use Django widgets
+  in `backend.forms`; keep that distinction when harmonizing other forms, and
+  verify rendered control attributes and multiple-value submissions.
+
 ## Production Python compatibility
 
 - Production deployments including Rojalets and Vevey run Python 3.8, while the

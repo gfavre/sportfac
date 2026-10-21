@@ -10,6 +10,8 @@ from django.views.generic import FormView
 from django.views.generic import ListView
 from django.views.generic import UpdateView
 
+from backend.forms import BuildingCreateForm
+from backend.forms import TeacherCreateForm
 from registrations.models import Child
 from schools.forms import BuildingForm
 from schools.forms import TeacherForm
@@ -44,7 +46,7 @@ class TeacherListView(FullBackendMixin, ListView):
 
 class TeacherCreateView(FullBackendMixin, SuccessMessageMixin, CreateView):
     model = Teacher
-    form_class = TeacherForm
+    form_class = TeacherCreateForm
     template_name = "backend/teacher/create.html"
     success_url = reverse_lazy("backend:teacher-list")
     success_message = _('<a href="%(url)s" class="alert-link">Teacher %(name)s)</a> has been created.')
@@ -113,7 +115,7 @@ class BuildingListView(FullBackendMixin, ListView):
 
 class BuildingCreateView(FullBackendMixin, SuccessMessageMixin, CreateView):
     model = Building
-    form_class = BuildingForm
+    form_class = BuildingCreateForm
     template_name = "backend/building/create.html"
     success_url = reverse_lazy("backend:building-list")
     success_message = _('<a href="%(url)s" class="alert-link">Building %(name)s)</a> has been created.')

@@ -7,6 +7,9 @@
 .paper-prepare .paper-prepare-card h3, .paper-prepare-form legend { font: 600 16px/1.4 Arial, sans-serif; color: #33434e; margin: 0 0 18px; }
 .paper-prepare-form legend { float: left; width: 100%; padding: 0; border: 0; }
 .paper-prepare-form legend + * { clear: both; }
+.creation-choices .controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px 12px; }
+.creation-choices .checkbox { margin: 0; }
+.creation-choices .controls .help-block { grid-column: 1 / -1; }
 .paper-prepare-form#question-form fieldset { margin-bottom: 18px; }
 .paper-prepare-date { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 0 12px; }
 .paper-prepare-date > .form-group:first-child { flex: 0 1 360px; min-width: 200px; }

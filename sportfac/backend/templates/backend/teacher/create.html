@@ -5,7 +5,24 @@
 
 {% block page_title %}<i class="icon-adult" aria-hidden="true"></i>&nbsp;&nbsp;{% translate "Create a new teacher" %}{% endblock %}
 
-{% block creation_fields %}<div class="paper-prepare-card">{{ form|crispy }}</div>{% endblock %}
+{% block creation_fields %}
+  {{ form.non_field_errors }}
+  <fieldset>
+    <legend>Identité et contact</legend>
+    <div class="row">
+      <div class="col-sm-6">{{ form.first_name|as_crispy_field }}</div>
+      <div class="col-sm-6">{{ form.last_name|as_crispy_field }}</div>
+    </div>
+    {{ form.email|as_crispy_field }}
+  </fieldset>
+  <fieldset>
+    <legend>Affectation scolaire</legend>
+    <div class="row">
+      <div class="col-sm-6 creation-choices">{{ form.years|as_crispy_field }}</div>
+      <div class="col-sm-6">{{ form.buildings|as_crispy_field }}</div>
+    </div>
+  </fieldset>
+{% endblock creation_fields %}
 
 {% block creation_label %}{% translate "Create teacher" %}{% endblock %}
 

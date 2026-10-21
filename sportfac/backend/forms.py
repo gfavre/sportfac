@@ -20,10 +20,13 @@ from django_select2 import forms as s2forms
 
 from activities.models import Course
 from activities.models import ExtraNeed
+from profiles.models import SchoolYear
 from registrations.models import Child
 from registrations.models import ExtraInfo
 from registrations.models import Registration
 from registrations.utils import check_children_load_format
+from schools.models import Building
+from schools.models import Teacher
 from sportfac.richtext import RichTextWidget
 
 from .models import YearTenant
@@ -201,6 +204,42 @@ class TransportWidget(s2forms.ModelSelect2Widget):
     search_fields = [
         "name__icontains",
     ]
+
+
+class BuildingMultipleWidget(s2forms.ModelSelect2MultipleWidget):
+    search_fields = ["name__icontains"]
+
+
+class TeacherCreateForm(forms.ModelForm):
+    """Use Django widgets: the creation template renders fields through Crispy."""
+
+    years = forms.ModelMultipleChoiceField(
+        label=_("Années scolaires"),
+        queryset=SchoolYear.visible_objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        help_text=_("Cochez toutes les années dans lesquelles cet enseignant intervient."),
+    )
+    buildings = forms.ModelMultipleChoiceField(
+        label=_("Bâtiments scolaires"),
+        queryset=Building.objects.all(),
+        widget=BuildingMultipleWidget(
+            attrs={"data-minimum-input-length": 0, "data-placeholder": _("Choisir les bâtiments")}
+        ),
+        required=False,
+        help_text=_("Facultatif. Vous pouvez sélectionner plusieurs bâtiments."),
+    )
+
+    class Meta:
+        model = Teacher
+        fields = ("first_name", "last_name", "email", "years", "buildings")
+
+
+class BuildingCreateForm(forms.ModelForm):
+    """Keep legacy Floppyforms widgets out of the Crispy creation template."""
+
+    class Meta:
+        model = Building
+        fields = ("name", "address", "zipcode", "city", "country")
 
     def build_attrs(self, base_attrs, extra_attrs=None):
         default_attrs = {"data-minimum-input-length": 0}
