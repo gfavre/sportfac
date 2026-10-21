@@ -1,27 +1,26 @@
 from unittest import mock
 
+import faker
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.test.client import RequestFactory
 from django.urls import reverse
 
-import faker
-
 from activities.tests.factories import CourseFactory
 from mailer.models import MailArchive
 from mailer.tests.factories import MailArchiveFactory
 from profiles.models import FamilyUser
-from profiles.tests.factories import FamilyUserFactory, SchoolYearFactory
+from profiles.tests.factories import FamilyUserFactory
+from profiles.tests.factories import SchoolYearFactory
 from registrations.models import Bill
-from registrations.tests.factories import (
-    BillFactory,
-    ChildFactory,
-    RegistrationFactory,
-    WaitingBillFactory,
-    WaitingRegistrationFactory,
-)
+from registrations.tests.factories import BillFactory
+from registrations.tests.factories import ChildFactory
+from registrations.tests.factories import RegistrationFactory
+from registrations.tests.factories import WaitingBillFactory
+from registrations.tests.factories import WaitingRegistrationFactory
 from sportfac.middleware import VersionMiddleware
 from sportfac.utils import process_request_for_middleware
+
 from ...views import mail_views
 from .base import BackendTestBase
 
@@ -279,6 +278,22 @@ class MailCourseInstructorsViewTest(BackendTestBase):
 
     def test_rights(self):
         self.generic_test_rights(self.url)
+
+    @mock.patch("mailer.tasks.send_instructors_email.delay")
+    def test_admin_copies_without_archive_address_use_emails(self, sendmail_method):
+        from backend.dynamic_preferences_registry import global_preferences_registry
+
+        global_preferences_registry.manager()["email__ADMIN_ARCHIVE_MAIL"] = ""
+        request = self.factory.post(self.url, data={"copy_all_admins": "on"})
+        request.user = self.manager
+        process_request_for_middleware(request, SessionMiddleware)
+        process_request_for_middleware(request, MessageMiddleware)
+        response = mail_views.MailCourseInstructorsView.as_view()(request, course=self.course.pk)
+        self.assertEqual(response.status_code, 302)
+        expected = {admin.get_email_string() for admin in FamilyUser.managers_objects.all()}
+        self.assertTrue(expected)
+        for call in sendmail_method.call_args_list:
+            self.assertEqual(set(call.kwargs["bcc"]), expected)
 
     def test_get(self):
         request = self.factory.get(self.url)

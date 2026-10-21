@@ -3,7 +3,9 @@ import shutil
 from smtplib import SMTPException
 from tempfile import mkdtemp
 
+from anymail.exceptions import AnymailInvalidAddress
 from anymail.exceptions import AnymailRecipientsRefused
+from anymail.utils import parse_address_list
 from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.db import transaction
@@ -111,6 +113,19 @@ def send_instructors_email(
     logger.debug("Forging email to instructors of course #%s" % course_pk)
     if bcc is None:
         bcc = []
+    valid_bcc = []
+    for address in bcc:
+        try:
+            parse_address_list([address], field="bcc")
+        except AnymailInvalidAddress:
+            logger.warning(
+                "Ignoring invalid instructor email BCC %r (course=%s, instructor=%s)",
+                address,
+                course_pk,
+                instructor_pk,
+            )
+        else:
+            valid_bcc.append(address)
     course = Course.objects.get(pk=course_pk)
     instructor = FamilyUser.objects.get(pk=instructor_pk)
 
@@ -120,7 +135,7 @@ def send_instructors_email(
         body=message,
         from_email=from_email,
         to=[instructor.get_email_string()],
-        bcc=bcc,
+        bcc=valid_bcc,
         reply_to=reply_to,
     )
     logger.debug("Message created")

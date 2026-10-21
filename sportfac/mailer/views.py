@@ -308,7 +308,7 @@ class MailCourseInstructorsView(ParticipantsBaseMixin, TemplatedEmailMixin, Canc
                 bcc_list.add(admin_email)
             else:
                 for admin in FamilyUser.managers_objects.all():
-                    bcc_list.add(str(admin.pk))
+                    bcc_list.add(admin)
             for manager in FamilyUser.managers_objects.exclude(pk=str(self.request.user.pk)):
                 bcc_list.add(manager)
         return bcc_list

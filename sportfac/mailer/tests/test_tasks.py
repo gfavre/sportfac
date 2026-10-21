@@ -48,7 +48,7 @@ class SendInstructorsEmailAdditionalDocumentsTest(TenantTestCase):
         self.settings_override.enable()
         self.addCleanup(self.settings_override.disable)
 
-    def _send(self):
+    def _send(self, bcc=None):
         return tasks.send_instructors_email(
             self.course.pk,
             self.instructor.pk,
@@ -56,7 +56,26 @@ class SendInstructorsEmailAdditionalDocumentsTest(TenantTestCase):
             "Voici les documents",
             "noreply@kepchup.ch",
             ["noreply@kepchup.ch"],
+            bcc=bcc,
         )
+
+    @override_settings(KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS=[])
+    def test_invalid_bcc_does_not_block_delivery_to_valid_recipients(self):
+        valid_bcc = ["Direction <es.coppet@vd.ch>", "Juliana Isgrò <juliana.isgro@apej.ch>"]
+        invalid_bcc = str(self.instructor.pk)
+        with self.assertLogs("mailer.tasks", level="WARNING") as logs:
+            self._send(bcc=[invalid_bcc, *valid_bcc])
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, [self.instructor.get_email_string()])
+        self.assertEqual(mail.outbox[0].bcc, valid_bcc)
+        self.assertIn(invalid_bcc, logs.output[0])
+
+    @override_settings(KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS=[])
+    def test_all_invalid_bcc_still_sends_to_instructor(self):
+        with self.assertLogs("mailer.tasks", level="WARNING"):
+            self._send(bcc=[str(self.instructor.pk)])
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].bcc, [])
 
     @override_settings(KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS=["pdf/does-not-exist.pdf"])
     def test_missing_document_does_not_send_the_email(self):
