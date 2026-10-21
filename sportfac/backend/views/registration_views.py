@@ -27,18 +27,15 @@ from django.views.generic import ListView
 from django.views.generic import TemplateView
 from django.views.generic import UpdateView
 from django.views.generic import View
-from formtools.wizard.views import SessionWizardView
 
 from absences.models import Absence
 from activities.models import Activity
 from activities.models import Course
 from activities.models import ExtraNeed
-from backend.forms import BillingForm
 from backend.forms import ChildSelectForm
-from backend.forms import CourseSelectForm
 from backend.forms import ExtraInfoFormSet
+from backend.forms import RegistrationCreateForm
 from backend.forms import RegistrationForm
-from backend.forms import SendConfirmationForm
 from profiles.models import FamilyUser as User
 from registrations.bibs import generate_bibs
 from registrations.forms import AssignBibsTransportForm
@@ -198,29 +195,51 @@ class RegistrationsMoveView(BackendMixin, FormView):
         return super().get_context_data(**kwargs)
 
 
-class RegistrationCreateView(BackendMixin, SessionWizardView):
-    form_list = (
-        (_("Child"), ChildSelectForm),
-        (_("Course"), CourseSelectForm),
-        (_("Email"), SendConfirmationForm),
-        (_("Billing"), BillingForm),
-    )
-    condition_dict = {
-        _("Billing"): not settings.KEPCHUP_NO_PAYMENT,
-        _("Email"): settings.KEPCHUP_NO_PAYMENT,
-    }
-    template_name = "backend/registration/wizard.html"
+class RegistrationCreateView(BackendMixin, FormView):
+    form_class = RegistrationCreateForm
+    template_name = "backend/registration/create.html"
     instance = None
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial["child"] = self.request.GET.get("child")
+        return initial
+
+    def get_template_names(self):
+        if self.request.method == "GET" and self.request.GET.get("courses") == "1":
+            return ["backend/registration/includes/create-course.html"]
+        return super().get_template_names()
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        # Resolve the child before constructing the course queryset, including on POST.
+        # Never trust the browser's dynamically refreshed course choices for validation.
+        child_form = ChildSelectForm(data=self.request.POST if self.request.method == "POST" else self.request.GET)
+        instance = Registration()
+        if child_form.is_valid():
+            instance.child = child_form.cleaned_data["child"]
+        kwargs.update(instance=instance, user=self.request.user)
+        return kwargs
+
+    def form_valid(self, form):
+        self.instance = form.save(commit=False)
+        return self.done([form], {})
+
+    def post(self, request, *args, **kwargs):
+        if "refresh_courses" in request.POST:
+            form_kwargs = self.get_form_kwargs()
+            form_kwargs.pop("data", None)
+            form_kwargs.pop("files", None)
+            form_kwargs["initial"] = {key: request.POST.get(key) for key in ("child", "paid", "send_confirmation")}
+            form = self.form_class(**form_kwargs)
+            return self.render_to_response(self.get_context_data(form=form))
+        return super().post(request, *args, **kwargs)
 
     def set_message(self, level=messages.INFO, message=""):
         messages.add_message(self.request, level, message)
 
     @transaction.atomic
     def done(self, form_list, form_dict, **kwargs):
-        # form_list
-        # [<ChildSelectForm bound=True, valid=True, fields=(child)>,
-        # <CourseSelectForm bound=True, valid=True, fields=(course)>,
-        # <BillingForm bound=True, valid=True, fields=(paid;send_confirmation)>]
         user = self.instance.child.family
         message = _("Registration for %(child)s to %(course)s has been validated.")
         message %= {"child": self.instance.child, "course": self.instance.course.short_name}
@@ -253,17 +272,6 @@ class RegistrationCreateView(BackendMixin, SessionWizardView):
             message %= {"child": self.instance.child, "course": self.instance.course.short_name}
             self.set_message(messages.WARNING, message)
         return response
-
-    def get_form_instance(self, step):
-        if self.instance is None:
-            self.instance = Registration()
-        return self.instance
-
-    def get_form_kwargs(self, step=None):
-        kwargs = super().get_form_kwargs(step)
-        if step == _("Course"):
-            kwargs.update({"user": self.request.user})
-        return kwargs
 
 
 class RegistrationDeleteView(RegistrationMixin, DeleteView):

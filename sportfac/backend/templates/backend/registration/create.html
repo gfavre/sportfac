@@ -1,0 +1,53 @@
+{% extends "backend/base.html" %}
+{% load crispy_forms_tags i18n sekizai_tags static %}
+
+{% block title %}{% translate "Create a new registration" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}<i class="icon-address-book" aria-hidden="true"></i>&nbsp;&nbsp;{% translate "Create a new registration" %}{% endblock %}
+
+{% block content %}
+  {% addtoblock "css" %}
+    {{ form.media.css }}
+    <link rel="stylesheet" href="{% static 'backend/css/paper-prepare.css' %}?v=2">
+  {% endaddtoblock %}
+  {% addtoblock "js" %}
+    {{ form.media.js }}
+    <script src="{% static 'backend/js/registration-create.js' %}?v=1"></script>
+  {% endaddtoblock %}
+  <div class="paper-prepare">
+    <header class="paper-prepare-overview">
+      <span class="paper-prepare-label">Inscription administrative</span>
+      <h2>Inscrire un enfant à un cours</h2>
+      <p>Choisissez l’enfant et son cours, puis créez l’inscription en une seule fois.</p>
+    </header>
+    <form method="post" id="registration-create" data-courses-url="{% url 'backend:registration-create' %}">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      <section class="paper-prepare-card">
+        <h3>Enfant et cours</h3>
+        <div class="row">
+          <div class="col-md-6">
+            {{ form.child|as_crispy_field }}
+            <noscript><button type="submit" name="refresh_courses" value="1" formnovalidate class="btn btn-default">Afficher les cours de cet enfant</button></noscript>
+          </div>
+          <div class="col-md-6" id="registration-course" aria-live="polite">
+            {% include "backend/registration/includes/create-course.html" %}
+          </div>
+        </div>
+        <p id="registration-course-error" class="alert alert-danger" role="alert" hidden>Les cours n’ont pas pu être chargés. Sélectionnez à nouveau l’enfant pour réessayer.</p>
+      </section>
+      <section class="paper-prepare-card">
+        <h3>Confirmation{% if form.paid %} et facturation{% endif %}</h3>
+        {% if form.paid %}
+          {{ form.paid|as_crispy_field }}
+          <p class="paper-prepare-note">Une facture sera créée. Si le paiement n’a pas encore été reçu, laissez cette case décochée.</p>
+        {% endif %}
+        {{ form.send_confirmation|as_crispy_field }}
+      </section>
+      <div class="form-group paper-prepare-actions">
+        <button type="submit" class="btn btn-success" id="registration-submit">Créer l’inscription</button>
+        <a href="{% url 'backend:registration-list' %}" class="btn btn-default">{% translate "Cancel" %}</a>
+      </div>
+    </form>
+  </div>
+{% endblock content %}

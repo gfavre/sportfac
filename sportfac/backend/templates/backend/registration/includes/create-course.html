@@ -1,0 +1,8 @@
+{% load crispy_forms_tags %}
+{{ form.course|as_crispy_field }}
+{% if form.instance.child_id %}
+  <p class="help-block">Les cours proposés tiennent compte de l’âge ou de l’année scolaire de l’enfant, de ses inscriptions et de vos droits d’accès.</p>
+  {% if not form.fields.course.queryset.exists %}<p class="alert alert-info">Aucun cours disponible pour cet enfant.</p>{% endif %}
+{% else %}
+  <p class="help-block">Choisissez d’abord un enfant pour afficher les cours proposés.</p>
+{% endif %}

@@ -6,11 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Changed
+- Create backend registrations on a single page, updating eligible courses when the child changes and keeping payment and confirmation options alongside the selection.
+- Align family convocation and practical reminder previews with instructor document emails, showing send totals, recipient and child details, attachments and a clear final confirmation.
+
 ### Fixed
 - Fix the activity absence page crashing when paper attendance is enabled and multiple courses are displayed without a single selected course.
-
-### Changed
-- Align family convocation and practical reminder previews with instructor document emails, showing send totals, recipient and child details, attachments and a clear final confirmation.
 
 ## 4.11.0 - 2026-10-21
 

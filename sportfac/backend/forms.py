@@ -465,6 +465,26 @@ class BillingForm(forms.ModelForm):
         fields = ("paid", "send_confirmation")
 
 
+class RegistrationCreateForm(CourseSelectForm):
+    child = forms.ModelChoiceField(label=_("Child"), queryset=Child.objects.exclude(family=None), widget=ChildWidget())
+    course = forms.ModelChoiceField(label=_("Course"), queryset=Course.objects.all(), widget=CourseWidget())
+    paid = forms.BooleanField(required=False, label=_("Mark as paid?"))
+    send_confirmation = forms.BooleanField(required=False, initial=True, label=_("Send confirmation email?"))
+
+    class Meta:
+        model = Registration
+        fields = ("child", "course", "paid")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["course"].empty_label = _("Choisir un cours")
+        if not self.instance.child_id:
+            self.fields["course"].queryset = Course.objects.none()
+            self.fields["course"].disabled = True
+        if settings.KEPCHUP_NO_PAYMENT:
+            del self.fields["paid"]
+
+
 class SessionForm(forms.Form):
     date = forms.DateField(
         label=_("Session date"),

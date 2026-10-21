@@ -1,32 +1,40 @@
+from datetime import date
 from unittest import mock
 from unittest.mock import patch
 
+from bs4 import BeautifulSoup
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.formsets import BaseFormSet
-from django.forms.models import BaseModelFormSet, model_to_dict
-from django.test import RequestFactory, override_settings
+from django.forms.models import BaseModelFormSet
+from django.forms.models import model_to_dict
+from django.test import RequestFactory
+from django.test import override_settings
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from activities.tests.factories import CourseFactory, ExtraNeedFactory
-from backend.forms import BillingForm, ChildSelectForm, CourseSelectForm
-from bs4 import BeautifulSoup
+from activities.tests.factories import CourseFactory
+from activities.tests.factories import ExtraNeedFactory
+from backend.forms import BillingForm
+from backend.forms import ChildSelectForm
+from backend.forms import CourseSelectForm
 from profiles.tests.factories import FamilyUserFactory
-from registrations.models import Bill, Registration
-from registrations.tests.factories import FIXTURES_PATH, ChildFactory, ExtraInfoFactory, RegistrationFactory
+from registrations.models import Bill
+from registrations.models import Registration
+from registrations.tests.factories import FIXTURES_PATH
+from registrations.tests.factories import ChildFactory
+from registrations.tests.factories import ExtraInfoFactory
+from registrations.tests.factories import RegistrationFactory
+from sportfac.utils import TenantTestCase
+from sportfac.utils import process_request_for_middleware
 
-from sportfac.utils import TenantTestCase, process_request_for_middleware
-
-from ...views.registration_views import (
-    RegistrationCreateView,
-    RegistrationDeleteView,
-    RegistrationDetailView,
-    RegistrationListView,
-    RegistrationsMoveView,
-    RegistrationUpdateView,
-)
+from ...views.registration_views import RegistrationCreateView
+from ...views.registration_views import RegistrationDeleteView
+from ...views.registration_views import RegistrationDetailView
+from ...views.registration_views import RegistrationListView
+from ...views.registration_views import RegistrationsMoveView
+from ...views.registration_views import RegistrationUpdateView
 from .base import fake_registrations_open_middleware
 
 
@@ -43,7 +51,7 @@ class RegistrationCreateViewTests(TenantTestCase):
         self.request.user = self.user
         process_request_for_middleware(self.request, SessionMiddleware)
         self.child = ChildFactory()
-        self.course = CourseFactory()
+        self.course = CourseFactory(age_min=None, age_max=None, schoolyear_min=None, schoolyear_max=None)
         self.registration = Registration()
         self.child_form = ChildSelectForm(instance=self.registration, data={"child": self.child})
         self.child_form.is_valid()
@@ -79,6 +87,106 @@ class RegistrationCreateViewTests(TenantTestCase):
         # noinspection PyUnresolvedReferences
         content = response.render().content
         self.assertTrue(len(content) > 0)
+
+    def post_registration(self, **data):
+        request = self.factory.post(self.url, data={"child": self.child.pk, "course": self.course.pk, **data})
+        request.user = self.user
+        return self.view(request)
+
+    def test_single_page_shows_all_options(self):
+        with override_settings(KEPCHUP_NO_PAYMENT=False):
+            response = self.view(self.request).render()
+        self.assertContains(response, 'name="child"')
+        self.assertContains(response, 'name="course"')
+        self.assertContains(response, 'name="paid"')
+        self.assertContains(response, 'name="send_confirmation"')
+        self.assertNotContains(response, "wizard_goto_step")
+
+    def test_course_fragment_is_filtered_and_does_not_create_registration(self):
+        RegistrationFactory(child=self.child, course=self.course)
+        request = self.factory.get(self.url, {"courses": "1", "child": self.child.pk})
+        request.user = self.user
+        response = self.view(request).render()
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'name="course"')
+        self.assertNotContains(response, "<form")
+        self.assertNotIn(self.course, response.context_data["form"].fields["course"].queryset)
+        self.assertEqual(Registration.objects.count(), 1)
+
+    @override_settings(KEPCHUP_NO_PAYMENT=True)
+    @mock.patch.object(RegistrationCreateView, "set_message")
+    def test_single_post_creates_confirmed_registration_without_bill(self, _message):
+        response = self.post_registration()
+        self.assertEqual(response.status_code, 302)
+        registration = Registration.objects.get(child=self.child, course=self.course)
+        self.assertEqual(registration.status, Registration.STATUS.confirmed)
+        self.assertEqual(Bill.objects.count(), 0)
+
+    @override_settings(KEPCHUP_NO_PAYMENT=True)
+    def test_payment_option_is_hidden_without_payment(self):
+        response = self.view(self.request).render()
+        self.assertNotContains(response, 'name="paid"')
+        self.assertContains(response, 'name="send_confirmation"')
+
+    def test_without_javascript_refresh_only_displays_courses(self):
+        response = self.post_registration(refresh_courses="1")
+        response.render()
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(self.course, response.context_data["form"].fields["course"].queryset)
+        self.assertFalse(Registration.objects.exists())
+
+    @override_settings(KEPCHUP_LIMIT_BY_SCHOOL_YEAR=False, KEPCHUP_EXPLICIT_SESSION_DATES=False)
+    def test_post_rechecks_child_age_instead_of_trusting_course_selection(self):
+        self.course = CourseFactory(age_min=8, age_max=None, start_date=date.today())
+        self.child.birth_date = date.today()
+        self.child.save()
+        response = self.post_registration()
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("course", response.context_data["form"].errors)
+        self.assertFalse(Registration.objects.exists())
+
+    def test_fragment_requires_backend_access(self):
+        request = self.factory.get(self.url, {"courses": "1", "child": self.child.pk})
+        for user in (AnonymousUser(), FamilyUserFactory(is_manager=False)):
+            with self.subTest(user=user):
+                request.user = user
+                self.assertEqual(self.view(request).status_code, 302)
+
+    @override_settings(KEPCHUP_NO_PAYMENT=False)
+    @mock.patch.object(RegistrationCreateView, "set_message")
+    def test_single_post_creates_registration_and_bill(self, _message):
+        with mock.patch.object(Bill, "send_to_accountant"), mock.patch.object(
+            Bill, "send_confirmation"
+        ) as confirmation:
+            response = self.post_registration(paid="on", send_confirmation="on")
+        self.assertEqual(response.status_code, 302)
+        registration = Registration.objects.get(child=self.child, course=self.course)
+        self.assertEqual(registration.status, Registration.STATUS.confirmed)
+        self.assertTrue(registration.paid)
+        self.assertTrue(registration.bill.is_paid)
+        confirmation.assert_called_once()
+
+    def test_duplicate_post_is_rejected_without_new_bill(self):
+        RegistrationFactory(child=self.child, course=self.course)
+        response = self.post_registration()
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("course", response.context_data["form"].errors)
+        self.assertEqual(Registration.objects.count(), 1)
+        self.assertEqual(Bill.objects.count(), 0)
+
+    def test_familyless_child_is_rejected(self):
+        child = ChildFactory(family=None)
+        response = self.post_registration(child=child.pk)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("child", response.context_data["form"].errors)
+        self.assertFalse(Registration.objects.exists())
+
+    def test_restricted_manager_cannot_register_to_other_activity(self):
+        self.user = FamilyUserFactory(is_manager=True, is_restricted_manager=True)
+        response = self.post_registration()
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("course", response.context_data["form"].errors)
+        self.assertFalse(Registration.objects.exists())
 
     @override_settings(KEPCHUP_NO_PAYMENT=True)
     @mock.patch.object(RegistrationCreateView, "set_message")
