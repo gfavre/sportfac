@@ -578,6 +578,64 @@ class RegistrationUpdateViewTests(TenantTestCase):
         self.registration.refresh_from_db()
         self.assertEqual(self.registration.status, "confirmed")
 
+    @override_settings(KEPCHUP_NO_PAYMENT=False)
+    @patch("django.contrib.messages.success")
+    def test_editing_answer_with_discount_above_price_does_not_crash(self, _messages):
+        bill = Bill.objects.create(family=self.registration.child.family, status=Bill.STATUS.paid)
+        self.registration.bill = bill
+        self.registration.price = 1
+        self.registration.save()
+        question = ExtraNeedFactory(type="C", choices=["Réduction", "Normal"], price_modifier=[-10, 0])
+        question.courses.add(self.registration.course)
+        extra = ExtraInfoFactory(registration=self.registration, key=question, value="Normal")
+        self.data.update(
+            {
+                "price": 1,
+                "extra_infos-TOTAL_FORMS": 1,
+                "extra_infos-INITIAL_FORMS": 1,
+                "extra_infos-0-id": extra.pk,
+                "extra_infos-0-registration": self.registration.pk,
+                "extra_infos-0-key": question.pk,
+                "extra_infos-0-value": "Réduction",
+            }
+        )
+        response = self.view(self.status_request("confirmed"), pk=self.registration.pk)
+        self.assertEqual(response.status_code, 302)
+        extra.refresh_from_db()
+        bill.refresh_from_db()
+        self.assertEqual(extra.value, "Réduction")
+        self.assertEqual(bill.total, 0)
+
+    @override_settings(KEPCHUP_NO_PAYMENT=False)
+    @patch("django.contrib.messages.success")
+    def test_boolean_no_is_valid_and_yes_keeps_question_discount(self, _messages):
+        bill = Bill.objects.create(family=self.registration.child.family)
+        self.registration.bill = bill
+        self.registration.price = 30
+        self.registration.save()
+        question = ExtraNeedFactory(type="B", choices=[], price_modifier=[0, -10])
+        question.courses.add(self.registration.course)
+        extra = ExtraInfoFactory(registration=self.registration, key=question, value="0")
+        self.data.update(
+            {
+                "price": 30,
+                "extra_infos-TOTAL_FORMS": 1,
+                "extra_infos-INITIAL_FORMS": 1,
+                "extra_infos-0-id": extra.pk,
+                "extra_infos-0-registration": self.registration.pk,
+                "extra_infos-0-key": question.pk,
+            }
+        )
+        for answer, stored, total in (("", "0", 30), ("on", "1", 20)):
+            with self.subTest(answer=answer):
+                self.data["extra_infos-0-value"] = answer
+                response = self.view(self.status_request("confirmed"), pk=self.registration.pk)
+                self.assertEqual(response.status_code, 302)
+                extra.refresh_from_db()
+                bill.refresh_from_db()
+                self.assertEqual(extra.value, stored)
+                self.assertEqual(bill.total, total)
+
     def test_restricted_manager_cannot_edit_canceled_registration_of_other_activity(self):
         self.registration.cancel(user=self.user)
         self.registration.save()

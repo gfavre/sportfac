@@ -14,11 +14,14 @@ from absences.models import Absence
 from absences.tests.factories import SessionFactory
 from activities.tests.factories import AllocationAccountFactory
 from activities.tests.factories import CourseFactory
+from activities.tests.factories import ExtraNeedFactory
+from appointments.models import Rental
 from profiles.tests.factories import CityFactory
 from profiles.tests.factories import FamilyUserFactory
 from sportfac.utils import TenantTestCase
 
 from ..models import Bill
+from ..models import ExtraInfo
 from ..models import Registration
 from ..models import RegistrationsProfile
 from ..tasks import send_bill_confirmation
@@ -509,6 +512,37 @@ class CancelTestCase(TenantTestCase):
 class BillTestCase(TenantTestCase):
     def setUp(self):
         self.bill = BillFactory()
+
+    def test_discount_cannot_make_registration_total_negative(self):
+        registration = RegistrationFactory(bill=self.bill, price=1)
+        question = ExtraNeedFactory(type="C", choices=["Réduction"], price_modifier=[-10])
+        ExtraInfo.objects.create(registration=registration, key=question, value="Réduction")
+        self.bill.refresh_from_db()
+        registration.refresh_from_db()
+        self.assertEqual(self.bill.total, 0)
+        self.assertEqual(registration.price, 1)
+
+    def test_normal_discounts_and_supplements_are_applied_once(self):
+        registration = RegistrationFactory(bill=self.bill, price=30)
+        question = ExtraNeedFactory(
+            type="C", choices=["Réduction", "Normal", "Supplément"], price_modifier=[-10, 0, 15]
+        )
+        extra = ExtraInfo.objects.create(registration=registration, key=question, value="Normal")
+        for value, total in (("Réduction", 20), ("Normal", 30), ("Supplément", 45)):
+            with self.subTest(value=value):
+                extra.value = value
+                extra.save()
+                self.bill.refresh_from_db()
+                self.assertEqual(self.bill.total, total)
+
+    def test_excess_discount_does_not_reduce_other_courses_or_rentals(self):
+        discounted = RegistrationFactory(bill=self.bill, price=1)
+        RegistrationFactory(bill=self.bill, price=50)
+        Rental.objects.create(child=discounted.child, invoice=self.bill, amount=20)
+        question = ExtraNeedFactory(type="C", choices=["Réduction"], price_modifier=[-10])
+        ExtraInfo.objects.create(registration=discounted, key=question, value="Réduction")
+        self.bill.refresh_from_db()
+        self.assertEqual(self.bill.total, 70)
 
     def test_code_for_reasonably_long_names(self):
         self.bill.family.last_name = "Bartholomey-Bolay"

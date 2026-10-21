@@ -808,15 +808,15 @@ class Bill(TimeStampedModel, StatusModel):
     def update_total(self):
         # A single fetch (with extra_infos prefetched) instead of querying self.registrations
         # twice and hitting extra_infos once per registration.
-        registrations = list(self.registrations.prefetch_related("extra_infos").all())
-        registrations_price = sum(registration.price for registration in registrations if registration.price)
-        extra_price = sum(
-            extra_info.price_modifier
+        registrations = list(self.registrations.prefetch_related("extra_infos__key").all())
+        # As in Registration.get_price(), discounts cannot make one registration negative
+        # or pay for another child's course. Keep the staff-entered base price unchanged.
+        registrations_price = sum(
+            max((registration.price or 0) + sum(extra.price_modifier for extra in registration.extra_infos.all()), 0)
             for registration in registrations
-            for extra_info in registration.extra_infos.all()
         )
         rental_price = sum([rental.amount for rental in self.rentals.all()])
-        self.total = registrations_price + extra_price + rental_price
+        self.total = registrations_price + rental_price
 
     def update_status(self):
         if (

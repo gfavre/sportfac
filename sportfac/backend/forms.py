@@ -431,11 +431,18 @@ class ExtraInfoForm(forms.ModelForm):
                     label=_("Answer"),
                 )
             elif self.instance.key.type == "B":
-                self.fields["value"] = forms.BooleanField(label=_("Answer"))
+                self.fields["value"] = forms.BooleanField(label=_("Answer"), required=False)
 
             elif self.instance.key.type == "I":
                 self.fields["value"] = forms.IntegerField(label=_("Answer"))
         self.helper.layout = Layout("key", "value", HTML("<hr>"))
+
+    def clean_value(self):
+        value = self.cleaned_data["value"]
+        if isinstance(self.fields["value"], forms.BooleanField):
+            # Question prices use canonical 0/1 keys; False is a valid answer.
+            return "1" if value else "0"
+        return value
 
 
 class HorizontalInlineFormSet(BaseInlineFormSet):
