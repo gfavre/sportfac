@@ -5433,6 +5433,15 @@ msgstr "Échoué"
 msgid "Pending"
 msgstr "En attente"
 
+#: backend/templates/backend/course/list.html
+msgctxt "registrations"
+msgid "Closed"
+msgstr "Fermées"
+
+#: backend/templates/backend/course/list.html
+msgid "Visibility"
+msgstr "Visibilité"
+
 #: payments/models.py:89
 msgid "Confirmed"
 msgstr "Confirmé"

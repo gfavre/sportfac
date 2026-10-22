@@ -5,6 +5,21 @@ from django.utils.translation import gettext as _
 register = template.Library()
 
 
+@register.filter
+def short_duration(value):
+    if value in (None, ""):
+        return "n/a"
+    try:
+        hours, minutes = divmod(int(value.total_seconds()) // 60, 60)
+    except AttributeError:
+        return ""
+    if hours and minutes:
+        return f"{hours}h{minutes:02d}mn"
+    if hours:
+        return f"{hours}h"
+    return f"{minutes}mn"
+
+
 @register.filter(is_safe=True)
 def duration(value, arg=False):
     """takes a time delta and renders it as duration"""
@@ -37,8 +52,7 @@ def duration(value, arg=False):
         if not len(out):
             if arg:
                 return _("0 second")
-            else:
-                return _("0 minute")
+            return _("0 minute")
         return ", ".join(out)
 
     except AttributeError:

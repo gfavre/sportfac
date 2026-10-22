@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 4.14.0 - 2026-10-22
+
+### Added
+- Filter backend courses by J+S status, completeness, weekday and visibility with compact panels and URL-persisted selections.
+
+### Changed
+- Compact course lists with shorter action and registration-status labels, abbreviated days and durations, and a separated action column.
+- Harmonize course details and attendance pages with clearer session forms, flat table headers, aligned actions and a simpler empty waiting list; preserve underlined section headings.
+
+### Fixed
+- Show actual course occupancy in the capacity gauge when registrations are closed, instead of a full bar; cover closed, full, over-capacity and zero-capacity courses.
+
 ## 4.13.2 - 2026-10-22
 
 ### Fixed

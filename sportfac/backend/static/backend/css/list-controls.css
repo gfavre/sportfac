@@ -49,26 +49,26 @@
         margin-top: 10px;
     }
 }
-.content :is(#users_wrapper, #registrations_wrapper) .dtsp-searchPanes {
+.content :is(#users_wrapper, #registrations_wrapper, #course-table_wrapper) .dtsp-searchPanes {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px;
 }
 
 /* Bootstrap's row clearfix must not occupy a cell in the filter grid. */
-.content :is(#users_wrapper, #registrations_wrapper) .dtsp-searchPanes::before,
-.content :is(#users_wrapper, #registrations_wrapper) .dtsp-searchPanes::after {
+.content :is(#users_wrapper, #registrations_wrapper, #course-table_wrapper) .dtsp-searchPanes::before,
+.content :is(#users_wrapper, #registrations_wrapper, #course-table_wrapper) .dtsp-searchPanes::after {
     display: none;
 }
 
-.content :is(#users_wrapper, #registrations_wrapper) .dtsp-searchPanes > .dtsp-searchPane {
+.content :is(#users_wrapper, #registrations_wrapper, #course-table_wrapper) .dtsp-searchPanes > .dtsp-searchPane {
     min-width: 0 !important;
     max-width: none !important;
     width: 100%;
     padding: 0;
     margin: 0 !important;
 }
-.content :is(#users_wrapper, #registrations_wrapper) .dtsp-searchCont input.search:disabled {
+.content :is(#users_wrapper, #registrations_wrapper, #course-table_wrapper) .dtsp-searchCont input.search:disabled {
     background: transparent;
     border: 0;
     border-radius: 0;
@@ -82,19 +82,19 @@
     opacity: 1;
 }
 
-.content :is(#users_wrapper, #registrations_wrapper) .dtsp-searchCont input.search:disabled::placeholder {
+.content :is(#users_wrapper, #registrations_wrapper, #course-table_wrapper) .dtsp-searchCont input.search:disabled::placeholder {
     color: #333;
     opacity: 1;
 }
 
-.content :is(#users_wrapper, #registrations_wrapper) .dtsp-panesContainer > .row:not(.dtsp-searchPanes) {
+.content :is(#users_wrapper, #registrations_wrapper, #course-table_wrapper) .dtsp-panesContainer > .row:not(.dtsp-searchPanes) {
     display: flex;
     align-items: center;
     gap: 12px;
     margin: 0;
 }
 
-.content :is(#users_wrapper, #registrations_wrapper) .dtsp-clearAll {
+.content :is(#users_wrapper, #registrations_wrapper, #course-table_wrapper) .dtsp-clearAll {
     margin-left: auto;
     margin-right: 0;
     padding: 4px 0;
@@ -106,22 +106,22 @@
     white-space: nowrap;
 }
 
-.content :is(#users_wrapper, #registrations_wrapper) .dtsp-panesContainer > .row:not(.dtsp-searchPanes)::before,
-.content :is(#users_wrapper, #registrations_wrapper) .dtsp-panesContainer > .row:not(.dtsp-searchPanes)::after {
+.content :is(#users_wrapper, #registrations_wrapper, #course-table_wrapper) .dtsp-panesContainer > .row:not(.dtsp-searchPanes)::before,
+.content :is(#users_wrapper, #registrations_wrapper, #course-table_wrapper) .dtsp-panesContainer > .row:not(.dtsp-searchPanes)::after {
     display: none;
 }
 
-.content :is(#users_wrapper, #registrations_wrapper) .dtsp-title {
+.content :is(#users_wrapper, #registrations_wrapper, #course-table_wrapper) .dtsp-title {
     margin: 0;
 }
 
-.content :is(#users_wrapper, #registrations_wrapper) .dtsp-clearAll:hover {
+.content :is(#users_wrapper, #registrations_wrapper, #course-table_wrapper) .dtsp-clearAll:hover {
     color: #23527c;
     text-decoration: underline;
 }
 
 @media (max-width: 767px) {
-    .content :is(#users_wrapper, #registrations_wrapper) .dtsp-searchPanes {
+    .content :is(#users_wrapper, #registrations_wrapper, #course-table_wrapper) .dtsp-searchPanes {
         grid-template-columns: 1fr;
     }
 }

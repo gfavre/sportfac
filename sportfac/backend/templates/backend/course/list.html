@@ -7,63 +7,154 @@
   {% translate "List courses" %}
 {% endblock page_title %}
 
+{% block page_header %}
+  <div class="container">
+    <div class="page-header course-list-heading">
+      <h1>{% translate "List courses" %}</h1>
+      <a href="{% url 'backend:course-create' %}" class="btn btn-success"><i class="icon-plus" aria-hidden="true"></i> {% translate "New course" %}</a>
+    </div>
+  </div>
+{% endblock page_header %}
+
 {% get_current_language as LANGUAGE_CODE %}
 
 
 
 {% block content %}
-  <a href="{% url 'backend:course-create' %}" class="btn btn-success"><i class="icon-plus" aria-hidden="true"></i> {% translate "New course" %}</a>
-  <hr />
   {% addtoblock "css" %}
     <link rel="stylesheet" type="text/css"
-          href="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.css"/>
+          href="https://cdn.datatables.net/v/bs/dt-1.10.24/b-1.7.0/r-2.2.7/sc-2.0.3/sp-1.2.2/sl-1.3.2/datatables.min.css"/>
+    <link rel="stylesheet" href="{% static 'backend/css/list-controls.css' %}?v=6">
+    <style>
+      .course-list-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .course-list-heading h1 { margin: 0; }
+
+      .content #course-table_wrapper .course-day-option td {
+        padding-top: 2px;
+        padding-bottom: 2px;
+        line-height: 18px;
+      }
+
+      #course-table .course-actions .course-delete { color: #a94442; }
+      #course-table .course-actions .course-delete:hover,
+      #course-table .course-actions .course-delete:focus { color: #843534; }
+
+      #course-table > thead > tr > th,
+      #course-table > tbody > tr > td {
+        padding-left: 4px;
+        padding-right: 4px;
+      }
+
+      #course-table .course-actions .btn {
+        white-space: nowrap;
+        text-align: left;
+      }
+
+      #course-table > thead > tr > .course-actions,
+      #course-table > tbody > tr > .course-actions {
+        border-left: 1px solid #ddd;
+        padding-left: 10px;
+      }
+
+      @media (min-width: 768px) {
+        .content #course-table_wrapper .dtsp-searchPanes {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+      }
+    </style>
   {% endaddtoblock %}
   {% addtoblock "js" %}
     <script type="text/javascript"
-            src="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.js"></script>
+            src="https://cdn.datatables.net/v/bs/dt-1.10.24/b-1.7.0/r-2.2.7/sc-2.0.3/sp-1.2.2/sl-1.3.2/datatables.min.js"></script>
 
     <script src="{% static 'backend/js/datatable-url-state.js' %}?v=2"></script>
     <script src="{% static 'backend/js/course-actions.js' %}?v=5"></script>
 
     <script>
       $(function () {
+        const announced = "{% translate 'Announced courses'|escapejs %}";
+        const notAnnounced = "{% translate 'Not announced courses'|escapejs %}";
+        function paneOption(label, predicate) {
+          // SearchPanes 1.2 uses the predicate's string value to restore selections.
+          predicate.toString = function () { return label; };
+          return {label: label, value: predicate};
+        }
+        const url = new URL(window.location.href);
+        // Preserve bookmarks made with the former J+S radio filter.
+        const legacy = url.searchParams.get('only_js');
+        if (!url.searchParams.has('panes') && ['announced', 'notannounced'].includes(legacy)) {
+          url.searchParams.set('panes', JSON.stringify([
+            {id: 8, selected: [legacy === 'announced' ? announced : notAnnounced]}
+          ]));
+        }
+        url.searchParams.delete('only_js');
+        window.history.replaceState(window.history.state, '', url.href);
         let table = window.dataTableUrlState('#course-table', {
+          dom: 'P<"course-selection-slot">frti',
+          initComplete: function () {
+            $(this.api().table().container()).find('.course-selection-slot')
+              .append($('.course-selection-actions'));
+          },
+          searchPanes: {
+            layout: 'columns-4', columns: [8, 9, 2, 11], viewTotal: true,
+            dtOpts: {scrollY: '110px', scrollCollapse: false}
+          },
           {% if LANGUAGE_CODE == 'fr' %}
             language: {
-              url: "{{ STATIC_URL }}js/vendor/datatables/French.json"
+              url: "{{ STATIC_URL }}js/vendor/datatables/French.json",
+              searchPanes: {
+                title: {_: "{% translate 'Filters selected'|escapejs %} - %d", 0: "{% translate 'No filter selected'|escapejs %}"},
+                clearMessage: "{% translate 'Clear filters'|escapejs %}"
+              }
             },
           {% endif %}
           select: {
             style: 'multi'
           },
-          aoColumnDefs: [
-            {'bSortable': false, 'bSearchable': false, 'aTargets': [-1]}
+          columnDefs: [
+            {orderable: false, searchable: false, targets: [10]},
+            {visible: false, searchPanes: {show: true, controls: false}, targets: 11},
+            {searchPanes: {show: false}, targets: [0, 1, 3, 4, 5, 6, 7, 10]},
+            {searchPanes: {show: true, controls: false, options: [
+              paneOption(announced, function (row) { return row[8]['@data-search'] === 'true'; }),
+              paneOption(notAnnounced, function (row) { return row[8]['@data-search'] === 'false'; })
+            ]}, targets: 8},
+            {searchPanes: {show: true, controls: false, options: [
+              paneOption("{% translate 'Yes'|escapejs %}", function (row) { return row[9]['@data-search'] === 'true'; }),
+              paneOption("{% translate 'No'|escapejs %}", function (row) { return row[9]['@data-search'] === 'false'; })
+            ]}, targets: 9},
+            {searchPanes: {show: true, controls: false,
+              dtOpts: {
+                scrollY: '168px', scrollCollapse: false, order: [], ordering: false
+              },
+              options:
+              ["{% translate 'Monday'|escapejs %}", "{% translate 'Tuesday'|escapejs %}",
+               "{% translate 'Wednesday'|escapejs %}", "{% translate 'Thursday'|escapejs %}",
+               "{% translate 'Friday'|escapejs %}", "{% translate 'Saturday'|escapejs %}",
+               "{% translate 'Sunday'|escapejs %}"].map(function (day) {
+                const option = paneOption(day, function (row) {
+                  return row[2]['@data-search'].split('|').includes(day);
+                });
+                option.className = 'course-day-option';
+                return option;
+              })
+            }, targets: 2}
           ],
           paging: false
-        }, [{
-          param: 'only_js', column: 8, selector: 'input[name=only_js]',
-          defaultValue: 'both', values: {both: '', announced: 'true', notannounced: 'false'}
-        }]);
+        });
         window.initializeCourseActions(table);
       });
     </script>
   {% endaddtoblock %}
 
   {% include "backend/course/includes/selection-actions.html" %}
-
-  <hr>
-  <div>
-    <label class="radio-inline"> J+S:</label>
-
-    <label class="radio-inline">
-      <input type="radio" name="only_js" value="announced"> {% translate "Announced courses" %}
-    </label>
-    <label class="radio-inline ">
-      <input type="radio" name="only_js" value="notannounced"> {% translate "Not announced courses" %}
-    </label>
-    <label class="radio-inline ">
-      <input type="radio" name="only_js" value="both" checked="checked"> {% translate "Both" %}
-    </label></div>
 
   <table id="course-table" class="table">
     <thead>
@@ -78,7 +169,8 @@
       <th class="text-nowrap">{% translate "Registrations" %}</th>
       <th class="text-nowrap">{% translate "J+S" %}</th>
       <th class="text-nowrap">{% translate "Up to date?" %}</th>
-      <th class="text-nowrap">{% translate "Actions" %}</th>
+      <th class="text-nowrap course-actions">{% translate "Actions" %}</th>
+      <th>{% translate "Visibility" %}</th>
     </tr>
     </thead>
     {% for course in object_list %}
@@ -97,14 +189,15 @@
             <br/>{{ course.name }}
           {% endif %}
         </td>
-        <td data-order="{{ course.start_date|date:'w' }}">
+        <td data-order="{{ course.start_date|date:'w' }}"
+            data-search="{% if course.is_multi_course %}{{ course.days_names|join:'|' }}{% else %}{{ course.day_name }}{% endif %}">
           {% if course.is_multi_course %}
             <ul class="list-unstyled">
               {% for day in course.days_names %}
-                <li>{{ day }}</li>{% endfor %}
+                <li>{{ day|slice:":3" }}.</li>{% endfor %}
             </ul>
           {% else %}
-            {{ course.day_name }}
+            {{ course.day_name|slice:":3" }}.
           {% endif %}
         </td>
         <td data-order="{{ course.start_date|date:'c' }}">{{ course.start_date|date:"SHORT_DATE_FORMAT" }}</td>
@@ -120,7 +213,7 @@
             n/a
           {% endif %}
         </td>
-        <td data-order="{{ course.duration|seconds }}">{{ course.duration|duration }}</td>
+        <td data-order="{{ course.duration|seconds }}">{{ course.duration|short_duration }}</td>
         <td>
           <ul class="list-unstyled">
             {% for instructor in course.instructors.all %}
@@ -139,9 +232,9 @@
           {% endif %}
         {% if course.has_waiting_list %}
         <br><i class="icon icon-clock text-warning"></i>
-        <small>{% translate "Waiting list" %}</small>
+        <small>{% translate "Pending" %}</small>
         {% endif %}
-        {% if not course.allow_new_participants %}<br><i class="icon icon-minus-circled text-danger"></i> <small>{% translate "Registrations not allowed " %}</small>{% endif %}
+        {% if not course.allow_new_participants %}<br><i class="icon icon-minus-circled text-danger"></i> <small>{% translate "Closed" context "registrations" %}</small>{% endif %}
         </td>
         <td data-order="{{ course.announced_js }}"
             data-search="{{ course.announced_js|yesno:"true,false" }}">
@@ -152,48 +245,49 @@
           {% endif %}
         </td>
         <td data-order="{{ course.uptodate }}"
-            data-search="{% translate 'up to date' %}">
+            data-search="{{ course.uptodate|yesno:'true,false' }}">
           {% if course.uptodate %}<i class="icon-ok-circled success"></i>{% else %}
             <i class="icon-cancel-circled  danger"></i>{% endif %}
         </td>
-        <td>
+        <td class="course-actions">
           <ul class="list-unstyled">
-            <li class="text-nowrap">
+            <li>
               <a href="{{ course.get_backend_url }}" class="btn btn-sm">
-                <i class="icon-check"></i>&nbsp;{% translate "Check registrations" %}
+                <i class="icon-check"></i>&nbsp;{% translate "Registrations" %}
             </a></li>
             {% if USE_ABSENCES %}
-              <li class="text-nowrap">
+              <li>
                 <a href="{{ course.get_backend_absences_url }}" class="btn btn-sm">
-                  <i class="icon-calendar"></i>&nbsp;{% translate "Manage absences" %}
+                  <i class="icon-calendar"></i>&nbsp;{% translate "Absences" %}
                 </a>
               </li>
             {% endif %}
-            <li class="text-nowrap">
+            <li>
               <a href="{{ course.get_update_url }}" data-list-return class="btn btn-sm">
-                <i class="icon-edit"></i>&nbsp;{% translate "Update course" %}
+                <i class="icon-edit"></i>&nbsp;{% translate "Modify" %}
               </a>
             </li>
 
-            <li class="text-nowrap">
+            <li>
               <a href="{{ course.get_duplicate_url }}" class="btn btn-sm">
-                <i class="icon-docs"></i>&nbsp;{% translate "Duplicate course" %}
+                <i class="icon-docs"></i>&nbsp;{% translate "Duplicate" %}
               </a>
             </li>
             {% if not course.is_camp %}
-              <li class="text-nowrap">
+              <li>
                 <a href="{{ course.get_js_export_url }}" class="btn btn-sm">
-                  <i class="icon-doc"></i>&nbsp;{% translate "Get BDNS: J+S export file" %}
+                  <i class="icon-doc"></i>&nbsp;{% translate "Export J+S" %}
                 </a>
               </li>
             {% endif %}
-            <li class="text-nowrap">
-              <a href="{{ course.get_delete_url }}" class="btn btn-sm">
-                <i class="icon-trash"></i>&nbsp;{% translate "Delete course" %}
+            <li>
+              <a href="{{ course.get_delete_url }}" class="btn btn-sm course-delete">
+                <i class="icon-trash"></i>&nbsp;{% translate "Delete" %}
               </a>
             </li>
           </ul>
         </td>
+        <td>{% if course.visible %}{% translate "Visible" %}{% else %}{% translate "Invisible" %}{% endif %}</td>
       </tr>
     {% endfor %}
   </table>

@@ -1,11 +1,13 @@
 {% load i18n sekizai_tags static %}
-{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/course-actions.css' %}?v=7">{% endaddtoblock %}
+{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/course-actions.css' %}?v=8">{% endaddtoblock %}
 {% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/selection-actions.css' %}?v=1">{% endaddtoblock %}
 <section class="course-selection-actions" aria-label="Actions sur les cours sélectionnés">
   <div class="selection-controls">
     <div class="course-selection-heading" role="status" aria-live="polite">Sélectionnez des cours dans le tableau</div>
-    <button type="button" class="btn btn-link" data-select-filtered>{% translate "Select filtered courses" %}</button>
-    <button type="button" class="btn btn-link" data-deselect disabled>{% translate "Deselect" %}</button>
+    <div class="course-selection-controls">
+      <button type="button" class="btn btn-link" data-select-filtered>{% translate "Select filtered courses" %}</button>
+      <button type="button" class="btn btn-link" data-deselect disabled>{% translate "Deselect" %}</button>
+    </div>
   </div>
   <div class="course-action-groups">
     {% if USE_ABSENCES %}
