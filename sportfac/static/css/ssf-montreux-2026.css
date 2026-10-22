@@ -27,7 +27,7 @@ input[type=checkbox], input[type=radio] {
   color: #252525;
 }
 
-.btn-primary {
+.btn-primary, .diploma-page .btn.btn-primary {
   color: #252525;
   background: #b2cd49;
   border-color: #91aa2f;
@@ -35,29 +35,29 @@ input[type=checkbox], input[type=radio] {
   box-shadow: none;
   filter: none;
 }
-.btn-primary:hover, .btn-primary:focus {
+.btn-primary:hover, .btn-primary:focus, .diploma-page .btn.btn-primary:hover, .diploma-page .btn.btn-primary:focus {
   color: #252525;
   background: #9db735;
   border-color: #768a26;
 }
-.btn-primary:active, .btn-primary.active, .open > .btn-primary.dropdown-toggle {
+.btn-primary:active, .btn-primary.active, .open > .btn-primary.dropdown-toggle, .diploma-page .btn.btn-primary:active, .diploma-page .btn.btn-primary.active, .open > .diploma-page .btn.btn-primary.dropdown-toggle {
   color: #252525;
   background: #8da52c;
   border-color: #687a22;
   box-shadow: inset 0 2px 3px rgba(37, 37, 37, 0.12);
 }
-.btn-primary.disabled, .btn-primary.disabled:hover, .btn-primary.disabled:focus, .btn-primary.disabled:active, .btn-primary[disabled], .btn-primary[disabled]:hover, .btn-primary[disabled]:focus, .btn-primary[disabled]:active, .btn-primary[aria-disabled=true], .btn-primary[aria-disabled=true]:hover, .btn-primary[aria-disabled=true]:focus, .btn-primary[aria-disabled=true]:active, fieldset[disabled] .btn-primary, fieldset[disabled] .btn-primary:hover, fieldset[disabled] .btn-primary:focus, fieldset[disabled] .btn-primary:active {
+.btn-primary.disabled, .btn-primary.disabled:hover, .btn-primary.disabled:focus, .btn-primary.disabled:active, .btn-primary[disabled], .btn-primary[disabled]:hover, .btn-primary[disabled]:focus, .btn-primary[disabled]:active, .btn-primary[aria-disabled=true], .btn-primary[aria-disabled=true]:hover, .btn-primary[aria-disabled=true]:focus, .btn-primary[aria-disabled=true]:active, fieldset[disabled] .btn-primary, fieldset[disabled] .btn-primary:hover, fieldset[disabled] .btn-primary:focus, fieldset[disabled] .btn-primary:active, .diploma-page .btn.btn-primary.disabled, .diploma-page .btn.btn-primary.disabled:hover, .diploma-page .btn.btn-primary.disabled:focus, .diploma-page .btn.btn-primary.disabled:active, .diploma-page .btn.btn-primary[disabled], .diploma-page .btn.btn-primary[disabled]:hover, .diploma-page .btn.btn-primary[disabled]:focus, .diploma-page .btn.btn-primary[disabled]:active, .diploma-page .btn.btn-primary[aria-disabled=true], .diploma-page .btn.btn-primary[aria-disabled=true]:hover, .diploma-page .btn.btn-primary[aria-disabled=true]:focus, .diploma-page .btn.btn-primary[aria-disabled=true]:active, fieldset[disabled] .diploma-page .btn.btn-primary, fieldset[disabled] .diploma-page .btn.btn-primary:hover, fieldset[disabled] .diploma-page .btn.btn-primary:focus, fieldset[disabled] .diploma-page .btn.btn-primary:active {
   color: #252525;
   background: #b2cd49;
   border-color: #91aa2f;
   box-shadow: none;
   opacity: 0.65;
 }
-.btn-primary .badge {
+.btn-primary .badge, .diploma-page .btn.btn-primary .badge {
   color: #252525;
   background: rgba(37, 37, 37, 0.12);
 }
-.btn-primary .caret {
+.btn-primary .caret, .diploma-page .btn.btn-primary .caret {
   border-top-color: #252525;
   border-bottom-color: #252525;
 }
@@ -78,7 +78,7 @@ input[type=checkbox], input[type=radio] {
   color: #252525;
 }
 
-.btn-secondary {
+.btn-secondary, .diploma-page .btn.btn-secondary {
   color: #252525;
   background: #fff;
   border-color: #62675b;
@@ -86,29 +86,29 @@ input[type=checkbox], input[type=radio] {
   box-shadow: none;
   filter: none;
 }
-.btn-secondary:hover, .btn-secondary:focus {
+.btn-secondary:hover, .btn-secondary:focus, .diploma-page .btn.btn-secondary:hover, .diploma-page .btn.btn-secondary:focus {
   color: #252525;
   background: #f1f4e6;
   border-color: #4d5148;
 }
-.btn-secondary:active, .btn-secondary.active, .open > .btn-secondary.dropdown-toggle {
+.btn-secondary:active, .btn-secondary.active, .open > .btn-secondary.dropdown-toggle, .diploma-page .btn.btn-secondary:active, .diploma-page .btn.btn-secondary.active, .open > .diploma-page .btn.btn-secondary.dropdown-toggle {
   color: #252525;
   background: #e4eacb;
   border-color: #43473e;
   box-shadow: inset 0 2px 3px rgba(37, 37, 37, 0.12);
 }
-.btn-secondary.disabled, .btn-secondary.disabled:hover, .btn-secondary.disabled:focus, .btn-secondary.disabled:active, .btn-secondary[disabled], .btn-secondary[disabled]:hover, .btn-secondary[disabled]:focus, .btn-secondary[disabled]:active, .btn-secondary[aria-disabled=true], .btn-secondary[aria-disabled=true]:hover, .btn-secondary[aria-disabled=true]:focus, .btn-secondary[aria-disabled=true]:active, fieldset[disabled] .btn-secondary, fieldset[disabled] .btn-secondary:hover, fieldset[disabled] .btn-secondary:focus, fieldset[disabled] .btn-secondary:active {
+.btn-secondary.disabled, .btn-secondary.disabled:hover, .btn-secondary.disabled:focus, .btn-secondary.disabled:active, .btn-secondary[disabled], .btn-secondary[disabled]:hover, .btn-secondary[disabled]:focus, .btn-secondary[disabled]:active, .btn-secondary[aria-disabled=true], .btn-secondary[aria-disabled=true]:hover, .btn-secondary[aria-disabled=true]:focus, .btn-secondary[aria-disabled=true]:active, fieldset[disabled] .btn-secondary, fieldset[disabled] .btn-secondary:hover, fieldset[disabled] .btn-secondary:focus, fieldset[disabled] .btn-secondary:active, .diploma-page .btn.btn-secondary.disabled, .diploma-page .btn.btn-secondary.disabled:hover, .diploma-page .btn.btn-secondary.disabled:focus, .diploma-page .btn.btn-secondary.disabled:active, .diploma-page .btn.btn-secondary[disabled], .diploma-page .btn.btn-secondary[disabled]:hover, .diploma-page .btn.btn-secondary[disabled]:focus, .diploma-page .btn.btn-secondary[disabled]:active, .diploma-page .btn.btn-secondary[aria-disabled=true], .diploma-page .btn.btn-secondary[aria-disabled=true]:hover, .diploma-page .btn.btn-secondary[aria-disabled=true]:focus, .diploma-page .btn.btn-secondary[aria-disabled=true]:active, fieldset[disabled] .diploma-page .btn.btn-secondary, fieldset[disabled] .diploma-page .btn.btn-secondary:hover, fieldset[disabled] .diploma-page .btn.btn-secondary:focus, fieldset[disabled] .diploma-page .btn.btn-secondary:active {
   color: #252525;
   background: #fff;
   border-color: #62675b;
   box-shadow: none;
   opacity: 0.65;
 }
-.btn-secondary .badge {
+.btn-secondary .badge, .diploma-page .btn.btn-secondary .badge {
   color: #252525;
   background: rgba(37, 37, 37, 0.12);
 }
-.btn-secondary .caret {
+.btn-secondary .caret, .diploma-page .btn.btn-secondary .caret {
   border-top-color: #252525;
   border-bottom-color: #252525;
 }
@@ -129,7 +129,7 @@ input[type=checkbox], input[type=radio] {
   color: #252525;
 }
 
-.btn-tertiary {
+.btn-tertiary, .diploma-page .btn.btn-tertiary {
   color: #252525;
   background: #eceee8;
   border-color: #cfd4c5;
@@ -137,29 +137,29 @@ input[type=checkbox], input[type=radio] {
   box-shadow: none;
   filter: none;
 }
-.btn-tertiary:hover, .btn-tertiary:focus {
+.btn-tertiary:hover, .btn-tertiary:focus, .diploma-page .btn.btn-tertiary:hover, .diploma-page .btn.btn-tertiary:focus {
   color: #252525;
   background: #dfe3d7;
   border-color: #bcc3ad;
 }
-.btn-tertiary:active, .btn-tertiary.active, .open > .btn-tertiary.dropdown-toggle {
+.btn-tertiary:active, .btn-tertiary.active, .open > .btn-tertiary.dropdown-toggle, .diploma-page .btn.btn-tertiary:active, .diploma-page .btn.btn-tertiary.active, .open > .diploma-page .btn.btn-tertiary.dropdown-toggle {
   color: #252525;
   background: #cbd0c1;
   border-color: #b2baa2;
   box-shadow: inset 0 2px 3px rgba(37, 37, 37, 0.12);
 }
-.btn-tertiary.disabled, .btn-tertiary.disabled:hover, .btn-tertiary.disabled:focus, .btn-tertiary.disabled:active, .btn-tertiary[disabled], .btn-tertiary[disabled]:hover, .btn-tertiary[disabled]:focus, .btn-tertiary[disabled]:active, .btn-tertiary[aria-disabled=true], .btn-tertiary[aria-disabled=true]:hover, .btn-tertiary[aria-disabled=true]:focus, .btn-tertiary[aria-disabled=true]:active, fieldset[disabled] .btn-tertiary, fieldset[disabled] .btn-tertiary:hover, fieldset[disabled] .btn-tertiary:focus, fieldset[disabled] .btn-tertiary:active {
+.btn-tertiary.disabled, .btn-tertiary.disabled:hover, .btn-tertiary.disabled:focus, .btn-tertiary.disabled:active, .btn-tertiary[disabled], .btn-tertiary[disabled]:hover, .btn-tertiary[disabled]:focus, .btn-tertiary[disabled]:active, .btn-tertiary[aria-disabled=true], .btn-tertiary[aria-disabled=true]:hover, .btn-tertiary[aria-disabled=true]:focus, .btn-tertiary[aria-disabled=true]:active, fieldset[disabled] .btn-tertiary, fieldset[disabled] .btn-tertiary:hover, fieldset[disabled] .btn-tertiary:focus, fieldset[disabled] .btn-tertiary:active, .diploma-page .btn.btn-tertiary.disabled, .diploma-page .btn.btn-tertiary.disabled:hover, .diploma-page .btn.btn-tertiary.disabled:focus, .diploma-page .btn.btn-tertiary.disabled:active, .diploma-page .btn.btn-tertiary[disabled], .diploma-page .btn.btn-tertiary[disabled]:hover, .diploma-page .btn.btn-tertiary[disabled]:focus, .diploma-page .btn.btn-tertiary[disabled]:active, .diploma-page .btn.btn-tertiary[aria-disabled=true], .diploma-page .btn.btn-tertiary[aria-disabled=true]:hover, .diploma-page .btn.btn-tertiary[aria-disabled=true]:focus, .diploma-page .btn.btn-tertiary[aria-disabled=true]:active, fieldset[disabled] .diploma-page .btn.btn-tertiary, fieldset[disabled] .diploma-page .btn.btn-tertiary:hover, fieldset[disabled] .diploma-page .btn.btn-tertiary:focus, fieldset[disabled] .diploma-page .btn.btn-tertiary:active {
   color: #252525;
   background: #eceee8;
   border-color: #cfd4c5;
   box-shadow: none;
   opacity: 0.65;
 }
-.btn-tertiary .badge {
+.btn-tertiary .badge, .diploma-page .btn.btn-tertiary .badge {
   color: #252525;
   background: rgba(37, 37, 37, 0.12);
 }
-.btn-tertiary .caret {
+.btn-tertiary .caret, .diploma-page .btn.btn-tertiary .caret {
   border-top-color: #252525;
   border-bottom-color: #252525;
 }
@@ -180,7 +180,7 @@ input[type=checkbox], input[type=radio] {
   color: #252525;
 }
 
-.btn-success {
+.btn-success, .diploma-page .btn.btn-success {
   color: #fff;
   background: #386b44;
   border-color: #23432a;
@@ -188,29 +188,29 @@ input[type=checkbox], input[type=radio] {
   box-shadow: none;
   filter: none;
 }
-.btn-success:hover, .btn-success:focus {
+.btn-success:hover, .btn-success:focus, .diploma-page .btn.btn-success:hover, .diploma-page .btn.btn-success:focus {
   color: #fff;
   background: #2f5b39;
   border-color: #152819;
 }
-.btn-success:active, .btn-success.active, .open > .btn-success.dropdown-toggle {
+.btn-success:active, .btn-success.active, .open > .btn-success.dropdown-toggle, .diploma-page .btn.btn-success:active, .diploma-page .btn.btn-success.active, .open > .diploma-page .btn.btn-success.dropdown-toggle {
   color: #fff;
   background: #264b2f;
   border-color: #0e1b11;
   box-shadow: inset 0 2px 3px rgba(37, 37, 37, 0.12);
 }
-.btn-success.disabled, .btn-success.disabled:hover, .btn-success.disabled:focus, .btn-success.disabled:active, .btn-success[disabled], .btn-success[disabled]:hover, .btn-success[disabled]:focus, .btn-success[disabled]:active, .btn-success[aria-disabled=true], .btn-success[aria-disabled=true]:hover, .btn-success[aria-disabled=true]:focus, .btn-success[aria-disabled=true]:active, fieldset[disabled] .btn-success, fieldset[disabled] .btn-success:hover, fieldset[disabled] .btn-success:focus, fieldset[disabled] .btn-success:active {
+.btn-success.disabled, .btn-success.disabled:hover, .btn-success.disabled:focus, .btn-success.disabled:active, .btn-success[disabled], .btn-success[disabled]:hover, .btn-success[disabled]:focus, .btn-success[disabled]:active, .btn-success[aria-disabled=true], .btn-success[aria-disabled=true]:hover, .btn-success[aria-disabled=true]:focus, .btn-success[aria-disabled=true]:active, fieldset[disabled] .btn-success, fieldset[disabled] .btn-success:hover, fieldset[disabled] .btn-success:focus, fieldset[disabled] .btn-success:active, .diploma-page .btn.btn-success.disabled, .diploma-page .btn.btn-success.disabled:hover, .diploma-page .btn.btn-success.disabled:focus, .diploma-page .btn.btn-success.disabled:active, .diploma-page .btn.btn-success[disabled], .diploma-page .btn.btn-success[disabled]:hover, .diploma-page .btn.btn-success[disabled]:focus, .diploma-page .btn.btn-success[disabled]:active, .diploma-page .btn.btn-success[aria-disabled=true], .diploma-page .btn.btn-success[aria-disabled=true]:hover, .diploma-page .btn.btn-success[aria-disabled=true]:focus, .diploma-page .btn.btn-success[aria-disabled=true]:active, fieldset[disabled] .diploma-page .btn.btn-success, fieldset[disabled] .diploma-page .btn.btn-success:hover, fieldset[disabled] .diploma-page .btn.btn-success:focus, fieldset[disabled] .diploma-page .btn.btn-success:active {
   color: #fff;
   background: #386b44;
   border-color: #23432a;
   box-shadow: none;
   opacity: 0.65;
 }
-.btn-success .badge {
+.btn-success .badge, .diploma-page .btn.btn-success .badge {
   color: #fff;
   background: rgba(255, 255, 255, 0.12);
 }
-.btn-success .caret {
+.btn-success .caret, .diploma-page .btn.btn-success .caret {
   border-top-color: #fff;
   border-bottom-color: #fff;
 }
@@ -231,7 +231,7 @@ input[type=checkbox], input[type=radio] {
   color: #fff;
 }
 
-.btn-warning {
+.btn-warning, .diploma-page .btn.btn-warning {
   color: #fff;
   background: #915c17;
   border-color: #5c3a0f;
@@ -239,29 +239,29 @@ input[type=checkbox], input[type=radio] {
   box-shadow: none;
   filter: none;
 }
-.btn-warning:hover, .btn-warning:focus {
+.btn-warning:hover, .btn-warning:focus, .diploma-page .btn.btn-warning:hover, .diploma-page .btn.btn-warning:focus {
   color: #fff;
   background: #7b4e13;
   border-color: #392409;
 }
-.btn-warning:active, .btn-warning.active, .open > .btn-warning.dropdown-toggle {
+.btn-warning:active, .btn-warning.active, .open > .btn-warning.dropdown-toggle, .diploma-page .btn.btn-warning:active, .diploma-page .btn.btn-warning.active, .open > .diploma-page .btn.btn-warning.dropdown-toggle {
   color: #fff;
   background: #654010;
   border-color: #271906;
   box-shadow: inset 0 2px 3px rgba(37, 37, 37, 0.12);
 }
-.btn-warning.disabled, .btn-warning.disabled:hover, .btn-warning.disabled:focus, .btn-warning.disabled:active, .btn-warning[disabled], .btn-warning[disabled]:hover, .btn-warning[disabled]:focus, .btn-warning[disabled]:active, .btn-warning[aria-disabled=true], .btn-warning[aria-disabled=true]:hover, .btn-warning[aria-disabled=true]:focus, .btn-warning[aria-disabled=true]:active, fieldset[disabled] .btn-warning, fieldset[disabled] .btn-warning:hover, fieldset[disabled] .btn-warning:focus, fieldset[disabled] .btn-warning:active {
+.btn-warning.disabled, .btn-warning.disabled:hover, .btn-warning.disabled:focus, .btn-warning.disabled:active, .btn-warning[disabled], .btn-warning[disabled]:hover, .btn-warning[disabled]:focus, .btn-warning[disabled]:active, .btn-warning[aria-disabled=true], .btn-warning[aria-disabled=true]:hover, .btn-warning[aria-disabled=true]:focus, .btn-warning[aria-disabled=true]:active, fieldset[disabled] .btn-warning, fieldset[disabled] .btn-warning:hover, fieldset[disabled] .btn-warning:focus, fieldset[disabled] .btn-warning:active, .diploma-page .btn.btn-warning.disabled, .diploma-page .btn.btn-warning.disabled:hover, .diploma-page .btn.btn-warning.disabled:focus, .diploma-page .btn.btn-warning.disabled:active, .diploma-page .btn.btn-warning[disabled], .diploma-page .btn.btn-warning[disabled]:hover, .diploma-page .btn.btn-warning[disabled]:focus, .diploma-page .btn.btn-warning[disabled]:active, .diploma-page .btn.btn-warning[aria-disabled=true], .diploma-page .btn.btn-warning[aria-disabled=true]:hover, .diploma-page .btn.btn-warning[aria-disabled=true]:focus, .diploma-page .btn.btn-warning[aria-disabled=true]:active, fieldset[disabled] .diploma-page .btn.btn-warning, fieldset[disabled] .diploma-page .btn.btn-warning:hover, fieldset[disabled] .diploma-page .btn.btn-warning:focus, fieldset[disabled] .diploma-page .btn.btn-warning:active {
   color: #fff;
   background: #915c17;
   border-color: #5c3a0f;
   box-shadow: none;
   opacity: 0.65;
 }
-.btn-warning .badge {
+.btn-warning .badge, .diploma-page .btn.btn-warning .badge {
   color: #fff;
   background: rgba(255, 255, 255, 0.12);
 }
-.btn-warning .caret {
+.btn-warning .caret, .diploma-page .btn.btn-warning .caret {
   border-top-color: #fff;
   border-bottom-color: #fff;
 }
@@ -282,7 +282,7 @@ input[type=checkbox], input[type=radio] {
   color: #fff;
 }
 
-.btn-danger {
+.btn-danger, .diploma-page .btn.btn-danger {
   color: #fff;
   background: #ac4438;
   border-color: #7e3229;
@@ -290,29 +290,29 @@ input[type=checkbox], input[type=radio] {
   box-shadow: none;
   filter: none;
 }
-.btn-danger:hover, .btn-danger:focus {
+.btn-danger:hover, .btn-danger:focus, .diploma-page .btn.btn-danger:hover, .diploma-page .btn.btn-danger:focus {
   color: #fff;
   background: #963a30;
   border-color: #5f261f;
 }
-.btn-danger:active, .btn-danger.active, .open > .btn-danger.dropdown-toggle {
+.btn-danger:active, .btn-danger.active, .open > .btn-danger.dropdown-toggle, .diploma-page .btn.btn-danger:active, .diploma-page .btn.btn-danger.active, .open > .diploma-page .btn.btn-danger.dropdown-toggle {
   color: #fff;
   background: #7d3028;
   border-color: #501f1a;
   box-shadow: inset 0 2px 3px rgba(37, 37, 37, 0.12);
 }
-.btn-danger.disabled, .btn-danger.disabled:hover, .btn-danger.disabled:focus, .btn-danger.disabled:active, .btn-danger[disabled], .btn-danger[disabled]:hover, .btn-danger[disabled]:focus, .btn-danger[disabled]:active, .btn-danger[aria-disabled=true], .btn-danger[aria-disabled=true]:hover, .btn-danger[aria-disabled=true]:focus, .btn-danger[aria-disabled=true]:active, fieldset[disabled] .btn-danger, fieldset[disabled] .btn-danger:hover, fieldset[disabled] .btn-danger:focus, fieldset[disabled] .btn-danger:active {
+.btn-danger.disabled, .btn-danger.disabled:hover, .btn-danger.disabled:focus, .btn-danger.disabled:active, .btn-danger[disabled], .btn-danger[disabled]:hover, .btn-danger[disabled]:focus, .btn-danger[disabled]:active, .btn-danger[aria-disabled=true], .btn-danger[aria-disabled=true]:hover, .btn-danger[aria-disabled=true]:focus, .btn-danger[aria-disabled=true]:active, fieldset[disabled] .btn-danger, fieldset[disabled] .btn-danger:hover, fieldset[disabled] .btn-danger:focus, fieldset[disabled] .btn-danger:active, .diploma-page .btn.btn-danger.disabled, .diploma-page .btn.btn-danger.disabled:hover, .diploma-page .btn.btn-danger.disabled:focus, .diploma-page .btn.btn-danger.disabled:active, .diploma-page .btn.btn-danger[disabled], .diploma-page .btn.btn-danger[disabled]:hover, .diploma-page .btn.btn-danger[disabled]:focus, .diploma-page .btn.btn-danger[disabled]:active, .diploma-page .btn.btn-danger[aria-disabled=true], .diploma-page .btn.btn-danger[aria-disabled=true]:hover, .diploma-page .btn.btn-danger[aria-disabled=true]:focus, .diploma-page .btn.btn-danger[aria-disabled=true]:active, fieldset[disabled] .diploma-page .btn.btn-danger, fieldset[disabled] .diploma-page .btn.btn-danger:hover, fieldset[disabled] .diploma-page .btn.btn-danger:focus, fieldset[disabled] .diploma-page .btn.btn-danger:active {
   color: #fff;
   background: #ac4438;
   border-color: #7e3229;
   box-shadow: none;
   opacity: 0.65;
 }
-.btn-danger .badge {
+.btn-danger .badge, .diploma-page .btn.btn-danger .badge {
   color: #fff;
   background: rgba(255, 255, 255, 0.12);
 }
-.btn-danger .caret {
+.btn-danger .caret, .diploma-page .btn.btn-danger .caret {
   border-top-color: #fff;
   border-bottom-color: #fff;
 }
@@ -333,7 +333,7 @@ input[type=checkbox], input[type=radio] {
   color: #fff;
 }
 
-.btn-info {
+.btn-info, .diploma-page .btn.btn-info {
   color: #fff;
   background: #466873;
   border-color: #2f464d;
@@ -341,29 +341,29 @@ input[type=checkbox], input[type=radio] {
   box-shadow: none;
   filter: none;
 }
-.btn-info:hover, .btn-info:focus {
+.btn-info:hover, .btn-info:focus, .diploma-page .btn.btn-info:hover, .diploma-page .btn.btn-info:focus {
   color: #fff;
   background: #3b5962;
   border-color: #1f2f34;
 }
-.btn-info:active, .btn-info.active, .open > .btn-info.dropdown-toggle {
+.btn-info:active, .btn-info.active, .open > .btn-info.dropdown-toggle, .diploma-page .btn.btn-info:active, .diploma-page .btn.btn-info.active, .open > .diploma-page .btn.btn-info.dropdown-toggle {
   color: #fff;
   background: #304952;
   border-color: #182327;
   box-shadow: inset 0 2px 3px rgba(37, 37, 37, 0.12);
 }
-.btn-info.disabled, .btn-info.disabled:hover, .btn-info.disabled:focus, .btn-info.disabled:active, .btn-info[disabled], .btn-info[disabled]:hover, .btn-info[disabled]:focus, .btn-info[disabled]:active, .btn-info[aria-disabled=true], .btn-info[aria-disabled=true]:hover, .btn-info[aria-disabled=true]:focus, .btn-info[aria-disabled=true]:active, fieldset[disabled] .btn-info, fieldset[disabled] .btn-info:hover, fieldset[disabled] .btn-info:focus, fieldset[disabled] .btn-info:active {
+.btn-info.disabled, .btn-info.disabled:hover, .btn-info.disabled:focus, .btn-info.disabled:active, .btn-info[disabled], .btn-info[disabled]:hover, .btn-info[disabled]:focus, .btn-info[disabled]:active, .btn-info[aria-disabled=true], .btn-info[aria-disabled=true]:hover, .btn-info[aria-disabled=true]:focus, .btn-info[aria-disabled=true]:active, fieldset[disabled] .btn-info, fieldset[disabled] .btn-info:hover, fieldset[disabled] .btn-info:focus, fieldset[disabled] .btn-info:active, .diploma-page .btn.btn-info.disabled, .diploma-page .btn.btn-info.disabled:hover, .diploma-page .btn.btn-info.disabled:focus, .diploma-page .btn.btn-info.disabled:active, .diploma-page .btn.btn-info[disabled], .diploma-page .btn.btn-info[disabled]:hover, .diploma-page .btn.btn-info[disabled]:focus, .diploma-page .btn.btn-info[disabled]:active, .diploma-page .btn.btn-info[aria-disabled=true], .diploma-page .btn.btn-info[aria-disabled=true]:hover, .diploma-page .btn.btn-info[aria-disabled=true]:focus, .diploma-page .btn.btn-info[aria-disabled=true]:active, fieldset[disabled] .diploma-page .btn.btn-info, fieldset[disabled] .diploma-page .btn.btn-info:hover, fieldset[disabled] .diploma-page .btn.btn-info:focus, fieldset[disabled] .diploma-page .btn.btn-info:active {
   color: #fff;
   background: #466873;
   border-color: #2f464d;
   box-shadow: none;
   opacity: 0.65;
 }
-.btn-info .badge {
+.btn-info .badge, .diploma-page .btn.btn-info .badge {
   color: #fff;
   background: rgba(255, 255, 255, 0.12);
 }
-.btn-info .caret {
+.btn-info .caret, .diploma-page .btn.btn-info .caret {
   border-top-color: #fff;
   border-bottom-color: #fff;
 }
