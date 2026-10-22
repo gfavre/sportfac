@@ -1,26 +1,31 @@
 from django.contrib import messages
-from django.db import connection, transaction
+from django.db import connection
+from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import get_language
 from django.utils.translation import gettext as _
-
-from rest_framework import generics, mixins, status
+from rest_framework import generics
+from rest_framework import mixins
+from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from api.permissions import IsAuthenticated, ManagerPermission
+from api.permissions import IsAuthenticated
+from api.permissions import ManagerPermission
 from registrations.models import Child
-from ..models import Appointment, AppointmentSlot, AppointmentType, Rental
-from ..serializers import (
-    AdminAppointmentSlotSerializer,
-    AppointmentSerializer,
-    RegisterChildrenSerializer,
-    RentalSerializer,
-    SlotSerializer,
-)
+
+from ..models import Appointment
+from ..models import AppointmentSlot
+from ..models import AppointmentType
+from ..models import Rental
+from ..serializers import AdminAppointmentSlotSerializer
+from ..serializers import AppointmentSerializer
+from ..serializers import RegisterChildrenSerializer
+from ..serializers import RentalSerializer
+from ..serializers import SlotSerializer
 from ..tasks import send_confirmation_mail as send_appointment_confirmation_email
 
 
@@ -291,11 +296,14 @@ class RentalViewSet(ModelViewSet):
     queryset = Rental.objects.all()
     serializer_class = RentalSerializer
 
+    def get_queryset(self):
+        return super().get_queryset().filter(child__family=self.request.user)
+
     def destroy(self, request, *args, **kwargs):
         """Delete a rental if no pickup or return appointment is set."""
         child_id = kwargs.get("pk")
         try:
-            rental = Rental.objects.get(child__id=child_id)
+            rental = Rental.objects.get(child__id=child_id, child__family=request.user)
 
             # Check if the rental has any appointments set
             if rental.pickup_appointment or rental.return_appointment:

@@ -8,6 +8,7 @@ from profiles.models import FamilyUser
 from registrations.models import Child
 from wizard.views import StaticStepView
 
+from ..eligibility import children_eligible_for_rental
 from ..forms import RentalSelectionForm
 from ..models import Appointment
 from ..models import AppointmentSlot
@@ -77,11 +78,14 @@ class WizardRentalStepView(LoginRequiredMixin, StaticStepView):
         context = super().get_context_data(**kwargs)
         user = self.request.user
 
-        disabled_children = Child.objects.filter(rentals__isnull=False, rentals__paid=True, family=user)
-        children_with_rentals = Child.objects.filter(rentals__isnull=False, rentals__paid=False, family=user)
+        children = Child.objects.filter(family=user)
+        if self.appointment_type == "pickup":
+            children = children_eligible_for_rental(user)
+        disabled_children = children.filter(rentals__isnull=False, rentals__paid=True)
+        children_with_rentals = children.filter(rentals__isnull=False, rentals__paid=False)
 
         context["appointment_type"] = self.appointment_type
-        context["rentals"] = Rental.objects.filter(child__family=user).select_related(
+        context["rentals"] = Rental.objects.filter(child__in=children).select_related(
             "child", "pickup_appointment__slot", "return_appointment__slot"
         )
         context["rentals_json"] = [

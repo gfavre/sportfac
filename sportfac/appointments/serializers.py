@@ -5,6 +5,7 @@ from rest_framework import serializers
 from backend.dynamic_preferences_registry import global_preferences_registry
 from registrations.models import Child
 
+from .eligibility import children_eligible_for_rental
 from .models import AppointmentSlot
 from .models import Rental
 
@@ -73,6 +74,16 @@ class RentalSerializer(serializers.ModelSerializer):
             return obj.return_appointment.slot.id
         return None
 
+    def validate_child(self, child):
+        request = self.context.get("request")
+        if request is None or child.family_id != request.user.pk:
+            raise serializers.ValidationError(_("Cet enfant ne fait pas partie de votre famille."))
+        if not children_eligible_for_rental(request.user).filter(pk=child.pk).exists():
+            raise serializers.ValidationError(
+                _("La location de matériel nécessite une inscription à un cours pour cet enfant.")
+            )
+        return child
+
     def create(self, validated_data):
         child = validated_data["child"]
         # Prevent duplicate rentals for the same child
@@ -101,4 +112,11 @@ class RegisterChildrenSerializer(serializers.Serializer):
         for child_id in value:
             if child_id not in valid_child_ids:
                 raise serializers.ValidationError(f"Child ID {child_id} does not belong to the user.")
+        request = self.context["request"]
+        if request.method == "POST" and self.initial_data.get("appointment_type") == "pickup":
+            eligible_ids = set(children_eligible_for_rental(user).filter(pk__in=value).values_list("pk", flat=True))
+            if set(value) - eligible_ids:
+                raise serializers.ValidationError(
+                    _("La location de matériel nécessite une inscription à un cours pour chaque enfant.")
+                )
         return value

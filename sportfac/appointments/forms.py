@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 from registrations.models import Child
 
+from .eligibility import children_eligible_for_rental
 from .models import Appointment
 from .models import AppointmentSlot
 
@@ -43,19 +44,27 @@ class RentalSelectionForm(forms.Form):
             "disabled_children",
             "children",
         )
-        if disabled_children_initial:
-            self.fields["children"].queryset = (
-                Child.objects.filter(family=user, registrations__isnull=False)
-                .distinct()
-                .exclude(id__in=disabled_children_initial)
+        if not disabled:
+            self.helper.layout.insert(
+                1,
+                HTML(
+                    '{% load i18n %}<p class="equipment-help">'
+                    '{% translate "Seuls les enfants inscrits à un cours peuvent louer du matériel." %}</p>'
+                ),
             )
-            self.fields["disabled_children"].queryset = disabled_children_initial
-            self.initial["disabled_children"] = disabled_children_initial  # all are checked
+        eligible = (
+            Child.objects.filter(family=user, rentals__isnull=False).distinct()
+            if disabled
+            else children_eligible_for_rental(user)
+        )
+        self.fields["children"].queryset = eligible
+        if disabled_children_initial:
+            paid_children = eligible.filter(pk__in=[child.pk for child in disabled_children_initial])
+            self.fields["children"].queryset = eligible.exclude(pk__in=paid_children)
+            self.fields["disabled_children"].queryset = paid_children
+            self.initial["disabled_children"] = paid_children
             self.fields["disabled_children"].widget.attrs["disabled"] = "disabled"
         else:
-            self.fields["children"].queryset = Child.objects.filter(
-                family=user, registrations__isnull=False
-            ).distinct()
             self.fields["disabled_children"].widget = forms.HiddenInput()
 
         if initial_rentals:

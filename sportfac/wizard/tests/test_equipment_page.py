@@ -139,8 +139,28 @@ class EquipmentPageTests(UserMixin, TenantTestCase):
         response = self.tenant_client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertNotIn(child, response.context["form"].fields["children"].queryset)
+
         self.assertNotIn(other_child, response.context["form"].fields["children"].queryset)
         Rental.objects.create(child=self.child, paid=True)
         response = self.tenant_client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertNotIn(child, response.context["form"].fields["children"].queryset)
+
+    def test_existing_rental_without_course_does_not_reenable_pickup(self):
+        child = ChildFactory(family=self.user)
+        rental = Rental.objects.create(child=child)
+        self.login(self.user)
+        response = self.tenant_client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(child, response.context["form"].fields["children"].queryset)
+        self.assertNotIn(rental, response.context["rentals"])
+        self.assertNotIn(child.pk, [item["child"] for item in response.context["rentals_json"]])
+        self.assertTrue(Rental.objects.filter(pk=rental.pk).exists())
+
+    def test_existing_rental_without_course_remains_visible_for_return(self):
+        child = ChildFactory(family=self.user)
+        Rental.objects.create(child=child)
+        self.login(self.user)
+        response = self.tenant_client.get(reverse("wizard:step", kwargs={"step_slug": "equipment-return"}))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(child, response.context["form"].fields["children"].queryset)
