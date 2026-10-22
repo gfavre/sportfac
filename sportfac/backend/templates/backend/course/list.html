@@ -4,13 +4,13 @@
 {% block title %}{% translate "View courses" %} - {{ block.super }}{% endblock %}
 
 {% block page_title %}
-  {% translate "List courses" %}
+  <i class="icon-graduation-cap" aria-hidden="true"></i> {% translate "List courses" %}
 {% endblock page_title %}
 
 {% block page_header %}
   <div class="container">
     <div class="page-header course-list-heading">
-      <h1>{% translate "List courses" %}</h1>
+      <h1><i class="icon-graduation-cap" aria-hidden="true"></i> {% translate "List courses" %}</h1>
       <a href="{% url 'backend:course-create' %}" class="btn btn-success"><i class="icon-plus" aria-hidden="true"></i> {% translate "New course" %}</a>
     </div>
   </div>
@@ -24,7 +24,7 @@
   {% addtoblock "css" %}
     <link rel="stylesheet" type="text/css"
           href="https://cdn.datatables.net/v/bs/dt-1.10.24/b-1.7.0/r-2.2.7/sc-2.0.3/sp-1.2.2/sl-1.3.2/datatables.min.css"/>
-    <link rel="stylesheet" href="{% static 'backend/css/list-controls.css' %}?v=6">
+    <link rel="stylesheet" href="{% static 'backend/css/list-controls.css' %}?v=7">
     <style>
       .course-list-heading {
         display: flex;

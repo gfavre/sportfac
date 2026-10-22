@@ -22,8 +22,7 @@
     gap: 8px 16px;
     margin-left: auto;
 }
-.course-selection-actions .selection-controls .btn-link,
-.content #course-table_wrapper .dtsp-clearAll {
+.course-selection-actions .selection-controls .btn-link {
     padding: 0;
     border: 0;
     background: transparent;
@@ -35,9 +34,7 @@
     line-height: 1.5;
 }
 .course-selection-actions .selection-controls .btn-link:not(:disabled):hover,
-.course-selection-actions .selection-controls .btn-link:not(:disabled):focus,
-.content #course-table_wrapper .dtsp-clearAll:hover,
-.content #course-table_wrapper .dtsp-clearAll:focus {
+.course-selection-actions .selection-controls .btn-link:not(:disabled):focus {
     color: #252525;
     text-decoration: underline;
 }

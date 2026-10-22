@@ -4,7 +4,7 @@
 
 {% block title %}{% translate "List bills" %} - {{ block.super }}{% endblock %}
 
-{% block page_title %}{% translate "List bills" %}{% endblock %}
+{% block page_title %}<i class="icon-credit-card-1" aria-hidden="true"></i> {% translate "List bills" %}{% endblock %}
 
 {% block content %}
   {% addtoblock "css" %}
@@ -12,7 +12,7 @@
           href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
     <link rel="stylesheet" type="text/css"
           href="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.css"/>
-    <link rel="stylesheet" href="{% static 'backend/css/list-controls.css' %}?v=1">
+    <link rel="stylesheet" href="{% static 'backend/css/list-controls.css' %}?v=7">
     {% endaddtoblock %}
 
   <section class="portlet">

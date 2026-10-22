@@ -4,13 +4,13 @@
 
 {% block title %}{% translate "List registrations" %} - {{ block.super }}{% endblock %}
 
-{% block page_title %}<i class="icon-address-book" aria-hidden="true"></i>&nbsp;&nbsp;{% translate "List registrations" %}{% endblock %}
+{% block page_title %}<i class="icon-address-book" aria-hidden="true"></i> {% translate "List registrations" %}{% endblock %}
 
 {% block content %}
   {% addtoblock "css" %}
     <link rel="stylesheet" type="text/css"
           href="https://cdn.datatables.net/v/bs/dt-1.10.24/b-1.7.0/r-2.2.7/sc-2.0.3/sp-1.2.2/sl-1.3.2/datatables.min.css"/>
-    <link rel="stylesheet" href="{% static 'backend/css/list-controls.css' %}?v=5">
+    <link rel="stylesheet" href="{% static 'backend/css/list-controls.css' %}?v=7">
   {% endaddtoblock %}
   {% addtoblock "js" %}
     <script type="text/javascript"

@@ -1,0 +1,1 @@
+{% load i18n %}{% if object.is_full_manager %}{% translate "Update administrator" %}{% elif object.is_restricted_manager %}{% translate "Update restricted administrator" %}{% elif is_instructor %}{% translate "Update instructor" %}{% else %}{% translate "Update user" %}{% endif %}

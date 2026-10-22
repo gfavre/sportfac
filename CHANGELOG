@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Changed
+- Harmonize backend table search fields, page-size menus and filter-reset controls; add matching menu icons to list headings and highlight destructive list actions in red.
+- Present user editing in framed sections with consistent save/cancel actions and role-specific titles and icons.
+
 ## 4.14.0 - 2026-10-22
 
 ### Added

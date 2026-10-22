@@ -1787,6 +1787,18 @@ msgstr "Détails"
 msgid "Update user"
 msgstr "Mettre à jour l'utilisateur"
 
+#: backend/templates/backend/user/includes/update-title.html
+msgid "Update administrator"
+msgstr "Mettre à jour l'administrateur"
+
+#: backend/templates/backend/user/includes/update-title.html
+msgid "Update restricted administrator"
+msgstr "Mettre à jour l'administrateur à accès limité"
+
+#: backend/templates/backend/user/includes/update-title.html
+msgid "Update instructor"
+msgstr "Mettre à jour le moniteur"
+
 #: api/serializers.py:520
 #: backend/templates/backend/user/restricted-admin-list.html:104
 msgid "Impersonate"

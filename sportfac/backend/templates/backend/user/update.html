@@ -1,18 +1,20 @@
 {% extends "backend/base.html" %}
-{% load crispy_forms_tags i18n sekizai_tags %}
+{% load crispy_forms_tags i18n sekizai_tags static %}
 
-{% block title %}{% translate "Update user" %} - {{ block.super }}{% endblock %}
+{% block title %}{% include "backend/user/includes/update-title.html" %} - {{ block.super }}{% endblock %}
 
-{% block page_title %}<i class="icon-user"></i>&nbsp;&nbsp;{% translate "Update user" %}{% endblock %}
+{% block page_title %}<i class="{% if object.is_full_manager %}icon-hammer{% elif object.is_restricted_manager %}icon-rebel{% elif is_instructor %}icon-star{% else %}icon-group{% endif %}" aria-hidden="true"></i>&nbsp;&nbsp;{% include "backend/user/includes/update-title.html" %}{% endblock %}
 
 {% block content %}
-<form action="" method="post">
-{% crispy form %}
-  <div class=" form-group">
-      <button type="submit" class="btn btn-primary ">{% translate 'Save' %}</button>
-      <a href="{% if list_return_url %}{{ list_return_url }}{% else %}{% url 'backend:user-list' %}{% endif %}" data-list-back class="btn  btn-default">{% translate 'Cancel' %}</a>
-  </div>
-</form>
+<div class="paper-prepare">
+  <form action="" method="post" id="user-update-form" class="paper-prepare-form">
+    {% crispy form %}
+    <div class="form-group paper-prepare-actions">
+      <button type="submit" class="btn btn-success"><i class="icon-ok" aria-hidden="true"></i> {% translate 'Save' %}</button>
+      <a href="{% if list_return_url %}{{ list_return_url }}{% else %}{% url 'backend:user-list' %}{% endif %}" data-list-back class="btn btn-default">{% translate 'Cancel' %}</a>
+    </div>
+  </form>
+</div>
 
   {% addtoblock "js" %}
 {{ form.media.js }}
@@ -20,6 +22,7 @@
 
 {% addtoblock "css" %}
 {{ form.media.css }}
+<link rel="stylesheet" href="{% static 'backend/css/paper-prepare.css' %}?v=4">
 {% endaddtoblock %}
 
 {% endblock content %}
