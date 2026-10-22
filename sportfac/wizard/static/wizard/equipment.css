@@ -1,0 +1,184 @@
+.wizard-equipment {
+  padding-bottom: 24px;
+}
+
+.wizard-equipment .equipment-card {
+  margin-bottom: 24px;
+  padding: 24px;
+  border: 1px solid #e1e4db;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.wizard-equipment .equipment-section-title {
+  margin: 0 0 14px;
+  font-family: inherit;
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.equipment-help,
+.equipment-description {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.equipment-introduction .lead {
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.equipment-description > :last-child {
+  margin-bottom: 0;
+}
+
+.equipment-help {
+  margin-bottom: 18px;
+  color: #62675b;
+}
+
+.equipment-rental-options,
+.equipment-dates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.equipment-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid #cbd0c1;
+  border-radius: 4px;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.equipment-option input[type="radio"] {
+  position: static;
+  margin: 0;
+}
+
+.equipment-option:focus-within {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.wizard-equipment .equipment-children-card .form-group:last-child {
+  margin-bottom: 0;
+}
+
+.wizard-equipment .equipment-children-card .checkbox,
+.wizard-equipment #myModal .checkbox {
+  margin: 12px 0;
+}
+
+.equipment-appointment-status {
+  display: block;
+  margin-top: 5px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.wizard-equipment input[type="checkbox"],
+.wizard-equipment input[type="radio"] {
+  width: 18px;
+  height: 18px;
+}
+
+.wizard-equipment .checkbox label {
+  padding-left: 28px;
+  line-height: 1.5;
+}
+
+.wizard-equipment .checkbox input[type="checkbox"] {
+  margin-left: -28px;
+  margin-top: 1px;
+}
+
+.equipment-dates {
+  margin: 0 0 22px;
+}
+
+.equipment-dates-label {
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #62675b;
+}
+
+.equipment-dates .calendar-change {
+  display: inline-block;
+  padding: 7px 12px;
+  border: 1px solid #cbd0c1;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.equipment-calendar .fc .fc-toolbar {
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.equipment-calendar .fc .fc-toolbar-title {
+  font-family: inherit;
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.equipment-calendar .fc .fc-button {
+  min-height: 36px;
+  padding: 7px 12px;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.4;
+  text-transform: none;
+  box-shadow: none;
+}
+
+.equipment-calendar .fc .fc-button-group > .fc-button {
+  border-radius: 0;
+}
+
+.equipment-calendar .fc .fc-button-group > .fc-button:first-child {
+  border-radius: 4px 0 0 4px;
+}
+
+.equipment-calendar .fc .fc-button-group > .fc-button:last-child {
+  border-radius: 0 4px 4px 0;
+}
+
+@media (max-width: 767px) {
+  #sidebar.sidebar {
+    min-height: 0;
+  }
+
+  .wizard-equipment .equipment-card {
+    padding: 16px;
+  }
+
+  .equipment-rental-options,
+  .equipment-calendar .fc .fc-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .equipment-calendar .fc .fc-toolbar-chunk {
+    text-align: center;
+  }
+
+  .equipment-calendar .fc .fc-toolbar-chunk:nth-child(2) {
+    order: -1;
+  }
+}

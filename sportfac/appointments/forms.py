@@ -1,10 +1,13 @@
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import HTML
+from crispy_forms.layout import Layout
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
-from crispy_forms.helper import FormHelper
-
 from registrations.models import Child
-from .models import Appointment, AppointmentSlot
+
+from .models import Appointment
+from .models import AppointmentSlot
 
 
 class RentalSelectionForm(forms.Form):
@@ -32,9 +35,17 @@ class RentalSelectionForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.form_id = "rental-form"
+        self.helper.form_class = "equipment-card equipment-children-card"
+        self.helper.layout = Layout(
+            HTML('{% load i18n %}<h2 class="equipment-section-title">{% translate "Enfants concernés" %}</h2>'),
+            "disabled_children",
+            "children",
+        )
         if disabled_children_initial:
-            self.fields["children"].queryset = Child.objects.filter(family=user).exclude(
-                id__in=disabled_children_initial
+            self.fields["children"].queryset = (
+                Child.objects.filter(family=user, registrations__isnull=False)
+                .distinct()
+                .exclude(id__in=disabled_children_initial)
             )
             self.fields["disabled_children"].queryset = disabled_children_initial
             self.initial["disabled_children"] = disabled_children_initial  # all are checked
@@ -50,6 +61,15 @@ class RentalSelectionForm(forms.Form):
             self.initial["children"] = initial_rentals
         if disabled:
             self.fields["children"].widget.attrs["disabled"] = "disabled"
+            self.fields["children"].label = ""
+            self.fields["disabled_children"].label = ""
+            self.helper.layout.insert(
+                1,
+                HTML(
+                    '{% load i18n %}<p class="equipment-help">'
+                    '{% translate "Le rendez-vous de retour concerne le matériel loué pour ces enfants." %}</p>'
+                ),
+            )
 
 
 class AppointmentForm(forms.ModelForm):

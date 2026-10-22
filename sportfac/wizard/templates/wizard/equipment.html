@@ -1,23 +1,41 @@
 {% extends "wizard/base.html" %}
 {% load crispy_forms_tags humanize i18n sekizai_tags static %}
 
+{% block step_introduction %}{% endblock %}
 
 {% block wizard_content %}
-  <div {% if appointment_type != "pickup" %}style="display:none"{% endif %}>
+<div class="wizard-equipment">
+  {% if appointment_type == "pickup" %}
+  <section class="equipment-card equipment-introduction">
+    <h2 class="equipment-section-title">{% translate "Location de matériel" %}</h2>
+    {% if current_step.lead %}<p>{{ current_step.lead }}</p>{% endif %}
+    <div class="equipment-description">{{ current_step.description|safe }}</div>
+    <div>
     <form id="rent-equipment-form">
-      <div class="form-group">
+      <div class="equipment-rental-options">
+        <label class="equipment-option" for="rent-yes">
         <input type="radio" id="rent-yes" name="rent_equipment" value="yes" {% if rentals %}checked{% endif %}>
-        <label for="rent-yes">{% translate "Yes" %}</label>
+        <span>{% translate "Oui, louer du matériel" %}</span>
+        </label>
+        <label class="equipment-option" for="rent-no">
         <input type="radio" id="rent-no" name="rent_equipment" value="no" {% if not rentals %}checked{% endif %}>
-        <label for="rent-no">{% translate "No" %}</label>
+        <span>{% translate "Non, nous avons le matériel" %}</span>
+        </label>
       </div>
     </form>
-  </div>
+    </div>
+  </section>
+  {% else %}
+    <form id="rent-equipment-form" hidden>
+      <input type="radio" id="rent-yes" name="rent_equipment" value="yes" {% if rentals %}checked{% endif %}>
+      <input type="radio" id="rent-no" name="rent_equipment" value="no" {% if not rentals %}checked{% endif %}>
+    </form>
+  {% endif %}
   {% crispy form %}
 
   {% if appointments %}
-    <section class="portlet">
-      <h3 class="content-title"><u>{% translate "Your appointments" %}</u></h3>
+    <section class="equipment-card">
+      <h2 class="equipment-section-title">{% translate "Your appointments" %}</h2>
       <ul>
         {% for appointment in appointments %}
           <li>
@@ -29,18 +47,18 @@
     </section>
   {% endif %}
 
-  <section class="portlet" id="dates-selection">
-    <h3 class="content-title">
-      <u>{% translate "Available dates" %}</u>
-    </h3>
-    <ul class="list-inline" style="margin-bottom: 2em">
+  <section class="equipment-card" id="dates-selection">
+    <h2 class="equipment-section-title">{% if appointment_type == "pickup" %}{% translate "Choisir un rendez-vous de retrait" %}{% else %}{% translate "Choisir un rendez-vous de retour" %}{% endif %}</h2>
+    <p class="equipment-help">{% translate "Cliquez sur un créneau disponible dans le calendrier pour réserver votre rendez-vous." %}</p>
+    {% if available_dates %}<p class="equipment-dates-label">{% translate "Accès rapide aux dates proposées" %}</p>{% endif %}
+    <ul class="equipment-dates" aria-label="{% translate 'Available dates' %}">
       {% for date in available_dates %}
-        <li style="margin-right:3em">
+        <li>
           <a class="calendar-change" data-date="{{ date|date:'c' }}" href="#calendar">{{ date|date:'d.m.Y' }}</a>
         </li>
       {% endfor %}
     </ul>
-    <div id="calendar"></div>
+    <div class="equipment-calendar"><div id="calendar"></div></div>
   </section>
 
   <!-- Modal Structure for Bootstrap 3 -->
@@ -70,11 +88,11 @@
     </div>
   </div>
 
-  <nav class="hidden-print" style="margin-top: 1.5em;">
-    <ul class="pager" style="font-size: 1.25em">
+  <nav class="hidden-print" aria-label="{% translate 'Navigation de l’inscription' %}">
+    <ul class="wizard-actions">
       {% if previous_step %}
         <li class="previous">
-          <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span>
+          <a href="{{ previous_step.url }}" class="btn btn-default"><span aria-hidden="true">&larr;</span>
             {% block previous_label %}{% translate "Previous" %}{% endblock %}</a>
         </li>
       {% endif %}
@@ -90,16 +108,11 @@
       {% endif %}
     </ul>
   </nav>
-
-
+</div>
 
   {% addtoblock "css" %}
     <link href="{% static 'js/vendor/fullcalendar-5/lib/main.css' %}" rel="stylesheet"/>
-    <style>
-      .fc .fc-button {
-        padding: 0 0.6em;
-      }
-    </style>
+    <link href="{% static 'wizard/equipment.css' %}?v=5" rel="stylesheet">
   {% endaddtoblock %}
 
   {% addtoblock "js" %}
@@ -153,7 +166,7 @@
 
         // Show or Hide Dates Section Based on Checkbox Selection
         function toggleDatesSection() {
-          const anyChecked = Array.from(childSelectionForm.querySelectorAll('input[name="children"]')).some(checkbox => checkbox.checked);
+          const anyChecked = childSelectionForm.querySelector('input[type="checkbox"]:checked') !== null;
           datesSection.style.display = anyChecked ? 'block' : 'none';
           rentYes.disabled = anyChecked;
           rentNo.disabled = anyChecked;
@@ -162,22 +175,23 @@
           }
         }
 
-        // Update Checkmarks for Existing Rentals
+        // Keep the confirmation visible even when its slot is outside the calendar's current week.
         function updateCheckmarks() {
           Object.values(rentalMap).forEach(rental => {
             const checkbox = childSelectionForm.querySelector(`input[type="checkbox"][value="${rental.child}"]`);
             if (checkbox) {
               const childLabel = checkbox.closest('label');
-              const checkmark = childLabel.querySelector('.badge-success');
+              const checkmark = childLabel.querySelector('.equipment-appointment-status');
 
               // Check if the child has any appointments (pickup or return)
               if (rental.{{ appointment_type }}_appointment) {
-                if (!checkmark) {
-                  const checkmarkElement = document.createElement('span');
-                  checkmarkElement.className = 'badge badge-success';
-                  checkmarkElement.textContent = '✔';
-                  childLabel.appendChild(checkmarkElement);
-                }
+                const status = checkmark || document.createElement('span');
+                status.className = 'equipment-appointment-status text-success';
+                const start = rental.{{ appointment_type }}_start;
+                status.textContent = start
+                  ? "{% translate 'Rendez-vous enregistré' %} — " + moment(start).format('dddd D MMMM YYYY [à] HH:mm')
+                  : "{% translate 'Rendez-vous enregistré' %}";
+                if (!checkmark) childLabel.appendChild(status);
               } else {
                 if (checkmark) {
                   checkmark.remove();
@@ -190,7 +204,7 @@
 
         // Update Modal Checkboxes Based on Calendar Event
         function updateModalCheckboxes(slotId) {
-          const selectedCheckboxes = childSelectionForm.querySelectorAll('input[name="children"]:checked');
+          const selectedCheckboxes = childSelectionForm.querySelectorAll('input[type="checkbox"]:checked');
           modalBody.empty(); // Clear previous content
 
           selectedCheckboxes.forEach(checkbox => {
@@ -427,7 +441,11 @@
             event.preventDefault();
             // Get the date from the 'data-date' attribute
             const selectedDate = this.getAttribute("data-date");
-            calendar.gotoDate(selectedDate);
+            if (calendar.view.type === 'dayGridMonth') {
+              calendar.changeView('timeGridDay', selectedDate);
+            } else {
+              calendar.gotoDate(selectedDate);
+            }
           });
         });
 
@@ -485,7 +503,12 @@
         const calendar = new FullCalendar.Calendar(calendarEl, {
           allDaySlot: false,
           events: '{% url "api:all_slots" %}',
-          initialView: 'timeGridWeek',
+          initialView: window.matchMedia('(max-width: 767px)').matches ? 'timeGridDay' : 'timeGridWeek',
+          headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+          },
           locale: 'fr-ch',
           slotDuration: '00:15:00',
           slotMinTime: '07:00',
@@ -493,7 +516,7 @@
           eventClick: (info) => {
             info.jsEvent.preventDefault();
             if (info.event.extendedProps.available_places > 0) {
-              modalTitle.text(`${moment(info.event.start).format('dddd Do MMM YYYY, h:mm')} - ${moment(info.event.end).format('h:mm')}`);
+              modalTitle.text(`${moment(info.event.start).format('dddd Do MMM YYYY, HH:mm')} - ${moment(info.event.end).format('HH:mm')}`);
               modalBody.text(info.event.extendedProps.description);
               formAction.attr('action', info.event.extendedProps.url);
               formAction.data('slot-id', parseInt(info.event.id));

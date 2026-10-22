@@ -1,11 +1,12 @@
 from django.utils.translation import gettext as _
-
 from phonenumber_field.modelfields import PhoneNumberField
 from rest_framework import serializers
 
 from backend.dynamic_preferences_registry import global_preferences_registry
 from registrations.models import Child
-from .models import AppointmentSlot, Rental
+
+from .models import AppointmentSlot
+from .models import Rental
 
 
 class SlotSerializer(serializers.ModelSerializer):
@@ -55,10 +56,12 @@ class AdminAppointmentSlotSerializer(SlotSerializer):
 class RentalSerializer(serializers.ModelSerializer):
     pickup_appointment = serializers.SerializerMethodField()
     return_appointment = serializers.SerializerMethodField()
+    pickup_start = serializers.DateTimeField(source="pickup_appointment.slot.start", read_only=True, default=None)
+    return_start = serializers.DateTimeField(source="return_appointment.slot.start", read_only=True, default=None)
 
     class Meta:
         model = Rental
-        fields = ["id", "child", "pickup_appointment", "return_appointment"]
+        fields = ["id", "child", "pickup_appointment", "return_appointment", "pickup_start", "return_start"]
 
     def get_pickup_appointment(self, obj):
         if obj.pickup_appointment and obj.pickup_appointment.slot:

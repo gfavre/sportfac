@@ -1,15 +1,18 @@
+from braces.views import LoginRequiredMixin
 from django.conf import settings
 from django.http import Http404
 from django.utils.timezone import now
 from django.views.generic import TemplateView
 
-from braces.views import LoginRequiredMixin
-
 from profiles.models import FamilyUser
 from registrations.models import Child
 from wizard.views import StaticStepView
+
 from ..forms import RentalSelectionForm
-from ..models import Appointment, AppointmentSlot, AppointmentType, Rental
+from ..models import Appointment
+from ..models import AppointmentSlot
+from ..models import AppointmentType
+from ..models import Rental
 
 
 class SlotsBaseView(TemplateView):
@@ -78,13 +81,17 @@ class WizardRentalStepView(LoginRequiredMixin, StaticStepView):
         children_with_rentals = Child.objects.filter(rentals__isnull=False, rentals__paid=False, family=user)
 
         context["appointment_type"] = self.appointment_type
-        context["rentals"] = Rental.objects.filter(child__family=user, paid=False)
+        context["rentals"] = Rental.objects.filter(child__family=user).select_related(
+            "child", "pickup_appointment__slot", "return_appointment__slot"
+        )
         context["rentals_json"] = [
             {
                 "id": rental.id,
                 "child": rental.child.id,
                 "pickup_appointment": rental.pickup_appointment.slot.id if rental.pickup_appointment else "",
                 "return_appointment": rental.return_appointment.slot.id if rental.return_appointment else "",
+                "pickup_start": rental.pickup_appointment.slot.start.isoformat() if rental.pickup_appointment else "",
+                "return_start": rental.return_appointment.slot.start.isoformat() if rental.return_appointment else "",
             }
             for rental in context["rentals"]
         ]
