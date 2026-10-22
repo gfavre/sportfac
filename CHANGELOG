@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 4.13.2 - 2026-10-22
+
+### Fixed
+- Require each child to have a non-canceled course registration before creating an equipment rental or booking pickup, both in the wizard and API. Scope rental access to the family while preserving returns for equipment already rented.
+
 ## 4.13.1 - 2026-10-22
 
 ### Changed
