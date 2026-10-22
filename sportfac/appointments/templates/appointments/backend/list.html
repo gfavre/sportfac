@@ -1,39 +1,109 @@
 {% extends "backend/base.html" %}
-{% load duration i18n sekizai_tags switzerland %}
+{% load i18n sekizai_tags static switzerland %}
 
 {% block title %}{% translate "All appointments" %} - {{ block.super }}{% endblock %}
 
-{% block page_title %}{% translate "All appointments" %}{% endblock %}
-
-{% get_current_language as LANGUAGE_CODE %}
-
-
+{% block page_title %}<i class="icon-calendar" aria-hidden="true"></i>&nbsp;&nbsp;{% translate "All appointments" %}{% endblock %}
 
 {% block content %}
-  <p>
-    <a href="{% url 'backend:appointments-export' %}" class="btn btn-primary"><i class="icon-file-excel"></i> {% translate "Export appointments" %}</a>
-  </p>
-  {% regroup object_list by start|date:"l d F Y" as slots_per_day %}
-  {% for slot in slots_per_day %}
-    <section class="portlet">
-      <h3 class="content-title"><u>{{ slot.grouper }}</u></h3>
-      {% for slot in slot.list %}
-        <h4>{{ slot.start|date:"H:i" }} - {{ slot.end|date:"H:i" }}</h4>
-          <ul>
-            {% for appointment in slot.appointments.all %}
-              <li>
-                {% if appointment.child.id_lagapeo %}{{ appointment.child.id_lagapeo }} : {% endif %}{{ appointment.child }} -
-                <a href="{{ appointment.child.family.best_phone|phone:'RFC3966' }}">{{ appointment.child.family.best_phone|phone }}</a>
-                - {{ appointment.child.family.email|urlize }}
-                  <a class="btn btn-sm" style="margin-left: 80px" href="{{ appointment.get_backend_edit_url }}"><i class="icon-pencil"></i> {% translate "Edit" %}</a>
-
-                  <a class="btn btn-sm" style="margin-left: 80px" href="{{ appointment.get_backend_delete_url }}"><i class="icon-trash"></i> {% translate "Delete" %}</a>
-
-              </li>
+  {% addtoblock "css" %}
+    <link rel="stylesheet" href="{% static 'backend/css/appointments.css' %}?v=5">
+  {% endaddtoblock %}
+  <div class="appointments-list">
+    <div class="appointments-list-toolbar">
+      <form method="get" class="appointments-filters">
+        <div class="form-group">
+          <label for="appointment-date">{% translate "Journée" %}</label>
+          <select name="date" id="appointment-date" class="form-control">
+            <option value="all" {% if selected_date == "all" %}selected{% endif %}>{% translate "Toutes les dates" %}</option>
+            {% for item in available_days %}
+              <option value="{{ item.day|date:'Y-m-d' }}" {% if selected_date == item.day|date:'Y-m-d' %}selected{% endif %}>{{ item.day|date:"l d F Y" }} · {{ item.bookings }} {% translate "rendez-vous" %}</option>
             {% endfor %}
-          </ul>
-      {% endfor %}
-    </ul>
-    </section>
-  {% endfor %}
+          </select>
+        </div>
+        <div class="form-group appointments-search">
+          <label for="appointment-search">{% translate "Retrouver un enfant" %}</label>
+          <input type="search" class="form-control" id="appointment-search" name="q" value="{{ search }}" placeholder="{% translate 'Nom, prénom ou courriel' %}">
+        </div>
+        <input type="hidden" name="empty" value="0">
+        <label class="appointments-empty-toggle"><input type="checkbox" name="empty" value="1" {% if include_empty %}checked{% endif %}> {% translate "Afficher les créneaux vides" %}</label>
+        <noscript><button class="btn btn-default" type="submit">{% translate "Afficher" %}</button></noscript>
+      </form>
+      <div class="appointments-list-actions">
+        <a href="{% url 'backend:appointments-manage' %}" class="btn btn-default"><i class="icon-calendar-plus-o" aria-hidden="true"></i> {% translate "Gérer les créneaux" %}</a>
+        <a href="{% url 'backend:appointments-export' %}" class="btn btn-primary"><i class="icon-file-excel" aria-hidden="true"></i> {% translate "Export appointments" %}</a>
+        <small>{% translate "L’export contient tous les rendez-vous." %}</small>
+      </div>
+    </div>
+    <p id="appointments-filter-status" role="status" hidden data-loading="{% translate 'Chargement…' %}" data-error="{% translate 'Impossible de charger les rendez-vous. Réessayez.' %}"></p>
+    <div id="appointment-results">
+    <p class="appointments-results" role="status"><strong>{{ appointment_count }}</strong> {% translate "rendez-vous" %} · <strong>{{ slot_count }}</strong> {% translate "créneaux pour cette sélection" %}</p>
+    {% include "appointments/backend/pagination.html" %}
+    {% regroup object_list by start|date:"l d F Y" as slots_per_day %}
+    {% for day in slots_per_day %}
+      <section class="appointments-day">
+        <h2>{{ day.grouper|capfirst }}</h2>
+        {% for slot in day.list %}
+          {% with appointments=slot.appointments.all %}
+            <section class="appointments-slot" aria-labelledby="appointments-slot-{{ slot.pk }}">
+              <div class="appointments-slot-heading">
+                <div class="appointments-slot-title">
+                  <h3 id="appointments-slot-{{ slot.pk }}">{{ slot.start|date:"H:i" }} – {{ slot.end|date:"H:i" }}</h3>
+                  <span class="appointments-slot-type">{{ slot.get_appointment_type_display }}</span>
+                </div>
+                <div class="appointments-slot-capacity">
+                  <span class="appointments-slot-count">{% blocktranslate count total=appointments|length with places=slot.places %}{{ total }} inscrit / {{ places }} places{% plural %}{{ total }} inscrits / {{ places }} places{% endblocktranslate %}</span>
+                  {% with available=slot.available_places %}
+                    <span class="appointments-availability {% if available > 0 %}appointments-availability-open{% endif %}">{% if available > 0 %}{% blocktranslate count total=available %}{{ total }} place disponible{% plural %}{{ total }} places disponibles{% endblocktranslate %}{% else %}{% translate "Complet" %}{% endif %}</span>
+                  {% endwith %}
+                </div>
+              </div>
+              {% if appointments %}
+                <table class="appointments-participants">
+                  <caption class="sr-only">{% translate "Rendez-vous" %} {{ slot.start|date:"d.m.Y H:i" }} – {{ slot.end|date:"H:i" }}</caption>
+                  <thead><tr><th scope="col">{% translate "Enfant" %}</th><th scope="col">{% translate "Contact" %}</th><th scope="col" class="appointments-actions-column">{% translate "Actions" %}</th></tr></thead>
+                  <tbody>
+                    {% for appointment in appointments %}
+                      <tr>
+                        <td class="appointments-child">
+                          <strong>{{ appointment.child }}</strong>
+                          {% if appointment.child.id_lagapeo %}<small>{% translate "Identifiant" %} : {{ appointment.child.id_lagapeo }}</small>{% endif %}
+                        </td>
+                        <td class="appointments-contact">
+                          {% firstof appointment.child.family.best_phone appointment.phone_number as phone_number %}
+                          {% firstof appointment.child.family.email appointment.email as email %}
+                          {% if phone_number %}<a href="{{ phone_number|phone:'RFC3966' }}">{{ phone_number|phone }}</a>{% endif %}
+                          {% if email %}<a href="mailto:{{ email }}">{{ email }}</a>{% endif %}
+                          {% if not phone_number and not email %}<span class="text-muted">{% translate "Aucune coordonnée" %}</span>{% endif %}
+                        </td>
+                        <td class="appointments-row-actions">
+                          <a class="btn btn-default btn-sm appointments-modal-link" href="{{ appointment.get_backend_edit_url }}" aria-label="{% translate 'Modifier le rendez-vous de' %} {{ appointment.child }}"><i class="icon-pencil" aria-hidden="true"></i> {% translate "Edit" %}</a>
+                          <a class="btn btn-link btn-sm appointments-delete appointments-modal-link" href="{{ appointment.get_backend_delete_url }}" aria-label="{% translate 'Supprimer le rendez-vous de' %} {{ appointment.child }}"><i class="icon-trash" aria-hidden="true"></i> {% translate "Delete" %}</a>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              {% else %}
+                <p class="appointments-empty-slot">{% translate "Aucun rendez-vous enregistré sur ce créneau." %}</p>
+              {% endif %}
+            </section>
+          {% endwith %}
+        {% endfor %}
+      </section>
+    {% empty %}
+      <div class="appointments-empty-state">
+        <i class="icon-calendar" aria-hidden="true"></i>
+        <h2>{% translate "Aucun rendez-vous pour cette sélection" %}</h2>
+        <p>{% translate "Choisissez une autre date ou affichez les créneaux vides." %}</p>
+      </div>
+    {% endfor %}
+    {% include "appointments/backend/pagination.html" %}
+    </div>
+  </div>
+  <div class="modal fade appointments-modal" id="appointment-modal" tabindex="-1" role="dialog" aria-labelledby="appointment-modal-title"
+       data-loading="{% translate 'Chargement…' %}" data-error="{% translate 'Impossible de charger ou d’enregistrer le rendez-vous. Réessayez.' %}">
+    <div class="modal-dialog" role="document"><div class="modal-content"></div></div>
+  </div>
+  {% addtoblock "js" %}<script src="{% static 'backend/js/appointments-list.js' %}?v=2"></script>{% endaddtoblock %}
 {% endblock content %}

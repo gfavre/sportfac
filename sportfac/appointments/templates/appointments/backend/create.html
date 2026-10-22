@@ -13,11 +13,7 @@
   {% addtoblock "css" %}
     <link rel="stylesheet" href="{% static 'backend/css/paper-prepare.css' %}?v=4">
     <link href="{% static 'js/vendor/fullcalendar-5/lib/main.css' %}" rel="stylesheet"/>
-    <style>
-      .fc .fc-button {
-        padding: 0 0.6em;
-      }
-    </style>
+    <link rel="stylesheet" href="{% static 'backend/css/appointments.css' %}?v=5">
   {% endaddtoblock %}
   {% addtoblock "js" %}
     <script src="{% static 'js/vendor/js.cookie.js' %}"></script>
@@ -61,28 +57,7 @@
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
           },
-          // Show the date picker for quick navigation
-          customButtons: {
-            datePicker: {
-              text: "{% translate 'Jump to Date...' %}",
-              click: function () {
-                const selectedDate = prompt("{% translate "Enter a date (DD.MM.YYYY)" %}");
-                const formattedDate = moment(selectedDate, 'DD.MM.YYYY', true); // Parse Swiss format
-
-                // Check if the date is valid
-                if (formattedDate.isValid()) {
-                  calendar.gotoDate(formattedDate.format('YYYY-MM-DD')); // Convert to FullCalendar format
-                } else {
-                  alert("{% translate "Invalid date, please use dd.mm.yyyy format, like 31.12.2028" %}"); // Alert if invalid
-                }
-              }
-            }
-          },
-          footerToolbar: {
-            center: 'datePicker'  // Place the custom date picker button in the footer
-          },
-
-          initialView: 'timeGridWeek',
+          initialView: window.matchMedia('(max-width: 767px)').matches ? 'timeGridDay' : 'timeGridWeek',
           locale: 'fr-ch',
           selectable: true,
           select: function (info) {
@@ -94,6 +69,15 @@
         });
         calendar.gotoDate("{{ start }}");
         calendar.render();
+        document.getElementById('calendar-date').addEventListener('change', function () {
+          if (this.value) {
+            if (calendar.view.type === 'dayGridMonth') {
+              calendar.changeView('timeGridDay', this.value);
+            } else {
+              calendar.gotoDate(this.value);
+            }
+          }
+        });
 
         // Function to open the modal with event data for editing
         function openModal(event) {
@@ -172,25 +156,38 @@
     </script>
   {% endaddtoblock %}
 
-  <section class="portlet">
+  <section class="appointments-management">
+    <div class="appointments-heading">
+      <div>
+        <h2>{% translate "Créneaux de rendez-vous" %}</h2>
+        <p>{% translate "Créez et ajustez les horaires proposés aux familles." %}</p>
+      </div>
+      <a class="btn btn-default" href="{% url 'backend:appointments-list' %}"><i class="icon-list" aria-hidden="true"></i> {% translate "Voir les rendez-vous" %}</a>
+    </div>
+    <div class="appointments-calendar-card">
+      <div class="appointments-calendar-navigation">
+        <p>{% translate "Sélectionnez une plage horaire pour créer un créneau. Cliquez sur un créneau pour le modifier." %}</p>
+        <div class="form-group">
+          <label for="calendar-date">{% translate "Aller à une date" %}</label>
+          <input type="date" class="form-control" id="calendar-date" value="{{ start }}">
+        </div>
+      </div>
+      <div id="calendar"></div>
+    </div>
 
-    <h3 class="content-title"><u> {% translate "Available dates" %} </u>
-    </h3>
-    <div id="calendar"></div>
 
-
-    <div class="modal fade" id="calendar-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade" id="calendar-modal" tabindex="-1" role="dialog" aria-labelledby="calendar-modal-title">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                 aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title">{% translate "Edit slot" %}</h4>
+            <h4 class="modal-title" id="calendar-modal-title">{% translate "Edit slot" %}</h4>
           </div>
           <div class="modal-body">
             <div class="paper-prepare">
             <form method="post" class="paper-prepare-form" action="">{% csrf_token %}
-              <div class="paper-prepare-card">
+              <div class="appointments-slot-fields">
               <div class="form-group">
                 <label class="control-label" for="id_places">{% translate "Number of places" %}</label>
                 <div>
@@ -214,7 +211,7 @@
 
               </div>
               <div class="form-group paper-prepare-actions">
-                  <button type="submit" class="btn btn-success" id="save-event"><i class="icon-ok" aria-hidden="true"></i> <span id="save-event-label">{% translate "Save" %}</span></button>
+                  <button type="submit" class="btn btn-primary" id="save-event"><i class="icon-ok" aria-hidden="true"></i> <span id="save-event-label">{% translate "Save" %}</span></button>
                   <button type="button" class="btn btn-default" data-dismiss="modal">{% translate "Cancel" %}</button>
                   <button type="button" class="btn btn-danger creation-delete" id="remove-event" data-dismiss="modal"><i class="icon-trash"></i> {% translate "Remove slot" %}</button>
               </div>

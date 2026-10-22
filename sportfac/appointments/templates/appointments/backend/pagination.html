@@ -1,0 +1,8 @@
+{% load i18n %}
+{% if is_paginated %}
+  <nav class="appointments-pagination" aria-label="{% translate 'Pagination des rendez-vous' %}">
+    {% if page_obj.has_previous %}<a class="btn btn-default" href="?{{ page_query }}&amp;page={{ page_obj.previous_page_number }}">← {% translate "Previous" %}</a>{% endif %}
+    <span>{% blocktranslate with page=page_obj.number pages=paginator.num_pages %}Page {{ page }} sur {{ pages }}{% endblocktranslate %}</span>
+    {% if page_obj.has_next %}<a class="btn btn-default" href="?{{ page_query }}&amp;page={{ page_obj.next_page_number }}">{% translate "Next" %} →</a>{% endif %}
+  </nav>
+{% endif %}

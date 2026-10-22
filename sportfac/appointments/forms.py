@@ -2,6 +2,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML
 from crispy_forms.layout import Layout
 from django import forms
+from django.db.models import Q
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from registrations.models import Child
@@ -82,7 +84,8 @@ class AppointmentForm(forms.ModelForm):
         self.fields["child"].disabled = True
         self.fields["slot"].queryset = (
             AppointmentSlot.objects.with_available_places()
-            .filter(count_available_places__gt=0)
+            .filter(start__gte=now())
+            .filter(Q(count_available_places__gt=0) | Q(pk=self.instance.slot_id))
             .order_by("start", "end")
         )
         self.helper = FormHelper(self)
