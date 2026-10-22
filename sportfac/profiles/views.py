@@ -18,6 +18,7 @@ from registration import signals
 from wizard.views import BaseWizardStepView
 
 from .forms import InstructorForm
+from .forms import ParentProfileForm
 from .forms import RegistrationForm
 from .forms import UserForm
 from .models import FamilyUser
@@ -173,22 +174,10 @@ class WizardFamilyUserCreateView(BaseWizardStepView, RegistrationBaseView):
 
 class WizardFamilyUserUpdateView(LoginRequiredMixin, BaseWizardStepView, UpdateView):
     model = FamilyUser
+    form_class = ParentProfileForm
     template_name = "wizard/account.html"
     step_name = "update_family_user"
     step_slug = "user-update"
-
-    def get_form_class(self):
-        user: FamilyUser = self.request.user  # type: ignore
-        if user.is_instructor:
-            return InstructorForm
-        return UserForm
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        user: FamilyUser = self.request.user  # type: ignore
-        if user.is_instructor:
-            kwargs["user"] = user
-        return kwargs
 
     def get_object(self, queryset=None):
         return self.request.user

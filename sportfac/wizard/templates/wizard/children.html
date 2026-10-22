@@ -31,10 +31,10 @@
   </div>
   {% endif %}
 
-<nav style="margin-top: 1.5em;">
-  <ul class="pager" style="font-size: 1.25em;">
+<nav aria-label="{% translate 'Navigation de l’inscription' %}">
+  <ul class="wizard-actions">
     <li class="previous">
-      <a href="{{ previous_step.url }}" >
+      <a href="{{ previous_step.url }}" class="btn btn-default">
         <span aria-hidden="true">&larr;</span> {% block previous_label %}{% translate "Previous" %}{% endblock %}
       </a>
     </li>

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n sekizai_tags %}
+{% load i18n sekizai_tags static %}
 
 {% block page_header %}
   {% comment %}
@@ -57,8 +57,10 @@
               </h1>
             </div>
           </div>
-          {% if current_step.lead %}<p class="lead">{{ current_step.lead }}</p>{% endif %}
-          {{ current_step.description|safe }}
+          {% block step_introduction %}
+            {% if current_step.lead %}<p class="lead">{{ current_step.lead }}</p>{% endif %}
+            {{ current_step.description|safe }}
+          {% endblock step_introduction %}
           {% block wizard_content %}{% endblock %}
         </div>
       </main>
@@ -67,6 +69,7 @@
 
 
   {% addtoblock "css" %}
+    <link rel="stylesheet" href="{% static 'wizard/navigation.css' %}?v=1">
     <style>
       .sidebar {
         min-height: 100vh;
@@ -152,10 +155,6 @@
 
       .step.current .nav-label {
         font-weight: bold;
-      }
-
-      .pager .btn {
-        font-size: 1.25em;
       }
 
     </style>

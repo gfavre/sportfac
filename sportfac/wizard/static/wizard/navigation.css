@@ -1,0 +1,52 @@
+/* Shared by every wizard footer, whether the action is a link or a button. */
+.wizard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0 0;
+  padding: 20px 0 0;
+  list-style: none;
+  border-top: 1px solid #e1e4db;
+}
+
+.wizard-actions > .previous,
+.wizard-actions > .next {
+  float: none;
+  margin: 0;
+  padding: 0;
+}
+
+.wizard-actions > .next,
+.wizard-actions > .btn-primary {
+  margin-left: auto;
+}
+
+.wizard-actions .btn {
+  float: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.wizard-actions .btn-default {
+  font-weight: 400;
+}
+
+.wizard-actions .btn-primary {
+  font-weight: 700;
+}
+
+.wizard-actions > .disabled > .btn {
+  opacity: .65;
+  cursor: not-allowed;
+}
+
+@media (max-width: 767px) {
+  .wizard-actions > .previous,
+  .wizard-actions > .next,
+  .wizard-actions .btn {
+    width: 100%;
+  }
+}

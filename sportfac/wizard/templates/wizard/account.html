@@ -1,26 +1,35 @@
 {% extends "wizard/base.html" %}
-{% load crispy_forms_tags i18n sekizai_tags %}
+{% load crispy_forms_tags i18n sekizai_tags static %}
+
+{% block step_introduction %}{% endblock %}
 
 {% block wizard_content %}
-  <form action="." method="post" class="form-horizontal" role="form">
-    {% crispy form %}
-    <nav style="margin-top: 1.5em;">
-      <ul class="pager" style="font-size: 1.25em;">
-        <li class="previous">
-          {% if previous_step %}
-          <li class="previous">
-            <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span>
-              {% block previous_label %}{% translate "Previous" %}{% endblock %}</a>
-          </li>
+  <div class="wizard-parent-profile">
+    {% if current_step.lead or current_step.description %}
+      <div class="wizard-parent-intro">
+        {% if current_step.lead %}<p>{{ current_step.lead }}</p>{% endif %}
+        {{ current_step.description|safe }}
+      </div>
+    {% endif %}
+    <form action="." method="post" class="wizard-parent-form" role="form">
+      {% csrf_token %}
+      {% crispy form %}
+      <nav class="wizard-actions" aria-label="{% translate 'Navigation de l’inscription' %}">
+        {% if previous_step %}
+          <a href="{{ previous_step.url }}" class="btn btn-default">
+            <span aria-hidden="true">&larr;</span>
+            {% block previous_label %}{% translate "Previous" %}{% endblock %}
+          </a>
         {% endif %}
-        <li class="next">
-          {% translate "Next" as default_next %}
-          <button type="submit" class="btn btn-primary" style="font-size: 1.25em;">
-            <strong>{{ next_step.link_display|default:default_next }} <span aria-hidden="true">→</span></strong>
-          </button>
-        </li>
-      </ul>
-    </nav>
-  </form>
+        {% translate "Enregistrer et continuer" as default_next %}
+        <button type="submit" class="btn btn-primary">
+          {{ next_step.link_display|default:default_next }} <span aria-hidden="true">&rarr;</span>
+        </button>
+      </nav>
+    </form>
+  </div>
+  {% addtoblock "css" %}
+    <link rel="stylesheet" href="{% static 'wizard/parent-profile.css' %}?v=3">
+  {% endaddtoblock %}
   {% addtoblock "js" %}{{ form.media }}{% endaddtoblock %}
 {% endblock wizard_content %}

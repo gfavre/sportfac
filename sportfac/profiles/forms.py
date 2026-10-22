@@ -32,6 +32,7 @@ __all__ = (
     "AcceptTermsForm",
     "RegistrationForm",
     "UserForm",
+    "ParentProfileForm",
     "ManagerForm",
     "InstructorForm",
 )
@@ -210,6 +211,38 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
     @staticmethod
     def field_pair(*names):
         return Div(*(Div(name, css_class="col-sm-6") for name in names), css_class="row")
+
+
+class ParentProfileForm(UserForm):
+    """The registration wizard edits family contact details, regardless of staff roles."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields.pop("password1")
+        self.fields.pop("password2")
+        if settings.KEPCHUP_REGISTRATION_HIDE_COUNTRY:
+            self.fields.pop("country")
+        if settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES:
+            self.fields.pop("private_phone2")
+            self.fields.pop("private_phone3")
+        self.helper.layout = Layout(
+            Fieldset(_("Identité du parent"), self.field_pair("first_name", "last_name"), "email"),
+            Fieldset(
+                _("Adresse"),
+                "address",
+                self.field_pair("zipcode", "city"),
+                *([] if settings.KEPCHUP_REGISTRATION_HIDE_COUNTRY else [self.field_pair("country")]),
+            ),
+            Fieldset(
+                _("Vous joindre"),
+                self.field_pair("private_phone"),
+                *(
+                    []
+                    if settings.KEPCHUP_REGISTRATION_HIDE_OTHER_PHONES
+                    else [self.field_pair("private_phone2", "private_phone3")]
+                ),
+            ),
+        )
 
 
 class IBANValidationWidget(forms.TextInput):

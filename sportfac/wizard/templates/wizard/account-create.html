@@ -13,18 +13,17 @@
   <form action="." method="post" class="form-horizontal" role="form">
     {% crispy form %}
 
-    <nav style="margin-top: 1.5em;">
-      <ul class="pager" style="font-size: 1.25em;">
-        <li class="previous">
+    <nav aria-label="{% translate 'Navigation de l’inscription' %}">
+      <ul class="wizard-actions">
           {% if previous_step %}
           <li class="previous">
-            <a href="{{ previous_step.url }}"><span aria-hidden="true">&larr;</span>
+            <a href="{{ previous_step.url }}" class="btn btn-default"><span aria-hidden="true">&larr;</span>
               {% block previous_label %}{% translate "Previous" %}{% endblock %}</a>
           </li>
         {% endif %}
         <li class="next">
           {% translate "Next" as default_next %}
-          <button type="submit" class="btn btn-primary" style="font-size: 1.25em;">
+          <button type="submit" class="btn btn-primary">
             <strong>{{ next_step.link_display|default:default_next }} <span aria-hidden="true">→</span></strong>
           </button>
         </li>
