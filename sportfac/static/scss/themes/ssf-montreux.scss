@@ -1,0 +1,301 @@
+// Shared by SSF autumn and winter. Other deployments keep their legacy palette.
+$ink: #252525;
+$paper: #fff;
+$lime: #b2cd49;
+$lime-hover: #9db735;
+$lime-active: #8da52c;
+$olive: #596c20;
+$olive-hover: #435218;
+$muted: #62675b;
+$line: #cbd0c1;
+$soft: #f1f4e6;
+$selected: #e9f0cc;
+
+// Semantic colors stay recognizable and use darker, quieter shades than the brand accent.
+$states: (
+  primary: ($lime, $lime-hover, $lime-active, $ink),
+  secondary: ($paper, $soft, #e4eacb, $ink),
+  tertiary: (#eceee8, #dfe3d7, #cbd0c1, $ink),
+  success: (#386b44, #2f5b39, #264b2f, $paper),
+  warning: (#915c17, #7b4e13, #654010, $paper),
+  danger: (#ac4438, #963a30, #7d3028, $paper),
+  info: (#466873, #3b5962, #304952, $paper)
+);
+$notices: (
+  success: (#edf4ec, #b9ceb6, #2f5b39),
+  warning: (#fff4de, #d5ad6c, #74480e),
+  danger: (#fbefed, #dcada5, #91352c),
+  info: (#edf3f4, #b8cbd0, #3b5962)
+);
+
+body { color: $ink; }
+h1, h2, h3, h4, h5, h6, legend { color: $ink; }
+a, .btn-link { color: $olive; }
+a:hover, a:focus, .btn-link:hover, .btn-link:focus { color: $olive-hover; }
+input[type="checkbox"], input[type="radio"] { accent-color: $olive; }
+.chart-bg { color: $ink; background: $lime; }
+.chart-bg .tickLabel { color: $ink; }
+
+@each $name, $colors in $states {
+  $base: nth($colors, 1);
+  $hover: nth($colors, 2);
+  $active: nth($colors, 3);
+  $text: nth($colors, 4);
+  $border: if($name == secondary, $muted, darken($base, 12%));
+
+  .btn-#{$name} {
+    color: $text;
+    background: $base;
+    border-color: $border;
+    text-shadow: none;
+    box-shadow: none;
+    filter: none;
+
+    &:hover, &:focus {
+      color: $text;
+      background: $hover;
+      border-color: darken($border, 8%);
+    }
+    &:active, &.active, .open > &.dropdown-toggle {
+      color: $text;
+      background: $active;
+      border-color: darken($border, 12%);
+      box-shadow: inset 0 2px 3px rgba($ink, .12);
+    }
+    &.disabled, &[disabled], &[aria-disabled="true"], fieldset[disabled] & {
+      &, &:hover, &:focus, &:active {
+        color: $text;
+        background: $base;
+        border-color: $border;
+        box-shadow: none;
+        opacity: .65;
+      }
+    }
+    .badge { color: $text; background: rgba($text, .12); }
+    .caret { border-top-color: $text; border-bottom-color: $text; }
+  }
+
+  .badge-#{$name}, .label-#{$name}, .progress-bar-#{$name}, .chart-bg-#{$name},
+  .pricing-plan-ribbon-#{$name}, .kv-icon-#{$name} {
+    color: $text;
+    background: $base;
+    text-shadow: none;
+    filter: none;
+  }
+  // Lime and pale gray are accents, not readable text colors on white.
+  .text-#{$name}, .text-#{$name}:hover {
+    color: if($name == primary, $olive, if($text == $ink, $muted, $base));
+  }
+  .chart-bg-#{$name} .tickLabel { color: $text; }
+}
+
+@each $name, $colors in $notices {
+  $background: nth($colors, 1);
+  $border: nth($colors, 2);
+  $text: nth($colors, 3);
+  .alert-#{$name} {
+    color: $text;
+    background: $background;
+    border-color: $border;
+    text-shadow: none;
+    filter: none;
+    .alert-link, a { color: $text; text-decoration: underline; }
+    h4 { color: $text; }
+  }
+  .table > thead > tr, .table > tbody > tr, .table > tfoot > tr {
+    > td.#{$name}, > th.#{$name}, &.#{$name} > td, &.#{$name} > th {
+      color: $text;
+      background-color: $background;
+    }
+  }
+  .table.table-hover > tbody > tr.#{$name}:hover > td,
+  .table.table-hover > tbody > tr > td.#{$name}:hover {
+    color: $text;
+    background-color: darken($background, 3%);
+  }
+  .panel-#{$name} {
+    border-color: $border;
+    > .panel-heading { color: $text; background: $background; border-color: $border; }
+  }
+}
+
+.btn-default {
+  color: $ink;
+  background: $paper;
+  border-color: $line;
+  text-shadow: none;
+  box-shadow: none;
+  &:hover, &:focus, &:active, &.active { color: $ink; background: $soft; border-color: $muted; }
+  &.disabled, &[disabled], fieldset[disabled] & {
+    &, &:hover, &:focus, &:active { background: $paper; border-color: $line; }
+  }
+}
+
+.btn:focus, a:focus, button:focus, input[type="checkbox"]:focus, input[type="radio"]:focus {
+  outline: 2px solid $olive;
+  outline-offset: 2px;
+}
+.form-control:focus, .mainnav-search-query:focus, .select2-container--bootstrap.select2-container--focus .select2-selection,
+.select2-container-active .select2-choice, .content select.form-control:not([multiple]):not([size]):focus,
+.content select.form-control[size="1"]:not([multiple]):focus {
+  border-color: $olive;
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba($olive, .2);
+}
+.has-success .form-control { border-color: nth(map-get($states, success), 1); }
+.has-warning .form-control { border-color: nth(map-get($states, warning), 1); }
+.has-error .form-control { border-color: nth(map-get($states, danger), 1); }
+.has-success .control-label { color: nth(map-get($states, success), 1); }
+.has-warning .control-label { color: nth(map-get($states, warning), 1); }
+.has-error .control-label { color: nth(map-get($states, danger), 1); }
+
+.navbar-inverse, .modal-styled .modal-header, .nav-layout-sidebar-skip {
+  color: $paper;
+  background: $ink;
+  filter: none;
+}
+.navbar-inverse .navbar-brand, .navbar-inverse .navbar-nav > li > a { color: #f0f2eb; }
+.modal-styled .modal-title { color: $paper; }
+.navbar-inverse .navbar-brand:hover, .navbar-inverse .navbar-brand:focus,
+.navbar-inverse .navbar-nav > li > a:hover, .navbar-inverse .navbar-nav > li > a:focus {
+  color: $lime;
+  background: #34372f;
+}
+.navbar-inverse .navbar-nav > li.active > a, .navbar-inverse .navbar-nav > li.open > a {
+  &, &:hover, &:focus { color: $lime; background: #34372f; }
+}
+.navbar-inverse .navbar-toggle { border-color: #73776b; }
+.navbar-inverse .noticebar > li > a { color: $lime; }
+.navbar-inverse .noticebar > li > a:hover { color: $paper; }
+.mainnav-toggle, .mainnav-form-btn, .noticebar-empty-title { color: $olive; }
+.mainnav-menu > li.active > a {
+  &, &:hover, &:focus { color: $olive; border-bottom-color: $lime; background: $soft; }
+}
+.mainnav-menu > li > a:hover, .mainnav-menu > li > a:focus { color: $olive-hover; background: $soft; }
+.nav-layout-sidebar > .active > a {
+  &, &:hover, &:focus { color: $olive; }
+}
+.nav-pills > li.active > a, .dropdown-menu > .active > a {
+  &, &:hover, &:focus { color: $ink; background: $lime; }
+}
+.dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
+  color: $ink;
+  background: $soft;
+}
+.nav-tabs > li.active > a {
+  &, &:hover, &:focus { color: $olive; }
+}
+.nav-tabs > li > a:hover, .nav-tabs .open > a { border-color: $line; }
+.pagination > li > a, .pagination > li > span { color: $olive; }
+.pagination > li > a:hover, .pagination > li > a:focus { color: $olive-hover; background: $soft; }
+.pagination > .active > a, .pagination > .active > span {
+  &, &:hover, &:focus { color: $ink; background: $lime; border-color: $olive; text-shadow: none; }
+}
+.pagination > .disabled > a, .pagination > .disabled > span {
+  &, &:hover, &:focus { color: $muted; background: $paper; border-color: $line; }
+}
+
+.pricing-header, .pricing-plan-current .pricing-header { color: $paper; background: $ink; }
+.pricing-plan-title, .pricing-plan-title small { color: $paper; }
+.pricing-plan-ribbon-current { color: $ink; background: $lime; }
+.portlet-title u { color: $ink; border-bottom-color: $lime; }
+.panel-primary { border-color: $line; }
+.panel-primary > .panel-heading { color: $ink; background: $soft; border-color: $line; }
+.accordion-panel .panel.is-open .accordion-toggle { color: $ink; background: $lime; }
+.accordion-panel .accordion-toggle i { color: $olive; }
+.progress-bar:not([class*="progress-bar-"]) { color: $ink; background: $lime; filter: none; }
+// The base progress rule must not override a semantic variant.
+@each $name, $colors in $states {
+  .progress-bar-#{$name} { color: nth($colors, 4); background: nth($colors, 1); }
+}
+
+body table.dataTable tbody tr.selected > *, body table.dataTable tbody tr.selected {
+  color: $ink;
+  background-color: $selected;
+}
+body table.dataTable tbody tr.selected:hover > *, body table.dataTable tbody tr.selected:hover {
+  background-color: darken($selected, 4%);
+}
+.bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary,
+.bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary {
+  color: $ink;
+  background: $lime;
+}
+.select2-results .select2-highlighted, .select2-container--bootstrap .select2-results__option--highlighted[aria-selected] {
+  color: $ink;
+  background: $lime;
+}
+.datepicker table tr td.active, .datepicker table tr td.active:hover {
+  &, &:hover, &:focus { color: $ink; background: $lime; text-shadow: none; }
+}
+// The current wizard has inline legacy colors; scope above their specificity
+// without changing the palettes of other deployments using that shared template.
+#sidebar.sidebar { background: #f6f7f1; }
+#sidebar .step-indicator .step {
+  .circle { color: $muted; background: $paper; border-color: $line; }
+  .nav-label { color: $muted; }
+  > a {
+    color: $ink;
+    &:hover, &:focus { background: $soft; }
+  }
+  &.completed {
+    .circle { color: $paper; background: nth(map-get($states, success), 1); border-color: nth(map-get($states, success), 1); }
+    .nav-label { color: $olive; }
+  }
+  &.current {
+    .circle { color: $ink; background: $lime; border-color: $olive; }
+    .nav-label { color: $ink; }
+    > a {
+      background: $selected;
+      &:hover, &:focus { background: darken($selected, 4%); }
+    }
+  }
+}
+@media (min-width: 1200px) {
+  .wizard ul li.active { color: $ink; background: $lime; }
+  .wizard ul li.active .chevron:before { border-left-color: $lime; }
+  .wizard ul li.complete, .wizard ul li.complete a { color: $olive; background: $soft; }
+  .wizard ul li.complete .chevron:before { border-left-color: $soft; }
+  .wizard ul li.complete:hover, .wizard ul li.complete:hover a, .wizard ul li.complete a:hover { color: $olive-hover; background: $selected; }
+  .wizard ul li.complete:hover .chevron:before { border-left-color: $selected; }
+}
+#back-to-top { color: $paper; background: rgba($ink, .9); }
+#back-to-top:hover { color: $ink; background: $lime; }
+
+.wizard-equipment .fc, .appointments-management .fc {
+  --fc-button-text-color: #{$ink};
+  --fc-button-bg-color: #{$paper};
+  --fc-button-border-color: #{$line};
+  --fc-button-hover-bg-color: #{$soft};
+  --fc-button-hover-border-color: #{$olive};
+  --fc-button-active-bg-color: #{$lime};
+  --fc-button-active-border-color: #{$olive};
+  --fc-today-bg-color: #{rgba($lime, .12)};
+  --fc-event-bg-color: #{nth(map-get($states, success), 1)};
+  --fc-event-border-color: #{nth(map-get($states, success), 2)};
+  --fc-event-text-color: #{$paper};
+}
+.wizard-equipment .fc .fc-button-primary, .appointments-management .fc .fc-button-primary {
+  color: $ink;
+  &:focus, &:not(:disabled):active:focus, &:not(:disabled).fc-button-active:focus {
+    outline: 2px solid $olive;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+}
+.equipment-option:has(input:checked) { color: $ink; background: $soft; border-color: $olive; }
+.equipment-option:has(input:disabled) { cursor: default; }
+.equipment-dates .calendar-change:hover, .equipment-dates .calendar-change:focus {
+  color: $olive-hover;
+  background: $soft;
+  border-color: $olive;
+  text-decoration: none;
+}
+
+// A neutral shadow replaces the old blue cast; season-specific photographs remain.
+#pagecontent .container { box-shadow: 0 2px 5px rgba($ink, .12); }
+@media (max-width: 767px) {
+  .navbar-inverse .navbar-nav .open .dropdown-menu > li > a { color: $paper; }
+  .navbar-inverse .navbar-nav .open .dropdown-menu > li > a:hover,
+  .navbar-inverse .navbar-nav .open .dropdown-menu > li > a:focus { color: $lime; background: #34372f; }
+}

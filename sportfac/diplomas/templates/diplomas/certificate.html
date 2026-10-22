@@ -25,6 +25,12 @@
   td.long { font-size: 16pt; }
   td .value { position: relative; top: 0.37em; }
   .year, th, td, td .value { background-color: white; }
+  {% if montreux_style %}
+  body, td { color: #252525; }
+  .stars { color: #b2cd49; }
+  th, td { border-color: #b2cd49; text-shadow: none; }
+  .year { text-shadow: none; }
+  {% endif %}
 </style></head><body>
 {% for diploma in diplomas %}
 <section class="certificate">

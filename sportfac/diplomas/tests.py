@@ -131,6 +131,21 @@ class DiplomaTests(TenantTestCase):
         with patch.object(DiplomaRenderer, "render_to_pdf", autospec=True, side_effect=write_pdf):
             self.assertEqual(render_diplomas(self.batch, [self.diploma]), b"%PDF-test")
 
+    def test_renderer_selects_deployment_palette(self):
+        def write_pdf(renderer, path):
+            from pathlib import Path
+
+            self.assertEqual(renderer.context["montreux_style"], _expected)
+            html = renderer.get_content(renderer.get_message_template())
+            self.assertEqual("body, td { color: #252525; }" in html, _expected)
+            self.assertEqual(".stars { color: #b2cd49; }" in html, _expected)
+            Path(path).write_bytes(b"%PDF-test")
+
+        for style, _expected in (("montreux", True), ("classic", False)):
+            with self.subTest(style=style), override_settings(KEPCHUP_DIPLOMA_STYLE=style):
+                with patch.object(DiplomaRenderer, "render_to_pdf", autospec=True, side_effect=write_pdf):
+                    self.assertEqual(render_diplomas(self.batch, [self.diploma]), b"%PDF-test")
+
     @patch("diplomas.tasks.sync_playwright")
     @patch("diplomas.tasks.DiplomaRenderer.get_content", return_value="<html>Diplôme</html>")
     def test_renderer_uses_local_chromium(self, get_content, playwright):

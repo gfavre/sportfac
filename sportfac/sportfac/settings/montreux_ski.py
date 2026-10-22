@@ -3,6 +3,10 @@
 from .production import *  # noqa: F403, F401
 
 
+KEPCHUP_LOGO = "img/montreux-ssf-logo-dark-2026.png"
+KEPCHUP_DIPLOMA_LOGO = KEPCHUP_LOGO
+KEPCHUP_DIPLOMA_STYLE = "montreux"
+
 TEMPLATES[0]["DIRS"] = [  # noqa: F405
     normpath(join(SITE_ROOT, "themes", "montreux_ski", "templates")),  # noqa: F405
     normpath(join(SITE_ROOT, "templates")),  # noqa: F405

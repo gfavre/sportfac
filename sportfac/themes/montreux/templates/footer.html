@@ -2,9 +2,9 @@
 <footer id="footer">
   <div class="container">
     <div>
-      {% cache 3600 "footer" %}
+      {% cache 3600 "footer-ssf-logo-2026" %}
       {% include "address.html" %}
-      <img src="{{ STATIC_URL }}img/logo.png" class="hidden-xs hidden-sm hidden-print"/>
+      <img src="{% static 'img/montreux-ssf-logo-dark-2026.png' %}" width="240" style="max-width: 100%; height: auto" alt="Montreux Sport — Sport scolaire facultatif" class="hidden-xs hidden-sm hidden-print"/>
       {% get_flatpages as flatpages %}
       <ul class="footer-links hidden-print">
         <li><a href="{% url 'contact:contact' %}">{% translate "Contact" %}</a></li>

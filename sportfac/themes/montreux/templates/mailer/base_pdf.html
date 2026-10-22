@@ -31,9 +31,11 @@ address {
 }
 
 .logo {
-    width: 3cm;
-    float: left;
-    margin-right: 0.4cm;
+    width: 4.5cm;
+    height: auto;
+    display: block;
+    max-width: 100%;
+    margin-bottom: 0.2cm;
 }
 .header, .title {
     vertical-align: top;
@@ -117,7 +119,7 @@ address span:first-child {
 <body>
   <header>
     <div class="header">
-      <img src="https://ssfmontreux.ch/static/img/logo.png" class="logo" />
+      <img src="{{ STATIC_URL }}img/montreux-ssf-logo-dark-2026.png" class="logo" alt="Montreux Sport — Sport scolaire facultatif" />
       {% include "address.html" %}
     </div>
     <div class="title">

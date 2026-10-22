@@ -5,6 +5,7 @@
     "uglifyjs": "^2.4.11"
   },
   "scripts": {
-    "build:mail-editor": "node scripts/build-mail-editor.js"
+    "build:mail-editor": "node scripts/build-mail-editor.js",
+    "build:montreux-theme": "sass --no-source-map --style=expanded sportfac/static/scss/themes/ssf-montreux.scss sportfac/static/css/ssf-montreux-2026.css"
   }
 }

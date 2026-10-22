@@ -56,7 +56,7 @@ class PracticalReminderView(BackendMixin, View):
                 "course": registration.course,
                 "registration": registration,
                 "year": timezone.localdate().year,
-                "logo_url": request.build_absolute_uri(static("img/logo.png")),
+                "logo_url": request.build_absolute_uri(static(settings.KEPCHUP_LOGO)),
             }
         )
         subject = Template(mail_type.subject_template.content).render(context).strip()

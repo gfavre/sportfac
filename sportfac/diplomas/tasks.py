@@ -49,6 +49,7 @@ def render_diplomas(batch, diplomas):
         "text_font": base64.b64encode(text_font.read_bytes()).decode("ascii"),
         "horizontal_stars": range(65),
         "vertical_stars": range(43),
+        "montreux_style": settings.KEPCHUP_DIPLOMA_STYLE == "montreux",
     }
     with TemporaryDirectory() as directory:
         path = Path(directory) / "diplomas.pdf"

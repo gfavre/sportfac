@@ -20,6 +20,14 @@ from ..tasks import send_practical_reminder
 
 
 class PracticalReminderTests(TenantTestCase):
+    @override_settings(KEPCHUP_LOGO="img/montreux-ssf-logo-dark-2026.png")
+    def test_reminder_uses_deployment_logo(self):
+        self.install()
+        self.client.force_login(self.manager)
+        response = self.client.get(self.url)
+        self.assertContains(response, "/static/img/montreux-ssf-logo-dark-2026.png")
+        self.assertNotContains(response, "/static/img/logo.png")
+
     def setUp(self):
         super().setUp()
         config = override_settings(

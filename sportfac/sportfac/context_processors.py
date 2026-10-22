@@ -140,6 +140,7 @@ def kepchup_context(request):
         return _kepchup_context_cache.copy()
     _kepchup_context_cache = {
         "VERSION": kepchup_version,
+        "KEPCHUP_LOGO": settings.KEPCHUP_LOGO,
         "CHILDREN_EDITABLE": settings.KEPCHUP_CHILDREN_EDITABLE,
         "CHILDREN_POPUP": settings.KEPCHUP_CHILDREN_POPUP,
         "CHILDREN_TERMS": settings.KEPCHUP_CHILDREN_TERMS,
