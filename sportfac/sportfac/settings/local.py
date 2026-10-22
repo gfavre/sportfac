@@ -1,4 +1,6 @@
 """Development settings and globals."""
+from sportfac.dev_theme import configure_development_theme
+
 from .base import *  # noqa: F403
 
 
@@ -386,7 +388,7 @@ CELERYBEAT_SCHEDULE["cancel-expired-registrations"] = {  # noqa: F405
     "task": "registrations.tasks.cancel_expired_registrations",
     "schedule": crontab(minute="*/5"),  # noqa: F405
 }
-KEPCHUP_USE_APPOINTMENTS = False
+KEPCHUP_USE_APPOINTMENTS = True
 
 
 # Dashboard
@@ -412,3 +414,6 @@ KEPCHUP_CHILDREN_TERMS = {
     "save_child": "Enregister le participant",
     "your_children": "Votre famille",
 }
+
+# Visual preview only: never import another deployment's database/SSO settings.
+configure_development_theme(globals())

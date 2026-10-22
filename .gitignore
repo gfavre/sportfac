@@ -60,3 +60,8 @@ sportfac/static/codekit-config.json
 codekit-config.json
 
 .env
+.dev-theme
+
+# Secondary IDE Sass-watcher output; use npm run build:montreux-theme instead.
+/sportfac/static/scss/css/ssf-montreux.css
+/sportfac/static/scss/css/ssf-montreux.css.map
