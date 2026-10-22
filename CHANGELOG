@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 4.13.1 - 2026-10-22
+
+### Changed
+- Organize the account form into framed sections with labels above fields and an aligned save action, preserving the existing member/instructor forms and correcting the French title accent.
+- Put Switzerland first in the account nationality menu, followed by a separator and the full alphabetical list, while retaining the saved nationality.
+
+### Fixed
+- Keep diploma-page buttons in the SSF Montreux palette despite stronger page-specific blue styles, including hover, focus and disabled states.
+- Use a local calendar and explicit DD.MM.YYYY input on the account page instead of mixing incompatible datepicker scripts; display existing dates correctly and validate date-only values when saving instructor details.
+
 ## 4.13.0 - 2026-10-22
 
 ### Added
