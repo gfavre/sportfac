@@ -1,0 +1,17 @@
+.account-profile { padding-bottom: 28px; }
+.account-profile > .content-title { margin: 0 0 24px; }
+.account-profile-form fieldset { padding: 24px; margin: 0 0 20px; border: 0; border-radius: 6px; background: #fff; box-shadow: inset 0 0 0 1px #dce3e8; }
+.account-profile-form legend { float: left; width: 100%; margin: 0 0 18px; padding: 0 0 10px; border: 0; border-bottom: 1px solid #e1e4db; font-family: inherit; font-size: 18px; font-weight: 600; line-height: 1.4; }
+.account-profile-form legend + * { clear: both; }
+.account-profile-form .form-group { margin-bottom: 18px; }
+.account-profile-form .control-label { display: block; float: none; width: auto; margin-bottom: 6px; padding-top: 0; text-align: left; }
+.account-profile-form input.form-control, .account-profile-form select.form-control:not([multiple]) { min-height: 36px; }
+.account-profile-form .checkbox label { padding-left: 26px; line-height: 1.5; }
+.account-profile-form .checkbox input[type="checkbox"] { width: 18px; height: 18px; margin-left: -26px; margin-top: 1px; }
+.account-profile-form .account-profile-actions { display: flex; justify-content: flex-end; margin: 24px 0 0; padding-top: 20px; border-top: 1px solid #dce3e8; }
+.account-profile-actions .btn-primary { padding: 8px 16px; border-radius: 4px; font-size: 15px; font-weight: 700; line-height: 1.4; }
+.account-date-control .btn { min-height: 36px; }
+@media (max-width: 767px) {
+  .account-profile-form fieldset { padding: 16px; }
+  .account-profile-actions .btn-primary { width: 100%; }
+}

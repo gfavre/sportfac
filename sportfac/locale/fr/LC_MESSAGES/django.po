@@ -5840,7 +5840,7 @@ msgstr "Mon compte"
 
 #: profiles/templates/profiles/account.html:29
 msgid "Edit profile"
-msgstr "Editer le compte"
+msgstr "Éditer le compte"
 
 #: profiles/templates/profiles/baseprofile.html:27
 msgid "Profile Settings"

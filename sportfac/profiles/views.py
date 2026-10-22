@@ -66,6 +66,37 @@ class _BaseAccount(LoginRequiredMixin, UpdateView):
 class AccountView(SuccessMessageMixin, _BaseAccount):
     template_name = "profiles/account.html"
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.helper.form_class = ""
+        form.helper.form_group_wrapper_class = ""
+        form.helper.label_class = ""
+        form.helper.field_class = ""
+        if "birth_date" in form.fields:
+            # Keep Swiss date parsing independent of incompatible datetimepicker generations.
+            birth_date = form.fields["birth_date"]
+            form.fields["birth_date"] = forms.DateField(
+                label=birth_date.label,
+                required=birth_date.required,
+                widget=forms.DateInput(
+                    format="%d.%m.%Y",
+                    attrs={
+                        "class": "form-control account-birth-date",
+                        "placeholder": "JJ.MM.AAAA",
+                        "autocomplete": "off",
+                        "data-calendar-label": _("Ouvrir le calendrier"),
+                    },
+                ),
+                input_formats=["%d.%m.%Y"],
+                help_text=_("Format : JJ.MM.AAAA, par exemple 31.12.1980."),
+            )
+        if "nationality" in form.fields:
+            choices = [(code, label) for code, label in form.fields["nationality"].choices if code]
+            swiss = next((label for code, label in choices if code == "CH"), None)
+            if swiss is not None:
+                form.fields["nationality"].choices = [("CH", swiss), ("", "---"), *choices]
+        return form
+
     def get_success_message(self, form):
         return _("Your contact informations have been saved.")
 
