@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 4.13.0 - 2026-10-22
+
+### Added
+- Preview themes locally through the Git-ignored `.dev-theme` file or `KEPCHUP_DEV_THEME`, selecting templates, static assets and branding at startup without importing production infrastructure settings.
+- Search backend appointments by child name or email, filter dates without leaving the page and see available places. Edit or cancel appointments in a modal, with pagination for large lists and all dates visible by default.
+
+### Changed
+- Clarify the backend appointment calendar with a dedicated navigation area, a date picker, readable calendar controls and a simpler slot editor; keep creation and editing actions unchanged.
+- Organize equipment pickup and return into clear child and appointment sections, with explicit saved dates/times that update after booking. Add month/week/day calendar views, date shortcuts and a mobile day view; remove the redundant return introduction.
+- Use consistent footer actions throughout registration steps, with matching button sizes, bold primary actions, secondary back links and a shared responsive layout while preserving navigation and confirmation hooks.
+- Improve the parent profile wizard step with padded, grouped contact fields, a better-placed introduction and a clear save/continue action.
+- Harmonize SSF Montreux autumn and winter colors around the new logo, including wizard progress, calendar controls, checkboxes, focus and semantic status colors. Keep the shared SCSS and generated CSS together with a documented build command.
+- Align SSF Montreux diploma colors with the new logo using anthracite text and lime-green stars and borders; preserve the existing palette for other deployments.
+- Replace SSF Montreux autumn and winter logos in footers, invoices, printed documents, reminder emails and new diplomas with bounded transparent assets under new filenames. Refresh browser icons with a dark-theme variant and invalidate the footer cache without changing EPA or PassVac branding.
+
+### Fixed
+- Keep instructor-only fields out of the parent profile wizard, preserving professional details, passwords and hidden contact fields when parents update their account.
+- Include children with paid equipment rentals in the appointment picker, while keeping children without course registrations out of the rental selection.
+- Exclude past destinations when moving appointments, retain the current future slot even when full, recheck destination capacity before saving and preserve rental links when moving or canceling an appointment.
+
 ## 4.12.1 - 2026-10-21
 
 ### Fixed
