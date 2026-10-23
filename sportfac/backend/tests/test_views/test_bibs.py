@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.test import RequestFactory
@@ -7,7 +5,6 @@ from django.test import override_settings
 
 from backend.views.registration_views import GenerateBibsView
 from profiles.tests.factories import FamilyUserFactory
-from registrations.forms import AssignBibsTransportForm
 from registrations.models import Transport
 from registrations.tests.factories import RegistrationFactory
 from sportfac.utils import TenantTestCase
@@ -17,94 +14,6 @@ from .base import fake_registrations_open_middleware
 
 @override_settings(KEPCHUP_EXPLICIT_SESSION_DATES=False)
 class GenerateBibsViewTests(TenantTestCase):
-    def test_assignment_supports_python38_field_names(self):
-        class Python38FieldName(str):
-            # CI uses newer Python; reproduce the missing Python 3.8 string API.
-            @property
-            def removeprefix(self):
-                raise AttributeError("'str' object has no attribute 'removeprefix'")
-
-        def assignment_form(*args, **kwargs):
-            form = AssignBibsTransportForm(*args, **kwargs)
-            form.changed_data = [Python38FieldName(name) for name in form.changed_data]
-            return form
-
-        registration = RegistrationFactory(transport=None)
-        car = Transport.objects.create(name="Bus", bib_prefix=3)
-        request = self.request(
-            FamilyUserFactory(is_manager=True),
-            "post",
-            {"action": "assign", f"child_{registration.child_id}": str(car.pk)},
-        )
-        with patch("backend.views.registration_views.AssignBibsTransportForm", side_effect=assignment_form):
-            response = GenerateBibsView.as_view()(request)
-        self.assertEqual(response.status_code, 302)
-        registration.refresh_from_db()
-        self.assertEqual(registration.transport_id, car.pk)
-        self.assertEqual(registration.child.bib_number, "")
-
-    def test_ready_population_collapses_list_but_allows_review(self):
-        RegistrationFactory(transport=Transport.objects.create(name="Bus", bib_prefix=3))
-        response = GenerateBibsView.as_view()(self.request(FamilyUserFactory(is_manager=True)))
-        self.assertContains(response, 'id="bib-assignment-panel" hidden', status_code=200)
-        self.assertContains(response, "Revoir les affectations")
-        self.assertContains(response, 'data-pending-count="0"')
-        self.assertTrue(response.context_data["can_generate"])
-
-    def test_pending_population_keeps_assignment_list_visible(self):
-        RegistrationFactory(transport=None)
-        response = GenerateBibsView.as_view()(self.request(FamilyUserFactory(is_manager=True)))
-        self.assertContains(response, '<div id="bib-assignment-panel">', status_code=200)
-        self.assertContains(response, "Masquer la liste")
-        self.assertContains(response, 'data-pending-count="1"')
-        self.assertFalse(response.context_data["can_generate"])
-
-    def test_last_autosave_returns_collapsed_state_and_updated_rows(self):
-        registration = RegistrationFactory(transport=None)
-        car = Transport.objects.create(name="Bus", bib_prefix=3)
-        request = self.request(
-            FamilyUserFactory(is_manager=True), "post", {"action": "assign", f"child_{registration.child_id}": car.pk}
-        )
-        request.META["HTTP_X_REQUESTED_WITH"] = "XMLHttpRequest"
-        response = GenerateBibsView.as_view()(request)
-        self.assertEqual(response["X-Bib-Saved"], "true")
-        self.assertContains(response, 'data-pending-count="0"', status_code=200)
-        self.assertContains(response, 'id="bib-assignment-panel" hidden')
-        self.assertContains(response, f'data-child="{registration.child_id}"')
-        self.assertTrue(response.context_data["can_generate"])
-
-    def test_autosave_returns_updated_readiness_without_changing_other_children(self):
-        first = RegistrationFactory(transport=None)
-        other = RegistrationFactory(transport=None)
-        car = Transport.objects.create(name="Bus", bib_prefix=3)
-        request = self.request(
-            FamilyUserFactory(is_manager=True), "post", {"action": "assign", f"child_{first.child_id}": str(car.pk)}
-        )
-        request.META["HTTP_X_REQUESTED_WITH"] = "XMLHttpRequest"
-        response = GenerateBibsView.as_view()(request)
-        self.assertEqual(response["X-Bib-Saved"], "true")
-        self.assertContains(response, "Enregistrement", status_code=200)
-        self.assertEqual(response.context_data["ready_count"], 1)
-        self.assertEqual(response.context_data["children_count"], 2)
-        self.assertEqual([entry["child"].pk for entry in response.context_data["children"]], [first.child_id])
-        first.refresh_from_db()
-        other.refresh_from_db()
-        self.assertEqual(first.transport_id, car.pk)
-        self.assertIsNone(other.transport_id)
-        self.assertEqual(first.child.bib_number, "")
-
-    def test_invalid_autosave_does_not_report_success(self):
-        registration = RegistrationFactory(transport=None)
-        request = self.request(
-            FamilyUserFactory(is_manager=True), "post", {"action": "assign", f"child_{registration.child_id}": "-1"}
-        )
-        request.META["HTTP_X_REQUESTED_WITH"] = "XMLHttpRequest"
-        response = GenerateBibsView.as_view()(request)
-        self.assertNotIn("X-Bib-Saved", response)
-        self.assertTrue(response.context_data["assignment_form"].errors)
-        registration.refresh_from_db()
-        self.assertIsNone(registration.transport_id)
-
     def request(self, user, method="get", data=None):
         request = getattr(RequestFactory(), method)("/backend/transport/generate-bibs/", data or {})
         request.user = user
@@ -140,22 +49,21 @@ class GenerateBibsViewTests(TenantTestCase):
 
     def test_missing_assignments_are_grouped_per_child_with_edit_links(self):
         first = RegistrationFactory(transport=None)
-        second = RegistrationFactory(child=first.child, transport=None)
+        RegistrationFactory(child=first.child, transport=None)
         RegistrationFactory(status="canceled", transport=None)
         response = GenerateBibsView.as_view()(self.request(FamilyUserFactory(is_manager=True)))
         self.assertEqual(response.context_data["children_count"], 1)
         self.assertEqual(len(response.context_data["pending_children"]), 1)
         self.assertFalse(response.context_data["can_generate"])
-        self.assertContains(response, first.update_url)
-        self.assertContains(response, second.update_url)
         self.assertContains(response, " disabled")
+        self.assertContains(response, "Traiter les affectations à compléter")
 
     def test_conflicting_cars_and_missing_prefix_are_shown(self):
         car = Transport.objects.create(name="Sans préfixe")
         first = RegistrationFactory(transport=car)
         response = GenerateBibsView.as_view()(self.request(FamilyUserFactory(is_manager=True)))
         self.assertContains(response, "Préfixe du car manquant")
-        self.assertContains(response, f'<a href="{car.update_url}">Préfixe du car manquant</a>', html=True)
+        self.assertContains(response, f'<a href="{car.update_url}?from=bibs">Préfixe du car manquant</a>', html=True)
         self.assertContains(response, car.update_url)
         RegistrationFactory(child=first.child, transport=Transport.objects.create(name="Autre", bib_prefix=4))
         response = GenerateBibsView.as_view()(self.request(FamilyUserFactory(is_manager=True)))
@@ -170,65 +78,89 @@ class GenerateBibsViewTests(TenantTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context_data["form"].non_field_errors())
 
-    def test_assignments_update_all_active_registrations_without_generating_bibs(self):
-        first = RegistrationFactory(transport=None)
-        second = RegistrationFactory(child=first.child, transport=None)
-        canceled = RegistrationFactory(child=first.child, transport=None, status="canceled")
-        other = RegistrationFactory(transport=None)
-        car = Transport.objects.create(name="Bus", bib_prefix=3)
+    def test_stale_assignment_submission_never_generates_bibs(self):
+        child = RegistrationFactory(transport=Transport.objects.create(name="Bus", bib_prefix=3)).child
         response = GenerateBibsView.as_view()(
-            self.request(
-                FamilyUserFactory(is_manager=True),
-                "post",
-                {"action": "assign", f"child_{first.child_id}": str(car.pk), f"child_{other.child_id}": str(car.pk)},
-            )
+            self.request(FamilyUserFactory(is_manager=True), "post", {"action": "assign"})
         )
         self.assertEqual(response.status_code, 302)
-        for registration in (first, second, other):
-            registration.refresh_from_db()
-            self.assertEqual(registration.transport_id, car.pk)
-            self.assertEqual(registration.child.bib_number, "")
-        canceled.refresh_from_db()
-        self.assertIsNone(canceled.transport_id)
+        self.assertIn("/assignments/", response.url)
+        child.refresh_from_db()
+        self.assertEqual(child.bib_number, "")
 
-    def test_blank_conflict_choice_preserves_existing_assignments(self):
-        first = RegistrationFactory(transport=Transport.objects.create(name="A", bib_prefix=1))
-        second = RegistrationFactory(child=first.child, transport=Transport.objects.create(name="B", bib_prefix=2))
-        initial = [first.transport_id, second.transport_id]
-        response = GenerateBibsView.as_view()(
-            self.request(
-                FamilyUserFactory(is_manager=True), "post", {"action": "assign", f"child_{first.child_id}": ""}
-            )
-        )
-        self.assertEqual(response.status_code, 302)
-        first.refresh_from_db()
-        second.refresh_from_db()
-        self.assertEqual([first.transport_id, second.transport_id], initial)
+    def test_disabled_generation_explains_why_and_links_to_assignments(self):
+        RegistrationFactory(transport=None)
+        response = GenerateBibsView.as_view()(self.request(FamilyUserFactory(is_manager=True)))
+        self.assertContains(response, "La génération est bloquée pour tous les cars.", status_code=200)
+        self.assertContains(response, 'aria-describedby="bib-generation-blocked"')
+        self.assertContains(response, "Corriger la répartition des enfants")
 
-    def test_invalid_car_rejects_entire_assignment_submission(self):
-        first = RegistrationFactory(transport=None)
-        second = RegistrationFactory(transport=None)
-        car = Transport.objects.create(name="Bus", bib_prefix=3)
-        response = GenerateBibsView.as_view()(
-            self.request(
-                FamilyUserFactory(is_manager=True),
-                "post",
-                {"action": "assign", f"child_{first.child_id}": str(car.pk), f"child_{second.child_id}": "-1"},
-            )
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.context_data["assignment_form"].errors)
-        first.refresh_from_db()
-        self.assertIsNone(first.transport_id)
-
-    def test_parent_cannot_assign(self):
+    def test_correction_links_target_pending_children_and_exact_child_not_profile(self):
         registration = RegistrationFactory(transport=None)
-        car = Transport.objects.create(name="Bus", bib_prefix=3)
-        response = GenerateBibsView.as_view()(
-            self.request(
-                FamilyUserFactory(), "post", {"action": "assign", f"child_{registration.child_id}": str(car.pk)}
-            )
+        response = GenerateBibsView.as_view()(self.request(FamilyUserFactory(is_manager=True)))
+        self.assertContains(response, "?car=pending&amp;from=bibs", status_code=200)
+        self.assertContains(response, f"?child={registration.child_id}&amp;from=bibs")
+        self.assertNotContains(response, f'href="{registration.child.backend_url}"')
+
+    def test_preflight_blocks_duplicate_bibs_before_submit(self):
+        car = Transport.objects.create(name="Car", bib_prefix=3)
+        RegistrationFactory(transport=car, child__bib_number="301")
+        RegistrationFactory(transport=car, child__bib_number="301")
+        response = GenerateBibsView.as_view()(self.request(FamilyUserFactory(is_manager=True)))
+        self.assertFalse(response.context_data["can_generate"])
+        self.assertContains(response, "Le dossard 301 est déjà attribué à plusieurs enfants.", status_code=200)
+
+    def test_summary_separates_missing_numbers_and_preserved_numbers(self):
+        car = Transport.objects.create(name="Car", bib_prefix=3)
+        RegistrationFactory(transport=car, child__bib_number="701")
+        RegistrationFactory(transport=car)
+        response = GenerateBibsView.as_view()(self.request(FamilyUserFactory(is_manager=True)))
+        self.assertContains(
+            response, "1 enfant(s) recevront un numéro ; 1 conserveront leur dossard.", status_code=200
         )
-        self.assertEqual(response.status_code, 302)
-        registration.refresh_from_db()
-        self.assertIsNone(registration.transport_id)
+        self.assertContains(response, "hors de la plage du car, conservé(s)")
+        self.assertNotContains(response, 'type="checkbox"')
+        self.assertContains(response, "Voir les numéros prévus")
+
+    def test_replacement_has_its_own_preview_and_does_not_write_on_get(self):
+        child = RegistrationFactory(
+            transport=Transport.objects.create(name="Car", bib_prefix=3), child__bib_number="701"
+        ).child
+        request = self.request(FamilyUserFactory(is_manager=True))
+        request.GET = request.GET.copy()
+        request.GET["mode"] = "replace"
+        response = GenerateBibsView.as_view()(request)
+        self.assertContains(response, 'name="overwrite" value="on"', status_code=200)
+        self.assertContains(response, "Recalculer tous les dossards")
+        child.refresh_from_db()
+        self.assertEqual(child.bib_number, "701")
+
+    def test_success_returns_to_preparation_with_all_car_pdf_action(self):
+        car = Transport.objects.create(name="Car", bib_prefix=3)
+        RegistrationFactory(transport=car)
+        manager = FamilyUserFactory(is_manager=True)
+        response = GenerateBibsView.as_view()(self.request(manager, "post"))
+        self.assertTrue(response.url.endswith("generate-bibs/"))
+        response = GenerateBibsView.as_view()(self.request(manager))
+        self.assertContains(response, 'name="t" value="%s"' % car.pk, status_code=200)
+        self.assertContains(response, "Chaque enfant a un dossard.")
+
+    def test_correcting_car_returns_to_bibs_and_preserves_access_checks(self):
+        from backend.views.registration_views import TransportUpdateView
+
+        car = Transport.objects.create(name="Sans préfixe")
+        manager = FamilyUserFactory(is_manager=True)
+        request = self.request(manager)
+        request.GET = request.GET.copy()
+        request.GET["from"] = "bibs"
+        self.assertContains(TransportUpdateView.as_view()(request, pk=car.pk), 'name="capacity"', status_code=200)
+        request = self.request(manager, "post", {"name": car.name, "bib_prefix": 3, "capacity": 48})
+        request.GET = request.GET.copy()
+        request.GET["from"] = "bibs"
+        response = TransportUpdateView.as_view()(request, pk=car.pk)
+        self.assertTrue(response.url.endswith("generate-bibs/"))
+        car.refresh_from_db()
+        self.assertEqual((car.bib_prefix, car.capacity), (3, 48))
+        for method in ("get", "post"):
+            response = TransportUpdateView.as_view()(self.request(FamilyUserFactory(), method), pk=car.pk)
+            self.assertEqual(response.status_code, 302)

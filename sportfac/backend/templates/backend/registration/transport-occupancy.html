@@ -1,0 +1,4 @@
+{% if car.capacity != None %}
+<strong>{{ car.capacity }} places</strong>
+{% if occupancy.peak_date %}<br><small>{{ occupancy.peak }} enfant(s) le {{ occupancy.peak_date|date:"d.m.Y" }}{% if occupancy.over_capacity %} — <span class="text-warning">effectif supérieur aux places : vérifier les trajets</span>{% elif not occupancy.undated_count %} · {{ occupancy.remaining }} place(s) restante(s) sur cette date{% endif %}</small>{% endif %}
+{% else %}<a href="{{ car.update_url }}{% if from_bibs %}?from=bibs{% endif %}">Renseigner le nombre de places</a>{% endif %}

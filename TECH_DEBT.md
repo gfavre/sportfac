@@ -4,13 +4,25 @@ Living list of known technical debt for the sportfac/Kepchup project. Not a task
 tracker — just a reference so decisions and their context aren't re-derived from
 scratch each time. Update in place as items are resolved or new ones are found.
 
-## Frontend test fixtures for course actions and bib assignments
+## Transport planning: dates versus journeys
 
-- Four existing tests in `tests/js/bib-autosave.test.js` and
-  `tests/js/course-actions.test.js` fail before exercising their assertions:
-  their hand-written DOM fixtures omit controls now required by the production
-  scripts (`bib-toggle-assignments`, `data-select-filtered`). Update the fixtures
-  against the current templates; registration-list and URL-return tests pass.
+- Transport occupancy follows the PDF sheets: unique children per calendar date,
+  including announced absences. There is no individual journey model, so capacity
+  comparisons are advisory if a car makes several trips in one day; undated
+  registrations must not be presented as free seats.
+- Every active child still needs a car before bib generation. An empty transport
+  does not mean “travels independently”. Transfers preserve distributed bibs,
+  even when the number no longer belongs to the destination car's prefix.
+- `registrations.bibs.prepare_bibs` supplies the read-only preview and the plan
+  rebuilt under locks by `generate_bibs`; keep their validation rules together.
+
+## Frontend test fixtures for course actions
+
+- Existing tests in `tests/js/course-actions.test.js` fail before exercising
+  their assertions: their hand-written DOM fixtures omit `data-select-filtered`.
+  Update the fixtures against the current template. Bib assignment autosave was
+  replaced by dedicated transport assignment screens in October 2026; the new
+  selection tests cover all filtered children.
 
 ## Legacy Floppyforms rendering
 

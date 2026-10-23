@@ -1,0 +1,97 @@
+{% extends "backend/base.html" %}
+{% load i18n sekizai_tags static %}
+{% block title %}Répartir les enfants dans les cars - {{ block.super }}{% endblock %}
+
+{% block page_title %}<i class="icon-exchange" aria-hidden="true"></i> {% if transport %}Répartir les enfants — {{ transport }}{% else %}Répartir les enfants dans les cars{% endif %}{% endblock %}
+
+{% block content %}
+{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/transport-assignments.css' %}?v=7">{% endaddtoblock %}
+<div class="transport-assignment-links">
+  {% if from_bibs %}<a href="{% url 'backend:transport-generate-bibs' %}">← Revenir aux dossards</a>{% endif %}
+  <a href="{% url 'backend:transport-list' %}">← Tous les cars</a>
+  {% if transport %}<a href="{{ transport.backend_url }}">Voir le car</a> · <a href="{% url 'backend:transport-assignments' %}">Répartition générale</a>{% endif %}
+</div>
+<section class="transport-question" aria-labelledby="transport-question-label">
+  <form method="get" id="question-form">
+    <label for="question" id="transport-question-label">Question utilisée pour les arrêts</label>
+    <select name="question" id="question" class="form-control" aria-describedby="transport-question-help">
+      <option value="">Choisir une question</option>
+      {% for item in questions %}<option value="{{ item.pk }}"{% if question.pk == item.pk %} selected{% endif %}>{{ item.question_label }}</option>{% endfor %}
+    </select>
+    <span id="transport-question-help" class="help-block">Les réponses des familles apparaissent dans la colonne « Arrêt demandé ».</span>
+    <noscript><button type="submit">Afficher les réponses</button></noscript>
+  </form>
+  {% if transport %}
+  <details class="transport-stop-settings"{% if stops_form.errors %} open{% endif %}>
+    <summary>Arrêts desservis par {{ transport }}</summary>
+    <form method="post">{% csrf_token %}
+      <input type="hidden" name="action" value="stops">
+      {{ stops_form.as_p }}
+      <button type="submit" class="btn btn-default btn-sm">Enregistrer les arrêts desservis</button>
+    </form>
+  </details>
+  {% endif %}
+{% if transport and transport.stop_values and transport.stop_question_id == question.pk %}
+  <p><a class="btn btn-default btn-sm" href="?question={{ question.pk }}&amp;stop=__served__&amp;car=none{% if from_bibs %}&amp;from=bibs{% endif %}">Enfants à placer pour les arrêts de ce car</a>
+  <a class="btn btn-link btn-sm" href="?question={{ question.pk }}&amp;stop=__served__&amp;car=all{% if from_bibs %}&amp;from=bibs{% endif %}">Inclure les enfants déjà affectés</a></p>
+{% endif %}
+</section>
+<h2 class="transport-assignment-heading">Enfants à répartir</h2>
+<p class="text-muted transport-assignment-hint">Filtrez par arrêt ou par car, puis cliquez sur les lignes pour sélectionner les enfants.</p>
+<form method="post" id="transport-assignments" data-current-car="{{ transport.pk|default:'' }}">{% csrf_token %}
+  <input type="hidden" name="action" value="assign">
+  {{ assignment_form.non_field_errors }}{{ assignment_form.children.errors }}
+  <div class="transport-assignment-table">
+  <table id="assignment-children" class="table table-striped table-hover">
+    <thead>
+      <tr><th>Enfant</th><th>Arrêt demandé</th><th>Car actuel</th></tr>
+      <tr class="transport-assignment-filters">
+        <th><span class="text-muted">Filtres immédiats</span></th>
+        <th><label class="sr-only" for="stop">Filtrer par arrêt demandé</label><select id="stop" class="form-control input-sm">
+          <option value="">Tous les arrêts</option>
+          <option value="__missing__"{% if stop == '__missing__' %} selected{% endif %}>Sans réponse</option>
+          {% if transport.stop_values and transport.stop_question_id == question.pk %}<option value="__served__"{% if stop == '__served__' %} selected{% endif %}>Arrêts desservis par ce car</option>{% endif %}
+          {% for value in stop_values %}<option value="{{ value }}"{% if stop == value %} selected{% endif %}>{{ value }}</option>{% endfor %}
+        </select></th>
+        <th><label class="sr-only" for="car">Filtrer par car actuel</label><select id="car" class="form-control input-sm">
+          <option value="all"{% if car == 'all' %} selected{% endif %}>Tous les enfants</option>
+          <option value="pending"{% if car == 'pending' %} selected{% endif %}>Affectations à compléter</option>
+          {% if transport %}<option value="current"{% if car == 'current' %} selected{% endif %}>Enfants de ce car</option>{% endif %}
+          <option value="none"{% if car == 'none' %} selected{% endif %}>Sans car / incomplet</option>
+          {% for item in transports %}<option value="{{ item.pk }}"{% if car == item.pk|stringformat:'s' %} selected{% endif %}>{{ item }}</option>{% endfor %}
+        </select></th>
+      </tr>
+    </thead>
+    <tbody>{% for entry in table_children %}
+      <tr data-child-id="{{ entry.child.pk }}" data-selected="{% if entry.child.pk|stringformat:'s' in selected_children %}true{% else %}false{% endif %}" data-stops="{{ entry.stops_json }}" data-cars="{{ entry.cars_json }}" data-pending="{{ entry.pending|yesno:'true,false' }}">
+        <td><a href="{{ entry.child.backend_url }}">{{ entry.child.last_name }} {{ entry.child.first_name }}</a></td>
+        <td>{% for value in entry.stops %}{{ value }}{% if not forloop.last %}<br>{% endif %}{% empty %}<span class="text-muted">Sans réponse</span>{% endfor %}{% if entry.stops|length > 1 %}<br><small class="text-warning">Plusieurs réponses : à vérifier</small>{% endif %}</td>
+        <td>{% for item in entry.cars %}{% if item %}{{ item }}{% if item.bib_prefix == None %}<br><a href="{{ item.update_url }}{% if from_bibs %}?from=bibs{% endif %}">Configurer le préfixe de dossard</a>{% endif %}{% else %}<span class="text-muted">Sans car</span>{% endif %}{% if not forloop.last %}<br>{% endif %}{% endfor %}</td>
+      </tr>
+    {% endfor %}</tbody>
+  </table>
+  </div>
+  <div class="transport-assignment-toolbar" id="assignment-toolbar">
+    <div class="transport-assignment-selection selection-controls">
+      <strong id="selection-count" role="status" aria-live="polite">Sélectionnez les enfants à affecter</strong>
+      <button type="button" class="btn btn-link btn-sm" id="select-filtered">Sélectionner les enfants filtrés</button>
+      <button type="button" class="btn btn-link btn-sm" id="clear-selection" disabled>Désélectionner</button>
+    </div>
+    <div class="transport-assignment-controls" id="assignment-action-controls">
+      <div class="transport-assignment-destination">
+        <label for="{{ assignment_form.destination.id_for_label }}">Car de destination</label>
+        {{ assignment_form.destination.errors }}{{ assignment_form.destination }}
+      </div>
+      <button type="submit" class="btn btn-primary" id="assign-selected">Affecter</button>
+    </div>
+  </div>
+  <p class="text-muted transport-assignment-note"><small>L’affectation concerne toutes les inscriptions actives de l’enfant. Son dossard reste identique après un changement de car, même si son numéro correspond à l’ancien car.</small></p>
+</form>
+{{ served_stops|json_script:"served-stops" }}
+{% addtoblock "js" %}
+<script src="{% static 'js/vendor/DataTables-2020/DataTables-1.10.24/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'js/vendor/DataTables-2020/DataTables-1.10.24/js/dataTables.bootstrap.min.js' %}"></script>
+<script src="{% static 'js/vendor/DataTables-2020/Select-1.3.2/js/dataTables.select.min.js' %}"></script>
+<script src="{% static 'backend/js/transport-assignments.js' %}?v=7"></script>
+{% endaddtoblock %}
+{% endblock content %}

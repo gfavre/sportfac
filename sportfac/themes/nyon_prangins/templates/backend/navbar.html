@@ -92,6 +92,13 @@
                   <i class="icon-bus"></i>&nbsp;&nbsp;{% translate "All transports" %}
                 </a>
               </li>
+              {% if user.is_full_manager %}
+                <li>
+                  <a href="{% url 'backend:transport-assignments' %}">
+                    <i class="icon-exchange" aria-hidden="true"></i>&nbsp;&nbsp;{% translate "Répartir les enfants" %}
+                  </a>
+                </li>
+              {% endif %}
               <li>
                 <a href="{% url 'backend:transport-create' %}">
                   <i class="icon-plus"></i>&nbsp;&nbsp;{% translate "Create transport" %}

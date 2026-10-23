@@ -32,6 +32,8 @@ $(function () {
 </script>
 {% endaddtoblock %}
 <a href="{% url 'backend:transport-create' %}" class="btn btn-success"><i class="icon-plus"></i> {% translate "New transport" %}</a>
+<a href="{% url 'backend:transport-assignments' %}" class="btn btn-primary"><i class="icon-exchange" aria-hidden="true"></i> Répartir les enfants</a>
+<p class="text-muted"><small>Effectifs de la période : chaque enfant est compté une seule fois par car, même avec plusieurs inscriptions. Les fiches PDF précisent l’effectif pour chaque séance.</small></p>
 <hr>
 {% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/selection-actions.css' %}?v=1">{% endaddtoblock %}
 {% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/course-actions.css' %}?v=7">{% endaddtoblock %}
@@ -64,7 +66,8 @@ $(function () {
     <tr>
       <th class="text-nowrap">{% translate "Name" %}</th>
       <th>{% translate "Préfixe des dossards" %}</th>
-      <th class="text-nowrap">{% translate "Registrations" %}</th>
+      <th class="text-nowrap">Enfants affectés</th>
+      <th>Places et date la plus chargée</th>
       <th class="text-nowrap">{% translate "Actions" %}</th>
     </tr>
   </thead>
@@ -72,10 +75,12 @@ $(function () {
    <tr>
       <td><input type="checkbox" class="transport-select" value="{{ transport.pk }}" aria-label="Sélectionner le car {{ transport.name }}"> <a href="{{ transport.backend_url }}">{{ transport.name }}</a></td>
       <td>{{ transport.bib_prefix|default_if_none:"—" }}</td>
-      <td>{{ transport.participants.count }}</td>
+      <td>{{ transport.children_count }}</td>
+      <td>{% include 'backend/registration/transport-occupancy.html' with car=transport occupancy=transport.occupancy %}</td>
       <td>
         <ul class="list-unstyled">
           <li class="text-nowrap"><a href="{{ transport.backend_url }}" class="btn btn-sm"><i class="icon-bus"></i> {% translate "Details" %}</a></li>
+          <li class="text-nowrap"><a href="{% url 'backend:transport-assign-children' pk=transport.pk %}" class="btn btn-sm"><i class="icon-exchange" aria-hidden="true"></i> Répartir les enfants</a></li>
           <li class="text-nowrap"><a href="{% url 'backend:transport-print' pk=transport.pk %}" class="btn btn-sm"><i class="icon-file-pdf" aria-hidden="true"></i> Fiche car PDF</a></li>
           <li class="text-nowrap"><a href="{{ transport.update_url }}" class="btn btn-sm"><i class="icon-edit"></i>&nbsp;{% translate "Update transport" %}</a></li>
           <li class="text-nowrap"><a href="{{ transport.delete_url }}" class="btn btn-sm"><i class="icon-trash"></i> {% translate "Delete transport" %}</a></li>

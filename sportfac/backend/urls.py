@@ -9,6 +9,7 @@ from . import views
 from .views.question_views import QuestionDeleteView
 from .views.question_views import QuestionEditView
 from .views.question_views import QuestionListView
+from .views.transport_assignment_views import TransportAssignmentView
 from .views.transport_print_views import TransportPrintView
 from .views.transport_print_views import TransportsPrintView
 from .views.user_views import ValidateIBANView
@@ -152,6 +153,8 @@ registrations_patterns = [
     path("bills/export", view=views.BillExportView.as_view(), name="bill-export"),
     path("transport", view=views.TransportListView.as_view(), name="transport-list"),
     path("transport/generate-bibs/", view=views.GenerateBibsView.as_view(), name="transport-generate-bibs"),
+    path("transport/assignments/", view=TransportAssignmentView.as_view(), name="transport-assignments"),
+    path("transport/<int:pk>/assignments/", view=TransportAssignmentView.as_view(), name="transport-assign-children"),
     path("transport/print/", view=TransportsPrintView.as_view(), name="transports-print"),
     path("transport/<int:pk>/", view=views.TransportDetailView.as_view(), name="transport-detail"),
     path("transport/<int:pk>/print/", view=TransportPrintView.as_view(), name="transport-print"),

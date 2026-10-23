@@ -11,6 +11,7 @@ from django.db import IntegrityError
 from django.db import connection
 from django.db import transaction
 from django.db.models import Count
+from django.db.models import Q
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -36,9 +37,10 @@ from backend.forms import ChildSelectForm
 from backend.forms import ExtraInfoFormSet
 from backend.forms import RegistrationCreateForm
 from backend.forms import RegistrationForm
+from backend.transport_planning import transport_occupancy
 from profiles.models import FamilyUser as User
 from registrations.bibs import generate_bibs
-from registrations.forms import AssignBibsTransportForm
+from registrations.bibs import prepare_bibs
 from registrations.forms import BillExportForm
 from registrations.forms import BillForm
 from registrations.forms import GenerateBibsForm
@@ -635,11 +637,28 @@ class TransportListView(FullBackendMixin, ListView):
     model = Transport
     template_name = "backend/registration/transport-list.html"
 
+    def get_queryset(self):
+        return Transport.objects.annotate(
+            children_count=Count("participants__child", filter=~Q(participants__status="canceled"), distinct=True)
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cars = list(context["transport_list"])
+        occupancy = transport_occupancy(cars)
+        for car in cars:
+            car.occupancy = occupancy[car.pk]
+        context["transport_list"] = cars
+        return context
+
 
 class GenerateBibsView(FullBackendMixin, FormView):
     form_class = GenerateBibsForm
     template_name = "backend/registration/generate-bibs.html"
-    success_url = reverse_lazy("backend:transport-list")
+    success_url = reverse_lazy("backend:transport-generate-bibs")
+
+    def get_initial(self):
+        return {**super().get_initial(), "overwrite": self.request.GET.get("mode") == "replace"}
 
     def get_children(self):
         children = {}
@@ -653,67 +672,56 @@ class GenerateBibsView(FullBackendMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        overwrite = self.request.GET.get("mode") == "replace"
+        if self.request.method == "POST":
+            overwrite = self.request.POST.get("overwrite", "").lower() not in ("", "false", "0")
+        plan = prepare_bibs(overwrite=overwrite)
+        occupancy = transport_occupancy([summary["car"] for summary in plan["cars"]])
+        for summary in plan["cars"]:
+            summary["occupancy"] = occupancy[summary["car"].pk]
+        for error in plan["errors"]:
+            if error.get("car"):
+                error["url"] = (
+                    error["car"].update_url + "?from=bibs"
+                    if error.get("kind") == "prefix"
+                    else str(reverse_lazy("backend:transport-assign-children", kwargs={"pk": error["car"].pk}))
+                )
+            elif error.get("child"):
+                error["url"] = error["child"].update_url
         children = self.get_children()
-        transports = list(Transport.objects.order_by("name", "pk"))
-        assignment_form = kwargs.get("assignment_form") or AssignBibsTransportForm(
-            children=children, transports=transports
-        )
         pending = []
         for entry in children:
-            entry["transport_field"] = assignment_form[f"child_{entry['child'].pk}"]
-            entry["car_ids"] = " ".join(str(car_id) if car_id is not None else "none" for car_id in entry["cars"])
             if None in entry["cars"]:
                 entry["reason"] = _("Affectation au car incomplète")
             elif len(entry["cars"]) > 1:
                 entry["reason"] = _("Plusieurs cars affectés au même enfant")
             elif entry["registrations"][0].transport.bib_prefix is None:
                 entry["reason"] = _("Préfixe du car manquant")
-                entry["reason_url"] = entry["registrations"][0].transport.update_url
+                entry["reason_url"] = entry["registrations"][0].transport.update_url + "?from=bibs"
             else:
                 continue
+            entry["assignment_url"] = (
+                str(reverse_lazy("backend:transport-assignments")) + f"?child={entry['child'].pk}&from=bibs"
+            )
             pending.append(entry)
         context.update(
             children_count=len(children),
             ready_count=len(children) - len(pending),
             pending_children=pending,
-            can_generate=bool(children) and not pending,
+            can_generate=plan["can_generate"],
             children=children,
-            transports=transports,
-            assignment_form=assignment_form,
+            plan=plan,
+            overwrite=overwrite,
+            additional_errors=[error for error in plan["errors"] if error.get("kind") not in ("assignment", "prefix")],
         )
         return context
 
     def post(self, request, *args, **kwargs):
-        if request.POST.get("action") != "assign":
-            return super().post(request, *args, **kwargs)
-        with transaction.atomic():
-            # Match the lock order used by bib generation.
-            transports = list(Transport.objects.select_for_update().order_by("pk"))
-            list(Registration.objects.select_for_update().order_by("pk").values_list("pk", flat=True))
-            form = AssignBibsTransportForm(request.POST, children=self.get_children(), transports=transports)
-            if not form.is_valid():
-                return self.render_to_response(self.get_context_data(assignment_form=form))
-            count = 0
-            for name in form.changed_data:
-                car_id = form.cleaned_data[name]
-                if car_id:
-                    # Changing only transport must not trigger billing/capacity side effects of save().
-                    # Production still uses Python 3.8, which has no str.removeprefix.
-                    Registration.objects.filter(child_id=int(name[len("child_") :])).update(
-                        transport_id=int(car_id), modified=now()
-                    )
-                    count += 1
-        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            context = self.get_context_data()
-            # Keep the summary global, but return only rows submitted by this save.
-            context["children"] = [
-                entry for entry in context["children"] if f"child_{entry['child'].pk}" in request.POST
-            ]
-            response = self.render_to_response(context)
-            response["X-Bib-Saved"] = "true"
-            return response
-        messages.success(request, _("Affectations enregistrées pour %(count)s enfant(s).") % {"count": count})
-        return HttpResponseRedirect(reverse_lazy("backend:transport-generate-bibs"))
+        # An old tab may still autosave here: never interpret an assignment as bib generation.
+        if request.POST.get("action") == "assign":
+            messages.info(request, _("La répartition des enfants dispose désormais de son propre écran."))
+            return HttpResponseRedirect(reverse_lazy("backend:transport-assignments"))
+        return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
         try:
@@ -722,7 +730,7 @@ class GenerateBibsView(FullBackendMixin, FormView):
             form.add_error(None, error)
             return self.form_invalid(form)
         messages.success(self.request, _("%(count)s dossards générés.") % {"count": count})
-        return super().form_valid(form)
+        return HttpResponseRedirect(self.success_url)
 
 
 class TransportDetailView(ListReturnMixin, FullBackendMixin, DetailView):
@@ -805,6 +813,11 @@ class TransportUpdateView(ListReturnMixin, SuccessMessageMixin, FullBackendMixin
     template_name = "backend/registration/transport-update.html"
     success_message = _("Transport has been updated.")
     success_url = reverse_lazy("backend:transport-list")
+
+    def get_success_url(self):
+        if self.request.GET.get("from") == "bibs":
+            return reverse_lazy("backend:transport-generate-bibs")
+        return super().get_success_url()
 
 
 class TransportDeleteView(SuccessMessageMixin, FullBackendMixin, DeleteView):

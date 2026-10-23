@@ -175,3 +175,51 @@ class GenerateBibsTests(TenantTestCase):
             set(Child.objects.filter(pk__in=[child.pk for child in children]).values_list("bib_number", flat=True)),
             {f"{car.bib_prefix}{rank:02d}" for car in cars for rank in range(1, 81)},
         )
+
+    def test_preview_does_not_write_and_matches_incremental_generation(self):
+        from registrations.bibs import prepare_bibs
+
+        existing = self.register(child__bib_number="304")
+        newcomer = self.register()
+        plan = prepare_bibs()
+        self.assertTrue(plan["can_generate"])
+        self.assertEqual((plan["existing_count"], plan["new_count"]), (1, 1))
+        self.assertEqual([(child.pk, child.bib_number) for child in plan["changed"]], [(newcomer.pk, "301")])
+        newcomer.refresh_from_db()
+        self.assertEqual(newcomer.bib_number, "")
+        self.assertEqual(generate_bibs(), 1)
+        newcomer.refresh_from_db()
+        existing.refresh_from_db()
+        self.assertEqual((newcomer.bib_number, existing.bib_number), ("301", "304"))
+
+    def test_preview_reports_multiple_car_errors_and_duplicates_before_generation(self):
+        from registrations.bibs import prepare_bibs
+
+        first = self.register(child__bib_number="301")
+        self.register(child__bib_number="301")
+        RegistrationFactory(transport=None)
+        empty_range = Transport.objects.create(name="Plage épuisée", bib_prefix=8)
+        RegistrationFactory(transport=empty_range)
+        for rank in range(1, 100):
+            ChildFactory(family=first.family, bib_number=f"8{rank:02d}")
+        plan = prepare_bibs()
+        self.assertFalse(plan["can_generate"])
+        messages = " ".join(error["message"] for error in plan["errors"])
+        self.assertIn("plusieurs enfants", messages)
+        self.assertIn("un seul car", messages)
+        self.assertIn("plus de numéro", messages)
+
+    def test_replacement_preview_resolves_active_duplicates_without_writing(self):
+        from registrations.bibs import prepare_bibs
+
+        first = self.register(child__bib_number="301")
+        self.register(child__bib_number="301")
+        plan = prepare_bibs(overwrite=True)
+        self.assertTrue(plan["can_generate"])
+        self.assertEqual(len(plan["changed"]), 2)
+        self.assertEqual(Child.objects.filter(bib_number="301").count(), 2)
+        RegistrationFactory(transport=None)
+        with self.assertRaises(ValidationError):
+            generate_bibs(overwrite=True)
+        first.refresh_from_db()
+        self.assertEqual(first.bib_number, "301")

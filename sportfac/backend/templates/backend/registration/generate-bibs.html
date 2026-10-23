@@ -1,318 +1,88 @@
 {% extends "backend/base.html" %}
 {% load i18n sekizai_tags static %}
-
 {% block title %}{% translate "Préparer les dossards" %} - {{ block.super }}{% endblock %}
 
-{% block page_title %}{% translate "Préparer les dossards" %}{% endblock %}
+{% block page_title %}<i class="icon-sort-numeric" aria-hidden="true"></i> {% translate "Préparer les dossards" %}{% endblock %}
 
 {% block content %}
 {% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/paper-prepare.css' %}?v=2">{% endaddtoblock %}
-{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/bib-preparation.css' %}?v=1">{% endaddtoblock %}
-
+{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/bib-preparation.css' %}?v=2">{% endaddtoblock %}
 <div class="bib-preparation paper-prepare">
 <header class="paper-prepare-overview">
-  <span class="paper-prepare-label">Tous les cars</span>
-  <h2>Affectations et dossards</h2>
-  <p>{% translate "Complétez les affectations aux cars, puis générez les dossards pour tous les enfants." %}</p>
-<div id="bib-summary" data-pending-count="{{ pending_children|length }}" aria-live="polite">
-  <span class="bib-state bib-state-ready">✓ {% blocktranslate count count=ready_count %}{{ count }} enfant prêt{% plural %}{{ count }} enfants prêts{% endblocktranslate %}</span>
-  {% if pending_children %}
-    <span class="bib-state bib-state-warning">⚠ {% blocktranslate count count=pending_children|length %}{{ count }} enfant à compléter{% plural %}{{ count }} enfants à compléter{% endblocktranslate %}</span>
-  {% elif not children_count %}
-    <span>{% translate "Aucun enfant avec une inscription active à numéroter." %}</span>
-  {% endif %}
-  <span class="text-muted">{% blocktranslate %}{{ children_count }} enfants au total · Tous les cars{% endblocktranslate %}</span>
-</div>
+  <span class="paper-prepare-label">Répartition → Dossards → Fiches cars</span>
+  <h2>{% if can_generate and not plan.new_count %}Les dossards sont prêts{% elif overwrite %}Recalculer tous les dossards{% else %}Préparer les dossards{% endif %}</h2>
+  <p>Vérifiez la répartition, attribuez les numéros, puis préparez les listes pour la commune.</p>
+  <div id="bib-summary" data-pending-count="{{ pending_children|length }}">
+    <span>{{ children_count }} enfant(s) sur la période</span>
+    <span>{{ plan.existing_count }} avec un dossard</span>
+    <span>{{ plan.new_count }} sans dossard</span>
+  </div>
 </header>
-{% if children %}
 <section class="paper-prepare-card">
-<div class="bib-assignment-heading">
-  <h2>{% translate "1. Répartir les enfants" %}</h2>
-  <button type="button" id="bib-toggle-assignments" class="btn btn-link" aria-controls="bib-assignment-panel" aria-expanded="{% if pending_children %}true{% else %}false{% endif %}">{% if pending_children %}Masquer la liste{% else %}Revoir les affectations{% endif %}</button>
-</div>
-<p id="bib-complete-message" class="bib-complete"{% if pending_children %} hidden{% endif %}>✓ Tous les enfants sont affectés à un car avec un préfixe. Vous pouvez générer les dossards.</p>
-<div id="bib-assignment-panel"{% if not pending_children %} hidden{% endif %}>
-<p class="text-muted">{% translate "Les changements sont enregistrés automatiquement sur toutes les inscriptions actives de l’enfant." %}</p>
-<div class="row">
-  <div class="col-sm-6 form-group">
-    <label for="filter-car">{% translate "Filtrer par car" %}</label>
-    <select id="filter-car" class="form-control">
-      <option value="">{% translate "Tous les cars" %}</option>
-      <option value="none">{% translate "Sans car" %}</option>
-      {% for transport in transports %}<option value="{{ transport.pk }}">{{ transport.name }}</option>{% endfor %}
-    </select>
-  </div>
-  <div class="col-sm-6 form-group">
-    <label for="filter-state">{% translate "État" %}</label>
-    <select id="filter-state" class="form-control">
-      <option value="pending" selected>{% translate "À compléter" %}</option>
-      <option value="all">{% translate "Tous les enfants" %}</option>
-    </select>
-  </div>
-</div>
-<form method="post" action="{% url 'backend:transport-generate-bibs' %}" id="assign-bib-transports">
-{% csrf_token %}
-<input type="hidden" name="action" value="assign">
-{{ assignment_form.non_field_errors }}
-<div id="bib-bulk-toolbar" class="bib-bulk-toolbar">
-  <label for="bulk-transport">{% translate "Affecter la sélection au car" %}</label>
-  <select id="bulk-transport" class="form-control" disabled>
-    <option value="">{% translate "Choisir un car" %}</option>
-    {% for transport in transports %}<option value="{{ transport.pk }}">{{ transport.name }}</option>{% endfor %}
-  </select>
-  <small class="text-muted">{% translate "Cochez les enfants sur cette page, puis choisissez leur car." %}</small>
-</div>
-<table id="bib-children" class="table table-striped">
-  <thead>
-    <tr>
-      <th><label><input type="checkbox" id="select-all-children" aria-label="{% translate 'Sélectionner les enfants de cette page' %}"> {% translate "Sélection" %}</label></th>
-      <th>{% translate "Enfant" %}</th>
-      <th>{% translate "Car à affecter" %}</th>
-      <th>{% translate "État" %}</th>
-      <th>{% translate "Inscriptions et cars" %}</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for entry in children %}
-    <tr data-child="{{ entry.child.pk }}" data-cars="{{ entry.car_ids }}" data-pending="{% if entry.reason %}pending{% endif %}">
-      <td><input type="checkbox" class="select-child" aria-label="{{ entry.child }}"></td>
-      <td><a href="{{ entry.child.backend_url }}">{{ entry.child.last_name }} {{ entry.child.first_name }}</a></td>
-      <td>
-        {{ entry.transport_field.errors }}{{ entry.transport_field }}
-        <small class="assignment-status" role="status" aria-live="polite"></small>
-      </td>
-      <td>
-        {% if entry.reason %}
-        <span class="bib-state bib-state-warning">⚠ {% translate "À compléter" %}</span>
-        <span class="bib-reason">
-        {% if entry.reason_url %}
-          <a href="{{ entry.reason_url }}">{{ entry.reason }}</a>
-        {% else %}
-          {{ entry.reason }}
-        {% endif %}
-        </span>
-        {% else %}
-        <span class="bib-state bib-state-ready">✓ {% translate "Prêt" %}</span>
-        {% endif %}
-      </td>
-      <td>
-        <details>
-        <summary>{% blocktranslate count count=entry.registrations|length %}{{ count }} inscription{% plural %}{{ count }} inscriptions{% endblocktranslate %}</summary>
-        <ul class="list-unstyled">
-          {% for registration in entry.registrations %}
-          <li>
-            <a href="{{ registration.update_url }}">{{ registration.course }}</a> —
-            {% if registration.transport %}
-              <a href="{{ registration.transport.update_url }}">{{ registration.transport }}</a>
-            {% else %}
-              <strong>{% translate "Sans car" %}</strong>
-            {% endif %}
-          </li>
-          {% endfor %}
-        </ul>
-        </details>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-<noscript><div class="form-group">
-  <button type="submit" class="btn btn-primary">{% translate "Enregistrer les affectations" %}</button>
-</div></noscript>
-</form>
-</div>
-</section>
+<h2>1. Vérifier la répartition</h2>
+{% if pending_children %}
+  <h3>Affectations à compléter</h3>
+  <p><a href="{% url 'backend:transport-assignments' %}?car=pending&amp;from=bibs" class="btn btn-primary">Traiter les affectations à compléter</a></p>
+  <ul>{% for entry in pending_children %}<li><a href="{{ entry.assignment_url }}">{{ entry.child }}</a> — {% if entry.reason_url %}<a href="{{ entry.reason_url }}">{{ entry.reason }}</a>{% else %}<a href="{{ entry.assignment_url }}">{{ entry.reason }}</a>{% endif %}</li>{% endfor %}</ul>
+{% else %}
+  {% if children_count %}<p class="text-success">✓ Tous les enfants sont affectés à un seul car avec un préfixe de dossard.</p>{% endif %}
+  <a href="{% url 'backend:transport-assignments' %}">Répartir les enfants dans les cars</a>
 {% endif %}
+<p class="text-muted"><small>Chaque enfant doit avoir le même car sur toutes ses inscriptions actives. Une inscription sans car bloque la génération.</small></p>
+{% if plan.cars %}
+<div class="table-responsive"><table class="table">
+  <thead><tr><th>Car</th><th>Enfants</th><th>Dossards existants</th><th>Sans dossard</th><th>Places et date la plus chargée</th></tr></thead>
+  <tbody>{% for summary in plan.cars %}<tr>
+    <td><a href="{% url 'backend:transport-assign-children' pk=summary.car.pk %}?from=bibs">{{ summary.car }}</a></td>
+    <td>{{ summary.count }}</td><td>{{ summary.existing_count }}{% if summary.outside_range_count %}<br><small class="text-warning">{{ summary.outside_range_count }} hors de la plage du car, conservé(s)</small>{% endif %}</td><td>{{ summary.new_count }}</td><td>{% include "backend/registration/transport-occupancy.html" with car=summary.car occupancy=summary.occupancy from_bibs=True %}</td>
+  </tr>{% endfor %}</tbody>
+</table></div>
+<p class="text-muted"><small>Les effectifs par date comptent chaque enfant une seule fois, comme les fiches cars. Si un car assure plusieurs trajets le même jour, vérifiez leur répartition. Les absences annoncées restent incluses.</small></p>
+{% endif %}
+</section>
 <section class="bib-generation" aria-labelledby="bib-generation-title">
-<h2 id="bib-generation-title">{% translate "2. Générer les dossards" %}</h2>
-<p>Par défaut, seuls les enfants sans dossard reçoivent un numéro libre dans leur car : car 3 → 301, 302… Les numéros existants sont conservés, même après de nouvelles inscriptions.</p>
-<p class="text-muted">Les nouveaux enfants sont traités par ordre alphabétique. Chaque car dispose de 99 numéros ; ceux déjà attribués à d’autres enfants restent réservés.</p>
-
+<h2 id="bib-generation-title">2. {% if overwrite %}Recalculer tous les numéros{% else %}Attribuer les dossards manquants{% endif %}</h2>
+{% if not can_generate %}
+<div class="alert alert-warning" id="bib-generation-blocked" role="status">
+  <strong>La génération est bloquée pour tous les cars.</strong>
+  {% if pending_children %}<p>{{ pending_children|length }} enfant(s) ont une affectation à compléter ci-dessus. <a href="{% url 'backend:transport-assignments' %}?car=pending&amp;from=bibs">Corriger la répartition des enfants</a>.</p>{% endif %}
+  {% if additional_errors %}<ul>{% for error in additional_errors %}<li>{{ error.message }}{% if error.url %} <a href="{{ error.url }}">Corriger</a>{% endif %}</li>{% endfor %}</ul>{% endif %}
+</div>
+{% endif %}
+{% if overwrite %}
+  <p class="alert alert-warning"><strong>Tous les numéros seront recalculés par ordre alphabétique.</strong> Les listes déjà imprimées et les dossards déjà distribués devront être revus.</p>
+  <p>{{ children_count }} enfant(s) seront renumérotés.</p>
+{% else %}
+  <p><strong>{{ plan.new_count }} enfant(s) recevront un numéro ; {{ plan.existing_count }} conserveront leur dossard.</strong></p>
+  <p class="text-muted">Les dossards existants sont conservés, y compris après un changement de car. Exemple : un enfant transféré du car 3 au car 7 conserve le dossard 301.</p>
+{% endif %}
+<p class="text-muted"><small>Les nouveaux numéros suivent l’ordre alphabétique dans chaque car : préfixe 3 → 301, 302… Chaque préfixe offre 99 numéros ; cette limite ne correspond pas au nombre de places du car. Les numéros déjà distribués restent réservés.</small></p>
+{% if can_generate and plan.changed %}
+<details><summary>Voir les numéros prévus</summary>
+<table class="table table-condensed"><thead><tr><th>Enfant</th><th>Dossard prévu</th></tr></thead><tbody>
+{% for child in plan.changed %}<tr><td>{{ child }}</td><td>{{ child.bib_number }}</td></tr>{% endfor %}
+</tbody></table></details>
+{% endif %}
+{% if overwrite or plan.new_count or not can_generate %}
 <form method="post">
-  {% csrf_token %}
-  {{ form.non_field_errors }}
-  {{ form.overwrite.errors }}
-  <label for="{{ form.overwrite.id_for_label }}" class="bib-replace">
-    {{ form.overwrite }}
-    <span>{% translate "Remplacer les dossards existants" %}<br><small class="text-muted">Recalcule tous les numéros par ordre alphabétique. Les listes déjà imprimées devront être refaites.</small></span>
-  </label>
-  <p class="text-muted">{% translate "La génération concerne tous les enfants, quels que soient les filtres affichés." %}</p>
+  {% csrf_token %}{{ form.non_field_errors }}{{ form.overwrite.errors }}
+  {% if overwrite %}<input type="hidden" name="overwrite" value="on">{% endif %}
   <div class="form-group">
-    <button type="submit" id="generate-bibs" class="btn btn-primary"{% if not can_generate %} disabled{% endif %}>{% translate "Générer les dossards" %}</button>
-    <a href="{% url 'backend:transport-list' %}" class="btn btn-default">{% translate "Retour aux cars" %}</a>
+    <button type="submit" id="generate-bibs" class="btn {% if overwrite %}btn-warning{% else %}btn-primary{% endif %}"{% if not can_generate %} disabled aria-describedby="bib-generation-blocked"{% endif %}>{% if overwrite %}Recalculer tous les dossards{% else %}Générer les dossards{% endif %}</button>
+    {% if overwrite %}<a href="{% url 'backend:transport-generate-bibs' %}" class="btn btn-default">Conserver les numéros existants</a>{% endif %}
   </div>
+</form>
+{% else %}<p class="text-success">✓ Aucun dossard manquant. Vous pouvez préparer les fiches cars.</p>{% endif %}
+{% if not overwrite and plan.existing_count %}<details><summary>Recalculer les numéros existants</summary><p>À utiliser si la numérotation complète doit être refaite. <a href="?mode=replace">Vérifier le recalcul de tous les dossards</a></p></details>{% endif %}
+</section>
+<section class="paper-prepare-card">
+<h2>3. Préparer les fiches cars PDF</h2>
+{% if can_generate and not plan.new_count %}<p>Chaque enfant a un dossard. Choisissez la date des listes avant de télécharger le PDF.</p>{% else %}<p class="text-muted">Terminez la numérotation avant de préparer les listes avec les dossards.</p>{% endif %}
+<form method="get" action="{% url 'backend:transports-print' %}">
+  {% for summary in plan.cars %}<input type="hidden" name="t" value="{{ summary.car.pk }}">{% endfor %}
+  <button type="submit" class="btn btn-primary"{% if not can_generate or plan.new_count %} disabled{% endif %}><i class="icon-file-pdf" aria-hidden="true"></i> Préparer les fiches cars PDF</button>
+  <a href="{% url 'backend:transport-list' %}" class="btn btn-default">Retour aux cars</a>
 </form>
 </section>
 </div>
-{% addtoblock "js" %}
-<script src="{% static 'js/vendor/DataTables-2020/DataTables-1.10.24/js/jquery.dataTables.min.js' %}"></script>
-<script src="{% static 'js/vendor/DataTables-2020/DataTables-1.10.24/js/dataTables.bootstrap.min.js' %}"></script>
-<script src="{% static 'backend/js/datatable-url-state.js' %}?v=2"></script>
-<script>
-(function () {
-  const form = document.getElementById('assign-bib-transports');
-  if (!form) return;
-  // Enter in the table search must not submit the no-JavaScript fallback form.
-  form.addEventListener('submit', function (event) { event.preventDefault(); });
-  const generate = document.getElementById('generate-bibs');
-  const bulk = document.getElementById('bulk-transport');
-  let saving = false;
-  const carFilter = document.getElementById('filter-car');
-  const stateFilter = document.getElementById('filter-state');
-  $.fn.dataTable.ext.search.push(function (settings, data, index) {
-    if (settings.nTable.id !== 'bib-children') return true;
-    const row = settings.aoData[index].nTr;
-    return (!carFilter.value || row.dataset.cars.split(' ').includes(carFilter.value)) &&
-      (stateFilter.value !== 'pending' || row.dataset.pending === 'pending');
-  });
-  const table = window.dataTableUrlState('#bib-children', {
-    pageLength: 50, lengthMenu: [25, 50, 100], order: [[1, 'asc']],
-    columnDefs: [{targets: [0, 2, 3, 4], orderable: false, searchable: false}],
-    language: {
-      search: '{% translate "Rechercher un enfant :" %}',
-      lengthMenu: '{% translate "Afficher _MENU_ enfants" %}',
-      info: '{% translate "Enfants _START_ à _END_ sur _TOTAL_" %}',
-      infoEmpty: '{% translate "Aucun enfant" %}',
-      infoFiltered: '{% translate "(sur _MAX_ au total)" %}',
-      zeroRecords: '{% translate "Aucun enfant à afficher. Choisissez Tous les enfants pour revoir les affectations terminées." %}',
-      paginate: {previous: '{% translate "Précédent" %}', next: '{% translate "Suivant" %}'}
-    }
-  }, [
-    {selector: '#filter-car', param: 'car', defaultValue: '',
-      validate: function (value) { return Array.from(carFilter.options).some(function (option) { return option.value === value; }); }},
-    {selector: '#filter-state', param: 'state', defaultValue: 'pending', values: {all: 'all', pending: 'pending'}}
-  ]);
-  $('#bib-children').before(document.getElementById('bib-bulk-toolbar'));
-  const assignmentPanel = document.getElementById('bib-assignment-panel');
-  const toggleAssignments = document.getElementById('bib-toggle-assignments');
-  function showAssignments(visible) {
-    assignmentPanel.hidden = !visible;
-    toggleAssignments.setAttribute('aria-expanded', String(visible));
-    toggleAssignments.textContent = visible ? 'Masquer la liste' : 'Revoir les affectations';
-  }
-  toggleAssignments.addEventListener('click', function () {
-    const visible = assignmentPanel.hidden;
-    showAssignments(visible);
-    if (visible) {
-      if (Number(document.getElementById('bib-summary').dataset.pendingCount) === 0) {
-        stateFilter.value = 'all';
-        carFilter.value = '';
-        table.search('');
-      }
-      table.columns.adjust().draw(false);
-    }
-  });
-  function allSelects() {
-    return Array.from(table.rows().nodes()).map(function (row) { return row.querySelector('.bib-transport'); });
-  }
-  function clearSelection() {
-    table.rows().nodes().toArray().forEach(function (row) { row.querySelector('.select-child').checked = false; });
-    document.getElementById('select-all-children').checked = false;
-    bulk.disabled = true;
-  }
-  $('#bib-children').on('draw.dt', function () {
-    clearSelection();
-    allSelects().forEach(function (select) { select.disabled = saving; });
-    form.querySelectorAll('.select-child').forEach(function (box) { box.disabled = saving; });
-  });
-  const statusTimers = new WeakMap();
-  function showStatus(names, message, style, temporary) {
-    allSelects().forEach(function (select) {
-      if (!names.includes(select.name)) return;
-      const status = select.closest('td').querySelector('.assignment-status');
-      clearTimeout(statusTimers.get(status));
-      status.className = 'assignment-status ' + style;
-      status.textContent = message;
-      if (temporary) {
-        statusTimers.set(status, setTimeout(function () { status.textContent = ''; }, 3000));
-      }
-    });
-  }
-  function rememberValues() {
-    allSelects().forEach(function (select) { select.dataset.saved = select.value; });
-  }
-  rememberValues();
-  async function save(selects) {
-    if (saving || !selects.length) return;
-    const names = selects.map(function (select) { return select.name; });
-    const data = new FormData();
-    data.append('csrfmiddlewaretoken', form.querySelector('[name=csrfmiddlewaretoken]').value);
-    data.append('action', 'assign');
-    selects.forEach(function (select) { data.append(select.name, select.value); });
-    saving = true;
-    generate.disabled = true;
-    form.querySelectorAll('select, input[type=checkbox]').forEach(function (input) { input.disabled = true; });
-    showStatus(names, '{% translate "Enregistrement…" %}', 'text-muted', false);
-    try {
-      // The hidden field named "action" shadows form.action in browsers.
-      const response = await fetch(form.getAttribute('action'), {
-        method: 'POST', body: data, headers: {'X-Requested-With': 'XMLHttpRequest'}, credentials: 'same-origin'
-      });
-      if (!response.ok || response.headers.get('X-Bib-Saved') !== 'true') throw new Error('Save failed');
-      const page = new DOMParser().parseFromString(await response.text(), 'text/html');
-      const updated = new Map(Array.from(page.querySelectorAll('#bib-children tbody tr')).map(function (row) {
-        return [row.dataset.child, row];
-      }));
-      table.rows().every(function () {
-        const row = this.node();
-        const replacement = updated.get(row.dataset.child);
-        if (!replacement) return;
-        row.innerHTML = replacement.innerHTML;
-        row.dataset.cars = replacement.dataset.cars;
-        row.dataset.pending = replacement.dataset.pending;
-        this.invalidate('dom');
-      });
-      table.draw(false);
-      if (table.page.info().page >= table.page.info().pages && table.page.info().pages) table.page('last').draw('page');
-      const summary = document.getElementById('bib-summary');
-      const updatedSummary = page.getElementById('bib-summary');
-      summary.innerHTML = updatedSummary.innerHTML;
-      summary.dataset.pendingCount = updatedSummary.dataset.pendingCount;
-      const complete = Number(summary.dataset.pendingCount) === 0;
-      document.getElementById('bib-complete-message').hidden = !complete;
-      showAssignments(!complete);
-      generate.disabled = page.getElementById('generate-bibs').disabled;
-      rememberValues();
-      showStatus(names, '✓ {% translate "Enregistré" %}', 'text-success', true);
-    } catch (error) {
-      selects.forEach(function (select) { select.value = select.dataset.saved; });
-      generate.disabled = true;
-      showStatus(names, '{% translate "Enregistrement non confirmé. Rechargez la page pour vérifier les affectations avant de réessayer." %}', 'text-danger', false);
-    } finally {
-      saving = false;
-      allSelects().forEach(function (select) { select.disabled = false; });
-      form.querySelectorAll('select, input[type=checkbox]').forEach(function (input) { input.disabled = false; });
-      bulk.value = '';
-      bulk.disabled = !form.querySelector('.select-child:checked');
-      document.getElementById('select-all-children').checked = false;
-    }
-  }
-  form.addEventListener('change', function (event) {
-    if (event.target.matches('.bib-transport')) {
-      if (!event.target.value) { event.target.value = event.target.dataset.saved; return; }
-      save([event.target]);
-    }
-    bulk.disabled = saving || !form.querySelector('.select-child:checked');
-  });
-  document.getElementById('select-all-children').addEventListener('change', function () {
-    const checked = this.checked;
-    form.querySelectorAll('.select-child').forEach(function (box) { box.checked = checked; });
-  });
-  bulk.addEventListener('change', function () {
-    const car = bulk.value;
-    if (!car) return;
-    const selects = [];
-    form.querySelectorAll('.select-child:checked').forEach(function (box) {
-      const select = box.closest('tr').querySelector('.bib-transport');
-      select.value = car;
-      selects.push(select);
-    });
-    save(selects);
-  });
-  window.addEventListener('beforeunload', function (event) {
-    if (saving) { event.preventDefault(); event.returnValue = ''; }
-  });
-})();
-</script>
-{% endaddtoblock %}
 {% endblock content %}

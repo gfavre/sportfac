@@ -444,7 +444,16 @@ class Registration(TimeStampedModel, StatusModel):
 
 class Transport(TimeStampedModel):
     name = models.CharField(_("Label"), max_length=60, db_index=True, blank=False)
+    capacity = models.PositiveIntegerField(_("Nombre de places"), null=True, blank=True)
     bib_prefix = models.PositiveIntegerField(_("Préfixe des dossards"), null=True, blank=True, unique=True)
+    stop_question = models.ForeignKey(
+        "activities.ExtraNeed",
+        verbose_name=_("Question sur l’arrêt"),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+    stop_values = models.JSONField(_("Arrêts desservis"), default=list, blank=True)
 
     class Meta:
         verbose_name = _("Transport")
