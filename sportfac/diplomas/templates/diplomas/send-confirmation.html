@@ -1,0 +1,46 @@
+{% extends "backend/base.html" %}
+{% load sekizai_tags static %}
+{% block title %}Vérifier l’envoi des diplômes — {{ block.super }}{% endblock %}
+
+{% block page_title %}Envoyer les diplômes aux familles{% endblock %}
+
+{% block content %}
+{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/instructor-mail.css' %}?v=3">{% endaddtoblock %}
+<div class="instructor-mail">
+  <div class="instructor-mail-overview">
+    <strong>{{ delivery_total }} email{{ delivery_total|pluralize }} prévu{{ delivery_total|pluralize }}</strong>
+    <p>Un mail par diplôme, pour chaque enfant et chaque cours. Une famille peut donc recevoir plusieurs mails. Vérifiez le message et les pièces jointes avant de confirmer l’envoi de toute la préparation.</p>
+  </div>
+  {% if error %}<p class="alert alert-warning" role="alert">{{ error }}</p>{% endif %}
+  {% include "diplomas/includes/course-mail-history.html" %}
+  {% if mail_counts.sent or mail_counts.sending or mail_counts.failed %}<p>{{ mail_counts.sent }} déjà envoyé(s) · {{ mail_counts.sending }} en cours · {{ mail_counts.failed }} en échec, à vérifier. Ces mails sont exclus de cet envoi.</p>{% endif %}
+  {% if missing_text %}<p class="alert alert-warning">Le texte à imprimer manque sur certains diplômes. <a href="{% url 'backend:diploma-batch' pk=batch.pk %}">Compléter les diplômes</a> avant de confirmer.</p>{% endif %}
+  {% if missing_pdfs %}<p class="alert alert-warning">Il manque des PDF dans cette préparation. Revenez à la préparation pour vérifier les diplômes.</p>{% endif %}
+  {% if batch.status == "queued" or batch.status == "generating" %}<p class="alert alert-info">La génération des PDF est en cours. Revenez à la préparation pour suivre son avancement.</p>{% endif %}
+  <h2 class="instructor-mail-section-title">Destinataires et contenu</h2>
+  {% if diploma %}
+  <nav class="family-mail-navigation" aria-label="Messages à vérifier">
+    {% if page.has_previous %}<a href="?number={{ page.previous_page_number }}">← Message précédent</a>{% endif %}
+    <span>Message {{ page.number }} / {{ delivery_total }}</span>
+    {% if page.has_next %}<a href="?number={{ page.next_page_number }}">Message suivant →</a>{% endif %}
+  </nav>
+  {% include "diplomas/includes/mail-preview.html" %}
+  <details><summary>Voir les {{ delivery_total }} destinataires</summary>
+    <div class="table-responsive"><table class="table"><thead><tr><th>Diplôme</th><th>Destinataire</th><th>Adresse email</th></tr></thead><tbody>
+      {% for item in pending %}<tr><td><a href="?number={{ forloop.counter }}">{{ item.first_name }} {{ item.last_name }} — {{ item.course_number }}</a></td><td>{{ item.parent.get_full_name }}</td><td>{{ item.parent.email }}</td></tr>{% endfor %}
+    </tbody></table></div>
+  </details>
+  {% else %}<p class="alert alert-info">Aucun email en attente d’envoi. Consultez le suivi dans la préparation.</p>{% endif %}
+  <form method="post" class="instructor-mail-send">{% csrf_token %}
+    <input type="hidden" name="action" value="send">
+    <input type="hidden" name="confirmation_token" value="{{ confirmation_token }}">
+    <h2 class="instructor-mail-section-title">Confirmer l’envoi</h2>
+    <p>L’envoi concerne <strong>{{ delivery_total }} email{{ delivery_total|pluralize }}</strong> de cette préparation, pas seulement le message affiché. Les diplômes seront également disponibles sur les comptes des familles.</p>
+    <div class="form-group instructor-mail-submit">
+      <button type="submit" class="btn btn-primary"{% if not can_send %} disabled{% endif %}><i class="icon-mail" aria-hidden="true"></i> {% if delivery_total == 1 %}Envoyer l’email à la famille{% else %}Envoyer les {{ delivery_total }} emails aux familles{% endif %}</button>
+      {% if batch.status == "draft" %}<a class="btn btn-default" href="{% url 'backend:diploma-batch' pk=batch.pk %}?edit_message=1#diploma-message">Modifier le mail</a>{% endif %}
+      <a class="btn btn-default" href="{% url 'backend:diploma-batch' pk=batch.pk %}">Retour à la préparation</a>
+    </div>
+  </form>
+</div>
+{% endblock content %}

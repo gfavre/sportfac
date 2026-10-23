@@ -26,6 +26,7 @@ from .forms import validate_supplement
 from .models import Diploma
 from .models import DiplomaBatch
 from .models import DiplomaEvent
+from .services import course_mail_history
 from .services import create_batch
 from .tasks import DiplomaRenderer
 from .tasks import generate_batch
@@ -42,6 +43,31 @@ def sample_pdf(width=595):
 
 
 class DiplomaTests(TenantTestCase):
+    def test_course_mail_history_warns_on_new_preparation_and_is_visible_on_course(self):
+        self.client.force_login(self.manager)
+        sent_at = timezone.now()
+        Diploma.objects.filter(pk=self.diploma.pk).update(mail_status="sent", sent_at=sent_at)
+        new_batch = create_batch(self.data, self.manager)
+        response = self.client.get(reverse("backend:diploma-batch", args=[new_batch.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Des diplômes ont déjà été envoyés pour ces cours.")
+        history = response.context["course_mail_history"]
+        self.assertEqual(len(history), 1)
+        self.assertEqual(history[0]["sent_count"], 1)
+        self.assertEqual(history[0]["last_sent"], sent_at)
+        self.assertEqual(history[0]["batch_id"], self.batch.pk)
+        response = self.client.get(self.course.get_backend_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Envois précédents par cours")
+
+    def test_course_mail_history_ignores_other_periods_unsent_and_failed_mail(self):
+        self.assertEqual(course_mail_history(self.batch.source_schema, [self.diploma.course_number]), [])
+        Diploma.objects.filter(pk=self.diploma.pk).update(mail_status="failed", sent_at=timezone.now())
+        self.assertEqual(course_mail_history(self.batch.source_schema, [self.diploma.course_number]), [])
+        Diploma.objects.filter(pk=self.diploma.pk).update(mail_status="sent")
+        self.assertEqual(course_mail_history("other_period", [self.diploma.course_number]), [])
+        self.assertEqual(course_mail_history(self.batch.source_schema, ["other_course"]), [])
+
     def test_instructor_is_only_first_name_from_latest_session(self):
         self.course.sessions.all().delete()
         previous = FamilyUserFactory(first_name="Ancien", last_name="Moniteur")
@@ -263,6 +289,7 @@ class DiplomaTests(TenantTestCase):
         self.diploma = self.batch.diplomas.get()
         self.detail_url = reverse("backend:diploma-batch", args=[self.batch.pk])
         self.download_url = reverse("profiles:diploma-download", args=[self.diploma.pk])
+        self.confirmation_url = reverse("backend:diploma-send-confirmation", args=[self.batch.pk])
 
     def tearDown(self):
         # Shared tables outlive TenantTestCase's disposable schema.
@@ -271,6 +298,12 @@ class DiplomaTests(TenantTestCase):
         Diploma.objects.filter(batch__in=batches).delete()
         batches.delete()
         super().tearDown()
+
+    def confirm_send(self):
+        response = self.client.get(self.confirmation_url)
+        return self.client.post(
+            self.confirmation_url, {"action": "send", "confirmation_token": response.context["confirmation_token"]}
+        )
 
     def ready(self):
         DiplomaBatch.objects.filter(pk=self.batch.pk).update(status="ready", print_pdf=b"%PDF-print")
@@ -401,6 +434,42 @@ class DiplomaTests(TenantTestCase):
         self.assertEqual(self.diploma.mail_status, "failed")
         self.assertTrue(self.diploma.events.filter(action="mail_failed").exists())
 
+    def test_batch_sends_directly_with_reviewed_count_and_token(self):
+        self.client.force_login(self.manager)
+        response = self.client.get(self.detail_url)
+        self.assertContains(response, "1 email à envoyer")
+        self.assertContains(response, "Envoyer 1 email aux familles")
+        self.assertNotContains(response, "Vérifier et confirmer l’envoi")
+        self.assertEqual(response["Cache-Control"], "private, no-store")
+        with patch("diplomas.views.generate_batch.delay") as generate:
+            with self.captureOnCommitCallbacks(execute=True):
+                result = self.client.post(
+                    self.detail_url, {"action": "send", "confirmation_token": response.context["confirmation_token"]}
+                )
+        self.assertRedirects(result, self.detail_url, fetch_redirect_response=False)
+        generate.assert_called_once()
+
+    def test_batch_collapses_complete_diplomas_and_shows_family_mail_preview(self):
+        self.client.force_login(self.manager)
+        response = self.client.get(self.detail_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '<details class="diploma-review">')
+        self.assertContains(response, 'class="instructor-mail-card"')
+        self.assertContains(response, self.parent.email)
+        self.assertContains(response, self.batch.subject)
+        self.assertContains(response, reverse("backend:diploma-preview", args=[self.diploma.pk]))
+        self.assertContains(response, 'target="_blank" rel="noopener"')
+        self.assertNotContains(response, 'class="well"')
+
+    def test_batch_opens_diplomas_when_text_needs_completing(self):
+        self.client.force_login(self.manager)
+        ChildActivityLevel.objects.filter(child=self.registration.child).delete()
+        Diploma.objects.filter(pk=self.diploma.pk).update(evaluation="", level="")
+        response = self.client.get(self.detail_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '<details class="diploma-review" open>')
+        self.assertContains(response, "1 texte à compléter")
+
     def test_backend_pages_permissions_and_draft_edit(self):
         urls = [
             reverse("backend:diploma-list"),
@@ -417,7 +486,7 @@ class DiplomaTests(TenantTestCase):
         for url in urls:
             self.assertEqual(self.client.get(url).status_code, 200)
         response = self.client.get(self.detail_url)
-        self.assertContains(response, "backend/css/diplomas.css?v=6")
+        self.assertContains(response, "backend/css/diplomas.css?v=7")
         self.assertContains(response, 'class="table diploma-children"')
         response = self.client.get(urls[-1])
         self.assertNotContains(response, 'name="level"')
@@ -457,14 +526,14 @@ class DiplomaTests(TenantTestCase):
         self.assertContains(response, "<iframe", html=False)
         with patch("diplomas.views.send_batch.delay") as send:
             with self.captureOnCommitCallbacks(execute=True):
-                self.client.post(self.detail_url, {"action": "send"})
+                self.confirm_send()
             send.assert_called_once_with(str(self.batch.pk))
 
     def test_send_from_draft_generates_publishes_and_sends(self):
         self.client.force_login(self.manager)
         with patch("diplomas.views.generate_batch.delay") as generate:
             with self.captureOnCommitCallbacks(execute=True):
-                self.client.post(self.detail_url, {"action": "send"})
+                self.confirm_send()
             generate.assert_called_once_with(str(self.batch.pk), send_after=True)
         with patch("diplomas.tasks.render_diplomas", return_value=sample_pdf()):
             generate_batch.run(str(self.batch.pk), send_after=True)
@@ -543,3 +612,233 @@ class DiplomaTests(TenantTestCase):
         self.diploma.refresh_from_db()
         self.assertEqual(self.diploma.parent_id, winner.pk)
         self.assertEqual(self.diploma.level, "A 1A")
+
+    def test_confirmation_counts_emails_per_diploma_not_per_family(self):
+        for index in range(308):
+            Diploma.objects.create(
+                batch=self.batch,
+                parent=self.parent,
+                source_registration_id=self.registration.pk + index + 1,
+                first_name=f"Enfant {index}",
+                last_name="Test",
+                activity="Ski",
+                course_number="1",
+                evaluation="Niveau acquis",
+                place="Les Diablerets",
+                instructors="Romain",
+                mail_status={305: "sent", 306: "failed", 307: "sending"}.get(index, "pending"),
+            )
+        self.client.force_login(self.manager)
+        with patch("diplomas.views.generate_batch.delay") as generate, patch(
+            "diplomas.views.send_batch.delay"
+        ) as send:
+            response = self.client.get(self.confirmation_url)
+        self.assertContains(response, "306 emails prévus", status_code=200)
+        self.assertContains(response, "Envoyer les 306 emails aux familles")
+        self.assertEqual(response.context["mail_counts"], {"pending": 306, "sent": 1, "failed": 1, "sending": 1})
+        generate.assert_not_called()
+        send.assert_not_called()
+        self.diploma.refresh_from_db()
+        self.assertIsNone(self.diploma.published_at)
+        self.assertIsNone(self.diploma.pdf)
+
+    def test_old_send_button_only_redirects_to_confirmation(self):
+        self.client.force_login(self.manager)
+        with patch("diplomas.views.generate_batch.delay") as generate, patch(
+            "diplomas.views.send_batch.delay"
+        ) as send:
+            with self.captureOnCommitCallbacks(execute=True):
+                response = self.client.post(self.detail_url, {"action": "send"})
+        self.assertRedirects(response, self.confirmation_url, fetch_redirect_response=False)
+        generate.assert_not_called()
+        send.assert_not_called()
+        self.batch.refresh_from_db()
+        self.assertEqual(self.batch.status, "draft")
+
+    def test_confirmation_previews_exact_subject_body_recipient_and_attachments(self):
+        supplement = self.batch.supplements.create(name="Niveaux.pdf", content=sample_pdf())
+        self.client.force_login(self.manager)
+        response = self.client.get(self.confirmation_url)
+        self.assertContains(response, self.batch.subject, status_code=200)
+        self.assertContains(response, self.batch.message)
+        self.assertContains(response, self.parent.email)
+        self.assertContains(response, reverse("backend:diploma-preview", args=[self.diploma.pk]))
+        self.assertContains(
+            response, reverse("backend:diploma-supplement-preview", args=[self.batch.pk, supplement.pk])
+        )
+        self.assertContains(response, 'target="_blank" rel="noopener"')
+        self.assertContains(response, "Modifier le mail")
+        self.assertNotContains(response, "confirm(")
+
+    def test_confirmation_cannot_be_bypassed_and_changed_mail_requires_review(self):
+        self.client.force_login(self.manager)
+        token = self.client.get(self.confirmation_url).context["confirmation_token"]
+        with patch("diplomas.views.generate_batch.delay") as generate:
+            with self.captureOnCommitCallbacks(execute=True):
+                for value in ("", "tampered"):
+                    response = self.client.post(self.confirmation_url, {"action": "send", "confirmation_token": value})
+                    self.assertEqual(response.status_code, 400)
+                DiplomaBatch.objects.filter(pk=self.batch.pk).update(message="Texte corrigé")
+                response = self.client.post(self.confirmation_url, {"action": "send", "confirmation_token": token})
+        self.assertContains(response, "La préparation a changé", status_code=400)
+        generate.assert_not_called()
+        self.batch.refresh_from_db()
+        self.assertEqual(self.batch.status, "draft")
+
+    def test_changed_recipient_or_supplements_invalidate_confirmation(self):
+        self.client.force_login(self.manager)
+        token = self.client.get(self.confirmation_url).context["confirmation_token"]
+        self.parent.email = "nouvelle-adresse@example.org"
+        self.parent.save()
+        with patch("diplomas.views.generate_batch.delay") as generate:
+            with self.captureOnCommitCallbacks(execute=True):
+                self.assertEqual(
+                    self.client.post(
+                        self.confirmation_url, {"action": "send", "confirmation_token": token}
+                    ).status_code,
+                    400,
+                )
+                token = self.client.get(self.confirmation_url).context["confirmation_token"]
+                self.batch.supplements.create(name="nouveau.pdf", content=sample_pdf())
+                self.assertEqual(
+                    self.client.post(
+                        self.confirmation_url, {"action": "send", "confirmation_token": token}
+                    ).status_code,
+                    400,
+                )
+        generate.assert_not_called()
+
+    def test_no_pending_mail_disables_confirmation_and_does_not_resend(self):
+        self.ready()
+        Diploma.objects.filter(pk=self.diploma.pk).update(mail_status="sent", sent_at=timezone.now())
+        self.client.force_login(self.manager)
+        response = self.client.get(self.confirmation_url)
+        self.assertContains(response, "Aucun email en attente", status_code=200)
+        self.assertFalse(response.context["can_send"])
+        with patch("diplomas.views.send_batch.delay") as send:
+            with self.captureOnCommitCallbacks(execute=True):
+                response = self.confirm_send()
+        self.assertEqual(response.status_code, 400)
+        send.assert_not_called()
+        response = self.client.get(self.detail_url)
+        self.assertContains(response, "1 email(s) accepté(s) par le serveur mail")
+
+    def test_confirmation_blocks_missing_diploma_text_and_busy_or_incomplete_batches(self):
+        self.client.force_login(self.manager)
+        Diploma.objects.filter(pk=self.diploma.pk).update(evaluation="")
+        response = self.client.get(self.confirmation_url)
+        self.assertFalse(response.context["can_send"])
+        self.assertContains(response, "Le texte à imprimer manque", status_code=200)
+        Diploma.objects.filter(pk=self.diploma.pk).update(evaluation="Acquis")
+        for status in ("queued", "generating", "ready"):
+            DiplomaBatch.objects.filter(pk=self.batch.pk).update(status=status)
+            response = self.client.get(self.confirmation_url)
+            self.assertFalse(response.context["can_send"])
+
+    def test_confirmation_navigation_covers_pending_diplomas_only(self):
+        other = Diploma.objects.create(
+            batch=self.batch,
+            parent=self.parent,
+            source_registration_id=self.registration.pk + 1,
+            first_name="Zoé",
+            last_name="Zzz",
+            activity="Ski",
+            course_number="2",
+            evaluation="Acquis",
+            place="Les Diablerets",
+            instructors="Romain",
+        )
+        self.client.force_login(self.manager)
+        response = self.client.get(self.confirmation_url + "?number=2")
+        self.assertEqual(response.context["diploma"], other)
+        self.assertContains(response, "Message 2 / 2")
+        Diploma.objects.filter(pk=self.diploma.pk).update(mail_status="failed")
+        response = self.client.get(self.confirmation_url)
+        self.assertEqual(response.context["delivery_total"], 1)
+        self.assertEqual(response.context["diploma"], other)
+
+    def test_attachment_previews_are_private_inline_and_scoped_to_batch(self):
+        self.client.force_login(self.manager)
+        for name, content, content_type in (
+            ("Niveaux.pdf", sample_pdf(), "application/pdf"),
+            ("Niveaux.png", b"\x89PNG\r\n\x1a\nimage", "image/png"),
+        ):
+            supplement = self.batch.supplements.create(name=name, content=content)
+            url = reverse("backend:diploma-supplement-preview", args=[self.batch.pk, supplement.pk])
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response["Content-Type"], content_type)
+            self.assertTrue(response["Content-Disposition"].startswith("inline;"))
+            self.assertEqual(response["Cache-Control"], "private, no-store")
+            self.assertEqual(b"".join(response.streaming_content), content)
+            other_batch = create_batch(self.data, self.manager)
+            self.assertEqual(
+                self.client.get(
+                    reverse("backend:diploma-supplement-preview", args=[other_batch.pk, supplement.pk])
+                ).status_code,
+                404,
+            )
+        supplement = self.batch.supplements.create(name="niveaux.svg", content=b"<svg></svg>")
+        response = self.client.get(reverse("backend:diploma-supplement-preview", args=[self.batch.pk, supplement.pk]))
+        self.assertEqual(response["Content-Type"], "application/octet-stream")
+        self.assertTrue(response["Content-Disposition"].startswith("attachment;"))
+
+    def test_confirmation_and_supplement_preview_permissions_and_feature_flag(self):
+        supplement = self.batch.supplements.create(name="Niveaux.pdf", content=sample_pdf())
+        supplement_url = reverse("backend:diploma-supplement-preview", args=[self.batch.pk, supplement.pk])
+        instructor = FamilyUserFactory()
+        self.course.instructors.add(instructor)
+        for user in (
+            None,
+            self.parent,
+            instructor,
+            FamilyUserFactory(is_restricted_manager=True),
+        ):
+            self.client.logout()
+            if user:
+                self.client.force_login(user)
+            self.assertEqual(self.client.get(self.confirmation_url).status_code, 302)
+            self.assertEqual(self.client.post(self.confirmation_url, {"action": "send"}).status_code, 302)
+            self.assertEqual(self.client.get(supplement_url).status_code, 302)
+        self.client.force_login(self.manager)
+        with override_settings(KEPCHUP_DIPLOMAS=False):
+            self.assertEqual(self.client.get(self.confirmation_url).status_code, 404)
+            self.assertEqual(self.client.get(supplement_url).status_code, 404)
+
+    def test_creation_form_groups_fields_and_collapses_prefilled_message(self):
+        self.client.force_login(self.manager)
+        response = self.client.get(reverse("backend:diploma-create"), {"c": self.course.pk})
+        self.assertContains(response, "Enfants concernés", status_code=200)
+        self.assertContains(response, "Informations sur le diplôme")
+        self.assertContains(response, "Pièce jointe complémentaire")
+        self.assertContains(response, 'class="diploma-create-grid diploma-create-metadata"')
+        self.assertContains(response, '<details class="diploma-create-message">')
+        self.assertContains(response, 'id="div_id_final_levels"')
+        self.assertContains(response, "data-level-status")
+        for name in ("courses", "final_levels", "season", "issued_on", "place", "subject", "message", "supplement"):
+            self.assertContains(response, f'name="{name}"')
+
+    def test_creation_message_errors_are_visible_in_expanded_editor(self):
+        self.client.force_login(self.manager)
+        data = {**self.data, "courses": [self.course.pk], "final_levels": ["A 1A"], "message": ""}
+        data.pop("supplement")
+        response = self.client.post(reverse("backend:diploma-create"), data)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("message", response.context["form"].errors)
+        self.assertContains(response, '<details class="diploma-create-message" open>')
+
+    def test_diploma_date_displays_and_accepts_swiss_format(self):
+        form = BatchForm(initial={"issued_on": date(2026, 2, 7)})
+        self.assertIn('value="07.02.2026"', str(form["issued_on"]))
+        self.assertEqual(form.fields["issued_on"].widget.config.options["format"], "DD.MM.YYYY")
+        self.assertEqual(form.fields["issued_on"].widget.config.options["locale"], "fr")
+        self.assertIn("datepicker-widget.js", str(form.media))
+        data = {**self.data, "courses": [self.course.pk], "final_levels": ["A 1A"]}
+        data.pop("supplement")
+        for value in ("07.02.2026", "2026-02-07"):
+            form = BatchForm({**data, "issued_on": value})
+            self.assertTrue(form.is_valid(), form.errors)
+            self.assertEqual(form.cleaned_data["issued_on"], date(2026, 2, 7))
+        form = BatchForm({**data, "issued_on": "02/07/2026"})
+        self.assertFalse(form.is_valid())
+        self.assertIn("jj.mm.aaaa", form.errors["issued_on"][0])

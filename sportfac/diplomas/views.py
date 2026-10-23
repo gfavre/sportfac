@@ -1,28 +1,39 @@
+import mimetypes
+from io import BytesIO
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.db import connection
 from django.db import transaction
+from django.http import FileResponse
 from django.http import Http404
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
+from django.urls import reverse
 from django.utils import timezone
 from django.views import View
+from dynamic_preferences.registries import global_preferences_registry
 
 from backend.views.mixins import FullBackendMixin
 from registrations.models import Registration
 
+from .confirmation import confirmation_matches
+from .confirmation import confirmation_token
+from .confirmation import mail_counts
 from .forms import BatchForm
 from .forms import DiplomaForm
 from .forms import DiplomaMessageForm
 from .models import Diploma
 from .models import DiplomaBatch
 from .models import DiplomaEvent
+from .models import DiplomaSupplement
 from .services import complete_missing_levels
+from .services import course_mail_history
 from .services import create_batch
 from .tasks import generate_batch
 from .tasks import render_diplomas
@@ -90,7 +101,7 @@ class BatchDetailView(DiplomaEnabledMixin, FullBackendMixin, View):
     def get(self, request, pk):
         batch = get_object_or_404(DiplomaBatch.objects.defer("print_pdf", "logo"), pk=pk)
         complete_missing_levels(batch, request.user)
-        diplomas = list(batch.diplomas.defer("pdf").all())
+        diplomas = list(batch.diplomas.select_related("parent").defer("pdf").all())
         # Registration IDs are only meaningful inside the period that created the batch.
         if batch.source_schema == connection.schema_name and settings.KEPCHUP_REGISTRATION_LEVELS:
             children = dict(
@@ -103,19 +114,28 @@ class BatchDetailView(DiplomaEnabledMixin, FullBackendMixin, View):
         events = Paginator(batch.events.select_related("actor", "diploma").defer("diploma__pdf"), 50).get_page(
             request.GET.get("page")
         )
-        return render(
+        mail_context = BatchSendConfirmationView().context(request, batch, diplomas=diplomas)
+        response = render(
             request,
             "diplomas/batch.html",
             {
                 "batch": batch,
                 "diplomas": diplomas,
                 "events": events,
-                "supplements": batch.supplements.defer("content").all(),
                 "message_form": DiplomaMessageForm(instance=batch),
+                **mail_context,
+                "missing_text": sum(not diploma.evaluation for diploma in diplomas),
             },
         )
+        response["Cache-Control"] = "private, no-store"
+        return response
 
     def post(self, request, pk):
+        # Open tabs using the former send button must also pass through confirmation.
+        if request.POST.get("action") == "send":
+            if request.POST.get("confirmation_token"):
+                return BatchSendConfirmationView().post(request, pk)
+            return redirect("backend:diploma-send-confirmation", pk=pk)
         with transaction.atomic():
             batch = get_object_or_404(DiplomaBatch.objects.select_for_update().defer("print_pdf"), pk=pk)
             self.perform_action(request, batch)
@@ -158,8 +178,12 @@ class BatchDetailView(DiplomaEnabledMixin, FullBackendMixin, View):
             batch=batch, actor=request.user, action="generate" if action == "download" else action
         )
         if action == "send":
+            count = batch.diplomas.filter(mail_status="pending").count()
             messages.success(
-                request, "Envoi demandé : les diplômes seront aussi disponibles sur les comptes des familles."
+                request,
+                "Envoi demandé pour %(count)s email%(plural)s. "
+                "Les diplômes seront aussi disponibles sur les comptes des familles."
+                % {"count": count, "plural": "" if count == 1 else "s"},
             )
 
 
@@ -233,3 +257,99 @@ class DiplomaDownloadView(LoginRequiredMixin, View):
         diploma = get_object_or_404(queryset, pk=pk)
         DiplomaEvent.objects.create(batch=diploma.batch, diploma=diploma, actor=request.user, action="downloaded")
         return pdf_response(diploma.pdf, f"diplome-{diploma.pk}.pdf")
+
+
+class BatchSendConfirmationView(DiplomaEnabledMixin, FullBackendMixin, View):
+    def context(self, request, batch, diplomas=None):
+        diplomas = (
+            diplomas
+            if diplomas is not None
+            else list(
+                batch.diplomas.select_related("parent")
+                .defer("pdf")
+                .order_by("last_name", "first_name", "course_number", "pk")
+            )
+        )
+        supplements = list(batch.supplements.defer("content").order_by("pk"))
+        pending = [diploma for diploma in diplomas if diploma.mail_status == "pending"]
+        page = Paginator(pending, 1).get_page(request.GET.get("number"))
+        missing_pdfs = (
+            batch.status == "ready" and batch.diplomas.filter(mail_status="pending", pdf__isnull=True).exists()
+        )
+        missing_text = batch.status in ("draft", "failed") and any(not diploma.evaluation for diploma in diplomas)
+        preferences = global_preferences_registry.manager()
+        return {
+            "batch": batch,
+            "page": page,
+            "diploma": page.object_list[0] if page.object_list else None,
+            "pending": pending,
+            "delivery_total": len(pending),
+            "supplements": supplements,
+            "mail_counts": mail_counts(diplomas),
+            "course_mail_history": course_mail_history(batch.source_schema, {d.course_number for d in diplomas}),
+            "missing_text": missing_text,
+            "missing_pdfs": missing_pdfs,
+            "can_send": bool(pending)
+            and batch.status in ("draft", "failed", "ready")
+            and not missing_text
+            and not missing_pdfs,
+            "confirmation_token": confirmation_token(batch, diplomas, supplements, request.user),
+            "from_email": preferences["email__FROM_MAIL"] or settings.DEFAULT_FROM_EMAIL,
+            "reply_to": preferences["email__REPLY_TO_MAIL"],
+        }
+
+    def get(self, request, pk):
+        batch = get_object_or_404(DiplomaBatch.objects.defer("print_pdf", "logo"), pk=pk)
+        response = render(request, "diplomas/send-confirmation.html", self.context(request, batch))
+        response["Cache-Control"] = "private, no-store"
+        return response
+
+    def post(self, request, pk):
+        with transaction.atomic():
+            batch = get_object_or_404(DiplomaBatch.objects.select_for_update().defer("print_pdf", "logo"), pk=pk)
+            context = self.context(request, batch)
+            if not context["can_send"]:
+                context["error"] = "Cet envoi n’est pas disponible. Vérifiez l’état de la préparation ci-dessous."
+            elif request.POST.get("action") != "send" or not confirmation_matches(
+                request.POST.get("confirmation_token"), context["confirmation_token"]
+            ):
+                context["error"] = (
+                    "La préparation a changé ou la confirmation a expiré. "
+                    "Vérifiez à nouveau le message et les destinataires avant de confirmer."
+                )
+            else:
+                BatchDetailView().perform_action(request, batch)
+                return redirect("backend:diploma-batch", pk=pk)
+        if request.path == reverse("backend:diploma-batch", kwargs={"pk": pk}):
+            messages.error(request, context["error"])
+            return redirect("backend:diploma-batch", pk=pk)
+        response = render(request, "diplomas/send-confirmation.html", context, status=400)
+        response["Cache-Control"] = "private, no-store"
+        return response
+
+
+class DiplomaSupplementPreviewView(DiplomaEnabledMixin, FullBackendMixin, View):
+    def get(self, request, pk, supplement_pk):
+        supplement = get_object_or_404(DiplomaSupplement, pk=supplement_pk, batch_id=pk)
+        content = bytes(supplement.content)
+        content_type = "application/pdf" if content.startswith(b"%PDF-") else mimetypes.guess_type(supplement.name)[0]
+        inline_types = {
+            "application/pdf",
+            "image/png",
+            "image/jpeg",
+            "image/gif",
+            "image/webp",
+            "image/bmp",
+            "image/tiff",
+        }
+        inline = content_type in inline_types
+        response = FileResponse(
+            BytesIO(content),
+            content_type=content_type if inline else "application/octet-stream",
+            as_attachment=not inline,
+            filename=supplement.name,
+        )
+        response["Cache-Control"] = "private, no-store"
+        response["X-Content-Type-Options"] = "nosniff"
+        response["Content-Security-Policy"] = "sandbox; default-src 'none'"
+        return response

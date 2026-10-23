@@ -7,6 +7,8 @@ from django.conf import settings
 from django.contrib.staticfiles import finders
 from django.db import connection
 from django.db import transaction
+from django.db.models import Count
+from django.db.models import Max
 from django.db.models import OuterRef
 from django.db.models import Subquery
 from dynamic_preferences.registries import global_preferences_registry
@@ -22,6 +24,21 @@ from .models import DiplomaSupplement
 
 
 EMPTY_LEVEL = "__empty__"
+
+
+def course_mail_history(source_schema, course_numbers):
+    # Course numbers belong to a period; snapshots remain available after its deletion.
+    return list(
+        Diploma.objects.filter(
+            batch__source_schema=source_schema,
+            course_number__in=course_numbers,
+            mail_status="sent",
+            sent_at__isnull=False,
+        )
+        .values("course_number", "batch_id", "batch__season")
+        .annotate(sent_count=Count("pk"), last_sent=Max("sent_at"))
+        .order_by("-last_sent", "course_number")
+    )
 
 
 def final_level_counts(courses):

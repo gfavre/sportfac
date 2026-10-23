@@ -1,0 +1,24 @@
+  <section class="instructor-mail-card">
+    <header class="instructor-mail-recipient">
+      <div><h3>{{ diploma.parent.get_full_name }}</h3><span>{{ diploma.parent.email }}</span></div>
+      <span class="instructor-mail-course">Cours {{ diploma.course_number }} — {{ diploma.activity }}</span>
+    </header>
+    <div class="instructor-mail-content">
+      <div class="instructor-mail-message">
+        <p class="family-mail-child">Pour {{ diploma.first_name }} {{ diploma.last_name }}</p>
+        <div class="family-mail-envelope"><span>Expéditeur :</span> {{ from_email }}{% if reply_to %}<br><span>Répondre à :</span> {{ reply_to }}{% endif %}</div>
+        {% if not diploma.parent.is_active %}<p class="alert alert-warning">Le compte de ce parent est désactivé. Son mail ne pourra pas être envoyé.</p>{% endif %}
+        <span class="instructor-mail-label">Objet du mail</span>
+        <p class="instructor-mail-subject">{{ batch.subject }}</p>
+        <details class="instructor-mail-preview" open><summary>Aperçu du mail</summary><pre>{{ batch.message }}</pre></details>
+      </div>
+      <aside class="instructor-mail-attachments" aria-label="Pièces jointes prévues">
+        <h4>Pièces jointes prévues</h4>
+        <ul>
+          <li><a href="{% url 'backend:diploma-preview' pk=diploma.pk %}" target="_blank" rel="noopener">Diplôme de {{ diploma.first_name }} {{ diploma.last_name }} — PDF <i class="icon-eye" aria-hidden="true"></i></a></li>
+          {% for supplement in supplements %}<li><a href="{% url 'backend:diploma-supplement-preview' pk=batch.pk supplement_pk=supplement.pk %}" target="_blank" rel="noopener">{{ supplement.name }} <i class="icon-eye" aria-hidden="true"></i></a></li>{% endfor %}
+        </ul>
+        <p class="help-block">Les PDF et images s’ouvrent dans un nouvel onglet.</p>
+      </aside>
+    </div>
+  </section>

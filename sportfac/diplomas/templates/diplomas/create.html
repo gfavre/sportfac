@@ -1,19 +1,52 @@
 {% extends "backend/base.html" %}
 {% load crispy_forms_tags sekizai_tags static %}
-
 {% block title %}Préparer les diplômes - {{ block.super }}{% endblock %}
 
 {% block page_title %}<i class="icon-award" aria-hidden="true"></i>&nbsp;&nbsp;Préparer les diplômes{% endblock %}
 
 {% block content %}
-{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/paper-prepare.css' %}?v=4">{% endaddtoblock %}
-<div class="paper-prepare">
-<p>Les noms, niveaux et moniteurs seront copiés depuis les cours sélectionnés. Vous pourrez corriger les évaluations avant la génération. Aucun mail n’est envoyé à cette étape.</p>
-<form method="post" enctype="multipart/form-data" class="paper-prepare-form" data-diploma-create="{% url 'backend:diploma-create' %}">{% csrf_token %}<div class="paper-prepare-card">{{ form|crispy }}</div>
-  <p class="help-block" role="status" data-level-status></p>
-  <div class="form-group paper-prepare-actions">
+{% addtoblock "css" %}{{ form.media.css }}<link rel="stylesheet" href="{% static 'backend/css/diploma-create.css' %}?v=5">{% endaddtoblock %}
+{% addtoblock "js" %}{{ form.media.js }}{% endaddtoblock %}
+<div class="diploma-create">
+<p class="diploma-create-intro">Choisissez les enfants et les informations à imprimer. Vous pourrez vérifier les diplômes et confirmer les emails à l’étape suivante.</p>
+<form method="post" enctype="multipart/form-data" data-diploma-create="{% url 'backend:diploma-create' %}">
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+  <section class="diploma-create-section" aria-labelledby="diploma-children-heading">
+    <h2 id="diploma-children-heading">Enfants concernés</h2>
+    <div class="diploma-create-grid diploma-create-children">
+      <div>{{ form.courses|as_crispy_field }}</div>
+      <div class="diploma-create-levels">{{ form.final_levels|as_crispy_field }}<p class="help-block" role="status" data-level-status></p></div>
+    </div>
+  </section>
+  <section class="diploma-create-section" aria-labelledby="diploma-content-heading">
+    <h2 id="diploma-content-heading">Informations sur le diplôme</h2>
+    <div class="diploma-create-grid diploma-create-metadata">
+      <div>{{ form.season|as_crispy_field }}</div>
+      <div>{{ form.issued_on|as_crispy_field }}</div>
+      <div>{{ form.place|as_crispy_field }}</div>
+    </div>
+  </section>
+  <section class="diploma-create-section" aria-labelledby="diploma-mail-heading">
+    <h2 id="diploma-mail-heading">Mail aux familles</h2>
+    <div class="diploma-create-grid diploma-create-mail">
+      <div class="diploma-create-mail-content">
+        {{ form.subject|as_crispy_field }}
+        <details class="diploma-create-message"{% if form.message.errors %} open{% endif %}>
+          <summary>Texte du mail <span>— prérempli, modifiable</span></summary>
+          {{ form.message|as_crispy_field }}
+        </details>
+      </div>
+      <aside class="diploma-create-attachment" aria-labelledby="diploma-attachment-heading">
+        <h3 id="diploma-attachment-heading">Pièce jointe complémentaire</h3>
+        {{ form.supplement|as_crispy_field }}
+      </aside>
+    </div>
+  </section>
+  <div class="diploma-create-actions">
     <button class="btn btn-success" type="submit"><i class="icon-ok" aria-hidden="true"></i> Préparer les diplômes</button>
     <a class="btn btn-default" href="{% url 'backend:diploma-list' %}">Annuler</a>
+    <span>Aucun email n’est envoyé à cette étape.</span>
   </div>
 </form>
 </div>

@@ -178,6 +178,12 @@
         </small>
       </div>
 
+      {% if DIPLOMAS %}<div>
+        <a href="{% url 'backend:diploma-create' %}?c={{ course.pk }}" class="btn btn-default btn-sm"><i class="icon-doc" aria-hidden="true"></i>&nbsp;Diplômes</a>
+        <small>Dernier envoi : {{ diploma_mail_history.0.last_sent|date:"d.m.Y H:i"|default:"—" }}</small>
+        {% include "diplomas/includes/course-mail-history.html" with course_mail_history=diploma_mail_history %}
+      </div>{% endif %}
+
       {% if not course.is_camp %}
       <div>
         <a href="{{ course.get_js_export_url }}" class="btn btn-default btn-sm">

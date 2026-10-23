@@ -8,11 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Added
+- Show diploma email history by course, with dates and accepted-email counts, and warn before another preparation sends diplomas for the same course and period.
+- Review diploma emails with the pending-message count, browsable recipients and private attachment previews in a new tab; reject stale confirmations and track accepted, pending and failed emails separately.
 - Manage child assignments from the car list or an individual car, with saved served stops and bulk moves across all active registrations.
 - Preview bib numbers and all blocking checks before generation, with a separate full-renumbering flow and direct access to car-sheet PDFs afterward.
 - Record optional car capacities and show unique children per period and per date, highlighting dates exceeding the available seats.
 
 ### Changed
+- Confirm diploma sending directly on the preparation page, with complete diploma lists collapsed and the family email and attachments displayed together.
+- Compact diploma creation into groups for recipients, printed information and family emails, with consistent field heights, a collapsible message and a Swiss-format date picker.
 - Simplify car assignments with DataTables, immediate column filters and a compact assignment toolbar; select children by clicking rows or select all filtered children across pages.
 - Harmonize backend table search fields, page-size menus and filter-reset controls; add matching menu icons to list headings and highlight destructive list actions in red.
 - Present user editing in framed sections with consistent save/cancel actions and role-specific titles and icons.

@@ -10,6 +10,7 @@ from urllib.parse import urlencode
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
+from django.db import connection
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
@@ -157,6 +158,11 @@ class CourseDetailView(ListReturnMixin, CourseMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         course = context["object"]
+
+        if settings.KEPCHUP_DIPLOMAS:
+            from diplomas.services import course_mail_history
+
+            context["diploma_mail_history"] = course_mail_history(connection.schema_name, [course.number])
 
         registrations = course.participants.all()
         context["registrations"] = registrations

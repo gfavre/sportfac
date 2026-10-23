@@ -1,5 +1,6 @@
 import mimetypes
 
+from bootstrap_datepicker_plus.widgets import DatePickerInput
 from django import forms
 from django.utils import timezone
 
@@ -26,6 +27,11 @@ Rue du Temple 11
 1820 Montreux"""
 
 
+class SwissDatePickerInput(DatePickerInput):
+    _date_format = "%d.%m.%Y"
+    backend_date_format = "DD.MM.YYYY"
+
+
 class BatchForm(forms.Form):
     courses = forms.ModelMultipleChoiceField(label="Cours", queryset=Course.objects.none())
     final_levels = forms.MultipleChoiceField(
@@ -38,7 +44,12 @@ class BatchForm(forms.Form):
     issued_on = forms.DateField(
         label="Date du diplôme",
         initial=timezone.localdate,
-        widget=forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
+        widget=SwissDatePickerInput(
+            attrs={"placeholder": "jj.mm.aaaa"},
+            options={"format": "DD.MM.YYYY", "locale": "fr", "useCurrent": False},
+        ),
+        input_formats=("%d.%m.%Y", "%Y-%m-%d"),
+        error_messages={"invalid": "Saisissez une date au format jj.mm.aaaa, par exemple 07.02.2026."},
     )
     place = forms.CharField(
         label="Lieu de cours",

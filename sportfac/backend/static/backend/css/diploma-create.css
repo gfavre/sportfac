@@ -1,0 +1,35 @@
+.diploma-create { max-width: 1160px; color: #33434e; }
+.diploma-create-intro { color: #647580; margin: 0 0 18px; }
+.diploma-create-section { border: 1px solid #dce3e8; border-radius: 4px; background: #fff; padding: 14px 18px 2px; margin-bottom: 14px; }
+.diploma-create-section h2 { font: 600 16px/1.4 Arial, sans-serif; margin: 0 0 14px; color: #33434e; }
+.diploma-create-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; }
+.diploma-create-attachment { border-left: 1px solid #e2e7eb; padding-left: 20px; }
+.diploma-create-attachment h3 { font: 600 13px/1.4 Arial, sans-serif; color: #526777; margin: 0 0 10px; }
+.diploma-create-metadata { grid-template-columns: 1fr .8fr 1.4fr; }
+.diploma-create-metadata .control-label { display: block; min-height: 18px; margin-bottom: 5px; }
+.diploma-create input.form-control:not([type="file"]), .diploma-create .input-group-addon { height: 34px; min-height: 34px; padding: 6px 12px; line-height: 20px; box-sizing: border-box; }
+.diploma-create .form-group { margin-bottom: 12px; }
+.diploma-create label { font-size: 13px; }
+.diploma-create .help-block { margin: 4px 0 0; font-size: 12px; line-height: 1.4; color: #647580; }
+.diploma-create #id_courses { height: 120px; }
+.diploma-create-levels .controls { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 6px 16px; }
+.diploma-create-levels .checkbox { margin: 0; }
+.diploma-create-levels .checkbox label { padding-top: 0; font-weight: normal; }
+.diploma-create-levels .controls .help-block { flex-basis: 100%; }
+.diploma-create-levels ul { list-style: none; padding: 0; margin: 0; }
+.diploma-create-message { margin: 0 0 12px; }
+.diploma-create-message summary { color: #24566f; cursor: pointer; font-size: 13px; font-weight: 600; }
+.diploma-create-message summary { display: flex; align-items: center; gap: 6px; list-style: none; }
+.diploma-create-message summary::-webkit-details-marker { display: none; }
+.diploma-create-message summary::before { content: ""; flex: 0 0 auto; width: 7px; height: 7px; margin-right: 4px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); }
+.diploma-create-message[open] summary::before { transform: rotate(45deg); }
+.diploma-create-message summary span { color: #647580; font-weight: normal; }
+.diploma-create-message .form-group { margin-top: 12px; }
+.diploma-create-message textarea { min-height: 150px; height: 180px; resize: vertical; }
+.diploma-create-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 14px 0; border-top: 1px solid #dce3e8; }
+.diploma-create-actions > span { margin-left: auto; font-size: 12px; color: #647580; }
+@media (max-width: 767px) {
+  .diploma-create-attachment { border-left: 0; padding: 12px 0 0; border-top: 1px solid #e2e7eb; }
+  .diploma-create-grid, .diploma-create-metadata { grid-template-columns: 1fr; }
+  .diploma-create-actions > span { width: 100%; margin-left: 0; }
+}

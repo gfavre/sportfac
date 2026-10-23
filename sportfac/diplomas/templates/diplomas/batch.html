@@ -2,17 +2,19 @@
 {% load crispy_forms_tags sekizai_tags static %}
 {% block extra_css %}
 {{ block.super }}
-<link rel="stylesheet" href="{% static 'backend/css/diplomas.css' %}?v=6">
+<link rel="stylesheet" href="{% static 'backend/css/diplomas.css' %}?v=7">
 {% endblock extra_css %}
 
 {% block page_title %}Diplômes — {{ batch.season }}{% endblock %}
 
 {% block content %}
-<div class="diploma-page">
+{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/instructor-mail.css' %}?v=3">{% endaddtoblock %}
+<div class="diploma-page instructor-mail">
 <p>{{ batch.issued_on|date:"d.m.Y" }} · <strong>{{ batch.get_status_display }}</strong></p>
 {% if batch.error %}<div class="alert alert-danger">{{ batch.error }}</div>{% endif %}
 {% if batch.status == "queued" or batch.status == "generating" %}<div class="alert alert-info">Préparation des diplômes en cours… Cette page se met à jour automatiquement.</div>{% endif %}
-<section class="diploma-section"><h2>Diplômes des enfants</h2>
+<details class="diploma-review"{% if missing_text %} open{% endif %}>
+<summary><span>Diplômes des enfants</span> <span class="diploma-review-status">{% if missing_text %}{{ missing_text }} texte{{ missing_text|pluralize }} à compléter{% else %}{{ diplomas|length }} diplôme{{ diplomas|length|pluralize }} · textes complets{% endif %}</span></summary>
 <div class="table-responsive"><table class="table diploma-children"><thead><tr><th>Enfant</th><th>Cours</th><th>Texte sur le diplôme</th>{% if batch.status == "ready" %}<th>Envoi aux familles</th>{% endif %}<th></th></tr></thead><tbody>
 {% for diploma in diplomas %}<tr{% if not diploma.evaluation %} class="warning"{% endif %}>
 <td>{{ diploma.first_name }} {{ diploma.last_name }}</td><td>{{ diploma.course_number }}</td>
@@ -26,15 +28,33 @@
 {% if batch.status == "ready" %}<td>{{ diploma.get_mail_status_display }}{% if diploma.sent_at %} le {{ diploma.sent_at|date:"d.m.Y H:i" }}{% endif %}{% if diploma.published_at %}<br><small>Disponible sur le compte famille</small>{% endif %}</td>{% endif %}
 <td>{% if batch.status == "draft" %}<a class="btn btn-default btn-sm" href="{% url 'backend:diploma-edit' pk=diploma.pk %}"><i class="icon-pencil" aria-hidden="true"></i> Modifier</a>{% endif %} <a class="btn btn-default btn-sm" href="{% url 'backend:diploma-preview' pk=diploma.pk %}" target="_blank" rel="noopener" title="Ouvrir le PDF dans un nouvel onglet"><i class="icon-eye" aria-hidden="true"></i> Aperçu</a></td></tr>{% endfor %}
 </tbody></table></div>
-</section>
-<section class="diploma-section"><h2>Mail aux familles</h2>
-{% if batch.status == "draft" %}<details><summary class="btn btn-default"><i class="icon-pencil" aria-hidden="true"></i> Modifier le texte du mail</summary><form method="post">{% csrf_token %}<input type="hidden" name="action" value="message">{{ message_form|crispy }}<div class="form-group"><button class="btn btn-default">Enregistrer le texte</button></div></form></details>{% endif %}
-<strong>{{ batch.subject }}</strong><div class="well">{{ batch.message|linebreaksbr }}</div>
-<p>Pièces jointes : le diplôme de l’enfant{% for supplement in supplements %}, {{ supplement.name }}{% endfor %}.</p>
+</details>
+<section class="diploma-section" id="diploma-message"><h2>Mail aux familles</h2>
+<div class="instructor-mail-overview"><strong>{{ delivery_total }} email{{ delivery_total|pluralize }} à envoyer</strong><p>Un mail par diplôme. Une famille peut recevoir plusieurs mails. Vérifiez le message et les pièces jointes ci-dessous avant l’envoi.</p></div>
+{% include "diplomas/includes/course-mail-history.html" %}
+{% if missing_pdfs %}<p class="alert alert-warning">Il manque des PDF dans cette préparation. Vérifiez les diplômes avant l’envoi.</p>{% endif %}
+{% if batch.status == "draft" %}<details{% if request.GET.edit_message %} open{% endif %}><summary class="btn btn-default"><i class="icon-pencil" aria-hidden="true"></i> Modifier le texte du mail</summary><form method="post">{% csrf_token %}<input type="hidden" name="action" value="message">{{ message_form|crispy }}<div class="form-group"><button class="btn btn-default">Enregistrer le texte</button></div></form></details>{% endif %}
+{% if diploma %}
+<nav class="family-mail-navigation" aria-label="Messages à vérifier">
+{% if page.has_previous %}<a href="?number={{ page.previous_page_number }}#diploma-message">← Message précédent</a>{% endif %}
+<span>Message {{ page.number }} / {{ delivery_total }}</span>
+{% if page.has_next %}<a href="?number={{ page.next_page_number }}#diploma-message">Message suivant →</a>{% endif %}
+</nav>
+{% include "diplomas/includes/mail-preview.html" %}
+{% else %}<p>Aucun email en attente d’envoi.</p>{% endif %}
+{% if pending %}<details><summary>Voir les {{ delivery_total }} destinataires</summary><div class="table-responsive"><table class="table"><thead><tr><th>Enfant / cours</th><th>Destinataire</th><th>Adresse email</th></tr></thead><tbody>
+{% for item in pending %}<tr><td><a href="?number={{ forloop.counter }}#diploma-message">{{ item.first_name }} {{ item.last_name }} — {{ item.course_number }}</a></td><td>{{ item.parent.get_full_name }}</td><td>{{ item.parent.email }}</td></tr>{% endfor %}
+</tbody></table></div></details>{% endif %}
 </section>
 
+{% if batch.status == "ready" or mail_counts.sent or mail_counts.sending or mail_counts.failed %}
+<section class="diploma-section"><h2>Suivi des emails</h2>
+<p><strong>{{ mail_counts.sent }} email(s) accepté(s) par le serveur mail</strong> · {{ mail_counts.sending }} en cours · {{ mail_counts.pending }} non envoyé(s) · {{ mail_counts.failed }} en échec, à vérifier.</p>
+<p>Les envois acceptés, en cours ou en échec ne sont pas relancés automatiquement. <a href="{% url 'backend:diploma-batch' pk=batch.pk %}">Actualiser le suivi</a></p>
+</section>
+{% endif %}
 {% if batch.status != "queued" and batch.status != "generating" %}
-<form method="post" data-diploma-actions>{% csrf_token %}
+<form method="post" data-diploma-actions>{% csrf_token %}<input type="hidden" name="confirmation_token" value="{{ confirmation_token }}">
   <div class="form-group">
     <div class="diploma-actions">
     {% if batch.status == "ready" %}
@@ -42,9 +62,9 @@
     {% else %}
       <button class="btn btn-primary" name="action" value="download"><i class="icon-download" aria-hidden="true"></i> Télécharger les diplômes</button>
     {% endif %}
-    <button class="btn btn-primary" name="action" value="send" onclick="return confirm('Envoyer les diplômes par mail et les rendre disponibles sur les comptes des familles ?');"><i class="icon-mail" aria-hidden="true"></i> Envoyer aux familles</button>
+    <button class="btn btn-primary" name="action" value="send"{% if not can_send %} disabled{% endif %}><i class="icon-mail" aria-hidden="true"></i> Envoyer {{ delivery_total }} email{{ delivery_total|pluralize }} aux familles</button>
     </div>
-    <p class="help-block">Télécharger prépare un PDF pour l’impression. Envoyer transmet les diplômes par mail et les rend disponibles sur les comptes des familles.</p>
+    <p class="help-block">L’envoi concerne tous les emails indiqués, pas seulement le message affiché. Les diplômes seront aussi disponibles sur les comptes des familles.</p>
   </div>
 </form>
 {% endif %}
