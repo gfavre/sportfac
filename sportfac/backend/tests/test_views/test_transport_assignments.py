@@ -51,7 +51,11 @@ class TransportAssignmentTests(TenantTestCase):
         response = self.view(data={"question": self.question.pk, "stop": "73 Chailly"})
         self.assertContains(response, "73 Chailly", status_code=200)
         self.assertEqual([row["child"].pk for row in response.context_data["children"]], [self.first.child_id])
-        self.assertContains(response, "Sélectionner les enfants filtrés")
+        self.assertContains(response, "Sélectionner tous les enfants filtrés")
+        self.assertContains(response, "Tout désélectionner")
+        self.assertContains(response, "La sélection inclut toutes les pages de résultats.")
+        content = response.content.decode()
+        self.assertLess(content.index('id="select-filtered"'), content.index('id="assignment-children"'))
 
     def test_missing_answers_conflicting_answers_and_canceled_answers(self):
         missing = RegistrationFactory(transport=None)

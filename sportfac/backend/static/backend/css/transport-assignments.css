@@ -16,6 +16,7 @@
 .transport-assignment-toolbar.has-selection { border-color: #9dbbd1; box-shadow: 0 3px 16px rgba(32, 57, 76, .14); }
 .transport-assignment-selection, .transport-assignment-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
 .transport-assignment-selection strong { color: #334b5c; font-size: 14px; }
+.transport-assignment-selection { padding: 12px 0; margin-bottom: 10px; }
 .transport-assignment-toolbar .btn-link { padding: 4px 0; }
 .transport-assignment-destination { display: flex; align-items: center; gap: 8px; }
 .transport-assignment-destination label { margin: 0; white-space: nowrap; font-weight: normal; }
@@ -31,7 +32,7 @@
 #assignment-children tr.selected a { color: #24566f; }
 #assignment-children .transport-assignment-filters th { padding: 6px 8px; font-weight: normal; border-top: 0; }
 #assignment-children .transport-assignment-filters select { width: 100%; min-width: 130px; }
-.transport-assignment-toolbar [hidden] { display: none !important; }
+.transport-assignment-toolbar[hidden], .transport-assignment-toolbar [hidden] { display: none !important; }
 @media (max-width: 767px) {
   .transport-assignment-table { overflow-x: auto; }
   .transport-assignment-toolbar { bottom: 0; padding: 10px; }

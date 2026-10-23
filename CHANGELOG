@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Present user editing in framed sections with consistent save/cancel actions and role-specific titles and icons.
 
 ### Fixed
+- Place bulk child selection above the car assignment table and clarify that it includes all filtered result pages.
 - Create independent diploma batches per course and separate unsent groups when resumed, including PDF-ready and failed groups, preserving texts, individual PDFs, attachments and child audit events. Scope archived group links to the chosen course and keep published documents unchanged.
 - Link bib preparation corrections to pending assignments or the exact child instead of the full child list or profile; expose missing car prefixes and a return link to bib preparation.
 

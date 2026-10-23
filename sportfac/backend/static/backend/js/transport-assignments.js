@@ -39,6 +39,7 @@
     const count = table.rows({selected: true}).count();
     document.getElementById('selection-count').textContent = count ? count + ' sélectionné(s)' : 'Sélectionnez les enfants à affecter';
     document.getElementById('assignment-action-controls').hidden = !count;
+    document.getElementById('assignment-toolbar').hidden = !count;
     document.getElementById('assignment-toolbar').classList.toggle('has-selection', !!count);
     document.getElementById('clear-selection').disabled = !count;
     document.getElementById('select-filtered').disabled = !table.rows({search: 'applied'}).count();
