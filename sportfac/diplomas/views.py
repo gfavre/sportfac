@@ -7,6 +7,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.db import connection
 from django.db import transaction
+from django.db.models import Count
+from django.db.models import Max
+from django.db.models import Q
 from django.http import FileResponse
 from django.http import Http404
 from django.http import HttpResponse
@@ -35,6 +38,7 @@ from .models import DiplomaSupplement
 from .services import complete_missing_levels
 from .services import course_mail_history
 from .services import create_batch
+from .services import separate_draft_courses
 from .tasks import generate_batch
 from .tasks import render_diplomas
 from .tasks import send_batch
@@ -56,9 +60,41 @@ def pdf_response(content, filename):
 
 class BatchListView(DiplomaEnabledMixin, FullBackendMixin, View):
     def get(self, request):
-        return render(
-            request, "diplomas/batches.html", {"batches": DiplomaBatch.objects.defer("print_pdf", "logo").all()}
+        resumable = set(
+            DiplomaBatch.objects.filter(source_schema=connection.schema_name, status__in=("draft", "ready", "failed"))
+            .exclude(diplomas__mail_status__in=("sent", "sending", "failed"))
+            .exclude(diplomas__published_at__isnull=False)
+            .values_list("pk", flat=True)
         )
+        preparations = (
+            Diploma.objects.filter(batch__source_schema=connection.schema_name)
+            .values("course_number", "activity", "batch_id", "batch__issued_on", "batch__status", "batch__created")
+            .annotate(total=Count("pk"), sent=Count("pk", filter=Q(mail_status="sent")), last_sent=Max("sent_at"))
+            .order_by("course_number", "-batch__created")
+        )
+        courses = {}
+        statuses = dict(DiplomaBatch._meta.get_field("status").choices)
+        for preparation in preparations:
+            course = courses.setdefault(
+                preparation["course_number"],
+                {
+                    "number": preparation["course_number"],
+                    "activity": preparation["activity"],
+                    "preparations": [],
+                    "last_sent": None,
+                },
+            )
+            preparation["status_label"] = statuses[preparation["batch__status"]]
+            preparation["can_resume"] = preparation["batch_id"] in resumable
+            course["preparations"].append(preparation)
+            if preparation["last_sent"] and (
+                not course["last_sent"] or preparation["last_sent"] > course["last_sent"]
+            ):
+                course["last_sent"] = preparation["last_sent"]
+        for course in courses.values():
+            course["current"] = course["preparations"][0]
+            course["history"] = course["preparations"][1:]
+        return render(request, "diplomas/batches.html", {"courses": list(courses.values())})
 
 
 class BatchCreateView(DiplomaEnabledMixin, FullBackendMixin, View):
@@ -76,7 +112,18 @@ class BatchCreateView(DiplomaEnabledMixin, FullBackendMixin, View):
     def post(self, request):
         form = BatchForm(request.POST, request.FILES)
         if form.is_valid():
-            batch = create_batch(form.cleaned_data, request.user)
+            batches = []
+            with transaction.atomic():
+                courses = form.cleaned_data["courses"]
+                for course in courses:
+                    data = {**form.cleaned_data, "courses": courses.filter(pk=course.pk)}
+                    if data.get("supplement"):
+                        data["supplement"].seek(0)
+                    batches.append(create_batch(data, request.user))
+            if len(batches) > 1:
+                messages.success(request, "Les diplômes sont prêts à compléter séparément pour chaque cours.")
+                return redirect("backend:diploma-list")
+            batch = batches[0]
             return redirect("backend:diploma-batch", pk=batch.pk)
         return render(request, "diplomas/create.html", {"form": form})
 
@@ -101,7 +148,13 @@ class BatchDetailView(DiplomaEnabledMixin, FullBackendMixin, View):
     def get(self, request, pk):
         batch = get_object_or_404(DiplomaBatch.objects.defer("print_pdf", "logo"), pk=pk)
         complete_missing_levels(batch, request.user)
-        diplomas = list(batch.diplomas.select_related("parent").defer("pdf").all())
+        queryset = batch.diplomas.select_related("parent").defer("pdf")
+        course_scope = request.GET.get("course")
+        if course_scope is not None:
+            queryset = queryset.filter(course_number=course_scope)
+            if not queryset.exists():
+                raise Http404
+        diplomas = list(queryset)
         # Registration IDs are only meaningful inside the period that created the batch.
         if batch.source_schema == connection.schema_name and settings.KEPCHUP_REGISTRATION_LEVELS:
             children = dict(
@@ -111,9 +164,10 @@ class BatchDetailView(DiplomaEnabledMixin, FullBackendMixin, View):
             )
             for diploma in diplomas:
                 diploma.level_child_id = children.get(diploma.source_registration_id)
-        events = Paginator(batch.events.select_related("actor", "diploma").defer("diploma__pdf"), 50).get_page(
-            request.GET.get("page")
-        )
+        event_query = batch.events.select_related("actor", "diploma").defer("diploma__pdf")
+        if course_scope is not None:
+            event_query = event_query.filter(Q(diploma__course_number=course_scope) | Q(diploma__isnull=True))
+        events = Paginator(event_query, 50).get_page(request.GET.get("page"))
         mail_context = BatchSendConfirmationView().context(request, batch, diplomas=diplomas)
         response = render(
             request,
@@ -125,12 +179,25 @@ class BatchDetailView(DiplomaEnabledMixin, FullBackendMixin, View):
                 "message_form": DiplomaMessageForm(instance=batch),
                 **mail_context,
                 "missing_text": sum(not diploma.evaluation for diploma in diplomas),
+                "batch_courses": sorted({d.course_number for d in diplomas}),
+                "course_scope": course_scope,
+                "can_resume_course": batch.status in ("draft", "ready", "failed")
+                and batch.source_schema == connection.schema_name
+                and not batch.diplomas.exclude(mail_status="pending", published_at__isnull=True).exists(),
             },
         )
         response["Cache-Control"] = "private, no-store"
         return response
 
     def post(self, request, pk):
+        if request.POST.get("action") == "course":
+            get_object_or_404(DiplomaBatch, pk=pk)
+            try:
+                separate_draft_courses(pk, request.POST.get("course_number"), request.user)
+            except ValueError as error:
+                messages.error(request, str(error))
+                return redirect("backend:diploma-list")
+            return redirect("backend:diploma-batch", pk=pk)
         # Open tabs using the former send button must also pass through confirmation.
         if request.POST.get("action") == "send":
             if request.POST.get("confirmation_token"):

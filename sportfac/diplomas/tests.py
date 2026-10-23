@@ -28,6 +28,7 @@ from .models import DiplomaBatch
 from .models import DiplomaEvent
 from .services import course_mail_history
 from .services import create_batch
+from .services import separate_draft_courses
 from .tasks import DiplomaRenderer
 from .tasks import generate_batch
 from .tasks import render_diplomas
@@ -43,6 +44,157 @@ def sample_pdf(width=595):
 
 
 class DiplomaTests(TenantTestCase):
+    def test_reopening_grouped_draft_separates_course_rosters_and_preserves_content(self):
+        other_course = CourseFactory()
+        other_registration = RegistrationFactory(course=other_course)
+        data = {
+            **self.data,
+            "courses": type(self.course).objects.filter(pk__in=[self.course.pk, other_course.pk]),
+            "supplement": SimpleUploadedFile("infos.pdf", sample_pdf(), content_type="application/pdf"),
+        }
+        grouped = create_batch(data, self.manager)
+        other_diploma = grouped.diplomas.get(source_registration_id=other_registration.pk)
+        DiplomaEvent.objects.create(batch=grouped, diploma=other_diploma, actor=self.manager, action="edited")
+        url = reverse("backend:diploma-batch", args=[grouped.pk])
+        self.assertEqual(
+            self.client.post(url, {"action": "course", "course_number": self.diploma.course_number}).status_code, 302
+        )
+        self.assertEqual(grouped.diplomas.count(), 2)
+        self.client.force_login(self.parent)
+        self.assertEqual(
+            self.client.post(url, {"action": "course", "course_number": self.diploma.course_number}).status_code, 302
+        )
+        self.assertEqual(grouped.diplomas.count(), 2)
+        self.client.force_login(self.manager)
+        self.assertContains(self.client.get(url), "Cette création regroupe 2 cours")
+        response = self.client.post(url, {"action": "course", "course_number": self.diploma.course_number})
+        self.assertRedirects(response, url)
+        self.assertEqual(
+            list(grouped.diplomas.values_list("source_registration_id", flat=True)), [self.registration.pk]
+        )
+        other_diploma.refresh_from_db()
+        separated = other_diploma.batch
+        self.assertNotEqual(separated.pk, grouped.pk)
+        self.assertEqual(separated.message, grouped.message)
+        self.assertEqual(separated.subject, grouped.subject)
+        self.assertEqual(bytes(separated.supplements.get().content), bytes(grouped.supplements.get().content))
+        self.assertEqual(other_diploma.events.filter(action="edited").get().batch_id, separated.pk)
+        response = self.client.get(url)
+        self.assertEqual(len(response.context["diplomas"]), 1)
+        self.assertEqual(response.context["diplomas"][0].source_registration_id, self.registration.pk)
+        count = DiplomaBatch.objects.count()
+        self.client.post(url, {"action": "course", "course_number": self.diploma.course_number})
+        self.assertEqual(DiplomaBatch.objects.count(), count)
+
+    def test_course_separation_rejects_published_or_generated_batches_and_invalid_course(self):
+        for status in ("generating", "queued"):
+            DiplomaBatch.objects.filter(pk=self.batch.pk).update(status=status)
+            with self.assertRaises(ValueError):
+                separate_draft_courses(self.batch.pk, self.diploma.course_number, self.manager)
+        DiplomaBatch.objects.filter(pk=self.batch.pk).update(status="draft")
+        with self.assertRaises(ValueError):
+            separate_draft_courses(self.batch.pk, "unknown", self.manager)
+        Diploma.objects.filter(pk=self.diploma.pk).update(published_at=timezone.now())
+        with self.assertRaises(ValueError):
+            separate_draft_courses(self.batch.pk, self.diploma.course_number, self.manager)
+
+        self.assertEqual(self.batch.diplomas.count(), 1)
+        Diploma.objects.filter(pk=self.diploma.pk).update(published_at=None)
+        DiplomaBatch.objects.filter(pk=self.batch.pk).update(source_schema="other_period")
+        with self.assertRaises(ValueError):
+            separate_draft_courses(self.batch.pk, self.diploma.course_number, self.manager)
+
+    def test_resume_separates_ready_and_failed_unsent_groups_by_course(self):
+        other_course = CourseFactory()
+        RegistrationFactory(course=other_course)
+        courses = type(self.course).objects.filter(pk__in=[self.course.pk, other_course.pk])
+        self.client.force_login(self.manager)
+        for status in ("ready", "failed"):
+            with self.subTest(status=status):
+                batch = create_batch({**self.data, "courses": courses}, self.manager)
+                DiplomaBatch.objects.filter(pk=batch.pk).update(status=status, print_pdf=b"%PDF-all-courses")
+                batch.diplomas.update(pdf=b"%PDF-child")
+                response = self.client.get(reverse("backend:diploma-list"))
+                row = next(c for c in response.context["courses"] if c["number"] == self.course.number)
+                self.assertTrue(row["current"]["can_resume"])
+                url = reverse("backend:diploma-batch", args=[batch.pk])
+                response = self.client.post(url, {"action": "course", "course_number": self.course.number})
+                self.assertRedirects(response, url)
+                batch.refresh_from_db()
+                self.assertEqual(batch.status, "draft")
+                self.assertIsNone(batch.print_pdf)
+                self.assertEqual(list(batch.diplomas.values_list("course_number", flat=True)), [self.course.number])
+                self.assertEqual(bytes(batch.diplomas.get().pdf), b"%PDF-child")
+
+    def test_course_scoped_archive_never_displays_other_course_children_or_group_actions(self):
+        other_course = CourseFactory()
+        RegistrationFactory(course=other_course)
+        courses = type(self.course).objects.filter(pk__in=[self.course.pk, other_course.pk])
+        batch = create_batch({**self.data, "courses": courses}, self.manager)
+        batch.diplomas.update(mail_status="sent", sent_at=timezone.now(), published_at=timezone.now())
+        other_diploma = batch.diplomas.exclude(source_registration_id=self.registration.pk).get()
+        DiplomaEvent.objects.create(batch=batch, diploma=other_diploma, action="mail_sent")
+        self.client.force_login(self.manager)
+        url = reverse("backend:diploma-batch", args=[batch.pk])
+        response = self.client.get(url, {"course": self.course.number})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([d.source_registration_id for d in response.context["diplomas"]], [self.registration.pk])
+        self.assertNotContains(response, "Cette création regroupe")
+        self.assertNotContains(response, "data-diploma-actions")
+        self.assertFalse(response.context["can_resume_course"])
+        self.assertFalse(any(event.diploma_id == other_diploma.pk for event in response.context["events"]))
+        self.assertEqual(self.client.get(url, {"course": "unknown"}).status_code, 404)
+
+    def test_creation_of_multiple_courses_makes_independent_diplomas(self):
+        other_course = CourseFactory()
+        other_registration = RegistrationFactory(course=other_course)
+        self.client.force_login(self.manager)
+        data = {
+            **self.data,
+            "courses": [self.course.pk, other_course.pk],
+            "final_levels": ["A 1A", "__empty__"],
+            "supplement": SimpleUploadedFile("infos.pdf", sample_pdf(), content_type="application/pdf"),
+        }
+        response = self.client.post(reverse("backend:diploma-create"), data)
+        self.assertRedirects(response, reverse("backend:diploma-list"))
+        batches = DiplomaBatch.objects.filter(created_by=self.manager).exclude(pk=self.batch.pk)
+        self.assertEqual(batches.count(), 2)
+        rosters = []
+        for batch in batches:
+            rosters.append(set(batch.diplomas.values_list("source_registration_id", flat=True)))
+            self.assertTrue(bytes(batch.supplements.get().content).startswith(b"%PDF-"))
+        self.assertIn({self.registration.pk}, rosters)
+        self.assertIn({other_registration.pk}, rosters)
+
+    def test_diploma_list_groups_preparations_by_course_in_current_period(self):
+        self.client.force_login(self.manager)
+        other = create_batch(self.data, self.manager)
+        sent_at = timezone.now()
+        Diploma.objects.filter(pk=self.diploma.pk).update(mail_status="sent", sent_at=sent_at)
+        url = reverse("backend:diploma-list")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Diplômes par cours")
+        self.assertNotContains(response, "Archives de toutes les saisons")
+        courses = response.context["courses"]
+        self.assertEqual(len(courses), 1)
+        self.assertEqual(courses[0]["number"], self.diploma.course_number)
+        self.assertEqual(len(courses[0]["preparations"]), 2)
+        self.assertEqual(courses[0]["current"]["batch_id"], other.pk)
+        self.assertEqual(courses[0]["history"][0]["batch_id"], self.batch.pk)
+        self.assertContains(response, "Reprendre les diplômes")
+        self.assertContains(response, "Brouillon · aucun email envoyé")
+        self.assertContains(response, "Anciennes créations de diplômes (1)")
+        self.assertEqual(courses[0]["last_sent"], sent_at)
+        self.assertContains(response, self.detail_url)
+        DiplomaBatch.objects.filter(pk=other.pk).update(source_schema="another_period")
+        response = self.client.get(url)
+        self.assertEqual(len(response.context["courses"][0]["preparations"]), 1)
+        self.assertNotContains(response, reverse("backend:diploma-batch", args=[other.pk]))
+        DiplomaBatch.objects.filter(pk=self.batch.pk).update(source_schema="another_period")
+        response = self.client.get(url)
+        self.assertContains(response, "Aucun diplôme préparé pour cette période.")
+
     def test_course_mail_history_warns_on_new_preparation_and_is_visible_on_course(self):
         self.client.force_login(self.manager)
         sent_at = timezone.now()
@@ -469,6 +621,13 @@ class DiplomaTests(TenantTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '<details class="diploma-review" open>')
         self.assertContains(response, "1 texte à compléter")
+        self.assertContains(response, "avant de continuer.")
+        self.assertNotContains(response, 'id="diploma-message"')
+        self.assertNotContains(response, "data-diploma-actions")
+        Diploma.objects.filter(pk=self.diploma.pk).update(evaluation="Niveau acquis")
+        response = self.client.get(self.detail_url)
+        self.assertContains(response, 'id="diploma-message"')
+        self.assertContains(response, "data-diploma-actions")
 
     def test_backend_pages_permissions_and_draft_edit(self):
         urls = [

@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Record optional car capacities and show unique children per period and per date, highlighting dates exceeding the available seats.
 
 ### Changed
+- Focus incomplete diploma batches on missing texts; reveal family email review, download and send actions once all diploma texts are complete.
+- Group diplomas by course within the selected period, with email counts, last-send dates and an explicit resume action for the latest creation; keep older drafts in collapsed history.
 - Confirm diploma sending directly on the preparation page, with complete diploma lists collapsed and the family email and attachments displayed together.
 - Compact diploma creation into groups for recipients, printed information and family emails, with consistent field heights, a collapsible message and a Swiss-format date picker.
 - Simplify car assignments with DataTables, immediate column filters and a compact assignment toolbar; select children by clicking rows or select all filtered children across pages.
@@ -22,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Present user editing in framed sections with consistent save/cancel actions and role-specific titles and icons.
 
 ### Fixed
+- Create independent diploma batches per course and separate unsent groups when resumed, including PDF-ready and failed groups, preserving texts, individual PDFs, attachments and child audit events. Scope archived group links to the chosen course and keep published documents unchanged.
 - Link bib preparation corrections to pending assignments or the exact child instead of the full child list or profile; expose missing car prefixes and a return link to bib preparation.
 
 ## 4.14.0 - 2026-10-22

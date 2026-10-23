@@ -1,11 +1,23 @@
 {% extends "backend/base.html" %}
 
-{% block page_title %}Diplômes{% endblock %}
+{% block page_title %}<i class="icon-award" aria-hidden="true"></i> Diplômes par cours{% endblock %}
 
 {% block content %}
 <a class="btn btn-success" href="{% url 'backend:diploma-create' %}">Préparer des diplômes</a>
-<p class="help-block">Archives de toutes les saisons. Les documents publiés restent disponibles pour les familles après un changement de période.</p>
-<table class="table"><thead><tr><th>Saison</th><th>Date</th><th>État</th><th></th></tr></thead><tbody>
-{% for batch in batches %}<tr><td>{{ batch.season }}</td><td>{{ batch.issued_on|date:"d.m.Y" }}</td><td>{{ batch.get_status_display }}</td><td><a href="{% url 'backend:diploma-batch' pk=batch.pk %}">Consulter</a></td></tr>{% empty %}<tr><td colspan="4">Aucun diplôme préparé.</td></tr>{% endfor %}
-</tbody></table>
+<p class="help-block">Cours de la période sélectionnée. Pour retrouver une autre période, changez de période dans le menu.</p>
+<div class="table-responsive"><table class="table"><thead><tr><th>Cours</th><th>Activité</th><th>Dernier envoi</th><th>Diplômes créés</th></tr></thead><tbody>
+{% for course in courses %}<tr>
+<td>{{ course.number }}</td><td>{{ course.activity }}</td>
+<td>{{ course.last_sent|date:"d.m.Y H:i"|default:"Aucun envoi" }}</td>
+<td>{% with preparation=course.current %}
+<p><strong>{{ preparation.total }} diplôme{{ preparation.total|pluralize }}</strong> <small>· créés le {{ preparation.batch__created|date:"d.m.Y à H:i" }}</small><br>
+{% if preparation.batch__status == "draft" %}Brouillon · aucun email envoyé{% else %}{{ preparation.status_label }} · {{ preparation.sent }} email{{ preparation.sent|pluralize }} envoyé{{ preparation.sent|pluralize }}{% endif %}</p>
+{% if preparation.can_resume %}<form method="post" action="{% url 'backend:diploma-batch' pk=preparation.batch_id %}">{% csrf_token %}<input type="hidden" name="action" value="course"><input type="hidden" name="course_number" value="{{ course.number }}"><button class="btn btn-default btn-sm">Reprendre les diplômes</button></form>
+{% else %}<p><a class="btn btn-default btn-sm" href="{% url 'backend:diploma-batch' pk=preparation.batch_id %}?course={{ course.number|urlencode }}">{% if preparation.sent == preparation.total %}Consulter l’envoi{% elif preparation.batch__status == "queued" or preparation.batch__status == "generating" %}Suivre la génération{% else %}Consulter les diplômes{% endif %}</a></p>{% endif %}
+{% endwith %}
+{% if course.history %}<details><summary>Anciennes créations de diplômes ({{ course.history|length }})</summary>
+{% for preparation in course.history %}<p><a href="{% url 'backend:diploma-batch' pk=preparation.batch_id %}?course={{ course.number|urlencode }}">{{ preparation.total }} diplôme{{ preparation.total|pluralize }} — {{ preparation.batch__created|date:"d.m.Y à H:i" }}</a><br><small>{% if preparation.batch__status == "draft" %}Ancien brouillon{% else %}{{ preparation.status_label }}{% endif %} · {{ preparation.sent }} email{{ preparation.sent|pluralize }} envoyé{{ preparation.sent|pluralize }}</small></p>{% endfor %}
+</details>{% endif %}</td>
+</tr>{% empty %}<tr><td colspan="4">Aucun diplôme préparé pour cette période.</td></tr>{% endfor %}
+</tbody></table></div>
 {% endblock content %}

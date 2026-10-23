@@ -26,6 +26,54 @@ from .models import DiplomaSupplement
 EMPTY_LEVEL = "__empty__"
 
 
+@transaction.atomic
+def separate_draft_courses(batch_id, course_number, actor):
+    batch = DiplomaBatch.objects.select_for_update().get(pk=batch_id)
+    if batch.status not in ("draft", "ready", "failed") or batch.source_schema != connection.schema_name:
+        raise ValueError("Ce groupe ne peut pas être séparé pendant sa génération ou depuis une autre période.")
+    if batch.diplomas.exclude(mail_status="pending", published_at__isnull=True).exists():
+        raise ValueError("Ce groupe contient déjà des publications ou des envois : il reste inchangé.")
+    numbers = set(batch.diplomas.values_list("course_number", flat=True))
+    if course_number not in numbers:
+        raise ValueError("Ce cours a changé de groupe. Retrouvez-le dans la liste des diplômes.")
+    supplements = list(batch.supplements.all())
+    for number in sorted(numbers - {course_number}):
+        separated = DiplomaBatch.objects.create(
+            season=batch.season,
+            issued_on=batch.issued_on,
+            source_schema=batch.source_schema,
+            subject=batch.subject,
+            message=batch.message,
+            logo=batch.logo,
+            created_by=batch.created_by,
+        )
+        ids = list(batch.diplomas.filter(course_number=number).values_list("pk", flat=True))
+        Diploma.objects.filter(pk__in=ids).update(batch=separated)
+        DiplomaEvent.objects.filter(diploma_id__in=ids).update(batch=separated)
+        DiplomaSupplement.objects.bulk_create(
+            [DiplomaSupplement(batch=separated, name=item.name, content=item.content) for item in supplements]
+        )
+        DiplomaEvent.objects.create(
+            batch=separated,
+            actor=actor,
+            action="created",
+            detail=f"Cours {number} séparé du brouillon {batch.pk} ; textes et pièces jointes conservés.",
+        )
+    if len(numbers) > 1:
+        # Invalidate confirmations opened before the course groups changed.
+        batch.status = "draft"
+        batch.print_pdf = None
+        batch.error = ""
+        batch.save(update_fields=["status", "print_pdf", "error", "modified"])
+        DiplomaEvent.objects.create(
+            batch=batch,
+            actor=actor,
+            action="edited",
+            detail=f"Brouillon limité au cours {course_number} ; autres cours séparés.",
+        )
+    return batch
+
+
 def course_mail_history(source_schema, course_numbers):
     # Course numbers belong to a period; snapshots remain available after its deletion.
     return list(

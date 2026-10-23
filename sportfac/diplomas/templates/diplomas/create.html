@@ -8,7 +8,7 @@
 {% addtoblock "css" %}{{ form.media.css }}<link rel="stylesheet" href="{% static 'backend/css/diploma-create.css' %}?v=5">{% endaddtoblock %}
 {% addtoblock "js" %}{{ form.media.js }}{% endaddtoblock %}
 <div class="diploma-create">
-<p class="diploma-create-intro">Choisissez les enfants et les informations à imprimer. Vous pourrez vérifier les diplômes et confirmer les emails à l’étape suivante.</p>
+<p class="diploma-create-intro">Choisissez les enfants et les informations à imprimer. Les diplômes seront préparés séparément pour chaque cours, pour les compléter et les envoyer indépendamment.</p>
 <form method="post" enctype="multipart/form-data" data-diploma-create="{% url 'backend:diploma-create' %}">
   {% csrf_token %}
   {% if form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>{% endif %}
