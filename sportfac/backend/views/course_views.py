@@ -18,6 +18,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.urls import reverse_lazy
+from django.utils.html import format_html
+from django.utils.html import format_html_join
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 from django.utils.translation import gettext as _
@@ -235,18 +237,40 @@ class CourseUpdateView(ListReturnMixin, SuccessMessageMixin, CourseMixin, Update
         return response  # noqa: R504
 
 
-class CoursesToggleVisibilityView(CourseMixin, ListView):
+class CoursesToggleVisibilityView(ListReturnMixin, CourseMixin, ListView):
     def get_queryset(self):
         courses_pk = [int(pk) for pk in self.request.POST.getlist("c") if pk.isdigit()]
         return super().get_queryset().filter(pk__in=courses_pk)
 
     def post(self, *args, **kwargs):
-        courses = self.get_queryset()
-        for course in courses:
-            course.visible = not course.visible
-            course.save()
-        messages.info(self.request, _("Courses visibility has been toggled, %s courses changed.") % courses.count())
-        return HttpResponseRedirect(reverse("backend:course-list"))
+        shown, hidden = [], []
+        with transaction.atomic():
+            for course in self.get_queryset().select_related("activity"):
+                course.visible = not course.visible
+                course.save()
+                link = format_html(
+                    '<a class="alert-link" data-course-target href="#course-{}">{}</a>', course.pk, course.short_name
+                )
+                (shown if course.visible else hidden).append(link)
+        if shown:
+            messages.success(
+                self.request,
+                format_html(
+                    _("Courses shown: %(courses)s.").replace("%(courses)s", "{}"),
+                    format_html_join(", ", "{}", ((link,) for link in shown)),
+                ),
+            )
+        if hidden:
+            messages.success(
+                self.request,
+                format_html(
+                    _("Courses hidden: %(courses)s.").replace("%(courses)s", "{}"),
+                    format_html_join(", ", "{}", ((link,) for link in hidden)),
+                ),
+            )
+        if not shown and not hidden:
+            messages.warning(self.request, _("No courses changed."))
+        return HttpResponseRedirect(self.get_list_return_url() or reverse("backend:course-list"))
 
 
 class BackendCourseAbsenceView(CourseMixin, CourseAbsenceView):

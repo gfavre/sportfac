@@ -4931,6 +4931,17 @@ msgstr ""
 
 #: backend/views/course_views.py:223
 #, python-format
+msgid "Courses shown: %(courses)s."
+msgstr "Cours affichés dans le catalogue des familles : %(courses)s."
+
+#, python-format
+msgid "Courses hidden: %(courses)s."
+msgstr "Cours masqués dans le catalogue des familles : %(courses)s."
+
+msgid "No courses changed."
+msgstr "Aucun cours modifié."
+
+#, python-format
 msgid "Courses visibility has been toggled, %s courses changed."
 msgstr "La visibilité des cours a été modifiée, %s cours ont été modifiés."
 

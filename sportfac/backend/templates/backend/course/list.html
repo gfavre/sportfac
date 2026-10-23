@@ -75,7 +75,7 @@
             src="https://cdn.datatables.net/v/bs/dt-1.10.24/b-1.7.0/r-2.2.7/sc-2.0.3/sp-1.2.2/sl-1.3.2/datatables.min.js"></script>
 
     <script src="{% static 'backend/js/datatable-url-state.js' %}?v=2"></script>
-    <script src="{% static 'backend/js/course-actions.js' %}?v=5"></script>
+    <script src="{% static 'backend/js/course-actions.js' %}?v=7"></script>
 
     <script>
       $(function () {
@@ -175,7 +175,7 @@
     </thead>
     {% for course in object_list %}
       <tr class="{% if not course.visible %}info{% elif course.has_issue %}danger{% elif not course.allow_new_participants %}warning{% endif %}"
-          data-courseid="{{ course.id }}">
+          id="course-{{ course.pk }}" data-courseid="{{ course.id }}">
         <td data-order="{{ course.number }}">
           <a href="{{ course.get_backend_url }}">{{ course.number }}</a>
           {% include "activities/includes/course-group.html" %}

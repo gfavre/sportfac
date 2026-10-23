@@ -33,6 +33,22 @@ document.addEventListener('click', function (event) {
 });
 
 window.initializeCourseActions = function (table) {
+    document.querySelectorAll('a[data-course-target]').forEach(function (link) {
+        link.addEventListener('click', function (event) {
+            const row = table.row(link.getAttribute('href')).node();
+            if (!row) return;
+            event.preventDefault();
+            // A visibility filter may have removed the changed course from the table.
+            if (!table.rows({search: 'applied'}).nodes().toArray().includes(row)) {
+                if (table.searchPanes) table.searchPanes.clearSelections();
+                table.search('').columns().search('');
+                table.draw();
+            }
+            row.setAttribute('tabindex', '-1');
+            row.focus({preventScroll: true});
+            row.scrollIntoView({behavior: 'smooth', block: 'center'});
+        });
+    });
     const toolbar = document.querySelector('.course-selection-actions');
     if (!toolbar) return;
     function updateSelection() {
@@ -53,6 +69,11 @@ window.initializeCourseActions = function (table) {
     $(toolbar).find('form').on('submit', function (event) {
         if (!table.rows({selected: true}).count()) { event.preventDefault(); return; }
         const form = this;
+        if (form.classList.contains('visibility')) {
+            const action = new URL(form.action, window.location.href);
+            action.searchParams.set('list_return', window.location.pathname + window.location.search);
+            form.action = action.href;
+        }
         form.querySelectorAll('input[name="c"]').forEach(function (input) { input.remove(); });
         table.rows({selected: true}).nodes().each(function (row) {
             const input = document.createElement('input');

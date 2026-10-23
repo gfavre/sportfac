@@ -24,7 +24,7 @@
             src="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.2/fc-3.2.5/fh-3.1.4/r-2.2.2/sc-1.5.0/sl-1.2.6/datatables.min.js"></script>
 
     <script src="{% static 'backend/js/datatable-url-state.js' %}?v=2"></script>
-    <script src="{% static 'backend/js/course-actions.js' %}?v=2"></script>
+    <script src="{% static 'backend/js/course-actions.js' %}?v=7"></script>
 
     <script>
       $(function () {
@@ -66,7 +66,7 @@
     </thead>
     {% for course in object_list %}
       <tr {% if not course.visible %}class="info"{% elif course.has_issue %}class="danger"{% endif %}
-          data-courseid="{{ course.id }}">
+          id="course-{{ course.pk }}" data-courseid="{{ course.id }}">
         <td data-order="{{ course.number }}">
           <a href="{{ course.get_backend_url }}">{{ course.number }}</a>
           {% include "activities/includes/course-group.html" %}

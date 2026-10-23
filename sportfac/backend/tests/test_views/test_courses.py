@@ -2,6 +2,7 @@ from unittest.mock import patch
 from urllib.parse import urlencode
 
 from django.contrib.auth.models import AnonymousUser
+from django.contrib.messages.storage.fallback import FallbackStorage
 from django.forms.models import model_to_dict
 from django.test import RequestFactory
 from django.test import SimpleTestCase
@@ -25,8 +26,70 @@ from ...views.course_views import CourseDeleteView
 from ...views.course_views import CourseDetailView
 from ...views.course_views import CourseListView
 from ...views.course_views import CoursesAbsenceView
+from ...views.course_views import CoursesToggleVisibilityView
 from ...views.course_views import CourseUpdateView
 from .base import fake_registrations_open_middleware
+
+
+class CoursesToggleVisibilityTests(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        self.manager = FamilyUserFactory(is_manager=True)
+        self.shown = CourseFactory(visible=True)
+        self.hidden = CourseFactory(visible=False)
+        self.url = reverse("backend:courses-toggle-visibility")
+
+    def submit(self, courses, target="", user=None):
+        request = RequestFactory().post(self.url + "?" + urlencode({"list_return": target}), {"c": courses})
+        request.user = user or self.manager
+        fake_registrations_open_middleware(request)
+        request.session = {}
+        request._messages = FallbackStorage(request)
+        response = CoursesToggleVisibilityView.as_view()(request)
+        return response, [str(message) for message in request._messages]
+
+    def test_mixed_selection_preserves_table_state_and_reports_each_result(self):
+        target = reverse("backend:course-list") + "?" + urlencode({"q": "ski", "order": '[[1,"desc"]]', "panes": "[]"})
+        response, notices = self.submit([self.shown.pk, self.hidden.pk], target)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, target)
+        self.shown.refresh_from_db()
+        self.hidden.refresh_from_db()
+        self.assertFalse(self.shown.visible)
+        self.assertTrue(self.hidden.visible)
+        self.assertEqual(len(notices), 2)
+        self.assertIn(self.hidden.short_name, notices[0])
+        self.assertIn(self.shown.short_name, notices[1])
+        self.assertIn(f'href="#course-{self.hidden.pk}"', notices[0])
+        self.assertIn(f'href="#course-{self.shown.pk}"', notices[1])
+
+    def test_course_link_escapes_activity_name(self):
+        self.shown.activity.name = '<script>alert("test")</script>'
+        self.shown.activity.save()
+        response, notices = self.submit([self.shown.pk])
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("&lt;script&gt;", notices[0])
+        self.assertNotIn("<script>", notices[0])
+
+    def test_single_course_and_unsafe_return(self):
+        response, notices = self.submit([self.shown.pk], "https://example.com/")
+        self.assertEqual(response.url, reverse("backend:course-list"))
+        self.assertEqual(len(notices), 1)
+        self.assertIn(self.shown.short_name, notices[0])
+
+    def test_empty_selection_reports_no_changes(self):
+        response, notices = self.submit(["invalid", "999999999"])
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(len(notices), 1)
+        self.shown.refresh_from_db()
+        self.assertTrue(self.shown.visible)
+
+    def test_unauthorized_users_cannot_toggle(self):
+        for user in (AnonymousUser(), FamilyUserFactory(), FamilyUserFactory(is_restricted_manager=True)):
+            with self.subTest(user=user):
+                self.submit([self.shown.pk], user=user)
+                self.shown.refresh_from_db()
+                self.assertTrue(self.shown.visible)
 
 
 class CourseAbsenceViewTests(TenantTestCase):
