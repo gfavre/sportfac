@@ -5,7 +5,7 @@
 {% block page_title %}<i class="icon-exchange" aria-hidden="true"></i> {% if transport %}Répartir les enfants — {{ transport }}{% else %}Répartir les enfants dans les cars{% endif %}{% endblock %}
 
 {% block content %}
-{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/transport-assignments.css' %}?v=8">{% endaddtoblock %}
+{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'backend/css/transport-assignments.css' %}?v=11">{% endaddtoblock %}
 <div class="transport-assignment-links">
   {% if from_bibs %}<a href="{% url 'backend:transport-generate-bibs' %}">← Revenir aux dossards</a>{% endif %}
   <a href="{% url 'backend:transport-list' %}">← Tous les cars</a>
@@ -37,7 +37,7 @@
 {% endif %}
 </section>
 <h2 class="transport-assignment-heading">Enfants à répartir</h2>
-<p class="text-muted transport-assignment-hint">Filtrez par arrêt ou par car, puis cliquez sur les lignes pour sélectionner les enfants.</p>
+<p class="text-muted transport-assignment-hint">Filtrez par cours, par arrêt ou par car, puis cliquez sur les lignes pour sélectionner les enfants.</p>
 <form method="post" id="transport-assignments" data-current-car="{{ transport.pk|default:'' }}">{% csrf_token %}
   <input type="hidden" name="action" value="assign">
   {{ assignment_form.non_field_errors }}{{ assignment_form.children.errors }}
@@ -50,9 +50,22 @@
   <div class="transport-assignment-table">
   <table id="assignment-children" class="table table-striped table-hover">
     <thead>
-      <tr><th>Enfant</th><th>Arrêt demandé</th><th>Car actuel</th></tr>
+      <tr><th>Enfant</th><th>Cours</th><th>Arrêt demandé</th><th>Car actuel</th></tr>
       <tr class="transport-assignment-filters">
         <th><span class="text-muted">Filtres immédiats</span></th>
+        <th>
+          <div id="course-filter" class="dropdown transport-course-filter">
+            <button type="button" class="btn btn-default btn-sm dropdown-toggle" id="course-filter-toggle" data-toggle="dropdown" aria-expanded="false" aria-controls="course-filter-options" aria-label="Filtrer par cours">
+              <span id="course-filter-summary">Tous les cours</span> <span class="caret" aria-hidden="true"></span>
+            </button>
+            <div id="course-filter-options" class="dropdown-menu" aria-labelledby="course-filter-toggle">
+              <div class="transport-course-header"><strong>Cours à inclure</strong><button type="button" class="btn btn-link btn-sm" id="clear-courses">Tout effacer</button></div>
+              <div class="transport-course-options" role="group" aria-label="Cours à inclure">
+                {% for item in courses %}<label class="transport-course-option"><input type="checkbox" value="{{ item.pk }}"{% if item.pk|stringformat:'s' in selected_courses %} checked{% endif %}><span><small>{{ item.number }}</small>{{ item.short_name }}</span></label>{% endfor %}
+              </div>
+            </div>
+          </div>
+        </th>
         <th><label class="sr-only" for="stop">Filtrer par arrêt demandé</label><select id="stop" class="form-control input-sm">
           <option value="">Tous les arrêts</option>
           <option value="__missing__"{% if stop == '__missing__' %} selected{% endif %}>Sans réponse</option>
@@ -69,8 +82,9 @@
       </tr>
     </thead>
     <tbody>{% for entry in table_children %}
-      <tr data-child-id="{{ entry.child.pk }}" data-selected="{% if entry.child.pk|stringformat:'s' in selected_children %}true{% else %}false{% endif %}" data-stops="{{ entry.stops_json }}" data-cars="{{ entry.cars_json }}" data-pending="{{ entry.pending|yesno:'true,false' }}">
+      <tr data-child-id="{{ entry.child.pk }}" data-selected="{% if entry.child.pk|stringformat:'s' in selected_children %}true{% else %}false{% endif %}" data-courses="{{ entry.courses_json }}" data-stops="{{ entry.stops_json }}" data-cars="{{ entry.cars_json }}" data-pending="{{ entry.pending|yesno:'true,false' }}">
         <td><a href="{{ entry.child.backend_url }}">{{ entry.child.last_name }} {{ entry.child.first_name }}</a></td>
+        <td>{% for item in entry.courses %}{{ item.number }} — {{ item.short_name }}{% if not forloop.last %}<br>{% endif %}{% endfor %}</td>
         <td>{% for value in entry.stops %}{{ value }}{% if not forloop.last %}<br>{% endif %}{% empty %}<span class="text-muted">Sans réponse</span>{% endfor %}{% if entry.stops|length > 1 %}<br><small class="text-warning">Plusieurs réponses : à vérifier</small>{% endif %}</td>
         <td>{% for item in entry.cars %}{% if item %}{{ item }}{% if item.bib_prefix == None %}<br><a href="{{ item.update_url }}{% if from_bibs %}?from=bibs{% endif %}">Configurer le préfixe de dossard</a>{% endif %}{% else %}<span class="text-muted">Sans car</span>{% endif %}{% if not forloop.last %}<br>{% endif %}{% endfor %}</td>
       </tr>
@@ -93,6 +107,6 @@
 <script src="{% static 'js/vendor/DataTables-2020/DataTables-1.10.24/js/jquery.dataTables.min.js' %}"></script>
 <script src="{% static 'js/vendor/DataTables-2020/DataTables-1.10.24/js/dataTables.bootstrap.min.js' %}"></script>
 <script src="{% static 'js/vendor/DataTables-2020/Select-1.3.2/js/dataTables.select.min.js' %}"></script>
-<script src="{% static 'backend/js/transport-assignments.js' %}?v=8"></script>
+<script src="{% static 'backend/js/transport-assignments.js' %}?v=11"></script>
 {% endaddtoblock %}
 {% endblock content %}

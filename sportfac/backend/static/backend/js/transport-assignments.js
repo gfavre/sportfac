@@ -3,6 +3,9 @@
   const form = document.getElementById('transport-assignments');
   if (!form) return;
   const stop = document.getElementById('stop');
+  const courseFilter = document.getElementById('course-filter');
+  const courseInputs = Array.from(courseFilter.querySelectorAll('input[type=checkbox]'));
+  function selectedCourses() { return courseInputs.filter(function (input) { return input.checked; }).map(function (input) { return input.value; }); }
   const car = document.getElementById('car');
   const question = document.getElementById('question');
   const served = JSON.parse(document.getElementById('served-stops').textContent);
@@ -13,6 +16,8 @@
   $.fn.dataTable.ext.search.push(function (settings, data, index) {
     if (settings.nTable.id !== 'assignment-children') return true;
     const row = settings.aoData[index].nTr;
+    const courses = selectedCourses();
+    if (courses.length && !JSON.parse(row.dataset.courses).some(function (id) { return courses.includes(id); })) return false;
     const stops = JSON.parse(row.dataset.stops);
     const cars = JSON.parse(row.dataset.cars);
     let matchesStop = !stop.value || stops.includes(stop.value);
@@ -26,7 +31,7 @@
     pageLength: 50, lengthMenu: [[25, 50, 100, -1], [25, 50, 100, 'Tous']],
     order: [[0, 'asc']], orderCellsTop: true,
     select: {style: 'multi'},
-    columnDefs: [{targets: [1, 2], searchable: false}],
+    columnDefs: [{targets: [1, 2, 3], searchable: false}],
     search: {search: params.get('q') || '', smart: false},
     language: {
       search: 'Rechercher un enfant :', lengthMenu: '_MENU_ enfants par page',
@@ -57,6 +62,8 @@
       if (item[1]) url.searchParams.set(item[0], item[1]);
       else url.searchParams.delete(item[0]);
     });
+    url.searchParams.delete('course');
+    selectedCourses().forEach(function (id) { url.searchParams.append('course', id); });
     window.history.replaceState(null, '', url);
   }
   table.on('user-select', function (event, dt, type, cell, originalEvent) {
@@ -75,7 +82,21 @@
   document.getElementById('clear-selection').addEventListener('click', function () { table.rows().deselect(); });
   table.on('select deselect', update);
   destination.addEventListener('change', update);
-  [stop, car].forEach(function (filter) {
+  function updateCourseFilter() {
+    const count = selectedCourses().length;
+    document.getElementById('course-filter-summary').textContent = count ? count + ' cours sélectionné(s)' : 'Tous les cours';
+    document.getElementById('clear-courses').disabled = !count;
+    document.getElementById('course-filter-toggle').classList.toggle('has-course-filter', !!count);
+  }
+  // Keep the menu open while choosing several courses.
+  document.getElementById('course-filter-options').addEventListener('click', function (event) { event.stopPropagation(); });
+  document.getElementById('clear-courses').addEventListener('click', function () {
+    courseInputs.forEach(function (input) { input.checked = false; });
+    updateCourseFilter(); table.draw();
+  });
+  courseFilter.addEventListener('change', updateCourseFilter);
+  updateCourseFilter();
+  [stop, car, courseFilter].forEach(function (filter) {
     filter.addEventListener('change', function () { table.draw(); });
   });
   table.on('draw', function () {

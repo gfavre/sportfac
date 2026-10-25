@@ -9,6 +9,7 @@ from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
 
+from activities.models import Course
 from activities.models import ExtraNeed
 from registrations.models import Child
 from registrations.models import ExtraInfo
@@ -72,6 +73,7 @@ class TransportAssignmentView(FullBackendMixin, TemplateView):
         stop = self.request.GET.get("stop", "")
         car = self.request.GET.get("car", "current" if transport else "all")
         search = self.request.GET.get("q", "").strip()
+        selected_courses = self.request.GET.getlist("course")
         served = (
             transport.stop_values
             if transport and transport.stop_question_id == (question.pk if question else None)
@@ -82,6 +84,8 @@ class TransportAssignmentView(FullBackendMixin, TemplateView):
         if child_id:
             table_children = [entry for entry in table_children if str(entry["child"].pk) == child_id]
         rows = self.filter_children(table_children, stop, car, search, transport, served)
+        if selected_courses:
+            rows = [entry for entry in rows if set(selected_courses).intersection(entry["course_ids"])]
         context.update(
             transport=transport,
             questions=questions,
@@ -89,6 +93,10 @@ class TransportAssignmentView(FullBackendMixin, TemplateView):
             stop=stop,
             car=car,
             search=search,
+            selected_courses=selected_courses,
+            courses=Course.objects.filter(pk__in=Registration.objects.values("course_id"))
+            .select_related("activity")
+            .order_by("number", "pk"),
             stop_values=sorted(values),
             children=rows,
             table_children=table_children,
@@ -132,15 +140,24 @@ class TransportAssignmentView(FullBackendMixin, TemplateView):
 
     def get_children(self, by_child):
         children = {}
-        for registration in Registration.objects.select_related("child", "transport").order_by(
-            "child__last_name", "child__first_name", "child_id", "pk"
-        ):
+        for registration in Registration.objects.select_related(
+            "child", "transport", "course", "course__activity"
+        ).order_by("child__last_name", "child__first_name", "child_id", "pk"):
             entry = children.setdefault(
                 registration.child_id,
-                {"child": registration.child, "cars": {}, "stops": sorted(by_child.get(registration.child_id, set()))},
+                {
+                    "child": registration.child,
+                    "cars": {},
+                    "courses": {},
+                    "stops": sorted(by_child.get(registration.child_id, set())),
+                },
             )
             entry["cars"][registration.transport_id] = registration.transport
+            entry["courses"][registration.course_id] = registration.course
         for entry in children.values():
+            entry["course_ids"] = [str(pk) for pk in entry["courses"]]
+            entry["courses_json"] = json.dumps(entry["course_ids"])
+            entry["courses"] = sorted(entry["courses"].values(), key=lambda course: (course.number, course.pk))
             entry["pending"] = (
                 None in entry["cars"]
                 or len(entry["cars"]) > 1

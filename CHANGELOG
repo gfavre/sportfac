@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Added
+- Filter car assignments by one or more courses alongside stops and current cars, distinguishing destinations that share a stop.
 - Show diploma email history by course, with dates and accepted-email counts, and warn before another preparation sends diplomas for the same course and period.
 - Review diploma emails with the pending-message count, browsable recipients and private attachment previews in a new tab; reject stale confirmations and track accepted, pending and failed emails separately.
 - Manage child assignments from the car list or an individual car, with saved served stops and bulk moves across all active registrations.

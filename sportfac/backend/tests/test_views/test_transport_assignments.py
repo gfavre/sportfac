@@ -69,6 +69,43 @@ class TransportAssignmentTests(TenantTestCase):
         response = self.view(data={"stop": "__missing__"})
         self.assertEqual([row["child"].pk for row in response.context_data["children"]], [missing.child_id])
 
+    def test_course_filter_combines_courses_and_exact_stop(self):
+        ExtraInfoFactory(registration=self.other, key=self.question, value="73 Chailly")
+        second = RegistrationFactory(child=self.first.child, transport=None)
+        canceled = RegistrationFactory(status="canceled", transport=None)
+        response = self.view(data={"course": [self.first.course_id], "stop": "73 Chailly"})
+        self.assertContains(response, 'id="course-filter"', status_code=200)
+        self.assertContains(response, 'id="course-filter-toggle"')
+        self.assertContains(response, f'type="checkbox" value="{self.first.course_id}" checked')
+        self.assertContains(response, 'class="transport-course-options"')
+        self.assertEqual([row["child"].pk for row in response.context_data["children"]], [self.first.child_id])
+        self.assertEqual(len(response.context_data["table_children"]), 2)
+        self.assertNotIn(canceled.course_id, [course.pk for course in response.context_data["courses"]])
+        row = response.context_data["children"][0]
+        self.assertEqual(set(row["course_ids"]), {str(self.first.course_id), str(second.course_id)})
+        response = self.view(data={"course": [self.first.course_id, self.other.course_id]})
+        self.assertEqual(len(response.context_data["children"]), 2)
+        response = self.view(data={"course": [canceled.course_id]})
+        self.assertEqual(response.context_data["children"], [])
+
+    def test_course_filter_rejects_other_children_and_assigns_all_active_registrations(self):
+        second = RegistrationFactory(child=self.first.child, transport=None)
+        query = f"?course={self.first.course_id}"
+        response = self.view(
+            "post", {"children": [self.first.child_id, self.other.child_id], "destination": self.car.pk}, query=query
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context_data["assignment_form"].errors)
+        self.first.refresh_from_db()
+        self.assertIsNone(self.first.transport_id)
+        response = self.view("post", {"children": [self.first.child_id], "destination": self.car.pk}, query=query)
+        self.assertEqual(response.status_code, 302)
+        for registration in (self.first, second):
+            registration.refresh_from_db()
+            self.assertEqual(registration.transport_id, self.car.pk)
+        self.other.refresh_from_db()
+        self.assertIsNone(self.other.transport_id)
+
     def test_bulk_assignment_updates_all_active_registrations_and_preserves_business_state(self):
         second = RegistrationFactory(child=self.first.child, transport=None)
         canceled = RegistrationFactory(child=self.first.child, transport=None, status="canceled")
