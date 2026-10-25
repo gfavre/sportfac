@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 4.15.0 - 2026-10-25
+
 ### Added
 - Filter car assignments by one or more courses alongside stops and current cars, distinguishing destinations that share a stop.
 - Show diploma email history by course, with dates and accepted-email counts, and warn before another preparation sends diplomas for the same course and period.
@@ -26,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Present user editing in framed sections with consistent save/cancel actions and role-specific titles and icons.
 
 ### Fixed
+- Sort instructor participant and attendance lists by numeric bib number, then surname and first name, with missing or invalid bibs last. PDF attachments and PDF/Excel tracking sheets use the same order; deployments without bibs sort by surname and first name.
 - Place bulk child selection above the car assignment table and clarify that it includes all filtered result pages.
 - Create independent diploma batches per course and separate unsent groups when resumed, including PDF-ready and failed groups, preserving texts, individual PDFs, attachments and child audit events. Scope archived group links to the chosen course and keep published documents unchanged.
 - Link bib preparation corrections to pending assignments or the exact child instead of the full child list or profile; expose missing car prefixes and a return link to bib preparation.

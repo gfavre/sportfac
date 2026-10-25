@@ -28,6 +28,17 @@ from .factories import SessionFactory
 
 
 class PaperAttendanceTests(TenantTestCase):
+    @override_settings(KEPCHUP_BIB_NUMBERS=True)
+    def test_paper_lists_sort_bibs_numerically_with_missing_bibs_last(self):
+        self.registration.child.bib_number = "100"
+        self.registration.child.save()
+        for bib, name in (("10", "Zebra"), ("2", "Young"), ("", "Albert")):
+            RegistrationFactory(course=self.course, child__bib_number=bib, child__last_name=name)
+        data = attendance_data(self.course, date(2026, 2, 7))
+        self.assertEqual([row[2] for row in data["rows"]], ["2", "10", "100", ""])
+        sheet = self.workbook(self.client.get(self.url, {"date": "2026-02-07"}))
+        self.assertEqual([sheet.cell(row=row, column=3).value for row in range(4, 8)], ["2", "10", "100", None])
+
     def test_responsible_is_only_instructor_of_selected_session(self):
         other = FamilyUserFactory(first_name="François", last_name="Iff")
         self.course.sessions.filter(date=date(2026, 2, 7)).update(instructor=other)

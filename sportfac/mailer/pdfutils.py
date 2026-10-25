@@ -13,6 +13,7 @@ from sekizai.context import SekizaiContext
 
 from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser
+from registrations.ordering import order_participants_by_bib
 from sportfac.context_processors import kepchup_context
 
 
@@ -178,9 +179,16 @@ class CourseParticipants(PDFRenderer):
     message_template = "mailer/pdf_participants_list.html"
     is_landscape = True
 
+    def __init__(self, context_data, request=None):
+        context_data["participants"] = order_participants_by_bib(
+            context_data["course"].participants.select_related("child__family")
+        )
+        super().__init__(context_data, request)
 
-class CourseParticipantsPresence(PDFRenderer):
+
+class CourseParticipantsPresence(CourseParticipants):
     message_template = "mailer/pdf_participants_presence.html"
+    is_landscape = False
 
     def __init__(self, context_data):
         super().__init__(context_data)

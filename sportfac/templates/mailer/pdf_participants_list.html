@@ -11,7 +11,7 @@ Liste des participants<br> Cours {{ course.number }} | {{ course.activity.name }
 
 
   <table class="table table-striped">
-    {% for registration in course.participants.all %}
+    {% for registration in participants %}
       <tr>
         <td>{{ registration.child.full_name|title }}</td>
         {% if LIMIT_BY_SCHOOL_YEAR %}

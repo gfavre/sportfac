@@ -28,7 +28,7 @@ Liste de présence<br>Cours n°{{ course.number }} | {{ course.activity.name }}
 
       </tr>
     </thead>
-    {% for registration in course.participants.all %}
+    {% for registration in participants %}
       <tr>
         <td>{{ registration.child.full_name|title }}</td>
         <td style="margin-right: 2cm;">{{ registration.child.school_year|default:"" }}</td>

@@ -13,6 +13,7 @@ from openpyxl.styles import Side
 from openpyxl.utils import get_column_letter
 
 from registrations.models import ChildActivityLevel
+from registrations.ordering import order_participants_by_bib
 
 from .extra_columns import parse_extra_columns
 
@@ -54,7 +55,7 @@ def attendance_data(course, day):
         else {}
     )
     columns = parse_extra_columns(global_preferences_registry.manager()["site__ATTENDANCE_EXTRA_COLUMNS"])
-    registrations = list(
+    registrations = order_participants_by_bib(
         course.participants.select_related("child")
         .prefetch_related("extra_infos__key")
         .order_by("child__last_name", "child__first_name", "pk")

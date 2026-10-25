@@ -128,3 +128,27 @@ class SendInstructorsEmailAdditionalDocumentsTest(TenantTestCase):
         with override_settings(KEPCHUP_ADDITIONAL_INSTRUCTOR_EMAIL_DOCUMENTS=[]):
             self._send()
         self.assertEqual(len(mail.outbox), 1)
+
+
+class InstructorParticipantOrderingTests(TenantTestCase):
+    @override_settings(KEPCHUP_BIB_NUMBERS=True)
+    def test_participant_and_presence_documents_use_numeric_bib_order(self):
+        from registrations.tests.factories import RegistrationFactory
+
+        from ..pdfutils import CourseParticipants
+        from ..pdfutils import CourseParticipantsPresence
+
+        course = CourseFactory()
+        for bib, name in (("100", "Albert"), ("10", "Bernard"), ("2", "Charles"), ("", "Daniel")):
+            RegistrationFactory(course=course, child__bib_number=bib, child__last_name=name)
+        for renderer_class in (CourseParticipants, CourseParticipantsPresence):
+            with self.subTest(renderer=renderer_class.__name__):
+                renderer = renderer_class({"course": course})
+                self.assertEqual(
+                    [registration.child.bib_number for registration in renderer.context["participants"]],
+                    ["2", "10", "100", ""],
+                )
+                html = renderer.get_content(renderer.get_message_template())
+                self.assertLess(html.index("Charles"), html.index("Bernard"))
+                self.assertLess(html.index("Bernard"), html.index("Albert"))
+                self.assertLess(html.index("Albert"), html.index("Daniel"))
