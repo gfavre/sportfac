@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Record optional car capacities and show unique children per period and per date, highlighting dates exceeding the available seats.
 
 ### Changed
+- Clarify that corrected diplomas can be sent through a new preparation; require an explicit checkbox confirmation, enforced by the server, when emails have already been sent for these courses in the same period.
 - Focus incomplete diploma batches on missing texts; reveal family email review, download and send actions once all diploma texts are complete.
 - Group diplomas by course within the selected period, with email counts, last-send dates and an explicit resume action for the latest creation; keep older drafts in collapsed history.
 - Confirm diploma sending directly on the preparation page, with complete diploma lists collapsed and the family email and attachments displayed together.

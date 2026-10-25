@@ -384,6 +384,11 @@ class BatchSendConfirmationView(DiplomaEnabledMixin, FullBackendMixin, View):
                     "La préparation a changé ou la confirmation a expiré. "
                     "Vérifiez à nouveau le message et les destinataires avant de confirmer."
                 )
+            elif context["course_mail_history"] and request.POST.get("confirm_previous_delivery") != "yes":
+                context["error"] = (
+                    "Des diplômes ont déjà été envoyés pour ces cours. "
+                    "Cochez la case de confirmation pour envoyer un nouvel email aux familles."
+                )
             else:
                 BatchDetailView().perform_action(request, batch)
                 return redirect("backend:diploma-batch", pk=pk)

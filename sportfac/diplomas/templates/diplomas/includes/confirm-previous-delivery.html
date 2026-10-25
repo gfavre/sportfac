@@ -1,0 +1,11 @@
+{% if course_mail_history and delivery_total %}
+<div class="alert alert-warning">
+  <div class="checkbox">
+    <label for="confirm-previous-delivery">
+      <input type="checkbox" id="confirm-previous-delivery" name="confirm_previous_delivery" value="yes" required>
+      Je confirme vouloir envoyer un nouvel email aux familles, même si elles ont déjà reçu un diplôme.
+    </label>
+  </div>
+  <p>Vérifiez les envois précédents et les diplômes corrigés avant de cocher cette case.</p>
+</div>
+{% endif %}

@@ -203,6 +203,11 @@ class DiplomaTests(TenantTestCase):
         response = self.client.get(reverse("backend:diploma-batch", args=[new_batch.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Des diplômes ont déjà été envoyés pour ces cours.")
+        self.assertContains(
+            response, "Vous pouvez envoyer cette préparation, par exemple pour transmettre une version corrigée."
+        )
+        self.assertContains(response, "Les familles concernées recevront un nouvel email.")
+        self.assertContains(response, "sans confirmation supplémentaire")
         history = response.context["course_mail_history"]
         self.assertEqual(len(history), 1)
         self.assertEqual(history[0]["sent_count"], 1)
@@ -219,6 +224,53 @@ class DiplomaTests(TenantTestCase):
         Diploma.objects.filter(pk=self.diploma.pk).update(mail_status="sent")
         self.assertEqual(course_mail_history("other_period", [self.diploma.course_number]), [])
         self.assertEqual(course_mail_history(self.batch.source_schema, ["other_course"]), [])
+
+    def test_previous_delivery_requires_explicit_confirmation_on_both_send_routes(self):
+        self.client.force_login(self.manager)
+        Diploma.objects.filter(pk=self.diploma.pk).update(mail_status="sent", sent_at=timezone.now())
+        batch = create_batch(self.data, self.manager)
+        detail_url = reverse("backend:diploma-batch", args=[batch.pk])
+        confirmation_url = reverse("backend:diploma-send-confirmation", args=[batch.pk])
+        for status in ("draft", "ready"):
+            DiplomaBatch.objects.filter(pk=batch.pk).update(status=status)
+            batch.diplomas.update(pdf=b"%PDF-child")
+            for url in (detail_url, confirmation_url):
+                with self.subTest(status=status, url=url):
+                    response = self.client.get(url)
+                    self.assertContains(response, 'name="confirm_previous_delivery" value="yes" required')
+                    payload = {"action": "send", "confirmation_token": response.context["confirmation_token"]}
+                    with patch("diplomas.views.generate_batch.delay") as generate, patch(
+                        "diplomas.views.send_batch.delay"
+                    ) as send:
+                        for value in (None, "no"):
+                            if value is not None:
+                                payload["confirm_previous_delivery"] = value
+                            with self.captureOnCommitCallbacks(execute=True):
+                                rejected = self.client.post(url, payload)
+                            self.assertEqual(rejected.status_code, 302 if url == detail_url else 400)
+                        generate.assert_not_called()
+                        send.assert_not_called()
+                        payload["confirm_previous_delivery"] = "yes"
+                        with self.captureOnCommitCallbacks(execute=True):
+                            accepted = self.client.post(url, payload)
+                        self.assertEqual(accepted.status_code, 302)
+                        (generate if status == "draft" else send).assert_called_once()
+                    DiplomaBatch.objects.filter(pk=batch.pk).update(status=status)
+
+    def test_previous_delivery_is_checked_again_when_submitting_an_open_page(self):
+        self.client.force_login(self.manager)
+        batch = create_batch(self.data, self.manager)
+        url = reverse("backend:diploma-send-confirmation", args=[batch.pk])
+        response = self.client.get(url)
+        self.assertNotContains(response, 'name="confirm_previous_delivery"')
+        Diploma.objects.filter(pk=self.diploma.pk).update(mail_status="sent", sent_at=timezone.now())
+        with patch("diplomas.views.generate_batch.delay") as generate:
+            with self.captureOnCommitCallbacks(execute=True):
+                response = self.client.post(
+                    url, {"action": "send", "confirmation_token": response.context["confirmation_token"]}
+                )
+        self.assertContains(response, "Cochez la case de confirmation", status_code=400)
+        generate.assert_not_called()
 
     def test_instructor_is_only_first_name_from_latest_session(self):
         self.course.sessions.all().delete()

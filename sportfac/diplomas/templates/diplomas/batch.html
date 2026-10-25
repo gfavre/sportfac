@@ -66,22 +66,23 @@
 {% if batch.status == "ready" or mail_counts.sent or mail_counts.sending or mail_counts.failed %}
 <section class="diploma-section"><h2>Suivi des emails</h2>
 <p><strong>{{ mail_counts.sent }} email(s) accepté(s) par le serveur mail</strong> · {{ mail_counts.sending }} en cours · {{ mail_counts.pending }} non envoyé(s) · {{ mail_counts.failed }} en échec, à vérifier.</p>
-<p>Les envois acceptés, en cours ou en échec ne sont pas relancés automatiquement. <a href="{% url 'backend:diploma-batch' pk=batch.pk %}{% if course_scope %}?course={{ course_scope|urlencode }}{% endif %}">Actualiser le suivi</a></p>
+<p>Dans cette préparation, seuls les emails non envoyés peuvent être envoyés. Pour transmettre une version corrigée d’un diplôme déjà envoyé, créez une nouvelle préparation. <a href="{% url 'backend:diploma-batch' pk=batch.pk %}{% if course_scope %}?course={{ course_scope|urlencode }}{% endif %}">Actualiser le suivi</a></p>
 </section>
 {% endif %}
 {% if batch.status != "queued" and batch.status != "generating" %}
 {% if not missing_text and not course_scope %}
 <form method="post" data-diploma-actions>{% csrf_token %}<input type="hidden" name="confirmation_token" value="{{ confirmation_token }}">
+  {% include "diplomas/includes/confirm-previous-delivery.html" %}
   <div class="form-group">
     <div class="diploma-actions">
     {% if batch.status == "ready" %}
       <a class="btn btn-primary" href="{% url 'backend:diploma-print' pk=batch.pk %}"><i class="icon-download" aria-hidden="true"></i> Télécharger les diplômes</a>
     {% else %}
-      <button class="btn btn-primary" name="action" value="download"><i class="icon-download" aria-hidden="true"></i> Télécharger les diplômes</button>
+      <button class="btn btn-primary" name="action" value="download" formnovalidate><i class="icon-download" aria-hidden="true"></i> Télécharger les diplômes</button>
     {% endif %}
     <button class="btn btn-primary" name="action" value="send"{% if not can_send %} disabled{% endif %}><i class="icon-mail" aria-hidden="true"></i> Envoyer {{ delivery_total }} email{{ delivery_total|pluralize }} aux familles</button>
     </div>
-    <p class="help-block">L’envoi concerne tous les emails indiqués, pas seulement le message affiché. Les diplômes seront aussi disponibles sur les comptes des familles.</p>
+    <p class="help-block">Le bouton « Envoyer » lance l’envoi sans confirmation supplémentaire, pour tous les emails indiqués. Les diplômes seront aussi disponibles sur les comptes des familles.</p>
   </div>
 </form>
 {% endif %}

@@ -13,7 +13,7 @@
   </div>
   {% if error %}<p class="alert alert-warning" role="alert">{{ error }}</p>{% endif %}
   {% include "diplomas/includes/course-mail-history.html" %}
-  {% if mail_counts.sent or mail_counts.sending or mail_counts.failed %}<p>{{ mail_counts.sent }} déjà envoyé(s) · {{ mail_counts.sending }} en cours · {{ mail_counts.failed }} en échec, à vérifier. Ces mails sont exclus de cet envoi.</p>{% endif %}
+  {% if mail_counts.sent or mail_counts.sending or mail_counts.failed %}<p>Dans cette préparation : {{ mail_counts.sent }} déjà envoyé(s) · {{ mail_counts.sending }} en cours · {{ mail_counts.failed }} en échec, à vérifier. Ces emails sont exclus de cet envoi. Pour transmettre une version corrigée d’un diplôme déjà envoyé, créez une nouvelle préparation.</p>{% endif %}
   {% if missing_text %}<p class="alert alert-warning">Le texte à imprimer manque sur certains diplômes. <a href="{% url 'backend:diploma-batch' pk=batch.pk %}">Compléter les diplômes</a> avant de confirmer.</p>{% endif %}
   {% if missing_pdfs %}<p class="alert alert-warning">Il manque des PDF dans cette préparation. Revenez à la préparation pour vérifier les diplômes.</p>{% endif %}
   {% if batch.status == "queued" or batch.status == "generating" %}<p class="alert alert-info">La génération des PDF est en cours. Revenez à la préparation pour suivre son avancement.</p>{% endif %}
@@ -35,6 +35,7 @@
     <input type="hidden" name="action" value="send">
     <input type="hidden" name="confirmation_token" value="{{ confirmation_token }}">
     <h2 class="instructor-mail-section-title">Confirmer l’envoi</h2>
+    {% include "diplomas/includes/confirm-previous-delivery.html" %}
     <p>L’envoi concerne <strong>{{ delivery_total }} email{{ delivery_total|pluralize }}</strong> de cette préparation, pas seulement le message affiché. Les diplômes seront également disponibles sur les comptes des familles.</p>
     <div class="form-group instructor-mail-submit">
       <button type="submit" class="btn btn-primary"{% if not can_send %} disabled{% endif %}><i class="icon-mail" aria-hidden="true"></i> {% if delivery_total == 1 %}Envoyer l’email à la famille{% else %}Envoyer les {{ delivery_total }} emails aux familles{% endif %}</button>

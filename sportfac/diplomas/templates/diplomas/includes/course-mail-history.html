@@ -1,5 +1,5 @@
 {% if course_mail_history %}
-{% if delivery_total %}<div class="alert alert-warning" role="alert"><strong>Des diplômes ont déjà été envoyés pour ces cours.</strong> Des familles peuvent donc avoir déjà reçu leur diplôme. Vérifiez les envois précédents avant de lancer un nouvel envoi.</div>{% endif %}
+{% if delivery_total %}<div class="alert alert-warning" role="alert"><strong>Des diplômes ont déjà été envoyés pour ces cours.</strong> Vous pouvez envoyer cette préparation, par exemple pour transmettre une version corrigée. Les familles concernées recevront un nouvel email. Vérifiez les envois précédents avant de continuer.</div>{% endif %}
 <details><summary>Envois précédents par cours</summary>
 <div class="table-responsive"><table class="table"><thead><tr><th>Cours</th><th>Dernier envoi</th><th>Emails envoyés</th><th>Préparation</th></tr></thead><tbody>
 {% for entry in course_mail_history %}<tr><td>{{ entry.course_number }}</td><td>{{ entry.last_sent|date:"d.m.Y H:i" }}</td><td>{{ entry.sent_count }}</td><td><a href="{% url 'backend:diploma-batch' pk=entry.batch_id %}">{{ entry.batch__season }}</a></td></tr>{% endfor %}
