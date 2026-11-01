@@ -14,6 +14,7 @@ from impersonate import views as impersonate_views
 
 from activities.urls import sitemap as activity_sitemap
 from backend import editor as editor_views
+from backend.views.health_views import ServerHealthView
 from contact.urls import Sitemap as ContactSitemap
 from payments.views import DatatransWebhookView
 from payments.views import NewDatatransTransactionView
@@ -100,6 +101,8 @@ urlpatterns += [
     path("editor/upload/", editor_views.upload, name="editor-upload"),
     path("editor/browse/", editor_views.browse, name="editor-browse"),
     path("contact/", include("contact.urls")),
+    path("health", ServerHealthView.as_view(), name="health"),
+    path("health/", ServerHealthView.as_view()),
     path(
         "datatrans/new-transaction/<int:invoice_id>/",
         NewDatatransTransactionView.as_view(),

@@ -19,6 +19,66 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Poedit 3.9\n"
 
+#: sportfac/service_health.py
+msgid "Authenticated API access verified. No operation was created."
+msgstr "Accès authentifié à l’API vérifié. Aucune opération créée."
+
+#: sportfac/service_health.py
+msgid "Required credentials are missing. Check the service configuration."
+msgstr "Des identifiants manquent. Vérifiez la configuration du service."
+
+#: sportfac/service_health.py
+msgid "HTTPS access verified only. Credentials and the complete workflow were not tested."
+msgstr "Accès HTTPS vérifié uniquement. Les identifiants et le parcours complet n’ont pas été testés."
+
+#: sportfac/service_health.py
+msgid "No existing transaction in this period: API access could not be verified."
+msgstr "Aucune transaction existante dans cette période : l’accès à l’API n’a pas pu être vérifié."
+
+#: sportfac/service_health.py
+msgid "The SMTP connection could not be opened."
+msgstr "La connexion SMTP n’a pas pu être ouverte."
+
+#: sportfac/service_health.py
+msgid "SMTP connection verified. No email was sent."
+msgstr "Connexion SMTP vérifiée. Aucun e-mail envoyé."
+
+#: sportfac/service_health.py
+msgid "This email backend has no automatic connection check."
+msgstr "Ce service d’envoi d’e-mails ne dispose pas de contrôle automatique de connexion."
+
+#: sportfac/service_health.py
+msgid "TLS connection verified only. Sentry event delivery was not tested."
+msgstr "Connexion TLS vérifiée uniquement. La réception des événements Sentry n’a pas été testée."
+
+#: sportfac/service_health.py
+msgid "Connection failed. Check credentials, network access and service availability."
+msgstr "Échec de connexion. Vérifiez les identifiants, l’accès réseau et la disponibilité du service."
+
+#: backend/views/health_views.py
+msgid "Not enabled"
+msgstr "Non activé"
+
+#: backend/views/health_views.py
+msgid "HTTP status"
+msgstr "Statut HTTP"
+
+#: backend/views/health_views.py
+msgid "Duration (ms)"
+msgstr "Durée (ms)"
+
+#: backend/templates/backend/health.html
+msgid "Checked at"
+msgstr "Vérifié le"
+
+#: backend/templates/backend/health.html
+msgid "Checks do not create payments, send emails or generate PDFs. Warnings explain what could not be fully verified."
+msgstr "Ces contrôles ne créent aucun paiement, n’envoient aucun e-mail et ne génèrent aucun PDF. Les avertissements précisent les limites des vérifications."
+
+#: backend/templates/backend/health.html
+msgid "Run checks again"
+msgstr "Relancer les contrôles"
+
 #: absences/admin.py:26 activities/admin.py:88 activities/admin.py:189
 #: activities/models/courses.py:206
 msgid "course"

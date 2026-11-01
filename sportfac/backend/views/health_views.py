@@ -1,8 +1,12 @@
+from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.cache import never_cache
 from django.views.generic import TemplateView
 
 from sportfac.health import overall_level
 from sportfac.health import run_checks
+from sportfac.service_health import run_service_checks
 
 from .mixins import SuperuserRequiredMixin
 
@@ -17,12 +21,20 @@ CHECK_LABELS = {
     "disk": _("Disk"),
     "memory": _("Memory"),
     "load": _("Load"),
+    "postfinance": "PostFinance",
+    "datatrans": "Datatrans",
+    "email": _("Email"),
+    "sso": "SSO",
+    "phantomjs": "PhantomJsCloud (PDF)",
+    "recaptcha": "reCAPTCHA",
+    "sentry": "Sentry",
 }
 
 LEVEL_LABELS = {
     "ok": _("OK"),
     "warning": _("Warning"),
     "critical": _("Critical"),
+    "disabled": _("Not enabled"),
 }
 
 DETAIL_LABELS = {
@@ -40,6 +52,8 @@ DETAIL_LABELS = {
     "load5": _("Load (5 min)"),
     "load15": _("Load (15 min)"),
     "cpu_count": _("CPU count"),
+    "http_status": _("HTTP status"),
+    "duration_ms": _("Duration (ms)"),
 }
 
 # Unlike free_gb/total_gb/available_mb/total_mb (whose label already spells out the
@@ -79,20 +93,30 @@ def _swiss_number(value):
     return value
 
 
+def _check_label(name):
+    if name.startswith("database:"):
+        return f"{_('Database')} : {name.partition(':')[2]}"
+    if name.startswith("cache:"):
+        return f"{_('Cache')} : {name.partition(':')[2]}"
+    return CHECK_LABELS.get(name, name)
+
+
+@method_decorator(never_cache, name="dispatch")
 class ServerHealthView(SuperuserRequiredMixin, TemplateView):
-    """Superuser-only detail view for the public /_health-kc/ status endpoint - same
-    checks, but with the raw numbers (disk/RAM/load/queue length) that endpoint
-    deliberately omits."""
+    """Superuser-only infrastructure and external service diagnostics."""
 
     template_name = "backend/health.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         raw_results = run_checks()
+        raw_results.update(run_service_checks())
+        context["checked_at"] = timezone.now()
+        context["schema_name"] = getattr(self.request.tenant, "schema_name", "public")
         context["results"] = [
             {
                 "name": name,
-                "label": CHECK_LABELS.get(name, name),
+                "label": _check_label(name),
                 "level": result["level"],
                 "level_label": LEVEL_LABELS.get(result["level"], result["level"]),
                 "explanation": CHECK_EXPLANATIONS.get(name),

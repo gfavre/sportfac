@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+- Add a superuser-only `/health` dashboard for database/cache aliases and configured external services, with authenticated PostFinance/Postmark checks and explicit limits for connectivity-only checks. Link it below Django admin in every navbar variant, including Montreux winter.
+
 ## 4.15.0 - 2026-10-25
 
 ### Added

@@ -4,6 +4,14 @@ Living list of known technical debt for the sportfac/Kepchup project. Not a task
 tracker — just a reference so decisions and their context aren't re-derived from
 scratch each time. Update in place as items are resolved or new ones are found.
 
+## Health dashboard limits
+
+- `/health` requires functioning tenant middleware and authentication; a complete
+  database or session-cache outage can prevent the dashboard itself from loading.
+  Keep external monitoring/server diagnostics for those failures. SSO, PDF,
+  reCAPTCHA and Sentry checks deliberately report partial verification without
+  creating remote operations; see `docs/health.md` for the exact check coverage.
+
 ## Transport planning: dates versus journeys
 
 - Transport occupancy follows the PDF sheets: unique children per calendar date,

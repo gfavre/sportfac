@@ -140,7 +140,7 @@ jQuery(function($){
               {% endif %}
               {% if user.is_superuser %}
                 <li>
-                  <a href="{% url 'backend:health' %}"><i class="icon-gauge"></i> {% translate "Server health" %}</a>
+                  <a href="{% url 'health' %}"><i class="icon-gauge"></i> {% translate "Server health" %}</a>
                 </li>
               {% endif %}
               <li class="divider"></li>

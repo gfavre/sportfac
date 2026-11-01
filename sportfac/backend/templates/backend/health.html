@@ -7,6 +7,11 @@
 
 {% block content %}
 
+<h1>{% translate "Server health" %}</h1>
+<p>{% translate "Checked at" %} : {{ checked_at|date:"d.m.Y H:i:s" }} · {% translate "Period" %} : <code>{{ schema_name }}</code></p>
+<p>{% translate "Checks do not create payments, send emails or generate PDFs. Warnings explain what could not be fully verified." %}</p>
+<p><a class="btn btn-default" href="{% url 'health' %}">{% translate "Run checks again" %}</a></p>
+
 <p>
   {% translate "Overall status" %} :
   <span class="label
@@ -29,7 +34,7 @@
       <td>{{ check.label }}</td>
       <td>
         <span class="label
-          {% if check.level == 'ok' %}label-success{% elif check.level == 'warning' %}label-warning{% else %}label-important{% endif %}">
+          {% if check.level == 'ok' %}label-success{% elif check.level == 'warning' %}label-warning{% elif check.level == 'disabled' %}label-default{% else %}label-important{% endif %}">
           {{ check.level_label }}
         </span>
       </td>
@@ -50,7 +55,7 @@
 
 <p class="text-muted">
   {% translate "Public status endpoint (ok/warning/critical only, no raw numbers)" %} :
-  <code>/_health-kc/</code>
+  <code>{% url 'health-check' %}</code>
 </p>
 
 {% endblock content %}
