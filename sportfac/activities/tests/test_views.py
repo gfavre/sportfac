@@ -350,6 +350,48 @@ class CustomMailPreviewTest(TestCase):
             response.url, reverse("activities:mail-participants-custom", kwargs={"course": self.course.pk})
         )
 
+    @mock.patch("mailer.tasks.send_mail.delay")
+    def test_post_without_archive_returns_to_composer_without_sending(self, send_mail):
+        request = self.factory.post(self.url)
+        request.user = self.instructor
+        process_request_for_middleware(request, SessionMiddleware)
+        response = CustomMailPreview.as_view()(request, course=self.course.pk)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, self.course.get_custom_mail_instructors_url())
+        send_mail.assert_not_called()
+
+    @mock.patch("mailer.tasks.send_mail.delay")
+    def test_deleted_archive_returns_to_composer_for_get_and_post(self, send_mail):
+        archive_pk = self.archive.pk
+        self.archive.delete()
+        for method in (self.factory.get, self.factory.post):
+            with self.subTest(method=method.__name__):
+                request = method(self.url)
+                request.user = self.instructor
+                process_request_for_middleware(request, SessionMiddleware)
+                request.session["mail"] = archive_pk
+                response = CustomMailPreview.as_view()(request, course=self.course.pk)
+                self.assertEqual(response.status_code, 302)
+                self.assertEqual(response.url, self.course.get_custom_mail_instructors_url())
+        send_mail.assert_not_called()
+
+    @mock.patch("mailer.tasks.send_mail.delay")
+    def test_repeated_confirmation_after_session_cleanup_does_not_resend(self, send_mail):
+        request = self.factory.post(self.url)
+        request.user = self.instructor
+        process_request_for_middleware(request, SessionMiddleware)
+        process_request_for_middleware(request, MessageMiddleware)
+        request.session["mail"] = self.archive.pk
+        response = CustomMailPreview.as_view()(request, course=self.course.pk)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(send_mail.call_count, len(self.instructors) + len(self.other_users))
+        self.assertNotIn("mail", request.session)
+        send_mail.reset_mock()
+        response = CustomMailPreview.as_view()(request, course=self.course.pk)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, self.course.get_custom_mail_instructors_url())
+        send_mail.assert_not_called()
+
     def test_get(self):
         request = self.factory.get(self.url)
         request.user = self.instructor

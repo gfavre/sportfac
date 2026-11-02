@@ -166,6 +166,9 @@ class ArchivedMailMixin(BaseEmailMixin):
         return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
+        # Confirmation can outlive the session's draft (e.g. after a previous send).
+        if not self.archive:
+            return HttpResponseRedirect(self.get_edit_url())
         return super().post(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

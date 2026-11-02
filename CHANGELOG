@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add a superuser-only `/health` dashboard for database/cache aliases and configured external services, with authenticated PostFinance/Postmark checks and explicit limits for connectivity-only checks. Link it below Django admin in every navbar variant, including Montreux winter.
 
+### Fixed
+- Redirect email confirmations back to the composer when the session no longer references an existing draft, instead of crashing while reading recipients. A repeated confirmation after session cleanup no longer attempts another send.
+
 ## 4.15.0 - 2026-10-25
 
 ### Added
