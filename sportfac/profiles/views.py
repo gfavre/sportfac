@@ -7,6 +7,7 @@ from django.contrib.auth import login
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.db import IntegrityError
+from django.db import transaction
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -65,6 +66,19 @@ class _BaseAccount(LoginRequiredMixin, UpdateView):
 
 class AccountView(SuccessMessageMixin, _BaseAccount):
     template_name = "profiles/account.html"
+
+    def form_valid(self, form):
+        try:
+            # Include SuccessMessageMixin inside the savepoint so a failed save
+            # neither leaves a broken transaction nor announces a successful update.
+            with transaction.atomic():
+                return super().form_valid(form)
+        except IntegrityError as exc:
+            constraint = getattr(getattr(exc.__cause__, "diag", None), "constraint_name", None)
+            if constraint != "profiles_familyuser_email_key":
+                raise
+            form.add_error("email", _("A user with that username already exists."))
+            return self.form_invalid(form)
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

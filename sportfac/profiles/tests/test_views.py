@@ -155,3 +155,91 @@ class AccountViewTests(TestCase):
         course.instructors.add(self.user)
         response = self.view(self.request)
         self.assertEqual(response.status_code, 200)
+
+    def account_data(self, email):
+        data = model_to_dict(self.user, exclude=["groups", "user_permissions"])
+        data = {key: value for key, value in data.items() if value is not None}
+        data.update(email=email, private_phone="0791234567", password1="", password2="")
+        return data
+
+    def test_case_variant_duplicate_email_is_a_form_error(self):
+        other = FamilyUserFactory(email="existing-account@example.com")
+        original_email = self.user.email
+        self.client.force_login(self.user)
+        response = self.client.post(self.url, self.account_data("  EXISTING-ACCOUNT@example.com  "))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("email", response.context["form"].errors)
+        self.user.refresh_from_db()
+        other.refresh_from_db()
+        self.assertEqual(self.user.email, original_email)
+        self.assertEqual(other.email, "existing-account@example.com")
+
+    def test_own_email_can_be_saved_with_different_case(self):
+        original_email = self.user.email
+        self.client.force_login(self.user)
+        response = self.client.post(self.url, self.account_data(original_email.upper()))
+        self.assertEqual(response.status_code, 302)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.email, original_email)
+
+    def test_legacy_case_variant_duplicate_is_a_form_error(self):
+        other = FamilyUserFactory(email="legacy-account@example.com")
+        FamilyUser.objects.filter(pk=self.user.pk).update(email="Legacy-Account@example.com")
+        self.user.refresh_from_db()
+        self.addCleanup(
+            lambda: FamilyUser.objects.filter(pk=self.user.pk).update(email=f"cleanup-{self.user.pk}@example.com")
+        )
+        self.client.force_login(self.user)
+        response = self.client.post(self.url, self.account_data(self.user.email))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("email", response.context["form"].errors)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.email, "Legacy-Account@example.com")
+        self.assertTrue(FamilyUser.objects.filter(pk=other.pk).exists())
+
+    def test_racing_email_collision_is_a_form_error_and_rolls_back(self):
+        from profiles.forms import UserForm
+
+        other = FamilyUserFactory(email="before-race@example.com")
+        original_email = self.user.email
+        original_save = UserForm.save
+
+        def racing_save(form, *args, **kwargs):
+            FamilyUser.objects.filter(pk=other.pk).update(email=form.cleaned_data["email"])
+            return original_save(form, *args, **kwargs)
+
+        self.client.force_login(self.user)
+        with patch.object(UserForm, "save", autospec=True, side_effect=racing_save):
+            response = self.client.post(self.url, self.account_data("race-target@example.com"))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("email", response.context["form"].errors)
+        self.assertFalse(any(message.level_tag == "success" for message in response.context["messages"]))
+        self.user.refresh_from_db()
+        other.refresh_from_db()
+        self.assertEqual(self.user.email, original_email)
+        self.assertEqual(other.email, "before-race@example.com")
+
+    def test_unrelated_integrity_error_is_not_hidden(self):
+        self.client.force_login(self.user)
+        with patch("profiles.forms.UserForm.save", side_effect=IntegrityError("unrelated constraint")):
+            with self.assertRaises(IntegrityError):
+                self.client.post(self.url, self.account_data("valid-new@example.com"))
+
+    def test_parent_and_instructor_forms_reject_case_variant_email(self):
+        from profiles.forms import InstructorForm
+        from profiles.forms import ParentProfileForm
+        from profiles.forms import UserForm
+
+        FamilyUserFactory(email="reserved-form@example.com")
+        for form_class in (UserForm, ParentProfileForm, InstructorForm):
+            with self.subTest(form=form_class.__name__):
+                form = form_class(data=self.account_data("RESERVED-FORM@example.com"), instance=self.user)
+                self.assertFalse(form.is_valid())
+                self.assertIn("email", form.errors)
+
+    def test_new_email_is_normalized_and_saved(self):
+        self.client.force_login(self.user)
+        response = self.client.post(self.url, self.account_data("  New.Account@example.com  "))
+        self.assertEqual(response.status_code, 302)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.email, "new.account@example.com")

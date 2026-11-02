@@ -158,6 +158,14 @@ class UserForm(PhoneRequiredMixin, forms.ModelForm):
             "private_phone3",
         )
 
+    def clean_email(self):
+        # Match save() normalization before ModelForm's case-sensitive unique check.
+        email = self.cleaned_data["email"].strip().lower()
+        existing = FamilyUser.objects.filter(email__iexact=email).exclude(pk=self.instance.pk)
+        if existing.exists():
+            raise forms.ValidationError(_("A user with that username already exists."))
+        return email
+
     def clean(self):
         super().clean()
         if self.cleaned_data.get("password1") != self.cleaned_data.get("password2"):

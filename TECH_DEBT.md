@@ -4,6 +4,15 @@ Living list of known technical debt for the sportfac/Kepchup project. Not a task
 tracker — just a reference so decisions and their context aren't re-derived from
 scratch each time. Update in place as items are resolved or new ones are found.
 
+## Legacy email case variants
+
+- `FamilyUser.save()` normalizes email to lowercase, but the database unique
+  constraint remains case-sensitive. Legacy rows differing only by case can still
+  exist. Account forms reject these collisions before saving and `/account/`
+  catches concurrent violations of the email constraint inside a savepoint.
+  Direct model writes and synchronization still require an explicit review of
+  legacy duplicates; do not silently merge identities or their family records.
+
 ## Invoice PDF email delivery tracking
 
 - `registrations.tasks.send_bill_pdf_email` returns `False` and logs schema,
