@@ -1,10 +1,12 @@
 from datetime import timedelta
 from unittest import mock
 
+from anymail.exceptions import AnymailRecipientsRefused
 from django.conf import settings
 from django.core import mail
 from django.core.mail import EmailMessage
 from django.test import override_settings
+from django.utils import translation
 from django.utils.timezone import now
 from faker import Faker
 
@@ -112,6 +114,50 @@ class SendBillPdfEmailTests(TenantTestCase):
     def test_unknown_bill_is_a_noop(self):
         send_bill_pdf_email(bill_pk=self.bill.pk + 1000000, tenant_pk=self.tenant.id)
         self.assertEqual(len(mail.outbox), 0)
+
+    @mock.patch("registrations.tasks.logger.warning")
+    @mock.patch("registrations.tasks.make_email")
+    def test_recipient_refusal_is_reported_without_retry_or_invoice_changes(self, make_email, warning):
+        self.bill.payment_method = self.bill.METHODS.iban
+        self.bill.save()
+        Bill.objects.filter(pk=self.bill.pk).update(pdf="bills/existing.pdf")
+        original_status = self.bill.status
+        original_language = translation.get_language()
+        make_email.return_value.send.side_effect = AnymailRecipientsRefused("private-provider-response")
+
+        with mock.patch.object(Bill, "generate_pdf") as generate_pdf, mock.patch.object(
+            send_bill_pdf_email, "retry"
+        ) as retry:
+            result = send_bill_pdf_email(bill_pk=self.bill.pk, tenant_pk=self.tenant.id, language="en")
+
+        self.assertIs(result, False)
+        make_email.return_value.send.assert_called_once_with()
+        generate_pdf.assert_not_called()
+        retry.assert_not_called()
+        warning.assert_called_once_with(
+            "Bill PDF email recipient refused schema=%s bill=%s family=%s",
+            self.tenant.schema_name,
+            self.bill.pk,
+            self.bill.family_id,
+        )
+        self.assertNotIn("private-provider-response", str(warning.call_args))
+        self.bill.refresh_from_db()
+        self.assertEqual(self.bill.status, original_status)
+        self.assertEqual(self.bill.pdf.name, "bills/existing.pdf")
+        self.assertEqual(translation.get_language(), original_language)
+
+    @mock.patch("registrations.tasks.make_email")
+    def test_transport_errors_still_propagate_and_restore_language(self, make_email):
+        self.bill.payment_method = self.bill.METHODS.iban
+        self.bill.save()
+        Bill.objects.filter(pk=self.bill.pk).update(pdf="bills/existing.pdf")
+        original_language = translation.get_language()
+        make_email.return_value.send.side_effect = ConnectionError("Transport unavailable")
+
+        with self.assertRaises(ConnectionError):
+            send_bill_pdf_email(bill_pk=self.bill.pk, tenant_pk=self.tenant.id, language="en")
+
+        self.assertEqual(translation.get_language(), original_language)
 
 
 class CreateFutureAbsencesForRegistrationTaskTests(TenantTestCase):

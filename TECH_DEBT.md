@@ -4,6 +4,14 @@ Living list of known technical debt for the sportfac/Kepchup project. Not a task
 tracker — just a reference so decisions and their context aren't re-derived from
 scratch each time. Update in place as items are resolved or new ones are found.
 
+## Invoice PDF email delivery tracking
+
+- `registrations.tasks.send_bill_pdf_email` returns `False` and logs schema,
+  invoice and family IDs when Anymail refuses all recipients. Correct the address
+  or provider suppression before explicitly resending; no automatic retry occurs.
+  There is no persisted invoice-email delivery status or staff review queue yet:
+  a completed Celery task alone does not prove that the invoice was delivered.
+
 ## Health dashboard limits
 
 - `/health` requires functioning tenant middleware and authentication; a complete

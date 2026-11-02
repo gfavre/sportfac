@@ -140,7 +140,8 @@ class MyCourseDetailView(CourseAccessMixin, DetailView):
         Ensure access is forbidden if course details
         should not be displayed.
         """
-        if not getattr(settings, "KEPCHUP_DISPLAY_COURSE_DETAILS", True):
+        # Anonymous users must reach the login check before calling FamilyUser methods.
+        if request.user.is_authenticated and not getattr(settings, "KEPCHUP_DISPLAY_COURSE_DETAILS", True):
             if not request.user.is_instructor_of(self.get_object()):
                 raise PermissionDenied("Course details are disabled.")
         return super().dispatch(request, *args, **kwargs)

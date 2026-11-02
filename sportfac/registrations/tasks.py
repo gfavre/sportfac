@@ -108,9 +108,9 @@ def send_bill_pdf_email(bill_pk, tenant_pk=None, language=settings.LANGUAGE_CODE
             try:
                 bill = Bill.objects.get(pk=bill_pk)
             except Bill.DoesNotExist:
-                return
+                return None
             if not bill.is_wire_transfer:
-                return
+                return None
 
             global_preferences = global_preferences_registry.manager()
             current_site = Site.objects.get_current()
@@ -143,7 +143,19 @@ def send_bill_pdf_email(bill_pk, tenant_pk=None, language=settings.LANGUAGE_CODE
                     email.attach_file(bill.pdf.path)
                 except ValueError:
                     logger.exception("Could not attach pdf to bill email")
-            email.send()
+            try:
+                email.send()
+            except AnymailRecipientsRefused:
+                # A recipient rejection needs staff intervention, not another queued send.
+                # Avoid exception text: provider responses can contain personal data.
+                logger.warning(
+                    "Bill PDF email recipient refused schema=%s bill=%s family=%s",
+                    connection.schema_name,
+                    bill.pk,
+                    bill.family_id,
+                )
+                return False
+            return None
     finally:
         translation.activate(cur_lang)
 

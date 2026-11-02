@@ -79,6 +79,28 @@ class CourseViewsTests(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
+    @override_settings(KEPCHUP_DISPLAY_COURSE_DETAILS=False)
+    def test_disabled_details_redirect_anonymous_to_login(self):
+        response = self.client.get(self.course.get_absolute_url())
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith(reverse("profiles:auth_login")))
+
+    @override_settings(KEPCHUP_DISPLAY_COURSE_DETAILS=False)
+    def test_disabled_details_remain_forbidden_to_non_instructors(self):
+        other_instructor = FamilyUserFactory()
+        CourseFactory(instructors=[other_instructor])
+        for user in (self.family, self.other_user, other_instructor):
+            with self.subTest(user=user.pk):
+                self.client.force_login(user)
+                response = self.client.get(self.course.get_absolute_url())
+                self.assertEqual(response.status_code, 403)
+
+    @override_settings(KEPCHUP_DISPLAY_COURSE_DETAILS=False)
+    def test_disabled_details_remain_accessible_to_course_instructor(self):
+        self.client.force_login(self.instructor)
+        response = self.client.get(self.course.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
     def test_my_courses_access(self):
         url = reverse("activities:my-courses")
         response = self.client.get(url)
