@@ -91,6 +91,9 @@ class AppointmentsListTests(UserMixin, TenantTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["appointment_count"], 0)
         self.assertContains(response, "Aucun rendez-vous pour cette sélection")
+        self.assertContains(response, reverse("backend:appointment-create"))
+        self.assertContains(response, 'type="submit"')
+        self.assertNotContains(response, "<noscript>")
 
     def test_contacts_are_prefetched_with_constant_query_count(self):
         for index in range(8):

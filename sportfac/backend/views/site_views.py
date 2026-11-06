@@ -14,18 +14,23 @@ from django.utils.dateparse import parse_date
 from django.utils.safestring import mark_safe
 from django.utils.timezone import now
 from django.utils.translation import gettext as _
+from django.views.generic import CreateView
 from django.views.generic import DeleteView
 from django.views.generic import ListView
 from django.views.generic import TemplateView
 from django.views.generic import UpdateView
 from django.views.generic import View
 
+from appointments.forms import AppointmentCreateForm
 from appointments.forms import AppointmentForm
 from appointments.models import Appointment
 from appointments.models import AppointmentSlot
+from appointments.models import Rental
 from appointments.resources import AppointmentResource
+from backend.dynamic_preferences_registry import global_preferences_registry
 from mailer.forms import GenericEmailForm
 from mailer.models import GenericEmail
+from registrations.models import Child
 from wizard.forms import WizardStepForm
 from wizard.models import WizardStep
 
@@ -99,6 +104,49 @@ class AppointmentsListView(FullBackendMixin, ListView):
             {"date": self.selected_date, "empty": int(self.include_empty), "q": self.search}
         )
         return context
+
+
+class AppointmentCreateView(SuccessMessageMixin, FullBackendMixin, CreateView):
+    model = Appointment
+    form_class = AppointmentCreateForm
+    template_name = "appointments/backend/book.html"
+    success_url = reverse_lazy("backend:appointments-list")
+    success_message = _("Le rendez-vous a été ajouté.")
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["search"] = self.request.GET.get("q", "").strip()
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["search"] = self.request.GET.get("q", "").strip()
+        return context
+
+    @transaction.atomic
+    def form_valid(self, form):
+        child = Child.objects.select_for_update().get(pk=form.cleaned_data["child"].pk)
+        slot = AppointmentSlot.objects.select_for_update().get(pk=form.cleaned_data["slot"].pk)
+        if slot.start < now() or slot.appointments.count() >= slot.places:
+            form.add_error("slot", _("Ce créneau est complet ou passé. Choisissez un autre horaire."))
+            return self.form_invalid(form)
+        if Appointment.objects.filter(child=child, slot=slot).exists():
+            form.add_error("slot", _("Cet enfant a déjà un rendez-vous sur ce créneau."))
+            return self.form_invalid(form)
+        rental = Rental.objects.select_for_update().filter(child=child).first()
+        rental_field = {"pickup": "pickup_appointment", "return": "return_appointment"}.get(slot.appointment_type)
+        if rental_field and rental and getattr(rental, f"{rental_field}_id"):
+            form.add_error("slot", _("Cet enfant a déjà ce type de rendez-vous. Modifiez le rendez-vous existant."))
+            return self.form_invalid(form)
+        if rental_field and not rental:
+            rental = Rental.objects.create(
+                child=child, amount=global_preferences_registry.manager()["site__RENTAL_PRICE"]
+            )
+        response = super().form_valid(form)
+        if rental_field:
+            setattr(rental, rental_field, self.object)
+            rental.save(update_fields=[rental_field, "modified"])
+        return response  # noqa: R504 - the rental link must be saved after the appointment.
 
 
 class AppointmentModalMixin:

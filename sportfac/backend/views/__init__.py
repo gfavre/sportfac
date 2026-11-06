@@ -63,6 +63,7 @@ from .registration_views import TransportDetailView  # noqa F401
 from .registration_views import TransportListView  # noqa F401
 from .registration_views import TransportMoveView  # noqa F401
 from .registration_views import TransportUpdateView  # noqa F401
+from .site_views import AppointmentCreateView  # noqa F401
 from .site_views import AppointmentDeleteView  # noqa F401
 from .site_views import AppointmentsExportView  # noqa F401
 from .site_views import AppointmentsListView  # noqa F401

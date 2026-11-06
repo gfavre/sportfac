@@ -1,0 +1,31 @@
+{% extends "backend/base.html" %}
+{% load crispy_forms_tags i18n %}
+
+{% block title %}{% translate "Ajouter un rendez-vous" %} - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% translate "Ajouter un rendez-vous" %}{% endblock %}
+
+{% block content %}
+  <form method="get">
+    <div class="form-group">
+      <label for="child-search">{% translate "Rechercher un enfant" %}</label>
+      <input type="search" id="child-search" name="q" value="{{ search }}" class="form-control" placeholder="{% translate 'Nom, prénom ou courriel du parent' %}" required>
+    </div>
+    <button type="submit" class="btn btn-default">{% translate "Rechercher" %}</button>
+  </form>
+  {% if search %}
+    {% if form.fields.child.queryset.exists %}
+      <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {{ form.child|as_crispy_field }}
+        {{ form.slot|as_crispy_field }}
+        <p>{% translate "Pour un retrait de matériel, l’enfant doit être inscrit à un cours. Seuls les créneaux à venir avec des places libres sont proposés." %}</p>
+        <button type="submit" class="btn btn-primary">{% translate "Ajouter le rendez-vous" %}</button>
+        <a class="btn btn-default" href="{% url 'backend:appointments-list' %}">{% translate "Cancel" %}</a>
+      </form>
+    {% else %}
+      <p role="status">{% translate "Aucun enfant trouvé. Essayez avec une autre partie du nom ou le courriel du parent." %}</p>
+    {% endif %}
+  {% endif %}
+{% endblock content %}

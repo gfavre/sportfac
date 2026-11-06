@@ -1,7 +1,9 @@
-document.addEventListener('DOMContentLoaded', function () {
+function initializeAppointmentsList() {
   const filters = document.querySelector('.appointments-filters');
   const results = document.getElementById('appointment-results');
   const filterStatus = document.getElementById('appointments-filter-status');
+  if (!filters || !results || !filterStatus || filters.dataset.initialized) return;
+  filters.dataset.initialized = 'true';
   let filterController;
   let searchTimer;
 
@@ -52,9 +54,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (filterController) filterController.abort();
     searchTimer = setTimeout(applyFilters, 350);
   });
-  filters.addEventListener('submit', function (event) {
-    event.preventDefault();
-    applyFilters();
+  filters.addEventListener('submit', function () {
+    clearTimeout(searchTimer);
+    if (filterController) filterController.abort();
   });
   results.addEventListener('click', function (event) {
     const link = event.target.closest('.appointments-pagination a');
@@ -153,4 +155,10 @@ document.addEventListener('DOMContentLoaded', function () {
   $(modal).on('hidden.bs.modal', function () {
     if (controller) controller.abort();
   });
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeAppointmentsList, {once: true});
+} else {
+  initializeAppointmentsList();
+}

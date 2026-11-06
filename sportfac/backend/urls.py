@@ -269,6 +269,7 @@ site_patterns = [
         name="appointments-manage",
     ),
     path("appointments/list", view=views.AppointmentsListView.as_view(), name="appointments-list"),
+    path("appointments/add", view=views.AppointmentCreateView.as_view(), name="appointment-create"),
     path(
         "appointments/export",
         view=views.AppointmentsExportView.as_view(),

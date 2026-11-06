@@ -11,6 +11,7 @@ from registrations.models import Child
 from .eligibility import children_eligible_for_rental
 from .models import Appointment
 from .models import AppointmentSlot
+from .models import Rental
 
 
 class RentalSelectionForm(forms.Form):
@@ -103,3 +104,38 @@ class AppointmentForm(forms.ModelForm):
         self.helper.form_class = "form-horizontal"
         self.helper.label_class = "col-sm-2"
         self.helper.field_class = "col-sm-10"
+
+
+class AppointmentCreateForm(forms.ModelForm):
+    class Meta:
+        model = Appointment
+        fields = ("child", "slot")
+        labels = {"child": _("Enfant"), "slot": _("Créneau de rendez-vous")}
+
+    def __init__(self, *args, search="", **kwargs):
+        super().__init__(*args, **kwargs)
+        children = Child.objects.select_related("family").exclude(family=None)
+        if not search.strip():
+            children = children.none()
+        for term in search.split():
+            children = children.filter(
+                Q(first_name__icontains=term) | Q(last_name__icontains=term) | Q(family__email__icontains=term)
+            )
+        self.fields["child"].queryset = children.order_by("last_name", "first_name", "pk")
+        self.fields["slot"].queryset = AppointmentSlot.objects.with_available_places().filter(
+            start__gte=now(), count_available_places__gt=0
+        )
+
+    def clean(self):
+        data = super().clean()
+        child, slot = data.get("child"), data.get("slot")
+        if not child or not slot:
+            return data
+        if (
+            slot.appointment_type == "pickup"
+            and not children_eligible_for_rental(child.family).filter(pk=child.pk).exists()
+        ):
+            self.add_error("child", _("La location de matériel nécessite une inscription à un cours pour cet enfant."))
+        if slot.appointment_type == "return" and not Rental.objects.filter(child=child).exists():
+            self.add_error("child", _("Cet enfant n’a pas de location de matériel à restituer."))
+        return data
