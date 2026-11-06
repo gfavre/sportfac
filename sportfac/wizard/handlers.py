@@ -168,9 +168,12 @@ class SuccessStepHandler(StepHandler):
 
 class ConfirmationStepHandler(StepHandler):
     def is_ready(self):
+        if not self.registration_context.get("rentals_eligible", True):
+            return False
         if self.registration_context["questions_not_answered"]:
             return False
-        if not self.registration_context.get("registrations"):
+        # Parents can add equipment after their course registrations have been paid.
+        if not self.registration_context.get("registrations") and not self.registration_context.get("rentals"):
             return False
         if self.registration_context.get("rentals"):
             return all(

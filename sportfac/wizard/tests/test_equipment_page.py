@@ -1,4 +1,5 @@
 from datetime import timedelta
+from decimal import Decimal
 
 from django.test import override_settings
 from django.urls import reverse
@@ -12,14 +13,73 @@ from appointments.serializers import RentalSerializer
 from appointments.tests.factories import AppointmentFactory
 from appointments.tests.factories import AppointmentSlotFactory
 from profiles.tests.factories import FamilyUserFactory
+from registrations.models import Bill
+from registrations.models import Registration
 from registrations.tests.factories import ChildFactory
 from registrations.tests.factories import RegistrationFactory
+from registrations.tests.factories import WaitingBillFactory
 from sportfac.utils import TenantTestCase
 
 from .factories import WizardStepFactory
 
 
 class EquipmentPageTests(UserMixin, TenantTestCase):
+    def test_confirmation_rejects_rental_for_child_without_active_registration(self):
+        self.login(self.user)
+        confirmation_url = reverse("wizard:step", kwargs={"step_slug": "confirmation"})
+        for status in (None, Registration.STATUS.canceled):
+            with self.subTest(status=status):
+                child = ChildFactory(family=self.user)
+                if status is not None:
+                    RegistrationFactory(child=child, status=status)
+                rental = Rental.objects.create(
+                    child=child,
+                    pickup_appointment=AppointmentFactory(child=child, slot=self.slot),
+                    return_appointment=AppointmentFactory(
+                        child=child, slot=AppointmentSlotFactory(appointment_type="return")
+                    ),
+                )
+                for method in (self.tenant_client.get, self.tenant_client.post):
+                    response = method(confirmation_url)
+                    self.assertEqual(response.status_code, 302)
+                rental.refresh_from_db()
+                self.assertIsNone(rental.invoice_id)
+                rental.delete()
+
+    @override_settings(KEPCHUP_PAYMENT_METHOD="postfinance")
+    def test_rental_after_paid_registration_can_be_confirmed_and_paid(self):
+        WizardStepFactory(slug="payment", position=6)
+        invoice = WaitingBillFactory(family=self.user, status=Bill.STATUS.paid)
+        registration = self.child.registrations.get()
+        registration.bill = invoice
+        registration.status = Registration.STATUS.confirmed
+        registration.save()
+        rental = Rental.objects.create(
+            child=self.child,
+            amount=Decimal("60.00"),
+            pickup_appointment=AppointmentFactory(child=self.child, slot=self.slot),
+            return_appointment=AppointmentFactory(
+                child=self.child, slot=AppointmentSlotFactory(appointment_type="return")
+            ),
+        )
+        self.login(self.user)
+        confirmation_url = reverse("wizard:step", kwargs={"step_slug": "confirmation"})
+        response = self.tenant_client.get(confirmation_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context["registrations"])
+        self.assertEqual(response.context["total_amount"], Decimal("60.00"))
+        response = self.tenant_client.post(confirmation_url, {"consent_given": "on"})
+        payment_url = reverse("wizard:step", kwargs={"step_slug": "payment"})
+        self.assertRedirects(response, payment_url)
+        rental.refresh_from_db()
+        self.assertNotEqual(rental.invoice_id, invoice.pk)
+        self.assertEqual(rental.invoice.total, Decimal("60.00"))
+        self.assertFalse(rental.invoice.registrations.exists())
+        registration.refresh_from_db()
+        invoice.refresh_from_db()
+        self.assertEqual(registration.bill_id, invoice.pk)
+        self.assertEqual(invoice.status, Bill.STATUS.paid)
+
     def setUp(self):
         super().setUp()
         configuration = override_settings(KEPCHUP_USE_APPOINTMENTS=True, ROOT_URLCONF="wizard.tests.equipment_urls")

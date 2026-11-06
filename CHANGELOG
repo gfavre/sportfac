@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add a superuser-only `/health` dashboard for database/cache aliases and configured external services, with authenticated PostFinance/Postmark checks and explicit limits for connectivity-only checks. Link it below Django admin in every navbar variant, including Montreux winter.
 
 ### Fixed
+- Allow equipment-only confirmation after course registrations have already been paid, so parents can reach a separate rental invoice and payment once both appointments are booked. Recheck that every child renting equipment still has an active course registration before confirmation.
 - Normalize account-edit email addresses before checking case-insensitive uniqueness, rejecting existing and legacy case-variant accounts as field errors. Handle a concurrent email uniqueness collision inside a savepoint instead of crashing `/account/`, without merging accounts.
 - Handle refused invoice-PDF email recipients as a logged delivery failure with period and invoice references, without an unhandled Celery exception or automatic retry. Leave invoice/payment state unchanged and continue surfacing transport errors.
 - Redirect anonymous course-detail visitors to login when course details are disabled, instead of calling an instructor method on `AnonymousUser`. Authenticated non-instructors remain forbidden; the course's instructors retain access.

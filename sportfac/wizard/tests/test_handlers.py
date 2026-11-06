@@ -271,6 +271,13 @@ class SuccessStepHandlerTests(TestCase):
 
 
 class ConfirmationStepHandlerTests(TestCase):
+    def test_rental_only_confirmation_requires_both_appointments(self):
+        for pickup, returned in ((False, False), (True, False), (False, True), (True, True)):
+            with self.subTest(pickup=pickup, returned=returned):
+                rental = SimpleNamespace(pickup_appointment=pickup, return_appointment=returned)
+                handler = ConfirmationStepHandler(make_step(), make_context(registrations=[], rentals=[rental]))
+                self.assertEqual(handler.is_ready(), pickup and returned)
+
     def test_not_ready_with_unanswered_questions(self):
         handler = ConfirmationStepHandler(make_step(), make_context(questions_not_answered={"q"}))
         self.assertFalse(handler.is_ready())

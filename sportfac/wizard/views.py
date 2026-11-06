@@ -12,6 +12,7 @@ from django.views import View
 from django.views.generic import TemplateView
 
 from activities.models import Course
+from appointments.eligibility import children_eligible_for_rental
 from appointments.models import Rental
 from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.models import FamilyUser
@@ -185,6 +186,9 @@ class BaseWizardStepView(View):
             "invoice": invoice,
             "blocking_payment": blocking_payment,
             "rentals": rentals,
+            "rentals_eligible": not rentals.exclude(child__in=children_eligible_for_rental(user)).exists()
+            if user.is_authenticated and settings.KEPCHUP_USE_APPOINTMENTS
+            else True,
             "validation": validation,
         }
         return self._registration_context
