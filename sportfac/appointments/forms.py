@@ -122,6 +122,11 @@ class AppointmentCreateForm(forms.ModelForm):
                 Q(first_name__icontains=term) | Q(last_name__icontains=term) | Q(family__email__icontains=term)
             )
         self.fields["child"].queryset = children.order_by("last_name", "first_name", "pk")
+        matches = list(self.fields["child"].queryset[:2])
+        self.single_child = matches[0] if len(matches) == 1 else None
+        if self.single_child and not self.is_bound:
+            self.initial["child"] = self.single_child.pk
+        self.fields["slot"].widget.attrs["class"] = "form-control"
         self.fields["slot"].queryset = AppointmentSlot.objects.with_available_places().filter(
             start__gte=now(), count_available_places__gt=0
         )

@@ -47,6 +47,9 @@ class AppointmentsListTests(UserMixin, TenantTestCase):
         self.assertContains(response, first.get_backend_edit_url)
         self.assertContains(response, first.get_backend_delete_url)
         self.assertContains(response, later.get_backend_edit_url)
+        self.assertNotContains(response, 'class="appointments-search-match"')
+        self.assertContains(response, 'class="btn appointments-add"')
+        self.assertContains(response, '<details class="appointments-tools">')
 
     def test_date_filter_and_optional_empty_slots(self):
         booked = self.create_booking()
@@ -133,6 +136,24 @@ class AppointmentsListTests(UserMixin, TenantTestCase):
         self.assertEqual(response.context["appointment_count"], 2)
         self.assertContains(response, other.get_backend_edit_url)
         self.assertNotContains(response, excluded.get_backend_edit_url)
+        participants = list(response.context["object_list"][0].appointments.all())
+        self.assertEqual(participants[0].pk, appointment.pk)
+        self.assertTrue(participants[0].search_match)
+        self.assertFalse(participants[1].search_match)
+        self.assertContains(response, 'class="appointments-search-match"', count=1)
+        self.assertContains(response, "Correspond à la recherche", count=1)
+
+    def test_email_search_highlights_all_matches_and_keeps_other_participants(self):
+        appointment = self.create_booking()
+        sibling = AppointmentFactory(slot=appointment.slot, child__family=appointment.child.family)
+        other = AppointmentFactory(slot=appointment.slot)
+        self.login(self.staff)
+        response = self.tenant_client.get(self.url, {"q": appointment.child.family.email})
+        self.assertEqual(response.status_code, 200)
+        participants = list(response.context["object_list"][0].appointments.all())
+        self.assertEqual({item.pk for item in participants[:2]}, {appointment.pk, sibling.pk})
+        self.assertEqual(participants[-1].pk, other.pk)
+        self.assertContains(response, 'class="appointments-search-match"', count=2)
 
     def test_empty_slots_and_remaining_capacity_are_visible_by_default(self):
         slot = AppointmentSlotFactory(start=self.start, end=self.start + timedelta(minutes=15), places=4)

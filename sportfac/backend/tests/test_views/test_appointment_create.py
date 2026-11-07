@@ -52,7 +52,40 @@ class AppointmentCreateTests(UserMixin, TenantTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.context["form"].fields["child"].queryset.exists())
         response = self.tenant_client.get(url, {"q": "no-such-child"})
-        self.assertContains(response, "Aucun enfant trouvé.")
+        self.assertContains(response, "Aucun enfant trouvé")
+
+    def test_unique_result_is_selected_without_a_child_menu(self):
+        self.login(self.staff)
+        response = self.tenant_client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["single_child"], self.child)
+        self.assertEqual(response.context["form"]["child"].value(), self.child.pk)
+        self.assertContains(response, 'type="hidden" name="child"')
+        self.assertNotContains(response, '<select name="child"')
+        self.assertContains(response, self.child.family.email)
+        self.assertContains(response, "backend/css/appointments.css")
+
+    def test_multiple_results_are_direct_choices_and_keep_selection_on_error(self):
+        other = ChildFactory(first_name="Camille", last_name="Exemple")
+        self.login(self.staff)
+        response = self.tenant_client.get(self.url)
+        self.assertIsNone(response.context["single_child"])
+        self.assertContains(response, 'type="radio" name="child"', count=2)
+        self.assertNotContains(response, '<select name="child"')
+        self.assertContains(response, other.family.email)
+        response = self.book(child=other.pk, slot="")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["form"]["child"].value(), str(other.pk))
+        self.assertContains(response, f'value="{other.pk}" required checked')
+        self.assertIn("slot", response.context["form"].errors)
+
+    def test_unique_result_does_not_override_tampered_child_on_submission(self):
+        other = ChildFactory(first_name="Autre", last_name="Enfant")
+        self.login(self.staff)
+        response = self.book(child=other.pk)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("child", response.context["form"].errors)
+        self.assertFalse(Appointment.objects.exists())
 
     def test_creation_links_pickup_to_unpaid_rental_without_changing_registration(self):
         self.login(self.staff)

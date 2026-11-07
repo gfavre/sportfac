@@ -162,7 +162,7 @@ jQuery(function($){
         {% else %}
           {% if not USE_SSO %}
             <li>
-              <a href="{% url 'profiles:auth_login' %}?next={% url 'authenticated-home' %}"><i
+              <a href="{% url 'profiles:auth_login' %}?next={% url 'profiles:authenticated-home' %}"><i
                   class="icon-user icon-white"></i> {% translate "login" %}</a>
             </li>
           {% endif %}

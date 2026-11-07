@@ -4,9 +4,13 @@ from urllib.parse import urlencode
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db import transaction
+from django.db.models import BooleanField
+from django.db.models import Case
 from django.db.models import Count
 from django.db.models import Prefetch
 from django.db.models import Q
+from django.db.models import Value
+from django.db.models import When
 from django.db.models.functions import TruncDate
 from django.http import JsonResponse
 from django.urls import reverse_lazy
@@ -76,6 +80,7 @@ class AppointmentsListView(FullBackendMixin, ListView):
             slots = slots.filter(start__date=selected_date)
         if not self.include_empty:
             slots = slots.filter(appointments__isnull=False).distinct()
+        appointments = Appointment.objects.select_related("child__family")
         if self.search:
             matches = Appointment.objects.all()
             for term in self.search.split():
@@ -86,12 +91,17 @@ class AppointmentsListView(FullBackendMixin, ListView):
                     | Q(email__icontains=term)
                 )
             slots = slots.filter(pk__in=matches.values("slot_id"))
+            appointments = appointments.annotate(
+                search_match=Case(
+                    When(pk__in=matches.values("pk"), then=Value(True)),
+                    default=Value(False),
+                    output_field=BooleanField(),
+                )
+            ).order_by("-search_match", "child__last_name", "child__first_name", "pk")
         self.summary = slots.aggregate(
             slot_count=Count("pk", distinct=True), appointment_count=Count("appointments", distinct=True)
         )
-        return slots.prefetch_related(
-            Prefetch("appointments", queryset=Appointment.objects.select_related("child__family"))
-        )
+        return slots.prefetch_related(Prefetch("appointments", queryset=appointments))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -121,6 +131,7 @@ class AppointmentCreateView(SuccessMessageMixin, FullBackendMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["search"] = self.request.GET.get("q", "").strip()
+        context["single_child"] = context["form"].single_child
         return context
 
     @transaction.atomic

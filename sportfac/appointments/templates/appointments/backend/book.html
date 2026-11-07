@@ -1,31 +1,70 @@
 {% extends "backend/base.html" %}
-{% load crispy_forms_tags i18n %}
+{% load i18n sekizai_tags static %}
 
 {% block title %}{% translate "Ajouter un rendez-vous" %} - {{ block.super }}{% endblock %}
 
 {% block page_title %}{% translate "Ajouter un rendez-vous" %}{% endblock %}
 
 {% block content %}
-  <form method="get">
-    <div class="form-group">
-      <label for="child-search">{% translate "Rechercher un enfant" %}</label>
-      <input type="search" id="child-search" name="q" value="{{ search }}" class="form-control" placeholder="{% translate 'Nom, prénom ou courriel du parent' %}" required>
-    </div>
-    <button type="submit" class="btn btn-default">{% translate "Rechercher" %}</button>
-  </form>
-  {% if search %}
-    {% if form.fields.child.queryset.exists %}
-      <form method="post">
-        {% csrf_token %}
-        {{ form.non_field_errors }}
-        {{ form.child|as_crispy_field }}
-        {{ form.slot|as_crispy_field }}
-        <p>{% translate "Pour un retrait de matériel, l’enfant doit être inscrit à un cours. Seuls les créneaux à venir avec des places libres sont proposés." %}</p>
-        <button type="submit" class="btn btn-primary">{% translate "Ajouter le rendez-vous" %}</button>
-        <a class="btn btn-default" href="{% url 'backend:appointments-list' %}">{% translate "Cancel" %}</a>
+  {% addtoblock "css" %}
+    <link rel="stylesheet" href="{% static 'backend/css/appointments.css' %}?v=6">
+  {% endaddtoblock %}
+  <div class="appointment-booking">
+    <a class="appointment-booking-back" href="{% url 'backend:appointments-list' %}">&larr; {% translate "Tous les rendez-vous" %}</a>
+    <section class="appointment-booking-card" aria-labelledby="child-search-title">
+      <h2 id="child-search-title">{% translate "Trouver l’enfant" %}</h2>
+      <form method="get" class="appointment-booking-search">
+        <div class="form-group">
+          <label for="child-search">{% translate "Nom, prénom ou courriel du parent" %}</label>
+          <input type="search" id="child-search" name="q" value="{{ search }}" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-default">{% translate "Rechercher" %}</button>
       </form>
-    {% else %}
-      <p role="status">{% translate "Aucun enfant trouvé. Essayez avec une autre partie du nom ou le courriel du parent." %}</p>
+    </section>
+    {% if search %}
+      {% if form.fields.child.queryset.exists %}
+        <form method="post" class="appointment-booking-form">
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+          <section class="appointment-booking-card" aria-labelledby="booking-child-title">
+            <h2 id="booking-child-title">{% if single_child %}{% translate "Rendez-vous pour" %}{% else %}{% translate "Choisir l’enfant" %}{% endif %}</h2>
+            {{ form.child.errors }}
+            {% if single_child %}
+              {{ form.child.as_hidden }}
+              <div class="appointment-booking-child">
+                <strong>{{ single_child }}</strong>
+                <span>{{ single_child.birth_date|date:"d.m.Y" }} · {{ single_child.family.email }}</span>
+              </div>
+            {% else %}
+              <fieldset class="appointment-booking-choices">
+                <legend class="sr-only">{% translate "Enfants trouvés" %}</legend>
+                {% for child in form.fields.child.queryset %}
+                  <label class="appointment-booking-choice" for="booking-child-{{ child.pk }}">
+                    <input type="radio" name="child" id="booking-child-{{ child.pk }}" value="{{ child.pk }}" required {% if form.child.value|stringformat:'s' == child.pk|stringformat:'s' %}checked{% endif %}>
+                    <span><strong>{{ child }}</strong><small>{{ child.birth_date|date:"d.m.Y" }} · {{ child.family.email }}</small></span>
+                  </label>
+                {% endfor %}
+              </fieldset>
+            {% endif %}
+            <div class="appointment-booking-slot form-group {% if form.slot.errors %}has-error{% endif %}">
+              <label for="{{ form.slot.id_for_label }}">{% translate "Créneau de rendez-vous" %}</label>
+              {{ form.slot }}
+              {{ form.slot.errors }}
+              <p class="help-block">{% translate "Seuls les créneaux à venir avec des places libres sont proposés." %}</p>
+            </div>
+            <p class="appointment-booking-note">{% translate "Le retrait de matériel nécessite une inscription à un cours pour cet enfant." %}</p>
+            <div class="appointment-booking-actions">
+              <button type="submit" class="btn btn-primary">{% translate "Ajouter le rendez-vous" %}</button>
+              <a class="btn btn-default" href="{% url 'backend:appointments-list' %}">{% translate "Annuler" %}</a>
+            </div>
+          </section>
+        </form>
+      {% else %}
+        <div class="appointment-booking-card appointment-booking-empty" role="status">
+          <h2>{% translate "Aucun enfant trouvé" %}</h2>
+          <p>{% translate "Essayez avec une autre partie du nom ou le courriel du parent." %}</p>
+        </div>
+      {% endif %}
     {% endif %}
-  {% endif %}
+  </div>
 {% endblock content %}

@@ -7,9 +7,19 @@
 
 {% block content %}
   {% addtoblock "css" %}
-    <link rel="stylesheet" href="{% static 'backend/css/appointments.css' %}?v=5">
+    <link rel="stylesheet" href="{% static 'backend/css/appointments.css' %}?v=7">
   {% endaddtoblock %}
   <div class="appointments-list">
+    <div class="appointments-list-heading">
+      <a href="{% url 'backend:appointment-create' %}?q={{ search|urlencode }}" class="btn appointments-add"><i class="icon-plus" aria-hidden="true"></i> {% translate "Ajouter un rendez-vous" %}</a>
+      <details class="appointments-tools">
+        <summary>{% translate "Autres actions" %}</summary>
+        <div>
+          <a href="{% url 'backend:appointments-manage' %}">{% translate "Gérer les créneaux" %}</a>
+          <a href="{% url 'backend:appointments-export' %}">{% translate "Exporter tous les rendez-vous" %}</a>
+        </div>
+      </details>
+    </div>
     <div class="appointments-list-toolbar">
       <form method="get" class="appointments-filters">
         <div class="form-group">
@@ -29,12 +39,6 @@
         <label class="appointments-empty-toggle"><input type="checkbox" name="empty" value="1" {% if include_empty %}checked{% endif %}> {% translate "Afficher les créneaux vides" %}</label>
         <button class="btn btn-default" type="submit">{% translate "Rechercher" %}</button>
       </form>
-      <div class="appointments-list-actions">
-        <a href="{% url 'backend:appointment-create' %}?q={{ search|urlencode }}" class="btn btn-primary">{% translate "Ajouter un rendez-vous" %}</a>
-        <a href="{% url 'backend:appointments-manage' %}" class="btn btn-default"><i class="icon-calendar-plus-o" aria-hidden="true"></i> {% translate "Gérer les créneaux" %}</a>
-        <a href="{% url 'backend:appointments-export' %}" class="btn btn-primary"><i class="icon-file-excel" aria-hidden="true"></i> {% translate "Export appointments" %}</a>
-        <small>{% translate "L’export contient tous les rendez-vous." %}</small>
-      </div>
     </div>
     <p id="appointments-filter-status" role="status" hidden data-loading="{% translate 'Chargement…' %}" data-error="{% translate 'Impossible de charger les rendez-vous. Cliquez sur Rechercher pour réessayer.' %}"></p>
     <div id="appointment-results">
@@ -65,9 +69,10 @@
                   <thead><tr><th scope="col">{% translate "Enfant" %}</th><th scope="col">{% translate "Contact" %}</th><th scope="col" class="appointments-actions-column">{% translate "Actions" %}</th></tr></thead>
                   <tbody>
                     {% for appointment in appointments %}
-                      <tr>
+                      <tr{% if appointment.search_match %} class="appointments-search-match"{% endif %}>
                         <td class="appointments-child">
                           <strong>{{ appointment.child }}</strong>
+                          {% if appointment.search_match %}<span class="appointments-match-label">{% translate "Correspond à la recherche" %}</span>{% endif %}
                           {% if appointment.child.id_lagapeo %}<small>{% translate "Identifiant" %} : {{ appointment.child.id_lagapeo }}</small>{% endif %}
                         </td>
                         <td class="appointments-contact">
