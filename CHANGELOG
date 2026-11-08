@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add a superuser-only `/health` dashboard for database/cache aliases and configured external services, with authenticated PostFinance/Postmark checks and explicit limits for connectivity-only checks. Link it below Django admin in every navbar variant, including Montreux winter.
 
 ### Fixed
+- Preserve the phone number object in appointment contacts: display Swiss numbers in Swiss national format and retain the country code for foreign numbers instead of showing an ambiguous foreign national number.
 - Simplify appointment list controls and emphasize the booking action. Show matching children first within each slot with a visual marker, while retaining other participants and full capacity counts.
 - Fix the anonymous Montreux winter navbar login link to use the namespaced account redirect route, preventing a NoReverseMatch on the login page.
 - Simplify staff appointment booking: select a unique child search result automatically, show multiple matches as direct choices with family details, and align the search, slot field and actions in a responsive form.

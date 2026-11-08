@@ -67,6 +67,35 @@ class AppointmentsListTests(UserMixin, TenantTestCase):
         self.assertContains(response, f'id="appointments-slot-{empty.pk}"')
         self.assertContains(response, "Aucun rendez-vous enregistré sur ce créneau.")
 
+    def test_phone_display_preserves_country_and_clickable_number(self):
+        appointment = self.create_booking()
+        family = appointment.child.family
+        self.login(self.staff)
+        for number, display, link in (
+            ("+41791234567", "079 123 45 67", "tel:+41-79-123-45-67"),
+            ("+33612345678", "+33 6 12 34 56 78", "tel:+33-6-12-34-56-78"),
+        ):
+            with self.subTest(number=number):
+                family.private_phone = number
+                family.private_phone2 = ""
+                family.private_phone3 = ""
+                family.save()
+                response = self.tenant_client.get(self.url)
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, f'<a href="{link}">{display}</a>', html=True)
+
+    def test_appointment_phone_fallback_uses_swiss_format(self):
+        appointment = self.create_booking()
+        family = appointment.child.family
+        family.private_phone = family.private_phone2 = family.private_phone3 = ""
+        family.save()
+        appointment.phone_number = "+41211234567"
+        appointment.save()
+        self.login(self.staff)
+        response = self.tenant_client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '<a href="tel:+41-21-123-45-67">021 123 45 67</a>', html=True)
+
     def test_all_dates_are_paginated_and_filters_are_preserved(self):
         for index in range(227):
             self.create_booking(self.start + timedelta(minutes=index * 15))

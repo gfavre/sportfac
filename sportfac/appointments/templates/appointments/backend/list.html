@@ -76,11 +76,12 @@
                           {% if appointment.child.id_lagapeo %}<small>{% translate "Identifiant" %} : {{ appointment.child.id_lagapeo }}</small>{% endif %}
                         </td>
                         <td class="appointments-contact">
-                          {% firstof appointment.child.family.best_phone appointment.phone_number as phone_number %}
+                          {% with phone_number=appointment.child.family.best_phone|default:appointment.phone_number %}
                           {% firstof appointment.child.family.email appointment.email as email %}
                           {% if phone_number %}<a href="{{ phone_number|phone:'RFC3966' }}">{{ phone_number|phone }}</a>{% endif %}
                           {% if email %}<a href="mailto:{{ email }}">{{ email }}</a>{% endif %}
                           {% if not phone_number and not email %}<span class="text-muted">{% translate "Aucune coordonnée" %}</span>{% endif %}
+                          {% endwith %}
                         </td>
                         <td class="appointments-row-actions">
                           <a class="btn btn-default btn-sm appointments-modal-link" href="{{ appointment.get_backend_edit_url }}" aria-label="{% translate 'Modifier le rendez-vous de' %} {{ appointment.child }}"><i class="icon-pencil" aria-hidden="true"></i> {% translate "Edit" %}</a>
