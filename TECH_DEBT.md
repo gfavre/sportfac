@@ -21,6 +21,23 @@ scratch each time. Update in place as items are resolved or new ones are found.
   There is no persisted invoice-email delivery status or staff review queue yet:
   a completed Celery task alone does not prove that the invoice was delivered.
 
+## Rental invoices and expiration
+
+- Parent checkout rental-only invoices use the normal invoice expiration deadline;
+  `Bill.cancel()` deletes their rentals and releases both appointments, while the
+  family's previously paid course invoice remains untouched. New rental invoices
+  created by staff appointment booking set `do_not_expire=True`: these deliberate
+  reservations require manual follow-up rather than automatic cancellation.
+- Staff appointment creation reuses a rental's existing invoice rather than
+  billing again. Sending its invoice email is opt-in and queued after commit;
+  invoice-only rental emails include that invoice's rentals and the authenticated
+  family invoice link. Existing invoices retain their expiration policy.
+- Install the editable mail type once per deployment with
+  `install_rental_invoice_email --schema ...`; subject/body customizations live in
+  the shared `GenericEmail`/`dbtemplates` tables. See `docs/rental-invoice-email.md`.
+  The command never overwrites existing content; feature activation alone does
+  not create database records.
+
 ## Health dashboard limits
 
 - `/health` requires functioning tenant middleware and authentication; a complete

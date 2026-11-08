@@ -1,4 +1,6 @@
 from datetime import timedelta
+from decimal import Decimal
+from unittest.mock import ANY
 from unittest.mock import patch
 
 from django.urls import reverse
@@ -10,10 +12,13 @@ from appointments.models import Appointment
 from appointments.models import Rental
 from appointments.tests.factories import AppointmentFactory
 from appointments.tests.factories import AppointmentSlotFactory
+from backend.dynamic_preferences_registry import global_preferences_registry
 from profiles.tests.factories import FamilyUserFactory
+from registrations.models import Bill
 from registrations.models import Registration
 from registrations.tests.factories import ChildFactory
 from registrations.tests.factories import RegistrationFactory
+from registrations.tests.factories import WaitingBillFactory
 from sportfac.utils import TenantTestCase
 
 
@@ -25,6 +30,10 @@ class AppointmentCreateTests(UserMixin, TenantTestCase):
         self.registration = RegistrationFactory(child=self.child, status=Registration.STATUS.confirmed)
         self.slot = AppointmentSlotFactory(appointment_type="pickup", places=2)
         self.url = reverse("backend:appointment-create") + "?q=Camille+Exemple"
+        preferences = global_preferences_registry.manager()
+        old_price = preferences["site__RENTAL_PRICE"]
+        self.addCleanup(lambda: preferences.__setitem__("site__RENTAL_PRICE", old_price))
+        preferences["site__RENTAL_PRICE"] = Decimal("60.00")
 
     def book(self, **data):
         return self.tenant_client.post(self.url, {"child": self.child.pk, "slot": self.slot.pk, **data})
@@ -89,15 +98,67 @@ class AppointmentCreateTests(UserMixin, TenantTestCase):
 
     def test_creation_links_pickup_to_unpaid_rental_without_changing_registration(self):
         self.login(self.staff)
-        self.assertRedirects(self.book(), reverse("backend:appointments-list"))
+        response = self.book()
         appointment = Appointment.objects.get(child=self.child)
         rental = Rental.objects.get(child=self.child)
         self.assertEqual(appointment.family, self.child.family)
         self.assertEqual(rental.pickup_appointment, appointment)
         self.assertFalse(rental.paid)
-        self.assertIsNone(rental.invoice_id)
+        self.assertRedirects(response, rental.invoice.get_backend_url(), fetch_redirect_response=False)
+        self.assertEqual(rental.invoice.total, 60)
+        self.assertEqual(rental.invoice.family, self.child.family)
+        self.assertEqual(rental.invoice.status, Bill.STATUS.waiting)
+        self.assertTrue(rental.invoice.do_not_expire)
+        self.assertFalse(rental.invoice.registrations.exists())
+        self.assertContains(
+            self.tenant_client.get(rental.invoice.get_backend_url()), rental.invoice.get_absolute_url()
+        )
         self.registration.refresh_from_db()
         self.assertEqual(self.registration.status, Registration.STATUS.confirmed)
+
+    def test_invoice_email_is_opt_in_and_dispatched_after_commit(self):
+        self.login(self.staff)
+        with patch("registrations.tasks.send_bill_confirmation.delay") as send, self.captureOnCommitCallbacks(
+            execute=True
+        ):
+            self.assertEqual(self.book(send_invoice="on").status_code, 302)
+        rental = Rental.objects.get(child=self.child)
+        send.assert_called_once_with(
+            user_pk=str(self.child.family_id),
+            bill_pk=rental.invoice_id,
+            tenant_pk=self.tenant.pk,
+            language=ANY,
+        )
+
+    def test_no_email_is_sent_by_default(self):
+        self.login(self.staff)
+        with patch("registrations.tasks.send_bill_confirmation.delay") as send, self.captureOnCommitCallbacks(
+            execute=True
+        ):
+            self.assertEqual(self.book().status_code, 302)
+        send.assert_not_called()
+
+    def test_return_reuses_existing_invoice_without_billing_twice(self):
+        invoice = WaitingBillFactory(family=self.child.family, do_not_expire=True)
+        rental = Rental.objects.create(child=self.child, invoice=invoice, amount=60)
+        self.slot.appointment_type = "return"
+        self.slot.save()
+        self.login(self.staff)
+        count = Bill.objects.count()
+        response = self.book()
+        self.assertRedirects(response, invoice.get_backend_url())
+        rental.refresh_from_db()
+        self.assertEqual(rental.invoice_id, invoice.pk)
+        self.assertEqual(Bill.objects.count(), count)
+
+    def test_free_rental_invoice_is_paid_without_expiration(self):
+        global_preferences_registry.manager()["site__RENTAL_PRICE"] = Decimal("0.00")
+        self.login(self.staff)
+        self.assertEqual(self.book().status_code, 302)
+        rental = Rental.objects.get(child=self.child)
+        self.assertTrue(rental.paid)
+        self.assertEqual(rental.invoice.status, Bill.STATUS.paid)
+        self.assertTrue(rental.invoice.do_not_expire)
 
     def test_pickup_requires_registration_for_this_child(self):
         self.login(self.staff)

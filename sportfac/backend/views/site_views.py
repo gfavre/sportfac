@@ -1,6 +1,7 @@
 # from datetime import timedelta
 from urllib.parse import urlencode
 
+from django.contrib import messages
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db import transaction
@@ -15,6 +16,7 @@ from django.db.models.functions import TruncDate
 from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.utils.dateparse import parse_date
+from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.timezone import now
 from django.utils.translation import gettext as _
@@ -34,6 +36,7 @@ from appointments.resources import AppointmentResource
 from backend.dynamic_preferences_registry import global_preferences_registry
 from mailer.forms import GenericEmailForm
 from mailer.models import GenericEmail
+from registrations.models import Bill
 from registrations.models import Child
 from wizard.forms import WizardStepForm
 from wizard.models import WizardStep
@@ -157,6 +160,29 @@ class AppointmentCreateView(SuccessMessageMixin, FullBackendMixin, CreateView):
         if rental_field:
             setattr(rental, rental_field, self.object)
             rental.save(update_fields=[rental_field, "modified"])
+            if not rental.paid and not rental.invoice_id:
+                # A staff booking is a deliberate reservation, not a timed parent checkout.
+                invoice = Bill.objects.create(family=child.family, status=Bill.STATUS.waiting, do_not_expire=True)
+                rental.invoice = invoice
+                rental.save(update_fields=["invoice", "modified"])
+                invoice.save()
+                if invoice.total == 0:
+                    invoice.set_paid()
+            else:
+                invoice = rental.invoice
+            if invoice:
+                response["Location"] = invoice.get_backend_url()
+                messages.info(
+                    self.request,
+                    format_html(
+                        _('Facture {}. <a href="{}">Lien de la facture pour les parents</a>.'),
+                        invoice.billing_identifier,
+                        self.request.build_absolute_uri(invoice.get_absolute_url()),
+                    ),
+                )
+                if form.cleaned_data["send_invoice"]:
+                    invoice.send_confirmation()
+                    messages.info(self.request, _("L’envoi de la facture par courriel a été demandé."))
         return response  # noqa: R504 - the rental link must be saved after the appointment.
 
 

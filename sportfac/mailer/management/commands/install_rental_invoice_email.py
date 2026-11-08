@@ -1,0 +1,67 @@
+from pathlib import Path
+
+from dbtemplates.models import Template
+from django.conf import settings
+from django.core.management.base import BaseCommand
+from django.core.management.base import CommandError
+from django.db import transaction
+from django_tenants.utils import schema_context
+
+from backend.models import YearTenant
+from mailer.models import GenericEmail
+
+
+SUBJECT_TEMPLATE = "registrations/rental_bill_mail_subject.txt"
+BODY_TEMPLATE = "registrations/rental_bill_mail.txt"
+
+
+class Command(BaseCommand):
+    help = "Install the editable rental invoice email without overwriting existing content."
+
+    def add_arguments(self, parser):
+        parser.add_argument("--schema", required=True, help="Existing school-year schema, not public")
+        parser.add_argument("--dry-run", action="store_true", help="Report only; do not write templates or caches")
+
+    def handle(self, *args, **options):
+        if not settings.KEPCHUP_USE_APPOINTMENTS:
+            raise CommandError("La location de matériel n’est pas activée dans ce déploiement.")
+        schema = options["schema"]
+        if schema == "public" or not YearTenant.objects.filter(schema_name=schema).exists():
+            raise CommandError("Choisissez le schéma d’une période existante, hors public.")
+        root = Path(settings.SITE_ROOT) / "registrations" / "templates"
+        defaults = {name: (root / name).read_text(encoding="utf-8") for name in (SUBJECT_TEMPLATE, BODY_TEMPLATE)}
+        with schema_context(schema):
+            if options["dry_run"]:
+                for name in defaults:
+                    action = "conservé" if Template.objects.filter(name=name).exists() else "à créer"
+                    self.stdout.write(f"{name}: {action}")
+                self.stdout.write("Simulation: aucune écriture. Le mail type sera créé s’il manque.")
+                return
+            with transaction.atomic():
+                templates = {}
+                for name, content in defaults.items():
+                    try:
+                        templates[name], _ = Template.objects.get_or_create(name=name, defaults={"content": content})
+                    except Template.MultipleObjectsReturned as exc:
+                        raise CommandError(f"Plusieurs modèles portent le nom {name}; corrigez les doublons.") from exc
+                mail_type, created = GenericEmail.objects.get_or_create(
+                    body_template=templates[BODY_TEMPLATE],
+                    defaults={
+                        "subject": "Facture de location de matériel",
+                        "is_html": False,
+                        "subject_template": templates[SUBJECT_TEMPLATE],
+                        "help_text": (
+                            "<p>Variables disponibles: <code>bill</code> (facture), <code>rentals</code> "
+                            "(locations de cette facture), <code>user</code>, <code>site_url</code>, "
+                            "<code>site_name</code>, <code>signature</code>.</p>"
+                            "<p>Chaque location contient <code>child</code>, <code>amount</code>, "
+                            "<code>pickup_appointment</code> et <code>return_appointment</code>. "
+                            "Les rendez-vous peuvent être absents. Conservez le lien "
+                            "<code>{{ site_url }}{{ bill.get_absolute_url }}</code>: les parents doivent "
+                            "se connecter pour consulter la facture et payer.</p>"
+                        ),
+                    },
+                )
+            action = "installé" if created else "déjà installé"
+            self.stdout.write(self.style.SUCCESS(f"{schema}: mail type {action}; textes existants conservés."))
+            self.stdout.write(f"Édition dans le backend: {mail_type.get_absolute_url()}")

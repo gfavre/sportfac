@@ -66,13 +66,19 @@ def send_bill_confirmation(user_pk, bill_pk, tenant_pk=None, language=settings.L
             if settings.KEPCHUP_USE_APPOINTMENTS:
                 context["appointments"] = Appointment.objects.filter(family=user)
 
-            subject = render_email_content("registrations/confirmation_bill_mail_subject.txt", extra_context=context)
-            body = render_email_content("registrations/confirmation_bill_mail.txt", extra_context=context)
+            mail_template = "registrations/confirmation_bill_mail"
+            if not registrations.exists() and bill.rentals.exists():
+                mail_template = "registrations/rental_bill_mail"
+                context["rentals"] = bill.rentals.select_related(
+                    "child", "pickup_appointment__slot", "return_appointment__slot"
+                )
+            subject = render_email_content(f"{mail_template}_subject.txt", extra_context=context)
+            body = render_email_content(f"{mail_template}.txt", extra_context=context)
 
             send_mail.delay(
                 subject=subject.strip(),
                 message=body,
-                is_html=template_is_html("registrations/confirmation_bill_mail.txt"),
+                is_html=template_is_html(f"{mail_template}.txt"),
                 from_email=global_preferences["email__FROM_MAIL"],
                 recipients=[user.get_email_string()],
                 reply_to=[global_preferences["email__REPLY_TO_MAIL"]],

@@ -12,6 +12,10 @@ from faker import Faker
 
 from absences.models import Absence
 from absences.tests.factories import SessionFactory
+from appointments.models import Appointment
+from appointments.models import Rental
+from appointments.tests.factories import AppointmentFactory
+from appointments.tests.factories import AppointmentSlotFactory
 from backend.dynamic_preferences_registry import global_preferences_registry
 from sportfac.utils import TenantTestCase
 
@@ -25,6 +29,7 @@ from ..tasks import send_invoice_pdf
 from ..tasks import send_reminders
 from .factories import BillFactory
 from .factories import RegistrationFactory
+from .factories import WaitingBillFactory
 
 
 fake = Faker(locale="fr_CH")
@@ -32,6 +37,12 @@ fake = Faker(locale="fr_CH")
 
 class SendBillConfirmationTests(TenantTestCase):
     def setUp(self):
+        # Exercise the email body without requiring a live Celery broker.
+        from mailer.tasks import send_mail
+
+        dispatch = mock.patch("registrations.tasks.send_mail.delay", side_effect=send_mail)
+        dispatch.start()
+        self.addCleanup(dispatch.stop)
         self.bill = BillFactory()
         global_preferences = global_preferences_registry.manager()
         # dynamic_preferences caches values outside the DB transaction rollback, so this would
@@ -79,6 +90,22 @@ class SendBillConfirmationTests(TenantTestCase):
         send_bill_confirmation(user_pk=str(self.bill.family.pk), bill_pk=self.bill.pk, tenant_pk=self.tenant.id)
 
         mock_delay.assert_not_called()
+
+    @mock.patch("registrations.tasks.send_bill_pdf_email.delay")
+    def test_rental_only_email_contains_invoice_and_only_its_rental(self, _delay):
+        rental = Rental.objects.create(
+            child=RegistrationFactory(child__family=self.bill.family).child,
+            invoice=self.bill,
+            amount=60,
+        )
+        self.bill.save()
+        send_bill_confirmation(user_pk=str(self.bill.family.pk), bill_pk=self.bill.pk, tenant_pk=self.tenant.id)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("location de matériel", mail.outbox[0].subject)
+        self.assertIn(rental.child.full_name, mail.outbox[0].body)
+        self.assertIn(self.bill.get_absolute_url(), mail.outbox[0].body)
+        self.assertIn("60", mail.outbox[0].body)
+        self.assertNotIn("cours suivants", mail.outbox[0].body)
 
 
 class SendBillPdfEmailTests(TenantTestCase):
@@ -319,6 +346,96 @@ class CancelExpiredRegistrationsTest(TenantTestCase):
             status=Registration.STATUS.waiting,
             modified__lte=mock_expiration_time,
         )
+
+
+class RentalOnlyExpirationTests(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        configuration = override_settings(
+            KEPCHUP_REGISTRATION_EXPIRE_MINUTES=60,
+            KEPCHUP_USE_APPOINTMENTS=True,
+            KEPCHUP_ENABLE_WAITING_LISTS=False,
+        )
+        configuration.enable()
+        self.addCleanup(configuration.disable)
+        self.timestamp = now()
+        self.registration = RegistrationFactory(status=Registration.STATUS.confirmed, paid=True)
+        self.paid_invoice = BillFactory(family=self.registration.child.family, status=Bill.STATUS.paid)
+        self.registration.bill = self.paid_invoice
+        self.registration.save()
+
+    def make_rental(self, age=61, paid=False, protected=False, invoiced=True):
+        invoice = None
+        if invoiced:
+            invoice = WaitingBillFactory(
+                family=self.registration.child.family,
+                status=Bill.STATUS.paid if paid else Bill.STATUS.waiting,
+                do_not_expire=protected,
+            )
+            Bill.objects.filter(pk=invoice.pk).update(created=self.timestamp - timedelta(minutes=age))
+        child = self.registration.child
+        pickup = AppointmentFactory(child=child)
+        returned = AppointmentFactory(child=child, slot=AppointmentSlotFactory(appointment_type="return"))
+        rental = Rental.objects.create(
+            child=child,
+            invoice=invoice,
+            paid=paid,
+            amount=60,
+            pickup_appointment=pickup,
+            return_appointment=returned,
+        )
+        Rental.objects.filter(pk=rental.pk).update(modified=self.timestamp - timedelta(minutes=age))
+        return rental, invoice, (pickup.pk, returned.pk)
+
+    def expire(self):
+        self.assertEqual(settings.KEPCHUP_REGISTRATION_EXPIRE_MINUTES, 60)
+        with mock.patch("registrations.tasks.Domain.objects.filter") as domains, mock.patch(
+            "registrations.tasks.now", return_value=self.timestamp
+        ):
+            domains.return_value.first.return_value.tenant = self.tenant
+            cancel_expired_registrations()
+
+    def test_unpaid_rental_only_invoice_expires_and_releases_both_appointments(self):
+        rental, invoice, appointment_ids = self.make_rental()
+        self.assertFalse(invoice.registrations.exists())
+        self.assertTrue(
+            Bill.objects.filter(
+                pk=invoice.pk,
+                status=Bill.STATUS.waiting,
+                created__lte=self.timestamp - timedelta(minutes=60),
+                do_not_expire=False,
+            ).exists()
+        )
+        self.expire()
+        invoice.refresh_from_db()
+        self.assertEqual(invoice.status, Bill.STATUS.canceled)
+        self.assertFalse(Rental.objects.filter(pk=rental.pk).exists())
+        self.assertFalse(Appointment.objects.filter(pk__in=appointment_ids).exists())
+        self.registration.refresh_from_db()
+        self.paid_invoice.refresh_from_db()
+        self.assertEqual(self.registration.status, Registration.STATUS.confirmed)
+        self.assertTrue(self.registration.paid)
+        self.assertEqual(self.registration.bill_id, self.paid_invoice.pk)
+        self.assertEqual(self.paid_invoice.status, Bill.STATUS.paid)
+        self.expire()  # Repeated runs must leave the original paid registration intact.
+        self.registration.refresh_from_db()
+        self.assertTrue(self.registration.paid)
+
+    def test_recent_paid_and_staff_protected_rentals_are_preserved(self):
+        for kwargs in ({"age": 59}, {"paid": True}, {"protected": True}):
+            with self.subTest(**kwargs):
+                rental, invoice, appointment_ids = self.make_rental(**kwargs)
+                self.expire()
+                self.assertTrue(Rental.objects.filter(pk=rental.pk).exists())
+                self.assertEqual(Appointment.objects.filter(pk__in=appointment_ids).count(), 2)
+                invoice.refresh_from_db()
+                self.assertNotEqual(invoice.status, Bill.STATUS.canceled)
+
+    def test_abandoned_rental_without_invoice_also_releases_appointments(self):
+        rental, _, appointment_ids = self.make_rental(invoiced=False)
+        self.expire()
+        self.assertFalse(Rental.objects.filter(pk=rental.pk).exists())
+        self.assertFalse(Appointment.objects.filter(pk__in=appointment_ids).exists())
 
 
 class SendRemindersTest(TenantTestCase):

@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 4.16.0 - 2026-11-08
+
 ### Added
+- Add `install_rental_invoice_email --schema ... [--dry-run]` to register editable rental invoice subject/body templates in backend mail types. Preserve existing customizations and document the Montreux winter installation.
+- Create a protected rental invoice for new staff equipment bookings, show the parent invoice link, and offer an opt-in invoice email. Reuse existing rental invoices and keep parent checkout expiration unchanged.
 - Add a superuser-only `/health` dashboard for database/cache aliases and configured external services, with authenticated PostFinance/Postmark checks and explicit limits for connectivity-only checks. Link it below Django admin in every navbar variant, including Montreux winter.
 
 ### Fixed

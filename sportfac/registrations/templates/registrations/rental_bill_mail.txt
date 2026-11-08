@@ -1,0 +1,18 @@
+{% load switzerland %}
+Madame, Monsieur,
+
+Voici votre facture pour la location de matériel:
+{% for rental in rentals %}
+• {{ rental.child.full_name|safe }}: {{ rental.amount|money }}
+{% if rental.pickup_appointment %}  Retrait: {{ rental.pickup_appointment.slot.start|date:"d.m.Y à H:i" }}
+{% endif %}{% if rental.return_appointment %}  Retour: {{ rental.return_appointment.slot.start|date:"d.m.Y à H:i" }}
+{% endif %}{% endfor %}
+Montant total: {{ bill.total|money }}
+
+Consultez votre facture et les moyens de paiement disponibles en vous connectant à votre compte:
+{{ site_url }}{{ bill.get_absolute_url }}
+{% if bill.is_wire_transfer %}
+Vous recevrez également la facture PDF et ses détails de paiement par un courriel séparé.
+{% endif %}
+
+{{ signature }}

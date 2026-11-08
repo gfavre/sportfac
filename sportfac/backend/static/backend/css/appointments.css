@@ -143,3 +143,6 @@
   .appointments-participants tr.appointments-search-match { border-left: 4px solid #738238; }
   .appointments-search-match .appointments-child { border-left: 0; }
 }
+
+.appointment-booking .appointment-booking-email { display: flex; align-items: flex-start; gap: 10px; margin: 18px 0 0; font-weight: 400; }
+.appointment-booking-email input { flex: 0 0 auto; width: 16px; height: 16px; margin: 2px 0 0; }

@@ -107,6 +107,11 @@ class AppointmentForm(forms.ModelForm):
 
 
 class AppointmentCreateForm(forms.ModelForm):
+    send_invoice = forms.BooleanField(
+        required=False,
+        label=_("Envoyer la facture et son lien de paiement aux parents par courriel"),
+    )
+
     class Meta:
         model = Appointment
         fields = ("child", "slot")

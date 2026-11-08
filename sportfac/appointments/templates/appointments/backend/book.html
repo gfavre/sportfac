@@ -7,7 +7,7 @@
 
 {% block content %}
   {% addtoblock "css" %}
-    <link rel="stylesheet" href="{% static 'backend/css/appointments.css' %}?v=6">
+    <link rel="stylesheet" href="{% static 'backend/css/appointments.css' %}?v=8">
   {% endaddtoblock %}
   <div class="appointment-booking">
     <a class="appointment-booking-back" href="{% url 'backend:appointments-list' %}">&larr; {% translate "Tous les rendez-vous" %}</a>
@@ -53,6 +53,9 @@
               <p class="help-block">{% translate "Seuls les créneaux à venir avec des places libres sont proposés." %}</p>
             </div>
             <p class="appointment-booking-note">{% translate "Le retrait de matériel nécessite une inscription à un cours pour cet enfant." %}</p>
+            <p class="appointment-booking-note">{% translate "Une nouvelle location sera facturée sans annulation automatique en cas de non-paiement. Une location déjà facturée ne sera pas facturée une seconde fois." %}</p>
+            <label class="appointment-booking-email">{{ form.send_invoice }} <span>{{ form.send_invoice.label }}</span></label>
+            {{ form.send_invoice.errors }}
             <div class="appointment-booking-actions">
               <button type="submit" class="btn btn-primary">{% translate "Ajouter le rendez-vous" %}</button>
               <a class="btn btn-default" href="{% url 'backend:appointments-list' %}">{% translate "Annuler" %}</a>
