@@ -33,7 +33,7 @@ scratch each time. Update in place as items are resolved or new ones are found.
   invoice-only rental emails include that invoice's rentals and the authenticated
   family invoice link. Existing invoices retain their expiration policy.
 - Install the editable mail type once per deployment with
-  `install_rental_invoice_email --schema ...`; subject/body customizations live in
+  `install_rental_invoice_email`; subject/body customizations live in
   the shared `GenericEmail`/`dbtemplates` tables. See `docs/rental-invoice-email.md`.
   The command never overwrites existing content; feature activation alone does
   not create database records.

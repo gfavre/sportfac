@@ -2,10 +2,15 @@ from io import StringIO
 from unittest.mock import patch
 
 from dbtemplates.models import Template
+from dbtemplates.utils.cache import cache
+from dbtemplates.utils.cache import get_cache_key
+from dbtemplates.utils.cache import get_cache_notfound_key
 from django.core.management import call_command
 from django.core.management.base import CommandError
+from django.db import connection
 from django.test import override_settings
 from django.urls import reverse
+from django_tenants.utils import get_public_schema_name
 
 from api.tests.utils import UserMixin
 from appointments.models import Rental
@@ -31,7 +36,7 @@ class RentalInvoiceInstallationTests(UserMixin, TenantTestCase):
 
     def install(self, **options):
         output = StringIO()
-        call_command("install_rental_invoice_email", schema=self.tenant.schema_name, stdout=output, **options)
+        call_command("install_rental_invoice_email", stdout=output, **options)
         return output.getvalue()
 
     def test_dry_run_makes_no_changes_and_install_is_repeatable(self):
@@ -65,13 +70,36 @@ class RentalInvoiceInstallationTests(UserMixin, TenantTestCase):
         self.assertEqual(mail_type.subject, "Nom personnalisé")
         self.assertTrue(mail_type.is_html)
 
-    def test_rejects_unknown_public_schema_and_disabled_feature(self):
-        for schema in ("public", "not_an_existing_period"):
-            with self.subTest(schema=schema), self.assertRaises(CommandError):
-                call_command("install_rental_invoice_email", schema=schema, stdout=StringIO())
+    def test_rejects_disabled_feature(self):
         with override_settings(KEPCHUP_USE_APPOINTMENTS=False), self.assertRaises(CommandError):
             self.install()
         self.assertFalse(Template.objects.filter(name__in=self.names).exists())
+
+    def test_install_uses_public_schema_and_restores_calling_period(self):
+        original_schema = connection.schema_name
+        saved_schemas = []
+        save = Template.save
+
+        def record_save(instance, *args, **kwargs):
+            saved_schemas.append(connection.schema_name)
+            return save(instance, *args, **kwargs)
+
+        with patch.object(Template, "save", record_save):
+            self.install()
+        self.assertEqual(set(saved_schemas), {get_public_schema_name()})
+        self.assertEqual(connection.schema_name, original_schema)
+
+    def test_install_invalidates_period_caches_but_dry_run_preserves_them(self):
+        key = get_cache_key(BODY_TEMPLATE)
+        missing = get_cache_notfound_key(BODY_TEMPLATE)
+        cache.set(key, "ancien contenu")
+        cache.set(missing, "1")
+        self.install(dry_run=True)
+        self.assertEqual(cache.get(key), "ancien contenu")
+        self.assertEqual(cache.get(missing), "1")
+        self.install()
+        self.assertIsNone(cache.get(key))
+        self.assertIsNone(cache.get(missing))
 
     def test_backend_edits_are_used_by_rental_invoice_delivery(self):
         self.install()

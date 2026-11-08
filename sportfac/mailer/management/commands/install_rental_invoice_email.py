@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.core.management.base import CommandError
 from django.db import transaction
+from django_tenants.utils import get_public_schema_name
 from django_tenants.utils import schema_context
 
 from backend.models import YearTenant
@@ -19,18 +20,14 @@ class Command(BaseCommand):
     help = "Install the editable rental invoice email without overwriting existing content."
 
     def add_arguments(self, parser):
-        parser.add_argument("--schema", required=True, help="Existing school-year schema, not public")
         parser.add_argument("--dry-run", action="store_true", help="Report only; do not write templates or caches")
 
     def handle(self, *args, **options):
         if not settings.KEPCHUP_USE_APPOINTMENTS:
             raise CommandError("La location de matériel n’est pas activée dans ce déploiement.")
-        schema = options["schema"]
-        if schema == "public" or not YearTenant.objects.filter(schema_name=schema).exists():
-            raise CommandError("Choisissez le schéma d’une période existante, hors public.")
         root = Path(settings.SITE_ROOT) / "registrations" / "templates"
         defaults = {name: (root / name).read_text(encoding="utf-8") for name in (SUBJECT_TEMPLATE, BODY_TEMPLATE)}
-        with schema_context(schema):
+        with schema_context(get_public_schema_name()):
             if options["dry_run"]:
                 for name in defaults:
                     action = "conservé" if Template.objects.filter(name=name).exists() else "à créer"
@@ -63,5 +60,15 @@ class Command(BaseCommand):
                     },
                 )
             action = "installé" if created else "déjà installé"
-            self.stdout.write(self.style.SUCCESS(f"{schema}: mail type {action}; textes existants conservés."))
+            self.stdout.write(self.style.SUCCESS(f"Mail type partagé {action}; textes existants conservés."))
             self.stdout.write(f"Édition dans le backend: {mail_type.get_absolute_url()}")
+            # Template tables are shared, but dbtemplates cache keys can be schema-specific.
+            from dbtemplates.utils.cache import remove_cached_template
+            from dbtemplates.utils.cache import remove_notfound_key
+
+            schemas = set(YearTenant.objects.values_list("schema_name", flat=True)) | {get_public_schema_name()}
+            for schema in schemas:
+                with schema_context(schema):
+                    for template in templates.values():
+                        remove_cached_template(template)
+                        remove_notfound_key(template)

@@ -10,12 +10,11 @@ requiert `KEPCHUP_USE_APPOINTMENTS=True`, déjà activé pour Montreux hiver.
 
 ## Installation
 
-Depuis la racine du dépôt, dans l’environnement du déploiement Montreux hiver,
-remplacer `NOM_PERIODE` par le schéma d’une période existante de cette installation:
+Depuis la racine du dépôt, dans l’environnement du déploiement Montreux hiver:
 
 ```sh
-python sportfac/manage.py install_rental_invoice_email --schema NOM_PERIODE --settings=sportfac.settings.montreux_ski --dry-run
-python sportfac/manage.py install_rental_invoice_email --schema NOM_PERIODE --settings=sportfac.settings.montreux_ski
+python sportfac/manage.py install_rental_invoice_email --settings=sportfac.settings.montreux_ski --dry-run
+python sportfac/manage.py install_rental_invoice_email --settings=sportfac.settings.montreux_ski
 ```
 
 La simulation n’écrit ni en base ni dans le cache des modèles. L’installation crée
@@ -24,9 +23,10 @@ le format HTML/texte et les paramètres du mail type existant. Elle n’envoie a
 courriel, ne crée aucune facture et ne modifie aucune réservation.
 
 `mailer` et `dbtemplates` sont partagés entre les périodes d’un même déploiement:
-installer une seule fois pour Montreux hiver. Le schéma explicite évite d’exécuter
-la commande dans un contexte indéterminé; il ne limite pas la portée des textes à
-cette seule période. Aucun autre déploiement communal n’est concerné.
+installer une seule fois pour Montreux hiver. La commande utilise automatiquement
+le schéma public et invalide les caches de ces modèles dans toutes les périodes.
+Aucun schéma de période n’est demandé; le déploiement ciblé est celui des settings.
+Aucun autre déploiement communal n’est concerné.
 
 Déployer aussi le code et redémarrer les workers Celery. Aucune migration nouvelle
 n’est requise. Ne pas installer ces modèles dans une autre base par inadvertance.
