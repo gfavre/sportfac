@@ -1,11 +1,14 @@
+from socket import gaierror
 from unittest import mock
 
 from django.test import override_settings
 from django.test.client import RequestFactory
 from django.urls import reverse
 from faker import Faker
+from postfinancecheckout.rest import ApiException
 from rest_framework.test import APIRequestFactory
 from rest_framework.test import force_authenticate
+from urllib3 import exceptions as network_errors
 
 from profiles.tests.factories import FamilyUserFactory
 from registrations.tests.factories import BillFactory
@@ -14,6 +17,7 @@ from sportfac.utils import TenantTestCase
 from wizard.tests.factories import WizardStepFactory
 
 from ..models import PostfinanceTransaction
+from ..postfinance import call_postfinance
 from ..postfinance import invoice_to_transaction
 from ..views import NewPostfinanceTransactionView
 from ..views import PostfinanceWebhookView
@@ -393,3 +397,188 @@ class PostfinanceFailureLoggingTests(TenantTestCase):
         self.assertEqual(response.data["paymentPageUrl"], url)
         saved = PostfinanceTransaction.objects.get(invoice=invoice, transaction_id=12346)
         self.assertEqual(saved.payment_page_url, url)
+
+
+class PostfinanceNetworkFailureTests(TenantTestCase):
+    def setUp(self):
+        super().setUp()
+        config = override_settings(POSTFINANCE_USER_ID=1, POSTFINANCE_API_SECRET="secret", POSTFINANCE_SPACE_ID=1)
+        config.enable()
+        self.addCleanup(config.disable)
+        delay = mock.patch("payments.postfinance.sleep")
+        self.sleep = delay.start()
+        self.addCleanup(delay.stop)
+        self.invoice = BillFactory(status="waiting")
+        self.factory = APIRequestFactory()
+
+    def post(self, user=None, invoice_id=None):
+        request = self.factory.post("/postfinance/new-transaction/407/", {}, format="json")
+        force_authenticate(request, user=user or self.invoice.family)
+        return NewPostfinanceTransactionView.as_view()(request, invoice_id=invoice_id or self.invoice.pk)
+
+    def dns_error(self):
+        # urllib3 1.x exposes DNS errors as NewConnectionError, 2.x adds a subclass.
+        error_type = getattr(network_errors, "NameResolutionError", None)
+        if error_type:
+            return error_type("checkout.postfinance.ch", None, gaierror(-2, "sensitive DNS details"))
+        return network_errors.NewConnectionError(None, "sensitive DNS details")
+
+    def test_dns_failure_returns_503_after_bounded_retry_without_mutating_invoice(self):
+        original_modified = self.invoice.modified
+        with mock.patch("payments.postfinance.TransactionServiceApi") as service, mock.patch(
+            "payments.postfinance.TransactionLightboxServiceApi"
+        ) as lightbox, self.assertLogs("payments", level="WARNING") as logs:
+            service.return_value.create.side_effect = self.dns_error()
+            response = self.post()
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.data["code"], "payment_service_unavailable")
+        self.assertNotIn("sensitive DNS details", str(response.data))
+        self.assertNotIn("sensitive DNS details", " ".join(logs.output))
+        self.assertIn("stage=create_remote_transaction", " ".join(logs.output))
+        self.assertIn("http_status=503", " ".join(logs.output))
+        self.assertEqual(service.return_value.create.call_count, 2)
+        self.sleep.assert_called_once_with(0.5)
+        lightbox.return_value.javascript_url.assert_not_called()
+        self.assertFalse(PostfinanceTransaction.objects.filter(invoice=self.invoice).exists())
+        self.invoice.refresh_from_db()
+        self.assertEqual(self.invoice.status, "waiting")
+        self.assertEqual(self.invoice.modified, original_modified)
+
+    def test_wrapped_dns_and_timeout_failures_are_also_temporary(self):
+        errors = (
+            network_errors.MaxRetryError(None, "https://checkout.postfinance.ch/api", reason=self.dns_error()),
+            network_errors.ReadTimeoutError(None, "https://checkout.postfinance.ch/api", "sensitive timeout"),
+        )
+        for error in errors:
+            with self.subTest(error=type(error).__name__), mock.patch(
+                "payments.postfinance.TransactionServiceApi"
+            ) as service:
+                service.return_value.create.side_effect = error
+                self.assertEqual(self.post().status_code, 503)
+                self.assertEqual(
+                    service.return_value.create.call_count,
+                    1 if isinstance(error, network_errors.ReadTimeoutError) else 2,
+                )
+
+    def test_script_network_failure_retains_remote_id_in_safe_log(self):
+        with mock.patch("payments.postfinance.TransactionServiceApi") as service, mock.patch(
+            "payments.postfinance.TransactionLightboxServiceApi"
+        ) as lightbox, self.assertLogs("payments.postfinance", level="WARNING") as logs:
+            service.return_value.create.return_value.id = 12345
+            lightbox.return_value.javascript_url.side_effect = self.dns_error()
+            self.assertEqual(self.post().status_code, 503)
+        self.assertIn("stage=get_payment_script", " ".join(logs.output))
+        self.assertIn("remote_id=12345", " ".join(logs.output))
+        self.assertFalse(PostfinanceTransaction.objects.filter(invoice=self.invoice).exists())
+
+    def test_parent_can_retry_explicitly_after_dns_recovers(self):
+        remote = mock.Mock(id=12345)
+        remote.state.value = "PENDING"
+        with mock.patch("payments.postfinance.TransactionServiceApi") as service, mock.patch(
+            "payments.postfinance.TransactionLightboxServiceApi"
+        ) as lightbox:
+            service.return_value.create.side_effect = [self.dns_error(), self.dns_error(), remote]
+            lightbox.return_value.javascript_url.return_value = "https://checkout.postfinance.ch/script.js"
+            self.assertEqual(self.post().status_code, 503)
+            response = self.post()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(service.return_value.create.call_count, 3)
+        self.assertEqual(PostfinanceTransaction.objects.filter(invoice=self.invoice).count(), 1)
+
+    def test_transient_dns_recovers_automatically_and_creates_one_local_transaction(self):
+        remote = mock.Mock(id=12345)
+        remote.state.value = "PENDING"
+        with mock.patch("payments.postfinance.TransactionServiceApi") as service, mock.patch(
+            "payments.postfinance.TransactionLightboxServiceApi"
+        ) as lightbox:
+            service.return_value.create.side_effect = [self.dns_error(), remote]
+            lightbox.return_value.javascript_url.return_value = "https://checkout.postfinance.ch/script.js"
+            response = self.post()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(service.return_value.create.call_count, 2)
+        lightbox.return_value.javascript_url.assert_called_once()
+        self.assertEqual(PostfinanceTransaction.objects.filter(invoice=self.invoice).count(), 1)
+
+    def test_script_503_is_retried_without_recreating_transaction(self):
+        with mock.patch("payments.postfinance.TransactionServiceApi") as service, mock.patch(
+            "payments.postfinance.TransactionLightboxServiceApi"
+        ) as lightbox:
+            service.return_value.create.return_value.id = 12345
+            service.return_value.create.return_value.state.value = "PENDING"
+            lightbox.return_value.javascript_url.side_effect = [
+                ApiException(status=503, reason="sensitive response"),
+                "https://checkout.postfinance.ch/script.js",
+            ]
+            with self.assertLogs("payments.postfinance", level="WARNING") as logs:
+                self.assertEqual(self.post().status_code, 200)
+        service.return_value.create.assert_called_once()
+        self.assertEqual(lightbox.return_value.javascript_url.call_count, 2)
+        self.assertNotIn("sensitive response", " ".join(logs.output))
+
+    def test_ambiguous_creation_failures_are_not_retried(self):
+        for error in (
+            network_errors.ReadTimeoutError(None, "url", "read timeout"),
+            network_errors.ProtocolError("connection reset after sending"),
+            ApiException(status=503, reason="provider error"),
+        ):
+            with self.subTest(error=type(error).__name__), mock.patch(
+                "payments.postfinance.TransactionServiceApi"
+            ) as service:
+                service.return_value.create.side_effect = error
+                self.assertEqual(self.post().status_code, 503)
+                service.return_value.create.assert_called_once()
+
+    def test_read_status_retries_transient_failure(self):
+        from payments.postfinance import get_new_status
+
+        remote = mock.Mock()
+        remote.state.value = "PENDING"
+        with mock.patch("payments.postfinance.TransactionServiceApi") as service:
+            service.return_value.read.side_effect = [ApiException(status=502), remote]
+            status, returned = get_new_status(12345)
+        self.assertEqual(status, "PENDING")
+        self.assertEqual(returned, remote)
+        self.assertEqual(service.return_value.read.call_count, 2)
+        service.return_value.create.assert_not_called()
+
+    def test_void_retries_connection_failure_but_not_http_error(self):
+        from payments.postfinance import void_transaction
+
+        remote = mock.Mock()
+        remote.state.value = "VOIDED"
+        with mock.patch("payments.postfinance.TransactionVoidServiceApi") as service:
+            service.return_value.void_offline.side_effect = [self.dns_error(), remote]
+            self.assertEqual(void_transaction(12345), "VOIDED")
+            self.assertEqual(service.return_value.void_offline.call_count, 2)
+        with mock.patch("payments.postfinance.TransactionVoidServiceApi") as service:
+            service.return_value.void_offline.side_effect = ApiException(status=503, reason="sensitive response")
+            with self.assertLogs("payments.postfinance", level="ERROR") as logs:
+                self.assertEqual(void_transaction(12345), "FAILED")
+            service.return_value.void_offline.assert_called_once()
+            self.assertNotIn("sensitive response", " ".join(logs.output))
+
+    def test_read_retry_limit_and_permanent_errors(self):
+        for error, attempts in (
+            (ApiException(status=503), 2),
+            (network_errors.ReadTimeoutError(None, "url", "timeout"), 2),
+            (ApiException(status=400), 1),
+            (ApiException(status=401), 1),
+            (ApiException(status=429), 1),
+            (network_errors.SSLError("certificate error"), 1),
+        ):
+            with self.subTest(error=type(error).__name__, status=getattr(error, "status", None)):
+                call = mock.Mock(side_effect=error)
+                with self.assertRaises(type(error)):
+                    call_postfinance(call, operation="read_status", read_only=True)
+                self.assertEqual(call.call_count, attempts)
+
+    @mock.patch("payments.views.get_postfinance_transaction")
+    def test_other_family_and_missing_invoice_cannot_call_provider(self, provider):
+        self.assertEqual(self.post(user=FamilyUserFactory()).status_code, 404)
+        self.assertEqual(self.post(invoice_id=self.invoice.pk + 999999).status_code, 404)
+        provider.assert_not_called()
+
+    @mock.patch("payments.views.get_postfinance_transaction", side_effect=RuntimeError("unexpected"))
+    def test_programming_errors_are_not_misreported_as_unavailability(self, _provider):
+        with self.assertRaises(RuntimeError):
+            self.post()

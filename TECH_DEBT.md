@@ -46,6 +46,23 @@ scratch each time. Update in place as items are resolved or new ones are found.
   reCAPTCHA and Sentry checks deliberately report partial verification without
   creating remote operations; see `docs/health.md` for the exact check coverage.
 
+## PostFinance network failures
+
+- The checkout SDK uses urllib3. DNS/transport failures while creating a remote
+  transaction or fetching its script return a controlled 503; unexpected code or
+  database errors still propagate. Invoice state is unchanged. SDK calls have at
+  most two attempts, with a 0.5-second delay: creation/void retries only pre-send
+  connection failures; status/script reads also retry read/protocol errors and
+  HTTP 500/502/503/504. Authentication, validation, TLS and rate-limit failures
+  are not automatically repeated. A creation read timeout or HTTP error never
+  triggers another creation automatically. If creation succeeds
+  but fetching the script fails, use the sanitized `stage`/`remote_id` log to inspect
+  the remote transaction rather than assuming none exists.
+- A `NameResolutionError` is an outbound server DNS failure, not a PostFinance
+  HTTP response. Diagnose the resolver and connectivity to `checkout.postfinance.ch`
+  on the affected application host; tests or DNS resolution on a developer machine
+  do not establish recovery in production. See issue 7844478624 (2026-11-12).
+
 ## Transport planning: dates versus journeys
 
 - Transport occupancy follows the PDF sheets: unique children per calendar date,

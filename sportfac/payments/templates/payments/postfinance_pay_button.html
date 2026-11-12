@@ -11,6 +11,13 @@
       evt.preventDefault();
       $('#pay-button').hide();
       $('#pay-loading').show();
+      $('#pay-error').prop('hidden', true).text('');
+      function showPaymentError(unavailable) {
+        $('#pay-loading').hide();
+        $('#pay-button').show();
+        const error = $('#pay-error');
+        error.text(error.attr(unavailable ? 'data-unavailable' : 'data-error')).prop('hidden', false);
+      }
       $.post("{% url 'postfinance-new-transaction' invoice.id %}", {fail_url: window.location.href})
         .done(function(data){
           const script = document.createElement("script");
@@ -18,12 +25,11 @@
           script.onload = function() {
             window.LightboxCheckoutHandler.startPayment();
           };
+          script.onerror = function() { showPaymentError(true); };
           document.body.appendChild(script);
         })
-        .fail(function(){
-          $('#pay-loading').hide();
-          $('#pay-button').show();
-          alert("Could not create PostFinance transaction");
+        .fail(function(xhr){
+          showPaymentError(xhr.status === 503);
         });
     });
   });
@@ -31,6 +37,9 @@
 {% endaddtoblock %}
 
 <div class=" hidden-print d-print-none  mt-3 mb-3" style="margin-top: 1em; margin-bottom: 2em">
+  <p id="pay-error" class="alert alert-warning" role="alert" hidden
+     data-unavailable="{% translate 'PostFinance est momentanément inaccessible. Réessayez dans quelques instants.' %}"
+     data-error="{% translate 'Le paiement n’a pas pu être ouvert. Réessayez dans quelques instants.' %}"></p>
   <div class="row">
     <div class="col-xs-6 text-right" style="min-height: 46px;">
       <a href="#" id="pay-button" class="btn btn-lg btn-success">

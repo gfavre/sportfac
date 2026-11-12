@@ -21,6 +21,7 @@ from wizard.views import BaseWizardStepView
 from .datatrans import get_transaction as get_datatrans_transaction
 from .models import DatatransTransaction
 from .models import PostfinanceTransaction
+from .postfinance import PostfinanceUnavailableError
 from .postfinance import get_transaction as get_postfinance_transaction
 
 
@@ -110,7 +111,16 @@ class NewPostfinanceTransactionView(APIView):
         )
 
         fail_url = request.data.get("fail_url")
-        transaction = get_postfinance_transaction(request, invoice, fail_url=fail_url)
+        try:
+            transaction = get_postfinance_transaction(request, invoice, fail_url=fail_url)
+        except PostfinanceUnavailableError:
+            return Response(
+                {
+                    "code": "payment_service_unavailable",
+                    "detail": _("PostFinance est momentanément inaccessible. Réessayez dans quelques instants."),
+                },
+                status=503,
+            )
         return Response({"paymentPageUrl": transaction.payment_page_url})
 
 

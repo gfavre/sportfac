@@ -1,4 +1,5 @@
 import logging
+from time import sleep
 
 from django.conf import settings
 from django.db import connection
@@ -12,6 +13,11 @@ from postfinancecheckout.models import LineItem
 from postfinancecheckout.models import LineItemType
 from postfinancecheckout.models import TransactionCreate
 from postfinancecheckout.rest import ApiException
+from urllib3.exceptions import ConnectTimeoutError
+from urllib3.exceptions import HTTPError
+from urllib3.exceptions import MaxRetryError
+from urllib3.exceptions import ProtocolError
+from urllib3.exceptions import ReadTimeoutError
 
 from .models import PostfinanceTransaction
 
@@ -19,8 +25,44 @@ from .models import PostfinanceTransaction
 CURR_CHF = "CHF"
 DEFAULT_TIMEOUT = 7
 DEFAULT_LANGUAGE = "fr"
+MAX_ATTEMPTS = 2
+RETRY_DELAY = 0.5
+TEMPORARY_PROVIDER_STATUSES = (500, 502, 503, 504)
 
 logger = logging.getLogger(__name__)
+
+
+class PostfinanceUnavailableError(Exception):
+    """Checkout is unavailable after any safe, bounded retry."""
+
+
+def call_postfinance(call, *, operation, read_only=False, invoice_id=None, remote_id=None, **kwargs):
+    for attempt in range(1, MAX_ATTEMPTS + 1):
+        try:
+            return call(**kwargs)
+        except (HTTPError, ApiException) as error:
+            reason = error.reason if isinstance(error, MaxRetryError) else error
+            # ConnectTimeoutError includes NewConnectionError and NameResolutionError.
+            # Read/protocol failures and HTTP responses cannot prove a POST was not processed.
+            safe = isinstance(reason, ConnectTimeoutError)
+            if read_only:
+                safe = (
+                    safe
+                    or isinstance(reason, (ReadTimeoutError, ProtocolError))
+                    or (isinstance(error, ApiException) and error.status in TEMPORARY_PROVIDER_STATUSES)
+                )
+            if not safe or attempt == MAX_ATTEMPTS:
+                raise
+            logger.warning(
+                "PostFinance retry schema=%s invoice=%s operation=%s remote_id=%s attempt=%s error_type=%s",
+                getattr(connection, "schema_name", "unknown"),
+                invoice_id,
+                operation,
+                remote_id,
+                attempt + 1,
+                type(reason).__name__,
+            )
+            sleep(RETRY_DELAY)
 
 
 def invoice_to_transaction(request, invoice, fail_url=None):
@@ -90,16 +132,26 @@ def get_transaction(request, invoice, fail_url=None):
         transaction_lightbox_service = TransactionLightboxServiceApi(config)
         transaction = invoice_to_transaction(request, invoice, fail_url=fail_url)
         stage = "create_remote_transaction"
-        transaction_create = transaction_service.create(
-            space_id=settings.POSTFINANCE_SPACE_ID, transaction=transaction
+        transaction_create = call_postfinance(
+            transaction_service.create,
+            operation=stage,
+            invoice_id=invoice.pk,
+            space_id=settings.POSTFINANCE_SPACE_ID,
+            transaction=transaction,
         )
         # payment_page_url = transaction_page_service.payment_page_url(
         #    space_id=settings.POSTFINANCE_SPACE_ID, id=transaction_create.id
         # )
         remote_id = transaction_create.id
         stage = "get_payment_script"
-        javascript_url = transaction_lightbox_service.javascript_url(
-            space_id=settings.POSTFINANCE_SPACE_ID, id=transaction_create.id
+        javascript_url = call_postfinance(
+            transaction_lightbox_service.javascript_url,
+            operation=stage,
+            read_only=True,
+            invoice_id=invoice.pk,
+            remote_id=remote_id,
+            space_id=settings.POSTFINANCE_SPACE_ID,
+            id=transaction_create.id,
         )
         stage = "save_local_transaction"
         return PostfinanceTransaction.objects.create(
@@ -111,7 +163,13 @@ def get_transaction(request, invoice, fail_url=None):
 
     except Exception as error:
         # SDK exception strings can contain headers, secrets and customer data.
-        logger.error(
+        unavailable = stage in ("create_remote_transaction", "get_payment_script") and (
+            isinstance(error, HTTPError)
+            or isinstance(error, ApiException)
+            and error.status in TEMPORARY_PROVIDER_STATUSES
+        )
+        log = logger.warning if unavailable else logger.error
+        log(
             "PostFinance creation failed schema=%s invoice=%s stage=%s remote_id=%s error_type=%s provider_status=%s",
             getattr(connection, "schema_name", "unknown"),
             invoice.pk,
@@ -120,6 +178,8 @@ def get_transaction(request, invoice, fail_url=None):
             type(error).__name__,
             error.status if isinstance(error, ApiException) else None,
         )
+        if unavailable:
+            raise PostfinanceUnavailableError("PostFinance checkout is unavailable") from error
         raise
 
     # return PostfinanceTransaction.objects.create(
@@ -137,7 +197,14 @@ def get_new_status(transaction_id):
         request_timeout=DEFAULT_TIMEOUT,
     )
     transaction_service = TransactionServiceApi(config)
-    transaction = transaction_service.read(space_id=settings.POSTFINANCE_SPACE_ID, id=transaction_id)
+    transaction = call_postfinance(
+        transaction_service.read,
+        operation="read_status",
+        read_only=True,
+        remote_id=transaction_id,
+        space_id=settings.POSTFINANCE_SPACE_ID,
+        id=transaction_id,
+    )
     return transaction.state.value, transaction
 
 
@@ -149,8 +216,14 @@ def void_transaction(transaction_id):
     )
     transaction_service = TransactionVoidServiceApi(config)
     try:
-        transaction_void = transaction_service.void_offline(space_id=settings.POSTFINANCE_SPACE_ID, id=transaction_id)
+        transaction_void = call_postfinance(
+            transaction_service.void_offline,
+            operation="void_transaction",
+            remote_id=transaction_id,
+            space_id=settings.POSTFINANCE_SPACE_ID,
+            id=transaction_id,
+        )
     except ApiException as e:
-        logger.error("Exception when calling TransactionVoidServiceApi->void_offline: %s\n", e)
+        logger.error("PostFinance void failed remote_id=%s provider_status=%s", transaction_id, e.status)
         return "FAILED"
     return transaction_void.state.value
