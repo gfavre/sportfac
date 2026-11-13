@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Added
+- Add `copy_child_levels` to transfer final levels to a later period's previous levels, matching children by Lagapeo ID and activities by name. Support interactive period selection, dry runs and explicit overwrites while preserving existing levels by default.
 - Include equipment pickup and return appointment dates and times in registration Excel exports when rentals are enabled, using each child's rental bookings.
 
 ### Fixed
