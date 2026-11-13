@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+- Include equipment pickup and return appointment dates and times in registration Excel exports when rentals are enabled, using each child's rental bookings.
+
 ### Fixed
 - Retry PostFinance connection failures once before returning a controlled 503; also retry transient failures of read-only calls. Preserve invoices, provide a clear manual retry, and never repeat an ambiguous transaction creation after a read timeout or provider response.
 - Install the shared rental invoice mail type directly in the public schema without requiring a period schema. Invalidate its template caches across periods so installation is immediately visible.

@@ -2,6 +2,7 @@ from io import BytesIO
 
 import tablib
 from django.conf import settings
+from django.db.models import Prefetch
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from import_export import fields
@@ -11,6 +12,7 @@ from openpyxl import load_workbook
 from openpyxl.workbook.workbook import Workbook
 
 from activities.models import ExtraNeed
+from appointments.models import Rental
 from backend.templatetags.switzerland import phone
 
 from .models import Bill
@@ -66,6 +68,8 @@ class RegistrationResource(resources.ModelResource):
     paid = fields.Field(attribute="paid", column_name=_("Paid"), widget=widgets.BooleanWidget())
 
     rental = fields.Field(attribute="child", column_name=_("Rental"), widget=widgets.BooleanWidget())
+    pickup_appointment = fields.Field(column_name=_("Pickup slot"))
+    return_appointment = fields.Field(column_name=_("Return slot"))
 
     class Meta:
         model = Registration
@@ -97,6 +101,8 @@ class RegistrationResource(resources.ModelResource):
             "before_level",
             "after_level",
             "rental",
+            "pickup_appointment",
+            "return_appointment",
         )
         export_order = fields
 
@@ -128,6 +134,8 @@ class RegistrationResource(resources.ModelResource):
             del self.fields["invoice_identifier"]
         if not settings.KEPCHUP_USE_APPOINTMENTS:
             del self.fields["rental"]
+            del self.fields["pickup_appointment"]
+            del self.fields["return_appointment"]
 
     def dehydrate_child_id(self, obj):
         if settings.KEPCHUP_IMPORT_CHILDREN:
@@ -192,11 +200,32 @@ class RegistrationResource(resources.ModelResource):
         child = obj.child
         return child.rentals.exists()
 
+    def rental_appointment_dates(self, obj, attribute):
+        dates = {
+            timezone.localtime(appointment.slot.start)
+            for rental in obj.child.rentals.all()
+            if (appointment := getattr(rental, attribute)) is not None
+        }
+        return "; ".join(date.strftime("%d.%m.%Y %H:%M") for date in sorted(dates))
+
+    def dehydrate_pickup_appointment(self, obj):
+        return self.rental_appointment_dates(obj, "pickup_appointment")
+
+    def dehydrate_return_appointment(self, obj):
+        return self.rental_appointment_dates(obj, "return_appointment")
+
     def export(self, queryset=None, *args, **kwargs):
         self.before_export(queryset, *args, **kwargs)
 
         if queryset is None:
             queryset = self.get_queryset()
+        if settings.KEPCHUP_USE_APPOINTMENTS:
+            queryset = queryset.prefetch_related(
+                Prefetch(
+                    "child__rentals",
+                    queryset=Rental.objects.select_related("pickup_appointment__slot", "return_appointment__slot"),
+                )
+            )
         headers = self.get_export_headers()
         data = tablib.Dataset(headers=headers)
 
@@ -239,6 +268,7 @@ class RegistrationResource(resources.ModelResource):
             removable_fields.append("payment_method")
         if not settings.KEPCHUP_USE_APPOINTMENTS:
             removable_fields.append("rental")
+            removable_fields.extend(("pickup_appointment", "return_appointment"))
         order = tuple([field for field in order if field not in removable_fields])
         return order + tuple(k for k in self.fields.keys() if k not in order)
 
